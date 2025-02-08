@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS MainAccounts 
+(
+	MainAccountsId	INTEGER NOT NULL UNIQUE,
+	Code	TEXT(150) DEFAULT NS,
+	Name	TEXT(150) DEFAULT NS,
+	Type	TEXT(150) DEFAULT NS,
+	SubFunctionCode	TEXT(150) DEFAULT NS,
+	SubFunctionName	TEXT(150) DEFAULT NS,
+	BudgetAccountCode	TEXT(150) DEFAULT NS,
+	BudgetAccountName	TEXT(150) DEFAULT NS,
+	BudgetEnforcementActCategory	TEXT(150) DEFAULT NS,
+	PRIMARY KEY(MainAccountsId AUTOINCREMENT)
+);

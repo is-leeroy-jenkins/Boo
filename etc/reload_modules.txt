@@ -1,0 +1,16 @@
+from importlib import reload
+import Booger as bg
+reload( bg )
+from Booger import *
+import Static as st
+reload( st )
+from Static import *
+import FileSys as fs
+reload( fs )
+from FileSys import *
+import Minion as mn
+reload( mn )
+from Minion import *
+import Bobo as bo
+reload( bo )
+from Bobo import *

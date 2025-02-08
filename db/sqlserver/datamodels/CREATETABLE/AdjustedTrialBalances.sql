@@ -1,0 +1,28 @@
+CREATE TABLE AdjustedTrialBalances 
+(
+	AdjustedTrialBalancesId INT NOT NULL UNIQUE,
+	AgencyIdentifier	NVARCHAR(150) DEFAULT NS,
+	AllocationTransferAgency	NVARCHAR(150) DEFAULT NS,
+	AvailabilityType	NVARCHAR(150) DEFAULT NS,
+	MainAccount	NVARCHAR(150) DEFAULT NS,
+	SubAccount	NVARCHAR(150) DEFAULT NS,
+	TreasurySymbol	NVARCHAR(150) DEFAULT NS,
+	BFY	NVARCHAR(150) DEFAULT NS,
+	EFY	NVARCHAR(150) DEFAULT NS,
+	FundCode	NVARCHAR(150) DEFAULT NS,
+	FundName	NVARCHAR(150) DEFAULT NS,
+	LedgerAccount	NVARCHAR(150) DEFAULT NS,
+	AccountName	NVARCHAR(150) DEFAULT NS,
+	BeginningBalance	DOUBLE DEFAULT 0.0,
+	CreditBalance	DOUBLE DEFAULT 0.0,
+	DebitBalance	DOUBLE DEFAULT 0.0,
+	EndingBalance	DOUBLE DEFAULT 0.0,
+	TreasuryAccountCode	NVARCHAR(150) DEFAULT NS,
+	TreasuryAccountName	NVARCHAR(150) DEFAULT NS,
+	BudgetAccountCode	NVARCHAR(150) DEFAULT NS,
+	BudgetAccountName	NVARCHAR(150) DEFAULT NS,
+	CONSTRAINT AdjustedTrialBalances PRIMARY KEY
+	(
+		AdjustedTrialBalancesId  ASC
+	)
+);

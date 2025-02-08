@@ -1,0 +1,1 @@
+CREATE VIEW <Name> AS <SelectStatement>;
