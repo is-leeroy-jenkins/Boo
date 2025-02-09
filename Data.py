@@ -778,10 +778,7 @@ class DataGenerator( ):
 		'''
 
 		try:
-			_path = self.data_path
-			_source = self.source
-			_table = self.source.name
-			_connection = sqlite.connect( _path )
+			_connection = sqlite.connect( self.data_path )
 			_sql = f'SELECT * FROM {self.source.name};'
 			_frame = sqlreader( _sql, _connection )
 			if _frame is None:
