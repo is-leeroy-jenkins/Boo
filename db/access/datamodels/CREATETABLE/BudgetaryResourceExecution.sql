@@ -1,86 +1,36 @@
-CREATE TABLE IF NOT EXISTS BudgetaryResourceExecution
+CREATE TABLE IF NOT EXISTS "BudgetaryResourceExecution" 
 (
-	BudgetaryResourceExecutionId
-	AUTOINCREMENT
-	NOT
-	NULL
-	UNIQUE,
-	FiscalYear
-	TEXT
-(
-	150
-) NULL DEFAULT NS,
-	BFY TEXT
-(
-	150
-) NULL DEFAULT NS,
-	EFY TEXT
-(
-	150
-) NULL DEFAULT NS,
-	LastUpdate TEXT
-(
-	150
-) NULL DEFAULT NS,
-	BudgetAccountCode TEXT
-(
-	150
-) NULL DEFAULT NS,
-	BudgetAccountName TEXT
-(
-	150
-) NULL DEFAULT NS,
-	TreasuryAccountName TEXT
-(
-	150
-) NULL DEFAULT NS,
-	STAT TEXT
-(
-	150
-) NULL DEFAULT NS,
-	CreditIndicator TEXT
-(
-	150
-) NULL DEFAULT NS,
-	LineNumber TEXT
-(
-	150
-) NULL DEFAULT NS,
-	LineDescription TEXT
-(
-	150
-) NULL DEFAULT NS,
-	SectionName TEXT
-(
-	150
-) NULL DEFAULT NS,
-	SectionNumber TEXT
-(
-	150
-) NULL DEFAULT NS,
-	LineType TEXT
-(
-	150
-) NULL DEFAULT NS,
-	FinancingAccounts TEXT
-(
-	150
-) NULL DEFAULT NS,
-	November DOUBLE NULL DEFAULT 0.0,
-	January DOUBLE NULL DEFAULT 0.0,
-	Feburary DOUBLE NULL DEFAULT 0.0,
-	April DOUBLE NULL DEFAULT 0.0,
-	May DOUBLE NULL DEFAULT 0.0,
-	June DOUBLE NULL DEFAULT 0.0,
-	August DOUBLE NULL DEFAULT 0.0,
-	October DOUBLE NULL DEFAULT 0.0,
-	Amount1 DOUBLE NULL DEFAULT 0.0,
-	Amount2 DOUBLE NULL DEFAULT 0.0,
-	Amount3 DOUBLE NULL DEFAULT 0.0,
-	Amount4 DOUBLE NULL DEFAULT 0.0,
-	CONSTRAINT BudgetaryResourceExecutionPrimaryKey
-	PRIMARY KEY
-(
-	BudgetaryResourceExecutionId
-)
-	);
+	"BudgetaryResourceExecutionId"	INTEGER,
+	"ReportYear"	TEXT(80) DEFAULT 'NS',
+	"BeginningPeriodOfAvailability"	TEXT(80) DEFAULT 'NS',
+	"EndingPeriodOfAvailability"	TEXT(80) DEFAULT 'NS',
+	"Agency"	TEXT(80) DEFAULT 'NS',
+	"Bureau"	TEXT(80) DEFAULT 'NS',
+	"BudgetAgencyCode"	TEXT(80) DEFAULT 'NS',
+	"BudgetBureauCode"	TEXT(80) DEFAULT 'NS',
+	"BudgetAccountCode"	TEXT(80) DEFAULT 'NS',
+	"BudgetAccountName"	TEXT(80) DEFAULT 'NS',
+	"TreasuryAgencyCode"	TEXT(80) DEFAULT 'NS',
+	"AllocationAccount"	TEXT(80) DEFAULT 'NS',
+	"TreasuryAccountCode"	TEXT(80) DEFAULT 'NS',
+	"TreasuryAccountName"	TEXT(80) DEFAULT 'NS',
+	"TreasuryFundSymbol"	TEXT(80) DEFAULT 'NS',
+	"LineNumber"	TEXT(80) DEFAULT 'NS',
+	"LineDescription"	TEXT(80) DEFAULT 'NS',
+	"SectionName"	TEXT(80) DEFAULT 'NS',
+	"SectionNumber"	TEXT(80) DEFAULT 'NS',
+	"LineType"	TEXT(80) DEFAULT 'NS',
+	"Updated"	TEXT(80) DEFAULT 'NS',
+	"November"	REAL DEFAULT 0.00,
+	"December"	REAL DEFAULT 0.00,
+	"January"	REAL DEFAULT 0.00,
+	"Feburary"	REAL DEFAULT 0.00,
+	"March"	REAL DEFAULT 0.00,
+	"April"	REAL DEFAULT 0.00,
+	"May"	REAL DEFAULT 0.00,
+	"June"	REAL DEFAULT 0.00,
+	"July"	REAL DEFAULT 0.00,
+	"August"	REAL DEFAULT 0.00,
+	"September"	REAL DEFAULT 0.00,
+	"October"	REAL DEFAULT 0.00
+);

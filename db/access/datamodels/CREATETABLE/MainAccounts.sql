@@ -1,15 +1,10 @@
-CREATE TABLE MainAccounts
+CREATE TABLE IF NOT EXISTS "MainAccounts" 
 (
-	MainAccountsId    AUTOINCREMENT NOT NULL,
-	Code              NVARCHAR(150) NULL DEFAULT ('NS'),
-	Name              NVARCHAR(150) NULL DEFAULT ('NS'),
-	BudgetAccountCode NVARCHAR(150) NULL DEFAULT ('NS'),
-	BudgetAccountName NVARCHAR(150) NULL DEFAULT ('NS'), CONSTRAINT
-(
-	MainAccountsPrimaryKey
-)
-	PRIMARY KEY
-(
-	MainAccountsId
-)
-	);
+	"MainAccountsId"	INTEGER NOT NULL UNIQUE,
+	"AgencyIdentifier"	TEXT(80) DEFAULT 'NS',
+	"AgencyCode"	TEXT(80) DEFAULT 'NS',
+	"Code"	TEXT(80) DEFAULT 'NS',
+	"Name"	TEXT(80) DEFAULT 'NS',
+	"Type"	TEXT(80) DEFAULT 'NS',
+	PRIMARY KEY("MainAccountsId" AUTOINCREMENT)
+);
