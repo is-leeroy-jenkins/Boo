@@ -81,7 +81,7 @@ class EndPoint():
         self.base_url = f"https://api.openai.com/"
         self.text_generation = f"https://api.openai.com/v1/chat/completions"
         self.image_generation = f"https://api.openai.com/v1/images/generations"
-        self.chat_completions = f"https://api.openai.com/v1/chat/completions"
+        self.chat_completion = f"https://api.openai.com/v1/chat/completions"
         self.speech_generation = f"https://api.openai.com/v1/audio/speech"
         self.translations = f"https://api.openai.com/v1/audio/translations"
         self.assistants = f"https://api.openai.com/v1/assistants"
@@ -98,7 +98,7 @@ class EndPoint():
             Methods that returns a list of member names
             Returns: list[ str ]
         '''
-        return [ 'base_url', 'text_generation', 'image_generation', 'chat_completion',
+        return [ 'base_url', 'text_generation', 'image_generation', 'chat_completions',
                  'speech_generation', 'translations', 'assistants', 'transcriptions',
                  'finetuning', 'embeddings', 'uploads', 'files', 'vector_stores' ]
 
@@ -124,6 +124,26 @@ class EndPoint():
                  'vector_stores': self.vector_stores }
 
 
+    def dump( self ) -> str:
+        '''
+            Returns: dict of members
+        '''
+        new = r'\r\n'
+        return 'base_url' + f' = {self.base_url}' + new + \
+                     'text_generation' + f' = {self.text_generation}' + new + \
+                     'image_generation' + f' = {self.image_generation}' + new + \
+                     'chat_completion' + f' = {self.chat_completion}' + new + \
+                     'speech_generation' + f' = {self.speech_generation}' + new + \
+                     'translations' + f' = {self.translations}' + new + \
+                     'assistants' + f' = {self.assistants}' + new + \
+                     'transcriptions' + f' = {self.transcriptions}' + new + \
+                     'finetuning' + f' = {self.finetuning}' + new + \
+                     'embeddings' + f' = {self.files}' + new + \
+                     'uploads' + f' = {self.uploads}' + new + \
+                     'files' + f' = {self.files}' + new + \
+                     'vector_stores' + f' = {self.vector_stores}' + new
+
+
 class Models():
     '''
         Class containing lists of OpenAI models by generation
@@ -136,6 +156,7 @@ class Models():
                                  'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
                                  'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
                                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
+
 
         self.image_generation = [ 'dall-e-2', 'dall-e-3',
                                   'gpt-4-0613', 'gpt-4-0314',
@@ -208,7 +229,6 @@ class GptOptions():
         self.store = store
         self.stream = stream
         self.size = size
-        self.response_format = None
         self.modalities = [ 'text', 'audio' ]
 
 
@@ -277,7 +297,7 @@ class GptOptions():
             Returns: dict[ str ] of members
 
         '''
-        return { 'n': self.number,
+        return { 'number': self.number,
                  'temperature': self.temperature,
                  'top_p': self.top_percent,
                  'frequency_penalty': self.frequency_penalty,
@@ -285,6 +305,21 @@ class GptOptions():
                  'store': self.store,
                  'stream': self.stream,
                  'size': self.size }
+
+
+    def dump( self ) -> str:
+        '''
+            Returns: dict of members
+        '''
+        new = "\r\n"
+        return 'number' + f' = {self.number}' + new + \
+                     'temperature' + f' = {self.temperature}' + new + \
+                     'top_percent' + f' = {self.top_percent}' + new + \
+                     'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+                     'presence_penalty' + f' = {self.presence_penalty}' + new + \
+                     'store' + f' = {self.store}' + new + \
+                     'stream' + f' = {self.stream}' + new + \
+                     'size' + f' = {self.size}' + new
 
 
 class Payload():
@@ -327,23 +362,22 @@ class Payload():
                  'presence_penalty', 'store', 'stream',
                  'size', 'data' ]
 
+
     def dump( self ):
         '''
             Returns: dict of members
         '''
-        newline = r'\r\n'
-        return  { 'number': f' = {self.number}' + newline,
-                     'model': f'{self.model}' + newline,
-                     'temperature': f'{self.temperature}' + newline,
-                     'top_percent': f'{self.top_percent}' + newline,
-                     'frequency_penalty': f'{self.frequency_penalty}' + newline,
-                     'presence_penalty': f'{self.presence_penalty}' + newline,
-                     'store': f'{self.store}' + newline,
-                     'stream': f'{self.stream}' + newline,
-                     'size': f'{self.size}' + newline,
-                     'endpoint': f'{self.endpoint}' + newline,
-                     'authorization': f'{self.header.authoriztion}' + newline,
-                     'content-type': f'{self.header.content_type}' + newline }
+        new = r'\r\n'
+        return 'number' + f' = {self.number}' + new + \
+                     'model' + f' = {self.model}' + new + \
+                     'temperature' + f' = {self.temperature}' + new + \
+                     'top_percent' + f' = {self.top_percent}' + new + \
+                     'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+                     'presence_penalty' + f' = {self.presence_penalty}' + new + \
+                     'store' + f' = {self.store}' + new + \
+                     'stream' + f' = {self.stream}' + new + \
+                     'size' + f' = {self.size}' + new
+
 
     def parse( self ) -> dict:
         pass
@@ -373,6 +407,22 @@ class Message():
             return message
 
 
+    def dump( self ):
+        '''
+            Returns: dict of members
+        '''
+        new = r'\r\n'
+        return 'number' + f' = {self.number}' + new + \
+                     'model' + f' = {self.model}' + new + \
+                     'temperature' + f' = {self.temperature}' + new + \
+                     'top_percent' + f' = {self.top_percent}' + new + \
+                     'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+                     'presence_penalty' + f' = {self.presence_penalty}' + new + \
+                     'store' + f' = {self.store}' + new + \
+                     'stream' + f' = {self.stream}' + new + \
+                     'size' + f' = {self.size}' + new
+
+
     def __dir__( self ):
         '''
         Methods that returns a list of member names
@@ -381,7 +431,7 @@ class Message():
         return [ 'role', 'content', 'type' ]
 
 
-class TextGeneration():
+class TextGeneration( ):
     '''
 
     Class provides the functionality fo the Text Generation API
@@ -389,9 +439,9 @@ class TextGeneration():
     '''
 
     def __init__( self ):
-        self.header = Header()
+        self.header = Header( )
         self.request_type = GptRequests.TextGenerations
-        self.endpoint = EndPoint().text_generation
+        self.endpoint = EndPoint( ).text_generation
         self.model = 'gpt-4o'
         self.number = 1;
         self.messages = [ ]
