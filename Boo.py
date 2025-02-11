@@ -93,14 +93,15 @@ class EndPoint():
         self.vector_stores = f"https://api.openai.com/v1/vector_stores"
 
 
-    def __dir__( self ):
+    def __dir__( self ) -> list[ str ]:
         '''
             Methods that returns a list of member names
             Returns: list[ str ]
         '''
         return [ 'base_url', 'text_generation', 'image_generation', 'chat_completions',
                  'speech_generation', 'translations', 'assistants', 'transcriptions',
-                 'finetuning', 'embeddings', 'uploads', 'files', 'vector_stores' ]
+                 'finetuning', 'embeddings', 'uploads', 'files', 'vector_stores',
+                 'get_data', 'dump' ]
 
 
     def get_data( self ) -> dict:
@@ -156,54 +157,42 @@ class Models():
                                  'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
                                  'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
                                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
-
-
         self.image_generation = [ 'dall-e-2', 'dall-e-3',
                                   'gpt-4-0613', 'gpt-4-0314',
                                   'gpt-4o-mini-2024-07-18' ]
-
         self.chat_completion = [ 'gpt-4-0613', 'gpt-4-0314',
                                  'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
                                  'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
                                  'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
                                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
-
         self.speech_generation = [ 'tts-1', 'tts-1-hd',
                                    'gpt-4o-audio-preview-2024-12-17',
                                    'gpt-4o-audio-preview-2024-10-01',
                                    'gpt-4o-mini-audio-preview-2024-12-17' ]
-
         self.transcription = [ 'whisper-1' ]
-
         self.translation = [ 'whisper-1', 'text-davinci-003',
                              'gpt-4-0613', 'gpt-4-0314',
                              'gpt-4-turbo-2024-04-09' ]
-
         self.finetuning = [ 'gpt-4-0613', 'gpt-4-0314',
                             'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
                             'gpt-4o-2024-05-13',
                             'gpt-4o-mini-2024-07-18' ]
-
         self.embeddings = [ 'text-embedding-3-small', 'text-embedding-3-large',
                             'text-embedding-ada-002' ]
-
         self.uploads = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
                          'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
                          'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
                          'o1-2024-12-17', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
-
         self.files = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
                        'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
                        'o1-2024-12-17', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
-
-
         self.vector_stores = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
                                'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
                                'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
                                'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 
 
-    def __dir__( self ):
+    def __dir__( self ) -> list[ str ]:
         '''
             Methods that returns a list of member names
             Returns: list[ str ]
@@ -211,6 +200,25 @@ class Models():
         return [ 'base_url', 'text_generation', 'image_generation', 'chat_completion',
                  'speech_generation', 'translations', 'assistants', 'transcriptions',
                  'finetuning', 'embeddings', 'uploads', 'files', 'vector_stores' ]
+
+
+    def get_data( self ) -> dict:
+        '''
+            Method that returns a list of dictionaries
+        '''
+        _data = \
+        {
+                "text_generation" : self.text_generation,
+                "image_generation" : self.image_generation,
+                "chat_completion" : self.chat_completion,
+                "speech_generation" : self.speech_generation,
+                "translations" : self.translation,
+                "finetuning" : self.finetuning,
+                "embeddings" : self.embeddings,
+                "uploads" : self.uploads,
+                "files" : self.files,
+                "vector_stores" : self.vector_stores,
+        }
 
 
 class GptOptions():
@@ -232,7 +240,7 @@ class GptOptions():
         self.modalities = [ 'text', 'audio' ]
 
 
-    def __dir__( self ):
+    def __dir__( self ) -> list[ str ]:
         '''
         Methods that returns a list of member names
         Returns: list[ str ]
@@ -352,7 +360,7 @@ class Payload():
                      'size': f'{self.size}'}
 
 
-    def __dir__( self ):
+    def __dir__( self ) -> list[ str ]:
         '''
         Methods that returns a list of member names
         Returns: list[ str ]
@@ -363,13 +371,12 @@ class Payload():
                  'size', 'data' ]
 
 
-    def dump( self ):
+    def dump( self ) -> str:
         '''
-            Returns: dict of members
+            Returns: a string of key value pairs
         '''
-        new = r'\r\n'
+        new = "\r\n"
         return 'number' + f' = {self.number}' + new + \
-                     'model' + f' = {self.model}' + new + \
                      'temperature' + f' = {self.temperature}' + new + \
                      'top_percent' + f' = {self.top_percent}' + new + \
                      'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
@@ -383,19 +390,19 @@ class Payload():
         pass
 
 
-class Message():
+class Message( ):
     '''
         Class for all messages used in the GPT application
     '''
 
 
-    def __init__( self, prompt: str,
-            role: str = 'user' ) -> None:
+    def __init__( self, prompt: str, role: str = 'user' ):
         self.role = role
         self.content = prompt
+        self.type = None
 
 
-    def __str__( self ):
+    def __str__( self ) -> str:
         '''
 
             Returns: the json string representation of the message.
@@ -407,26 +414,20 @@ class Message():
             return message
 
 
-    def dump( self ):
+    def dump( self ) -> str:
         '''
             Returns: dict of members
         '''
         new = r'\r\n'
         return 'number' + f' = {self.number}' + new + \
-                     'model' + f' = {self.model}' + new + \
-                     'temperature' + f' = {self.temperature}' + new + \
-                     'top_percent' + f' = {self.top_percent}' + new + \
-                     'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
-                     'presence_penalty' + f' = {self.presence_penalty}' + new + \
-                     'store' + f' = {self.store}' + new + \
-                     'stream' + f' = {self.stream}' + new + \
-                     'size' + f' = {self.size}' + new
+                     'role' + f' = {self.role}' + new + \
+                     'content' + f' = {self.content}'
 
 
-    def __dir__( self ):
+    def __dir__( self ) -> list[ str ]:
         '''
-        Methods that returns a list of member names
-        Returns: list[ str ]
+            Methods that returns a list of member names
+            Returns: list[ str ]
         '''
         return [ 'role', 'content', 'type' ]
 
@@ -452,7 +453,7 @@ class TextGeneration( ):
         self.prompt = None
 
 
-    def __dir__( self ):
+    def __dir__( self ) -> list[ str ]:
         '''
             Methods that returns a list of member names
             Returns: list[ str ]
@@ -469,10 +470,10 @@ class TextGeneration( ):
             Returns: dict[ str ] of request items
 
         '''
-        return { 'n': f'{self.number}',
+        return { 'nnumber': f'{self.number}',
                  'model': f'{self.model}',
                  'temperature': f'{self.temperature}',
-                 'top_p': f'{self.top_percent}',
+                 'top_percent': f'{self.top_percent}',
                  'frequency_penalty': f'{self.frequency_penalty}',
                  'presence_penalty': f'{self.presence_penalty}',
                  'store': f'{self.store}',
