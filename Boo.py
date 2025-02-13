@@ -47,7 +47,7 @@ import requests
 from pygments.lexers.csound import newline
 
 from Static import GptRequests, GptRoles, GptLanguages
-from Booger import Error
+from Booger import ErrorDialog, Error
 
 class Header():
     '''
@@ -511,18 +511,11 @@ class TextGeneration( ):
                 self.prompt = prompt
 
             openai.api_key = self.header.api_key
-            self.messages = f'''
-			[
-					{
-							'role': 'system',
-					        'content': 'You are a programming tutor who specializes in Python.'
-					},
-					{
-							'role': 'user',
-					        'content': {self.prompt}
-					},
-			]
-			'''
+            _sys = 'You are a helpful assistant and Budget Analyst'
+            _system = Message( prompt=_sys, role = 'user', type = 'text' )
+            _user = Message( prompt=self.prompt, role = 'user', type = 'text' )
+            self.messages.append( _system )
+            self.messages.append( _user )
 
             self.response = openai.ChatCompletion.create(
                 model = self.model,
