@@ -113,7 +113,7 @@ class EndPoint():
         return { 'base_url': self.base_url,
                  'text_generation': self.text_generation,
                  'image_generation': self.image_generation,
-                 'chat_completion': self.chat_completions,
+                 'chat_completion': self.chat_completion,
                  'speech_generation': self.speech_generation,
                  'translations': self.translations,
                  'assistants': self.assistants,
@@ -247,9 +247,10 @@ class GptOptions():
         '''
         return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
                  'presence_penalty', 'store', 'stream', 'size',
-                 'get_voices', 'get_sizes', 'get_file_formats',
-                 'get_response_formats', 'get_output_formats',
-                 'get_input_formats', 'get_data' ]
+                 'get_voices', 'get_sizes',
+                 'get_file_formats', 'get_response_formats',
+                 'get_output_formats', 'get_input_formats',
+                 'get_data' ]
 
 
     def get_voices( self ) -> list[ str ]:
@@ -307,7 +308,7 @@ class GptOptions():
         '''
         return { 'number': self.number,
                  'temperature': self.temperature,
-                 'top_p': self.top_percent,
+                 'top_percent': self.top_percent,
                  'frequency_penalty': self.frequency_penalty,
                  'presence_penalty': self.presence_penalty,
                  'store': self.store,
@@ -337,8 +338,9 @@ class Payload():
 
     '''
 
-    def __init__( self, model: str, number: int = 1, temperature: float = 0.08, top_p: float = 0.09,
-            frequency: float = 0.00, presence: float = 0.00, store: bool = False,
+    def __init__( self, model: str, number: int = 1, temperature: float = 0.08,
+            top_p: float = 0.09, frequency: float = 0.00,
+            presence: float = 0.00, store: bool = False,
             stream: bool = True, size: str = '1024X1024' ):
         self.model = model
         self.number = number
@@ -368,7 +370,7 @@ class Payload():
         return [ 'number', 'model', 'temperature',
                  'top_percent', 'frequency_penalty',
                  'presence_penalty', 'store', 'stream',
-                 'size', 'data' ]
+                 'size', 'data', 'dump', 'parse' ]
 
 
     def dump( self ) -> str:
@@ -377,6 +379,7 @@ class Payload():
         '''
         new = "\r\n"
         return 'number' + f' = {self.number}' + new + \
+                     'model' + f' = {self.model}' + new + \
                      'temperature' + f' = {self.temperature}' + new + \
                      'top_percent' + f' = {self.top_percent}' + new + \
                      'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
@@ -396,10 +399,16 @@ class Message( ):
     '''
 
 
-    def __init__( self, prompt: str, role: str = 'user' ):
+    def __init__( self, prompt: str, role: str = 'user', type: str = 'text' ):
         self.role = role
         self.content = prompt
-        self.type = None
+        self.type = type
+        self.data = \
+        {
+            'role' : self.role,
+            'type' : self.type,
+            'content' : self.content
+        }
 
 
     def __str__( self ) -> str:
@@ -409,18 +418,21 @@ class Message( ):
 
         '''
         if self.type is None and not self.content is None:
-            data = f" 'role': '{self.role}', \r\n 'content': '{self.content}' "
-            message = "{ " + data + " }"
-            return message
+            _pair = f''' 
+            'role': '{self.role}', 
+            \r\n 'type': '{self.type}', 
+            \r\n 'content': '{self.content}' "'''
+            _retval = "{ " + _pair + " }"
+            return _retval
 
 
     def dump( self ) -> str:
         '''
-            Returns: dict of members
+            Returns: key value pairs in a string
         '''
-        new = r'\r\n'
-        return 'number' + f' = {self.number}' + new + \
-                     'role' + f' = {self.role}' + new + \
+        new = "\r\n"
+        return 'role' + f' = {self.role}' + new + \
+                     'type' + f' = {self.type}' + new + \
                      'content' + f' = {self.content}'
 
 
@@ -439,18 +451,33 @@ class TextGeneration( ):
 
     '''
 
-    def __init__( self ):
+    def __init__( self  ):
         self.header = Header( )
-        self.request_type = GptRequests.TextGenerations
+        self.request_type = GptRequests.TextGeneration
         self.endpoint = EndPoint( ).text_generation
         self.model = 'gpt-4o'
         self.number = 1;
-        self.messages = [ ]
+        self.temperature = 0.08
+        self.top_percent = 0.09
+        self.frequency_penalty = 0.0
+        self.presence_penalty = 0.0
         self.store = False
         self.stream = True
         self.content = None
         self.response = None
         self.prompt = None
+        self.messages = [ ]
+        self.data = { 'number': f'{self.number}',
+                 'model': f'{self.model}',
+                 'temperature': f'{self.temperature}',
+                 'top_percent': f'{self.top_percent}',
+                 'frequency_penalty': f'{self.frequency_penalty}',
+                 'presence_penalty': f'{self.presence_penalty}',
+                 'store': f'{self.store}',
+                 'stream': f'{self.stream}',
+                 'endpoint': f'{self.endpoint}',
+                 'authorization': f'{self.header.authoriztion}',
+                 'content-type': f'{self.header.content_type}'}
 
 
     def __dir__( self ) -> list[ str ]:
@@ -462,25 +489,6 @@ class TextGeneration( ):
                  'model', 'number', 'messages',
                  'content', 'store', 'stream',
                  'response', 'prompt', 'generate_request' ]
-
-
-    def get_data( self ) -> dict:
-        '''
-
-            Returns: dict[ str ] of request items
-
-        '''
-        return { 'nnumber': f'{self.number}',
-                 'model': f'{self.model}',
-                 'temperature': f'{self.temperature}',
-                 'top_percent': f'{self.top_percent}',
-                 'frequency_penalty': f'{self.frequency_penalty}',
-                 'presence_penalty': f'{self.presence_penalty}',
-                 'store': f'{self.store}',
-                 'stream': f'{self.stream}',
-                 'endpoint': f'{self.endpoint}',
-                 'authorization': f'{self.header.authoriztion}',
-                 'content-type': f'{self.header.content_type}'}
 
 
     def generate_request( self, prompt: str ) -> str:
@@ -503,7 +511,7 @@ class TextGeneration( ):
                 self.prompt = prompt
 
             openai.api_key = self.header.api_key
-            self.messages = '''
+            self.messages = f'''
 			[
 					{
 							'role': 'system',
@@ -511,10 +519,10 @@ class TextGeneration( ):
 					},
 					{
 							'role': 'user',
-					        'content': { }
+					        'content': {self.prompt}
 					},
 			]
-			'''.format( self.prompt )
+			'''
 
             self.response = openai.ChatCompletion.create(
                 model = self.model,
@@ -553,20 +561,26 @@ class ChatCompletion():
         self.content = None
         self.response = None
         self.prompt = None
-        self.data = { }
+        self.data = { 'number': f'{self.number}',
+                 'model': f'{self.model}',
+                 'temperature': f'{self.temperature}',
+                 'top_percent': f'{self.top_percent}',
+                 'frequency_penalty': f'{self.frequency_penalty}',
+                 'presence_penalty': f'{self.presence_penalty}',
+                 'store': f'{self.store}',
+                 'stream': f'{self.stream}',
+                 'endpoint': f'{self.endpoint}',
+                 'authorization': f'{self.header.authoriztion}',
+                 'content-type': f'{self.header.content_type}'}
 
 
-    def __dir__( self ):
+    def __dir__( self ) -> list[ str ]:
         '''
             Methods that returns a list of member names
             Returns: list[ str ]
         '''
         return [ 'header', 'request_type', 'endpoint', 'model', 'number', 'messages',
-                 'content', 'response', 'prompt', 'generate_request( prompt )' ]
-
-
-    def getdata( self ) -> dict:
-        pass
+                 'content', 'response', 'prompt', 'generate_request' ]
 
 
     def generate_request( self, prompt: str ) -> str:
@@ -638,25 +652,7 @@ class ImageGeneration():
         self.number = 1
         self.size = '1024X1024'
         self.quality = 'standard'
-        self.data = { }
-
-
-    def __dir__( self ):
-        '''
-            Methods that returns a list of member names
-            Returns: list[ str ]
-        '''
-        return [ 'header', 'request_type', 'endpoint', 'model', 'number', 'messages',
-                 'content', 'response', 'prompt', 'size', 'generate_request( prompt )' ]
-
-
-    def get_data( self ) -> dict:
-        '''
-
-            Returns: dict[ str ] of request items
-
-        '''
-        return { 'n': f'{self.number}',
+        self.data = { 'number': f'{self.number}',
                  'model': f'{self.model}',
                  'temperature': f'{self.temperature}',
                  'top_p': f'{self.top_percent}',
@@ -669,6 +665,15 @@ class ImageGeneration():
                  'content-type': f'{self.header.content_type}'}
 
 
+    def __dir__( self ) -> list[ str ]:
+        '''
+            Methods that returns a list of member names
+            Returns: list[ str ]
+        '''
+        return [ 'header', 'request_type', 'endpoint', 'model', 'number', 'messages',
+                 'content', 'response', 'prompt', 'size', 'generate_request( prompt )' ]
+
+
     def generate_request( self, prompt: str, num: int = 1,
             quality = 'standard', size: str = '1024X1024' ) -> str:
         '''
@@ -676,6 +681,7 @@ class ImageGeneration():
 
             Args:
                 prompt: str, num: int, size: str
+
 
             Returns:
 
