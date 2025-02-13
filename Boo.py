@@ -42,7 +42,7 @@
   ******************************************************************************************
   '''
 import os
-import openai
+from openai import OpenAI
 import requests
 from pygments.lexers.csound import newline
 
@@ -452,6 +452,7 @@ class TextGeneration( ):
     '''
 
     def __init__( self  ):
+        self.client = OpenAI( )
         self.header = Header( )
         self.request_type = GptRequests.TextGeneration
         self.endpoint = EndPoint( ).text_generation
@@ -510,14 +511,14 @@ class TextGeneration( ):
             else:
                 self.prompt = prompt
 
-            openai.api_key = self.header.api_key
+            self.client.api_key = self.header.api_key
             _sys = 'You are a helpful assistant and Budget Analyst'
             _system = Message( prompt=_sys, role = 'user', type = 'text' )
             _user = Message( prompt=self.prompt, role = 'user', type = 'text' )
             self.messages.append( _system )
             self.messages.append( _user )
 
-            self.response = openai.ChatCompletion.create(
+            completion = self.client.chat.completions.create(
                 model = self.model,
                 messages = self.messages,
                 temperature = 0.08,
@@ -527,7 +528,7 @@ class TextGeneration( ):
                 presence_penalty = 0.00,
             )
 
-            self.content = self.response[ 'choices' ][ 0 ][ 'message' ][ 'content' ]
+            self.content = completion[ 'choices' ][ 0 ][ 'message' ][ 'content' ]
             return self.content
         except Exception as e:
             exception = Error( e )
