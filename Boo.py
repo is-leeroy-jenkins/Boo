@@ -513,7 +513,7 @@ class TextGeneration( ):
 
             self.client.api_key = self.header.api_key
             _sys = 'You are a helpful assistant and Budget Analyst'
-            _system = Message( prompt=_sys, role = 'user', type = 'text' )
+            _system = Message( prompt=_sys, role = 'system', type = 'text' )
             _user = Message( prompt=self.prompt, role = 'user', type = 'text' )
             self.messages.append( _system )
             self.messages.append( _user )
@@ -547,7 +547,8 @@ class ChatCompletion():
     '''
 
     def __init__( self ):
-        self.header = Header()
+        self.header = Header( )
+        self.client = OpenAI( )
         self.request_type = GptRequests.ChatCompletions
         self.endpoint = EndPoint().chat_completions
         self.model = "gpt-4o"
@@ -593,22 +594,13 @@ class ChatCompletion():
                 raise Exception( alert )
             else:
                 self.prompt = prompt
-
-            openai.api_key = self.header.api_key
-            self.messages = '''
-			[
-					{
-                            'role': 'system',
-							'content': 'You are a helpful assitant.'
-					},
-					{
-                           'role': 'user',
-							'content': {prompt}
-					},
-			]
-			'''
-
-            self.response = openai.ChatCompletion.create(
+            self.client.api_key = self.header.api_key
+            _sys = 'You are a helpful assistant and Budget Analyst'
+            _system = Message( prompt=_sys, role = 'system', type = 'text' )
+            _user = Message( prompt=self.prompt, role = 'user', type = 'text' )
+            self.messages.append( _system )
+            self.messages.append( _user )
+            self.response = self.client.chat.completions.create(
                 model = self.model,
                 messages = self.messages,
                 temperature = 0.08,
