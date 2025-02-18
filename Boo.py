@@ -627,7 +627,8 @@ class ImageGeneration():
     '''
 
     def __init__( self ):
-        self.header = Header()
+        self.header = Header( )
+        self.client = OpenAI( )
         self.endpoint = EndPoint().image_generation
         self.model = 'dall-e-2'
         self.messages = [ ]
@@ -683,20 +684,12 @@ class ImageGeneration():
                 self.size = size
 
             openai.api_key = self.header.api_key
-            self.messages = f'''
-			[
-					{
-            'role': 'system',
-					        'content': 'You are a helpful assistant with artistic abilities.'
-					},
-					{
-            'role': 'user',
-					        'content': {prompt}
-					}
-			]
-			'''
-
-            self.response = openai.ChatCompletion.create(
+            _sys = 'You are a helpful assistant and Budget Analyst'
+            _system = Message( prompt=_sys, role = 'system', type = 'text' )
+            _user = Message( prompt=self.prompt, role = 'user', type = 'text' )
+            self.messages.append( _system )
+            self.messages.append( _user )
+            self.response = self.client.chat.completions.create(
                 model = self.model,
                 messages = self.messages,
                 n = self.number,
