@@ -574,7 +574,8 @@ class ChatCompletion():
             Methods that returns a list of member names
             Returns: list[ str ]
         '''
-        return [ 'header', 'request_type', 'endpoint', 'model', 'number', 'messages',
+        return [ 'header', 'client', 'request_type', 'endpoint',
+                 'model', 'number', 'messages',
                  'content', 'response', 'prompt', 'generate_request' ]
 
 
