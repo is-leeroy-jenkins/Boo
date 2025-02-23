@@ -173,10 +173,9 @@ class Models( ):
         self.translation = [ 'whisper-1', 'text-davinci-003',
                              'gpt-4-0613', 'gpt-4-0314',
                              'gpt-4-turbo-2024-04-09' ]
-        self.finetuning = [ 'gpt-4-0613', 'gpt-4-0314',
-                            'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
-                            'gpt-4o-2024-05-13',
-                            'gpt-4o-mini-2024-07-18' ]
+        self.finetuning = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18',
+                            'gpt-4-0613', 'gpt-3.5-turbo-0125',
+                            'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-0613' ]
         self.embeddings = [ 'text-embedding-3-small', 'text-embedding-3-large',
                             'text-embedding-ada-002' ]
         self.uploads = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
