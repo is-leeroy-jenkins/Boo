@@ -177,3 +177,4 @@ cython_debug/
 #.idea/
 db/access/budget.accdb
 db/sqlite/budget.db
+!/venv/
