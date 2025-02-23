@@ -1,6 +1,6 @@
 '''
   ******************************************************************************************
-      Assembly:                BudgetPy
+      Assembly:                Boo
       Filename:                Minion.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
@@ -68,7 +68,7 @@ class App( ):
         self.outlook = r'C:\Program Files\Microsoft Office\root\Office16\OUTLOOK.EXE'
         self.pyscripter = r'db\python\PyScripter\PyScripter.exe'
         self.task_manager = r'C:\Windows\System32\Taskmgr.exe'
-        self.storage = r'C:\Users\teppler\AppData\Local\Microsoft\OneDrive\OneDrive.exe'
+        self.storage = r'C:\Users\terry\AppData\Local\Microsoft\OneDrive\OneDrive.exe'
         self.word = r'C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE'
 
     def __dir__( self ) -> list[ str ]:
@@ -79,11 +79,13 @@ class App( ):
 
     def run( self ):
         '''
-        Purpose:
 
-        Parameters:
+            Purpose:
 
-        Returns:
+            Parameters:
+
+            Returns:
+
         '''
         try:
             if self.app == Client.SQLite:

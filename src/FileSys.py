@@ -1,6 +1,6 @@
 '''
   ******************************************************************************************
-      Assembly:                Bobo Py
+      Assembly:                Boo
       Filename:                FileSys.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
@@ -963,7 +963,7 @@ class Excel( ):
 	'''
 	
 	def __init__( self, path: str ):
-		self.internal_path = r'etc/templates/report/Excel.xlsx'
+		self.internal_path = r'../etc/templates/report/Excel.xlsx'
 		self.external_path = path
 		self.name = os.path.split( path )[ 1 ]
 		self.title = self.name.split( '.' )[ 0 ]

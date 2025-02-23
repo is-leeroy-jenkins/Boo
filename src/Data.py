@@ -1,6 +1,6 @@
 '''
   ******************************************************************************************
-      Assembly:                BudgetPy
+      Assembly:                Boo
       Filename:                Data.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
@@ -179,9 +179,9 @@ class SqlPath( ):
 
 	def __init__( self ):
 		self.sqlite_driver = 'sqlite3'
-		self.sqlite_path = r'\db\sqlite\budget.db'
+		self.sqlite_path = r'../db/sqlite/Boo.db'
 		self.access_driver = r'DRIVER={ Microsoft Access Driver (*.mdb, *.accdb) };DBQ='
-		self.access_path = os.getcwd( ) + r'\db\access\budget.accdb'
+		self.access_path = os.getcwd( ) + r'\db\access\Boo.accdb'
 
 
 	def __dir__( self ) -> list[ str ]:
@@ -368,11 +368,11 @@ class DbConfig( ):
 		self.provider = pro
 		self.source = src
 		self.table_name = src.name
-		self.sqlite_path = os.getcwd( ) + r'\db\sqlite\Budget.db'
+		self.sqlite_path = os.getcwd( ) + r'\db\sqlite\Boo.db'
 		self.access_driver = r'DRIVER={ Microsoft Access Driver (*.mdb, *.accdb) };DBQ='
-		self.access_path = os.getcwd( ) + r'\db\access\Budget.accdb'
+		self.access_path = os.getcwd( ) + r'\db\access\Boo.accdb'
 		self.sqlserver_driver = r'DRIVER={ ODBC Driver 17 for SQL Server };SERVER=.\SQLExpress;'
-		self.sqlserver_path = os.getcwd( ) + r'\db\sqlserver\Budget.mdf'
+		self.sqlserver_path = os.getcwd( ) + r'\db\sqlserver\Boo.mdf'
 		self.data = [ 'BudgetaryResourceExecution',
 		              'BudgetAuthority',
 		              'BudgetOutlays'
