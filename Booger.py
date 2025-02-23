@@ -194,7 +194,7 @@ class Dark( ):
 	button_backcolor = sg.theme_button_color_background( )
 	button_forecolor = sg.theme_button_color_text( )
 	button_color = sg.theme_button_color( )
-	icon_path = os.getcwd( ) + r'\etc\ico\ninja.ico'
+	icon_path = os.getcwd( ) + r'\Resources\Assets\ApplicationImages\Bubba.ico'
 	theme_font = ('Roboto', 9)
 	scrollbar_color = '#755600'
 	progressbar_backcolor = sg.theme_progress_bar_color( )
@@ -217,7 +217,7 @@ class Dark( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = os.getcwd( ) + r'\etc\ico\ninja.ico'
+		self.icon_path = os.getcwd( ) + r'\Resources\Assets\ApplicationImages\Bubba.ico'
 		self.theme_font = ('Roboto', 9)
 		self.scrollbar_color = '#755600'
 		self.progressbar_backcolor = sg.theme_progress_bar_color( )
