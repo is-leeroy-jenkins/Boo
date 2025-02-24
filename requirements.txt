@@ -32,3 +32,6 @@ seaborn
 tensorflow
 urllib3
 typing
+soundfile
+sounddevice
+loguru
