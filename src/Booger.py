@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="Booger.py" company="Terry D. Eppler">
 
-     This is a Federal Budget Execution and Data Analysis Application for EPA Analysts
+     This is a Federal Booger and Data Analysis Application for EPA Analysts
      Copyright ©  2024  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -69,20 +69,20 @@ import urllib.request
 class Error( Exception ):
     '''
 
-    Constructor:
+        Constructor:
 
-        Error( error: Exception, heading: str=None, cause: str=None,
-                  method: str=None, module: str=None )
+            Error( error: Exception, heading: str=None, cause: str=None,
+                    method: str=None, module: str=None )
 
-    Purpose:
+        Purpose:
 
-        Class wrapping error used as the input argument for ErrorDialog class
+            Class wrapping error used as the input argument for ErrorDialog class
 
     '''
 
     def __init__( self, error: Exception, heading: str = None, cause: str = None,
             method: str = None, module: str = None ):
-        super().__init__( )
+        super().__init__()
         self.heading = heading
         self.cause = cause
         self.method = method
@@ -98,23 +98,24 @@ class Error( Exception ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'message', 'cause',
                  'method', 'module', 'type',
                  'stack_trace', 'info' ]
 
+
 class ButtonIcon():
     '''
 
-    Constructor:
+        Constructor:
 
-        ButtonIcon( png: Enum )
+            ButtonIcon( png: Enum )
 
-    Pupose:
+        Pupose:
 
-        Class representing form images
+            Class representing form images
 
     '''
 
@@ -130,20 +131,21 @@ class ButtonIcon():
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'button', 'name', 'file_path' ]
 
+
 class TitleIcon():
     '''
 
-	Construcotr:
-		TitleIcon( ico )
+	    Construcotr:
+		    TitleIcon( ico )
 
-	Purpose:
+	    Purpose:
 
-		Class used to define the TitleIcon used on the GUI
+		    Class used to define the TitleIcon used on the GUI
 
 	'''
 
@@ -159,21 +161,22 @@ class TitleIcon():
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'folder', 'name', 'file_path' ]
 
+
 class Dark():
     '''
 
-    Constructor:
+        Constructor:
 
-        Dark( )
+            Dark( )
 
-    Pupose:
+        Pupose:
 
-        Class representing the theme
+            Class representing the theme
 
     '''
 
@@ -224,7 +227,7 @@ class Dark():
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -233,6 +236,7 @@ class Dark():
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
                  'scrollbar_color', 'progressbar_color' ]
+
 
 class FileDialog( Dark ):
     '''
@@ -268,14 +272,16 @@ class FileDialog( Dark ):
         self.sqlite = (('SQLite Databases', '*.db'),)
         self.sqlserver = (('SQL Server Databases', '*.mdf', '*.ldf', '*.sdf'),)
 
+
     def __str__( self ) -> str:
         if self.selected_item is not None:
             return self.selected_item
 
+
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -286,13 +292,16 @@ class FileDialog( Dark ):
                  'scrollbar_color', 'progressbar_color', 'form_size',
                  'selected_path', 'message', 'show' ]
 
+
     def show( self ):
         '''
-		Purpose: Displays the control/form
 
-		Parameters: void
+		    Purpose: Displays the control/form
 
-		Returns: void
+		    Parameters: void
+
+		    Returns: void
+
 		'''
         try:
             _layout = [ [ sg.Text() ],
@@ -303,7 +312,7 @@ class FileDialog( Dark ):
                         [ sg.Text() ],
                         [ sg.OK( size = (8, 1), ), sg.Cancel( size = (10, 1) ) ] ]
 
-            _window = sg.Window( ' Budget Execution', _layout,
+            _window = sg.Window( ' Booger', _layout,
                 font = self.theme_font,
                 size = self.form_size )
 
@@ -323,6 +332,7 @@ class FileDialog( Dark ):
             _exc.method = 'show( self )'
             _err = ErrorDialog( _exc )
             _err.show()
+
 
 class FolderDialog( Dark ):
     '''
@@ -348,14 +358,16 @@ class FolderDialog( Dark ):
         self.form_size = (475, 250)
         self.selected_item = None
 
+
     def __str__( self ) -> str:
         if isinstance( self.selected_item, str ):
             return self.selected_item
 
+
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -366,13 +378,14 @@ class FolderDialog( Dark ):
                  'scrollbar_color', 'progressbar_color',
                  'selected_path', 'show' ]
 
+
     def show( self ):
         '''
-		Purpose:
+		    Purpose:
 
-		Parameters:
+		    Parameters:
 
-		Returns:
+		    Returns:
 		'''
         try:
             _layout = [ [ sg.Text() ],
@@ -383,7 +396,7 @@ class FolderDialog( Dark ):
                         [ sg.Text( size = (100, 1) ) ],
                         [ sg.OK( size = (8, 1) ), sg.Cancel( size = (10, 1) ) ] ]
 
-            _window = sg.Window( '  Budget Execution', _layout,
+            _window = sg.Window( '  Booger', _layout,
                 font = self.theme_font,
                 size = self.form_size )
 
@@ -406,11 +419,14 @@ class FolderDialog( Dark ):
             _error = ErrorDialog( _exc )
             _error.show()
 
+
 class SaveFileDialog( Dark ):
     '''
-	Constructor: SaveFileDialog( path = '' ):
 
-    Purpose: Class define object that provides a dialog to locate file destinations
+	    Constructor: SaveFileDialog( path = '' ):
+
+        Purpose: Class define object that provides a dialog to locate file destinations
+
     '''
 
     def __init__( self, path = '' ):
@@ -435,7 +451,7 @@ class SaveFileDialog( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -448,16 +464,16 @@ class SaveFileDialog( Dark ):
 
     def show( self ):
         '''
-		Purpose:
+		    Purpose:
 
-		Parameters:
+		    Parameters:
 
-		Returns:
+		    Returns:
 		'''
         try:
             _username = os.environ.get( 'USERNAME' )
             _filename = sg.popup_get_file( 'Select Location / Enter File Name',
-                title = '  Budget Execution',
+                title = '  Booger',
                 font = self.theme_font,
                 icon = self.icon_path,
                 save_as = True )
@@ -475,11 +491,14 @@ class SaveFileDialog( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class GoogleDialog( Dark ):
     '''
-	Constructor:   GoogleDialog(  )
 
-	Purpose:   Class that renames a folder
+	    Constructor:   GoogleDialog(  )
+
+	    Purpose:   Class that renames a folder
+
 	'''
 
     def __init__( self ):
@@ -504,7 +523,7 @@ class GoogleDialog( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -517,11 +536,11 @@ class GoogleDialog( Dark ):
 
     def show( self ):
         '''
-		Purpose:
+		    Purpose:
 
-		Parameters:
+		    Parameters:
 
-		Returns:
+		    Returns:
 		'''
         try:
             self.results = [ ]
@@ -534,7 +553,7 @@ class GoogleDialog( Dark ):
                         [ sg.Text( size = (10, 1) ), sg.Submit( size = (15, 1) ),
                           sg.Text( size = (5, 1) ), sg.Cancel( size = (15, 1) ) ] ]
 
-            _window = sg.Window( '  Budget Execution', _layout,
+            _window = sg.Window( '  Booger', _layout,
                 icon = self.icon_path,
                 font = self.theme_font,
                 size = self.form_size )
@@ -560,21 +579,16 @@ class GoogleDialog( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class EmailDialog( Dark ):
     '''
 
-	Construcotr: EmailDialog( sender: str=None, receiver: str=None,
-			subject: str=None, heading: str=None )
+	    Construcotr: EmailDialog( sender: str=None, receiver: str=None,
+			    subject: str=None, heading: str=None )
 
-	Purpose: Class providing form used to send email messages.
+	    Purpose: Class providing form used to send email messages.
 
     '''
-
-    # Fields
-    sender: str = None
-    receiver: list[ str ] = None
-    subject: str = None
-    message: str = None
 
     def __init__( self, sender: str = None, receiver: list[ str ] = None,
             subject: str = None, message: list[ str ] = None ):
@@ -603,7 +617,7 @@ class EmailDialog( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -628,8 +642,8 @@ class EmailDialog( Dark ):
                         [ sg.Text( ' ', size = _spc ),
                           sg.Text( 'From:', size = _btn, text_color = _clr ),
                           sg.Input( key = '-EMAIL FROM-', size = _input ) ],
-                        [ sg.Text( ' ', size = _spc ), sg.Text( 'To:', size = _btn, text_color =
-                        _clr ),
+                        [ sg.Text( ' ', size = _spc ), sg.Text( 'To:', size = _btn,
+                            text_color = _clr ),
                           sg.Input( key = '-EMAIL TO-', size = _input ) ],
                         [ sg.Text( ' ', size = _spc ),
                           sg.Text( 'Subject:', size = _btn, text_color = _clr ),
@@ -649,7 +663,7 @@ class EmailDialog( Dark ):
                         [ sg.Text( ' ', size = _spc ), sg.Button( 'Send', size = _btn ),
                           sg.Text( ' ', size = _btn ), sg.Button( 'Cancel', size = _btn ) ] ]
 
-            _window = sg.Window( '  Budget Execution', _layout,
+            _window = sg.Window( '  Booger', _layout,
                 icon = self.icon_path,
                 size = self.form_size )
 
@@ -669,12 +683,13 @@ class EmailDialog( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class MessageDialog( Dark ):
     '''
 
-	Construcotr:  MessageDialog( text = '' )
+	    Construcotr:  MessageDialog( text = '' )
 
-	Purpose:  Class that provides form used to display informational messages
+	    Purpose:  Class that provides form used to display informational messages
 
     '''
 
@@ -703,7 +718,7 @@ class MessageDialog( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'text', 'show',
@@ -733,7 +748,7 @@ class MessageDialog( Dark ):
                         [ sg.Text( size = (5, 1) ), sg.Ok( size = _btnsz ),
                           sg.Text( size = (15, 1) ), sg.Cancel( size = _btnsz ) ] ]
 
-            _window = sg.Window( r'  Budget Execution', _layout,
+            _window = sg.Window( r'  Booger', _layout,
                 icon = self.icon_path,
                 font = self.theme_font,
                 size = self.form_size )
@@ -752,13 +767,14 @@ class MessageDialog( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class ErrorDialog( Dark ):
     '''
 
-	Construcotr:  ErrorDialog( error )
+	    Construcotr:  ErrorDialog( error )
 
-	Purpose:  Class that displays excetption data that accepts
-     a single, optional argument 'error' of type Error
+	    Purpose:  Class that displays excetption data that accepts
+            a single, optional argument 'error' of type Error
 
     '''
 
@@ -824,7 +840,7 @@ class ErrorDialog( Dark ):
                     [ sg.Text( size = (20, 1) ), sg.Cancel( size = (15, 1), key = '-CANCEL-' ),
                       sg.Text( size = (10, 1) ), sg.Ok( size = (15, 1), key = '-OK-' ) ] ]
 
-        _window = sg.Window( r' Budget Execution', _layout,
+        _window = sg.Window( r' Booger', _layout,
             icon = self.icon_path,
             font = self.theme_font,
             size = self.form_size )
@@ -836,11 +852,14 @@ class ErrorDialog( Dark ):
 
         _window.close()
 
+
 class InputDialog( Dark ):
     '''
-	Construcotr:  Input( question )
 
-	Purpose:  class that produces a contact input form
+	    Construcotr:  Input( question )
+
+	    Purpose:  class that produces a contact input form
+
 	'''
 
     # Fields
@@ -870,7 +889,7 @@ class InputDialog( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -895,7 +914,7 @@ class InputDialog( Dark ):
                           sg.Text( size = (5, 1) ),
                           sg.Cancel( size = (15, 1), key = '-CANCEL-' ) ] ]
 
-            _window = sg.Window( '  Budget Execution', _layout,
+            _window = sg.Window( '  Booger', _layout,
                 icon = self.icon_path,
                 font = self.theme_font,
                 size = self.form_size )
@@ -920,16 +939,17 @@ class InputDialog( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class ScrollingDialog( Dark ):
     '''
 
-	'Construcotr:
+        'Construcotr:
 
-	    ScrollingDialog( text = '' )
+            ScrollingDialog( text = '' )
 
-	Purpose:
+        Purpose:
 
-	    Provides form for multiline input/output
+            Provides form for multiline input/output
 
 	'''
 
@@ -956,7 +976,7 @@ class ScrollingDialog( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -988,7 +1008,7 @@ class ScrollingDialog( Dark ):
                           sg.Text( size = (15, 1) ), sg.Button( 'Exit', size = _btnsize ),
                           sg.Text( size = _space ), ] ]
 
-            _window = sg.Window( '  Budget Execution', _layout,
+            _window = sg.Window( '  Booger', _layout,
                 icon = self.icon_path,
                 size = self.form_size,
                 font = self.theme_font,
@@ -1009,11 +1029,14 @@ class ScrollingDialog( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class ContactForm( Dark ):
     '''
-	Construcotr: ContactForm( contact )
 
-	Purpose:  class that produces a contact input form
+        Construcotr: ContactForm( contact )
+
+        Purpose:  class that produces a contact input form
+
 	'''
 
     def __init__( self ):
@@ -1034,7 +1057,7 @@ class ContactForm( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -1061,7 +1084,7 @@ class ContactForm( Dark ):
                         [ sg.Text( size = (10, 1) ), sg.Submit( size = (10, 1) ),
                           sg.Text( size = (20, 1) ), sg.Cancel( size = (10, 1) ) ] ]
 
-            _window = sg.Window( '  Budget Execution', _layout,
+            _window = sg.Window( '  Booger', _layout,
                 icon = self.icon_path,
                 font = self.theme_font,
                 size = self.form_size )
@@ -1087,11 +1110,14 @@ class ContactForm( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class GridForm( Dark ):
     '''
-	Construcotr: GridForm( )
 
-	Purpose:  object providing form that simulates a datagrid
+        Construcotr: GridForm( )
+
+        Purpose:  object providing form that simulates a datagrid
+
 	'''
 
     def __init__( self, rows = 30, columns = 10 ):
@@ -1115,7 +1141,7 @@ class GridForm( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -1145,7 +1171,7 @@ class GridForm( Dark ):
             # noinspection PyTypeChecker
             _layout = _space + _header + _records + _buttons
 
-            _window = sg.Window( '  Budget Execution', _layout,
+            _window = sg.Window( '  Booger', _layout,
                 finalize = True,
                 size = self.form_size,
                 icon = self.icon_path,
@@ -1166,11 +1192,14 @@ class GridForm( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class LoadingPanel( Dark ):
     '''
-	Construcotr:  LoadingPanel( )
 
-	Purpose:  object providing form loading behavior
+        Construcotr:  LoadingPanel( )
+
+        Purpose:  object providing form loading behavior
+
 	'''
 
     def __init__( self ):
@@ -1192,7 +1221,7 @@ class LoadingPanel( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -1236,11 +1265,14 @@ class LoadingPanel( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class WaitingPanel( Dark ):
     '''
-	Construcotr:  WaitingPanel( )
 
-	Purpose:  object providing form loader behavior
+        Construcotr:  WaitingPanel( )
+
+        Purpose:  object providing form loader behavior
+
 	'''
 
     def __init__( self ):
@@ -1263,7 +1295,7 @@ class WaitingPanel( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -1308,11 +1340,14 @@ class WaitingPanel( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class ProcessingPanel( Dark ):
     '''
-	Construcotr:  ProcessingPanel( )
 
-	Purpose:  object providing form processing behavior
+        Construcotr:  ProcessingPanel( )
+
+        Purpose:  object providing form processing behavior
+
 	'''
 
     def __init__( self ):
@@ -1334,7 +1369,7 @@ class ProcessingPanel( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -1385,11 +1420,14 @@ class ProcessingPanel( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class SplashPanel( Dark ):
     '''
-	Construcotr:  SplashPanel( )
 
-	Purpose:  Class providing splash dialog behavior
+        Construcotr:  SplashPanel( )
+
+        Purpose:  Class providing splash dialog behavior
+
 	'''
 
     def __init__( self ):
@@ -1413,7 +1451,7 @@ class SplashPanel( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -1434,7 +1472,7 @@ class SplashPanel( Dark ):
                         [ sg.Text( size = _space ), sg.Text( size = _line ) ],
                         [ sg.Text( size = _space ),
                           sg.Image( filename = self.image, size = _imgsize ) ] ]
-            _window = sg.Window( '  Budget Execution', _layout,
+            _window = sg.Window( '  Booger', _layout,
                 no_titlebar = True,
                 keep_on_top = True,
                 grab_anywhere = True,
@@ -1452,11 +1490,14 @@ class SplashPanel( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class Notification( Dark ):
     '''
-	Construcotr:  Notification( )
 
-	Purpose:  object providing form processing behavior
+        Construcotr:  Notification( )
+
+        Purpose:  object providing form processing behavior
+
 	'''
 
     def __init__( self ):
@@ -1550,7 +1591,7 @@ class Notification( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -1578,11 +1619,14 @@ class Notification( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class ImageSizeEncoder( Dark ):
     '''
-	Construcotr:  ImageSizeEncoder( )
 
-	Purpose:  Class resizing image and encoding behavior
+        Construcotr:  ImageSizeEncoder( )
+
+        Purpose:  Class resizing image and encoding behavior
+
 	'''
 
     def __init__( self ):
@@ -1601,7 +1645,7 @@ class ImageSizeEncoder( Dark ):
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -1614,11 +1658,13 @@ class ImageSizeEncoder( Dark ):
 
     def show( self ):
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         version = '1.3.1'
         __version__ = version.split()[ 0 ]
@@ -1793,13 +1839,16 @@ class ImageSizeEncoder( Dark ):
 
         _window.close()
 
+
 class PdfForm( Dark ):
     '''
-	Construcotr:
-	PdfForm( )
 
-	Purpose:
-	Creates form to view a PDF
+        Construcotr:
+            PdfForm( )
+
+        Purpose:
+            Creates form to view a PDF
+
 	'''
 
     def __init__( self ):
@@ -1816,10 +1865,11 @@ class PdfForm( Dark ):
         self.button_color = super().button_color
         self.form_size = (600, 800)
 
+
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -1829,13 +1879,16 @@ class PdfForm( Dark ):
                  'button_forecolor', 'icon_path', 'theme_font',
                  'scrollbar_color', 'progressbar_color', 'show' ]
 
+
     def show( self ):
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         try:
             _oldpage = 0
@@ -1854,7 +1907,8 @@ class PdfForm( Dark ):
             _pdf = fitz.open( _filename )
             _pages = len( _pdf )
             _displaylist = [ None ] * _pages
-            _title = ' Budget Execution'
+            _title = ' Booger'
+
 
             def getpage( pno, zoom = 0 ):
                 _display = _displaylist[ pno ]
@@ -1949,13 +2003,16 @@ class PdfForm( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class CalendarDialog( Dark ):
     '''
-	Construcotr:
-	CalendarDialog( )
 
-	Purpose:
-	class creates form providing today selection behavior
+        Construcotr:
+        CalendarDialog( )
+
+        Purpose:
+        class creates form providing today selection behavior
+
 	'''
 
     def __init__( self ):
@@ -1972,6 +2029,7 @@ class CalendarDialog( Dark ):
         self.button_color = super().button_color
         self.form_size = (500, 250)
 
+
     def __str__( self ) -> str:
         if isinstance( self.selected_item, tuple ):
             year = str( self.selected_item[ 2 ] )
@@ -1980,10 +2038,11 @@ class CalendarDialog( Dark ):
             date = f'{year}/{month}/{day}'
             return date
 
+
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -1994,13 +2053,16 @@ class CalendarDialog( Dark ):
                  'scrollbar_color', 'progressbar_color',
                  'selected_item', 'day', 'month', 'year', 'show' ]
 
+
     def show( self ):
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         try:
             _btnsize = (20, 1)
@@ -2027,13 +2089,16 @@ class CalendarDialog( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class ComboBoxDialog( Dark ):
     '''
-	Construcotr:
-	ComboBoxDialog( data: list = None )
 
-	Purpose:
-	Logger object provides form for log printing
+        Construcotr:
+            ComboBoxDialog( data: list = None )
+
+        Purpose:
+            Logger object provides form for log printing
+
 	'''
 
     def __init__( self, data: list = None ):
@@ -2051,14 +2116,16 @@ class ComboBoxDialog( Dark ):
         self.form_size = (400, 150)
         self.items = data
 
+
     def __str__( self ) -> str:
         if self.selected_item is not None:
             return self.selected_item
 
+
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -2071,11 +2138,13 @@ class ComboBoxDialog( Dark ):
 
     def show( self ):
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         try:
             _btnsz = (10, 1)
@@ -2093,7 +2162,7 @@ class ComboBoxDialog( Dark ):
                                                                                            1) ),
                           sg.Cancel( size = _btnsz ) ] ]
 
-            _window = sg.Window( '  Budget Execution', _layout,
+            _window = sg.Window( '  Booger', _layout,
                 icon = self.icon_path,
                 size = self.form_size )
 
@@ -2117,13 +2186,16 @@ class ComboBoxDialog( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class ListBoxDialog( Dark ):
     '''
-	Construcotr:
-	    ListBox( data: list = None )
 
-	Purpose:
-	    List search and selection
+        Construcotr:
+            ListBox( data: list = None )
+
+        Purpose:
+            List search and selection
+
     '''
 
     def __init__( self, data: list[ str ] = None ):
@@ -2142,14 +2214,16 @@ class ListBoxDialog( Dark ):
         self.image = os.getcwd() + r'\etc\img\app\dialog\lookup.png'
         self.items = data
 
+
     def __str__( self ) -> str:
         if self.selected_item is not None:
             return self.selected_item
 
+
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -2160,13 +2234,16 @@ class ListBoxDialog( Dark ):
                  'scrollbar_color', 'progressbar_color', 'items',
                  'selected_items', 'show' ]
 
+
     def show( self ):
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         try:
             _btnsize = (10, 1)
@@ -2195,7 +2272,7 @@ class ListBoxDialog( Dark ):
                           sg.Button( 'Select', size = _btnsize, enable_events = True ),
                           sg.Text( size = (3, 1) ), sg.Button( 'Exit', size = _btnsize ) ] ]
 
-            _window = sg.Window( '  Budget Execution', _layout,
+            _window = sg.Window( '  Booger', _layout,
                 size = self.form_size,
                 font = self.theme_font,
                 icon = self.icon )
@@ -2228,16 +2305,17 @@ class ListBoxDialog( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class ColorDialog( Dark ):
     '''
 
-	Construcotr:
+        Construcotr:
 
-	    ColorDialog( )
+            ColorDialog( )
 
-	Purpose:
+        Purpose:
 
-	    class provides a form to select colors returning string values
+            class provides a form to select colors returning string values
 
 	'''
 
@@ -2259,10 +2337,11 @@ class ColorDialog( Dark ):
         self.argb = None
         self.html = None
 
+
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -2273,13 +2352,16 @@ class ColorDialog( Dark ):
                  'scrollbar_color', 'progressbar_color',
                  'rgb', 'hex', 'html', 'argb', 'show' ]
 
+
     def show( self ):
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         try:
             _colormap = {
@@ -2938,6 +3020,7 @@ class ColorDialog( Dark ):
             COLORS_PER_ROW = 40
             _fontsize = 9
 
+
             def make_window():
                 _layout = [ [ sg.Text(), ],
                             [ sg.Text( f'{len( _colorlist )} Colors', font = self.theme_font ), ],
@@ -2966,7 +3049,7 @@ class ColorDialog( Dark ):
                 _layout.append( [ sg.Text( ' ', size = (10, 1) ), ] )
                 _layout.append( [ sg.Text( ' ', size = (50, 1) ), sg.Cancel( size = (20, 1) ), ] )
 
-                return sg.Window( ' Budget Execution', _layout,
+                return sg.Window( ' Booger', _layout,
                     font = self.theme_font,
                     size = self.form_size,
                     element_padding = (1, 1),
@@ -3024,16 +3107,17 @@ class ColorDialog( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class BudgetForm( Dark ):
     '''
 
-    Constructor:
+        Constructor:
 
-        BudgetForm( )
+            BudgetForm( )
 
-    Purpose:
+        Purpose:
 
-        Class defining basic dashboard for the application
+            Class defining basic dashboard for the application
 
     '''
 
@@ -3050,7 +3134,8 @@ class BudgetForm( Dark ):
         self.input_forecolor = super().input_forecolor
         self.button_color = super().button_color
         self.form_size = (1200, 650)
-        self.image = os.getcwd() + r'\etc\img\BudgetEx.png'
+        self.image = os.getcwd() + r'\etc\img\app\Application.png'
+
 
     def __dir__( self ) -> list[ str ]:
         '''
@@ -3070,13 +3155,16 @@ class BudgetForm( Dark ):
                  'create_first', 'create_second', 'create_third',
                  'create_fourth', 'set_layout', 'show' ]
 
+
     def create_title( self, items: list ) -> list:
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         if items is not None:
             try:
@@ -3106,13 +3194,16 @@ class BudgetForm( Dark ):
                 _err = ErrorDialog( _exc )
                 _err.show()
 
+
     def create_header( self, items: list ) -> list:
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         if items is not None:
             try:
@@ -3139,13 +3230,16 @@ class BudgetForm( Dark ):
                 _err = ErrorDialog( _exc )
                 _err.show()
 
+
     def create_first( self, items: list ) -> list:
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         if items is not None:
             try:
@@ -3176,13 +3270,16 @@ class BudgetForm( Dark ):
                 _err = ErrorDialog( _exc )
                 _err.show()
 
+
     def create_second( self, items: list ) -> list:
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         if items is not None:
             try:
@@ -3213,13 +3310,16 @@ class BudgetForm( Dark ):
                 _err = ErrorDialog( _exc )
                 _err.show()
 
+
     def create_third( self, items: list ) -> list:
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         if items is not None:
             try:
@@ -3250,13 +3350,16 @@ class BudgetForm( Dark ):
                 _err = ErrorDialog( _exc )
                 _err.show()
 
+
     def create_fourth( self, items: list ) -> list:
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         if items is not None:
             try:
@@ -3287,13 +3390,16 @@ class BudgetForm( Dark ):
                 _err = ErrorDialog( _exc )
                 _err.show()
 
+
     def set_layout( self ) -> list:
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         try:
             _blu = '#051F3D'
@@ -3343,13 +3449,16 @@ class BudgetForm( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
     def show( self ):
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         try:
             _blu = '#051F3D'
@@ -3364,7 +3473,7 @@ class BudgetForm( Dark ):
             _frasz = (450, 150)
             _hdrsz = (920, 100)
             self.__titlelayout = [
-                    [ sg.Text( 'Budget Execution', font = _hdr, background_color = _mblk,
+                    [ sg.Text( 'Booger', font = _hdr, background_color = _mblk,
                         enable_events = True, grab = False ), sg.Push( background_color = _mblk ),
                       sg.Text( 'Wednesday 27 Oct 2021', font = _hdr, background_color = _mblk ) ],
             ]
@@ -3432,7 +3541,7 @@ class BudgetForm( Dark ):
                           pad = BPAD_LEFT, background_color = _blu, border_width = 0,
                           expand_x = True, expand_y = True ), ],
                     [ sg.Sizegrip( background_color = _mblk ) ] ]
-            _window = sg.Window( '  Budget Execution', self.__formlayout,
+            _window = sg.Window( '  Booger', self.__formlayout,
                 size = self.form_size,
                 margins = (0, 0),
                 background_color = _blk,
@@ -3460,13 +3569,16 @@ class BudgetForm( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class ChartPanel( Dark ):
     '''
-    Constructor:
-    ChartPanel( )
 
-    Purpose:
-    Provides form with a bar chart
+        Constructor:
+        ChartPanel( )
+
+        Purpose:
+        Provides form with a bar chart
+
     '''
 
     @property
@@ -3485,10 +3597,11 @@ class ChartPanel( Dark ):
         self.icon_path = super().icon_path
         self.form_size = (750, 650)
 
+
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -3498,13 +3611,16 @@ class ChartPanel( Dark ):
                  'button_forecolor', 'icon_path', 'theme_font',
                  'scrollbar_color', 'progressbar_color', 'header', 'show' ]
 
+
     def show( self ):
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         try:
             _sm = (10, 1)
@@ -3525,7 +3641,7 @@ class ChartPanel( Dark ):
                           sg.Text( size = _lg ), sg.Exit( size = _md ) ],
                         [ sg.Sizegrip( background_color = _black ) ] ]
 
-            _window = sg.Window( 'Budget Execution', _layout,
+            _window = sg.Window( 'Booger', _layout,
                 finalize = True,
                 resizable = True,
                 icon = self.icon_path,
@@ -3559,13 +3675,16 @@ class ChartPanel( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class CsvForm( Dark ):
     '''
-	Construcotr:
-	CsvForm( )
 
-	Purpose:
-	Provides form that reads CSV file with pandas
+        Construcotr:
+        CsvForm( )
+
+        Purpose:
+        Provides form that reads CSV file with pandas
+
 	'''
 
     @property
@@ -3592,10 +3711,11 @@ class CsvForm( Dark ):
         self.button_color = super().button_color
         self.form_size = (800, 600)
 
+
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -3606,13 +3726,16 @@ class CsvForm( Dark ):
                  'scrollbar_color', 'progressbar_color', 'header',
                  'show' ]
 
+
     def show( self ):
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         try:
             _sm = (3, 1)
@@ -3658,7 +3781,7 @@ class CsvForm( Dark ):
                 alternating_row_color = '#EDF3F8', border_width = 1, text_color = '#000000',
                 expand_x = True, expand_y = True, sbar_relief = sg.RELIEF_FLAT,
                 num_rows = min( 26, len( _data ) ) ), ], ]
-            _window = sg.Window( '  Budget Execution', _datagrid, icon = self.icon_path,
+            _window = sg.Window( '  Booger', _datagrid, icon = self.icon_path,
                 font = self.theme_font, resizable = True )
             _event, _values = _window.read()
             _window.close()
@@ -3670,13 +3793,16 @@ class CsvForm( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class ExcelForm( Dark ):
     '''
-	Construcotr:
-	ExcelForm( )
 
-	Purpose:
-	Provides form that reads CSV file with pandas
+        Construcotr:
+        ExcelForm( )
+
+        Purpose:
+        Provides form that reads CSV file with pandas
+
 	'''
 
     @property
@@ -3703,10 +3829,11 @@ class ExcelForm( Dark ):
         self.button_color = super().button_color
         self.form_size = (1250, 650)
 
+
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -3717,13 +3844,16 @@ class ExcelForm( Dark ):
                  'scrollbar_color', 'progressbar_color',
                  'header', 'show' ]
 
+
     def show( self ):
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
         try:
             _small = (3, 1)
@@ -3780,7 +3910,7 @@ class ExcelForm( Dark ):
                           sg.Text( size = _spc ), sg.Button( 'Close', size = _med, key = '-CLOSE-'
                         ) ],
                         [ sg.Sizegrip() ], ]
-            _window = sg.Window( ' Budget Execution', _layout,
+            _window = sg.Window( ' Booger', _layout,
                 size = self.form_size,
                 grab_anywhere = True,
                 icon = self.icon_path,
@@ -3803,13 +3933,16 @@ class ExcelForm( Dark ):
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class GraphForm( Dark ):
     '''
-	Construcotr:
-	GraphForm( )
 
-	Purpose:
-	Provides form that reads CSV file with pandas
+        Construcotr:
+        GraphForm( )
+
+        Purpose:
+        Provides form that reads CSV file with pandas
+
 	'''
 
     def __init__( self ):
@@ -3826,10 +3959,11 @@ class GraphForm( Dark ):
         self.button_color = super().button_color
         self.form_size = (800, 600)
 
+
     def __dir__( self ) -> list[ str ]:
         '''
 
-        Returns a list[ str ] of member names
+            Returns a list[ str ] of member names
 
 		'''
         return [ 'size', 'settings_path', 'theme_background',
@@ -3839,13 +3973,16 @@ class GraphForm( Dark ):
                  'button_forecolor', 'icon_path', 'theme_font',
                  'scrollbar_color', 'progressbar_color', 'show' ]
 
+
     def show( self ):
         '''
-		Purpose:
 
-		Parameters:
+            Purpose:
 
-		Returns:
+            Parameters:
+
+            Returns:
+
 		'''
 
         def create_axis_grid():
@@ -3882,11 +4019,13 @@ class GraphForm( Dark ):
             plt.draw()
             return plt.gcf()
 
+
         def create_figure():
             _figure = matplotlib.figure.Figure( figsize = (5, 4), dpi = 100 )
             _data = np.arange( 0, 3, .01 )
             _figure.add_subplot( 111 ).plot( _data, 2 * np.sin( 2 * np.pi * _data ) )
             return _figure
+
 
         def create_subplot_3d():
             _figure = plt.figure()
@@ -3905,6 +4044,7 @@ class GraphForm( Dark ):
             _x, _y, _z = get_test_data()
             _axis.plot_wireframe( _x, _y, _z, rstride = 10, cstride = 10 )
             return _figure
+
 
         def create_pyplot_scales():
             plt.close( 'all' )
@@ -3952,6 +4092,7 @@ class GraphForm( Dark ):
 
             return plt.gcf()
 
+
         def draw_figure( element, figure ):
             plt.close( 'all' )
             _canvas = FigureCanvasAgg( figure )
@@ -3968,6 +4109,7 @@ class GraphForm( Dark ):
                 'Subplot 3D': create_subplot_3d,
                 'Scales': create_pyplot_scales,
                 'Basic Figure': create_figure }
+
 
         def create_window():
             _leftcolumn = [ [ sg.T( 'Charts' ) ],
@@ -3986,7 +4128,7 @@ class GraphForm( Dark ):
                         [ sg.Col( _leftcolumn ), sg.Image( key = '-IMAGE-' ) ],
                         [ sg.B( 'Draw' ), sg.B( 'Exit' ) ] ]
 
-            _window = sg.Window( 'Budget Execution', _layout, finalize = True )
+            _window = sg.Window( 'Booger', _layout, finalize = True )
 
             return _window
 
@@ -4012,13 +4154,17 @@ class GraphForm( Dark ):
 
         _window.close()
 
+
 class ChatWindow():
     '''
-	Function to generate a chat window
+
+	    Function to generate a chat window
+
 	'''
 
     def __init__( self ):
-        sg.theme( 'GreenTan' )
+        sg.theme( 'DarkGrey15' )
+
 
     def show( self ):
         try:
@@ -4054,12 +4200,14 @@ class ChatWindow():
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class ChatBot():
 
     # -------  Make a new Window  ------- #
     # give our form a spiffy set of colors
     def __init__( self ):
-        sg.theme( 'GreenTan' )
+        sg.theme( 'DarkGrey15' )
+
 
     def show( self ):
         try:
@@ -4123,6 +4271,7 @@ class ChatBot():
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class InputWindow():
     """
 	    Demo sg.Columns and sg.Frames
@@ -4159,6 +4308,7 @@ class InputWindow():
 
     def __init__( self ):
         pass
+
 
     def show( self ):
         try:
@@ -4233,6 +4383,7 @@ class InputWindow():
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class Executable():
     '''
 	    Make a "Windows os" executable with PyInstaller
@@ -4247,6 +4398,7 @@ class Executable():
 
     def __init__( self ):
         sg.theme( 'LightGreen' )
+
 
     def show( self ):
         try:
@@ -4312,13 +4464,17 @@ class Executable():
             _err = ErrorDialog( _exc )
             _err.show()
 
+
     def run_command( cmd, timeout = None, window = None ):
-        """ run shell command
+        """
 
-		@param cmd: command to execute
-		@param timeout: timeout for command execution
+            run shell command
 
-		@return: (return code from command, command output)
+            @param cmd: command to execute
+            @param timeout: timeout for command execution
+
+            @return: (return code from command, command output)
+
 		"""
         try:
             p = subprocess.Popen( cmd, shell = True, stdout = subprocess.PIPE,
@@ -4343,17 +4499,23 @@ class Executable():
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class ThemeSelector():
     '''
-	Class providing theme selection
+
+	    Class providing theme selection
+
 	'''
 
     def __init__( self ):
         sg.theme( 'Dark Green 5' )
 
+
     def show( self ):
         '''
-		shows the selector
+
+		    shows the selector
+
 		'''
         try:
             layout = [ [ sg.Text( 'Look and Feel Browser' ) ],
@@ -4382,18 +4544,22 @@ class ThemeSelector():
             _err = ErrorDialog( _exc )
             _err.show()
 
+
 class UrlImageViewer():
     '''
-	Class that presents an image given a URL
+
+	    Class that presents an image given a URL
+
 	'''
 
     def __init__( self ):
         sg.theme( 'Dark Green 5' )
 
+
     def show( self ):
         '''
 
-		Returns:
+		    Returns:
 
 		'''
         try:

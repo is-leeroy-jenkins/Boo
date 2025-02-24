@@ -49,11 +49,10 @@ from pygments.lexers.csound import newline
 from Static import GptRequests, GptRoles, GptLanguages
 from Booger import ErrorDialog, Error
 
-class Header( ):
+class Header():
     '''
         Class used to encapsulate GPT headers
     '''
-
 
     def __init__( self ):
         self.content_type = 'application/json'
@@ -62,7 +61,6 @@ class Header( ):
         self.data = { 'content-type': self.content_type,
                       'Authorization': self.authoriztion }
 
-
     def __dir__( self ):
         '''
             Methods that returns a list of member names
@@ -70,12 +68,10 @@ class Header( ):
         '''
         return [ 'content_type', 'api_key', 'authorization', 'data' ]
 
-
-class EndPoint( ):
+class EndPoint():
     '''
         The class containing endpoints for OpenAI
     '''
-
 
     def __init__( self ):
         self.base_url = f'https://api.openai.com/'
@@ -92,7 +88,6 @@ class EndPoint( ):
         self.files = f'https://api.openai.com/v1/files'
         self.vector_stores = f'https://api.openai.com/v1/vector_stores'
 
-
     def __dir__( self ) -> list[ str ]:
         '''
             Methods that returns a list of member names
@@ -102,7 +97,6 @@ class EndPoint( ):
                  'speech_generation', 'translations', 'assistants', 'transcriptions',
                  'finetuning', 'embeddings', 'uploads', 'files', 'vector_stores',
                  'get_data', 'dump' ]
-
 
     def get_data( self ) -> dict:
         '''
@@ -124,28 +118,26 @@ class EndPoint( ):
                  'files': self.files,
                  'vector_stores': self.vector_stores }
 
-
     def dump( self ) -> str:
         '''
             Returns: dict of members
         '''
         new = r'\r\n'
         return 'base_url' + f' = {self.base_url}' + new + \
-                     'text_generation' + f' = {self.text_generation}' + new + \
-                     'image_generation' + f' = {self.image_generation}' + new + \
-                     'chat_completion' + f' = {self.chat_completion}' + new + \
-                     'speech_generation' + f' = {self.speech_generation}' + new + \
-                     'translations' + f' = {self.translations}' + new + \
-                     'assistants' + f' = {self.assistants}' + new + \
-                     'transcriptions' + f' = {self.transcriptions}' + new + \
-                     'finetuning' + f' = {self.finetuning}' + new + \
-                     'embeddings' + f' = {self.files}' + new + \
-                     'uploads' + f' = {self.uploads}' + new + \
-                     'files' + f' = {self.files}' + new + \
-                     'vector_stores' + f' = {self.vector_stores}' + new
+            'text_generation' + f' = {self.text_generation}' + new + \
+            'image_generation' + f' = {self.image_generation}' + new + \
+            'chat_completion' + f' = {self.chat_completion}' + new + \
+            'speech_generation' + f' = {self.speech_generation}' + new + \
+            'translations' + f' = {self.translations}' + new + \
+            'assistants' + f' = {self.assistants}' + new + \
+            'transcriptions' + f' = {self.transcriptions}' + new + \
+            'finetuning' + f' = {self.finetuning}' + new + \
+            'embeddings' + f' = {self.files}' + new + \
+            'uploads' + f' = {self.uploads}' + new + \
+            'files' + f' = {self.files}' + new + \
+            'vector_stores' + f' = {self.vector_stores}' + new
 
-
-class Models( ):
+class Models():
     '''
         Class containing lists of OpenAI models by generation
     '''
@@ -190,7 +182,6 @@ class Models( ):
                                'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
                                'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 
-
     def __dir__( self ) -> list[ str ]:
         '''
             Methods that returns a list of member names
@@ -200,33 +191,31 @@ class Models( ):
                  'speech_generation', 'translations', 'assistants', 'transcriptions',
                  'finetuning', 'embeddings', 'uploads', 'files', 'vector_stores' ]
 
-
     def get_data( self ) -> dict:
         '''
             Method that returns a list of dictionaries
         '''
-        _data = { 'text_generation' : self.text_generation, 
-                  'image_generation' : self.image_generation, 
-                  'chat_completion' : self.chat_completion,
-                  'speech_generation' : self.speech_generation,
-                  'translations' : self.translation,
-                  'finetuning' : self.finetuning,
-                  'embeddings' : self.embeddings,
-                  'uploads' : self.uploads,
-                  'files' : self.files,
-                  'vector_stores' : self.vector_stores }
+        _data = { 'text_generation': self.text_generation,
+                  'image_generation': self.image_generation,
+                  'chat_completion': self.chat_completion,
+                  'speech_generation': self.speech_generation,
+                  'translations': self.translation,
+                  'finetuning': self.finetuning,
+                  'embeddings': self.embeddings,
+                  'uploads': self.uploads,
+                  'files': self.files,
+                  'vector_stores': self.vector_stores }
 
-
-class AI( ):
+class AI():
     '''
     AI is the base class for all OpenAI functionalityl
     '''
 
     def __init__( self ):
-        self.header = Header( )
-        self.endpoint = EndPoint( )
+        self.header = Header()
+        self.endpoint = EndPoint()
         self.api_key = self.header.api_key
-        self.client = OpenAI( api_key=self.api_key )
+        self.client = OpenAI( api_key = self.api_key )
         self.system_instructions = '''You are the most knowledgeable Budget Analyst in the federal 
         government who provides detailed responses based on your vast knowledge of 
         budget legislation, and federal appropriations.  
@@ -242,8 +231,7 @@ class AI( ):
         translate from a variety of languages into English.  Your name is Bubba.
         '''
 
-
-class GptOptions( ):
+class GptOptions():
     '''
 
         The base class used by all parameter classes.
@@ -263,7 +251,6 @@ class GptOptions( ):
         self.size = size
         self.modalities = [ 'text', 'audio' ]
 
-
     def __dir__( self ) -> list[ str ]:
         '''
 
@@ -278,7 +265,6 @@ class GptOptions( ):
                  'get_output_formats', 'get_input_formats',
                  'get_data' ]
 
-
     def get_voices( self ) -> list[ str ]:
         '''
 
@@ -287,7 +273,6 @@ class GptOptions( ):
         '''
         return [ 'alloy', 'cash', 'coral', 'echo',
                  'onyx', 'fable', 'nova', 'sage' ]
-
 
     def get_sizes( self ) -> list[ str ]:
         '''
@@ -298,7 +283,6 @@ class GptOptions( ):
         return [ '256X256', '512X512', '1024X1024',
                  '1024x1792', '1792x1024' ]
 
-
     def get_response_formats( self ) -> list[ str ]:
         '''
 
@@ -306,7 +290,6 @@ class GptOptions( ):
 
         '''
         return [ 'text', 'audio', 'url' ]
-
 
     def get_output_formats( self ) -> list[ str ]:
         '''
@@ -316,7 +299,6 @@ class GptOptions( ):
         '''
         return [ 'mp3', 'opus', 'aac', 'flac', 'pcm' ]
 
-
     def get_input_formats( self ) -> list[ str ]:
         '''
 
@@ -324,7 +306,6 @@ class GptOptions( ):
 
         '''
         return [ 'mp3', 'mp4', 'mpeg', 'mpga', 'm4a', 'wav', 'webm' ]
-
 
     def get_data( self ) -> dict:
         '''
@@ -341,23 +322,21 @@ class GptOptions( ):
                  'stream': self.stream,
                  'size': self.size }
 
-
     def dump( self ) -> str:
         '''
             Returns: dict of members
         '''
         new = '\r\n'
         return 'number' + f' = {self.number}' + new + \
-                     'temperature' + f' = {self.temperature}' + new + \
-                     'top_percent' + f' = {self.top_percent}' + new + \
-                     'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
-                     'presence_penalty' + f' = {self.presence_penalty}' + new + \
-                     'store' + f' = {self.store}' + new + \
-                     'stream' + f' = {self.stream}' + new + \
-                     'size' + f' = {self.size}' + new
+            'temperature' + f' = {self.temperature}' + new + \
+            'top_percent' + f' = {self.top_percent}' + new + \
+            'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+            'presence_penalty' + f' = {self.presence_penalty}' + new + \
+            'store' + f' = {self.store}' + new + \
+            'stream' + f' = {self.stream}' + new + \
+            'size' + f' = {self.size}' + new
 
-
-class Payload( ):
+class Payload():
     '''
 
         The class used to capture request parameters.
@@ -378,15 +357,14 @@ class Payload( ):
         self.stream = stream
         self.size = size
         self.data = { 'number': f'{self.number}',
-                     'model': f'{self.model}',
-                     'temperature': f'{self.temperature}',
-                     'top_percent': f'{self.top_percent}',
-                     'frequency_penalty': f'{self.frequency_penalty}',
-                     'presence_penalty': f'{self.presence_penalty}',
-                     'store': f'{self.store}',
-                     'stream': f'{self.stream}',
-                     'size': f'{self.size}'}
-
+                      'model': f'{self.model}',
+                      'temperature': f'{self.temperature}',
+                      'top_percent': f'{self.top_percent}',
+                      'frequency_penalty': f'{self.frequency_penalty}',
+                      'presence_penalty': f'{self.presence_penalty}',
+                      'store': f'{self.store}',
+                      'stream': f'{self.stream}',
+                      'size': f'{self.size}' }
 
     def __dir__( self ) -> list[ str ]:
         '''
@@ -398,7 +376,6 @@ class Payload( ):
                  'presence_penalty', 'store', 'stream',
                  'size', 'data', 'dump', 'parse' ]
 
-
     def dump( self ) -> str:
         '''
 
@@ -407,36 +384,32 @@ class Payload( ):
         '''
         new = '\r\n'
         return 'n' + f' = {self.number}' + new + \
-                     'model' + f' = {self.model}' + new + \
-                     'temperature' + f' = {self.temperature}' + new + \
-                     'top_p' + f' = {self.top_percent}' + new + \
-                     'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
-                     'presence_penalty' + f' = {self.presence_penalty}' + new + \
-                     'store' + f' = {self.store}' + new + \
-                     'stream' + f' = {self.stream}' + new + \
-                     'size' + f' = {self.size}' + new
-
+            'model' + f' = {self.model}' + new + \
+            'temperature' + f' = {self.temperature}' + new + \
+            'top_p' + f' = {self.top_percent}' + new + \
+            'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+            'presence_penalty' + f' = {self.presence_penalty}' + new + \
+            'store' + f' = {self.store}' + new + \
+            'stream' + f' = {self.stream}' + new + \
+            'size' + f' = {self.size}' + new
 
     def parse( self ) -> dict:
         pass
 
-
-class Message( ):
+class Message():
     '''
 
         Class for all messages used in the GPT application
 
     '''
 
-
     def __init__( self, prompt: str, role: str = 'user', type: str = 'text' ):
         self.role = role
         self.content = prompt
         self.type = type
-        self.data = { 'role' : f'{self.role}', 
-                      'type' : f'{self.type}',
-                      'content' : f'{self.content}' }
-
+        self.data = { 'role': f'{self.role}',
+                      'type': f'{self.type}',
+                      'content': f'{self.content}' }
 
     def __str__( self ) -> str:
         '''
@@ -445,14 +418,14 @@ class Message( ):
 
         '''
         new = '\r\n'
-        if self.type is None and not self.content is None:
+        if not self.content is None:
             _pair = f''' 
-            'role': '{self.role}', 
-            \r\n 'type': '{self.type}', 
-            \r\n 'content': '{self.content}' '''
+            'role': '{self.role}', \r\n 
+            'type': '{self.type}', \r\n 
+            'content': '{self.content}'
+            '''
             _retval = '{ ' + _pair + ' }'
             return _retval
-
 
     def dump( self ) -> str:
         '''
@@ -462,9 +435,8 @@ class Message( ):
         '''
         new = '\r\n'
         return 'role' + f' = {self.role}' + new + \
-                     'type' + f' = {self.type}' + new + \
-                     'content' + f' = {self.content}'
-
+            'type' + f' = {self.type}' + new + \
+            'content' + f' = {self.content}'
 
     def __dir__( self ) -> list[ str ]:
         '''
@@ -473,7 +445,6 @@ class Message( ):
         '''
         return [ 'role', 'content', 'type' ]
 
-
 class TextGeneration( AI ):
     '''
 
@@ -481,12 +452,12 @@ class TextGeneration( AI ):
 
     '''
 
-    def __init__( self  ):
-        super( ).__init__( )
-        self.client = OpenAI( )
+    def __init__( self ):
+        super().__init__()
+        self.client = OpenAI()
         self.header = super().header
         self.request_type = GptRequests.TextGeneration
-        self.endpoint = EndPoint( ).text_generation
+        self.endpoint = EndPoint().text_generation
         self.model = 'gpt-4o'
         self.number = 1;
         self.temperature = 0.08
@@ -500,17 +471,16 @@ class TextGeneration( AI ):
         self.prompt = None
         self.messages = [ ]
         self.data = { 'number': f'{self.number}',
-                 'model': f'{self.model}',
-                 'temperature': f'{self.temperature}',
-                 'top_percent': f'{self.top_percent}',
-                 'frequency_penalty': f'{self.frequency_penalty}',
-                 'presence_penalty': f'{self.presence_penalty}',
-                 'store': f'{self.store}',
-                 'stream': f'{self.stream}',
-                 'endpoint': f'{self.endpoint}',
-                 'authorization': f'{self.header.authoriztion}',
-                 'content-type': f'{self.header.content_type}'}
-
+                      'model': f'{self.model}',
+                      'temperature': f'{self.temperature}',
+                      'top_percent': f'{self.top_percent}',
+                      'frequency_penalty': f'{self.frequency_penalty}',
+                      'presence_penalty': f'{self.presence_penalty}',
+                      'store': f'{self.store}',
+                      'stream': f'{self.stream}',
+                      'endpoint': f'{self.endpoint}',
+                      'authorization': f'{self.header.authoriztion}',
+                      'content-type': f'{self.header.content_type}' }
 
     def __dir__( self ) -> list[ str ]:
         '''
@@ -521,7 +491,6 @@ class TextGeneration( AI ):
                  'model', 'number', 'messages',
                  'content', 'store', 'stream',
                  'response', 'prompt', 'generate_request' ]
-
 
     def generate_request( self, prompt: str ) -> str:
         '''
@@ -544,8 +513,8 @@ class TextGeneration( AI ):
 
             self.client.api_key = self.header.api_key
             _system_prompt = 'You are a helpful assistant and Budget Analyst'
-            _system = Message( prompt=_system_prompt, role = 'system', type = 'text' )
-            _user = Message( prompt=self.prompt, role = 'user', type = 'text' )
+            _system = Message( prompt = _system_prompt, role = 'system', type = 'text' )
+            _user = Message( prompt = self.prompt, role = 'user', type = 'text' )
             self.messages.append( _system )
             self.messages.append( _user )
 
@@ -555,6 +524,7 @@ class TextGeneration( AI ):
                 temperature = 0.08,
                 max_completion_tokens = 2048,
                 top_p = 0.09,
+                n = 1,
                 frequency_penalty = 0.00,
                 presence_penalty = 0.00,
             )
@@ -569,8 +539,7 @@ class TextGeneration( AI ):
             error = ErrorDialog( exception )
             error.show()
 
-
-class ChatCompletion( ):
+class ChatCompletion():
     '''
 
         Class provides the functionality fo the Completions API
@@ -578,8 +547,8 @@ class ChatCompletion( ):
     '''
 
     def __init__( self ):
-        self.header = Header( )
-        self.client = OpenAI( )
+        self.header = Header()
+        self.client = OpenAI()
         self.request_type = GptRequests.ChatCompletions
         self.endpoint = EndPoint().chat_completions
         self.model = 'gpt-4o'
@@ -588,17 +557,16 @@ class ChatCompletion( ):
         self.response = None
         self.prompt = None
         self.data = { 'number': f'{self.number}',
-                 'model': f'{self.model}',
-                 'temperature': f'{self.temperature}',
-                 'top_percent': f'{self.top_percent}',
-                 'frequency_penalty': f'{self.frequency_penalty}',
-                 'presence_penalty': f'{self.presence_penalty}',
-                 'store': f'{self.store}',
-                 'stream': f'{self.stream}',
-                 'endpoint': f'{self.endpoint}',
-                 'authorization': f'{self.header.authoriztion}',
-                 'content-type': f'{self.header.content_type}'}
-
+                      'model': f'{self.model}',
+                      'temperature': f'{self.temperature}',
+                      'top_percent': f'{self.top_percent}',
+                      'frequency_penalty': f'{self.frequency_penalty}',
+                      'presence_penalty': f'{self.presence_penalty}',
+                      'store': f'{self.store}',
+                      'stream': f'{self.stream}',
+                      'endpoint': f'{self.endpoint}',
+                      'authorization': f'{self.header.authoriztion}',
+                      'content-type': f'{self.header.content_type}' }
 
     def __dir__( self ) -> list[ str ]:
         '''
@@ -608,7 +576,6 @@ class ChatCompletion( ):
         return [ 'header', 'client', 'request_type', 'endpoint',
                  'model', 'number', 'messages',
                  'content', 'response', 'prompt', 'generate_request' ]
-
 
     def generate_request( self, prompt: str ) -> str:
         '''
@@ -628,8 +595,8 @@ class ChatCompletion( ):
                 self.prompt = prompt
             self.client.api_key = self.header.api_key
             _sys = 'You are a helpful assistant and Budget Analyst'
-            _system = Message( prompt=_sys, role = 'system', type = 'text' )
-            _user = Message( prompt=self.prompt, role = 'user', type = 'text' )
+            _system = Message( prompt = _sys, role = 'system', type = 'text' )
+            _user = Message( prompt = self.prompt, role = 'user', type = 'text' )
             self.messages.append( _system )
             self.messages.append( _user )
             self.response = self.client.chat.completions.create(
@@ -652,15 +619,14 @@ class ChatCompletion( ):
             error = ErrorDialog( exception )
             error.show()
 
-
-class ImageGeneration( ):
+class ImageGeneration():
     '''
         Class provides the functionality fo the Image Generation API
     '''
 
     def __init__( self ):
-        self.header = Header( )
-        self.client = OpenAI( )
+        self.header = Header()
+        self.client = OpenAI()
         self.endpoint = EndPoint().image_generation
         self.model = 'dall-e-2'
         self.messages = [ ]
@@ -672,17 +638,16 @@ class ImageGeneration( ):
         self.size = '1024X1024'
         self.quality = 'standard'
         self.data = { 'number': f'{self.number}',
-                 'model': f'{self.model}',
-                 'temperature': f'{self.temperature}',
-                 'top_p': f'{self.top_percent}',
-                 'frequency_penalty': f'{self.frequency_penalty}',
-                 'presence_penalty': f'{self.presence_penalty}',
-                 'store': f'{self.store}',
-                 'stream': f'{self.stream}',
-                 'endpoint': f'{self.endpoint}',
-                 'authorization': f'{self.header.authoriztion}',
-                 'content-type': f'{self.header.content_type}'}
-
+                      'model': f'{self.model}',
+                      'temperature': f'{self.temperature}',
+                      'top_p': f'{self.top_percent}',
+                      'frequency_penalty': f'{self.frequency_penalty}',
+                      'presence_penalty': f'{self.presence_penalty}',
+                      'store': f'{self.store}',
+                      'stream': f'{self.stream}',
+                      'endpoint': f'{self.endpoint}',
+                      'authorization': f'{self.header.authoriztion}',
+                      'content-type': f'{self.header.content_type}' }
 
     def __dir__( self ) -> list[ str ]:
         '''
@@ -691,7 +656,6 @@ class ImageGeneration( ):
         '''
         return [ 'header', 'request_type', 'endpoint', 'model', 'number', 'messages',
                  'content', 'response', 'prompt', 'size', 'generate_request( prompt )' ]
-
 
     def generate_request( self, prompt: str, num: int = 1,
             quality = 'standard', size: str = '1024X1024' ) -> str:
@@ -717,8 +681,8 @@ class ImageGeneration( ):
 
             openai.api_key = self.header.api_key
             _sys = 'You are a helpful assistant and Budget Analyst'
-            _system = Message( prompt=_sys, role = 'system', type = 'text' )
-            _user = Message( prompt=self.prompt, role = 'user', type = 'text' )
+            _system = Message( prompt = _sys, role = 'system', type = 'text' )
+            _user = Message( prompt = self.prompt, role = 'user', type = 'text' )
             self.messages.append( _system )
             self.messages.append( _user )
             self.response = self.client.chat.completions.create(
