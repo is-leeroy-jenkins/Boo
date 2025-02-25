@@ -492,6 +492,7 @@ class TextGeneration( AI ):
                  'content', 'store', 'stream',
                  'response', 'prompt', 'generate_request' ]
 
+
     def generate_request( self, prompt: str ) -> str:
         '''
 
@@ -539,6 +540,7 @@ class TextGeneration( AI ):
             error = ErrorDialog( exception )
             error.show()
 
+
 class ChatCompletion():
     '''
 
@@ -568,6 +570,7 @@ class ChatCompletion():
                       'authorization': f'{self.header.authoriztion}',
                       'content-type': f'{self.header.content_type}' }
 
+
     def __dir__( self ) -> list[ str ]:
         '''
             Methods that returns a list of member names
@@ -576,6 +579,7 @@ class ChatCompletion():
         return [ 'header', 'client', 'request_type', 'endpoint',
                  'model', 'number', 'messages',
                  'content', 'response', 'prompt', 'generate_request' ]
+
 
     def generate_request( self, prompt: str ) -> str:
         '''
@@ -619,6 +623,7 @@ class ChatCompletion():
             error = ErrorDialog( exception )
             error.show()
 
+
 class ImageGeneration():
     '''
         Class provides the functionality fo the Image Generation API
@@ -649,6 +654,7 @@ class ImageGeneration():
                       'authorization': f'{self.header.authoriztion}',
                       'content-type': f'{self.header.content_type}' }
 
+
     def __dir__( self ) -> list[ str ]:
         '''
             Methods that returns a list of member names
@@ -656,6 +662,7 @@ class ImageGeneration():
         '''
         return [ 'header', 'request_type', 'endpoint', 'model', 'number', 'messages',
                  'content', 'response', 'prompt', 'size', 'generate_request( prompt )' ]
+
 
     def generate_request( self, prompt: str, num: int = 1,
             quality = 'standard', size: str = '1024X1024' ) -> str:

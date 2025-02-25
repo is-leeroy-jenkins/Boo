@@ -1,0 +1,5 @@
+opt = oo.GptOptions( )
+voices = opt.get_voices( )
+for i in voices: print( i )
+
+print( opt.dump( ) )

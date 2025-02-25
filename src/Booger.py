@@ -1895,7 +1895,7 @@ class PdfForm( Dark ):
             _zoom = 0
             _oldzoom = 0
 
-            _filename = sg.popup_get_file( 'Select file', ' Budget PDF Viewer',
+            _filename = sg.popup_get_file( 'Select file', ' PDF Viewer',
                 icon = self.icon_path,
                 font = self.theme_font,
                 file_types = (('PDF Files', '*.pdf'),) )
@@ -3100,12 +3100,12 @@ class ColorDialog( Dark ):
                 border_width = 1,
                 tooltip_time = 100 )
         except Exception as e:
-            _exc = Error( e )
-            _exc.module = 'Booger'
-            _exc.cause = 'ColorDialog'
-            _exc.method = 'show( self )'
-            _err = ErrorDialog( _exc )
-            _err.show()
+            _exception = Error( e )
+            _exception.module = 'Booger'
+            _exception.cause = 'ColorDialog'
+            _exception.method = 'show( self )'
+            _error = ErrorDialog( _exception )
+            _error.show( )
 
 
 class BudgetForm( Dark ):
@@ -4155,6 +4155,60 @@ class GraphForm( Dark ):
         _window.close()
 
 
+class FileBrowser( ):
+    '''
+        File Chooser - with clearable history
+        This is a design pattern that is very useful for programs that you run often that requires
+        a filename be entered.  You've got 4 options to use to get your filename with this pattern:
+        1. Copy and paste a filename into the combo element
+        2. Use the last used item which will be visible when you create the window
+        3. Choose an item from the list of previously used items
+        4. Browse for a new name
+        To clear the list of previous entries, click the "Clear History" button.
+        The history is stored in a json file using the PySimpleGUI User Settings APIs
+        The code is as sparse as possible to enable easy integration into your code.
+        Copyright 2021-2023 PySimpleSoft, Inc. and/or its licensors. All rights reserved.
+        Redistribution, modification, or any other use of PySimpleGUI or any portion thereof
+        is subject to the terms of the PySimpleGUI License Agreement
+        available at https://eula.pysimplegui.com.
+        You may not redistribute, modify or otherwise use PySimpleGUI or its contents except
+         pursuant to the PySimpleGUI License Agreement.
+    '''
+    
+    
+    def __init__(self):
+        sg.theme( 'DarkGrey15' )
+    
+    
+    def show( self ):
+        '''
+        
+        '''
+        layout = [[sg.Combo(sorted(sg.user_settings_get_entry('-filenames-', [])),
+            default_value=sg.user_settings_get_entry('-last filename-', ''),
+            size=(50, 1), key='-FILENAME-'), sg.FileBrowse(), sg.B('Clear History')],
+          [sg.Button('Ok', bind_return_key=True),  sg.Button('Cancel')]]
+
+        window = sg.Window('Browser File System', layout)
+        while True:
+            event, values = window.read( )
+            
+            if event in (sg.WIN_CLOSED, 'Cancel'):
+                break
+            if event == 'Ok':
+                sg.user_settings_set_entry( '-filenames-', list( set(
+                    sg.user_settings_get_entry( '-filenames-', [ ] ) + [
+                        values[ '-FILENAME-' ], ] ) ) )
+                sg.user_settings_set_entry( '-last filename-', values[ '-FILENAME-' ] )
+                break
+            elif event == 'Clear History':
+                sg.user_settings_set_entry( '-filenames-', [ ] )
+                sg.user_settings_set_entry( '-last filename-', '' )
+                window[ '-FILENAME-' ].update( values=[ ], value='' )
+        
+        window.close( )
+
+
 class ChatWindow():
     '''
 
@@ -4169,7 +4223,7 @@ class ChatWindow():
     def show( self ):
         try:
             _layout = [ [ sg.Text( 'Your output will go here', size = (40, 1) ) ],
-                        [ sg.Output( size = (110, 20), font = ('Helvetica 10') ) ],
+                        [ sg.Output( size = (110, 20), font = ('Roboto 10') ) ],
                         [ sg.Multiline( size = (70, 5), enter_submits = True, key = '-QUERY-',
                             do_not_clear = False ),
                           sg.Button( 'SEND', button_color = (sg.YELLOWS[ 0 ], sg.BLUES[ 0 ]),
@@ -4177,7 +4231,7 @@ class ChatWindow():
                           sg.Button( 'EXIT', button_color = (sg.YELLOWS[ 0 ], sg.GREENS[ 0 ]) ) ] ]
 
             window = sg.Window( 'Chat Window', _layout,
-                font = ('Helvetica', ' 13'),
+                font = ('Roboto', ' 13'),
                 default_button_element_size = (8, 2),
                 use_default_focus = False )
 
@@ -4212,7 +4266,7 @@ class ChatBot():
     def show( self ):
         try:
             layout = [ [ sg.Text( 'Your output will go here', size = (40, 1) ) ],
-                       [ sg.Output( size = (127, 30), font = ('Helvetica 10') ) ],
+                       [ sg.Output( size = (127, 30), font = ('Rooboto 10') ) ],
                        [ sg.Text( 'Command History' ),
                          sg.Text( '', size = (20, 3), key = 'history' ) ],
                        [ sg.ML( size = (85, 5), enter_submits = True, key = 'query',
@@ -4225,7 +4279,7 @@ class ChatBot():
 
             window = sg.Window( 'Chat window with history', layout,
                 default_element_size = (30, 2),
-                font = ('Helvetica', ' 13'),
+                font = ('Roboto', ' 13'),
                 default_button_element_size = (8, 2),
                 return_keyboard_events = True )
 
