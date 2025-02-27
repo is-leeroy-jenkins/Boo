@@ -1068,7 +1068,7 @@ class ZipFile( ):
 		Returns a list[ str ] of member names.
 
 		'''
-		return [ 'file_name', 'file_path', 'file_extenstion',
+		return [ 'file_name', 'authority_filepath', 'file_extenstion',
 		         'zip_name', 'zip_path', 'zip_extension',
 		         'create', 'unzip' ]
 	

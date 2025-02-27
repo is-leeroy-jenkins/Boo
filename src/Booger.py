@@ -134,7 +134,7 @@ class ButtonIcon():
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'button', 'name', 'file_path' ]
+        return [ 'button', 'name', 'authority_filepath' ]
 
 
 class TitleIcon():
@@ -164,7 +164,7 @@ class TitleIcon():
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'folder', 'name', 'file_path' ]
+        return [ 'folder', 'name', 'authority_filepath' ]
 
 
 class Dark():
