@@ -24,7 +24,6 @@ notebook
 openai
 pylint
 pyodbc
-pywin32
 requests
 scipy
 setuptools
