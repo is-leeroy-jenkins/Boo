@@ -41,7 +41,7 @@
   </summary>
   ******************************************************************************************
   '''
-class GptParameter( ):
+class GptOptions( ):
 	'''
 	The base class used by all parameter classes.
 	'''
@@ -55,7 +55,7 @@ class GptParameter( ):
 		self.store = store
 		self.stream = stream
 		
-class TextParameter( GptParameter ):
+class TextOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
@@ -70,7 +70,7 @@ class TextParameter( GptParameter ):
 		self.store = store
 		self.stream = stream
 		
-class ChatParameter( GptParameter ):
+class ChatOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
@@ -85,7 +85,7 @@ class ChatParameter( GptParameter ):
 		self.store = store
 		self.stream = stream
 		
-class EmbeddingParameter( GptParameter ):
+class EmbeddingOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
@@ -100,7 +100,7 @@ class EmbeddingParameter( GptParameter ):
 		self.store = store
 		self.stream = stream
 		
-class FineTuningParameter( GptParameter ):
+class FineTuningOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
@@ -115,7 +115,7 @@ class FineTuningParameter( GptParameter ):
 		self.store = store
 		self.stream = stream
 		
-class FileParameter( GptParameter ):
+class FileOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
@@ -130,7 +130,7 @@ class FileParameter( GptParameter ):
 		self.store = store
 		self.stream = stream
 		
-class ImageParameter( GptParameter ):
+class ImageOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
@@ -145,7 +145,7 @@ class ImageParameter( GptParameter ):
 		self.store = store
 		self.stream = stream
 		
-class SpeechParameter( GptParameter ):
+class SpeechOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
@@ -160,7 +160,7 @@ class SpeechParameter( GptParameter ):
 		self.store = store
 		self.stream = stream
 		
-class TranslationParameter( GptParameter ):
+class TranslationOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
@@ -175,7 +175,7 @@ class TranslationParameter( GptParameter ):
 		self.store = store
 		self.stream = stream
 		
-class TranscriptionParameter( GptParameter ):
+class TranscriptionOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
@@ -190,7 +190,7 @@ class TranscriptionParameter( GptParameter ):
 		self.store = store
 		self.stream = stream
 		
-class VectorParameter( GptParameter ):
+class VectorOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''

@@ -82,7 +82,7 @@ class Error( Exception ):
 
     def __init__( self, error: Exception, heading: str = None, cause: str = None,
             method: str = None, module: str = None ):
-        super().__init__()
+        super( ).__init__( )
         self.heading = heading
         self.cause = cause
         self.method = method
@@ -180,46 +180,32 @@ class Dark():
 
     '''
 
-    theme_background = sg.theme_background_color()
-    theme_textcolor = sg.theme_text_color()
-    element_backcolor = sg.theme_text_element_background_color()
-    element_forecolor = sg.theme_element_text_color()
-    text_forecolor = sg.theme_text_color()
-    text_backcolor = sg.theme_text_element_background_color()
-    input_forecolor = sg.theme_input_text_color()
-    input_backcolor = sg.theme_input_background_color()
-    button_backcolor = sg.theme_button_color_background()
-    button_forecolor = sg.theme_button_color_text()
-    button_color = sg.theme_button_color()
-    icon_path = os.getcwd() + r'\etc\ico\ninja.ico'
-    theme_font = ('Roboto', 11)
+    icon_path = os.getcwd( ) + r'\etc\ico\ninja.ico'
+    theme_font = ( 'Roboto', 11 )
     scrollbar_color = '#755600'
-    progressbar_backcolor = sg.theme_progress_bar_color()
-    form_size = (400, 200)
-    settings_path = os.getcwd() + r'\etc\theme'
+    form_size = ( 400, 200 )
+    settings_path = os.getcwd( ) + r'\etc\theme'
 
     def __init__( self ):
         sg.theme( 'DarkGrey15' )
         sg.theme_input_text_color( '#FFFFFF' )
         sg.theme_element_text_color( '#69B1EF' )
         sg.theme_text_color( '#69B1EF' )
-        self.theme_background = sg.theme_background_color()
-        self.theme_textcolor = sg.theme_text_color()
-        self.element_backcolor = sg.theme_text_element_background_color()
-        self.element_forecolor = sg.theme_element_text_color()
-        self.text_forecolor = sg.theme_text_color()
-        self.text_backcolor = sg.theme_text_element_background_color()
-        self.input_forecolor = sg.theme_input_text_color()
-        self.input_backcolor = sg.theme_input_background_color()
-        self.button_backcolor = sg.theme_button_color_background()
-        self.button_forecolor = sg.theme_button_color_text()
-        self.button_color = sg.theme_button_color()
-        self.icon_path = os.getcwd() + r'\etc\ico\ninja.ico'
-        self.theme_font = ('Roboto', 11)
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.text_forecolor = sg.theme_text_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = os.getcwd( ) + r'\etc\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
         self.scrollbar_color = '#755600'
-        self.progressbar_backcolor = sg.theme_progress_bar_color()
-        self.form_size = (400, 200)
-        self.settings_path = os.getcwd() + r'\etc\theme'
+        self.form_size = ( 400, 200 )
+        self.settings_path = os.getcwd( ) + r'\etc\theme'
         sg.set_global_icon( icon = self.icon_path )
         sg.set_options( font = self.theme_font )
         sg.user_settings_save( 'Boo', self.settings_path )
@@ -248,29 +234,29 @@ class FileDialog( Dark ):
 	'''
 
     def __init__( self, extension = EXT.XLSX ):
-        super().__init__()
-        self.theme_background = sg.theme_background_color()
-        self.theme_font = ('Roboto', 11)
-        self.icon_path = os.getcwd() + r'\etc\ico\ninja.ico'
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.text_forecolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
-        self.form_size = (475, 240)
+        super( ).__init__( )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_font = ( 'Roboto', 11 )
+        self.icon_path = os.getcwd( ) + r'\etc\ico\ninja.ico'
+        self.element_backcolor = super( ).element_backcolor
+        self.element_forecolor = super( ).element_forecolor
+        self.text_forecolor = super( ).text_forecolor
+        self.text_backcolor = super( ).text_backcolor
+        self.input_backcolor = super( ).input_backcolor
+        self.input_forecolor = super( ).input_forecolor
+        self.button_color = super( ).button_color
+        self.form_size = ( 475, 240 )
         self.selected_item = None
         self.message = 'Search for File'
         self.extension = extension
-        self.excel = (('Excel Files', '*.xlsx'),)
-        self.csv = (('CSV Files', '*.csv'),)
-        self.pdf = (('PDF Files', '*.pdf'),)
-        self.sql = (('SQL Files', '*.sqlstatement',),)
-        self.text = (('Text Files', '*.txt'),)
-        self.access = (('MS ACCDB Databases', '*.accdb'),)
-        self.sqlite = (('SQLite Databases', '*.db'),)
-        self.sqlserver = (('SQL Server Databases', '*.mdf', '*.ldf', '*.sdf'),)
+        self.excel = ( ( 'Excel Files', '*.xlsx' ), )
+        self.csv = ( ( 'CSV Files', '*.csv' ), )
+        self.pdf = ( ( 'PDF Files', '*.pdf' ), )
+        self.sql = ( ( 'SQL Files', '*.sqlstatement', ), )
+        self.text = ( ( 'Text Files', '*.txt'),)
+        self.access = ( ( 'MS ACCDB Databases', '*.accdb' ), )
+        self.sqlite = ( ( 'SQLite Databases', '*.db'),)
+        self.sqlserver = ( ( 'SQL Server Databases', '*.mdf', '*.ldf', '*.sdf' ), )
 
 
     def __str__( self ) -> str:
@@ -305,33 +291,33 @@ class FileDialog( Dark ):
 		'''
         try:
             _layout = [ [ sg.Text() ],
-                        [ sg.Text( self.message, font = ('Roboto', 11) ) ],
+                        [ sg.Text( self.message, font = ( 'Roboto', 11 ) ) ],
                         [ sg.Text() ],
-                        [ sg.Input( key = '-PATH-' ), sg.FileBrowse( size = (15, 1) ) ],
-                        [ sg.Text() ],
-                        [ sg.Text() ],
-                        [ sg.OK( size = (8, 1), ), sg.Cancel( size = (10, 1) ) ] ]
+                        [ sg.Input( key = '-PATH-' ), sg.FileBrowse( size = ( 15, 1 ) ) ],
+                        [ sg.Text( ) ],
+                        [ sg.Text( ) ],
+                        [ sg.OK( size = ( 8, 1 ), ), sg.Cancel( size = ( 10, 1 ) ) ] ]
 
             _window = sg.Window( ' Booger', _layout,
                 font = self.theme_font,
                 size = self.form_size )
 
             while True:
-                _event, _values = _window.read()
-                if _event in (sg.WIN_CLOSED, sg.WIN_X_EVENT, 'Cancel'):
+                _event, _values = _window.read( )
+                if _event in ( sg.WIN_CLOSED, sg.WIN_X_EVENT, 'Cancel' ):
                     break
                 elif _event == 'OK':
                     self.selected_item = _values[ '-PATH-' ]
-                    _window.close()
+                    _window.close( )
 
-            _window.close()
+            _window.close( )
         except Exception as e:
             _exc = Error( e )
             _exc.module = 'Booger'
             _exc.cause = 'FileDialog'
             _exc.method = 'show( self )'
             _err = ErrorDialog( _exc )
-            _err.show()
+            _err.show( )
 
 
 class FolderDialog( Dark ):
@@ -344,18 +330,18 @@ class FolderDialog( Dark ):
 	'''
 
     def __init__( self ):
-        super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
-        self.form_size = (475, 250)
+        super( ).__init__( )
+        self.theme_background = super( ).theme_background
+        self.theme_font = super( ).theme_font
+        self.icon_path = super( ).icon_path
+        self.element_backcolor = super( ).element_backcolor
+        self.element_forecolor = super( ).element_forecolor
+        self.theme_textcolor = super( ).text_forecolor
+        self.text_backcolor = super( ).text_backcolor
+        self.input_backcolor = super( ).input_backcolor
+        self.input_forecolor = super( ).input_forecolor
+        self.button_color = super( ).button_color
+        self.form_size = ( 475, 250 )
         self.selected_item = None
 
 
@@ -391,10 +377,10 @@ class FolderDialog( Dark ):
             _layout = [ [ sg.Text() ],
                         [ sg.Text( 'Search for Directory' ) ],
                         [ sg.Text() ],
-                        [ sg.Input( key = '-PATH-' ), sg.FolderBrowse( size = (15, 1) ) ],
-                        [ sg.Text( size = (100, 1) ) ],
-                        [ sg.Text( size = (100, 1) ) ],
-                        [ sg.OK( size = (8, 1) ), sg.Cancel( size = (10, 1) ) ] ]
+                        [ sg.Input( key = '-PATH-' ), sg.FolderBrowse( size = ( 15, 1 ) ) ],
+                        [ sg.Text( size = ( 100, 1 ) ) ],
+                        [ sg.Text( size = ( 100, 1 ) ) ],
+                        [ sg.OK( size = ( 8, 1 ) ), sg.Cancel( size = ( 10, 1 ) ) ] ]
 
             _window = sg.Window( '  Booger', _layout,
                 font = self.theme_font,
