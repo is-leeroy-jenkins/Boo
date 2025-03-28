@@ -26,7 +26,7 @@ if you want it, that you can change the software or use pieces of it
 in new free programs; and that you know you can do these things.
 
   To protect your rights, we need to make restrictions that forbid
-anyone to deny you these rights or to ask you to surrender the rights.
+anyone to deny you these rights or to query you to surrender the rights.
 These restrictions translate to certain responsibilities for you if you
 distribute copies of the software, or if you modify it.
 
@@ -249,7 +249,7 @@ Foundation.
 
   10. If you wish to incorporate parts of the Program into other free
 programs whose distribution conditions are different, write to the author
-to ask for permission.  For software which is copyrighted by the Free
+to query for permission.  For software which is copyrighted by the Free
 Software Foundation, write to the Free Software Foundation; we sometimes
 make exceptions for this.  Our decision will be guided by the two goals
 of preserving the free status of all derivatives of our free software and

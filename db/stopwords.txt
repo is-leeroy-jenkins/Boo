@@ -90,7 +90,7 @@
 "arpa",
 "as",
 "aside",
-"ask",
+"query",
 "asked",
 "asking",
 "asks",
