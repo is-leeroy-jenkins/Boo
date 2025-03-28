@@ -45,7 +45,7 @@ class GptOptions( ):
 	'''
 	The base class used by all parameter classes.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		self.number = num
 		self.temperature = temp
@@ -59,7 +59,7 @@ class TextOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -74,7 +74,7 @@ class ChatOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -89,7 +89,7 @@ class EmbeddingOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -104,7 +104,7 @@ class FineTuningOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -119,7 +119,7 @@ class FileOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -134,7 +134,7 @@ class ImageOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -149,7 +149,7 @@ class SpeechOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -164,7 +164,7 @@ class TranslationOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -179,7 +179,7 @@ class TranscriptionOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -194,7 +194,7 @@ class VectorOptions( GptOptions ):
 	'''
 	Class to encapsulate the GPT Chat GptOptions object.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num

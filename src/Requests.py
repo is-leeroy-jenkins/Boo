@@ -43,9 +43,9 @@
   '''
 class GptRequest( ):
 	'''
-	Base class for GPT requests.
+		Base class for GPT requests.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		self.number = num
 		self.temperature = temp
@@ -55,11 +55,12 @@ class GptRequest( ):
 		self.store = store
 		self.stream = stream
 
-class TextGenerationRequest( GptRequest ):
+
+class TextRequest( GptRequest ):
 	'''
-	Class encapsulating the request for text generations.
+		Class encapsulating the request for text generations.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.18, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -70,11 +71,12 @@ class TextGenerationRequest( GptRequest ):
 		self.store = store
 		self.stream = stream
 	
-class ChatCompletionRequest( GptRequest ):
+	
+class ChatRequest( GptRequest ):
 	'''
-	Class encapsulating requests for chat completions.
+		Class encapsulating requests for chat completions.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -85,11 +87,12 @@ class ChatCompletionRequest( GptRequest ):
 		self.store = store
 		self.stream = stream
 
-class SpeechGenerationRequest( GptRequest ):
+
+class SpeechRequest( GptRequest ):
 	'''
-	Class encapsulating requests for speech generations.
+		Class encapsulating requests for speech generations.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -99,12 +102,13 @@ class SpeechGenerationRequest( GptRequest ):
 		self.presence_penalty = pres
 		self.store = store
 		self.stream = stream
+
 
 class TranslationRequest( GptRequest ):
 	'''
-	Class encapsulating requests for translation.
+		Class encapsulating requests for translation.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -115,11 +119,12 @@ class TranslationRequest( GptRequest ):
 		self.store = store
 		self.stream = stream
 	
+	
 class TranscriptionRequest( GptRequest ):
 	'''
-	Class encapsulating requests for transcriptions.
+		Class encapsulating requests for transcriptions.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -129,12 +134,13 @@ class TranscriptionRequest( GptRequest ):
 		self.presence_penalty = pres
 		self.store = store
 		self.stream = stream
+
 
 class EmbeddingRequest( GptRequest ):
 	'''
-	Class encapsulating requests for embedding.
+		Class encapsulating requests for embedding.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -144,12 +150,13 @@ class EmbeddingRequest( GptRequest ):
 		self.presence_penalty = pres
 		self.store = store
 		self.stream = stream
+
 
 class VectorRequest( GptRequest ):
 	'''
-	Class encapsulating requests for vectors.
+		Class encapsulating requests for vectors.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -160,11 +167,12 @@ class VectorRequest( GptRequest ):
 		self.store = store
 		self.stream = stream
 
+
 class GptFileRequest( GptRequest ):
 	'''
-	Class encapsulating requests for GPT files.
+		Class encapsulating requests for GPT files.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -180,11 +188,12 @@ class GptUploadRequest( GptRequest ):
 	Class encapsulating requests for GPT uploads.
 	'''
 
+
 class FineTuningRequest( GptRequest ):
 	'''
 		Class encapsulating requests for fine-tuning.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
@@ -195,11 +204,12 @@ class FineTuningRequest( GptRequest ):
 		self.store = store
 		self.stream = stream
 
-class ImageGenerationRequest( GptRequest ):
+
+class ImageRequest( GptRequest ):
 	'''
 	Class encapsulating requests for image generation.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.11, top: float = 0.11, freq: float = 0.0,
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
 		self.number = num
