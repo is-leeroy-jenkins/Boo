@@ -120,9 +120,9 @@ class Text:
 
     def tokenize( self, cleaned_line: str ) -> list:
         '''
-        Method that tokenizes a line of text given as input
-        :param cleaned_line: str
-        :return: list
+            Function that tokenizes a line of text given as input.
+            :param cleaned_line: str
+            :return: list
         '''
         try:
             words = cleaned_line.split( )
