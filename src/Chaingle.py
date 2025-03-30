@@ -52,6 +52,7 @@ from langchain.memory import ConversationBufferMemory
 from typing import List
 from Booger import Error, ErrorDialog
 
+
 class Fetch:
 	'''
 		Class providing lang chain functionality below:
@@ -60,6 +61,8 @@ class Fetch:
 			- Document retriever using FAISS + RetrievalQA
 			- Unified agent with a .query() method
 	'''
+	
+	
 	def __init__( self, db_uri: str, doc_paths: List[ str ], model: str = 'gpt-4o',
 	              temperature: float = 0.8 ):
 		'''
@@ -145,7 +148,7 @@ class Fetch:
 		try:
 			raw_docs = self._load_documents( )
 			chunks = (RecursiveCharacterTextSplitter( chunk_size=500, chunk_overlap=50 )
-			          .split_documents( raw_docs ) )
+			          .split_documents( raw_docs ))
 			embeddings = OpenAIEmbeddings( )
 			vectordb = FAISS.from_documents( chunks, embeddings )
 			retriever = vectordb.as_retriever( )
@@ -207,7 +210,7 @@ class Fetch:
 		'''
 		try:
 			return [ f'{msg.type.upper( )}: {msg.content}' for msg in
-		         self.memory.chat_memory.messages ]
+			         self.memory.chat_memory.messages ]
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Chaingle'
