@@ -53,8 +53,6 @@ class Header( ):
 	'''
 		Class used to encapsulate GPT headers
 	'''
-	
-	
 	def __init__( self ):
 		self.content_type = 'application/json'
 		self.api_key = os.environ.get( 'OPENAI_API_KEY' )
@@ -75,8 +73,6 @@ class EndPoint( ):
 	'''
 		The class containing endpoints for OpenAI
 	'''
-	
-	
 	def __init__( self ):
 		self.base_url = f'https://api.openai.com/'
 		self.text_generation = f'https://api.openai.com/v1/chat/completions'
@@ -149,8 +145,6 @@ class Models( ):
 	'''
 		Class containing lists of OpenAI models by generation
 	'''
-	
-	
 	def __init__( self ):
 		self.text_generation = [ 'text-davinci-003', 'text-curie-001',
 		                         'gpt-4-0613', 'gpt-4-0314',
@@ -222,8 +216,6 @@ class AI( ):
 	'''
 	AI is the base class for all OpenAI functionalityl
 	'''
-	
-	
 	def __init__( self ):
 		self.header = Header( )
 		self.endpoint = EndPoint( )
@@ -251,10 +243,8 @@ class GptOptions( ):
 		The base class used by all parameter classes.
 
 	'''
-	
-	
 	def __init__( self, num: int = 1, temp: float = 0.80, top: float = 0.90,
-	              frequency: float = 0.00, max: int = 2048, presence: float = 0.00,
+	              freq: float = 0.00, max: int = 2048, pres: float = 0.00,
 	              store: bool = False, stream: bool = True, size: str = '1024X1024' ):
 		self.number = num
 		self.temperature = temp
@@ -368,11 +358,10 @@ class Payload( ):
 		The class used to capture request parameters.
 
 	'''
-	
-	
-	def __init__( self, number: int = 1, temperature: float = 0.80, top_p: float = 0.90,
-	              frequency: float = 0.00, max: int = 2048, presence: float = 0.00,
-	              store: bool = False, stream: bool = True, size: str = '1024X1024' ):
+	def __init__( self, model: str='gpt-4o', number: int = 1, temperature: float = 0.80,
+	              top_p: float = 0.90, frequency: float = 0.00, max: int = 2048,
+	              presence: float = 0.00, store: bool = False,
+	              stream: bool = True, size: str = '1024X1024' ):
 		self.model = model
 		self.number = number
 		self.temperature = temperature
@@ -430,69 +419,13 @@ class Payload( ):
 		pass
 
 
-class Message( ):
-	'''
-
-		Class for all messages used in the GPT application
-
-	'''
-	
-	
-	def __init__( self, prompt: str, role: str = 'user', type: str = 'text' ):
-		self.role = role
-		self.content = prompt
-		self.type = type
-		self.data = { 'role': f'{self.role}',
-		              'type': f'{self.type}',
-		              'content': f'{self.content}' }
-	
-	
-	def __str__( self ) -> str:
-		'''
-
-			Returns: the json string representation of the message.
-
-		'''
-		new = '\r\n'
-		if not self.content is None:
-			_pair = f''' 
-            'role': '{self.role}', \r\n 
-            'type': '{self.type}', \r\n 
-            'content': '{self.content}'
-            '''
-			_retval = '{ ' + _pair + ' }'
-			return _retval
-	
-	
-	def dump( self ) -> str:
-		'''
-
-			Returns: key value pairs in a string
-
-		'''
-		new = '\r\n'
-		return 'role' + f' = {self.role}' + new + \
-			'type' + f' = {self.type}' + new + \
-			'content' + f' = {self.content}'
-	
-	
-	def __dir__( self ) -> list[ str ]:
-		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
-		'''
-		return [ 'role', 'content', 'type' ]
-
-
 class GptRequest( AI ):
 	'''
 		Base class for GPT requests.
 	'''
-	
-	
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
-		super( ).__init__(  )
+		super( ).__init__( )
 		self.client = OpenAI( )
 		self.header = super( ).header
 		self.api_key = super( ).api_key
@@ -521,14 +454,12 @@ class GptRequest( AI ):
 		              'content-type': f'{self.header.content_type}' }
 
 
-class TextGeneration( GptRequest ):
+class TextRequest( GptRequest ):
 	'''
 
 	Class provides the functionality fo the Text Generation API
 
 	'''
-	
-	
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
@@ -560,10 +491,10 @@ class TextGeneration( GptRequest ):
 		return [ 'header', 'request_type', 'endpoint',
 		         'model', 'number', 'messages',
 		         'content', 'store', 'stream',
-		         'response', 'prompt', 'create_request' ]
+		         'response', 'prompt', 'create' ]
 	
 	
-	def generate_request( self, prompt: str ) -> str:
+	def create( self, prompt: str ) -> str:
 		'''
 
 			Given an input prompt 'prompt', function generates a text generation
@@ -584,8 +515,8 @@ class TextGeneration( GptRequest ):
 			
 			self.client.api_key = self.header.api_key
 			_system_prompt = 'You are a helpful assistant and Budget Analyst'
-			_system = Message( prompt=_system_prompt, role='system', type='text' )
-			_user = Message( prompt=self.prompt, role='user', type='text' )
+			_system = GptMessage( prompt=_system_prompt, role='system', type='text' )
+			_user = GptMessage( prompt=self.prompt, role='user', type='text' )
 			self.messages.append( _system )
 			self.messages.append( _user )
 			
@@ -605,20 +536,18 @@ class TextGeneration( GptRequest ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'TextGeneration'
-			exception.method = 'create_request( prompt: str ) -> str'
+			exception.cause = 'TextRequest'
+			exception.method = 'create( prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class ChatCompletion( GptRequest ):
+class CompletionRequest( GptRequest ):
 	'''
 
 		Class provides the functionality fo the Completions API
 
 	'''
-	
-	
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
@@ -649,10 +578,10 @@ class ChatCompletion( GptRequest ):
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint',
 		         'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'create_request' ]
+		         'content', 'response', 'prompt', 'create' ]
 	
 	
-	def generate_request( self, prompt: str ) -> str:
+	def create( self, prompt: str ) -> str:
 		'''
 				Function that generates chat completions given a prompt
 			Args:
@@ -670,8 +599,8 @@ class ChatCompletion( GptRequest ):
 				self.prompt = prompt
 			self.client.api_key = self.header.api_key
 			_sys = 'You are a helpful assistant and Budget Analyst'
-			_system = Message( prompt=_sys, role='system', type='text' )
-			_user = Message( prompt=self.prompt, role='user', type='text' )
+			_system = GptMessage( prompt=_sys, role='system', type='text' )
+			_user = GptMessage( prompt=self.prompt, role='user', type='text' )
 			self.messages.append( _system )
 			self.messages.append( _user )
 			self.response = self.client.chat.completions.create(
@@ -690,13 +619,13 @@ class ChatCompletion( GptRequest ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'ChatCompletion'
-			exception.method = 'create_request( prompt: str )'
+			exception.cause = 'CompletionRequest'
+			exception.method = 'create( prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class ImageGeneration( GptRequest ):
+class ImageRequest( GptRequest ):
 	'''
 		Class provides the functionality fo the Image Generation API
 	'''
@@ -728,11 +657,11 @@ class ImageGeneration( GptRequest ):
 			Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create_request' ]
+		         'content', 'response', 'prompt', 'size', 'create' ]
 	
 	
-	def create_request( self, prompt: str, num: int = 1,
-	                    quality='standard', size: str = '1024X1024' ) -> str:
+	def create( self, prompt: str, num: int = 1,
+	            quality='standard', size: str = '1024X1024' ) -> str:
 		'''
 			Function geerates chat completq
 
@@ -743,7 +672,6 @@ class ImageGeneration( GptRequest ):
 			Returns:
 
 		'''
-		
 		try:
 			if prompt is None:
 				alert = 'The prompt argument is not available'
@@ -755,8 +683,8 @@ class ImageGeneration( GptRequest ):
 			
 			openai.api_key = self.header.api_key
 			_sys = 'You are a helpful assistant and Budget Analyst'
-			_system = Message( prompt=_sys, role='system', type='text' )
-			_user = Message( prompt=self.prompt, role='user', type='text' )
+			_system = GptMessage( prompt=_sys, role='system', type='text' )
+			_user = GptMessage( prompt=self.prompt, role='user', type='text' )
 			self.messages.append( _system )
 			self.messages.append( _user )
 			self.response = self.client.chat.completions.create(
@@ -777,18 +705,18 @@ class ImageGeneration( GptRequest ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'ImageGeneration'
-			exception.method = 'create_request( prompt: str )'
+			exception.cause = 'ImageRequest'
+			exception.method = 'create( prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class SpeechGeneration( GptRequest ):
+class SpeechRequest( GptRequest ):
 	'''
 		Class encapsulating requests for speech generations.
 	'''
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int=2048, store: bool = False, stream: bool = True ):
+	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.number = super( ).number
 		self.temperature = super( ).temperature
@@ -805,12 +733,12 @@ class SpeechGeneration( GptRequest ):
 		self.data = super( ).data
 
 
-class Translation( GptRequest ):
+class TranslationRequest( GptRequest ):
 	'''
 		Class encapsulating requests for translation.
 	'''
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int=2048, store: bool = False, stream: bool = True ):
+	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.number = super( ).number
 		self.temperature = super( ).temperature
@@ -826,12 +754,13 @@ class Translation( GptRequest ):
 		self.messages = super( ).messages
 		self.data = super( ).data
 
-class Transcription( GptRequest ):
+
+class TranscriptionRequest( GptRequest ):
 	'''
 		Class encapsulating requests for transcriptions.
 	'''
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int=2048,  store: bool = False, stream: bool = True ):
+	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.number = super( ).number
 		self.temperature = super( ).temperature
@@ -848,7 +777,7 @@ class Transcription( GptRequest ):
 		self.data = super( ).data
 
 
-class Embedding( GptRequest ):
+class EmbeddingRequest( GptRequest ):
 	'''
 		Class encapsulating requests for embedding.
 	'''
@@ -870,7 +799,7 @@ class Embedding( GptRequest ):
 		self.data = super( ).data
 
 
-class VectorStore( GptRequest ):
+class VectorStoreRequest( GptRequest ):
 	'''
 		Class encapsulating requests for vectors.
 	'''
@@ -892,7 +821,7 @@ class VectorStore( GptRequest ):
 		self.data = super( ).data
 
 
-class GptFile( GptRequest ):
+class GptFileRequest( GptRequest ):
 	'''
 		Class encapsulating requests for GPT files.
 	'''
@@ -914,13 +843,29 @@ class GptFile( GptRequest ):
 		self.data = super( ).data
 
 
-class GptUpload( GptRequest ):
+class GptUploadRequest( GptRequest ):
 	'''
-	Class encapsulating requests for GPT uploads.
+		Class encapsulating requests for GPT uploads.
 	'''
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
+	              pres: float = 0.0, max: int=2048, store: bool = False, stream: bool = True ):
+		super( ).__init__( num, temp, top, freq, pres, store, stream )
+		self.number = super( ).number
+		self.temperature = super( ).temperature
+		self.top_percent = super( ).top_percent
+		self.frequency_penalty = super( ).frequency_penalty
+		self.presence_penalty = super( ).presence_penalty
+		self.max_completion_tokens = super( ).max_completion_tokens
+		self.store = super( ).store
+		self.stream = super( ).stream
+		self.content = super( ).content
+		self.response = super( ).response
+		self.prompt = super( ).prompt
+		self.messages = super( ).messages
+		self.data = super( ).data
 
 
-class FineTuning( GptRequest ):
+class FineTuningRequest( GptRequest ):
 	'''
 		Class encapsulating requests for fine-tuning.
 	'''
@@ -940,3 +885,362 @@ class FineTuning( GptRequest ):
 		self.prompt = super( ).prompt
 		self.messages = super( ).messages
 		self.data = super( ).data
+
+
+class GptResponse( ):
+	'''
+		Base class for GPT responses.
+	'''
+	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
+		self.id = respid
+		self.object = obj
+		self.model = model
+		self.created = created
+
+
+class CompletionResponse( GptResponse ):
+	'''
+		Class containing the GPT response for the chat completion
+	'''
+	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
+		super( ).__init__( respid, obj, model, created )
+		self.id = super( ).id
+		self.object = super( ).object
+		self.model = super( ).model
+		self.created = super( ).created
+
+
+class TextResponse( GptResponse ):
+	'''
+		Class containing the GPT response for the text generation
+	'''
+	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
+		super( ).__init__( respid, obj, model, created )
+		self.id = super( ).id
+		self.object = super( ).object
+		self.model = super( ).model
+		self.created = super( ).created
+
+
+class EmbeddingResponse( GptResponse ):
+	'''
+		Class containing the GPT response for the embedding request
+	'''
+	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
+		super( ).__init__( respid, obj, model, created )
+		self.id = super( ).id
+		self.object = super( ).object
+		self.model = super( ).model
+		self.created = super( ).created
+
+
+class FineTuningResponse( GptResponse ):
+	'''
+		Class containing the GPT response for the fine tuning request
+	'''
+	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
+		super( ).__init__( respid, obj, model, created )
+		self.id = super( ).id
+		self.object = super( ).object
+		self.model = super( ).model
+		self.created = super( ).created
+
+
+class VectorResponse( GptResponse ):
+	'''
+		Class containing the GPT response for the vector request
+	'''
+	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
+		super( ).__init__( respid, obj, model, created )
+		self.id = super( ).id
+		self.object = super( ).object
+		self.model = super( ).model
+		self.created = super( ).created
+
+
+class FileResponse( GptResponse ):
+	'''
+		Class containing the GPT response for the file request
+	'''
+	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
+		super( ).__init__( respid, obj, model, created )
+		self.id = super( ).id
+		self.object = super( ).object
+		self.model = super( ).model
+		self.created = super( ).created
+
+
+class UploadResponse( GptResponse ):
+	'''
+		References
+	'''
+	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
+		super( ).__init__( respid, obj, model, created )
+		self.id = super( ).id
+		self.object = super( ).object
+		self.model = super( ).model
+		self.created = super( ).created
+
+
+class ImageResponse( GptResponse ):
+	'''
+		Class containing the GPT response for the image request
+	'''
+	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
+		super( ).__init__( respid, obj, model, created )
+		self.id = super( ).id
+		self.object = super( ).object
+		self.model = super( ).model
+		self.created = super( ).created
+
+
+class GptMessage( ):
+	'''
+
+		Base class for all messages used in the GPT application
+
+	'''
+	def __init__( self, prompt: str, role: str, type: str ):
+		self.content = prompt
+		self.role = role
+		self.type = type
+		self.data = { 'role': f'{self.role}',
+		              'type': f'{self.type}',
+		              'content': f'{self.content}' }
+	
+	
+	def __str__( self ) -> str:
+		'''
+
+			Returns: the json string representation of the message.
+
+		'''
+		new = '\r\n'
+		if not self.content is None:
+			_pair = f'''
+            'role': '{self.role}', \r\n
+            'type': '{self.type}', \r\n
+            'content': '{self.content}'
+            '''
+			_retval = '{ ' + _pair + ' }'
+			return _retval
+	
+	
+	def dump( self ) -> str:
+		'''
+
+			Returns: key value pairs in a string
+
+		'''
+		new = '\r\n'
+		return 'role' + f' = {self.role}' + new + \
+			'type' + f' = {self.type}' + new + \
+			'content' + f' = {self.content}'
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'role', 'content', 'type' ]
+	
+	
+class SystemMessage( GptMessage ):
+	'''
+		
+		Class representing the system message
+		
+	'''
+	def __init__( self, prompt: str, role: str='system', type: str='text' ) -> None:
+		super( ).__init__( prompt, role, type )
+		self.content = super( ).content
+		self.role = super( ).role
+		self.type = super( ).type
+	
+	
+	def __str__( self ) -> str:
+		'''
+
+			Returns: the json string representation of the message.
+
+		'''
+		new = '\r\n'
+		if not self.content is None:
+			_pair = f'''
+            'role': '{self.role}', \r\n
+            'type': '{self.type}', \r\n
+            'content': '{self.content}'
+            '''
+			_retval = '{ ' + _pair + ' }'
+			return _retval
+	
+	
+	def dump( self ) -> str:
+		'''
+
+			Returns: key value pairs in a string
+
+		'''
+		new = '\r\n'
+		return 'role' + f' = {self.role}' + new + \
+			'type' + f' = {self.type}' + new + \
+			'content' + f' = {self.content}'
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'role', 'content', 'type' ]
+		
+		
+class UserMessage( GptMessage ):
+	'''
+		
+		Class representing the system message
+		
+	'''
+	def __init__( self, prompt: str, role: str='user', type: str='text' ) -> None:
+		super( ).__init__( prompt, role, type )
+		self.content = super( ).content
+		self.role = super( ).role
+		self.type = super( ).type
+	
+	
+	def __str__( self ) -> str:
+		'''
+
+			Returns: the json string representation of the message.
+
+		'''
+		new = '\r\n'
+		if not self.content is None:
+			_pair = f'''
+            'role': '{self.role}', \r\n
+            'type': '{self.type}', \r\n
+            'content': '{self.content}'
+            '''
+			_retval = '{ ' + _pair + ' }'
+			return _retval
+	
+	
+	def dump( self ) -> str:
+		'''
+
+			Returns: key value pairs in a string
+
+		'''
+		new = '\r\n'
+		return 'role' + f' = {self.role}' + new + \
+			'type' + f' = {self.type}' + new + \
+			'content' + f' = {self.content}'
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'role', 'content', 'type' ]
+		
+		
+class DeveloperMessage( GptMessage ):
+	'''
+		
+		Class representing the system message
+		
+	'''
+	def __init__( self, prompt: str, role: str='developer', type: str='text' ) -> None:
+		super( ).__init__( prompt, role, type )
+		self.content = super( ).content
+		self.role = super( ).role
+		self.type = super( ).type
+	
+	
+	def __str__( self ) -> str:
+		'''
+
+			Returns: the json string representation of the message.
+
+		'''
+		new = '\r\n'
+		if not self.content is None:
+			_pair = f'''
+            'role': '{self.role}', \r\n
+            'type': '{self.type}', \r\n
+            'content': '{self.content}'
+            '''
+			_retval = '{ ' + _pair + ' }'
+			return _retval
+	
+	
+	def dump( self ) -> str:
+		'''
+
+			Returns: key value pairs in a string
+
+		'''
+		new = '\r\n'
+		return 'role' + f' = {self.role}' + new + \
+			'type' + f' = {self.type}' + new + \
+			'content' + f' = {self.content}'
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'role', 'content', 'type' ]
+		
+		
+class AssistantMessage( GptMessage ):
+	'''
+		
+		Class representing the system message
+		
+	'''
+	def __init__( self, prompt: str, role: str='assistant', type: str='text' ) -> None:
+		super( ).__init__( prompt, role, type )
+		self.content = super( ).content
+		self.role = super( ).role
+		self.type = super( ).type
+	
+	
+	def __str__( self ) -> str:
+		'''
+
+			Returns: the json string representation of the message.
+
+		'''
+		new = '\r\n'
+		if not self.content is None:
+			_pair = f'''
+            'role': '{self.role}', \r\n
+            'type': '{self.type}', \r\n
+            'content': '{self.content}'
+            '''
+			_retval = '{ ' + _pair + ' }'
+			return _retval
+	
+	
+	def dump( self ) -> str:
+		'''
+
+			Returns: key value pairs in a string
+
+		'''
+		new = '\r\n'
+		return 'role' + f' = {self.role}' + new + \
+			'type' + f' = {self.type}' + new + \
+			'content' + f' = {self.content}'
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'role', 'content', 'type' ]

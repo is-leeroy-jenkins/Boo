@@ -4024,7 +4024,7 @@ msgstr "Správy"
 
 #. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
 #: frmMessages.dfm
-msgid "Message"
+msgid "GptMessage"
 msgstr "Správa"
 
 #. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
@@ -5621,7 +5621,7 @@ msgstr "Unit-testy"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..Label2..Caption
 #: frmUnitTests.dfm
-msgid "Error Message:"
+msgid "Error GptMessage:"
 msgstr "Chybová správa:"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..ModuleName..Caption
@@ -5773,7 +5773,7 @@ msgstr ""
 #, object-pascal-format
 msgid ""
 "Error in copying file \"%s\" to \"%s\"\n"
-"Error Message: "
+"Error GptMessage: "
 msgstr ""
 
 #: cSSHSupport.pas
@@ -6009,7 +6009,7 @@ msgid ""
 msgstr ""
 
 #: dlgAboutPyScripter.pas
-msgid "Translation manager"
+msgid "TranslationRequest manager"
 msgstr ""
 
 #: dlgAboutPyScripter.pas

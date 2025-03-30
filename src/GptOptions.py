@@ -43,17 +43,19 @@
   '''
 class GptOptions( ):
 	'''
-	The base class used by all parameter classes.
+		The base class used by all parameter classes.
 	'''
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, store: bool = False, stream: bool = True ):
+	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
 		self.frequency_penalty = freq
 		self.presence_penalty = pres
+		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
+		
 		
 class TextOptions( GptOptions ):
 	'''

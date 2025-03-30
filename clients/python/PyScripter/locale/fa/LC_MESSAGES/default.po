@@ -4029,7 +4029,7 @@ msgstr "پیام ها"
 
 #. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
 #: frmMessages.dfm
-msgid "Message"
+msgid "GptMessage"
 msgstr "پیام"
 
 #. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
@@ -5636,7 +5636,7 @@ msgstr "آزمون واحدها"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..Label2..Caption
 #: frmUnitTests.dfm
-msgid "Error Message:"
+msgid "Error GptMessage:"
 msgstr "پیام خطا:"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..ModuleName..Caption
@@ -5788,7 +5788,7 @@ msgstr "اجرای پیکربندی ها"
 #, object-pascal-format
 msgid ""
 "Error in copying file \"%s\" to \"%s\"\n"
-"Error Message: "
+"Error GptMessage: "
 msgstr ""
 "خطا در رونوشت فایل از \"%s\" به \"%s\"\n"
 "پیام خطا: "
@@ -6032,7 +6032,7 @@ msgstr ""
 "لطفاً اشکالات و پرسش های خود درباره ی PyScripter را به نشانی pyscripter@gmail.com بفرستید."
 
 #: dlgAboutPyScripter.pas
-msgid "Translation manager"
+msgid "TranslationRequest manager"
 msgstr "مدیر ترجمه"
 
 #: dlgAboutPyScripter.pas

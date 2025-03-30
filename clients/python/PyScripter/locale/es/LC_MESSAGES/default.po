@@ -4031,7 +4031,7 @@ msgstr "Mensajes"
 
 #. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
 #: frmMessages.dfm
-msgid "Message"
+msgid "GptMessage"
 msgstr "Mensaje"
 
 #. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
@@ -5644,7 +5644,7 @@ msgstr "Pruebas Unitarias"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..Label2..Caption
 #: frmUnitTests.dfm
-msgid "Error Message:"
+msgid "Error GptMessage:"
 msgstr ""
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..ModuleName..Caption
@@ -5796,7 +5796,7 @@ msgstr ""
 #, object-pascal-format
 msgid ""
 "Error in copying file \"%s\" to \"%s\"\n"
-"Error Message: "
+"Error GptMessage: "
 msgstr ""
 
 #: cSSHSupport.pas
@@ -6038,7 +6038,7 @@ msgstr ""
 "Por favor envíe reportes de bugs y preguntas sobre PyScripter a pyscripter@gmail.com."
 
 #: dlgAboutPyScripter.pas
-msgid "Translation manager"
+msgid "TranslationRequest manager"
 msgstr "Gestión de Traducción"
 
 #: dlgAboutPyScripter.pas

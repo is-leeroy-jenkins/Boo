@@ -930,7 +930,7 @@ class Message( ):
 
 		Constructor:
 	
-		    Message( sender: str, receiver: str,
+		    GptMessage( sender: str, receiver: str,
 		              body: str, subject: str, copy: str = '')
 	
 		Purpose:

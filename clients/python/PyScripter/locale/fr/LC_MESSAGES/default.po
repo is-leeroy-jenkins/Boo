@@ -4047,8 +4047,8 @@ msgstr "Messages"
 
 #. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
 #: frmMessages.dfm
-msgid "Message"
-msgstr "Message"
+msgid "GptMessage"
+msgstr "GptMessage"
 
 #. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
 #: frmMessages.dfm
@@ -5662,8 +5662,8 @@ msgstr "Tests des éléments"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..Label2..Caption
 #: frmUnitTests.dfm
-msgid "Error Message:"
-msgstr "Message d'erreur:"
+msgid "Error GptMessage:"
+msgstr "GptMessage d'erreur:"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..ModuleName..Caption
 #: frmUnitTests.dfm
@@ -5814,7 +5814,7 @@ msgstr ""
 #, object-pascal-format
 msgid ""
 "Error in copying file \"%s\" to \"%s\"\n"
-"Error Message: "
+"Error GptMessage: "
 msgstr ""
 
 #: cSSHSupport.pas
@@ -6050,7 +6050,7 @@ msgid ""
 msgstr ""
 
 #: dlgAboutPyScripter.pas
-msgid "Translation manager"
+msgid "TranslationRequest manager"
 msgstr "Responsable des traductions"
 
 #: dlgAboutPyScripter.pas

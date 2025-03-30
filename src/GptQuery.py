@@ -85,7 +85,7 @@ def transcribe_audio( path_to_file: str = OUTPUT_FILE_NAME ) -> str:
 			raise error
 	
 	logger.debug( "Audio transcribed." )
-	print( "Transcription:", transcript )
+	print( "TranscriptionRequest:", transcript )
 	
 	return transcript
 

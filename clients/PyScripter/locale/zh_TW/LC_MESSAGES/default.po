@@ -4006,7 +4006,7 @@ msgstr "資訊"
 
 #. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
 #: frmMessages.dfm
-msgid "Message"
+msgid "GptMessage"
 msgstr "資訊"
 
 #. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
@@ -5603,7 +5603,7 @@ msgstr "單元測試"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..Label2..Caption
 #: frmUnitTests.dfm
-msgid "Error Message:"
+msgid "Error GptMessage:"
 msgstr "錯誤資訊:"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..ModuleName..Caption
@@ -5755,7 +5755,7 @@ msgstr "運行設置"
 #, object-pascal-format
 msgid ""
 "Error in copying file \"%s\" to \"%s\"\n"
-"Error Message: "
+"Error GptMessage: "
 msgstr ""
 
 #: cSSHSupport.pas
@@ -5996,7 +5996,7 @@ msgstr ""
 "請將有關pyscripter的錯誤報告和問題提交到pyscripter@gmail.com."
 
 #: dlgAboutPyScripter.pas
-msgid "Translation manager"
+msgid "TranslationRequest manager"
 msgstr "翻譯管理器"
 
 #: dlgAboutPyScripter.pas
