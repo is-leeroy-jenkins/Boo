@@ -1244,3 +1244,13 @@ class AssistantMessage( GptMessage ):
 			Returns: list[ str ]
 		'''
 		return [ 'role', 'content', 'type' ]
+
+
+class ChatLog(  ):
+	'''
+	
+		Class used to encapsulate a collection of chat messages.
+	
+	'''
+	def __init__( self ):
+		self.messages = []
