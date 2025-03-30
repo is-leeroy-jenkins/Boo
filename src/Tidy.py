@@ -67,6 +67,17 @@ class Text:
 	
 	
 	def convert( self, input: str, output: str ):
+		'''
+			
+			Reads the unprocessed 'input' file and writes a cleaned 'output' file
+	
+			Args:
+				input (str): path to pre-processed file.
+				output (str): path to processed file.
+			Returns:
+				str: Cleaned and newlines text.
+				
+		'''
 		try:
 			if not os.path.exists( input ):
 				raise FileNotFoundError( f'Input file not found: {input}' )
@@ -100,38 +111,45 @@ class Text:
 	
 	
 	def clean_text( self, text: str ) -> str:
-		"""Clean the raw text extracted from a PDF for preprocessing.
-
-		This includes removing headers, footers, page numbers, hyphenations,
-		fixing line breaks, collapsing whitespace, and normalizing section markers.
-
-		Args:
-			text (str): Raw extracted text.
-
-		Returns:
-			str: Cleaned and normalized text.
-		"""
+		'''
+			
+			Clean the raw text extracted from a PDF for preprocessing.
+	
+			This includes removing headers, footers, page numbers, hyphenations,
+			fixing line breaks, collapsing whitespace, and normalizing section markers.
+	
+			Args:
+				text (str): Raw extracted text.
+	
+			Returns:
+				str: Cleaned and newlines text.
+		
+		'''
 		try:
-			# Step 1: Normalize newlines
-			text = raw_text.replace( '\r\n', '\n' ).replace( '\r', '\n' )
-			
-			# Step 2: Remove page headers and footers (Public Law-specific)
-			text = re.sub( r'PUBLIC LAW 118–32.*?\n', '', text, flags=re.IGNORECASE )
-			text = re.sub( r'\n\s*\d+\s*\n', '\n', text )
-			
-			# Step 3: Remove hyphenation at line breaks (e.g., "appropria-\ntion")
-			text = re.sub( r'(\w+)-\n(\w+)', r'\1\2', text )
-			
-			# Step 4: Merge broken lines where sentence continues
-			text = re.sub( r'(?<!\n)\n(?![\n])', ' ', text )
-			
-			# Step 5: Collapse excessive whitespace
-			text = re.sub( r'\s+', ' ', text )
-			
-			# Step 6: Normalize section markers (optional but useful)
-			text = re.sub( r'(SEC\.\s*\d+[A-Z]*\.)', r'\n\n\1', text )
-			
-			return text.strip( )
+			if text is None:
+				_msg = 'The input parameter "text" is required.'
+				raise Exception( _msg )
+			else:
+				# Step 1: Normalize newlines
+				self.newlines = text.replace( '\r\n', '\n' ).replace( '\r', '\n' )
+				
+				# Step 2: Remove page headers and footers (Public Law-specific)
+				self.headers = re.sub( r'PUBLIC.*?\n', '', self.newlines, flags=re.IGNORECASE )
+				self.footers = re.sub( r'\n\s*\d+\s*\n', '\n', self.headers )
+				
+				# Step 3: Remove hyphenation at line breaks (e.g., "appropria-\ntion")
+				self.hyphens = re.sub( r'(\w+)-\n(\w+)', r'\1\2', self.footers )
+				
+				# Step 4: Merge broken lines where sentence continues
+				self.merge = re.sub( r'(?<!\n)\n(?![\n])', ' ', self.hyphens )
+				
+				# Step 5: Collapse excessive whitespace
+				self.whitespace = re.sub( r'\s+', ' ', self.merge )
+				
+				# Step 6: Normalize section markers (optional but useful)
+				self.normalized = re.sub( r'(SEC\.\s*\d+[A-Z]*\.)', r'\n\n\1', self.whitespace )
+				
+				return self.normalized.strip( )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tidy'
@@ -151,29 +169,33 @@ class Text:
 			text (str): Raw extracted text.
 
 		Returns:
-			str: Cleaned and normalized text.
+			str: Cleaned and newlines text.
 		"""
 		try:
-			# Step 1: Normalize newlines
-			text = raw_text.replace( '\r\n', '\n' ).replace( '\r', '\n' )
-			
-			# Step 2: Remove page headers and footers (Public Law-specific)
-			text = re.sub( r'PUBLIC LAW 118–32.*?\n', '', text, flags=re.IGNORECASE )
-			text = re.sub( r'\n\s*\d+\s*\n', '\n', text )
-			
-			# Step 3: Remove hyphenation at line breaks (e.g., "appropria-\ntion")
-			text = re.sub( r'(\w+)-\n(\w+)', r'\1\2', text )
-			
-			# Step 4: Merge broken lines where sentence continues
-			text = re.sub( r'(?<!\n)\n(?![\n])', ' ', text )
-			
-			# Step 5: Collapse excessive whitespace
-			text = re.sub( r'\s+', ' ', text )
-			
-			# Step 6: Normalize section markers (optional but useful)
-			text = re.sub( r'(SEC\.\s*\d+[A-Z]*\.)', r'\n\n\1', text )
-			
-			return text.strip( )
+			if line is None:
+				_msg = 'The input parameter "line" is None'
+				raise Exception( _msg )
+			else:
+				# Step 1: Normalize newlines
+				self.newlines = line.replace( '\r\n', '\n' ).replace( '\r', '\n' )
+				
+				# Step 2: Remove page headers and footers (Public Law-specific)
+				self.headers = re.sub( r'PUBLIC.*?\n', '', self.newlines, flags=re.IGNORECASE )
+				self.footers = re.sub( r'\n\s*\d+\s*\n', '\n', self.headers )
+				
+				# Step 3: Remove hyphenation at line breaks (e.g., "appropria-\ntion")
+				self.hyphens = re.sub( r'(\w+)-\n(\w+)', r'\1\2', self.footers )
+				
+				# Step 4: Merge broken lines where sentence continues
+				self.merge = re.sub( r'(?<!\n)\n(?![\n])', ' ', self.hyphens )
+				
+				# Step 5: Collapse excessive whitespace
+				self.whitespace = re.sub( r'\s+', ' ', self.merge )
+				
+				# Step 6: Normalize section markers (optional but useful)
+				self.normalized = re.sub( r'(SEC\.\s*\d+[A-Z]*\.)', r'\n\n\1', self.whitespace )
+				
+				return self.normalized.strip( )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tidy'
@@ -185,49 +207,68 @@ class Text:
 	
 	def clean_string( self, text: str, stem='None' ) -> str:
 		'''
-			Function that cleans a string of text given as input.
-			:param text: str
-			:param stem: str
-			:return: str
+		
+			Clean the raw text extracted for preprocessing.
+			This includes removing headers, footers, page numbers, hyphenations,
+			fixing line breaks, collapsing whitespace, and normalizing section markers.
+	
+			Args:
+				text (str): Raw extracted text.
+	
+			Returns:
+				str: Cleaned and newlines text.
+				
 		'''
 		try:
-			final_string = ''
-			text = text.lower( )
-			text = re.sub( r'\n', '', text )
-			translator = str.maketrans( '', '', string.punctuation )
-			text = text.translate( translator )
-			text = text.split( )
-			text_filtered = [ re.sub( r'\w*\d\w*', '', w ) for w in text ]
-			
-			if stem == 'Stem':
-				stemmer = PorterStemmer( )
-				text_stemmed = [ stemmer.stem( y ) for y in text_filtered ]
-			elif stem == 'Lem':
-				lem = WordNetLemmatizer( )
-				text_stemmed = [ lem.lemmatize( y ) for y in text_filtered ]
-			elif stem == 'Spacy':
-				text_filtered = nlp( ' '.join( text_filtered ) )
-				text_stemmed = [ y.lemma_ for y in text_filtered ]
+			if text is None:
+				_msg = 'The input parameter "text" is required'
+				raise Exception( _msg )
 			else:
-				text_stemmed = text_filtered
-			
-			final_string = ' '.join( text_stemmed )
-			
-			return final_string
+				self.final_string = ''
+				self.lower = text.lower( )
+				self.lines = re.sub( r'\n', '', self.lower )
+				self.translator = str.maketrans( '', '', string.punctuation )
+				self.text = self.lines.translate( self.translator )
+				self.split = self.text.split( )
+				self.text_filtered = [ re.sub( r'\w*\d\w*', '', w ) for w in self.split ]
+				
+				if stem == 'Stem':
+					self.stemmer = PorterStemmer( )
+					self.text_stemmed = [ self.stemmer.stem( y ) for y in self.text_filtered ]
+				elif stem == 'Lem':
+					self.lemmer = WordNetLemmatizer( )
+					self.text_stemmed = [ self.lemmer.lemmatize( y ) for y in self.text_filtered ]
+				elif stem == 'Spacy':
+					self.text_filtered = nlp( ' '.join( self.text_filtered ) )
+					self.text_stemmed = [ y.lemma_ for y in self.text_filtered ]
+				else:
+					self.text_stemmed = self.text_filtered
+				
+				self.final_string = ' '.join( self.text_stemmed )
+				
+				return self.final_string
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tidy'
 			_exc.cause = 'Text'
-			_exc.method = 'clean_string( self, text: str, stem="None" ) -> str)'
+			_exc.method = 'clean_string( self, text: str, stem="None" ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
 	def tokenize( self, cleaned_line: str ) -> list:
 		'''
-			Function that tokenizes a line of text given as input.
-			:param cleaned_line: str
-			:return: list
+		
+			Clean the raw text extracted for preprocessing.
+			This includes removing headers, footers, page numbers, hyphenations,
+			fixing line breaks, collapsing whitespace, and normalizing section markers.
+	
+			Args:
+				cleaned_line: (str) - clean text.
+	
+			Returns:
+				list: Cleaned and newlines text.
+				
 		'''
 		try:
 			if cleaned_line is None:
@@ -253,11 +294,15 @@ class Text:
 		:return: list
 		'''
 		try:
-			soup = BeautifulSoup( html, 'html.parser' )
-			for data in soup( [ 'style', 'script', 'code', 'a' ] ):
-				data.decompose( )
-			
-			return ' '.join( soup.stripped_strings )
+			if html is None:
+				_msg = 'The input parameter "html" was None'
+				raise Exception( _msg )
+			else:
+				soup = BeautifulSoup( html, 'html.parser' )
+				for data in soup( [ 'style', 'script', 'code', 'a' ] ):
+					data.decompose( )
+				
+				return ' '.join( soup.stripped_strings )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tidy'

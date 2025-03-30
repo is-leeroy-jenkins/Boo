@@ -231,12 +231,12 @@ class Path( ):
 	def join( self, first: str, second: str ) -> str | None:
 		'''
 
-		Purpose: Joins two paths into one.
-
-		Parameters: 'first: str' representing the first path
-		that is joined to the second path 'second: str'.
-
-		Returns: a single string representing a path
+			Purpose: Joins two paths into one.
+	
+			Parameters: 'first: str' representing the first path
+			that is joined to the second path 'second: str'.
+	
+			Returns: a single string representing a path
 
 		'''
 		

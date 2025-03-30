@@ -253,14 +253,15 @@ class GptOptions( ):
 	'''
 	
 	
-	def __init__( self, number: int = 1, temperature: float = 0.80, top_p: float = 0.90,
-	              frequency: float = 0.00, presence: float = 0.00, store: bool = False,
-	              stream: bool = True, size: str = '1024X1024' ):
-		self.number = number
-		self.temperature = temperature
-		self.top_percent = top_p
-		self.frequency_penalty = frequency
-		self.presence_penalty = presence
+	def __init__( self, num: int = 1, temp: float = 0.80, top: float = 0.90,
+	              frequency: float = 0.00, max: int = 2048, presence: float = 0.00,
+	              store: bool = False, stream: bool = True, size: str = '1024X1024' ):
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.max_completion_tokens = max
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
 		self.store = store
 		self.stream = stream
 		self.size = size
@@ -275,7 +276,7 @@ class GptOptions( ):
 
 		'''
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
-		         'presence_penalty', 'store', 'stream', 'size',
+		         'presence_penalty', 'max_completion_tokens', 'store', 'stream', 'size',
 		         'get_voices', 'get_sizes',
 		         'get_file_formats', 'get_response_formats',
 		         'get_output_formats', 'get_input_formats',
@@ -355,6 +356,7 @@ class GptOptions( ):
 			'top_percent' + f' = {self.top_percent}' + new + \
 			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
 			'presence_penalty' + f' = {self.presence_penalty}' + new + \
+			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
 			'store' + f' = {self.store}' + new + \
 			'stream' + f' = {self.stream}' + new + \
 			'size' + f' = {self.size}' + new
@@ -368,15 +370,15 @@ class Payload( ):
 	'''
 	
 	
-	def __init__( self, model: str, number: int = 1, temperature: float = 0.80,
-	              top_p: float = 0.90, frequency: float = 0.00,
-	              presence: float = 0.00, store: bool = False,
-	              stream: bool = True, size: str = '1024X1024' ):
+	def __init__( self, number: int = 1, temperature: float = 0.80, top_p: float = 0.90,
+	              frequency: float = 0.00, max: int = 2048, presence: float = 0.00,
+	              store: bool = False, stream: bool = True, size: str = '1024X1024' ):
 		self.model = model
 		self.number = number
 		self.temperature = temperature
 		self.top_percent = top_p
 		self.frequency_penalty = frequency
+		self.max_completion_tokens = max
 		self.presence_penalty = presence
 		self.store = store
 		self.stream = stream
@@ -385,6 +387,7 @@ class Payload( ):
 		              'model': f'{self.model}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
+		              'max_completion_tokens': f'{self.max_completion_tokens}',
 		              'frequency_penalty': f'{self.frequency_penalty}',
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
@@ -399,7 +402,8 @@ class Payload( ):
 		'''
 		return [ 'number', 'model', 'temperature',
 		         'top_percent', 'frequency_penalty',
-		         'presence_penalty', 'store', 'stream',
+		         'max_completion_tokens', 'presence_penalty',
+		         'store', 'stream',
 		         'size', 'data', 'dump', 'parse' ]
 	
 	
@@ -416,6 +420,7 @@ class Payload( ):
 			'top_p' + f' = {self.top_percent}' + new + \
 			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
 			'presence_penalty' + f' = {self.presence_penalty}' + new + \
+			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
 			'store' + f' = {self.store}' + new + \
 			'stream' + f' = {self.stream}' + new + \
 			'size' + f' = {self.size}' + new
@@ -479,28 +484,27 @@ class Message( ):
 		return [ 'role', 'content', 'type' ]
 
 
-class TextGeneration( AI ):
+class GptRequest( AI ):
 	'''
-
-	Class provides the functionality fo the Text Generation API
-
+		Base class for GPT requests.
 	'''
 	
 	
-	def __init__( self ):
-		super( ).__init__( )
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
+	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+		super( ).__init__(  )
 		self.client = OpenAI( )
 		self.header = super( ).header
-		self.request_type = GptRequests.TextGeneration
-		self.endpoint = EndPoint( ).text_generation
+		self.api_key = super( ).api_key
 		self.model = 'gpt-4o'
-		self.number = 1;
-		self.temperature = 0.08
-		self.top_percent = 0.09
-		self.frequency_penalty = 0.0
-		self.presence_penalty = 0.0
-		self.store = False
-		self.stream = True
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
 		self.content = None
 		self.response = None
 		self.prompt = None
@@ -513,9 +517,38 @@ class TextGeneration( AI ):
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
-		              'endpoint': f'{self.endpoint}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
+
+
+class TextGeneration( GptRequest ):
+	'''
+
+	Class provides the functionality fo the Text Generation API
+
+	'''
+	
+	
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
+	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
+		self.client = super( ).client
+		self.header = super( ).header
+		self.request_type = GptRequests.TextGeneration
+		self.endpoint = EndPoint( ).text_generation
+		self.model = 'gpt-4o'
+		self.number = super( ).number
+		self.temperature = super( ).temperature
+		self.top_percent = super( ).top_percent
+		self.frequency_penalty = super( ).frequency_penalty
+		self.presence_penalty = super( ).presence_penalty
+		self.store = super( ).store
+		self.stream = super( ).stream
+		self.content = super( ).content
+		self.response = super( ).response
+		self.prompt = super( ).prompt
+		self.messages = super( ).messages
+		self.data = super( ).data
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -558,12 +591,12 @@ class TextGeneration( AI ):
 			completion = self.client.chat.completions.create(
 				model=self.model,
 				messages=self.messages,
-				temperature=0.08,
-				max_completion_tokens=2048,
-				top_p=0.09,
-				n=1,
-				frequency_penalty=0.00,
-				presence_penalty=0.00,
+				temperature=self.temperature,
+				max_completion_tokens=self.max_completion_tokens,
+				top_p=self.top_percent,
+				n=self.number,
+				frequency_penalty=self.frequency_penalty,
+				presence_penalty=self.presence_penalty,
 			)
 			
 			self.content = completion[ 'choices' ][ 0 ][ 'message' ][ 'content' ]
@@ -577,7 +610,7 @@ class TextGeneration( AI ):
 			error.show( )
 
 
-class ChatCompletion( ):
+class ChatCompletion( GptRequest ):
 	'''
 
 		Class provides the functionality fo the Completions API
@@ -585,27 +618,26 @@ class ChatCompletion( ):
 	'''
 	
 	
-	def __init__( self ):
-		self.header = Header( )
-		self.client = OpenAI( )
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
+	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True  ):
+		super().__init__( num, temp, top, freq, pres, max, store, stream )
+		self.header = super( ).header
+		self.client = super( ).client
 		self.request_type = GptRequests.ChatCompletions
 		self.endpoint = EndPoint( ).chat_completions
 		self.model = 'gpt-4o'
-		self.messages = [ ]
-		self.content = None
-		self.response = None
-		self.prompt = None
-		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
-		              'temperature': f'{self.temperature}',
-		              'top_percent': f'{self.top_percent}',
-		              'frequency_penalty': f'{self.frequency_penalty}',
-		              'presence_penalty': f'{self.presence_penalty}',
-		              'store': f'{self.store}',
-		              'stream': f'{self.stream}',
-		              'endpoint': f'{self.endpoint}',
-		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}' }
+		self.number = super( ).number
+		self.temperature = super( ).temperature
+		self.top_percent = super( ).top_percent
+		self.frequency_penalty = super( ).frequency_penalty
+		self.presence_penalty = super( ).presence_penalty
+		self.store = super( ).store
+		self.stream = super( ).stream
+		self.content = super( ).content
+		self.response = super( ).response
+		self.prompt = super( ).prompt
+		self.messages = super( ).messages
+		self.data = super( ).data
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -661,7 +693,7 @@ class ChatCompletion( ):
 			error.show( )
 
 
-class ImageGeneration( ):
+class ImageGeneration( GptRequest ):
 	'''
 		Class provides the functionality fo the Image Generation API
 	'''
