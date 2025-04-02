@@ -75,7 +75,7 @@ class Text:
 				input (str): path to pre-processed file.
 				output (str): path to processed file.
 			Returns:
-				str: Cleaned and newlines text.
+				str: Cleaned and normalized text.
 				
 		'''
 		try:
@@ -122,7 +122,7 @@ class Text:
 				text (str): Raw extracted text.
 	
 			Returns:
-				str: Cleaned and newlines text.
+				str: Cleaned and normalized text.
 		
 		'''
 		try:
@@ -130,11 +130,11 @@ class Text:
 				_msg = 'The input parameter "text" is required.'
 				raise Exception( _msg )
 			else:
-				# Step 1: Normalize newlines
-				self.newlines = text.replace( '\r\n', '\n' ).replace( '\r', '\n' )
+				# Step 1: Normalize normalized
+				self.normal = text.replace( '\r\n', '\n' ).replace( '\r', '\n' )
 				
 				# Step 2: Remove page headers and footers (Public Law-specific)
-				self.headers = re.sub( r'PUBLIC.*?\n', '', self.newlines, flags=re.IGNORECASE )
+				self.headers = re.sub( r'PUBLIC.*?\n', '', self.normal, flags=re.IGNORECASE )
 				self.footers = re.sub( r'\n\s*\d+\s*\n', '\n', self.headers )
 				
 				# Step 3: Remove hyphenation at line breaks (e.g., "appropria-\ntion")
@@ -146,10 +146,7 @@ class Text:
 				# Step 5: Collapse excessive whitespace
 				self.whitespace = re.sub( r'\s+', ' ', self.merge )
 				
-				# Step 6: Normalize section markers (optional but useful)
-				self.normalized = re.sub( r'(SEC\.\s*\d+[A-Z]*\.)', r'\n\n\1', self.whitespace )
-				
-				return self.normalized.strip( )
+				return self.whitespace.strip( )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tidy'
@@ -169,18 +166,18 @@ class Text:
 			text (str): Raw extracted text.
 
 		Returns:
-			str: Cleaned and newlines text.
+			str: Cleaned and normalized text.
 		"""
 		try:
 			if line is None:
 				_msg = 'The input parameter "line" is None'
 				raise Exception( _msg )
 			else:
-				# Step 1: Normalize newlines
-				self.newlines = line.replace( '\r\n', '\n' ).replace( '\r', '\n' )
+				# Step 1: Normalize normalized
+				self.normalized = line.replace( '\r\n', '\n' ).replace( '\r', '\n' )
 				
 				# Step 2: Remove page headers and footers (Public Law-specific)
-				self.headers = re.sub( r'PUBLIC.*?\n', '', self.newlines, flags=re.IGNORECASE )
+				self.headers = re.sub( r'PUBLIC.*?\n', '', self.normalized, flags=re.IGNORECASE )
 				self.footers = re.sub( r'\n\s*\d+\s*\n', '\n', self.headers )
 				
 				# Step 3: Remove hyphenation at line breaks (e.g., "appropria-\ntion")
@@ -216,7 +213,7 @@ class Text:
 				text (str): Raw extracted text.
 	
 			Returns:
-				str: Cleaned and newlines text.
+				str: Cleaned and normalized text.
 				
 		'''
 		try:
@@ -267,7 +264,7 @@ class Text:
 				cleaned_line: (str) - clean text.
 	
 			Returns:
-				list: Cleaned and newlines text.
+				list: Cleaned and normalized text.
 				
 		'''
 		try:
@@ -325,13 +322,14 @@ class Token:
 	
 	
 	def load_file( self, path: str ) -> str:
-		"""Load the content of a text file.
-
-		Args:
-			path (str): The path to the text file.
-
-		Returns:
-			str: The contents of the file as a string.
+		"""
+			Load the content of a text file.
+	
+			Args:
+				path (str): The path to the text file.
+	
+			Returns:
+				str: The contents of the file as a string.
 		"""
 		try:
 			if path is None:
@@ -349,15 +347,18 @@ class Token:
 	
 	
 	def parse_hierarchy( self, text: str ) -> list:
-		"""Parse the cleaned text into a structured hierarchy of sections, subsections,
-		and paragraphs.
-	
-		Args:
-			text (str): Cleaned legal or structured document text.
-	
-		Returns:
-			list: A list of dictionaries, each representing a structural unit with section markers
-			and text.
+		"""
+		
+			Parse the cleaned text into a structured hierarchy of sections, subsections,
+			and paragraphs.
+		
+			Args:
+				text (str): Cleaned legal or structured document text.
+		
+			Returns:
+				list: A list of dictionaries, each representing a structural unit with section markers
+				and text.
+			
 		"""
 		try:
 			if text is None:
@@ -441,13 +442,15 @@ class Token:
 
 def tokenize( self, text: str ) -> list:
 	"""
-		Tokenize a block of text using the OpenAI model tokenizer.
+		Purpose:
+			Tokenize a block of text using the OpenAI model tokenizer.
 	
 		Args:
 			text (str): Text to tokenize.
 	
 		Returns:
 			list: A list of token IDs.
+			
 	"""
 	try:
 		if text is None:
@@ -464,16 +467,18 @@ def tokenize( self, text: str ) -> list:
 		_err.show( )
 
 
-def chunk_tokens( self, tokens: list, max_tokens: int = 800, overlap: int = 50 ) -> list:
-	"""Split a list of tokens into overlapping chunks based on token limits.
+def chunk_tokens( self, tokens: list, max_tokens: int=800, overlap: int=50 ) -> list:
+	"""
+		Purpose:
+			Split a list of tokens into overlapping chunks based on token limits.
 
-	Args:
-		tokens (list): Tokenized input text.
-		max_tokens (int): Max token size per chunk.
-		overlap (int): Overlapping token count between chunks.
-
-	Returns:
-		list: A list of token chunks.
+		Args:
+			tokens (list): Tokenized input text.
+			max_tokens (int): Max token size per chunk.
+			overlap (int): Overlapping token count between chunks.
+	
+		Returns:
+			list: A list of token chunks.
 	"""
 	try:
 		if tokens is None:
@@ -501,13 +506,16 @@ def chunk_tokens( self, tokens: list, max_tokens: int = 800, overlap: int = 50 )
 
 def decode_tokens( self, tokens: list ) -> str:
 	"""
-		Decode a list of token IDs back to string text.
+		
+		Purpose:
+			Decode a list of token IDs back to string text.
 	
 		Args:
 			tokens (list): A list of token IDs.
 	
 		Returns:
 			str: Decoded string.
+			
 	"""
 	try:
 		if tokens is None:

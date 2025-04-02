@@ -19,3 +19,4 @@ loguru
 statsmodels
 dotenv
 python-dotenv
+openai

@@ -277,11 +277,11 @@ class GptRequests( Enum ):
 	'''
 	TextGeneration = auto( )
 	ImageGeneration = auto( )
-	Translations = auto( )
-	Transcriptions = auto( )
 	ChatCompletion = auto( )
 	Assistants = auto( )
 	SpeechGeneration = auto( )
+	Translations = auto( )
+	Transcriptions = auto( )
 	FineTuning = auto( )
 	Files = auto( )
 	Uploads = auto( )
@@ -293,14 +293,16 @@ class GptParameters( Enum ):
 	'''
 	Type classifying hyper-parameters
 	'''
-	Number = auto( ),
-	TopPercent = auto( ),
-	Temperature = auto( ),
-	MaxCompletionTokens = auto( ),
-	Store = auto( ),
-	Stream = auto( ),
-	FrequencyPenalty = auto( ),
-	PresencePenalty = auto( ),
+	Number = auto( )
+	TopPercent = auto( )
+	Temperature = auto( )
+	TopLogProbs = auto( )
+	MaxCompletionTokens = auto( )
+	Store = auto( )
+	Stream = auto( )
+	Speed = auto( )
+	FrequencyPenalty = auto( )
+	PresencePenalty = auto( )
 	ResponseFormat = auto( )
 
 
@@ -308,13 +310,13 @@ class GptLanguages( Enum ):
 	'''
 	Type categorizing the languages used in the editor
 	'''
-	TXT = auto( ),
-	SQL = auto( ),
-	CS = auto( ),
-	PY = auto( ),
-	JS = auto( ),
-	C = auto( ),
-	CPP = auto( ),
+	TXT = auto( )
+	SQL = auto( )
+	CS = auto( )
+	PY = auto( )
+	JS = auto( )
+	C = auto( )
+	CPP = auto( )
 	VBA = auto( )
 
 
@@ -322,10 +324,11 @@ class GptRoles( Enum ):
 	'''
 	Type classifyig the various content roles
 	'''
-	System = auto( ),
-	User = auto( ),
+	System = auto( )
+	User = auto( )
 	Assistant = auto( )
 	Developer = auto( )
+	Tool = auto( )
 
 
 class Source( Enum ):

@@ -42,6 +42,7 @@
   ******************************************************************************************
   '''
 import os
+import datetime as dt
 from openai import OpenAI
 import requests
 from pygments.lexers.csound import newline
@@ -164,7 +165,7 @@ class Models( ):
 		                           'gpt-4o-audio-preview-2024-12-17',
 		                           'gpt-4o-audio-preview-2024-10-01',
 		                           'gpt-4o-mini-audio-preview-2024-12-17' ]
-		self.transcription = [ 'whisper-1' ]
+		self.transcription = [ 'whisper-1', 'gpt-4o-mini-transcribe', ' gpt-4o-transcribe' ]
 		self.translation = [ 'whisper-1', 'text-davinci-003',
 		                     'gpt-4-0613', 'gpt-4-0314',
 		                     'gpt-4-turbo-2024-04-09' ]
