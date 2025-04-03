@@ -15,7 +15,7 @@ msgstr ""
 "Last-Translator: Kiriakos Vlahos <pyscripter@gmail.com>, 2021\n"
 "Language-Team: Persian (https://www.transifex.com/pyscripter/teams/116142/fa/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: documents/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fa\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -1134,7 +1134,7 @@ msgstr "کلیک راست ماوس مکان نما را جا به جا می کن
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckDragAndDropEditing....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Allows you to select a block of text and drag it within the document to "
+"Allows you to select a block of documents and drag it within the document to "
 "another location"
 msgstr ""
 "به شما اجازه می دهد تا تکّه ای از متن را علامت بزنید و آن را داخل سند به "
@@ -3064,7 +3064,7 @@ msgstr "برجسته کردن متن مورد جستجو"
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Hint
 #: dmCommands.dfm
-msgid "Highlight the search text in the current editor"
+msgid "Highlight the search documents in the current editor"
 msgstr "برجسته کردن متن مورد جستجو در ویرایشگر کنونی"
 
 #. CommandsDataModule..actlMain..actEditWordWrap..Caption
@@ -3889,7 +3889,7 @@ msgstr "نمایش بافت متنی همتا"
 
 #. FindResultsWindow..Actions..actViewShowContext..Hint
 #: frmFindResults.dfm
-msgid "View/Hide Context of found text"
+msgid "View/Hide Context of found documents"
 msgstr "نمایش/نهفتن بافت متن پیدا شده"
 
 #. FindResultsWindow..Actions..actFileSave..Caption
@@ -4605,7 +4605,7 @@ msgstr "حسّاسیّت خودکار به حروف بزرگ و کوچک"
 
 #. PyIDEMainForm..TBXDockTop..FindToolbar..tbiSearchOptions..tbiAutoCaseSensitive..Hint
 #: frmPyIDEMain.dfm
-msgid "Case Sensitive when search text contains upper case characters"
+msgid "Case Sensitive when search documents contains upper case characters"
 msgstr "در متن های دارای حروف بزرگ هنگام جستجو به بزرگی و کوچکی حسّاس باشد"
 
 #. PyIDEMainForm..TBXDockTop..FindToolbar..tbiSearchOptions..tbiCaseSensitive..Caption
@@ -5452,7 +5452,7 @@ msgstr "رونوشت ( بدون نشانگر خط فرمان)"
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Hint
 #: frmPythonII.dfm
-msgid "Copy selected text without the interpreter prompts"
+msgid "Copy selected documents without the interpreter prompts"
 msgstr "رونوشت متن منتخب بدون نشانگر مفسّر"
 
 #. PythonIIForm..InterpreterActionList..actPasteAndExecute..Caption
@@ -5462,7 +5462,7 @@ msgstr "چسباندن و اجرا"
 
 #. PythonIIForm..InterpreterActionList..actPasteAndExecute..Hint
 #: frmPythonII.dfm
-msgid "Paste clipboard text with added interpreter prompts"
+msgid "Paste clipboard documents with added interpreter prompts"
 msgstr "چسباندن متن به همراه نشانه های خط فرمان مفسّر"
 
 #. RegExpTesterWindow..Caption
@@ -6243,7 +6243,7 @@ msgid "File explorer filter"
 msgstr "سرند کاوشگر فایل"
 
 #: dmCommands.pas
-msgid "text file"
+msgid "documents file"
 msgstr "فایل متنی"
 
 #: dmCommands.pas
@@ -6251,7 +6251,7 @@ msgid "Editor"
 msgstr "ویرایشگر"
 
 #: dmCommands.pas
-msgid "Search text at caret"
+msgid "Search documents at caret"
 msgstr "جستجوی متن از محل مکان نما"
 
 #: dmCommands.pas
@@ -7345,7 +7345,7 @@ msgstr ""
 #: StringResources.pas
 msgid ""
 "You are now in post-mortem analysis mode.\n"
-"You can examine the Call Stack, Variables and Watches windows, evaluate expressions etc.\n"
+"You can examine the Call Stack, Variables and Watches windows, evaluate expressions resources.\n"
 "To exit the post-mortem analysis select the 'Abort Debugging' command."
 msgstr ""
 "شما اکنون در حالت تحلیل کالبد شکافی هستید.\n"
@@ -8159,7 +8159,7 @@ msgstr "پیمانه"
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"The text in the \"%s\" file has changed.\n"
+"The documents in the \"%s\" file has changed.\n"
 "\n"
 "Do you want to save the modifications?"
 msgstr ""
@@ -8565,7 +8565,7 @@ msgstr "برچسب"
 msgid "Anchor"
 msgstr "مهار"
 
-#. Python Paths etc.
+#. Python Paths resources.
 #: uParams.pas
 msgid "Directory of active Python version"
 msgstr "شاخه ی نگارش فعّال پایتون"
@@ -8609,7 +8609,7 @@ msgstr "شاخه ی رومیزی"
 
 #. register parameters
 #: uParams.pas
-msgid "Clipboard as text"
+msgid "Clipboard as documents"
 msgstr "حافظه ی بریده دان به عنوان متن"
 
 #: uParams.pas
@@ -8682,7 +8682,7 @@ msgid "File type"
 msgstr "نوع فایل"
 
 #: uParams.pas
-msgid "Contents of text file"
+msgid "Contents of documents file"
 msgstr "محتواهای فایل متنی"
 
 #: uParams.pas
@@ -8786,7 +8786,7 @@ msgid "Current line number in the active document"
 msgstr "شماره ی خطّ حاضر در سند فعّال"
 
 #: uParams.pas
-msgid "Selected text in the active document"
+msgid "Selected documents in the active document"
 msgstr "متن انتخاب شده در سند فعال"
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..tabToolbars..Caption

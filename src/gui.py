@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                GUI.py
+      Filename:                gui.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="GUI.py" company="Terry D. Eppler">
+  <copyright file="gui.py" company="Terry D. Eppler">
 
      This is a Federal Budget, Finance, and Accounting application.
      Copyright ©  2024  Terry Eppler
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    GUI.py
+    gui.py
   </summary>
   ******************************************************************************************
   '''
@@ -73,7 +73,7 @@ def create_button(
 	Args:
 		key (str): The key of the button.
 		tooltip (str): The tooltip of the button.
-		text (str, optional): The text of the button. Defaults to "".
+		text (str, optional): The documents of the button. Defaults to "".
 		image_data (str, optional): The image data of the button. Defaults to None.
 		subsample (int, optional): The subsample of the image. Defaults to 1.
 		standard (bool, optional): Whether to use the standard theme. Defaults to False.
@@ -107,16 +107,16 @@ def create_text_area(
 	text_color: str = None,
 ) -> sg.Text:
 	"""
-	Create a text area element with the given parameters.
+	Create a documents area element with the given parameters.
 
 	Args:
-		text (str, optional): The text of the text area. Defaults to "".
-		size (Optional[Tuple[int, int]], optional): The size of the text area. Defaults to None.
-		key (str, optional): The key of the text area. Defaults to "".
-		text_color (str, optional): The color of the text. Defaults to None.
+		text (str, optional): The documents of the documents area. Defaults to "".
+		size (Optional[Tuple[int, int]], optional): The size of the documents area. Defaults to None.
+		key (str, optional): The key of the documents area. Defaults to "".
+		text_color (str, optional): The color of the documents. Defaults to None.
 
 	Returns:
-		sg.Text: The text area element.
+		sg.Text: The documents area element.
 	"""
 	return sg.Text(
 		text=text,
@@ -131,13 +131,13 @@ def create_text_area(
 
 def name( name: str ) -> sg.Text:
 	"""
-	Create a text element with spaces to the right.
+	Create a documents element with spaces to the right.
 
 	Args:
-		name (str): The name of the text element.
+		name (str): The name of the documents element.
 
 	Returns:
-		sg.Text: The text element.
+		sg.Text: The documents element.
 	"""
 	spaces: int = 15 - len( name ) - 2
 	return sg.Text(

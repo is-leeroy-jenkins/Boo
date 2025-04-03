@@ -16,7 +16,7 @@ msgstr ""
 "Last-Translator: Kiriakos Vlahos <pyscripter@gmail.com>, 2019\n"
 "Language-Team: Greek (https://www.transifex.com/pyscripter/teams/116142/el/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: documents/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: el\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1135,7 +1135,7 @@ msgstr "Δεξί πλήκτρο μετακινεί δρομέα"
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckDragAndDropEditing....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Allows you to select a block of text and drag it within the document to "
+"Allows you to select a block of documents and drag it within the document to "
 "another location"
 msgstr "Επιτρέπεται σύρσιμο και εναπόθεση επιλεγμένου κειμένου"
 
@@ -3064,7 +3064,7 @@ msgstr "&Τονισμός Ταιριασμάτων "
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Hint
 #: dmCommands.dfm
-msgid "Highlight the search text in the current editor"
+msgid "Highlight the search documents in the current editor"
 msgstr "Τονισμός των ταιριασμάτων στο ενεργό αρχείο"
 
 #. CommandsDataModule..actlMain..actEditWordWrap..Caption
@@ -3888,7 +3888,7 @@ msgstr "Εμφάνιση Συμφραζομένων"
 
 #. FindResultsWindow..Actions..actViewShowContext..Hint
 #: frmFindResults.dfm
-msgid "View/Hide Context of found text"
+msgid "View/Hide Context of found documents"
 msgstr "Εμφάνιση/Απόκρυψη των περιφραζομένων του ευρεθέντος κειμένου"
 
 #. FindResultsWindow..Actions..actFileSave..Caption
@@ -4610,7 +4610,7 @@ msgstr "& Αυτόματο Ταίριασμα Πεζών-Κεφαλαίων"
 
 #. PyIDEMainForm..TBXDockTop..FindToolbar..tbiSearchOptions..tbiAutoCaseSensitive..Hint
 #: frmPyIDEMain.dfm
-msgid "Case Sensitive when search text contains upper case characters"
+msgid "Case Sensitive when search documents contains upper case characters"
 msgstr ""
 
 #. PyIDEMainForm..TBXDockTop..FindToolbar..tbiSearchOptions..tbiCaseSensitive..Caption
@@ -5454,7 +5454,7 @@ msgstr "Αντιγραφή (&Χωρίς Προτροπές)"
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Hint
 #: frmPythonII.dfm
-msgid "Copy selected text without the interpreter prompts"
+msgid "Copy selected documents without the interpreter prompts"
 msgstr "Αντιγραφή επιλεγμένου κειμένου με τις προτροπές του Διερμηνευτή"
 
 #. PythonIIForm..InterpreterActionList..actPasteAndExecute..Caption
@@ -5464,7 +5464,7 @@ msgstr "Επικόλληση && Ε&κτέλεση"
 
 #. PythonIIForm..InterpreterActionList..actPasteAndExecute..Hint
 #: frmPythonII.dfm
-msgid "Paste clipboard text with added interpreter prompts"
+msgid "Paste clipboard documents with added interpreter prompts"
 msgstr ""
 "Επικόλληση κειμένου του Προχείρου με πρόσθεση προτροπών του Διερμηνευτή"
 
@@ -6232,7 +6232,7 @@ msgid "File explorer filter"
 msgstr "Φίλτρο Εξερευνητή Αρχείων"
 
 #: dmCommands.pas
-msgid "text file"
+msgid "documents file"
 msgstr ""
 
 #: dmCommands.pas
@@ -6240,7 +6240,7 @@ msgid "Editor"
 msgstr "Επεξεργαστής κειμένου"
 
 #: dmCommands.pas
-msgid "Search text at caret"
+msgid "Search documents at caret"
 msgstr "Αναζήτηση λέξης δρομέα"
 
 #: dmCommands.pas
@@ -7327,7 +7327,7 @@ msgstr ""
 #: StringResources.pas
 msgid ""
 "You are now in post-mortem analysis mode.\n"
-"You can examine the Call Stack, Variables and Watches windows, evaluate expressions etc.\n"
+"You can examine the Call Stack, Variables and Watches windows, evaluate expressions resources.\n"
 "To exit the post-mortem analysis select the 'Abort Debugging' command."
 msgstr ""
 
@@ -8116,7 +8116,7 @@ msgstr ""
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"The text in the \"%s\" file has changed.\n"
+"The documents in the \"%s\" file has changed.\n"
 "\n"
 "Do you want to save the modifications?"
 msgstr ""
@@ -8507,7 +8507,7 @@ msgstr ""
 msgid "Anchor"
 msgstr ""
 
-#. Python Paths etc.
+#. Python Paths resources.
 #: uParams.pas
 msgid "Directory of active Python version"
 msgstr ""
@@ -8551,7 +8551,7 @@ msgstr ""
 
 #. register parameters
 #: uParams.pas
-msgid "Clipboard as text"
+msgid "Clipboard as documents"
 msgstr ""
 
 #: uParams.pas
@@ -8624,7 +8624,7 @@ msgid "File type"
 msgstr ""
 
 #: uParams.pas
-msgid "Contents of text file"
+msgid "Contents of documents file"
 msgstr ""
 
 #: uParams.pas
@@ -8728,7 +8728,7 @@ msgid "Current line number in the active document"
 msgstr ""
 
 #: uParams.pas
-msgid "Selected text in the active document"
+msgid "Selected documents in the active document"
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..tabToolbars..Caption

@@ -19,7 +19,7 @@ msgstr ""
 "Last-Translator: Vincent CARDON <vcardon@tranquil.it>, 2019\n"
 "Language-Team: French (https://www.transifex.com/pyscripter/teams/116142/fr/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: documents/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -1142,10 +1142,10 @@ msgstr "Le clic droit déplace le curseur"
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckDragAndDropEditing....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Allows you to select a block of text and drag it within the document to "
+"Allows you to select a block of documents and drag it within the document to "
 "another location"
 msgstr ""
-"Autoriser la sélection d'un bloc de text ou d'un glissement de l'intérieur "
+"Autoriser la sélection d'un bloc de documents ou d'un glissement de l'intérieur "
 "du document à un autre endroit"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckDragAndDropEditing..Caption
@@ -3084,7 +3084,7 @@ msgstr "&Mettre en surbrillance le texte recherché"
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Hint
 #: dmCommands.dfm
-msgid "Highlight the search text in the current editor"
+msgid "Highlight the search documents in the current editor"
 msgstr "Mettre en surbrillance le texte recherché dans l'éditeur actuel."
 
 #. CommandsDataModule..actlMain..actEditWordWrap..Caption
@@ -3907,7 +3907,7 @@ msgstr "Afficher les correspondances"
 
 #. FindResultsWindow..Actions..actViewShowContext..Hint
 #: frmFindResults.dfm
-msgid "View/Hide Context of found text"
+msgid "View/Hide Context of found documents"
 msgstr "Afficher/Cacher le contexte du texte trouvé"
 
 #. FindResultsWindow..Actions..actFileSave..Caption
@@ -4627,7 +4627,7 @@ msgstr "Sensible à la casse &Automatique"
 
 #. PyIDEMainForm..TBXDockTop..FindToolbar..tbiSearchOptions..tbiAutoCaseSensitive..Hint
 #: frmPyIDEMain.dfm
-msgid "Case Sensitive when search text contains upper case characters"
+msgid "Case Sensitive when search documents contains upper case characters"
 msgstr "Sensible à la casse si la recherche contient des majuscules"
 
 #. PyIDEMainForm..TBXDockTop..FindToolbar..tbiSearchOptions..tbiCaseSensitive..Caption
@@ -5473,7 +5473,7 @@ msgstr "Copier (&Sans confirmations)"
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Hint
 #: frmPythonII.dfm
-msgid "Copy selected text without the interpreter prompts"
+msgid "Copy selected documents without the interpreter prompts"
 msgstr "Copier le texte sélectionné sans demandes de confirmation"
 
 #. PythonIIForm..InterpreterActionList..actPasteAndExecute..Caption
@@ -5483,7 +5483,7 @@ msgstr "Coller && E&xécuter"
 
 #. PythonIIForm..InterpreterActionList..actPasteAndExecute..Hint
 #: frmPythonII.dfm
-msgid "Paste clipboard text with added interpreter prompts"
+msgid "Paste clipboard documents with added interpreter prompts"
 msgstr ""
 "Coller le texte du presse-papiers avec les demandes de confirmation d'ajout "
 "de la console"
@@ -6259,7 +6259,7 @@ msgid "File explorer filter"
 msgstr "Filtres de l'explorateur de fichiers"
 
 #: dmCommands.pas
-msgid "text file"
+msgid "documents file"
 msgstr "fichier texte"
 
 #: dmCommands.pas
@@ -6267,7 +6267,7 @@ msgid "Editor"
 msgstr "Editeur"
 
 #: dmCommands.pas
-msgid "Search text at caret"
+msgid "Search documents at caret"
 msgstr ""
 
 #: dmCommands.pas
@@ -7356,7 +7356,7 @@ msgstr ""
 #: StringResources.pas
 msgid ""
 "You are now in post-mortem analysis mode.\n"
-"You can examine the Call Stack, Variables and Watches windows, evaluate expressions etc.\n"
+"You can examine the Call Stack, Variables and Watches windows, evaluate expressions resources.\n"
 "To exit the post-mortem analysis select the 'Abort Debugging' command."
 msgstr ""
 
@@ -8141,7 +8141,7 @@ msgstr "module"
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"The text in the \"%s\" file has changed.\n"
+"The documents in the \"%s\" file has changed.\n"
 "\n"
 "Do you want to save the modifications?"
 msgstr ""
@@ -8532,7 +8532,7 @@ msgstr ""
 msgid "Anchor"
 msgstr ""
 
-#. Python Paths etc.
+#. Python Paths resources.
 #: uParams.pas
 msgid "Directory of active Python version"
 msgstr ""
@@ -8576,7 +8576,7 @@ msgstr ""
 
 #. register parameters
 #: uParams.pas
-msgid "Clipboard as text"
+msgid "Clipboard as documents"
 msgstr ""
 
 #: uParams.pas
@@ -8649,7 +8649,7 @@ msgid "File type"
 msgstr ""
 
 #: uParams.pas
-msgid "Contents of text file"
+msgid "Contents of documents file"
 msgstr ""
 
 #: uParams.pas
@@ -8753,7 +8753,7 @@ msgid "Current line number in the active document"
 msgstr ""
 
 #: uParams.pas
-msgid "Selected text in the active document"
+msgid "Selected documents in the active document"
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..tabToolbars..Caption

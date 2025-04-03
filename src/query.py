@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                GptQuery.py
+      Filename:                query.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="GptQuery.py" company="Terry D. Eppler">
+  <copyright file="query.py" company="Terry D. Eppler">
 
      This is a Federal Budget, Finance, and Accounting application.
      Copyright ©  2024  Terry Eppler
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    GptQuery.py
+    query.py
   </summary>
   ******************************************************************************************
   '''
@@ -78,7 +78,7 @@ def transcribe_audio( path_to_file: str = OUTPUT_FILE_NAME ) -> str:
 	with open( path_to_file, "rb" ) as audio_file:
 		try:
 			transcript: str = client.audio.transcriptions.create(
-				model="whisper-1", file=audio_file, response_format="text"
+				model="whisper-1", file=audio_file, response_format="documents"
 			)
 		except Exception as error:
 			logger.error( f"Can't transcribe audio: {error}" )

@@ -49,7 +49,7 @@ from nltk.stem import PorterStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 import spacy
-from Booger import Error, ErrorDialog
+from booger import Error, ErrorDialog
 from pathlib import Path
 import tiktoken
 import string
@@ -57,7 +57,7 @@ import string
 
 class Text:
 	'''
-		Class providing text preprocessing functionality
+		Class providing documents preprocessing functionality
 		@params: tokenize: bool
 	'''
 	
@@ -75,7 +75,7 @@ class Text:
 				input (str): path to pre-processed file.
 				output (str): path to processed file.
 			Returns:
-				str: Cleaned and normalized text.
+				str: Cleaned and normalized documents.
 				
 		'''
 		try:
@@ -113,21 +113,21 @@ class Text:
 	def clean_text( self, text: str ) -> str:
 		'''
 			
-			Clean the raw text extracted from a PDF for preprocessing.
+			Clean the raw documents extracted from a PDF for preprocessing.
 	
 			This includes removing headers, footers, page numbers, hyphenations,
 			fixing line breaks, collapsing whitespace, and normalizing section markers.
 	
 			Args:
-				text (str): Raw extracted text.
+				text (str): Raw extracted documents.
 	
 			Returns:
-				str: Cleaned and normalized text.
+				str: Cleaned and normalized documents.
 		
 		'''
 		try:
 			if text is None:
-				_msg = 'The input parameter "text" is required.'
+				_msg = 'The input parameter "documents" is required.'
 				raise Exception( _msg )
 			else:
 				# Step 1: Normalize normalized
@@ -157,16 +157,16 @@ class Text:
 	
 	
 	def clean_line( self, line: str ) -> str:
-		"""Clean the raw text extracted from a PDF for preprocessing.
+		"""Clean the raw documents extracted from a PDF for preprocessing.
 
 		This includes removing headers, footers, page numbers, hyphenations,
 		fixing line breaks, collapsing whitespace, and normalizing section markers.
 
 		Args:
-			text (str): Raw extracted text.
+			documents (str): Raw extracted documents.
 
 		Returns:
-			str: Cleaned and normalized text.
+			str: Cleaned and normalized documents.
 		"""
 		try:
 			if line is None:
@@ -205,20 +205,20 @@ class Text:
 	def clean_string( self, text: str, stem='None' ) -> str:
 		'''
 		
-			Clean the raw text extracted for preprocessing.
+			Clean the raw documents extracted for preprocessing.
 			This includes removing headers, footers, page numbers, hyphenations,
 			fixing line breaks, collapsing whitespace, and normalizing section markers.
 	
 			Args:
-				text (str): Raw extracted text.
+				text (str): Raw extracted documents.
 	
 			Returns:
-				str: Cleaned and normalized text.
+				str: Cleaned and normalized documents.
 				
 		'''
 		try:
 			if text is None:
-				_msg = 'The input parameter "text" is required'
+				_msg = 'The input parameter "documents" is required'
 				raise Exception( _msg )
 			else:
 				self.final_string = ''
@@ -248,7 +248,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tidy'
 			_exc.cause = 'Text'
-			_exc.method = 'clean_string( self, text: str, stem="None" ) -> str'
+			_exc.method = 'clean_string( self, documents: str, stem="None" ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -256,15 +256,15 @@ class Text:
 	def tokenize( self, cleaned_line: str ) -> list:
 		'''
 		
-			Clean the raw text extracted for preprocessing.
+			Clean the raw documents extracted for preprocessing.
 			This includes removing headers, footers, page numbers, hyphenations,
 			fixing line breaks, collapsing whitespace, and normalizing section markers.
 	
 			Args:
-				cleaned_line: (str) - clean text.
+				cleaned_line: (str) - clean documents.
 	
 			Returns:
-				list: Cleaned and normalized text.
+				list: Cleaned and normalized documents.
 				
 		'''
 		try:
@@ -311,7 +311,7 @@ class Text:
 
 class Token:
 	
-	def __init__( self, model: str = "text-embedding-ada-002" ):
+	def __init__( self, model: str = "documents-embedding-ada-002" ):
 		"""Initialize the PreTokenizer with a specific OpenAI model.
 
 		Args:
@@ -323,17 +323,17 @@ class Token:
 	
 	def load_file( self, path: str ) -> str:
 		"""
-			Load the content of a text file.
+			Load the content of a documents file.
 	
 			Args:
-				path (str): The path to the text file.
+				path (str): The path to the documents file.
 	
 			Returns:
 				str: The contents of the file as a string.
 		"""
 		try:
 			if path is None:
-				_msg = 'Input parameter "text" is required.'
+				_msg = 'Input parameter "documents" is required.'
 				raise Exception( _msg )
 			else:
 				return Path( path ).read_text( encoding='utf-8' )
@@ -349,20 +349,20 @@ class Token:
 	def parse_hierarchy( self, text: str ) -> list:
 		"""
 		
-			Parse the cleaned text into a structured hierarchy of sections, subsections,
+			Parse the cleaned documents into a structured hierarchy of sections, subsections,
 			and paragraphs.
 		
 			Args:
-				text (str): Cleaned legal or structured document text.
+				text (str): Cleaned legal or structured document documents.
 		
 			Returns:
 				list: A list of dictionaries, each representing a structural unit with section markers
-				and text.
+				and documents.
 			
 		"""
 		try:
 			if text is None:
-				_msg = 'Input parameter "text" is required.'
+				_msg = 'Input parameter "documents" is required.'
 				raise Exception( _msg )
 			else:
 				self.section_pattern = re.compile( r"(SEC\.\s*\d+[A-Z]*\.)" )
@@ -385,7 +385,7 @@ class Token:
 								"section": self.current_section,
 								"subsection": self.current_subsection,
 								"paragraph": self.current_paragraph,
-								"text": self.buffer.strip( )
+								"documents": self.buffer.strip( )
 							} )
 							self.buffer = ""
 						self.current_section = sec_match.group( 1 )
@@ -400,7 +400,7 @@ class Token:
 								"section": self.current_section,
 								"subsection": self.current_subsection,
 								"paragraph": self.current_paragraph,
-								"text": self.buffer.strip( )
+								"documents": self.buffer.strip( )
 							} )
 							self.buffer = ""
 						self.current_subsection = sub_match.group( 0 )
@@ -414,7 +414,7 @@ class Token:
 								"section": self.current_section,
 								"subsection": self.current_subsection,
 								"paragraph": self.current_paragraph,
-								"text": self.buffer.strip( )
+								"documents": self.buffer.strip( )
 							} )
 							self.buffer = ""
 						self.current_paragraph = para_match.group( 0 )
@@ -427,7 +427,7 @@ class Token:
 						"section": self.current_section,
 						"subsection": self.current_subsection,
 						"paragraph": self.current_paragraph,
-						"text": self.buffer.strip( )
+						"documents": self.buffer.strip( )
 					} )
 				
 				return self.structured
@@ -435,7 +435,7 @@ class Token:
 			_exc = Error( e )
 			_exc.module = 'Tidy'
 			_exc.cause = 'Token'
-			_exc.method = 'parse_hierarchy( self, text: str ) -> list'
+			_exc.method = 'parse_hierarchy( self, documents: str ) -> list'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
@@ -443,7 +443,7 @@ class Token:
 def tokenize( self, text: str ) -> list:
 	"""
 		Purpose:
-			Tokenize a block of text using the OpenAI model tokenizer.
+			Tokenize a block of documents using the OpenAI model tokenizer.
 	
 		Args:
 			text (str): Text to tokenize.
@@ -454,7 +454,7 @@ def tokenize( self, text: str ) -> list:
 	"""
 	try:
 		if text is None:
-			_msg = 'Input parameter "text" is required.'
+			_msg = 'Input parameter "documents" is required.'
 			raise Exception( _msg )
 		else:
 			return self.encoding.encode( text )
@@ -462,7 +462,7 @@ def tokenize( self, text: str ) -> list:
 		_exc = Error( e )
 		_exc.module = 'Tidy'
 		_exc.cause = 'Token'
-		_exc.method = 'tokenize( self, text: str ) -> list'
+		_exc.method = 'tokenize( self, documents: str ) -> list'
 		_err = ErrorDialog( _exc )
 		_err.show( )
 
@@ -473,7 +473,7 @@ def chunk_tokens( self, tokens: list, max_tokens: int=800, overlap: int=50 ) -> 
 			Split a list of tokens into overlapping chunks based on token limits.
 
 		Args:
-			tokens (list): Tokenized input text.
+			tokens (list): Tokenized input documents.
 			max_tokens (int): Max token size per chunk.
 			overlap (int): Overlapping token count between chunks.
 	
@@ -508,7 +508,7 @@ def decode_tokens( self, tokens: list ) -> str:
 	"""
 		
 		Purpose:
-			Decode a list of token IDs back to string text.
+			Decode a list of token IDs back to string documents.
 	
 		Args:
 			tokens (list): A list of token IDs.
@@ -534,19 +534,19 @@ def decode_tokens( self, tokens: list ) -> str:
 def chunk_text_for_embedding( self, text: str, max_tokens: int = 800,
                               overlap: int = 50 ) -> list:
 	"""
-		Chunk text into strings suitable for embedding under the token limit.
+		Chunk documents into strings suitable for embedding under the token limit.
 	
 		Args:
-			text (str): Raw or cleaned input text.
+			text (str): Raw or cleaned input documents.
 			max_tokens (int): Max tokens per chunk for embedding model.
 			overlap (int): Overlap between consecutive chunks.
 	
 		Returns:
-			list: List of decoded text chunks.
+			list: List of decoded documents chunks.
 	"""
 	try:
 		if(text is None):
-			_msg = 'Input parameter "text" is required.'
+			_msg = 'Input parameter "documents" is required.'
 			raise Exception( _msg )
 		else:
 			tokens = self.tokenize( text )
@@ -556,7 +556,7 @@ def chunk_text_for_embedding( self, text: str, max_tokens: int = 800,
 		_exc = Error( e )
 		_exc.module = 'Tidy'
 		_exc.cause = 'Token'
-		_exc.method = ( 'chunk_text_for_embedding( self, text: str, max_tokens: int = 800, '
+		_exc.method = ( 'chunk_text_for_embedding( self, documents: str, max_tokens: int = 800, '
 		               'overlap: int = 50 ) -> list' )
 		_err = ErrorDialog( _exc )
 		_err.show( )

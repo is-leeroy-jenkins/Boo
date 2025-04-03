@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                Handlers.py
+      Filename:                handlers.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="Handlers.py" company="Terry D. Eppler">
+  <copyright file="handlers.py" company="Terry D. Eppler">
 
      This is a Federal Budget, Finance, and Accounting application.
      Copyright ©  2024  Terry Eppler
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    Handlers.py
+    handlers.py
   </summary>
   ******************************************************************************************
   '''
@@ -46,7 +46,7 @@ from typing import Any, Dict
 import PySimpleGUI as sg
 from loguru import logger
 
-from src import Audio, GptQuery
+from src import Audio, query
 from src.Button import OFF_IMAGE, ON_IMAGE
 
 def handle_events( window: sg.Window, event: str, values: Dict[ str, Any ] ) -> None:
@@ -103,7 +103,7 @@ def recording_event( window: sg.Window ) -> None:
 
 def transcribe_event( window: sg.Window ) -> None:
     '''
-    Handle the transcribe event. Transcribe audio and update the text area.
+    Handle the transcribe event. Transcribe audio and update the documents area.
 
     Args:
         window (sg.Window): The window element.
@@ -116,7 +116,7 @@ def transcribe_event( window: sg.Window ) -> None:
 
 def answer_events( window: sg.Window, values: Dict[ str, Any ] ) -> None:
     '''
-    Handle the answer events. Generate quick and full answers and update the text areas.
+    Handle the answer events. Generate quick and full answers and update the documents areas.
 
     Args:
         window (sg.Window): The window element.
@@ -126,7 +126,7 @@ def answer_events( window: sg.Window, values: Dict[ str, Any ] ) -> None:
     quick_answer: sg.Element = window[ '-QUICK_ANSWER-' ]
     full_answer: sg.Element = window[ '-FULL_ANSWER-' ]
 
-    # Get audio transcript and update text area
+    # Get audio transcript and update documents area
     audio_transcript: str = values[ '-WHISPER-' ]
     transcribed_text.update( audio_transcript )
 

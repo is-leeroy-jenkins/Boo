@@ -15,7 +15,7 @@ msgstr ""
 "Last-Translator: Kiriakos Vlahos <pyscripter@gmail.com>, 2021\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/pyscripter/teams/116142/zh_CN/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: documents/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -1132,7 +1132,7 @@ msgstr "按鼠标右键移动光标"
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckDragAndDropEditing....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Allows you to select a block of text and drag it within the document to "
+"Allows you to select a block of documents and drag it within the document to "
 "another location"
 msgstr "允许选择一块文本并拖到同一文档的另一位置"
 
@@ -3042,7 +3042,7 @@ msgstr "高亮查找的文字(&H)"
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Hint
 #: dmCommands.dfm
-msgid "Highlight the search text in the current editor"
+msgid "Highlight the search documents in the current editor"
 msgstr "高亮现在的编辑器内的查找的文字"
 
 #. CommandsDataModule..actlMain..actEditWordWrap..Caption
@@ -3865,7 +3865,7 @@ msgstr "显示匹配的上下文"
 
 #. FindResultsWindow..Actions..actViewShowContext..Hint
 #: frmFindResults.dfm
-msgid "View/Hide Context of found text"
+msgid "View/Hide Context of found documents"
 msgstr "发现的文本上下文的显示/隐藏"
 
 #. FindResultsWindow..Actions..actFileSave..Caption
@@ -4581,7 +4581,7 @@ msgstr "自动大小写敏感"
 
 #. PyIDEMainForm..TBXDockTop..FindToolbar..tbiSearchOptions..tbiAutoCaseSensitive..Hint
 #: frmPyIDEMain.dfm
-msgid "Case Sensitive when search text contains upper case characters"
+msgid "Case Sensitive when search documents contains upper case characters"
 msgstr "搜索关键字包含大写字符时大小写敏感"
 
 #. PyIDEMainForm..TBXDockTop..FindToolbar..tbiSearchOptions..tbiCaseSensitive..Caption
@@ -5422,7 +5422,7 @@ msgstr "复制(无提示)(&N)"
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Hint
 #: frmPythonII.dfm
-msgid "Copy selected text without the interpreter prompts"
+msgid "Copy selected documents without the interpreter prompts"
 msgstr "复制解释器提示以外的选择文本"
 
 #. PythonIIForm..InterpreterActionList..actPasteAndExecute..Caption
@@ -5432,7 +5432,7 @@ msgstr "粘贴并执行"
 
 #. PythonIIForm..InterpreterActionList..actPasteAndExecute..Hint
 #: frmPythonII.dfm
-msgid "Paste clipboard text with added interpreter prompts"
+msgid "Paste clipboard documents with added interpreter prompts"
 msgstr "粘贴裁剪板的文本和添加的解释器提示"
 
 #. RegExpTesterWindow..Caption
@@ -6201,7 +6201,7 @@ msgid "File explorer filter"
 msgstr "文件资源管理器筛选"
 
 #: dmCommands.pas
-msgid "text file"
+msgid "documents file"
 msgstr "文本文件"
 
 #: dmCommands.pas
@@ -6209,7 +6209,7 @@ msgid "Editor"
 msgstr "编辑器"
 
 #: dmCommands.pas
-msgid "Search text at caret"
+msgid "Search documents at caret"
 msgstr "在插入符号处搜索"
 
 #: dmCommands.pas
@@ -7298,7 +7298,7 @@ msgstr ""
 #: StringResources.pas
 msgid ""
 "You are now in post-mortem analysis mode.\n"
-"You can examine the Call Stack, Variables and Watches windows, evaluate expressions etc.\n"
+"You can examine the Call Stack, Variables and Watches windows, evaluate expressions resources.\n"
 "To exit the post-mortem analysis select the 'Abort Debugging' command."
 msgstr "您现在处于事后分析模式。 您可以检查调用堆栈、变量和监视窗口、计算表达式等。 要退出事后分析，请选择“中止调试”命令。"
 
@@ -8087,7 +8087,7 @@ msgstr "模块"
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"The text in the \"%s\" file has changed.\n"
+"The documents in the \"%s\" file has changed.\n"
 "\n"
 "Do you want to save the modifications?"
 msgstr ""
@@ -8489,7 +8489,7 @@ msgstr "标签"
 msgid "Anchor"
 msgstr ""
 
-#. Python Paths etc.
+#. Python Paths resources.
 #: uParams.pas
 msgid "Directory of active Python version"
 msgstr "活动Python版本目录"
@@ -8533,7 +8533,7 @@ msgstr "桌面目录"
 
 #. register parameters
 #: uParams.pas
-msgid "Clipboard as text"
+msgid "Clipboard as documents"
 msgstr "剪贴板作为文本"
 
 #: uParams.pas
@@ -8606,7 +8606,7 @@ msgid "File type"
 msgstr "文件类型"
 
 #: uParams.pas
-msgid "Contents of text file"
+msgid "Contents of documents file"
 msgstr "文本文件内容"
 
 #: uParams.pas
@@ -8710,7 +8710,7 @@ msgid "Current line number in the active document"
 msgstr "活动文档中的当前行号"
 
 #: uParams.pas
-msgid "Selected text in the active document"
+msgid "Selected documents in the active document"
 msgstr "活动文档中的已选定文本"
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..tabToolbars..Caption

@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                Boo.py
+      Filename:                boo.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="Boo.py" company="Terry D. Eppler">
+  <copyright file="boo.py" company="Terry D. Eppler">
 
      Bobo is a data analysis tool for EPA Analysts.
      Copyright ©  2024  Terry Eppler
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    Boo.py
+    boo.py
   </summary>
   ******************************************************************************************
   '''
@@ -46,8 +46,8 @@ import datetime as dt
 from openai import OpenAI
 import requests
 from pygments.lexers.csound import newline
-from Static import GptRequests, GptRoles, GptLanguages
-from Booger import ErrorDialog, Error
+from static import GptRequests, GptRoles, GptLanguages
+from booger import ErrorDialog, Error
 
 
 class Header( ):
@@ -147,7 +147,7 @@ class Models( ):
 		Class containing lists of OpenAI models by generation
 	'''
 	def __init__( self ):
-		self.text_generation = [ 'text-davinci-003', 'text-curie-001',
+		self.text_generation = [ 'documents-davinci-003', 'documents-curie-001',
 		                         'gpt-4-0613', 'gpt-4-0314',
 		                         'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
 		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
@@ -166,14 +166,14 @@ class Models( ):
 		                           'gpt-4o-audio-preview-2024-10-01',
 		                           'gpt-4o-mini-audio-preview-2024-12-17' ]
 		self.transcription = [ 'whisper-1', 'gpt-4o-mini-transcribe', ' gpt-4o-transcribe' ]
-		self.translation = [ 'whisper-1', 'text-davinci-003',
+		self.translation = [ 'whisper-1', 'documents-davinci-003',
 		                     'gpt-4-0613', 'gpt-4-0314',
 		                     'gpt-4-turbo-2024-04-09' ]
 		self.finetuning = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18',
 		                    'gpt-4-0613', 'gpt-3.5-turbo-0125',
 		                    'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-0613' ]
-		self.embeddings = [ 'text-embedding-3-small', 'text-embedding-3-large',
-		                    'text-embedding-ada-002' ]
+		self.embeddings = [ 'documents-embedding-3-small', 'documents-embedding-3-large',
+		                    'documents-embedding-ada-002' ]
 		self.uploads = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
 		                 'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
@@ -256,7 +256,7 @@ class GptOptions( ):
 		self.store = store
 		self.stream = stream
 		self.size = size
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'documents', 'audio' ]
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -300,7 +300,7 @@ class GptOptions( ):
 			Returns: list[ str ] of response formats used by the GPT
 
 		'''
-		return [ 'text', 'audio', 'url' ]
+		return [ 'documents', 'audio', 'url' ]
 	
 	
 	def get_output_formats( self ) -> list[ str ]:
@@ -498,7 +498,7 @@ class TextRequest( GptRequest ):
 	def create( self, prompt: str ) -> str:
 		'''
 
-			Given an input prompt 'prompt', function generates a text generation
+			Given an input prompt 'prompt', function generates a documents generation
 			request from the openai api.
 
 		Args:
@@ -516,8 +516,8 @@ class TextRequest( GptRequest ):
 			
 			self.client.api_key = self.header.api_key
 			_system_prompt = 'You are a helpful assistant and Budget Analyst'
-			_system = GptMessage( prompt=_system_prompt, role='system', type='text' )
-			_user = GptMessage( prompt=self.prompt, role='user', type='text' )
+			_system = GptMessage( prompt=_system_prompt, role='system', type='documents' )
+			_user = GptMessage( prompt=self.prompt, role='user', type='documents' )
 			self.messages.append( _system )
 			self.messages.append( _user )
 			
@@ -600,8 +600,8 @@ class CompletionRequest( GptRequest ):
 				self.prompt = prompt
 			self.client.api_key = self.header.api_key
 			_sys = 'You are a helpful assistant and Budget Analyst'
-			_system = GptMessage( prompt=_sys, role='system', type='text' )
-			_user = GptMessage( prompt=self.prompt, role='user', type='text' )
+			_system = GptMessage( prompt=_sys, role='system', type='documents' )
+			_user = GptMessage( prompt=self.prompt, role='user', type='documents' )
 			self.messages.append( _system )
 			self.messages.append( _user )
 			self.response = self.client.chat.completions.create(
@@ -684,8 +684,8 @@ class ImageRequest( GptRequest ):
 			
 			openai.api_key = self.header.api_key
 			_sys = 'You are a helpful assistant and Budget Analyst'
-			_system = GptMessage( prompt=_sys, role='system', type='text' )
-			_user = GptMessage( prompt=self.prompt, role='user', type='text' )
+			_system = GptMessage( prompt=_sys, role='system', type='documents' )
+			_user = GptMessage( prompt=self.prompt, role='user', type='documents' )
 			self.messages.append( _system )
 			self.messages.append( _user )
 			self.response = self.client.chat.completions.create(
@@ -913,7 +913,7 @@ class CompletionResponse( GptResponse ):
 
 class TextResponse( GptResponse ):
 	'''
-		Class containing the GPT response for the text generation
+		Class containing the GPT response for the documents generation
 	'''
 	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
 		super( ).__init__( respid, obj, model, created )
@@ -1053,7 +1053,7 @@ class SystemMessage( GptMessage ):
 		Class representing the system message
 		
 	'''
-	def __init__( self, prompt: str, role: str='system', type: str='text' ) -> None:
+	def __init__( self, prompt: str, role: str='system', type: str='documents' ) -> None:
 		super( ).__init__( prompt, role, type )
 		self.content = super( ).content
 		self.role = super( ).role
@@ -1103,7 +1103,7 @@ class UserMessage( GptMessage ):
 		Class representing the system message
 		
 	'''
-	def __init__( self, prompt: str, role: str='user', type: str='text' ) -> None:
+	def __init__( self, prompt: str, role: str='user', type: str='documents' ) -> None:
 		super( ).__init__( prompt, role, type )
 		self.content = super( ).content
 		self.role = super( ).role
@@ -1153,7 +1153,7 @@ class DeveloperMessage( GptMessage ):
 		Class representing the system message
 		
 	'''
-	def __init__( self, prompt: str, role: str='developer', type: str='text' ) -> None:
+	def __init__( self, prompt: str, role: str='developer', type: str='documents' ) -> None:
 		super( ).__init__( prompt, role, type )
 		self.content = super( ).content
 		self.role = super( ).role
@@ -1203,7 +1203,7 @@ class AssistantMessage( GptMessage ):
 		Class representing the system message
 		
 	'''
-	def __init__( self, prompt: str, role: str='assistant', type: str='text' ) -> None:
+	def __init__( self, prompt: str, role: str='assistant', type: str='documents' ) -> None:
 		super( ).__init__( prompt, role, type )
 		self.content = super( ).content
 		self.role = super( ).role

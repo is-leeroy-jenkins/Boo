@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                Boo.py
+      Filename:                boo.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="Boo.py" company="Terry D. Eppler">
+  <copyright file="boo.py" company="Terry D. Eppler">
 
      Bobo is a data analysis tool for EPA Analysts.
      Copyright ©  2024  Terry Eppler
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    Boo.py
+    boo.py
   </summary>
   ******************************************************************************************
   '''

@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                Booger.py
+      Filename:                booger.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="Booger.py" company="Terry D. Eppler">
+  <copyright file="booger.py" company="Terry D. Eppler">
 
      This is a Federal Booger and Data Analysis Application for EPA Analysts
      Copyright ©  2024  Terry Eppler
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    Booger.py
+    booger.py
   </summary>
   ******************************************************************************************
   '''
@@ -51,7 +51,7 @@ from enum import Enum
 from sys import exit, exc_info
 import random
 import io
-from src.Minion import App
+from src.minion import App
 import traceback
 import numpy as np
 from pandas import read_csv as CsvReader
@@ -63,7 +63,7 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d.axes3d import get_test_data
 from matplotlib.ticker import NullFormatter
 from mpl_toolkits.axes_grid1.axes_rgb import RGBAxes
-from Static import EXT, Client
+from static import EXT, Client
 import urllib.request
 
 class Error( Exception ):
@@ -151,7 +151,7 @@ class TitleIcon():
 
     def __init__( self, ico ):
         self.name = ico.name
-        self.folder = os.getcwd() + r'etc\ico'
+        self.folder = os.getcwd() + r'resources\ico'
         self.file_path = self.folder + r'\\' + self.name + r'.ico'
 
     def __str__( self ) -> str:
@@ -255,7 +255,7 @@ class FileDialog( Dark ):
         self.sql = ( ( 'SQL Files', '*.sqlstatement', ), )
         self.text = ( ( 'Text Files', '*.txt'),)
         self.access = ( ( 'MS ACCDB Databases', '*.accdb' ), )
-        self.sqlite = ( ( 'SQLite Databases', '*.db'),)
+        self.sqlite = ( ( 'SQLite Databases', '*.data'),)
         self.sqlserver = ( ( 'SQL Server Databases', '*.mdf', '*.ldf', '*.sdf' ), )
 
 
@@ -673,7 +673,7 @@ class EmailDialog( Dark ):
 class MessageDialog( Dark ):
     '''
 
-	    Construcotr:  MessageDialog( text = '' )
+	    Construcotr:  MessageDialog( documents = '' )
 
 	    Purpose:  Class that provides form used to display informational messages
 
@@ -707,7 +707,7 @@ class MessageDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'text', 'show',
+        return [ 'documents', 'show',
                  'size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
@@ -931,7 +931,7 @@ class ScrollingDialog( Dark ):
 
         'Construcotr:
 
-            ScrollingDialog( text = '' )
+            ScrollingDialog( documents = '' )
 
         Purpose:
 
@@ -971,7 +971,7 @@ class ScrollingDialog( Dark ):
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
                  'scrollbar_color', 'progressbar_color',
-                 'text', 'show' ]
+                 'documents', 'show' ]
 
     def show( self ):
         try:
@@ -3064,7 +3064,7 @@ class ColorDialog( Dark ):
                                sg.DummyButton( _color, button_color = self.button_color,
                                    tooltip = _colorhex ) ] ]
 
-                _window2 = sg.Window( 'Buttons with white and black text', _layout2,
+                _window2 = sg.Window( 'Buttons with white and black documents', _layout2,
                     keep_on_top = True,
                     finalize = True,
                     size = self.form_size,
@@ -4319,7 +4319,7 @@ class InputWindow():
 	    layout.
 	    A couple of the concepts shown here include:
 	    * Using sg.Columns and sg.Frames with specific sizes on them
-	    * Buttons that have the same text on them that arew differentiated using explicit keys
+	    * Buttons that have the same documents on them that arew differentiated using explicit keys
 	    * One way to hard-code the size of a Frame is to hard-code the size of a Column inside the
 	    frame
 
@@ -4489,7 +4489,7 @@ class Executable():
                         print( '**** DONE ****' )
                     except:
                         sg.PopupError( 'Something went wrong',
-                            'close this window and copy command line from text printed out in '
+                            'close this window and copy command line from documents printed out in '
                             'main window',
                             'Here is the output from the run', out )
                         print(

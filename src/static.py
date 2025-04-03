@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Bobo
-      Filename:                Static.py
+      Filename:                static.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="Static.py" company="Terry D. Eppler">
+  <copyright file="static.py" company="Terry D. Eppler">
 
      This is a Federal Budget, Finance, and Accounting application.
      Copyright ©  2024  Terry Eppler
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    Static.py
+    static.py
   </summary>
   ******************************************************************************************
   '''

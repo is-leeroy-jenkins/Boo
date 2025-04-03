@@ -17,7 +17,7 @@ msgstr ""
 "Last-Translator: ROBERTO BORIOTTI <roberto.boriotti@canon.it>, 2021\n"
 "Language-Team: Italian (https://www.transifex.com/pyscripter/teams/116142/it/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: documents/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: it\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1143,7 +1143,7 @@ msgstr "Il mouse destro muove il cursore"
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckDragAndDropEditing....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Allows you to select a block of text and drag it within the document to "
+"Allows you to select a block of documents and drag it within the document to "
 "another location"
 msgstr ""
 "Consenti la selezione di un blocco di testo e di trascinarlo in un altra "
@@ -3080,7 +3080,7 @@ msgstr "&Evidenzia il testo di ricerca"
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Hint
 #: dmCommands.dfm
-msgid "Highlight the search text in the current editor"
+msgid "Highlight the search documents in the current editor"
 msgstr "Evidenzia il testo di ricerca nell'editor attuale"
 
 #. CommandsDataModule..actlMain..actEditWordWrap..Caption
@@ -3903,7 +3903,7 @@ msgstr "Visualizza contesto corrispondenze"
 
 #. FindResultsWindow..Actions..actViewShowContext..Hint
 #: frmFindResults.dfm
-msgid "View/Hide Context of found text"
+msgid "View/Hide Context of found documents"
 msgstr "Visualizza/nascondi il contesto del testo trovato"
 
 #. FindResultsWindow..Actions..actFileSave..Caption
@@ -4621,7 +4621,7 @@ msgstr "Distinzione &automatica maiuscole"
 
 #. PyIDEMainForm..TBXDockTop..FindToolbar..tbiSearchOptions..tbiAutoCaseSensitive..Hint
 #: frmPyIDEMain.dfm
-msgid "Case Sensitive when search text contains upper case characters"
+msgid "Case Sensitive when search documents contains upper case characters"
 msgstr ""
 "Distingui le maiuscole durante la ricerca in un testo contentente caratteri "
 "maiuscoli"
@@ -5470,7 +5470,7 @@ msgstr "Copia (&senza prompt)"
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Hint
 #: frmPythonII.dfm
-msgid "Copy selected text without the interpreter prompts"
+msgid "Copy selected documents without the interpreter prompts"
 msgstr "Copia il testo selezionato senza il prompt dell'interprete"
 
 #. PythonIIForm..InterpreterActionList..actPasteAndExecute..Caption
@@ -5480,7 +5480,7 @@ msgstr "Incolla e e&segui"
 
 #. PythonIIForm..InterpreterActionList..actPasteAndExecute..Hint
 #: frmPythonII.dfm
-msgid "Paste clipboard text with added interpreter prompts"
+msgid "Paste clipboard documents with added interpreter prompts"
 msgstr "Incolla il testo degli Appunti con aggiunto il prompt dell'interprete"
 
 #. RegExpTesterWindow..Caption
@@ -6259,7 +6259,7 @@ msgid "File explorer filter"
 msgstr "Filtro explorer file"
 
 #: dmCommands.pas
-msgid "text file"
+msgid "documents file"
 msgstr "file testo"
 
 #: dmCommands.pas
@@ -6267,7 +6267,7 @@ msgid "Editor"
 msgstr "Editor"
 
 #: dmCommands.pas
-msgid "Search text at caret"
+msgid "Search documents at caret"
 msgstr "Cerca il testo alla posizione del cursore"
 
 #: dmCommands.pas
@@ -7368,7 +7368,7 @@ msgstr ""
 #: StringResources.pas
 msgid ""
 "You are now in post-mortem analysis mode.\n"
-"You can examine the Call Stack, Variables and Watches windows, evaluate expressions etc.\n"
+"You can examine the Call Stack, Variables and Watches windows, evaluate expressions resources.\n"
 "To exit the post-mortem analysis select the 'Abort Debugging' command."
 msgstr ""
 "Ora sei nel modo analisi post-mortem.\n"
@@ -8186,7 +8186,7 @@ msgstr "modulo"
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"The text in the \"%s\" file has changed.\n"
+"The documents in the \"%s\" file has changed.\n"
 "\n"
 "Do you want to save the modifications?"
 msgstr ""
@@ -8592,7 +8592,7 @@ msgstr "Tag"
 msgid "Anchor"
 msgstr "Ancoraggio"
 
-#. Python Paths etc.
+#. Python Paths resources.
 #: uParams.pas
 msgid "Directory of active Python version"
 msgstr "Cartella della versione attiva di Python"
@@ -8636,7 +8636,7 @@ msgstr "Cartella Desktop"
 
 #. register parameters
 #: uParams.pas
-msgid "Clipboard as text"
+msgid "Clipboard as documents"
 msgstr "Appunti come testo"
 
 #: uParams.pas
@@ -8709,7 +8709,7 @@ msgid "File type"
 msgstr "Tipo file"
 
 #: uParams.pas
-msgid "Contents of text file"
+msgid "Contents of documents file"
 msgstr "Contenuto file testo"
 
 #: uParams.pas
@@ -8813,7 +8813,7 @@ msgid "Current line number in the active document"
 msgstr "Nuemro linea attuale del documento attivo"
 
 #: uParams.pas
-msgid "Selected text in the active document"
+msgid "Selected documents in the active document"
 msgstr "Testo selezionato nel documento attivo"
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..tabToolbars..Caption

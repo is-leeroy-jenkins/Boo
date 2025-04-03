@@ -15,7 +15,7 @@ msgstr ""
 "Last-Translator: Lübbe Onken <luebbe.opensource@gmail.com>, 2018\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/luebbe/teams/82736/pt_BR/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: documents/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pt_BR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -1371,7 +1371,7 @@ msgstr "Mouse move o cursor"
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckDragAndDropEditing....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Allows you to select a block of text and drag it within the document to "
+"Allows you to select a block of documents and drag it within the document to "
 "another location"
 msgstr ""
 "Permite você selecionar um bloco de texto e arrastar dentro do documento "
@@ -3170,7 +3170,7 @@ msgstr ""
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Hint
 #: dmCommands.dfm
-msgid "Highlight the search text in the current editor"
+msgid "Highlight the search documents in the current editor"
 msgstr ""
 
 #. CommandsDataModule..actlMain..actEditWordWrap..Caption
@@ -4100,7 +4100,7 @@ msgstr ""
 
 #. FindResultsWindow..Actions..actViewShowContext..Hint
 #: frmFindResults.dfm
-msgid "View/Hide Context of found text"
+msgid "View/Hide Context of found documents"
 msgstr ""
 
 #. FindResultsWindow..Actions..actFileSave..Caption
@@ -4851,7 +4851,7 @@ msgstr ""
 
 #. PyIDEMainForm..TBXDockTop..FindToolbar..tbiSearchOptions..tbiAutoCaseSensitive..Hint
 #: frmPyIDEMain.dfm
-msgid "Case Sensitive when search text contains upper case characters"
+msgid "Case Sensitive when search documents contains upper case characters"
 msgstr ""
 
 #. PyIDEMainForm..TBXDockTop..FindToolbar..tbiSearchOptions..tbiCaseSensitive..Caption
@@ -5714,7 +5714,7 @@ msgstr ""
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Hint
 #: frmPythonII.dfm
-msgid "Copy selected text without the interpreter prompts"
+msgid "Copy selected documents without the interpreter prompts"
 msgstr ""
 
 #. PythonIIForm..InterpreterActionList..actPasteAndExecute..Caption
@@ -5724,7 +5724,7 @@ msgstr ""
 
 #. PythonIIForm..InterpreterActionList..actPasteAndExecute..Hint
 #: frmPythonII.dfm
-msgid "Paste clipboard text with added interpreter prompts"
+msgid "Paste clipboard documents with added interpreter prompts"
 msgstr ""
 
 #. RegExpTesterWindow..Caption
@@ -6507,7 +6507,7 @@ msgid "File explorer filter"
 msgstr ""
 
 #: dmCommands.pas
-msgid "text file"
+msgid "documents file"
 msgstr ""
 
 #: dmCommands.pas
@@ -6519,7 +6519,7 @@ msgid "Restore open files"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Search text at caret"
+msgid "Search documents at caret"
 msgstr ""
 
 #: dmCommands.pas
@@ -7615,7 +7615,7 @@ msgstr ""
 #: StringResources.pas
 msgid ""
 "You are now in post-mortem analysis mode.\n"
-"You can examine the Call Stack, Variables and Watches windows, evaluate expressions etc.\n"
+"You can examine the Call Stack, Variables and Watches windows, evaluate expressions resources.\n"
 "To exit the post-mortem analysis select the 'Abort Debugging' command."
 msgstr ""
 
@@ -8394,7 +8394,7 @@ msgstr ""
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"The text in the \"%s\" file has changed.\n"
+"The documents in the \"%s\" file has changed.\n"
 "\n"
 "Do you want to save the modifications?"
 msgstr ""
@@ -8782,7 +8782,7 @@ msgstr ""
 msgid "Anchor"
 msgstr ""
 
-#. Python Paths etc.
+#. Python Paths resources.
 #: uParams.pas
 msgid "Directory of active Python version"
 msgstr ""
@@ -8826,7 +8826,7 @@ msgstr ""
 
 #. register parameters
 #: uParams.pas
-msgid "Clipboard as text"
+msgid "Clipboard as documents"
 msgstr ""
 
 #: uParams.pas
@@ -8899,7 +8899,7 @@ msgid "File type"
 msgstr ""
 
 #: uParams.pas
-msgid "Contents of text file"
+msgid "Contents of documents file"
 msgstr ""
 
 #: uParams.pas
@@ -9003,7 +9003,7 @@ msgid "Current line number in the active document"
 msgstr ""
 
 #: uParams.pas
-msgid "Selected text in the active document"
+msgid "Selected documents in the active document"
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..tabToolbars..Caption

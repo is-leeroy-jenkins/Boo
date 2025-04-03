@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                FileSys.py
+      Filename:                fsys.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="FileSys.py" company="Terry D. Eppler">
+  <copyright file="fsys.py" company="Terry D. Eppler">
 
      This is a data analysis application for Federal Budget, Finance, and Accounting application.
      Copyright ©  2024  Terry Eppler
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    FileSys.py
+    fsys.py
   </summary>
   ******************************************************************************************
   '''
@@ -45,7 +45,7 @@ import os
 import zipfile as zp
 from openpyxl import Workbook
 import shutil as sh
-from Booger import Error, ErrorDialog
+from booger import Error, ErrorDialog
 
 
 class Path( ):
@@ -68,7 +68,7 @@ class Path( ):
 		self.current_directory = os.getcwd( )
 		self.file_extension = os.path.splitext( filepath )[ 1 ]
 		self.parent_directory = os.path.split( filepath )[ 0 ]
-		self.template = r'etc\templates\report\Report.xlsx'
+		self.template = r'resources\templates\report\Report.xlsx'
 		self.path_separator = os.path.sep
 		self.extension_separator = os.extsep
 		self.drive_separator = ':\\'
@@ -643,7 +643,7 @@ class File( Path ):
 	def writeall( self, other: str ) -> list[ str ]:
 		'''
 
-			Purpose: writes all text in 'other' to file 'self.input'
+			Purpose: writes all documents in 'other' to file 'self.input'
 	
 			Parameters: str
 	
@@ -1008,7 +1008,7 @@ class Excel( ):
 
 	'''
 	def __init__( self, path: str ):
-		self.internal_path = r'../etc/templates/report/Excel.xlsx'
+		self.internal_path = r'resources/templates/report/Excel.xlsx'
 		self.external_path = path
 		self.name = os.path.split( path )[ 1 ]
 		self.title = self.name.split( '.' )[ 0 ]
