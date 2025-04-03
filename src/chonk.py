@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                choncky.py
+      Filename:                chonk.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="choncky.py" company="Terry D. Eppler">
+  <copyright file="chonk.py" company="Terry D. Eppler">
 
      This is a Budget Execution and Data Analysis Application for Federal Analysts
      Copyright ©  2024  Terry Eppler
@@ -50,7 +50,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import TextLoader, PyPDFLoader, CSVLoader, UnstructuredHTMLLoader
 from langchain.memory import ConversationBufferMemory
 from typing import List
-from Booger import Error, ErrorDialog
+from booger import Error, ErrorDialog
 
 
 class Fetch:
