@@ -788,7 +788,6 @@ class Text:
 		'''
 			
 			Clean the raw documents extracted from a PDF for preprocessing.
-	
 			This includes removing headers, footers, page numbers, hyphenations,
 			fixing line breaks, collapsing whitespace, and normalizing section markers.
 	
@@ -1205,6 +1204,7 @@ class Token:
 	def chunk_text_for_embedding( self, text: str, max_tokens: int = 800,
 	                              overlap: int = 50 ) -> list:
 		"""
+		
 			Chunk documents into strings suitable for embedding under the token limit.
 		
 			Args:
@@ -1214,6 +1214,7 @@ class Token:
 		
 			Returns:
 				list: List of decoded documents chunks.
+				
 		"""
 		try:
 			if(text is None):

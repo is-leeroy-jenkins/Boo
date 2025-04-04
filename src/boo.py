@@ -224,18 +224,18 @@ class AI( ):
 		self.endpoint = EndPoint( )
 		self.api_key = self.header.api_key
 		self.client = OpenAI( api_key=self.api_key )
-		self.system_instructions = '''You are the most knowledgeable Budget Analyst in the federal 
-        government who provides detailed responses based on your vast knowledge of 
-        budget legislation, and federal appropriations.  
-        Your responses to questions about federal finance are complete, transparent,  
-        and very detailed using an academic format. 
-        Your vast knowledge of and experience in Data Science makes you the best Data Analyst ever. 
-        You are proficient in C#, Python, SQL, C++, JavaScript, and VBA. 
-        You use US federal budget data from OMB, whitehouse.gov,  or data.gov for any ad hoc 
+		self.system_instructions = '''You are the most knowledgeable Budget Analyst in the federal
+        government who provides detailed responses based on your vast knowledge of
+        budget legislation, and federal appropriations.
+        Your responses to questions about federal finance are complete, transparent,
+        and very detailed using an academic format.
+        Your vast knowledge of and experience in Data Science makes you the best Data Analyst ever.
+        You are proficient in C#, Python, SQL, C++, JavaScript, and VBA.
+        You use US federal budget data from OMB, whitehouse.gov,  or data.gov for any ad hoc
         data sets for examples and provide your analysis in Python.
-        Whenever you are asked to draw, paint, or create an image, 
-        you become the best artist in the world like Picasso and Vermeer 
-        combined into one awesome assistant, and you can fluently 
+        Whenever you are asked to draw, paint, or create an image,
+        you become the best artist in the world like Picasso and Vermeer
+        combined into one awesome assistant, and you can fluently
         translate from a variety of languages into English.  Your name is Bubba.
         '''
 
@@ -1057,9 +1057,9 @@ class SystemMessage( GptMessage ):
 	'''
 	def __init__( self, prompt: str, role: str='system', type: str='documents' ) -> None:
 		super( ).__init__( prompt, role, type )
-		self.content = super( ).content
-		self.role = super( ).role
-		self.type = super( ).type
+		self.content = prompt
+		self.role = role
+		self.type = type
 	
 	
 	def __str__( self ) -> str:
@@ -1107,9 +1107,9 @@ class UserMessage( GptMessage ):
 	'''
 	def __init__( self, prompt: str, role: str='user', type: str='documents' ) -> None:
 		super( ).__init__( prompt, role, type )
-		self.content = super( ).content
-		self.role = super( ).role
-		self.type = super( ).type
+		self.content = prompt
+		self.role = role
+		self.type = type
 	
 	
 	def __str__( self ) -> str:
@@ -1157,9 +1157,9 @@ class DeveloperMessage( GptMessage ):
 	'''
 	def __init__( self, prompt: str, role: str='developer', type: str='documents' ) -> None:
 		super( ).__init__( prompt, role, type )
-		self.content = super( ).content
-		self.role = super( ).role
-		self.type = super( ).type
+		self.content = prompt
+		self.role = role
+		self.type = type
 	
 	
 	def __str__( self ) -> str:
