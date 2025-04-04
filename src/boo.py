@@ -1380,6 +1380,7 @@ class AdaptiveLinearNeuron( ):
 		self.n_iter = n_iter
 		self.random_state = random_state
 		
+		
 	def fit(self, X, y):
 		""" Fit training data.
 
@@ -1412,6 +1413,7 @@ class AdaptiveLinearNeuron( ):
 		self.losses_.append( loss )
 		return self
 
+
 	def net_input( self, X ):
 		"""
 			
@@ -1420,6 +1422,7 @@ class AdaptiveLinearNeuron( ):
 		"""
 		return np.dot( X, self.w_ ) + self.b_
 
+
 	def activation( self, X) :
 		"""
 		
@@ -1427,6 +1430,7 @@ class AdaptiveLinearNeuron( ):
 		
 		"""
 		return X
+
 
 	def predict( self, X ):
 		"""
