@@ -669,18 +669,18 @@ class Text:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
 				# Remove HTML tags
-				text = BeautifulSoup( text, "html.parser" ).get_text( separator=' ', strip=True )
+				_html = BeautifulSoup( text, "html.parser" ).get_text( separator=' ', strip=True )
 				
 				# Remove Markdown syntax
-				text = re.sub( r'\[.*?\]\(.*?\)', '', text )  # Markdown links
-				text = re.sub( r'[`_*#~>-]', '', text )  # Markdown chars
-				text = re.sub( r'!\[.*?\]\(.*?\)', '', text )  # Markdown images
+				_mark = re.sub( r'\[.*?\]\(.*?\)', '', _html )  # Markdown links
+				_chars = re.sub( r'[`_*#~>-]', '', _mark )  # Markdown chars
+				_images = re.sub( r'!\[.*?\]\(.*?\)', '', _chars )  # Markdown images
 				
 				# Remove control characters and normalize whitespace
-				text = re.sub( r'[\r\n\t]+', ' ', text )  # Newlines, tabs
-				text = re.sub( r'\s+', ' ', text ).strip( )  # Collapse multiple spaces
+				_lines = re.sub( r'[\r\n\t]+', ' ', _images )  # Newlines, tabs
+				_cleaned = re.sub( r'\s+', ' ', _lines ).strip( )  # Collapse multiple spaces
 				
-				return text
+				return _cleaned
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
