@@ -479,22 +479,24 @@ class Text:
 	
 	def remove_headers_footers( self, text: str ) -> str:
 		"""
-		Removes common headers and footers from a text document.
-
-		This function:
-		  - Assumes repeated lines at the top or bottom (like titles, page numbers)
-		  - Removes lines that are common across multiple pages (heuristic)
-		  - Returns cleaned text with main body content only
-
-		Parameters:
-		-----------
-		text : str
-			The input text potentially containing headers/footers.
-
-		Returns:
-		--------
-		str
-			The cleaned text with headers and footers removed.
+		
+			Removes common headers and footers from a text document.
+	
+			This function:
+			  - Assumes repeated lines at the top or bottom (like titles, page numbers)
+			  - Removes lines that are common across multiple pages (heuristic)
+			  - Returns cleaned text with main body content only
+	
+			Parameters:
+			-----------
+			text : str
+				The input text potentially containing headers/footers.
+	
+			Returns:
+			--------
+			str
+				The cleaned text with headers and footers removed.
+			
 		"""
 		# Split the text into lines
 		lines = text.splitlines( )
@@ -684,16 +686,19 @@ class Text:
 	
 	
 	def clean_line( self, line: str ) -> str:
-		"""Clean the raw documents extracted from a PDF for preprocessing.
-
-		This includes removing headers, footers, page numbers, hyphenations,
-		fixing line breaks, collapsing whitespace, and normalizing section markers.
-
-		Args:
-			documents (str): Raw extracted documents.
-
-		Returns:
-			str: Cleaned and normalized documents.
+		"""
+			
+			Clean the raw documents extracted from a PDF for preprocessing.
+	
+			This includes removing headers, footers, page numbers, hyphenations,
+			fixing line breaks, collapsing whitespace, and normalizing section markers.
+	
+			Args:
+				documents (str): Raw extracted documents.
+	
+			Returns:
+				str: Cleaned and normalized documents.
+			
 		"""
 		try:
 			if line is None:
@@ -834,7 +839,9 @@ class Text:
 
 
 class Token:
+	'''
 	
+	'''
 	def __init__( self, model: str = "documents-embedding-ada-002" ):
 		"""Initialize the PreTokenizer with a specific OpenAI model.
 
@@ -962,121 +969,121 @@ class Token:
 			_err.show( )
 
 
-def tokenize( self, text: str ) -> list:
-	"""
-		Purpose:
-			Tokenize a block of documents using the OpenAI model tokenizer.
-	
-		Args:
-			text (str): Text to tokenize.
-	
-		Returns:
-			list: A list of token IDs.
-			
-	"""
-	try:
-		if text is None:
-			raise Exception( 'Input parameter "documents" is required.' )
-		else:
-			return self.encoding.encode( text )
-	except Exception as e:
-		_exc = Error( e )
-		_exc.module = 'Tiggr'
-		_exc.cause = 'Token'
-		_exc.method = 'tokenize( self, documents: str ) -> list'
-		_err = ErrorDialog( _exc )
-		_err.show( )
-
-
-def chunk_tokens( self, tokens: list, max_tokens: int=800, overlap: int=50 ) -> list:
-	"""
-		Purpose:
-			Split a list of tokens into overlapping chunks based on token limits.
-
-		Args:
-			tokens (list): Tokenized input documents.
-			max_tokens (int): Max token size per chunk.
-			overlap (int): Overlapping token count between chunks.
-	
-		Returns:
-			list: A list of token chunks.
-	"""
-	try:
-		if tokens is None:
-			raise Exception( 'Input parameter "tokens" is required.' )
-		else:
-			chunks = [ ]
-			start = 0
-			while start < len( tokens ):
-				end = start + max_tokens
-				chunk = tokens[ start:end ]
-				chunks.append( chunk )
-				start += max_tokens - overlap
-			
-			return chunks
-	except Exception as e:
-		_exc = Error( e )
-		_exc.module = 'Tiggr'
-		_exc.cause = 'Token'
-		_exc.method = ('chunk_tokens( self, tokens: list, '
-		               'max_tokens: int = 800, overlap: int = 50 ) -> list')
-		_err = ErrorDialog( _exc )
-		_err.show( )
-
-
-def decode_tokens( self, tokens: list ) -> str:
-	"""
+	def tokenize( self, text: str ) -> list:
+		"""
+			Purpose:
+				Tokenize a block of documents using the OpenAI model tokenizer.
 		
-		Purpose:
-			Decode a list of token IDs back to string documents.
+			Args:
+				text (str): Text to tokenize.
+		
+			Returns:
+				list: A list of token IDs.
+				
+		"""
+		try:
+			if text is None:
+				raise Exception( 'Input parameter "documents" is required.' )
+			else:
+				return self.encoding.encode( text )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Token'
+			_exc.method = 'tokenize( self, documents: str ) -> list'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
-		Args:
-			tokens (list): A list of token IDs.
 	
-		Returns:
-			str: Decoded string.
+	def chunk_tokens( self, tokens: list, max_tokens: int=800, overlap: int=50 ) -> list:
+		"""
+			Purpose:
+				Split a list of tokens into overlapping chunks based on token limits.
+	
+			Args:
+				tokens (list): Tokenized input documents.
+				max_tokens (int): Max token size per chunk.
+				overlap (int): Overlapping token count between chunks.
+		
+			Returns:
+				list: A list of token chunks.
+		"""
+		try:
+			if tokens is None:
+				raise Exception( 'Input parameter "tokens" is required.' )
+			else:
+				chunks = [ ]
+				start = 0
+				while start < len( tokens ):
+					end = start + max_tokens
+					chunk = tokens[ start:end ]
+					chunks.append( chunk )
+					start += max_tokens - overlap
+				
+				return chunks
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Token'
+			_exc.method = ('chunk_tokens( self, tokens: list, '
+			               'max_tokens: int = 800, overlap: int = 50 ) -> list')
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def decode_tokens( self, tokens: list ) -> str:
+		"""
 			
-	"""
-	try:
-		if tokens is None:
-			raise Exception( 'Input parameter "tokens" is required.' )
-		else:
-			return self.encoding.decode( tokens )
-	except Exception as e:
-		_exc = Error( e )
-		_exc.module = 'Tiggr'
-		_exc.cause = 'Token'
-		_exc.method = 'decode_tokens( self, tokens: list ) -> str'
-		_err = ErrorDialog( _exc )
-		_err.show( )
-
-
-def chunk_text_for_embedding( self, text: str, max_tokens: int = 800,
-                              overlap: int = 50 ) -> list:
-	"""
-		Chunk documents into strings suitable for embedding under the token limit.
+			Purpose:
+				Decode a list of token IDs back to string documents.
+		
+			Args:
+				tokens (list): A list of token IDs.
+		
+			Returns:
+				str: Decoded string.
+				
+		"""
+		try:
+			if tokens is None:
+				raise Exception( 'Input parameter "tokens" is required.' )
+			else:
+				return self.encoding.decode( tokens )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Token'
+			_exc.method = 'decode_tokens( self, tokens: list ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
-		Args:
-			text (str): Raw or cleaned input documents.
-			max_tokens (int): Max tokens per chunk for embedding model.
-			overlap (int): Overlap between consecutive chunks.
 	
-		Returns:
-			list: List of decoded documents chunks.
-	"""
-	try:
-		if(text is None):
-			_msg = 'Input parameter "documents" is required.'
-			raise Exception( _msg )
-		else:
-			tokens = self.tokenize( text )
-			token_chunks = self.chunk_tokens( tokens, max_tokens, overlap )
-			return [ self.decode_tokens( chunk ) for chunk in token_chunks ]
-	except Exception as e:
-		_exc = Error( e )
-		_exc.module = 'Tiggr'
-		_exc.cause = 'Token'
-		_exc.method = ( 'chunk_text_for_embedding( self, documents: str, max_tokens: int = 800, '
-		               'overlap: int = 50 ) -> list' )
-		_err = ErrorDialog( _exc )
-		_err.show( )
+	def chunk_text_for_embedding( self, text: str, max_tokens: int = 800,
+	                              overlap: int = 50 ) -> list:
+		"""
+			Chunk documents into strings suitable for embedding under the token limit.
+		
+			Args:
+				text (str): Raw or cleaned input documents.
+				max_tokens (int): Max tokens per chunk for embedding model.
+				overlap (int): Overlap between consecutive chunks.
+		
+			Returns:
+				list: List of decoded documents chunks.
+		"""
+		try:
+			if(text is None):
+				_msg = 'Input parameter "documents" is required.'
+				raise Exception( _msg )
+			else:
+				tokens = self.tokenize( text )
+				token_chunks = self.chunk_tokens( tokens, max_tokens, overlap )
+				return [ self.decode_tokens( chunk ) for chunk in token_chunks ]
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Token'
+			_exc.method = ( 'chunk_text_for_embedding( self, documents: str, max_tokens: int = 800, '
+			               'overlap: int = 50 ) -> list' )
+			_err = ErrorDialog( _exc )
+			_err.show( )
