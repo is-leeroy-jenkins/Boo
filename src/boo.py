@@ -429,10 +429,8 @@ class GptRequest( AI ):
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( )
-		self.client = OpenAI( )
 		self.header = super( ).header
 		self.api_key = super( ).api_key
-		self.model = 'gpt-4o'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -446,7 +444,6 @@ class GptRequest( AI ):
 		self.prompt = None
 		self.messages = [ ]
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
 		              'frequency_penalty': f'{self.frequency_penalty}',
@@ -466,35 +463,33 @@ class TextRequest( GptRequest ):
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
-		self.client = super( ).client
-		self.header = super( ).header
-		self.request_type = GptRequests.TextGeneration
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'gpt-4o-mini'
 		self.endpoint = EndPoint( ).text_generation
-		self.model = 'gpt-4o'
-		self.number = super( ).number
-		self.temperature = super( ).temperature
-		self.top_percent = super( ).top_percent
-		self.frequency_penalty = super( ).frequency_penalty
-		self.presence_penalty = super( ).presence_penalty
-		self.max_completion_tokens = super( ).max_completion_tokens
-		self.store = super( ).store
-		self.stream = super( ).stream
-		self.content = super( ).content
-		self.response = super( ).response
-		self.prompt = super( ).prompt
-		self.messages = super( ).messages
-		self.data = super( ).data
+		self.messages = [ ]
+		self.content = None
+		self.response = None
+		self.prompt = None
+		self.data = { 'number': f'{self.number}',
+		              'temperature': f'{self.temperature}',
+		              'top_percent': f'{self.top_percent}',
+		              'frequency_penalty': f'{self.frequency_penalty}',
+		              'presence_penalty': f'{self.presence_penalty}',
+		              'store': f'{self.store}',
+		              'stream': f'{self.stream}',
+		              'authorization': f'{self.header.authoriztion}',
+		              'content-type': f'{self.header.content_type}' }
+	
 	
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+				Methods that returns a list of member names
+				Returns: list[ str ]
 		'''
-		return [ 'header', 'request_type', 'endpoint',
-		         'model', 'number', 'messages',
-		         'content', 'store', 'stream',
-		         'response', 'prompt', 'create' ]
+		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
 	
 	
 	def create( self, prompt: str ) -> str:
@@ -554,34 +549,32 @@ class CompletionRequest( GptRequest ):
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
-		self.header = super( ).header
-		self.client = super( ).client
-		self.request_type = GptRequests.ChatCompletions
-		self.endpoint = EndPoint( ).chat_completions
-		self.model = 'gpt-4o'
-		self.number = super( ).number
-		self.temperature = super( ).temperature
-		self.top_percent = super( ).top_percent
-		self.frequency_penalty = super( ).frequency_penalty
-		self.presence_penalty = super( ).presence_penalty
-		self.max_completion_tokens = super( ).max_completion_tokens
-		self.store = super( ).store
-		self.stream = super( ).stream
-		self.content = super( ).content
-		self.response = super( ).response
-		self.prompt = super( ).prompt
-		self.messages = super( ).messages
-		self.data = super( ).data
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'gpt-4o-mini'
+		self.endpoint = EndPoint( ).chat_completion
+		self.content = None
+		self.response = None
+		self.prompt = None
+		self.messages = None
+		self.data = { 'number': f'{self.number}',
+		              'temperature': f'{self.temperature}',
+		              'top_percent': f'{self.top_percent}',
+		              'frequency_penalty': f'{self.frequency_penalty}',
+		              'presence_penalty': f'{self.presence_penalty}',
+		              'store': f'{self.store}',
+		              'stream': f'{self.stream}',
+		              'authorization': f'{self.header.authoriztion}',
+		              'content-type': f'{self.header.content_type}' }
 	
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+				Methods that returns a list of member names
+				Returns: list[ str ]
 		'''
-		return [ 'header', 'client', 'request_type', 'endpoint',
-		         'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'create' ]
+		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
 	
 	
 	def create( self, prompt: str ) -> str:
@@ -635,32 +628,32 @@ class ImageRequest( GptRequest ):
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
-		self.header = super( ).header
-		self.client = super( ).client
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'dall-e-3'
 		self.endpoint = EndPoint( ).image_generation
-		self.model = 'dall-e-2'
-		self.number = super( ).number
-		self.temperature = super( ).temperature
-		self.top_percent = super( ).top_percent
-		self.frequency_penalty = super( ).frequency_penalty
-		self.presence_penalty = super( ).presence_penalty
-		self.max_completion_tokens = super( ).max_completion_tokens
-		self.store = super( ).store
-		self.stream = super( ).stream
-		self.content = super( ).content
-		self.response = super( ).response
-		self.prompt = super( ).prompt
-		self.messages = super( ).messages
-		self.data = super( ).data
+		self.content = None
+		self.response = None
+		self.prompt = None
+		self.messages = [ GptMessage ]
+		self.data = { 'number': f'{self.number}',
+		              'temperature': f'{self.temperature}',
+		              'top_percent': f'{self.top_percent}',
+		              'frequency_penalty': f'{self.frequency_penalty}',
+		              'presence_penalty': f'{self.presence_penalty}',
+		              'store': f'{self.store}',
+		              'stream': f'{self.stream}',
+		              'authorization': f'{self.header.authoriztion}',
+		              'content-type': f'{self.header.content_type}' }
 	
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+				Methods that returns a list of member names
+				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create' ]
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
 	
 	
 	def create( self, prompt: str, num: int = 1,
@@ -683,28 +676,27 @@ class ImageRequest( GptRequest ):
 				self.prompt = prompt
 				self.number = num
 				self.size = size
-			
-			openai.api_key = self.header.api_key
-			_sys = 'You are a helpful assistant and Budget Analyst'
-			_system = GptMessage( prompt=_sys, role='system', type='documents' )
-			_user = GptMessage( prompt=self.prompt, role='user', type='documents' )
-			self.messages.append( _system )
-			self.messages.append( _user )
-			self.response = self.client.chat.completions.create(
-				model=self.model,
-				messages=self.messages,
-				temperature=self.temperature,
-				max_completion_tokens=self.max_completion_tokens,
-				top_p=self.top_percent,
-				n=self.number,
-				frequency_penalty=self.frequency_penalty,
-				presence_penalty=self.presence_penalty,
-			)
-			
-			self.url = self.response[ 'data' ][ 0 ][ 'url' ]
-			self.content = requests.get( url ).content
-			with open( 'image_name.png', 'wb' ) as file:
-				file.write( self.content )
+				openai.api_key = self.header.api_key
+				_sys = 'You are a helpful assistant and Budget Analyst'
+				_system = GptMessage( prompt=_sys, role='system', type='documents' )
+				_user = GptMessage( prompt=self.prompt, role='user', type='documents' )
+				self.messages.append( _system )
+				self.messages.append( _user )
+				self.response = self.client.chat.completions.create(
+					model=self.model,
+					messages=self.messages,
+					temperature=self.temperature,
+					max_completion_tokens=self.max_completion_tokens,
+					top_p=self.top_percent,
+					n=self.number,
+					frequency_penalty=self.frequency_penalty,
+					presence_penalty=self.presence_penalty,
+				)
+				
+				self.url = self.response[ 'data' ][ 0 ][ 'url' ]
+				self.content = requests.get( url ).content
+				with open( 'image_name.png', 'wb' ) as file:
+					file.write( self.content )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
@@ -721,19 +713,26 @@ class SpeechRequest( GptRequest ):
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
-		self.number = super( ).number
-		self.temperature = super( ).temperature
-		self.top_percent = super( ).top_percent
-		self.frequency_penalty = super( ).frequency_penalty
-		self.presence_penalty = super( ).presence_penalty
-		self.max_completion_tokens = super( ).max_completion_tokens
-		self.store = super( ).store
-		self.stream = super( ).stream
-		self.content = super( ).content
-		self.response = super( ).response
-		self.prompt = super( ).prompt
-		self.messages = super( ).messages
-		self.data = super( ).data
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'tts-1-hd'
+		self.endpoint = EndPoint( ).speech_generation
+		self.content = None
+		self.response = None
+		self.prompt = None
+		self.messages = None
+		self.data = { 'number': f'{self.number}',
+		              'model': f'{self.model}',
+		              'endpoint': f'{self.endpoint}',
+		              'temperature': f'{self.temperature}',
+		              'top_percent': f'{self.top_percent}',
+		              'frequency_penalty': f'{self.frequency_penalty}',
+		              'presence_penalty': f'{self.presence_penalty}',
+		              'store': f'{self.store}',
+		              'stream': f'{self.stream}',
+		              'authorization': f'{self.header.authoriztion}',
+		              'content-type': f'{self.header.content_type}' }
+
 
 
 class TranslationRequest( GptRequest ):
@@ -743,21 +742,36 @@ class TranslationRequest( GptRequest ):
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
-		self.number = super( ).number
-		self.temperature = super( ).temperature
-		self.top_percent = super( ).top_percent
-		self.frequency_penalty = super( ).frequency_penalty
-		self.presence_penalty = super( ).presence_penalty
-		self.max_completion_tokens = super( ).max_completion_tokens
-		self.store = super( ).store
-		self.stream = super( ).stream
-		self.content = super( ).content
-		self.response = super( ).response
-		self.prompt = super( ).prompt
-		self.messages = super( ).messages
-		self.data = super( ).data
-
-
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'whisper-1'
+		self.endpoint = EndPoint( ).translations
+		self.content = None
+		self.response = None
+		self.prompt = None
+		self.messages = [ GptMessage ]
+		self.data = { 'number': f'{self.number}',
+		              'model': f'{self.model}',
+		              'endpoint': f'{self.endpoint}',
+		              'temperature': f'{self.temperature}',
+		              'top_percent': f'{self.top_percent}',
+		              'frequency_penalty': f'{self.frequency_penalty}',
+		              'presence_penalty': f'{self.presence_penalty}',
+		              'store': f'{self.store}',
+		              'stream': f'{self.stream}',
+		              'authorization': f'{self.header.authoriztion}',
+		              'content-type': f'{self.header.content_type}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+				Methods that returns a list of member names
+				Returns: list[ str ]
+		'''
+		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+	
+	
 class TranscriptionRequest( GptRequest ):
 	'''
 		Class encapsulating requests for transcriptions.
@@ -765,19 +779,35 @@ class TranscriptionRequest( GptRequest ):
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
-		self.number = super( ).number
-		self.temperature = super( ).temperature
-		self.top_percent = super( ).top_percent
-		self.frequency_penalty = super( ).frequency_penalty
-		self.presence_penalty = super( ).presence_penalty
-		self.max_completion_tokens = super( ).max_completion_tokens
-		self.store = super( ).store
-		self.stream = super( ).stream
-		self.content = super( ).content
-		self.response = super( ).response
-		self.prompt = super( ).prompt
-		self.messages = super( ).messages
-		self.data = super( ).data
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'whisper-1'
+		self.endpoint = EndPoint( ).transcriptions
+		self.content = None
+		self.response = None
+		self.prompt = None
+		self.messages = None
+		self.data = { 'number': f'{self.number}',
+		              'model': f'{self.model}',
+		              'endpoint': f'{self.endpoint}',
+		              'temperature': f'{self.temperature}',
+		              'top_percent': f'{self.top_percent}',
+		              'frequency_penalty': f'{self.frequency_penalty}',
+		              'presence_penalty': f'{self.presence_penalty}',
+		              'store': f'{self.store}',
+		              'stream': f'{self.stream}',
+		              'authorization': f'{self.header.authoriztion}',
+		              'content-type': f'{self.header.content_type}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+				Methods that returns a list of member names
+				Returns: list[ str ]
+		'''
+		return [ 'header', 'client', 'endpoint', 'model', 'number', 'messages',
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+
 
 
 class EmbeddingRequest( GptRequest ):
@@ -787,19 +817,35 @@ class EmbeddingRequest( GptRequest ):
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
-		self.number = super( ).number
-		self.temperature = super( ).temperature
-		self.top_percent = super( ).top_percent
-		self.frequency_penalty = super( ).frequency_penalty
-		self.presence_penalty = super( ).presence_penalty
-		self.max_completion_tokens = super( ).max_completion_tokens
-		self.store = super( ).store
-		self.stream = super( ).stream
-		self.content = super( ).content
-		self.response = super( ).response
-		self.prompt = super( ).prompt
-		self.messages = super( ).messages
-		self.data = super( ).data
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'text-embedding-3-large'
+		self.endpoint = EndPoint( ).embeddings
+		self.content = None
+		self.response = None
+		self.prompt = None
+		self.messages = None
+		self.data = { 'number': f'{self.number}',
+		              'model': f'{self.model}',
+		              'endpoint': f'{self.endpoint}',
+		              'temperature': f'{self.temperature}',
+		              'top_percent': f'{self.top_percent}',
+		              'frequency_penalty': f'{self.frequency_penalty}',
+		              'presence_penalty': f'{self.presence_penalty}',
+		              'store': f'{self.store}',
+		              'stream': f'{self.stream}',
+		              'authorization': f'{self.header.authoriztion}',
+		              'content-type': f'{self.header.content_type}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+				Methods that returns a list of member names
+				Returns: list[ str ]
+		'''
+		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+
 
 
 class VectorStoreRequest( GptRequest ):
@@ -809,19 +855,35 @@ class VectorStoreRequest( GptRequest ):
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
-		self.number = super( ).number
-		self.temperature = super( ).temperature
-		self.top_percent = super( ).top_percent
-		self.frequency_penalty = super( ).frequency_penalty
-		self.presence_penalty = super( ).presence_penalty
-		self.max_completion_tokens = super( ).max_completion_tokens
-		self.store = super( ).store
-		self.stream = super( ).stream
-		self.content = super( ).content
-		self.response = super( ).response
-		self.prompt = super( ).prompt
-		self.messages = super( ).messages
-		self.data = super( ).data
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'gt-4o-mini'
+		self.endpoint = EndPoint( ).vector_stores
+		self.content = None
+		self.response = None
+		self.prompt = None
+		self.messages = None
+		self.data = { 'number': f'{self.number}',
+		              'model': f'{self.model}',
+		              'endpoint': f'{self.endpoint}',
+		              'temperature': f'{self.temperature}',
+		              'top_percent': f'{self.top_percent}',
+		              'frequency_penalty': f'{self.frequency_penalty}',
+		              'presence_penalty': f'{self.presence_penalty}',
+		              'store': f'{self.store}',
+		              'stream': f'{self.stream}',
+		              'authorization': f'{self.header.authoriztion}',
+		              'content-type': f'{self.header.content_type}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+				Methods that returns a list of member names
+				Returns: list[ str ]
+		'''
+		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+
 
 
 class GptFileRequest( GptRequest ):
@@ -831,19 +893,35 @@ class GptFileRequest( GptRequest ):
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
-		self.number = super( ).number
-		self.temperature = super( ).temperature
-		self.top_percent = super( ).top_percent
-		self.frequency_penalty = super( ).frequency_penalty
-		self.presence_penalty = super( ).presence_penalty
-		self.max_completion_tokens = super( ).max_completion_tokens
-		self.store = super( ).store
-		self.stream = super( ).stream
-		self.content = super( ).content
-		self.response = super( ).response
-		self.prompt = super( ).prompt
-		self.messages = super( ).messages
-		self.data = super( ).data
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'gt-4o-mini'
+		self.endpoint = EndPoint( ).files
+		self.content = None
+		self.response = None
+		self.prompt = None
+		self.messages = None
+		self.data = { 'number': f'{self.number}',
+		              'model': f'{self.model}',
+		              'endpoint': f'{self.endpoint}',
+		              'temperature': f'{self.temperature}',
+		              'top_percent': f'{self.top_percent}',
+		              'frequency_penalty': f'{self.frequency_penalty}',
+		              'presence_penalty': f'{self.presence_penalty}',
+		              'store': f'{self.store}',
+		              'stream': f'{self.stream}',
+		              'authorization': f'{self.header.authoriztion}',
+		              'content-type': f'{self.header.content_type}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+				Methods that returns a list of member names
+				Returns: list[ str ]
+		'''
+		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+
 
 
 class GptUploadRequest( GptRequest ):
@@ -853,19 +931,35 @@ class GptUploadRequest( GptRequest ):
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
 	              pres: float = 0.0, max: int=2048, store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
-		self.number = super( ).number
-		self.temperature = super( ).temperature
-		self.top_percent = super( ).top_percent
-		self.frequency_penalty = super( ).frequency_penalty
-		self.presence_penalty = super( ).presence_penalty
-		self.max_completion_tokens = super( ).max_completion_tokens
-		self.store = super( ).store
-		self.stream = super( ).stream
-		self.content = super( ).content
-		self.response = super( ).response
-		self.prompt = super( ).prompt
-		self.messages = super( ).messages
-		self.data = super( ).data
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'gt-4o-mini'
+		self.endpoint = EndPoint( ).uploads
+		self.content = None
+		self.response = None
+		self.prompt = None
+		self.messages = None
+		self.data = { 'number': f'{self.number}',
+		              'model': f'{self.model}',
+		              'endpoint': f'{self.endpoint}',
+		              'temperature': f'{self.temperature}',
+		              'top_percent': f'{self.top_percent}',
+		              'frequency_penalty': f'{self.frequency_penalty}',
+		              'presence_penalty': f'{self.presence_penalty}',
+		              'store': f'{self.store}',
+		              'stream': f'{self.stream}',
+		              'authorization': f'{self.header.authoriztion}',
+		              'content-type': f'{self.header.content_type}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+				Methods that returns a list of member names
+				Returns: list[ str ]
+		'''
+		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+
 
 
 class FineTuningRequest( GptRequest ):
@@ -873,21 +967,35 @@ class FineTuningRequest( GptRequest ):
 		Class encapsulating requests for fine-tuning.
 	'''
 	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, store: bool = False, stream: bool = True ):
+	              pres: float = 0.0, max: int=2048,  store: bool = False, stream: bool = True ):
 		super( ).__init__( num, temp, top, freq, pres, store, stream )
-		self.number = super( ).number
-		self.temperature = super( ).temperature
-		self.top_percent = super( ).top_percent
-		self.frequency_penalty = super( ).frequency_penalty
-		self.presence_penalty = super( ).presence_penalty
-		self.max_completion_tokens = super( ).max_completion_tokens
-		self.store = super( ).store
-		self.stream = super( ).stream
-		self.content = super( ).content
-		self.response = super( ).response
-		self.prompt = super( ).prompt
-		self.messages = super( ).messages
-		self.data = super( ).data
+		self.client = OpenAI( super( ).api_key )
+		self.model = 'gt-4o-mini'
+		self.endpoint = EndPoint( ).finetuning
+		self.content = None
+		self.response = None
+		self.prompt = None
+		self.messages = None
+		self.data = { 'number': f'{self.number}',
+		              'model': f'{self.model}',
+		              'endpoint': f'{self.endpoint}',
+		              'temperature': f'{self.temperature}',
+		              'top_percent': f'{self.top_percent}',
+		              'frequency_penalty': f'{self.frequency_penalty}',
+		              'presence_penalty': f'{self.presence_penalty}',
+		              'store': f'{self.store}',
+		              'stream': f'{self.stream}',
+		              'authorization': f'{self.header.authoriztion}',
+		              'content-type': f'{self.header.content_type}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+				Methods that returns a list of member names
+				Returns: list[ str ]
+		'''
+		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
 
 
 class GptResponse( ):
@@ -899,6 +1007,18 @@ class GptResponse( ):
 		self.object = obj
 		self.model = model
 		self.created = created
+		self.data = { 'id': f'{self.id}',
+		              'object': f'{self.object}',
+		              'model': f'{self.model}',
+		              'created': f'{self.created}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'id', 'object', 'model', 'created' ]
 
 
 class CompletionResponse( GptResponse ):
@@ -907,10 +1027,22 @@ class CompletionResponse( GptResponse ):
 	'''
 	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
 		super( ).__init__( respid, obj, model, created )
-		self.id = super( ).id
-		self.object = super( ).object
-		self.model = super( ).model
-		self.created = super( ).created
+		self.id = respid
+		self.object = obj
+		self.model = model
+		self.created = created
+		self.data = { 'id': f'{self.id}',
+		              'object': f'{self.object}',
+		              'model': f'{self.model}',
+		              'created': f'{self.created}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'id', 'object', 'model', 'created' ]
 
 
 class TextResponse( GptResponse ):
@@ -919,10 +1051,22 @@ class TextResponse( GptResponse ):
 	'''
 	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
 		super( ).__init__( respid, obj, model, created )
-		self.id = super( ).id
-		self.object = super( ).object
-		self.model = super( ).model
-		self.created = super( ).created
+		self.id = respid
+		self.object = obj
+		self.model = model
+		self.created = created
+		self.data = { 'id': f'{self.id}',
+		              'object': f'{self.object}',
+		              'model': f'{self.model}',
+		              'created': f'{self.created}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'id', 'object', 'model', 'created' ]
 
 
 class EmbeddingResponse( GptResponse ):
@@ -931,10 +1075,22 @@ class EmbeddingResponse( GptResponse ):
 	'''
 	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
 		super( ).__init__( respid, obj, model, created )
-		self.id = super( ).id
-		self.object = super( ).object
-		self.model = super( ).model
-		self.created = super( ).created
+		self.id = respid
+		self.object = obj
+		self.model = model
+		self.created = created
+		self.data = { 'id': f'{self.id}',
+		              'object': f'{self.object}',
+		              'model': f'{self.model}',
+		              'created': f'{self.created}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'id', 'object', 'model', 'created' ]
 
 
 class FineTuningResponse( GptResponse ):
@@ -943,10 +1099,22 @@ class FineTuningResponse( GptResponse ):
 	'''
 	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
 		super( ).__init__( respid, obj, model, created )
-		self.id = super( ).id
-		self.object = super( ).object
-		self.model = super( ).model
-		self.created = super( ).created
+		self.id = respid
+		self.object = obj
+		self.model = model
+		self.created = created
+		self.data = { 'id': f'{self.id}',
+		              'object': f'{self.object}',
+		              'model': f'{self.model}',
+		              'created': f'{self.created}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'id', 'object', 'model', 'created' ]
 
 
 class VectorResponse( GptResponse ):
@@ -955,10 +1123,22 @@ class VectorResponse( GptResponse ):
 	'''
 	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
 		super( ).__init__( respid, obj, model, created )
-		self.id = super( ).id
-		self.object = super( ).object
-		self.model = super( ).model
-		self.created = super( ).created
+		self.id = respid
+		self.object = obj
+		self.model = model
+		self.created = created
+		self.data = { 'id': f'{self.id}',
+		              'object': f'{self.object}',
+		              'model': f'{self.model}',
+		              'created': f'{self.created}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'id', 'object', 'model', 'created' ]
 
 
 class FileResponse( GptResponse ):
@@ -967,10 +1147,22 @@ class FileResponse( GptResponse ):
 	'''
 	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
 		super( ).__init__( respid, obj, model, created )
-		self.id = super( ).id
-		self.object = super( ).object
-		self.model = super( ).model
-		self.created = super( ).created
+		self.id = respid
+		self.object = obj
+		self.model = model
+		self.created = created
+		self.data = { 'id': f'{self.id}',
+		              'object': f'{self.object}',
+		              'model': f'{self.model}',
+		              'created': f'{self.created}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'id', 'object', 'model', 'created' ]
 
 
 class UploadResponse( GptResponse ):
@@ -979,10 +1171,22 @@ class UploadResponse( GptResponse ):
 	'''
 	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
 		super( ).__init__( respid, obj, model, created )
-		self.id = super( ).id
-		self.object = super( ).object
-		self.model = super( ).model
-		self.created = super( ).created
+		self.id = respid
+		self.object = obj
+		self.model = model
+		self.created = created
+		self.data = { 'id': f'{self.id}',
+		              'object': f'{self.object}',
+		              'model': f'{self.model}',
+		              'created': f'{self.created}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'id', 'object', 'model', 'created' ]
 
 
 class ImageResponse( GptResponse ):
@@ -991,10 +1195,22 @@ class ImageResponse( GptResponse ):
 	'''
 	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
 		super( ).__init__( respid, obj, model, created )
-		self.id = super( ).id
-		self.object = super( ).object
-		self.model = super( ).model
-		self.created = super( ).created
+		self.id = respid
+		self.object = obj
+		self.model = model
+		self.created = created
+		self.data = { 'id': f'{self.id}',
+		              'object': f'{self.object}',
+		              'model': f'{self.model}',
+		              'created': f'{self.created}' }
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'id', 'object', 'model', 'created' ]
 
 
 class GptMessage( ):
@@ -1295,7 +1511,7 @@ class Perceptron:
 		self.random_state = random_state
 	
 	
-	def fit( self, X, y ):
+	def fit( self, X, y ) -> self:
 		"""
 		
 			Purpose
@@ -1317,36 +1533,79 @@ class Perceptron:
 			self : object
 		
 		"""
-		rgen = np.random.RandomState( self.random_state )
-		self.w_ = rgen.normal( loc=0.0, scale=0.01, size=X.shape[ 1 ] )
-		self.b_ = np.float_( 0. )
-		self.errors_ = [ ]
-		
-		for _ in range( self.n_iter ):
-			errors = 0
-			
-		for xi, target in zip( X, y ):
-			update = self.eta * ( target - self.predict( xi ) )
-			
-		self.w_ += update * xi
-		self.b_ += update
-		errors += int( update != 0.0 )
-		self.errors_.append( errors )
-		return self
+		try:
+			if X is None:
+				raise Exception( 'X is not provided.' )
+			elif y is None:
+				raise Exception( 'y is not provided.' )
+			else:
+				rgen = np.random.RandomState( self.random_state )
+				self.w_ = rgen.normal( loc=0.0, scale=0.01, size=X.shape[ 1 ] )
+				self.b_ = np.float_( 0. )
+				self.errors_ = [ ]
+				
+				for _ in range( self.n_iter ):
+					errors = 0
+					
+				for xi, target in zip( X, y ):
+					update = self.eta * ( target - self.predict( xi ) )
+					
+				self.w_ += update * xi
+				self.b_ += update
+				errors += int( update != 0.0 )
+				self.errors_.append( errors )
+				return self
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Perceptron'
+			exception.method = 'fit( self, X, y ) -> self'
+			error = ErrorDialog( exception )
+			error.show( )
 		
 		
 	def net_input( self, X ):
 		"""
 			Calculate net input
 		"""
-		return np.dot( X, self.w_ ) + self.b_
+		try:
+			if X is None:
+				raise Exception( 'X is not provided.' )
+			else:
+				return np.dot( X, self.w_ ) + self.b_
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Perceptron'
+			exception.method = 'net_input( self, X ):'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def predict( self, X ):
 		"""
 		Return class label after unit step
 		"""
-		return np.where( self.net_input( X ) >= 0.0, 1, 0 )
+		try:
+			if X is None:
+				raise Exception( 'X is not provided.' )
+			else:
+				return np.where( self.net_input( X ) >= 0.0, 1, 0 )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Perceptron'
+			exception.method = 'predict( self, X )'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'fit', 'net_input', 'predict' ]
 
 
 class AdaptiveLinearNeuron( ):
@@ -1381,7 +1640,7 @@ class AdaptiveLinearNeuron( ):
 		self.random_state = random_state
 		
 		
-	def fit(self, X, y):
+	def fit( self, X, y ) -> self:
 		""" Fit training data.
 
 			Parameters
@@ -1397,21 +1656,34 @@ class AdaptiveLinearNeuron( ):
 			self : object
 		
 		"""
-		rgen = np.random.RandomState(self.random_state)
-		self.w_ = rgen.normal(loc=0.0, scale=0.01,
-		size=X.shape[1])
-		self.b_ = np.float_(0.)
-		self.losses_ = []
-		for i in range(self.n_iter):
-			net_input = self.net_input(X)
-			
-		output = self.activation(net_input)
-		errors = (y - output)
-		self.w_ += self.eta * 2.0 * X.T.dot(errors) / X.shape[0]
-		self.b_ += self.eta * 2.0 * errors.mean()
-		loss = ( errors**2 ).mean( )
-		self.losses_.append( loss )
-		return self
+		try:
+			if X is None:
+				raise Exception( 'X is not provided.' )
+			elif y is None:
+				raise Exception( 'y is not provided.' )
+			else:
+				rgen = np.random.RandomState(self.random_state)
+				self.w_ = rgen.normal(loc=0.0, scale=0.01,
+				size=X.shape[1])
+				self.b_ = np.float_(0.)
+				self.losses_ = []
+				for i in range(self.n_iter):
+					net_input = self.net_input(X)
+					
+				output = self.activation(net_input)
+				errors = (y - output)
+				self.w_ += self.eta * 2.0 * X.T.dot(errors) / X.shape[0]
+				self.b_ += self.eta * 2.0 * errors.mean()
+				loss = ( errors**2 ).mean( )
+				self.losses_.append( loss )
+				return self
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'AdaptiveLinearNeuron'
+			exception.method = 'fit( self, X, y ) -> self'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 	def net_input( self, X ):
@@ -1420,16 +1692,38 @@ class AdaptiveLinearNeuron( ):
 			Calculate net
 			
 		"""
-		return np.dot( X, self.w_ ) + self.b_
+		try:
+			if X is None:
+				raise Exception( 'X is not provided.' )
+			else:
+				return np.dot( X, self.w_ ) + self.b_
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'AdaptiveLinearNeuron'
+			exception.method = 'net_input( self, X )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
-	def activation( self, X) :
+	def activation( self, X):
 		"""
 		
 			Compute linear activation
 		
 		"""
-		return X
+		try:
+			if X is None:
+				raise Exception( 'X is not provided.' )
+			else:
+				return X
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'AdaptiveLinearNeuron'
+			exception.method = 'activation( self, X)'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 	def predict( self, X ):
@@ -1438,4 +1732,230 @@ class AdaptiveLinearNeuron( ):
 			Return class label after unit step
 		
 		"""
-		return np.where( self.activation( self.net_input( X ) ) >= 0.5, 1, 0 )
+		try:
+			if X is None:
+				raise Exception( 'X is not provided.' )
+			else:
+				return np.where( self.activation( self.net_input( X ) ) >= 0.5, 1, 0 )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'AdaptiveLinearNeuron'
+			exception.method = 'predict( self, X )'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+		
+			Methods that returns a list of member names
+			Returns: list[ str ]
+			
+		'''
+		return [ 'fit', 'net_input', 'activation', 'predict' ]
+
+
+class Embedding( AI ):
+	'''
+	
+		Class proiding embedding objects
+		
+	'''
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = super().api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'text-embedding-3-large'
+		
+	
+	def create( self, input: str ) -> list[ float ]:
+		try:
+			if input is None:
+				raise Exception( 'Argument "input" is required.' )
+			else:
+				self.input = input
+				_request = self.client.embeddings.create( input, self.model )
+				_emedding = _request.data[ 0 ].embedding
+				return _emedding
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Embedding'
+			exception.method = 'create( self, input: str ) -> list[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+		
+			Methods that returns a list of member names
+			Returns: list[ str ]
+			
+		'''
+		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+
+
+class Response( AI ):
+	'''
+
+		Class proiding Response objects
+
+	'''
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'gpt-4o-mini'
+	
+	
+	def create( self, input: str ) -> str:
+		pass
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+		
+			Methods that returns a list of member names
+			Returns: list[ str ]
+			
+		'''
+		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+
+
+
+class Chat( AI ):
+	'''
+
+		Class proiding Response objects
+
+	'''
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'gpt-4o-mini'
+	
+	
+	def create( self, input: str ) -> str:
+		pass
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+		
+			Methods that returns a list of member names
+			Returns: list[ str ]
+			
+		'''
+		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+
+
+
+class Image( AI ):
+	'''
+
+		Class proiding Response objects
+
+	'''
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'dall-e-3'
+	
+	
+	def create( self, input: str ) -> str:
+		pass
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+		
+			Methods that returns a list of member names
+			Returns: list[ str ]
+			
+		'''
+		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+
+
+class TTS( AI ):
+	'''
+
+		Class proiding Response objects
+
+	'''
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'tts-1-hd'
+	
+	
+	def create( self, input: str ) -> str:
+		pass
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+		
+			Methods that returns a list of member names
+			Returns: list[ str ]
+			
+		'''
+		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+
+
+class Transcription( AI ):
+	'''
+
+		Class proiding Transciprtion objects
+
+	'''
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'whisper-1'
+	
+	
+	def create( self, input: str ) -> str:
+		pass
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+		
+			Methods that returns a list of member names
+			Returns: list[ str ]
+			
+		'''
+		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+
+
+class Translation( AI ):
+	'''
+
+		Class proiding Response objects
+
+	'''
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'whisper-1'
+	
+	
+	def create( self, input: str ) -> str:
+		pass
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+		
+			Methods that returns a list of member names
+			Returns: list[ str ]
+			
+		'''
+		return [ 'api_key', 'client', 'model', 'input', 'create' ]
