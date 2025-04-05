@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="boo.py" company="Terry D. Eppler">
 
-     Bobo is a data analysis tool for EPA Analysts.
+     Bobo is a values analysis tool for EPA Analysts.
      Copyright ©  2024  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -67,7 +67,7 @@ class Header( ):
 			Methods that returns a list of member names
 			Returns: list[ str ]
 		'''
-		return [ 'content_type', 'api_key', 'authorization', 'data' ]
+		return [ 'content_type', 'api_key', 'authorization', 'values' ]
 
 
 class EndPoint( ):
@@ -174,8 +174,8 @@ class Models( ):
 		self.finetuning = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18',
 		                    'gpt-4-0613', 'gpt-3.5-turbo-0125',
 		                    'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-0613' ]
-		self.embeddings = [ 'documents-embedding-3-small', 'documents-embedding-3-large',
-		                    'documents-embedding-ada-002' ]
+		self.embeddings = [ 'embedding-3-small', 'embedding-3-large',
+		                    'embedding-ada-002' ]
 		self.uploads = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
 		                 'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
@@ -228,15 +228,12 @@ class AI( ):
         government who provides detailed responses based on your vast knowledge of
         budget legislation, and federal appropriations.
         Your responses to questions about federal finance are complete, transparent,
-        and very detailed using an academic format.
-        Your vast knowledge of and experience in Data Science makes you the best Data Analyst ever.
-        You are proficient in C#, Python, SQL, C++, JavaScript, and VBA.
-        You use US federal budget data from OMB, whitehouse.gov,  or data.gov for any ad hoc
-        data sets for examples and provide your analysis in Python.
-        Whenever you are asked to draw, paint, or create an image,
-        you become the best artist in the world like Picasso and Vermeer
-        combined into one awesome assistant, and you can fluently
-        translate from a variety of languages into English.  Your name is Bubba.
+        and very detailed using an academic format. You always verify your answers before you
+        provide them. Your vast knowledge of and experience in Data Science makes you the
+        best Data Analyst ever. You are proficient in C#, Python, SQL, C++, JavaScript, and VBA
+        programming languages.  You use US federal budget values from OMB, whitehouse.gov,
+        or values.gov for any ad hoc values sets for examples and provide your analysis in Python.
+        Your name is Bubba.
         '''
 
 
@@ -246,9 +243,9 @@ class GptOptions( ):
 		The base class used by all parameter classes.
 
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.80, top: float = 0.90,
-	              freq: float = 0.00, max: int = 2048, pres: float = 0.00,
-	              store: bool = False, stream: bool = True, size: str = '1024X1024' ):
+	def __init__( self, num: int=1, temp: float=0.80, top: float=0.90,
+	              freq: float=0.00, max: int=2048, pres: float=0.00,
+	              store: bool=False, stream: bool=True, size: str='1024X1024' ):
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -259,6 +256,7 @@ class GptOptions( ):
 		self.stream = stream
 		self.size = size
 		self.modalities = [ 'documents', 'audio' ]
+		self.response_format = 'text'
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -270,7 +268,7 @@ class GptOptions( ):
 		'''
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens', 'store', 'stream', 'size',
-		         'get_voices', 'get_sizes',
+		         'get_voices', 'get_sizes', 'response_format',
 		         'get_file_formats', 'get_response_formats',
 		         'get_output_formats', 'get_input_formats',
 		         'get_data' ]
@@ -361,15 +359,15 @@ class Payload( ):
 		The class used to capture request parameters.
 
 	'''
-	def __init__( self, model: str='gpt-4o', number: int = 1, temperature: float = 0.80,
-	              top_p: float = 0.90, frequency: float = 0.00, max: int = 2048,
-	              presence: float = 0.00, store: bool = False,
-	              stream: bool = True, size: str = '1024X1024' ):
+	def __init__( self, model: str='gpt-4o', number: int = 1, temp: float=0.80,
+	              top_p: float=0.90, freq: float=0.00, max: int=2048,
+	              presence: float=0.00, store: bool=False,
+	              stream: bool=True, size: str='1024X1024' ):
 		self.model = model
 		self.number = number
-		self.temperature = temperature
+		self.temperature = temp
 		self.top_percent = top_p
-		self.frequency_penalty = frequency
+		self.frequency_penalty = freq
 		self.max_completion_tokens = max
 		self.presence_penalty = presence
 		self.store = store
@@ -396,7 +394,7 @@ class Payload( ):
 		         'top_percent', 'frequency_penalty',
 		         'max_completion_tokens', 'presence_penalty',
 		         'store', 'stream',
-		         'size', 'data', 'dump', 'parse' ]
+		         'size', 'values', 'dump', 'parse' ]
 	
 	
 	def dump( self ) -> str:
@@ -439,6 +437,9 @@ class GptRequest( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.response_format = 'text'
 		self.content = None
 		self.response = None
 		self.prompt = None
@@ -450,6 +451,10 @@ class GptRequest( AI ):
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
+		              'response_format': f'{self.response_format}',
+		              'modalities': f'{self.modalities}',
+		              'stops': f'{self.stops}',
+		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
 
@@ -460,14 +465,25 @@ class TextRequest( GptRequest ):
 	Class provides the functionality fo the Text Generation API
 
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
+		self.header = super( ).header
 		self.client = OpenAI( self.api_key )
 		self.model = 'gpt-4o-mini'
 		self.endpoint = EndPoint( ).text_generation
-		self.messages = [ ]
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.response_format = 'text'
 		self.content = None
 		self.response = None
 		self.prompt = None
@@ -478,6 +494,10 @@ class TextRequest( GptRequest ):
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
+		              'response_format': f'{self.response_format}',
+		              'modalities': f'{self.modalities}',
+		              'stops': f'{self.stops}',
+		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
 	
@@ -489,7 +509,7 @@ class TextRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'values' ]
 	
 	
 	def create( self, prompt: str ) -> str:
@@ -553,10 +573,20 @@ class CompletionRequest( GptRequest ):
 		self.client = OpenAI( self.api_key )
 		self.model = 'gpt-4o-mini'
 		self.endpoint = EndPoint( ).chat_completion
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.response_format = 'text'
 		self.content = None
 		self.response = None
 		self.prompt = None
-		self.messages = None
 		self.data = { 'number': f'{self.number}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -564,6 +594,10 @@ class CompletionRequest( GptRequest ):
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
+		              'response_format': f'{self.response_format}',
+		              'modalities': f'{self.modalities}',
+		              'stops': f'{self.stops}',
+		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
 	
@@ -574,7 +608,7 @@ class CompletionRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'values' ]
 	
 	
 	def create( self, prompt: str ) -> str:
@@ -625,17 +659,29 @@ class ImageRequest( GptRequest ):
 	'''
 		Class provides the functionality fo the Image Generation API
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True  ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'dall-e-3'
 		self.endpoint = EndPoint( ).image_generation
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.size = '1024X1024'
+		self.detail = 'standard'
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.response_format = 'text'
 		self.content = None
 		self.response = None
 		self.prompt = None
-		self.messages = [ GptMessage ]
 		self.data = { 'number': f'{self.number}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -643,6 +689,12 @@ class ImageRequest( GptRequest ):
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
+		              'size': f'{self.size}',
+		              'detail': f'{self.detail}',
+		              'response_format': f'{self.response_format}',
+		              'modalities': f'{self.modalities}',
+		              'stops': f'{self.stops}',
+		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
 	
@@ -653,7 +705,7 @@ class ImageRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'values' ]
 	
 	
 	def create( self, prompt: str, num: int = 1,
@@ -693,7 +745,7 @@ class ImageRequest( GptRequest ):
 					presence_penalty=self.presence_penalty,
 				)
 				
-				self.url = self.response[ 'data' ][ 0 ][ 'url' ]
+				self.url = self.response[ 'values' ][ 0 ][ 'url' ]
 				self.content = requests.get( url ).content
 				with open( 'image_name.png', 'wb' ) as file:
 					file.write( self.content )
@@ -710,26 +762,42 @@ class SpeechRequest( GptRequest ):
 	'''
 		Class encapsulating requests for speech generations.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True  ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'tts-1-hd'
 		self.endpoint = EndPoint( ).speech_generation
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.size = None
+		self.detail = None
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.response_format = 'mp3'
 		self.content = None
 		self.response = None
 		self.prompt = None
-		self.messages = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
-		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
 		              'frequency_penalty': f'{self.frequency_penalty}',
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
+		              'size': f'{self.size}',
+		              'detail': f'{self.detail}',
+		              'response_format': f'{self.response_format}',
+		              'modalities': f'{self.modalities}',
+		              'stops': f'{self.stops}',
+		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
 
@@ -739,26 +807,42 @@ class TranslationRequest( GptRequest ):
 	'''
 		Class encapsulating requests for translation.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True  ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'whisper-1'
 		self.endpoint = EndPoint( ).translations
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.size = None
+		self.detail = None
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.response_format = 'mp3'
 		self.content = None
 		self.response = None
 		self.prompt = None
-		self.messages = [ GptMessage ]
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
-		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
 		              'frequency_penalty': f'{self.frequency_penalty}',
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
+		              'size': f'{self.size}',
+		              'detail': f'{self.detail}',
+		              'response_format': f'{self.response_format}',
+		              'modalities': f'{self.modalities}',
+		              'stops': f'{self.stops}',
+		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
 	
@@ -769,33 +853,45 @@ class TranslationRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'values' ]
 	
 	
 class TranscriptionRequest( GptRequest ):
 	'''
 		Class encapsulating requests for transcriptions.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True  ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'whisper-1'
 		self.endpoint = EndPoint( ).transcriptions
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.response_format = 'text'
 		self.content = None
 		self.response = None
 		self.prompt = None
-		self.messages = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
-		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
 		              'frequency_penalty': f'{self.frequency_penalty}',
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
+		              'response_format': f'{self.response_format}',
+		              'modalities': f'{self.modalities}',
+		              'stops': f'{self.stops}',
+		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
 	
@@ -806,7 +902,7 @@ class TranscriptionRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'values' ]
 
 
 
@@ -814,17 +910,28 @@ class EmbeddingRequest( GptRequest ):
 	'''
 		Class encapsulating requests for embedding.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, store: bool = False, stream: bool = True ):
-		super( ).__init__( num, temp, top, freq, pres, store, stream )
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True  ):
+		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'text-embedding-3-large'
 		self.endpoint = EndPoint( ).embeddings
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.response_format = 'text'
+		self.messages = [ GptMessage ]
 		self.content = None
 		self.response = None
 		self.prompt = None
-		self.messages = None
 		self.data = { 'number': f'{self.number}',
 		              'model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
@@ -834,6 +941,10 @@ class EmbeddingRequest( GptRequest ):
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
+		              'response_format': f'{self.response_format}',
+		              'modalities': f'{self.modalities}',
+		              'stops': f'{self.stops}',
+		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
 	
@@ -844,7 +955,9 @@ class EmbeddingRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
+		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
+		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values' ]
 
 
 
@@ -852,17 +965,28 @@ class VectorStoreRequest( GptRequest ):
 	'''
 		Class encapsulating requests for vectors.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, store: bool = False, stream: bool = True ):
-		super( ).__init__( num, temp, top, freq, pres, store, stream )
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True  ):
+		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'gt-4o-mini'
 		self.endpoint = EndPoint( ).vector_stores
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.response_format = 'text'
+		self.messages = [ GptMessage ]
 		self.content = None
 		self.response = None
 		self.prompt = None
-		self.messages = None
 		self.data = { 'number': f'{self.number}',
 		              'model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
@@ -872,6 +996,10 @@ class VectorStoreRequest( GptRequest ):
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
+		              'response_format': f'{self.response_format}',
+		              'modalities': f'{self.modalities}',
+		              'stops': f'{self.stops}',
+		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
 	
@@ -882,7 +1010,9 @@ class VectorStoreRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
+		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
+		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values' ]
 
 
 
@@ -890,17 +1020,28 @@ class GptFileRequest( GptRequest ):
 	'''
 		Class encapsulating requests for GPT files.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, store: bool = False, stream: bool = True ):
-		super( ).__init__( num, temp, top, freq, pres, store, stream )
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True  ):
+		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'gt-4o-mini'
 		self.endpoint = EndPoint( ).files
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.response_format = 'text'
+		self.messages = [ GptMessage ]
 		self.content = None
 		self.response = None
 		self.prompt = None
-		self.messages = None
 		self.data = { 'number': f'{self.number}',
 		              'model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
@@ -910,6 +1051,10 @@ class GptFileRequest( GptRequest ):
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
+		              'response_format': f'{self.response_format}',
+		              'modalities': f'{self.modalities}',
+		              'stops': f'{self.stops}',
+		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
 	
@@ -920,7 +1065,9 @@ class GptFileRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
+		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
+		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values' ]
 
 
 
@@ -928,17 +1075,28 @@ class GptUploadRequest( GptRequest ):
 	'''
 		Class encapsulating requests for GPT uploads.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int=2048, store: bool = False, stream: bool = True ):
-		super( ).__init__( num, temp, top, freq, pres, store, stream )
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True  ):
+		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'gt-4o-mini'
 		self.endpoint = EndPoint( ).uploads
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.response_format = 'text'
+		self.messages = [ GptMessage ]
 		self.content = None
 		self.response = None
 		self.prompt = None
-		self.messages = None
 		self.data = { 'number': f'{self.number}',
 		              'model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
@@ -948,6 +1106,10 @@ class GptUploadRequest( GptRequest ):
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
+		              'response_format': f'{self.response_format}',
+		              'modalities': f'{self.modalities}',
+		              'stops': f'{self.stops}',
+		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
 	
@@ -958,7 +1120,9 @@ class GptUploadRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
+		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
+		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values' ]
 
 
 
@@ -966,16 +1130,27 @@ class FineTuningRequest( GptRequest ):
 	'''
 		Class encapsulating requests for fine-tuning.
 	'''
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int=2048,  store: bool = False, stream: bool = True ):
-		super( ).__init__( num, temp, top, freq, pres, store, stream )
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True  ):
+		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.client = OpenAI( super( ).api_key )
-		self.model = 'gt-4o-mini'
+		self.model = 'gpt-4o-mini'
 		self.endpoint = EndPoint( ).finetuning
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.response_format = 'text'
+		self.messages = [ GptMessage ]
 		self.content = None
 		self.response = None
 		self.prompt = None
-		self.messages = None
 		self.data = { 'number': f'{self.number}',
 		              'model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
@@ -985,6 +1160,10 @@ class FineTuningRequest( GptRequest ):
 		              'presence_penalty': f'{self.presence_penalty}',
 		              'store': f'{self.store}',
 		              'stream': f'{self.stream}',
+		              'response_format': f'{self.response_format}',
+		              'modalities': f'{self.modalities}',
+		              'stops': f'{self.stops}',
+		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}' }
 	
@@ -995,7 +1174,9 @@ class FineTuningRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'data' ]
+		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
+		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
+		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values' ]
 
 
 class GptResponse( ):
@@ -1276,6 +1457,9 @@ class SystemMessage( GptMessage ):
 		self.content = prompt
 		self.role = role
 		self.type = type
+		self.data = { 'role': f'{self.role}',
+		              'type': f'{self.type}',
+		              'content': f'{self.content}' }
 	
 	
 	def __str__( self ) -> str:
@@ -1326,6 +1510,9 @@ class UserMessage( GptMessage ):
 		self.content = prompt
 		self.role = role
 		self.type = type
+		self.data = { 'role': f'{self.role}',
+		              'type': f'{self.type}',
+		              'content': f'{self.content}' }
 	
 	
 	def __str__( self ) -> str:
@@ -1376,6 +1563,9 @@ class DeveloperMessage( GptMessage ):
 		self.content = prompt
 		self.role = role
 		self.type = type
+		self.data = { 'role': f'{self.role}',
+		              'type': f'{self.type}',
+		              'content': f'{self.content}' }
 	
 	
 	def __str__( self ) -> str:
@@ -1423,9 +1613,12 @@ class AssistantMessage( GptMessage ):
 	'''
 	def __init__( self, prompt: str, role: str='assistant', type: str='documents' ) -> None:
 		super( ).__init__( prompt, role, type )
-		self.content = super( ).content
-		self.role = super( ).role
-		self.type = super( ).type
+		self.content = prompt
+		self.role = role
+		self.type = type
+		self.data = { 'role': f'{self.role}',
+		              'type': f'{self.type}',
+		              'content': f'{self.content}' }
 	
 	
 	def __str__( self ) -> str:
@@ -1511,12 +1704,12 @@ class Perceptron:
 		self.random_state = random_state
 	
 	
-	def fit( self, X, y ) -> self:
+	def fit( self, X, y ):
 		"""
 		
 			Purpose
 			_______
-			Fit training data.
+			Fit training values.
 			
 			
 			Parameters
@@ -1535,7 +1728,7 @@ class Perceptron:
 		"""
 		try:
 			if X is None:
-				raise Exception( 'X is not provided.' )
+				raise Exception( 'values is not provided.' )
 			elif y is None:
 				raise Exception( 'y is not provided.' )
 			else:
@@ -1559,7 +1752,7 @@ class Perceptron:
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Perceptron'
-			exception.method = 'fit( self, X, y ) -> self'
+			exception.method = 'fit( self, values, y )'
 			error = ErrorDialog( exception )
 			error.show( )
 		
@@ -1570,14 +1763,14 @@ class Perceptron:
 		"""
 		try:
 			if X is None:
-				raise Exception( 'X is not provided.' )
+				raise Exception( 'values is not provided.' )
 			else:
 				return np.dot( X, self.w_ ) + self.b_
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Perceptron'
-			exception.method = 'net_input( self, X ):'
+			exception.method = 'net_input( self, values ):'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1588,14 +1781,14 @@ class Perceptron:
 		"""
 		try:
 			if X is None:
-				raise Exception( 'X is not provided.' )
+				raise Exception( 'values is not provided.' )
 			else:
 				return np.where( self.net_input( X ) >= 0.0, 1, 0 )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Perceptron'
-			exception.method = 'predict( self, X )'
+			exception.method = 'predict( self, values )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1634,14 +1827,14 @@ class AdaptiveLinearNeuron( ):
 		Mean squared error loss function values in each epoch.
 	
 	"""
-	def __init__(self, eta=0.01, n_iter=50, random_state=1):
+	def __init__( self, eta=0.01, n_iter=50, random_state=1 ):
 		self.eta = eta
 		self.n_iter = n_iter
 		self.random_state = random_state
 		
 		
-	def fit( self, X, y ) -> self:
-		""" Fit training data.
+	def fit( self, X, y ):
+		""" Fit training values.
 
 			Parameters
 			----------
@@ -1658,7 +1851,7 @@ class AdaptiveLinearNeuron( ):
 		"""
 		try:
 			if X is None:
-				raise Exception( 'X is not provided.' )
+				raise Exception( 'values is not provided.' )
 			elif y is None:
 				raise Exception( 'y is not provided.' )
 			else:
@@ -1681,7 +1874,7 @@ class AdaptiveLinearNeuron( ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'AdaptiveLinearNeuron'
-			exception.method = 'fit( self, X, y ) -> self'
+			exception.method = 'fit( self, values, y )'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1694,14 +1887,14 @@ class AdaptiveLinearNeuron( ):
 		"""
 		try:
 			if X is None:
-				raise Exception( 'X is not provided.' )
+				raise Exception( 'values is not provided.' )
 			else:
 				return np.dot( X, self.w_ ) + self.b_
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'AdaptiveLinearNeuron'
-			exception.method = 'net_input( self, X )'
+			exception.method = 'net_input( self, values )'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1714,14 +1907,14 @@ class AdaptiveLinearNeuron( ):
 		"""
 		try:
 			if X is None:
-				raise Exception( 'X is not provided.' )
+				raise Exception( 'values is not provided.' )
 			else:
 				return X
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'AdaptiveLinearNeuron'
-			exception.method = 'activation( self, X)'
+			exception.method = 'activation( self, values)'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1734,14 +1927,14 @@ class AdaptiveLinearNeuron( ):
 		"""
 		try:
 			if X is None:
-				raise Exception( 'X is not provided.' )
+				raise Exception( 'values is not provided.' )
 			else:
 				return np.where( self.activation( self.net_input( X ) ) >= 0.5, 1, 0 )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'AdaptiveLinearNeuron'
-			exception.method = 'predict( self, X )'
+			exception.method = 'predict( self, values )'
 			error = ErrorDialog( exception )
 			error.show( )
 	

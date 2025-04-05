@@ -1205,7 +1205,7 @@ msgstr "Tabuladores a espacios"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the X position will always stay the same"
+msgid "When moving through lines the values position will always stay the same"
 msgstr ""
 "Al cambiar de linea, arriba y abajo, el cursor se mantiene en la misma "
 "columna"

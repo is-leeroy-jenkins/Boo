@@ -1200,7 +1200,7 @@ msgstr "Μετατροπή TAB σε διαστήματα"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the X position will always stay the same"
+msgid "When moving through lines the values position will always stay the same"
 msgstr ""
 "Οταν μετακινείται ο κέρσορας σε διαφορετικές γραμμέσ η  στήλη του δρομέα "
 "διατηρείται"

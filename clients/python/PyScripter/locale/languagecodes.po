@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: documents/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en\n"
-"X-Generator: Poedit 2.0.4\n"
+"values-Generator: Poedit 2.0.4\n"
 
 #. Row 1
 msgid "aa"

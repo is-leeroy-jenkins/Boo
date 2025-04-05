@@ -74,7 +74,7 @@ def create_button(
 		key (str): The key of the button.
 		tooltip (str): The tooltip of the button.
 		text (str, optional): The documents of the button. Defaults to "".
-		image_data (str, optional): The image data of the button. Defaults to None.
+		image_data (str, optional): The image values of the button. Defaults to None.
 		subsample (int, optional): The subsample of the image. Defaults to 1.
 		standard (bool, optional): Whether to use the standard theme. Defaults to False.
 

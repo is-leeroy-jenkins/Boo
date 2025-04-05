@@ -1200,8 +1200,8 @@ msgstr "отступы к пробелам"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the X position will always stay the same"
-msgstr "При перемещении через строки позиции X всегда будет оставаться той же"
+msgid "When moving through lines the values position will always stay the same"
+msgstr "При перемещении через строки позиции values всегда будет оставаться той же"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
 #: dlgSynEditOptions.dfm

@@ -1210,7 +1210,7 @@ msgstr "Tabulazioni in spazi"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the X position will always stay the same"
+msgid "When moving through lines the values position will always stay the same"
 msgstr "Mantieni la posizione nella colonna nei movimenti per riga"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
@@ -8750,11 +8750,11 @@ msgstr "Seleziona file"
 
 #: uParams.pas
 msgid "Date of a today-time value"
-msgstr "Parte data di un valore data-ora"
+msgstr "Parte values di un valore values-ora"
 
 #: uParams.pas
 msgid "Time of a today-time value"
-msgstr "Parte Orario del valore data-orario"
+msgstr "Parte Orario del valore values-orario"
 
 #: uParams.pas
 msgid "Date of a file"

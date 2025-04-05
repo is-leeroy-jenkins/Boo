@@ -104,10 +104,10 @@ def save_audio_file(
         audio_data: np.ndarray, output_file_name: str = OUTPUT_FILE_NAME
 ) -> None:
     '''
-    Save the audio data to a file.
+    Save the audio values to a file.
 
     Args:
-        audio_data (np.ndarray): The audio data.
+        audio_data (np.ndarray): The audio values.
         output_file_name (str, optional): The output file name. Defaults to OUTPUT_FILE_NAME.
     '''
     sf.write(

@@ -614,7 +614,7 @@ msgstr "完全に一致"
 #. FindInFilesDialog..Panel1..gbxOptions..cbRegEx..Caption
 #: dlgFindInFiles.dfm
 msgid "Regular e&xpression"
-msgstr "正規表現(&X)"
+msgstr "正規表現(&values)"
 
 #. FindInFilesDialog..Panel1..gbxWhere..Caption
 #: dlgFindInFiles.dfm
@@ -1195,7 +1195,7 @@ msgstr "タブをスペースに変換する"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the X position will always stay the same"
+msgid "When moving through lines the values position will always stay the same"
 msgstr "キャレットが行を移動してもカラム位置を保持します"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
@@ -2101,7 +2101,7 @@ msgstr "ショートカット(&S):"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox4..lbContext..Caption
 #: dlgToolProperties.dfm
 msgid "Conte&xt:"
-msgstr "コンテキスト(&X):"
+msgstr "コンテキスト(&values):"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox4..Label13..Caption
 #: dlgToolProperties.dfm
@@ -4237,7 +4237,7 @@ msgstr "設定を選択して実行します"
 #. PyIDEMainForm..actlStandard..actExternalRun..Caption
 #: frmProjectExplorer.dfm frmPyIDEMain.dfm
 msgid "E&xternal Run"
-msgstr "外部実行(&X)"
+msgstr "外部実行(&values)"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectExternalRun..Hint
 #: frmProjectExplorer.dfm
@@ -4743,7 +4743,7 @@ msgstr "すべてのファイルを閉じます"
 #. PyIDEMainForm..actlStandard..actFileExit..Caption
 #: frmPyIDEMain.dfm
 msgid "E&xit"
-msgstr "終了(&X)"
+msgstr "終了(&values)"
 
 #. PyIDEMainForm..actlStandard..actFileExit..Hint
 #: frmPyIDEMain.dfm
@@ -5210,7 +5210,7 @@ msgstr "メッセージ ウィンドウをアクティブにします"
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Caption
 #: frmPyIDEMain.dfm
 msgid "File E&xplorer"
-msgstr "ファイル エクスプローラ(&X)"
+msgstr "ファイル エクスプローラ(&values)"
 
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Hint
 #: frmPyIDEMain.dfm
@@ -5266,7 +5266,7 @@ msgstr "SSHリモートPythonエンジンを使用"
 #. PyIDEMainForm..actlStandard..actExecSelection..Caption
 #: frmPyIDEMain.dfm
 msgid "E&xecute selection"
-msgstr "選択範囲を実行(&X)"
+msgstr "選択範囲を実行(&values)"
 
 #. PyIDEMainForm..actlStandard..actExecSelection..Hint
 #: frmPyIDEMain.dfm

@@ -58,7 +58,7 @@ class App( ):
 
     def __init__( self, client: Client ):
         self.app = client
-        self.sqlite = r'data\sqlite\gui\SQLiteDatabaseBrowserPortable.exe'
+        self.sqlite = r'values\sqlite\gui\SQLiteDatabaseBrowserPortable.exe'
         self.access = r'C:\Program Files\Microsoft Office\root\Office16\MSACCESS.EXE'
         self.excel = r'C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE'
         self.edge = r'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
@@ -66,7 +66,7 @@ class App( ):
         self.control_panel = r'C:\Windows\System32\control.exe'
         self.calculator = r'C:\Windows\System32\calc.exe'
         self.outlook = r'C:\Program Files\Microsoft Office\root\Office16\OUTLOOK.EXE'
-        self.pyscripter = r'data\python\PyScripter\PyScripter.exe'
+        self.pyscripter = r'values\python\PyScripter\PyScripter.exe'
         self.task_manager = r'C:\Windows\System32\Taskmgr.exe'
         self.storage = r'C:\Users\terry\AppData\Local\Microsoft\OneDrive\OneDrive.exe'
         self.word = r'C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE'

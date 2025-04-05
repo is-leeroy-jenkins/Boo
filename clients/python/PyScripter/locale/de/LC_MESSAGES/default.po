@@ -1203,8 +1203,8 @@ msgstr "Tabulatoren zu Leerzeichen"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the X position will always stay the same"
-msgstr "Beim Bewegen durch die Zeilen wird die X Position immer beibehalten"
+msgid "When moving through lines the values position will always stay the same"
+msgstr "Beim Bewegen durch die Zeilen wird die values Position immer beibehalten"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
 #: dlgSynEditOptions.dfm

@@ -613,7 +613,7 @@ msgstr "整个词"
 #. FindInFilesDialog..Panel1..gbxOptions..cbRegEx..Caption
 #: dlgFindInFiles.dfm
 msgid "Regular e&xpression"
-msgstr "正则表达式(&X)"
+msgstr "正则表达式(&values)"
 
 #. FindInFilesDialog..Panel1..gbxWhere..Caption
 #: dlgFindInFiles.dfm
@@ -1194,7 +1194,7 @@ msgstr "TAB字符变换到空白字符"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the X position will always stay the same"
+msgid "When moving through lines the values position will always stay the same"
 msgstr "当移动行时插入符号的列位置保持不变"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
@@ -2099,7 +2099,7 @@ msgstr "快捷键(&S):"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox4..lbContext..Caption
 #: dlgToolProperties.dfm
 msgid "Conte&xt:"
-msgstr "上下文(&X):"
+msgstr "上下文(&values):"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox4..Label13..Caption
 #: dlgToolProperties.dfm
@@ -4238,7 +4238,7 @@ msgstr "运行选择的配置"
 #. PyIDEMainForm..actlStandard..actExternalRun..Caption
 #: frmProjectExplorer.dfm frmPyIDEMain.dfm
 msgid "E&xternal Run"
-msgstr "外部运行(&X)"
+msgstr "外部运行(&values)"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectExternalRun..Hint
 #: frmProjectExplorer.dfm
@@ -4744,7 +4744,7 @@ msgstr "关闭所有文件"
 #. PyIDEMainForm..actlStandard..actFileExit..Caption
 #: frmPyIDEMain.dfm
 msgid "E&xit"
-msgstr "退出(&X)"
+msgstr "退出(&values)"
 
 #. PyIDEMainForm..actlStandard..actFileExit..Hint
 #: frmPyIDEMain.dfm
@@ -5211,7 +5211,7 @@ msgstr "激活信息窗口"
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Caption
 #: frmPyIDEMain.dfm
 msgid "File E&xplorer"
-msgstr "文件浏览器(&X)"
+msgstr "文件浏览器(&values)"
 
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Hint
 #: frmPyIDEMain.dfm
@@ -5267,7 +5267,7 @@ msgstr "使用SSH远程Python引擎"
 #. PyIDEMainForm..actlStandard..actExecSelection..Caption
 #: frmPyIDEMain.dfm
 msgid "E&xecute selection"
-msgstr "执行选中的代码(&X)"
+msgstr "执行选中的代码(&values)"
 
 #. PyIDEMainForm..actlStandard..actExecSelection..Hint
 #: frmPyIDEMain.dfm

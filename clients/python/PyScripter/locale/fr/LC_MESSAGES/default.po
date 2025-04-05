@@ -1209,9 +1209,9 @@ msgstr "Tabulations en espaces blancs"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the X position will always stay the same"
+msgid "When moving through lines the values position will always stay the same"
 msgstr ""
-"Lors du déplacement dans les lignes de code, la position X restera toujours "
+"Lors du déplacement dans les lignes de code, la position values restera toujours "
 "là même"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption

@@ -1199,8 +1199,8 @@ msgstr "تبدیل  جهش ها (Tab) به فاصله ها"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the X position will always stay the same"
-msgstr "هنگام جا به جا شدن در خط ها، موقعیّت X همیشه یکسان می ماند"
+msgid "When moving through lines the values position will always stay the same"
+msgstr "هنگام جا به جا شدن در خط ها، موقعیّت values همیشه یکسان می ماند"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
 #: dlgSynEditOptions.dfm

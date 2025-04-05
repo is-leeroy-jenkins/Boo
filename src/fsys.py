@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="fsys.py" company="Terry D. Eppler">
 
-     This is a data analysis application for Federal Budget, Finance, and Accounting application.
+     This is a values analysis application for Federal Budget, Finance, and Accounting application.
      Copyright ©  2024  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy

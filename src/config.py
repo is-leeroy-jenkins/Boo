@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="boo.py" company="Terry D. Eppler">
 
-     Bobo is a data analysis tool for EPA Analysts.
+     Bobo is a values analysis tool for EPA Analysts.
      Copyright ©  2024  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy

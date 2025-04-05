@@ -255,7 +255,7 @@ class FileDialog( Dark ):
         self.sql = ( ( 'SQL Files', '*.sqlstatement', ), )
         self.text = ( ( 'Text Files', '*.txt'),)
         self.access = ( ( 'MS ACCDB Databases', '*.accdb' ), )
-        self.sqlite = ( ( 'SQLite Databases', '*.data'),)
+        self.sqlite = ( ( 'SQLite Databases', '*.values'),)
         self.sqlserver = ( ( 'SQL Server Databases', '*.mdf', '*.ldf', '*.sdf' ), )
 
 
@@ -759,7 +759,7 @@ class ErrorDialog( Dark ):
 
 	    Construcotr:  ErrorDialog( error )
 
-	    Purpose:  Class that displays excetption data that accepts
+	    Purpose:  Class that displays excetption values that accepts
             a single, optional argument 'error' of type Error
 
     '''
@@ -1721,13 +1721,13 @@ class ImageSizeEncoder( Dark ):
                     [ sg.Frame( 'Input Filename', [
                             [ sg.Input( key = '-IN-', enable_events = True, s = 80 ),
                               sg.FileBrowse(), ],
-                            [ sg.T( 'Original size' ), sg.T( k = '-ORIG WIDTH-' ), sg.T( 'X' ),
+                            [ sg.T( 'Original size' ), sg.T( k = '-ORIG WIDTH-' ), sg.T( 'values' ),
                               sg.T( k = '-ORIG HEIGHT-' ) ] ] ) ],
                     [ sg.Frame( 'Output Filename',
                         [ [ sg.In( k = '-NEW FILENAME-', s = 80 ), sg.FileBrowse(), ],
                           [ sg.In( default_text = sg.user_settings_get_entry( '-_width-', '' ),
                               s = 4,
-                              k = '-WIDTH-' ), sg.T( 'X' ),
+                              k = '-WIDTH-' ), sg.T( 'values' ),
                             sg.In( default_text = sg.user_settings_get_entry( '-_height-', '' ),
                                 s = 4, k = '-HEIGHT-' ) ] ] ) ],
                     [ sg.Frame( 'Convert To New Format', _newformat ) ],
@@ -2080,7 +2080,7 @@ class ComboBoxDialog( Dark ):
     '''
 
         Construcotr:
-            ComboBoxDialog( data: list = None )
+            ComboBoxDialog( values: list = None )
 
         Purpose:
             Logger object provides form for log printing
@@ -2177,7 +2177,7 @@ class ListBoxDialog( Dark ):
     '''
 
         Construcotr:
-            ListBox( data: list = None )
+            ListBox( values: list = None )
 
         Purpose:
             List search and selection
@@ -4224,7 +4224,7 @@ class ChatWindow():
             # The Event Loop
             while True:
                 event, values = window.read()
-                # quit if exit button or X
+                # quit if exit button or values
                 if event in (sg.WIN_CLOSED, 'EXIT'):
                     break
                 if event == 'SEND':
@@ -4286,7 +4286,7 @@ class ChatBot():
                     window[ 'query' ].update( '' )
                     window[ 'history' ].update( '\n'.join( command_history[ -3: ] ) )
 
-                elif event in (sg.WIN_CLOSED, 'EXIT'):  # quit if exit event or X
+                elif event in (sg.WIN_CLOSED, 'EXIT'):  # quit if exit event or values
                     break
 
                 elif 'Up' in event and len( command_history ):
