@@ -1135,9 +1135,9 @@ class ZipFile( ):
 
 		'''
 		try:
-			if not self.file_path == '':
+			if self.file_path is not None:
 				(zp.ZipFile( self.zip_path, 'w' )
-				 .write( self.file_path, self.file_name ))
+				 .write( self.file_path, self.file_name ) )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'FileSys'
