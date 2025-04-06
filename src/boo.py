@@ -126,7 +126,7 @@ class EndPoint( ):
 	
 	def dump( self ) -> str:
 		'''
-			Returns: dict of members
+			Returns: string of "member = value", pairs
 		'''
 		new = r'\r\n'
 		return 'base_url' + f' = {self.base_url}' + new + \
@@ -255,7 +255,7 @@ class GptOptions( ):
 		self.store = store
 		self.stream = stream
 		self.size = size
-		self.modalities = [ 'documents', 'audio' ]
+		self.modalities = [ 'text', 'audio' ]
 		self.response_format = 'text'
 	
 	

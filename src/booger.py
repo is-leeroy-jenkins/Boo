@@ -65,6 +65,8 @@ from matplotlib.ticker import NullFormatter
 from mpl_toolkits.axes_grid1.axes_rgb import RGBAxes
 from static import EXT, Client
 import urllib.request
+import smtplib as smtp
+from email.message import EmailMessage
 
 class Error( Exception ):
     '''

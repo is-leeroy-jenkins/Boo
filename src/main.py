@@ -3,7 +3,7 @@ from typing import Any, Dict
 import PySimpleGUI as sg
 from loguru import logger
 
-from src.gui import initialize_window
+from gui import initialize_window
 from src.handlers import handle_events
 
 
