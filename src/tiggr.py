@@ -642,16 +642,13 @@ class Text:
 			_err.show( )
 	
 	
-	def remove_formatting( self, text: str ) -> str:
+	def remove_html( self, text: str ) -> str:
 		"""
 
-			Removes formatting artifacts (Markdown, HTML, control characters) from text.
+			Removes HTML  from text.
 
 			This function:
 			  - Strips HTML tags
-			  - Removes Markdown syntax (e.g., *, #, [], etc.)
-			  - Collapses whitespace (newlines, tabs)
-			  - Optionally removes special characters for clean unformatted text
 
 			Parameters:
 			-----------
@@ -670,26 +667,122 @@ class Text:
 			else:
 				# Remove HTML tags
 				_html = BeautifulSoup( text, "html.parser" ).get_text( separator=' ', strip=True )
-				
+				return _html
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Text'
+			_exc.method = 'remove_html( self, text: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def remove_markdown( self, text: str ) -> str:
+		"""
+
+			Removes Markdown
+			
+			This function:
+			  - Removes Markdown syntax (e.g., *, #, [], etc.)
+
+			Parameters:
+			-----------
+			text : str
+				The formatted input text.
+
+			Returns:
+			--------
+			str
+				A cleaned version of the text with formatting removed.
+
+		"""
+		try:
+			if text is None:
+				raise Exception( 'The input argument "text" is required.' )
+			else:
 				# Remove Markdown syntax
-				_mark = re.sub( r'\[.*?\]\(.*?\)', '', _html )  # Markdown links
+				_mark = re.sub( r'\[.*?\]\(.*?\)', '', text )  # Markdown links
 				_chars = re.sub( r'[`_*#~>-]', '', _mark )  # Markdown chars
 				_images = re.sub( r'!\[.*?\]\(.*?\)', '', _chars )  # Markdown images
-				
-				# Remove control characters and normalize whitespace
-				_lines = re.sub( r'[\r\n\t]+', ' ', _images )  # Newlines, tabs
-				_cleaned = re.sub( r'\s+', ' ', _lines ).strip( )  # Collapse multiple spaces
-				
+				return _images
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Text'
+			_exc.method = 'remove_markdown( self, text: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def remove_spaces( self, text: str ) -> str:
+		"""
+
+			Removes extra spaces from text.
+
+			This function:
+			  - Collapses whitespace (newlines, tabs)
+
+			Parameters:
+			-----------
+			text : str
+				The formatted input text.
+
+			Returns:
+			--------
+			str
+				A cleaned version of the text with formatting removed.
+
+		"""
+		try:
+			if text is None:
+				raise Exception( 'The input argument "text" is required.' )
+			else:
+				# Collapse multiple spaces
+				_cleaned = re.sub( r'\s+', ' ', text ).strip( )
 				return _cleaned
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_formatting( self, text: str ) -> str'
+			_exc.method = 'remove_spaces( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
+	def remove_lines( self, text: str ) -> str:
+		"""
+
+			Removes extra spaces from text.
+
+			This function:
+			  - Collapses whitespace (newlines, tabs)
+
+			Parameters:
+			-----------
+			text : str
+				The formatted input text.
+
+			Returns:
+			--------
+			str
+				A cleaned version of the text with formatting removed.
+
+		"""
+		try:
+			if text is None:
+				raise Exception( 'The input argument "text" is required.' )
+			else:
+				# Remove Newlines, tabs
+				_lines = re.sub( r'[\r\n\t]+', ' ', text )
+				return _cleaned
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Text'
+			_exc.method = 'remove_lines( self, text: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+			
 	def remove_stopwords( self, text: str ) -> str:
 		"""
 
@@ -975,6 +1068,7 @@ class Text:
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
+			
 			_exc.cause = 'Text'
 			_exc.method = 'clean_html( self, html: str ) -> list'
 			_err = ErrorDialog( _exc )
@@ -997,7 +1091,7 @@ class Token:
 	
 	def load_file( self, path: str ) -> str:
 		"""
-			Load the content of a documents file.
+			Load the content of a document's file.
 	
 			Args:
 				path (str): The path to the documents file.
@@ -1017,6 +1111,7 @@ class Token:
 			_exc.method = 'load_file( self, path: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
+			
 	
 	
 	def parse_hierarchy( self, text: str ) -> list:

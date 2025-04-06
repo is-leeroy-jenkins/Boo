@@ -11,6 +11,8 @@ matplotlib
 pillow
 openpyxl
 scikit-learn
+torch
+tensorflow
 scipy
 seaborn
 soundfile
