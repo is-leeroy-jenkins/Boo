@@ -2208,3 +2208,13 @@ class Translation( AI ):
 			
 		'''
 		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+	
+	
+class Bro( AI ):
+	'''
+	
+		Class providing open ai functionality
+		
+	'''
+	def __init__( self ):
+		pass

@@ -42,7 +42,7 @@
   ******************************************************************************************
   '''
 import os
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 import base64
 import webbrowser
 import fitz

@@ -1,4 +1,4 @@
-PySimpleGUI
+FreeSimpleGUI
 typing
 numpy
 openai
@@ -22,3 +22,7 @@ statsmodels
 dotenv
 python-dotenv
 openai
+langchain
+langchain-openai
+langchain-community
+chromadb
