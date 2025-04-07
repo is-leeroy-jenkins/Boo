@@ -25,6 +25,7 @@ openai
 langchain
 langchain-openai
 langchain-community
+langgraph
 chromadb
 tiktoken
 pytube
