@@ -1724,7 +1724,7 @@ class ChatLog(  ):
 		self.messages = [ GptMessage ]
 		
 		
-class Perceptron:
+class Perceptron( ):
 	'''
 		Purpose
 		________

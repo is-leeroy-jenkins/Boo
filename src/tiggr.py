@@ -45,6 +45,7 @@ import re
 import string
 from bs4 import BeautifulSoup
 import nltk
+from lxml.xsltext import self_node
 from nltk.stem import PorterStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
@@ -75,11 +76,24 @@ class Text:
 		self.lemmatized_tokens = None
 		self.tokenized_text = None
 		self.tokens = [ str ]
+		self.lines = [ ]
+		self.all_tokens = [ ]
 		self.cleaned_tokens = [ str ]
+		self.chunks = [ ]
 		self.html = None
 		self.cleaned_html = None
 		self.stop_words = [ ]
+		self.filtered = [ ]
 	
+	def __dir__(self):
+		'''
+			returns a list[ str ] of members
+		'''
+		return [ 'tokenize', 'raw_text', 'cleaned_lines', 'cleaned_text',
+		         'lower_case', 'normalized_text', 'unicode_text',
+		         'translator', 'lemmatizer', 'tokenizer', 'lemmatized_text',
+		         'lemmatized_tokens', 'cleaned_tokens', 'html', 'cleaned_html',
+		         'stop_words', 'filtered', 'chunks' ]
 	
 	def clean_whitespace( self, text: str ) -> str:
 		"""
@@ -102,19 +116,13 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Replace multiple spaces or tabs with a single space
-				text = re.sub( r'[ \t]+', ' ', text )
+				self.raw_text = text
+				self.raw_text = re.sub( r'[ \t]+', ' ', self.raw_text )
+				self.lines = [ line.strip( ) for line in self.raw_text.splitlines( ) ]
+				self.cleaned_lines = [ line for line in self.lines if line ]
+				self.cleaned_text = '\n'.join( self.cleaned_lines )
 				
-				# Remove leading/trailing spaces from each line
-				lines = [ line.strip( ) for line in text.splitlines( ) ]
-				
-				# Remove empty lines
-				cleaned_lines = [ line for line in lines if line ]
-				
-				# Join lines back into a single string
-				cleaned_text = '\n'.join( cleaned_lines )
-				
-				return cleaned_text
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -150,16 +158,11 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Convert to lowercase
 				self.raw_text = text
 				self.lower_case = self.raw_text.lower( )
-				
-				# Remove accented characters using Unicode normalization
 				self.unicode_text = (unicodedata.normalize( 'NFKD', self.lower_case )
 				        .encode( 'ascii', 'ignore' )
 				        .decode( 'utf-8' ) )
-				
-				# Trim leading/trailing spaces and collapse internal whitespace
 				self.normalized_text = re.sub( r'\s+', ' ', self.unicode_text ).strip( )
 				
 				return self.normalized_text
@@ -196,13 +199,11 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Strip leading and trailing whitespace
-				self.raw_text = text.strip( )
-				
-				# Replace multiple whitespace characters (spaces, tabs, etc.) with a single space
+				self.raw_text = text
+				self.raw_text = self.raw_text.strip( )
 				self.cleaned_text = re.sub( r'\s+', ' ', self.raw_text )
 				
-				return cleaned_text
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -232,11 +233,8 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Create a translation table that maps punctuation to None
 				self.raw_text = text
 				self.translator = str.maketrans( '', '', string.punctuation )
-				
-				# Apply the translation to the text
 				self.cleaned_text = self.raw_text.translate( self.translator )
 				
 				return self.cleaned_text
@@ -275,20 +273,14 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Initialize lemmatizer
-				lemmatizer = WordNetLemmatizer( )
+				self.raw_text = text
+				self.lower_case = self.raw_text.lower( )
+				self.lemmatizer = WordNetLemmatizer( )
+				self.tokens = word_tokenize( self.lower_case )
+				self.lemmatized_tokens = [ self.lemmatizer.lemmatize( token ) for token in self.tokens ]
+				self.lemmatized_text = ' '.join( self.lemmatized_tokens )
 				
-				lower_case = text.lower( )
-				# Convert to lowercase and tokenize
-				tokens = word_tokenize( lower_case )
-				
-				# Lemmatize each token
-				lemmatized_tokens = [ lemmatizer.lemmatize( token ) for token in tokens ]
-				
-				# Join tokens back to a string
-				lemmatized_text = ' '.join( lemmatized_tokens )
-				
-				return lemmatized_text
+				return self.lemmatized_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -322,14 +314,11 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Convert to lowercase
 				self.raw_text = text
 				self.lower_case = self.raw_text.lower( )
-				
-				# Tokenize
 				self.tokenized_text = word_tokenize( self.lower_case )
 				
-				return tokenized_text
+				return self.tokenized_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -364,11 +353,10 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Uses regex to replace all non-alphanumeric characters with empty strings
 				self.raw_text = text
 				self.cleaned_text = re.sub( r'[^A-Za-z0-9\s]', '', self.raw_text )
 				
-				return cleaned_text
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -402,11 +390,11 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Parse HTML and extract text
-				soup = BeautifulSoup( text, "html.parser" )
-				cleaned_text = soup.get_text( separator=' ', strip=True )
+				self.raw_text = text
+				_soup = BeautifulSoup( self.raw_text, "html.parser" )
+				self.cleaned_text = _soup.get_text( separator=' ', strip=True )
 				
-				return cleaned_text
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -445,16 +433,14 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Flatten the list of token lists into a single list
-				tokenized_text = [ token for sublist in text for token in sublist ]
-				
-				# Create chunks of tokens
-				chunks = [
-					tokenized_text[ i:i + chunk_size ]
+				self.raw_text = text
+				self.tokenized_text = [ token for sublist in self.raw_text for token in sublist ]
+				self.chunks = [
+					self.tokenized_text[ i:i + chunk_size ]
 					for i in range( 0, len( all_tokens ), chunk_size )
 				]
 				
-				return chunks
+				return self.chunks
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -497,20 +483,17 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Tokenize the text into words
-				tokens = word_tokenize( text.lower( ) )
-				
-				# Create chunks of specified token length
-				token_chunks = [
-					tokens[ i:i + chunk_size ]
-					for i in range( 0, len( tokens ), chunk_size )
+				self.raw_text = text
+				self.tokens = word_tokenize( self.raw_text.lower( ) )
+				self.chunks = [
+					self.tokens[ i:i + chunk_size ]
+					for i in range( 0, len( self.tokens ), chunk_size )
 				]
 				
-				# Optionally join tokens into strings
-				if return_string:
-					return [ ' '.join( chunk ) for chunk in token_chunks ]
+				if return_srting:
+					return [ ' '.join( chunk ) for chunk in self.chunks ]
 				else:
-					return token_chunks
+					return self.chunks
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -547,14 +530,12 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Convert to lowercase and tokenize
-				tokens = word_tokenize( text.lower( ) )
+				self.raw_text = text
+				self.tokens = word_tokenize( self.raw_text.lower( ) )
+				self.cleaned_tokens = \
+					[ word for word in self.tokens if Word( word ).spellcheck( )[ 0 ][ 1 ] > 0.9 ]
 				
-				# Keep only correctly spelled words (as per Word dictionary in TextBlob)
-				cleaned_tokens = [ word for word in tokens if Word( word ).spellcheck( )[ 0 ][ 1 ] > 0.9 ]
-				
-				# Return cleaned string
-				return ' '.join( cleaned_tokens )
+				return ' '.join( self.cleaned_tokens )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -590,16 +571,12 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Convert to lowercase and tokenize
-				tokens = word_tokenize( text.lower( ) )
+				self.raw_text = text
+				self.tokens = word_tokenize( self.raw_text.lower( ) )
+				self.corrected_tokens = [ str( Word( word ).correct( ) ) for word in self.tokens ]
+				self.corrected_text = ' '.join( self.corrected_tokens )
 				
-				# Apply spelling correction to each token
-				corrected_tokens = [ str( Word( word ).correct( ) ) for word in tokens ]
-				
-				# Join the corrected words into a single string
-				corrected_text = ' '.join( corrected_tokens )
-				
-				return corrected_text
+				return self.corrected_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -634,26 +611,16 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Split the text into lines
-				lines = text.splitlines( )
+				self.raw_text = text
+				self.lines = self.raw_text.splitlines( )
+				self.cleaned_lines = [ line.strip( ) for line in self.lines if line.strip( ) ]
+				self.line_counts = Counter( self.cleaned_lines )
+				_threshold = max( 1, int( len( self.cleaned_lines ) * 0.01 ) )
+				_repeated_lines = { line for line, count in self.line_counts.items( ) if count > _threshold }
+				_body_lines = [ line for line in self.lines if line not in _repeated_lines ]
+				self.cleaned_text = '\n'.join( _body_lines )
 				
-				# Remove empty lines and trim whitespace
-				lines = [ line.strip( ) for line in lines if line.strip( ) ]
-				
-				# Count line frequencies to identify repeated headers/footers
-				line_counts = Counter( lines )
-				
-				# Identify frequent lines (appear in >1% of total lines)
-				threshold = max( 1, int( len( lines ) * 0.01 ) )
-				repeated_lines = { line for line, count in line_counts.items( ) if count > threshold }
-				
-				# Remove lines that are likely headers or footers
-				body_lines = [ line for line in lines if line not in repeated_lines ]
-				
-				# Reconstruct the cleaned text
-				cleaned_text = '\n'.join( body_lines )
-				
-				return cleaned_text
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -686,9 +653,9 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Remove HTML tags
-				_html = BeautifulSoup( text, "html.parser" ).get_text( separator=' ', strip=True )
-				return _html
+				self.raw_text = text
+				self.html = BeautifulSoup( self.raw_text, "html.parser" ).get_text( separator=' ', strip=True )
+				return self.html
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -721,11 +688,11 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Remove Markdown syntax
-				_mark = re.sub( r'\[.*?\]\(.*?\)', '', text )  # Markdown links
+				self.raw_text = text
+				_mark = re.sub( r'\[.*?\]\(.*?\)', '', self.raw_text )  # Markdown links
 				_chars = re.sub( r'[`_*#~>-]', '', _mark )  # Markdown chars
-				_images = re.sub( r'!\[.*?\]\(.*?\)', '', _chars )  # Markdown images
-				return _images
+				self.cleaned_text = re.sub( r'!\[.*?\]\(.*?\)', '', _chars )  # Markdown images
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -758,10 +725,9 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Collapse multiple spaces
-				raw_text = text
-				cleaned_text = re.sub( r'\s+', ' ', raw_text ).strip( )
-				return cleaned_text
+				self.raw_text = text
+				self.cleaned_text = re.sub( r'\s+', ' ', self.raw_text ).strip( )
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -771,7 +737,7 @@ class Text:
 			_err.show( )
 	
 	
-	def remove_lines( self, text: str ) -> str:
+	def collapse_lines( self, text: str ) -> str:
 		"""
 
 			Removes extra spaces from text.
@@ -794,14 +760,14 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Remove Newlines, tabs
-				_lines = re.sub( r'[\r\n\t]+', ' ', text )
-				return _cleaned
+				self.raw_text = text
+				self.cleaned_text = re.sub( r'[\r\n\t]+', ' ', self.raw_text )
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_lines( self, text: str ) -> str'
+			_exc.method = 'collapse_lines( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 			
@@ -830,22 +796,14 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Download required NLTK resources (only once)
+				self.raw_text = text
 				nltk.download( 'punkt', quiet=True )
+				_stopwords = set( stopwords.words( 'english' ) )
+				self.tokens = word_tokenize( self.raw_text.lower( ) )
+				self.filtered = [ word for word in self.tokens if word.isalnum( ) and word not in _stopwords ]
+				self.cleaned_text = ' '.join( self.filtered )
 				
-				# Define English stopword set
-				stop_words = set( stopwords.words( 'english' ) )
-				
-				# Tokenize and lowercase
-				tokens = word_tokenize( text.lower( ) )
-				
-				# Remove stopwords
-				filtered = [ word for word in tokens if word.isalnum( ) and word not in stop_words ]
-				
-				# Join tokens back into a string
-				cleaned_text = ' '.join( filtered )
-				
-				return cleaned_text
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -874,20 +832,20 @@ class Text:
 			if output is None:
 				raise FileNotFoundError( f'Output file not found: {output}' )
 			
-			cleaned_lines = [ ]
+			self.lines = [ ]
 			with open( input, 'r', encoding='utf-8' ) as infile:
 				for line in infile:
-					cleaned = self.clean_line( line )
-					if cleaned:
-						cleaned_lines.append( cleaned )
+					_cleaned = self.clean_line( line )
+					if _cleaned:
+						self.lines.append( _cleaned )
 			
 			with open( output, 'w', encoding='utf-8' ) as outfile:
-				for cleaned_line in cleaned_lines:
+				for _line in self.lines:
 					if self.tokenize:
-						tokens = self.tokenize( cleaned_line )
-						json_obj = { 'tokens': tokens }
+						self.tokens = self.tokenize( _line )
+						json_obj = { 'tokens': self.tokens }
 					else:
-						json_obj = { 'line': cleaned_line }
+						json_obj = { 'line': self.cleaned_line }
 					json_str = json.dumps( json_obj, ensure_ascii=False )
 					outfile.write( json_str + '\n' )
 		except Exception as e:
@@ -917,20 +875,12 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				# Step 1: Normalize normalized
-				self.normal = text.replace( '\r\n', '\n' ).replace( '\r', '\n' )
-				
-				# Step 2: Remove page headers and footers (Public Law-specific)
+				self.raw_text = text
+				self.normal = self.raw_text.replace( '\r\n', '\n' ).replace( '\r', '\n' )
 				self.headers = re.sub( r'PUBLIC.*?\n', '', self.normal, flags=re.IGNORECASE )
 				self.footers = re.sub( r'\n\s*\d+\s*\n', '\n', self.headers )
-				
-				# Step 3: Remove hyphenation at line breaks (e.g., "appropria-\ntion")
 				self.hyphens = re.sub( r'(\w+)-\n(\w+)', r'\1\2', self.footers )
-				
-				# Step 4: Merge broken lines where sentence continues
 				self.merge = re.sub( r'(?<!\n)\n(?![\n])', ' ', self.hyphens )
-				
-				# Step 5: Collapse excessive whitespace
 				self.whitespace = re.sub( r'\s+', ' ', self.merge )
 				
 				return self.whitespace.strip( )
@@ -963,23 +913,13 @@ class Text:
 				_msg = 'The input argument "line" is None'
 				raise Exception( _msg )
 			else:
-				# Step 1: Normalize normalized
-				self.normalized = line.replace( '\r\n', '\n' ).replace( '\r', '\n' )
-				
-				# Step 2: Remove page headers and footers (Public Law-specific)
+				self.raw_text = line
+				self.normalized = self.raw_text.replace( '\r\n', '\n' ).replace( '\r', '\n' )
 				self.headers = re.sub( r'PUBLIC.*?\n', '', self.normalized, flags=re.IGNORECASE )
 				self.footers = re.sub( r'\n\s*\d+\s*\n', '\n', self.headers )
-				
-				# Step 3: Remove hyphenation at line breaks (e.g., "appropria-\ntion")
 				self.hyphens = re.sub( r'(\w+)-\n(\w+)', r'\1\2', self.footers )
-				
-				# Step 4: Merge broken lines where sentence continues
 				self.merge = re.sub( r'(?<!\n)\n(?![\n])', ' ', self.hyphens )
-				
-				# Step 5: Collapse excessive whitespace
 				self.whitespace = re.sub( r'\s+', ' ', self.merge )
-				
-				# Step 6: Normalize section markers (optional but useful)
 				self.normalized = re.sub( r'(SEC\.\s*\d+[A-Z]*\.)', r'\n\n\1', self.whitespace )
 				
 				return self.normalized.strip( )
@@ -1010,8 +950,9 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" is required' )
 			else:
+				self.raw_text = text
 				self.final_string = ''
-				self.lower = text.lower( )
+				self.lower = self.raw_text.lower( )
 				self.lines = re.sub( r'\n', '', self.lower )
 				self.translator = str.maketrans( '', '', string.punctuation )
 				self.text = self.lines.translate( self.translator )
@@ -1060,8 +1001,9 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" was None' )
 			else:
-				words = text.split( )
-				tokens = [ re.sub( r'[^\w"-]', '', word ) for word in words if word.strip( ) ]
+				self.raw_text = text
+				_words = self.raw_text.split( )
+				self.tokens = [ re.sub( r'[^\w"-]', '', word ) for word in _words if word.strip( ) ]
 				return tokens
 		except Exception as e:
 			_exc = Error( e )
