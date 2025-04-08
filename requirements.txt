@@ -26,10 +26,4 @@ langchain
 langchain-openai
 langchain-community
 langgraph
-chromadb
 tiktoken
-pytube
-pydub
-whisper
-ffmpeg-python
-faiss-cpu
