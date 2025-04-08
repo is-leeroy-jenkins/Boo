@@ -1045,10 +1045,11 @@ class Token:
 	'''
 	def __init__( self, model: str = "documents-embedding-ada-002" ):
 		"""
-		Initialize the PreTokenizer with a specific OpenAI model.
-
-		Args:
-			model (str): The name of the OpenAI model used for tokenization.
+		
+			Initialize the PreTokenizer with a specific OpenAI model.
+	
+			Args:
+				model (str): The name of the OpenAI model used for tokenization.
 			
 		"""
 		self.model = model
@@ -1056,7 +1057,9 @@ class Token:
 	
 	
 	def load_file( self, path: str ) -> str:
+		
 		"""
+		
 			Load the content of a document's file.
 	
 			Args:
@@ -1064,6 +1067,7 @@ class Token:
 	
 			Returns:
 				str: The contents of the file as a string.
+				
 		"""
 		try:
 			if path is None:
