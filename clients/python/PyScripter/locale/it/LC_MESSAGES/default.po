@@ -1055,7 +1055,7 @@ msgstr "&Appendi al file"
 #. RunConfigurationForm..Panel1..gbSaveOutput..cbSaveOutput..Caption
 #: dlgRunConfiguration.dfm
 msgid "Save Output"
-msgstr "Salva output"
+msgstr "Salva cleaned_lines"
 
 #. StyleSelectorForm..Caption
 #. PyIDEMainForm..actlStandard..actSelectStyle..Hint
@@ -2189,7 +2189,7 @@ msgstr "Tutti i file"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..Caption
 #: dlgToolProperties.dfm
 msgid "Standard Input and Output"
-msgstr "Input e output standard"
+msgstr "Input e cleaned_lines standard"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..Label10..Caption
 #: dlgToolProperties.dfm
@@ -2209,16 +2209,16 @@ msgstr "&Formato messaggi:"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbCaptureOutput..Caption
 #: dlgToolProperties.dfm
 msgid "&Capture Output"
-msgstr "&Cattura output"
+msgstr "&Cattura cleaned_lines"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseMessages....Hint
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked output lines that look like messages \n"
+"If checked cleaned_lines lines that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
-"Se abilitata, le linee di output che sembrano messaggi \n"
+"Se abilitata, le linee di cleaned_lines che sembrano messaggi \n"
 "sono analizzate e mostrate nella finestra dei messaggi."
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseMessages..Caption
@@ -2234,11 +2234,11 @@ msgstr "Analizza &traceback"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing output lines.\n"
+"A grep expression for parsing cleaned_lines lines.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
-"Un'espressione grep per analizzare l'output.\n"
+"Un'espressione grep per analizzare l'cleaned_lines.\n"
 "Usa il pulsante a destra per inserire \n"
 "le espressioni grep predefinite."
 
@@ -2280,11 +2280,11 @@ msgstr "File attuale"
 #: dlgToolProperties.dfm
 msgid ""
 "Select option other than None to \n"
-"redirect the output to the \n"
+"redirect the cleaned_lines to the \n"
 "corresponding outlet."
 msgstr ""
 "Seleziona un'opzione diversa da Nessuno per \n"
-"redizionare l'output verso \n"
+"redizionare l'cleaned_lines verso \n"
 "l'uscita corrispondente."
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbStandardOutput....Items.Strings
@@ -3555,8 +3555,8 @@ msgstr "Pulisci"
 
 #. OutputWindow..OutputActions..actClearOutput..Hint
 #: frmCommandOutput.dfm
-msgid "Clear output"
-msgstr "Azzera output"
+msgid "Clear cleaned_lines"
+msgstr "Azzera cleaned_lines"
 
 #. OutputWindow..OutputActions..actToolTerminate..Caption
 #: frmCommandOutput.dfm
@@ -5033,12 +5033,12 @@ msgstr "Visualizza/nascondi i risultati della ricerca nei file"
 #. PyIDEMainForm..actlStandard..actViewOutput..Caption
 #: frmPyIDEMain.dfm
 msgid "&Output Window"
-msgstr "Finestra &output"
+msgstr "Finestra &cleaned_lines"
 
 #. PyIDEMainForm..actlStandard..actViewOutput..Hint
 #: frmPyIDEMain.dfm
 msgid "View/Hide Output Window"
-msgstr "Visualizza/nascondi finestra output"
+msgstr "Visualizza/nascondi finestra cleaned_lines"
 
 #. PyIDEMainForm..actlStandard..actViewUnitTests..Caption
 #. PyIDEMainForm..actlStandard..actNavUnitTests..Caption
@@ -5286,7 +5286,7 @@ msgstr "&Output comando"
 #. PyIDEMainForm..actlStandard..actNavOutput..Hint
 #: frmPyIDEMain.dfm
 msgid "Activate the Command Output window"
-msgstr "Attiva la finestra dell'output del comando"
+msgstr "Attiva la finestra dell'cleaned_lines del comando"
 
 #. PyIDEMainForm..actlStandard..actNavEditor..Caption
 #: frmPyIDEMain.dfm
@@ -5460,8 +5460,8 @@ msgstr "&Pulisci tutto"
 
 #. PythonIIForm..InterpreterActionList..actClearContents..Hint
 #: frmPythonII.dfm
-msgid "Clear all interpreter output"
-msgstr "Azzera l'output dell'interprete"
+msgid "Clear all interpreter cleaned_lines"
+msgstr "Azzera l'cleaned_lines dell'interprete"
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Caption
 #: frmPythonII.dfm
@@ -6203,12 +6203,12 @@ msgid "Timeout for running scripts in ms"
 msgstr "Timeout per script in esecuzione in ms"
 
 #: dmCommands.pas
-msgid "Pretty print output"
+msgid "Pretty print cleaned_lines"
 msgstr "Output di stampa formattato"
 
 #: dmCommands.pas
-msgid "Clear output before run"
-msgstr "Azzera l'output prima dell'esecuzione"
+msgid "Clear cleaned_lines before run"
+msgstr "Azzera l'cleaned_lines prima dell'esecuzione"
 
 #: dmCommands.pas
 msgid "Post-mortem on exception"
@@ -6426,7 +6426,7 @@ msgid "Language server"
 msgstr "Server lingua"
 
 #: dmCommands.pas
-msgid "Language server debug output"
+msgid "Language server debug cleaned_lines"
 msgstr "Output debug server lingua"
 
 #: dmCommands.pas
@@ -7588,8 +7588,8 @@ msgstr "Impossibile cambiare l'interprete Python finché è attivo."
 #. Programmer's name for it: SCouldNotOpenOutputFile
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not open/create output file %s"
-msgstr "Impossibile aprire/creare il file di output \"%s\""
+msgid "Could not open/create cleaned_lines file %s"
+msgstr "Impossibile aprire/creare il file di cleaned_lines \"%s\""
 
 #. Programmer's name for it: SUnknownPythonVersion
 #: StringResources.pas
@@ -7740,8 +7740,8 @@ msgstr "Selezione script Python da eseguire"
 
 #. Programmer's name for it: SSelectOutputFile
 #: StringResources.pas
-msgid "Select output file"
-msgstr "Seleziona file output"
+msgid "Select cleaned_lines file"
+msgstr "Seleziona file cleaned_lines"
 
 #. Programmer's name for it: SSelectApplication
 #: StringResources.pas
@@ -8501,7 +8501,7 @@ msgstr ""
 "Impossibile eseguire Python (\"%s\") nel server SSH:\n"
 "Codice ritornato: %d\n"
 "Output: %s\n"
-"Errore output: %s"
+"Errore cleaned_lines: %s"
 
 #. Programmer's name for it: SSHVersionMismatch
 #: StringResources.pas

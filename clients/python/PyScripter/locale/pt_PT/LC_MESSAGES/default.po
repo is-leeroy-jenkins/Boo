@@ -2200,7 +2200,7 @@ msgstr ""
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked output lines that look like messages \n"
+"If checked cleaned_lines lines that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 
@@ -2217,7 +2217,7 @@ msgstr ""
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing output lines.\n"
+"A grep expression for parsing cleaned_lines lines.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -2257,7 +2257,7 @@ msgstr ""
 #: dlgToolProperties.dfm
 msgid ""
 "Select option other than None to \n"
-"redirect the output to the \n"
+"redirect the cleaned_lines to the \n"
 "corresponding outlet."
 msgstr ""
 
@@ -3687,7 +3687,7 @@ msgstr ""
 
 #. OutputWindow..OutputActions..actClearOutput..Hint
 #: frmCommandOutput.dfm
-msgid "Clear output"
+msgid "Clear cleaned_lines"
 msgstr ""
 
 #. OutputWindow..OutputActions..actToolTerminate..Caption
@@ -5705,7 +5705,7 @@ msgstr ""
 
 #. PythonIIForm..InterpreterActionList..actClearContents..Hint
 #: frmPythonII.dfm
-msgid "Clear all interpreter output"
+msgid "Clear all interpreter cleaned_lines"
 msgstr ""
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Caption
@@ -6456,11 +6456,11 @@ msgid "UTF8 in interactive interpreter"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Pretty print output"
+msgid "Pretty print cleaned_lines"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Clear output before run"
+msgid "Clear cleaned_lines before run"
 msgstr ""
 
 #: dmCommands.pas
@@ -7819,7 +7819,7 @@ msgstr ""
 #. Programmer's name for it: SCouldNotOpenOutputFile
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not open/create output file %s"
+msgid "Could not open/create cleaned_lines file %s"
 msgstr ""
 
 #. Programmer's name for it: SUnknownPythonVersion
@@ -7960,7 +7960,7 @@ msgstr ""
 
 #. Programmer's name for it: SSelectOutputFile
 #: StringResources.pas
-msgid "Select output file"
+msgid "Select cleaned_lines file"
 msgstr ""
 
 #. Programmer's name for it: SSelectApplication

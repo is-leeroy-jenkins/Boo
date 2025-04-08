@@ -306,7 +306,7 @@ class GptOptions( ):
 	def get_output_formats( self ) -> list[ str ]:
 		'''
 
-			Returns: list[ str ] of audio formats output by the audio api
+			Returns: list[ str ] of audio formats cleaned_lines by the audio api
 
 		'''
 		return [ 'mp3', 'opus', 'aac', 'flac', 'pcm' ]

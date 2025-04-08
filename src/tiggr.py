@@ -62,6 +62,23 @@ class Text:
 	'''
 	def __init__( self, tokenize: bool = False ):
 		self.tokenize = tokenize
+		self.raw_text = None
+		self.cleaned_lines = [ str ]
+		self.cleaned_text = None
+		self.lower_case = None
+		self.normalized_text = None
+		self.unicode_text = None
+		self.translator = None
+		self.lemmatizer = None
+		self.tokenizer = None
+		self.lemmatized_text = None
+		self.lemmatized_tokens = None
+		self.tokenized_text = None
+		self.tokens = [ str ]
+		self.cleaned_tokens = [ str ]
+		self.html = None
+		self.cleaned_html = None
+		self.stop_words = [ ]
 	
 	
 	def clean_whitespace( self, text: str ) -> str:
@@ -134,17 +151,18 @@ class Text:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
 				# Convert to lowercase
-				_lower = text.lower( )
+				self.raw_text = text
+				self.lower_case = self.raw_text.lower( )
 				
 				# Remove accented characters using Unicode normalization
-				_unicode = (unicodedata.normalize( 'NFKD', _lower )
+				self.unicode_text = (unicodedata.normalize( 'NFKD', self.lower_case )
 				        .encode( 'ascii', 'ignore' )
 				        .decode( 'utf-8' ) )
 				
 				# Trim leading/trailing spaces and collapse internal whitespace
-				_normalized = re.sub( r'\s+', ' ', _unicode ).strip( )
+				self.normalized_text = re.sub( r'\s+', ' ', self.unicode_text ).strip( )
 				
-				return _normalized
+				return self.normalized_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -179,10 +197,10 @@ class Text:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
 				# Strip leading and trailing whitespace
-				text = text.strip( )
+				self.raw_text = text.strip( )
 				
 				# Replace multiple whitespace characters (spaces, tabs, etc.) with a single space
-				cleaned_text = re.sub( r'\s+', ' ', text )
+				self.cleaned_text = re.sub( r'\s+', ' ', self.raw_text )
 				
 				return cleaned_text
 		except Exception as e:
@@ -215,12 +233,13 @@ class Text:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
 				# Create a translation table that maps punctuation to None
-				translator = str.maketrans( '', '', string.punctuation )
+				self.raw_text = text
+				self.translator = str.maketrans( '', '', string.punctuation )
 				
 				# Apply the translation to the text
-				cleaned_text = text.translate( translator )
+				self.cleaned_text = self.raw_text.translate( self.translator )
 				
-				return cleaned_text
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -304,12 +323,13 @@ class Text:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
 				# Convert to lowercase
-				_lower = text.lower( )
+				self.raw_text = text
+				self.lower_case = self.raw_text.lower( )
 				
 				# Tokenize
-				tokens = word_tokenize( _lower )
+				self.tokenized_text = word_tokenize( self.lower_case )
 				
-				return tokens
+				return tokenized_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -345,7 +365,8 @@ class Text:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
 				# Uses regex to replace all non-alphanumeric characters with empty strings
-				cleaned_text = re.sub( r'[^A-Za-z0-9\s]', '', text )
+				self.raw_text = text
+				self.cleaned_text = re.sub( r'[^A-Za-z0-9\s]', '', self.raw_text )
 				
 				return cleaned_text
 		except Exception as e:
@@ -425,11 +446,11 @@ class Text:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
 				# Flatten the list of token lists into a single list
-				all_tokens = [ token for sublist in text for token in sublist ]
+				tokenized_text = [ token for sublist in text for token in sublist ]
 				
 				# Create chunks of tokens
 				chunks = [
-					all_tokens[ i:i + chunk_size ]
+					tokenized_text[ i:i + chunk_size ]
 					for i in range( 0, len( all_tokens ), chunk_size )
 				]
 				
@@ -738,8 +759,9 @@ class Text:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
 				# Collapse multiple spaces
-				_cleaned = re.sub( r'\s+', ' ', text ).strip( )
-				return _cleaned
+				raw_text = text
+				cleaned_text = re.sub( r'\s+', ' ', raw_text ).strip( )
+				return cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -836,7 +858,7 @@ class Text:
 	def convert_file( self, input: str, output: str ):
 		'''
 
-			Reads the unprocessed 'input' file and writes a cleaned 'output' file
+			Reads the unprocessed 'input' file and writes a cleaned 'cleaned_lines' file
 
 			Args:
 				input (str): path to pre-processed file.
@@ -872,7 +894,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'convert( self, input: str, output: str )'
+			_exc.method = 'convert( self, input: str, cleaned_lines: str )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -1020,7 +1042,7 @@ class Text:
 			_err.show( )
 	
 	
-	def tokenize( self, line: str ) -> list:
+	def tokenize( self, text: str ) -> list:
 		'''
 		
 			Clean the raw documents extracted for preprocessing.
@@ -1035,10 +1057,10 @@ class Text:
 				
 		'''
 		try:
-			if line is None:
-				raise Exception( 'The input argument "line" was None' )
+			if text is None:
+				raise Exception( 'The input argument "text" was None' )
 			else:
-				words = line.split( )
+				words = text.split( )
 				tokens = [ re.sub( r'[^\w"-]', '', word ) for word in words if word.strip( ) ]
 				return tokens
 		except Exception as e:
