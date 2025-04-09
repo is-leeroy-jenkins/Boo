@@ -546,7 +546,7 @@ class TextRequest( GptRequest ):
 			self.messages.append( _system )
 			self.messages.append( _user )
 			
-			completion = self.client.chat.completions.create(
+			self.response = self.client.chat.completions.create(
 				model=self.model,
 				messages=self.messages,
 				temperature=self.temperature,
@@ -554,10 +554,9 @@ class TextRequest( GptRequest ):
 				top_p=self.top_percent,
 				n=self.number,
 				frequency_penalty=self.frequency_penalty,
-				presence_penalty=self.presence_penalty,
-			)
+				presence_penalty=self.presence_penalty )
 			
-			self.content = completion[ 'choices' ][ 0 ][ 'message' ][ 'content' ]
+			self.content = self.response[ 'choices' ][ 0 ][ 'message' ][ 'content' ]
 			return self.content
 		except Exception as e:
 			exception = Error( e )
@@ -656,8 +655,7 @@ class CompletionRequest( GptRequest ):
 				top_p=self.top_percent,
 				n=self.number,
 				frequency_penalty=self.frequency_penalty,
-				presence_penalty=self.presence_penalty,
-			)
+				presence_penalty=self.presence_penalty )
 			
 			self.content = self.response[ 'choices' ][ 0 ][ 'message' ][ 'content' ]
 			return self.content
@@ -739,7 +737,6 @@ class ImageRequest( GptRequest ):
 
 
 			Returns:
-
 		'''
 		try:
 			if prompt is None:
