@@ -2029,7 +2029,7 @@ class PdfForm( Dark ):
         sg.set_global_icon( icon = self.icon_path )
         sg.set_options( font = self.theme_font )
         sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
-        self.form_size = (600, 800)
+        self.form_size = ( 600, 800 )
 
 
     def __dir__( self ) -> list[ str ]:
@@ -2064,7 +2064,7 @@ class PdfForm( Dark ):
             _filename = sg.popup_get_file( 'Select file', ' PDF Viewer',
                 icon = self.icon_path,
                 font = self.theme_font,
-                file_types = (('PDF Files', '*.pdf'),) )
+                file_types = ( ( 'PDF', '*.pdf' ), ) )
 
             if _filename is None:
                 sg.popup_cancel( 'Cancelling' )
@@ -2082,11 +2082,11 @@ class PdfForm( Dark ):
                     _displaylist[ pno ] = _pdf[ pno ].get_displaylist()
                     _display = _displaylist[ pno ]
                     _r = _display.rect
-                    _mp = _r.tl + (_r.br - _r.tl) * 0.5  # rect middle point
-                    _mt = _r.tl + (_r.tr - _r.tl) * 0.5  # middle of top_p edge
-                    _ml = _r.tl + (_r.bl - _r.tl) * 0.5  # middle of left edge
-                    _mr = _r.tr + (_r.br - _r.tr) * 0.5  # middle of right egde
-                    _mb = _r.bl + (_r.br - _r.bl) * 0.5  # middle of bottom edge
+                    _mp = _r.tl + ( _r.br - _r.tl ) * 0.5  # rect middle point
+                    _mt = _r.tl + ( _r.tr - _r.tl ) * 0.5  # middle of top_p edge
+                    _ml = _r.tl + ( _r.bl - _r.tl ) * 0.5  # middle of left edge
+                    _mr = _r.tr + ( _r.br - _r.tr ) * 0.5  # middle of right egde
+                    _mb = _r.bl + ( _r.br - _r.bl ) * 0.5  # middle of bottom edge
                     _mat = fitz.Matrix( 2, 2 )
                     if zoom == 1:
                         _clip = fitz.Rect( _r.tl, _mp )
@@ -2097,24 +2097,24 @@ class PdfForm( Dark ):
                     elif zoom == 3:
                         _clip = fitz.Rect( _ml, _mb )
                     if zoom == 0:
-                        _pix = _display.get_pixmap( alpha = False )
+                        _pix = _display.get_pixmap( alpha=False )
                     else:
-                        _pix = _display.get_pixmap( alpha = False, matrix = _mat )
-                    return _pix.tobytes()
+                        _pix = _display.get_pixmap( alpha=False, matrix=_mat )
+                    return _pix.tobytes( )
 
             _current = 0
             _data = getpage( _current )
             _image = sg.Image( data = _data )
-            _goto = sg.InputText( f'{str( _current + 1 )} of {str( _pages )}', size = (10, 1) )
+            _goto = sg.InputText( f'{str( _current + 1 )} of {str( _pages )}', size=( 10, 1 ) )
             _layout = [ [ sg.Button( 'Prev' ), sg.Button( 'Next' ),
-                          sg.Text(),
+                          sg.Text( ),
                           sg.Text( 'Page:' ), _goto,
                           sg.Text( size = (10, 1) ), sg.Text( 'Zoom: ' ),
                           sg.Button( ' In ', key = '-IN-' ), sg.Button( ' Out', key = '-OUT-' ), ],
                         [ _image ], ]
 
-            _keys = ('Next', 'Next:34', 'Prev', 'Prior:33', 'MouseWheel:Down', 'MouseWheel:Up',
-                     '-IN-', '-OUT-')
+            _keys = ( 'Next', 'Next:34', 'Prev', 'Prior:33', 'MouseWheel:Down', 'MouseWheel:Up',
+                     '-IN-', '-OUT-' )
 
             _window = sg.Window( _title, _layout,
                 size = self.form_size,
@@ -2180,7 +2180,6 @@ class CalendarDialog( Dark ):
         class creates form providing today selection behavior
 
 	'''
-
     def __init__( self ):
         super().__init__()
         sg.theme( 'DarkGrey15' )
@@ -2204,7 +2203,7 @@ class CalendarDialog( Dark ):
         sg.set_global_icon( icon = self.icon_path )
         sg.set_options( font = self.theme_font )
         sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
-        self.form_size = (500, 250)
+        self.form_size = ( 500, 250 )
 
 
     def __str__( self ) -> str:
@@ -4950,7 +4949,7 @@ class Executable():
             _err.show()
 
 
-    def run_command( cmd, timeout = None, window = None ):
+    def run_command( cmd, timeout=None, window=None ):
         """
 
             run shell command
@@ -4962,16 +4961,16 @@ class Executable():
 
 		"""
         try:
-            p = subprocess.Popen( cmd, shell = True, stdout = subprocess.PIPE,
+            p = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE,
                 stderr = subprocess.STDOUT )
             output = ''
             for line in p.stdout:
-                line = line.decode( errors = 'replace' if (sys.version_info) < (3, 5)
-                else 'backslashreplace' ).rstrip()
+                line = line.decode( errors = 'replace' if ( sys.version_info ) < ( 3, 5 )
+                else 'backslashreplace' ).rstrip( )
                 output += line
                 print( line )
                 if window:
-                    window.Refresh()
+                    window.Refresh( )
 
             retval = p.wait( timeout )
 
@@ -5069,7 +5068,6 @@ class UrlImageViewer():
 	    Class that presents an image given a URL
 
 	'''
-
     def __init__( self ):
         sg.theme( 'DarkGrey15' )
         sg.theme_input_text_color( '#FFFFFF' )
@@ -5131,4 +5129,4 @@ class UrlImageViewer():
             _exc.cause = 'UrlImageViewer'
             _exc.method = 'show( self)'
             _err = ErrorDialog( _exc )
-            _err.show()
+            _err.show( )

@@ -727,9 +727,10 @@ class ImageRequest( GptRequest ):
 		         'instructions' ]
 	
 	
-	def create( self, prompt: str, num: int = 1,
-	            quality='standard', size: str = '1024X1024' ) -> str:
+	def create( self, prompt: str, num: int=1,
+	            quality='standard', size: str='1024X1024' ) -> str:
 		'''
+		
 			Function geerates chat completq
 
 			Args:
@@ -746,7 +747,7 @@ class ImageRequest( GptRequest ):
 				self.prompt = prompt
 				self.number = num
 				self.size = size
-				openai.api_key = self.header.api_key
+				self.client.api_key = self.header.api_key
 				_sys = 'You are a helpful assistant and Budget Analyst'
 				_system = GptMessage( prompt=_sys, role='system', type='documents' )
 				_user = GptMessage( prompt=self.prompt, role='user', type='documents' )
@@ -760,8 +761,7 @@ class ImageRequest( GptRequest ):
 					top_p=self.top_percent,
 					n=self.number,
 					frequency_penalty=self.frequency_penalty,
-					presence_penalty=self.presence_penalty,
-				)
+					presence_penalty=self.presence_penalty )
 				
 				self.url = self.response[ 'values' ][ 0 ][ 'url' ]
 				self.content = requests.get( url ).content
@@ -823,7 +823,6 @@ class SpeechRequest( GptRequest ):
 		              'authorization': f'{self.header.authoriztion}',
 		              'content-type': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
-
 
 
 class TranslationRequest( GptRequest ):
@@ -997,7 +996,6 @@ class EmbeddingRequest( GptRequest ):
 		         'instructions' ]
 
 
-
 class VectorStoreRequest( GptRequest ):
 	'''
 		Class encapsulating requests for vectors.
@@ -1054,7 +1052,6 @@ class VectorStoreRequest( GptRequest ):
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
 		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values',
 		         'instructions' ]
-
 
 
 class GptFileRequest( GptRequest ):
@@ -1114,7 +1111,6 @@ class GptFileRequest( GptRequest ):
 		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values' ]
 
 
-
 class UploadRequest( GptRequest ):
 	'''
 		Class encapsulating requests for GPT uploads.
@@ -1126,7 +1122,7 @@ class UploadRequest( GptRequest ):
 		self.header = super( ).header
 		self.instructions = super( ).system_instructions
 		self.client = OpenAI( self.api_key )
-		self.model = 'gt-4o-mini'
+		self.model = 'gpt-4o-mini'
 		self.endpoint = EndPoint( ).uploads
 		self.number = num
 		self.temperature = temp
@@ -1417,8 +1413,10 @@ class UploadResponse( GptResponse ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
+		
 			Methods that returns a list of member names
 			Returns: list[ str ]
+			
 		'''
 		return [ 'id', 'object', 'model', 'created' ]
 
@@ -1505,7 +1503,7 @@ class SystemMessage( GptMessage ):
 		Class representing the system message
 		
 	'''
-	def __init__( self, prompt: str, role: str='system', type: str='documents' ) -> None:
+	def __init__( self, prompt: str, role: str='system', type: str='text' ) -> None:
 		super( ).__init__( prompt, role, type )
 		self.content = prompt
 		self.role = role
@@ -1599,8 +1597,10 @@ class UserMessage( GptMessage ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
+		
 			Methods that returns a list of member names
 			Returns: list[ str ]
+			
 		'''
 		return [ 'role', 'content', 'type' ]
 		
@@ -1887,7 +1887,9 @@ class AdaptiveLinearNeuron( ):
 		
 		
 	def fit( self, X, y ):
-		""" Fit training values.
+		"""
+		
+			Fit training values.
 
 			Parameters
 			----------
@@ -2070,7 +2072,6 @@ class Response( AI ):
 		return [ 'api_key', 'client', 'model', 'input', 'create' ]
 
 
-
 class Chat( AI ):
 	'''
 
@@ -2096,7 +2097,6 @@ class Chat( AI ):
 			
 		'''
 		return [ 'api_key', 'client', 'model', 'input', 'create' ]
-
 
 
 class Image( AI ):
