@@ -196,15 +196,16 @@ class Dark():
         self.theme_background = sg.theme_background_color( )
         self.theme_textcolor = sg.theme_text_color( )
         self.element_forecolor = sg.theme_element_text_color( )
-        self.text_forecolor = sg.theme_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
         self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
         self.input_forecolor = sg.theme_input_text_color( )
         self.input_backcolor = sg.theme_input_background_color( )
         self.button_backcolor = sg.theme_button_color_background( )
         self.button_forecolor = sg.theme_button_color_text( )
         self.button_color = sg.theme_button_color( )
-        self.icon_path = os.getcwd( ) + r'\etc\ico\ninja.ico'
-        self.theme_font = ( 'Roboto', 11 )
+        self.icon_path = os.getcwd( ) + r'\resources\ico\Application.ico'
+        self.theme_font = ( 'Roboto', 12 )
         self.scrollbar_color = '#755600'
         self.form_size = ( 400, 200 )
         self.settings_path = os.getcwd( ) + r'\etc\theme'
@@ -239,15 +240,8 @@ class FileDialog( Dark ):
         super( ).__init__( )
         self.theme_background = sg.theme_background_color( )
         self.theme_font = ( 'Roboto', 11 )
-        self.icon_path = os.getcwd( ) + r'\etc\ico\ninja.ico'
-        self.element_backcolor = super( ).element_backcolor
-        self.element_forecolor = super( ).element_forecolor
-        self.text_forecolor = super( ).text_forecolor
-        self.text_backcolor = super( ).text_backcolor
-        self.input_backcolor = super( ).input_backcolor
-        self.input_forecolor = super( ).input_forecolor
-        self.button_color = super( ).button_color
-        self.form_size = ( 475, 240 )
+        self.icon_path = os.getcwd( ) + r'\resources\ico\Application.ico'
+        self.form_size = ( 500, 240 )
         self.selected_item = None
         self.message = 'Search for File'
         self.extension = extension
@@ -333,17 +327,10 @@ class FolderDialog( Dark ):
 
     def __init__( self ):
         super( ).__init__( )
-        self.theme_background = super( ).theme_background
-        self.theme_font = super( ).theme_font
-        self.icon_path = super( ).icon_path
-        self.element_backcolor = super( ).element_backcolor
-        self.element_forecolor = super( ).element_forecolor
-        self.theme_textcolor = super( ).text_forecolor
-        self.text_backcolor = super( ).text_backcolor
-        self.input_backcolor = super( ).input_backcolor
-        self.input_forecolor = super( ).input_forecolor
-        self.button_color = super( ).button_color
-        self.form_size = ( 475, 250 )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_font = ( 'Roboto', 11 )
+        self.icon_path = os.getcwd( ) + r'\resources\ico\Application.ico'
+        self.form_size = ( 500, 250 )
         self.selected_item = None
 
 

@@ -45,6 +45,7 @@ import os
 import datetime as dt
 from openai import OpenAI
 import requests
+import tiktoken
 from pygments.lexers.csound import newline
 from static import GptRequests, GptRoles, GptLanguages
 from booger import ErrorDialog, Error
@@ -1118,7 +1119,7 @@ class GptFileRequest( GptRequest ):
 
 
 
-class GptUploadRequest( GptRequest ):
+class UploadRequest( GptRequest ):
 	'''
 		Class encapsulating requests for GPT uploads.
 	'''
@@ -2136,14 +2137,40 @@ class TTS( AI ):
 
 	'''
 	def __init__( self ):
+		'''
+			Constructor to create TTS objects
+		'''
 		super( ).__init__( )
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'tts-1-hd'
+		self.audio_path = None
+		self.response = None
+		self.prompt = None
+
 	
 	
-	def create( self, input: str ) -> str:
-		pass
+	def create( self, prompt: str, path: str ):
+		'''
+			method providing TTS functionality
+		'''
+		try:
+			if path is None:
+				raise Exception( 'Argument "path" is required.' )
+			elif prompt is None:
+				raise Exception( 'Argument "prompt" is required.' )
+			else:
+				self.audio_path= Path( path ).parent  # 'speech.mp3'
+				self.prompt = prompt
+				self.response = self.client.audio.speech.create( model=self.model, voice='alloy', input=prompt )
+				self.response.stream_to_file( self.audio_path )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'TTS'
+			exception.method = 'create( self, prompt: str, input: str )]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -2167,10 +2194,31 @@ class Transcription( AI ):
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'whisper-1'
+		self.input_text = None
+		self.audio_file = None
+		self.transcript = None
 	
 	
-	def create( self, input: str ) -> str:
-		pass
+	def create( self, input: str ):
+		'''
+			method creating transciption object given an input: str
+		'''
+		try:
+			if input is None:
+				raise Exception( 'Argument "input" is required.' )
+			else:
+				self.audio_file = open( 'boo.mp3', 'rb' )
+				self.input_text = input
+				self.response = self.client.audio.speech.create( model=self.model,
+					voice='alloy', input=self.input_text )
+				self.response.stream_to_file( self.audio_path )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Transcription'
+			exception.method = 'create( self, input: str )'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -2194,10 +2242,28 @@ class Translation( AI ):
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'whisper-1'
+		self.audio_file = None
+		self.response = None
 	
 	
-	def create( self, input: str ) -> str:
-		pass
+	def create( self, input: str ):
+		'''
+			Method creating a translation from one language to another
+		'''
+		try:
+			if input is None:
+				raise Exception( 'Argument "input" is required.' )
+			else:
+				self.audio_file = open( 'boo.mp3', 'rb' )
+				self.response = self.client.audio.translations.create( model='whisper-1',
+					file=self.audio_file )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Translation'
+			exception.method = 'create( self, input: str )'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -2208,13 +2274,4 @@ class Translation( AI ):
 			
 		'''
 		return [ 'api_key', 'client', 'model', 'input', 'create' ]
-	
-	
-class Bro( AI ):
-	'''
-	
-		Class providing open ai functionality
-		
-	'''
-	def __init__( self ):
-		pass
+
