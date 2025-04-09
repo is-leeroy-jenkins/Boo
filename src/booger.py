@@ -81,7 +81,6 @@ class Error( Exception ):
             Class wrapping error used as the input argument for ErrorDialog class
 
     '''
-
     def __init__( self, error: Exception, heading: str = None, cause: str = None,
             method: str = None, module: str = None ):
         super( ).__init__( )
@@ -123,7 +122,7 @@ class ButtonIcon():
 
     def __init__( self, png: Enum ):
         self.name = png.name
-        self.button = os.getcwd() + r'\etc\img\button'
+        self.button = r'C:\Users\terry\source\repos\Boo\resources\img\button'
         self.file_path = self.button + r'\\' + self.name + '.png'
 
     def __str__( self ) -> str:
@@ -153,7 +152,7 @@ class TitleIcon():
 
     def __init__( self, ico ):
         self.name = ico.name
-        self.folder = os.getcwd() + r'resources\ico'
+        self.folder = r'C:\Users\terry\source\repos\Boo\resources\ico'
         self.file_path = self.folder + r'\\' + self.name + r'.ico'
 
     def __str__( self ) -> str:
@@ -169,7 +168,7 @@ class TitleIcon():
         return [ 'folder', 'name', 'authority_filepath' ]
 
 
-class Dark():
+class Dark( ):
     '''
 
         Constructor:
@@ -181,13 +180,6 @@ class Dark():
             Class representing the theme
 
     '''
-
-    icon_path = os.getcwd( ) + r'\etc\ico\ninja.ico'
-    theme_font = ( 'Roboto', 11 )
-    scrollbar_color = '#755600'
-    form_size = ( 400, 200 )
-    settings_path = os.getcwd( ) + r'\etc\theme'
-
     def __init__( self ):
         sg.theme( 'DarkGrey15' )
         sg.theme_input_text_color( '#FFFFFF' )
@@ -204,14 +196,13 @@ class Dark():
         self.button_backcolor = sg.theme_button_color_background( )
         self.button_forecolor = sg.theme_button_color_text( )
         self.button_color = sg.theme_button_color( )
-        self.icon_path = os.getcwd( ) + r'\resources\ico\Application.ico'
-        self.theme_font = ( 'Roboto', 12 )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
         self.scrollbar_color = '#755600'
         self.form_size = ( 400, 200 )
-        self.settings_path = os.getcwd( ) + r'\etc\theme'
         sg.set_global_icon( icon = self.icon_path )
         sg.set_options( font = self.theme_font )
-        sg.user_settings_save( 'Boo', self.settings_path )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
 
     def __dir__( self ) -> list[ str ]:
         '''
@@ -219,12 +210,12 @@ class Dark():
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color' ]
+                 'scrollbar_color'  ]
 
 
 class FileDialog( Dark ):
@@ -238,21 +229,39 @@ class FileDialog( Dark ):
 
     def __init__( self, extension = EXT.XLSX ):
         super( ).__init__( )
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
         self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
         self.theme_font = ( 'Roboto', 11 )
-        self.icon_path = os.getcwd( ) + r'\resources\ico\Application.ico'
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = ( 500, 240 )
         self.selected_item = None
-        self.message = 'Search for File'
+        self.message = 'Grab File'
         self.extension = extension
-        self.excel = ( ( 'Excel Files', '*.xlsx' ), )
-        self.csv = ( ( 'CSV Files', '*.csv' ), )
-        self.pdf = ( ( 'PDF Files', '*.pdf' ), )
-        self.sql = ( ( 'SQL Files', '*.sqlstatement', ), )
-        self.text = ( ( 'Text Files', '*.txt'),)
-        self.access = ( ( 'MS ACCDB Databases', '*.accdb' ), )
-        self.sqlite = ( ( 'SQLite Databases', '*.values'),)
-        self.sqlserver = ( ( 'SQL Server Databases', '*.mdf', '*.ldf', '*.sdf' ), )
+        self.excel = ( ( 'Excel', '*.xlsx' ), )
+        self.csv = ( ( 'CSV', '*.csv' ), )
+        self.pdf = ( ( 'PDF', '*.pdf' ), )
+        self.sql = ( ( 'SQL', '*.sql', ), )
+        self.text = ( ( 'Text', '*.txt'),)
+        self.access = ( ( 'Access', '*.accdb' ), )
+        self.sqlite = ( ( 'SQLite', '*.db'),)
+        self.sqlserver = ( ( 'MSSQL', '*.mdf', '*.ldf', '*.sdf' ), )
 
 
     def __str__( self ) -> str:
@@ -266,13 +275,14 @@ class FileDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'original', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color', 'form_size',
-                 'selected_path', 'message', 'show' ]
+                 'scrollbar_color', 'original', 'selected_item', 'show',
+                 'message', 'extension', 'excel', 'csv', 'pdf', 'sql',
+                 'text', 'access', 'sqlite', 'sqlserver' ]
 
 
     def show( self ):
@@ -295,8 +305,9 @@ class FileDialog( Dark ):
                         [ sg.OK( size = ( 8, 1 ), ), sg.Cancel( size = ( 10, 1 ) ) ] ]
 
             _window = sg.Window( ' Booger', _layout,
-                font = self.theme_font,
-                size = self.form_size )
+                font=self.theme_font,
+                size=self.form_size,
+                icon=self.icon_path )
 
             while True:
                 _event, _values = _window.read( )
@@ -327,9 +338,27 @@ class FolderDialog( Dark ):
 
     def __init__( self ):
         super( ).__init__( )
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
         self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
         self.theme_font = ( 'Roboto', 11 )
-        self.icon_path = os.getcwd( ) + r'\resources\ico\Application.ico'
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = ( 500, 250 )
         self.selected_item = None
 
@@ -345,13 +374,12 @@ class FolderDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'original', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'selected_path', 'show' ]
+                 'scrollbar_color', 'original', 'selected_item', 'show' ]
 
 
     def show( self ):
@@ -372,8 +400,9 @@ class FolderDialog( Dark ):
                         [ sg.OK( size = ( 8, 1 ) ), sg.Cancel( size = ( 10, 1 ) ) ] ]
 
             _window = sg.Window( '  Booger', _layout,
-                font = self.theme_font,
-                size = self.form_size )
+                font=self.theme_font,
+                size=self.form_size,
+                icon=self.icon_path )
 
             while True:
                 _event, _values = _window.read()
@@ -382,9 +411,9 @@ class FolderDialog( Dark ):
                 elif _event == 'OK':
                     self.selected_item = _values[ '-PATH-' ]
                     sg.popup_ok( self.selected_item,
-                        title = 'Results',
-                        icon = self.icon_path,
-                        font = self.theme_font )
+                        title='Results',
+                        icon=self.icon_path,
+                        font=self.theme_font )
 
             _window.close()
         except Exception as e:
@@ -406,16 +435,28 @@ class SaveFileDialog( Dark ):
 
     def __init__( self, path = '' ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        self.file_name = None
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'\resources\theme' )
         self.form_size = (400, 250)
         self.original = path
 
@@ -429,13 +470,12 @@ class SaveFileDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'original', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'original', 'file_name', 'show' ]
+                 'scrollbar_color', 'original', 'file_name', 'show' ]
 
     def show( self ):
         '''
@@ -478,18 +518,29 @@ class GoogleDialog( Dark ):
 
     def __init__( self ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (500, 235)
-        self.image = os.getcwd() + r'\etc\img\app\web\google.png'
+        self.image = r'C:\Users\terry\source\repos\Boo\resources\img\app\web\google.png'
 
     def __str__( self ) -> str:
         if isinstance( self.results, list ):
@@ -501,13 +552,12 @@ class GoogleDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'original', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'search', 'results', 'show' ]
+                 'scrollbar_color', 'image', 'show' ]
 
     def show( self ):
         '''
@@ -568,18 +618,29 @@ class EmailDialog( Dark ):
     def __init__( self, sender: str = None, receiver: list[ str ] = None,
             subject: str = None, message: list[ str ] = None ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
-        self.image = os.getcwd() + r'\etc\img\app\web\outlook.png'
-        self.form_size = (570, 550)
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+        self.image = r'C:\Users\terry\source\repos\Boo\resources\img\app\web\outlook.png'
+        self.form_size = ( 570, 550 )
         self.sender = sender
         self.receiver = receiver
         self.subject = subject
@@ -674,16 +735,27 @@ class MessageDialog( Dark ):
     def __init__( self, text: str = None ):
         self.text = text
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (450, 250)
 
     def __str__( self ) -> str:
@@ -696,13 +768,12 @@ class MessageDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'documents', 'show',
-                 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'original', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color' ]
+                 'scrollbar_color', 'image', 'show' ]
 
     def show( self ):
         try:
@@ -763,15 +834,27 @@ class ErrorDialog( Dark ):
 
     def __init__( self, error: Error ):
         super().__init__()
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (500, 300)
         self.error = error
         self.heading = error.heading
@@ -796,7 +879,7 @@ class ErrorDialog( Dark ):
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
                  'scrollbar_color', 'progressbar_color',
-                 'info', 'cause', 'method',
+                 'info', 'cause', 'method', 'error', 'heading'
                  'module', 'type', 'message' 'show' ]
 
     def show( self ) -> object:
@@ -836,26 +919,36 @@ class InputDialog( Dark ):
 	    Purpose:  class that produces a contact input form
 
 	'''
-
     # Fields
-    theme_background: str = None
-    response: str = None
+    theme_background: str=None
+    response: str=None
 
-    def __init__( self, question: str = None ):
+    def __init__( self, question: str=None ):
         super().__init__()
-        self.theme_background = super().theme_background
         self.question = question
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
-        self.form_size = (500, 250)
-        self.response = None
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+        self.form_size = ( 500, 250 )
+        self.selected_item = None
 
     def __str__( self ) -> str:
         if isinstance( self.response, str ):
@@ -867,13 +960,12 @@ class InputDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'question', 'response', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
     def show( self ):
         try:
@@ -901,7 +993,7 @@ class InputDialog( Dark ):
 
                 self.response = _values[ '-INPUT-' ]
                 sg.popup( _event, _values, self.response,
-                    text_color = self.theme_textcolor,
+                    text_color = sg.theme_text_color(),
                     font = self.theme_font,
                     icon = self.icon )
 
@@ -912,7 +1004,7 @@ class InputDialog( Dark ):
             _exc.cause = 'InputDialog'
             _exc.method = 'show( self )'
             _err = ErrorDialog( _exc )
-            _err.show()
+            _err.show( )
 
 
 class ScrollingDialog( Dark ):
@@ -927,21 +1019,30 @@ class ScrollingDialog( Dark ):
             Provides form for multiline input/cleaned_lines
 
 	'''
-
     def __init__( self, text = '' ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
-        self.arrowcolor = super().scrollbar_color
-        self.form_size = (700, 600)
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+        self.form_size = ( 700, 600 )
         self.text = text if isinstance( text, str ) and text != '' else None
 
     def __str__( self ) -> str:
@@ -954,13 +1055,12 @@ class ScrollingDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'documents', 'show' ]
+                 'scrollbar_color', 'show' ]
 
     def show( self ):
         try:
@@ -1013,21 +1113,31 @@ class ContactForm( Dark ):
         Purpose:  class that produces a contact input form
 
 	'''
-
     def __init__( self ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
-        self.image = os.getcwd() + r'\etc\img\app\web\outlook.png'
-        self.form_size = (500, 300)
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+        self.image = r'C:\Users\terry\source\repos\Boo\resources\img\app\web\outlook.png'
+        self.form_size = ( 500, 300 )
 
     def __dir__( self ) -> list[ str ]:
         '''
@@ -1035,13 +1145,13 @@ class ContactForm( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
+
 
     def show( self ):
         try:
@@ -1090,28 +1200,37 @@ class GridForm( Dark ):
     '''
 
         Construcotr: GridForm( )
-
+        
         Purpose:  object providing form that simulates a datagrid
 
 	'''
-
     def __init__( self, rows = 30, columns = 10 ):
-        super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
-        self.image = None
-        self.width = (17, 1)
+        super( ).__init__( )
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+        self.width = ( 17, 1 )
         self.rows = rows
         self.columns = columns
-        self.form_size = (1250, 650)
+        self.form_size = ( 1250, 650 )
 
     def __dir__( self ) -> list[ str ]:
         '''
@@ -1119,8 +1238,8 @@ class GridForm( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
-                 'theme_textcolor', 'element_backcolor', 'element_forecolor',
+        return [ 'form_size', 'theme_background', 'theme_textcolor',
+                 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
@@ -1165,32 +1284,42 @@ class GridForm( Dark ):
             _exc.cause = 'GridForm'
             _exc.method = 'show( self )'
             _err = ErrorDialog( _exc )
-            _err.show()
+            _err.show( )
 
 
 class LoadingPanel( Dark ):
     '''
 
         Construcotr:  LoadingPanel( )
-
+        
         Purpose:  object providing form loading behavior
 
 	'''
-
     def __init__( self ):
-        super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
-        self.image = os.getcwd() + r'\etc\img\loaders\loading.gif'
-        self.form_size = (800, 600)
+        super().__init__( )
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+        self.image = r'C:\Users\terry\source\repos\Boo\resources\img\loaders\loading.gif'
+        self.form_size = ( 800, 600 )
         self.timeout = 6000
 
     def __dir__( self ) -> list[ str ]:
@@ -1199,12 +1328,13 @@ class LoadingPanel( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color', 'timeout', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
+
 
     def show( self ):
         try:
@@ -1245,27 +1375,37 @@ class WaitingPanel( Dark ):
     '''
 
         Construcotr:  WaitingPanel( )
-
+        
         Purpose:  object providing form loader behavior
 
 	'''
-
     def __init__( self ):
-        super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
-        self.image = os.getcwd() + r'\etc\img\loaders\loader.gif'
-        self.theme_font = ('Roboto', 9)
-        self.form_size = (800, 600)
+        super( ).__init__( )
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+        self.image = r'C:\Users\terry\source\repos\Boo\resources\img\loaders\loader.gif'
+        self.theme_font = ('Roboto', 11 )
+        self.form_size = ( 800, 600 )
         self.timeout = 6000
+
 
     def __dir__( self ) -> list[ str ]:
         '''
@@ -1273,12 +1413,13 @@ class WaitingPanel( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color', 'timeout', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
+
 
     def show( self ):
         try:
@@ -1324,22 +1465,33 @@ class ProcessingPanel( Dark ):
         Purpose:  object providing form processing behavior
 
 	'''
-
     def __init__( self ):
-        super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
-        self.image = os.getcwd() + r'\etc\img\loaders\processing.gif'
-        self.form_size = (800, 600)
+        super().__init__ ()
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+        self.image = r'C:\Users\terry\source\repos\Boo\resources\img\loaders\processing.gif'
+        self.form_size = ( 800, 600 )
         self.timeout = None
+
 
     def __dir__( self ) -> list[ str ]:
         '''
@@ -1347,13 +1499,13 @@ class ProcessingPanel( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'timeout', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
+
 
     def show( self ):
         try:
@@ -1385,8 +1537,7 @@ class ProcessingPanel( Dark ):
                         exit( 0 )
 
                     _window[ '-IMAGE-' ].update( data = ImageTk.PhotoImage( frame ) )
-                    _window.close()
-
+                    _window.close( )
         except Exception as e:
             _exc = Error( e )
             _exc.module = 'Booger'
@@ -1404,23 +1555,31 @@ class SplashPanel( Dark ):
         Purpose:  Class providing splash dialog behavior
 
 	'''
-
     def __init__( self ):
-        super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
-        self.button_forecolor = super().button_forecolor
-        self.button_backcolor = super().button_backcolor
-        self.image = os.getcwd() + r'\etc\img\BudgetEx.png'
-        self.form_size = (800, 600)
+        super().__init__( )
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+        self.image = r'C:\Users\terry\source\repos\Boo\resources\img\BudgetEx.png'
+        self.form_size = ( 800, 600 )
         self.timeout = 6000
 
     def __dir__( self ) -> list[ str ]:
@@ -1429,13 +1588,12 @@ class SplashPanel( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'timeout', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
     def show( self ):
         try:
@@ -1453,10 +1611,10 @@ class SplashPanel( Dark ):
                 grab_anywhere = True,
                 size = self.form_size )
             while True:
-                _event, _values = _window.read( timeout = self.timeout, close = True )
-                if _event in (sg.WIN_CLOSED, 'Exit'):
+                _event, _values = _window.read( timeout=self.timeout, close=True )
+                if _event in ( sg.WIN_CLOSED, 'Exit' ):
                     break
-            _window.close()
+            _window.close( )
         except Exception as e:
             _exc = Error( e )
             _exc.module = 'Booger'
@@ -1474,17 +1632,30 @@ class Notification( Dark ):
         Purpose:  object providing form processing behavior
 
 	'''
-
     def __init__( self ):
-        super().__init__()
-        self.theme_background = super().theme_background
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        super( ).__init__( )
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+        self.form_size = ( 800, 600 )
         self.success = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAA3NCSVQICAjb4U' \
                        b'/gAAAACXBIWXMAAAEKAAABCgEWpLzLAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5r' \
                        b'c2NhcGUub3Jnm+48GgAAAHJQTFRF////ZsxmbbZJYL9gZrtVar9VZsJcbMRYaM' \
@@ -1569,13 +1740,12 @@ class Notification( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'message', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
     def show( self ) -> int:
         try:
@@ -1592,7 +1762,7 @@ class Notification( Dark ):
             _exc.cause = 'Notification'
             _exc.method = 'show( self )'
             _err = ErrorDialog( _exc )
-            _err.show()
+            _err.show( )
 
 
 class ImageSizeEncoder( Dark ):
@@ -1605,17 +1775,30 @@ class ImageSizeEncoder( Dark ):
 	'''
 
     def __init__( self ):
-        super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        super().__init__( )
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+        self.form_size = ( 800, 600 )
+
 
     def __dir__( self ) -> list[ str ]:
         '''
@@ -1623,13 +1806,12 @@ class ImageSizeEncoder( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'timeout', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
     def show( self ):
         '''
@@ -1811,7 +1993,6 @@ class ImageSizeEncoder( Dark ):
             sg.user_settings_set_entry( '-base64-', _values[ '-BASE64-' ] )
             sg.user_settings_set_entry( '-_width-', _values[ '-WIDTH-' ] )
             sg.user_settings_set_entry( '-_height-', _values[ '-HEIGHT-' ] )
-
         _window.close()
 
 
@@ -1825,19 +2006,29 @@ class PdfForm( Dark ):
             Creates form to view a PDF
 
 	'''
-
     def __init__( self ):
-        super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        super( ).__init__( )
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (600, 800)
 
 
@@ -1847,12 +2038,12 @@ class PdfForm( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
 
     def show( self ):
@@ -1992,16 +2183,27 @@ class CalendarDialog( Dark ):
 
     def __init__( self ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (500, 250)
 
 
@@ -2020,13 +2222,12 @@ class CalendarDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'selected_item', 'day', 'month', 'year', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
 
     def show( self ):
@@ -2078,16 +2279,27 @@ class ComboBoxDialog( Dark ):
 
     def __init__( self, data: list = None ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (400, 150)
         self.items = data
 
@@ -2103,13 +2315,12 @@ class ComboBoxDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color', 'items',
-                 'selected_item', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
     def show( self ):
         '''
@@ -2175,18 +2386,29 @@ class ListBoxDialog( Dark ):
 
     def __init__( self, data: list[ str ] = None ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (400, 250)
-        self.image = os.getcwd() + r'\etc\img\app\dialog\lookup.png'
+        self.image = os.getcwd() + r'\resources\img\app\dialog\lookup.png'
         self.items = data
 
 
@@ -2201,13 +2423,12 @@ class ListBoxDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color', 'items',
-                 'selected_items', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
 
     def show( self ):
@@ -2296,16 +2517,27 @@ class ColorDialog( Dark ):
 
     def __init__( self ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (450, 450)
         self.rgb = None
         self.hex = None
@@ -2319,13 +2551,12 @@ class ColorDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'rgb', 'hex', 'html', 'argb', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
 
     def show( self ):
@@ -3098,18 +3329,29 @@ class BudgetForm( Dark ):
 
     def __init__( self ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (1200, 650)
-        self.image = os.getcwd() + r'\etc\img\app\Application.png'
+        self.image = os.getcwd() + r'\resources\img\app\Application.png'
 
 
     def __dir__( self ) -> list[ str ]:
@@ -3569,7 +3811,26 @@ class ChartPanel( Dark ):
     def __init__( self ):
         super().__init__()
         sg.theme( 'DarkGrey15' )
-        self.icon_path = super().icon_path
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (750, 650)
 
 
@@ -3579,12 +3840,12 @@ class ChartPanel( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color', 'header', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
 
     def show( self ):
@@ -3674,16 +3935,27 @@ class CsvForm( Dark ):
 
     def __init__( self ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (800, 600)
 
 
@@ -3693,13 +3965,12 @@ class CsvForm( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color', 'header',
-                 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
 
     def show( self ):
@@ -3792,16 +4063,27 @@ class ExcelForm( Dark ):
 
     def __init__( self ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (1250, 650)
 
 
@@ -3811,13 +4093,12 @@ class ExcelForm( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color',
-                 'header', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
 
     def show( self ):
@@ -3922,16 +4203,27 @@ class GraphForm( Dark ):
 
     def __init__( self ):
         super().__init__()
-        self.theme_background = super().theme_background
-        self.theme_font = super().theme_font
-        self.icon_path = super().icon_path
-        self.element_backcolor = super().element_backcolor
-        self.element_forecolor = super().element_forecolor
-        self.theme_textcolor = super().text_forecolor
-        self.text_backcolor = super().text_backcolor
-        self.input_backcolor = super().input_backcolor
-        self.input_forecolor = super().input_forecolor
-        self.button_color = super().button_color
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
         self.form_size = (800, 600)
 
 
@@ -3941,12 +4233,12 @@ class GraphForm( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-        return [ 'size', 'settings_path', 'theme_background',
+        return [ 'form_size', 'settings_path', 'theme_background',
                  'theme_textcolor', 'element_backcolor', 'element_forecolor',
                  'text_forecolor', 'text_backcolor', 'input_backcolor',
                  'input_forecolor', 'button_color', 'button_backcolor',
                  'button_forecolor', 'icon_path', 'theme_font',
-                 'scrollbar_color', 'progressbar_color', 'show' ]
+                 'scrollbar_color', 'input_text', 'show' ]
 
 
     def show( self ):
@@ -4149,10 +4441,42 @@ class FileBrowser( ):
         You may not redistribute, modify or otherwise use PySimpleGUI or its contents except
          pursuant to the PySimpleGUI License Agreement.
     '''
-    
-    
     def __init__(self):
         sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+        
+        
+    def __dir__( self ) -> list[ str ]:
+        '''
+
+            Returns a list[ str ] of member names
+
+        '''
+        return [ 'form_size', 'settings_path', 'theme_background',
+                 'theme_textcolor', 'element_backcolor', 'element_forecolor',
+                 'text_forecolor', 'text_backcolor', 'input_backcolor',
+                 'input_forecolor', 'button_color', 'button_backcolor',
+                 'button_forecolor', 'icon_path', 'theme_font',
+                 'scrollbar_color', 'input_text', 'show' ]
     
     
     def show( self ):
@@ -4190,10 +4514,42 @@ class ChatWindow():
 	    Function to generate a chat window
 
 	'''
-
     def __init__( self ):
         sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+    
+    
+    def __dir__( self ) -> list[ str ]:
+        '''
 
+            Returns a list[ str ] of member names
+
+        '''
+        return [ 'form_size', 'settings_path', 'theme_background',
+                 'theme_textcolor', 'element_backcolor', 'element_forecolor',
+                 'text_forecolor', 'text_backcolor', 'input_backcolor',
+                 'input_forecolor', 'button_color', 'button_backcolor',
+                 'button_forecolor', 'icon_path', 'theme_font',
+                 'scrollbar_color', 'input_text', 'show' ]
 
     def show( self ):
         try:
@@ -4236,8 +4592,42 @@ class ChatBot():
     # give our form a spiffy set of colors
     def __init__( self ):
         sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+    
+    
+    def __dir__( self ) -> list[ str ]:
+        '''
 
+            Returns a list[ str ] of member names
 
+        '''
+        return [ 'form_size', 'settings_path', 'theme_background',
+                 'theme_textcolor', 'element_backcolor', 'element_forecolor',
+                 'text_forecolor', 'text_backcolor', 'input_backcolor',
+                 'input_forecolor', 'button_color', 'button_backcolor',
+                 'button_forecolor', 'icon_path', 'theme_font',
+                 'scrollbar_color', 'input_text', 'show' ]
+    
+    
     def show( self ):
         try:
             layout = [ [ sg.Text( 'Your cleaned_lines will go here', size = (40, 1) ) ],
@@ -4254,7 +4644,7 @@ class ChatBot():
 
             window = sg.Window( 'Chat window with history', layout,
                 default_element_size = (30, 2),
-                font = ('Roboto', ' 13'),
+                font = ('Roboto', ' 11'),
                 default_button_element_size = (8, 2),
                 return_keyboard_events = True )
 
@@ -4334,11 +4724,44 @@ class InputWindow():
 	    You may not redistribute, modify or otherwise use PySimpleGUI or its contents except
 	    pursuant to the PySimpleGUI License Agreement.
 	"""
-
     def __init__( self ):
-        pass
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+    
+    
+    def __dir__( self ) -> list[ str ]:
+        '''
 
+            Returns a list[ str ] of member names
 
+        '''
+        return [ 'form_size', 'settings_path', 'theme_background',
+                 'theme_textcolor', 'element_backcolor', 'element_forecolor',
+                 'text_forecolor', 'text_backcolor', 'input_backcolor',
+                 'input_forecolor', 'button_color', 'button_backcolor',
+                 'button_forecolor', 'icon_path', 'theme_font',
+                 'scrollbar_color', 'input_text', 'show' ]
+    
+    
     def show( self ):
         try:
             col2 = sg.Column( [ [ sg.Frame( 'Accounts:',
@@ -4424,9 +4847,42 @@ class Executable():
 	    You may not redistribute, modify or otherwise use PySimpleGUI or
 	    its contents except pursuant to the PySimpleGUI License Agreement.
 	'''
-
     def __init__( self ):
-        sg.theme( 'LightGreen' )
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+    
+    
+    def __dir__( self ) -> list[ str ]:
+        '''
+
+            Returns a list[ str ] of member names
+
+        '''
+        return [ 'form_size', 'settings_path', 'theme_background',
+                 'theme_textcolor', 'element_backcolor', 'element_forecolor',
+                 'text_forecolor', 'text_backcolor', 'input_backcolor',
+                 'input_forecolor', 'button_color', 'button_backcolor',
+                 'button_forecolor', 'icon_path', 'theme_font',
+                 'scrollbar_color', 'input_text', 'show' ]
 
 
     def show( self ):
@@ -4535,11 +4991,44 @@ class ThemeSelector():
 	    Class providing theme selection
 
 	'''
-
     def __init__( self ):
-        sg.theme( 'Dark Green 5' )
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+    
+    
+    def __dir__( self ) -> list[ str ]:
+        '''
 
+            Returns a list[ str ] of member names
 
+        '''
+        return [ 'form_size', 'settings_path', 'theme_background',
+                 'theme_textcolor', 'element_backcolor', 'element_forecolor',
+                 'text_forecolor', 'text_backcolor', 'input_backcolor',
+                 'input_forecolor', 'button_color', 'button_backcolor',
+                 'button_forecolor', 'icon_path', 'theme_font',
+                 'scrollbar_color', 'input_text', 'show' ]
+    
+    
     def show( self ):
         '''
 
@@ -4582,7 +5071,41 @@ class UrlImageViewer():
 	'''
 
     def __init__( self ):
-        sg.theme( 'Dark Green 5' )
+        sg.theme( 'DarkGrey15' )
+        sg.theme_input_text_color( '#FFFFFF' )
+        sg.theme_element_text_color( '#69B1EF' )
+        sg.theme_text_color( '#69B1EF' )
+        self.theme_background = sg.theme_background_color( )
+        self.theme_textcolor = sg.theme_text_color( )
+        self.element_forecolor = sg.theme_element_text_color( )
+        self.element_backcolor = sg.theme_background_color( )
+        self.text_backcolor = sg.theme_text_element_background_color( )
+        self.text_forecolor = sg.theme_element_text_color( )
+        self.input_forecolor = sg.theme_input_text_color( )
+        self.input_backcolor = sg.theme_input_background_color( )
+        self.button_backcolor = sg.theme_button_color_background( )
+        self.button_forecolor = sg.theme_button_color_text( )
+        self.button_color = sg.theme_button_color( )
+        self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+        self.theme_font = ( 'Roboto', 11 )
+        self.scrollbar_color = '#755600'
+        sg.set_global_icon( icon = self.icon_path )
+        sg.set_options( font = self.theme_font )
+        sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+    
+    
+    def __dir__( self ) -> list[ str ]:
+        '''
+
+            Returns a list[ str ] of member names
+
+        '''
+        return [ 'form_size', 'settings_path', 'theme_background',
+                 'theme_textcolor', 'element_backcolor', 'element_forecolor',
+                 'text_forecolor', 'text_backcolor', 'input_backcolor',
+                 'input_forecolor', 'button_color', 'button_backcolor',
+                 'button_forecolor', 'icon_path', 'theme_font',
+                 'scrollbar_color', 'input_text', 'show' ]
 
 
     def show( self ):

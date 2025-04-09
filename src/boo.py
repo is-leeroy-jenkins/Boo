@@ -291,8 +291,7 @@ class GptOptions( ):
 			Returns: list[ str ] of size used by the audio api
 
 		'''
-		return [ '256X256', '512X512', '1024X1024',
-		         '1024x1792', '1792x1024' ]
+		return [ '256X256', '512X512', '1024X1024', '1024x1792', '1792x1024' ]
 	
 	
 	def get_response_formats( self ) -> list[ str ]:
