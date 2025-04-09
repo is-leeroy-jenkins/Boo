@@ -268,11 +268,11 @@ class GptOptions( ):
 
 		'''
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
-		         'presence_penalty', 'max_completion_tokens', 'store', 'stream', 'size',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'size',
 		         'get_voices', 'get_sizes', 'response_format',
 		         'get_file_formats', 'get_response_formats',
-		         'get_output_formats', 'get_input_formats',
-		         'get_data' ]
+		         'get_output_formats', 'get_input_formats', 'get_data' ]
 	
 	
 	def get_voices( self ) -> list[ str ]:
@@ -300,7 +300,7 @@ class GptOptions( ):
 			Returns: list[ str ] of response formats used by the GPT
 
 		'''
-		return [ 'documents', 'audio', 'url' ]
+		return [ 'text', 'audio', 'url' ]
 	
 	
 	def get_output_formats( self ) -> list[ str ]:
@@ -373,8 +373,8 @@ class Payload( ):
 		self.store = store
 		self.stream = stream
 		self.size = size
-		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
+		self.data = { 'model': f'{self.model}',
+		              'number': f'{self.number}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -635,13 +635,13 @@ class CompletionRequest( GptRequest ):
 			Returns:
 
 		'''
-		
 		try:
 			if prompt is None:
 				alert = 'The prompt argument is not available'
 				raise Exception( alert )
 			else:
 				self.prompt = prompt
+				
 			self.client.api_key = self.header.api_key
 			_sys = 'You are a helpful assistant and Budget Analyst'
 			_system = GptMessage( prompt=_sys, role='system', type='documents' )
