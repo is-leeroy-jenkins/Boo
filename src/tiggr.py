@@ -72,12 +72,12 @@ class Text:
 		correct_errors( self, text: str ) -> str:
 		remove_markdown( self, text: str ) -> str
 	    normalize(text: str) -> str
-	    tokenize_sentences(text: str) -> list
+	    tokenize_sentences(text: str) -> str
 	    tokenize_words(text: str) -> list
-	    remove_stopwords(tokens: list) -> list
+	    load_file( path: str) -> li
 	    lemmatize(tokens: list) -> str
 	    bag_of_words(tokens: list) -> dict
-	    train_word2vec_model(sentences: list, vector_size=100, window=5, min_count=1) -> Word2Vec
+	    train_word2vec(sentences: list, vector_size=100, window=5, min_count=1) -> Word2Vec
 	    compute_tfidf(corpus: list, max_features=1000, prep=True) -> tuple
 	    
 	'''
