@@ -547,17 +547,15 @@ class TextRequest( GptRequest ):
 		'''
 		try:
 			if prompt is None:
-				alert = f'The prompt argument is not available'
-				raise Exception( alert )
+				raise Exception( f'The "prompt" argument is not available' )
 			else:
 				self.prompt = prompt
 			
 			self.client.api_key = self.header.api_key
-			_system_prompt = 'You are a helpful assistant and Budget Analyst'
-			_system = GptMessage( prompt=_system_prompt, role='system', type='documents' )
-			_user = GptMessage( prompt=self.prompt, role='user', type='documents' )
-			self.messages.append( _system )
-			self.messages.append( _user )
+			_system = SystemMessage( prompt=self.system_instructions )
+			_user = UserMessage( prompt=self.prompt  )
+			self.messages.append( SystemMessage( prompt=_system_prompt ) )
+			self.messages.append( UserMessage( prompt=self.prompt  ) )
 			
 			self.response = self.client.chat.completions.create(
 				model=self.model,
