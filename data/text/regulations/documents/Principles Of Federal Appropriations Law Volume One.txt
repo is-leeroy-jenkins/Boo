@@ -922,7 +922,7 @@ agreed to the condition for receipt of federal Medicaid funds on state
 provision of emergency medical services to illegal aliens, California now 
 viewed that condition as coerced because substantial increases in illegal 
 immigration left California with no choice but to remain in the program to 
-prevent collapse of its medical system; the complaint was dismissed for 
+prevent collapse_whitespace of its medical system; the complaint was dismissed for
 failure to state a claim upon which relief could be granted). 
 Page 1-10 GAO-04-261SP Appropriations Law—Vol. I 
 Chapter 1 

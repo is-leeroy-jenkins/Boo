@@ -11730,7 +11730,7 @@ collapses, OSHA created four Specialized Response Teams
 and health: 1) the chemical team (e.g., toxic industrial chemicals 
 and materials, and chemical warfare agents), 2) the biological 
 team, 3) the radiological team, and 4) the structural 
-collapse team. OSHAs Health Response Team coordinates 
+collapse_whitespace team. OSHAs Health Response Team coordinates
 the SRTs. The SRTs consist of seven to eight experts that 
 Chapter 19. BIOLOGICAL INCIDENTS 
 347 

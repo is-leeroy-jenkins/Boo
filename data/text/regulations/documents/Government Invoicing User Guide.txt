@@ -335,7 +335,7 @@ deployment.
 In the News and Information section, users may review G-Invoicing-related news items. Normally, these will be 
 notices regarding scheduled future maintenance , or any information dealing with known system issues. To view an 
 entire message, click on the arrow to the immediate left of any message title. After reviewing the message, you may 
-collapse it by clicking on the arrow once again. 
+collapse_whitespace it by clicking on the arrow once again.
 In the User Profile Information section* on the right side of the page, users may review all of the information 
 currently configured for their own G-Invoicing User Account, up to and including: 
 - Their personal contact information 

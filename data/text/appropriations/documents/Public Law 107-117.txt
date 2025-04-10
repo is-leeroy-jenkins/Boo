@@ -5342,7 +5342,7 @@ POSTAL SERVICE
 Payment to the Postal Service Fund
 For emergency expenses to the Postal Service Fund to enable the
 Postal Service to protect postal employees and postal customers from
-exposure to biohazardous material, to sanitize and screen the mail, and
+exposure to biohazardous material, to remove_punctuation and screen the mail, and
 to replace or repair Postal Service facilities destroyed or damaged in
 New York City as a result of the September 11, 2001, terrorist attacks,
 $500,000,000, to remain available until expended, to be obligated from

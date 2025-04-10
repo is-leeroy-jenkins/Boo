@@ -5842,7 +5842,7 @@ POSTAL SERVICE
 Payment to the Postal Service Fund
 For emergency expenses to the Postal Service Fund to enable
 the Postal Service to protect postal employees and postal
-customers from exposure to biohazardous material, to sanitize
+customers from exposure to biohazardous material, to remove_punctuation
 and screen the mail, and to replace or repair Postal Service
 facilities destroyed or damaged in New York City as a result of
 the September 11, 2001, terrorist attacks, $500,000,000, to
@@ -8748,7 +8748,7 @@ public telecommunications facilities, planning and construction
 The conference agreement includes $8,250,000 for
 emergency grants to assist public broadcasters in restoring
 broadcasting facilities and capabilities that were destroyed in
-the collapse of the World Trade Center towers, as proposed in
+the collapse_whitespace of the World Trade Center towers, as proposed in
 both the House and Senate bills. In addition, language is
 included providing a waiver of matching requirements, as
 proposed in the House bill. The Senate bill did not include
@@ -10068,7 +10068,7 @@ services to serve PATH commuters traveling from New Jersey to
 Manhattan. A total of $10,000,000 for traffic controls and
 detours in New York City and for the repair and reconstruction
 of non-Federal-aid highways destroyed or damaged by the
-collapse of the World Trade Center buildings is provided under
+collapse_whitespace of the World Trade Center buildings is provided under
 the Federal Emergency Management Agency as proposed by the
 House, instead of under this head as proposed by the Senate.
 Federal-Aid Highways
@@ -10100,7 +10100,7 @@ Formula Grants
 The conference agreement includes $23,500,000 for formula
 grants as proposed by both the House and the Senate. These
 supplemental funds will finance the replacement of buses and
-transit kiosks destroyed by the collapse of the World Trade
+transit kiosks destroyed by the collapse_whitespace of the World Trade
 Center; provide technical assistance for transit agencies to
 refine and develop security and emergency response plans;
 accelerate and expand the PROTECT program aimed at detecting
@@ -10352,7 +10352,7 @@ expenses of the Postal Service instead of $600,000,000 as
 proposed by the Senate and no funding as proposed by the House.
 The conferees agree that these funds shall be obligated for the
 purpose of protecting postal employees and postal customers
-from exposure to biohazards material, to sanitize and screen
+from exposure to biohazards material, to remove_punctuation and screen
 mail, and to replace or repair Postal Service facilities
 destroyed or damaged in New Your City as a result of the
 September 11, 2001, terrorist attacks. The conferees note that
@@ -10668,7 +10668,7 @@ September 11, 2001 terrorist attacks. The amount provided
 includes $10,000,000 for expenses related to traffic control
 and detours in New York City and for the repair and
 reconstruction of non-Federal-aid-eligible highways destroyed
-or damaged by the collapse of the World Trade Center buildings.
+or damaged by the collapse_whitespace of the World Trade Center buildings.
 The conferees are concerned that there may be some gaps
 in assistance to those affected by the terrorist attacks on
 September 11, 2001. The conferees have been informed by FEMA

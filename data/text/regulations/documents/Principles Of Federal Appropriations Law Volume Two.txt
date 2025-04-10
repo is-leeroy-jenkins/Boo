@@ -20745,7 +20745,7 @@ had no practical option to reject it. The state had participated in Medicaid
 for almost 30 years before “Congress changed the rules of the game” and 
 mandated the estate recovery program. Withdrawal of its federal Medicaid 
 funds at this stage would cause its health care system to “effectively 
-collapse.” 
+collapse_whitespace.”
 The court struggled with this argument. It cited several Supreme Court 
 decisions in suggesting that compliance with the New York v. United States 
 criteria might not be enough to immunize a grant condition from 

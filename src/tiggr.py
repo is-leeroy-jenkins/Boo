@@ -72,6 +72,7 @@ class Text:
 		self.cleaned = [ str ]
 		self.removed = [ str ]
 		self.normalized = None
+		self.lowercase = None
 		self.translator = None
 		self.lemmatizer = WordNetLemmatizer( )
 		self.stemmer = PorterStemmer( )
@@ -79,28 +80,27 @@ class Text:
 		self.lemmatized = None
 		self.tokenized = None
 		self.corrected = None
+		self.vectorizer = None
 		self.words = [ str ]
 		self.tokens = [ str ]
 		self.lines = [ str ]
-		self.chunks = [ ]
-		self.raw_html = None
-		self.stop_words = [ ]
-		self.filtered = [ ]
+		self.chunks = [ str ]
+		self.stop_words = [ str ]
 	
 	
 	def __dir__( self ):
 		'''
 			returns a list[ str ] of members
 		'''
-		return [ 'raw_input', 'cleaned', 'finished',
-		         'lowercase', 'normalized', 'unicoded',
-		         'translator', 'lemmatizer', 'tokenizer',
-		         'stemmer', 'lemmatized', 'lemmatized_tokens',
-		         'cleaned_tokens', 'raw_html', 'cleaned_html',
-		         'stop_words', 'filtered', 'chunks' ]
+		return [ 'raw_input', 'cleaned', 'removed',
+		         'lowercase', 'normalized', 'translator',
+		         'lemmatizer', 'tokenizer',
+		         'stemmer', 'lemmatized', 'tokens',
+		         'tokenized', 'corrected', 'words',
+		         'stop_words', 'lines', 'chunks' ]
 	
 	
-	def remove_whitespace( self, text: str ) -> str:
+	def collapse_whitespace( self, text: str ) -> str:
 		"""
 			Removes extra spaces and blank lines from the input text.
 
@@ -131,7 +131,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_whitespace( self, text: str ) -> str:'
+			_exc.method = 'collapse_whitespace( self, text: str ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -481,7 +481,7 @@ class Text:
 
 			This function:
 			  - Converts text to lowercase
-			  - Tokenizes the text into words
+			  - Tokenizes the lowercased text into words
 			  - Lemmatizes each token using WordNetLemmatizer
 			  - Reconstructs the lemmatized tokens into a single string
 
@@ -515,6 +515,41 @@ class Text:
 			_err.show( )
 	
 	
+	def chunk( self, tokens: list, max: int=800, over: int=50 ) -> list[ str ]:
+		"""
+			Purpose:
+				Split a list of tokens into overlapping chunks based on token limits.
+
+			Args:
+				tokens (list): Tokenized input documents.
+				max (int): Max token size per chunk.
+				over (int): Overlapping token count between chunks.
+
+			Returns:
+				list: A list of token chunks.
+		"""
+		try:
+			if tokens is None:
+				raise Exception( 'Input parameter "tokens" is required.' )
+			else:
+				chunks = [ ]
+				start = 0
+				while start < len( tokens ):
+					end = start + max
+					chunk = tokens[ start:end ]
+					chunks.append( chunk )
+					start += max - over
+				
+				return chunks
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Token'
+			_exc.method = 'chunk( self, tokens: list, max: int=800, over: int=50 ) -> list[ str ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
 	def tokenize( self, text: str ) -> list[ str ]:
 		'''
 
@@ -531,6 +566,7 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "text" was None' )
 			else:
+				self.tokens.clear( )
 				self.raw_input = text
 				self.lowercase = self.raw_input.lower( )
 				self.tokens = word_tokenize( self.lowercase )
@@ -547,72 +583,159 @@ class Text:
 			_err.show( )
 	
 	
-	def chunk( self, text: str, size: int = 50 ) -> list[ list[ str ] ]:
+	def tokenize_words( self, text: str ) -> list[ str ]:
 		"""
+		
+			Tokenize a sentence or paragraph into word tokens.
 
-			Tokenizes cleaned text and breaks it
-			into chunks for downstream embeddings.
-
-			This function:
-			  - Converts text to lowercase
-			  - Tokenizes text using NLTK's word_tokenize
-			  - Breaks tokens into chunks of a specified size
-			  - Optionally joins tokens into strings (for transformer models)
-
-			Parameters:
-			-----------
-			text : str
-				The cleaned input text to be tokenized and chunked.
-
-			chunk_size : int, optional (default=50)
-				Number of tokens per chunk.
-
-			return_string : bool, optional (default=True)
-				If True, returns each chunk as a string; otherwise, returns a list of tokens.
+			Args:
+				text (str): Input text.
 
 			Returns:
-			--------
-			list
-				A list of token chunks. Each chunk is either a list of tokens or a string.
-
+				list: List of word tokens.
+				
+		"""
+		try:
+			if text is None:
+				raise Exception( 'The input argument "text" was None' )
+			else:
+				self.raw_input = text
+				self.lowercase = self.raw_input.lower( )
+				self.tokens = word_tokenize( self.lowercase )
+				self.words = [ w for w in self.tokens.split( ' ' ) ]
+				self.tokens = [ re.sub( r'[^\w"-]', '', word ) for word in self.words if
+				                word.strip( ) ]
+				return self.tokens
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Text'
+			_exc.method = 'tokenize_words( self, text: str ) -> list[ str ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def tokenize_sentences( self, text: str ) -> list[ str ]:
+		"""
+		
+			Tokenize a paragraph or document into a list of sentence strings.
+	
+			Args:
+				text (str): Input text.
+	
+			Returns:
+				list: List of sentence strings.
+				
 		"""
 		try:
 			if text is None:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
-				self.raw_input = text
-				self.lowercase = self.raw_input.lower( )
-				self.tokens = word_tokenize( self.lowercase )
-				self.chunks = [ self.tokens[ i: i + size ] for i in
-				                range( 0, len( self.tokens ), size ) ]
-				return self.chunks
+				return sent_tokenize( text )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = ('chunk( self, text: str, chunk_size: int=50, '
-			               'return_string: bool=True ) -> list')
+			_exc.method = 'tokenize_sentences( self, text: str ) -> list[ str ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+
+	
+	def bag_of_words( self, tokens: list ) -> dict:
+		"""
+		
+			Construct a Bag-of-Words (BoW) frequency dictionary from tokens.
+	
+			Args:
+				tokens (list): List of tokens from a document.
+	
+			Returns:
+				dict: Word frequency dictionary.
+				
+		"""
+		try:
+			if tokens is None:
+				raise Exception( 'The input argument "tokens" is required.' )
+			else:
+				return dict( Counter( tokens ) )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Token'
+			_exc.method = 'bag_of_words( self, tokens: list ) -> dict'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def train_word2vec( self, tokens: list, size=100, window=5, min=1 ) -> Word2Vec:
+		"""
+			Train a Word2Vec embedding model from tokenized sentences.
+	
+			Args:
+				sentences (list of list of str): List of tokenized sentences.
+				vector_size (int): Dimensionality of word vectors.
+				window (int): Max distance between current and predicted word.
+				min_count (int): Minimum frequency for inclusion in vocabulary.
+	
+			Returns:
+				Word2Vec: Trained Gensim Word2Vec model.
+		"""
+		try:
+			if tokens is None:
+				raise Exception( 'The input argument "sentences" is required.' )
+			else:
+				return Word2Vec( sentences=tokens, vector_size=size, window=window, min_count=min )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Token'
+			_exc.method = 'train_word2vec( self, tokens: list, size=100, window=5, min=1 ) -> Word2Vec'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def compute_tfidf( self, corpus: list, max: int=1000, preprocess: bool=True ) -> tuple:
+		"""
+	
+			Compute TF-IDF matrix with optional full preprocessing pipeline.
+	
+			Args:
+				corpus (list): List of raw or preprocessed text documents.
+				max_features (int): Max number of terms to include (vocabulary size).
+				preprocess (bool): If True, normalize, tokenize, clean, and lemmatize input.
+	
+			Returns:
+				tuple:
+					- tfidf_matrix (scipy.sparse.csr_matrix): TF-IDF feature matrix.
+					- feature_names (list): Vocabulary terms.
+					- vectorizer (TfidfVectorizer): Fitted vectorizer instance.
+	
+		"""
+		try:
+			if corpus is None:
+				raise Exception( 'The input argument "corpus" is required.' )
+			elif preprocess:
+				cleaned_docs = [ ]
+				for doc in corpus:
+					norm = self.normalize_text( doc )
+					tokens = self.tokenize_words( norm )
+					tokens = self.remove_stopwords( tokens )
+					tokens = self.lemmatize_tokens( tokens )
+					cleaned_doc = " ".join( tokens )
+					cleaned_docs.append( cleaned_doc )
+					
+			self.vectorizer = TfidfVectorizer( max_features=max, stop_words='english' )
+			tfidf_matrix = self.vectorizer.fit_transform( cleaned_docs )
+			return tfidf_matrix, self.vectorizer.get_feature_names_out( ).tolist( ), self.vectorizer
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Token'
+			_exc.method = 'compute_tfidf( self, corpus: list, max: int=1000, preprocess: bool=True ) -> tuple'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
 
-class Token:
-	'''
-	
-	'''	
-	def __init__( self, model: str = 'text-embedding-ada-002' ):
-		"""
-		
-			Initialize the PreTokenizer with a specific OpenAI model.
-	
-			Args:
-				model (str): The name of the OpenAI model used for tokenization.
-			
-		"""
-		self.model = model
-		self.encoding = tiktoken.encoding_for_model( model )
-	
-	
 	def load_file( self, path: str ) -> str:
 		"""
 		
@@ -633,224 +756,9 @@ class Token:
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
+			_exc.cause = 'Text'
 			_exc.method = 'load_file( self, path: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
-	
-	def parse_hierarchy( self, text: str ) -> list:
-		"""
-		
-			Parse the cleaned documents into a structured hierarchy of sections, subsections,
-			and paragraphs.
-		
-			Args:
-				text (str): Cleaned legal or structured document documents.
-		
-			Returns:
-				list: A list of dictionaries, each representing a structural unit with section 
-				markers
-				and documents.
-			
-		"""
-		try:
-			if text is None:
-				raise Exception( 'Input parameter "text" is required.' )
-			else:
-				self.section_pattern = re.compile( r'(SEC\.\s*\d+[A-Z]*\.)' )
-				self.subsection_pattern = re.compile( r'\([a-z]\)' )
-				self.paragraph_pattern = re.compile( r'\(\d+\)' )
-				
-				self.structured = [ ]
-				self.current_section = None
-				self.current_subsection = None
-				self.current_paragraph = None
-				self.buffer = ""
-				
-				for line in text.split( '\n' ):
-					line = line.strip( )
-					
-					sec_match = self.section_pattern.match( line )
-					if sec_match:
-						if self.buffer:
-							self.structured.append( {
-								'section': self.current_section,
-								'subsection': self.current_subsection,
-								'paragraph': self.current_paragraph,
-								'text': self.buffer.strip( )
-							} )
-							self.buffer = ""
-						self.current_section = sec_match.group( 1 )
-						self.current_subsection = None
-						self.current_paragraph = None
-						continue
-					
-					sub_match = self.subsection_pattern.match( line )
-					if sub_match and len( line ) < 30:
-						if self.buffer:
-							self.structured.append( {
-								'section': self.current_section,
-								'subsection': self.current_subsection,
-								'paragraph': self.current_paragraph,
-								'text': self.buffer.strip( )
-							} )
-							self.buffer = ""
-						self.current_subsection = sub_match.group( 0 )
-						self.current_paragraph = None
-						continue
-					
-					para_match = self.paragraph_pattern.match( line )
-					if para_match:
-						if self.buffer:
-							self.structured.append( {
-								'section': self.current_section,
-								'subsection': self.current_subsection,
-								'paragraph': self.current_paragraph,
-								'documents': self.buffer.strip( )
-							} )
-							self.buffer = ""
-						self.current_paragraph = para_match.group( 0 )
-						continue
-					
-					self.buffer += " " + line
-				
-				if self.buffer:
-					self.structured.append( {
-						'section': self.current_section,
-						'subsection': self.current_subsection,
-						'paragraph': self.current_paragraph,
-						'documents': self.buffer.strip( )
-					} )
-				
-				return self.structured
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'parse_hierarchy( self, documents: str ) -> list'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def tokenize( self, text: str ) -> list:
-		"""
-			Purpose:
-				Tokenize a block of documents using the OpenAI model tokenizer.
-		
-			Args:
-				text (str): Text to tokenize.
-		
-			Returns:
-				list: A list of token IDs.
-				
-		"""
-		try:
-			if text is None:
-				raise Exception( 'Input parameter "documents" is required.' )
-			else:
-				return self.encoding.encode( text )
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'tokenize( self, documents: str ) -> list'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def chunk_tokens( self, tokens: list, max_tokens: int = 800, overlap: int = 50 ) -> list:
-		"""
-			Purpose:
-				Split a list of tokens into overlapping chunks based on token limits.
-	
-			Args:
-				tokens (list): Tokenized input documents.
-				max_tokens (int): Max token size per chunk.
-				overlap (int): Overlapping token count between chunks.
-		
-			Returns:
-				list: A list of token chunks.
-		"""
-		try:
-			if tokens is None:
-				raise Exception( 'Input parameter "tokens" is required.' )
-			else:
-				chunks = [ ]
-				start = 0
-				while start < len( tokens ):
-					end = start + max_tokens
-					chunk = tokens[ start:end ]
-					chunks.append( chunk )
-					start += max_tokens - overlap
-				
-				return chunks
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
-			_exc.method = ('chunk_tokens( self, tokens: list, '
-			               'max_tokens: int = 800, overlap: int = 50 ) -> list')
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def decode_tokens( self, tokens: list ) -> str:
-		"""
-			
-			Purpose:
-				Decode a list of token IDs back to string documents.
-		
-			Args:
-				tokens (list): A list of token IDs.
-		
-			Returns:
-				str: Decoded string.
-				
-		"""
-		try:
-			if tokens is None:
-				raise Exception( 'Input parameter "tokens" is required.' )
-			else:
-				return self.encoding.decode( tokens )
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'decode_tokens( self, tokens: list ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def chunk_text_for_embedding( self, text: str, max_tokens: int = 800,
-	                              overlap: int = 50 ) -> list:
-		"""
-		
-			Chunk documents into strings suitable for embedding under the token limit.
-		
-			Args:
-				text (str): Raw or cleaned input documents.
-				max_tokens (int): Max tokens per chunk for embedding model.
-				overlap (int): Overlap between consecutive chunks.
-		
-			Returns:
-				list: List of decoded documents chunks.
-				
-		"""
-		try:
-			if (text is None):
-				_msg = 'Input parameter "documents" is required.'
-				raise Exception( _msg )
-			else:
-				tokens = self.tokenize( text )
-				token_chunks = self.chunk_tokens( tokens, max_tokens, overlap )
-				return [ self.decode_tokens( chunk ) for chunk in token_chunks ]
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
-			_exc.method = ('chunk_text_for_embedding( self, text: str, max_tokens: int = '
-			               '800, '
-			               'overlap: int = 50 ) -> list')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+
