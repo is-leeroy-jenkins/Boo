@@ -57,14 +57,57 @@ from nltk.stem import WordNetLemmatizer, PorterStemmer
 from collections import Counter
 from gensim.models import Word2Vec
 
-
-
 class Text:
 	'''
 	
 		Class providing documents preprocessing functionality
 		
-		@params: tokenize: bool
+	    Methods:
+	    --------
+	    collapse_whitespace( self, text: str ) -> str
+	        Removes extra spaces and lines
+	        
+	    remove_punctuation( self, text: str ) -> str:
+			Removes all punctuation characters from the input text string.
+		
+		remove_special( self, text: str ) -> str:
+			Removes special characters from the input text string.
+
+		remove_html( self, text: str ) -> str
+			Removes HTML entities from the input text string.
+			
+		remove_errors( self, text: str ) -> str
+			Removes misspelled or non-English words from the input text.
+		
+		correct_errors( self, text: str ) -> str:
+			Corrects misspelled words in the input text string.
+			
+		remove_markdown( self, text: str ) -> str
+			Removes markdown from the input text string.
+			
+	    normalize(text: str) -> str
+	        Normalize input text by lowercasing and stripping punctuation.
+	
+	    tokenize_sentences(text: str) -> list
+	        Tokenize text into a list of sentences.
+	
+	    tokenize_words(text: str) -> list
+	        Tokenize text into a list of word tokens.
+	
+	    remove_stopwords(tokens: list) -> list
+	        Remove common English stopwords from token list.
+	
+	    lemmatize(tokens: list) -> str
+	        Apply WordNet lemmatization to each token.
+	
+	    bag_of_words(tokens: list) -> dict
+	        Construct a frequency dictionary (Bag-of-Words) from token list.
+	
+	    train_word2vec_model(sentences: list, vector_size=100, window=5, min_count=1) -> Word2Vec
+	        Train a Gensim Word2Vec model on a list of tokenized sentences.
+	
+	    compute_tfidf(corpus: list, max_features=1000, prep=True) -> tuple
+	        Compute a TF-IDF matrix from a list of documents with optional preprocessing.
 		
 	'''
 	def __init__( self ):
@@ -94,7 +137,7 @@ class Text:
 		'''
 		return [ 'raw_input', 'cleaned', 'removed',
 		         'lowercase', 'normalized', 'translator',
-		         'lemmatizer', 'tokenizer',
+		         'lemmatizer', 'tokenizer', 'vectorizer',
 		         'stemmer', 'lemmatized', 'tokens',
 		         'tokenized', 'corrected', 'words',
 		         'stop_words', 'lines', 'chunks' ]
@@ -123,9 +166,9 @@ class Text:
 			else:
 				self.raw_input = text
 				self.words = re.sub( r'[ \t]+', ' ', self.raw_input )
-				self.lines = [ line.strip( ) for line in self.words.splitlines( ) ]
-				self.cleaned = [ line for line in self.lines if line ]
-				self.removed = '\n'.join( self.cleaned )
+				self.cleaned = [ line.strip( ) for line in self.words.splitlines( ) ]
+				self.lines = [ line for line in self.cleaned if line ]
+				self.removed = '\n'.join( self.lines )
 				return self.removed
 		except Exception as e:
 			_exc = Error( e )
@@ -641,7 +684,7 @@ class Text:
 			_err.show( )
 
 	
-	def bag_of_words( self, tokens: list ) -> dict:
+	def bag_of_words( self, tokens: list[ str ] ) -> dict:
 		"""
 		
 			Construct a Bag-of-Words (BoW) frequency dictionary from tokens.
@@ -694,7 +737,7 @@ class Text:
 			_err.show( )
 	
 	
-	def compute_tfidf( self, corpus: list, max: int=1000, preprocess: bool=True ) -> tuple:
+	def compute_tfidf( self, corpus: list, max: int=1000, prep: bool=True ) -> tuple:
 		"""
 	
 			Compute TF-IDF matrix with optional full preprocessing pipeline.
@@ -702,7 +745,7 @@ class Text:
 			Args:
 				corpus (list): List of raw or preprocessed text documents.
 				max_features (int): Max number of terms to include (vocabulary size).
-				preprocess (bool): If True, normalize, tokenize, clean, and lemmatize input.
+				prep (bool): If True, normalize, tokenize, clean, and lemmatize input.
 	
 			Returns:
 				tuple:
@@ -714,14 +757,13 @@ class Text:
 		try:
 			if corpus is None:
 				raise Exception( 'The input argument "corpus" is required.' )
-			elif preprocess:
+			elif prep:
 				cleaned_docs = [ ]
 				for doc in corpus:
-					norm = self.normalize_text( doc )
-					tokens = self.tokenize_words( norm )
-					tokens = self.remove_stopwords( tokens )
-					tokens = self.lemmatize_tokens( tokens )
-					cleaned_doc = " ".join( tokens )
+					norm = self.normalize( doc )
+					self.tokens = self.tokenize_words( norm )
+					_lemma = [ self.lemmatize( token ) for token in self.tokens ]
+					cleaned_doc = " ".join( _lemma )
 					cleaned_docs.append( cleaned_doc )
 					
 			self.vectorizer = TfidfVectorizer( max_features=max, stop_words='english' )
@@ -731,7 +773,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Token'
-			_exc.method = 'compute_tfidf( self, corpus: list, max: int=1000, preprocess: bool=True ) -> tuple'
+			_exc.method = 'compute_tfidf( self, corpus: list, max: int=1000, prep: bool=True ) -> tuple'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
@@ -752,6 +794,7 @@ class Text:
 			if path is None:
 				raise Exception( 'Input parameter "path" is required.' )
 			else:
+				self.raw_input = path
 				return Path( path ).read_text( encoding='utf-8' )
 		except Exception as e:
 			_exc = Error( e )
