@@ -65,50 +65,21 @@ class Text:
 	    Methods:
 	    --------
 	    collapse_whitespace( self, text: str ) -> str
-	        Removes extra spaces and lines
-	        
 	    remove_punctuation( self, text: str ) -> str:
-			Removes all punctuation characters from the input text string.
-		
 		remove_special( self, text: str ) -> str:
-			Removes special characters from the input text string.
-
 		remove_html( self, text: str ) -> str
-			Removes HTML entities from the input text string.
-			
 		remove_errors( self, text: str ) -> str
-			Removes misspelled or non-English words from the input text.
-		
 		correct_errors( self, text: str ) -> str:
-			Corrects misspelled words in the input text string.
-			
 		remove_markdown( self, text: str ) -> str
-			Removes markdown from the input text string.
-			
 	    normalize(text: str) -> str
-	        Normalize input text by lowercasing and stripping punctuation.
-	
 	    tokenize_sentences(text: str) -> list
-	        Tokenize text into a list of sentences.
-	
 	    tokenize_words(text: str) -> list
-	        Tokenize text into a list of word tokens.
-	
 	    remove_stopwords(tokens: list) -> list
-	        Remove common English stopwords from token list.
-	
 	    lemmatize(tokens: list) -> str
-	        Apply WordNet lemmatization to each token.
-	
 	    bag_of_words(tokens: list) -> dict
-	        Construct a frequency dictionary (Bag-of-Words) from token list.
-	
 	    train_word2vec_model(sentences: list, vector_size=100, window=5, min_count=1) -> Word2Vec
-	        Train a Gensim Word2Vec model on a list of tokenized sentences.
-	
 	    compute_tfidf(corpus: list, max_features=1000, prep=True) -> tuple
-	        Compute a TF-IDF matrix from a list of documents with optional preprocessing.
-		
+	    
 	'''
 	def __init__( self ):
 		self.raw_input = None
