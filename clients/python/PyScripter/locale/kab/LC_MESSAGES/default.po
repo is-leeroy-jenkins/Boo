@@ -2209,7 +2209,7 @@ msgstr "&Ṭṭef-d tuffɣa"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned_lines lines that look like messages \n"
+"If checked cleaned lines that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 "Les lignes de sorties sont cochées, qui ressemblent à des messages, \n"
@@ -2228,7 +2228,7 @@ msgstr "Analyser le &rapport de l'exécution"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned_lines lines.\n"
+"A grep expression for parsing cleaned lines.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -2274,7 +2274,7 @@ msgstr "Afaylu ummid"
 #: dlgToolProperties.dfm
 msgid ""
 "Select option other than None to \n"
-"redirect the cleaned_lines to the \n"
+"redirect the cleaned to the \n"
 "corresponding outlet."
 msgstr ""
 "Sélectionner une option autre que Aucun \n"
@@ -3548,7 +3548,7 @@ msgstr "Sfeḍ"
 
 #. OutputWindow..OutputActions..actClearOutput..Hint
 #: frmCommandOutput.dfm
-msgid "Clear cleaned_lines"
+msgid "Clear cleaned"
 msgstr "Sfeḍ tuffɣa"
 
 #. OutputWindow..OutputActions..actToolTerminate..Caption
@@ -5450,7 +5450,7 @@ msgstr "&Sfeḍ akk"
 
 #. PythonIIForm..InterpreterActionList..actClearContents..Hint
 #: frmPythonII.dfm
-msgid "Clear all interpreter cleaned_lines"
+msgid "Clear all interpreter cleaned"
 msgstr "Sfeḍ akk tuffɣiwin n tdiwent"
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Caption
@@ -6190,11 +6190,11 @@ msgid "Timeout for running scripts in ms"
 msgstr "Temps écoulé pour les scripts en cours en ms"
 
 #: dmCommands.pas
-msgid "Pretty print cleaned_lines"
+msgid "Pretty print cleaned"
 msgstr "Sortie d'impression soignée"
 
 #: dmCommands.pas
-msgid "Clear cleaned_lines before run"
+msgid "Clear cleaned before run"
 msgstr "Sfeḍ tuffɣa send aselkem"
 
 #: dmCommands.pas
@@ -6413,7 +6413,7 @@ msgid "Language server"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Language server debug cleaned_lines"
+msgid "Language server debug cleaned"
 msgstr ""
 
 #: dmCommands.pas
@@ -6593,7 +6593,7 @@ msgstr ""
 
 #. Programmer's name for it: sHTMLFileFilter
 #: StringResources.pas
-msgid "HTML Documents (*.htm;*.html)|*.htm;*.html"
+msgid "HTML Documents (*.htm;*.raw_html)|*.htm;*.raw_html"
 msgstr ""
 
 #. Programmer's name for it: sXMLFileFilter
@@ -7550,7 +7550,7 @@ msgstr "Impossible de changer de moteur Python lorsqu'il est actif."
 #. Programmer's name for it: SCouldNotOpenOutputFile
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not open/create cleaned_lines file %s"
+msgid "Could not open/create cleaned file %s"
 msgstr "Ur izmir ara ad d-ildi/ad irnu afaylu n tuffɣa  %s"
 
 #. Programmer's name for it: SUnknownPythonVersion
@@ -7695,7 +7695,7 @@ msgstr "Fren askript Python ara tselkemeḍ"
 
 #. Programmer's name for it: SSelectOutputFile
 #: StringResources.pas
-msgid "Select cleaned_lines file"
+msgid "Select cleaned file"
 msgstr "Fren ifuyla n tuffɣa"
 
 #. Programmer's name for it: SSelectApplication

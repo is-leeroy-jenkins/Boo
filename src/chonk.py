@@ -66,7 +66,7 @@ class Fetch:
 		'''
 			Initializes the Fetch system.
 			:param db_uri: URI for the SQLite database
-			:param doc_paths: List of file paths to documents (txt, pdf, csv, html)
+			:param doc_paths: List of file paths to documents (txt, pdf, csv, raw_html)
 			:param model: OpenAI model to use (default: gpt-4)
 			:param temperature: LLM temperature setting for creativity
 		'''
@@ -122,7 +122,7 @@ class Fetch:
 					loader = PyPDFLoader( path )
 				elif ext == '.csv':
 					loader = CSVLoader( path )
-				elif ext in [ '.html', '.htm' ]:
+				elif ext in [ '.raw_html', '.htm' ]:
 					loader = UnstructuredHTMLLoader( path )
 				else:
 					loader = TextLoader( path )

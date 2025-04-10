@@ -2181,7 +2181,7 @@ msgstr "出力をキャプチャ(&C)"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned_lines lines that look like messages \n"
+"If checked cleaned lines that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 "チェックするとメッセージのように出力をパースして\n"
@@ -2200,7 +2200,7 @@ msgstr "トレースバックをパース"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned_lines lines.\n"
+"A grep expression for parsing cleaned lines.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -2244,7 +2244,7 @@ msgstr "アクティブなファイル"
 #: dlgToolProperties.dfm
 msgid ""
 "Select option other than None to \n"
-"redirect the cleaned_lines to the \n"
+"redirect the cleaned to the \n"
 "corresponding outlet."
 msgstr ""
 "標準出力のリダイレクト先を指定する場合は\n"
@@ -3516,7 +3516,7 @@ msgstr "クリア"
 
 #. OutputWindow..OutputActions..actClearOutput..Hint
 #: frmCommandOutput.dfm
-msgid "Clear cleaned_lines"
+msgid "Clear cleaned"
 msgstr "出力をクリアします"
 
 #. OutputWindow..OutputActions..actToolTerminate..Caption
@@ -5411,7 +5411,7 @@ msgstr "すべてクリア(&A)"
 
 #. PythonIIForm..InterpreterActionList..actClearContents..Hint
 #: frmPythonII.dfm
-msgid "Clear all interpreter cleaned_lines"
+msgid "Clear all interpreter cleaned"
 msgstr "すべてのインタープリタの出力をクリアします"
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Caption
@@ -6143,11 +6143,11 @@ msgid "Timeout for running scripts in ms"
 msgstr "スクリプト実行時のタイムアウトミリ秒"
 
 #: dmCommands.pas
-msgid "Pretty print cleaned_lines"
+msgid "Pretty print cleaned"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Clear cleaned_lines before run"
+msgid "Clear cleaned before run"
 msgstr ""
 
 #: dmCommands.pas
@@ -6366,7 +6366,7 @@ msgid "Language server"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Language server debug cleaned_lines"
+msgid "Language server debug cleaned"
 msgstr ""
 
 #: dmCommands.pas
@@ -6546,8 +6546,8 @@ msgstr "Cython ファイル(*.pyx*.pxd;*.pxi)|*.pyx;*.pxd;*.pxi"
 
 #. Programmer's name for it: sHTMLFileFilter
 #: StringResources.pas
-msgid "HTML Documents (*.htm;*.html)|*.htm;*.html"
-msgstr "HTML ドキュメント(*.htm;*.html)|*.htm;*.html"
+msgid "HTML Documents (*.htm;*.raw_html)|*.htm;*.raw_html"
+msgstr "HTML ドキュメント(*.htm;*.raw_html)|*.htm;*.raw_html"
 
 #. Programmer's name for it: sXMLFileFilter
 #: StringResources.pas
@@ -7498,7 +7498,7 @@ msgstr "動作中のPythonエンジンは変更できません"
 #. Programmer's name for it: SCouldNotOpenOutputFile
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not open/create cleaned_lines file %s"
+msgid "Could not open/create cleaned file %s"
 msgstr "出力ファイル %s を 作成/開く ができませんでした"
 
 #. Programmer's name for it: SUnknownPythonVersion
@@ -7639,7 +7639,7 @@ msgstr "実行するPythonスクリプトを選択"
 
 #. Programmer's name for it: SSelectOutputFile
 #: StringResources.pas
-msgid "Select cleaned_lines file"
+msgid "Select cleaned file"
 msgstr "出力ファイルを選択"
 
 #. Programmer's name for it: SSelectApplication

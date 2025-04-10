@@ -1056,7 +1056,7 @@ class ScrollingDialog( Dark ):
 
         Purpose:
 
-            Provides form for multiline input/cleaned_lines
+            Provides form for multiline input/cleaned
 
 	'''
 	
@@ -4657,7 +4657,7 @@ class ChatWindow( ):
 	
 	def show( self ):
 		try:
-			_layout = [ [ sg.Text( 'Your cleaned_lines will go here', size=(40, 1) ) ],
+			_layout = [ [ sg.Text( 'Your cleaned will go here', size=(40, 1) ) ],
 			            [ sg.Output( size=(110, 20), font=('Roboto 10') ) ],
 			            [ sg.Multiline( size=(70, 5), enter_submits=True, key='-QUERY-',
 				            do_not_clear=False ),
@@ -4734,7 +4734,7 @@ class ChatBot( ):
 	
 	def show( self ):
 		try:
-			layout = [ [ sg.Text( 'Your cleaned_lines will go here', size=(40, 1) ) ],
+			layout = [ [ sg.Text( 'Your cleaned will go here', size=(40, 1) ) ],
 			           [ sg.Output( size=(127, 30), font=('Rooboto 10') ) ],
 			           [ sg.Text( 'Command History' ),
 			             sg.Text( '', size=(20, 3), key='history' ) ],
@@ -5046,7 +5046,7 @@ class Executable( ):
 							'close this window and copy command line from documents printed out '
 							'in '
 							'main window',
-							'Here is the cleaned_lines from the run', out )
+							'Here is the cleaned from the run', out )
 						print(
 							'Copy and paste this line into the command prompt to manually run '
 							'PyInstaller:\n\n',
@@ -5068,7 +5068,7 @@ class Executable( ):
             @param cmd: command to execute
             @param timeout: timeout for command execution
 
-            @return: (return code from command, command cleaned_lines)
+            @return: (return code from command, command cleaned)
 
 		"""
 		try:

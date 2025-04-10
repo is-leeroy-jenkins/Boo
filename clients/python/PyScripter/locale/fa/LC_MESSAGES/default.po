@@ -2201,7 +2201,7 @@ msgstr "ضبط برون داد"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned_lines lines that look like messages \n"
+"If checked cleaned lines that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 "اگر علامت خورده باشد سطرهای بروندادی که شبیه به پیام ها باشند؛  \n"
@@ -2220,7 +2220,7 @@ msgstr "تجزیه و تحلیل ردیابی"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned_lines lines.\n"
+"A grep expression for parsing cleaned lines.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -2265,7 +2265,7 @@ msgstr "فایل فعّال"
 #: dlgToolProperties.dfm
 msgid ""
 "Select option other than None to \n"
-"redirect the cleaned_lines to the \n"
+"redirect the cleaned to the \n"
 "corresponding outlet."
 msgstr ""
 "گزینه ای به جز هیچ کدام را انتخاب کنید تا\n"
@@ -3539,7 +3539,7 @@ msgstr "پاکسازی"
 
 #. OutputWindow..OutputActions..actClearOutput..Hint
 #: frmCommandOutput.dfm
-msgid "Clear cleaned_lines"
+msgid "Clear cleaned"
 msgstr "پاکسازی محوّطه ی برون داد"
 
 #. OutputWindow..OutputActions..actToolTerminate..Caption
@@ -5442,7 +5442,7 @@ msgstr "پاکسازی همه"
 
 #. PythonIIForm..InterpreterActionList..actClearContents..Hint
 #: frmPythonII.dfm
-msgid "Clear all interpreter cleaned_lines"
+msgid "Clear all interpreter cleaned"
 msgstr "پاکسازی همه ی برون داد های مفسّر"
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Caption
@@ -6187,11 +6187,11 @@ msgid "Timeout for running scripts in ms"
 msgstr "مهلت اجرای برنامه بر حسب میلی ثانیه"
 
 #: dmCommands.pas
-msgid "Pretty print cleaned_lines"
+msgid "Pretty print cleaned"
 msgstr "برون داد چاپ زیبا (Pretty print)"
 
 #: dmCommands.pas
-msgid "Clear cleaned_lines before run"
+msgid "Clear cleaned before run"
 msgstr "پاکسازی محوّطه ی برون داد قبل از اجرا"
 
 #: dmCommands.pas
@@ -6410,7 +6410,7 @@ msgid "Language server"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Language server debug cleaned_lines"
+msgid "Language server debug cleaned"
 msgstr ""
 
 #: dmCommands.pas
@@ -6590,8 +6590,8 @@ msgstr "فایل های سایتون(*.pyx*.pxd;*.pxi)|*.pyx;*.pxd;*.pxi"
 
 #. Programmer's name for it: sHTMLFileFilter
 #: StringResources.pas
-msgid "HTML Documents (*.htm;*.html)|*.htm;*.html"
-msgstr "HTML اسناد (*.htm;*.html)|*.htm;*.html"
+msgid "HTML Documents (*.htm;*.raw_html)|*.htm;*.raw_html"
+msgstr "HTML اسناد (*.htm;*.raw_html)|*.htm;*.raw_html"
 
 #. Programmer's name for it: sXMLFileFilter
 #: StringResources.pas
@@ -7562,7 +7562,7 @@ msgstr "زمانی که موتور پایتون فعّال است نمی توا�
 #. Programmer's name for it: SCouldNotOpenOutputFile
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not open/create cleaned_lines file %s"
+msgid "Could not open/create cleaned file %s"
 msgstr "امکان گشودن/ساخت فایل برون داد \"%s\" نبود"
 
 #. Programmer's name for it: SUnknownPythonVersion
@@ -7714,7 +7714,7 @@ msgstr "انتخاب فایل پایتون را برای اجرا"
 
 #. Programmer's name for it: SSelectOutputFile
 #: StringResources.pas
-msgid "Select cleaned_lines file"
+msgid "Select cleaned file"
 msgstr "انتخاب فایل برون داد"
 
 #. Programmer's name for it: SSelectApplication
