@@ -1059,7 +1059,7 @@ class GptFileRequest( GptRequest ):
 		Class encapsulating requests for GPT files.
 	'''
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True  ):
+	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True  ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.header = super( ).header
@@ -1077,7 +1077,7 @@ class GptFileRequest( GptRequest ):
 		self.stream = stream
 		self.modalities = [ 'text', 'audio' ]
 		self.stops = [ '#', ';' ]
-		self.response_format = 'text'
+		self.response_format = 'auto'
 		self.messages = [ GptMessage ]
 		self.content = None
 		self.response = None
@@ -1167,7 +1167,6 @@ class UploadRequest( GptRequest ):
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
 		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values',
 		         'instructions' ]
-
 
 
 class FineTuningRequest( GptRequest ):
@@ -2126,6 +2125,46 @@ class Image( AI ):
 		return [ 'api_key', 'client', 'model', 'input', 'create' ]
 
 
+class Assistant( AI ):
+	'''
+
+		Class proiding Transciprtion objects
+
+	'''
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'gpt-4o'
+		self.response_format = 'auto'
+		self.input_text = None
+		self.name = None
+		self.description = None
+		self.id = None
+		self.metadata = { }
+		self.tools = [ ]
+		self.top_p = 0.9
+		self.temperature = 0.8
+	
+	
+	def create( self, input: str ):
+		'''
+			method creating transciption object given an input: str
+		'''
+		try:
+			if input is None:
+				raise Exception( 'Argument "input" is required.' )
+			else:
+				self.input_text = input
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Transcription'
+			exception.method = 'create( self, input: str )'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
 class TextToSpeech( AI ):
 	'''
 
