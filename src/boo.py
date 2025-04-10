@@ -2126,7 +2126,7 @@ class Image( AI ):
 		return [ 'api_key', 'client', 'model', 'input', 'create' ]
 
 
-class TTS( AI ):
+class TextToSpeech( AI ):
 	'''
 
 		Class proiding Response objects
@@ -2134,7 +2134,7 @@ class TTS( AI ):
 	'''
 	def __init__( self ):
 		'''
-			Constructor to create TTS objects
+			Constructor to create TextToSpeech objects
 		'''
 		super( ).__init__( )
 		self.api_key = super( ).api_key
@@ -2143,12 +2143,11 @@ class TTS( AI ):
 		self.audio_path = None
 		self.response = None
 		self.prompt = None
-
 	
 	
 	def create( self, prompt: str, path: str ):
 		'''
-			method providing TTS functionality
+			method providing TextToSpeech functionality
 		'''
 		try:
 			if path is None:
@@ -2163,7 +2162,7 @@ class TTS( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'TTS'
+			exception.cause = 'TextToSpeech'
 			exception.method = 'create( self, prompt: str, input: str )]'
 			error = ErrorDialog( exception )
 			error.show( )
