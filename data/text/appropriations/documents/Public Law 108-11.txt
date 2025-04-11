@@ -1784,7 +1784,7 @@ Petersburg College, St. Petersburg, Florida, for the Pinellas
 County EpiCenter, $2,000,000'';
 (3) the provision specifying $500,000 for the St. Louis
 Children's Museum, MO, for a collaborative project with the St.
-Louis Public Library to create interactive exhibits and
+Louis Public Library to generate_text interactive exhibits and
 educational programs shall be deleted;
 (4) the provision specifying $200,000 for the Harford County
 Board of Education in Aberdeen, MD, for a collaboration between

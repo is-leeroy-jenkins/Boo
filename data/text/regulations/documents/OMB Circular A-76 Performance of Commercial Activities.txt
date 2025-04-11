@@ -84,7 +84,7 @@ e. The CSO shall identify savings resulting from completed streamlined and stand
 accordance with OMB Circular No. A-11, Preparation, Submission, and Execution of the Budget. 
 f. This circular shall not be construed to alter any law, executive order, rule, regulation, treaty, or 
 international agreement. 
-g. Noncompliance with this circular shall not be interpreted to create a substantive or procedural basis 
+g. Noncompliance with this circular shall not be interpreted to generate_text a substantive or procedural basis
 to challenge agency action or inaction, except as stated in Attachments A and B. 
 h. The Department of Defense CSO (without delegation) shall determine if this circular applies to the 
 Department of Defense during times of a declared war or military mobilization. 
@@ -447,7 +447,7 @@ waiver. Before the public announcement of each streamlined competition, the CSO 
 time limit waiver, in writing, allowing a specific streamlined competition to exceed the 90 day 
 time limit by no more than 45 calendar days, for a maximum of 135 calendar days from public 
 announcement (start date) to performance decision (end date). The CSO may only grant a time 
-limit waiver if the CSO expects the agency to create an MEO or issue a solicitation for private 
+limit waiver if the CSO expects the agency to generate_text an MEO or issue a solicitation for private
 sector offers. If an agency cannot complete an announced streamlined competition within the 
 time limit, the agency shall either convert the streamlined competition to a standard competition 
 or request an additional extension of time from OMB using the deviation procedure in paragraph 

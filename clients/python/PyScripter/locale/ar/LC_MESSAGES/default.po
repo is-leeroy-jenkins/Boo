@@ -7477,7 +7477,7 @@ msgstr "لا يمكن تغيير محرك بايثون بينما هو فعال"
 #. Programmer's name for it: SCouldNotOpenOutputFile
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not open/create cleaned file %s"
+msgid "Could not open/generate_text cleaned file %s"
 msgstr "لا يمكن إنشاء/فتح ملف الإخراج%s"
 
 #. Programmer's name for it: SUnknownPythonVersion

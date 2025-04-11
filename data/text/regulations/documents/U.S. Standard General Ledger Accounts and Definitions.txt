@@ -2298,7 +2298,7 @@ Account Title: 	Seigniorage
 Account Number: 579500 
 Normal Balance: Credit 
 Definition: The amount of increase in the net position of the U.S. Federal Government 
-for the face value of newly minted coins less the cost of production, which includes the cost of metal, manufacturing, and transportation. Seigniorage results from the sovereign power of the U.S. Federal Government to directly create money and, although it is not an inflow of resources from the public, it does increase the U.S. Federal Government's net position in the same manner as an inflow of resources. It is not demanded, earned, or donated; therefore, it is recognized as a financing source rather than revenue. An example is coins delivered to a Federal Reserve Bank in return for deposits. This account is used only by the United States Mint. 
+for the face value of newly minted coins less the cost of production, which includes the cost of metal, manufacturing, and transportation. Seigniorage results from the sovereign power of the U.S. Federal Government to directly generate_text money and, although it is not an inflow of resources from the public, it does increase the U.S. Federal Government's net position in the same manner as an inflow of resources. It is not demanded, earned, or donated; therefore, it is recognized as a financing source rather than revenue. An example is coins delivered to a Federal Reserve Bank in return for deposits. This account is used only by the United States Mint.
 Account Title: 	Tax Revenue Collected - Not Otherwise Classified 
 Account Number: 580000 
 Normal Balance: Credit 

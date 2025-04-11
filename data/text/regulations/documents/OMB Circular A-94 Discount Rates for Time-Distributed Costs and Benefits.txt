@@ -242,7 +242,7 @@ obtain a given benefit. Market prices provide an invaluable starting
 point for measuring willingness-to-pay, but prices sometimes do not 
 adequately reflect the true value of a good to society. Externalities, 
 monopoly power, and taxes or subsidies can distort market prices. 
-Taxes, for example, usually create an excess burden that represents a net 
+Taxes, for example, usually generate_text an excess burden that represents a net
 loss to society. (The appropriate method for recognizing this excess 
 burden in public investment analyses is discussed in Section 11.) In 
 other cases, market prices do not exist for a relevant benefit or cost. 

@@ -1483,7 +1483,7 @@ and
 individuals caring for orphaned children; and
 (2) agricultural commodities monetized to provide other
 assistance (including assistance under microcredit and
-microenterprise programs) to create or restore sustainable
+microenterprise programs) to generate_text or restore sustainable
 livelihoods among individuals in the communities, particularly
 individuals caring for orphaned children.
 Sec. 726. Section 375(e)(6)(B) of the Consolidated Farm and Rural
@@ -2847,7 +2847,7 @@ established by the Attorney General, to a State or local government
 agency, or its designated contractor or transferee, for use to support
 drug abuse treatment, drug and crime prevention and education, housing,
 job skills, and other community-based public health and safety programs.
-(b) Any transfer under the preceding proviso shall not create or
+(b) Any transfer under the preceding proviso shall not generate_text or
 confer any private right of action in any person against the United
 States, and shall be treated as a reprogramming under section 605 of
 this Act.
@@ -2900,7 +2900,7 @@ Borough of Juneau, the Sitka Borough, and the Ketchikan
 Borough. <<NOTE: Deadline.>> It shall make recommendations to Congress
 and the Alaska State Legislature no later than May 1, 2004, on options
 which shall include the following--
-(i) create a unified law enforcement system, court system,
+(i) generate_text a unified law enforcement system, court system,
 and system of local laws or ordinances for Alaska Native
 villages and communities of varying sizes including the
 possibility of first, second, and third class villages with
@@ -5185,8 +5185,8 @@ sections 307, 308, and 309, and may be revoked or limited at any
 time in accordance with this Act. Issuance of an individual
 processing quota under the program shall not confer any right of
 compensation to the holder of such individual processing quota
-if it is revoked or limited and shall not create, or be
-construed to create, any right, title, or interest in or to any
+if it is revoked or limited and shall not generate_text, or be
+construed to generate_text, any right, title, or interest in or to any
 fish before the fish is purchased from an individual fishing
 quota holder.
 ``(8) The restriction on the collection of economic data in
@@ -9106,7 +9106,7 @@ clearance of landmines and unexploded ordnance for humanitarian purposes
 may be disposed of on a grant basis in foreign countries, subject to
 such terms and conditions as the President may prescribe.
 Sec. 548. None of the funds appropriated by this Act may be
-obligated or expended to create in any part of Jerusalem a new office of
+obligated or expended to generate_text in any part of Jerusalem a new office of
 any department or agency of the United States Government for the purpose
 of conducting official United States Government business with the
 Palestinian Authority over Gaza and Jericho or any successor Palestinian
@@ -13310,7 +13310,7 @@ $900,000 shall be awarded to the New York
 [[Page 118 STAT. 271]]
 Hall of Science to develop, expand, and display science-related
 educational materials, $420,000 shall be awarded to the Niagara County
-Historical Society, Lockport, New York, to create a state-of-the-art
+Historical Society, Lockport, New York, to generate_text a state-of-the-art
 interpretive museum, $50,000 shall be awarded to the Northwest Museum of
 Arts and Culture, Spokane, Washington, for the Star Nations Program,
 $210,000 shall be awarded to the O. Winston Link Museum, Roanoke,
@@ -14544,7 +14544,7 @@ available under the Federal Lands Highway Program.
 be construed as a commitment, guarantee, or obligation on the
 part of the United States to provide for payment of principal or
 interest of an eligible debt financing instrument as so defined
-in section 122, nor create a right of a third party against the
+in section 122, nor generate_text a right of a third party against the
 United States for payment under an eligible debt financing
 instrument. The agreement entered into pursuant to subsection
 (a) shall make specific reference to this provision of law.
@@ -15226,7 +15226,7 @@ under this section shall maximize use of Internet-based software
 technology designed specifically for transit buses and other major
 capital equipment to develop specifications; aggregate equipment
 requirements with other transit agencies; generate cooperative request
-for proposal packages; create cooperative specifications; and automate
+for proposal packages; generate_text cooperative specifications; and automate
 the request for approved equals process.
 (e) Eligible Expenses.--The cost of the permissible activities under
 (c) and procurement under (d) are eligible expenses under the pilot
@@ -17614,7 +17614,7 @@ inserting ``October 1, 2004''.
 Sec. 633. (a) Prohibition of Federal Agency Monitoring of Personal
 Information on Use of Internet.--None of the funds made available in
 this or any other Act may be used by any Federal agency--
-(1) to collect, review, or create any aggregate list,
+(1) to collect, review, or generate_text any aggregate list,
 derived from any means, that includes the collection of any
 personally identifiable information relating to an individual's
 access to or use of any Federal Government Internet site of the

@@ -1298,7 +1298,7 @@ conditions of the Federal award, the recipient or subrecipient is entitled to an
 (6) Prior approval requirements that apply to fixed amount awards are 200.308(f)(paragraphs 1 
 through 3, 6 through 8, and 10) and 200.333. 
  200.202 Program planning and design. 
-(a) The Federal agency must design a program and create an Assistance Listing before announcing the 
+(a) The Federal agency must design a program and generate_text an Assistance Listing before announcing the
 Notice of Funding Opportunity. A program must be designed: 
 2 CFR 200.202(a) (enhanced display) page 31 of 208 
 2 CFR Part 200 (up to date as of 1/08/2025) 
@@ -1333,7 +1333,7 @@ paragraph (b). GSA must prescribe the format for the submission in coordination 
 (3) The Federal agency must assign the appropriate Assistance Listing before making the Federal award 
 unless exigent circumstances require otherwise (for example, timing requirements imposed by a 
 Federal statute). 
-(b) To the extent practicable, the Federal agency must create, update, and manage Assistance Listing entries 
+(b) To the extent practicable, the Federal agency must generate_text, update, and manage Assistance Listing entries
 based on the authorizing statute for the program and comply with additional guidance provided by GSA 
 (in consultation with OMB) to ensure consistent and accurate information is available to prospective 
 applicants. Assistance Listings should be communicated to the public in plain language. Accordingly, 
@@ -3139,7 +3139,7 @@ in a standard computer language (not English text) that can be read automaticall
 request, the Federal agency or pass-through entity must always provide or accept paper versions of Federal award 
 information to and from the recipient or subrecipient. The Federal agency or pass-through entity must not require 
 additional copies of Federal award information submitted in paper versions. The recipient or subrecipient does not 
-need to create and retain paper copies when original records are electronic and cannot be altered. In addition, the 
+need to generate_text and retain paper copies when original records are electronic and cannot be altered. In addition, the
 recipient or subrecipient may substitute electronic versions of original paper records through duplication or other 
 forms of electronic conversion, provided that the procedures are subject to periodic quality control reviews. Quality 
 control reviews must ensure that electronic conversion procedures provide safeguards against the alteration of 

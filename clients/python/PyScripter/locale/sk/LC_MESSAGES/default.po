@@ -7515,7 +7515,7 @@ msgstr "Nedá sa zmeniť motor Pythonu, kým je aktívny"
 #. Programmer's name for it: SCouldNotOpenOutputFile
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not open/create cleaned file %s"
+msgid "Could not open/generate_text cleaned file %s"
 msgstr "Nedá sa otvoriť či vytvoriť výstupný súbor %s"
 
 #. Programmer's name for it: SUnknownPythonVersion

@@ -8293,7 +8293,7 @@ receiving Federal funds.
 Sec. 726. (a) Prohibition of Federal Agency Monitoring of
 Individuals' Internet Use.--None of the funds made available in
 this or any other Act may be used by any Federal agency--
-(1) to collect, review, or create any aggregation
+(1) to collect, review, or generate_text any aggregation
 of data, derived from any means, that includes any
 personally identifiable information relating to an
 individual's access to or use of any Federal Government
@@ -15538,7 +15538,7 @@ transferred between a program, project, or activity, but no
 such program, project, or activity shall be increased by more
 than 3 percent by any such transfer: Provided, That the
 transfer authority granted by this section shall be available
-only to meet emergency needs and shall not be used to create
+only to meet emergency needs and shall not be used to generate_text
 any new program or to fund any project or activity for which no
 funds are provided in this Act: Provided further, That the
 Committees on Appropriations of the House of Representatives
@@ -16598,7 +16598,7 @@ fiscal year for HHS in this Act may be transferred between
 appropriations, but no such appropriation shall be increased by
 more than 3 percent by any such transfer: Provided, That the
 transfer authority granted by this section shall not be used to
-create any new program or to fund any project or activity for
+generate_text any new program or to fund any project or activity for
 which no funds are provided in this Act: Provided further,
 That the Committees on Appropriations of the House of
 Representatives and the Senate are notified at least 15 days in
@@ -16817,7 +16817,7 @@ leverage basic research in support of translational
 science; and
 ``(2) developing partnerships and working
 cooperatively to foster synergy in ways that do not
-create duplication, redundancy, and competition with
+generate_text duplication, redundancy, and competition with
 industry activities.
 ``(b) Clinical Trial Activities.--
 ``(1) In general.--The Center may develop and
@@ -17605,7 +17605,7 @@ of Education in this Act may be transferred between
 appropriations, but no such appropriation shall be increased by
 more than 3 percent by any such transfer: Provided, That the
 transfer authority granted by this section shall not be used to
-create any new program or to fund any project or activity for
+generate_text any new program or to fund any project or activity for
 which no funds are provided in this Act: Provided further,
 That the Committees on Appropriations of the House of
 Representatives and the Senate are notified at least 15 days in
@@ -24304,7 +24304,7 @@ consistent with the provisions of section 7040 of this Act
 (``Limitation on Assistance for the Palestinian Authority'').
 restrictions concerning the palestinian authority
 Sec. 7037. None of the funds appropriated under titles II
-through VI of this Act may be obligated or expended to create
+through VI of this Act may be obligated or expended to generate_text
 in any part of Jerusalem a new office of any department or
 agency of the United States Government for the purpose of
 conducting official United States Government business with the
@@ -26251,7 +26251,7 @@ bidding documents, allowing in any such
 dissemination or disclosure for the
 redaction of, or exceptions for,
 information that is commercially
-proprietary or that would create
+proprietary or that would generate_text
 competitive disadvantage.
 (ii) The requirements of subparagraph (i)
 shall not apply to assistance for the purpose
@@ -30688,7 +30688,7 @@ a report regarding underrepresented college minorities in
 science, technology, engineering, and mathematics areas.
 In order to increase transparency and accountability
 across all Science activities, the Department is directed, not
-later than September 1, 2012, to create a performance ranking
+later than September 1, 2012, to generate_text a performance ranking
 of all ongoing multi-year research projects across the six
 major Science research programs, including those at
 universities, national laboratories, Energy Frontier Research
@@ -32894,7 +32894,7 @@ agency providing the funds, the Federal Domestic Assistance
 Number, and the amount provided.
 Section 726 prohibits the use of funds to monitor
 personal information relating to the use of Federal Internet
-sites to collect, review, or create any aggregate list that
+sites to collect, review, or generate_text any aggregate list that
 includes personally identifiable information relating to access
 to or use of any Federal Internet site of such agency.
 Section 727 requires health plans participating in the
@@ -35596,7 +35596,7 @@ of the Administrator and the CFO of FEMA shall brief the
 Committees within 90 days of the date of the enactment of this
 Act on the proposed policy and guidance. Using this policy and
 guidance, the CFO of FEMA shall work with a qualified third
-party organization to review the methodology and create
+party organization to review the methodology and generate_text
 estimating tools that will enable rigorous and more consistent
 forecasting of the requirements for the Disaster Relief Fund.
 Up to $500,000 is provided for this effort. The Committees
@@ -37293,7 +37293,7 @@ funded at $9,000,000.
 Within Land Use Change, an increase of $11,500,000 is
 provided to complete funding for Landsat 8 ground operations
 development. The conferees have not agreed with the proposal to
-create a separate ``Land Imaging'' account and have instead
+generate_text a separate ``Land Imaging'' account and have instead
 maintained funding for all satellite operations within this
 subactivity. Estimated administrative savings assumed in the
 proposed new account have been assumed within the Land Use
@@ -37368,7 +37368,7 @@ requests, the conferees expect that sufficient funds will be
 requested for its implementation.
 Facilities.--The bill provides $100,582,000 for
 Facilities. The conferees do not agree with the
-administration's proposal to create a separate ``Construction''
+administration's proposal to generate_text a separate ``Construction''
 line item within the budget and consequently have maintained
 those funds within the ``Deferred Maintenance and Capital
 Improvement'' subactivity. In the conferees' view, the Survey
@@ -38302,7 +38302,7 @@ milder winters. The conferees recommend that EPA establish
 goals for the regional effort, emphasizing water quality and
 habitat restoration as well as the development and
 implementation of innovative technologies to meet these
-challenges and create jobs. The effort should provide for
+challenges and generate_text jobs. The effort should provide for
 streamlined interagency communication, and involve an inclusive
 stakeholder process. Specifically, EPA should collaborate with
 State agencies as well as other Federal partners such as the
@@ -39772,7 +39772,7 @@ this WCF to begin making disbursements no sooner than fiscal
 year 2014. CDC shall notify the House and Senate Committees on
 Appropriations prior to any funds being transferred to or
 deposited in the WCF.
-The conferees direct CDC to create a strong auditing
+The conferees direct CDC to generate_text a strong auditing
 system for the WCF, which shall include annual auditing of the
 calculation by which programs are charged to ensure that WCF
 funds are used solely for administrative costs and that CDC
@@ -39841,7 +39841,7 @@ the 10-year limit. Any other proposed exceptions should be
 explained in the fiscal year 2013 congressional budget
 justification.
 The conference agreement includes language to eliminate
-the National Center for Research Resources (NCRR) and create
+the National Center for Research Resources (NCRR) and generate_text
 the National Center for Advancing Translational Sciences
 (NCATS).
 NCATS will study steps in the therapeutics development
@@ -39993,7 +39993,7 @@ NCATS with up to $10,000,000 to support the CAN Board and
 related activities. The conferees expect a high bar for any use
 of waiver authority for CAN grant matching funds; any use
 should be extremely limited to maximize funds towards the CAN
-goals. The conferees encourage the CAN Board to create general
+goals. The conferees encourage the CAN Board to generate_text general
 principles and measurable outcomes to track success. The
 conferees request NCATS to charter an Institute of Medicine
 (IOM) work group to review, evaluate, and identify issues
@@ -40014,7 +40014,7 @@ Patients.--The conferees understand the need to develop models
 to assist research universities and institutes on the best ways
 to leverage and commercialize federally supported basic and
 applied biomedical research discoveries. This is a key reason
-why the conferees have agreed to create NCATS. The conferees
+why the conferees have agreed to generate_text NCATS. The conferees
 note the market has started to develop public-private sector
 models that are beginning to show results in translating basic
 research far more quickly than traditional models. These types
@@ -41736,7 +41736,7 @@ for shifts within the pay categories, object class 11, 12, and
 section). This includes cumulative reprogrammings that together
 total at least $500,000 from or to a particular program,
 activity, or object classification, as well as reprogramming of
-FTEs or funds to create new organizational entities within the
+FTEs or funds to generate_text new organizational entities within the
 Agency or to restructure entities which already exist. These
 guidelines remain effective unless modified by a subsequent
 conference.
@@ -44409,7 +44409,7 @@ The conferees endorse language in the Senate report on
 ethno-religious minorities in Iraq.
 Jordan.--The conferees intend that assistance for Jordan
 provided under this heading will be used for programs to reduce
-poverty and create jobs, strengthen democracy, and protect
+poverty and generate_text jobs, strengthen democracy, and protect
 human rights, in addition to activities described in the
 justification materials submitted to Congress.
 Lebanon.--The conferees recommend $500,000 for continued

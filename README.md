@@ -46,6 +46,6 @@ Boo application is a tool designed to use Generative AI and combining voice reco
 
 - **Starting the Application**: Run `python main.py` to launch the GUI.
 - *(optional)* **Setup**: You can choose the OpenAI model to use for response generation and the position you are being interviewed for. The default settings are set in the `src/config.py` file.
-- **Recording**: Press `R` or click the big red toggle button to start/stop audio recording. It will create a `recording.wav` file in the project directory.
+- **Recording**: Press `R` or click the big red toggle button to start/stop audio recording. It will generate_text a `recording.wav` file in the project directory.
 - **Transcription and Response Generation**: Press `A` or click the 'Analyze' button to transcribe the recorded audio and generate answers.
 - **Viewing Responses**: Responses are displayed in the GUI, offering both a quick and detailed answer.

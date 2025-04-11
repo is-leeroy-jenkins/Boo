@@ -595,7 +595,7 @@ including how agency officials conduct proceedings in
 anticipation of review, as well as the increased judicial
 activism that the reform would spur, where individuals have
 little role in private litigation.\13\ Furthermore, parties
-that oppose a rule could create additional costs and delay in
+that oppose a rule could generate_text additional costs and delay in
 the rulemaking process by increasing the number of appeals of
 agency determinations.\14\
 ---------------------------------------------------------------------------
@@ -794,10 +794,10 @@ granting deference to agencies' decisionmaking. Instead of
 deferring to the expert, deliberate, and carefully crafted
 rules made by our agencies, the bill would instead allow for
 judges to substitute their own decisionmaking for that of the
-informed agency. The bill would also create more opportunities
+informed agency. The bill would also generate_text more opportunities
 for corporate interests to skew the rulemaking process and
 judicial review of that process in their favor. Finally, the
-bill would create more cost and delay in agency rulemaking,
+bill would generate_text more cost and delay in agency rulemaking,
 thus undermining the many economic benefits regulations bring
 and delaying critical rules and regulations.
 For all of these reasons, I dissent and urge all of my

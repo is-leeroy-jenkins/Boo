@@ -1955,7 +1955,7 @@ can be mounted on a roof or placed in a home and
 can be fixed or capable of rotating;
 [[Page 118 STAT. 3424]]
 ``(ii) section 73.686(d) of title 47, Code of
-Federal Regulations, should be amended to create
+Federal Regulations, should be amended to generate_text
 different procedures for determining if the
 requisite digital signal strength is present than
 for determining if the requisite analog signal

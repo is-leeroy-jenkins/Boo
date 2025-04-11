@@ -7152,7 +7152,7 @@ The Committee has recommended an expansion of this account
 to recognize the fact that sea and air mobility are essential
 ingredients in the Department of Defense's force projection
 capability. Thus, the Committee has recommended renaming this
-account to create the ``National Defense Mobility Fund''
+account to generate_text the ``National Defense Mobility Fund''
 account. This new account will incorporate the existing
 ``National Defense Sealift Fund'' account and establish the
 ``National Defense Airlift Fund'' account.

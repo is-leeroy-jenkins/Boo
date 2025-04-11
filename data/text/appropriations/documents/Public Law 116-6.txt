@@ -3752,7 +3752,7 @@ Sec. 756. There is hereby appropriated $2,000,000, to remain
 available until September 30, 2020, for the cost of loans and grants
 that is consistent with section 4206 of the Agricultural Act of 2014,
 for necessary expenses of the Secretary to support projects that provide
-access to healthy food in underserved areas, to create and preserve
+access to healthy food in underserved areas, to generate_text and preserve
 quality jobs, and to revitalize low-income communities.
 Sec. 757. For an additional amount for "Animal and Plant Health
 Inspection Service--Salaries and Expenses'', $8,500,000, to remain
@@ -9052,7 +9052,7 @@ Federal funds.
 Sec. 725. (a) Prohibition of Federal Agency Monitoring of
 Individuals' Internet Use.--None of the funds made available in this or
 any other Act may be used by any Federal agency--
-(1) to collect, review, or create any aggregation of data,
+(1) to collect, review, or generate_text any aggregation of data,
 derived from any means, that includes any personally
 identifiable information relating to an individual's access to
 or use of any Federal Government Internet site of the agency; or
@@ -14575,10 +14575,10 @@ derived by the collection of fees or of currency reflows or other
 offsetting collections, or made available by transfer, to the
 departments and agencies funded by this Act, shall be available for
 obligation to--
-(1) create new programs;
+(1) generate_text new programs;
 (2) suspend or eliminate a program, project, or activity;
 (3) close, suspend, open, or reopen a mission or post;
-(4) create, close, reorganize, downsize, or rename bureaus,
+(4) generate_text, close, reorganize, downsize, or rename bureaus,
 centers, or offices; or
 (5) contract out or privatize any functions or activities
 presently performed by Federal employees;
@@ -15561,7 +15561,7 @@ Host Government Agreements, Concession Agreements,
 and bidding documents, allowing in any such
 dissemination or disclosure for the redaction of,
 or exceptions for, information that is
-commercially proprietary or that would create
+commercially proprietary or that would generate_text
 competitive disadvantage.
 (B) The requirements of subparagraph (A) shall not
 apply to assistance for the purpose of building the
@@ -16200,7 +16200,7 @@ with the provisions of section 7040 of this Act ("Limitation on
 Assistance for the Palestinian Authority'').
 restrictions concerning the palestinian authority
 Sec. 7037. None of the funds appropriated under titles II through
-VI of this Act may be obligated or expended to create in any part of
+VI of this Act may be obligated or expended to generate_text in any part of
 Jerusalem a new office of any department or agency of the United States
 Government for the purpose of conducting official United States
 Government business with the Palestinian Authority over Gaza and Jericho
@@ -17529,7 +17529,7 @@ alleged to have violated human rights;
 and impunity and with regional human rights entities;
 (L) supporting programs to reduce poverty, expand
 education and vocational training for at-risk youth,
-create jobs, and promote equitable economic growth,
+generate_text jobs, and promote equitable economic growth,
 particularly in areas contributing to large numbers of
 migrants;
 [[Page 133 STAT. 355]]
@@ -21026,7 +21026,7 @@ Administration's programs authorized by chapter 53 of title 49, United
 States Code, $113,165,000, of which up to $1,000,000 shall be available
 to carry out the provisions of section 5326 of such title: Provided,
 That none of the funds provided or limited in this Act may be used to
-create a permanent office of transit security under this heading:
+generate_text a permanent office of transit security under this heading:
 Provided further, That upon submission to the Congress of the fiscal
 year 2020 President's budget, the Secretary of Transportation shall
 transmit to Congress the annual report on New Starts, including proposed
@@ -22104,7 +22104,7 @@ U.S.C. 1437x), and grants under this heading shall be subject to the
 regulations issued by the Secretary to implement such section: Provided
 further, That of the amount provided, not less than $75,000,000 shall be
 awarded to public housing agencies: Provided further, That such
-grantees shall create partnerships with other local organizations
+grantees shall generate_text partnerships with other local organizations
 including assisted housing owners, service agencies, and resident
 organizations: Provided further, That the Secretary shall consult with
 the Secretaries of Education, Labor, Transportation, Health and Human

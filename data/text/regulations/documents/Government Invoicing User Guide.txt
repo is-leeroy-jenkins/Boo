@@ -22,11 +22,11 @@ managing the collection of delinquent debt owed to the government.
 Users access G-Invoicing through a secure web-based portal, which has been certified to conform to Federal security 
 standards. The User portion of G-Invoicing is a fully integrated electronic solution which supports the buy/sell standard 
 business process between two federal agencies: the Requesting Agency and the Servicing Agency . 
-- A Requesting Agency acts as a buyer, and may create, approve, reject, and close Interagency Agreement (IAA) 
+- A Requesting Agency acts as a buyer, and may generate_text, approve, reject, and close Interagency Agreement (IAA)
 GT&Cs and Orders. 
-- A Servicing Agency acts as a seller, and may create, approve, and close Interagency Agreement (IAA) GT&Cs, may 
-create, approve, and reject Orders, and may generate Performance off of Orders. 
-G-Invoicing helps manage Intragov transactions by enabling users to establish trading partners, to create GT&Cs and 
+- A Servicing Agency acts as a seller, and may generate_text, approve, and close Interagency Agreement (IAA) GT&Cs, may
+generate_text, approve, and reject Orders, and may generate Performance off of Orders.
+G-Invoicing helps manage Intragov transactions by enabling users to establish trading partners, to generate_text GT&Cs and
 Orders, and to generate Performance off of Orders. 
 A GT&C is a written agreement entered into between two Federal agencies, or major organizational units within an 
 agency, which specifies the goods to be furnished or tasks to be accomplished by one agency (the Servicing Agency) in 
@@ -147,7 +147,7 @@ The sign in page will appear:
 4. Click Log In. 
 5. On the Password Change page: 
 - Type your temporary password in the Password field. 
-- In the New Password field, create a new password using the password requirements on the screen. 
+- In the New Password field, generate_text a new password using the password requirements on the screen.
 6. Retype your new password in the Confirm New Password field. 
 7. Click Change Password . 
 8. A message should display stating that your new password has been reset. Click Continue . 
@@ -244,7 +244,7 @@ Prerequisites for Using Intra-governmental Transactions:
 Before creating GT&Cs and Orders in the User portion of G-Invoicing, please do the following in the order specified: 
 1. Ensure that you have a G-Invoicing user account in an Active status within an overall agency account that is also in 
 an Active status. 
-2. To be able to create an Order as a Requesting Agency or a Servicing Agency, you are required to fully complete a 
+2. To be able to generate_text an Order as a Requesting Agency or a Servicing Agency, you are required to fully complete a
 GT&C with a trading partner and progress it to an Open for Orders status. 
 GT&Cs 
 A GT&C is the standard electronic format used for all reimbursable agreements between two agencies or within a 
@@ -257,10 +257,10 @@ Agency and the Servicing Agency to manage associated Orders, and which defines t
 The G-Invoicing system may generally be thought of as an electronic version of the United States Department of the 
 Treasury 7600A and 7600B paper forms. 
 Creating a GT&C: 
-Either the Requesting Agency or the Servicing Agency can create an IAA GT&C. The agency that creates the GT&C is 
+Either the Requesting Agency or the Servicing Agency can generate_text an IAA GT&C. The agency that creates the GT&C is
 required to enter the other trading partner's agency name, Agency Location Code (ALC), and Group based on 
 information provided by the other trading partner. 
-To create an IAA GT&C, if you are the Servicing Agency, you enter your information via the Servicing Agency section of 
+To generate_text an IAA GT&C, if you are the Servicing Agency, you enter your information via the Servicing Agency section of
 the application. If you are a Requesting Agency, you enter your information via the Requesting Agency section of the 
 application. The information you enter into a GT&C in G-Invoicing corresponds to the information contained in the 
 United States Department of the Treasury 7600A paper version of the agreement. To complete a GT&C in G-Invoicing, 
@@ -271,12 +271,12 @@ GT&Cs are required to be manually created through the G-Invoicing online interfa
 information on the relationship between your agency's ERP system and G-Invoicing, please contact the ERP team for 
 your specific agency. 
 Creating an Order off of a GT&C: 
-A Requesting Agency or Servicing Agency may create an Order after both parties Approve the GT&C. 
+A Requesting Agency or Servicing Agency may generate_text an Order after both parties Approve the GT&C.
 Orders 
 Orders in G-Invoicing correspond to the Interagency Agreement (IAA) Form 7600B. Orders provide specific details 
 regarding the items/services the Requesting Agency is purchasing from the Servicing Agency, and any related funding 
 information. 
-A Requesting Agency or Servicing Agency may create individual orders manually in G-Invoicing, or may upload multiple 
+A Requesting Agency or Servicing Agency may generate_text individual orders manually in G-Invoicing, or may upload multiple
 orders simultaneously to G-Invoicing from an agency's Enterprise Resource Planning (ERP) system through an 
 automated process that is configured in the Administration portion of G-Invoicing. In both cases, if subscribed to the 
 Intragov Order Created or Changed Notification, G-Invoicing notifies the Requesting Agency or Servicing Agency of a 
@@ -364,13 +364,13 @@ corner of the Work Basket section to bring up the Work Item Dashboard :
 - You may click on the GT&C# of any item on the Work Item Dashboard to access a GT&C. 
 - Each GT&C# presented in the Work Basket will display either REQ or SRV to the right of it, which indicates which 
 trading partner needs to perform the work: The Requesting Agency or the Servicing Agency. This is especially helpful to 
-agencies that create documents where they are named as both the Requesting Agency and Servicing Agency on. 
+agencies that generate_text documents where they are named as both the Requesting Agency and Servicing Agency on.
 - The gray ovals with white numbers in them that display to the right of any GT&C# in either the Work Basket or the 
 Work Item Dashboard indicate the number of days left until the SLA for the item expires. Hovering over the gray ovals 
 with your cursor will display a short message: 
 GT&C Workflow 
 Through GT&C Workflow , agencies may route GT&Cs to specific Organization Groups within their own agency accounts 
-based on rules that the agencies create and manage themselves. 
+based on rules that the agencies generate_text and manage themselves.
 - GT&C Workflow is only available for GT&Cs in an Internal Draft or Shared Draft status at this time. Additional GT&C 
 statuses will be available for Workflow in a future G-Invoicing release. 
 - Users who have been tasked by their agency to Review a GT&C before it is Shared with a trading partner must hold 
@@ -462,7 +462,7 @@ How to Create a GT&C with a Trading Partner Whose ALC is Located in the Trading 
 in either the Requesting Agency or Servicing Agency sections and select Trading Partner Queue from the drop-down 
 menu. 
 2. Select the appropriate Group Name . 
-3. Select the proper ALC* for the agency you would like to create a GT&C with. 
+3. Select the proper ALC* for the agency you would like to generate_text a GT&C with.
 *You may view a list of available ALCs in G-Invoicing at any time from the ALC Search function. 
 The Trading Partner Directory (TPD) is a document maintained outside of G-Invoicing. The TPD includes up-to-date 
 information on: 
@@ -505,7 +505,7 @@ major tasks
 G-Invoicing provides some of the required information for the agency based on the partnerships the agency has already 
 created, such as the ALC and Agency ID, thus reducing the risk of data entry error. However, if either agency has more 
 than one ALC or has multiple Groups, the agency must select the appropriate codes when creating the GT&C. 
-To create a GT&C, an Agency Administrator must assign an agency user at least one of the following roles: 
+To generate_text a GT&C, an Agency Administrator must assign an agency user at least one of the following roles:
 - Requesting or Servicing GT&C Manager (Permits an agency user to Create, Edit, Delete, Modify, View, and Share 
 GT&C agreements.) 
 - Requesting or Servicing GT&C Creator (Permits an agency user to Create, Edit, Delete, Modify, and View GT&C 
@@ -536,7 +536,7 @@ from their agency called Detroit on it as the Primary Group:
 as the Primary Group, but they would not have the ability to perform any work on them. 
 - The Groups that do not have a red circle or green rectangle surrounding them are Groups that the user in our example 
 would not have any access to because they are not above or below Detroit in their agency's Group hierarchy. 
-*In the event a GT&C has its DII set to ”No”, a user will have the ability to create an Order off of the GT&C if: 
+*In the event a GT&C has its DII set to ”No”, a user will have the ability to generate_text an Order off of the GT&C if:
 - The user holds one or more of the appropriate Order-related Roles in their user account 
 - The user's appropriate Order-Related Roles are assigned to a Group that is used as a Subordinate Group on the 
 GT&C. 
@@ -584,7 +584,7 @@ Group used on the GT&C and how the Organization Group
 hierarchy is configured for any given agency account. In the 
 event a Group a user has access to through their user account 
 is used as a Subordinate Group on a GT&C, a user will be able 
-to view and possibly create an Order off of it depending on 
+to view and possibly generate_text an Order off of it depending on
 the Role(s) they hold in their user account. 
 Title 
 The descriptive name given to any GT&C by a Requesting or 
@@ -677,7 +677,7 @@ Group used on the GT&C and how the Organization Group
 hierarchy is configured for any given agency account. In the 
 event a Group a user has access to through their user account 
 is used as a Subordinate Group on a GT&C, a user will be able 
-to view and possibly create an Order off of it depending on 
+to view and possibly generate_text an Order off of it depending on
 the Role(s) they hold in their user account. 
 Title 
 The descriptive name given to any GT&C by a Requesting or 
@@ -768,7 +768,7 @@ icon* to the right of their GT&C#:
 *An "O" icon displaying to the right of a GT&C# indicates a document that a user has access to view, but does not have 
 the permission to perform any work on, based on the Primary Group used on the GT&C and how the Organization Group 
 hierarchy is configured for any given agency account. In the event a Group a user has access to through their user 
-account is used as a Subordinate Group on a GT&C, a user will be able to view and possibly create an Order off of it 
+account is used as a Subordinate Group on a GT&C, a user will be able to view and possibly generate_text an Order off of it
 depending on the Role(s) they hold in their user account. 
 Viewing GT&C Details 
 To view additional details for each GT&C, Requesting and Servicing Agencies may click on any GT&C# from the GT&C 
@@ -807,13 +807,13 @@ Part 3: The trading partner (the agency that did not initiate the GT&C) enters t
 submitting it for Approval . 
 Part 4: The Requesting and Servicing Agencies must both electronically Approve the GT&C (please see the topics 
 Approving or Rejecting a GT&C for further information). 
-Note: The following procedures explain how to create a GT&C as the Requesting Agency , as it is the most common 
-way GT&Cs are created. To create a GT&C as a Servicing Agency , you would log in to G-Invoicing, then click on the 
+Note: The following procedures explain how to generate_text a GT&C as the Requesting Agency , as it is the most common
+way GT&Cs are created. To generate_text a GT&C as a Servicing Agency , you would log in to G-Invoicing, then click on the
 Servicing Agency sub-menu. Once the Servicing Agency GT&C Summary Page appears, you would follow the 
 instructions noted below. Please note that while the instructions for creating a GT&C as a Servicing Agency are very 
 similar to the ones as a Requesting Agency, some fields will not be available to the Servicing Agency as they are meant 
 to be filled out by the Requesting Agency only. 
-CRITICAL NOTE : During the create process, GT&Cs do not self-save. If you are creating a GT&C and should happen to 
+CRITICAL NOTE : During the generate_text process, GT&Cs do not self-save. If you are creating a GT&C and should happen to
 move out of the GT&C sub-tab without saving the document as a Draft first, the GT&C will not be retained, and you will 
 need to start the document over from scratch. 
 - For instructions on how to save a GT&C as a Draft as a Requesting Agency , please see here . 
@@ -849,7 +849,7 @@ remove any calendar information you may have chosen, click on the Clear button i
 calendar box. 
 If the month, year, and arrows are not visible to you at the top of the calendar box, please lower the zoom level on your 
 internet browser and/or computer screen. 
-- Note : Backdating GT&Cs is allowed (i.e., you may create a GT&C using a start date that is before the current date). 
+- Note : Backdating GT&Cs is allowed (i.e., you may generate_text a GT&C using a start date that is before the current date).
 5. Click on the empty Agreement End Date field. When the calendar box appears, select the appropriate date. You 
 may use the arrows near the top of the calendar box to skip ahead to a future month, or to go back to a previous 
 month. You may also click on the Month and Year drop-down menus to select a specific month or year. Alternatively, 
@@ -885,7 +885,7 @@ Group(s) section, you may grant GT&C access to users who belong to one or more o
 Subordinate Groups within your agency's Organizational Group structure who may share the ALC used on the GT&C 
 based on the Roles and Groups that are assigned to individual user accounts (thus allowing agencies the flexibility to 
 narrow the amount of Groups and users who can access GT&Cs). A user that has access to GT&Cs through a 
-Subordinate Group will only be able to create an Order off the GT&C as long as they hold the appropriate Role in their 
+Subordinate Group will only be able to generate_text an Order off the GT&C as long as they hold the appropriate Role in their
 user account (Requesting Order Manager or Servicing Order Manager ), and depending on which trading partner (the 
 Requesting Agency or Servicing Agency) was selected as the Order Originating Partner Indicator on the GT&C. 
 In addition: 
@@ -995,7 +995,7 @@ form
 Order Originating 
 Partner Indicator 
 This setting determines which trading 
-partner will have the ability to create Orders 
+partner will have the ability to generate_text Orders
 off of the GT&C. 
 From the drop-down menu, select either 
 Requesting Agency or Servicing Agency . 
@@ -1217,7 +1217,7 @@ time.
 Block #16 
 CRITICAL NOTE : If you are satisfied with the information you have entered into the GT&C, please ensure that you 
 save the GT&C as a Draft at this point. If you move out of the GT&C sub-menu without saving the document as a Draft 
-first, the document will not be retained, and you will need to create the GT&C over from scratch. 
+first, the document will not be retained, and you will need to generate_text the GT&C over from scratch.
 As a reminder, a GT&C number will not generate on the document until you save a Draft for the first time. 
 How to Save and/or Share a GT&C as a Requesting Agency 
 After you finish entering GT&C information as a Requesting Agency, select one of the following: 
@@ -1380,7 +1380,7 @@ allowing agencies the flexibility to narrow the
 amount of Groups and users who can access 
 GT&Cs). A user that has access to GT&Cs 
 through a Subordinate Group will be able to 
-create an Order off the GT&C as long as they 
+generate_text an Order off the GT&C as long as they
 hold the appropriate Role in their user account 
 (Requesting Order Manager or Servicing Order 
 Manager ), and depending on which trading 
@@ -1662,7 +1662,7 @@ point in time.
 To Submit a GT&C For Approval: 
 (Please note that only users who hold either the Requesting Agency GT&C Manager or Servicing Agency GT&C Manager 
 roles in their G-Invoicing user accounts may submit GT&Cs for Approval.) 
-1. A trading partner (the agency that did not create the GT&C) locates a GT&C from the GT&C Summary List that is in a 
+1. A trading partner (the agency that did not generate_text the GT&C) locates a GT&C from the GT&C Summary List that is in a
 Shared Draf t status, and clicks on the GT&C# to open the GT&C. 
 2. Click on Submit For Approval button on the bottom of the page. 
 3. Click on Yes to submit the GT&C for Approval. (Clicking on No returns you to the previous GT&C page.) 
@@ -1720,7 +1720,7 @@ Basket box to display the Work Item Dashboard: the Dashboard presents a larger v
 may also select a GT&C number to review from there. 
 - Each GT&C# presented in the Work Basket will display either REQ or SRV to the right of it, which indicates which 
 trading partner needs to perform the work: the Requesting Agency or the Servicing Agency. This is especially helpful to 
-agencies that create documents where they are named as both the Requesting Agency and Servicing Agency on. 
+agencies that generate_text documents where they are named as both the Requesting Agency and Servicing Agency on.
 - The gray ovals with white numbers in them that display to the right of any GT&C# in either the Work Basket or the 
 Work Item Dashboard indicate the number of calendar days left until the Service Level Agreement (SLA) date for the 
 item expires. Hovering over the gray ovals with your cursor will display a short message: 
@@ -2021,7 +2021,7 @@ appears on the Audit History for both the Requesting Agency and the Servicing Ag
 Note: Before G-Invoicing Release 3.0 , the GT&C Audit History record for an attachment was not captured if the GT&C 
 had not been previously saved before an attachment was added to the document. If this occurred on a GT&C, the 
 attachment is recorded in the Attachment box with its created time. However, the time stamp on that record will 
-be earlier than the time stamp on the document create record in the GT&C Audit History. 
+be earlier than the time stamp on the document generate_text record in the GT&C Audit History.
 How to Access the GT&C Audit History: 
 1. From the Requesting Agency tab or Servicing Agency tab, click the GT&C sub-tab. 
 2. From the GT&C Summary Page, click the link in the GT&C# column to open a GT&C. 
@@ -2305,7 +2305,7 @@ their own, if needed.
 About Orders 
 The Order section of Interagency Agreement (IAA) Form 7600B provides specific details regarding the goods/services 
 the Requesting Agency is purchasing from the Servicing Agency, and any related funding information. 
-A Requesting Agency or Servicing Agency may create individual Orders manually in G-Invoicing, or may send Orders to 
+A Requesting Agency or Servicing Agency may generate_text individual Orders manually in G-Invoicing, or may send Orders to
 G-Invoicing from its own Enterprise Resource Planning (ERP) system. In both cases, if subscribed to the Intragov Order 
 Created or Changed Notification, G-Invoicing notifies Servicing Agency users of a new order creation or an existing 
 order modification. 
@@ -2333,7 +2333,7 @@ Order number:
 GT&C# 
 The GT&C number any given Order is generated off of. 
 Order Originator 
-Displays which agency is allowed to create Orders off of 
+Displays which agency is allowed to generate_text Orders off of
 the GT&C: the Requesting Agency or the Servicing 
 Agency. 
 Period of Performance 
@@ -2401,7 +2401,7 @@ Order number:
 GT&C# 
 The GT&C number any given Order is generated off of. 
 Order Originator 
-Displays which agency is allowed to create Orders off of 
+Displays which agency is allowed to generate_text Orders off of
 the GT&C: the Requesting Agency or the Servicing 
 Agency. 
 Period of Performance 
@@ -2468,7 +2468,7 @@ individual Schedule field descriptions.)
 creating agency may submit a corrected file (the creating agency cannot make manual changes to an Order submitted 
 through an ERP in the G-Invoicing UI). When the creating agency submits a corrected file, the trading partner must 
 re-approve the Order. 
-For specific instructions on how to create and send an Order from an agency ERP to G-Invoicing (or how to pull an 
+For specific instructions on how to generate_text and send an Order from an agency ERP to G-Invoicing (or how to pull an
 Order from G-Invoicing into an ERP), users should contact the ERP staff at their respective agencies directly. 
 Search for an Order 
 From the Orders Summary Page , you may search for Orders based on a variety of criteria, and may use filters to 
@@ -2544,12 +2544,12 @@ From the Orders in Process list, you should be able to see the appropriate Order
 amount of the Order Imbalance, their Age (in days), the number of days until the Constructive Receipt is triggered, and 
 the Requesting and Servicing ALCs on the Orders. 
 Sending / Receiving Orders between Agency ERPs and G-INV 
-For specific instructions on how to create and send an Order via web services from an agency Enterprise Resource 
+For specific instructions on how to generate_text and send an Order via web services from an agency Enterprise Resource
 Planning (ERP) system to G-Invoicing (or how to receive an Order via web services from G-Invoicing to an agency ERP), 
 users should contact the ERP staff of their respective agencies directly. 
 Creating an Order Manually as a Requesting Agency 
-A Requesting Agency can manually create an Order directly from a GT&C that is in an Open for Orders status. 
-CRITICAL NOTE : To be able to create an Order off of a GT&C, the Group that has been assigned to the GT&C and the 
+A Requesting Agency can manually generate_text an Order directly from a GT&C that is in an Open for Orders status.
+CRITICAL NOTE : To be able to generate_text an Order off of a GT&C, the Group that has been assigned to the GT&C and the
 Order must have at least one Treasury Account Symbol (TAS) Filter created for it. For more information regarding 
 Groups and TAS Filters, please speak to one of your agency's administrators. 
 How to Manually Create a New Order from an Approved GT&C as a Requesting Agency: 
@@ -3535,8 +3535,8 @@ Once you click Yes, the Schedule will be restored.
 Once An Order Has Been Completed: 
 Once an Order has been completed by the Requesting Agency, it may be sent for Approval . 
 Creating an Order Manually as a Servicing Agency 
-A Servicing Agency can manually create an Order directly from a GT&C that is in an Open for Orders status. 
-CRITICAL NOTE : To be able to create an Order off of a GT&C, the Group that has been assigned to the GT&C and the 
+A Servicing Agency can manually generate_text an Order directly from a GT&C that is in an Open for Orders status.
+CRITICAL NOTE : To be able to generate_text an Order off of a GT&C, the Group that has been assigned to the GT&C and the
 Order must have at least one Treasury Account Symbol (TAS) Filter created for it. For more information regarding 
 Groups and TAS Filters, please speak to one of your agency's administrators. 
 How to Manually Create a New Order from an Approved GT&C as a Servicing Agency: 
@@ -4599,7 +4599,7 @@ Please keep in mind that when an Order is in a Draft status, it will only be vis
 Agency that is creating the Order. An Order will only be visible/accessible to the trading partner once it has been shared 
 with them by the agency that created it. 
 How to Save an Order as a Draft: 
-Note : Users who hold roles within G-Invoicing that allow them to create Orders will also have at least one Group 
+Note : Users who hold roles within G-Invoicing that allow them to generate_text Orders will also have at least one Group
 assigned to each of those roles within their G-Invoicing user account. You will need to select the appropriate Group 
 before you will be able to save the Order. For additional information on Groups, please speak to a G-Invoicing User 
 Administrator or Organization Administrator from your agency. 
@@ -6154,7 +6154,7 @@ users should be aware of the following:
 - Copying an existing Order will remove both the Requesting Agency and Service Agency Approvals if the original 
 Order has passed the Approval stage 
 - Any attachments included on the original Order will not be copied over to the new Order 
-- If a TAS used on an existing Order has been removed from the Group used to create the Order and/or the TAS is no 
+- If a TAS used on an existing Order has been removed from the Group used to generate_text the Order and/or the TAS is no
 longer valid, the TAS information from the existing Order will not be included on the copy of the Order. 
 - Once a copy is created, it may be edited as needed 
 How to Copy an Existing Order: 
@@ -6395,7 +6395,7 @@ Error : if settlement failed. (If an Error status displays, please
 contact the Treasury Support Center for assistance.) 
 About Sending / Receiving Performance Between Agency ERPs 
 and G-Invoicing 
-For specific instructions on how to create and send Performance from an agency ERP to G-Invoicing (or how to pull 
+For specific instructions on how to generate_text and send Performance from an agency ERP to G-Invoicing (or how to pull
 Performance from G-Invoicing into an ERP), users should contact the ERP staff at their respective agencies directly. 
 Searching for Performance 
 Users may narrow or increase the items displayed on the Performance Summary Page and/or search for specific 
@@ -6487,20 +6487,20 @@ Transaction Details page for that Performance:
 - Click on the Return button underneath the Status section of the Performance Transaction Details page to return to 
 the previous page. 
 Creating Performance 
-Only Servicing Agencies may create Performance off of an Order. Please be aware of the following : 
+Only Servicing Agencies may generate_text Performance off of an Order. Please be aware of the following :
 - You can not Deliver on an Advance that is in the future. Advances must be settled before they can be Delivered. 
-- You will not be allowed to create Performance off of a Schedule that uses an invalid/inactive Treasury Account Symbol 
+- You will not be allowed to generate_text Performance off of a Schedule that uses an invalid/inactive Treasury Account Symbol
 (TAS). 
 How to Create Performance for an Order: 
 1. Log in to G-Invoicing, and from the Servicing Agency drop-down menu, click on Order . 
-2. Locate an Order Number you would like to create Performance for and click on it to open the Order. 
+2. Locate an Order Number you would like to generate_text Performance for and click on it to open the Order.
 3. After the Order opens, click on the Show Performance button at the bottom of the screen. The Order Schedule 
 Balance (OSB) page will display: 
-4. Select the arrow to the left of a Line number that you would like to create Performance for. The Schedule 
+4. Select the arrow to the left of a Line number that you would like to generate_text Performance for. The Schedule
 information for that Line will display: 
 - Note : If the Order has existing Performance created for it, clicking on the arrow to the left of the Schedule number 
 will display its previous Performance: 
-5. From the Schedule number you would like to create an additional Performance for, click on the Create button 
+5. From the Schedule number you would like to generate_text an additional Performance for, click on the Create button
 under its Action column: 
 6. The Create Performance box will appear: 
 7. In the Type field, select a Performance Type from the drop-down menu (required): Advance , 
@@ -6621,8 +6621,8 @@ Transaction Details page will appear.
 Attachments box.) 
 Taking Action on Performance 
 Once created, a Requesting Agency may take action on Performance. 
-Please note that you will not be able to create a Performance that is scheduled for a future date . For example, if today 
-is 2021-06-01 and the Performance Date on the Performance is set to 2021-06-04, you will not be allowed to create a 
+Please note that you will not be able to generate_text a Performance that is scheduled for a future date . For example, if today
+is 2021-06-01 and the Performance Date on the Performance is set to 2021-06-04, you will not be allowed to generate_text a
 Reference Performance for it until 2021-06-04 or later. If you attempt to do so, you will be presented with an error 
 message stating "Buyer cannot respond to a future-dated seller performance ". 
 How to Take Action on Performance: 
@@ -7185,7 +7185,7 @@ R3.3.2
 (Deploy 8/5/20) 
 07/07/20 
 R3.3.1 
-1) Enhance GINV user create-Modify process to circumvent ISIM duplicate 
+1) Enhance GINV user generate_text-Modify process to circumvent ISIM duplicate
 user issue 2) Implement GT&C last update change 3) Allow GT&C Creator 
 Role to add/remove attachments (Deploy 7/7/20) 
 05/18/20 

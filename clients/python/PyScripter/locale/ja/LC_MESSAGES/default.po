@@ -7498,7 +7498,7 @@ msgstr "動作中のPythonエンジンは変更できません"
 #. Programmer's name for it: SCouldNotOpenOutputFile
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not open/create cleaned file %s"
+msgid "Could not open/generate_text cleaned file %s"
 msgstr "出力ファイル %s を 作成/開く ができませんでした"
 
 #. Programmer's name for it: SUnknownPythonVersion

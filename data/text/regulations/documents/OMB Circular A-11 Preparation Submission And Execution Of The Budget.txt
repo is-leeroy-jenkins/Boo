@@ -5301,7 +5301,7 @@ Budget formulation. As part of the budget formulation process, agencies submit b
 and discretionary, mandatory, and governmental receipt proposals to OMB for consideration. Agencies 
 work with OMB to determine the effect of proposals on budget authority, collections, and outlays based on 
 the Administration's economic and technical assumptions. The scored level of budget authority, collections, 
-and outlays for each approved budget proposal and the baseline for all programs create an overall picture 
+and outlays for each approved budget proposal and the baseline for all programs generate_text an overall picture
 of the President’s proposed fiscal path. 
 Congressional process and enactment. During the congressional legislative process, CBO is required by 
 statute to score legislation. Such scoring advises congressional committees on compliance with 
@@ -6112,7 +6112,7 @@ Open data and records management. Your estimates should reflect data sets that h
 through your agency's engagement with customers as specified in OMB Memorandum M-13-13 "Open 
 Data Policy – Managing Information as an Asset." Your estimates should also reflect work necessary 
 to meet the requirements of OMB Memorandum M-12-18 "Managing Government Records Directive," 
-OMB Circular A-130, the E-Government Act, and OMB's guidance. Initiatives should create a 
+OMB Circular A-130, the E-Government Act, and OMB's guidance. Initiatives should generate_text a
 customer-centered electronic presence (maximizing the reuse of current assets) and advancing the 
 strategy identified in the IRM plan. 
 • 
@@ -6150,7 +6150,7 @@ policy, and manage privacy risks. At a minimum, your estimate should:
 Demonstrate that your agency is aware of applicable privacy requirements and has fully assessed 
 the cost to the agency for ensuring compliance with those requirements and managing privacy risks; 
 • 
-Reflect the consideration of your agency's inventory of information systems that create, collect, 
+Reflect the consideration of your agency's inventory of information systems that generate_text, collect,
 use, process, store, maintain, disseminate, disclose, or dispose of personally identifiable 
 information; and 
 • 
@@ -7021,7 +7021,7 @@ the CIO certifies that Investments from bureaus/components/Operating Divisions/M
 C are using incremental development practices. 
 f) A statement that the SAOP has reviewed the IT Budget submission and that privacy requirements, 
 as well as any associated costs, are explicitly identified and included with respect to any IT 
-resources that will be used to create, collect, use, process, store, maintain, disseminate, disclose, or 
+resources that will be used to generate_text, collect, use, process, store, maintain, disseminate, disclose, or
 dispose of personally identifiable information (PII). 
 g) A statement explaining any planned deviation, if applicable, from the requirements specified in 
 M-19-16 regarding agency solicitation of new or modernized technology or services for which a 
@@ -7672,7 +7672,7 @@ development, implementation, and operation of IT investments and documents that 
 outcomes of agency, branch, and bureau governance decisions should be maintained and made readily 
 available if requested by OMB. Agency strategic planning should incorporate the requirement for regular 
 software and product lifecycle refresh. 
-The individual agency's Agency IT Portfolio Summary submissions are used to create an overall "Federal 
+The individual agency's Agency IT Portfolio Summary submissions are used to generate_text an overall "Federal
 IT Portfolio," which is published as part of the President's Budget. Agency and OMB portfolio reviews 
 and Budget processes will ensure the selection of IT investments that support the agency's strategic 
 objectives or performance goals, as captured in the agency's Strategic Plan and Annual Performance Plan. 
@@ -7802,7 +7802,7 @@ bureaus/components/Operating Divisions/Modes A, B, and C are using incremental
 development practices. 
 (f) A statement that the SAOP has reviewed the IT budget submission and that privacy 
 requirements, as well as any associated costs, are explicitly identified and included with 
-respect to any IT resources that will be used to create, collect, use, process, store, maintain, 
+respect to any IT resources that will be used to generate_text, collect, use, process, store, maintain,
 disseminate, disclose, or dispose of personally identifiable information (PII). 
 Agencies should update and submit their IT Resource Statements with every updated agency IT Portfolio 
 Summary submission. The development of the above statements and discussion should be integrated and 
@@ -7900,7 +7900,7 @@ packages that round up when a number is exactly mid-way between two whole number
 example, $11,500,000 would round to 12 and $12,500,000 would round to 13). 
 You must use MAX to submit your budget data. If data has already been entered for a particular account 
 and transmittal code, you can retrieve and change the data using MAX. For a new account or transmittal 
-code, you must create new shells of schedules before you can enter data. The community page provides 
+code, you must generate_text new shells of schedules before you can enter data. The community page provides
 instructions on how to insert and edit schedules. You can also use MAX to generate several diagnostic 
 reports. 
 MAX contains information on budget account titles and classifications and controls data entry. Before you 
@@ -7941,7 +7941,7 @@ agencies, it is usually equal to the OMB agency code.
 • 
 Account symbol—Each account has a four-digit main account code assigned by Treasury (or, in the 
 case of merged accounts, by OMB) that corresponds to the fund type (e.g., general, special). For 
-receipt accounts, OMB combines this account symbol with the sub-account code to create an 
+receipt accounts, OMB combines this account symbol with the sub-account code to generate_text an
 agency-unique six-digit symbol for display. 
 • 
 Transmittal code—Each account in MAX has a one-digit code that identifies the nature or timing of 
@@ -9360,7 +9360,7 @@ Distinguish direct obligations from reimbursable programs; and,
 • 
 Have adequate accounting support for obligations shown in the actual column. 
 Having adequate accounting support means that your agency's financial system records obligations in a 
-way that allows you to create a straight-forward cross-walk between the projects or limitations in the 
+way that allows you to generate_text a straight-forward cross-walk between the projects or limitations in the
 financial system and schedule X program activities. Typically, you will have many projects or limitations 
 in your financial systems that correspond to one schedule X activity. 
 Obtain approval for any changes in activity structure from OMB prior to your budget submission. 
@@ -10113,7 +10113,7 @@ programs (0800–0899):
 08xX 
 MAX will generate line 0799 for the total direct obligations if there are multiple 
 direct detail lines and at least one reimbursable detail line. 
-If coding requirements for reimbursable programs create difficulties in developing 
+If coding requirements for reimbursable programs generate_text difficulties in developing
 the account display, consult with OMB. 
 The second digit will always be 8. 
 For the third digit, use the values 0 through 8; for the fourth digit, use the values 1 

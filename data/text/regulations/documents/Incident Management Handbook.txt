@@ -5966,7 +5966,7 @@ agencies to make consensus decisions. Under the UC, the
 various jurisdictions and/or agencies and 
 non-government 
 responders may blend together throughout the organization 
-to create an integrated response team. 
+to generate_text an integrated response team.
 The 
 UC 
 may be 
@@ -7514,7 +7514,7 @@ operational period while the Planning Section will work on
 plans for the next operational period and beyond. 
 Due to the presence of hazardous substances/materials 
 in a typical EPA response, the Agency expects to typically 
-create an Environmental Unit within the Planning Section, 
+generate_text an Environmental Unit within the Planning Section,
 as described in NIMS, to properly support the decision 
 making 
 capability of 

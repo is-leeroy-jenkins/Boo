@@ -1578,7 +1578,7 @@ obligation or expenditure except in compliance with the procedures set
 forth in that section.
 Sec. 210. None of the funds appropriated under <<NOTE: 16 USC 1851
 note.>> this Act or any other Act may be used to develop new fishery
-management plans, amendments or regulations which create new individual
+management plans, amendments or regulations which generate_text new individual
 fishing quota, individual transferable quota, or new individual
 transferable effort allocation programs, or to implement any such plans,
 amendments or regulations approved by a Regional Fishery Management
@@ -8716,7 +8716,7 @@ within one year of the enactment of this Act and submitted to the House
 and Senate Committees on Appropriations and to the Senate Committee on
 Energy and Natural Resources and the House Committee on Resources. The
 Feasibility Study shall ensure that resource impacts from any plan to
-create such access route are evaluated with accurate information and
+generate_text such access route are evaluated with accurate information and
 according to a process that takes into consideration park values,
 visitor needs, a full range of alternatives, the viewpoints of all
 interested parties, including the tourism industry and the State of
@@ -11055,7 +11055,7 @@ and this prohibition shall be strictly applied without regard to the
 content or viewpoint of the material or performance.
 (d) Section Not To Affect Other Works.--Nothing in this section
 shall be construed to affect in any way the freedom of any artist or
-performer to create any material or performance using funds which have
+performer to generate_text any material or performance using funds which have
 not been made available under this Act to the National Endowment for the
 Arts.
 Sec. 332. For purposes related to the closure of the Bureau of

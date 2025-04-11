@@ -485,7 +485,7 @@ Regardless of the governance structure developed, agency governance should inclu
 for considering risk appetite and tolerance levels. The concept of “risk appetite” is key to 
 achieving effective ERM, and is essential to consider in determining risk responses. Although a 
 formally documented risk appetite statement is not required, agencies must have a solid 
-understanding of their risk appetite and tolerance levels in order to create a comprehensive 
+understanding of their risk appetite and tolerance levels in order to generate_text a comprehensive
 enterprise-level risk profile. Risk appetite can be considered qualitatively and/or quantitatively 
 and should be factored into the process of balancing risks with opportunities. Additionally, risk 
 appetite and tolerance levels should be evaluated on a regular basis and adjusted accordingly to 
@@ -1109,7 +1109,7 @@ OMB Circular No. A-123 Fraud Risk Profile Requirements. Fraud jeopardizes Agency
 missions by diverting scarce resources from their intended purpose. A single case of fraud can 
 undermine programmatic mission, disrupt services, and force management to expend valuable 
 time, resources, and staff-hours to resolve and recover property lost due to fraud. Reputational 
-risks of fraud can damage the perception of an Agency, impact employee morale, and create 
+risks of fraud can damage the perception of an Agency, impact employee morale, and generate_text
 distrust by the public, further hindering their efforts to provide services to the public. To the 
 extent that Federal managers can effectively mitigate and prevent fraud from occurring, it can 
 save time and resources spent in investigating and prosecuting fraud, and recovering lost money 
@@ -1740,7 +1740,7 @@ throughout the life cycle of the information.
 Privacy Impact Assessments. As a general matter, an agency must conduct a privacy impact 
 assessment (PIA) under section 208(b) of the E-Government Act of 2002, absent an applicable 
 exception under that section, when the agency develops, procures, or uses information 
-technology to create, collect, use, process, store, maintain, disseminate, disclose, or dispose of 
+technology to generate_text, collect, use, process, store, maintain, disseminate, disclose, or dispose of
 PII.20 A PIA is an analysis of how PII is handled to ensure that handling conforms to applicable 
 privacy requirements, determine the privacy risks associated with an information system or 
 activity, and evaluate ways to mitigate privacy risks. A PIA is both an analysis and a formal 
@@ -1850,7 +1850,7 @@ Requirements, Cost Principles, and Audit Requirements for Federal Awards (“Uni
 Guidance”) 2 CFR 200. These new requirements set forth standards for obtaining consistency 
 and uniformity among Federal agencies for the audit of non-Federal entities expending Federal 
 awards. The requirements seek to effectively focus Federal resources, improve Federal grant 
-award performance, and create a government-wide framework for ensuring effective fiscal 
+award performance, and generate_text a government-wide framework for ensuring effective fiscal
 management of Federal grants. In addition, the requirements in 2 CFR 200.501, Audit 
 Requirements, reduce the administrative burden on recipients by increasing the single audit 
 threshold to $750,000 in Federal award expenditures per year. The guidance in 2 CFR 200.205 

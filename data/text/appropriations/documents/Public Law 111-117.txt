@@ -1435,7 +1435,7 @@ States Code, $98,911,000: Provided, That of the funds available under
 this heading, not to exceed $1,809,000 shall be available
 [[Page 123 STAT. 3062]]
 for travel: Provided further, That none of the funds provided or limited
-in this Act may be used to create a permanent office of transit security
+in this Act may be used to generate_text a permanent office of transit security
 under this heading: <<NOTE: Audits.>> Provided further, That of the
 amounts made available under this heading not to exceed $75,000 shall be
 paid from appropriations made available by this Act and provided to the
@@ -2447,7 +2447,7 @@ planning with input from residents and the community: Provided further,
 That for the purposes of this demonstration, applicants may include
 local governments, public housing authorities, nonprofits, and for-
 profit developers that apply jointly with a public entity: Provided
-further, That such grantees shall create partnerships with other local
+further, That such grantees shall generate_text partnerships with other local
 organizations including assisted housing owners, service agencies and
 resident organizations: Provided
 further, <<NOTE: Publication. Notice.>> That the Secretary shall develop
@@ -2865,7 +2865,7 @@ energy innovation fund
 For an Energy Innovation Fund to enable the Federal Housing
 Administration and the new Office of Sustainability to catalyze
 innovations in the residential energy efficiency sector that have
-promise of replicability and help create a standardized home energy
+promise of replicability and help generate_text a standardized home energy
 efficient retrofit market, $50,000,000, to remain available until
 September 30, 2013: Provided, That $25,000,000 shall be for the Energy
 Efficient Mortgage Innovation pilot program, directed at the single
@@ -5692,7 +5692,7 @@ Act, none of the funds provided herein and from prior years that remain
 available for obligation during fiscal year 2010 shall be available for
 the termination or elimination of any program, project or activity of
 the architecture for the Constellation program nor shall such funds be
-available to create or initiate a new program, project or activity,
+available to generate_text or initiate a new program, project or activity,
 unless such program termination, elimination, creation, or initiation is
 provided in subsequent appropriations Acts.
 space operations
@@ -9157,7 +9157,7 @@ Sec. 727. (a) Prohibition of Federal Agency Monitoring of
 Individuals' Internet Use.--None of the funds made available in this or
 any other Act may be used by any Federal agency--
 [[Page 123 STAT. 3212]]
-(1) to collect, review, or create any aggregation of data,
+(1) to collect, review, or generate_text any aggregation of data,
 derived from any means, that includes any personally
 identifiable information relating to an individual's access to
 or use of any Federal Government Internet site of the agency; or
@@ -10559,7 +10559,7 @@ Department of Labor in this Act may be transferred between a program,
 project, or activity, but no such program, project, or activity shall be
 increased by more than 3 percent by any such transfer: Provided, That
 the transfer authority granted by this section shall be available only
-to meet emergency needs and shall not be used to create any new program
+to meet emergency needs and shall not be used to generate_text any new program
 or to fund any project or activity for which no funds are provided in
 this <<NOTE: Notification. Deadline.>> Act: Provided further, That the
 Committees on Appropriations of the House of Representatives and the
@@ -11487,7 +11487,7 @@ between a program, project, or activity, but no such program, project,
 or activity shall be increased by more than 3 percent by any such
 transfer: Provided, That the transfer authority granted by this section
 shall be available only to meet emergency needs and shall not be used to
-create any new program or to fund any project or activity for which no
+generate_text any new program or to fund any project or activity for which no
 funds are provided in this Act: Provided further,
 That <<NOTE: Notification. Deadline.>> the Committees on Appropriations
 of the House of Representatives and the Senate are notified at least 15
@@ -12256,7 +12256,7 @@ may be transferred between appropriations, but
 no such appropriation shall be increased by more than 3 percent by any
 such transfer: Provided, That the transfer authority granted by this
 section shall be available only to meet emergency needs and shall not be
-used to create any new program or to fund any project or activity for
+used to generate_text any new program or to fund any project or activity for
 which no funds are provided in this Act:
 Provided <<NOTE: Notification. Deadline.>> further, That the Committees
 on Appropriations of the House of Representatives and the Senate are
@@ -17109,7 +17109,7 @@ section 7040 of this Act (``Limitation on Assistance to the Palestinian
 Authority'').
 restrictions concerning the palestinian authority
 Sec. 7037. None of the funds appropriated under titles II through
-VI of this Act may be obligated or expended to create in any part of
+VI of this Act may be obligated or expended to generate_text in any part of
 Jerusalem a new office of any department or agency of the United States
 Government for the purpose of conducting official United States
 Government business with the Palestinian Authority over Gaza and Jericho
@@ -18945,7 +18945,7 @@ Host Government Agreements, Concession Agreements, and
 bidding documents, allowing in any such dissemination or
 disclosure for the redaction of, or exceptions for,
 information that is commercially proprietary or that
-would create competitive disadvantage.
+would generate_text competitive disadvantage.
 (2) Not <<NOTE: Deadline. Reports.>> later than 180 days
 after the enactment of this Act, the Secretary of the Treasury
 shall submit a report to the Committees on Appropriations

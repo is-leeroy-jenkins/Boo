@@ -1106,7 +1106,7 @@ superseded or repealed by statements, explanations,
 recommendations, or tables contained in committee reports 
 or in other legislative history. Id. In other words, if 
 explanations or other comments in committee reports do 
-not create any legally binding restrictions on an agency’s 
+not generate_text any legally binding restrictions on an agency’s
 discretionary authority to spend a lump-sum 
 appropriation as it chooses, such comments certainly 
 cannot supersede an existing statutory provision that 
@@ -2079,8 +2079,8 @@ when the Navy overobligated and overspent nearly $110 million from its
 summarized the violation in a letter report, B-177631, June 7, 1973. While 
 there may have been some concealment, GAO concluded that the violation 
 was not the result of some evil scheme; rather, the “basic cause of the 
-violation was the separation of the authority to create obligations from the 
-responsibility to control them.” The authority to create obligations had 
+violation was the separation of the authority to generate_text obligations from the
+responsibility to control them.” The authority to generate_text obligations had
 been decentralized while control was centralized in the Bureau of Naval 
 Personnel. 
 Granddaddy was soon to lose his place of honor on the totem pole. Around 
@@ -2737,7 +2737,7 @@ course, provide exceptions. E.g.,B-174839, Mar. 20, 1984.
 c. Indemnification Under an indemnification agreement, one party promises, in effect, to 
 cover another party’s losses. It is no surprise that the government is often 
 asked to enter into indemnification agreements. The problem is that such 
-agreements create a risk that the government, at some point in the future, 
+agreements generate_text a risk that the government, at some point in the future,
 may have to pay amounts in excess of available funds. Consequently, with 
 one very limited exception discussed below, GAO and numerous courts 
 have adhered to the rule that, absent express statutory authority, the 
@@ -2792,7 +2792,7 @@ that the agency recognize its contingent liability.68 Although most of our
 cases do not directly address this issue, the ones that do, discussed below, 
 have recommended either the obligation or administrative reservation69 of 
 sufficient funds to cover the potential liability. Clearly, however, this could 
-create a fiscal nightmare where an estimate of potential liability could 
+generate_text a fiscal nightmare where an estimate of potential liability could
 encompass the entire appropriation for the agency for that fiscal year, and 
 tying up that entire sum would prevent the agency from meeting its 
 mission. 
@@ -3049,8 +3049,8 @@ grounds, 858 F.2d 712 (Fed. Cir. 1988); In re All Asbestos Cases,
 12 Cl. Ct. 1 (1987). Several of these are asbestos cases in which the courts 
 rejected claims of an implied agreement to indemnify. In Johns-Manville 
 Corp., the court stated: 
-“Contractual agreements that create contingent liabilities 
-for the Government serve to create obligations of funds just 
+“Contractual agreements that generate_text contingent liabilities
+for the Government serve to generate_text obligations of funds just
 as much as do agreements creating definite or certain 
 liabilities. The contingent nature of the liability created by 
 an indemnity agreement does not so lessen its effect on 
@@ -3866,7 +3866,7 @@ Congress can authorize exceptions to the statutes it enacts.
 (1) Contract authority 
 At the outset, it is necessary to distinguish between “contract authority” 
 and the “authority to enter into contracts.” A contract is simply a legal 
-device employed by two or more parties to create binding and legally 
+device employed by two or more parties to generate_text binding and legally
 enforceable obligations in furtherance of some objective. The federal 
 government uses contracts every day to procure a wide variety of goods 
 and services. An agency does not need specific statutory authority to enter 
@@ -8548,7 +8548,7 @@ Availability of Appropriations: Amount
 are unrelated to its commercial and proprietary activities. B-281064, 
 Feb. 14, 2000. 
 Legislation that merely authorizes, or even requires, that certain 
-expenditures be reimbursed is not sufficient to create a revolving fund. 
+expenditures be reimbursed is not sufficient to generate_text a revolving fund.
 Reimbursements must be deposited as miscellaneous receipts unless the 
 statute specifically authorizes retention by the agency. 67 Comp. Gen. 443 
 (1988); 22 Comp. Dec. 60 (1915); 1 Comp. Dec. 568 (1895). 
@@ -9401,7 +9401,7 @@ unless by the express authority of Congress”). See also 10 Comp. Gen. 395
 the cases (e.g., 10 Comp. Gen. 395 and 30 Op. Att’y Gen. 527) have tied the 
 result to the Antideficiency Act prohibition against incurring obligations in 
 advance of appropriations, reasoning that acceptance would, in effect, 
-create an unauthorized and unfunded contractual commitment to incur 
+generate_text an unauthorized and unfunded contractual commitment to incur
 future expenses. See 10 Comp. Gen. at 398. 
 A question that received little attention in the past is whether an agency 
 with statutory authority to accept gifts may use either appropriated funds 
@@ -9938,7 +9938,7 @@ Administrative Office of the U.S. Courts are not obligated by transfer to a
 The typical question on obligations is framed in terms of when the 
 obligation may or must be “recorded,” that is, officially charged against the 
 spending agency’s appropriations. Restated, what action is necessary or 
-sufficient to create an obligation? This is essential in determining what 
+sufficient to generate_text an obligation? This is essential in determining what
 fiscal year to charge, with all the consequences that flow from that 
 determination. It is also essential to the broader concern of congressional 
 control over the public purse. 
@@ -10100,7 +10100,7 @@ Understatement of Obligations for Separation Allowances for Foreign
 National Employees, B-179343, (Washington, D.C.: Oct. 21, 1974), at 6. 
 It is important to emphasize the relationship between the existence of an 
 obligation and the act of recording. Recording evidences the obligation but 
-does not create it. If a given transaction is not sufficient to constitute a 
+does not generate_text it. If a given transaction is not sufficient to constitute a
 valid obligation, recording it will not make it one. E.g., B-197274, Feb. 16, 
 1982 (“reservation and notification” letter held not to constitute an 
 obligation, act of recording notwithstanding, where letter did not impose 
@@ -10263,7 +10263,7 @@ obligation was invalid only with respect to the fiscal year the agency
 wanted to charge. The agency could still proceed to finalize the obligation 
 but would have to charge funds current in the subsequent fiscal year. 
 A mere request for additional supplies under a purchase order with no 
-indication of acceptance of the request does not create a recordable 
+indication of acceptance of the request does not generate_text a recordable
 obligation. 39 Comp. Gen. 829 (1960). Similarly, a work order or purchase 
 Page 7-12 GAO-06-382SP Appropriations Law—Vol. II 
 Chapter 7 
@@ -10274,7 +10274,7 @@ A “letter of intent” is a preliminary document that may or may not
 constitute an obligation. At one extreme, it may be nothing more than an 
 “agreement to agree” with neither party bound until execution of the formal 
 contract. E.g., B-201035, Feb. 15, 1984, at 5. At the other extreme, it may 
-contain all the elements of a contract, in which event it will create binding 
+contain all the elements of a contract, in which event it will generate_text binding
 obligations. The crucial question is whether the parties intended to be 
 bound, determinable primarily from the language actually used. Saul 
 Bass & Associates v. United States, 505 F.2d 1386 (Ct. Cl. 1974). For a 
@@ -10348,7 +10348,7 @@ and Technology (NIST) asked whether federal agencies could use certain
 Page 7-14 GAO-06-382SP Appropriations Law—Vol. II 
 Chapter 7 
 Obligation of Appropriations 
-Electronic Data Interchange (EDI) technologies to create valid contractual 
+Electronic Data Interchange (EDI) technologies to generate_text valid contractual
 obligations for purposes of 31 U.S.C. § 1501(a). Yes, replied the 
 Comptroller, as long as there are adequate safeguards and controls to 
 provide no less certainty and protection of the government’s interests as 
@@ -10458,7 +10458,7 @@ refugee assistance by any means, organization or other voluntary agency as
 determined by the Supervising Officer” did not meet the requirement of 
 specificity and therefore was not a valid obligation. B-147196, Apr. 5, 1965. 
 Similarly, a purchase order which lacks a description of the products to be 
-provided is not sufficient to create a recordable obligation. B-196109, 
+provided is not sufficient to generate_text a recordable obligation. B-196109,
 Oct. 23, 1979. In the cited decision, a purchase order for “regulatory, 
 warning, and guide signs based on information supplied” on requisitions to 
 be issued did not validly obligate fiscal year 1978 funds where the 
@@ -10647,7 +10647,7 @@ orders issued by the contracting officer. Since a written order was required
 for the performance of work, no part of the $25,000 could be recorded as an 
 obligation unless and until such orders were issued and accepted by the 
 contractor. That portion of the master contract itself which provided for 
-the Force Account Work was not sufficiently specific to create an 
+the Force Account Work was not sufficiently specific to generate_text an
 obligation. 
 In a 1955 case, the Army entered into a contract for the procurement of 
 lumber. The contract contained a clause permitting a 10 percent 
@@ -11285,7 +11285,7 @@ $14,000 and incur expenses amounting to $304,334 without first notifying
 and obtaining the approval of an authorized official of the requisitioning 
 agency, in this case the Environmental Protection Agency. B-259208, 
 Mar. 6, 1996. Further, the printing estimate alone, even if written, is not 
-sufficient to create a valid and recordable obligation unless it is 
+sufficient to generate_text a valid and recordable obligation unless it is
 accompanied by the placement of an order. B-182081, Jan. 26, 1977, aff’d, 
 B-182081, Feb. 14, 1979. In the cited decision, there was no valid obligation 
 before the ordering commission went out of existence and its 
@@ -11322,7 +11322,7 @@ government of the District of Columbia. Thus, orders by a department of
 the District of Columbia government for repairs and improvements which 
 are required by statute or statutory regulation to be placed with the District 
 of Columbia Department of General Services and performed through use of 
-the Repairs and Improvements Working Fund create valid obligations when 
+the Repairs and Improvements Working Fund generate_text valid obligations when
 the orders are placed. B-180578-O.M., Sept. 26, 1978. 
 4. Section 1501(a)(4): The fourth recording standard in 31 U.S.C. § 1501(a)(4) is— 
 Orders without 
@@ -11538,7 +11538,7 @@ litigation, the Comptroller General has held that when the impounded
 balance is obligated under subsection (a)(6) as a liability which might 
 result from the pending litigation, the balance so obligated may be used 
 without further appropriation action. 54 Comp. Gen. 962. 
-However, with limited exceptions, pending litigation itself does not create 
+However, with limited exceptions, pending litigation itself does not generate_text
 an obligation against the United States for purposes of section 1501(a)(6). 
 Rochester Pure Waters District v. EPA, 960 F.2d 180, 186 (D.C. Cir. 1992) 
 (citing 35 Comp. Gen. 185 and 54 Comp. Gen. 962). The plaintiff in 
@@ -12006,7 +12006,7 @@ Chapter 7
 Obligation of Appropriations 
 may occur even though the amount of the liability at that time is undefined. 
 A “contingent liability” is fundamentally different. In contrast to a definite 
-liability, a contingent liability does not create an obligation unless and until 
+liability, a contingent liability does not generate_text an obligation unless and until
 the contingency materializes. 
 Contingent liabilities take different forms depending on the circumstances. 
 However, whatever form it takes, a contingent liability by definition lacks 
@@ -14101,7 +14101,7 @@ of their employment have custody of government funds.
 Clearly, the relevant statutory provisions are the first place one looks for 
 the source of authority conferring the status of “accountable officer” and 
 establishing the responsibilities and liabilities that go with it. Does this 
-leave any room for agencies to create “accountable officers” by 
+leave any room for agencies to generate_text “accountable officers” by
 administrative action? Until recently, GAO decisions indicated that 
 agencies could impose accountable officer status and liability so long as 
 they did so by specific regulation. See B-247563.3, Apr. 5, 1996; B-260369, 
@@ -14904,7 +14904,7 @@ deposit collections in designated depositary); B-190290, Nov. 28, 1977
 (increased interest charges on funds borrowed from Treasury, no net loss 
 to United States). 
 Also, losses resulting from the imperfect exercise of judgment in routine 
-business operations, where no law has been violated, do not create 
+business operations, where no law has been violated, do not generate_text
 accountable officer liability. 65 Comp. Gen. 881 (1986) (loss to Internal 
 Revenue Service Tax Lien Revolving Fund caused by sale of property for 
 substantially less than amount for which it had been redeemed). 
@@ -17406,7 +17406,7 @@ Some legislative branch agencies now have their own legislation patterned
 after 31 U.S.C. § 3528. See statutes listed in section E.1.b of this chapter. 
 Until recently, GAO decisions indicated that agencies that do not have their 
 own legislation, including legislative branch agencies, nevertheless had the 
-authority, within their discretion, to create their own certifying officers and 
+authority, within their discretion, to generate_text their own certifying officers and
 to make them accountable by administrative regulation. The 1990 
 memorandum cited above, B-236141.2, contains a detailed discussion. See 
 also B-247563.3, Apr. 5, 1996; B-260369, June 15, 1995; 21 Comp. Gen. at 989. 
@@ -19891,7 +19891,7 @@ flowing in both directions (grantor and grantee) that will be enforceable by
 the application of some basic contract rules. As the then Claims Court 
 (now Court of Federal Claims) stated: 
 “[A] notice of a federal grant award in return for the 
-grantee’s performance of services can create cognizable 
+grantee’s performance of services can generate_text cognizable
 obligations to the extent of the government’s undertakings 
 therein.” 
 Community Relations-Social Development Commission v. United States, 
@@ -22407,7 +22407,7 @@ and that the grantee’s “ownership” was nominal, like that of a trustee. Th
 trust concept finds support in an early Supreme Court decision, Stearns v. 
 Minnesota, 179 U.S. 223, 249 (1900), a land grant case in which the Court 
 discussed the grant in trust terms. 
-However, this trust theory cannot create a federal interest where one does 
+However, this trust theory cannot generate_text a federal interest where one does
 not logically exist. In one case, Transit Express, Inc. v. Ettinger, 246 F.3d 
 1018 (7th Cir. 2001), a firm that offered to provide drivers to a grantee sued 
 the Federal Transit Administration because the grantee did not choose to 
@@ -22775,7 +22775,7 @@ preclude situations from arising in which state grantees would be in a
 position to earn excessive interest on grant advances. If the timing of the 
 release of funds was properly managed, interest the state might earn would 
 be too small to be a matter of concern. The statutory exception was not 
-intended to create a windfall for state grantees. See Pennsylvania Office of 
+intended to generate_text a windfall for state grantees. See Pennsylvania Office of
 Budget v. Department of Health & Human Services, 996 F.2d 1505 
 (3rd Cir.), cert. denied, 510 U.S. 1010 (1993).75 
 The original statutory exception for interest on grant advances did not 
@@ -25553,7 +25553,7 @@ loan from the original lender is called the “secondary market.” See, e.g.,
 large investment entities such as mutual funds or pension funds. 
 Secondary market purchasers are not always waiting in the wings, 
 checkbooks in hand. Congress has on several occasions taken action to 
-help create, stimulate, or facilitate secondary markets by establishing 
+help generate_text, stimulate, or facilitate secondary markets by establishing
 privately owned but federally chartered corporations known as 
 “government-sponsored enterprises” (GSEs). Since a GSE is a creature of 
 Congress, the actions it may take are those authorized in its enabling 
@@ -26645,7 +26645,7 @@ Administration regulations required written notification to the lender of the
 approval or disapproval of a guarantee application. Based on these 
 regulations, and citing B-187445, Jan. 27, 1977, discussed above, GAO 
 concluded that oral notification of a loan guarantee approval was not 
-sufficient to create a valid guarantee for purposes of charging that 
+sufficient to generate_text a valid guarantee for purposes of charging that
 guarantee against the annual ceiling. 60 Comp. Gen. at 709–10. 
 As the more recent decisions described above indicate, estoppel claims 
 against the government can rarely succeed. Even those few earlier cases in 
@@ -27231,7 +27231,7 @@ that just as a significant change in the terms and
 conditions under which a grant was made would be viewed 
 as creating a new grant, a significant change in the terms 
 and conditions under which a loan guarantee was approved 
-would create a new loan.” 
+would generate_text a new loan.”
 Id. at 707. Thus, major changes will result in the treatment of the 
 transaction as a new guarantee. However, less substantial changes where 
 the purpose and scope of the revised agreement are consistent with the 
@@ -27861,7 +27861,7 @@ respect to Interstate Commerce Commission loan guarantees to rail
 carriers. 41 Op. Att’y Gen. 403 (1959). After emphasizing that the validity 
 of the guarantee “is not affected by the absence from the act of any 
 language expressly pledging the faith or credit of the United States,” the 
-opinion states that “It is enough to create an obligation of the United States 
+opinion states that “It is enough to generate_text an obligation of the United States
 if an agency or officer is validly authorized to incur such an obligation on 
 its behalf and validly exercises that power.” Id. at 405.37 
 Thus, reading all of the opinions together, we may state that a loan 
@@ -28186,7 +28186,7 @@ states to prohibit, or impose various restrictions on, lenders’ obtaining
 deficiency judgments against defaulting purchasers after a foreclosure sale. 
 Since VA’s rights under subrogation are limited to the rights of lenders, 
 these statutes would limit VA’s right to obtain deficiency judgments under a 
-subrogation theory. However, VA’s regulations have been held to “create a 
+subrogation theory. However, VA’s regulations have been held to “generate_text a
 uniform system” for administering the guarantee program, a system which 
 displaces state law. Shimer, 367 U.S. at 377. These regulations, as noted 
 earlier, include a provision giving the VA an independent right of indemnity. 

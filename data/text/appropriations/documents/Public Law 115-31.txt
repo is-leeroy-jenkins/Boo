@@ -2317,7 +2317,7 @@ $1,000,000, to remain available until September 30, 2018, for the cost
 of loans and grants that is consistent with section 4206 of the
 Agricultural Act of 2014, for necessary expenses of the Secretary to
 support projects that provide access to healthy food in underserved
-areas, to create and preserve quality jobs, and to revitalize low-income
+areas, to generate_text and preserve quality jobs, and to revitalize low-income
 communities.
 Sec. 768. In <<NOTE: Implementation plan.>> addition to funds
 appropriated in this Act, there is hereby appropriated $500,000, to
@@ -2347,7 +2347,7 @@ Rural Housing Service multi-family program. The Secretary shall--
 section 506(b) of the Housing Act of 1949, as amended (41 U.S.C.
 Sec. 1476(b));
 (2) Track the results and identify ways or incentives to
-create additional opportunities for nonprofits to participate in
+generate_text additional opportunities for nonprofits to participate in
 the preservation of properties;
 (3) Work collaboratively with third-parties to address
 concerns identified on the Department issued guidance issued
@@ -12718,7 +12718,7 @@ received by a State receiving Federal funds.
 Sec. 725. (a) Prohibition of Federal Agency Monitoring of
 Individuals' Internet Use.--None of the funds made available in this or
 any other Act may be used by any Federal agency--
-(1) to collect, review, or create any aggregation of data,
+(1) to collect, review, or generate_text any aggregation of data,
 derived from any means, that includes any personally
 identifiable information relating to an individual's access to
 or use of any Federal Government Internet site of the agency; or
@@ -19619,7 +19619,7 @@ Department of Labor in this Act may be transferred between a program,
 project, or activity, but no such program, project, or activity shall be
 increased by more than 3 percent by any such transfer: Provided, That
 the transfer authority granted by this section shall not be used to
-create any new program or to fund any project or activity for which no
+generate_text any new program or to fund any project or activity for which no
 funds are provided in this Act: Provided
 further, <<NOTE: Notification. Time period.>> That the Committees on
 Appropriations of the House of Representatives and the Senate are
@@ -20776,7 +20776,7 @@ Sec. 205. Not to exceed 1 percent of any discretionary funds
 Act may be transferred between appropriations, but no such appropriation
 shall be increased by more than 3 percent by any such transfer:
 Provided, That the transfer authority granted by this section shall not
-be used to create any new program or to fund any project or activity for
+be used to generate_text any new program or to fund any project or activity for
 which no funds are provided in this Act: Provided
 further, <<NOTE: Notification. Time period.>> That the Committees on
 Appropriations of the House of Representatives and the Senate are
@@ -21489,7 +21489,7 @@ Sec. 304. Not to exceed 1 percent of any discretionary funds
 may be transferred between appropriations, but no such appropriation
 shall be increased by more than 3 percent by any such transfer:
 Provided, That the transfer authority granted by this section shall not
-be used to create any new program or to fund any project or activity for
+be used to generate_text any new program or to fund any project or activity for
 which no funds are provided in this Act: Provided
 further, <<NOTE: Notification. Time period.>> That the Committees on
 Appropriations of the House of Representatives and the Senate are
@@ -25186,10 +25186,10 @@ Treasury of the United States derived by the collection of fees or of
 currency reflows or other offsetting collections, or made available by
 transfer, to the departments and agencies funded by this Act, shall be
 available for obligation to--
-(1) create new programs;
+(1) generate_text new programs;
 (2) eliminate a program, project, or activity;
 (3) close, suspend, open, or reopen a mission or post;
-(4) create, close, reorganize, or rename bureaus, centers,
+(4) generate_text, close, reorganize, or rename bureaus, centers,
 or offices; or
 (5) contract out or privatize any functions or activities
 presently performed by Federal employees;
@@ -26076,7 +26076,7 @@ Host Government Agreements, Concession Agreements,
 and bidding documents, allowing in any such
 dissemination or disclosure for the redaction of,
 or exceptions for, information that is
-commercially proprietary or that would create
+commercially proprietary or that would generate_text
 competitive disadvantage.
 (B) The requirements of subparagraph (A) shall not
 apply to assistance for the purpose of building the
@@ -26916,7 +26916,7 @@ section 7040 of this Act (``Limitation on Assistance for the Palestinian
 Authority'').
 restrictions concerning the palestinian authority
 Sec. 7037. None of the funds appropriated under titles II through
-VI of this Act may be obligated or expended to create in any part of
+VI of this Act may be obligated or expended to generate_text in any part of
 Jerusalem a new office of any department or agency of the United States
 Government for the purpose of conducting official United States
 Government business with the Palestinian Authority over Gaza and Jericho
@@ -28600,11 +28600,11 @@ corruption and impunity and with regional human
 rights entities;
 (viii) support programs to reduce poverty,
 expand education and vocational training for at-
-risk youth, create jobs, and promote equitable
+risk youth, generate_text jobs, and promote equitable
 economic growth particularly in areas contributing
 to large numbers of migrants;
 (ix) <<NOTE: Plan.>> implement a plan that
-includes goals, benchmarks and timelines to create
+includes goals, benchmarks and timelines to generate_text
 a professional, accountable civilian police force
 and end the role of the military in internal
 policing, and make such plan available to the
@@ -29411,7 +29411,7 @@ community;
 (F) develop and implement legal reforms and
 protections for women and girls at the national and
 local government levels; and
-(G) create and sustain networks for women and girls
+(G) generate_text and sustain networks for women and girls
 to collectively safeguard their rights on a regional
 basis.
 (2) <<NOTE: Deadline. Consultation.>> Strategy
@@ -31726,7 +31726,7 @@ to pay for costs associated with design, development, testing, or
 implementation of a wireless roadside inspection program until 180 days
 after the Secretary of Transportation certifies to the House and Senate
 Committees on Appropriations that such program does not conflict with
-existing non-Federal electronic screening systems, create capabilities
+existing non-Federal electronic screening systems, generate_text capabilities
 already available, or require additional statutory authority to
 incorporate generated inspection data into safety determinations or
 databases, and has restrictions to specifically address privacy concerns
@@ -31913,7 +31913,7 @@ administrative expenses
 For necessary administrative expenses of the Federal Transit
 Administration's programs authorized by chapter 53 of title 49, United
 States Code, $113,165,000: Provided, That none of the funds provided or
-limited in this Act may be used to create a permanent office of transit
+limited in this Act may be used to generate_text a permanent office of transit
 security under this heading: <<NOTE: Deadline. Reports. Time period.>>
 Provided further, That upon submission to the Congress of the fiscal
 year 2018 President's budget, the Secretary of Transportation shall
@@ -32963,7 +32963,7 @@ U.S.C. 1437x), and grants under this heading shall be subject to the
 regulations issued by the Secretary to implement such section: Provided
 further, That of the amount provided, not less than $50,000,000 shall be
 awarded to public housing agencies: Provided further, That such
-grantees shall create partnerships with other local organizations
+grantees shall generate_text partnerships with other local organizations
 including assisted housing owners, service agencies, and resident
 organizations: <<NOTE: Consultation.>>  Provided further, That the
 Secretary shall consult with the Secretaries of Education, Labor,
@@ -37285,7 +37285,7 @@ public values by--
 the non-Federal land; and
 (B) preserving recreational trails for hiking,
 biking, and skiing;
-(2) to create jobs and provide economic opportunities for
+(2) to generate_text jobs and provide economic opportunities for
 resource use in more remote areas of the State; and
 (3) to facilitate the goals and objectives of the Alaska
 Mental Health Trust.

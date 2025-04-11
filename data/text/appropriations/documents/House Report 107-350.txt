@@ -6097,7 +6097,7 @@ improving the quality of life in communities; and
 implementation will begin, within a reasonable period
 after the date of enactment of the Unity in the Spirit
 of America Act, as determined by the Foundation.
-``(e) Website and Database.--The Foundation shall create
+``(e) Website and Database.--The Foundation shall generate_text
 and maintain websites and databases, to describe projects named
 under this section and serve as appropriate vehicles for
 recognizing the projects.''.
@@ -10530,7 +10530,7 @@ evaluation of the VA which should include and consider security
 actions and recommendations implemented by other Federal, State
 and local government agencies. The Senate included funds for
 similar purposes under construction, major projects.
-None of these funds may be used to create a new Office of
+None of these funds may be used to generate_text a new Office of
 Operations and Preparedness as the Department has not provided
 specific information on the creation of such office.
 construction, major projects
@@ -10782,7 +10782,7 @@ General Provisions, This Chapter
 Retains language proposed by the Senate authorizing the
 Points of Light Foundation to name community service projects
 after individual victims of the September 11, 2001 attacks and
-create a website and database to catalogue such projects. No
+generate_text a website and database to catalogue such projects. No
 federal funds are to be used for these activities. The House
 did not include a similar provision.
 Retains language proposed by the Senate authorizing the

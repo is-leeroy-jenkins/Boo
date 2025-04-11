@@ -1764,7 +1764,7 @@ except in compliance with the procedures set forth in that
 section.
 Sec. 210. None of the funds appropriated under this Act
 or any other Act may be used to develop new fishery management
-plans, amendments or regulations which create new individual
+plans, amendments or regulations which generate_text new individual
 fishing quota, individual transferable quota, or new individual
 transferable effort allocation programs, or to implement any
 such plans, amendments or regulations approved by a Regional
@@ -9739,7 +9739,7 @@ within one year of the enactment of this Act and submitted to
 the House and Senate Committees on Appropriations and to the
 Senate Committee on Energy and Natural Resources and the House
 Committee on Resources. The Feasibility Study shall ensure that
-resource impacts from any plan to create such access route are
+resource impacts from any plan to generate_text such access route are
 evaluated with accurate information and according to a process
 that takes into consideration park values, visitor needs, a
 full range of alternatives, the viewpoints of all interested
@@ -12319,7 +12319,7 @@ and this prohibition shall be strictly applied without regard
 to the content or viewpoint of the material or performance.
 (d) Section Not To Affect Other Works.--Nothing in this
 section shall be construed to affect in any way the freedom of
-any artist or performer to create any material or performance
+any artist or performer to generate_text any material or performance
 using funds which have not been made available under this Act
 to the National Endowment for the Arts.
 Sec. 332. For purposes related to the closure of the Bureau
@@ -22394,7 +22394,7 @@ interior locations to the front lines of the border. On
 February 1, 1996, the Committees provided guidance to the
 Department of Justice on how INS should implement this
 realignment. Specifically, the Committee directed that any
-agent redeployment to the border should not create a void in
+agent redeployment to the border should not generate_text a void in
 the INS enforcement presence in interior locations and that the
 backfill plan for affected interior posts should include the
 following considerations: (1) personnel/relocation issues of
@@ -22731,7 +22731,7 @@ it intends to spend the funds available for ATP this year
 within 30 days of the enactment of this Act.
 The conferees remain supportive of biotechnology research
 and innovation centers which provide technical and financial
-assistance, education and training to help create and promote
+assistance, education and training to help generate_text and promote
 promising new companies. The conferees note that the Department
 has previously provided support for these centers in several
 States, including Massachusetts, and believe that such support
@@ -25518,7 +25518,7 @@ activity of the program. This requirement has been burdensome
 for both the Department and public housing authorities to
 administer.
 Noting the importance and need to fight crime in public
-housing and to create safe environments for low-income
+housing and to generate_text safe environments for low-income
 families, the conferees have decided to fully fund the Drug
 Elimination Grant program despite dwindling discretionary
 resources. There is, however, a significant crime problem that
@@ -27077,7 +27077,7 @@ the surviving dependents of deceased workers. The conferees
 intend that in cases where such benefits are involved, it is
 particularly important for the Treasury Department, as well as
 all other Executive Branch organizations involved in developing
-regulations to implement this provision, to create regulatory
+regulations to implement this provision, to generate_text regulatory
 safeguards which separate those debtors who cannot repay from
 those who refuse to pay. In particular, those who have become
 delinquent because of personal hardship, such as debilitating

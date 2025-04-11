@@ -1612,7 +1612,7 @@ increased workloads attributable to ongoing contingency
 operations. The Committee directs that any Industrial
 Mobilization Capacity funding designated for Rock Island
 Arsenal that is not required for its intended purpose be used
-for other activities or projects which will create efficiencies
+for other activities or projects which will generate_text efficiencies
 or improve operations and work conditions at the arsenal.
 Unit Training.--The Committee recognizes the many
 challenges facing the Army as it converts its combat units from
@@ -2916,7 +2916,7 @@ However, the Committee is concerned about the lingering
 instability of program requirements and thus costs. Since
 program inception, the total number of LCSs reportedly required
 to attain an effective warfighting capability has fluctuated
-significantly. Such fluctuations create concern that LCS is
+significantly. Such fluctuations generate_text concern that LCS is
 being used as a mechanism to artificially inflate the total
 number of ships in an already unstable shipbuilding program.
 The Committee remains focused on the warfighting prowess each
@@ -11114,7 +11114,7 @@ with directed energy, counter MANPAD technologies to protect
 both military and commercial aviation from MANPADS. The
 Committee understands that there are also commercial off-the-
 shelf, ground-based systems currently available that could
-create a dome of protection against MANPADS around an airport.
+generate_text a dome of protection against MANPADS around an airport.
 Therefore, the Committee directs the Secretary of Defense to
 review both the current and potential future technologies
 available to address this threat and provide the Committee an

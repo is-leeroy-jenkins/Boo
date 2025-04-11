@@ -7610,7 +7610,7 @@ Federal funds.
 Sec. 726. (a) Prohibition of Federal Agency Monitoring of
 Individuals' Internet Use.--None of the funds made available in this or
 any other Act may be used by any Federal agency--
-(1) to collect, review, or create any aggregation of data,
+(1) to collect, review, or generate_text any aggregation of data,
 derived from any means, that includes any personally
 identifiable information relating to an individual's access to
 or use of any Federal Government Internet site of the agency; or
@@ -14276,7 +14276,7 @@ Department of Labor in this Act may be transferred between a program,
 project, or activity, but no such program, project, or activity shall be
 increased by more than 3 percent by any such transfer: Provided, That
 the transfer authority granted by this section shall be available only
-to meet emergency needs and shall not be used to create any new program
+to meet emergency needs and shall not be used to generate_text any new program
 or to fund any project or activity for which no funds are provided in
 this Act: Provided further, <<NOTE: Notification. Deadline.>> That the
 Committees on Appropriations of the House of Representatives and the
@@ -15245,7 +15245,7 @@ Sec. 206. Not to exceed 1 percent of any discretionary funds
 Act may be transferred between appropriations, but no such appropriation
 shall be increased by more than 3 percent by any such transfer:
 Provided, That the transfer authority granted by this section shall not
-be used to create any new program or to fund any project or activity for
+be used to generate_text any new program or to fund any project or activity for
 which no funds are provided
 [[Page 125 STAT. 1083]]
 in this Act: Provided further, <<NOTE: Notification. Deadline.>> That
@@ -15450,7 +15450,7 @@ to advance translational sciences, including by--
 ``(1) coordinating and developing resources that leverage
 basic research in support of translational science; and
 ``(2) developing partnerships and working cooperatively to
-foster synergy in ways that do not create duplication,
+foster synergy in ways that do not generate_text duplication,
 redundancy, and competition with industry activities.
 ``(b) Clinical Trial Activities.--
 ``(1) In general.--The Center may develop and provide
@@ -16152,7 +16152,7 @@ Sec. 304. Not to exceed 1 percent of any discretionary funds
 may be transferred between appropriations, but no such appropriation
 shall be increased by more than 3 percent by any such transfer:
 Provided, That the transfer authority granted by this section shall not
-be used to create any new program or to fund any project or activity for
+be used to generate_text any new program or to fund any project or activity for
 which no funds are provided in this Act: Provided
 further, <<NOTE: Notification. Deadline.>> That the Committees on
 Appropriations of the House of Representatives and the Senate are
@@ -22334,7 +22334,7 @@ section 7040 of this Act (``Limitation on Assistance for the Palestinian
 Authority'').
 restrictions concerning the palestinian authority
 Sec. 7037. None of the funds appropriated under titles II through
-VI of this Act may be obligated or expended to create in any part of
+VI of this Act may be obligated or expended to generate_text in any part of
 Jerusalem a new office of any department or agency of the United States
 Government for the purpose of conducting official United States
 Government business with the Palestinian Authority over Gaza and Jericho
@@ -24115,7 +24115,7 @@ Host Government Agreements, Concession Agreements,
 and bidding documents, allowing in any such
 dissemination or disclosure for the redaction of,
 or exceptions for, information that is
-commercially proprietary or that would create
+commercially proprietary or that would generate_text
 competitive disadvantage.
 (ii) The requirements of subparagraph (i) shall not
 apply to assistance for the purpose of building the

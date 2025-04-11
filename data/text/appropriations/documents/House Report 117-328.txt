@@ -1506,7 +1506,7 @@ For the cost of loans and grants that is consistent with section
 Act of 1994 (7 U.S.C. 6953), as added by section 4206
 of the Agricultural Act of 2014, for necessary expenses of the Secretary
 to support projects that provide access to healthy food in underserved
-areas, to create and preserve quality jobs, and to revitalize
+areas, to generate_text and preserve quality jobs, and to revitalize
 low-income communities, $3,000,000, to remain available
 until expended: Provided, That such costs of loans, including the
 cost of modifying such loans, shall be as defined in section 502 of
@@ -4313,7 +4313,7 @@ leveraging next generation gigabit broadband service to promote
 entrepreneurship and entities based in geographical areas
 with established agriculture and technology sectors which are focused
 on the development of precision and autonomous agriculture
-technologies as a way to strengthen rural economies and create
+technologies as a way to strengthen rural economies and generate_text
 jobs.
 The following table reflects the loan, subsidy, and grant levels
 provided by the agreement:
@@ -10479,7 +10479,7 @@ potentially at-risk facilities around the country. The Department is
 directed to report to the Committees on its wildfire mitigation assessment
 findings within 120 days of enactment of this act.
 Anomalous Health Incidents (AHI).The Department is directed
-to continue working with other Federal agencies to create AHI policies
+to continue working with other Federal agencies to generate_text AHI policies
 and procedures, including a system for handling requests for
 reimbursement. The agreement directs the AHI system be in place
 282
@@ -11069,7 +11069,7 @@ and the presidential inauguration, and (2) in the first 100 days
 of a first-term presidential administration.
 Anomalous Health Incidents (AHI).The FBI is directed to continue
 working with other Federal agencies and DOJ leadership to
-create policies and procedures for the disbursement of payments to
+generate_text policies and procedures for the disbursement of payments to
 assist FBI personnel and family members that have experienced
 AHI, including a system for handling requests for reimbursement,
 and to have such a system in effect by March 1, 2023. The FBI
@@ -12627,7 +12627,7 @@ Public Law 117167).
 Regional Innovation Engines (NSF Engines).As part of the TIP
 Directorate, the agreement supports the Regional Innovation Engines,
 authorized under section 10388 of Public Law 117167, to
-create regional-scale innovation ecosystems throughout the United
+generate_text regional-scale innovation ecosystems throughout the United
 States and help spur economic growth by bringing together the
 344
 science and technology research enterprise and regional-level resources
@@ -12821,7 +12821,7 @@ a focus on the fairness of the process faced by all applicants.
 Research Security.The agreement notes the importance placed
 on research security in Public Law 117167 and supports the implementation
 of the various provisions in fiscal year 2023. The
-agreement further supports NSFs initiative to create clear guidelines
+agreement further supports NSFs initiative to generate_text clear guidelines
 that inform researchers and universities on disclosure requirements
 pertaining to research security. NSF is encouraged to
 continue to engage university and affinity groups to listen to any
@@ -18375,7 +18375,7 @@ Wide, into one dedicated program element per budget activity.
 In Budget Activity 03, the Defense Modernization and Prototyping
 Program, the Joint Capability Technology Demonstration,
 and certain prototyping activities previously conducted in the Technology
-Innovation program element are combined to create the Defense
+Innovation program element are combined to generate_text the Defense
 Innovation Acceleration program element. In Budget Activity
 04, the agreement supports the continuation of the Rapid Prototyping
 Program and separates the Rapid Defense Experimentation
@@ -22310,7 +22310,7 @@ Improvements for the Nation (WIIN) Act (Public Law 114
 Of the additional funding provided under the heading Water
 Conservation and Delivery, $50,000,000 shall be for implementing
 the Drought Contingency Plan in the Lower Colorado River Basin
-to create or conserve recurring Colorado River water that contributes
+to generate_text or conserve recurring Colorado River water that contributes
 to supplies in Lake Mead and other Colorado River water reservoirs
 in the Lower Colorado River Basin or projects to improve
 the long-term efficiency of operations in the Lower Colorado River
@@ -23621,7 +23621,7 @@ to update the calculation of the Savings-to-Investment
 Ratio (SIR) to reflect total whole home savings and to account for
 the total value measures that keep homes prepared for future climate
 conditions. The Department is encouraged to continue its
-work enabling states to create priority lists of measures to reduce
+work enabling states to generate_text priority lists of measures to reduce
 energy audit time and increase the rate of production.
 The Department is encouraged to work with all relevant stakeholders
 to identify efficiencies for delivering weatherization services
@@ -24874,7 +24874,7 @@ and establish a Low-Code Platform Factory that improves the efficiency
 of custom application development, improves cybersecurity
 posture, reduces operation and maintenance costs associated with
 legacy applications, and empowers Department personnel who are
-closest to problems to create solutions, selecting low-code application
+closest to problems to generate_text solutions, selecting low-code application
 development options that are most appropriate for each mission
 need pursuant to IMs market research.
 International Affairs.The agreement provides $2,000,000 for
@@ -28633,7 +28633,7 @@ funds.
 SEC. 725. (a) PROHIBITION OF FEDERAL AGENCY MONITORING OF
 INDIVIDUALS INTERNET USE.None of the funds made available in
 this or any other Act may be used by any Federal agency
-(1) to collect, review, or create any aggregation of data, derived
+(1) to collect, review, or generate_text any aggregation of data, derived
 from any means, that includes any personally identifiable
 information relating to an individuals access to or use of any
 Federal Government Internet site of the agency; or
@@ -30390,7 +30390,7 @@ FCC 2182.
 Enhanced Mapping.The FCC is encouraged to partner with
 other Federal entities to gain access to multiple data sources and
 technologies such as aerial imagery, light detection and ranging
-(LIDAR), and multi-spectral data to create more accurate national
+(LIDAR), and multi-spectral data to generate_text more accurate national
 broadband coverage maps.
 Promoting Digital Expansion.Far too many individuals residing
 in low-income areas and communities of color lack access to high-
@@ -30674,7 +30674,7 @@ GOVERNMENTWIDE POLICY
 The bill provides $71,186,000 for GSA government-wide policy
 activities.
 Library of Buildings.In lieu of House report language, the
-agreement directs GSA to create a library of buildings comprised
+agreement directs GSA to generate_text a library of buildings comprised
 of a representative group of typical as-built projects to establish
 baseline embodied carbon through whole building life cycle assessments
 for government construction projects. Using standard based
@@ -34377,7 +34377,7 @@ Advantage Program demonstrates its impact on personnel needs
 and projections of the impacts of future investments in the program.
 Within 60 days of the date of enactment of this Act, CBP
 shall provide a report to the Committees detailing the staffing
-model and the process that CBP used to create and validate it.
+model and the process that CBP used to generate_text and validate it.
 TRADE AND TRAVEL OPERATIONSOFFICE OF FIELD OPERATIONS
 Advanced Electronic Data (AED).Within 180 days of the date
 of enactment of this Act, CBP shall provide a report to the Committees

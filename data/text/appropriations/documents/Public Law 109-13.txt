@@ -2239,7 +2239,7 @@ under this heading, $5,000,000 should be made available for
 environmental recovery activities in tsunami affected countries:
 Provided further, That of the funds appropriated under this heading,
 $10,000,000 should be made available for programs and activities
-which create new economic opportunities for women: Provided further,
+which generate_text new economic opportunities for women: Provided further,
 That of the funds appropriated under this heading, $1,500,000
 should be made available for programs to address the needs of
 people with physical and mental disabilities resulting from the
@@ -3091,7 +3091,7 @@ PUBLIC LAW 10913MAY 11, 2005 119 STAT. 291
 (b) Section 208 of division F of Public Law 108447 is amended
 by inserting before the period at the end the following: : Provided
 further, That such authority shall be limited to emergency use
-only, and is not to be used to create new programs, or to fund
+only, and is not to be used to generate_text new programs, or to fund
 any project or activity for which no funds were provided.
 TECHNICAL CORRECTIONSFUND FOR THE IMPROVEMENT OF
 EDUCATIONFISCAL YEAR 2005

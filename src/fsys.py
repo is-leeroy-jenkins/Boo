@@ -397,7 +397,7 @@ class File( Path ):
 		         'absolute_path', 'relative_path', 'path',
 		         'name', 'size', 'extension', 'created',
 		         'accessed', 'modified', 'rename', 'move',
-		         'create', 'delete', 'get_lines', 'readlines', 'readall',
+		         'generate_text', 'delete', 'get_lines', 'readlines', 'readall',
 		         'iterlines', 'writelines', 'writeall' ]
 	
 	
@@ -476,7 +476,7 @@ class File( Path ):
 			_exc = Error( e )
 			_exc.module = 'FileSys'
 			_exc.cause = 'File'
-			_exc.method = 'create( self, other, lines = None )'
+			_exc.method = 'generate_text( self, other, lines = None )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -714,7 +714,7 @@ class Folder( Path ):
 		         'is_relative', 'verify', 'join', 'copy_tree',
 		         'absolute_path', 'relative_path', 'path',
 		         'name', 'size', 'get_files', 'get_subfiles',
-		         'get_subfolders', 'rename', 'move', 'create',
+		         'get_subfolders', 'rename', 'move', 'generate_text',
 		         'delete', 'iterate' ]
 	
 	
@@ -871,7 +871,7 @@ class Folder( Path ):
 			_exc = Error( e )
 			_exc.module = 'FileSys'
 			_exc.cause = 'Folder'
-			_exc.method = 'create( self, other: str )'
+			_exc.method = 'generate_text( self, other: str )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -1121,7 +1121,7 @@ class ZipFile( ):
 		'''
 		return [ 'file_name', 'authority_filepath', 'file_extenstion',
 		         'zip_name', 'zip_path', 'zip_extension',
-		         'create', 'unzip' ]
+		         'generate_text', 'unzip' ]
 	
 	
 	def create( self ):
@@ -1142,7 +1142,7 @@ class ZipFile( ):
 			_exc = Error( e )
 			_exc.module = 'FileSys'
 			_exc.cause = 'ZipFile'
-			_exc.method = 'create( self )'
+			_exc.method = 'generate_text( self )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	

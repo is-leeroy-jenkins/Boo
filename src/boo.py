@@ -436,10 +436,8 @@ class GptRequest( AI ):
 	'''
 		Base class for GPT requests.
 	'''
-	
-	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( )
 		self.header = super( ).header
 		self.api_key = super( ).api_key
@@ -481,10 +479,8 @@ class TextRequest( GptRequest ):
 	Class provides the functionality fo the Text Generation API
 
 	'''
-	
-	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.header = super( ).header
@@ -530,7 +526,7 @@ class TextRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'values' ]
+		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values' ]
 	
 	
 	def create( self, prompt: str ) -> str:
@@ -573,7 +569,7 @@ class TextRequest( GptRequest ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'TextRequest'
-			exception.method = 'create( prompt: str ) -> str'
+			exception.method = 'generate_text( prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -584,10 +580,8 @@ class CompletionRequest( GptRequest ):
 		Class provides the functionality fo the Completions API
 
 	'''
-	
-	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.header = super( ).header
@@ -635,12 +629,14 @@ class CompletionRequest( GptRequest ):
 		return [ 'header', 'client', 'request_type', 'endpoint',
 		         'model', 'number', 'messages',
 		         'content', 'response', 'instructions', 'prompt',
-		         'size', 'create', 'messages', 'values' ]
+		         'size', 'generate_text', 'messages', 'values' ]
 	
 	
 	def create( self, prompt: str ) -> str:
 		'''
-				Function that generates chat completions given a prompt
+		
+			Function that generates chat completions given a prompt
+			
 			Args:
 				prompt:
 
@@ -676,7 +672,7 @@ class CompletionRequest( GptRequest ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'CompletionRequest'
-			exception.method = 'create( prompt: str )'
+			exception.method = 'generate_text( prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -685,10 +681,8 @@ class ImageRequest( GptRequest ):
 	'''
 		Class provides the functionality fo the Image Generation API
 	'''
-	
-	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.header = super( ).header
@@ -738,7 +732,7 @@ class ImageRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'values',
+		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values',
 		         'instructions' ]
 	
 	
@@ -786,7 +780,7 @@ class ImageRequest( GptRequest ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'ImageRequest'
-			exception.method = 'create( prompt: str )'
+			exception.method = 'generate_text( prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -795,10 +789,8 @@ class SpeechRequest( GptRequest ):
 	'''
 		Class encapsulating requests for speech generations.
 	'''
-	
-	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.header = super( ).header
@@ -846,10 +838,8 @@ class TranslationRequest( GptRequest ):
 	'''
 		Class encapsulating requests for translation.
 	'''
-	
-	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.header = super( ).header
@@ -899,17 +889,15 @@ class TranslationRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'values' ]
+		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values' ]
 
 
 class TranscriptionRequest( GptRequest ):
 	'''
 		Class encapsulating requests for transcriptions.
 	'''
-	
-	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.header = super( ).header
@@ -955,17 +943,15 @@ class TranscriptionRequest( GptRequest ):
 				Returns: list[ str ]
 		'''
 		return [ 'header', 'client', 'endpoint', 'model', 'number', 'messages',
-		         'content', 'response', 'prompt', 'size', 'create', 'messages', 'values' ]
+		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values' ]
 
 
 class EmbeddingRequest( GptRequest ):
 	'''
 		Class encapsulating requests for embedding.
 	'''
-	
-	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.header = super( ).header
@@ -1014,7 +1000,7 @@ class EmbeddingRequest( GptRequest ):
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
-		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values',
+		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values',
 		         'instructions' ]
 
 
@@ -1022,10 +1008,8 @@ class VectorStoreRequest( GptRequest ):
 	'''
 		Class encapsulating requests for vectors.
 	'''
-	
-	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.header = super( ).header
@@ -1074,7 +1058,7 @@ class VectorStoreRequest( GptRequest ):
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
-		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values',
+		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values',
 		         'instructions' ]
 
 
@@ -1082,10 +1066,8 @@ class GptFileRequest( GptRequest ):
 	'''
 		Class encapsulating requests for GPT files.
 	'''
-	
-	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = True, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.header = super( ).header
@@ -1134,17 +1116,15 @@ class GptFileRequest( GptRequest ):
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
-		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values' ]
+		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values' ]
 
 
 class UploadRequest( GptRequest ):
 	'''
 		Class encapsulating requests for GPT uploads.
 	'''
-	
-	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.header = super( ).header
@@ -1193,7 +1173,7 @@ class UploadRequest( GptRequest ):
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
-		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values',
+		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values',
 		         'instructions' ]
 
 
@@ -1201,10 +1181,8 @@ class FineTuningRequest( GptRequest ):
 	'''
 		Class encapsulating requests for fine-tuning.
 	'''
-	
-	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=True ):
 		super( ).__init__( num, temp, top, freq, pres, max, store, stream )
 		self.api_key = super( ).api_key
 		self.header = super( ).header
@@ -1253,7 +1231,7 @@ class FineTuningRequest( GptRequest ):
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
-		         'stops', 'content', 'response', 'prompt', 'create', 'messages', 'values',
+		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values',
 		         'instructions' ]
 
 
@@ -1279,7 +1257,7 @@ class GptResponse( ):
 			Methods that returns a list of member names
 			Returns: list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created' ]
+		return [ 'id', 'object', 'model', 'created', 'data' ]
 
 
 class CompletionResponse( GptResponse ):
@@ -1305,7 +1283,7 @@ class CompletionResponse( GptResponse ):
 			Methods that returns a list of member names
 			Returns: list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created' ]
+		return [ 'id', 'object', 'model', 'created', 'data' ]
 
 
 class TextResponse( GptResponse ):
@@ -1331,7 +1309,7 @@ class TextResponse( GptResponse ):
 			Methods that returns a list of member names
 			Returns: list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created' ]
+		return [ 'id', 'object', 'model', 'created', 'data' ]
 
 
 class EmbeddingResponse( GptResponse ):
@@ -1357,7 +1335,7 @@ class EmbeddingResponse( GptResponse ):
 			Methods that returns a list of member names
 			Returns: list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created' ]
+		return [ 'id', 'object', 'model', 'created', 'data' ]
 
 
 class FineTuningResponse( GptResponse ):
@@ -1383,7 +1361,7 @@ class FineTuningResponse( GptResponse ):
 			Methods that returns a list of member names
 			Returns: list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created' ]
+		return [ 'id', 'object', 'model', 'created', 'data' ]
 
 
 class VectorResponse( GptResponse ):
@@ -1409,7 +1387,7 @@ class VectorResponse( GptResponse ):
 			Methods that returns a list of member names
 			Returns: list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created' ]
+		return [ 'id', 'object', 'model', 'created', 'data' ]
 
 
 class FileResponse( GptResponse ):
@@ -1912,7 +1890,9 @@ class Perceptron( ):
 			Methods that returns a list of member names
 			Returns: list[ str ]
 		'''
-		return [ 'fit', 'net_input', 'predict' ]
+		return [ 'fit', 'net_input', 'predict',
+		         'w_', 'b_', 'errors_',
+		         'n_iter', 'random_state', 'eta' ]
 
 
 class AdaptiveLinearNeuron( ):
@@ -2064,10 +2044,102 @@ class AdaptiveLinearNeuron( ):
 			Returns: list[ str ]
 			
 		'''
-		return [ 'fit', 'net_input', 'activation', 'predict' ]
+		return [ 'fit', 'net_input', 'activation',
+		         'predict', 'losses_', 'b_', 'w_',
+		         'n_iter', 'eta', 'random_state', 'embedding-3-small' ]
 
 
-class Embedding( AI ):
+class SmallEmbedding( AI ):
+	'''
+
+		Class proiding embedding objects
+
+	'''
+	
+	
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'embedding-3-small'
+		self.embedding = None
+		self.response = None
+	
+	
+	def create( self, input: str ) -> list[ float ]:
+		try:
+			if input is None:
+				raise Exception( 'Argument "input" is required.' )
+			else:
+				self.input = input
+				self.response = self.client.embeddings.create( input, self.model )
+				self.embedding = self.response.data[ 0 ].embedding
+				return self.embedding
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'SmallEmbedding'
+			exception.method = 'create( self, input: str ) -> list[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+
+			Methods that returns a list of member names
+			Returns: list[ str ]
+
+		'''
+		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
+
+
+class AdaEmbedding( AI ):
+	'''
+
+		Class proiding embedding objects
+
+	'''
+	
+	
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'embedding-ada-002'
+		self.embedding = None
+		self.response = None
+	
+	
+	def create( self, input: str ) -> list[ float ]:
+		try:
+			if input is None:
+				raise Exception( 'Argument "input" is required.' )
+			else:
+				self.input = input
+				self.response = self.client.embeddings.create( input, self.model )
+				self.embedding = self.response.data[ 0 ].embedding
+				return self.embedding
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'AdaEmbedding'
+			exception.method = 'create( self, input: str ) -> list[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+
+			Methods that returns a list of member names
+			Returns: list[ str ]
+
+		'''
+		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
+
+
+class LargeEmbedding( AI ):
 	'''
 	
 		Class proiding embedding objects
@@ -2080,6 +2152,8 @@ class Embedding( AI ):
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'text-embedding-3-large'
+		self.embedding = None
+		self.response = None
 	
 	
 	def create( self, input: str ) -> list[ float ]:
@@ -2088,13 +2162,13 @@ class Embedding( AI ):
 				raise Exception( 'Argument "input" is required.' )
 			else:
 				self.input = input
-				_request = self.client.embeddings.create( input, self.model )
-				_emedding = _request.data[ 0 ].embedding
-				return _emedding
+				self.response = self.client.embeddings.create( input, self.model )
+				self.embedding = self.response.data[ 0 ].embedding
+				return self.embedding
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Embedding'
+			exception.cause = 'LargeEmbedding'
 			exception.method = 'create( self, input: str ) -> list[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2107,7 +2181,7 @@ class Embedding( AI ):
 			Returns: list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
 
 
 class Response( AI ):
@@ -2136,26 +2210,78 @@ class Response( AI ):
 			Returns: list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
 
 
 class Chat( AI ):
 	'''
 
-		Class proiding Response objects
+		Class proiding Chat object functionality
 
 	'''
-	
-	
 	def __init__( self ):
 		super( ).__init__( )
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'gpt-4o-mini'
+		self.response = None
+		self.input = [ ]
+		self.image_url = None
+		self.response_format = 'auto'
+		self.tools = [ ]
+		self.top_p = 0.9
+		self.temperature = 0.8
 	
 	
-	def create( self, input: str ) -> str:
-		pass
+	def generate_text( self, prompt: str ) -> str:
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.response = self.client.responses.create( model=self.model, input=prompt )
+				return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'generate_text( self, prompt: str )'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze_image( self, prompt: str, path: str ) -> str:
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			elif path is None:
+				raise Exception( 'Argument "path" cannot be None' )
+			else:
+				self.input =\
+				[
+					{
+						'role': 'user',
+						'content':
+						[
+							{ 'type': 'input_text',
+							  'text': prompt
+							},
+							{
+								'type': 'input_image',
+								'image_url': path
+							}
+						]
+					}
+				]
+				
+				self.response = self.client.responses.create( model=self.model, input=self.input )
+				return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'analyze_image( self, prompt: str, path: str )'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -2165,7 +2291,8 @@ class Chat( AI ):
 			Returns: list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+		return [ 'api_key', 'client', 'model', 'input',
+		         'generate_text', 'analyze_image' ]
 
 
 class Image( AI ):
@@ -2174,8 +2301,6 @@ class Image( AI ):
 		Class proiding Response objects
 
 	'''
-	
-	
 	def __init__( self ):
 		super( ).__init__( )
 		self.api_key = super( ).api_key
@@ -2194,7 +2319,7 @@ class Image( AI ):
 			Returns: list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
 
 
 class Assistant( AI ):
@@ -2209,7 +2334,7 @@ class Assistant( AI ):
 		super( ).__init__( )
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
-		self.model = 'gpt-4o'
+		self.model = 'gpt-4o-mini'
 		self.response_format = 'auto'
 		self.input_text = None
 		self.name = None
@@ -2233,7 +2358,91 @@ class Assistant( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Transcription'
+			exception.cause = 'Assistant'
+			exception.method = 'create( self, input: str )'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class Bubba( AI ):
+	'''
+
+		Class proiding Transciprtion objects
+
+	'''
+	
+	
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'gpt-4o-mini'
+		self.response_format = 'auto'
+		self.input_text = None
+		self.name = 'Bubba'
+		self.description = None
+		self.id = 'asst_J6SAABzDixkTYi2k39OGgjPv'
+		self.metadata = { }
+		self.tools = [ ]
+		self.top_p = 0.9
+		self.temperature = 0.8
+	
+	
+	def create( self, input: str ):
+		'''
+			method creating transciption object given an input: str
+		'''
+		try:
+			if input is None:
+				raise Exception( 'Argument "input" is required.' )
+			else:
+				self.input_text = input
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Assistant'
+			exception.method = 'create( self, input: str )'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class Bro( AI ):
+	'''
+
+		Class proiding Transciprtion objects
+
+	'''
+	
+	
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'gpt-4o-mini'
+		self.response_format = 'auto'
+		self.input_text = None
+		self.name = 'Bro'
+		self.description = None
+		self.id = 'asst_2Yu2yfINGD5en4e0aUXAKxyu'
+		self.metadata = { }
+		self.tools = [ ]
+		self.top_p = 0.9
+		self.temperature = 0.8
+	
+	
+	def create( self, input: str ):
+		'''
+			method creating transciption object given an input: str
+		'''
+		try:
+			if input is None:
+				raise Exception( 'Argument "input" is required.' )
+			else:
+				self.input_text = input
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Assistant'
 			exception.method = 'create( self, input: str )'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2249,7 +2458,7 @@ class TextToSpeech( AI ):
 	
 	def __init__( self ):
 		'''
-			Constructor to create TextToSpeech objects
+			Constructor to generate_text TextToSpeech objects
 		'''
 		super( ).__init__( )
 		self.api_key = super( ).api_key
@@ -2291,7 +2500,7 @@ class TextToSpeech( AI ):
 			Returns: list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
 
 
 class Transcription( AI ):
@@ -2329,7 +2538,7 @@ class Transcription( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Transcription'
-			exception.method = 'create( self, input: str )'
+			exception.method = 'creat( self, input: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2341,7 +2550,7 @@ class Transcription( AI ):
 			Returns: list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
 
 
 class Translation( AI ):
@@ -2388,4 +2597,4 @@ class Translation( AI ):
 			Returns: list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]

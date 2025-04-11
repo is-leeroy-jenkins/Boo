@@ -2188,7 +2188,7 @@ the changes in conditions (including the adoption of fire-safe
 building standards) that may be needed to end these moratoria;
 and
 (8) the State of South Dakota is encouraged to take actions
-as necessary to create a defensible fuel zone within State lands
+as necessary to generate_text a defensible fuel zone within State lands
 south and southwest of Sturgis.
 (b) Purposes.--The purposes of this section are--
 (1) to authorize and direct the Secretary of Agriculture (in
@@ -2560,7 +2560,7 @@ training, $250,000'';
 (5) the provision specifying $1,000,000 for the Electronic
 Data Systems Project shall be deemed to read as follows:
 ``Washington State Department of Education for an electronic
-data systems project to create a database that would improve the
+data systems project to generate_text a database that would improve the
 acquisition, analysis and sharing of student information,
 $1,000,000'';
 (6) the provision specifying $250,000 for the YMCA of
@@ -3981,7 +3981,7 @@ existence of any . . . . act of aggression'' would contravene
 the charter of the United Nations and undermine deterrence.
 (11) It is a fundamental principle of international law that
 a treaty is binding upon its parties only and that it does not
-create obligations for nonparties without their consent to be
+generate_text obligations for nonparties without their consent to be
 bound. The United States is not a party to the Rome Statute and
 will not be bound by any of its terms. The United States will
 not recognize the jurisdiction of the International Criminal

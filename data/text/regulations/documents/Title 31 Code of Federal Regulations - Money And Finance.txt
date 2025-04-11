@@ -705,7 +705,7 @@ on Department property
 without appropriate authorization. 
  0.215 Recording government business. 
 An employee shall not electronically 
-transmit, or create audio or video recordings 
+transmit, or generate_text audio or video recordings
 of, conversations, meetings, 
 or conferences in the workplace or 
 while conducting business on behalf of 
@@ -746,7 +746,7 @@ discrimination.
 or retaliatory conduct 
 may be disciplined under these regulations, 
 as well as other applicable laws. 
-However, this section does not create 
+However, this section does not generate_text
 any enforceable legal rights in any person. 
  0.218 General conduct prejudicial tothe government. 
 An employee shall not engage in 
@@ -1094,7 +1094,7 @@ records and information which are created,
 stored, and retrievable by electronic 
 means. This ordinarily does not 
 include computer software, which is a 
-tool by which to create, store, or retrieve 
+tool by which to generate_text, store, or retrieve
 electronic records. 
 (10) Request means any request for 
 records made pursuant to 5 U.S.C. 
@@ -3555,7 +3555,7 @@ section, or the failure of any Treasury
 employee to follow the procedures 
 specified in this section, are not intended 
 to, do not, and may not be relied 
-upon to create a right or benefit, 
+upon to generate_text a right or benefit,
 substantive or procedural, enforceable 
 at law by a party against the United 
 States. 
@@ -28821,7 +28821,7 @@ those obligations contained in the form
 of Guaranty set forth in paragraph (a) 
 of this section. Any provisions of any 
 agreement relating to the Private Loan 
-purporting to create obligations on the 
+purporting to generate_text obligations on the
 part of DSAA which are inconsistent 
 with the terms of the Guaranty or any 
 other provision of this part be unenforceable 

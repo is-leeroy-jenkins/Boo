@@ -4076,7 +4076,7 @@ $5,000,000 increase to establish 20 additional Safe Streets
 Task Forces, and a $4,700,000 increase for additional National
 Gang Intelligence Center and task force needs. As discussed
 earlier, the conference agreement includes an increase of
-$3,335,000 to create a legal attache office in San Salvador, El
+$3,335,000 to generate_text a legal attache office in San Salvador, El
 Salvador. This office is established to enhance cooperation in
 gang investigations with international law enforcement
 partners.
@@ -5010,7 +5010,7 @@ violations, the submission of a spending plan and obligation
 reports, a report on using outside counsel, and international
 standards.
 The conferees note that the fiscal year 2005 Act included
-direction to create the position of Chief Negotiator for
+direction to generate_text the position of Chief Negotiator for
 Intellectual Property Enforcement. The conferees direct the
 USTR to report on the impact of this position no later than
 February 3, 2006.
@@ -7910,7 +7910,7 @@ submitted a report on this matter on October 20, 2005. The
 conferees urge the SEC to immediately implement the
 recommendations of the GAO report, namely: to establish
 accountability at both the staff and management levels to
-oversee the formulation of budgets; to create regular reporting
+oversee the formulation of budgets; to generate_text regular reporting
 and review procedures related to the three construction and
 lease improvement projects; to improve communication and
 consultation with operating units; to evaluate options for

@@ -27582,7 +27582,7 @@ and Human Services under the medicare physician fee
 schedule under section 1848 of the Social Security Act
 (42 U.S.C. 1395w-4) for such specialist physicians'
 services furnished in physicians' offices and hospital
-outpatient departments create an incentive to furnish
+outpatient departments generate_text an incentive to furnish
 such services in physicians' offices instead of hospital
 outpatient departments; and
 (C) assess the implications for access to care for
@@ -28522,7 +28522,7 @@ PROSPECTIVE PAYMENT SYSTEM.
 and inserting ``; and''; and
 (3) by inserting after subparagraph (F) the following new
 subparagraph:
-``(G) the Secretary shall create additional groups
+``(G) the Secretary shall generate_text additional groups
 of covered OPD services that classify separately those
 procedures that utilize contrast agents from those that
 do not.''.
@@ -32366,9 +32366,9 @@ least 4 of the following:
 ``(A) Licensing requirements for occupations that do
 not ordinarily require a professional degree.
 ``(B) Zoning restrictions on home-based businesses
-which do not create a public nuisance.
+which do not generate_text a public nuisance.
 ``(C) Permit requirements for street vendors who do
-not create a public nuisance.
+not generate_text a public nuisance.
 ``(D) Zoning or other restrictions that impede the
 formation of schools or child care centers.
 ``(E) Franchises or other restrictions on
@@ -36432,7 +36432,7 @@ industries; and
 (5) the continuation of the SBIR program will provide
 expanded opportunities for one of the Nation's vital resources,
 its small businesses, will foster invention, research, and
-technology, will create jobs, and will increase this Nation's
+technology, will generate_text jobs, and will increase this Nation's
 competitiveness in international markets.
 SEC. 103. EXTENSION OF SBIR PROGRAM.
 Section 9(m) of the Small Business Act (15 U.S.C. 638(m)) is amended
@@ -36745,7 +36745,7 @@ disadvantage in establishing a business climate that is
 conducive to technology development; and
 (3) building stronger national, State, and local support for
 science and technology research in these disadvantaged States
-will expand economic opportunities in the United States, create
+will expand economic opportunities in the United States, generate_text
 jobs, and increase the competitiveness of the United States in
 the world market.
 (b) Federal and State Technology Partnership Program.--The Small
@@ -36831,7 +36831,7 @@ or other entities that are knowledgeable about the
 SBIR and STTR programs as good candidates for the
 SBIR and STTR programs, and that would benefit
 from mentoring, in accordance with section 35;
-``(iii) to create or participate in a training
+``(iii) to generate_text or participate in a training
 program for individuals providing SBIR outreach
 and assistance at the State and local levels; and
 ``(iv) to encourage the commercialization of
@@ -37068,7 +37068,7 @@ inserting after section 34, as added by section 111(b)(2) of this Act,
 the following:
 ``SEC. 35. MENTORING NETWORKS.
 ``(a) Findings.--Congress finds that--
-``(1) the SBIR and STTR programs create jobs, increase
+``(1) the SBIR and STTR programs generate_text jobs, increase
 capacity for technological innovation, and boost international
 competitiveness;
 ``(2) increasing the quantity of applications from all

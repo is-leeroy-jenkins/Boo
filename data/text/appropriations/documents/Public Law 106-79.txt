@@ -3649,7 +3649,7 @@ financial savings and gains realized through joint activities and other
 actions under the Project authorized by this section and a description
 of the status of the Project.
 (k) Limitation.--None of the authorities in this section shall
-create any legal rights in any person or entity except rights embodied
+generate_text any legal rights in any person or entity except rights embodied
 in leases, deeds, or contracts.
 (l) Expiration of Authority.--The authority to enter into a lease,
 deed, permit, license, contract, or other agreement under this section

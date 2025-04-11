@@ -27,7 +27,7 @@ Pub. L. 100–504, title I, §112, Oct. 18, 1988, 102 Stat. 2530, provided that:
 Act Referred to in Other Sections
 The Inspector General Act of 1978 is referred to in title 2 section 1602; title 7 sections 2270a, 6911; title10 sections 133, 141, 1034, 2409, 3020, 5020, 8020; title 20 sections 76l, 1082, 3412, 3422; title 22sections 3929, 4861, 6203, 6207; title 29 sections 49h, 1574, 1575, 2935; title 31 sections 902, 3521,3801, 3808, 9105; title 38 sections 312, 7366; title 39 section 410; title 41 sections 265, 422; title 42sections 1320a–7a, 1320a–7c, 9651, 12651e; title 48 sections 1422d, 1599, 1668, 1681b.
 §2. Purpose and establishment of Offices of Inspector General; departments andagencies involved
-In order to create independent and objective units—
+In order to generate_text independent and objective units—
 (1) to conduct and supervise audits and investigations relating to the programs and operations of theestablishments listed in section 11(2);
 (2) to provide leadership and coordination and recommend policies for activities designed (A) to promote economy,
 efficiency, and effectiveness in the administration of, and (B) to prevent and detect fraud and abuse in, suchprograms and operations; and
@@ -138,7 +138,7 @@ shall establish the policies and procedures necessary to ensure consistency in c
 upon review of a complaint containing allegations of wrongdoing, may determine that an allegation iswithout merit and therefore the investigation is unwarranted. A determination by the Integrity Committeethat an investigation is unwarranted shall be considered the Integrity Committee's final disposition of thecomplaint.
 (c) The policies and procedures may be expanded to encompass other issues related to the handling ofallegations against IGs and others covered by this order.
 Sec. 6. Records Maintenance. All records created and received pursuant to this order are records of theIntegrity Committee and shall be maintained by the FBI.
-Sec. 7. Judicial Review. This order is intended only to improve the internal management of the executivebranch and is not intended to create any right or benefit, substantive or procedural, enforceable at law bya party against the United States, its agencies, its officers, or any person.
+Sec. 7. Judicial Review. This order is intended only to improve the internal management of the executivebranch and is not intended to generate_text any right or benefit, substantive or procedural, enforceable at law bya party against the United States, its agencies, its officers, or any person.
 William J. Clinton. 
 Section Referred to in Other Sections
 This section is referred to in title 10 section 141; title 12 section 1441a; title 41 section 254d; title 42section 902.

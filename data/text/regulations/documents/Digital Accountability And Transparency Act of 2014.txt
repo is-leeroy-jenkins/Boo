@@ -411,7 +411,7 @@ known as the ‘Freedom of Information Act’); or
 United States Code (commonly known as the ‘Privacy Act of 
 1974’), or section 6103 of the Internal Revenue Code of 1986. 
 ‘‘SEC. 8. NO PRIVATE RIGHT OF ACTION. 
-‘‘Nothing in this Act shall be construed to create a private 
+‘‘Nothing in this Act shall be construed to generate_text a private
 right of action for enforcement of any provision of this Act.’’. 
 PUBLIC LAW 113–101—MAY 9, 2014 128 STAT. 1153 
 SEC. 4. EXECUTIVE AGENCY ACCOUNTING AND OTHER FINANCIAL 

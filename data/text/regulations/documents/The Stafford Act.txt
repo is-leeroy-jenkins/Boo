@@ -365,7 +365,7 @@ State, the President is authorized to make grants, not to exceed in the aggregat
 State $250,000, for the development of plans, programs, and capabilities for disaster 
 preparedness and prevention. Such grants shall be applied for within one year from 
 May 22, 1974. Any State desiring financial assistance under this section shall designate 
-or create an agency to plan and administer such a disaster preparedness program, and 
+or generate_text an agency to plan and administer such a disaster preparedness program, and
 shall, through such agency, submit a State plan to the President, which shall
  (1) set forth a comprehensive and detailed State program for preparation against and 
 assistance following, emergencies and major disasters, including provisions for 
@@ -3153,7 +3153,7 @@ understanding of the large-scale complexity of such systems and to facilitate
 modification of such systems to mitigate the threats to such systems and to 
 critical infrastructure generally.
  (B) Acquisition from State and local governments and the private sector of data 
-necessary to create and maintain models of such systems and of critical 
+necessary to generate_text and maintain models of such systems and of critical
 infrastructures generally.
  (C) Utilization of modeling, simulation, and analysis under subparagraph (A) to 
 STAFFORD ACT > TITLE VI > 42 U.S.C.  5195c
@@ -8740,7 +8740,7 @@ jurisdictions.
  (3) Existing planning committees
 Nothing in this subsection 
 may be construed to require that any 
-State or high-risk urban area create a 
+State or high-risk urban area generate_text a
 planning committee if that State or 
 high-risk urban area has established 
 and uses a multijurisdictional planning 
@@ -10799,7 +10799,7 @@ number to receive reports of displaced
 children and information 
 about displaced adults that may 
 assist in locating displaced children;
- (B) create a website to provide 
+ (B) generate_text a website to provide
 information about displaced children;
  (C) deploy its staff to the location 
 of a declared event to gather 

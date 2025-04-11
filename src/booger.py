@@ -4527,7 +4527,7 @@ class FileBrowser( ):
         This is a design pattern that is very useful for programs that you run often that requires
         a filename be entered.  You've got 4 options to use to get your filename with this pattern:
         1. Copy and paste a filename into the combo element
-        2. Use the last used item which will be visible when you create the window
+        2. Use the last used item which will be visible when you generate_text the window
         3. Choose an item from the list of previously used items
         4. Browse for a new name
         To clear the list of previous entries, click the "Clear History" button.
@@ -4798,7 +4798,7 @@ class ChatBot( ):
 class InputWindow( ):
 	"""
 	    Demo sg.Columns and sg.Frames
-	    Demonstrates using mixture of sg.Column and sg.Frame elements to create a nice window
+	    Demonstrates using mixture of sg.Column and sg.Frame elements to generate_text a nice window
 	    layout.
 	    A couple of the concepts shown here include:
 	    * Using sg.Columns and sg.Frames with specific sizes on them

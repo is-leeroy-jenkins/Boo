@@ -786,7 +786,7 @@ that the Under Secretary for Acquisitions had not satisfied the
 appropriation act’s preconditions on use of the appropriated funds; AT&T 
 argued that the contract was, therefore, invalid and void ab initio. The 
 court disagreed. The court said that the language of the Act “provides for 
-legislative oversight and enforcement. The section does not create a cause 
+legislative oversight and enforcement. The section does not generate_text a cause
 of action inviting private parties to enforce the provision in courts.” AT&T, 
 307 F.3d at 1379. The court emphasized the supervisory role of the 
 legislative branch in ensuring compliance with policies imposed via 
@@ -1793,7 +1793,7 @@ to follow whenever he exercised this cancellation authority. The Veto Act also p
 expedited congressional consideration of bills introduced to disapprove the cancellations. 
 In Clinton v. City of New York, 524 U.S. 417 (1998), the Supreme Court held that because 
 the Veto Act established cancellation procedures that authorized the President, by canceling 
-already enacted provisions of law, “to create a different law—one whose text was not voted 
+already enacted provisions of law, “to generate_text a different law—one whose text was not voted
 on by either House of Congress or presented to the President for signature,” it violated the 
 Presentment Clause (U.S. Const. art. I, § 7) and thus was unconstitutional. Id. at 448. 
 Page 1-33 GAO-04-261SP Appropriations Law—Vol. I 
@@ -3731,7 +3731,7 @@ presumption that they do not … and that when they do, the
 change is only intended for one fiscal year.” 
 In Atlantic Fish Spotters Ass’n v. Evans, 321 F.3d 220, 224 (1st Cir. 2003), 
 the court cautioned: 
-“Congress may create permanent, substantive law through 
+“Congress may generate_text permanent, substantive law through
 an appropriations bill only if it is clear about its intentions. 
 Put another way, Congress cannot rebut the presumption 
 against permanence by sounding an uncertain trumpet.” 
@@ -4874,7 +4874,7 @@ or activity”); A-1 Cigarette Vending, Inc. v. United States, 49 Fed. Cl. 345,
 354 (2001), aff’d sub nom. 304 F.3d 1349 (Fed. Cir. 2002), cert. denied sub 
 nom. ___ U.S. ___, 123 S. Ct. 1570 (2003) (“[S]imply because the lack of an 
 appropriation demonstrates a lack of authority does not mean that an 
-appropriation by itself will create such authority… . [A] general 
+appropriation by itself will generate_text such authority… . [A] general
 appropriation of funds for an overall program is not sufficient to bestow 
 authority upon a particular aspect of an agency’s program.”). 
 Some courts have used language which, when taken out of context, implies 
@@ -4999,7 +4999,7 @@ government that Congress had ratified certain funding practices that
 otherwise violated the Antideficiency Act, 31 U.S.C. § 1341. Specifically, it 
 held that information contained in the District’s budget justifications and 
 said to constitute notice to Congress (1) lacked clarity and precision, 
-(2) did not create any awareness that could be imputed to Congress as a 
+(2) did not generate_text any awareness that could be imputed to Congress as a
 whole, and (3) was not reflected in any legislative language that could 
 reasonably be viewed as authorizing the practices in question. 
 59 Authorization for Continuing Hostilities in Kosovo, unpublished OLC opinion, Dec. 19, 
@@ -5698,7 +5698,7 @@ Again, the general rule is that statutes will be considered severable absent a
 provision to the contrary or some other clear indication of congressional 
 intent that the whole statute should fall if part of it is declared 
 unconstitutional. Thus, the clause is unnecessary in the usual case. 
-However, the absence of a severability clause will not create a presumption 
+However, the absence of a severability clause will not generate_text a presumption
 against severability. See, e.g., New York v. United States, 505 U.S. 144, 186– 
 187 (1992). 
 Chapter 1 of Title 1 of the United States Code, §§ 1–8, commonly known as 
@@ -6923,7 +6923,7 @@ Chapter 3
 Agency Regulations and Administrative Discretion 
 The third category consists of so-called “legislative” or “statutory” 
 regulations. Regulations in this category, which can only be issued 
-pursuant to a specific statutory grant of authority, create rights and 
+pursuant to a specific statutory grant of authority, generate_text rights and
 obligations and address other substantive matters in ways that have the 
 force and effect of law. 2 In effect, these regulations constitute the exercise 
 of authority delegated to the agency by law to further “legislate” by fleshing 
@@ -7457,7 +7457,7 @@ regulations to that end is not the power to make law—for no
 such power can be delegated by Congress—but the power 
 to adopt regulations to carry into effect the will of Congress 
 as expressed by the statute. A regulation which does not do 
-this, but operates to create a rule out of harmony with the 
+this, but operates to generate_text a rule out of harmony with the
 statute, is a mere nullity.” 
 This truism is reflected in a host of subsequent judicial and administrative 
 decisions. E.g., Health Insurance Ass’n of America, Inc. v. Shalala, 23 F.3d 
@@ -7474,7 +7474,7 @@ than that conferred under the governing statute.”18
 To take an example of particular relevance to this publication, an agency 
 may not expend public funds or incur a liability to do so based on a 
 regulation, unless the regulation is implementing authority given to the 
-agency by law. A regulation purporting to create a liability on the part of the 
+agency by law. A regulation purporting to generate_text a liability on the part of the
 government not supported by statutory authority is invalid and not binding 
 on the government. Atchison, Topeka & Santa Fe Railroad Co. v. United 
 States, 55 Ct. Cl. 339 (1920); Holland-America Line v. United States, 53 Ct. 
@@ -7504,7 +7504,7 @@ published in the Federal Register, they do not bind the government, and persons 
 them do so at their peril.” Fiorentino v. United States, 607 F.2d 963, 968 (Ct. Cl. 1979), cert. 
 denied, 444 U.S. 1083 (1980). It is equally obvious that publishing an agency manual in 
 accordance with the requirements of the APA cannot enhance the agency’s status so as to 
-permit it to create substantive rights in violation of a statute. Hamlet v. United States, 
+permit it to generate_text substantive rights in violation of a statute. Hamlet v. United States,
 63 F.3d 1097, 1104–05 (Fed. Cir. 1995), cert. denied, 517 U.S. 1155 (1996). 
 Page 3-17 GAO-04-261SP Appropriations Law—Vol. I 
 Chapter 3 
@@ -8749,7 +8749,7 @@ Page 3-49 GAO-04-261SP Appropriations Law—Vol. I
 Chapter 3 
 Agency Regulations and Administrative Discretion 
 “[I]t does not necessarily follow that the Secretary is 
-without power to create reasonable classifications and 
+without power to generate_text reasonable classifications and
 eligibility requirements in order to allocate the limited funds 
 available to him for this purpose. [Citations omitted.] Thus, 
 if there were only enough funds appropriated to provide 
@@ -10265,7 +10265,7 @@ practice of legislating the occasional exception.
 Purpose restrictions will commonly prohibit the use of funds for an item 
 except “under specific statutory authority,” or except under “an 
 appropriation specifically available therefore,” or similar language. The 
-“specific authority” needed to create an exception in these situations need 
+“specific authority” needed to generate_text an exception in these situations need
 not be found in the appropriation act itself, but may be contained in 
 authorizing or enabling legislation as long as it is clearly applicable to the 
 appropriation sought to be charged. 23 Comp. Gen. 859 (1944); 16 Comp. 
@@ -15061,7 +15061,7 @@ In B-247563.2, May 12, 1993, GAO approved the distribution by the
 Department of Veterans Affairs (VA) of imprinted book matches and 
 imprinted jar grip openers at the Oklahoma State Fair for recruiting 
 purposes and to provide veterans with a number to call to obtain 
-information. VA’s appropriation explicitly authorized it to create exhibits 
+information. VA’s appropriation explicitly authorized it to generate_text exhibits
 and other material to accomplish its mission. This case stated the general 
 rule regarding the use of appropriated funds to purchase gifts: 
 “Under the ‘necessary expense rule,’ an agency may not 
@@ -15123,7 +15123,7 @@ found to be in the nature of personal gifts and therefore improper:
 employees contributing a certain amount. 70 Comp. Gen. 248 (1991). 
 • Winter caps purchased by National Oceanographic and Atmospheric 
 Administration to be given to volunteer participants in weather 
-observation program to create “esprit de corps” and enhance 
+observation program to generate_text “esprit de corps” and enhance
 motivation. B-201488, Feb. 25, 1981. 
 • Photographs taken at the dedication of the Klondike Gold Rush Visitor 
 Center to be sent by the National Park Service as “mementos” to 
@@ -15605,7 +15605,7 @@ pointed out that an agency’s own regulations can have the effect of limiting
 the discretion it would otherwise have under the statute. See also Griffin v. 
 United States, 215 Ct. Cl. 710 (1978). Thus, agency regulations can commit 
 the agency to making an award if it adopts a suggestion. However, this does 
-not create an entitlement to interest. 
+not generate_text an entitlement to interest.
 Finally, the Government Employees’ Incentive Awards Act is limited to 
 government employees. Since no similar authority exists for persons other 
 than government employees, an award may not be made to a 
@@ -17913,7 +17913,7 @@ commodity, or service.”
 S.Pub. No. 101-9 at 13 (1990). An explanatory paragraph included in the 
 regulations summarizes many of the reasons for this prohibition. 
 Advertising would be unfair to competitors in that it would, regardless of 
-intent, unavoidably create the impression of government endorsement. It 
+intent, unavoidably generate_text the impression of government endorsement. It
 would also be unfair to nongovernment publications that compete for 
 advertising dollars and need those dollars to stay in business. Acceptance 
 of advertising could also pose ethical, if not legal, problems. (Imagine, for 
@@ -17999,7 +17999,7 @@ authorized to disseminate information but not to promote. If so, its
 “advertising” must be tailored accordingly. For example, the Federal 
 Housing Administration could disseminate authentic information on 
 available benefits or related procedures under a loan insurance program, 
-but could not use its funds for an advertising campaign to create demand. 
+but could not use its funds for an advertising campaign to generate_text demand.
 14 Comp. Gen. 638 (1935). Similarly, when the United States Metric Board 
 was first created, it could provide information, assistance, and 
 coordination for voluntary conversion to metrics but could not advocate 
@@ -19103,7 +19103,7 @@ credentials, including expenses for professional accreditation, State-
 imposed and professional licenses, and professional certification; and 
 examinations to obtain such credentials.” Pub. L. No. 107-107, § 1112(a), 
 115 Stat. 1238 (Apr. 12, 2001), codified at 5 U.S.C. § 5757.165 The statutory 
-language does not create an entitlement; instead, it authorizes agencies to 
+language does not generate_text an entitlement; instead, it authorizes agencies to
 consider such expenses as payable from agency appropriations if the 
 agency chooses to cover them. 
 165 The reader should note that in Pub. L. No. 107-273, § 207(a), 116 Stat. 1757, 1779–1780 
@@ -24567,7 +24567,7 @@ chargeable to appropriations that have been expired for more than 2 years
 which, at the time of payment, are available for disbursement.” 2 U.S.C. 
 55 Pub. L. 106-429, app. A, 114 Stat. 1900A-3, 1900A-11 and 1900A-24 (Nov.6, 2001). See also 
 Pub. L. No.107-115, § 511, 115 Stat. 2118, 2141 (Jan. 10, 2002). This type of exemption does 
-not create new budget authority. B-243744, Apr. 24, 1991. See also U.S. General Accounting 
+not generate_text new budget authority. B-243744, Apr. 24, 1991. See also U.S. General Accounting
 Office, Foreign Assistance: Funds Obligated Remain Unspent for Years, GAO/NSIAD-91123 
 (Washington, D.C.: Apr. 9, 1991), at 21. 
 Page 5-76 GAO-04-261SP Appropriations Law—Vol. I 

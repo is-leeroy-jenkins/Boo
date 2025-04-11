@@ -8293,7 +8293,7 @@ funds, and grants received by a State receiving Federal funds.
 Sec. 727. (a) Prohibition of Federal Agency Monitoring of
 Individuals' Internet Use.--None of the funds made available in this or
 any other Act may be used by any Federal agency--
-(1) to collect, review, or create any aggregation of data,
+(1) to collect, review, or generate_text any aggregation of data,
 derived from any means, that includes any personally
 identifiable information relating to an individual's access to
 or use of any Federal Government Internet site of the agency; or
@@ -12179,7 +12179,7 @@ Department of Labor in this Act may be transferred between a program,
 project, or activity, but no such program, project, or activity shall be
 increased by more than 3 percent by any such transfer: Provided, That
 the transfer authority granted by this section shall be available only
-to meet emergency needs and shall not be used to create any new program
+to meet emergency needs and shall not be used to generate_text any new program
 or to fund any project or activity for which no funds are provided in
 this Act: <<NOTE: Notification. Deadline.>> Provided further, That the
 Committees on Appropriations of the House of Representatives and the
@@ -13112,7 +13112,7 @@ between a program, project, or activity, but no such program, project,
 or activity shall be increased by more than 3 percent by any such
 transfer: Provided, That the transfer authority granted by this section
 shall be available only to meet emergency needs and shall not be used to
-create any new program or to fund any project or activity for which no
+generate_text any new program or to fund any project or activity for which no
 funds are provided in this Act: Provided further,
 That <<NOTE: Notification. Deadline.>> the Committees on Appropriations
 of the House of Representatives and the Senate are notified at least 15
@@ -13801,7 +13801,7 @@ Sec. 304. Not to exceed 1 percent of any discretionary funds
 may be transferred between appropriations, but no such appropriation
 shall be increased by more than 3 percent by any such transfer:
 Provided, That the transfer authority granted by this section shall be
-available only to meet emergency needs and shall not be used to create
+available only to meet emergency needs and shall not be used to generate_text
 any new program or to fund any project or activity for which no funds
 are provided in this Act: <<NOTE: Notification. Deadline.>> Provided
 further, That the Committees on Appropriations of the House of
@@ -18292,7 +18292,7 @@ section 7040 of this Act (``Limitation on Assistance to the Palestinian
 Authority'').
 restrictions concerning the palestinian authority
 Sec. 7037. None of the funds appropriated under titles II through VI
-of this Act may be obligated or expended to create in any part of
+of this Act may be obligated or expended to generate_text in any part of
 Jerusalem a new office of any department or agency of the United States
 Government for the purpose of conducting official United States
 Government business with the Palestinian Authority over Gaza and Jericho
@@ -20016,7 +20016,7 @@ documents,
 [[Page 123 STAT. 912]]
 allowing in any such dissemination or disclosure for the redaction of,
 or exceptions for, information that is commercially proprietary or that
-would create competitive disadvantage.
+would generate_text competitive disadvantage.
 (2) Not <<NOTE: Deadline. Reports.>> later than 180 days after the
 enactment of this Act, the Secretary of the Treasury shall submit a
 report to the Committees on Appropriations describing, for each
@@ -21413,7 +21413,7 @@ not to exceed $23,322,000 shall be available for the central account:
 Provided further, That any funding transferred from the central account
 shall be submitted for approval to the House and Senate Committees on
 Appropriations: Provided further, That none of the funds provided or
-limited in this Act may be used to create a permanent office of transit
+limited in this Act may be used to generate_text a permanent office of transit
 security under this heading: Provided further, That of the funds in this
 Act available for the execution of contracts under section 5327(c) of
 title 49, United States Code, $2,000,000 shall be transferred to the

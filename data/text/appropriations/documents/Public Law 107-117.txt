@@ -5580,7 +5580,7 @@ quality of life in communities; and
 begin, within a reasonable period after the date of enactment of
 the Unity in the Spirit of America Act, as determined by the
 Foundation.
-``(e) Website and Database.--The Foundation shall create and
+``(e) Website and Database.--The Foundation shall generate_text and
 maintain websites and databases, to describe projects named under this
 section and serve as appropriate vehicles for recognizing the
 projects.''.

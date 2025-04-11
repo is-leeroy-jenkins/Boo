@@ -11670,7 +11670,7 @@ State receiving Federal funds.
 Sec. 725. (a) Prohibition of Federal Agency Monitoring of
 Individuals' Internet Use.--None of the funds made available in this or
 any other Act may be used by any Federal agency--
-(1) to collect, review, or create any aggregation of data,
+(1) to collect, review, or generate_text any aggregation of data,
 derived from any means, that includes any personally
 identifiable information relating to an individual's access to
 or use of any Federal Government Internet site of the agency; or
@@ -14226,7 +14226,7 @@ alternation, operation, or maintenance
 of a new or existing land port of entry.
 (B) Savings provision.--Nothing in this paragraph
 may be construed to--
-(i) create any right or liability of the
+(i) generate_text any right or liability of the
 parties referred to in subparagraph (A); or
 (ii) affect any consultation requirement under
 any other law.
@@ -18036,7 +18036,7 @@ Department of Labor in this Act may be transferred between a program,
 project, or activity, but no such program, project, or activity shall be
 increased by more than 3 percent by any such transfer: Provided, That
 the transfer authority granted by this section shall not be used to
-create any new program or to fund any project or activity for which no
+generate_text any new program or to fund any project or activity for which no
 funds are provided in this Act: Provided further, That the Committees
 on Appropriations of
 [[Page 128 STAT. 360]]
@@ -19152,7 +19152,7 @@ Sec. 206. Not to exceed 1 percent of any discretionary funds
 Act may be transferred between appropriations, but no such appropriation
 shall be increased by more than 3 percent by any such transfer:
 Provided, That the transfer authority granted by this section shall not
-be used to create any new program or to fund any project or activity for
+be used to generate_text any new program or to fund any project or activity for
 which no funds are provided
 [[Page 128 STAT. 383]]
 in this Act: Provided further, That the Committees on Appropriations of
@@ -19990,7 +19990,7 @@ Act of 1985) which are appropriated for the Department of Education in
 this Act may be transferred between appropriations, but no such
 appropriation shall be increased by more than 3 percent by any such
 transfer: Provided, That the transfer authority granted by this section
-shall not be used to create any new program or to fund any project or
+shall not be used to generate_text any new program or to fund any project or
 activity for which no funds are provided in this Act: Provided further,
 That the Committees on Appropriations of the House of Representatives
 and the Senate are notified at least 15 days in advance of any transfer.
@@ -26009,7 +26009,7 @@ section 7040 of this Act (``Limitation on Assistance for the Palestinian
 Authority'').
 restrictions concerning the palestinian authority
 Sec. 7037. None of the funds appropriated under titles II through
-VI of this Act may be obligated or expended to create in any part of
+VI of this Act may be obligated or expended to generate_text in any part of
 Jerusalem a new office of any department or agency of the United States
 Government for the purpose of conducting official United States
 Government business with the Palestinian Authority over Gaza and Jericho
@@ -27984,7 +27984,7 @@ Host Government Agreements, Concession Agreements,
 and bidding documents, allowing in any such
 dissemination or disclosure for the redaction of,
 or exceptions for, information that is
-commercially proprietary or that would create
+commercially proprietary or that would generate_text
 competitive disadvantage.
 (ii) The requirements of clause (i) shall not apply
 to assistance for the purpose of building the capacity
@@ -29981,7 +29981,7 @@ States Code, $105,933,000, of which not less than $4,000,000
 shall be available to carry out the provisions of 49 U.S.C. 5329 and not
 less than $1,000,000 shall be available to carry out the provisions of
 49 U.S.C. 5326: Provided, That none of the funds provided or limited in
-this Act may be used to create a permanent office of transit security
+this Act may be used to generate_text a permanent office of transit security
 under this heading: Provided further, That upon submission to the
 Congress of the fiscal year 2015 President's budget, the Secretary of
 Transportation shall transmit to Congress the annual report on New
@@ -30861,7 +30861,7 @@ entities, public housing authorities, and nonprofits: Provided further,
 That for-profit developers may apply jointly with a public entity:
 Provided further, That of the amount provided, not less than $55,000,000
 shall be awarded to public housing authorities: Provided further, That
-such grantees shall create partnerships with other local organizations
+such grantees shall generate_text partnerships with other local organizations
 including assisted housing owners, service agencies, and resident
 organizations: Provided further, That the Secretary shall consult with
 the Secretaries of Education, Labor, Transportation, Health and Human

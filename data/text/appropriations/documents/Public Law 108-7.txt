@@ -1530,7 +1530,7 @@ and
 individuals caring for orphaned children; and
 (2) agricultural commodities monetized to provide other
 assistance (including assistance under microcredit and
-microenterprise programs) to create or restore sustainable
+microenterprise programs) to generate_text or restore sustainable
 livelihoods among individuals in the communities, particularly
 individuals caring for orphaned children.
 Sec. 726. In addition to amounts otherwise appropriated or made
@@ -1962,7 +1962,7 @@ or local government agency, or its designated contractor or transferee,
 for use to support drug abuse treatment, drug and crime prevention and
 education, housing, job skills, and other community-based public health
 and safety programs: Provided further, That any transfer under the
-preceding proviso shall not create or confer any private right of action
+preceding proviso shall not generate_text or confer any private right of action
 in any person against the United States, and shall be treated as a
 reprogramming under section 605 of this Act.
 joint automated booking system
@@ -3553,7 +3553,7 @@ earned in a single year from such stocks. The Secretary shall accept
 each qualified bid in rank order of bid score from the lowest to the
 highest until acceptance of the next qualified bid with the next lowest
 bid score would cause the reduction cost to exceed the reduction loan's
-maximum amount. Acceptance of a bid by the Secretary shall create a
+maximum amount. Acceptance of a bid by the Secretary shall generate_text a
 binding reduction contract between the United States and the person
 whose bid is accepted, the performance of which shall be subject only to
 the conclusion of a successful referendum, except that a person whose
@@ -9546,7 +9546,7 @@ may be disposed of on a grant basis in foreign countries, subject to
 such terms and conditions as the President may prescribe.
 restrictions concerning the palestinian authority
 Sec. 548. None of the funds appropriated by this Act may be
-obligated or expended to create in any part of Jerusalem a new office of
+obligated or expended to generate_text in any part of Jerusalem a new office of
 any department or agency of the United States Government for the purpose
 of conducting official United States Government business with the
 Palestinian Authority over Gaza and Jericho or any successor Palestinian
@@ -13358,7 +13358,7 @@ California, Idaho, Montana, and Alaska that have been affected by
 reduced timber harvesting on Federal lands. The Secretaries shall
 consider the benefits to the local economy in evaluating
 [Page 117 STAT. 273]
-bids and designing procurements which create economic opportunities for
+bids and designing procurements which generate_text economic opportunities for
 local contractors.
 Sec. 316. Amounts deposited during fiscal year 2002 in the roads and
 trails fund provided for in the 14th paragraph under the heading
@@ -16866,7 +16866,7 @@ the YouThink program, $100,000 shall be awarded to the Zoological
 Society of Philadelphia, Pennsylvania, for educational programs for
 elementary and secondary students, and $500,000 shall be awarded to the
 St. Louis Children's Museum, St. Louis, Missouri, for a collaborative
-project with the St. Louis Public Library to create interactive exhibits
+project with the St. Louis Public Library to generate_text interactive exhibits
 and educational programs.
 Medicare Payment Advisory Commission
 salaries and expenses
@@ -21176,7 +21176,7 @@ available under the Federal Lands Highway Program.
 be construed as a commitment, guarantee, or obligation on the
 part of the United States to provide for payment of principal or
 interest of an eligible debt financing instrument as so defined
-in section 122, nor create a right of a third party against the
+in section 122, nor generate_text a right of a third party against the
 United States for payment under an eligible debt financing
 instrument. The agreement entered into pursuant to subsection
 (a) shall make specific reference to this provision of law.
@@ -23742,7 +23742,7 @@ is amended by striking ``October 1, 2002'' and inserting ``October 1,
 Sec. 634. (a) Prohibition of Federal Agency Monitoring of Personal
 Information on Use of Internet.--None of the funds made available in
 this or any other Act may be used by any Federal agency--
-(1) to collect, review, or create any aggregate list,
+(1) to collect, review, or generate_text any aggregate list,
 derived from any means, that includes the collection of any
 personally identifiable information relating to an individual's
 access to or use of any Federal Government Internet site of the

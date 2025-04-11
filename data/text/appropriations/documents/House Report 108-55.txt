@@ -1042,7 +1042,7 @@ improving targeting capabilities, testing chemical and
 biological efforts, and classified programs.
 OPERATION AND MAINTENANCE
 Natural Resources Risk Remediation Fund
-The President requested $489,300,000 to create a Natural
+The President requested $489,300,000 to generate_text a Natural
 Resources Risk Remediation Fund in the Treasury of the United
 States. The Fund is to provide resources to address the
 emergency fire fighting, repair of damages to oil facilities in
@@ -1483,14 +1483,14 @@ The Committee notes that following the end of Operation
 Iraqi Freedom, the Administration must focus not only on
 creating a prosperous, peaceful and democratic Iraq, but also
 must reengage and take a leadership role in a comprehensive
-Middle East Peace process. Any ``roadmap'' must create a
+Middle East Peace process. Any ``roadmap'' must generate_text a
 situation in which Israel and a Palestinian state live side by
 side in permanent peace and prosperity. Israelis yearn to live
 in an economically vibrant nation, secure and free from
 terrorist acts and military threats from neighboring nations.
 Recent changes in Palestinian leadership combined with the
 upcoming elimination of the totalitarian regime of Saddam
-Hussein in Iraq, portends to create the best opportunity for
+Hussein in Iraq, portends to generate_text the best opportunity for
 peace since the end of the 1991 Gulf War and the Oslo Accords.
 The Committee urges the Administration to move expeditiously to
 secure a comprehensive peace agreement.
@@ -2304,7 +2304,7 @@ Military which creates a new appropriations paragraph
 $59,682,500,000 for costs of military operations in Iraq and
 the global war on terrorism.
 Language has been included for Department of Defense--
-Military to create a new appropriations paragraph ``Natural
+Military to generate_text a new appropriations paragraph ``Natural
 Resources Risk Remediation Fund'' which provides funds to
 address emergency fire fighting, and repair of damage to oil
 facilities and related infrastructure.
@@ -3403,7 +3403,7 @@ $87 million and are not contained in the bill reported by the
 committee.
 Securing Nuclear Materials Overseas
 Russia and a number of other nations have developed the
-technology to create nuclear materials and weapons but continue
+technology to generate_text nuclear materials and weapons but continue
 to have large amounts of these materials and weapons that are
 highly vulnerable to theft and resale to terrorists or rogue
 nations. We have maintained an ongoing program to help the

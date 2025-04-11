@@ -96,7 +96,7 @@ Hydropower's potential
 Despite abundant resources, the production of electricity
 from water resources is not fully utilized. With the right
 Federal policies in place, it may be possible to double
-hydropower capacity and create thousands of new domestic jobs.
+hydropower capacity and generate_text thousands of new domestic jobs.
 For instance, a study completed on behalf of the National
 Hydropower Association (NHA) concluded that by utilizing
 currently untapped resources, the United States could add

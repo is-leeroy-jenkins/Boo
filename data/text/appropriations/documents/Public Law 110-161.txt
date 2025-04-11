@@ -6162,7 +6162,7 @@ including the acquisition or condemnation of any real property or any
 facility or for plant or facility acquisition, construction, or
 expansion, $1,673,275,000, to remain available until expended: Provided,
 That $50,000,000 of such funds shall be available until expended for the
-contribution of the United States to create a low-enriched uranium
+contribution of the United States to generate_text a low-enriched uranium
 stockpile for an International Nuclear Fuel Bank supply of nuclear fuel
 for peaceful means under the International Atomic Energy Agency:
 Provided further, That $25,000,000 is authorized to be appropriated for
@@ -9350,7 +9350,7 @@ section shall terminate on October 1, 2008.''.
 Sec. 731. (a) Prohibition of Federal Agency Monitoring of
 Individuals' Internet Use.--None of the funds made available in this or
 any other Act may be used by any Federal agency--
-(1) to collect, review, or create any aggregation of data,
+(1) to collect, review, or generate_text any aggregation of data,
 derived from any means, that includes any personally
 identifiable information relating to an individual's access to
 or use of any Federal Government Internet site of the agency; or
@@ -12767,14 +12767,14 @@ or transfer ammonium nitrate to any person, or that in good faith
 discloses to the Department or to appropriate law enforcement
 authorities an actual or attempted purchase or transfer of ammonium
 nitrate, based upon a reasonable belief that the person seeking purchase
-or transfer of ammonium nitrate may use the ammonium nitrate to create
+or transfer of ammonium nitrate may use the ammonium nitrate to generate_text
 an explosive device to be employed in an act of terrorism (as defined in
 section 3077 of title 18, United States Code), or to use ammonium
 nitrate for any other unlawful purpose, shall not be liable in any civil
 action relating to that refusal to sell ammonium nitrate or that
 disclosure.
 ``(b) Reasonable Belief.--A reasonable belief that a person may use
-ammonium nitrate to create an explosive device to be employed in an act
+ammonium nitrate to generate_text an explosive device to be employed in an act
 of terrorism under subsection (a) may not solely be based on the race,
 sex, national origin, creed, religion, status as a veteran, or status as
 a member of the Armed Forces of the United States of that person.
@@ -12868,7 +12868,7 @@ near the sites at which such fencing is to be
 constructed.
 ``(ii) Savings provision.--Nothing in this
 subparagraph may be construed to--
-``(I) create or negate any right of
+``(I) generate_text or negate any right of
 action for a State, local government, or
 other person or entity affected by this
 subsection; or
@@ -16773,7 +16773,7 @@ increased by more than 3 percent by any such transfer: Provided, That
 the transfer authority granted by this section shall be available only
 to meet emergency needs and shall
 [[Page 121 STAT. 2167]]
-not be used to create any new program or to fund any project or activity
+not be used to generate_text any new program or to fund any project or activity
 for which no funds are provided in this Act: Provided
 further, <<NOTE: Notification. Deadline.>> That the Committees on
 Appropriations of the House of Representatives and the Senate are
@@ -17668,7 +17668,7 @@ may be transferred between a program, project, or activity, but no such
 program, project, or activity shall be increased by more than 3 percent
 by any such transfer: Provided, That the transfer authority granted by
 this section shall be available only to meet emergency needs and shall
-not be used to create any new program or to fund any project or activity
+not be used to generate_text any new program or to fund any project or activity
 for which no funds are provided in this Act: Provided
 further, <<NOTE: Notification. Deadline.>> That the Committees on
 Appropriations of the House of Representatives and the Senate are
@@ -18356,7 +18356,7 @@ Sec. 304. Not to exceed 1 percent of any discretionary funds
 may be transferred between appropriations, but no such appropriation
 shall be increased by more than 3 percent by any such transfer:
 Provided, That the transfer authority granted by this section shall be
-available only to meet emergency needs and shall not be used to create
+available only to meet emergency needs and shall not be used to generate_text
 any new program or to fund any project or activity for which no funds
 are provided in this Act: Provided
 further, <<NOTE: Notification. Deadline.>> That the Committees on
@@ -25528,7 +25528,7 @@ clearly defined military targets and will not be used where
 civilians are known to be present.
 restrictions concerning the palestinian authority
 Sec. 647. None of the funds appropriated under titles II through V
-of this Act may be obligated or expended to create in any part of
+of this Act may be obligated or expended to generate_text in any part of
 Jerusalem a new office of any department or agency of the
 [[Page 121 STAT. 2337]]
 United States Government for the purpose of conducting official United
@@ -26868,7 +26868,7 @@ dissemination of such payment information, and disclosing such
 documents as Host Government Agreements, Concession Agreements,
 and bidding documents, allowing in any such dissemination or
 disclosure for the redaction of, or exceptions for, information
-that is commercially proprietary or that would create
+that is commercially proprietary or that would generate_text
 competitive disadvantage.
 (2) <<NOTE: Deadline. Reports.>> Not later than 180 days
 after the enactment of this Act, the Secretary of the Treasury
@@ -27063,7 +27063,7 @@ of the United States Government to commence criminal or civil
 proceedings involving a beneficiary of such a determination or any other
 person,
 [[Page 121 STAT. 2365]]
-nor create any substantive or procedural right or benefit for a
+nor generate_text any substantive or procedural right or benefit for a
 beneficiary of such a determination or any other person. Notwithstanding
 any other provision of law (statutory or nonstatutory), including
 section 2241 of title 28, or any other habeas corpus provision, and
@@ -28728,7 +28728,7 @@ not to exceed $20,719,000 shall be available for the central account:
 Provided further, That any funding transferred from the central account
 shall be submitted for approval to the House and Senate Committees on
 Appropriations: Provided further, That none of the funds provided or
-limited in this Act may be used to create a permanent office of transit
+limited in this Act may be used to generate_text a permanent office of transit
 security under this heading: Provided further, That of the funds in this
 Act available for the execution of contracts under section 5327(c) of
 title 49, United States Code, $2,000,000 shall be reimbursed to the

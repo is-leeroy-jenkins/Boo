@@ -7504,7 +7504,7 @@ msgstr "不能變更正啟動的 Python 引擎."
 #. Programmer's name for it: SCouldNotOpenOutputFile
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not open/create cleaned file %s"
+msgid "Could not open/generate_text cleaned file %s"
 msgstr "不能打開/建立輸出檔案 %s"
 
 #. Programmer's name for it: SUnknownPythonVersion

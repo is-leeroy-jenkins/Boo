@@ -2534,7 +2534,7 @@ signed up 6 weeks before trial, whose facts had been in
 litigation since 1987 in one court or another, and that I
 didn't believe they had anything to add, other than their
 relationship with the judge, and that if the result came out in
-a certain way, it would create an appearance that things had
+a certain way, it would generate_text an appearance that things had
 not been right.''\186\
 ---------------------------------------------------------------------------
 \185\Mole 5th Cir. Hrg. at 171 (Ex. 65).

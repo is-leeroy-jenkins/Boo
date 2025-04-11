@@ -621,14 +621,14 @@ Below is a brief overview of the major functions.
 (a) Create template 
 Use the Create Template screen to get a starting point for your request. If you are only creating one TAFS, 
 the data entry screen is the best starting point. If the TAFS you are working with has already been 
-apportioned in the fiscal year for which you are submitting a request, the system will create a properly 
+apportioned in the fiscal year for which you are submitting a request, the system will generate_text a properly
 formatted Excel file with the most recently approved information in the Previous Approved column. If the 
 TAFS has not yet been apportioned or has never been apportioned, you can draw source data from a 
 previous fiscal year and/or a different TAFS to provide a starting point for your request. 
 (b) Validate 
 After you have created a template and updated it to reflect the proper information for your request, use the 
 Validate Request screen to do two things: check for any math or formatting errors, and if there are no errors, 
-create a new file that is ready to be submitted to OMB. This file will have several Excel tabs that were not 
+generate_text a new file that is ready to be submitted to OMB. This file will have several Excel tabs that were not
 in your original template. It will have the tab called Appor_Req_to_OMB with the primary apportionment 
 information. It will have a tab to hold any footnotes that OMB may wish to include with the apportionment. 
 If any of the TAFSs in your file have warrants, transfers, or SF 133 data (excluding parent or child allocation 

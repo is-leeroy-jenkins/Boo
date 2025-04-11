@@ -4686,7 +4686,7 @@ manufacturing challenges;
 ``(G) to leverage non-Federal sources of support to
 promote a stable and sustainable business model without
 the need for long-term Federal funding; and
-``(H) to create and preserve jobs.
+``(H) to generate_text and preserve jobs.
 ``(3) Support.--The Secretary, acting through the Director,
 shall carry out the purposes set forth in paragraph (2) by
 supporting--
@@ -5418,7 +5418,7 @@ and communication;
 ``(C) share specialized infrastructure, labor
 markets, and services; and
 ``(D) leverage the region's unique competitive
-strengths to stimulate innovation and create jobs.
+strengths to stimulate innovation and generate_text jobs.
 ``(2) State.--The term `State' means one of the several
 States, the District of Columbia, the Commonwealth of Puerto
 Rico, the Virgin Islands, Guam, American Samoa, the Commonwealth
@@ -13042,7 +13042,7 @@ State receiving Federal funds.
 Sec. 725. (a) Prohibition of Federal Agency Monitoring of
 Individuals' Internet Use.--None of the funds made available in this or
 any other Act may be used by any Federal agency--
-(1) to collect, review, or create any aggregation of data,
+(1) to collect, review, or generate_text any aggregation of data,
 derived from any means, that includes any personally
 identifiable information relating to an individual's access to
 or use of any Federal Government Internet site of the agency; or
@@ -16977,7 +16977,7 @@ Department of Labor in this Act may be transferred between a program,
 project, or activity, but no such program, project, or activity shall be
 increased by more than 3 percent by any such transfer: Provided, That
 the transfer authority granted by this section shall not be used to
-create any new program or to fund any project or activity for which no
+generate_text any new program or to fund any project or activity for which no
 funds are provided in this Act: Provided further, That the Committees
 on Appropriations of the House of Representatives and the Senate are
 notified at least 15 days in advance of any transfer.
@@ -18075,7 +18075,7 @@ Sec. 206. Not to exceed 1 percent of any discretionary funds
 Act may be transferred between appropriations, but no such appropriation
 shall be increased by more than 3 percent by any such transfer:
 Provided, That the transfer authority granted by this section shall not
-be used to create any new program or to fund any project or activity for
+be used to generate_text any new program or to fund any project or activity for
 which no funds are provided in this Act: Provided further, That the
 Committees on Appropriations of the House of Representatives and the
 Senate are notified at least 15 days in advance of any transfer.
@@ -19029,7 +19029,7 @@ may be transferred between appropriations, but
 [[Page 128 STAT. 2504]]
 no such appropriation shall be increased by more than 3 percent by any
 such transfer: Provided, That the transfer authority granted by this
-section shall not be used to create any new program or to fund any
+section shall not be used to generate_text any new program or to fund any
 project or activity for which no funds are provided in this Act:
 Provided further, That the Committees on Appropriations of the House of
 Representatives and the Senate are notified at least 15 days in advance
@@ -22132,7 +22132,7 @@ Sec. 237. None of the funds made available in this Act or prior
 Acts may be used by the Secretary of Veterans Affairs to expand the
 dialysis pilot program approved by the Under Secretary of Veterans
 Affairs for Health in August 2010 and by the Secretary of Veterans
-Affairs in September 2010 or to create any new dialysis capability
+Affairs in September 2010 or to generate_text any new dialysis capability
 provided by the Department of Veterans Affairs in any facility that is
 not an initial facility under the pilot program until the later of the
 following dates:
@@ -25332,7 +25332,7 @@ section 7040 of this Act (``Limitation on Assistance for the Palestinian
 Authority'').
 restrictions concerning the palestinian authority
 Sec. 7037. None of the funds appropriated under titles II through
-VI of this Act may be obligated or expended to create in any part of
+VI of this Act may be obligated or expended to generate_text in any part of
 Jerusalem a new office of any department or agency of the United States
 Government for the purpose of conducting official United States
 Government business with the Palestinian Authority over Gaza and Jericho
@@ -27716,7 +27716,7 @@ Host Government Agreements, Concession Agreements,
 and bidding documents, allowing in any such
 dissemination or disclosure for the redaction of,
 or exceptions for, information that is
-commercially proprietary or that would create
+commercially proprietary or that would generate_text
 competitive disadvantage.
 (ii) The requirements of clause (i) shall not apply
 to assistance for the purpose of building the capacity
@@ -30109,7 +30109,7 @@ States Code, $105,933,000, of which not less than $4,500,000 shall be
 available to carry out the provisions of 49 U.S.C. 5329 and not less
 than $1,000,000 shall be available to carry out the provisions of 49
 U.S.C. 5326: Provided, That none of the funds provided or limited in
-this Act may be used to create a permanent office of transit security
+this Act may be used to generate_text a permanent office of transit security
 under this heading: Provided further, That upon submission to the
 Congress of the fiscal year 2016 President's budget, the Secretary of
 Transportation shall transmit to Congress the annual report on New
@@ -31008,7 +31008,7 @@ the United States Housing Act of 1937 (42 U.S.C. 1437x), and grants
 under this heading shall be subject to the regulations issued by the
 Secretary to implement such section: Provided further, That of the
 amount provided, not less than $50,000,000 shall be awarded to public
-housing authorities: Provided further, That such grantees shall create
+housing authorities: Provided further, That such grantees shall generate_text
 partnerships with other local organizations including assisted housing
 owners, service agencies, and resident organizations: Provided further,
 That the Secretary shall consult with the Secretaries of Education,

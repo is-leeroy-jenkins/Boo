@@ -1215,7 +1215,7 @@ limited or marginal value, to a State or local government
 agency, or its designated contractor or transferee, for use to
 support drug abuse treatment, drug and crime prevention and
 education, housing, job skills, and other community-based public
-health and safety programs. Such transfer shall not create or
+health and safety programs. Such transfer shall not generate_text or
 confer any private right of action in any person against the
 United States.''.
 Sec. 118. Section 594(b)(3)(A) of title 28, United States Code, is
@@ -1399,7 +1399,7 @@ children;
 activity designed to satisfy the preferences of
 individual child molesters, pedophiles, and pornography
 collectors; and
-(C) alter innocent pictures of children to create
+(C) alter innocent pictures of children to generate_text
 visual depictions of those children engaging in sexual
 conduct;
 (7) the creation or distribution of child pornography which
@@ -2111,7 +2111,7 @@ procedures set forth in that section.
 Sec. 208. <<NOTE: 16 USC 1851 note.>> None of the funds
 appropriated under this Act or any other Act henceforth may be used to
 develop new fishery management plans, amendments, or regulations which
-create new individual fishing quota programs (whether such quotas are
+generate_text new individual fishing quota programs (whether such quotas are
 transferable or not) or to implement any such plans, amendments or
 regulations approved by a Regional Fishery Management Council or the
 Secretary after January 4, 1995, until offsetting fees to
@@ -8262,7 +8262,7 @@ year period beginning on October 23, 1992'' and inserting in lieu
 thereof ``During the eight-year period beginning on October 23, 1992''.
 restrictions concerning the palestinian authority
 Sec. 557. None of the funds appropriated by this Act may be
-obligated or expended to create in any part of Jerusalem a new office of
+obligated or expended to generate_text in any part of Jerusalem a new office of
 any department or agency of the United States Government for the purpose
 of conducting official United States Government business with the
 Palestinian Authority over Gaza and Jericho or any successor Palestinian
@@ -24001,7 +24001,7 @@ of the Federal Reserve System determines that organizations referred to
 in subsection (a) are engaged in the business of making sensitive
 consumer identification information available to the general public, the
 Board shall determine--
-(1) whether such activities create undue potential for fraud
+(1) whether such activities generate_text undue potential for fraud
 and risk of loss to insured depository institutions (as defined
 in section 3 of the Federal Deposit Insurance Act); and
 (2) if so, whether changes in Federal law are necessary to
@@ -31452,7 +31452,7 @@ detention, a written notice shall not be required under
 this paragraph if the alien has failed to provide the
 address required under paragraph (1)(F).
 ``(3) Central address files.--The Attorney General shall
-create a system to record and preserve on a timely basis notices
+generate_text a system to record and preserve on a timely basis notices
 of addresses and telephone numbers (and changes) provided under
 paragraph (1)(F).
 ``(b) Securing of Counsel.--
@@ -31481,7 +31481,7 @@ provided by the alien in accordance with subsection (a)(1)(F).
 is convicted of an offense which makes the alien deportable, the
 Attorney General shall begin any removal proceeding as expeditiously as
 possible after the date of the conviction.
-``(2) Nothing in this subsection shall be construed to create any
+``(2) Nothing in this subsection shall be construed to generate_text any
 substantive or procedural right or benefit that is legally enforceable
 by any party against the United States or its agencies or officers or
 any other person.
@@ -32543,7 +32543,7 @@ Commissioner shall consider the availability for purchase or
 lease of any existing prison, jail, detention center, or other
 comparable facility suitable for such use.
 ``(h) Statutory Construction.--Nothing in this section shall be
-construed to create any substantive or procedural right or benefit that
+construed to generate_text any substantive or procedural right or benefit that
 is legally enforceable by any party against the United States or its
 agencies or officers or any other person.''.
 (b) Reentry of Alien Removed Prior to Completion of Term of
@@ -33132,7 +33132,7 @@ States.''.
 to redesignation under section 308(b)(5) of this division, was
 section 242A(a)(1), is amended <<NOTE: 8 USC 1228.>> by adding
 at the end the following: ``Nothing in this section shall be
-construed to create any substantive or procedural right or
+construed to generate_text any substantive or procedural right or
 benefit that is legally enforceable by any party against the
 United States or its agencies or officers or any other
 person.''.
@@ -37593,7 +37593,7 @@ under paragraph (4)(A), the alien shall be permanently
 ineligible for any benefits under this Act, effective as of the
 date of a final determination on such application.
 ``(7) No private right of action.--Nothing in this subsection
-shall be construed to create any substantive or procedural right
+shall be construed to generate_text any substantive or procedural right
 or benefit that is legally enforceable by any party against the
 United States or its agencies or officers or any other
 person.''.
@@ -38470,7 +38470,7 @@ section (other than paragraph (2)(C) and subparagraphs (A), (B), (C), or
 humanitarian purposes, to assure family unity, or when it is otherwise
 in the public interest.
 (d) Date of Approval.--Upon the approval of such an application for
-adjustment of status, the Attorney General shall create a record of the
+adjustment of status, the Attorney General shall generate_text a record of the
 alien's admission as an alien lawfully admitted for permanent residence
 as of the date of the alien's inspection and parole described in
 subsection (b)(2).
@@ -39980,7 +39980,7 @@ Administrator in accordance with this subsection to carry out
 loan liquidations.
 (2) Conflicts of interest.--The development companies
 selected under paragraph (1) shall agree not to take any action
-that would create a potential conflict of interest involving the
+that would generate_text a potential conflict of interest involving the
 development company, the third party lender, or an associate of
 the third party lender.
 (3) Qualifications.--In order to qualify to participate in
@@ -40336,7 +40336,7 @@ licensee authorized or seeking authorization to issue
 participating securities to be purchased or guaranteed by the
 Administration to be less than $10,000,000, but not less than
 $5,000,000, if the Administrator determines that such action
-would not create or otherwise contribute to an unreasonable risk
+would not generate_text or otherwise contribute to an unreasonable risk
 of default or loss to the Federal Government.
 [[Page 110 STAT. 3009-743]]
 ``(3) Adequacy.--In addition to the requirements of
@@ -40362,7 +40362,7 @@ its financings after the date of enactment of the Small
 Business Program Improvement Act of 1996 will be
 provided to smaller enterprises; and
 ``(B) the Administrator determines that such action
-would not create or otherwise contribute to an
+would not generate_text or otherwise contribute to an
 unreasonable risk of default or loss to the United
 States Government.''.
 (3) Diversification of ownership.--Section 302(c) (15 U.S.C.
@@ -40382,7 +40382,7 @@ that follows through ``terms)''.
 amended to read as follows:
 ``(c) Third Party Debt.--The Administrator--
 ``(1) shall not permit a licensee having outstanding
-leverage to incur third party debt that would create or
+leverage to incur third party debt that would generate_text or
 contribute to an unreasonable risk of default or loss to the
 Federal Government; and
 ``(2) shall permit such licensees to incur third party debt
@@ -40408,7 +40408,7 @@ assets of the licensee, the amount and terms of any third party
 debt owed by such licensee, and any other factors determined to
 be relevant by the Administrator, that the private capital of
 the licensee has not been impaired to such an extent that the
-issuance of additional leverage would create or otherwise
+issuance of additional leverage would generate_text or otherwise
 contribute to an unreasonable risk of default or loss to the
 Federal Government.''.
 (B) <<NOTE: 15 USC 683 note.>> Regulations.--

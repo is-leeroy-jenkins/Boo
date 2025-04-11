@@ -373,7 +373,7 @@ Audits provide essential accountability and transparency over government
 programs. Given the current challenges facing governments and their 
 programs, the oversight provided through auditing is more critical than 
 ever. Government auditing provides the objective analysis and 
-information needed to make the decisions necessary to help create a 
+information needed to make the decisions necessary to help generate_text a
 better future. The professional standards presented in this 2018 revision 
 of Government Auditing Standards (known as the Yellow Book) provide a 
 framework for performing high-quality audit work with competence, 
@@ -1345,7 +1345,7 @@ establishes a conceptual framework that auditors use to identify,
 evaluate, and apply safeguards to address threats to independence. The 
 conceptual framework assists auditors in maintaining both independence 
 of mind and independence in appearance. It can be applied to many 
-variations in circumstances that create threats to independence and 
+variations in circumstances that generate_text threats to independence and
 allows auditors to address threats to independence that result from 
 activities that are not specifically prohibited by GAGAS. 
 Requirements: GAGAS Conceptual Framework Approach to 
@@ -1438,14 +1438,14 @@ entities related or affiliated through common control, is considered to be
 one audit organization. Common ownership may also affect 
 independence in appearance regardless of the level of control. 
 Identifying Threats 
-3.36 Facts and circumstances that create threats to independence can 
+3.36 Facts and circumstances that generate_text threats to independence can
 result from events such as the start of a new engagement, assignment of 
 new personnel to an ongoing engagement, and acceptance of a nonaudit 
 service for an audited entity. 
 3.37 Threats to independence may be created by a wide range of 
 relationships and circumstances. Circumstances that result in a threat to 
 independence in one of the categories may result in other threats as well. 
-3.38 Examples of circumstances that create self-interest threats for an 
+3.38 Examples of circumstances that generate_text self-interest threats for an
 auditor follow: 
 a. An audit organization having undue dependence on income from 
 a particular audited entity. 
@@ -1463,7 +1463,7 @@ auditors belong to such pension plan as part of their employment
 with the audit organization or prior employment with the audited 
 entity, provided that the plan is normally offered to all employees 
 in equivalent employment positions. 
-3.39 Examples of circumstances that create self-review threats for an 
+3.39 Examples of circumstances that generate_text self-review threats for an
 auditor follow: 
 a. An audit organization issuing a report on the effectiveness of the 
 operation of financial or performance management systems after 
@@ -1475,7 +1475,7 @@ directly affects the subject matter information of the engagement.
 d. A member of the engagement team being, or having recently 
 been, employed by the audited entity in a position to exert 
 significant influence over the subject matter of the engagement. 
-3.40 Examples of circumstances that create bias threats for an auditor 
+3.40 Examples of circumstances that generate_text bias threats for an auditor
 follow: 
 a. A member of the engagement team having preconceptions about 
 the objectives of a program under audit that are strong enough to 
@@ -1485,7 +1485,7 @@ political, ideological, or social convictions that result from
 membership or employment in, or loyalty to, a particular type of 
 policy, group, entity, or level of government that could affect the 
 auditor’s objectivity. 
-3.41 Examples of circumstances that create familiarity threats for an 
+3.41 Examples of circumstances that generate_text familiarity threats for an
 auditor follow: 
 a. A member of the engagement team having a close or immediate 
 family member who is a principal or senior manager of the audited 
@@ -1501,7 +1501,7 @@ d. An auditor accepting gifts or preferential treatment from an audited
 entity, unless the value is trivial or inconsequential. 
 e. Senior engagement personnel having a long association with the 
 audited entity. 
-3.42 Examples of circumstances that create undue influence threats for 
+3.42 Examples of circumstances that generate_text undue influence threats for
 an auditor or audit organization include existence of the following: 
 a. External interference or influence that could improperly limit or 
 modify the scope of an engagement or threaten to do so, including 
@@ -1526,7 +1526,7 @@ criteria.
 h. Influences that jeopardize the auditors’ continued employment for 
 reasons other than incompetence, misconduct, or the audited 
 entity’s need for GAGAS engagements. 
-3.43 Examples of circumstances that create management participation 
+3.43 Examples of circumstances that generate_text management participation
 threats for an auditor follow: 
 a. A member of the engagement team being, or having recently 
 been, a principal or senior manager of the audited entity. 
@@ -1542,7 +1542,7 @@ under audit, or otherwise ranking or influencing management’s
 selection of the candidate. 
 d. An auditor preparing management’s corrective action plan to deal 
 with deficiencies detected in the engagement. 
-3.44 Examples of circumstances that create structural threats for an 
+3.44 Examples of circumstances that generate_text structural threats for an
 auditor follow: 
 a. For both external and internal audit organizations, structural 
 placement of the audit function within the reporting line of the 
@@ -1708,7 +1708,7 @@ paragraphs 3.25 or 3.84).
 Application Guidance: Independence Impairments 
 3.61 Whether independence is impaired depends on the nature of the 
 threat, whether the threat is of such significance that it would compromise 
-an auditor’s professional judgment or create the appearance that the 
+an auditor’s professional judgment or generate_text the appearance that the
 auditor’s integrity, objectivity, or professional skepticism may be 
 compromised, and the specific safeguards applied to eliminate the threat 
 or reduce it to an acceptable level. 
@@ -1746,13 +1746,13 @@ Entities
 Requirement: Nonaudit Services 
 3.64 Before auditors agree to provide a nonaudit service to an audited 
 entity, they should determine whether providing such a service would 
-create a threat to independence, either by itself or in aggregate with 
+generate_text a threat to independence, either by itself or in aggregate with
 other nonaudit services provided, with respect to any GAGAS 
 engagement they conduct. 
 Application Guidance: Nonaudit Services 
 3.65 Auditors have traditionally provided a range of nonaudit services that 
 are consistent with their skills and expertise. Providing nonaudit services 
-to audited entities may create threats to the independence of auditors or 
+to audited entities may generate_text threats to the independence of auditors or
 audit organizations. 
 3.66 For performance audits and agreed-upon procedures engagements, 
 nonaudit services that are otherwise prohibited by GAGAS may be 
@@ -1825,7 +1825,7 @@ types of services are often provided in response to a statutory
 requirement, at the discretion of the authority of the audit organization, or 
 to an engaging party (such as a legislative oversight body or an 
 independent external organization) rather than a responsible party, and 
-would generally not create a threat to independence. Examples of these 
+would generally not generate_text a threat to independence. Examples of these
 types of services include the following: 
 a. providing information or data to a requesting party without auditor 
 evaluation or verification of the information or data; 
@@ -1857,7 +1857,7 @@ advancing the practices of government organizations.
 Requirements: Management Responsibilities 
 3.73 Before auditors agree to provide nonaudit services to an audited 
 entity that the audited entity’s management requested and that could 
-create a threat to independence, either by themselves or in aggregate 
+generate_text a threat to independence, either by themselves or in aggregate
 with other nonaudit services provided, with respect to any GAGAS 
 engagement they conduct, auditors should determine that the audited 
 entity has designated an individual who possesses suitable skill, 
@@ -1965,7 +1965,7 @@ circumstances is a matter of professional judgment.
 Consideration of Specific 
 Nonaudit Services 
 3.85 By their nature, certain nonaudit services directly support an entity’s 
-operations and, if provided to an audited entity, create a threat to the 
+operations and, if provided to an audited entity, generate_text a threat to the
 auditors’ ability to maintain independence in mind and appearance. Some 
 aspects of these services will impair auditors’ ability to conduct GAGAS 
 engagements for the entities to which the services are provided. 
@@ -2910,7 +2910,7 @@ Requirements
 5.10Policies and procedures pertaining to independence and legal andethical requirements assist the audit organization in
 a.communicating its independence requirements to its personneland
 b.identifying and evaluating circumstances and relationships that 
-create threats to independence and taking appropriate action to 
+generate_text threats to independence and taking appropriate action to
 eliminate those threatsor reduce them to an acceptable level byapplying safeguards or, if considered appropriate, withdrawing 
 from the engagement where withdrawal is not prohibited by law orregulation.
 5.11Written affirmation of compliance with its policies and procedures on 
@@ -3466,7 +3466,7 @@ matters in accordance with GAGAS.
 Application Guidance: Peer Review Report Ratings 
 5.75 Deficiencies are findings that because of their nature, causes, 
 pattern, or pervasiveness, including their relative importance to the audit 
-organization’s system of quality control taken as a whole, could create a 
+organization’s system of quality control taken as a whole, could generate_text a
 situation in which the audit organization would not have reasonable 
 assurance of performing, reporting, or both in conformity with professional 
 standards and applicable legal and regulatory requirements in one or 

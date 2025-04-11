@@ -2394,7 +2394,7 @@ conditions (including the adoption of fire-safe
 building standards) that may be needed to end these
 moratoria; and
 (8) the State of South Dakota is encouraged to take
-actions as necessary to create a defensible fuel zone
+actions as necessary to generate_text a defensible fuel zone
 within state lands south and southwest of Sturgis.
 (b) Purposes.--The purposes of this Section are--
 (1) to authorize and direct the Secretary of
@@ -2801,7 +2801,7 @@ to expand technology-based training, $250,000'';
 (5) the provision specifying $1,000,000 for the
 Electronic Data Systems Project shall be deemed to read
 as follows: ``Washington State Department of Education
-for an electronic data systems project to create a
+for an electronic data systems project to generate_text a
 database that would improve the acquisition, analysis
 and sharing of student information, $1,000,000'';
 (6) the provision specifying $250,000 for the YMCA
@@ -4328,7 +4328,7 @@ United Nations to ``determine the existence of any . .
 the United Nations and undermine deterrence.
 (11) It is a fundamental principle of international
 law that a treaty is binding upon its parties only and
-that it does not create obligations for nonparties
+that it does not generate_text obligations for nonparties
 without their consent to be bound. The United States is
 not a party to the Rome Statute and will not be bound
 by any of its terms. The United States will not
@@ -6129,7 +6129,7 @@ which funding is requested continue to change, and that the
 Department of Justice and the Administration have not yet
 articulated to the Congress the policies that this proposed new
 system would support. Better planning and interagency
-coordination will be necessary to create an effective Entry
+coordination will be necessary to generate_text an effective Entry
 Exit system that will alert Federal law enforcement when would-
 be terrorists try to gain entry to or leave the U.S. The
 recommendation includes $1,000,000 for the Entry Exit System,
@@ -6478,7 +6478,7 @@ Office, in consultation with the Office of Science and
 Technology (OS&T) of the National Institute of Justice, and the
 Bureau of Justice Assistance (BJA). The conferees seek to
 utilize the expertise of all three organizations so as to
-create a grant program that is highly responsive to the
+generate_text a grant program that is highly responsive to the
 immediate needs of the State and local law enforcement
 community and that takes full advantage of the expertise and
 lessons learned from OS&T and BJA research and development in

@@ -3794,7 +3794,7 @@ of such a nationwide system.
 (b) Reimbursement Incentive Study and Report.--
 (1) Study.--The Secretary of Health and Human Services shall
 carry out, or contract with a private entity to carry out, a
-study that examines methods to create efficient reimbursement
+study that examines methods to generate_text efficient reimbursement
 incentives for improving health care quality in Federally
 qualified health centers, rural health clinics, and free
 clinics.
@@ -4024,7 +4024,7 @@ Federal agencies with demonstrated experience and expertise in
 information technology services, such as the National Institute of
 Standards and Technology, in developing and implementing this program.
 ``(b) Health Information Technology Research Center.--
-``(1) In general.--The Secretary shall create a Health
+``(1) In general.--The Secretary shall generate_text a Health
 Information Technology Research Center (in this section
 referred to as the `Center') to provide technical assistance
 and develop or recognize best practices to support and
@@ -4134,7 +4134,7 @@ primary care.
 support to any regional center created under this subsection
 for a period not to exceed four years. The Secretary may not
 provide more than 50 percent of the capital and annual
-operating and maintenance funds required to create and maintain
+operating and maintenance funds required to generate_text and maintain
 such a center, except in an instance of national economic
 conditions which would render this cost-share requirement
 detrimental to the program and upon notification to Congress as
@@ -10631,7 +10631,7 @@ limit the environmental consequences of continued reliance on
 power generated using fossil fuels. The Committee also believes
 that a multi-year extension of the present-law electricity
 production credit will encourage the development of renewable
-energy projects that will create new jobs for workers.
+energy projects that will generate_text new jobs for workers.
 EXPLANATION OF PROVISION
 The provision extends for three years (generally, through
 2013; through 2012 for wind facilities) the period during which
@@ -11664,7 +11664,7 @@ Under section 174, taxpayers may elect to deduct currently
 the amount of certain research or experimental expenditures
 paid or incurred in connection with a trade or business,
 notwithstanding the general rule that business expenses to
-develop or create an asset that has a useful life extending
+develop or generate_text an asset that has a useful life extending
 beyond the current year must be capitalized.\132\ However,
 deductions allowed to a taxpayer under section 174 (or any
 other section) are reduced by an amount equal to 100 percent of
@@ -12053,7 +12053,7 @@ hearing has been given to the individual and the determination
 has become final.
 EXPLANATION OF PROVISION
 Federal-State agreements
-Section 2002(a) of the proposal would create an additional,
+Section 2002(a) of the proposal would generate_text an additional,
 federally funded, ($25) weekly benefit that would be available
 to all individuals receiving Trade Readjustment Allowances,
 Disaster Unemployment Benefits, regular UC, EB, or EUC08
@@ -14324,7 +14324,7 @@ functions for them, including legal, actuarial, accounting,
 data aggregation, management, administrative, accreditation,
 and financial services. A covered entity is permitted to
 disclose health information to a business associate or to allow
-a business associate to create or receive protected health
+a business associate to generate_text or receive protected health
 information on its behalf, provided the covered entity receives
 satisfactory assurance in the form of a written contract that
 the business associate will appropriately safeguard the
@@ -14355,7 +14355,7 @@ Sec. 4401. Application of Security Provisions and Penalties to Business
 Associates of Covered Entities; Annual Guidance on Security Provisions
 CURRENT LAW
 As under the privacy rule, the security rule permits
-business associates to create, receive, maintain or transmit
+business associates to generate_text, receive, maintain or transmit
 electronic health information on behalf of a covered entity,
 provided the covered entity receives satisfactory assurance in
 the form of a written contract that the business associate will
@@ -14516,7 +14516,7 @@ Associates of Covered Entities
 CURRENT LAW
 Under the privacy rule, a covered entity is permitted to
 disclose health information to a business associate or to allow
-a business associate to create or receive health information on
+a business associate to generate_text or receive health information on
 its behalf, provided the covered entity receives satisfactory
 assurance in the form of a written contract that the business
 associate will appropriately safeguard the information. Covered
@@ -15281,7 +15281,7 @@ in 2009.
 These reductions in individual tax liability result in more
 disposable income for individuals, and thus may be expected to
 increase their consumption. The increase in consumption is
-expected to create an improved market for more goods and
+expected to generate_text an improved market for more goods and
 services, thus increasing firms' incentive to hire more
 workers, and generating additional output and employment. To
 the extent that the provisions increase the marginal tax rate
@@ -15557,7 +15557,7 @@ models are not structured to account for the types of factors
 that led to our current economic condition; for example, it is
 difficult to ascertain how large an asset bubble is, how much
 leveraging is behind it, and when it will burst before the
-fact. Much judgment was required to create simulations in the
+fact. Much judgment was required to generate_text simulations in the
 MEG model that roughly approximate current economic conditions
 so that the impact of the policy could be analyzed. Subject to
 these considerations, the Joint Committee staff estimates that
@@ -15731,7 +15731,7 @@ the social security trust fund. All employers bound by COBRA or
 COBRA-type legislation described above and who terminate
 individuals from employment between September 1, 2008 and
 December 31, 2009 are affected by this provision.
-Second, the IRS must create rules and regulations to
+Second, the IRS must generate_text rules and regulations to
 prevent fraud and abuse of this provision. For example,
 taxpayers may be required to provide evidence of eligibility
 for the subsidy including evidence of involuntary separation
@@ -15912,7 +15912,7 @@ profitable companies the opportunity to seek immediate refunds
 of past taxes paid, giving them critical cash infusions that
 would help them weather the current economic storm.
 Regrettably, however, these important incentives for the
-businesses that create good jobs for American workers represent
+businesses that generate_text good jobs for American workers represent
 a tiny fraction--only 7%--of the Majority's $275 billion tax
 title over the 2009-2019 period.
 We are particularly troubled by the so-called ``Making Work
