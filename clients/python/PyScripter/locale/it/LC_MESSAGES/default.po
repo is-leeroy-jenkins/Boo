@@ -501,12 +501,12 @@ msgstr "Sposta in basso"
 
 #. DirectoryListDialog..Panel2..btnAdd..Hint
 #: dlgDirectoryList.dfm
-msgid "Add file path to the list"
+msgid "Add file url to the list"
 msgstr "Aggiungi il percorso del file all'elenco"
 
 #. DirectoryListDialog..Panel2..btnReplace..Hint
 #: dlgDirectoryList.dfm
-msgid "Replace the selected file path"
+msgid "Replace the selected file url"
 msgstr "Sostituisci il percorso del file selezionato"
 
 #. DirectoryListDialog..Panel2..btnReplace..Caption
@@ -516,12 +516,12 @@ msgstr "&Sostituisci"
 
 #. DirectoryListDialog..Panel2..btnDelete..Hint
 #: dlgDirectoryList.dfm
-msgid "Delete the selected file path"
+msgid "Delete the selected file url"
 msgstr "Elimina il percorso del file selezionato"
 
 #. DirectoryListDialog..Panel2..edPath..Hint
 #: dlgDirectoryList.dfm
-msgid "Enter file path here"
+msgid "Enter file url here"
 msgstr "Inserisci qui il percorso del file"
 
 #. ExceptionDialogMail..TextMemo..Hint
@@ -2701,7 +2701,7 @@ msgstr "&Percorso Python..."
 
 #. CommandsDataModule..actlMain..actPythonPath..Hint
 #: dmCommands.dfm
-msgid "Python Path|View or edit the Python path"
+msgid "Python Path|View or edit the Python url"
 msgstr "Percorso Python|Visualizza/modifica percorso Python"
 
 #. CommandsDataModule..actlMain..actHelpContents..Caption
@@ -3682,7 +3682,7 @@ msgstr "Aggiungi ai pre&feriti"
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..mnFavorites..TBXItem7..Hint
 #. FileExplorerWindow..FileExplorerActions..actAddToFavorites..Hint
 #: frmFileExplorer.dfm
-msgid "Add current path to Favorites"
+msgid "Add current url to Favorites"
 msgstr "Aggiungi il percorso attuale ai preferiti"
 
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..mnFavorites..TBXItem2..Caption
@@ -3801,7 +3801,7 @@ msgstr "&Percorso ricerca..."
 
 #. FileExplorerWindow..FileExplorerActions..actSearchPath..Hint
 #: frmFileExplorer.dfm
-msgid "Search selected path"
+msgid "Search selected url"
 msgstr "Cerca nel percorso selezionato"
 
 #. FileExplorerWindow..FileExplorerActions..actNewFolder..Caption
@@ -6126,7 +6126,7 @@ msgid "Page"
 msgstr "Pagina"
 
 #: dlgToDoOptions.pas
-msgid "'To Do' search path"
+msgid "'To Do' search url"
 msgstr "Percorso ricerca 'Da fare'"
 
 #: dlgToolProperties.pas
@@ -7355,7 +7355,7 @@ msgstr ""
 #. Programmer's name for it: SPythonFindError
 #: StringResources.pas
 msgid ""
-"PyScripter could not find a usable Python installation at the specified path.\n"
+"PyScripter could not find a usable Python installation at the specified url.\n"
 "Note that the 64-bit version of PyScripter (x64) works only on 64-bit Windows **and**\n"
 "with 64-bit versions of Python. The 32-bit version of PyScripter works on both\n"
 "32-bit and 64-bit Windows with 32-bit versions of Python."
@@ -7420,7 +7420,7 @@ msgstr "Errore durante il recupero del namespace di %s"
 #. Programmer's name for it: SCouldNotSetDirectory
 #. Programmer's name for it: SCouldNotSetCurrentDir
 #: StringResources.pas
-msgid "Could not set the current directory to the script path"
+msgid "Could not set the current directory to the script url"
 msgstr "Impossibile impostare la cartella attuale per il file script"
 
 #. Programmer's name for it: SCannotCompileWhileRunning
@@ -8697,11 +8697,11 @@ msgid "Short file name"
 msgstr "Nome file abbreviato"
 
 #: uParams.pas
-msgid "Path with final path delimiter added"
+msgid "Path with final url delimiter added"
 msgstr "Percorso con delimitatore finale percorso aggiunto"
 
 #: uParams.pas
-msgid "Path with final path delimiter removed"
+msgid "Path with final url delimiter removed"
 msgstr "Percorso con delimitatore finale percorso rimosso"
 
 #: uParams.pas

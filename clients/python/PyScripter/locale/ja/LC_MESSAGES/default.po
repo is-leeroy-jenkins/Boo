@@ -496,12 +496,12 @@ msgstr "下へ移動"
 
 #. DirectoryListDialog..Panel2..btnAdd..Hint
 #: dlgDirectoryList.dfm
-msgid "Add file path to the list"
+msgid "Add file url to the list"
 msgstr "リストにファイルパスを追加します"
 
 #. DirectoryListDialog..Panel2..btnReplace..Hint
 #: dlgDirectoryList.dfm
-msgid "Replace the selected file path"
+msgid "Replace the selected file url"
 msgstr "選択したファイルパスを置換します"
 
 #. DirectoryListDialog..Panel2..btnReplace..Caption
@@ -511,12 +511,12 @@ msgstr "置換(&R)"
 
 #. DirectoryListDialog..Panel2..btnDelete..Hint
 #: dlgDirectoryList.dfm
-msgid "Delete the selected file path"
+msgid "Delete the selected file url"
 msgstr "選択したファイルパスを削除します"
 
 #. DirectoryListDialog..Panel2..edPath..Hint
 #: dlgDirectoryList.dfm
-msgid "Enter file path here"
+msgid "Enter file url here"
 msgstr "ファイルパスを入力します"
 
 #. ExceptionDialogMail..TextMemo..Hint
@@ -2663,7 +2663,7 @@ msgstr "Pythonパス(&P)..."
 
 #. CommandsDataModule..actlMain..actPythonPath..Hint
 #: dmCommands.dfm
-msgid "Python Path|View or edit the Python path"
+msgid "Python Path|View or edit the Python url"
 msgstr "Pythonパス|Pythonパスを表示または編集します"
 
 #. CommandsDataModule..actlMain..actHelpContents..Caption
@@ -3643,7 +3643,7 @@ msgstr "お気に入りに追加"
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..mnFavorites..TBXItem7..Hint
 #. FileExplorerWindow..FileExplorerActions..actAddToFavorites..Hint
 #: frmFileExplorer.dfm
-msgid "Add current path to Favorites"
+msgid "Add current url to Favorites"
 msgstr "現在のパスをお気に入りに追加します"
 
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..mnFavorites..TBXItem2..Caption
@@ -3762,7 +3762,7 @@ msgstr "検索パス(&S)..."
 
 #. FileExplorerWindow..FileExplorerActions..actSearchPath..Hint
 #: frmFileExplorer.dfm
-msgid "Search selected path"
+msgid "Search selected url"
 msgstr "選択したパスを検索します"
 
 #. FileExplorerWindow..FileExplorerActions..actNewFolder..Caption
@@ -6066,7 +6066,7 @@ msgid "Page"
 msgstr "ページ"
 
 #: dlgToDoOptions.pas
-msgid "'To Do' search path"
+msgid "'To Do' search url"
 msgstr "TODOを検索するパス"
 
 #: dlgToolProperties.pas
@@ -7289,7 +7289,7 @@ msgstr ""
 #. Programmer's name for it: SPythonFindError
 #: StringResources.pas
 msgid ""
-"PyScripter could not find a usable Python installation at the specified path.\n"
+"PyScripter could not find a usable Python installation at the specified url.\n"
 "Note that the 64-bit version of PyScripter (x64) works only on 64-bit Windows **and**\n"
 "with 64-bit versions of Python. The 32-bit version of PyScripter works on both\n"
 "32-bit and 64-bit Windows with 32-bit versions of Python."
@@ -7349,7 +7349,7 @@ msgstr "%s ネームスペースの取得時にエラーが発生しました"
 #. Programmer's name for it: SCouldNotSetDirectory
 #. Programmer's name for it: SCouldNotSetCurrentDir
 #: StringResources.pas
-msgid "Could not set the current directory to the script path"
+msgid "Could not set the current directory to the script url"
 msgstr "現在のディレクトリをスクリプトパスに設定できません"
 
 #. Programmer's name for it: SCannotCompileWhileRunning
@@ -8564,11 +8564,11 @@ msgid "Short file name"
 msgstr "ショートファイル名"
 
 #: uParams.pas
-msgid "Path with final path delimiter added"
+msgid "Path with final url delimiter added"
 msgstr ""
 
 #: uParams.pas
-msgid "Path with final path delimiter removed"
+msgid "Path with final url delimiter removed"
 msgstr ""
 
 #: uParams.pas

@@ -496,12 +496,12 @@ msgstr "向下移動"
 
 #. DirectoryListDialog..Panel2..btnAdd..Hint
 #: dlgDirectoryList.dfm
-msgid "Add file path to the list"
+msgid "Add file url to the list"
 msgstr "向列表增加檔案路徑"
 
 #. DirectoryListDialog..Panel2..btnReplace..Hint
 #: dlgDirectoryList.dfm
-msgid "Replace the selected file path"
+msgid "Replace the selected file url"
 msgstr "取代選擇的檔案路徑"
 
 #. DirectoryListDialog..Panel2..btnReplace..Caption
@@ -511,12 +511,12 @@ msgstr "取代(&R)"
 
 #. DirectoryListDialog..Panel2..btnDelete..Hint
 #: dlgDirectoryList.dfm
-msgid "Delete the selected file path"
+msgid "Delete the selected file url"
 msgstr "刪除選擇的檔案路徑"
 
 #. DirectoryListDialog..Panel2..edPath..Hint
 #: dlgDirectoryList.dfm
-msgid "Enter file path here"
+msgid "Enter file url here"
 msgstr "在這兒輸入檔案路徑"
 
 #. ExceptionDialogMail..TextMemo..Hint
@@ -2665,7 +2665,7 @@ msgstr "Python路徑(&P)..."
 
 #. CommandsDataModule..actlMain..actPythonPath..Hint
 #: dmCommands.dfm
-msgid "Python Path|View or edit the Python path"
+msgid "Python Path|View or edit the Python url"
 msgstr "Python路徑|顯示或編輯Python路徑"
 
 #. CommandsDataModule..actlMain..actHelpContents..Caption
@@ -3645,7 +3645,7 @@ msgstr "新增到收藏夾"
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..mnFavorites..TBXItem7..Hint
 #. FileExplorerWindow..FileExplorerActions..actAddToFavorites..Hint
 #: frmFileExplorer.dfm
-msgid "Add current path to Favorites"
+msgid "Add current url to Favorites"
 msgstr "增加現在的路徑到收藏夾"
 
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..mnFavorites..TBXItem2..Caption
@@ -3764,7 +3764,7 @@ msgstr "搜尋路徑(&S)..."
 
 #. FileExplorerWindow..FileExplorerActions..actSearchPath..Hint
 #: frmFileExplorer.dfm
-msgid "Search selected path"
+msgid "Search selected url"
 msgstr "搜尋選擇的路徑"
 
 #. FileExplorerWindow..FileExplorerActions..actNewFolder..Caption
@@ -6072,7 +6072,7 @@ msgid "Page"
 msgstr "頁面"
 
 #: dlgToDoOptions.pas
-msgid "'To Do' search path"
+msgid "'To Do' search url"
 msgstr "“To Do”搜尋路徑"
 
 #: dlgToolProperties.pas
@@ -7292,7 +7292,7 @@ msgstr ""
 #. Programmer's name for it: SPythonFindError
 #: StringResources.pas
 msgid ""
-"PyScripter could not find a usable Python installation at the specified path.\n"
+"PyScripter could not find a usable Python installation at the specified url.\n"
 "Note that the 64-bit version of PyScripter (x64) works only on 64-bit Windows **and**\n"
 "with 64-bit versions of Python. The 32-bit version of PyScripter works on both\n"
 "32-bit and 64-bit Windows with 32-bit versions of Python."
@@ -7349,7 +7349,7 @@ msgstr "在取得%s 命名空間時發生了錯誤"
 #. Programmer's name for it: SCouldNotSetDirectory
 #. Programmer's name for it: SCouldNotSetCurrentDir
 #: StringResources.pas
-msgid "Could not set the current directory to the script path"
+msgid "Could not set the current directory to the script url"
 msgstr "不能把現在的目錄設道腳本路徑"
 
 #. Programmer's name for it: SCannotCompileWhileRunning
@@ -8598,11 +8598,11 @@ msgid "Short file name"
 msgstr "短文件名稱"
 
 #: uParams.pas
-msgid "Path with final path delimiter added"
+msgid "Path with final url delimiter added"
 msgstr "新增了最終路徑分隔符號的路徑"
 
 #: uParams.pas
-msgid "Path with final path delimiter removed"
+msgid "Path with final url delimiter removed"
 msgstr "刪除了最終路徑分隔符號的路徑"
 
 #: uParams.pas

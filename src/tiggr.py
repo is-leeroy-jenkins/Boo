@@ -74,7 +74,7 @@ class Text:
 	    normalize(text: str) -> str
 	    tokenize_sentences(text: str) -> str
 	    tokenize_words(text: str) -> list
-	    load_file( path: str) -> li
+	    load_file( url: str) -> li
 	    lemmatize(tokens: list) -> str
 	    bag_of_words(tokens: list) -> dict
 	    train_word2vec(sentences: list, vector_size=100, window=5, min_count=1) -> Word2Vec
@@ -755,7 +755,7 @@ class Text:
 			Load the content of a document's file.
 	
 			Args:
-				path (str): The path to the documents file.
+				path (str): The url to the documents file.
 	
 			Returns:
 				str: The contents of the file as a string.
@@ -763,7 +763,7 @@ class Text:
 		"""
 		try:
 			if path is None:
-				raise Exception( 'Input parameter "path" is required.' )
+				raise Exception( 'Input parameter "url" is required.' )
 			else:
 				self.raw_input = path
 				return Path( path ).read_text( encoding='utf-8' )
@@ -771,7 +771,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'load_file( self, path: str ) -> str'
+			_exc.method = 'load_file( self, url: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	

@@ -347,7 +347,7 @@ class FolderDialog( Dark ):
 
 		Construcotr: FolderDialog( )
 
-		Purpose: Class defining dialog used to select a directory path
+		Purpose: Class defining dialog used to select a directory url
 
 	'''
 	
@@ -443,7 +443,7 @@ class FolderDialog( Dark ):
 class SaveFileDialog( Dark ):
 	'''
 
-	    Constructor: SaveFileDialog( path = '' ):
+	    Constructor: SaveFileDialog( url = '' ):
 
         Purpose: Class define object that provides a dialog to locate file destinations
 
@@ -4081,7 +4081,7 @@ class CsvForm( Dark ):
 			_path = _dialog.selected_path
 			
 			if _path == '':
-				_msg = MessageDialog( 'No file path was provided!' )
+				_msg = MessageDialog( 'No file url was provided!' )
 				_msg.show( )
 				return
 			

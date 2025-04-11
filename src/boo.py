@@ -736,12 +736,12 @@ class Chat( AI ):
 			error.show( )
 	
 	
-	def analyze_image( self, prompt: str, path: str ) -> str:
+	def analyze_image( self, prompt: str, url: str ) -> str:
 		try:
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
-			elif path is None:
-				raise Exception( 'Argument "path" cannot be None' )
+			elif url is None:
+				raise Exception( 'Argument "url" cannot be None' )
 			else:
 				self.input =\
 				[
@@ -754,7 +754,7 @@ class Chat( AI ):
 							},
 							{
 								'type': 'input_image',
-								'image_url': path
+								'image_url': url
 							}
 						]
 					}
@@ -766,7 +766,7 @@ class Chat( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
-			exception.method = 'analyze_image( self, prompt: str, path: str )'
+			exception.method = 'analyze_image( self, prompt: str, url: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -796,7 +796,7 @@ class LargeImage( AI ):
 		self.model = 'dall-e-3'
 	
 	
-	def create( self, input: str ) -> str:
+	def generate( self, input: str ) -> str:
 		pass
 	
 	
@@ -807,7 +807,7 @@ class LargeImage( AI ):
 			Returns: list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
+		return [ 'api_key', 'client', 'model', 'input', 'generate' ]
 
 
 class Image( AI ):
@@ -826,7 +826,7 @@ class Image( AI ):
 		self.model = 'dall-e-2'
 	
 	
-	def create( self, input: str ) -> str:
+	def generate( self, input: str ) -> str:
 		pass
 	
 	
@@ -837,7 +837,7 @@ class Image( AI ):
 			Returns: list[ str ]
 
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
+		return [ 'api_key', 'client', 'model', 'input', 'generate' ]
 
 
 class Assistant( AI ):
@@ -994,7 +994,7 @@ class TextToSpeech( AI ):
 		'''
 		try:
 			if path is None:
-				raise Exception( 'Argument "path" is required.' )
+				raise Exception( 'Argument "url" is required.' )
 			elif prompt is None:
 				raise Exception( 'Argument "prompt" is required.' )
 			else:

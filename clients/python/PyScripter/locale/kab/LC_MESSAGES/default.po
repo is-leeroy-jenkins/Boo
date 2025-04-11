@@ -496,12 +496,12 @@ msgstr "Déplacer vers le bas"
 
 #. DirectoryListDialog..Panel2..btnAdd..Hint
 #: dlgDirectoryList.dfm
-msgid "Add file path to the list"
+msgid "Add file url to the list"
 msgstr "Ajouter le chemin de fichier à la liste"
 
 #. DirectoryListDialog..Panel2..btnReplace..Hint
 #: dlgDirectoryList.dfm
-msgid "Replace the selected file path"
+msgid "Replace the selected file url"
 msgstr "Remplacer le chemin du fichier sélectionné"
 
 #. DirectoryListDialog..Panel2..btnReplace..Caption
@@ -511,12 +511,12 @@ msgstr "&Semselsi"
 
 #. DirectoryListDialog..Panel2..btnDelete..Hint
 #: dlgDirectoryList.dfm
-msgid "Delete the selected file path"
+msgid "Delete the selected file url"
 msgstr "Kkes abrid n ufaylu ittufernen"
 
 #. DirectoryListDialog..Panel2..edPath..Hint
 #: dlgDirectoryList.dfm
-msgid "Enter file path here"
+msgid "Enter file url here"
 msgstr "Sekcem abrid n ufaylu dagi"
 
 #. ExceptionDialogMail..TextMemo..Hint
@@ -2695,7 +2695,7 @@ msgstr "Abrid &Python..."
 
 #. CommandsDataModule..actlMain..actPythonPath..Hint
 #: dmCommands.dfm
-msgid "Python Path|View or edit the Python path"
+msgid "Python Path|View or edit the Python url"
 msgstr "Abrid Python|Sken neɣ ẓreg abrid Python"
 
 #. CommandsDataModule..actlMain..actHelpContents..Caption
@@ -3675,7 +3675,7 @@ msgstr "R&nu ɣeṛ isniraf"
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..mnFavorites..TBXItem7..Hint
 #. FileExplorerWindow..FileExplorerActions..actAddToFavorites..Hint
 #: frmFileExplorer.dfm
-msgid "Add current path to Favorites"
+msgid "Add current url to Favorites"
 msgstr "Ajouter le chemin actuel aux favoris"
 
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..mnFavorites..TBXItem2..Caption
@@ -3794,7 +3794,7 @@ msgstr "A&brid n unadi..."
 
 #. FileExplorerWindow..FileExplorerActions..actSearchPath..Hint
 #: frmFileExplorer.dfm
-msgid "Search selected path"
+msgid "Search selected url"
 msgstr "Nadi abrid yettwafernen"
 
 #. FileExplorerWindow..FileExplorerActions..actNewFolder..Caption
@@ -6113,7 +6113,7 @@ msgid "Page"
 msgstr ""
 
 #: dlgToDoOptions.pas
-msgid "'To Do' search path"
+msgid "'To Do' search url"
 msgstr "Abrid n unadi 'Ad yettwag'"
 
 #: dlgToolProperties.pas
@@ -7336,7 +7336,7 @@ msgstr ""
 #. Programmer's name for it: SPythonFindError
 #: StringResources.pas
 msgid ""
-"PyScripter could not find a usable Python installation at the specified path.\n"
+"PyScripter could not find a usable Python installation at the specified url.\n"
 "Note that the 64-bit version of PyScripter (x64) works only on 64-bit Windows **and**\n"
 "with 64-bit versions of Python. The 32-bit version of PyScripter works on both\n"
 "32-bit and 64-bit Windows with 32-bit versions of Python."
@@ -7393,7 +7393,7 @@ msgstr "Erreur en cherchant l'espace de travail de %s"
 #. Programmer's name for it: SCouldNotSetDirectory
 #. Programmer's name for it: SCouldNotSetCurrentDir
 #: StringResources.pas
-msgid "Could not set the current directory to the script path"
+msgid "Could not set the current directory to the script url"
 msgstr "Impossible de définir le répertoire actuel au chemin du script"
 
 #. Programmer's name for it: SCannotCompileWhileRunning
@@ -8626,11 +8626,11 @@ msgid "Short file name"
 msgstr ""
 
 #: uParams.pas
-msgid "Path with final path delimiter added"
+msgid "Path with final url delimiter added"
 msgstr ""
 
 #: uParams.pas
-msgid "Path with final path delimiter removed"
+msgid "Path with final url delimiter removed"
 msgstr ""
 
 #: uParams.pas

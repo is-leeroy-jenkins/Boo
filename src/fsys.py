@@ -57,7 +57,7 @@ class Path( ):
 
 	Purpose:
 
-		Class representing a path
+		Class representing a url
 
 	'''
 	
@@ -220,7 +220,7 @@ class Path( ):
 		'''
 		try:
 			if not os.path.exists( other ):
-				_msg = "The object 'self' is not a path!"
+				_msg = "The object 'self' is not a url!"
 				raise Exception( _msg )
 			else:
 				return True
@@ -238,10 +238,10 @@ class Path( ):
 
 			Purpose: Joins two paths into one.
 	
-			Parameters: 'first: str' representing the first path
-			that is joined to the second path 'second: str'.
+			Parameters: 'first: str' representing the first url
+			that is joined to the second url 'second: str'.
 	
-			Returns: a single string representing a path
+			Returns: a single string representing a url
 
 		'''
 		try:
@@ -294,10 +294,10 @@ class Path( ):
 		'''
 
 		Purpose:
-		Creates a symbolic link of 'path' given the name 'name'
+		Creates a symbolic link of 'url' given the name 'name'
 
 		Parameters:
-		path: str, name: str
+		url: str, name: str
 
 		Returns:
 		str
@@ -305,7 +305,7 @@ class Path( ):
 		'''
 		try:
 			if path is None:
-				_msg = "The argument 'path' is None"
+				_msg = "The argument 'url' is None"
 				raise Exception( _msg )
 			elif name is None:
 				_msg = "The argument 'name' is None"
@@ -316,7 +316,7 @@ class Path( ):
 			_exc = Error( e )
 			_exc.module = 'FileSys'
 			_exc.cause = 'Path'
-			_exc.method = 'create_link( self, path: str, name: str )'
+			_exc.method = 'create_link( self, url: str, name: str )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -326,7 +326,7 @@ class Path( ):
 
 		Purpose:
 
-			reads a symbolic link of 'path'
+			reads a symbolic link of 'url'
 
 		Parameters:
 
@@ -339,7 +339,7 @@ class Path( ):
 		'''
 		try:
 			if path is None:
-				_msg = "The argument 'path' is None"
+				_msg = "The argument 'url' is None"
 				raise Exception( _msg )
 			else:
 				os.readlink( path )
@@ -347,7 +347,7 @@ class Path( ):
 			_exc = Error( e )
 			_exc.module = 'FileSys'
 			_exc.cause = 'Path'
-			_exc.method = 'read_link( self, path: str )'
+			_exc.method = 'read_link( self, url: str )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
@@ -356,7 +356,7 @@ class File( Path ):
 	'''
 		Constructor:
 	
-			File( path: str )
+			File( url: str )
 	
 		Purpose:
 	
@@ -394,7 +394,7 @@ class File( Path ):
 		         'drive_separator', 'extension_separator', 'internal_path',
 		         'exists', 'is_folder', 'is_file', 'is_absolute',
 		         'is_relative', 'verify', 'join', 'copy_tree',
-		         'absolute_path', 'relative_path', 'path',
+		         'absolute_path', 'relative_path', 'url',
 		         'name', 'size', 'extension', 'created',
 		         'accessed', 'modified', 'rename', 'move',
 		         'generate_text', 'delete', 'get_lines', 'readlines', 'readall',
@@ -438,7 +438,7 @@ class File( Path ):
 			Returns:
 		'''
 		try:
-			_msg = " The 'path' is not a file or the argument " \
+			_msg = " The 'url' is not a file or the argument " \
 			       "'destination' has not been specified!"
 			if os.path.isfile( self.input ) == False or destination is None:
 				raise Exception( _msg )
@@ -483,7 +483,7 @@ class File( Path ):
 	
 	def delete( self, other: str ):
 		'''
-			Purpose: deletes a file provided its path 'other'
+			Purpose: deletes a file provided its url 'other'
 	
 			Parameters: other: str
 	
@@ -516,7 +516,7 @@ class File( Path ):
 		_lines = list( )
 		try:
 			if os.path.isfile( self.input ) == False:
-				_msg = "The 'path' is not a file!"
+				_msg = "The 'url' is not a file!"
 				raise Exception( _msg )
 			else:
 				file = open( self.input )
@@ -542,7 +542,7 @@ class File( Path ):
 		'''
 		try:
 			if os.path.isfile( self.input ) == False:
-				_msg = "The 'path' is not a file!"
+				_msg = "The 'url' is not a file!"
 				raise Exception( _msg )
 			else:
 				file = open( self.input )
@@ -568,7 +568,7 @@ class File( Path ):
 		try:
 			_contents = list( )
 			if os.path.isfile( self.input ) == False:
-				_msg = "The 'path' is not a file!"
+				_msg = "The 'url' is not a file!"
 				raise Exception( _msg )
 			else:
 				_file = open( self.input )
@@ -622,7 +622,7 @@ class File( Path ):
 		'''
 		try:
 			if lines is None or os.path.isfile( self.input ) == False:
-				_msg = "The 'lines' is None or 'path' is not a file!"
+				_msg = "The 'lines' is None or 'url' is not a file!"
 				raise Exception( _msg )
 			else:
 				_path = os.path.relpath( self.input )
@@ -655,7 +655,7 @@ class File( Path ):
 			_lines = [ ]
 			if other is None or os.path.isfile( self.input ) == False:
 				_msg = "The argument 'other' has not been specified " \
-				       "or the 'path' is not a file!"
+				       "or the 'url' is not a file!"
 				raise Exception( _msg )
 			else:
 				_path = os.path.relpath( self.input )
@@ -712,7 +712,7 @@ class Folder( Path ):
 		         'drive_separator', 'extension_separator', 'internal_path',
 		         'exists', 'is_folder', 'is_file', 'is_absolute',
 		         'is_relative', 'verify', 'join', 'copy_tree',
-		         'absolute_path', 'relative_path', 'path',
+		         'absolute_path', 'relative_path', 'url',
 		         'name', 'size', 'get_files', 'get_subfiles',
 		         'get_subfolders', 'rename', 'move', 'generate_text',
 		         'delete', 'iterate' ]
@@ -756,7 +756,7 @@ class Folder( Path ):
 		'''
 		try:
 			_names = [ ]
-			_msg = "The input path 'input' is not a directory!"
+			_msg = "The input url 'input' is not a directory!"
 			if not os.path.isdir( self.input ):
 				raise Exception( _msg )
 			else:
@@ -1000,7 +1000,7 @@ class Excel( ):
 
 		Constructor:
 	
-			Excel( path: str )
+			Excel( url: str )
 	
 		Purpose:
 	
@@ -1057,7 +1057,7 @@ class ExcelReport( Excel ):
 	
 		Constructor:
 	
-			ExcelReport( path: str, rows: int = 46, cols: int = 12 ).
+			ExcelReport( url: str, rows: int = 46, cols: int = 12 ).
 	
 		Purpose:
 	
@@ -1091,7 +1091,7 @@ class ZipFile( ):
 	
 		Constructor:
 	
-			ZipFile( path: str )
+			ZipFile( url: str )
 	
 		Purpose:
 	
@@ -1127,7 +1127,7 @@ class ZipFile( ):
 	def create( self ):
 		'''
 	
-			Purpose: creates a zipfile from a given path
+			Purpose: creates a zipfile from a given url
 	
 			Parameters: void
 	

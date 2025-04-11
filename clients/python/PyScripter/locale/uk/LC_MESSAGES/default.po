@@ -495,12 +495,12 @@ msgstr "Перемістити вниз"
 
 #. DirectoryListDialog..Panel2..btnAdd..Hint
 #: dlgDirectoryList.dfm
-msgid "Add file path to the list"
+msgid "Add file url to the list"
 msgstr "Додати шлях до файлу у список"
 
 #. DirectoryListDialog..Panel2..btnReplace..Hint
 #: dlgDirectoryList.dfm
-msgid "Replace the selected file path"
+msgid "Replace the selected file url"
 msgstr "Замінити вибраний шлях до файлу"
 
 #. DirectoryListDialog..Panel2..btnReplace..Caption
@@ -510,12 +510,12 @@ msgstr "&Замінити"
 
 #. DirectoryListDialog..Panel2..btnDelete..Hint
 #: dlgDirectoryList.dfm
-msgid "Delete the selected file path"
+msgid "Delete the selected file url"
 msgstr ""
 
 #. DirectoryListDialog..Panel2..edPath..Hint
 #: dlgDirectoryList.dfm
-msgid "Enter file path here"
+msgid "Enter file url here"
 msgstr "Введіть шлях до файлу тут"
 
 #. ExceptionDialogMail..TextMemo..Hint
@@ -2779,7 +2779,7 @@ msgstr ""
 
 #. CommandsDataModule..actlMain..actPythonPath..Hint
 #: dmCommands.dfm
-msgid "Python Path|View or edit the Python path"
+msgid "Python Path|View or edit the Python url"
 msgstr ""
 
 #. CommandsDataModule..actlMain..actHelpContents..Caption
@@ -3839,7 +3839,7 @@ msgstr ""
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..mnFavorites..TBXItem7..Hint
 #. FileExplorerWindow..FileExplorerActions..actAddToFavorites..Hint
 #: frmFileExplorer.dfm
-msgid "Add current path to Favorites"
+msgid "Add current url to Favorites"
 msgstr ""
 
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..mnFavorites..TBXItem2..Caption
@@ -3958,7 +3958,7 @@ msgstr ""
 
 #. FileExplorerWindow..FileExplorerActions..actSearchPath..Hint
 #: frmFileExplorer.dfm
-msgid "Search selected path"
+msgid "Search selected url"
 msgstr ""
 
 #. FileExplorerWindow..FileExplorerActions..actNewFolder..Caption
@@ -6384,7 +6384,7 @@ msgid "Page"
 msgstr "Сторінка"
 
 #: dlgToDoOptions.pas
-msgid "'To Do' search path"
+msgid "'To Do' search url"
 msgstr ""
 
 #: dlgToolProperties.pas
@@ -7664,7 +7664,7 @@ msgstr ""
 #. Programmer's name for it: SCouldNotSetDirectory
 #. Programmer's name for it: SCouldNotSetCurrentDir
 #: StringResources.pas
-msgid "Could not set the current directory to the script path"
+msgid "Could not set the current directory to the script url"
 msgstr ""
 
 #. Programmer's name for it: SCannotCompileWhileRunning
@@ -8884,11 +8884,11 @@ msgid "Short file name"
 msgstr ""
 
 #: uParams.pas
-msgid "Path with final path delimiter added"
+msgid "Path with final url delimiter added"
 msgstr ""
 
 #: uParams.pas
-msgid "Path with final path delimiter removed"
+msgid "Path with final url delimiter removed"
 msgstr ""
 
 #: uParams.pas

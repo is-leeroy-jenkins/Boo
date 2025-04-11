@@ -496,12 +496,12 @@ msgstr "Μετακίνηση κάτω"
 
 #. DirectoryListDialog..Panel2..btnAdd..Hint
 #: dlgDirectoryList.dfm
-msgid "Add file path to the list"
+msgid "Add file url to the list"
 msgstr "Πρόσθεση καταλόγου στη λίστα"
 
 #. DirectoryListDialog..Panel2..btnReplace..Hint
 #: dlgDirectoryList.dfm
-msgid "Replace the selected file path"
+msgid "Replace the selected file url"
 msgstr "Αντικατάσταση επιλεγμένου φακέλου"
 
 #. DirectoryListDialog..Panel2..btnReplace..Caption
@@ -511,12 +511,12 @@ msgstr "&Αντικατάσταση"
 
 #. DirectoryListDialog..Panel2..btnDelete..Hint
 #: dlgDirectoryList.dfm
-msgid "Delete the selected file path"
+msgid "Delete the selected file url"
 msgstr "Διαγραφή επιλεγμένου καταλόγου"
 
 #. DirectoryListDialog..Panel2..edPath..Hint
 #: dlgDirectoryList.dfm
-msgid "Enter file path here"
+msgid "Enter file url here"
 msgstr "Εισάγετε όνομα φακέλου εδώ"
 
 #. ExceptionDialogMail..TextMemo..Hint
@@ -2682,9 +2682,9 @@ msgstr "&Κατάλογος  Python..."
 
 #. CommandsDataModule..actlMain..actPythonPath..Hint
 #: dmCommands.dfm
-msgid "Python Path|View or edit the Python path"
+msgid "Python Path|View or edit the Python url"
 msgstr ""
-"Κατάλογος Python|Προβολή και επεξεργασία του καταλόγου Python (Python path)"
+"Κατάλογος Python|Προβολή και επεξεργασία του καταλόγου Python (Python url)"
 
 #. CommandsDataModule..actlMain..actHelpContents..Caption
 #: dmCommands.dfm
@@ -3666,7 +3666,7 @@ msgstr "Προσθήκη στα &Αγαπημένα"
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..mnFavorites..TBXItem7..Hint
 #. FileExplorerWindow..FileExplorerActions..actAddToFavorites..Hint
 #: frmFileExplorer.dfm
-msgid "Add current path to Favorites"
+msgid "Add current url to Favorites"
 msgstr "Προσθήκη του τρέχοντος καταλόγου στους Σελιδοδείκτες"
 
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..mnFavorites..TBXItem2..Caption
@@ -3786,7 +3786,7 @@ msgstr "&Αναζήτηση σε Κατάλογο..."
 
 #. FileExplorerWindow..FileExplorerActions..actSearchPath..Hint
 #: frmFileExplorer.dfm
-msgid "Search selected path"
+msgid "Search selected url"
 msgstr "Αναζήτηση στον επιλεγμένο κατάλογο"
 
 #. FileExplorerWindow..FileExplorerActions..actNewFolder..Caption
@@ -6099,7 +6099,7 @@ msgid "Page"
 msgstr ""
 
 #: dlgToDoOptions.pas
-msgid "'To Do' search path"
+msgid "'To Do' search url"
 msgstr ""
 
 #: dlgToolProperties.pas
@@ -7317,7 +7317,7 @@ msgstr ""
 #. Programmer's name for it: SPythonFindError
 #: StringResources.pas
 msgid ""
-"PyScripter could not find a usable Python installation at the specified path.\n"
+"PyScripter could not find a usable Python installation at the specified url.\n"
 "Note that the 64-bit version of PyScripter (x64) works only on 64-bit Windows **and**\n"
 "with 64-bit versions of Python. The 32-bit version of PyScripter works on both\n"
 "32-bit and 64-bit Windows with 32-bit versions of Python."
@@ -7374,7 +7374,7 @@ msgstr "Σφάλμα κατά την εύρεση του χώρου ονομάτ
 #. Programmer's name for it: SCouldNotSetDirectory
 #. Programmer's name for it: SCouldNotSetCurrentDir
 #: StringResources.pas
-msgid "Could not set the current directory to the script path"
+msgid "Could not set the current directory to the script url"
 msgstr ""
 "Δεν ήταν δυνατό να ορισθεί ως κατάλογος εργασίας ο κατάλαγος του αρχείου"
 
@@ -8612,11 +8612,11 @@ msgid "Short file name"
 msgstr ""
 
 #: uParams.pas
-msgid "Path with final path delimiter added"
+msgid "Path with final url delimiter added"
 msgstr ""
 
 #: uParams.pas
-msgid "Path with final path delimiter removed"
+msgid "Path with final url delimiter removed"
 msgstr ""
 
 #: uParams.pas
