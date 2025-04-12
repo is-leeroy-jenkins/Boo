@@ -4564,6 +4564,7 @@ class FileBrowser( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		self.form_size = (400, 200)
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -4639,6 +4640,7 @@ class ChatWindow( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		self.form_size = (800, 600)
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -4657,8 +4659,8 @@ class ChatWindow( ):
 	
 	def show( self ):
 		try:
-			_layout = [ [ sg.Text( 'Your cleaned will go here', size=(40, 1) ) ],
-			            [ sg.Output( size=(110, 20), font=('Roboto 10') ) ],
+			_layout = [ [ sg.Text( 'Your query will go here', size=(40, 1) ) ],
+			            [ sg.Output( size=(110, 20), font=('Roboto 11') ) ],
 			            [ sg.Multiline( size=(70, 5), enter_submits=True, key='-QUERY-',
 				            do_not_clear=False ),
 			              sg.Button( 'SEND', button_color=(sg.YELLOWS[ 0 ], sg.BLUES[ 0 ]),
@@ -4666,9 +4668,10 @@ class ChatWindow( ):
 			              sg.Button( 'EXIT', button_color=(sg.YELLOWS[ 0 ], sg.GREENS[ 0 ]) ) ] ]
 			
 			window = sg.Window( 'Chat Window', _layout,
-				font=('Roboto', ' 13'),
+				font=('Roboto', ' 11'),
 				default_button_element_size=(8, 2),
-				use_default_focus=False )
+				use_default_focus=False,
+				size=self.form_size )
 			
 			# The Event Loop
 			while True:
@@ -4678,7 +4681,7 @@ class ChatWindow( ):
 					break
 				if event == 'SEND':
 					query = values[ '-QUERY-' ].rstrip( )
-					print( 'The command you entered was {}'.format( query ), flush=True )
+					print( 'The query you entered was {}'.format( query ), flush=True )
 			
 			window.close( )
 		except Exception as e:
@@ -4716,6 +4719,7 @@ class ChatBot( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		self.form_size = (800, 600)
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -4734,11 +4738,11 @@ class ChatBot( ):
 	
 	def show( self ):
 		try:
-			layout = [ [ sg.Text( 'Your cleaned will go here', size=(40, 1) ) ],
-			           [ sg.Output( size=(127, 30), font=('Rooboto 10') ) ],
+			layout = [ [ sg.Text( 'Your query will go here', size=(40, 1) ) ],
+			           [ sg.Output( size=(127, 30), font=('Rooboto 11') ) ],
 			           [ sg.Text( 'Command History' ),
-			             sg.Text( '', size=(20, 3), key='history' ) ],
-			           [ sg.ML( size=(85, 5), enter_submits=True, key='query',
+			             sg.Text( '', size=(20, 3), key='-HISTORY-' ) ],
+			           [ sg.ML( size=(85, 5), enter_submits=True, key='-QUERY-',
 				           do_not_clear=False ),
 			             sg.Button( 'SEND',
 				             button_color=(sg.YELLOWS[ 0 ], sg.BLUES[ 0 ]),
@@ -4750,7 +4754,8 @@ class ChatBot( ):
 				default_element_size=(30, 2),
 				font=('Roboto', ' 11'),
 				default_button_element_size=(8, 2),
-				return_keyboard_events=True )
+				return_keyboard_events=True,
+				size=self.form_size )
 			
 			# ---===--- Loop taking in user input and using it  --- #
 			command_history = [ ]
@@ -4760,14 +4765,14 @@ class ChatBot( ):
 				event, value = window.read( )
 				
 				if event == 'SEND':
-					query = value[ 'query' ].rstrip( )
+					query = value[ '-QUERY-' ].rstrip( )
 					# EXECUTE YOUR COMMAND HERE
 					print( 'The command you entered was {}'.format( query ) )
 					command_history.append( query )
 					history_offset = len( command_history ) - 1
 					# manually clear input because keyboard events blocks clear
-					window[ 'query' ].update( '' )
-					window[ 'history' ].update( '\n'.join( command_history[ -3: ] ) )
+					window[ '-QUERY-' ].update( '' )
+					window[ '-HISTORY-' ].update( '\n'.join( command_history[ -3: ] ) )
 				
 				elif event in (sg.WIN_CLOSED, 'EXIT'):  # quit if exit event or values
 					break
@@ -4776,16 +4781,16 @@ class ChatBot( ):
 					command = command_history[ history_offset ]
 					# decrement is not zero
 					history_offset -= 1 * (history_offset > 0)
-					window[ 'query' ].update( command )
+					window[ '-QUERY-' ].update( command )
 				
 				elif 'Down' in event and len( command_history ):
 					# increment up to end of list
 					history_offset += 1 * (history_offset < len( command_history ) - 1)
 					command = command_history[ history_offset ]
-					window[ 'query' ].update( command )
+					window[ '-QUERY-' ].update( command )
 				
 				elif 'Escape' in event:
-					window[ 'query' ].update( '' )
+					window[ '-QUERY-' ].update( '' )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Booger'
@@ -4852,6 +4857,7 @@ class InputWindow( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		self.form_size = (800, 600)
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -4925,7 +4931,8 @@ class InputWindow( ):
 			# aligned
 			# layout = [sg.vtop([col1, col2]),
 			#           [col3]]
-			window = sg.Window( 'Columns and Frames', layout )
+			window = sg.Window( 'Columns and Frames', layout,
+				size=self.form_size )
 			
 			while True:
 				event, values = window.read( )
@@ -4978,6 +4985,7 @@ class Executable( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		self.form_size = (800, 600)
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -5010,8 +5018,11 @@ class Executable( ):
 				           auto_size_text=True,
 				           font='Courier 8' ) ] ]
 			
-			window = sg.Window( 'PySimpleGUI EXE Maker', layout, auto_size_text=False,
-				auto_size_buttons=False, default_element_size=(20, 1),
+			window = sg.Window( 'PySimpleGUI EXE Maker', layout,
+				size=self.form_size,
+				auto_size_text=False,
+				auto_size_buttons=False,
+				default_element_size=(20, 1),
 				text_justification='right' )
 			# ---===--- Loop taking in user input --- #
 			while True:
@@ -5125,6 +5136,7 @@ class ThemeSelector( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		self.form_size = (400, 200)
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -5154,7 +5166,8 @@ class ThemeSelector( ):
 				           size=(20, 20), key='-LIST-', enable_events=True ) ],
 			           [ sg.Button( 'Exit' ) ] ]
 			
-			window = sg.Window( 'Look and Feel Browser', layout )
+			window = sg.Window( 'Look and Feel Browser', layout,
+				size=self.form_size )
 			
 			# Event Loop
 			while True:
@@ -5205,6 +5218,7 @@ class UrlImageViewer( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		self.form_size = ( 800, 600 )
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -5231,7 +5245,8 @@ class UrlImageViewer( ):
 			image_URL = (r'https://upload.wikimedia.org/wikipedia/commons/4/47'
 			             r'/PNG_transparency_demonstration_1.png')
 			layout = [ [ sg.Image( urllib.request.urlopen( image_URL ).read( ) ) ] ]
-			window = sg.Window( 'Image From URL', layout )
+			window = sg.Window( 'Image From URL', layout,
+				size=self.form_size )
 			while True:
 				event, values = window.read( )
 				if event == sg.WIN_CLOSED or event == 'Exit':

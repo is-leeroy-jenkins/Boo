@@ -228,7 +228,6 @@ class AI( ):
 	AI is the base class for all OpenAI functionalityl
 	'''
 	
-	
 	def __init__( self ):
 		self.header = Header( )
 		self.endpoint = EndPoint( )
@@ -536,6 +535,7 @@ class AdaptiveLinearNeuron( ):
 		         'n_iter', 'eta', 'random_state', 'embedding-3-small' ]
 
 
+						
 class SmallEmbedding( AI ):
 	'''
 
@@ -708,11 +708,16 @@ class Chat( AI ):
 	'''
 	def __init__( self ):
 		super( ).__init__( )
-		self.api_key = super( ).api_key
-		self.client = OpenAI( self.api_key )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI(  )
+		self.client.api_key = Header( ).api_key
 		self.model = 'gpt-4o-mini'
 		self.response = None
+		self.completion = None
+		self.file = None
+		self.file_path = None
 		self.input = [ ]
+		self.messages = [ ]
 		self.image_url = None
 		self.response_format = 'auto'
 		self.tools = [ ]
@@ -743,8 +748,7 @@ class Chat( AI ):
 			elif url is None:
 				raise Exception( 'Argument "url" cannot be None' )
 			else:
-				self.input =\
-				[
+				self.input = [
 					{
 						'role': 'user',
 						'content':
@@ -771,6 +775,49 @@ class Chat( AI ):
 			error.show( )
 	
 	
+	def summarize( self, prompt: str, path: str ) -> str:
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			elif path is None:
+				raise Exception( 'Argument "path" cannot be None' )
+			else:
+				self.file_path = path
+				self.file = client.files.create( file=open( self.file_path, 'rb' ),
+					purpose='user_data' )
+				
+				self.messages = [
+					{
+						'role': 'user',
+						'content': [
+							{
+								'type': 'file',
+								'file':
+									{
+										'file_id': file.id,
+									}
+							},
+							{
+								'type': 'text',
+								'text': 'What is the first dragon in the book?',
+							},
+						]
+					}
+				]
+				
+				# Create Completion
+				self.completion = client.chat.completions.create(
+					model=self.model,
+					messages=self.messages )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'summarize( self, prompt: str, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
@@ -779,7 +826,7 @@ class Chat( AI ):
 			
 		'''
 		return [ 'api_key', 'client', 'model', 'input',
-		         'generate_text', 'analyze_image' ]
+		         'generate_text', 'analyze_image', 'summarize' ]
 
 
 class LargeImage( AI ):
@@ -790,8 +837,9 @@ class LargeImage( AI ):
 	'''
 	def __init__( self ):
 		super( ).__init__( )
-		self.api_key = super( ).api_key
-		self.client = OpenAI( self.api_key )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI(  )
+		self.client.api_key = Header( ).api_key
 		self.quality = 'hd'
 		self.model = 'dall-e-3'
 	
@@ -820,8 +868,9 @@ class Image( AI ):
 	
 	def __init__( self ):
 		super( ).__init__( )
-		self.api_key = super( ).api_key
-		self.client = OpenAI( self.api_key )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI(  )
+		self.client.api_key = Header( ).api_key
 		self.quality = 'standard'
 		self.model = 'dall-e-2'
 	
@@ -850,10 +899,12 @@ class Assistant( AI ):
 	
 	def __init__( self ):
 		super( ).__init__( )
-		self.api_key = super( ).api_key
-		self.client = OpenAI( self.api_key )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI(  )
+		self.client.api_key = Header( ).api_key
 		self.model = 'gpt-4o-mini'
 		self.response_format = 'auto'
+		self.reasoning_effort = None
 		self.input_text = None
 		self.name = None
 		self.description = None
@@ -864,20 +915,20 @@ class Assistant( AI ):
 		self.temperature = 0.8
 	
 	
-	def generate_text( self, input: str ):
-		'''
-			method creating transciption object given an input: str
-		'''
+	def generate_text( self, prompt: str ) -> str:
 		try:
-			if input is None:
-				raise Exception( 'Argument "input" is required.' )
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
-				self.input_text = input
+				self.input_text = prompt
+				self.response = self.client.responses.create( model=self.model,
+					input=self.input_text )
+				return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Assistant'
-			exception.method = 'create( self, input: str )'
+			exception.cause = 'Chat'
+			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -892,10 +943,12 @@ class Bubba( AI ):
 	
 	def __init__( self ):
 		super( ).__init__( )
-		self.api_key = super( ).api_key
-		self.client = OpenAI( self.api_key )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI(  )
+		self.client.api_key = Header( ).api_key
 		self.model = 'gpt-4o-mini'
 		self.response_format = 'auto'
+		self.reasoning_effort = None
 		self.input_text = None
 		self.name = 'Bubba'
 		self.description = None
@@ -906,21 +959,20 @@ class Bubba( AI ):
 		self.temperature = 0.8
 	
 	
-	def generate_text( self, input: str ):
-		'''
-			method creating transciption object given an input: str
-		'''
+	def generate_text( self, prompt: str ) -> str:
 		try:
-			if input is None:
-				raise Exception( 'Argument "input" is required.' )
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
-				self.input_text = input
-				self.client.beta.threads.create( )
+				self.input_text = prompt
+				self.response = self.client.responses.create( model=self.model,
+					input=self.input_text )
+				return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Assistant'
-			exception.method = 'generate_text( self, input: str )'
+			exception.cause = 'Chat'
+			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -935,10 +987,12 @@ class Bro( AI ):
 	
 	def __init__( self ):
 		super( ).__init__( )
-		self.api_key = super( ).api_key
-		self.client = OpenAI( self.api_key )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI(  )
+		self.client.api_key = Header( ).api_key
 		self.model = 'gpt-4o-mini'
 		self.response_format = 'auto'
+		self.reasoning_effort = None
 		self.input_text = None
 		self.name = 'Bro'
 		self.description = None
@@ -949,20 +1003,20 @@ class Bro( AI ):
 		self.temperature = 0.8
 	
 	
-	def generate_text( self, input: str ):
-		'''
-			method creating transciption object given an input: str
-		'''
+	def generate_text( self, prompt: str ) -> str:
 		try:
-			if input is None:
-				raise Exception( 'Argument "input" is required.' )
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
-				self.input_text = input
+				self.input_text = prompt
+				self.response = self.client.responses.create( model=self.model,
+					input=self.input_text )
+				return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Assistant'
-			exception.method = 'generate_text( self, input: str )'
+			exception.cause = 'Chat'
+			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -980,8 +1034,9 @@ class TextToSpeech( AI ):
 			Constructor to generate_text TextToSpeech objects
 		'''
 		super( ).__init__( )
-		self.api_key = super( ).api_key
-		self.client = OpenAI( self.api_key )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI(  )
+		self.client.api_key = Header( ).api_key
 		self.model = 'tts-1-hd'
 		self.audio_path = None
 		self.response = None
@@ -1032,8 +1087,9 @@ class Transcription( AI ):
 	
 	def __init__( self ):
 		super( ).__init__( )
-		self.api_key = super( ).api_key
-		self.client = OpenAI( self.api_key )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI(  )
+		self.client.api_key = Header( ).api_key
 		self.model = 'whisper-1'
 		self.input_text = None
 		self.audio_file = None
@@ -1082,8 +1138,9 @@ class Translation( AI ):
 	
 	def __init__( self ):
 		super( ).__init__( )
-		self.api_key = super( ).api_key
-		self.client = OpenAI( self.api_key )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI(  )
+		self.client.api_key = Header( ).api_key
 		self.model = 'whisper-1'
 		self.audio_file = None
 		self.response = None
