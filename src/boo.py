@@ -816,8 +816,9 @@ class Chat( AI ):
 					}
 				]
 				
-				self.completion = client.chat.completions.create(
-					model=self.model, messages=self.messages )
+				self.completion = client.chat.completions.create( model=self.model,
+					messages=self.messages )
+				return self.completion.choices[ 0 ].message.content
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
@@ -838,8 +839,7 @@ class Chat( AI ):
 		        } ]
 				
 				self.response = client.chat.completions.create( model=self.model,
-					web_search_options={ },
-				    messages=self.messages )
+					web_search_options={ }, messages=self.messages )
 				
 				return  self.response.output_text
 		except Exception as e:
