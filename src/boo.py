@@ -731,6 +731,7 @@ class Chat( AI ):
 		self.image_url = None
 		self.response_format = 'auto'
 		self.tools = [ ]
+		self.vector_store_ids = [ 'vs_712r5W5833G6aLxIYIbuvVcK', 'vs_8fEoYp1zVvk5D8atfWLbEupN' ]
 		self.top_p = 0.9
 		self.temperature = 0.8
 	
@@ -815,10 +816,8 @@ class Chat( AI ):
 					}
 				]
 				
-				# Create Completion
 				self.completion = client.chat.completions.create(
-					model=self.model,
-					messages=self.messages )
+					model=self.model, messages=self.messages )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
@@ -832,9 +831,15 @@ class Chat( AI ):
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
-				self.response = client.responses.create( model=self.model,
-				    tools=[ { 'type': 'web_search_preview' } ],
-				    input=prompt )
+				self.messages = [
+		        {
+		            'role': 'user',
+		            'content': prompt,
+		        } ]
+				
+				self.response = client.chat.completions.create( model=self.model,
+					web_search_options={ },
+				    messages=self.messages )
 				
 				return  self.response.output_text
 		except Exception as e:
@@ -845,6 +850,29 @@ class Chat( AI ):
 			error = ErrorDialog( exception )
 			error.show( )
 
+	def search_file( self, prompt: str ) -> str:
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.tools = [
+				{
+					'type': 'file_search',
+					'vector_store_ids': self.vector_store_ids,
+					'max_num_results': 20
+				} ]
+				
+				self.response = client.responses.create( model=self.model,
+					tools=self.tools, input=prompt )
+				return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'search_file( self, prompt: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+		
 
 	def __dir__( self ) -> list[ str ]:
 		'''
