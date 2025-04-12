@@ -56,9 +56,9 @@ import traceback
 import numpy as np
 from pandas import read_csv as CsvReader
 from pandas import read_excel as ExcelReader
+import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasAgg
 import matplotlib.figure
-import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d.axes3d import get_test_data
 from matplotlib.ticker import NullFormatter
@@ -727,7 +727,7 @@ class EmailDialog( Dark ):
 			            [ sg.Text( ' ', size=_spc ), sg.Button( 'Send', size=_btn ),
 			              sg.Text( ' ', size=_btn ), sg.Button( 'Cancel', size=_btn ) ] ]
 			
-			_window = sg.Window( '  Booger', _layout,
+			_window = sg.Window( '  Send Message', _layout,
 				icon=self.icon_path,
 				size=self.form_size )
 			
@@ -2503,7 +2503,7 @@ class ListBoxDialog( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
+		return [ 'form_size', 'theme_background',
 		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
 		         'text_forecolor', 'text_backcolor', 'input_backcolor',
 		         'input_forecolor', 'button_color', 'button_backcolor',
@@ -2550,8 +2550,7 @@ class ListBoxDialog( Dark ):
 			
 			_window = sg.Window( '  Booger', _layout,
 				size=self.form_size,
-				font=self.theme_font,
-				icon=self.icon )
+				font=self.theme_font )
 			
 			while True:
 				_event, _values = _window.read( )
@@ -4326,12 +4325,12 @@ class GraphForm( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
+		return [ 'form_size', 'theme_background',
+		         'theme_textcolor', 'element_forecolor', 'element_backcolor',
+		         'text_backcolor', 'text_forecolor', 'input_backcolor',
 		         'input_forecolor', 'button_color', 'button_backcolor',
 		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
+		         'scrollbar_color', 'show' ]
 	
 	
 	def show( self ):
@@ -4857,7 +4856,7 @@ class InputWindow( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
-		self.form_size = (800, 600)
+		self.form_size = (520, 550)
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -4913,7 +4912,7 @@ class InputWindow( ):
 					                             [ sg.Text( 'Notes:' ) ],
 					                             [ sg.Multiline(
 						                             key='-NOTES-',
-						                             size=(25, 5) ) ],
+						                             size=(25, 3) ) ],
 					                             ], size=(235, 350),
 						pad=(0, 0) ) ] ] ) ], ], pad=(0, 0) )
 			
@@ -4985,7 +4984,7 @@ class Executable( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
-		self.form_size = (800, 600)
+		self.form_size = (600, 600)
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -5136,7 +5135,7 @@ class ThemeSelector( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
-		self.form_size = (400, 200)
+		self.form_size = (300, 400)
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -5160,7 +5159,7 @@ class ThemeSelector( ):
 
 		'''
 		try:
-			layout = [ [ sg.Text( 'Look and Feel Browser' ) ],
+			layout = [ [ sg.Text( 'UI Theme Browser' ) ],
 			           [ sg.Text( 'Click a look and feel color to see demo window' ) ],
 			           [ sg.Listbox( values=sg.theme_list( ),
 				           size=(20, 20), key='-LIST-', enable_events=True ) ],
@@ -5260,3 +5259,608 @@ class UrlImageViewer( ):
 			_exc.method = 'show( self)'
 			_err = ErrorDialog( _exc )
 			_err.show( )
+
+
+class AutoComplete( ):
+	"""
+	    Autocomplete input
+	
+	    There are 3 keyboard characters to be aware of:
+	    * Arrow up - Change selected item in list
+	    * Arrow down - Change selected item in list
+	    * Escape - Erase the input and start over
+	    * Return/Enter - use the current item selected from the list
+	
+	    You can easily remove the ignore case option by searching for the "Irnore Case" Check box
+	    key:
+	        '-IGNORE CASE-'
+	
+	    The variable "choices" holds the list of strings your program will match against.
+	    Even though the listbox of choices doesn't have a scrollbar visible, the list is longer
+	    than shown
+	        and using your keyboard more of it will br shown as you scroll down with the arrow keys
+	    The selection wraps around from the end to the start (and vicea versa). You can change
+	    this behavior to
+	        make it stay at the beignning or the end
+	"""
+	
+	
+	def __init__( self ):
+		sg.theme( 'DarkGrey15' )
+		sg.theme_input_text_color( '#FFFFFF' )
+		sg.theme_element_text_color( '#69B1EF' )
+		sg.theme_text_color( '#69B1EF' )
+		self.theme_background = sg.theme_background_color( )
+		self.theme_textcolor = sg.theme_text_color( )
+		self.element_forecolor = sg.theme_element_text_color( )
+		self.element_backcolor = sg.theme_background_color( )
+		self.text_backcolor = sg.theme_text_element_background_color( )
+		self.text_forecolor = sg.theme_element_text_color( )
+		self.input_forecolor = sg.theme_input_text_color( )
+		self.input_backcolor = sg.theme_input_background_color( )
+		self.button_backcolor = sg.theme_button_color_background( )
+		self.button_forecolor = sg.theme_button_color_text( )
+		self.button_color = sg.theme_button_color( )
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
+		self.scrollbar_color = '#755600'
+		sg.set_global_icon( icon=self.icon_path )
+		sg.set_options( font=self.theme_font )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+	
+	
+	def show( self ):
+		try:
+			self.choices = sorted( [ elem.__name__ for elem in sg.Element.__subclasses__( ) ] )
+			
+			self.input_width = 20
+			self.num_items_to_show = 4
+			
+			self.layout = [
+				[ sg.CB( 'Ignore Case', k='-IGNORE CASE-' ) ],
+				[ sg.Text( 'Input PySimpleGUI Element Name:' ) ],
+				[ sg.Input( size=(input_width, 1), enable_events=True, key='-IN-' ) ],
+				[ sg.pin( sg.Col( [ [ sg.Listbox( values=[ ], size=(self.input_width,
+				                                                    self.num_items_to_show),
+					enable_events=True, key='-BOX-',
+					select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, no_scrollbar=True ) ] ],
+					key='-BOX-CONTAINER-', pad=(0, 0), visible=False ) ) ]
+			]
+			
+			self.window = sg.Window( 'AutoComplete', self.layout,
+				return_keyboard_events=True,
+				finalize=True,
+				font=('Roboto', 11) )
+			
+			self.list_element: sg.Listbox = self.window.Element( '-BOX-' )
+			self.prediction_list, self.input_text, self.selected_item = [ ], "", 0
+			
+			# Event Loop
+			while True:
+				event, values = window.read( )
+				# print(event, values)
+				if event == sg.WINDOW_CLOSED:
+					break
+				# pressing down arrow will trigger event -IN- then aftewards event Down:40
+				elif event.startswith( 'Escape' ):
+					self.window[ '-IN-' ].update( '' )
+					self.window[ '-BOX-CONTAINER-' ].update( visible=False )
+				elif event.startswith( 'Down' ) and len( self.prediction_list ):
+					self.selected_item = (self.selected_item + 1) % len( self.prediction_list )
+					self.list_element.update( set_to_index=self.selected_item,
+						scroll_to_index=self.selected_item )
+				elif event.startswith( 'Up' ) and len( self.prediction_list ):
+					self.selected_item = (self.selected_item + (
+								len( self.prediction_list ) - 1)) % len( self.prediction_list )
+					self.list_element.update( set_to_index=self.selected_item,
+						scroll_to_index=self.selected_item )
+				elif event == '\r':
+					if len( values[ '-BOX-' ] ) > 0:
+						self.window[ '-IN-' ].update( value=values[ '-BOX-' ] )
+						self.window[ '-BOX-CONTAINER-' ].update( visible=False )
+				elif event == '-IN-':
+					text = values[ '-IN-' ] if not values[ '-IGNORE CASE-' ] else values[
+						'-IN-' ].lower( )
+					if text == self.input_text:
+						continue
+					else:
+						self.input_text = text
+					self.prediction_list = [ ]
+					if text:
+						if values[ '-IGNORE CASE-' ]:
+							self.prediction_list = [ item for item in self.choices if
+							                         item.lower( ).startswith( text ) ]
+						else:
+							self.prediction_list = [ item for item in self.choices if
+							                         item.startswith( text ) ]
+					
+					self.list_element.update( values=self.prediction_list )
+					self.selected_item = 0
+					self.list_element.update( set_to_index=self.selected_item )
+					
+					if len( self.prediction_list ) > 0:
+						self.window[ '-BOX-CONTAINER-' ].update( visible=True )
+					else:
+						self.window[ '-BOX-CONTAINER-' ].update( visible=False )
+				elif event == '-BOX-':
+					self.window[ '-IN-' ].update( value=values[ '-BOX-' ] )
+					self.window[ '-BOX-CONTAINER-' ].update( visible=False )
+			
+			self.window.close( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Booger'
+			_exc.cause = 'UrlImageViewer'
+			_exc.method = 'show( self)'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+class CheckBox( ):
+	"""
+
+	    The Base64 Image encoding feature of PySimpleGUI makes it possible to create beautiful GUIs
+	    very simply
+
+	    These 2 checkboxes required 3 extra lines of code than a normal checkbox.
+	    1. Keep track of the current value using the Image Element's Metadata
+	    2. Changle / Update the image when clicked
+	    3. The Base64 image definition
+
+	    Enable the event on the Image with the checkbox so that you can take action (flip the value)
+
+	"""
+	def __init__(self):
+		sg.theme( 'DarkGrey15' )
+		sg.theme_input_text_color( '#FFFFFF' )
+		sg.theme_element_text_color( '#69B1EF' )
+		sg.theme_text_color( '#69B1EF' )
+		self.theme_background = sg.theme_background_color( )
+		self.theme_textcolor = sg.theme_text_color( )
+		self.element_forecolor = sg.theme_element_text_color( )
+		self.element_backcolor = sg.theme_background_color( )
+		self.text_backcolor = sg.theme_text_element_background_color( )
+		self.text_forecolor = sg.theme_element_text_color( )
+		self.input_forecolor = sg.theme_input_text_color( )
+		self.input_backcolor = sg.theme_input_background_color( )
+		self.button_backcolor = sg.theme_button_color_background( )
+		self.button_forecolor = sg.theme_button_color_text( )
+		self.button_color = sg.theme_button_color( )
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
+		self.scrollbar_color = '#755600'
+		sg.set_global_icon( icon=self.icon_path )
+		sg.set_options( font=self.theme_font )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+	
+	def show( self ):
+		try:
+		    layout = [ [ sg.Text( 'Fancy Checkboxes... Simply' ) ],
+		               [ sg.Image( checked, key=('-IMAGE-', 1), metadata=True, enable_events=True ),
+		                 sg.Text( True, enable_events=True, k=('-TEXT-', 1) ) ],
+		               [ sg.Image( unchecked, key=('-IMAGE-', 2), metadata=False, enable_events=True ),
+		                 sg.Text( False, enable_events=True, k=('-TEXT-', 2) ) ],
+		               [ sg.Button( 'Go' ), sg.Button( 'Exit' ) ] ]
+		    
+		    window = sg.Window( 'Custom Checkboxes', layout, font="_ 14" )
+		    while True:
+		        event, values = window.read( )
+		        print( event, values )
+		        if event == sg.WIN_CLOSED or event == 'Exit':
+		            break
+		        # if a checkbox is clicked, flip the vale and the image
+		        if event[ 0 ] in ('-IMAGE-', '-TEXT-'):
+		            cbox_key = ('-IMAGE-', event[ 1 ])
+		            text_key = ('-TEXT-', event[ 1 ])
+		            window[ cbox_key ].metadata = not window[ cbox_key ].metadata
+		            window[ cbox_key ].update( checked if window[ cbox_key ].metadata else unchecked )
+		            # Update the string next to the checkbox
+		            window[ text_key ].update( window[ cbox_key ].metadata )
+		    
+		    window.close( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Booger'
+			_exc.cause = 'UrlImageViewer'
+			_exc.method = 'show( self)'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+
+
+
+class MachineLearningWindow( ):
+	'''
+	
+	'''
+	def __init__(self):
+		sg.theme( 'DarkGrey15' )
+		sg.theme_input_text_color( '#FFFFFF' )
+		sg.theme_element_text_color( '#69B1EF' )
+		sg.theme_text_color( '#69B1EF' )
+		self.theme_background = sg.theme_background_color( )
+		self.theme_textcolor = sg.theme_text_color( )
+		self.element_forecolor = sg.theme_element_text_color( )
+		self.element_backcolor = sg.theme_background_color( )
+		self.text_backcolor = sg.theme_text_element_background_color( )
+		self.text_forecolor = sg.theme_element_text_color( )
+		self.input_forecolor = sg.theme_input_text_color( )
+		self.input_backcolor = sg.theme_input_background_color( )
+		self.button_backcolor = sg.theme_button_color_background( )
+		self.button_forecolor = sg.theme_button_color_text( )
+		self.button_color = sg.theme_button_color( )
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
+		self.scrollbar_color = '#755600'
+		sg.set_global_icon( icon=self.icon_path )
+		sg.set_options( font=self.theme_font )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+	
+	def __build_window( self ):
+		'''
+		
+			Method that builds the window
+		
+		'''
+		try:
+			sg.set_options( text_justification='right' )
+			
+			flags = [ [ sg.CB( 'Normalize', size=(12, 1), default=True ),
+			            sg.CB( 'Verbose', size=(20, 1) ) ],
+			          [ sg.CB( 'Cluster', size=(12, 1) ), sg.CB(
+				          'Flush Output', size=(20, 1), default=True ) ],
+			          [ sg.CB( 'Write Results', size=(12, 1) ), sg.CB(
+				          'Keep Intermediate Data', size=(20, 1) ) ],
+			          [ sg.CB( 'Normalize', size=(12, 1), default=True ),
+			            sg.CB( 'Verbose', size=(20, 1) ) ],
+			          [ sg.CB( 'Cluster', size=(12, 1) ), sg.CB(
+				          'Flush Output', size=(20, 1), default=True ) ],
+			          [ sg.CB( 'Write Results', size=(12, 1) ),
+			            sg.CB( 'Keep Intermediate Data', size=(20, 1) ) ], ]
+			
+			loss_functions = [ [ sg.Rad( 'Cross-Entropy', 'loss', size=(12, 1) ),
+			                     sg.Rad( 'Logistic', 'loss', default=True, size=(12, 1) ) ],
+			                   [ sg.Rad( 'Hinge', 'loss', size=(12, 1) ),
+			                     sg.Rad( 'Huber', 'loss', size=(12, 1) ) ],
+			                   [ sg.Rad( 'Kullerback', 'loss', size=(12, 1) ),
+			                     sg.Rad( 'MAE(L1)', 'loss', size=(12, 1) ) ],
+			                   [ sg.Rad( 'MSE(L2)', 'loss', size=(12, 1) ),
+			                     sg.Rad( 'MB(L0)', 'loss', size=(12, 1) ) ], ]
+			
+			command_line_parms = [ [ sg.Text( 'Passes', size=(8, 1) ),
+			                         sg.Spin( values=[ i for i in range( 1, 1000 ) ],
+				                         initial_value=20, size=(6, 1) ),
+			                         sg.Text( 'Steps', size=(8, 1), pad=((7, 3)) ),
+			                         sg.Spin( values=[ i for i in range( 1, 1000 ) ],
+				                         initial_value=20, size=(6, 1) ) ],
+			                       [ sg.Text( 'ooa', size=(8, 1) ),
+			                         sg.Input( default_text='6', size=(8, 1) ),
+			                         sg.Text( 'nn', size=(8, 1) ),
+			                         sg.Input( default_text='10', size=(10, 1) ) ],
+			                       [ sg.Text( 'q', size=(8, 1) ),
+			                         sg.Input( default_text='ff', size=(8, 1) ),
+			                         sg.Text( 'ngram', size=(8, 1) ),
+			                         sg.Input( default_text='5', size=(10, 1) ) ],
+			                       [ sg.Text( 'l', size=(8, 1) ),
+			                         sg.Input( default_text='0.4', size=(8, 1) ),
+			                         sg.Text( 'Layers', size=(8, 1) ),
+			                         sg.Drop( values=('BatchNorm', 'other') ) ], ]
+			
+			layout = [ [ sg.Frame( 'Command Line Parameteres', command_line_parms,
+				title_color='green', font='Any 12' ) ],
+			           [ sg.Frame( 'Flags', flags, font='Any 12', title_color='blue' ) ],
+			           [ sg.Frame( 'Loss Functions', loss_functions,
+				           font='Any 12', title_color='red' ) ],
+			           [ sg.Submit( ), sg.Cancel( ) ] ]
+			
+			sg.set_options( text_justification='left' )
+			
+			window = sg.Window( 'Machine Learning',
+				layout, font=("Helvetica", 12) )
+			button, values = window.read( )
+			window.close( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Booger'
+			_exc.cause = 'MachineLearningWindow'
+			_exc.method = '__build_window( self)'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	def __custom_meter( self ):
+		'''
+		
+			Method that creates custom meter
+		
+		'''
+		try:
+			# layout the form
+			layout = [ [ sg.Text( 'A custom progress meter' ) ],
+			           [ sg.ProgressBar( 1000, orientation='h',
+				           size=(20, 20), key='progress' ) ],
+			           [ sg.Cancel( ) ] ]
+			
+			# create the form`
+			window = sg.Window( 'Custom Progress Meter', layout )
+			progress_bar = window[ 'progress' ]
+			# loop that would normally do something useful
+			for i in range( 1000 ):
+				# check to see if the cancel button was clicked and exit loop if clicked
+				event, values = window.read( timeout=0, timeout_key='timeout' )
+				if event == 'Cancel' or event == None:
+					break
+				# update bar with loop value +1 so that bar eventually reaches the maximum
+				progress_bar.update_bar( i + 1 )
+			# done with loop... need to destroy the window as it's still open
+			window.CloseNonBlocking( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Booger'
+			_exc.cause = 'MachineLearningWindow'
+			_exc.method = '__custom_meter( self)'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	def show( self ):
+		try:
+			self.__custom_meter( )
+			self.__build_window( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Booger'
+			_exc.cause = 'MachineLearningWindow'
+			_exc.method = 'show( self)'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+class PlotStyle( ):
+	"""
+
+	    Matplotlib Non-interactive Embedded with Theme and Style selection
+
+	    This demo is based on the Matplotlib "TEMPLATE" demo that is a general purpose, display-only
+	    demo as only the image of the plot is shown.  None of the buttons and interactive parts
+	    of the MAtplotlib interface are included.
+
+	    This demo adds the ability to change the Window's "Theme" and the Matplotlib's "Style".
+	    It gives you a way to quickly see how well a theme is going to match a particular Matplotlib Style.
+
+	"""
+	def __init__( self ):
+		sg.theme( 'DarkGrey15' )
+		sg.theme_input_text_color( '#FFFFFF' )
+		sg.theme_element_text_color( '#69B1EF' )
+		sg.theme_text_color( '#69B1EF' )
+		self.theme_background = sg.theme_background_color( )
+		self.theme_textcolor = sg.theme_text_color( )
+		self.element_forecolor = sg.theme_element_text_color( )
+		self.element_backcolor = sg.theme_background_color( )
+		self.text_backcolor = sg.theme_text_element_background_color( )
+		self.text_forecolor = sg.theme_element_text_color( )
+		self.input_forecolor = sg.theme_input_text_color( )
+		self.input_backcolor = sg.theme_input_background_color( )
+		self.button_backcolor = sg.theme_button_color_background( )
+		self.button_forecolor = sg.theme_button_color_text( )
+		self.button_color = sg.theme_button_color( )
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
+		self.scrollbar_color = '#755600'
+		sg.set_global_icon( icon=self.icon_path )
+		sg.set_options( font=self.theme_font )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+	
+	
+	def create_axis_grid( ):
+		from mpl_toolkits.axes_grid1.axes_rgb import RGBAxes
+		
+		plt.close( 'all' )
+		
+		
+		def get_demo_image( ):
+			# prepare image
+			delta = 0.5
+			
+			extent = (-3, 4, -4, 3)
+			x = np.arange( -3.0, 4.001, delta )
+			y = np.arange( -4.0, 3.001, delta )
+			X, Y = np.meshgrid( x, y )
+			Z1 = np.exp( -X ** 2 - Y ** 2 )
+			Z2 = np.exp( -(X - 1) ** 2 - (Y - 1) ** 2 )
+			Z = (Z1 - Z2) * 2
+			
+			return Z, extent
+		
+		
+		def get_rgb( ):
+			Z, extent = get_demo_image( )
+			
+			Z[ Z < 0 ] = 0.
+			Z = Z / Z.max( )
+			
+			R = Z[ :13, :13 ]
+			G = Z[ 2:, 2: ]
+			B = Z[ :13, 2: ]
+			
+			return R, G, B
+		
+		
+		fig = plt.figure( 1 )
+		ax = RGBAxes( fig, [ 0.1, 0.1, 0.8, 0.8 ] )
+		
+		r, g, b = get_rgb( )
+		kwargs = dict( origin="lower", interpolation="nearest" )
+		ax.imshow_rgb( r, g, b, **kwargs )
+		
+		ax.RGB.set_xlim( 0., 9.5 )
+		ax.RGB.set_ylim( 0.9, 10.6 )
+		
+		plt.draw( )
+		return plt.gcf( )
+	
+	
+	def create_figure( ):
+		# ------------------------------- START OF YOUR MATPLOTLIB CODE -------------------------------
+		fig = matplotlib.figure.Figure( figsize=(5, 4), dpi=100 )
+		t = np.arange( 0, 3, .01 )
+		fig.add_subplot( 111 ).plot( t, 2 * np.sin( 2 * np.pi * t ) )
+		
+		return fig
+	
+	
+	def create_subplot_3d( ):
+		fig = plt.figure( )
+		
+		ax = fig.add_subplot( 1, 2, 1, projection='3d' )
+		X = np.arange( -5, 5, 0.25 )
+		Y = np.arange( -5, 5, 0.25 )
+		X, Y = np.meshgrid( X, Y )
+		R = np.sqrt( X ** 2 + Y ** 2 )
+		Z = np.sin( R )
+		surf = ax.plot_surface( X, Y, Z, rstride=1, cstride=1, cmap=cm.jet,
+			linewidth=0, antialiased=False )
+		ax.set_zlim3d( -1.01, 1.01 )
+		
+		fig.colorbar( surf, shrink=0.5, aspect=5 )
+		
+		ax = fig.add_subplot( 1, 2, 2, projection='3d' )
+		X, Y, Z = get_test_data( 0.05 )
+		ax.plot_wireframe( X, Y, Z, rstride=10, cstride=10 )
+		return fig
+	
+	
+	def create_pyplot_scales( ):
+		plt.close( 'all' )
+		# Fixing random state for reproducibility
+		np.random.seed( 19680801 )
+		
+		# make up some data in the interval ]0, 1[
+		y = np.random.normal( loc=0.5, scale=0.4, size=1000 )
+		y = y[ (y > 0) & (y < 1) ]
+		y.sort( )
+		x = np.arange( len( y ) )
+		
+		# plot with various axes scales
+		plt.figure( 1 )
+		
+		# linear
+		plt.subplot( 221 )
+		plt.plot( x, y )
+		plt.yscale( 'linear' )
+		plt.title( 'linear' )
+		plt.grid( True )
+		
+		# log
+		plt.subplot( 222 )
+		plt.plot( x, y )
+		plt.yscale( 'log' )
+		plt.title( 'log' )
+		plt.grid( True )
+		
+		# symmetric log
+		plt.subplot( 223 )
+		plt.plot( x, y - y.mean( ) )
+		plt.yscale( 'symlog', linthreshy=0.01 )
+		plt.title( 'symlog' )
+		plt.grid( True )
+		
+		# logit
+		plt.subplot( 224 )
+		plt.plot( x, y )
+		plt.yscale( 'logit' )
+		plt.title( 'logit' )
+		plt.grid( True )
+		# Format the minor tick labels of the y-axis into empty strings with
+		# `NullFormatter`, to avoid cumbering the axis with too many labels.
+		plt.gca( ).yaxis.set_minor_formatter( NullFormatter( ) )
+		# Adjust the subplot layout, because the logit one may take more space
+		# than usual, due to y-tick labels like "1 - 10^{-3}"
+		plt.subplots_adjust( top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.25,
+			wspace=0.35 )
+		return plt.gcf( )
+	
+	
+	# ----------------------------- The draw figure helpful function -----------------------------
+	def draw_figure( element, figure ):
+		"""
+		Draws the previously created "figure" in the supplied Image Element
+
+		:param element: an Image Element
+		:param figure: a Matplotlib figure
+		:return: The figure canvas
+		"""
+		
+		plt.close( 'all' )  # erases previously drawn plots
+		canv = FigureCanvasAgg( figure )
+		buf = io.BytesIO( )
+		canv.print_figure( buf, format='png' )
+		if buf is None:
+			return None
+		buf.seek( 0 )
+		element.update( data=buf.read( ) )
+		return canv
+	
+	
+	dictionary_of_figures = { 'Axis Grid': create_axis_grid,
+	                          'Subplot 3D': create_subplot_3d,
+	                          'Scales': create_pyplot_scales,
+	                          'Basic Figure': create_figure }
+	
+	
+	# ----------------------------- The GUI Section -----------------------------
+	def create_window( ):
+		"""
+		Defines the window's layout and creates the window object.
+		This function is used so that the window's theme can be changed and the window "re-started".
+
+		:return: The Window object
+		:rtype: sg.Window
+		"""
+		
+		left_col = [ [ sg.T( 'Figures to Draw' ) ],
+		             [ sg.Listbox( list( dictionary_of_figures ),
+			             default_values=[ list( dictionary_of_figures )[ 0 ] ], size=(15, 5),
+			             key='-LB-' ) ],
+		             [ sg.T( 'Matplotlib Styles' ) ],
+		             [ sg.Combo( plt.style.available, size=(15, 10), key='-STYLE-' ) ],
+		             [ sg.T( 'PySimpleGUI Themes' ) ],
+		             [ sg.Combo( sg.theme_list( ), default_value=sg.theme( ), size=(15, 10),
+			             key='-THEME-' ) ] ]
+		
+		layout = [ [ sg.T( 'Matplotlib Example', font='Any 20' ) ],
+		           [ sg.Col( left_col ), sg.Image( key='-IMAGE-' ) ],
+		           [ sg.B( 'Draw' ), sg.B( 'Exit' ) ] ]
+		
+		window = sg.Window( 'Matplotlib Embedded Template', layout, finalize=True )
+		
+		return window
+	
+	
+	def show( ):
+		try:
+			window = create_window( )
+			
+			while True:
+				event, values = window.read( )
+				print( event, values )
+				if event == 'Exit' or event == sg.WIN_CLOSED:
+					break
+				if event == 'Draw':
+					if values[ '-THEME-' ] != sg.theme( ):  # if new theme chosen, create a new window
+						window.close( )
+						sg.theme( values[ '-THEME-' ] )
+						window = create_window( )
+					if values[ '-LB-' ]:  # make sure something selected to draw
+						func = dictionary_of_figures[ values[ '-LB-' ][ 0 ] ]
+						if values[ '-STYLE-' ]:
+							plt.style.use( values[ '-STYLE-' ] )
+						draw_figure( window[ '-IMAGE-' ], func( ) )
+			
+			window.close( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Booger'
+			_exc.cause = 'PlotStyle'
+			_exc.method = 'show( self)'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+

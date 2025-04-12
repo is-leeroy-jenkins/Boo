@@ -911,6 +911,7 @@ class Assistant( AI ):
 		self.id = None
 		self.metadata = { }
 		self.tools = [ ]
+		self.assistants = None
 		self.top_p = 0.9
 		self.temperature = 0.8
 	
@@ -932,6 +933,23 @@ class Assistant( AI ):
 			error = ErrorDialog( exception )
 			error.show( )
 
+
+	def list( self ) -> list:
+		'''
+		
+			Method that returns a list of available assistants
+			
+		'''
+		try:
+			self.assistants = self.client.beta.assistants.list( order="desc", limit="20" )
+			return self.assistants.data
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'generate_text( self, prompt: str )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 class Bubba( AI ):
 	'''
@@ -1055,8 +1073,9 @@ class TextToSpeech( AI ):
 			else:
 				self.audio_path = Path( path ).parent  # 'speech.mp3'
 				self.prompt = prompt
-				self.response = self.client.audio.speech.create( model=self.model, voice='alloy',
-					input=prompt )
+				self.response = self.client.audio.speech.create( model=self.model,
+					voice='alloy', input=self.prompt )
+				
 				self.response.stream_to_file( self.audio_path )
 		except Exception as e:
 			exception = Error( e )
@@ -1074,7 +1093,7 @@ class TextToSpeech( AI ):
 			Returns: list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
+		return [ 'api_key', 'client', 'model', 'input', 'create' ]
 
 
 class Transcription( AI ):
