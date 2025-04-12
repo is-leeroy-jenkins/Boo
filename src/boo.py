@@ -228,12 +228,21 @@ class AI( ):
 	AI is the base class for all OpenAI functionalityl
 	'''
 	
+	
 	def __init__( self ):
 		self.header = Header( )
 		self.endpoint = EndPoint( )
 		self.api_key = self.header.api_key
 		self.client = OpenAI( api_key=self.api_key )
-		self.system_instructions = '''You are the most knowledgeable Budget Analyst in the federal
+		self.bro_instructions = '''
+		You are an assistant who is the most knowledgeable Data Scientist in the world.   You
+		provide detailed responses based on your vast knowledge of federal appropriations and your
+		knowledge of computer programming.  Your responses to questions are always complete and
+		detailed using an academic format.  Your vast knowledge of and experience in Data Science
+		makes you the best Analyst in the world. You are an expert programmer proficient in C#,
+		Python, SQL, C++, JavaScript, and VBA.  Your name is Bro because your code just works!
+		'''
+		self.bubba_instructions = '''You are the most knowledgeable Budget Analyst in the federal
 		government who provides detailed responses based on your vast knowledge of budget
 		legislation, and federal appropriations. Your responses to questions about federal finance
 		are complete, transparent, and very detailed using an academic format. Your vast knowledge
@@ -535,7 +544,6 @@ class AdaptiveLinearNeuron( ):
 		         'n_iter', 'eta', 'random_state', 'embedding-3-small' ]
 
 
-						
 class SmallEmbedding( AI ):
 	'''
 
@@ -706,10 +714,12 @@ class Chat( AI ):
 		Class proiding Chat object functionality
 
 	'''
+	
+	
 	def __init__( self ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
-		self.client = OpenAI(  )
+		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'gpt-4o-mini'
 		self.response = None
@@ -752,15 +762,15 @@ class Chat( AI ):
 					{
 						'role': 'user',
 						'content':
-						[
-							{ 'type': 'input_text',
-							  'text': prompt
-							},
-							{
-								'type': 'input_image',
-								'image_url': url
-							}
-						]
+							[
+								{ 'type': 'input_text',
+								  'text': prompt
+								  },
+								{
+									'type': 'input_image',
+									'image_url': url
+								}
+							]
 					}
 				]
 				
@@ -817,7 +827,25 @@ class Chat( AI ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	
+	def search_web( self, prompt: str ) -> str:
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.response = client.responses.create( model=self.model,
+				    tools=[ { 'type': 'web_search_preview' } ],
+				    input=prompt )
+				
+				return  self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'search_web( self, prompt: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
@@ -826,7 +854,8 @@ class Chat( AI ):
 			
 		'''
 		return [ 'api_key', 'client', 'model', 'input',
-		         'generate_text', 'analyze_image', 'summarize' ]
+		         'generate_text', 'analyze_image', 'summarize',
+		         'search_web' ]
 
 
 class LargeImage( AI ):
@@ -835,10 +864,12 @@ class LargeImage( AI ):
 		Class proiding Response objects
 
 	'''
+	
+	
 	def __init__( self ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
-		self.client = OpenAI(  )
+		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.quality = 'hd'
 		self.model = 'dall-e-3'
@@ -869,7 +900,7 @@ class Image( AI ):
 	def __init__( self ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
-		self.client = OpenAI(  )
+		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.quality = 'standard'
 		self.model = 'dall-e-2'
@@ -900,7 +931,8 @@ class Assistant( AI ):
 	def __init__( self ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
-		self.client = OpenAI(  )
+		self.system_instructions = AI( ).bubba_instructions
+		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'gpt-4o-mini'
 		self.response_format = 'auto'
@@ -932,8 +964,8 @@ class Assistant( AI ):
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
-
-
+	
+	
 	def list( self ) -> list:
 		'''
 		
@@ -951,6 +983,7 @@ class Assistant( AI ):
 			error = ErrorDialog( exception )
 			error.show( )
 
+
 class Bubba( AI ):
 	'''
 
@@ -962,7 +995,8 @@ class Bubba( AI ):
 	def __init__( self ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
-		self.client = OpenAI(  )
+		self.system_instructions = AI( ).bubba_instructions
+		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'gpt-4o-mini'
 		self.response_format = 'auto'
@@ -1006,7 +1040,8 @@ class Bro( AI ):
 	def __init__( self ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
-		self.client = OpenAI(  )
+		self.system_instructions = AI( ).bro_instructions
+		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'gpt-4o-mini'
 		self.response_format = 'auto'
@@ -1053,7 +1088,7 @@ class TextToSpeech( AI ):
 		'''
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
-		self.client = OpenAI(  )
+		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'tts-1-hd'
 		self.audio_path = None
@@ -1107,7 +1142,7 @@ class Transcription( AI ):
 	def __init__( self ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
-		self.client = OpenAI(  )
+		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'whisper-1'
 		self.input_text = None
@@ -1158,7 +1193,7 @@ class Translation( AI ):
 	def __init__( self ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
-		self.client = OpenAI(  )
+		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'whisper-1'
 		self.audio_file = None

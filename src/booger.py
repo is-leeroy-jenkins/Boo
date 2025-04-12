@@ -2113,7 +2113,7 @@ class PdfForm( Dark ):
             Returns a list[ str ] of member names
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
+		return [ 'form_size', 'theme_background',
 		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
 		         'text_forecolor', 'text_backcolor', 'input_backcolor',
 		         'input_forecolor', 'button_color', 'button_backcolor',
@@ -3427,13 +3427,13 @@ class BudgetForm( Dark ):
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
 		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\app\Application.png'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
 		self.form_size = (1200, 650)
-		self.image = os.getcwd( ) + r'\resources\img\app\Application.png'
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -3565,7 +3565,7 @@ class BudgetForm( Dark ):
 				_exc = Error( e )
 				_exc.module = 'Booger'
 				_exc.cause = 'BudgetForm'
-				_exc.method = 'setfirsttext( self, items )'
+				_exc.method = 'create_first( self, items: list ) -> list'
 				_err = ErrorDialog( _exc )
 				_err.show( )
 	
@@ -3709,7 +3709,7 @@ class BudgetForm( Dark ):
 			BPAD_LEFT_INSIDE = (5, (5, 5))
 			BPAD_RIGHT = ((5, 5), (5, 5))
 			_hdr = 'Roboto 20'
-			_li = 'Roboto 10'
+			_li = 'Roboto 11'
 			_frasz = (450, 150)
 			_hdrsz = (920, 100)
 			_layout = [
@@ -3768,7 +3768,7 @@ class BudgetForm( Dark ):
 			BPAD_LEFT_INSIDE = (5, (5, 5))
 			BPAD_RIGHT = ((5, 5), (5, 5))
 			_hdr = 'Roboto 20'
-			_li = 'Roboto 10'
+			_li = 'Roboto 11'
 			_frasz = (450, 150)
 			_hdrsz = (920, 100)
 			self.__titlelayout = [
@@ -5319,7 +5319,7 @@ class AutoComplete( ):
 			self.layout = [
 				[ sg.CB( 'Ignore Case', k='-IGNORE CASE-' ) ],
 				[ sg.Text( 'Input PySimpleGUI Element Name:' ) ],
-				[ sg.Input( size=(input_width, 1), enable_events=True, key='-IN-' ) ],
+				[ sg.Input( size=(self.input_width, 1), enable_events=True, key='-IN-' ) ],
 				[ sg.pin( sg.Col( [ [ sg.Listbox( values=[ ], size=(self.input_width,
 				                                                    self.num_items_to_show),
 					enable_events=True, key='-BOX-',
@@ -5337,7 +5337,7 @@ class AutoComplete( ):
 			
 			# Event Loop
 			while True:
-				event, values = window.read( )
+				event, values = self.window.read( )
 				# print(event, values)
 				if event == sg.WINDOW_CLOSED:
 					break
@@ -5394,8 +5394,8 @@ class AutoComplete( ):
 			_exc.method = 'show( self)'
 			_err = ErrorDialog( _exc )
 			_err.show( )
-	
-	
+
+
 class CheckBox( ):
 	"""
 
@@ -5407,10 +5407,13 @@ class CheckBox( ):
 	    2. Changle / Update the image when clicked
 	    3. The Base64 image definition
 
-	    Enable the event on the Image with the checkbox so that you can take action (flip the value)
+	    Enable the event on the Image with the checkbox so that you can take action (flip the
+	    value)
 
 	"""
-	def __init__(self):
+	
+	
+	def __init__( self ):
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
 		sg.theme_element_text_color( '#69B1EF' )
@@ -5432,32 +5435,44 @@ class CheckBox( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		self.checked = \
+			(
+				b'iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAKMGlDQ1BJQ0MgUHJvZmlsZQAAeJydlndUVNcWh8'
+				b'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')
+		self.unchecked = \
+			(
+				b'iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAKMGlDQ1BJQ0MgUHJvZmlsZQAAeJydlndUVNcWh8'
+				b'+9d3qhzTAUKUPvvQ0gvTep0kRhmBlgKAMOMzSxIaICEUVEBBVBgiIGjIYisSKKhYBgwR6QIKDEYBRRUXkzslZ05eW9l5ffH2d9a5+99z1n733WugCQvP25vHRYCoA0noAf4uVKj4yKpmP7AQzwAAPMAGCyMjMCQj3DgEg+Hm70TJET+CIIgDd3xCsAN428g+h08P9JmpXBF4jSBInYgs3JZIm4UMSp2YIMsX1GxNT4FDHDKDHzRQcUsbyYExfZ8LPPIjuLmZ3GY4tYfOYMdhpbzD0i3pol5IgY8RdxURaXky3iWyLWTBWmcUX8VhybxmFmAoAiie0CDitJxKYiJvHDQtxEvBQAHCnxK47/igWcHIH4Um7pGbl8bmKSgK7L0qOb2doy6N6c7FSOQGAUxGSlMPlsult6WgaTlwvA4p0/S0ZcW7qoyNZmttbWRubGZl8V6r9u/k2Je7tIr4I/9wyi9X2x/ZVfej0AjFlRbXZ8scXvBaBjMwDy97/YNA8CICnqW/vAV/ehieclSSDIsDMxyc7ONuZyWMbigv6h/+nwN/TV94zF6f4oD92dk8AUpgro4rqx0lPThXx6ZgaTxaEb/XmI/3HgX5/DMISTwOFzeKKIcNGUcXmJonbz2FwBN51H5/L+UxP/YdiftDjXIlEaPgFqrDGQGqAC5Nc+gKIQARJzQLQD/dE3f3w4EL+8CNWJxbn/LOjfs8Jl4iWTm/g5zi0kjM4S8rMW98TPEqABAUgCKlAAKkAD6AIjYA5sgD1wBh7AFwSCMBAFVgEWSAJpgA+yQT7YCIpACdgBdoNqUAsaQBNoASdABzgNLoDL4Dq4AW6DB2AEjIPnYAa8AfMQBGEhMkSBFCBVSAsygMwhBuQIeUD+UAgUBcVBiRAPEkL50CaoBCqHqqE6qAn6HjoFXYCuQoPQPWgUmoJ+h97DCEyCqbAyrA2bwAzYBfaDw+CVcCK8Gs6DC+HtcBVcDx+D2+EL8HX4NjwCP4dnEYAQERqihhghDMQNCUSikQSEj6xDipFKpB5pQbqQXuQmMoJMI+9QGBQFRUcZoexR3qjlKBZqNWodqhRVjTqCakf1oG6iRlEzqE9oMloJbYC2Q/ugI9GJ6Gx0EboS3YhuQ19C30aPo99gMBgaRgdjg/HGRGGSMWswpZj9mFbMecwgZgwzi8ViFbAGWAdsIJaJFWCLsHuxx7DnsEPYcexbHBGnijPHeeKicTxcAa4SdxR3FjeEm8DN46XwWng7fCCejc/Fl+Eb8F34Afw4fp4gTdAhOBDCCMmEjYQqQgvhEuEh4RWRSFQn2hKDiVziBmIV8TjxCnGU+I4kQ9InuZFiSELSdtJh0nnSPdIrMpmsTXYmR5MF5O3kJvJF8mPyWwmKhLGEjwRbYr1EjUS7xJDEC0m8pJaki+QqyTzJSsmTkgOS01J4KW0pNymm1DqpGqlTUsNSs9IUaTPpQOk06VLpo9JXpSdlsDLaMh4ybJlCmUMyF2XGKAhFg+JGYVE2URoolyjjVAxVh+pDTaaWUL+j9lNnZGVkLWXDZXNka2TPyI7QEJo2zYeWSiujnaDdob2XU5ZzkePIbZNrkRuSm5NfIu8sz5Evlm+Vvy3/XoGu4KGQorBToUPhkSJKUV8xWDFb8YDiJcXpJdQl9ktYS4qXnFhyXwlW0lcKUVqjdEipT2lWWUXZSzlDea/yReVpFZqKs0qySoXKWZUpVYqqoypXtUL1nOozuizdhZ5Kr6L30GfUlNS81YRqdWr9avPqOurL1QvUW9UfaRA0GBoJGhUa3RozmqqaAZr5ms2a97XwWgytJK09Wr1ac9o62hHaW7Q7tCd15HV8dPJ0mnUe6pJ1nXRX69br3tLD6DH0UvT2693Qh/Wt9JP0a/QHDGADawOuwX6DQUO0oa0hz7DecNiIZORilGXUbDRqTDP2Ny4w7jB+YaJpEm2y06TX5JOplWmqaYPpAzMZM1+zArMus9/N9c1Z5jXmtyzIFp4W6y06LV5aGlhyLA9Y3rWiWAVYbbHqtvpobWPNt26xnrLRtImz2WczzKAyghiljCu2aFtX2/W2p23f2VnbCexO2P1mb2SfYn/UfnKpzlLO0oalYw7qDkyHOocRR7pjnONBxxEnNSemU73TE2cNZ7Zzo/OEi55Lsssxlxeupq581zbXOTc7t7Vu590Rdy/3Yvd+DxmP5R7VHo891T0TPZs9Z7ysvNZ4nfdGe/t57/Qe9lH2Yfk0+cz42viu9e3xI/mF+lX7PfHX9+f7dwXAAb4BuwIeLtNaxlvWEQgCfQJ3BT4K0glaHfRjMCY4KLgm+GmIWUh+SG8oJTQ29GjomzDXsLKwB8t1lwuXd4dLhseEN4XPRbhHlEeMRJpEro28HqUYxY3qjMZGh0c3Rs+u8Fixe8V4jFVMUcydlTorc1ZeXaW4KnXVmVjJWGbsyTh0XETc0bgPzEBmPXM23id+X/wMy421h/Wc7cyuYE9xHDjlnIkEh4TyhMlEh8RdiVNJTkmVSdNcN24192Wyd3Jt8lxKYMrhlIXUiNTWNFxaXNopngwvhdeTrpKekz6YYZBRlDGy2m717tUzfD9+YyaUuTKzU0AV/Uz1CXWFm4WjWY5ZNVlvs8OzT+ZI5/By+nL1c7flTuR55n27BrWGtaY7Xy1/Y/7oWpe1deugdfHrutdrrC9cP77Ba8ORjYSNKRt/KjAtKC94vSliU1ehcuGGwrHNXpubiySK+EXDW+y31G5FbeVu7d9msW3vtk/F7OJrJaYllSUfSlml174x+6bqm4XtCdv7y6zLDuzA7ODtuLPTaeeRcunyvPKxXQG72ivoFcUVr3fH7r5aaVlZu4ewR7hnpMq/qnOv5t4dez9UJ1XfrnGtad2ntG/bvrn97P1DB5wPtNQq15bUvj/IPXi3zquuvV67vvIQ5lDWoacN4Q293zK+bWpUbCxp/HiYd3jkSMiRniabpqajSkfLmuFmYfPUsZhjN75z/66zxailrpXWWnIcHBcef/Z93Pd3Tvid6D7JONnyg9YP+9oobcXtUHtu+0xHUsdIZ1Tn4CnfU91d9l1tPxr/ePi02umaM7Jnys4SzhaeXTiXd272fMb56QuJF8a6Y7sfXIy8eKsnuKf/kt+lK5c9L1/sdek9d8XhyumrdldPXWNc67hufb29z6qv7Sern9r6rfvbB2wGOm/Y3ugaXDp4dshp6MJN95uXb/ncun572e3BO8vv3B2OGR65y747eS/13sv7WffnH2x4iH5Y/EjqUeVjpcf1P+v93DpiPXJm1H2070nokwdjrLHnv2T+8mG88Cn5aeWE6kTTpPnk6SnPqRvPVjwbf57xfH666FfpX/e90H3xw2/Ov/XNRM6Mv+S/XPi99JXCq8OvLV93zwbNPn6T9mZ+rvitwtsj7xjvet9HvJ+Yz/6A/VD1Ue9j1ye/Tw8X0hYW/gUDmPP8uaxzGQAAAPFJREFUeJzt101KA0EQBeD3XjpBCIoSPYC3cPQaCno9IQu9h+YauYA/KFk4k37lYhAUFBR6Iko/at1fU4uqbp5dLg+Z8pxW0z7em5IQgaIhEc6e7M5kxo2ULxK1njNtNc5dpIN9lRU/RLZBpZPofJWIUePcBQAiG+BAbC8gwsHOjdqHO0PquaHQ92eT7FZPFqUh2/v5HX4DfUuFK1zhClf4H8IstDp/DJd6Ff2dVle4wt+Gw/am0Qhbk72ZEBu0IzCe7igF8i0xOQ46wFJz6Uu1r4RFYhvnZnfNNh+tV8+GKBT+s4EAHE7TbcVYi9FLPn0F1D1glFsARrAAAAAASUVORK5CYII=')
+	
 	
 	def show( self ):
 		try:
-		    layout = [ [ sg.Text( 'Fancy Checkboxes... Simply' ) ],
-		               [ sg.Image( checked, key=('-IMAGE-', 1), metadata=True, enable_events=True ),
-		                 sg.Text( True, enable_events=True, k=('-TEXT-', 1) ) ],
-		               [ sg.Image( unchecked, key=('-IMAGE-', 2), metadata=False, enable_events=True ),
-		                 sg.Text( False, enable_events=True, k=('-TEXT-', 2) ) ],
-		               [ sg.Button( 'Go' ), sg.Button( 'Exit' ) ] ]
-		    
-		    window = sg.Window( 'Custom Checkboxes', layout, font="_ 14" )
-		    while True:
-		        event, values = window.read( )
-		        print( event, values )
-		        if event == sg.WIN_CLOSED or event == 'Exit':
-		            break
-		        # if a checkbox is clicked, flip the vale and the image
-		        if event[ 0 ] in ('-IMAGE-', '-TEXT-'):
-		            cbox_key = ('-IMAGE-', event[ 1 ])
-		            text_key = ('-TEXT-', event[ 1 ])
-		            window[ cbox_key ].metadata = not window[ cbox_key ].metadata
-		            window[ cbox_key ].update( checked if window[ cbox_key ].metadata else unchecked )
-		            # Update the string next to the checkbox
-		            window[ text_key ].update( window[ cbox_key ].metadata )
-		    
-		    window.close( )
+			layout = [ [ sg.Text( 'Fancy Checkboxes... Simply' ) ],
+			           [ sg.Image( self.checked, key=('-IMAGE-', 1), metadata=True,
+				           enable_events=True ),
+			             sg.Text( True, enable_events=True, k=('-TEXT-', 1) ) ],
+			           [ sg.Image( self.unchecked, key=('-IMAGE-', 2), metadata=False,
+				           enable_events=True ),
+			             sg.Text( False, enable_events=True, k=('-TEXT-', 2) ) ],
+			           [ sg.Button( 'Go' ), sg.Button( 'Exit' ) ] ]
+			
+			window = sg.Window( 'Custom Checkboxes', layout, font="_ 14" )
+			while True:
+				event, values = window.read( )
+				print( event, values )
+				if event == sg.WIN_CLOSED or event == 'Exit':
+					break
+				# if a checkbox is clicked, flip the vale and the image
+				if event[ 0 ] in ('-IMAGE-', '-TEXT-'):
+					cbox_key = ('-IMAGE-', event[ 1 ])
+					text_key = ('-TEXT-', event[ 1 ])
+					window[ cbox_key ].metadata = not window[ cbox_key ].metadata
+					window[ cbox_key ].update(
+						self.checked if window[ cbox_key ].metadata else self.unchecked )
+					# Update the string next to the checkbox
+					window[ text_key ].update( window[ cbox_key ].metadata )
+			
+			window.close( )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Booger'
@@ -5608,258 +5623,6 @@ class MachineLearningWindow( ):
 			_exc = Error( e )
 			_exc.module = 'Booger'
 			_exc.cause = 'MachineLearningWindow'
-			_exc.method = 'show( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-class PlotStyle( ):
-	"""
-
-	    Matplotlib Non-interactive Embedded with Theme and Style selection
-
-	    This demo is based on the Matplotlib "TEMPLATE" demo that is a general purpose, display-only
-	    demo as only the image of the plot is shown.  None of the buttons and interactive parts
-	    of the MAtplotlib interface are included.
-
-	    This demo adds the ability to change the Window's "Theme" and the Matplotlib's "Style".
-	    It gives you a way to quickly see how well a theme is going to match a particular Matplotlib Style.
-
-	"""
-	def __init__( self ):
-		sg.theme( 'DarkGrey15' )
-		sg.theme_input_text_color( '#FFFFFF' )
-		sg.theme_element_text_color( '#69B1EF' )
-		sg.theme_text_color( '#69B1EF' )
-		self.theme_background = sg.theme_background_color( )
-		self.theme_textcolor = sg.theme_text_color( )
-		self.element_forecolor = sg.theme_element_text_color( )
-		self.element_backcolor = sg.theme_background_color( )
-		self.text_backcolor = sg.theme_text_element_background_color( )
-		self.text_forecolor = sg.theme_element_text_color( )
-		self.input_forecolor = sg.theme_input_text_color( )
-		self.input_backcolor = sg.theme_input_background_color( )
-		self.button_backcolor = sg.theme_button_color_background( )
-		self.button_forecolor = sg.theme_button_color_text( )
-		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
-		self.theme_font = ('Roboto', 11)
-		self.scrollbar_color = '#755600'
-		sg.set_global_icon( icon=self.icon_path )
-		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
-	
-	
-	def create_axis_grid( ):
-		from mpl_toolkits.axes_grid1.axes_rgb import RGBAxes
-		
-		plt.close( 'all' )
-		
-		
-		def get_demo_image( ):
-			# prepare image
-			delta = 0.5
-			
-			extent = (-3, 4, -4, 3)
-			x = np.arange( -3.0, 4.001, delta )
-			y = np.arange( -4.0, 3.001, delta )
-			X, Y = np.meshgrid( x, y )
-			Z1 = np.exp( -X ** 2 - Y ** 2 )
-			Z2 = np.exp( -(X - 1) ** 2 - (Y - 1) ** 2 )
-			Z = (Z1 - Z2) * 2
-			
-			return Z, extent
-		
-		
-		def get_rgb( ):
-			Z, extent = get_demo_image( )
-			
-			Z[ Z < 0 ] = 0.
-			Z = Z / Z.max( )
-			
-			R = Z[ :13, :13 ]
-			G = Z[ 2:, 2: ]
-			B = Z[ :13, 2: ]
-			
-			return R, G, B
-		
-		
-		fig = plt.figure( 1 )
-		ax = RGBAxes( fig, [ 0.1, 0.1, 0.8, 0.8 ] )
-		
-		r, g, b = get_rgb( )
-		kwargs = dict( origin="lower", interpolation="nearest" )
-		ax.imshow_rgb( r, g, b, **kwargs )
-		
-		ax.RGB.set_xlim( 0., 9.5 )
-		ax.RGB.set_ylim( 0.9, 10.6 )
-		
-		plt.draw( )
-		return plt.gcf( )
-	
-	
-	def create_figure( ):
-		# ------------------------------- START OF YOUR MATPLOTLIB CODE -------------------------------
-		fig = matplotlib.figure.Figure( figsize=(5, 4), dpi=100 )
-		t = np.arange( 0, 3, .01 )
-		fig.add_subplot( 111 ).plot( t, 2 * np.sin( 2 * np.pi * t ) )
-		
-		return fig
-	
-	
-	def create_subplot_3d( ):
-		fig = plt.figure( )
-		
-		ax = fig.add_subplot( 1, 2, 1, projection='3d' )
-		X = np.arange( -5, 5, 0.25 )
-		Y = np.arange( -5, 5, 0.25 )
-		X, Y = np.meshgrid( X, Y )
-		R = np.sqrt( X ** 2 + Y ** 2 )
-		Z = np.sin( R )
-		surf = ax.plot_surface( X, Y, Z, rstride=1, cstride=1, cmap=cm.jet,
-			linewidth=0, antialiased=False )
-		ax.set_zlim3d( -1.01, 1.01 )
-		
-		fig.colorbar( surf, shrink=0.5, aspect=5 )
-		
-		ax = fig.add_subplot( 1, 2, 2, projection='3d' )
-		X, Y, Z = get_test_data( 0.05 )
-		ax.plot_wireframe( X, Y, Z, rstride=10, cstride=10 )
-		return fig
-	
-	
-	def create_pyplot_scales( ):
-		plt.close( 'all' )
-		# Fixing random state for reproducibility
-		np.random.seed( 19680801 )
-		
-		# make up some data in the interval ]0, 1[
-		y = np.random.normal( loc=0.5, scale=0.4, size=1000 )
-		y = y[ (y > 0) & (y < 1) ]
-		y.sort( )
-		x = np.arange( len( y ) )
-		
-		# plot with various axes scales
-		plt.figure( 1 )
-		
-		# linear
-		plt.subplot( 221 )
-		plt.plot( x, y )
-		plt.yscale( 'linear' )
-		plt.title( 'linear' )
-		plt.grid( True )
-		
-		# log
-		plt.subplot( 222 )
-		plt.plot( x, y )
-		plt.yscale( 'log' )
-		plt.title( 'log' )
-		plt.grid( True )
-		
-		# symmetric log
-		plt.subplot( 223 )
-		plt.plot( x, y - y.mean( ) )
-		plt.yscale( 'symlog', linthreshy=0.01 )
-		plt.title( 'symlog' )
-		plt.grid( True )
-		
-		# logit
-		plt.subplot( 224 )
-		plt.plot( x, y )
-		plt.yscale( 'logit' )
-		plt.title( 'logit' )
-		plt.grid( True )
-		# Format the minor tick labels of the y-axis into empty strings with
-		# `NullFormatter`, to avoid cumbering the axis with too many labels.
-		plt.gca( ).yaxis.set_minor_formatter( NullFormatter( ) )
-		# Adjust the subplot layout, because the logit one may take more space
-		# than usual, due to y-tick labels like "1 - 10^{-3}"
-		plt.subplots_adjust( top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.25,
-			wspace=0.35 )
-		return plt.gcf( )
-	
-	
-	# ----------------------------- The draw figure helpful function -----------------------------
-	def draw_figure( element, figure ):
-		"""
-		Draws the previously created "figure" in the supplied Image Element
-
-		:param element: an Image Element
-		:param figure: a Matplotlib figure
-		:return: The figure canvas
-		"""
-		
-		plt.close( 'all' )  # erases previously drawn plots
-		canv = FigureCanvasAgg( figure )
-		buf = io.BytesIO( )
-		canv.print_figure( buf, format='png' )
-		if buf is None:
-			return None
-		buf.seek( 0 )
-		element.update( data=buf.read( ) )
-		return canv
-	
-	
-	dictionary_of_figures = { 'Axis Grid': create_axis_grid,
-	                          'Subplot 3D': create_subplot_3d,
-	                          'Scales': create_pyplot_scales,
-	                          'Basic Figure': create_figure }
-	
-	
-	# ----------------------------- The GUI Section -----------------------------
-	def create_window( ):
-		"""
-		Defines the window's layout and creates the window object.
-		This function is used so that the window's theme can be changed and the window "re-started".
-
-		:return: The Window object
-		:rtype: sg.Window
-		"""
-		
-		left_col = [ [ sg.T( 'Figures to Draw' ) ],
-		             [ sg.Listbox( list( dictionary_of_figures ),
-			             default_values=[ list( dictionary_of_figures )[ 0 ] ], size=(15, 5),
-			             key='-LB-' ) ],
-		             [ sg.T( 'Matplotlib Styles' ) ],
-		             [ sg.Combo( plt.style.available, size=(15, 10), key='-STYLE-' ) ],
-		             [ sg.T( 'PySimpleGUI Themes' ) ],
-		             [ sg.Combo( sg.theme_list( ), default_value=sg.theme( ), size=(15, 10),
-			             key='-THEME-' ) ] ]
-		
-		layout = [ [ sg.T( 'Matplotlib Example', font='Any 20' ) ],
-		           [ sg.Col( left_col ), sg.Image( key='-IMAGE-' ) ],
-		           [ sg.B( 'Draw' ), sg.B( 'Exit' ) ] ]
-		
-		window = sg.Window( 'Matplotlib Embedded Template', layout, finalize=True )
-		
-		return window
-	
-	
-	def show( ):
-		try:
-			window = create_window( )
-			
-			while True:
-				event, values = window.read( )
-				print( event, values )
-				if event == 'Exit' or event == sg.WIN_CLOSED:
-					break
-				if event == 'Draw':
-					if values[ '-THEME-' ] != sg.theme( ):  # if new theme chosen, create a new window
-						window.close( )
-						sg.theme( values[ '-THEME-' ] )
-						window = create_window( )
-					if values[ '-LB-' ]:  # make sure something selected to draw
-						func = dictionary_of_figures[ values[ '-LB-' ][ 0 ] ]
-						if values[ '-STYLE-' ]:
-							plt.style.use( values[ '-STYLE-' ] )
-						draw_figure( window[ '-IMAGE-' ], func( ) )
-			
-			window.close( )
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'PlotStyle'
 			_exc.method = 'show( self)'
 			_err = ErrorDialog( _exc )
 			_err.show( )
