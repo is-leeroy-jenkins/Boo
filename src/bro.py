@@ -52,6 +52,29 @@ from static import GptRequests, GptRoles, GptLanguages
 from booger import ErrorDialog, Error
 
 
+class EndPoint( ):
+	'''
+		The class containing endpoints for OpenAI
+	'''
+	
+	
+	def __init__( self ):
+		self.base_url = f'https://api.openai.com/'
+		self.text_generation = f'https://api.openai.com/v1/chat/completions'
+		self.image_generation = f'https://api.openai.com/v1/images/generations'
+		self.chat_completion = f'https://api.openai.com/v1/chat/completions'
+		self.responses = f'https://api.openai.com/v1/responses'
+		self.speech_generation = f'https://api.openai.com/v1/audio/speech'
+		self.translations = f'https://api.openai.com/v1/audio/translations'
+		self.assistants = f'https://api.openai.com/v1/assistants'
+		self.transcriptions = f'https://api.openai.com/v1/audio/transcriptions'
+		self.finetuning = f'https://api.openai.com/v1/fineTuning/jobs'
+		self.embeddings = f'https://api.openai.com/v1/embeddings'
+		self.uploads = f'https://api.openai.com/v1/uploads'
+		self.files = f'https://api.openai.com/v1/files'
+		self.vector_stores = f'https://api.openai.com/v1/vector_stores'
+
+
 class AI( ):
 	'''
 	AI is the base class for all OpenAI functionalityl

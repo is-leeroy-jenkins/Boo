@@ -73,30 +73,6 @@ class Header( ):
 		'''
 		return [ 'content_type', 'api_key', 'authorization', 'values' ]
 
-
-class EndPoint( ):
-	'''
-		The class containing endpoints for OpenAI
-	'''
-	
-	
-	def __init__( self ):
-		self.base_url = f'https://api.openai.com/'
-		self.text_generation = f'https://api.openai.com/v1/chat/completions'
-		self.image_generation = f'https://api.openai.com/v1/images/generations'
-		self.chat_completion = f'https://api.openai.com/v1/chat/completions'
-		self.responses = f'https://api.openai.com/v1/responses'
-		self.speech_generation = f'https://api.openai.com/v1/audio/speech'
-		self.translations = f'https://api.openai.com/v1/audio/translations'
-		self.assistants = f'https://api.openai.com/v1/assistants'
-		self.transcriptions = f'https://api.openai.com/v1/audio/transcriptions'
-		self.finetuning = f'https://api.openai.com/v1/fineTuning/jobs'
-		self.embeddings = f'https://api.openai.com/v1/embeddings'
-		self.uploads = f'https://api.openai.com/v1/uploads'
-		self.files = f'https://api.openai.com/v1/files'
-		self.vector_stores = f'https://api.openai.com/v1/vector_stores'
-	
-	
 	def __dir__( self ) -> list[ str ]:
 		'''
 			Methods that returns a list of member names
@@ -1136,10 +1112,9 @@ class TextToSpeech( AI ):
 			else:
 				self.audio_path = Path( path ).parent  # 'speech.mp3'
 				self.prompt = prompt
-				self.response = self.client.audio.speech.create( model=self.model,
+				self.response = self.client.audio.speech.with_streaming_response( model=self.model,
 					voice='alloy', input=self.prompt )
-				
-				self.response.stream_to_file( self.audio_path )
+				return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
