@@ -3452,7 +3452,7 @@ its vulnerability assessments and has identified security needs
 totaling $24 million. The amendment that the committee rejected
 contained $132 million to meet the security needs identified by
 the two agencies.
-(See appendix for list of facilities.)
+(See appendix for get_list of facilities.)
 Chemical Plant Vulnerability Assessments
 Only weeks ago, the General Accounting Office completed a
 report indicating that a serious threat is posed by the

@@ -2458,7 +2458,7 @@ damages to waterways and watersheds resulting from natural
 disasters, $104,500,000, to remain available until expended:
 Provided, That the above amount includes funding for eligible
 work identified in the Emergency Watershed Program Recovery
-Projects Unfunded list as of April 25, 2005: Provided further,
+Projects Unfunded get_list as of April 25, 2005: Provided further,
 That notwithstanding any other provision of law, the Secretary
 of Agriculture shall count local financial and technical
 resources, including in-kind materials and services,
@@ -2973,7 +2973,7 @@ expenditure plan shall include each specific project funded,
 key milestones, all funding sources for each project, details
 of annual and lifecycle costs, and projected cost savings or
 cost avoidance to be achieved by project: Provided further,
-That the expenditure plan shall include a complete list of all
+That the expenditure plan shall include a complete get_list of all
 legacy systems operational as of March 1, 2003, the current
 operational status of each system, and the plans for continued
 operation or termination of each system.
@@ -6173,7 +6173,7 @@ appropriated for fiscal year 2005, the Secretary of State shall
 fund an external study of the publicly available data on
 foreign public opinion about the United States. This study
 should include a thorough analysis of the impact of foreign
-perceptions of the United States, and a list of concrete
+perceptions of the United States, and a get_list of concrete
 responses and `best practice' actions at the governmental level
 that have the potential to influence the public foreign policy
 debate and mitigate the impact of negative perceptions.
@@ -6470,7 +6470,7 @@ GENERAL PROVISIONS--THIS CHAPTER
 Sec. 2101. The conference agreement includes a general
 provision proposed by the Senate, and similar to that proposed
 by the House, that amends section 307(a) of the Foreign
-Assistance Act of 1961 by striking ``Iraq'' from the list of
+Assistance Act of 1961 by striking ``Iraq'' from the get_list of
 countries for which the United States would otherwise be
 required to withhold voluntary contributions.
 Sec. 2102. The conference agreement includes a general
@@ -6733,7 +6733,7 @@ by August 1, 2005. The conference agreement adopts the Senate
 report language requiring submission of a long-term plan for
 TSC to be submitted no later than September 1, 2005. The report
 shall include the following: (1) a five year staffing and
-spending plan for TSC; (2) a list of TSC's existing and
+spending plan for TSC; (2) a get_list of TSC's existing and
 projected users, their sponsoring agency, and that agency's
 financial and in-kind contributions to TSC; (3) a comprehensive
 description and direct cost estimate of the unique needs of
@@ -7030,7 +7030,7 @@ Natural Resources Conservation Service Emergency Watershed Protection
 Program
 The conference agreement provides $104,500,000 for
 eligible work identified in the Emergency Watershed Protection
-Program, Recovery Projects Unfunded list, including full
+Program, Recovery Projects Unfunded get_list, including full
 funding for eligible needs in the state of Utah. The Senate
 proposed $103,000,000 for this account and the House proposed
 no funding. The conference agreement directs the Secretary of
@@ -7335,14 +7335,14 @@ new programs, projects or activities. Pursuant to law, advanced
 notification to the House and Senate Appropriations Committees
 is required prior to the CIO initiating any new information
 technology project. The conferees direct the CIO to submit a
-list of every project underway or planned for fiscal year 2005;
-a complete list of all legacy systems in operation as of March
+get_list of every project underway or planned for fiscal year 2005;
+a complete get_list of all legacy systems in operation as of March
 1, 2003; the operating status of those systems; and plans for
 continued operation or termination of each system. The
 conferees direct the CIO to submit an expenditure plan for all
 on-going or planned projects, to include but not be limited to:
 total project costs, key milestones, obligations to date,
-contracts entered into, and a list of all funding sources
+contracts entered into, and a get_list of all funding sources
 specifying the exact dollar amount.
 In addition, the conferees direct the Department to
 submit a report detailing all reimbursable agreements between
@@ -8740,7 +8740,7 @@ differentiate the person from others with the same name--for
 example, there are thousands of John R. Browns in the U.S., but
 very few have the same birthday. This is particularly relevant
 to protect people from being delayed at airports because their
-name coincides with someone on the ``do not fly'' list.
+name coincides with someone on the ``do not fly'' get_list.
 Additional biographic information on the document most citizens
 present to board a plane will reduce problems with
 misidentification that currently plague our security processes.
@@ -9127,7 +9127,7 @@ of Homeland Security enter conviction information into the
 appropriate aviation screening database. This provision should
 improve the security of the clearance process while reducing
 incidents of travelers being delayed because of similar names
-with people on the ``do not fly'' watch list.
+with people on the ``do not fly'' watch get_list.
 Section 204 of the conference agreement includes language
 modified from language proposed in section 205 of division B of
 the House bill. The Senate did not include similar language.

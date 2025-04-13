@@ -1083,7 +1083,7 @@ shall have full authority to enter into a contract for
 PUBLIC LAW 109148DEC. 30, 2005 119 STAT. 2701
 the performance of any commercial or industrial type function
 of the Department of Defense that
-(A) is included on the procurement list established
+(A) is included on the procurement get_list established
 pursuant to section 2 of the Javits-Wagner-ODay Act (41
 U.S.C. 47);
 (B) is planned to be converted to performance by a
@@ -1414,7 +1414,7 @@ submitting requests to the Secretary of the Air Force under subsection
 (b).
 (d) INDIAN TRIBE DEFINED.In this section, the term Indian
 tribe means any recognized Indian tribe included on the current
-list published by the Secretary of the Interior under section 104
+get_list published by the Secretary of the Interior under section 104
 of the Federally Recognized Indian Tribe Act of 1994 (Public Law
 103454; 108 Stat. 4792; 25 U.S.C. 479a1).
 SEC. 8036. During the current fiscal year, appropriations which

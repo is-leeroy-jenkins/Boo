@@ -484,12 +484,12 @@ msgstr "Remover atalho"
 
 #. DirectoryListDialog..Caption
 #: dlgDirectoryList.dfm
-msgid "Directory list"
+msgid "Directory get_list"
 msgstr "Lista de diretórios"
 
 #. DirectoryListDialog..Panel1..Label1..Caption
 #: dlgDirectoryList.dfm
-msgid "Ordered list of file paths:"
+msgid "Ordered get_list of file paths:"
 msgstr "Lista ordenada por caminho de arquivo"
 
 #. DirectoryListDialog..Panel1..btnMoveUp..Hint
@@ -504,7 +504,7 @@ msgstr "Mover para baixo"
 
 #. DirectoryListDialog..Panel2..btnAdd..Hint
 #: dlgDirectoryList.dfm
-msgid "Add file url to the list"
+msgid "Add file url to the get_list"
 msgstr "Adicionar caminho de arquivo a lista"
 
 #. DirectoryListDialog..Panel2..btnReplace..Hint
@@ -2955,7 +2955,7 @@ msgstr ""
 
 #. CommandsDataModule..actlMain..actFindFunction..Hint
 #: dmCommands.dfm
-msgid "Find Function|Find function from function list"
+msgid "Find Function|Find function from function get_list"
 msgstr ""
 
 #. CommandsDataModule..actlMain..actEditLineNumbers..Caption
@@ -6613,7 +6613,7 @@ msgid "Special packages"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Code completion list size"
+msgid "Code completion get_list size"
 msgstr ""
 
 #: dmCommands.pas
@@ -9017,7 +9017,7 @@ msgstr ""
 msgid ""
 "To add command buttons, drag and drop commands onto a toolbar. To remove "
 "command buttons, drag them off the toolbar and drop them on the commands "
-"list."
+"get_list."
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings

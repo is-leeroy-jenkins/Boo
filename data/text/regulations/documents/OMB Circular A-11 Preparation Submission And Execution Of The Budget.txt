@@ -2549,7 +2549,7 @@ in appropriations.
 124.4 Provides a new resource page for agencies to receive lapse communications from OMB. 
 130N Clarifies how newly enacted appropriations are reflected on the existing automatic 
 apportionment and SF 133 while awaiting reapportionment. 
-135A Updates list of agencies/programs that are required to submit plans. 
+135A Updates get_list of agencies/programs that are required to submit plans.
 145.8 
 Updates reporting requirement for when GAO finds an ADA violation. 
 185.10 Adds guidance to clarify the application of character classification across credit accounts. 
@@ -2558,7 +2558,7 @@ obligation or loan guarantee commitment does not typically constitute a modifica
 notes circumstances in which such an action may constitute a modification. Directs reader to 
 Appendix F for treatment of recovery of unpaid obligations, and instructs the reader to contact 
 the OMB representative to verify appropriate execution. 
-185.3 Expands the list of characteristics that distinguish risk categories to include major contract 
+185.3 Expands the get_list of characteristics that distinguish risk categories to include major contract
 terms. Instructs agencies with risk categories executed on a portfolio basis to work with their 
 examiners to establish thresholds for OMB notification or review when individual loans may 
 be outside the contemplated definition of the risk category. 
@@ -2998,7 +2998,7 @@ times and has codified them as Chapter 11, Title 31, U.S. Code. These are some o
 the President shall submit a budget of the United States Government for the following fiscal year." 
 • 
 "Each budget shall include a budget message and summary and supporting information. The 
-President shall include in each budget the following...." The provision goes on to list about thirty 
+President shall include in each budget the following...." The provision goes on to get_list about thirty
 items, such as expenditures and receipts for the past year through the fourth year following the 
 budget year, information on debt, financial information, and information on employment levels. 
 OMB Circular No. A–11 (2019) Page 1 of Section 15 
@@ -5720,7 +5720,7 @@ in support of Federal payments to the District. OMB includes the information sub
 in the budget without change. In addition, Government-sponsored enterprises (GSEs) submit some of the 
 information required of Government agencies on a comparable basis, and OMB includes it in the budget 
 for information purposes. 
-If your agency appears in the following list, it is not subject to Executive Branch review by law or custom. 
+If your agency appears in the following get_list, it is not subject to Executive Branch review by law or custom.
 That means that the requirements for submitting materials in support of your budget request do not apply 
 to you. However, you do need to submit the information required for inclusion in the budget database and 
 documents, which OMB incorporates without revision. 
@@ -6058,7 +6058,7 @@ administrative actions affecting net mandatory spending. This requirement is est
 PAYGO and additional implementation guidance is available to agencies in OMB Memorandum M-20-06 
 and Budget Procedures Memorandum 986. 
 E.O 13893 requires agencies to submit proposed administrative actions to OMB for Administrative 
-PAYGO review. In addition, you are required to include with your budget submission a list of all planned 
+PAYGO review. In addition, you are required to include with your budget submission a get_list of all planned
 or anticipated administrative actions that would increase mandatory spending (see section 25.5). 
 31.4 Equal opportunity 
 Your estimates should reflect the Administration's commitment to programs designed to ensure or promote 
@@ -7375,7 +7375,7 @@ Rental payments to others, both non-Federal and Federal sources.
 • 
 Supporting detail on all changes from the GSA rent bill or GSA estimates of rental costs (see 
 section 54.5). 
-Your submission must support your budget year request and list all applicable appropriations and/or other 
+Your submission must support your budget year request and get_list all applicable appropriations and/or other
 funding sources by account. 
 Report space requirements to the nearest square foot; state obligations in thousands of dollars and round 
 to the nearest thousand. Where an amount falls exactly halfway in between, round to the nearest even 
@@ -7539,7 +7539,7 @@ Complete and submit all six worksheets of exhibit 54 that support the Space Budg
 summary page. For each change, include the GSA bureau code; the GSA building number (if known); 
 city and State; type of action; effective date; square feet; and rent, on the appropriate worksheet. For any 
 program changes requested, provide supporting information that identifies the program initiatives related 
-to the requested changes. In addition, provide a list that identifies major acquisitions, renovations, or 
+to the requested changes. In addition, provide a get_list that identifies major acquisitions, renovations, or
 consolidations required to implement agency planned space changes, as well as the timing, amount of 
 work space, and cost of each action. 
 54.6 What is new for this fiscal year? 
@@ -7919,7 +7919,7 @@ number, you are required to perform several steps that can be eliminated if you 
 can be identified in several ways. For example, you can access your accounts in MAX by entering either 
 the OMB account number or the Treasury account number. Regardless of which number you use, 
 familiarity with the following coding options is helpful. See exhibit 79D for examples of various account 
-code combinations, and appendix C for a list of OMB agency and bureau codes, and Treasury and CGAC 
+code combinations, and appendix C for a get_list of OMB agency and bureau codes, and Treasury and CGAC
 agency codes. 
 • 
 OMB agency code—Each department or independent agency has a unique three-digit number 
@@ -7952,7 +7952,7 @@ type.
 • 
 Subfunction code—OMB assigns each account a three-digit code that corresponds to the account's 
 subfunctional classification (e.g., national defense, income security, agriculture). (See section 
-79.4(d) for further explanation of subfunctions and exhibit 79A for a list of functional 
+79.4(d) for further explanation of subfunctions and exhibit 79A for a get_list of functional
 classifications.) 
 Page 2 of Section 79 OMB Circular No. A–11 (2019) 
 SECTION 79—THE BUDGET DATA SYSTEM 
@@ -8032,7 +8032,7 @@ Where the account will be printed in the budget (see section 95.3).
 (a) General 
 If you need to request a new account or make changes to an existing account, please contact your OMB 
 budget representative. If requesting a new account, you will need to provide information on all the items 
-in the bulleted list above except for the identification codes. These classifications are discussed further 
+in the bulleted get_list above except for the identification codes. These classifications are discussed further
 below. 
 For new deposit funds, only a subset of the information above is required, as deposit funds are not included 
 in OMB’s MAX database. Provide the citation of legal authority and any proposed account number and 
@@ -8084,7 +8084,7 @@ will contain resources classified in more than one BEA category, OMB will identi
 account. 
 (d) Functional and subfunctional classification 
 OMB normally assigns each expenditure and offsetting receipt account a single subfunction code (see 
-exhibit 79A for a list of functional classifications). In rare cases, an appropriation account may be split 
+exhibit 79A for a get_list of functional classifications). In rare cases, an appropriation account may be split
 between two or more subfunctions. If the subfunctions are in the same function, the code of the function is 
 used (e.g., 500, 550, etc.). If two or more functions are involved, the code "999" is used. Annually, OMB 
 consults with CBO and other relevant budget and appropriation committee staff members regarding 
@@ -8104,7 +8104,7 @@ established (see section 20.7 for a full discussion of receipts).
 Each receipt type has a number of unique source category codes that enable MAX to produce tables needed 
 for the budget. OMB assigns the codes when a new receipt account is established by determining the receipt 
 type for the account and selecting an appropriate program category within that receipt type (see exhibit 79B 
-for a list of source category codes). 
+for a get_list of source category codes).
 (h) Payments for individuals 
 An account finances payments for individuals if it pays for Federal Government spending programs designed 
 to transfer income (in cash or in kind) to individuals or families. To the extent feasible, this category 
@@ -8720,7 +8720,7 @@ in MAX, choose the appropriate line number, subfunction, budget enforcement subc
 OMB Circular No. A–11 (2019) Page 1 of Section 81 
 SECTION 81—POLICY AND BASELINE ESTIMATES OF BUDGET AUTHORITY, 
 OUTLAYS, AND RECEIPTS (SCHEDULES A, S, R, AND K) 
-classifications from a list provided on the screen. For more on inserting data classifications in MAX, see 
+classifications from a get_list provided on the screen. For more on inserting data classifications in MAX, see
 exhibit 81. 
 DATA CLASSIFICATIONS FOR SCHEDULES X (A and S), R, AND K 
 Classification 
@@ -9140,7 +9140,7 @@ How do I add a new data classification to my account in MAX?
 When you add a new policy line (line number xxxx-40 or xxxx-41) to schedule X in the MAX A-11 Data 
 Entry application (MAX), you are required to specify a data classification. The classification includes the 
 budget enforcement category (discretionary or mandatory), committee jurisdiction (appropriations or 
-authorizing), and possibly a budget enforcement subcategory (e.g., emergency). See section 81.2 for a list 
+authorizing), and possibly a budget enforcement subcategory (e.g., emergency). See section 81.2 for a get_list
 of these combinations. 
 To add a line with a data classification that is not already represented in your account: 
 • 
@@ -9149,7 +9149,7 @@ Right-click on the title of the four-digit line number associated with the data 
 • 
 Choose Insert line/schedule; 
 • 
-Choose the item from the line number list with the same line number you just clicked on plus the 
+Choose the item from the line number get_list with the same line number you just clicked on plus the
 last two digits ‘30’ (e.g., 116030) and titled Budget Enforcement Act Category; 
 • 
 Click on Insert; and 
@@ -9163,7 +9163,7 @@ Right-click on the title of a policy line (e.g., 1160-40) with the correct class
 • 
 Choose Insert line/schedule. 
 • 
-Choose the item from the line number list with the same line number plus the last two digits ‘40’ 
+Choose the item from the line number get_list with the same line number plus the last two digits ‘40’
 (e.g., 116040); 
 • 
 Click on Insert; 
@@ -9314,7 +9314,7 @@ Other:
 xxxx–10 Sum of detail lines 
 xxxx–20 Computed totals 
 Sum of the detail lines 
-xxxx–30 Pick list placeholders 
+xxxx–30 Pick get_list placeholders
 MAX displays these lines only in the pick lists for collapsible lines in schedule X. 
 Choose this line number when you want to enter a line with a new BEA category, 
 BEA subcategory and Spending Committee (e.g., authorizing committee) code 
@@ -9381,7 +9381,7 @@ in credit program and liquidating accounts as direct.
 (d) Program activity codes 
 Program activity codes are unique to each account and have no relationship to the codes shown in other 
 schedules, except for credit programs. For obligations specific to credit accounts, use the 07xx series, as 
-specified in the list of line numbers at the end of this chapter. 
+specified in the get_list of line numbers at the end of this chapter.
 82.6 How do I report the budgetary resources available for obligation? 
 This section identifies the budgetary resources available for obligation in the account and provides detailed 
 information on the new budget authority. This section is also used in the SF 133 report on budget execution 
@@ -9613,7 +9613,7 @@ Lines 7000–7020 of schedule X identify unfunded deficiencies that have not yet
 a new appropriation that specifically authorizes amounts to be applied to the deficiency or by the 
 administrative application of other budgetary resources not expressly provided to liquidate deficiencies. 
 82.11 What control totals do I need to tie to? 
-Some of the data you enter into MAX needs to tie to control totals. The following list is not exhaustive: 
+Some of the data you enter into MAX needs to tie to control totals. The following get_list is not exhaustive:
 (a) Controls reported by the agency 
 The following is data that your agency has already reported. You must either tie to those controls, or, if 
 appropriate, fix your other reporting: 
@@ -9983,7 +9983,7 @@ Consult with your accounting office for any differences that you are aware of an
 and balances reported on your quarterly SF 133 throughout the year. Also, review any differences from 
 last year at https://max.omb.gov/community/x/HAAQAw to prevent these differences from reoccurring. 
 82.13 What amounts in schedule X need to tie to other schedules? 
-The data you enter into schedule X needs to tie to data in other schedules. The following list is not 
+The data you enter into schedule X needs to tie to data in other schedules. The following get_list is not
 exhaustive: 
 (a) Other schedules in the same account 
 All accounts, not including financing accounts 
@@ -10072,7 +10072,7 @@ Where two or more appropriations have been or are proposed to be replaced by a s
 section 79.4(i)), submit a single set of schedules for the new appropriation. 
 When you merge accounts, you may find it helpful to append a distribution of budget authority and outlays 
 by account to the bottom of the program and financing schedule. For accounts where you have created a 
-distribution table, list each merged budget account by name and provide data for PY through BY. 
+distribution table, get_list each merged budget account by name and provide data for PY through BY.
 82.17 How should I treat allocation accounts? 
 Combine schedule P information for allocation accounts with the parent account without separate 
 identification (see section 20.4(l)). 
@@ -14482,7 +14482,7 @@ current, and budget year.
 MAX Schedule O. Object class data are displayed in MAX on the basis of a 4–digit line number followed 
 by a 2-digit line serial number. The 4-digit line number is made up of a prefix and a 3-digit object class 
 code. The prefix for direct obligations is 1xxx and for reimbursable obligations is 2xxx. See exhibit 83A 
-for a list of the 3-digit object class codes. 
+for a get_list of the 3-digit object class codes.
 Page 30 of Section 83 OMB Circular No. A–11 (2019) 
 SECTION 83—OBJECT CLASSIFICATION (MAX SCHEDULE O) 
 Note: The 3-digit object class code in MAX schedule O is the same 3-digit object class code in the Appendix, 
@@ -15361,7 +15361,7 @@ Full-time equivalent (FTE) employment means the total number of regular straight
 (i.e., not including overtime or holiday hours worked) by employees divided by the number of compensable 
 hours applicable to each fiscal year. Annual leave, sick leave, compensatory time off and other approved 
 leave categories are considered "hours worked" for purposes of defining full-time equivalent employment 
-that is reported in the employment summary (see section 85.6). A list of compensable days (with associated 
+that is reported in the employment summary (see section 85.6). A get_list of compensable days (with associated
 hours) is provided in section 85.5(c). 
 85.3 What should be the basis for my personnel estimates? 
 (1) Staffing requirements. Base estimates for staffing requirements on the assumption that improvements 

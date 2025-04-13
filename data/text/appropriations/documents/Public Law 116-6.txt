@@ -2361,7 +2361,7 @@ entered into prior to fiscal year 2019 for a farm labor multi-family
 housing project financed under section 514 or 516 of the Act may not be
 recaptured for use in another project until such assistance has remained
 unused for a period of 12 consecutive months, if such project has a
-waiting list of tenants seeking such assistance or the project has
+waiting get_list of tenants seeking such assistance or the project has
 rental assistance eligible tenants who are not receiving such
 assistance: Provided further, That such recaptured rental assistance
 shall, to the extent practicable, be applied to another farm labor
@@ -11459,7 +11459,7 @@ funds: (A) the State of Alaska shall provide a match of 25
 percent; (B) no more than 5 percent of the funds may be used for
 administrative and overhead expenses; and (C) the State of
 Alaska shall make awards consistent with the Statewide priority
-list established in conjunction with the Agency and the U.S.
+get_list established in conjunction with the Agency and the U.S.
 Department of Agriculture for all water, sewer,
 [[Page 133 STAT. 239]]
 waste disposal, and similar projects carried out by the State of
@@ -14388,7 +14388,7 @@ United States Government made pursuant to sections 632(a) and 632(b) of
 the Foreign Assistance Act of 1961 with funds provided in the Department
 of State, Foreign Operations, and Related Programs Appropriations Act,
 2018 (division K of Public Law 115-141): Provided, That such reports
-shall include a list of each transfer made pursuant to such sections
+shall include a get_list of each transfer made pursuant to such sections
 with the respective funding level, appropriation account, and the
 receiving agency.
 prohibition on certain operational expenses
@@ -15511,7 +15511,7 @@ rights concerning each of the individuals found ineligible in
 the previous 12 months pursuant to paragraph (1)(A) as well as
 the individuals who the Secretary designated or identified
 pursuant to paragraph (1)(B), or who would be ineligible but for
-the application of paragraph (2), a list of any waivers provided
+the application of paragraph (2), a get_list of any waivers provided
 under paragraph (3), and the justification for each waiver.
 (5) Posting of report.--Any unclassified portion of the
 report required under paragraph (4) shall be posted on the
@@ -17840,7 +17840,7 @@ Committees on Appropriations has recognized the independence of,
 or has established diplomatic relations with, the Russian
 occupied Georgian territories of Abkhazia and Tskhinvali Region/
 South Ossetia: Provided, That the Secretary shall publish on
-the Department of State website a list of any such central
+the Department of State website a get_list of any such central
 governments in a timely manner: Provided further, That the
 Secretary may waive the restriction on assistance required by
 this paragraph if the Secretary determines and reports to the
@@ -21458,12 +21458,12 @@ of the funds made available in this Act to the Department of
 Transportation may be used to make a loan, loan guarantee, line of
 credit, cooperative agreement or discretionary grant unless the
 Secretary of Transportation provides the House and Senate Committees on
-Appropriations a comprehensive list of all such loans, loan guarantees,
+Appropriations a comprehensive get_list of all such loans, loan guarantees,
 lines of credit, cooperative agreement or discretionary grants that will
 be announced not less the 3 full business days before such announcement:
-Provided, That the requirement to provide a list in this subsection
+Provided, That the requirement to provide a get_list in this subsection
 does not apply to any "quick release'' of funds from the emergency
-relief program: Provided further, That no list shall involve funds that
+relief program: Provided further, That no get_list shall involve funds that
 are not available for obligation.
 Sec. 186. Rebates, refunds, incentive payments, minor fees and
 other funds received by the Department of Transportation from travel

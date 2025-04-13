@@ -104,7 +104,7 @@ class Error( Exception ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'message', 'cause',
@@ -140,7 +140,7 @@ class ButtonIcon( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'button', 'name', 'authority_filepath' ]
@@ -173,7 +173,7 @@ class TitleIcon( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'folder', 'name', 'authority_filepath' ]
@@ -221,7 +221,7 @@ class Dark( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'theme_background',
@@ -287,7 +287,7 @@ class FileDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'original', 'theme_background',
@@ -387,7 +387,7 @@ class FolderDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'original', 'theme_background',
@@ -486,7 +486,7 @@ class SaveFileDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'original', 'theme_background',
@@ -572,7 +572,7 @@ class GoogleDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'original', 'theme_background',
@@ -680,7 +680,7 @@ class EmailDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'size', 'settings_path', 'theme_background',
@@ -796,7 +796,7 @@ class MessageDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'original', 'theme_background',
@@ -905,7 +905,7 @@ class ErrorDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-        Returns a list[ str ] of member names
+        Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'size', 'settings_path', 'theme_background',
@@ -996,7 +996,7 @@ class InputDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1096,7 +1096,7 @@ class ScrollingDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1190,7 +1190,7 @@ class ContactForm( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1286,7 +1286,7 @@ class GridForm( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'theme_background', 'theme_textcolor',
@@ -1380,7 +1380,7 @@ class LoadingPanel( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1467,7 +1467,7 @@ class WaitingPanel( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1555,7 +1555,7 @@ class ProcessingPanel( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1647,7 +1647,7 @@ class SplashPanel( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1804,7 +1804,7 @@ class Notification( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1872,7 +1872,7 @@ class ImageSizeEncoder( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -2110,7 +2110,7 @@ class PdfForm( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'theme_background',
@@ -2155,7 +2155,7 @@ class PdfForm( Dark ):
 						are zoomed-in instead and the corresponding clip returned.
 
 					"""
-					dlist = dlist_tab[ pno ]  # get display list
+					dlist = dlist_tab[ pno ]  # get display get_list
 					if not dlist:  # create if not yet there
 						dlist_tab[ pno ] = doc[ pno ].get_displaylist( )
 						dlist = dlist_tab[ pno ]
@@ -2331,7 +2331,7 @@ class CalendarDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -2382,7 +2382,7 @@ class ComboBoxDialog( Dark ):
 	'''
 
         Construcotr:
-            ComboBoxDialog( values: list = None )
+            ComboBoxDialog( values: get_list = None )
 
         Purpose:
             Logger object provides form for log printing
@@ -2425,7 +2425,7 @@ class ComboBoxDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -2491,7 +2491,7 @@ class ListBoxDialog( Dark ):
 	'''
 
         Construcotr:
-            ListBox( values: list = None )
+            ListBox( values: get_list = None )
 
         Purpose:
             List search and selection
@@ -2535,7 +2535,7 @@ class ListBoxDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'theme_background',
@@ -2663,7 +2663,7 @@ class ColorDialog( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -3474,7 +3474,7 @@ class BudgetForm( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'size', 'settings_path', 'theme_background',
@@ -3600,7 +3600,7 @@ class BudgetForm( Dark ):
 				_exc = Error( e )
 				_exc.module = 'Booger'
 				_exc.cause = 'BudgetForm'
-				_exc.method = 'create_first( self, items: list ) -> list'
+				_exc.method = 'create_first( self, items: get_list ) -> get_list'
 				_err = ErrorDialog( _exc )
 				_err.show( )
 	
@@ -3680,7 +3680,7 @@ class BudgetForm( Dark ):
 				_exc = Error( e )
 				_exc.module = 'Booger'
 				_exc.cause = 'BudgetForm'
-				_exc.method = 'create_third( self, items: list )'
+				_exc.method = 'create_third( self, items: get_list )'
 				_err = ErrorDialog( _exc )
 				_err.show( )
 	
@@ -3720,7 +3720,7 @@ class BudgetForm( Dark ):
 				_exc = Error( e )
 				_exc.module = 'Booger'
 				_exc.cause = 'BudgetForm'
-				_exc.method = 'create_fourth( self, items: list )'
+				_exc.method = 'create_fourth( self, items: get_list )'
 				_err = ErrorDialog( _exc )
 				_err.show( )
 	
@@ -3957,7 +3957,7 @@ class ChartPanel( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -4085,7 +4085,7 @@ class CsvForm( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -4216,7 +4216,7 @@ class ExcelForm( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -4357,7 +4357,7 @@ class GraphForm( Dark ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
 		'''
 		return [ 'form_size', 'theme_background',
@@ -4562,9 +4562,9 @@ class FileBrowser( ):
         a filename be entered.  You've got 4 options to use to get your filename with this pattern:
         1. Copy and paste a filename into the combo element
         2. Use the last used item which will be visible when you generate_text the window
-        3. Choose an item from the list of previously used items
+        3. Choose an item from the get_list of previously used items
         4. Browse for a new name
-        To clear the list of previous entries, click the "Clear History" button.
+        To clear the get_list of previous entries, click the "Clear History" button.
         The history is stored in a json file using the PySimpleGUI User Settings APIs
         The code is as sparse as possible to enable easy integration into your code.
         Copyright 2021-2023 PySimpleSoft, Inc. and/or its licensors. All rights reserved.
@@ -4604,7 +4604,7 @@ class FileBrowser( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
         '''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -4680,7 +4680,7 @@ class ChatWindow( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
         '''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -4759,7 +4759,7 @@ class ChatBot( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
         '''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -4818,7 +4818,7 @@ class ChatBot( ):
 					window[ '-QUERY-' ].update( command )
 				
 				elif 'Down' in event and len( command_history ):
-					# increment up to end of list
+					# increment up to end of get_list
 					history_offset += 1 * (history_offset < len( command_history ) - 1)
 					command = command_history[ history_offset ]
 					window[ '-QUERY-' ].update( command )
@@ -4897,7 +4897,7 @@ class InputWindow( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
         '''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -5025,7 +5025,7 @@ class Executable( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
         '''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -5176,7 +5176,7 @@ class ThemeSelector( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
         '''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -5258,7 +5258,7 @@ class UrlImageViewer( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-            Returns a list[ str ] of member names
+            Returns a get_list[ str ] of member names
 
         '''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -5301,17 +5301,17 @@ class AutoComplete( ):
 	    Autocomplete input
 	
 	    There are 3 keyboard characters to be aware of:
-	    * Arrow up - Change selected item in list
-	    * Arrow down - Change selected item in list
+	    * Arrow up - Change selected item in get_list
+	    * Arrow down - Change selected item in get_list
 	    * Escape - Erase the input and start over
-	    * Return/Enter - use the current item selected from the list
+	    * Return/Enter - use the current item selected from the get_list
 	
 	    You can easily remove the ignore case option by searching for the "Irnore Case" Check box
 	    key:
 	        '-IGNORE CASE-'
 	
-	    The variable "choices" holds the list of strings your program will match against.
-	    Even though the listbox of choices doesn't have a scrollbar visible, the list is longer
+	    The variable "choices" holds the get_list of strings your program will match against.
+	    Even though the listbox of choices doesn't have a scrollbar visible, the get_list is longer
 	    than shown
 	        and using your keyboard more of it will br shown as you scroll down with the arrow keys
 	    The selection wraps around from the end to the start (and vicea versa). You can change

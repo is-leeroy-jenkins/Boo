@@ -923,7 +923,7 @@ be made prior to June 30, 2012: Provided further, That transfers among
 military personnel appropriations shall not be taken into account for
 purposes of the limitation on the amount of funds that may be
 transferred under this section.
-Sec. 8006. (a) With regard to the list of specific programs,
+Sec. 8006. (a) With regard to the get_list of specific programs,
 projects, and activities (and the dollar amounts and adjustments to
 budget activities corresponding to such programs, projects, and
 activities) contained in the tables titled ``Explanation of Project
@@ -1309,7 +1309,7 @@ among requests of Indian tribes for housing units under subsection (a)
 before submitting requests to the Secretary of the Air Force under
 subsection (b).
 (d) <<NOTE: Definition.>> In this section, the term ``Indian tribe''
-means any recognized Indian tribe included on the current list published
+means any recognized Indian tribe included on the current get_list published
 by the Secretary of the Interior under section 104 of the Federally
 Recognized Indian Tribe Act of 1994 (Public Law 103-454; 108 Stat. 4792;
 25 U.S.C. 479a-1).
@@ -1480,7 +1480,7 @@ of title 10, United States Code, and notwithstanding any administrative
 regulation, requirement, or policy to the contrary shall have full
 authority to enter into a contract for the performance of any commercial
 or industrial type function of the Department of Defense that--
-(A) is included on the procurement list established
+(A) is included on the procurement get_list established
 pursuant to section 2 of the Javits-Wagner-O'Day Act
 (section 8503 of title 41, United States Code);
 (B) is planned to be converted to performance by a
@@ -8265,14 +8265,14 @@ For expenses for U.S. Customs and Border Protection automated
 systems, $334,275,000, to remain available until September 30, 2014, of
 which not less than $140,000,000 shall be for the development of the
 Automated Commercial <<NOTE: Deadline. Expenditure plan. Project
-list.>> Environment: Provided, That of the total amount made available
+get_list.>> Environment: Provided, That of the total amount made available
 under this heading, $25,000,000 may not be obligated for the Automated
 Commercial Environment program until the Commissioner of U.S. Customs
 and Border Protection submits to the Committees on Appropriations of the
 Senate and the House of Representatives, not later than 60 days after
 the date of enactment of this Act, an expenditure plan for the Automated
 Commercial Environment program including results to date, plans for the
-program, and a list of projects with associated funding from prior
+program, and a get_list of projects with associated funding from prior
 appropriations and provided by this Act.
 border security fencing, infrastructure, and technology
 For expenses for border security fencing, infrastructure, and
@@ -10521,7 +10521,7 @@ activity regarding the designation of critical habitat, pursuant to
 subsection (a)(3), excluding litigation support, for species listed
 pursuant to subsection (a)(1) prior to October 1, 2010; of which not to
 exceed $1,500,000 shall be used for any activity regarding petitions to
-list species that are indigenous to the United States pursuant to
+get_list species that are indigenous to the United States pursuant to
 subsections (b)(3)(A) and (b)(3)(B); and, of which not to exceed
 $1,500,000 shall be used for implementing subsections (a), (b), (c), and
 (e) of section 4 of the Endangered Species Act, as amended, for species
@@ -11952,7 +11952,7 @@ further, <<NOTE: Alaska.>> That, of these funds: (1) the State of Alaska
 shall provide a match of 25 percent; (2) no more than 5 percent of the
 funds may be used for administrative and overhead expenses; and (3) the
 State of Alaska shall make awards consistent with the State-wide
-priority list established in conjunction with the Agency and the U.S.
+priority get_list established in conjunction with the Agency and the U.S.
 Department of Agriculture for all water, sewer, waste disposal, and
 similar projects carried out by the State of Alaska that are funded
 under section 221 of the Federal Water Pollution Control Act (33 U.S.C.
@@ -15476,7 +15476,7 @@ the Federal Government's liability beyond the award
 value of the Center's support.
 ``(c) Annual Report.--The Center shall publish an annual report
 that, with respect to all research supported by the Center, includes a
-complete list of--
+complete get_list of--
 ``(1) the molecules being studied;
 [[Page 125 STAT. 1087]]
 ``(2) clinical trial activities being conducted;
@@ -21873,7 +21873,7 @@ and identify benchmarks for measuring progress.
 (4) Assistance.--Of the funds appropriated under title III
 of this Act, not less than $5,000,000 should be made available
 for programs and activities to assist the central governments of
-countries named in the list required by paragraph (1) to improve
+countries named in the get_list required by paragraph (1) to improve
 budget transparency or to support civil society organizations in
 such countries that promote budget transparency: Provided, That
 such sums shall be in addition to funds otherwise made available
@@ -21904,7 +21904,7 @@ necessary, to the Committees
 [[Page 125 STAT. 1212]]
 on Appropriations describing the information regarding
 corruption concerning each of the individuals found ineligible
-pursuant to paragraph (1), a list of any waivers provided under
+pursuant to paragraph (1), a get_list of any waivers provided under
 subsection (3), and the justification for each waiver.
 authority to engage in debt buybacks or sales
 Sec. 7032. (a) Loans Eligible for Sale, Reduction, or
@@ -22141,7 +22141,7 @@ inserting ``steps''; and
 ``(d) Credible Information.--The <<NOTE: Procedures.>> Secretary
 shall establish, and periodically update, procedures to--
 ``(1) ensure that for each country the Department of State
-has a current list of all security force units receiving United
+has a current get_list of all security force units receiving United
 States training, equipment, or other types of assistance;
 ``(2) facilitate receipt by the Department of State and
 United States embassies of information from individuals and

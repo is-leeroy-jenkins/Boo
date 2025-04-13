@@ -475,12 +475,12 @@ msgstr "移除快捷键"
 
 #. DirectoryListDialog..Caption
 #: dlgDirectoryList.dfm
-msgid "Directory list"
+msgid "Directory get_list"
 msgstr "目录列表"
 
 #. DirectoryListDialog..Panel1..Label1..Caption
 #: dlgDirectoryList.dfm
-msgid "Ordered list of file paths:"
+msgid "Ordered get_list of file paths:"
 msgstr "有序的文件路径列表："
 
 #. DirectoryListDialog..Panel1..btnMoveUp..Hint
@@ -495,7 +495,7 @@ msgstr "向下移动"
 
 #. DirectoryListDialog..Panel2..btnAdd..Hint
 #: dlgDirectoryList.dfm
-msgid "Add file url to the list"
+msgid "Add file url to the get_list"
 msgstr "向列表增加文件路径"
 
 #. DirectoryListDialog..Panel2..btnReplace..Hint
@@ -2831,7 +2831,7 @@ msgstr "查找函数(&U)..."
 
 #. CommandsDataModule..actlMain..actFindFunction..Hint
 #: dmCommands.dfm
-msgid "Find Function|Find function from function list"
+msgid "Find Function|Find function from function get_list"
 msgstr "查找函数|从函数列表中查找函数"
 
 #. CommandsDataModule..actlMain..actEditLineNumbers..Caption
@@ -6299,7 +6299,7 @@ msgid "Special packages"
 msgstr "特殊包"
 
 #: dmCommands.pas
-msgid "Code completion list size"
+msgid "Code completion get_list size"
 msgstr "代码补全列表的大小"
 
 #: dmCommands.pas
@@ -8724,7 +8724,7 @@ msgstr ""
 msgid ""
 "To add command buttons, drag and drop commands onto a toolbar. To remove "
 "command buttons, drag them off the toolbar and drop them on the commands "
-"list."
+"get_list."
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings

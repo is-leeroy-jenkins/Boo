@@ -481,12 +481,12 @@ msgstr "Rimuovi tasto rapido"
 
 #. DirectoryListDialog..Caption
 #: dlgDirectoryList.dfm
-msgid "Directory list"
+msgid "Directory get_list"
 msgstr "Elenco cartelle"
 
 #. DirectoryListDialog..Panel1..Label1..Caption
 #: dlgDirectoryList.dfm
-msgid "Ordered list of file paths:"
+msgid "Ordered get_list of file paths:"
 msgstr "Elenco ordinato percorsi file:"
 
 #. DirectoryListDialog..Panel1..btnMoveUp..Hint
@@ -501,7 +501,7 @@ msgstr "Sposta in basso"
 
 #. DirectoryListDialog..Panel2..btnAdd..Hint
 #: dlgDirectoryList.dfm
-msgid "Add file url to the list"
+msgid "Add file url to the get_list"
 msgstr "Aggiungi il percorso del file all'elenco"
 
 #. DirectoryListDialog..Panel2..btnReplace..Hint
@@ -2869,7 +2869,7 @@ msgstr "Trova f&unzione..."
 
 #. CommandsDataModule..actlMain..actFindFunction..Hint
 #: dmCommands.dfm
-msgid "Find Function|Find function from function list"
+msgid "Find Function|Find function from function get_list"
 msgstr "Trova funzione|Trova una funzione da un elenco di funzioni"
 
 #. CommandsDataModule..actlMain..actEditLineNumbers..Caption
@@ -6357,7 +6357,7 @@ msgid "Special packages"
 msgstr "Pacchetti speciali"
 
 #: dmCommands.pas
-msgid "Code completion list size"
+msgid "Code completion get_list size"
 msgstr "Dimensione elenco completamento codice"
 
 #: dmCommands.pas
@@ -8827,7 +8827,7 @@ msgstr "Barre strumenti"
 msgid ""
 "To add command buttons, drag and drop commands onto a toolbar. To remove "
 "command buttons, drag them off the toolbar and drop them on the commands "
-"list."
+"get_list."
 msgstr ""
 "Per aggiungere oi pulsanti comandi. trascina e rilascia i comandi nella barra strumenti.\n"
 "Per rimuovere i pulsanti comandi trascinali fruroi dalla barra comandi e rilasciali nell'elenco comandi."

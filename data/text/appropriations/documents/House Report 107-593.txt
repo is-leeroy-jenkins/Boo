@@ -4026,7 +4026,7 @@ the Federal Register governing the allocation and use of the
 funds under this heading, including provisions for ensuring the
 compliance of the States with the requirements of this program:
 Provided further, That 10 days prior to distribution of funds,
-the Director shall submit a list to the House and Senate
+the Director shall submit a get_list to the House and Senate
 Committees on Appropriations setting forth the proposed uses of
 funds and the most recent estimates of unmet needs: Provided
 further, That the Director shall submit quarterly reports to
@@ -6258,9 +6258,9 @@ In addition, the conferees direct the FBI to use
 $44,713,000 expected to be carried over from funds provided in
 P.L. 107-117 to establish additional Legal Attache offices and
 provide for information infrastructure enhancements for Legal
-Attache offices. The FBI shall submit to the Committees a list
+Attache offices. The FBI shall submit to the Committees a get_list
 of proposed new Legal Attache offices no later than August 16,
-2002. As directed in the Senate report, this list should also
+2002. As directed in the Senate report, this get_list should also
 include a review of and sight-sizing proposal for existing
 offices to ensure that resources are deployed to the highest
 priority locations. The proposal should be coordinated with the
@@ -8889,7 +8889,7 @@ Proposed actions of any size that deviate from high
 priority Congressional interests and requirements, as
 reflected in report language and documented in DOT's
 annual Base for Reprogramming Actions.
-To implement these procedures, a list of PPAs must be
+To implement these procedures, a get_list of PPAs must be
 developed against which the reprogramming thresholds apply. To
 establish this, the conferees direct TSA to provide a fiscal
 year 2002 reprogramming baseline to the House and Senate
@@ -9405,11 +9405,11 @@ same time as it is transmitted to the Department of
 Transportation.
 The agreement between Amtrak and DOT also calls on
 Amtrak's management to present to Amtrak's Board of Directors a
-prioritized list of expense reduction options totaling at least
+prioritized get_list of expense reduction options totaling at least
 $100,000,000 for fiscal year 2003--expense reductions that the
 Board of Directors must apply to critical maintenance needs
 throughout the Amtrak system. The conferees direct that this
-list of expense reductions, as well as a list of such critical
+get_list of expense reductions, as well as a get_list of such critical
 maintenance projects, be provided to the House and Senate
 Committees on Appropriations no later than August 31, 2002--the
 date stipulated in the Amtrak-DOT agreement.

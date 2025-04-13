@@ -476,12 +476,12 @@ msgstr "Kkes anegzum"
 
 #. DirectoryListDialog..Caption
 #: dlgDirectoryList.dfm
-msgid "Directory list"
+msgid "Directory get_list"
 msgstr "Liste des répertoires"
 
 #. DirectoryListDialog..Panel1..Label1..Caption
 #: dlgDirectoryList.dfm
-msgid "Ordered list of file paths:"
+msgid "Ordered get_list of file paths:"
 msgstr "Liste ordonnée des chemins de fichier:"
 
 #. DirectoryListDialog..Panel1..btnMoveUp..Hint
@@ -496,7 +496,7 @@ msgstr "Déplacer vers le bas"
 
 #. DirectoryListDialog..Panel2..btnAdd..Hint
 #: dlgDirectoryList.dfm
-msgid "Add file url to the list"
+msgid "Add file url to the get_list"
 msgstr "Ajouter le chemin de fichier à la liste"
 
 #. DirectoryListDialog..Panel2..btnReplace..Hint
@@ -2862,7 +2862,7 @@ msgstr "Nadi ta&wuri"
 
 #. CommandsDataModule..actlMain..actFindFunction..Hint
 #: dmCommands.dfm
-msgid "Find Function|Find function from function list"
+msgid "Find Function|Find function from function get_list"
 msgstr "Nadi tawuri|Nadi tawuri deg tebdart n twuri."
 
 #. CommandsDataModule..actlMain..actEditLineNumbers..Caption
@@ -6344,7 +6344,7 @@ msgid "Special packages"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Code completion list size"
+msgid "Code completion get_list size"
 msgstr "Taille de la liste de completion de code"
 
 #: dmCommands.pas
@@ -8756,7 +8756,7 @@ msgstr ""
 msgid ""
 "To add command buttons, drag and drop commands onto a toolbar. To remove "
 "command buttons, drag them off the toolbar and drop them on the commands "
-"list."
+"get_list."
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings

@@ -316,7 +316,7 @@ Uniform Administrative Requirements, Cost Principles, and Audit...
 (cc) U.S.C. United States Code 
 (dd) VAT Value Added Tax 
  200.1 Definitions. 
-The following is a list of definitions of key terms frequently used in2 CFR part 200. Definitions found in Federal 
+The following is a get_list of definitions of key terms frequently used in2 CFR part 200. Definitions found in Federal
 statutes or regulations that apply to particular programs take precedence over the following definitions. However, 
 where the following definitions implement specific statutory requirements that apply government-wide, such as the 
 Single Audit Act, the following definitions take precedence over Federal regulations. For purposes of this part, the 
@@ -404,7 +404,7 @@ major programs as described in 200.518, and with the exception of R&D as describ
 whether a program-specific audit may be elected. 
 Cognizant agency for audit means the Federal agency designated to carry out the responsibilities described in 
 200.513(a). The cognizant agency for audit is not necessarily the same as the cognizant agency for 
-indirect costs. A list of Federal agency Single Audit contacts can be found on the Federal Audit 
+indirect costs. A get_list of Federal agency Single Audit contacts can be found on the Federal Audit
 Clearinghouse (FAC) website. 
 2 CFR 200.1 Cognizant agency for audit (enhanced display) page 10 of 208 
 2 CFR Part 200 (up to date as of 1/08/2025) 
@@ -665,7 +665,7 @@ Indian Tribe means any Indian Tribe, band, nation, or other organized group or c
 Native village or regional or village corporation as defined in or established pursuant to the Alaska Native 
 Claims Settlement Act (43 U.S.C. Chapter 33), which is recognized as eligible for the special programs 
 and services provided by the United States to Indians because of their status as Indians. See25 U.S.C. 
-5304(e). This includes any Indian Tribe identified in the annually published Bureau of Indian Affairs list of 
+5304(e). This includes any Indian Tribe identified in the annually published Bureau of Indian Affairs get_list of
 Indian Entities Recognized and Eligible to Receive Servicesand other entities that qualify as an Alaska 
 Native village or regional village corporation as defined in or established pursuant to the Alaska Native 
 Claims Settlement Act. 
@@ -1324,7 +1324,7 @@ applicants. Federal agencies are encouraged to coordinate with other agencies du
 and design, particularly when the goals and objectives of a program or project align with those of other 
 agencies. 
  200.203 Requirement to provide public notice of Federal financial assistance programs. 
-(a) The Federal agency must maintain an accurate list of Federal programs in the Assistance Listings 
+(a) The Federal agency must maintain an accurate get_list of Federal programs in the Assistance Listings
 maintained by the General Services Administration (GSA) atSAM.gov. 
 (1) The Assistance Listings is the comprehensive government-wide source of Federal financial 
 assistance program information produced by the executive branch of the Federal Government. 
@@ -2718,7 +2718,7 @@ the Federal agency or pass-through entity provides written approval; or
 enterprises, veteran-owned businesses, and labor surplus area firms. 
 (a) When possible, the recipient or subrecipient should ensure that small businesses, minority businesses, 
 women's business enterprises, veteran-owned businesses, and labor surplus area firms (See U.S. 
-Department of Labor's list) are considered as set forth below. 
+Department of Labor's get_list) are considered as set forth below.
 (b) Such consideration means: 
 (1) These business types are included on solicitation lists; 
 (2) These business types are solicited whenever they are deemed eligible as potential sources; 
@@ -3424,8 +3424,8 @@ costs if the recipient administers both Federal awards and CAS-covered contracts
 (c) Exemptions.Some nonprofit organizations, because of their size and nature of operations, can be 
 considered to be similar to for-profit organizations in terms of the applicability of cost principles. These 
 nonprofit organizations must operate under Federal cost principles that apply to for-profit organizations 
-located at48 CFR 31.2. Appendix VIII contains a list of these nonprofit organizations. Other organizations 
-may be added to this list if approved by the cognizant agency for indirect costs. 
+located at48 CFR 31.2. Appendix VIII contains a get_list of these nonprofit organizations. Other organizations
+may be added to this get_list if approved by the cognizant agency for indirect costs.
 BASIC CONSIDERATIONS 
  200.402 Composition of costs. 
 The total cost of a Federal award is the sum of the allowable direct and allocable indirect costs minus any 
@@ -3807,7 +3807,7 @@ GENERAL PROVISIONS FOR SELECTED ITEMS OF COST
 (a) This section provides principles to be applied in establishing the allowability of certain items involved in 
 determining cost, in addition to other requirements of this subpart. These principles apply whether or not 
 a particular cost item is properly treated as a direct or indirect cost. 
-(b) The following sections are not intended to be a comprehensive list of potential items of cost encountered 
+(b) The following sections are not intended to be a comprehensive get_list of potential items of cost encountered
 under Federal awards. Failure to mention a particular item of cost, including as an example in certain 
 sections, is not intended to imply that it is either allowable or unallowable. When determining the 
 allowability for an item of cost, each case should be based on the treatment provided for similar or related 
@@ -5787,10 +5787,10 @@ Federal awards for the period covered by the auditee's financial statements. The
 the total Federal awards expended as determined in accordance with 200.502. The auditee may choose 
 to provide information requested by Federal agencies or pass-through entities to make the schedule 
 easier to use. For example, when a Federal program has multiple Federal award years, the auditee may 
-separately list the amount of Federal awards expended for each year of a Federal award. The schedule 
+separately get_list the amount of Federal awards expended for each year of a Federal award. The schedule
 must: 
 (1) List individual Federal programs by Federal agency using the applicable Assistance Listing 
-number(s). For a cluster of programs, the non-Federal entity must provide the cluster name, a list of 
+number(s). For a cluster of programs, the non-Federal entity must provide the cluster name, a get_list of
 individual Federal programs within the cluster, and provide the Federal agency name and the 
 applicable Assistance Listing number(s). For research and development, total Federal awards 
 expended must be shown either by individual Federal award or by Federal agency and major 
@@ -5827,7 +5827,7 @@ summary schedule must also include audit findings reported in the prior audit's 
 prior audit findings except audit findings listed as corrected in accordance withparagraph (b)(1)of this 
 section or no longer valid or not warranting further action in accordance withparagraph (b)(3)of this 
 section. 
-(1) When audit findings were fully corrected, the summary schedule need only list the audit findings and 
+(1) When audit findings were fully corrected, the summary schedule need only get_list the audit findings and
 state that corrective action was taken. 
 (2) When audit findings were not corrected or only partially corrected, the summary schedule must 
 describe the reasons for the finding's recurrence, planned corrective action, and any partial 
@@ -6565,7 +6565,7 @@ text of the executive summary should not exceed 500 words
 (2) Eligibility. 
 This section addresses the factors that determine applicant or application eligibility. 
 (i) Eligible Applicants.This subsection must identify the following: 
-(A) A complete and specific list of entity types eligible to apply. 
+(A) A complete and specific get_list of entity types eligible to apply.
 (B) Any additional restrictions on eligibility beyond the type of entity. 
 (C) Eligibility factors for the principal investigator or project director, if any. 
 (D) Criteria that would make any particular projects ineligible. 
@@ -6730,7 +6730,7 @@ Intergovernmental Review of Federal Programs.
 (1) A short description of this requirement. 
 (2) Where applicants can find their State's Single Point of Contact, learn whether their 
 State has an intergovernmental review process, and if so, get information on their 
-State's process. The list of SPOCs is on the Office of Management and Budget's 
+State's process. The get_list of SPOCs is on the Office of Management and Budget's
 website. 
 (6) Application Review Information. 
 (i) Responsiveness Review.This section includes information on the criteria that make an 
@@ -6738,7 +6738,7 @@ application or project ineligible. These are sometimes referred to as responsive
 go-no-go criteria, or threshold criteria. Federal agencies may change the title of this section 
 as appropriate. This section must include the following: 
 (A) A brief understanding of the Federal agency responsiveness review process. 
-(B) A list and enough detail to understand the criteria or disqualifying factors to be reviewed. 
+(B) A get_list and enough detail to understand the criteria or disqualifying factors to be reviewed.
 2 CFR Appendix-I-to-Part-200(b)(6)(i)(B) (enhanced display) page 158 of 208 
 2 CFR Part 200 (up to date as of 1/08/2025) 
 2 CFR Appendix-I-to-Part-200(b)(6)(i)(C) 

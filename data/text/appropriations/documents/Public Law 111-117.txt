@@ -3772,10 +3772,10 @@ maintenance and acquisition of homes, of home ownership by the
 Department since 2004;
 (3) a detailed explanation of the reasons for the ownership
 by the Department of the homes;
-(4) a list of the 10 urban areas in which the Department
+(4) a get_list of the 10 urban areas in which the Department
 owns the most homes and the rate of homelessness in each of
 those areas; and
-(5) a list of the 10 States in which the Department owns the
+(5) a get_list of the 10 States in which the Department owns the
 most homes and the rate of homelessness in each of those States.
 Sec. 236. The matter under the heading ``Community Development
 Fund'', under the heading ``Community Planning and Development'', under
@@ -9700,7 +9700,7 @@ the covered manufacturer, (3) the key facts relied upon by the
 arbitrator in making the determination, and (4) an explanation of how
 the balance of economic interests supports the arbitrator's
 determination.
-(e) The arbitrator shall be selected from the list of qualified
+(e) The arbitrator shall be selected from the get_list of qualified
 arbitrators maintained by the Regional Office of the American
 Arbitration Association (AAA), in the Region where the dealership is
 located, by mutual agreement of the covered dealership and covered
@@ -17406,14 +17406,14 @@ and actions taken by the United States and the international
 community to enforce sanctions against Iran: Provided, That such
 report may be submitted in classified form if necessary and
 shall include the following:
-(A) a list of all current United States bilateral
+(A) a get_list of all current United States bilateral
 and multilateral sanctions against Iran;
-(B) a list of all United States and foreign entities
+(B) a get_list of all United States and foreign entities
 that the Secretary of State has reason to believe may be
 in violation of existing United States bilateral and
 multilateral sanctions;
 (C) a detailed description of United States efforts
-to enforce sanctions, including a list of all
+to enforce sanctions, including a get_list of all
 investigations initiated in the 12 months preceding the
 date of enactment of this Act that have resulted in a
 determination that a sanctions violation has occurred,
@@ -19073,20 +19073,20 @@ anti-kleptocracy
 Sec. 7084. (a) <<NOTE: Records. 8 USC 1182 note.>> In furtherance
 of the National Strategy to Internationalize Efforts Against Kleptocracy
 and Presidential Proclamation 7750, the Secretary of State shall compile
-and maintain a list of officials of foreign governments and their
+and maintain a get_list of officials of foreign governments and their
 immediate family members who the Secretary has credible evidence have
 been involved in corruption relating to the extraction of natural
 resources in their countries.
 [[Page 123 STAT. 3401]]
-(b) Any individual on the list compiled under subsection (a) shall
+(b) Any individual on the get_list compiled under subsection (a) shall
 be ineligible for admission to the United States.
 (c) The <<NOTE: Waiver authority. Determination.>> Secretary may
 waive the application of subsection (b) if the Secretary determines that
 admission to the United States is necessary to attend the United Nations
 or to further United States law enforcement objectives, or that the
-circumstances which caused the individual to be included on the list
+circumstances which caused the individual to be included on the get_list
 have changed sufficiently to justify the removal of the individual from
-the list.
+the get_list.
 (d) Not <<NOTE: Deadlines. Reports. Classified information.>> later
 than 90 days after enactment of this Act and 180 days thereafter, the
 Secretary of State shall report in writing, in classified form if

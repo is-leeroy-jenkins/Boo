@@ -1540,7 +1540,7 @@ Appendix D to OMB Circular No. A-123, Compliance with the Federal Financial Mana
 Improvement Act of 1996. FFMIA Section 803(a) requirements include compliance with Federal 
 Financial Management System Requirements, applicable Federal accounting standards, and the 
 United States Standard General Ledger (USSGL) at the transaction level. If the Agency’s 
-systems do not comply with financial systems requirements, the statement must list the lack of 
+systems do not comply with financial systems requirements, the statement must get_list the lack of
 compliance noted and discuss the Agency's plans for bringing its systems into compliance. 
 Financial management systems include both financial and financially-related (or mixed) systems. 
 G. Government Corporations 
@@ -1722,9 +1722,9 @@ collection, use, processing, storage, maintenance, dissemination, disclosure, an
 PII. In particular, the agency must evaluate the sensitivity of each individual data element that is 
 PII, as well as all of the data elements together. The sensitivity level of the PII will depend on 
 the context, including the purpose for which the PII is created, collected, used, processed, stored, 
-maintained, disseminated, disclosed, or disposed. For example, the sensitivity level of a list of 
+maintained, disseminated, disclosed, or disposed. For example, the sensitivity level of a get_list of
 individuals’ names may depend on the source of the information, the other information 
-associated with the list, the intended use of the information, how the information will be 
+associated with the get_list, the intended use of the information, how the information will be
 processed and shared, and the ability to access the information. In addition, when determining 
 the privacy and associated risks, the agency must also consider the volume of PII. A higher 
 volume of PII about a single individual or multiple individuals may pose increased privacy or 

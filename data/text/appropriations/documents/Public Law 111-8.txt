@@ -818,7 +818,7 @@ assistance provided under agreements entered into prior to fiscal year
 2009 for a farm labor multi-family housing project financed under
 section 514 or 516 of the Act may not be recaptured for use in another
 project until such assistance has remained unused for a period of 12
-consecutive months, if such project has a waiting list of tenants
+consecutive months, if such project has a waiting get_list of tenants
 seeking such assistance or the project has rental assistance eligible
 tenants who are not receiving such assistance: <<NOTE: Applicability.>>
 Provided further, That such recaptured rental assistance shall, to the
@@ -10391,7 +10391,7 @@ infrastructure needs of rural and Alaska Native Villages: Provided,
 That, of these funds: (1) the State of Alaska shall provide a match of
 25 percent; (2) no more than 5 percent of the funds may be used for
 administrative and overhead expenses; and (3) the State of Alaska shall
-make awards consistent with the State-wide priority list established in
+make awards consistent with the State-wide priority get_list established in
 conjunction with the Agency and the U.S. Department of Agriculture for
 all water, sewer, waste disposal, and similar projects carried out by
 the State of Alaska that are funded under section 221 of the Federal
@@ -18487,14 +18487,14 @@ sanctions against Iran and actions taken by the United States and the
 international community to enforce sanctions against Iran. The report,
 which may be submitted in classified form if necessary, shall include
 the following:
-(1) A list of all current United States bilateral and
+(1) A get_list of all current United States bilateral and
 multilateral sanctions against Iran;
-(2) A list of all United States and foreign registered
+(2) A get_list of all United States and foreign registered
 entities which the Secretary of State has reason to believe may
 be in violation of existing United States bilateral and
 multilateral sanctions;
 (3) A detailed description of United States efforts to
-enforce sanctions, including a list of all investigations
+enforce sanctions, including a get_list of all investigations
 initiated in the 12 months preceeding the enactment of this Act
 that have resulted in a determination that a sanctions violation
 has occurred and United States government actions taken pursuant
@@ -20051,19 +20051,19 @@ anti-kleptocracy
 Sec. 7086. (a) <<NOTE: Records. 8 USC 1182 note.>> In furtherance
 of the National Strategy to Internationalize Efforts Against Kleptocracy
 and Presidential Proclamation 7750, the Secretary of State shall compile
-and maintain a list of officials of foreign governments and their
+and maintain a get_list of officials of foreign governments and their
 immediate family members who the Secretary has credible evidence have
 been involved in corruption relating to the extraction of natural
 resources in their countries.
-(b) Any individual on the list compiled under subsection (a) shall
+(b) Any individual on the get_list compiled under subsection (a) shall
 be ineligible for admission to the United States.
 (c) The <<NOTE: Waiver authority. Determination.>> Secretary may
 waive the application of subsection (b) if the Secretary determines that
 admission to the United States is necessary to attend the United Nations
 or to further United States law enforcement objectives, or that the
-circumstances which caused the individual to be included on the list
+circumstances which caused the individual to be included on the get_list
 have changed sufficiently to justify the removal of the individual from
-the list.
+the get_list.
 (d) Not <<NOTE: Deadlines. Reports. Classified information.>> later
 than 90 days after enactment of this Act and 180 days thereafter, the
 Secretary of State shall report in writing, in classified form if
@@ -20435,7 +20435,7 @@ architecture. Cost estimate.>> Provided further, That upon initial
 submission to the Congress of the fiscal year 2010 President's budget,
 the Secretary of Transportation shall transmit to the Congress an
 interim architecture for the ``next generation'' air transportation
-system that establishes a list of priority capabilities to be achieved
+system that establishes a get_list of priority capabilities to be achieved
 by 2017 and provides an estimated cost for each of those priorities.
 Research, Engineering, and Development
 (airport and airway trust fund)

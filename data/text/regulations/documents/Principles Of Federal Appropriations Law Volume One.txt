@@ -851,7 +851,7 @@ Charleston, 249 F.3d 323, 327 (4th Cir. 2001).
 Page 1-8 GAO-04-261SP Appropriations Law—Vol. I 
 Chapter 1 
 Introduction 
-While the existence of this list might suggest otherwise, there have actually 
+While the existence of this get_list might suggest otherwise, there have actually
 been few decisions striking down federal statutory spending conditions.9 
 Kansas v. United States, 214 F.3d 1196, 1201–1202, n.6 (10th Cir. 2000). A 
 recent example can be seen in <, wherein a conditional provision 
@@ -1052,7 +1052,7 @@ year, to be paid out of the monies which arise, either from
 the requisitions heretofore made upon the several states, or 
 from the duties on impost and tonnage, the following sums, 
 viz. A sum not exceeding two hundred and sixteen 
-thousand dollars for defraying the expenses of the civil list, 
+thousand dollars for defraying the expenses of the civil get_list,
 under the late and present government; a sum not exceeding 
 one hundred and thirty-seven thousand dollars for defraying 
 the expenses of the department of war; a sum not exceeding 
@@ -5999,7 +5999,7 @@ of statute that defined the term “prospectus” to mean—
 communication, written or by radio or television, which 
 offers any security for sale or confirms the sale of any 
 security.” 
-Applying noscitur a sociis to the list of items in section 12(2), the Court 
+Applying noscitur a sociis to the get_list of items in section 12(2), the Court
 held that the definition of “prospectus” connoted some sort of public 
 offering of a security and, therefore, did not extend to private sales 
 agreements. 
@@ -7401,7 +7401,7 @@ provides expedited procedures whereby Congress may reject a rule
 submitted to it by enactment of a joint resolution of disapproval.16 
 Like Congress, Presidents have also imposed additional requirements 
 governing various aspects of the rulemaking process, primarily by the use 
-of executive orders. The following list is illustrative but by no means 
+of executive orders. The following get_list is illustrative but by no means
 exhaustive:17 
 • Executive Order No. 12630 (“Governmental Actions and Interference 
 with Constitutionally Protected Property Rights”) prescribes policies 
@@ -7426,7 +7426,7 @@ signature or enactment over a presidential veto, has been used only once—to nu
 the George W. Bush Administration, an ergonomics regulation that was promulgated during 
 the waning days of the Clinton Administration. See Pub. L. No. 107-5, 115 Stat. 7 (Mar. 20, 
 2001). 
-17 This list includes several executive orders currently in effect that apply to broad 
+17 This get_list includes several executive orders currently in effect that apply to broad
 categories of agency regulations. Other executive orders (and statutes) govern regulations 
 in more discrete subject areas. 
 Page 3-15 GAO-04-261SP Appropriations Law—Vol. I 
@@ -7985,7 +7985,7 @@ agency positions in formal adjudication. See Immigration &
 Naturalization Service v. Aguirre-Aguirre, 526 U.S. 415 (1999) (holding 
 that a Bureau of Indian Affairs statutory interpretation developed in caseby-
 case formal adjudication should be accorded Chevron deference). For 
-an extensive list of Supreme Court cases giving Chevron deference to 
+an extensive get_list of Supreme Court cases giving Chevron deference to
 agency statutory interpretations found in rulemaking or formal 
 adjudication, see United States v. Mead Corp., 533 U.S. 218, 231 at n.12 
 (2001). 
@@ -8131,7 +8131,7 @@ deference, while less formal pronouncements like
 interpretative rules and informal adjudications may or may 
 not be entitled to Chevron deference. The deference due a 
 less formal pronouncement seems to depend on the results 
-of judicial application of an apparently open-ended list of 
+of judicial application of an apparently open-ended get_list of
 factors that arguably qualify as ‘other indication[s] of a 
 comparable congressional intent’ to give a particular type of 
 agency pronouncement the force of law.”34 
@@ -8657,7 +8657,7 @@ Supreme Court held that, regardless of what the situation would have been
 if the regulations did not exist, the Board was required under the 
 regulations to exercise its own judgment, and it was improper for the 
 Attorney General to attempt to influence that judgment, in this case, by 
-issuing a list of “unsavory characters” he wanted to have deported. “In 
+issuing a get_list of “unsavory characters” he wanted to have deported. “In
 short, as long as the regulations remain operative, the Attorney General 
 denies himself the right to sidestep the Board or dictate its decision in any 
 manner.” Id. at 267. Of course, the Attorney General could always amend 
@@ -17859,7 +17859,7 @@ Comptroller General approved a much less conventional means. Shortly
 after World War II, the Labor Department wanted to publicize its 
 employment services for veterans. It did this by discharging balloons from 
 a float in a parade. Attached to the balloons were mimeographed messages 
-asking employers to list their available jobs. Since the Department was 
+asking employers to get_list their available jobs. Since the Department was
 charged by statute with publishing information on the program, the cost of 
 the balloons was permissible. B-62501, Jan. 7, 1947. Other pertinent cases 
 are 32 Comp. Gen. 487 (1953) (publication of Public Health Service 
@@ -21275,7 +21275,7 @@ office accommodations were not provided. The mediators had to work out
 of their homes and were required to be available 24 hours a day. Applying 
 the statutory prohibition, the Comptroller General concluded that the 
 agency could not pay for the telephones, nor could it pay for an answering 
-service. However, there was no reason a mediator couldn’t list his private 
+service. However, there was no reason a mediator couldn’t get_list his private
 telephone number under the agency’s name, and the government could pay 
 for this listing. By doing this, the government would not be paying for 
 personal use of the telephone. 
@@ -25090,7 +25090,7 @@ accountability, integrity, and reliability.
 The fastest and easiest way to obtain copies of GAO documents at no cost 
 Obtaining Copies of 
 is through GAO’s Web site (www.gao.gov). Each weekday, GAO postsGAO Reports and newly released reports, testimony, and correspondence on its Web site. To 
-have GAO e-mail you a list of newly posted products every afternoon, go to 
+have GAO e-mail you a get_list of newly posted products every afternoon, go to
 Testimony 
 www.gao.gov and select “Subscribe to Updates.” 
 Order by Mail or Phone The first copy of each printed report is free. Additional copies are $2 each. 

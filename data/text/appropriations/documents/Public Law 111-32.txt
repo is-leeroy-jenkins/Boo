@@ -2680,7 +2680,7 @@ voucher;
 (C) a mechanism for obtaining such other
 certifications as deemed necessary by the Secretary from
 entities engaged in vehicle disposal; and
-(D) a list of entities to which dealers may transfer
+(D) a get_list of entities to which dealers may transfer
 eligible trade-in vehicles for disposal; and
 (6) provide for the enforcement of the penalties described
 in subsection (e).
@@ -2711,7 +2711,7 @@ the Secretary information about the Program, including--
 vehicle;
 (2) how to participate in the Program, including how to
 determine participating dealers; and
-(3) a comprehensive list, by make and model, of new fuel
+(3) a comprehensive get_list, by make and model, of new fuel
 efficient automobiles meeting the requirements of the Program.
 Once such <<NOTE: Public information.>> information is available, the
 Secretary shall conduct a public awareness campaign to inform consumers

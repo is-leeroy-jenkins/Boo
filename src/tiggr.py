@@ -73,12 +73,12 @@ class Text:
 		remove_markdown( self, text: str ) -> str
 	    normalize(text: str) -> str
 	    tokenize_sentences(text: str) -> str
-	    tokenize_words(text: str) -> list
+	    tokenize_words(text: str) -> get_list
 	    load_file( url: str) -> li
-	    lemmatize(tokens: list) -> str
-	    bag_of_words(tokens: list) -> dict
-	    train_word2vec(sentences: list, vector_size=100, window=5, min_count=1) -> Word2Vec
-	    compute_tfidf(corpus: list, max_features=1000, prep=True) -> tuple
+	    lemmatize(tokens: get_list) -> str
+	    bag_of_words(tokens: get_list) -> dict
+	    train_word2vec(sentences: get_list, vector_size=100, window=5, min_count=1) -> Word2Vec
+	    compute_tfidf(corpus: get_list, max_features=1000, prep=True) -> tuple
 	    
 	'''
 	def __init__( self ):
@@ -104,7 +104,7 @@ class Text:
 	
 	def __dir__( self ):
 		'''
-			returns a list[ str ] of members
+			returns a get_list[ str ] of members
 		'''
 		return [ 'raw_input', 'cleaned', 'removed',
 		         'lowercase', 'normalized', 'translator',
@@ -532,7 +532,7 @@ class Text:
 	def chunk( self, tokens: list, max: int=800, over: int=50 ) -> list[ str ]:
 		"""
 			Purpose:
-				Split a list of tokens into overlapping chunks based on token limits.
+				Split a get_list of tokens into overlapping chunks based on token limits.
 
 			Args:
 				tokens (list): Tokenized input documents.
@@ -540,7 +540,7 @@ class Text:
 				over (int): Overlapping token count between chunks.
 
 			Returns:
-				list: A list of token chunks.
+				list: A get_list of token chunks.
 		"""
 		try:
 			if tokens is None:
@@ -559,7 +559,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Token'
-			_exc.method = 'chunk( self, tokens: list, max: int=800, over: int=50 ) -> list[ str ]'
+			_exc.method = 'chunk( self, tokens: get_list, max: int=800, over: int=50 ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -592,7 +592,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize( self, text: str ) -> list'
+			_exc.method = 'tokenize( self, text: str ) -> get_list'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -624,7 +624,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize_words( self, text: str ) -> list[ str ]'
+			_exc.method = 'tokenize_words( self, text: str ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -632,7 +632,7 @@ class Text:
 	def tokenize_sentences( self, text: str ) -> list[ str ]:
 		"""
 		
-			Tokenize a paragraph or document into a list of sentence strings.
+			Tokenize a paragraph or document into a get_list of sentence strings.
 	
 			Args:
 				text (str): Input text.
@@ -650,7 +650,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize_sentences( self, text: str ) -> list[ str ]'
+			_exc.method = 'tokenize_sentences( self, text: str ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
@@ -676,7 +676,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Token'
-			_exc.method = 'bag_of_words( self, tokens: list ) -> dict'
+			_exc.method = 'bag_of_words( self, tokens: get_list ) -> dict'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -686,7 +686,7 @@ class Text:
 			Train a Word2Vec embedding model from tokenized sentences.
 	
 			Args:
-				sentences (list of list of str): List of tokenized sentences.
+				sentences (get_list of get_list of str): List of tokenized sentences.
 				vector_size (int): Dimensionality of word vectors.
 				window (int): Max distance between current and predicted word.
 				min_count (int): Minimum frequency for inclusion in vocabulary.
@@ -703,7 +703,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Token'
-			_exc.method = 'train_word2vec( self, tokens: list, size=100, window=5, min=1 ) -> Word2Vec'
+			_exc.method = 'train_word2vec( self, tokens: get_list, size=100, window=5, min=1 ) -> Word2Vec'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -721,7 +721,7 @@ class Text:
 			Returns:
 				tuple:
 					- tfidf_matrix (scipy.sparse.csr_matrix): TF-IDF feature matrix.
-					- feature_names (list): Vocabulary terms.
+					- feature_names (get_list): Vocabulary terms.
 					- vectorizer (TfidfVectorizer): Fitted vectorizer instance.
 	
 		"""
@@ -744,7 +744,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Token'
-			_exc.method = 'compute_tfidf( self, corpus: list, max: int=1000, prep: bool=True ) -> tuple'
+			_exc.method = 'compute_tfidf( self, corpus: get_list, max: int=1000, prep: bool=True ) -> tuple'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 

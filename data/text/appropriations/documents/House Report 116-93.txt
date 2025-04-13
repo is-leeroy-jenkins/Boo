@@ -140,7 +140,7 @@ reported to the House with a favorable recommendation, without
 amendment, by unanimous consent.
 COMMITTEE VOTES
 Clause 3(b) of rule XIII of the Rules of the House of
-Representatives requires the Committee to list the recorded
+Representatives requires the Committee to get_list the recorded
 votes on the motion to report legislation and amendments
 thereto.
 No recorded votes were requested during consideration of

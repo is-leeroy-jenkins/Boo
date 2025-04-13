@@ -476,12 +476,12 @@ msgstr "ショートカットを削除"
 
 #. DirectoryListDialog..Caption
 #: dlgDirectoryList.dfm
-msgid "Directory list"
+msgid "Directory get_list"
 msgstr "ディレクトリ一覧"
 
 #. DirectoryListDialog..Panel1..Label1..Caption
 #: dlgDirectoryList.dfm
-msgid "Ordered list of file paths:"
+msgid "Ordered get_list of file paths:"
 msgstr "順序付けられたファイルパスのリスト："
 
 #. DirectoryListDialog..Panel1..btnMoveUp..Hint
@@ -496,7 +496,7 @@ msgstr "下へ移動"
 
 #. DirectoryListDialog..Panel2..btnAdd..Hint
 #: dlgDirectoryList.dfm
-msgid "Add file url to the list"
+msgid "Add file url to the get_list"
 msgstr "リストにファイルパスを追加します"
 
 #. DirectoryListDialog..Panel2..btnReplace..Hint
@@ -2830,7 +2830,7 @@ msgstr "関数を検索(&U)..."
 
 #. CommandsDataModule..actlMain..actFindFunction..Hint
 #: dmCommands.dfm
-msgid "Find Function|Find function from function list"
+msgid "Find Function|Find function from function get_list"
 msgstr "関数を検索|関数リストから関数を検索します"
 
 #. CommandsDataModule..actlMain..actEditLineNumbers..Caption
@@ -6297,7 +6297,7 @@ msgid "Special packages"
 msgstr "特別パッケージ"
 
 #: dmCommands.pas
-msgid "Code completion list size"
+msgid "Code completion get_list size"
 msgstr "コード補完リストサイズ"
 
 #: dmCommands.pas
@@ -8694,7 +8694,7 @@ msgstr ""
 msgid ""
 "To add command buttons, drag and drop commands onto a toolbar. To remove "
 "command buttons, drag them off the toolbar and drop them on the commands "
-"list."
+"get_list."
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings

@@ -937,7 +937,7 @@ agreements entered into prior to fiscal year 2015 for a farm
 labor multi-family housing project financed under section 514 or 516 of
 the Act may not be recaptured for use in another project until such
 assistance has remained unused for a period of 12 consecutive months, if
-such project has a waiting list of tenants seeking such assistance or
+such project has a waiting get_list of tenants seeking such assistance or
 the project has rental assistance eligible tenants who are not receiving
 such assistance: Provided further, That such recaptured rental
 assistance shall, to the extent practicable, be applied to another farm
@@ -6281,7 +6281,7 @@ Provided further, That transfers among military personnel
 appropriations shall not be taken into account for purposes of the
 limitation on the amount of funds that may be transferred under this
 section.
-Sec. 8006. (a) With regard to the list of specific programs,
+Sec. 8006. (a) With regard to the get_list of specific programs,
 projects, and activities (and the dollar amounts and adjustments to
 budget activities corresponding to such programs, projects, and
 activities) contained in the tables titled ``Explanation of Project
@@ -6681,7 +6681,7 @@ among requests of Indian tribes for housing units under subsection (a)
 before submitting requests to the Secretary of the Air Force under
 subsection (b).
 (d) In this section, the term ``Indian tribe'' means any recognized
-Indian tribe included on the current list published by the Secretary of
+Indian tribe included on the current get_list published by the Secretary of
 the Interior under section 104 of the Federally Recognized Indian Tribe
 Act of 1994 (Public Law 103-454; 108 Stat. 4792; 25 U.S.C. 479a-1).
 Sec. 8031. During the current fiscal year, appropriations which are
@@ -6846,7 +6846,7 @@ of this section or subsection (a), (b), or (c) of section 2461 of title
 regulation, requirement, or policy to the contrary shall have full
 authority to enter into a contract for the performance of any commercial
 or industrial type function of the Department of Defense that--
-(A) is included on the procurement list established pursuant
+(A) is included on the procurement get_list established pursuant
 to section 2 of the Javits-Wagner-O'Day Act (section 8503 of
 title 41, United States Code);
 (B) is planned to be converted to performance by a qualified
@@ -13852,7 +13852,7 @@ be used for any activity regarding the designation of critical habitat,
 pursuant to subsection (a)(3), excluding litigation support, for species
 listed pursuant to subsection (a)(1) prior to October 1, 2012; of which
 not to exceed $1,501,000 shall be used for any activity regarding
-petitions to list species that are indigenous to the United States
+petitions to get_list species that are indigenous to the United States
 pursuant to subsections (b)(3)(A) and (b)(3)(B); and, of which not to
 exceed $1,504,000 shall be used for implementing subsections (a), (b),
 (c), and (e) of section 4 of the Endangered Species Act of 1973 (16
@@ -15130,7 +15130,7 @@ funds: (A) the State of Alaska shall provide a match of 25
 percent; (B) no more than 5 percent of the funds may be used for
 administrative and overhead expenses; and (C) the State of
 Alaska shall make awards consistent with the Statewide priority
-list established in conjunction with the Agency and the U.S.
+get_list established in conjunction with the Agency and the U.S.
 Department of Agriculture for all water, sewer, waste disposal,
 and similar projects carried out by the State of Alaska that are
 funded under section 221 of the Federal Water Pollution Control
@@ -23843,7 +23843,7 @@ That such funds shall be subject to prior consultation with the
 Committees on Appropriations.
 (2) Not later than 90 days after enactment of this Act, the
 Secretary of State shall submit to the appropriate congressional
-committees a list of all expeditionary, interim, and temporary
+committees a get_list of all expeditionary, interim, and temporary
 diplomatic facilities and the number of personnel and security costs for
 each such facility: Provided, That the report required by this
 paragraph may be submitted in classified form if necessary.
@@ -24880,7 +24880,7 @@ the individuals found ineligible in the previous 12 months
 pursuant to paragraph (1)(A) as well as the individuals who the
 Secretary designated or identified pursuant to paragraph (1)(B),
 or who would be ineligible but for the application of paragraph
-(2), a list of any waivers provided under paragraph (3), and the
+(2), a get_list of any waivers provided under paragraph (3), and the
 justification for each waiver.
 (5) Any unclassified portion of the report required under
 paragraph (4) shall be posted on the Department of State's Web

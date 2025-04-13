@@ -848,7 +848,7 @@ GAGAS
 terminology differs from that used at an organization subject to GAGAS, 
 auditors use professional judgment to determine if there is an equivalent 
 term.9 
-9See the Glossary for an expanded list of terms used in GAGAS. 
+9See the Glossary for an expanded get_list of terms used in GAGAS.
 a. Attestation engagement: An examination, review, or agreed-upon 
 procedures engagement conducted under the GAGAS attestation 
 standards related to subject matter or an assertion that is the 

@@ -3119,7 +3119,7 @@ Joint
 Field 
 Office 
 (JFO); 
-d. Maintain a list of assisting and cooperating agencies 
+d. Maintain a get_list of assisting and cooperating agencies
 and Agency Representatives; 
 e. Establish and coordinate contact with key stakeholders; 
 f. Assist in establishing and coordinating interagency 
@@ -3554,7 +3554,7 @@ resources
 are needed; surplus resources are available; or haz
 ardous situations or significant 
 events occur; 
-i. Review suggested list of resources to be released 
+i. Review suggested get_list of resources to be released
 and initiate recommendation for release of resources; 
 j. Evaluate 
 on-scene 
@@ -4155,7 +4155,7 @@ the status of all assigned resources (primary and support) at
 an incident. This is achieved by overseeing the check-in of 
 all resources, maintaining a status-keeping system indicating 
 current location and status of all resources, and maintaining 
-a master list of all resources (e.g., key supervisory personnel, 
+a master get_list of all resources (e.g., key supervisory personnel,
 primary and 
 support 
 resources). 
@@ -9526,7 +9526,7 @@ a. Review Branch Director Responsibilities (page 8-9);
 b. Develop the Wildlife Branch portion of the IAP; 
 c. Supervise Wildlife Branch operations; 
 d. Determine resource needs; 
-e. Review the suggested list of resources to be released 
+e. Review the suggested get_list of resources to be released
 and initiate recommendation for release of 
 resources; 
 f. Assemble and disassemble Teams/Task Forces assigned 
@@ -9692,7 +9692,7 @@ Natural
 Resources Trustee 
 Representative 
 and the Historical/Cultural Resources 
-Specialist, develop a prioritized list of sensitive areas 
+Specialist, develop a prioritized get_list of sensitive areas
 or species that may be impacted by recovery actions; 
 f. Develop a protection strategy for resources at risk; 
 g. Coordinate with the SSC; and 
@@ -10053,7 +10053,7 @@ tive
 risk to 
 develop 
 a 
-priority list 
+priority get_list
 for protection. 
 Tasks specific 
 to the Resources at Risk Technical Specialist include: 
@@ -10072,7 +10072,7 @@ Trustee Representatives;
 f. Identify historic properties at risk following consultation 
 with the Historical/Cultural Resources Specialist; 
 g. Identify socioeconomic resources at risk; 
-h. Develop a prioritized list of the resources at risk for 
+h. Develop a prioritized get_list of the resources at risk for
 use by the Planning Section in consultation with Natural 
 Resource Trustee Representatives, Land Management 
 Agency Representatives, and the Historical/

@@ -91,15 +91,15 @@ class Header( ):
 	
 	def __dir__( self ):
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'content_type', 'api_key', 'authorization', 'values' ]
 
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completions',
 		         'speech_generation', 'translations', 'assistants', 'transcriptions',
@@ -156,7 +156,7 @@ class Models( ):
 	
 	
 	def __init__( self ):
-		self.text_generation = [ 'documents-davinci-003', 'documents-curie-001',
+		self.text_generation = [ 'text-davinci-003', 'text-curie-001',
 		                         'gpt-4-0613', 'gpt-4-0314',
 		                         'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
 		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
@@ -198,8 +198,8 @@ class Models( ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completion',
 		         'speech_generation', 'translations', 'assistants', 'transcriptions',
@@ -208,7 +208,7 @@ class Models( ):
 	
 	def get_data( self ) -> dict:
 		'''
-			Method that returns a list of dictionaries
+			Method that returns a get_list of dictionaries
 		'''
 		_data = { 'text_generation': self.text_generation,
 		          'image_generation': self.image_generation,
@@ -434,8 +434,8 @@ class Perceptron( ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'fit', 'net_input', 'predict',
 		         'w_', 'b_', 'errors_',
@@ -653,265 +653,13 @@ class AdaptiveLinearNeuron( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 			
 		'''
 		return [ 'fit', 'net_input', 'activation',
 		         'predict', 'losses_', 'b_', 'w_',
 		         'n_iter', 'eta', 'random_state', 'embedding-3-small' ]
-
-
-class SmallEmbedding( AI ):
-	"""
-		
-		Purpose
-		___________
-		Class used for creating embeddings using
-		OpenAI' embedding-3-small embedding model
-		
-		Parameters
-		------------
-		None
-		
-		Attributes
-		-----------
-		self.api_key
-		self.client
-		self.model
-		self.embedding
-		self.response
-		
-		Methods
-		------------
-		create( self, input: str ) -> list[ float ]
-		
-	
-	"""
-	
-	
-	def __init__( self ):
-		"""
-		
-			Purpose
-			_______
-			Initializes SmallEmbedding opbjects
-			
-			
-			Parameters
-			----------
-			None
-			
-			
-			Returns
-			-------
-			None
-		
-		"""
-		super( ).__init__( )
-		self.api_key = super( ).api_key
-		self.client = OpenAI( self.api_key )
-		self.model = 'embedding-3-small'
-		self.embedding = None
-		self.response = None
-	
-	
-	def create( self, input: str ) -> list[ float ]:
-		"""
-		
-			Purpose
-			_______
-			Creates an embedding ginve a string input
-			
-			
-			Parameters
-			----------
-			input: str
-			
-			
-			Returns
-			-------
-			list[ float
-		
-		"""
-		try:
-			if input is None:
-				raise Exception( 'Argument "input" is required.' )
-			else:
-				self.input = input
-				self.response = self.client.embeddings.create( input, self.model )
-				self.embedding = self.response.data[ 0 ].embedding
-				return self.embedding
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'SmallEmbedding'
-			exception.method = 'create( self, input: str ) -> list[ float ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def __dir__( self ) -> list[ str ]:
-		'''
-
-			Methods that returns a list of member names
-			Returns: list[ str ]
-
-		'''
-		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
-
-
-class AdaEmbedding( AI ):
-	'''
-		
-		Purpose
-		___________
-		Class used for creating ADA embeddings using
-		OpenAI's embedding-ada-02 embedding model
-		
-		Parameters
-		------------
-		None
-		
-		Attributes
-		-----------
-		self.api_key
-		self.client
-		self.model
-		self.embedding
-		self.response
-		
-		Methods
-		------------
-		create( self, input: str ) -> list[ float ]
-		
-	'''
-	
-	def create( self, input: str ) -> list[ float ]:
-		"""
-		
-			Purpose
-			_______
-			Creates an ADA embedding given a string input
-			
-			
-			Parameters
-			----------
-			input: str
-			
-			
-			Returns
-			-------
-			list[ float
-		
-		"""
-		try:
-			if input is None:
-				raise Exception( 'Argument "input" is required.' )
-			else:
-				self.input = input
-				self.response = self.client.embeddings.create( input, self.model )
-				self.embedding = self.response.data[ 0 ].embedding
-				return self.embedding
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'AdaEmbedding'
-			exception.method = 'create( self, input: str ) -> list[ float ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def __dir__( self ) -> list[ str ]:
-		'''
-
-			Methods that returns a list of member names
-			Returns: list[ str ]
-
-		'''
-		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
-
-
-class LargeEmbedding( AI ):
-	'''
-		
-		Purpose
-		___________
-		Class used for creating ADA embeddings using
-		OpenAI's embedding-ada-02 embedding model
-		
-		Parameters
-		------------
-		None
-		
-		Attributes
-		-----------
-		self.api_key
-		self.client
-		self.model
-		self.embedding
-		self.response
-		
-		Methods
-		------------
-		create( self, input: str ) -> list[ float ]
-		
-	'''
-	
-	
-	def __init__( self ):
-		super( ).__init__( )
-		self.api_key = Header( ).api_key
-		self.client = OpenAI( self.api_key )
-		self.model = 'text-embedding-3-large'
-		self.embedding = None
-		self.response = None
-	
-	
-	def create( self, input: str ) -> list[ float ]:
-		"""
-		
-			Purpose
-			_______
-			Creates an Large embedding given a string input
-			
-			
-			Parameters
-			----------
-			input: str
-			
-			
-			Returns
-			-------
-			list[ float ]
-		
-		"""
-		try:
-			if input is None:
-				raise Exception( 'Argument "input" is required.' )
-			else:
-				self.input = input
-				self.response = self.client.embeddings.create( input, self.model )
-				self.embedding = self.response.data[ 0 ].embedding
-				return self.embedding
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'LargeEmbedding'
-			exception.method = 'create( self, input: str ) -> list[ float ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def __dir__( self ) -> list[ str ]:
-		'''
-		
-			Methods that returns a list of member names
-			Returns: list[ str ]
-			
-		'''
-		return [ 'api_key', 'client', 'model', 'input', 'create' ]
-
 
 class Chat( AI ):
 	"""
@@ -935,6 +683,10 @@ class Chat( AI ):
 		
 		Attributes
 		-----------
+		
+		self.self.number, self.self.temperature, self.self.top_percent,
+		self.frequency_penalty, self.presence_penalty,
+		self.store, self.stream, self.maximum_completion_tokens,
 		self.api_key, self.client, self.model,  self.embedding,
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
@@ -945,6 +697,7 @@ class Chat( AI ):
 		
 		Methods
 		------------
+		get_model_options( self ) -> list[ str ]
 		generate_text( self, prompt: str ) -> str:
 		analyze_image( self, prompt: str, url: str ) -> str:
 		summarize( self, prompt: str, path: str ) -> str
@@ -984,6 +737,18 @@ class Chat( AI ):
 		self.response_format = 'auto'
 		self.tools = [ ]
 		self.vector_store_ids = [ 'vs_712r5W5833G6aLxIYIbuvVcK', 'vs_8fEoYp1zVvk5D8atfWLbEupN' ]
+	
+	def get_model_options( self ) -> str:
+		'''
+		
+			Methods that returns a list of model names
+		
+		'''
+		return [ 'gpt-4-0613', 'gpt-4-0314',
+                 'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
+                 'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
+                 'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+                 'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 	
 	
 	def generate_text( self, prompt: str ) -> str:
@@ -1117,6 +882,7 @@ class Chat( AI ):
 			error = ErrorDialog( exception )
 			error.show( )
 
+
 	def search_file( self, prompt: str ) -> str:
 		try:
 			if prompt is None:
@@ -1144,30 +910,76 @@ class Chat( AI ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input',
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'modalities', 'stops', 'content',
+		         'prompt', 'response', 'completion', 'file', 'file_path',
+		         'input', 'messages', 'image_url', 'respose_format', 'tools',
+		         'vector_store_ids', 'size', 'api_key', 'client', 'model',
 		         'generate_text', 'analyze_image', 'summarize',
 		         'search_web' ]
 
 
 class LargeImage( AI ):
-	'''
-
-		Class proiding Response objects
-
-	'''
+	"""
+		
+		Purpose
+		___________
+		Class used for generating images OpenAI's
+		Images API and dall-e-3
+		
+		
+		Parameters
+		------------
+		number: int
+		temperature: float
+		top_percent: float
+		frequency_penalty: float
+		presence_penalty: float
+		maximum_completion_tokens: int
+		store: bool
+		stream: bool
+		
+		Attributes
+		-----------
+		self.api_key, self.client, self.model,  self.embedding,
+		self.response, self.number, self.temperature, self.top_percent,
+		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+		self.store, self.stream, self.modalities, self.stops, self.content,
+		self.prompt, self.response, self.completion, self.file, self.file_path,
+		self.input, self.messages, self.image_url, self.response_format,
+		self.tools, self.vector_store_ids
+		
+		Methods
+		------------
+		generate( self, input: str ) -> str:
+		get_detail_options( self ) -> list[ str ]
+		get_format_options( self ) -> list[ str ]:
+		get_size_options( self ) -> list[ str ]
+		
+	"""
 	
 	
-	def __init__( self ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=False):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.quality = 'hd'
 		self.model = 'dall-e-3'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
 		
 	
 	
@@ -1175,31 +987,123 @@ class LargeImage( AI ):
 		pass
 	
 	
+	def get_model_options( self ) -> str:
+		'''
+		
+			Methods that returns a list of model names
+		
+		'''
+		return [ ]
+		
+
+	def get_detail_options( self ) -> list[  str ]:
+		'''
+		
+			Method that returns a  list of detail options
+		
+		'''
+		return [ ]
+	
+	
+	def get_format_options( self ):
+		'''
+		
+			Method that returns a  list of format options
+		
+		'''
+		return [ ]
+	
+	
+	def get_size_options( self ):
+		'''
+		
+			Method that returns a  list of sizes
+		
+		'''
+		return [ ]
+	
+	
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'generate' ]
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'modalities', 'stops',
+				 'api_key', 'client', 'model', 'input', 'generate',
+		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
 
 class Image( AI ):
-	'''
-
-		Class proiding Response objects
-
-	'''
+	"""
+		
+		Purpose
+		___________
+		Class used for generating images OpenAI's
+		Images API and dall-e-2
+		
+		
+		Parameters
+		------------
+		num: int=1
+		temp: float=0.8
+		top: float=0.9
+		freq: float=0.0
+		pres: float=0.0
+		max: int=2048
+		store: bool=True
+		stream: bool=True
+		
+		Attributes
+		-----------
+		self.api_key, self.client, self.model,  self.embedding,
+		self.response, self.number, self.temperature, self.top_percent,
+		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+		self.store, self.stream, self.modalities, self.stops, self.content,
+		self.prompt, self.response, self.completion, self.file, self.file_path,
+		self.input, self.messages, self.image_url, self.response_format,
+		self.tools, self.vector_store_ids
+		
+		Methods
+		------------
+		get_model_options( self ) -> str
+		generate( self, input: str ) -> str:
+		get_detail_options( self ) -> list[ str ]
+		get_format_options( self ) -> list[ str ]:
+		get_size_options( self ) -> list[ str ]
+		
+	"""
 	
 	
-	def __init__( self ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=False):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.quality = 'standard'
+		self.detail = 'auto'
 		self.model = 'dall-e-2'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+	
+	
+	def get_model_options( self ) -> str:
+		'''
+		
+			Methods that returns a list of model names
+		
+		'''
+		return [ ]
 	
 	
 	def generate( self, input: str ) -> str:
@@ -1226,13 +1130,45 @@ class Image( AI ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'generate' ]
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'modalities', 'stops',
+		         'api_key', 'client', 'model', 'input',
+		         'generate', 'quality', 'detail', 'model', 'get_model_options',
+		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
 
+	def get_size_options( self ) -> list[  str ]:
+		'''
+		
+			Method that returns a  list of model options
+		
+		'''
+		return [ ]
+	
+	
+	def get_format_options( self ):
+		'''
+		
+			Method that returns a  list of format options
+		
+		'''
+		return [ ]
+	
+	
+	def get_effort_options( self ):
+		'''
+		
+			Method that returns a  list of reasoning effort options
+		
+		'''
+		return [ ]
+	
+	
 class Assistant( AI ):
 	"""
 		
@@ -1255,16 +1191,20 @@ class Assistant( AI ):
 		
 		Attributes
 		-----------
-		self.api_key, self.system_instructions, self.client, self.model,  self.reasoning_effort,
+		self.self.number, self.self.temperature, self.self.top_percent,
+		self.frequency_penalty, self.presence_penalty, self.system_instructions,
+		self.store, self.stream, self.maximum_completion_tokens,
+		self.api_key, self.client, self.model,  self.embedding,
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.input_text, self.response, self.completion, self.file, self.file_path,
+		self.prompt, self.response, self.completion, self.file, self.file_path,
 		self.input, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids, self.descriptions, self.assistants
 		
 		Methods
 		------------
+		get_model_options( self ) -> str
 		generate_text( self, prompt: str ) -> str:
 		analyze_image( self, prompt: str, url: str ) -> str:
 		summarize( self, prompt: str, path: str ) -> str
@@ -1291,17 +1231,17 @@ class Assistant( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'text', 'audio', 'auto' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
-		self.reasoning_effort = None
+		self.reasoning_effort = 'auto'
 		self.input_text = None
 		self.name = None
-		self.description = None
+		self.description = 'Generic Assistant'
 		self.id = None
 		self.metadata = { }
-		self.tools = [ ]
-		self.assistants = None\
+		self.tools = list
+		self.assistants = list
 	
 	
 	def generate_text( self, prompt: str ) -> str:
@@ -1339,7 +1279,7 @@ class Assistant( AI ):
 			error.show( )
 	
 	
-	def list( self ) -> list:
+	def get_list( self ) -> list:
 		'''
 		
 			Method that returns a list of available assistants
@@ -1357,6 +1297,49 @@ class Assistant( AI ):
 			error.show( )
 
 
+	def get_format_options( ):
+		'''
+		
+			Method that returns a list of formatting options
+		
+		'''
+		pass
+	
+	
+	def get_model_options( ):
+		'''
+
+			Method that returns a list of available models
+
+		'''
+		pass
+	
+	
+	def get_effort_options( ):
+		'''
+
+			Method that returns a list of available models
+
+		'''
+		pass
+	
+	
+	def __dir__(self):
+		'''
+		
+			Method that returns a list of members
+		
+		'''
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
+		         'store', 'stream', 'modalities', 'stops', 'content',
+		         'prompt', 'response', 'completion', 'file', 'file_path',
+		         'input', 'messages', 'image_url', 'respose_format', 'tools',
+		         'vector_store_ids', 'name', 'description', 'generate_text',
+		         'get_format_options', 'get_model_options',
+		         'get_list', 'get_effort_options' ]
+	
+	
 class Bubba( AI ):
 	"""
 		
@@ -1378,16 +1361,20 @@ class Bubba( AI ):
 		
 		Attributes
 		-----------
-		self.api_key, self.system_instructions, self.client, self.model,  self.reasoning_effort,
+		self.self.number, self.self.temperature, self.self.top_percent,
+		self.frequency_penalty, self.presence_penalty,
+		self.store, self.stream, self.maximum_completion_tokens,
+		self.api_key, self.client, self.model,  self.embedding, self.system_instructions,
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.input_text, self.response, self.completion, self.file, self.file_path,
+		self.prompt, self.response, self.completion, self.file, self.file_path,
 		self.input, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids, self.descriptions, self.assistants
 		
 		Methods
 		------------
+		get_model_options( self ) -> str
 		generate_text( self, prompt: str ) -> str:
 		analyze_image( self, prompt: str, url: str ) -> str:
 		summarize( self, prompt: str, path: str ) -> str
@@ -1417,7 +1404,7 @@ class Bubba( AI ):
 		self.modalities = [ 'text', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
-		self.reasoning_effort = None
+		self.reasoning_effort = 'auto'
 		self.input_text = None
 		self.name = 'Bubba'
 		self.description = 'A Budget Execution & Data Analysis Assistant'
@@ -1461,6 +1448,48 @@ class Bubba( AI ):
 			error.show( )
 
 
+	def get_format_options( ):
+		'''
+		
+			Method that returns a list of formatting options
+		
+		'''
+		pass
+	
+	
+	def get_model_options( ):
+		'''
+
+			Method that returns a list of available models
+
+		'''
+		pass
+	
+	
+	def get_effort_options( ):
+		'''
+
+			Method that returns a list of available models
+
+		'''
+		pass
+	
+	def __dir__(self):
+		'''
+		
+			Method that returns a list of members
+		
+		'''
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
+		         'store', 'stream', 'modalities', 'stops', 'content',
+		         'prompt', 'response', 'completion', 'file', 'file_path',
+		         'input', 'messages', 'image_url', 'respose_format', 'tools',
+		         'vector_store_ids', 'name', 'description', 'generate_text',
+		         'get_format_options', 'get_model_options',
+		         'get_list', 'get_effort_options' ]
+
+
 class Bro( AI ):
 	"""
 		
@@ -1482,16 +1511,20 @@ class Bro( AI ):
 		
 		Attributes
 		-----------
-		self.api_key, self.system_instructions, self.client, self.model,  self.reasoning_effort,
+		self.self.number, self.self.temperature, self.self.top_percent,
+		self.frequency_penalty, self.presence_penalty, self.system_instructions,
+		self.store, self.stream, self.maximum_completion_tokens,
+		self.api_key, self.client, self.model,  self.embedding, self.reasoning_effort,
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.input_text, self.response, self.completion, self.file, self.file_path,
+		self.prompt, self.response, self.completion, self.file, self.file_path,
 		self.input, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids, self.descriptions, self.assistants
 		
 		Methods
 		------------
+		get_model_options( self ) -> str
 		generate_text( self, prompt: str ) -> str:
 		analyze_image( self, prompt: str, url: str ) -> str:
 		summarize( self, prompt: str, path: str ) -> str
@@ -1565,6 +1598,49 @@ class Bro( AI ):
 			error.show( )
 
 
+	def get_format_options( ):
+		'''
+		
+			Method that returns a list of formatting options
+		
+		'''
+		pass
+	
+	
+	def get_model_options( ):
+		'''
+
+			Method that returns a list of available models
+
+		'''
+		pass
+	
+	
+	def get_effort_options( ):
+		'''
+
+			Method that returns a list of available models
+
+		'''
+		pass
+	
+	
+	def __dir__(self):
+		'''
+		
+			Method that returns a list of members
+		
+		'''
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
+		         'store', 'stream', 'modalities', 'stops', 'content',
+		         'prompt', 'response', 'completion', 'file', 'file_path',
+		         'input', 'messages', 'image_url', 'respose_format', 'tools',
+		         'vector_store_ids', 'name', 'description', 'generate_text',
+		         'get_format_options', 'get_model_options',
+		         'get_list', 'get_effort_options' ]
+
+
 class TextToSpeech( AI ):
 	"""
 		
@@ -1596,6 +1672,7 @@ class TextToSpeech( AI ):
 		
 		Methods
 		------------
+		get_model_options( self ) -> str
 		create( self, prompt: str, path: str )
 		
 	
@@ -1626,6 +1703,15 @@ class TextToSpeech( AI ):
 		self.response = None
 		self.prompt = None
 		self.voice = None
+	
+	
+	def get_model_options( self ) -> str:
+		'''
+		
+			Methods that returns a list of model names
+		
+		'''
+		return [ ]
 	
 	
 	def create( self, prompt: str, path: str ):
@@ -1670,11 +1756,17 @@ class TextToSpeech( AI ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'create' ]
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'modalities', 'stops',
+		         'prompt', 'response', 'completion', 'audio_path',
+		         'input', 'messages', 'respose_format', 'tools',
+		         'size', 'api_key', 'client', 'model', 'voice',
+		         'generate_text', 'get_model_options' ]
 
 
 class Transcription( AI ):
@@ -1708,6 +1800,7 @@ class Transcription( AI ):
 		
 		Methods
 		------------
+		get_model_options( self ) -> str
 		create( self, prompt: str, path: str ) -> str
 		
 	
@@ -1734,6 +1827,15 @@ class Transcription( AI ):
 		self.input_text = None
 		self.audio_file = None
 		self.transcript = None
+	
+	
+	def get_model_options( self ) -> str:
+		'''
+
+			Methods that returns a list of model names
+
+		'''
+		return [ ]
 	
 	
 	def create( self, input: str ) -> str:
@@ -1775,11 +1877,16 @@ class Transcription( AI ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'modalities', 'stops',
+		         'prompt', 'response', 'completion', 'audio_path',
+		         'input', 'messages', 'respose_format', 'tools',
+		         'size', 'api_key', 'client', 'model', 'create' ]
 
 
 class Translation( AI ):
@@ -1840,6 +1947,15 @@ class Translation( AI ):
 		self.response = None
 	
 	
+	def get_model_options( self ) -> str:
+		'''
+
+			Methods that returns a list of model names
+
+		'''
+		return [ ]
+	
+	
 	def create( self, input: str ):
 		"""
 		
@@ -1877,8 +1993,300 @@ class Translation( AI ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 			
 		'''
-		return [ 'api_key', 'client', 'model', 'input', 'generate_text' ]
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'modalities', 'stops',
+		         'prompt', 'response', 'completion', 'audio_path',
+		         'input', 'messages', 'respose_format', 'tools',
+		         'size', 'api_key', 'client',
+		         'model', 'create', 'get_model_options' ]
+
+
+class SmallEmbedding( AI ):
+	"""
+
+		Purpose
+		___________
+		Class used for creating embeddings using
+		OpenAI' embedding-3-small embedding model
+
+		Parameters
+		------------
+		None
+
+		Attributes
+		-----------
+		self.api_key
+		self.client
+		self.model
+		self.embedding
+		self.response
+
+		Methods
+		------------
+		create( self, input: str ) -> get_list[ float ]
+
+
+	"""
+	
+	
+	def __init__( self ):
+		"""
+
+			Purpose
+			_______
+			Initializes SmallEmbedding opbjects
+
+
+			Parameters
+			----------
+			None
+
+
+			Returns
+			-------
+			None
+
+		"""
+		super( ).__init__( )
+		self.api_key = super( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'embedding-3-small'
+		self.embedding = None
+		self.response = None
+	
+	
+	def get_model_options( self ) -> str:
+		'''
+
+			Methods that returns a list of model names
+
+		'''
+		return [ ]
+	
+	
+	def create( self, input: str ) -> list[ float ]:
+		"""
+
+			Purpose
+			_______
+			Creates an embedding ginve a string input
+
+
+			Parameters
+			----------
+			input: str
+
+
+			Returns
+			-------
+			get_list[ float
+
+		"""
+		try:
+			if input is None:
+				raise Exception( 'Argument "input" is required.' )
+			else:
+				self.input = input
+				self.response = self.client.embeddings.create( input, self.model )
+				self.embedding = self.response.data[ 0 ].embedding
+				return self.embedding
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'SmallEmbedding'
+			exception.method = 'create( self, input: str ) -> get_list[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
+
+		'''
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'modalities', 'stops',
+		         'api_key', 'client', 'model',
+		         'input', 'create', 'get_model_options' ]
+
+
+class AdaEmbedding( AI ):
+	'''
+
+		Purpose
+		___________
+		Class used for creating ADA embeddings using
+		OpenAI's embedding-ada-02 embedding model
+
+		Parameters
+		------------
+		None
+
+		Attributes
+		-----------
+		self.api_key
+		self.client
+		self.model
+		self.embedding
+		self.response
+
+		Methods
+		------------
+		create( self, input: str ) -> get_list[ float ]
+
+	'''
+	
+	
+	def create( self, input: str ) -> list[ float ]:
+		"""
+
+			Purpose
+			_______
+			Creates an ADA embedding given a string input
+
+
+			Parameters
+			----------
+			input: str
+
+
+			Returns
+			-------
+			get_list[ float
+
+		"""
+		try:
+			if input is None:
+				raise Exception( 'Argument "input" is required.' )
+			else:
+				self.input = input
+				self.response = self.client.embeddings.create( input, self.model )
+				self.embedding = self.response.data[ 0 ].embedding
+				return self.embedding
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'AdaEmbedding'
+			exception.method = 'create( self, input: str ) -> get_list[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def get_model_options( self ) -> str:
+		'''
+
+			Methods that returns a list of model names
+
+		'''
+		return [ ]
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
+
+		'''
+		return [ 'api_key', 'client', 'model',
+		         'input', 'create', 'get_model_options' ]
+
+
+class LargeEmbedding( AI ):
+	'''
+
+		Purpose
+		___________
+		Class used for creating ADA embeddings using
+		OpenAI's embedding-ada-02 embedding model
+
+		Parameters
+		------------
+		None
+
+		Attributes
+		-----------
+		self.api_key
+		self.client
+		self.model
+		self.embedding
+		self.response
+
+		Methods
+		------------
+		create( self, input: str ) -> get_list[ float ]
+
+	'''
+	
+	
+	def __init__( self ):
+		super( ).__init__( )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'text-embedding-3-large'
+		self.embedding = None
+		self.response = None
+	
+	
+	def get_model_options( self ) -> str:
+		'''
+
+			Methods that returns a list of model names
+
+		'''
+		return [ ]
+	
+	
+	def create( self, input: str ) -> list[ float ]:
+		"""
+
+			Purpose
+			_______
+			Creates an Large embedding given a string input
+
+
+			Parameters
+			----------
+			input: str
+
+
+			Returns
+			-------
+			list[ float ]
+
+		"""
+		try:
+			if input is None:
+				raise Exception( 'Argument "input" is required.' )
+			else:
+				self.input = input
+				self.response = self.client.embeddings.create( input, self.model )
+				self.embedding = self.response.data[ 0 ].embedding
+				return self.embedding
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'LargeEmbedding'
+			exception.method = 'create( self, input: str ) -> get_list[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
+
+		'''
+		return [ 'api_key', 'client', 'model',
+		         'input', 'create', 'get_model_options' ]
+

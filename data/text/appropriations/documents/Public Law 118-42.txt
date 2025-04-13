@@ -534,7 +534,7 @@ and
 ``Military Construction, Army Reserve'', $23,000,000:
 Provided, That such funds may only be obligated to carry out
 construction and cost to complete projects identified in the respective
-military department's unfunded priority list for fiscal year 2024
+military department's unfunded priority get_list for fiscal year 2024
 submitted to Congress: Provided further, That such projects are subject
 to authorization prior to obligation and expenditure of funds to carry
 out construction: Provided further, <<NOTE: Deadline. Expenditure
@@ -2936,7 +2936,7 @@ entered into prior to fiscal year 2024 for a farm labor multi-family
 housing project financed under section 514 or 516 of the Act may not be
 recaptured for use in another project until such assistance has remained
 unused for a period of twelve consecutive months, if such project has a
-waiting list of tenants seeking such assistance or the project has
+waiting get_list of tenants seeking such assistance or the project has
 rental assistance eligible tenants who are not receiving such
 assistance: Provided further, <<NOTE: Applicability.>> That such
 recaptured rental assistance shall, to the extent practicable, be
@@ -11732,7 +11732,7 @@ That of these funds: (A) the State of Alaska shall provide a
 match of 25 percent; (B) no more than 5 percent of the funds may
 be used for administrative and overhead expenses; and (C) the
 State of Alaska shall make awards consistent with the Statewide
-priority list established in conjunction with the Agency and the
+priority get_list established in conjunction with the Agency and the
 U.S. Department of Agriculture for all water, sewer, waste
 disposal, and similar projects carried out by the State of
 Alaska that are funded under section 221 of the Federal Water
@@ -13488,7 +13488,7 @@ clearly identified in such submission.
 (2)(A) <<NOTE: Lists.>> Concurrent with the annual budget submission
 of the President for fiscal year 2025, the Secretary of the Interior and
 the Secretary of Agriculture shall each submit to the Committees on
-Appropriations of the House of Representatives and the Senate a list of
+Appropriations of the House of Representatives and the Senate a get_list of
 supplementary allocations for Federal land acquisition and Forest Legacy
 Projects at the National Park Service, the U.S. Fish and Wildlife
 Service, the Bureau of Land Management, and the U.S. Forest Service that
@@ -13505,7 +13505,7 @@ executed, such amounts must be clearly identified if proposed for
 reallocation in the annual budget submission.
 (B) The Federal land acquisition and Forest Legacy projects in the
 ``Submission of Cost Estimates'' required by section 200303(c)(1) of
-title 54, United States Code, and on the list of supplementary
+title 54, United States Code, and on the get_list of supplementary
 allocations required by subparagraph (A) shall be comprised only of
 projects for which a willing seller has been identified and for which an
 appraisal or market research has been initiated.
@@ -13521,7 +13521,7 @@ projects in the ``Submission of Cost Estimates'' required by section
 containing the same level of detailed information that is found on such
 sheets submitted to the Committees pursuant to section 427 of division D
 of the Further Consolidated Appropriations Act, 2020 (Public Law 116-94)
-for the list of supplementary allocations required by subparagraph (A).
+for the get_list of supplementary allocations required by subparagraph (A).
 (e) <<NOTE: Reports.>> The Department of the Interior and the
 Department of Agriculture shall provide the Committees on Appropriations
 of the House of Representatives and Senate quarterly reports on the
@@ -16019,7 +16019,7 @@ guarantee commitment, line of credit commitment, federally funded
 cooperative agreement, or full funding grant agreement is announced by
 the Department or its operating administrations: <<NOTE: List.>>
 Provided, That the Secretary of Transportation shall provide the House
-and Senate Committees on Appropriations with a comprehensive list of all
+and Senate Committees on Appropriations with a comprehensive get_list of all
 such loans, loan guarantees, lines of credit, letters of intent,
 federally funded cooperative agreements, full funding grant agreements,
 and discretionary grants prior to the notification required under the
@@ -18164,7 +18164,7 @@ the Secretary notifies the House and Senate Committees on Appropriations
 not less than 3 full business days before any project, State, locality,
 housing authority, Tribe, nonprofit organization, or other entity
 selected to receive a grant award is announced by the Department or its
-offices: Provided, That such notification shall list each grant award
+offices: Provided, That such notification shall get_list each grant award
 by State and congressional district.
 Sec. 222. None of the funds made available in this Act shall be
 used by the Federal Housing Administration, the Government National
@@ -19195,7 +19195,7 @@ and mental health condition.
 enrolled under the State plan under this title or the
 State child health plan under title XXI (or under a
 waiver of such plans) who have received a diagnosis
-described in subparagraph (A), a list of the substance
+described in subparagraph (A), a get_list of the substance
 use disorder and mental health treatment services,
 including, to the extent such data are available,
 specific adult and pediatric services by each major type
@@ -22403,7 +22403,7 @@ design, construction, and operation.
 (6) Public Infrastructure.
 (i) U.S. annual grant assistance under subsection
 (a) of this section shall be made available in
-accordance with a list of specific projects included in
+accordance with a get_list of specific projects included in
 the plan described in subsection (c) of this section to
 assist the Government of the Federated States of
 Micronesia in its efforts to provide adequate public
@@ -23168,7 +23168,7 @@ Association, as Amended.
 (1) Unless otherwise agreed, not less than 30 percent and
 not more than 50 percent of U.S. annual grant assistance
 provided under subsection (a) of this section shall be made
-available in accordance with a list of specific projects
+available in accordance with a get_list of specific projects
 included in the infrastructure improvement and maintenance plan
 prepared by the Government of the Republic of the Marshall
 Islands as part of the strategic framework described in

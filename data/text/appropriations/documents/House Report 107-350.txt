@@ -1062,7 +1062,7 @@ to the Committees on Appropriations of the House of
 Representatives and the Senate: Provided, That this section and
 subsections (a), (b), and (c) of 10 U.S.C. 2461 shall not apply
 to a commercial or industrial type function of the Department
-of Defense that: (1) is included on the procurement list
+of Defense that: (1) is included on the procurement get_list
 established pursuant to section 2 of the Act of June 25, 1938
 (41 U.S.C. 47), popularly referred to as the Javits-Wagner-
 O'Day Act; (2) is planned to be converted to performance by a
@@ -1451,7 +1451,7 @@ requests of Indian tribes for housing units under subsection
 Force under subsection (b).
 (d) Indian Tribe Defined.--In this section, the term
 ``Indian tribe'' means any recognized Indian tribe included on
-the current list published by the Secretary of the Interior
+the current get_list published by the Secretary of the Interior
 under section 104 of the Federally Recognized Indian Tribe Act
 of 1994 (Public Law 103-454; 108 Stat. 4792; 25 U.S.C. 479a-1).
 Sec. 8043. During the current fiscal year, appropriations
@@ -6072,7 +6072,7 @@ Attorney General, shall--
 victims killed as a result of the terrorist
 attacks on September 11, 2001 (referred to in
 this section as the `estimated number'); and
-``(B) compile a list that specifies, for
+``(B) compile a get_list that specifies, for
 each individual that the Foundation determines
 to be such a victim, the name of the victim and
 the State in which the victim resided.
@@ -7389,7 +7389,7 @@ Office of Energy Policy and New Uses of the U.S. Department of
 Agriculture to support independent testing of biofuels and
 biobased products. The Department should also cooperate with
 industry suppliers to facilitate inclusion of such biofuels and
-biobased products on the Defense Logistics Agency list of items
+biobased products on the Defense Logistics Agency get_list of items
 approved for DoD purchase.
 Defense Threat Reduction Agency
 Funding for the Operation and Maintenance activities of

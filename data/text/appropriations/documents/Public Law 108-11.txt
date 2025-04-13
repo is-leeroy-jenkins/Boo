@@ -1045,13 +1045,13 @@ that could be used to pay such costs.
 after the date of enactment of this Act, and every 90 days thereafter
 until September 30, 2004, the President shall submit to the Committees
 on Appropriations a report that contains:
-(1) A list of significant United States Government-funded
+(1) A get_list of significant United States Government-funded
 activities related to reconstruction in Iraq that, during the
 90-day period ending 15 days prior to the date the report is
 submitted to the Committees on Appropriations--
 (A) were initiated; or
 (B) were completed.
-(2) A list of the significant activities related to
+(2) A get_list of the significant activities related to
 reconstruction in Iraq that the President anticipates initiating
 during the 90-day period beginning on the date the report is
 submitted to the Committees on Appropriations, including:
@@ -1062,7 +1062,7 @@ activities.
 such costs.
 (3) Updated strategies, if changes are proposed regarding
 matters included in the reports required under subsection (a).
-(4) An updated list of the financial pledges and
+(4) An updated get_list of the financial pledges and
 contributions made by foreign governments or international
 organizations to fund activities related to humanitarian,
 governance, and reconstruction assistance in Iraq.
@@ -1372,7 +1372,7 @@ date the Secretary of Defense submits written notice to the appropriate
 committees of Congress certifying that the transfer is necessary to
 respond to, or protect against, acts or threatened acts of terrorism or
 to support Department of Defense operations in Iraq, and specifying the
-amounts and purposes of the transfer, including a list of proposed
+amounts and purposes of the transfer, including a get_list of proposed
 projects and their estimated costs.
 (c) Notice of Obligations.--Notwithstanding section 2804(b) of title
 10, United States Code, when a decision is made to carry out a military

@@ -4385,7 +4385,7 @@ Loan Fund of such entity.
 ``(2) Contents.--A strategic plan under paragraph (1), with
 respect to a Loan Fund of an eligible entity, shall include for
 a year the following:
-``(A) A list of the projects to be assisted through
+``(A) A get_list of the projects to be assisted through
 the Loan Fund during such year.
 ``(B) A description of the criteria and methods
 established for the distribution of funds from the Loan
@@ -4854,7 +4854,7 @@ exception under subsection (a)(7)(B).
 ``(D) Posting on website.--The Secretary shall post
 on the Internet website of the Centers for Medicare &
 Medicaid Services, in an easily understandable format,
-a list of the names, business addresses, and business
+a get_list of the names, business addresses, and business
 phone numbers of the eligible professionals who are
 meaningful EHR users and, as determined appropriate by
 the Secretary, of group practices receiving incentive
@@ -5362,7 +5362,7 @@ subsection, and the exception under subsection
 ``(B) Posting on website.--The Secretary shall post
 on the Internet website of the Centers for Medicare &
 Medicaid Services, in an easily understandable format,
-a list of the names of the eligible hospitals that are
+a get_list of the names of the eligible hospitals that are
 meaningful EHR users under this subsection or
 subsection (b)(3)(B)(ix) and other relevant data as
 determined appropriate by the Secretary. The Secretary
@@ -6063,7 +6063,7 @@ annually submit such a log to the Secretary documenting such
 breaches occuring during the year involved.
 (4) Posting on hhs public website.--The Secretary shall make
 available to the public on the Internet website of the
-Department of Health and Human Services a list that identifies
+Department of Health and Human Services a get_list that identifies
 each covered entity involved in a breach described in
 subsection (a) in which the unsecured protected health
 information of more than 500 individuals is acquired or
@@ -13683,7 +13683,7 @@ Miscellaneous. There would be no administrative or judicial
 review of any EHR incentive payment and the payment, including
 the determination of a meaningful EHR user or the cap on EHR
 incentive payments as described above. The Secretary would post
-a list of the names, business addresses, and business phone
+a get_list of the names, business addresses, and business phone
 numbers of the eligible professionals who are meaningful EHR
 users and, as determined appropriate by the Secretary, of group
 practices receiving incentive payments in an easily
@@ -14447,7 +14447,7 @@ immediately notify the Secretary of breaches of unsecured PHI
 involving 500 or more individuals. If the breach impacted fewer
 than 500 individuals, the covered entity involved would have to
 maintain a log of such breaches and annually submit it to the
-Secretary. The Secretary would be required to list on the HHS
+Secretary. The Secretary would be required to get_list on the HHS
 website each covered entity involved in a breach that impacted
 more than 500 individuals.
 The bill would define unsecured PHI as information that is

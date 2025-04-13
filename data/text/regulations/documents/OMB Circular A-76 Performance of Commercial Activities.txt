@@ -345,7 +345,7 @@ performance decision; (b) identify adversely affected employees; (c) accomplish
 employee placement entitlements in accordance with 5 C.F.R. Part 351 (reduction-in-
 force procedures); (d) provide post-employment restrictions to employees; (e) determine 
 agency priority considerations for vacant positions and establish a reemployment 
-priority list(s) in accordance with 5 C.F.R. Part 330; and (f) provide the CO with a list of 
+priority get_list(s) in accordance with 5 C.F.R. Part 330; and (f) provide the CO with a get_list of
 the agency’s adversely affected employees, as required by this attachment and FAR 
 7.305(c) regarding the right of first refusal for a private sector performance decision. 
 (2) MEO Team Requirements. The HRA shall assist the ATO and MEO team in 
@@ -618,7 +618,7 @@ CO may include a cross-reference compliance matrix in section L of the solicitat
 (see Figure B3. below). A compliance matrix should clearly identify proposal 
 reference information as it relates to the PWS, contract line item numbers (CLIN), 
 solicitation sections L and M, proposal volume and section, and, if appropriate, contract 
-data requirements list (CDRL) references. This matrix should be modified to account 
+data requirements get_list (CDRL) references. This matrix should be modified to account
 for proposed performance standards that differ from the requirements in a solicitation. 
 Example Compliance Matrix 
 This matrix is included in the solicitation with the following sections completed. 
@@ -1082,7 +1082,7 @@ decision resulting from a standard competition as follows:
 source, the CO shall award a contract in accordance with the FAR. 
 (b) Right of First Refusal. When the agency is the incumbent service provider, the CO 
 shall comply with FAR 7.305(c) regarding the right of first refusal. The HRA shall 
-provide the CO with a list of adversely affected employees as soon as possible after 
+provide the CO with a get_list of adversely affected employees as soon as possible after
 the performance decision is made. 
 (2) Public Reimbursable Provider. For a performance decision favoring a public 
 reimbursable source, the CO shall develop a fee-for-service agreement with the public 
@@ -2179,7 +2179,7 @@ on Line 2 or Line 2a, as appropriate. If a solicitation does not include a mater
 cost ceiling, agency and public reimbursable sources shall calculate the full cost of materials 
 and supplies, including inflation if required, and enter these costs on Line 2 or 2a, as 
 appropriate. 
-c. Material Related Costs. Agency and public reimbursable sources shall list required material 
+c. Material Related Costs. Agency and public reimbursable sources shall get_list required material
 by the quantity needed, unit price, inflation for out-years, and enter the total cost in cost 
 estimates on Line 2 or Line 2a, as appropriate. Material costs include, but are not limited to, 
 material, transport, handling, availability, delay costs, and established allowances for normal 
@@ -3052,7 +3052,7 @@ sector sources referred to in (1) above; (3) an officer or employee of an organi
 agency that is an actual or prospective offeror to perform the activity; (4) the head of any labor 
 organization referred to in section 7103(a)(4) of title 5, United States Code, that includes within its 
 membership officers or employees of an organization referred to in paragraph (3). 
-Inventory. A list of government personnel, by location, function, and position, performing either 
+Inventory. A get_list of government personnel, by location, function, and position, performing either
 commercial activities or inherently governmental activities. 
 MEO Letter of Obligation. A formal agreement that an agency implements when a standard or 
 streamlined competition results in agency performance (e.g., MEO). 

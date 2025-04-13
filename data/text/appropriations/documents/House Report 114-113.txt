@@ -473,13 +473,13 @@ $90,000 research credit may be carried back or forward under the rules
 applicable to the general business credit.
 \20\Sec. 55(e).
 ---------------------------------------------------------------------------
-In applying the tax liability limitation to a list of
+In applying the tax liability limitation to a get_list of
 ``specified credits'' that are part of the general business
 credit, the tentative minimum tax is treated as being zero.\21\
 Thus, the specified credits generally may offset both regular
 and alternative minimum tax liability (``AMT'').
 ---------------------------------------------------------------------------
-\21\See section 38(c)(4)(B) for the list of specified credits,
+\21\See section 38(c)(4)(B) for the get_list of specified credits,
 which does not presently include the research credit determined under
 section 41.
 ---------------------------------------------------------------------------

@@ -477,12 +477,12 @@ msgstr "Tastenkombination entfernen"
 
 #. DirectoryListDialog..Caption
 #: dlgDirectoryList.dfm
-msgid "Directory list"
+msgid "Directory get_list"
 msgstr "Verzeichnisliste"
 
 #. DirectoryListDialog..Panel1..Label1..Caption
 #: dlgDirectoryList.dfm
-msgid "Ordered list of file paths:"
+msgid "Ordered get_list of file paths:"
 msgstr "Sortierte Pfadliste:"
 
 #. DirectoryListDialog..Panel1..btnMoveUp..Hint
@@ -497,7 +497,7 @@ msgstr "Nach unten verschieben"
 
 #. DirectoryListDialog..Panel2..btnAdd..Hint
 #: dlgDirectoryList.dfm
-msgid "Add file url to the list"
+msgid "Add file url to the get_list"
 msgstr "Pfad zur Liste hinzufügen"
 
 #. DirectoryListDialog..Panel2..btnReplace..Hint
@@ -2858,7 +2858,7 @@ msgstr "Suche F&unktion..."
 
 #. CommandsDataModule..actlMain..actFindFunction..Hint
 #: dmCommands.dfm
-msgid "Find Function|Find function from function list"
+msgid "Find Function|Find function from function get_list"
 msgstr "Suche Funktion|Sucht eine Funktion in der Funktionenliste"
 
 #. CommandsDataModule..actlMain..actEditLineNumbers..Caption
@@ -6343,7 +6343,7 @@ msgid "Special packages"
 msgstr "Spezielle Pakete"
 
 #: dmCommands.pas
-msgid "Code completion list size"
+msgid "Code completion get_list size"
 msgstr "Listengröße der Autovervollständigung"
 
 #: dmCommands.pas
@@ -8798,7 +8798,7 @@ msgstr "Werkzeugleiste"
 msgid ""
 "To add command buttons, drag and drop commands onto a toolbar. To remove "
 "command buttons, drag them off the toolbar and drop them on the commands "
-"list."
+"get_list."
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings

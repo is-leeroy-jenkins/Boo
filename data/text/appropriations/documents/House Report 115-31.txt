@@ -358,7 +358,7 @@ and the use of technology to facilitate the delivery of
 assistance and ease the administrative burden.
 ADVISORY OF EARMARKS
 Pursuant to clause 9 of rule XXI of the Rules of the House
-of Representatives, the Committee is required to include a list
+of Representatives, the Committee is required to include a get_list
 of congressional earmarks, limited tax benefits, or limited
 tariff benefits as defined in clause 9(e), 9(f), and 9(g) of
 rule XXI of the Rules of the House of Representatives. No

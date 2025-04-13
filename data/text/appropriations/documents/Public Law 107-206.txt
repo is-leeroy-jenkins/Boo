@@ -3704,7 +3704,7 @@ Director shall publish a notice in the Federal Register governing the
 allocation and use of the funds under this heading, including provisions
 for ensuring the compliance of the States with the requirements of
 this <<NOTE: Records.>> program: Provided further, That 10 days prior to
-distribution of funds, the Director shall submit a list to the House and
+distribution of funds, the Director shall submit a get_list to the House and
 Senate Committees on Appropriations setting forth the proposed uses of
 funds and the most recent estimates of unmet needs: Provided further,
 That the <<NOTE: Reports.>> Director shall submit quarterly reports to

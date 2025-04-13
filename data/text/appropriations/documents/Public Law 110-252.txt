@@ -459,7 +459,7 @@ That the Secretary of State shall submit to the Committees on
 Appropriations not later than 45 days after enactment of this Act,
 and prior to the initial obligation of funds appropriated under
 this heading, a report on the proposed uses of such funds to alleviate
-hunger and malnutrition, including a list of those countries facing
+hunger and malnutrition, including a get_list of those countries facing
 significant food shortages.
 PUBLIC LAW 110252JUNE 30, 2008 122 STAT. 2333
 INTERNATIONAL DISASTER ASSISTANCE
@@ -561,7 +561,7 @@ PUBLIC LAW 110252JUNE 30, 2008 122 STAT. 2335
 until the Secretary of State reports to the Committees on Appropriations
 that a comprehensive anti-corruption strategy has been developed,
 and is being implemented, by the Government of Iraq, and
-the Secretary of State submits a list, in classified form if necessary,
+the Secretary of State submits a get_list, in classified form if necessary,
 to the Committees on Appropriations of senior Iraqi officials who
 the Secretary has credible evidence to believe have committed corrupt
 acts.
@@ -658,7 +658,7 @@ on actions being taken by the Government of Afghanistan to
 combat corruption within the national and provincial governments,
 including to remove and prosecute officials who have
 committed corrupt acts;
-(2) submit a list to the Committees on Appropriations,
+(2) submit a get_list to the Committees on Appropriations,
 in classified form if necessary, of senior Afghan officials who
 the Secretary has credible evidence to believe have committed
 corrupt acts; and
@@ -2008,9 +2008,9 @@ is a discharge or release as follows:
 with an honorable discharge.
 (2) A release after service on active duty in the Armed
 Forces characterized by the Secretary concerned as honorable
-service and placement on the retired list, transfer to the Fleet
+service and placement on the retired get_list, transfer to the Fleet
 Reserve or Fleet Marine Corps Reserve, or placement on the
-temporary disability retired list.
+temporary disability retired get_list.
 (3) A release from active duty in the Armed Forces for
 further service in a reserve component of the Armed Forces
 after service on active duty characterized by the Secretary
@@ -2441,8 +2441,8 @@ of this chapter shall be available to the Secretary for purposes
 of paragraph (1).
 (e) OUTREACH.The Secretary shall make available on the
 Internet website of the Department available to the public a current
-list of the colleges and universities participating in the program
-under this section. The list shall specify, for each college or university
+get_list of the colleges and universities participating in the program
+under this section. The get_list shall specify, for each college or university
 so listed, appropriate information on the agreement between
 the Secretary and such college or university under subsection (c).
  3318. Additional assistance: relocation or travel assistance

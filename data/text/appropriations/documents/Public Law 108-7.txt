@@ -5819,7 +5819,7 @@ reports accompanying the Act and the deadline by which each report must
 be submitted. <<NOTE: Deadline. Reports.>> The Chief Financial Officer
 of the District of Columbia shall provide to the Committees on
 Appropriations of the House of Representatives and Senate by the 10th
-day after the end of each quarter a summary list showing each report,
+day after the end of each quarter a summary get_list showing each report,
 the due date, and the date submitted to the Committees.
 Sec. 126. <<NOTE: Drugs and drug abuse.>> (a) None of the funds
 contained in this Act may be used to enact or carry out any law, rule,
@@ -11752,7 +11752,7 @@ demonstration program has achieved its purposes of providing additional
 tribes fair opportunities to construct tribally controlled schools,
 accelerating construction of needed educational facilities in Indian
 Country, and permitting additional funds to be provided for the
-Department's priority list for construction of replacement educational
+Department's priority get_list for construction of replacement educational
 facilities.
 Sec. 123. White River Oil Shale Mine, Utah. Sale.--Subject to the
 terms and conditions of section 126 of the Department of the Interior
@@ -12842,7 +12842,7 @@ quarters in the Bethel service area, pursuant to the negotiated project
 agreement between the YKHC and the Indian Health Service: Provided
 further, That this project shall not be subject to the construction
 provisions of the Indian Self-Determination and Education Assistance Act
-and shall be removed from the Indian Health Service priority list upon
+and shall be removed from the Indian Health Service priority get_list upon
 completion: Provided further, That the Federal Government shall not be
 liable for any property damages or other construction claims that may
 arise from YKHC undertaking this project: Provided further, That the
@@ -23742,14 +23742,14 @@ is amended by striking ``October 1, 2002'' and inserting ``October 1,
 Sec. 634. (a) Prohibition of Federal Agency Monitoring of Personal
 Information on Use of Internet.--None of the funds made available in
 this or any other Act may be used by any Federal agency--
-(1) to collect, review, or generate_text any aggregate list,
+(1) to collect, review, or generate_text any aggregate get_list,
 derived from any means, that includes the collection of any
 personally identifiable information relating to an individual's
 access to or use of any Federal Government Internet site of the
 agency; or
 (2) to enter into any agreement with a third party
 (including another government agency) to collect, review, or
-obtain any aggregate list, derived from any means, that includes
+obtain any aggregate get_list, derived from any means, that includes
 the collection of any personally identifiable information
 relating to an individual's access to or use of any
 nongovernmental Internet site.
@@ -26429,9 +26429,9 @@ contracts for any consulting service shall be limited to
 [Page 117 STAT. 524]
 contracts which are: (1) a matter of public record and available for
 public inspection; and (2) thereafter included in a publicly available
-list of all contracts entered into within 24 months prior to the date on
-which the list is made available to the public and of all contracts on
-which performance has not been completed by such date. The list required
+get_list of all contracts entered into within 24 months prior to the date on
+which the get_list is made available to the public and of all contracts on
+which performance has not been completed by such date. The get_list required
 by the preceding sentence shall be updated quarterly and shall include a
 narrative description of the work to be performed under each such
 contract.
@@ -27069,7 +27069,7 @@ capabilities of terrorists or terrorist groups;
 (3) assesses the likely impact of the implementation of a
 system such as the Total Information Awareness program on
 privacy and civil liberties;
-(4) sets forth a list of the laws and regulations that
+(4) sets forth a get_list of the laws and regulations that
 govern the information to be collected by the Total Information
 Awareness program, and a description of any modifications of
 such laws that will be required to use the information in the

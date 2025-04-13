@@ -1316,7 +1316,7 @@ multi-family housing project financed under section 514 or 516 of
 the Act may not be recaptured for use in another project until such
 29
 assistance has remained unused for a period of 12 consecutive
-months, if such project has a waiting list of tenants seeking such
+months, if such project has a waiting get_list of tenants seeking such
 assistance or the project has rental assistance eligible tenants who
 are not receiving such assistance: Provided further, That such recaptured
 rental assistance shall, to the extent practicable, be applied
@@ -5027,7 +5027,7 @@ against unlawfully marketed products.
 The agreement directs the FDA, in consultation with the Committees,
 to provide a report 180 days after enactment of this Act
 on domestic and foreign manufacturing of drugs included on FDAs
-list of Essential Medicines and Medical Countermeasures published
+get_list of Essential Medicines and Medical Countermeasures published
 in October 2020.
 The agreement encourages ongoing collaboration with patient
 stakeholders and the broad eczema community to address gaps and
@@ -5357,7 +5357,7 @@ Section 781.The bill includes language regarding certain balances.
 108
 DISCLOSURE OF EARMARKS AND CONGRESSIONALLY DIRECTED
 SPENDING ITEMS
-Following is a list of congressional earmarks and congressionally
+Following is a get_list of congressional earmarks and congressionally
 directed spending items (as defined in clause 9 of rule XXI of the
 Rules of the House of Representatives and rule XLIV of the Standing
 Rules of the Senate, respectively) included in the bill or this explanatory
@@ -8493,9 +8493,9 @@ Some enduring reporting requirements from previous appropriations
 laws may no longer be necessary for congressional oversight
 purposes. In the interest of reducing government waste and expediting
 responses to current report mandates, each department or
-agency is invited to submit a list of reporting requirements that it
+agency is invited to submit a get_list of reporting requirements that it
 considers outdated or no longer relevant for the review of the Committees.
-Any list submitted for review shall cite the original authority,
+Any get_list submitted for review shall cite the original authority,
 as well as a justification for eliminating each reporting requirement.
 For fiscal year 2023, all agencies and departments funded in this
 act are directed to follow prior year direction adopted in Public Law
@@ -10356,7 +10356,7 @@ modeling improvements associated with the IWP initiative, consistent
 with direction adopted in Public Law 117103.
 NWS Facilities.Within 270 days of enactment of this act,
 NOAA is directed to provide the Committees with an updated NWS
-Facilities Strategic Plan, including an ordered list of the highest
+Facilities Strategic Plan, including an ordered get_list of the highest
 priority facilities and associated upgrade or lease improvement
 costs.
 NESDIS Budget Reorganization.The agreement approves the
@@ -11276,7 +11276,7 @@ sought to qualify as an EBRR and PAs under FSA, including the
 number denied, number of requests pending, names of accepted applicants
 and faith affiliation, if any; (4) BOP actions to promote
 submissions of external programs for consideration as EBRRs and
-PAs; and (5) list of faith-based recidivism-reduction partnerships
+PAs; and (5) get_list of faith-based recidivism-reduction partnerships
 reported in the Bureau of Justice Statistics reporting on FSA implementation.
 The report shall describe efforts to fill vacant programming
 and other dedicated FSA positions, improve EBRR credit
@@ -13251,7 +13251,7 @@ Section 543 sets certain requirements for the allocations of funds
 related to the CHIPS Act of 2022 (Public Law 117167).
 DISCLOSURE OF EARMARKS AND CONGRESSIONALLY DIRECTED
 SPENDING ITEMS
-Following is a list of congressional earmarks and congressionally
+Following is a get_list of congressional earmarks and congressionally
 directed spending items (as defined in clause 9 of rule XXI of the
 Rules of the House of Representatives and rule XLIV of the Standing
 Rules of the Senate, respectively) included in the bill or this explanatory
@@ -14313,7 +14313,7 @@ shall be made prior to June 30, 2023: Provided further, That transfers
 among military personnel appropriations shall not be taken
 into account for purposes of the limitation on the amount of funds
 that may be transferred under this section.
-SEC. 8006. (a) With regard to the list of specific programs,
+SEC. 8006. (a) With regard to the get_list of specific programs,
 projects, and activities (and the dollar amounts and adjustments to
 budget activities corresponding to such programs, projects, and activities)
 contained in the tables titled Explanation of Project Level
@@ -14613,7 +14613,7 @@ among requests of Indian tribes for housing units under subsection
 (a) before submitting requests to the Secretary of the Air
 Force under subsection (b).
 (d) In this section, the term Indian tribe means any recognized
-Indian tribe included on the current list published by the Secretary
+Indian tribe included on the current get_list published by the Secretary
 of the Interior under section 104 of the Federally Recognized Indian
 Tribe Act of 1994 (Public Law 103454; 108 Stat. 4792; 25
 U.S.C. 5131).
@@ -14995,7 +14995,7 @@ regulation, requirement, or policy to the contrary shall have full
 authority to enter into a contract for the performance of any commercial
 or industrial type function of the Department of Defense
 that
-(A) is included on the procurement list established pursuant
+(A) is included on the procurement get_list established pursuant
 to section 2 of the Javits-Wagner-ODay Act (section 8503 of
 title 41, United States Code);
 (B) is planned to be converted to performance by a qualified
@@ -15220,7 +15220,7 @@ funds requested in research, development, test and evaluation accounts
 for end-items used in development, prototyping and test activities
 preceding and leading to acceptance for operational use:
 Provided, That the report shall set forth, for each end item covered
-by the preceding proviso, a detailed list of the statutory authorities
+by the preceding proviso, a detailed get_list of the statutory authorities
 under which amounts in the accounts described in that proviso
 were used for such item: Provided further, That the Secretary of
 Defense shall, at the time of the submittal to Congress of the budget
@@ -17670,7 +17670,7 @@ in doubt the status and future of F15C/D units, several of which
 are housed in the Air National Guard. The agreement therefore directs
 the Secretary of the Air Force to submit a report to the congressional
 defense committees, concurrent with submission of the
-fiscal year 2024 Presidents budget request, that provides a list of
+fiscal year 2024 Presidents budget request, that provides a get_list of
 all aircraft procurement programs that are being truncated across
 the FYDP, to include F15EX and CRH. The report shall include
 an assessment of the operational impacts of the decision, strategic
@@ -17925,7 +17925,7 @@ and Acquisition and Sustainment, in coordination with the Service
 acquisition executives for the Army, Navy, Air Force, and Space
 Force, are directed to provide to the congressional defense committees
 with submission of the fiscal year 2024 Presidents budget request
-a complete list of approved acquisition programs, and programs
+a complete get_list of approved acquisition programs, and programs
 pending approval in fiscal year 2024, utilizing prototyping or
 accelerated acquisition authorities, along with the rationale for
 each selected acquisition strategy, as well as a cost estimate and
@@ -18318,11 +18318,11 @@ than 90 days following the enactment of this Act, that details the
 acquisition programs and systems that are in development for operational
 use within the cislunar or lunar space, and any capabilities
 in development for the cislunar space domain awareness mission.
-The report shall include a list of acquisition milestones and dates
+The report shall include a get_list of acquisition milestones and dates
 (or program schedule for each of the efforts) as well as the costs
 of the effort by appropriation, line item, and program element
 across the future years defense program. In addition, the report
-shall include a list of unfunded programs and opportunities for investment.
+shall include a get_list of unfunded programs and opportunities for investment.
 RESEARCH, DEVELOPMENT, TEST AND EVALUATION,
 DEFENSEWIDE
 The agreement provides $34,565,478,000 for Research, Development,
@@ -19243,7 +19243,7 @@ Budget Activity 04, Advanced Component Development and Prototypes:
 Microelectronics Commons .............................................................................................................................................................. 65,682,000
 DISCLOSURE OF EARMARKS AND CONGRESSIONALLY
 DIRECTED SPENDING ITEMS
-Following is a list of congressional earmarks and congressionally
+Following is a get_list of congressional earmarks and congressionally
 directed spending items (as defined in clause 9 of rule XXI of the
 Rules of the House of Representatives and rule XLIV of the Standing
 Rules of the Senate, respectively) included in the bill or this explanatory
@@ -20951,7 +20951,7 @@ process and criteria used to evaluate studies and projects; (2) delineation
 of how these funds are to be allocated; (3) a summary of the
 work to be accomplished with each allocation, including phase of
 work and the study or projects remaining cost to complete (excluding
-Operation and Maintenance); and (4) a list of all studies and
+Operation and Maintenance); and (4) a get_list of all studies and
 projects that were considered eligible for funding but did not receive
 funding, including an explanation of whether the study or
 project could have used funds in fiscal year 2023 and the specific
@@ -22807,7 +22807,7 @@ and industry consortia to pursue job training programs, including
 programs focused on displaced fossil fuel workers, that lead
 to an industry-recognized credential in the energy workforce. The
 Department is encouraged to update and publish on its website the
-list of credentials that are recognized by the Department through
+get_list of credentials that are recognized by the Department through
 its Better Buildings Workforce Guidelines and additional credentials
 that are relevant to designing, building, and operating building
 energy systems.
@@ -24408,7 +24408,7 @@ Center.
 ENERGY PROJECTS
 The agreement provides $221,968,652 for the Energy Projects account
 for Community Project Funding and Congressionally Directed
-Spending at the Department for the following list of projects.
+Spending at the Department for the following get_list of projects.
 The Committees remind recipients that statutory cost sharing requirements
 may apply to these projects.
 The Department may use program direction funds from the appropriate
@@ -25435,7 +25435,7 @@ activities.
 1008
 DISCLOSURE OF EARMARKS AND CONGRESSIONALLY
 DIRECTED SPENDING ITEMS
-Following is a list of congressional earmarks and congressionally
+Following is a get_list of congressional earmarks and congressionally
 directed spending items (as defined in clause 9 of rule XXI of the
 Rules of the House of Representatives and rule XLIV of the Standing
 Rules of the Senate, respectively) included in the bill or this explanatory
@@ -26250,7 +26250,7 @@ and act accordingly: Provided further, That no later than 14
 days after the submission of the budget of the United States Government
 for fiscal year 2024, the Director of the Office of Management
 and Budget shall make publicly available on a website a tabular
-list for each agency that submits budget justification materials
+get_list for each agency that submits budget justification materials
 (as defined in section 3 of the Federal Funding Accountability and
 Transparency Act of 2006) that shall include, at minimum, the
 name of the agency, the date on which the budget justification materials
@@ -29194,7 +29194,7 @@ efforts made by the Administrator over the year preceding submission
 to support such compliance at agencies and any
 planned efforts in the coming year to improve compliance at
 agencies; and
-(C) a list of recommendations that agencies or Congress may
+(C) a get_list of recommendations that agencies or Congress may
 take to help support that compliance.
 (2) The Administrator shall ensure that the reports required
 under this subsection are made available on a public website and
@@ -30516,7 +30516,7 @@ encouraged to work with Congress to address this issue.
 GENERAL SERVICES ADMINISTRATION
 In lieu of the House report directive on Diversity in Federal Public
 Building Names, GSA is directed to submit to the Committees
-no later than 180 days after enactment of this Act a list of all
+no later than 180 days after enactment of this Act a get_list of all
 unnamed GSA-owned buildings with more than 10,000 gross
 square feet.
 Hartford, Connecticut Courthouse.The agreement directs GSA
@@ -30745,7 +30745,7 @@ modernization, customer experience, and cybersecurity efforts
 across the federal enterprise. The GSA Administrator, in consultation
 with the Office of Management and Budget and, as appropriate,
 other federal agencies, is directed to identify, define, and
-produce a prioritized list of the common challenges or needs across
+produce a prioritized get_list of the common challenges or needs across
 agencies that would benefit from shared technical solutions or ways
 to make data more accessible and interoperable across one or more
 agency IT systems, including specific examples and recommendations
@@ -31598,7 +31598,7 @@ Government Appropriations Act, 2023.
 1210
 DISCLOSURE OF EARMARKS AND CONGRESSIONALLY
 DIRECTED SPENDING ITEMS
-Following is a list of congressional earmarks and congressionally
+Following is a get_list of congressional earmarks and congressionally
 directed spending items (as defined in clause 9 of rule XXI of the
 Rules of the House of Representatives and rule XLIV of the Standing
 Rules of the Senate, respectively) included in the bill or this explanatory
@@ -31776,9 +31776,9 @@ SEC. 106. (a) The Under Secretary for Management shall brief
 the Committees on Appropriations of the Senate and the House of
 Representatives not later than 45 days after the end of each fiscal
 quarter on all Level 1 and Level 2 acquisition programs on the
-Master Acquisition Oversight list between Acquisition Decision
+Master Acquisition Oversight get_list between Acquisition Decision
 Event and Full Operational Capability, including programs that
-have been removed from such list during the preceding quarter.
+have been removed from such get_list during the preceding quarter.
 (b) For each such program, the briefing described in subsection
 (a) shall include
 (1) a description of the purpose of the program, including the
@@ -33890,7 +33890,7 @@ and sharing agreements among DHS immigration enforcement
 agencies, other federal, state, local, and foreign law enforcement
 agencies, and fusion centers as relates to the development of
 HART. The report shall provide details on HART data compiling
-and a list of data sharing agreements related to the source or recipient
+and a get_list of data sharing agreements related to the source or recipient
 of data.
 Office of Biometric Identity Management (OBIM) Semi-Annual
 Briefings.OBIM is directed to continue briefing the Committees
@@ -33913,7 +33913,7 @@ campus.
 DHS Headquarters Consolidation.Within 60 days of the date of
 enactment of this Act, the Department shall brief the Committees
 on an updated master plan for St. Elizabeths, to include an updated
-Estimated Implementation Costs and Date of Occupancy list
+Estimated Implementation Costs and Date of Occupancy get_list
 and a detailed plan for the average number of federal employees,
 by component, who are slated to work on-site at the St. Elizabeths
 campus and the average number who will telework. The plan
@@ -34179,7 +34179,7 @@ Law Enforcement Suitability Analysis.CBP is directed to submit
 a report on the effectiveness of polygraph tests within 120 days
 of the date of enactment of this Act. The report shall include data
 comparing CBPs failure rates to those of other federal law enforcement
-agencies; a list of admissions elicited during polygraph tests
+agencies; a get_list of admissions elicited during polygraph tests
 since CBP implemented a mandatory polygraph test requirement;
 and details regarding the total and annualized number of such admissions
 and types of admissions.
@@ -34238,7 +34238,7 @@ under this heading, such as the monitoring of obligations and on-
 board staff at the program level; and
 (4) plans to address such limitations.
 Prior to the first briefing, CBP shall provide the Committees a
-proposed list of program areas to be tracked within each PPA,
+proposed get_list of program areas to be tracked within each PPA,
 which shall include at a minimum any program enhancements in
 this Act for congressional priorities described in this statement or
 enhancements that were in the Presidents budget request.
@@ -34765,7 +34765,7 @@ and adopting promising new capabilities.
 LPOE.CBP shall provide a detailed report and timeline within
 90 days of the date of enactment of this Act outlining completion
 of the Blue Water Bridge Plaza expansion project. The report shall
-align with the annual LPOE priority list; outline projected CBP
+align with the annual LPOE priority get_list; outline projected CBP
 costs; explain how CBP will engage with state and local entities;
 and detail specific milestones and a timeline for the projects completion.
 CBP is directed to provide an update on the agencys implementation
@@ -34929,7 +34929,7 @@ briefings shall include any source of funding available to ICE for
 obligation; align projected and executed budgetary obligations and
 on-board staffing data to program areas within each PPA; and delineate
 pay and non-pay obligations. Prior to the first briefing, ICE
-shall provide the Committees a proposed list of program areas to
+shall provide the Committees a proposed get_list of program areas to
 be tracked within each PPA, which shall at a minimum include all
 congressional priorities referenced in this Act, along with those of
 the last three fiscal years, including the accompanying explanatory
@@ -35412,7 +35412,7 @@ brief the Committees on the status of the rulemaking and implementation
 of new user fees within 60 days of the date of enactment
 of this Act.
 Unfunded Priorities List (UPL).The Coast Guard is directed to
-provide a list of approved but unfunded Coast Guard priorities and
+provide a get_list of approved but unfunded Coast Guard priorities and
 the associated funding needs for each priority to the Committees at
 the time of the fiscal year 2024 budget request submission.
 Unmanned Surface Vehicles (USV).The agreement directs the
@@ -37264,7 +37264,7 @@ lapsed balances pursuant to Section 505 of division F of Public Law
 117103.
 DISCLOSURE OF EARMARKS
 AND CONGRESSIONALLY DIRECTED SPENDING ITEMS
-Following is a list of congressional earmarks and congressionally
+Following is a get_list of congressional earmarks and congressionally
 directed spending items (as defined in clause 9 of rule XXI of the
 Rules of the House of Representatives and rule XLIV of the Standing
 Rules of the Senate, respectively) included in the bill or this explanatory

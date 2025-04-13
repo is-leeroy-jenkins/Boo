@@ -74,7 +74,7 @@ class Pascal( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
-			Retunes a list[ str ] of member names.
+			Retunes a get_list[ str ] of member names.
 		
 		'''
 		return [ 'input', 'cleaned', 'split', 'join' ]
@@ -186,7 +186,7 @@ class SqlPath( ):
 
 	def __dir__( self ) -> list[ str ]:
 		'''
-		Retunes a list[ str ] of member names.
+		Retunes a get_list[ str ] of member names.
 		'''
 		return [ 'sqlite_driver', 'sqlite_database',
 		         'access_driver', 'access_path' ]
@@ -229,7 +229,7 @@ class SqlFile( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
-			Retunes a list[ str ] of member names.
+			Retunes a get_list[ str ] of member names.
 			
 		'''
 		return [ 'source', 'provider', 'command_type', 'get_file_path',
@@ -359,7 +359,7 @@ class DbConfig( ):
 			DbConfig( source: Source, provider: Provider=Provider.SQLite )
 	
 		Purpose:
-			Class provides list of Budget Execution tables across two databases
+			Class provides get_list of Budget Execution tables across two databases
 
 	'''
 
@@ -396,7 +396,7 @@ class DbConfig( ):
 
 	def __dir__( self ) -> list[ str ]:
 		'''
-		Retunes a list[ str ] of member names.
+		Retunes a get_list[ str ] of member names.
 		'''
 		return [ 'source', 'provider', 'table_name', 'get_driver_info',
 		         'sqlite_path', 'access_driver', 'access_path',
@@ -513,7 +513,7 @@ class Connection( DbConfig ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
-			Retunes a list[ str ] of member names.
+			Retunes a get_list[ str ] of member names.
 			
 		'''
 		return [ 'source', 'provider', 'table_name', 'getdriver_info',
@@ -556,7 +556,7 @@ class SqlConfig( ):
 
 	 Constructor:
 
-		 SqlConfig( commandtype: SQL=SQL.SELECTALL, columnnames: list = None,
+		 SqlConfig( commandtype: SQL=SQL.SELECTALL, columnnames: get_list = None,
 					columnvalues: tuple=None, paramstyle: ParamStyle = None )
 
 	 Purpose:
@@ -578,7 +578,7 @@ class SqlConfig( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-		Returns a list[ str ] of member names.
+		Returns a get_list[ str ] of member names.
 
 		'''
 		return [ 'command_type', 'column_names', 'column_values',
@@ -760,7 +760,7 @@ class DataGenerator( ):
 
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Returns a list[ str ] of member names
+			Returns a get_list[ str ] of member names
 		'''
 		return [ 'source', 'data_path', 'table_name',
 		         'command_text', 'create_frame', 'create_tuples' ]

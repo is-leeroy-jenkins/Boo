@@ -865,7 +865,7 @@ agreements entered into prior to fiscal year 2008 for a farm labor
 multi-family housing project financed under section 514 or 516 of the
 Act may not be recaptured for use in another project until such
 assistance has remained unused for a period of 12 consecutive months, if
-such project has a waiting list of tenants seeking such assistance or
+such project has a waiting get_list of tenants seeking such assistance or
 the project has rental assistance eligible tenants who
 [[Page 121 STAT. 1862]]
 are not receiving such assistance: Provided
@@ -2670,7 +2670,7 @@ total life-cycle cost for GOES-R shall be the estimate provided with the
 NOAA Fiscal Year 2008 Presidential Budget justification (page 513).
 Sec. 113. (a) <<NOTE: 16 USC 1861 note.>> The Secretary of Commerce
 may--
-(1) develop, maintain, and make public a list of vessels and
+(1) develop, maintain, and make public a get_list of vessels and
 vessel owners engaged in illegal, unreported, or unregulated
 fishing, including vessels or vessel owners identified by an
 international fishery management organization, whether or not
@@ -6453,7 +6453,7 @@ fiscal year 2008.
 (b) Definitions.--For purposes of this section:
 (1) The term ``congressionally directed project'' means a
 congressional earmark or congressionally directed spending item
-specified in the list of such earmarks and items for this
+specified in the get_list of such earmarks and items for this
 division that is included in the explanatory statement described
 in section 4 (in the matter preceding division A of this
 consolidated Act).
@@ -9546,7 +9546,7 @@ United States Code.
 [[Page 121 STAT. 2030]]
 (B) section 44920 of title 49, United States Code;
 (C) a commercial or industrial type function that--
-(i) is included on the procurement list
+(i) is included on the procurement get_list
 established pursuant to section 2 of the Javits-
 Wagner-O'Day Act (41 U.S.C. 47); or
 (ii) is planned to be converted to performance
@@ -10069,7 +10069,7 @@ by which each report must be <<NOTE: Deadlines. Records.>> submitted:
 Provided, That the Chief Financial Officer of the District of Columbia
 shall provide to the Committees on Appropriations of the House of
 Representatives and Senate by April 1, 2008 and October 1, 2008, a
-summary list showing each report, the due date, and the date submitted
+summary get_list showing each report, the due date, and the date submitted
 to the Committees.
 Sec. 816. <<NOTE: Contraceptives.>> Nothing in this Act may be
 construed to prevent the Council or Mayor of the District of Columbia
@@ -10827,11 +10827,11 @@ Credentialing, $82,590,000, to remain available until September 30,
 2009: Provided, <<NOTE: Certification.>> That if the Assistant Secretary
 of Homeland Security (Transportation Security Administration) determines
 that the Secure Flight program does not need to check airline passenger
-names against the full terrorist watch list, then the Assistant
+names against the full terrorist watch get_list, then the Assistant
 Secretary shall certify to the Committees on Appropriations of the
 Senate and the House of Representatives that no significant security
 risks are raised by screening airline passenger names only against a
-subset of the full terrorist watch list.
+subset of the full terrorist watch get_list.
 Transportation Security Support
 For necessary expenses of the Transportation Security Administration
 related to providing transportation security support and intelligence
@@ -11446,7 +11446,7 @@ expenditure data;
 mission assignment;
 (7) specific reasons for all waivers granted and a
 description of each waiver;
-(8) a list of all contracts that were awarded on a sole
+(8) a get_list of all contracts that were awarded on a sole
 source or limited competition basis, including the dollar
 amount, the purpose of the contract, and the reason for the lack
 of competitive award; and
@@ -11814,7 +11814,7 @@ required under subsection (a).
 information gathered from passengers, foreign or domestic air carriers,
 or reservation systems may be used to screen aviation passengers, or
 delay or deny boarding to such passengers, except in instances where
-passenger names are matched to a Government watch list.
+passenger names are matched to a Government watch get_list.
 (e) None of the funds provided in this or previous appropriations
 Acts may be utilized to develop or test algorithms assigning risk to
 passengers whose names are not on Government watch lists.
@@ -13103,7 +13103,7 @@ shall--
 (1) implement the infrastructure and technology improvement
 projects described in subsection (c) in the order of priority
 assigned to each project under subsection (c)(3); or
-(2) forward the prioritized list of infrastructure and
+(2) forward the prioritized get_list of infrastructure and
 technology improvement projects to the Administrator of General
 Services for implementation in the order of priority assigned to
 each project under subsection (c)(3).
@@ -14690,7 +14690,7 @@ these <<NOTE: Alaska. Deadline.>> funds: (1) the State of Alaska shall
 provide a match of 25 percent; (2) no more than 5 percent of the funds
 may be used for administrative and overhead expenses; and (3) not later
 than October 1, 2005, the State of Alaska shall make awards consistent
-with the State-wide priority list established in 2004 for all water,
+with the State-wide priority get_list established in 2004 for all water,
 sewer, waste disposal, and similar projects carried out by the State of
 Alaska that are funded under section 221 of the Federal Water Pollution
 Control Act (33 U.S.C. 1301) or the Consolidated Farm and Rural
@@ -21966,7 +21966,7 @@ which obligations are not incurred within the time limitations
 established above: Provided further, That none of the funds appropriated
 in this or any other Act may be used to reduce the mission, services, or
 infrastructure, including land, of the 18 facilities on the Capital
-Asset Realignment for Enhanced Services (CARES) list requiring further
+Asset Realignment for Enhanced Services (CARES) get_list requiring further
 study, as specified by the Secretary of Veterans Affairs, without prior
 approval of the Committees on Appropriations of both Houses of Congress.
 construction, minor projects
@@ -27528,19 +27528,19 @@ the National Strategy to Internationalize Efforts Against Kleptocracy
 and Presidential Proclamation 7750, the Secretary of State shall compile
 and maintain a
 [[Page 121 STAT. 2374]]
-list of officials of foreign governments and their immediate family
+get_list of officials of foreign governments and their immediate family
 members who the Secretary determines there is credible evidence to
 believe have been involved in corruption relating to the extraction of
 natural resources in their countries.
-(b) Any individual on the list submitted under subsection (a) shall
+(b) Any individual on the get_list submitted under subsection (a) shall
 be ineligible for admission to the United States.
 (c) <<NOTE: Waiver authority.>> The Secretary may waive the
 application of subsection (a) if the Secretary determines that admission
 to the United States is necessary to attend the United Nations or to
 further United States law enforcement objectives, or that the
-circumstances which caused the individual to be included on the list
+circumstances which caused the individual to be included on the get_list
 have changed sufficiently to justify the removal of the individual from
-the list.
+the get_list.
 (d) Not <<NOTE: Deadline. Reports.>> later than 90 days after
 enactment of this Act and 180 days thereafter, the Secretary of State
 shall submit a report, in classified form if necessary, to the

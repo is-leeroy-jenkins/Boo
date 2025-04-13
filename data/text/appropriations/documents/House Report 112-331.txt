@@ -1027,7 +1027,7 @@ further, That transfers among military personnel appropriations
 shall not be taken into account for purposes of the limitation
 on the amount of funds that may be transferred under this
 section.
-Sec. 8006. (a) With regard to the list of specific
+Sec. 8006. (a) With regard to the get_list of specific
 programs, projects, and activities (and the dollar amounts and
 adjustments to budget activities corresponding to such
 programs, projects, and activities) contained in the tables
@@ -1437,7 +1437,7 @@ conflicts among requests of Indian tribes for housing units
 under subsection (a) before submitting requests to the
 Secretary of the Air Force under subsection (b).
 (d) In this section, the term ``Indian tribe'' means any
-recognized Indian tribe included on the current list published
+recognized Indian tribe included on the current get_list published
 by the Secretary of the Interior under section 104 of the
 Federally Recognized Indian Tribe Act of 1994 (Public Law 103-
 454; 108 Stat. 4792; 25 U.S.C. 479a-1).
@@ -1619,7 +1619,7 @@ notwithstanding any administrative regulation, requirement, or
 policy to the contrary shall have full authority to enter into
 a contract for the performance of any commercial or industrial
 type function of the Department of Defense that--
-(A) is included on the procurement list
+(A) is included on the procurement get_list
 established pursuant to section 2 of the
 Javits-Wagner-O'Day Act (section 8503 of title
 41, United States Code);
@@ -9012,7 +9012,7 @@ Appropriations of the Senate and the House of Representatives,
 not later than 60 days after the date of enactment of this Act,
 an expenditure plan for the Automated Commercial Environment
 program including results to date, plans for the program, and a
-list of projects with associated funding from prior
+get_list of projects with associated funding from prior
 appropriations and provided by this Act.
 border security fencing, infrastructure, and technology
 For expenses for border security fencing, infrastructure,
@@ -11439,7 +11439,7 @@ for any activity regarding the designation of critical habitat,
 pursuant to subsection (a)(3), excluding litigation support,
 for species listed pursuant to subsection (a)(1) prior to
 October 1, 2010; of which not to exceed $1,500,000 shall be
-used for any activity regarding petitions to list species that
+used for any activity regarding petitions to get_list species that
 are indigenous to the United States pursuant to subsections
 (b)(3)(A) and (b)(3)(B); and, of which not to exceed $1,500,000
 shall be used for implementing subsections (a), (b), (c), and
@@ -13005,7 +13005,7 @@ these funds: (1) the State of Alaska shall provide a match of
 25 percent; (2) no more than 5 percent of the funds may be used
 for administrative and overhead expenses; and (3) the State of
 Alaska shall make awards consistent with the State-wide
-priority list established in conjunction with the Agency and
+priority get_list established in conjunction with the Agency and
 the U.S. Department of Agriculture for all water, sewer, waste
 disposal, and similar projects carried out by the State of
 Alaska that are funded under section 221 of the Federal Water
@@ -16846,7 +16846,7 @@ not increase the Federal Government's liability
 beyond the award value of the Center's support.
 ``(c) Annual Report.--The Center shall publish an annual
 report that, with respect to all research supported by the
-Center, includes a complete list of--
+Center, includes a complete get_list of--
 ``(1) the molecules being studied;
 ``(2) clinical trial activities being conducted;
 ``(3) the methods and tools in development;
@@ -23808,7 +23808,7 @@ for measuring progress.
 (4) Assistance.--Of the funds appropriated under
 title III of this Act, not less than $5,000,000 should
 be made available for programs and activities to assist
-the central governments of countries named in the list
+the central governments of countries named in the get_list
 required by paragraph (1) to improve budget
 transparency or to support civil society organizations
 in such countries that promote budget transparency:
@@ -23840,7 +23840,7 @@ shall submit a report, in classified form if necessary,
 to the Committees on Appropriations describing the
 information regarding corruption concerning each of the
 individuals found ineligible pursuant to paragraph (1),
-a list of any waivers provided under subsection (3),
+a get_list of any waivers provided under subsection (3),
 and the justification for each waiver.
 authority to engage in debt buybacks or sales
 Sec. 7032. (a) Loans Eligible for Sale, Reduction, or
@@ -24096,7 +24096,7 @@ inserting ``steps''; and
 ``(d) Credible Information.--The Secretary shall establish,
 and periodically update, procedures to--
 ``(1) ensure that for each country the Department
-of State has a current list of all security force units
+of State has a current get_list of all security force units
 receiving United States training, equipment, or other
 types of assistance;
 ``(2) facilitate receipt by the Department of State
@@ -29680,7 +29680,7 @@ least one of the previous three fiscal years. Funding
 associated with each category may be allocated to any eligible
 study within that category; funding associated with each
 subcategory may be allocated only to eligible studies within
-that subcategory. The list of subcategories is not meant to be
+that subcategory. The get_list of subcategories is not meant to be
 exhaustive. The conferees direct that priority in allocating
 these funds be given to completing or accelerating ongoing
 studies which will enhance the nation's economic development,
@@ -29749,7 +29749,7 @@ projects in the Continuing Authorities Program. Funding
 associated with each category may be allocated to any eligible
 project within that category; funding associated with each
 subcategory may be allocated only to eligible projects within
-that subcategory. The list of subcategories is not meant to be
+that subcategory. The get_list of subcategories is not meant to be
 exhaustive.
 The Corps shall evaluate all ongoing projects that have
 received funding, other than through a reprogramming, in at
@@ -29890,7 +29890,7 @@ safety importance.
 Funding associated with each category may be allocated to
 any eligible project within that category; funding associated
 with each subcategory may be allocated only to eligible
-projects within that subcategory. The list of subcategories is
+projects within that subcategory. The get_list of subcategories is
 not meant to be exhaustive. Priority in allocating these funds
 should consider the following: number of jobs created directly
 by the funded activity; benefits to the local, regional or
@@ -30358,7 +30358,7 @@ award must be subject to appropriations and the Department must
 notify the House and Senate Committees on Appropriations at
 least 14 calendar days prior to public announcement of the
 award. The Department shall deliver each notification as a
-cumulative list of all notifications under this subsection, to
+cumulative get_list of all notifications under this subsection, to
 include: recipient; appropriations account, program, and
 activity; award date; total amount of award; amount awarded
 from fiscal year 2012 appropriations; amount awarded from prior
@@ -31322,7 +31322,7 @@ discipline of nuclear science and engineering.
 The conferees recognize the progress that the Nuclear
 Regulatory Commission has made on the recommendations of the
 Near Term Task Force. Commission staff has proposed a
-prioritized list of the Task Force recommendations that
+prioritized get_list of the Task Force recommendations that
 reflects the order regulatory actions are to be taken. The
 conferees direct the Commission to implement these
 recommendations consistent with, or more expeditiously than,
@@ -32894,7 +32894,7 @@ agency providing the funds, the Federal Domestic Assistance
 Number, and the amount provided.
 Section 726 prohibits the use of funds to monitor
 personal information relating to the use of Federal Internet
-sites to collect, review, or generate_text any aggregate list that
+sites to collect, review, or generate_text any aggregate get_list that
 includes personally identifiable information relating to access
 to or use of any Federal Internet site of such agency.
 Section 727 requires health plans participating in the
@@ -33157,7 +33157,7 @@ year 2012 for the agencies funded under this appropriation as
 specified in the Senate report, with the exception of CNE which
 is being terminated. The plans shall be submitted to the
 Committees no later than March 30, 2012. The plan for the
-Office of Policy shall list planned projects for each sub-
+Office of Policy shall get_list planned projects for each sub-
 office within the Office of Policy, with their associated
 funding and staffing requirements. In addition, should the
 funds made available for either counternarcotics or risk
@@ -33480,9 +33480,9 @@ being or are planned to be deployed; and how reforms in
 headquarters structure and function are improving support and
 management for Department field operations. The briefing should
 cover the status of the ongoing Balanced Workforce Initiative;
-provide the most current list of positions DHS plans to convert
+provide the most current get_list of positions DHS plans to convert
 from contractor to Federal positions, and progress against that
-list; and discuss estimated savings from that effort and the
+get_list; and discuss estimated savings from that effort and the
 methodology used to calculate those savings.
 The Department is directed to arrange for an independent
 evaluation of its efficiency review and provide the results to
@@ -35047,7 +35047,7 @@ justification, by activity, for this PPA in the fiscal year
 Major Shore Construction, Aids to Navigation, and Survey and Design
 As requested, $92,900,000 is provided for Major Shore
 Construction, Aids to Navigation, and Survey and Design. The
-Coast Guard is directed to submit a prioritized list of shore
+Coast Guard is directed to submit a prioritized get_list of shore
 construction projects, as directed in the Senate report, which
 includes all unfunded and backlogged projects, to the
 Committees no later than 45 days after the date of enactment of
@@ -36808,7 +36808,7 @@ CONSTRUCTION
 The bill provides $3,576,000 for Construction of which
 $2,019,000 is for line item projects. The amount provided will
 fully fund construction projects as prioritized by the Bureau
-pursuant to the Administration's revised request list provided
+pursuant to the Administration's revised request get_list provided
 to the Committees on June 24, 2011. Requests for reprogramming
 will be considered pursuant to the guidelines in the front of
 this statement.
@@ -36819,7 +36819,7 @@ for Inholdings, Emergencies, and Hardships; and $19,000,000 is
 for Acquisitions.
 This amount will fully fund projects 1 through 5 as
 prioritized by the Bureau pursuant to the Administration's
-revised request list provided to the Committees on June 24,
+revised request get_list provided to the Committees on June 24,
 2011. Requests for reprogramming will be considered pursuant to
 the guidelines in the front of this statement.
 OREGON AND CALIFORNIA GRANT LANDS
@@ -37062,7 +37062,7 @@ The bill includes $23,088,000 for Construction, as
 requested, of which $12,149,000 is for line item projects. The
 amount provided will fully fund the projects as prioritized by
 the Service pursuant to the Administration's revised request
-list provided to the Committees on June 24, 2011. Requests for
+get_list provided to the Committees on June 24, 2011. Requests for
 reprogramming will be considered pursuant to the guidelines in
 the front of this statement.
 LAND ACQUISITION
@@ -37076,7 +37076,7 @@ proposal to transfer land protection planning funds from the
 Resource Management account.
 The amount provided for Acquisitions will fully fund
 projects 1 through 13 as prioritized by the Service pursuant to
-the Administration's revised request list provided to the
+the Administration's revised request get_list provided to the
 Committees on June 24, 2011. Requests for reprogramming will be
 considered pursuant to the guidelines in the front of this
 statement.
@@ -37226,7 +37226,7 @@ Line Item Construction. The bill provides $77,847,000 in
 funding for line item construction projects. The amount
 provided will fully fund NPS construction projects as
 prioritized by the Service pursuant to the Administration's
-revised request list provided to the Committees on June 24,
+revised request get_list provided to the Committees on June 24,
 2011. Requests for reprogramming will be considered pursuant to
 the guidelines in the front of this statement.
 Washington Monument Stabilization and Repair, National
@@ -37255,7 +37255,7 @@ funded at $45,000,000, of which $2,794,000 is for
 Administrative Expenses.
 The amount provided for Federal Acquisitions will fully
 fund the first two projects as prioritized by the Service
-pursuant to the Administration's revised request list provided
+pursuant to the Administration's revised request get_list provided
 to the Committees on June 24, 2011. Requests for reprogramming
 will be considered pursuant to the guidelines in the front of
 this statement.
@@ -37602,7 +37602,7 @@ included in the table at the end of the statement. Specific
 changes to the request are the following:
 Education.--The bill provides $70,940,000 for Education.
 Replacement Schools are funded at $17,836,000, which funds the
-next school on the 2004 priority list. Facilities Improvement
+next school on the 2004 priority get_list. Facilities Improvement
 and Repair is funded at $48,669,000.
 INDIAN LAND AND WATER CLAIM SETTLEMENTS AND MISCELLANEOUS PAYMENTS TO
 INDIANS
@@ -38484,7 +38484,7 @@ Forest Legacy program. This includes $6,628,000 for program
 administration, $2,500,000 for new State startups, and
 $44,260,000 for forest legacy projects. The Service should fund
 projects in priority order according to their competitively
-selected national priority list for fiscal year 2012.
+selected national priority get_list for fiscal year 2012.
 NATIONAL FOREST SYSTEM
 The bill provides $1,556,628,000 for the National Forest
 System. The agreement includes a proof of concept pilot for
@@ -38580,7 +38580,7 @@ Facilities.--The bill provides $75,785,000 for facilities
 including $13,124,000 for construction and $62,661,000 for
 maintenance. For future year planning, the Forest Service
 should include both new construction and maintenance in its
-list of major facilities projects based on its facility master
+get_list of major facilities projects based on its facility master
 plans and the most efficient use of taxpayer dollars.
 Roads.--The bill provides $182,818,000 for roads
 including $27,327,000 for construction and $155,491,000 for
@@ -38612,7 +38612,7 @@ for critical inholdings/cash equalization; and $41,605,000 is
 for acquisitions.
 This amount will fully fund projects 1 through 30 as
 prioritized by the Service pursuant to the Administration's
-revised request list provided to the Committees on August 26,
+revised request get_list provided to the Committees on August 26,
 2011. Requests for reprogramming will be considered pursuant to
 the guidelines in the front of this statement.
 The conferees direct the Forest Service to use inholding
@@ -39126,9 +39126,9 @@ conferees further direct the Department of Labor to submit
 annual reports documenting the use of farmworker housing funds.
 The reports should include information on the amount of funds
 used for permanent and temporary housing activities,
-respectively; a list of the communities served; a list of the
+respectively; a get_list of the communities served; a get_list of the
 grantees and the states in which they are located; the total
-number of individuals or families served; and a list of
+number of individuals or families served; and a get_list of
 allowable temporary housing activities.
 The conference agreement includes $50,000,000 for the
 Workforce Innovation Fund.
@@ -41247,7 +41247,7 @@ The conferees are aware of efforts underway by the House
 Sergeant At Arms (HSAA) and the Capitol Police (USCP) to
 improve security in Congressional district offices. With the
 assistance of the HSAA and USCP, many Member offices had
-security assessments conducted and were provided a list of
+security assessments conducted and were provided a get_list of
 recommended security upgrades as a result of those assessments.
 Member offices currently pay for their office leases, including
 physical security, through their office budgets, also called
@@ -41865,7 +41865,7 @@ this Act, the Secretary of Defense shall provide a report, in
 writing, on installations and properties in Germany that the
 Department of Defense intends to return to the host nation.
 This report should include (1) intended timelines for closures
-of U.S. Army installations along with a list of military
+of U.S. Army installations along with a get_list of military
 construction projects required at other installations to
 facilitate the downsizing and consolidation of Army forces in
 Germany; (2) identification of the brigade combat team that
@@ -42459,7 +42459,7 @@ budget request for Medical Facilities with the submission of
 the 2013 budget to address the need for increased non-recurring
 maintenance funding. Additionally, the conferees direct the
 Department to submit no later than April 6, 2012, a
-comprehensive list by location of all established multi-
+comprehensive get_list by location of all established multi-
 specialty outpatient clinics and any proposed to be opened in
 fiscal year 2012.
 MEDICAL AND PROSTHETIC RESEARCH
@@ -42782,7 +42782,7 @@ Total Other Development............................   334,916
 Total Development..........................................   580,538
 ------------------------------------------------------------------------
 As proposed in the Senate bill, the conferees intend this
-table to serve as the Department's approved list of development
+table to serve as the Department's approved get_list of development
 projects; any requested changes are subject to reprogramming
 guidelines. The agreement does not include the House proposed
 bill language requiring the VA to submit to the Committees a
@@ -42893,7 +42893,7 @@ Department to provide to the Committees an expenditure plan for
 this account within 30 days of enactment of this Act. The House
 did not propose a similar requirement.
 The conferees expect the fiscal year 2013 budget
-submission to include a separate list of all minor construction
+submission to include a separate get_list of all minor construction
 projects proposed to be funded in fiscal year 2013 in priority
 order, consistent with the integrated Strategic Capital
 Investment Plan.
@@ -45720,7 +45720,7 @@ destination, size, composition, and expected duration and cost
 of the deployment.
 The conferees expect the spend plan required by section
 7078 of this Act to include details on projected staffing of
-the CRC, a list of deployments and planned deployments for the
+the CRC, a get_list of deployments and planned deployments for the
 fiscal year, and a summary of any strategic review of CSO
 operations, including a timeline for implementation of
 organizational, personnel, and program changes.

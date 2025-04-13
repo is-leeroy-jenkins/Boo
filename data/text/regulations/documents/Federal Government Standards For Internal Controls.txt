@@ -1534,7 +1534,7 @@ entity’s internal control system. Control activities help management fulfill
 responsibilities and address identified risk responses in the internal 
 control system. The common control activity categories listed in figure 6 
 are meant only to illustrate the range and variety of control activities that 
-may be useful to management. The list is not all inclusive and may not 
+may be useful to management. The get_list is not all inclusive and may not
 include particular control activities that an entity may need. 
 Figure 6: Examples of Common Categories of Control Activities 
 Top-level reviews of actual performance 
@@ -2305,7 +2305,7 @@ Page 68 GAO-14-704G Federal Internal Control Standards
 recommendations do not warrant management action. Management, with 
 oversight from the oversight body, monitors the status of remediation 
 efforts so that they are completed on a timely basis. 
-The following is a list of the requirements included in the Green Book. 
+The following is a get_list of the requirements included in the Green Book.
 The five components of internal control must be effectively designed, 
 implemented, and operating, and operating together in an integrated 
 manner, for an internal control system to be effective. (paragraph 
@@ -2590,7 +2590,7 @@ accountability, integrity, and reliability.
 The fastest and easiest way to obtain copies of GAO documents at no 
 cost is through GAO’s website (http://www.gao.gov). Each weekday 
 afternoon, GAO posts on its website newly released reports, testimony, 
-and correspondence. To have GAO e-mail you a list of newly posted 
+and correspondence. To have GAO e-mail you a get_list of newly posted
 products, go to http://www.gao.gov and select “E-mail Updates.” 
 The printed version of the 2014 Standards for Internal Control in the 
 Federal Government can be ordered through the Government Printing 

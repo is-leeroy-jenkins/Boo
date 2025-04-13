@@ -20421,7 +20421,7 @@ shall include--
 a person designated to receive communications from
 the Commission;
 ``(ii) the commodity categories that the
-facility intends to list or otherwise make
+facility intends to get_list or otherwise make
 available for trading on the facility in reliance
 on the exemption set forth in paragraph (3);
 ``(iii) certifications that--
@@ -20684,7 +20684,7 @@ monitor and enforce compliance with the rules of the contract
 market, including the terms and conditions of any contracts to
 be traded and any limitations on access to the contract market.
 ``(3) Contracts not readily subject to manipulation.--The
-board of trade shall list on the contract market only contracts
+board of trade shall get_list on the contract market only contracts
 that are not readily susceptible to manipulation.
 ``(4) Monitoring of trading.--The board of trade shall
 monitor trading to prevent manipulation, price distortion, and
@@ -21525,7 +21525,7 @@ or derivatives transaction execution facility shall promptly
 take steps to address the noncompliance.
 ``(c) New Contracts, New Rules, and Rule Amendments.--
 ``(1) In general.--Subject to paragraph (2), a registered
-entity may elect to list for trading or accept for clearing any
+entity may elect to get_list for trading or accept for clearing any
 new contract or other instrument, or may elect to approve and
 implement any new rule or rule amendment, by providing to the
 Commission (and the Secretary of the Treasury, in the case of a
@@ -28265,7 +28265,7 @@ in this clause is an item of custom-
 fabricated orthotics that requires
 education, training, and experience to
 custom-fabricate and that is included in
-a list established by the Secretary in
+a get_list established by the Secretary in
 subclause (II). Such an item does not
 include shoes and shoe inserts.
 ``(II) List of items.--The
@@ -28274,9 +28274,9 @@ appropriate experts in orthotics
 (including national organizations
 representing manufacturers of
 orthotics), shall establish and update
-as appropriate a list of items to which
+as appropriate a get_list of items to which
 this subparagraph applies. No item may
-be included in such list unless the item
+be included in such get_list unless the item
 is individually fabricated for the
 patient over a positive model of the
 patient.
@@ -33949,7 +33949,7 @@ beneficiaries of their rights under this section.
 ``(3) Additional requirements.--A program participant making
 a referral pursuant to paragraph (1) shall--
 ``(A) prior to making such referral, consider any
-list that the State or local government makes available
+get_list that the State or local government makes available
 of entities in the geographic area that provide program
 services; and
 ``(B) ensure that the individual makes contact with
@@ -34128,7 +34128,7 @@ threat of release) or disposal of any hazardous
 substance.
 ``(2) National priorities listed sites not included.--Such
 term shall not include any site which is on, or proposed for,
-the national priorities list under section 105(a)(8)(B) of the
+the national priorities get_list under section 105(a)(8)(B) of the
 Comprehensive Environmental Response, Compensation, and
 Liability Act of 1980 (as in effect on the date of the enactment
 of this section).
@@ -36968,7 +36968,7 @@ of the House of Representatives regarding--
 ``(A) the number and amount of awards provided and
 cooperative agreements entered into under the FAST
 program during the preceding year;
-``(B) a list of recipients under this section,
+``(B) a get_list of recipients under this section,
 including their location and the activities being
 performed with the awards made or under the cooperative
 agreements entered into; and

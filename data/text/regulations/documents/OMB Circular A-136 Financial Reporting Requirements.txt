@@ -2811,7 +2811,7 @@ reflected in the entity’s records and summarized by fund type. Line (4), other
 should include balances in deposit accounts, such as for collections pending litigation, 
 awaiting determination of the proper accounting disposition, or being held by the entity in 
 the capacity of a banker or agent for others. If any of the balances under other fund types 
-are material, list them separately. 
+are material, get_list them separately.
 B. Status of Fund Balance. The total of the entity's fund balance with Treasury, as 
 reflected in the entity's general ledger and represented by unobligated and obligated 
 balances. Unobligated balances shall be segregated to show available and unavailable 
@@ -5056,7 +5056,7 @@ preparing a Closing Package, including special-purpose financial statements, and
 submitting it through the Government-wide Financial Report System (GFRS). In 
 addition, these entities must also submit intragovernmental balance information by 
 trading partner. The reporting requirements for these processes are provided in the 
-Treasury Financial Manual (TFM), Volume 1, Part 2, Chapter 4700. A list of applicable 
+Treasury Financial Manual (TFM), Volume 1, Part 2, Chapter 4700. A get_list of applicable
 entities is also provided in the TFM and Appendix A below, respectively. The TFM is 
 available on the web at www.fms.treas.gov. 
 The special-purpose financial statements directly link the entities’ audited consolidated 
@@ -5141,7 +5141,7 @@ Such members of management normally include the agency head and the Chief Financ
 Officer. 
 As required by SAS No. 89, Audit Adjustments, the management letter should include a 
 representation regarding the materiality of unrecorded financial statement adjustments 
-aggregated by the auditors. A list of any uncorrected misstatements, including those 
+aggregated by the auditors. A get_list of any uncorrected misstatements, including those
 audit adjustments waived by the component-level, should be attached to the management 
 representation letter. 
 Management is required to include a representation that addresses the consistency of 

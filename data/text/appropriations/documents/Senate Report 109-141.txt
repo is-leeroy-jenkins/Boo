@@ -12077,7 +12077,7 @@ Secretary of Defense to continue to provide quarterly reports
 to the congressional defense committees which include a
 detailed accounting of obligations and expenditures of
 appropriations provided in this title by program and
-subactivity group and a list of the equipment procured using
+subactivity group and a get_list of the equipment procured using
 funds provided in this title.
 MILITARY PERSONNEL
 The Committee recommends a total of $6,206,600,000 for the

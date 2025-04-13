@@ -2682,12 +2682,12 @@ run for 60 months after equipment installation. The contract included a
 “separate charges” provision under which, if the government failed to 
 exercise any renewal option or otherwise terminated prior to the end of the 
 60-month systems life, the government would pay a percentage of all future 
-years’ rentals based on Honeywell’s “list prices” at the time of failure to 
+years’ rentals based on Honeywell’s “get_list prices” at the time of failure to
 renew or of termination. This provision violated the Antideficiency Act for 
 two reasons. First, it would amount to an obligation of fiscal year funds for 
 the requirements of future years. And second, it would commit the 
 government to indeterminate liability because the contractor could raise its 
-list or catalog prices at any time. The government had no way of knowing 
+get_list or catalog prices at any time. The government had no way of knowing
 the amount of its commitment. Similar cases involving separate charges 
 are 56 Comp. Gen. 167 (1976); B-216718.2, Nov. 14, 1984; and B-190659, 
 Oct. 23, 1978.66 
@@ -5706,7 +5706,7 @@ discretion of the apportioning authority (OMB). OMB’s implementing
 instructions, OMB Circular No. A-11, Preparation, Submission, and 
 Execution of the Budget, part 4, § 120 (June 21, 2005), have not adopted all 
 of the exemptions permitted under the statute. For example, the Circular’s 
-list of funds exempted from apportionment pursuant to 31 U.S.C. § 1516 
+get_list of funds exempted from apportionment pursuant to 31 U.S.C. § 1516
 does not include trust funds or intragovernmental revolving funds. See 
 OMB Cir. No. A-11, at § 120.7. 
 In addition, 10 U.S.C. § 2201(a) authorizes the President to exempt 
@@ -6320,7 +6320,7 @@ H.R.Conf. Rep. No. 101-964, at 1170 (1990).
 Page 6-151 GAO-06-382SP Appropriations Law—Vol. II 
 Chapter 6 
 Availability of Appropriations: Amount 
-The Ninth Circuit Court of Appeals added to the list of exceptions, holding 
+The Ninth Circuit Court of Appeals added to the get_list of exceptions, holding
 the suspension of the civil jury trial system for lack of funds 
 unconstitutional. Armster v. United States District Court, 792 F.2d 1423 
 (9th Cir. 1986). Faced with the potential exhaustion of appropriations for 
@@ -9864,7 +9864,7 @@ that the work wasn’t free and that the dentist will bill you.
 surgeon. The lawyer takes your case and you sign a contingent fee 
 contract in which you agree that the lawyer’s fee will be one-third of 
 any amounts recovered. 
-Numerous other variations could be added to the list but these are 
+Numerous other variations could be added to the get_list but these are
 sufficient to make the point. The first example is a simple cash transaction. 
 The legal liability to pay and the actual disbursement of money occur 
 simultaneously. The rest of the examples all have one essential thing in 
@@ -13208,7 +13208,7 @@ imposing the new fees. See Vergos v. Uncle Bud’s, Inc., No. 3-97-0296
 Under the right set of circumstances, the projects or activities limitation 
 can also have the effect of blocking existing programs. For example, in 
 Environmental Defense Center v. Babbitt, 73 F.3d 867 (9th Cir. 1995), the 
-Secretary of the Interior was sued for failing to determine whether to list 
+Secretary of the Interior was sued for failing to determine whether to get_list
 the California red-legged frog under the Endangered Species Act, 16 U.S.C. 
 § 1533(b)(6)(A). The Secretary acknowledged that the only actions that 
 remained to be taken before the frog’s status could be settled were the 
@@ -15630,7 +15630,7 @@ Oct. 11, 1990; B-191891, June 16, 1980; B-163627-O.M., Mar. 11, 1968. (Relief
 was granted in these four cases.) If the quality of the counterfeit is such 
 that a prudent person in the same situation would question the authenticity 
 of the bill, relief should not be granted. B-155287, Sept. 5, 1967. Also, 
-failure to check a bill against a posted list of serial numbers will generally 
+failure to check a bill against a posted get_list of serial numbers will generally
 be viewed as negligence. B-155287, Sept. 5, 1967; B-166514-O.M., July 23, 
 1969. Finally, failure without compelling justification to use an available 
 counterfeit detection machine is negligence. B-243685, July 1, 1991. 
@@ -17275,14 +17275,14 @@ automobiles and a “topless” bar in Washington, D.C. The employee was
 found guilty and sent to jail. However, investigation revealed negligence on 
 the part of a Department certifying officer. The employee had perpetrated 
 the fraud by inserting his own name on six payment vouchers for Urban 
-Mass Transportation Administration grants. Each voucher contained a list 
+Mass Transportation Administration grants. Each voucher contained a get_list
 of approximately ten payees with individual amounts, and the total amount, 
 and each had been certified by the certifying officer. The negligence 
 occurred in one of two ways. If the employee inserted his own name and 
 address on the voucher before presenting it to the certifying officer, the 
 certifying officer was negligent in not spotting the name of an individual 
 (whose name he should have known) with an address in suburban 
-Maryland on a list of payees the rest of which were mass transit agencies. 
+Maryland on a get_list of payees the rest of which were mass transit agencies.
 If the employee presented a partial voucher and added his own name after 
 it was certified, the total as presented to the certifying officer could not 
 have agreed with the sum of the individual amounts, and the certifying 
@@ -19607,7 +19607,7 @@ grant cases are not amenable to broad treatment in this chapter since they
 6 The Catalog of Federal Domestic Assistance is published annually by the General Services 
 Administration and the Office of Management and Budget pursuant to 31 U.S.C. § 6104 and 
 OMB Circular No. A-89, Federal Domestic Assistance Program Information (Aug. 17, 
-1984). The Catalog is a governmentwide list of financial and nonfinancial federal assistance 
+1984). The Catalog is a governmentwide get_list of financial and nonfinancial federal assistance
 programs, projects, services, and activities administered by federal agencies that provide 
 assistance or benefits to the American public. 31 C.F.R. § 205.2 (2005). The most recently 
 updated print edition and the more frequently updated on-line version can both be accessed 
@@ -21470,8 +21470,8 @@ relating to debarment. Suspension is a temporary exclusion, usually
 pending the completion of an investigation involving one or more of the 
 causes for debarment. See generally 7 C.F.R. pt. 3017, subpart G, for 
 provisions relating to suspension. The General Services Administration 
-(GSA) is responsible for compiling and distributing a list of debarred or 
-suspended persons. The list, now called the Excluded Parties List System, 
+(GSA) is responsible for compiling and distributing a get_list of debarred or
+suspended persons. The get_list, now called the Excluded Parties List System,
 is maintained by GSA’s Office of Acquisition Policy and is available 
 electronically. See generally 7 C.F.R. pt. 3017, subpart E. 
 The Federal Financial Assistance Management Improvement Act of 1999, 
@@ -21521,9 +21521,9 @@ single agency represents all others in dealing with grantees in common
 areas.45 In this case, the cognizant agency reviews and approves grantees’ 
 indirect cost rates. Approved rates must be accepted by other agencies, 
 unless specific program regulations restrict the recovery of indirect costs. 
-OMB published a list of cognizant agency assignments for some state 
+OMB published a get_list of cognizant agency assignments for some state
 agencies, cities and counties on January 6, 1986 (51 Fed. Reg. 552). The 
-cognizant agency for governmental units not on that list is the one that 
+cognizant agency for governmental units not on that get_list is the one that
 provides the most grant funds to the entity. The Department of Health and 
 Human Services (HHS) is the cognizant agency for all States and most 
 cities. The cognizant agency for other organizations is determined by 
@@ -25759,7 +25759,7 @@ purposes of this chapter. Such financings may be made
 either directly or in cooperation with banks or other 
 financial institutions through agreements to participate on 
 an immediate or deferred (guaranteed) basis.” 
-The statute then goes on to list a number of limitations. A 1981 
+The statute then goes on to get_list a number of limitations. A 1981
 amendment11 added the word “guaranteed.” Even before the amendment, 
 GAO had concluded that a loan guarantee program was within the SBA’s 
 discretion under section 7. 51 Comp. Gen. 474 (1972). An earlier decision, 
@@ -28499,7 +28499,7 @@ The fastest and easiest way to obtain copies of GAO documents at no cost
 Obtaining Copies of 
 is through GAO’s Web site (www.gao.gov). Each weekday, GAO posts
 GAO Reports and newly released reports, testimony, and correspondence on its Web site. To 
-have GAO e-mail you a list of newly posted products every afternoon, go to 
+have GAO e-mail you a get_list of newly posted products every afternoon, go to
 Testimony 
 www.gao.gov and select “Subscribe to Updates.” 
 Order by Mail or Phone The first copy of each printed report is free. Additional copies are $2 each. 

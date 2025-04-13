@@ -83,7 +83,7 @@ class Path( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-		Returns a list[ str ] of member names.
+		Returns a get_list[ str ] of member names.
 
 		'''
 		return [ 'input', 'name', 'current_directory', 'extension',
@@ -386,7 +386,7 @@ class File( Path ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-		Returns a list[ str ] of member names.
+		Returns a get_list[ str ] of member names.
 
 		'''
 		return [ 'name', 'current_directory', 'extension',
@@ -507,11 +507,11 @@ class File( Path ):
 	
 	def get_lines( self ) -> list[ str ]:
 		'''
-			Purpose: reads 'self.input' appending each line to a list
+			Purpose: reads 'self.input' appending each line to a get_list
 	
 			Parameters: void
 	
-			Returns: list[ str ]
+			Returns: get_list[ str ]
 		'''
 		_lines = list( )
 		try:
@@ -527,7 +527,7 @@ class File( Path ):
 			_exc = Error( e )
 			_exc.module = 'FileSys'
 			_exc.cause = 'File'
-			_exc.method = 'get_lines( self ) -> list[ str ]'
+			_exc.method = 'get_lines( self ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -580,7 +580,7 @@ class File( Path ):
 			_exc = Error( e )
 			_exc.module = 'FileSys'
 			_exc.cause = 'File'
-			_exc.method = 'readlines( self ) -> list[ str ]'
+			_exc.method = 'readlines( self ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -616,7 +616,7 @@ class File( Path ):
 		'''
 			Purpose: writes lines in 'lines' to file 'self.input'
 	
-			Parameters: list[ str ]
+			Parameters: get_list[ str ]
 	
 			Returns: void
 		'''
@@ -635,7 +635,7 @@ class File( Path ):
 			_exc = Error( e )
 			_exc.module = 'FileSys'
 			_exc.cause = 'File'
-			_exc.method = 'writelines( self, lines: list[ str ] ):'
+			_exc.method = 'writelines( self, lines: get_list[ str ] ):'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -670,7 +670,7 @@ class File( Path ):
 			_exc = Error( e )
 			_exc.module = 'FileSys'
 			_exc.cause = 'File'
-			_exc.method = 'writeall( self, other: str ) -> list[ str ]'
+			_exc.method = 'writeall( self, other: str ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
@@ -704,7 +704,7 @@ class Folder( Path ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-		Returns a list[ str ] of member names.
+		Returns a get_list[ str ] of member names.
 
 		'''
 		return [ 'name', 'current_directory', 'extension',
@@ -741,7 +741,7 @@ class Folder( Path ):
 			_exc = Error( e )
 			_exc.module = 'FileSys'
 			_exc.cause = 'Folder'
-			_exc.method = 'get_files( self ) -> list[ str ]'
+			_exc.method = 'get_files( self ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -771,7 +771,7 @@ class Folder( Path ):
 			_exc = Error( e )
 			_exc.module = 'FileSys'
 			_exc.cause = 'Folder'
-			_exc.method = 'get_subfiles( self ) -> list[ str ]'
+			_exc.method = 'get_subfiles( self ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -801,7 +801,7 @@ class Folder( Path ):
 			_exc = Error( e )
 			_exc.module = 'FileSys'
 			_exc.cause = 'Folder'
-			_exc.method = 'get_subfolders( self ) -> list[ str ]'
+			_exc.method = 'get_subfolders( self ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -955,7 +955,7 @@ class Message( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-			Returns a list[ str ] of member names.
+			Returns a get_list[ str ] of member names.
 
 		'''
 		return [ 'sender', 'receiver', 'subject',
@@ -988,7 +988,7 @@ class Email( Message ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-			Returns a list[ str ] of member names.
+			Returns a get_list[ str ] of member names.
 
 		'''
 		return [ 'sender', 'receiver', 'subject',
@@ -1024,7 +1024,7 @@ class Excel( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-		Returns a list[ str ] of member names.
+		Returns a get_list[ str ] of member names.
 
 		'''
 		return [ 'internal_path', 'external_path', 'name',
@@ -1080,7 +1080,7 @@ class ExcelReport( Excel ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-		Returns a list[ str ] of member names.
+		Returns a get_list[ str ] of member names.
 
 		'''
 		return [ 'rows', 'columns', 'dimensions' ]
@@ -1116,7 +1116,7 @@ class ZipFile( ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-		Returns a list[ str ] of member names.
+		Returns a get_list[ str ] of member names.
 
 		'''
 		return [ 'file_name', 'authority_filepath', 'file_extenstion',

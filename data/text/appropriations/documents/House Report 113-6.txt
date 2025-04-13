@@ -230,7 +230,7 @@ reported, by unanimous consent, to the House of
 Representatives.
 Committee Votes
 Clause 3(b) of rule XIII of the Rules of the House of
-Representatives requires the Committee to list the record votes
+Representatives requires the Committee to get_list the record votes
 on the motion to report legislation and amendments thereto.
 There were no record votes taken in connection with ordering
 H.R. 267 reported. A motion by Mr. Upton to order H.R. 267

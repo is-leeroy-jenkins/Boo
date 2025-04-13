@@ -91,16 +91,16 @@ class Header( ):
 	
 	def __dir__( self ):
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'content_type', 'api_key', 'authorization', 'values' ]
 	
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completions',
 		         'speech_generation', 'translations', 'assistants', 'transcriptions',
@@ -181,14 +181,14 @@ class GptOptions( ):
 		self.stream = stream
 		self.size = size
 		self.modalities = [ 'text', 'audio' ]
-		self.response_format = 'text'
+		self.response_format = 'auto'
 	
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 
 		'''
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
@@ -202,7 +202,7 @@ class GptOptions( ):
 	def get_voices( self ) -> list[ str ]:
 		'''
 
-			Returns: list[ str ] of voices used by the audio api
+			Returns: get_list[ str ] of voices used by the audio api
 
 		'''
 		return [ 'alloy', 'cash', 'coral', 'echo',
@@ -212,7 +212,7 @@ class GptOptions( ):
 	def get_sizes( self ) -> list[ str ]:
 		'''
 
-			Returns: list[ str ] of size used by the audio api
+			Returns: get_list[ str ] of size used by the audio api
 
 		'''
 		return [ '256X256', '512X512', '1024X1024', '1024x1792', '1792x1024' ]
@@ -221,7 +221,7 @@ class GptOptions( ):
 	def get_response_formats( self ) -> list[ str ]:
 		'''
 
-			Returns: list[ str ] of response formats used by the GPT
+			Returns: get_list[ str ] of response formats used by the GPT
 
 		'''
 		return [ 'text', 'audio', 'url' ]
@@ -230,7 +230,7 @@ class GptOptions( ):
 	def get_output_formats( self ) -> list[ str ]:
 		'''
 
-			Returns: list[ str ] of audio formats cleaned by the audio api
+			Returns: get_list[ str ] of audio formats cleaned by the audio api
 
 		'''
 		return [ 'mp3', 'opus', 'aac', 'flac', 'pcm' ]
@@ -239,7 +239,7 @@ class GptOptions( ):
 	def get_input_formats( self ) -> list[ str ]:
 		'''
 
-			Returns: list[ str ] of audio formats uploaded into the audio api
+			Returns: get_list[ str ] of audio formats uploaded into the audio api
 
 		'''
 		return [ 'mp3', 'mp4', 'mpeg', 'mpga', 'm4a', 'wav', 'webm' ]
@@ -314,8 +314,8 @@ class Payload( ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-		Methods that returns a list of member names
-		Returns: list[ str ]
+		Methods that returns a get_list of member names
+		Returns: get_list[ str ]
 		'''
 		return [ 'number', 'model', 'temperature',
 		         'top_percent', 'frequency_penalty',
@@ -367,8 +367,8 @@ class GptResponse( ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'id', 'object', 'model', 'created', 'data' ]
 
@@ -393,8 +393,8 @@ class CompletionResponse( GptResponse ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'id', 'object', 'model', 'created', 'data' ]
 
@@ -419,8 +419,8 @@ class TextResponse( GptResponse ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'id', 'object', 'model', 'created', 'data' ]
 
@@ -445,8 +445,8 @@ class EmbeddingResponse( GptResponse ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'id', 'object', 'model', 'created', 'data' ]
 
@@ -471,8 +471,8 @@ class FineTuningResponse( GptResponse ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'id', 'object', 'model', 'created', 'data' ]
 
@@ -497,8 +497,8 @@ class VectorResponse( GptResponse ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'id', 'object', 'model', 'created', 'data' ]
 
@@ -523,8 +523,8 @@ class FileResponse( GptResponse ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'id', 'object', 'model', 'created' ]
 
@@ -550,8 +550,8 @@ class UploadResponse( GptResponse ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 
 		'''
 		return [ 'id', 'object', 'model', 'created' ]
@@ -577,8 +577,8 @@ class ImageResponse( GptResponse ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'id', 'object', 'model', 'created' ]
 
@@ -677,8 +677,8 @@ class TextRequest( GptRequest ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-				Methods that returns a list of member names
-				Returns: list[ str ]
+				Methods that returns a get_list of member names
+				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values' ]
@@ -780,8 +780,8 @@ class CompletionRequest( GptRequest ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-				Methods that returns a list of member names
-				Returns: list[ str ]
+				Methods that returns a get_list of member names
+				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint',
 		         'model', 'number', 'messages',
@@ -887,8 +887,8 @@ class ImageRequest( GptRequest ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-				Methods that returns a list of member names
-				Returns: list[ str ]
+				Methods that returns a get_list of member names
+				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values',
@@ -1048,8 +1048,8 @@ class TranslationRequest( GptRequest ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-				Methods that returns a list of member names
-				Returns: list[ str ]
+				Methods that returns a get_list of member names
+				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values' ]
@@ -1104,8 +1104,8 @@ class TranscriptionRequest( GptRequest ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-				Methods that returns a list of member names
-				Returns: list[ str ]
+				Methods that returns a get_list of member names
+				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'endpoint', 'model', 'number', 'messages',
 		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values' ]
@@ -1161,8 +1161,8 @@ class EmbeddingRequest( GptRequest ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-				Methods that returns a list of member names
-				Returns: list[ str ]
+				Methods that returns a get_list of member names
+				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
@@ -1221,8 +1221,8 @@ class VectorStoreRequest( GptRequest ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-				Methods that returns a list of member names
-				Returns: list[ str ]
+				Methods that returns a get_list of member names
+				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
@@ -1281,8 +1281,8 @@ class GptFileRequest( GptRequest ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-				Methods that returns a list of member names
-				Returns: list[ str ]
+				Methods that returns a get_list of member names
+				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
@@ -1340,8 +1340,8 @@ class UploadRequest( GptRequest ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-				Methods that returns a list of member names
-				Returns: list[ str ]
+				Methods that returns a get_list of member names
+				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
@@ -1400,8 +1400,8 @@ class FineTuningRequest( GptRequest ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-				Methods that returns a list of member names
-				Returns: list[ str ]
+				Methods that returns a get_list of member names
+				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
@@ -1459,8 +1459,8 @@ class GptMessage( ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'role', 'content', 'type' ]
 
@@ -1514,8 +1514,8 @@ class SystemMessage( GptMessage ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'role', 'content', 'type' ]
 
@@ -1570,8 +1570,8 @@ class UserMessage( GptMessage ):
 	def __dir__( self ) -> list[ str ]:
 		'''
 
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 
 		'''
 		return [ 'role', 'content', 'type' ]
@@ -1626,8 +1626,8 @@ class DeveloperMessage( GptMessage ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'role', 'content', 'type' ]
 
@@ -1681,8 +1681,8 @@ class AssistantMessage( GptMessage ):
 	
 	def __dir__( self ) -> list[ str ]:
 		'''
-			Methods that returns a list of member names
-			Returns: list[ str ]
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
 		'''
 		return [ 'role', 'content', 'type' ]
 

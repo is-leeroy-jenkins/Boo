@@ -1074,7 +1074,7 @@ the analysis is made to the Committees on Appropriations of the House of
 Representatives and the Senate: Provided, That this section and
 subsections (a), (b), and (c) of 10 U.S.C. 2461 shall not apply to a
 commercial or industrial type function of the Department of Defense
-that: (1) is included on the procurement list established pursuant to
+that: (1) is included on the procurement get_list established pursuant to
 section 2 of the Act of June 25, 1938 (41 U.S.C. 47), popularly referred
 to as the Javits-Wagner-O'Day Act; (2) is planned to be converted to
 performance by a qualified nonprofit agency for the blind or by a
@@ -2335,7 +2335,7 @@ by DOD Employees.--The Secretary of Defense shall submit a report not
 later than 90 days after the enactment of this Act which lists all
 instances since 1995 in which missions or functions of the Department of
 Defense have been reviewed by the Department of Defense pursuant to OMB
-Circular A-76. The report shall list the disposition of each such review
+Circular A-76. The report shall get_list the disposition of each such review
 and indicate whether the review resulted in the performance of such
 missions
 [[Page 113 STAT. 1257]]
@@ -3233,7 +3233,7 @@ tribes for housing units under subsection (a) before
 submitting requests to the Secretary of the Air Force under paragraph
 (b).
 (d) Indian Tribe Defined.--In this section, the term ``Indian
-tribe'' means any recognized Indian tribe included on the current list
+tribe'' means any recognized Indian tribe included on the current get_list
 published by the Secretary of Interior under section 104 of the
 Federally Recognized Indian Tribe Act of 1994 (Public Law 103-454; 108
 Stat. 4792; 25 U.S.C. 479a-1).
@@ -3833,7 +3833,7 @@ Export Control Act.
 application of export controls to nearly 300 Indian and
 Pakistani entities is inconsistent with the specific
 national security interests of the United States and
-that this control list requires refinement; and
+that this control get_list requires refinement; and
 (B) export controls should be applied only to those
 Indian and Pakistani entities that make direct and
 material contributions to weapons of mass destruction

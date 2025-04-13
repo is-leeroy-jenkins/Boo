@@ -777,11 +777,11 @@ date expenditures and obligations, and total fiscal year
 expenditure projections versus budget broken out on the basis of
 control center, responsibility center, and object class, and for
 all funds, non-appropriated funds, and capital financing;
-(2) a list of each account for which spending is frozen and
+(2) a get_list of each account for which spending is frozen and
 the amount of funds frozen, broken out by control center,
 responsibility center, detailed object, and for all funding
 sources;
-(3) a list of all active contracts in excess of $10,000
+(3) a get_list of all active contracts in excess of $10,000
 annually, which contains the name of each contractor; the budget
 to which the contract is charged, broken out on the basis of
 control center and responsibility center, and contract
@@ -860,11 +860,11 @@ expenditure projections versus budget, broken out on the basis
 of control center, responsibility center, agency reporting code,
 and object class, and for all funds, including capital
 financing;
-(2) a list of each account for which spending is frozen and
+(2) a get_list of each account for which spending is frozen and
 the amount of funds frozen, broken out by control center,
 responsibility center, detailed object, and agency reporting
 code, and for all funding sources;
-(3) a list of all active contracts in excess of $10,000
+(3) a get_list of all active contracts in excess of $10,000
 annually, which contains the name of each contractor; the budget
 to which the contract is charged, broken out on the basis of
 control center, responsibility center, and agency reporting
@@ -4628,7 +4628,7 @@ three representatives of the Government of Canada, and
 three representatives of the United States. The three
 United States representatives shall be the United States
 Commissioner and Alternate Commissioner appointed (or
-designated) from a list submitted by the Governor of
+designated) from a get_list submitted by the Governor of
 Alaska for appointment to the Pacific Salmon Commission
 and the Regional Administrator of the National Marine
 Fisheries Service for the Alaska Region. Only programs
@@ -4643,10 +4643,10 @@ Southern Fund Committee, which shall be comprised of
 three representatives of Canada and three
 representatives of the United States. The United States
 representatives shall be appointed by the Secretary of
-Commerce: one shall be selected from a list of three
+Commerce: one shall be selected from a get_list of three
 qualified individuals submitted by the Governors of the
 States of Washington and Oregon; one shall be selected
-from a list of three qualified individuals submitted by
+from a get_list of three qualified individuals submitted by
 the treaty Indian tribes (as defined by the Secretary of
 Commerce); and one shall be the Regional Administrator
 of the National Marine Fisheries Service for the
@@ -4727,14 +4727,14 @@ paragraph:
 salmon fishery regime covered by chapter 1 or 2 (except paragraph 4 of
 chapter 2) of Annex IV to the Pacific Salmon Treaty of 1985 shall be
 taken upon the affirmative vote of the United States Commissioner
-appointed from the list submitted by the Governor of Alaska pursuant to
+appointed from the get_list submitted by the Governor of Alaska pursuant to
 subsection (a). A decision of the United States Section with respect to
 any salmon fishery regime covered by chapter 4, 5 (except paragraph 2(b)
 of chapter 5), or 6 of the Pacific Salmon Treaty of 1985 shall be taken
 upon the affirmative vote of both the United States Commissioner
-appointed from the list submitted by the Governors of Washington and
+appointed from the get_list submitted by the Governors of Washington and
 Oregon pursuant to subsection (a) and the United States Commissioner
-appointed from the list submitted by the treaty Indian tribes of the
+appointed from the get_list submitted by the treaty Indian tribes of the
 State of Idaho, Oregon, or Washington pursuant to subsection (a). Before
 a decision of the United States Section is made under this paragraph,
 the voting Commissioner or Commissioners shall consult with the
@@ -8120,7 +8120,7 @@ country reports on human rights practices
 Sec. 597. Section 116 of the Foreign Assistance Act of 1961 is
 amended by adding the following new subsection:
 ``(f )(1) The report required by subsection (d) shall include--
-``(A) a list of foreign states where trafficking in persons,
+``(A) a get_list of foreign states where trafficking in persons,
 especially women and children, originates, passes through, or is
 a destination; and
 [[Page 113 STAT. 1501A-127]]
@@ -8909,7 +8909,7 @@ for the guaranteed supply of water to the natural areas in southern
 Florida, including all National parks, Preserves, Wildlife Refuge lands,
 and other natural areas to ensure a restored ecosystem; and (2)
 submission of a complete prioritized non-Federal land acquisition
-project list: Provided further, That after the requirements under this
+project get_list: Provided further, That after the requirements under this
 heading have been met, from the funds made available for State grants
 for land acquisition in the State of Florida the Secretary may provide
 Federal assistance to the State of Florida for the acquisition of lands
@@ -12673,7 +12673,7 @@ River ecosystem restoration, or acquisitions of interests in the Baca
 Ranch, the California desert, the Grand Staircase-Escalante National
 Monument, and the Rhode Island National Wildlife Refuge Complex shall be
 available until the House Committee on Appropriations and the Senate
-Committee on Appropriations approve, in writing, a list of projects to
+Committee on Appropriations approve, in writing, a get_list of projects to
 be undertaken with such funds.
 This Act may be cited as the ``Department of the Interior and
 Related Agencies Appropriations Act, 2000''.
@@ -23568,7 +23568,7 @@ the United States chief of mission in the country to which the
 child is alleged to have been abducted''; and
 (6) by inserting after paragraph (5) the following new
 paragraphs:
-``(6) A list of the countries that are parties to the
+``(6) A get_list of the countries that are parties to the
 Convention in which, during the reporting period, parents who
 have been left-behind in the United States have not been able to
 secure prompt enforcement of a final return or access order
@@ -24136,7 +24136,7 @@ consular posts which account for approximately 72 percent of immigrant
 visas issued and, in addition, the consular posts in Guatemala City,
 Nicosia, Caracas, Naples, and Jakarta. Each report should include data
 on the average time for processing each category of visa application
-under subsection (a), a list of the embassies and consular posts which
+under subsection (a), a get_list of the embassies and consular posts which
 do not meet the policy standards under subsection (a), the amount of
 funds collected worldwide for processing of visa applications during the
 most recent fiscal year, the estimated costs of processing such visa
@@ -25329,7 +25329,7 @@ diplomatic or consular post composed of such facilities that is
 a priority for replacement or for any major security enhancement
 because of its vulnerability to terrorist attack (by reason of
 the terrorist threat and the current condition of the facility).
-The report shall list such facilities in groups of 20. The
+The report shall get_list such facilities in groups of 20. The
 groups shall be ranked in order from most vulnerable to least
 vulnerable to such an attack.
 (2) Priority on use of funds.--
@@ -25380,7 +25380,7 @@ Plan (EAP) of each United States mission shall address
 the threat of large explosive attacks from vehicles and
 the safety of employees during such an explosive attack.
 Such plan shall be reviewed and updated annually.
-(B) Security environment threat list.--The Security
+(B) Security environment threat get_list.--The Security
 Environment Threat List shall contain a section that
 addresses potential acts of international terrorism
 against United States diplomatic facilities based on
@@ -25713,7 +25713,7 @@ membership; and
 international organizations that may require statehood as a
 prerequisite to full membership.
 (b) Report Elements.--Each report under subsection (a) shall--
-(1) set forth a comprehensive list of the international
+(1) set forth a comprehensive get_list of the international
 organizations in which the United States Government supports the
 membership or participation of Taiwan;
 (2) describe in detail the efforts of the United States
@@ -25721,7 +25721,7 @@ Government to achieve the membership or participation of Taiwan
 in each organization listed; and
 (3) identify the obstacles to the membership or
 participation of Taiwan in each organization listed, including a
-list of any governments that do not support the membership or
+get_list of any governments that do not support the membership or
 participation of Taiwan in each such organization.
 SEC. 705. RESTRICTION RELATING TO UNITED STATES ACCESSION TO THE
 INTERNATIONAL CRIMINAL COURT.
@@ -25976,7 +25976,7 @@ consultations, the following information shall be provided each
 month to the designated congressional committees:
 ``(A) With respect to ongoing United Nations
 peacekeeping operations, the following:
-``(i) A list of all resolutions of the United
+``(i) A get_list of all resolutions of the United
 Nations Security Council anticipated to be voted
 on during such month that would extend or change
 the mandate of any United Nations peacekeeping
@@ -26238,20 +26238,20 @@ annex as necessary, to the appropriate congressional committees
 regarding terrorist attacks in Israel, in territory administered by
 Israel, and in territory administered by the Palestinian Authority. The
 report shall contain the following information:
-(1) A list of formal commitments the Palestinian Authority
+(1) A get_list of formal commitments the Palestinian Authority
 has made to combat terrorism.
-(2) A list of terrorist attacks, occurring between September
+(2) A get_list of terrorist attacks, occurring between September
 13, 1993 and the date of the report, against United States
 citizens in Israel, in territory administered by Israel, or in
 territory administered by the Palestinian Authority, including--
-(A) a list of all citizens of the United States
+(A) a get_list of all citizens of the United States
 killed or injured in such attacks;
 (B) the date of each attack and the total number of
 people killed or injured in each attack;
 (C) the person or group claiming responsibility for
 the attack and where such person or group has found
 refuge or support;
-(D) a list of suspects implicated in each attack and
+(D) a get_list of suspects implicated in each attack and
 the nationality of each suspect, including information
 on--
 (i) which suspects are in the custody of the
@@ -26278,9 +26278,9 @@ Palestinian Authority or Israel.
 offering rewards for information on terrorist suspects,
 including any information on whether a reward has been posted
 for suspects involved in terrorist attacks listed in the report.
-(5) A list of each request by the United States for
+(5) A get_list of each request by the United States for
 assistance in investigating terrorist attacks listed in the
-report, a list of each request by the United States for the
+report, a get_list of each request by the United States for the
 transfer of terrorist suspects from the Palestinian Authority
 and Israel since September 13, 1993, and the response to each
 request from the Palestinian Authority and Israel.
@@ -26289,15 +26289,15 @@ since September 13, 1993 to bring to justice perpetrators of
 terrorist acts against United States citizens as listed in the
 report.
 [[Page 113 STAT. 1501A-471]]
-(7) A list of any terrorist suspects in these cases who are
+(7) A get_list of any terrorist suspects in these cases who are
 members of Palestinian police or security forces, the Palestine
 Liberation Organization, or any Palestinian governing body.
-(8) A list of all United States citizens killed or injured
+(8) A get_list of all United States citizens killed or injured
 in terrorist attacks in Israel or in territory administered by
 Israel between 1950 and September 13, 1993, to include in each
 case, where such information is reasonably available, any stated
 claim of responsibility and the resolution or disposition of
-each case, except that this list shall be submitted only once
+each case, except that this get_list shall be submitted only once
 with the initial report required under this section unless
 additional relevant information on these cases becomes
 available.
@@ -28281,15 +28281,15 @@ export information established under chapter 9 of title 13,
 United States Code, on June 19, 1995 (60 Federal Register
 32040).
 [[Page 113 STAT. 1501A-508]]
-(2) Commerce control list.--The term ``Commerce Control
+(2) Commerce control get_list.--The term ``Commerce Control
 List'' has the meaning given the term in section 774.1 of title
 15, Code of Federal Regulations.
 (3) Shippers' export declaration.--The term ``Shippers'
 Export Declaration'' means the export information filed under
 chapter 9 of title 13, United States Code, as described in part
 30 of title 15, Code of Federal Regulations.
-(4) United states munitions list.--The term ``United States
-Munitions List'' means the list of items controlled under
+(4) United states munitions get_list.--The term ``United States
+Munitions List'' means the get_list of items controlled under
 section 38 of the Arms Export Control Act (22 U.S.C. 2778).
 Subtitle F--International Arms Sales Code of Conduct Act of 1999
 SEC. 1261. SHORT TITLE.
@@ -29089,14 +29089,14 @@ secondary transmissions of a primary transmission made by a
 network station under subsection (a) shall, within 90 days after
 commencing such secondary transmissions, submit to the network
 [[Page 113 STAT. 1501A-524]]
-that owns or is affiliated with the network station a list
+that owns or is affiliated with the network station a get_list
 identifying (by name in alphabetical order and street address,
 including county and zip code) all subscribers to which the
 satellite carrier makes secondary transmissions of that primary
 transmission under subsection (a).
-``(2) Subsequent lists.--After the list is submitted under
+``(2) Subsequent lists.--After the get_list is submitted under
 paragraph (1), the satellite carrier shall, on the 15th of each
-month, submit to the network a list identifying (by name in
+month, submit to the network a get_list identifying (by name in
 alphabetical order and street address, including county and zip
 code) any subscribers who have been added or dropped as
 subscribers since the last submission under this subsection.

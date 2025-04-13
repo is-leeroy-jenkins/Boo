@@ -370,7 +370,7 @@ an Act of Congress, Executive action,
 judicial decree, or any other action;
 or
 (ii) any entity not included in the
-list authorized pursuant to the
+get_list authorized pursuant to the
 Federally Recognized Indian Tribe List
 Act of 1994 (25 U.S.C. 479a et seq.);
 (B) make recommendations on necessary
@@ -730,7 +730,7 @@ establish a government-to-government relationship with--
 of enactment of this Act by the Federal Government
 through an Act of Congress, Executive action, judicial
 decree, or any other action; or
-(2) any entity not included in the list authorized
+(2) any entity not included in the get_list authorized
 pursuant to the Federally Recognized Indian Tribe List
 Act of 1994 (25 U.S.C. 479a et seq.).
 Supplemental, Minority, Additional, or Dissenting Views

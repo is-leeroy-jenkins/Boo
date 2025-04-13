@@ -1052,7 +1052,7 @@ forth on a county-by-county basis for wireline services and on a
 market service area basis for wireless services, and the
 historical baseline of electronic surveillance activity upon
 which such capacity requirements are based;
-``(3) a prioritized list of carrier equipment, facilities,
+``(3) a prioritized get_list of carrier equipment, facilities,
 and services deployed on or before January 1, 1995, to be
 modified by carriers at the request of law enforcement based on
 its investigative needs;
@@ -1279,11 +1279,11 @@ Director of the National Institute for Occupational Safety and Health
 directly or by contract, a study, and shall submit to the appropriate
 committees of Congress a report based on the results of the study that
 shall include--
-(1) a list and description of all tests available for the
+(1) a get_list and description of all tests available for the
 assessment of abilities important for the completion of public
 safety tasks performed by law enforcement officers and
 firefighters;
-(2) a list of the public safety tasks for which adequate
+(2) a get_list of the public safety tasks for which adequate
 tests described in paragraph (1) do not exist;
 (3) a description of the technical characteristics that the
 tests shall meet to be in compliance with applicable Federal
@@ -1941,7 +1941,7 @@ operations, research, and facilities
 For necessary expenses of activities authorized by law for the
 National Oceanic and Atmospheric Administration, including acquisition,
 maintenance, operation, and hire of aircraft; <<NOTE: 33 USC 851.>> not
-to exceed 299 commissioned officers on the active list as of September
+to exceed 299 commissioned officers on the active get_list as of September
 30, 1997; grants, contracts, or other payments to nonprofit
 organizations for the purposes of conducting activities pursuant to
 cooperative agreements; and alteration, modernization, and relocation of
@@ -4614,7 +4614,7 @@ analysis is completed on such activity or function and certification of
 the analysis is made to the Committees on Appropriations of the House of
 Representatives and the Senate: Provided, That this section shall not
 apply to a commercial or industrial type function of the Department of
-Defense that: (1) is included on the procurement list established
+Defense that: (1) is included on the procurement get_list established
 pursuant to section 2 of the Act of June 25, 1938 (41 U.S.C. 47),
 popularly referred to as the Javits-Wagner-O'Day Act; (2) is planned to
 be converted to performance by a qualified nonprofit agency for the
@@ -13848,7 +13848,7 @@ determination and the effect of the determination on the
 eligibility of the covered educational entity for contracts and
 grants.
 (e) Semiannual Notice in Federal Register.--The Secretary of
-Defense shall publish in the Federal Register once every 6 months a list
+Defense shall publish in the Federal Register once every 6 months a get_list
 of each covered educational entity that is currently ineligible for
 contracts and grants by reason of a determination of the Secretary under
 subsection (a) or (b).
@@ -22708,7 +22708,7 @@ consumer.
 ``(d) Reserved
 ``(e) Election of Consumer To Be Excluded From Lists.--
 ``(1) In general.--A consumer may elect to have the
-consumer's name and address excluded from any list provided by a
+consumer's name and address excluded from any get_list provided by a
 consumer reporting agency under subsection (c)(1)(B) in
 connection with a credit or insurance transaction that is not
 initiated by the consumer, by notifying the agency in accordance
@@ -22776,7 +22776,7 @@ which permits any consumer whose consumer report
 is maintained by the agency to notify the agency,
 with appropriate identification, of the consumer's
 election to have the consumer's name and address
-excluded from any such list of names and addresses
+excluded from any such get_list of names and addresses
 provided by the agency for such a transaction; and
 ``(ii) publish by not later than 365 days
 after the date of enactment of the Consumer Credit
@@ -23022,7 +23022,7 @@ of rights required under paragraph (1) shall include--
 rights of consumers under this title;
 ``(B) an explanation of how the consumer may
 exercise the rights of the consumer under this title;
-``(C) a list of all Federal agencies responsible for
+``(C) a get_list of all Federal agencies responsible for
 enforcing any provision of this title and the address
 and any appropriate phone number of each such agency, in
 a form that will assist the consumer in selecting the
@@ -25243,7 +25243,7 @@ and
 includes--
 ``(i) the basis for the eligibility of the
 partnership under subparagraph (F);
-``(ii) a list of the existing activities and
+``(ii) a get_list of the existing activities and
 investments of the partnership;
 ``(iii) a commitment to comply with this
 paragraph;
@@ -27081,10 +27081,10 @@ vacancy occurs in the membership of the Board for
 reasons other than the expiration of the term of a
 member of the Board, the Secretary of Education, not
 later than 30 days after the vacancy occurs, shall
-present to the Mayor a list of 3 people the Secretary
+present to the Mayor a get_list of 3 people the Secretary
 determines are qualified to serve on the Board. The
 Mayor, in consultation with the District of Columbia
-Council, shall appoint 1 person from the list to serve
+Council, shall appoint 1 person from the get_list to serve
 on the Board. The Secretary shall recommend, and the
 Mayor shall appoint, such member of the Board taking
 into consideration the criteria described in paragraph
@@ -27095,10 +27095,10 @@ shall be appointed only for the remainder of the term.
 that is 60 days before the expiration of the term of a
 member of the Board, the Secretary of Education shall
 present to the Mayor, with respect to each such
-impending vacancy, a list of 3 people the Secretary
+impending vacancy, a get_list of 3 people the Secretary
 determines are qualified to serve on the Board. The
 Mayor, in consultation with the District of Columbia
-Council, shall appoint 1 person from each such list to
+Council, shall appoint 1 person from each such get_list to
 serve on the Board. The Secretary shall recommend, and
 the Mayor shall appoint, any member of the Board taking
 into consideration the criteria described in paragraph
@@ -28153,7 +28153,7 @@ be designated by the Governor of Oregon; and
 designated by the mayor of Salem, Oregon;
 (4) 1 member from a city within a 25-mile radius of the Opal
 Creek Scenic Recreation Area, to be designated by the Governor
-of the State of Oregon from a list of candidates provided by the
+of the State of Oregon from a get_list of candidates provided by the
 mayors of the cities located within a 25-mile radius of the Opal
 Creek Scenic Recreation Area; and
 (5) not more than 9 members shall be appointed by the
@@ -28248,7 +28248,7 @@ subsection (a) as the land to be offered by Rosboro shall comprise
 Section 36, Township 8 South, range 4 east, Willamette Meridian.
 (c) Land To Be Conveyed by the United States.--The land referred
 to in subsection (a) as the land to be conveyed by the United States
-shall comprise sufficient land from the following prioritized list to be
+shall comprise sufficient land from the following prioritized get_list to be
 of equal value under subparagraph (d):
 (1) Section 5, Township 17 South, Range 4 East, Lot 7 (37.63
 acres).
@@ -31415,7 +31415,7 @@ statutory provisions alleged to have been violated.
 ``(E) The alien may be represented by counsel and
 the alien will be provided (i) a period of time to
 secure counsel under subsection (b)(1) and (ii) a
-current list of counsel prepared under subsection
+current get_list of counsel prepared under subsection
 (b)(2).
 ``(F)(i) The requirement that the alien must
 immediately provide (or have provided) the Attorney
@@ -37213,7 +37213,7 @@ individual or family under this section at any
 time at which the public housing agency determines
 that such eligibility is in question, regardless
 of whether or not that individual or family is at
-or near the top of the waiting list of the public
+or near the top of the waiting get_list of the public
 housing agency;
 ``(ii) may affirmatively establish or verify
 the eligibility of an individual or family under
@@ -37543,7 +37543,7 @@ asylum, the Attorney General shall--
 represented by counsel and of the consequences, under
 paragraph (6), of knowingly filing a frivolous
 application for asylum; and
-``(B) provide the alien a list of persons (updated not
+``(B) provide the alien a get_list of persons (updated not
 less often than quarterly) who have indicated their
 availability to represent aliens in asylum proceedings
 on a pro bono basis.

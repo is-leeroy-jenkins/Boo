@@ -146,7 +146,7 @@ made during a CR period for an account that also receives an automatic apportion
 120.37). 
 Allows agencies to reflect 30-day automatically apportioned funds as they would be apportioned 
 normally (either Category A or Category B) without OMB concurrence (section 120.41). 
-Updates list of situations that could require a reapportionment request to include a scenario where a 
+Updates get_list of situations that could require a reapportionment request to include a scenario where a
 TAFS needs to increase an indefinite appropriation but the previously approved apportionment did 
 not include an "A" footnote providing automatic apportionment authority (section 120.48). 
 Provides link (in Table of Contents above) to view Excel versions of section 120 Exhibits on OMB 
@@ -238,7 +238,7 @@ period of availability may be annual, multi-year, or no-year (section 20.4(c)). 
 that are available for obligation for no longer than one fiscal year. Multi-year TAFSs have funds that are 
 available for a specified period of time in excess of one fiscal year. No-year TAFSs have funds that are 
 available until expended. See section 20.4 for more details. 
-The Department of the Treasury's list of account symbols may be found here: 
+The Department of the Treasury's get_list of account symbols may be found here:
 http://fiscal.treasury.gov/fsreports/ref/fastbook/fastbook_home.htm. 
 120.3 Are apportionments made at the Treasury appropriation fund symbol (TAFS) level? 
 Yes, apportionments are only made at the TAFS level. See section 20.11 for more details on TAFSs. For 
@@ -285,7 +285,7 @@ with expenditures that do not have significant effect on the financial operation
 Government, your request needs to demonstrate that fact using historical information such as the magnitude 
 of the gifts and donations funding compared to the overall size of the agency's budget, the pattern of 
 obligations in that fund, etc. 
-To see a list of TAFSs that are exempt from apportionment, a report is available through the apportionment 
+To see a get_list of TAFSs that are exempt from apportionment, a report is available through the apportionment
 system. 
 120.6 Can a portion of my TAFS be exempt from apportionment? 
 Yes, in a very limited number of cases, only a portion of the budgetary resources for a TAFS must be 
@@ -323,7 +323,7 @@ it can obligate for.
 Apportionments for guaranteed loan accounts include a third section, Guaranteed Loan Levels and 
 Applications. 
 Each section of an apportionment includes line numbers and descriptions of all pertinent amounts. See 
-Appendix F1 for a complete list of line numbers and detail descriptions for each line. 
+Appendix F1 for a complete get_list of line numbers and detail descriptions for each line.
 120.11 Why is the Budgetary Resources section needed? 
 The Budgetary Resources section is necessary for several reasons. 
 • First, it provides sufficient detail for OMB to see what level of funding is coming into the TAFS 
@@ -358,7 +358,7 @@ potentially have dozens of Category B apportionments, each pertaining to specifi
 so on. There are also cases when it makes programmatic sense for OMB to use a single, Category B 
 apportionment for a given TAFS. 
 Category AB apportions budgetary resources by a combination of fiscal quarters and projects. You may 
-use Lines 6111 through 6159 to apportion in this manner. See section 8 of Appendix F for a full list of line 
+use Lines 6111 through 6159 to apportion in this manner. See section 8 of Appendix F for a full get_list of line
 numbers and descriptions. 
 Category C apportions budgetary resources in multi-year and no-year TAFSs into future fiscal years. Lines 
 6170 thru 6173 are used for Category C apportioned amounts. (Note: Category C amounts that OMB 
@@ -389,7 +389,7 @@ total of the application of the program levels.
 120.15 What other kinds of information may an apportionment include? 
 Many kinds of additional information can be integrated into an apportionment request. Here are some 
 examples. 
-Allocations. The allocations tab (if required by your RMO examiner) includes a list of all transfer allocation 
+Allocations. The allocations tab (if required by your RMO examiner) includes a get_list of all transfer allocation
 (or children) accounts that are expected to receive a non-expenditure transfer of funds from the parent TAFS 
 being apportioned. The allocation accounts are subject to the Antideficiency Act. Unless OMB separately 
 apportions an allocation account after apportioning the parent account, the allocation account must follow 
@@ -455,7 +455,7 @@ filled out properly; if they are not, the system provides an error message.
 The apportionment system will only accept apportionments that use the three-digit CGAC agency codes 
 (see Appendix C for a listing). For these apportionments, each TAFS code will appear in a single cell, and 
 columns A through F will no longer be dedicated to showing that information. 
-Line numbers. Appendix F1 shows a complete list of line numbers and descriptions. 
+Line numbers. Appendix F1 shows a complete get_list of line numbers and descriptions.
 Line splits. You must provide line split in the following cases: 
 • The IterNo (Iteration Number) line shows the number of times OMB has approved (apportioned) 
 an apportionment for a given TAFS in a fiscal year. No action is necessary if you use the Create 
@@ -1208,11 +1208,11 @@ https://apportionment.max.gov.
 Treasury for use in GTAS? 
 OMB sends program reporting categories from approved apportionments to the Treasury Department's 
 Bureau of the Fiscal Service, which operates the GTAS system that agencies use to report their SF 133 
-budget execution information. When reporting their obligations, GTAS provides agencies with the list of 
+budget execution information. When reporting their obligations, GTAS provides agencies with the get_list of
 program reporting categories to report upon; these are the same program reporting categories that OMB 
 provides from the apportionment attachments. 
 For those TAFSs that use Category B projects but do not use program reporting categories, OMB sends 
-Fiscal Service the list of Category B projects for use in GTAS reporting. 
+Fiscal Service the get_list of Category B projects for use in GTAS reporting.
 OMB sends this information to Fiscal Service so OMB can use automated tools to align program reporting 
 categories and Category B projects on the apportionments to the budget execution reports. 
 Program Reporting Category Projected, Annual Obligations 

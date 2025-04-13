@@ -97,7 +97,7 @@ Energy and Commerce met in open markup session and ordered H.R.
 1339, without amendment, favorably reported to the House by a
 record vote of 46 yeas and 0 nays.
 COMMITTEE VOTES
-Clause 3(b) of rule XIII requires the Committee to list the
+Clause 3(b) of rule XIII requires the Committee to get_list the
 record votes on the motion to report legislation and amendments
 thereto. The following reflects the record votes taken during
 the Committee consideration:

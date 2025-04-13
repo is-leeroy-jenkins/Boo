@@ -72,7 +72,7 @@ reference use.
 3. Requirements are set forth with respect to section 607 of the Congressional Budqet Act of 1974 dealing 
 with year-ahead requests for authorizing the enactment of new budget authority (section 7e and 
 Attachment B). 
-4. Additions have been made to the list of statutory and other requirements and Administration policies that 
+4. Additions have been made to the get_list of statutory and other requirements and Administration policies that
 should be taken into account (section 7h). 
 5. orms of clearance advice given by OMB are set forth and explained (section 8(b) and Attachment C). 
 6. Previous Attachments B, C, and D have been deleted. 
@@ -155,12 +155,12 @@ on policy-level decisions within the agency and should take into account the Pre
 known legislative, budgetary, and other relevant policies. Agencies' proposed legislative 
 programs should identify those items of sufficient importance to be included in the 
 President's legislative program. 
-(2) A separate list of legislative proposals under active consideration in the agency that 
+(2) A separate get_list of legislative proposals under active consideration in the agency that
 are not yet ready for inclusion in its proposed legislative program. For each item in this 
-list, the agency should indicate when it expects to reach a policy-level decision and, 
+get_list, the agency should indicate when it expects to reach a policy-level decision and,
 specifically, whether it expects to propose the item in time for its consideration for 
 inclusion in the annual budget under preparation. 
-(3) A separate list of all laws or provisions of law affecting an agency that will expire 
+(3) A separate get_list of all laws or provisions of law affecting an agency that will expire
 between the date the program is submitted to OMB and the end of the two following 
 calendar years, whether or not the agency plans to propose their extension. 
 (4) All items in the submissions that are proposed, or expected to be proposed, for 
@@ -453,7 +453,7 @@ Those items that the agency believes are of sufficient importance to be included
 legislative program and given specific endorsement by him in one of the regular annual messages, 
 such as the budget message, or in a special message. 
 PART II -- ALL OTHER PROPOSALS 
-2. Within each Part, agencies should list the items in order of relative priority. Each item of proposed 
+2. Within each Part, agencies should get_list the items in order of relative priority. Each item of proposed
 legislation should be given a separate number for purposes of ready identification, using a numbering 
 system which identifies the Congress; e.g., Agriculture, 96-12. 
 3. With respect to each item, agencies should provide the following information: 

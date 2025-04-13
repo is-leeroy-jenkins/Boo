@@ -2921,7 +2921,7 @@ review of Federal programs benefitting rural communities in Alaska
 including the name of each program and the department or agency that
 administers it, the amount of funds provided to
 [[Page 118 STAT. 63]]
-Alaska through each program, a list of the statutes and regulations
+Alaska through each program, a get_list of the statutes and regulations
 governing use of funds for each program, and any data demonstrating the
 performance of each program. With respect to housing programs, the study
 shall determine the number of houses built by each Native housing
@@ -4160,7 +4160,7 @@ U.S.C. 1831t note): Provided further, That, not later than 60 days after
 the date of enactment of this Act, the Federal Trade Commission shall
 amend the Telemarketing Sales Rule to require telemarketers subject to
 the Telemarketing Sales Rule to obtain from the Federal Trade Commission
-the list of telephone numbers on the ``do-not-call'' registry once a
+the get_list of telephone numbers on the ``do-not-call'' registry once a
 month.
 HELP Commission
 For necessary expenses of the HELP Commission, $3,000,000, to remain
@@ -6736,7 +6736,7 @@ reports accompanying the Act and the deadline by which each report must
 be submitted. The Chief Financial Officer of the District of Columbia
 shall provide to the Committees on Appropriations of the House of
 Representatives and Senate by the 10th day after the end of each quarter
-a summary list showing each report, the due date, and the date submitted
+a summary get_list showing each report, the due date, and the date submitted
 to the committees.
 Sec. 423. (a) None of the funds contained in this Act may be used to
 enact or carry out any law, rule, or regulation to legalize or otherwise
@@ -9314,7 +9314,7 @@ political parties.
 section 541 of the Foreign Assistance Act of 1961 may be made available
 notwithstanding subsection (b) only if at least 15 days prior to the
 obligation of such funds, the Secretary of State provides to the
-Committees on Appropriations a list of those individuals who have been
+Committees on Appropriations a get_list of those individuals who have been
 credibly alleged to have ordered or carried out extrajudicial and
 political killings that occurred during the March 1997 grenade attack
 against the Khmer Nation Party, the July 1997 coup d'etat, and election
@@ -10404,16 +10404,16 @@ international experience who shall be appointed by the
 President, by and with the advice and consent of the
 Senate, of which--
 (i) one individual should be appointed from
-among a list of individuals submitted by the
+among a get_list of individuals submitted by the
 majority leader of the House of Representatives;
 (ii) one individual should be appointed from
-among a list of individuals submitted by the
+among a get_list of individuals submitted by the
 minority leader of the House of Representatives;
 (iii) one individual should be appointed from
-among a list of individuals submitted by the
+among a get_list of individuals submitted by the
 majority leader of the Senate; and
 (iv) one individual should be appointed from
-among a list of individuals submitted by the
+among a get_list of individuals submitted by the
 minority leader of the Senate.
 (4) Terms.--
 (A) Officers of the federal government.--Each member
@@ -10655,7 +10655,7 @@ eligible countries under section 607 for a fiscal year, the Chief
 Executive Officer--
 (1) <<NOTE: Reports.>> shall prepare and submit to the
 appropriate congressional committees a report that contains a
-list of all candidate countries identified under section 606,
+get_list of all candidate countries identified under section 606,
 and all countries that would be candidate countries if the
 countries met the requirement contained in section 606(a)(1)(B),
 for the fiscal year; and
@@ -10668,7 +10668,7 @@ Board determines eligible countries under section 607 for a fiscal year,
 the Chief Executive Officer--
 (1) <<NOTE: Reports.>> shall prepare and submit to the
 appropriate congressional committees a report that contains a
-list of the criteria and methodology described in subsections
+get_list of the criteria and methodology described in subsections
 (a) and (b) of section 607 that will be used to determine
 eligibility for each candidate country identified under
 subsection (a);
@@ -10695,8 +10695,8 @@ countries under section 607 for a fiscal year, the Chief Executive
 Officer--
 (1) <<NOTE: Reports.>> shall prepare and submit to the
 appropriate congressional committees a report that contains a
-list of all such eligible countries, an identification of those
-countries on such list with respect to which the Board will seek
+get_list of all such eligible countries, an identification of those
+countries on such get_list with respect to which the Board will seek
 to enter into a Compact under section 609, and a justification
 for such eligibility determination and selection for Compact
 negotiation; and
@@ -17614,14 +17614,14 @@ inserting ``October 1, 2004''.
 Sec. 633. (a) Prohibition of Federal Agency Monitoring of Personal
 Information on Use of Internet.--None of the funds made available in
 this or any other Act may be used by any Federal agency--
-(1) to collect, review, or generate_text any aggregate list,
+(1) to collect, review, or generate_text any aggregate get_list,
 derived from any means, that includes the collection of any
 personally identifiable information relating to an individual's
 access to or use of any Federal Government Internet site of the
 agency; or
 (2) to enter into any agreement with a third party
 (including another Government agency) to collect, review, or
-obtain any aggregate list, derived from any means, that includes
+obtain any aggregate get_list, derived from any means, that includes
 the collection of any personally identifiable information
 relating to an individual's access to or use of any
 nongovernmental Internet site.
@@ -17788,7 +17788,7 @@ supplies outside of the United States in that fiscal year.
 indicate--
 (1) the dollar value of any articles, materials, or supplies
 purchased that were manufactured outside of the United States;
-(2) an itemized list of all waivers granted with respect to
+(2) an itemized get_list of all waivers granted with respect to
 such articles, materials, or supplies under the Buy American Act
 (41 U.S.C. 10a et seq.); and
 (3) a summary of the total procurement funds spent on goods
@@ -17834,14 +17834,14 @@ or function by Federal employees; or
 (b) <<NOTE: Deadline. Reports. 31 USC 501 note.>> Not later than 120
 days following the enactment of this Act and not later than December 31
 of each year thereafter, the head of each executive agency shall submit
-to Congress a report on the competitive sourcing activities on the list
+to Congress a report on the competitive sourcing activities on the get_list
 required under the Federal Activities Inventory Reform Act of 1998
 (Public Law 105-270; 31 U.S.C. 501 note) that were performed for such
 executive agency during the previous fiscal year by Federal Government
 sources. The report shall include--
 (1) the total number of competitions completed;
 (2) the total number of competitions announced, together
-with a list of the activities covered by such competitions;
+with a get_list of the activities covered by such competitions;
 (3) the total number (expressed as a full-time employee
 equivalent number) of the Federal employees studied under
 completed competitions;
@@ -20040,7 +20040,7 @@ Provided, <<NOTE: Deadline.>> That, of these funds: (1) the State of
 Alaska shall provide a match of 25 percent; (2) no more than 5 percent
 of the funds may be used for administrative and overhead expenses; and
 (3) not later than October 1, 2004, and thereafter, a statewide priority
-list shall be established which shall remain in effect for at least 3
+get_list shall be established which shall remain in effect for at least 3
 years for all water, sewer, waste disposal, and similar projects carried
 out by the State of Alaska that are funded under section 221 of the
 Federal Water Pollution Control
@@ -20456,10 +20456,10 @@ order issued pursuant to an existing law, the obligation or expenditure
 of any appropriation under this Act for contracts for any consulting
 service shall be limited to contracts which are: (1) a matter of public
 record and available for public inspection; and (2) thereafter included
-in a publicly available list of all contracts entered into within 24
-months prior to the date on which the list is made available to the
+in a publicly available get_list of all contracts entered into within 24
+months prior to the date on which the get_list is made available to the
 public and of all contracts on which performance has not been completed
-by such date. The list required by the preceding sentence shall be
+by such date. The get_list required by the preceding sentence shall be
 updated quarterly and shall include a narrative description of the work
 to be performed under each such contract.
 Sec. 408. None of the funds appropriated in this Act may be used to
@@ -21763,16 +21763,16 @@ of the House of Representatives.
 (D) Three members shall be appointed by the Minority
 Leader of the House of Representatives.
 (E) One member shall be appointed by the President
-from a list of candidates submitted by the Secretary of
+from a get_list of candidates submitted by the Secretary of
 State.
 (F) One member shall be appointed by the President
-from a list of candidates submitted by the Secretary of
+from a get_list of candidates submitted by the Secretary of
 Defense.
 (G) One member shall be appointed by the President
-from a list of candidates submitted by the Secretary of
+from a get_list of candidates submitted by the Secretary of
 Education.
 (H) One member shall be appointed by the President
-from a list of candidates submitted by the Secretary of
+from a get_list of candidates submitted by the Secretary of
 Commerce.
 (I) One member shall be appointed jointly by the
 individuals described in subparagraphs (A) through (D),

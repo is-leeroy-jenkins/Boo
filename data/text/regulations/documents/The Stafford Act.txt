@@ -6574,7 +6574,7 @@ Nation that were examined for the
 purposes of that review;
  (C) the national homeland security 
 strategy, including a prioritized 
-list of the critical homeland security 
+get_list of the critical homeland security
 missions of the Nation;
  (D) a description of the interagency 
 cooperation, preparedness 
@@ -6820,7 +6820,7 @@ of such grant, and every 12 months
 thereafter until all funds provided under 
 such grant are expended, submit a 
 report to the Secretary that contains a 
-list of all expenditures made by such 
+get_list of all expenditures made by such
 State or local government using funds 
 from such grant.
  526. Integrated Public Alert and 
@@ -7474,7 +7474,7 @@ waters;
  (II) that is located within 10 
 miles of a system or asset included 
 on the prioritized critical 
-infrastructure list established 
+infrastructure get_list established
 under section 124l(a)(2) 
 of this title or has such a system 
 or asset within its territory;
@@ -8438,7 +8438,7 @@ under section 321a of this title and
 section 748 of this title;
  (3) protecting a system or asset included 
 on the prioritized critical 
-infrastructure list established under 
+infrastructure get_list established under
 section 124l(a)(2) of this title;
  (4) purchasing, upgrading, storing, 
 or maintaining equipment, including 
@@ -8762,7 +8762,7 @@ natural disasters, acts of terrorism,
 and other man-made disasters, shall 
 jointly
  (A) compile a comprehensive 
-list of Federal grant programs for 
+get_list of Federal grant programs for
 State, local, and tribal governments 
 for preventing, preparing 
 for, protecting against, and responding 
@@ -9165,19 +9165,19 @@ the Administrator on State, local,
 and tribal governments in connection 
 with the awarding of grants, 
 including
- (A) a list of each discrete item of 
+ (A) a get_list of each discrete item of
 data requested by the Administrator 
 from grant recipients as part of 
 the process of administering covered 
 grants;
  (B) identification of the items 
-of data from the list described 
+of data from the get_list described
 in subparagraph (A) that are required 
 to be submitted by grant 
 recipients on multiple occasions 
 or to multiple systems; and
  (C) identification of the items 
-of data from the list described 
+of data from the get_list described
 in subparagraph (A) that are not 
 necessary to be collected in order 
 for the Administrator to effectively 
@@ -10028,10 +10028,10 @@ to respond to all hazards, including
 natural disasters, acts of 
 terrorism, and other man-made 
 disasters;
- (2) a list of personnel credentialed in 
+ (2) a get_list of personnel credentialed in
 accordance with section 320 of this 
 title;
- (3) a list of resources typed in accordance 
+ (3) a get_list of resources typed in accordance
 with section 320 of this title; 
 and
  (4) emergency communications assets 
@@ -10042,7 +10042,7 @@ the private sector.
 (c) Department of Defense
 The Administrator, in coordination 
 with the Secretary of Defense, shall 
-develop a list of organizations and 
+develop a get_list of organizations and
 functions within the Department of 
 Defense that may be used, pursuant 
 to the authority provided under the 
@@ -10126,7 +10126,7 @@ made disasters nationally and
 in State, local, and tribal jurisdictions; 
 and
  (F) a discussion of whether the 
-list of credentialed personnel of 
+get_list of credentialed personnel of
 the Agency described in section 
 751(b)(2) of this title
  (i) complies with the strategic 

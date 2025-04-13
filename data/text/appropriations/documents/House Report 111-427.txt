@@ -5881,7 +5881,7 @@ Part VI of the Financial Disclosure Report required Judge
 Porteous to report liabilities by means of a letter code, the
 pertinent categories being ``J'' for liabilities of $15,000 or
 less, and ``K'' for amounts between $15,001 and $50,000. The
-filer is required to list all liabilities to credit card
+filer is required to get_list all liabilities to credit card
 companies where the balance exceeded $10,000 at the close of
 the calendar year for which the Report was filed.\431\
 ---------------------------------------------------------------------------
@@ -6249,7 +6249,7 @@ under a False Name
 On March 28, 2001, Judge Porteous filed a Petition for
 Chapter 13 bankruptcy (the ``Initial Petition'') in the United
 States Bankruptcy Court for the Eastern District of
-Louisiana.\461\ While the Initial Petition contained a list of
+Louisiana.\461\ While the Initial Petition contained a get_list of
 creditors, it did not contain financial schedules or other
 detailed financial information. Those documents were
 subsequently filed on April 9, 2001.
@@ -6345,7 +6345,7 @@ Schedules, and Statement of Financial Affairs
 Judge Porteous amended his Initial Petition on April 9,
 2001, 2 weeks after it was filed, correcting the false names
 and listing his actual residential address in Metairie,
-Louisiana.\470\ The Amended Petition did not list Judge
+Louisiana.\470\ The Amended Petition did not get_list Judge
 Porteous's newly acquired PO Box under either the ``street
 address'' field or the ``mailing address'' field.\471\
 ---------------------------------------------------------------------------
@@ -6400,7 +6400,7 @@ refunds.''\476\ In response to Category 17, the box ``none'' is
 checked.\477\
 ---------------------------------------------------------------------------
 \476\The instructions for completing Category 17 on Schedule B
-state that ``Item 17 request [sic] the debtor to list all monies owed
+state that ``Item 17 request [sic] the debtor to get_list all monies owed
 to the debtor . . . and specifically, any expected tax refunds.''
 Instructions for Completing Official Form 6, Schedules at 62 (Ex. 345).
 \477\Bankruptcy Schedules at SC00096 (Ex. 127). During his Fifth
@@ -6478,14 +6478,14 @@ tax refund.
 Further, Lightfoot testified he viewed the existence of the
 refund as significant and he stated that if he had known about
 it, he would have disclosed it to the bankruptcy trustee:
-I would have amended this schedule to list it, had it
+I would have amended this schedule to get_list it, had it
 been absent, and probably informed the trustee,
 particularly if the meeting of creditors hadn't been
 held yet. I would have mentioned it.\484\
 ---------------------------------------------------------------------------
 \484\Lightfoot TF Hrg. II at 47. See also Lightfoot Dep. at 18 (``I
 would have felt the requirement, the obligation on my part to amend the
-schedules, to list an expected tax refund as the questions read, and I
+schedules, to get_list an expected tax refund as the questions read, and I
 would have informed the trustee at the upcoming meeting of
 creditors.'') (Ex. 123).
 According to Lightfoot, a tax refund is an asset and ``[i]f you
@@ -6512,7 +6512,7 @@ b. Omitted and Undervalued Financial Accounts
 The Bankruptcy Schedules were also inaccurate as to two of
 Judge Porteous's accounts.
 Question 2 on Schedule B (``Personal Property'') requires
-the debtor to list, among other things, ``checking, savings or
+the debtor to get_list, among other things, ``checking, savings or
 other financial accounts.'' In response, the current market
 value of Judge Porteous's Bank One Checking Account--into which
 his monthly salary was deposited--was listed as $100.\486\
@@ -6601,7 +6601,7 @@ $2,055.43.
 ---------------------------------------------------------------------------
 c. Understated Income
 Schedule I of the Bankruptcy Schedules, ``Current Income of
-Individual Debtor(s),'' required Judge Porteous to list his
+Individual Debtor(s),'' required Judge Porteous to get_list his
 ``current monthly gross wages, salary, and commissions (pro
 rate if not paid monthly).'' On that schedule, Judge Porteous's
 monthly gross income was listed as $7,531.52, the amount that
@@ -6680,13 +6680,13 @@ that he filed the bankruptcy petition?
 A. LNo.
 Q. LShould Judge Porteous have told you about those
 sorts of gambling debts?
-A. LYes, so I could list them.\496\
+A. LYes, so I could get_list them.\496\
 ---------------------------------------------------------------------------
 \496\Lightfoot TF Hrg. II at 43. It was clear to Lightfoot that a
 marker was a form of debt that had to be reported. He explained, ``I
 have had some cases involving gambling, people who had markers, and, of
 course, they are a civil liability. It is a debt like any other debt in
-that sense. So it has to be listed. I would have listed and do list
+that sense. So it has to be listed. I would have listed and do get_list
 anybody who has a casino-type debt.'' Lightfoot TF Hrg. II at 53.
 Gulfport collected on these markers on or about April 5-6,
 2001.\497\
@@ -6716,7 +6716,7 @@ Judge Porteous to ``[l]ist all payments on loans, installment
 purchases of goods or services, and other debts, aggregating
 more than $600 to any creditor, made within 90 days immediately
 preceding the commencement of this case.'' The question
-thereafter provided fields for the debtor to list the name and
+thereafter provided fields for the debtor to get_list the name and
 address of any creditor, the dates of payments, the amount
 paid, and the amount still owing.\499\
 ---------------------------------------------------------------------------
@@ -7879,14 +7879,14 @@ other Federal judges.
 Judge Porteous's courtroom clerk, Richard Windhorst,
 testified that he had previously clerked for District Court
 Judge Morey L. Sear, who provided Windhorst a ``conflict
-list.'' If a company on the list was a party in a case assigned
+get_list.'' If a company on the get_list was a party in a case assigned
 to Judge Sear, Windhorst was instructed to call the clerk's
 office and have the case reassigned to another judge. Judge
-Richard Haik maintained a ``recusal list'' for the same
+Richard Haik maintained a ``recusal get_list'' for the same
 purpose. As described later in this section, Judge Haik made
-sure to include on that list companies which provided him with
+sure to include on that get_list companies which provided him with
 hunting trips.\579\ In contrast, Judge Porteous had no such
-list and had no such procedures. He recused himself only on
+get_list and had no such procedures. He recused himself only on
 matters on which his sons, who were attorneys, were
 involved.\580\
 ---------------------------------------------------------------------------

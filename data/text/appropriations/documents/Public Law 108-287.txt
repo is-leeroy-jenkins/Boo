@@ -1061,7 +1061,7 @@ administrative regulation, requirement, or policy to the
 contrary shall have full authority to enter into a contract for
 the performance of any commercial or industrial type function of
 the Department of Defense that--
-(A) is included on the procurement list established
+(A) is included on the procurement get_list established
 pursuant to section 2 of the Javits-Wagner-O'Day Act (41
 U.S.C. 47);
 (B) is planned to be converted to performance by a
@@ -1419,7 +1419,7 @@ Shield Program shall resolve any conflicts among requests of Indian
 tribes for housing units under subsection (a) before submitting requests
 to the Secretary of the Air Force under subsection (b).
 (d) Indian Tribe Defined.--In this section, the term ``Indian
-tribe'' means any recognized Indian tribe included on the current list
+tribe'' means any recognized Indian tribe included on the current get_list
 published by the Secretary of the Interior under section 104 of the
 Federally Recognized Indian Tribe Act of 1994 (Public Law 103-454; 108
 Stat. 4792; 25 U.S.C. 479a-1).
@@ -2707,7 +2707,7 @@ DOD policies. This report shall address: (1) the types and quantities of
 munitions systems that employ cluster munitions presently in DOD's
 inventory that do and do not meet the 1-percent dud rate policy; (2) DOD
 efforts to ensure the development of cluster munitions that meet the 1-
-percent dud rate policy, including a list of programs funded in fiscal
+percent dud rate policy, including a get_list of programs funded in fiscal
 year 2005; and (3) a schedule describing the DOD cluster munitions
 inventory profile from the present until the time this inventory will
 meet the 1-percent dud rate policy.

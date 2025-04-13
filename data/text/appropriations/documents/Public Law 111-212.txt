@@ -696,8 +696,8 @@ later than 30 days after the date of the enactment of this Act, the
 Assistant Secretary for the Transportation Security Administration shall
 issue a security directive that requires a commercial foreign air
 carrier who operates flights in and out of the United States to check
-the list of individuals that the Transportation Security Administration
-has prohibited from flying not later than 30 minutes after such list is
+the get_list of individuals that the Transportation Security Administration
+has prohibited from flying not later than 30 minutes after such get_list is
 modified and provided to such air carrier.
 (b) The requirements of subsection (a) shall not apply to commercial
 foreign air carriers that operate flights in and out of the United

@@ -2424,7 +2424,7 @@ Credit Act of 1978 (16 U.S.C. 2203) to repair damages to waterways
 and watersheds resulting from natural disasters, $104,500,000, to
 remain available until expended: Provided, That the above amount
 includes funding for eligible work identified in the Emergency
-Watershed Program Recovery Projects Unfunded list as of April
+Watershed Program Recovery Projects Unfunded get_list as of April
 Utah. 25, 2005: Provided further, That notwithstanding any other provision
 of law, the Secretary of Agriculture shall count local financial
 and technical resources, including in-kind materials and services,
@@ -2940,7 +2940,7 @@ That such expenditure plan shall include each specific project
 funded, key milestones, all funding sources for each project, details
 of annual and lifecycle costs, and projected cost savings or cost
 avoidance to be achieved by project: Provided further, That the
-expenditure plan shall include a complete list of all legacy systems
+expenditure plan shall include a complete get_list of all legacy systems
 operational as of March 1, 2003, the current operational status
 of each system, and the plans for continued operation or termination
 of each system.

@@ -169,14 +169,14 @@ made by a network station pursuant to subparagraph
 (A) shall, 90 days after commencing such secondary
 transmissions, submit to the network that owns or
 is affiliated with the network station--
-``(I) a list identifying (by name
+``(I) a get_list identifying (by name
 and address, including street or rural
 route number, city, State, and zip code)
 all subscribers to which the satellite
 carrier makes secondary transmissions of
 that primary transmission to subscribers
 in unserved households; and
-``(II) a separate list, aggregated
+``(II) a separate get_list, aggregated
 by designated market area (as defined in
 section 122(j)) (by name and address,
 including street or rural route number,
@@ -189,14 +189,14 @@ significantly viewed stations.
 the initial lists under clause (i), on the 15th of
 each month, the satellite carrier shall submit to
 the network--
-``(I) a list identifying (by name
+``(I) a get_list identifying (by name
 and address, including street or rural
 route number, city, State, and zip code)
 any persons who have been added or
 dropped as subscribers under clause
 (i)(I) since the last submission under
 clause (i); and
-``(II) a separate list, aggregated
+``(II) a separate get_list, aggregated
 by designated market area (by name and
 street address, including street or
 rural route number, city, State, and zip
@@ -337,7 +337,7 @@ unless the satellite carrier, within 60
 days after the date of the enactment of
 the Satellite Home Viewer Extension and
 Reauthorization Act of 2004, submits to
-that television network a list,
+that television network a get_list,
 aggregated by designated market area (as
 defined in section 122(j)(2)(C)), that--
 ``(aa) identifies that
@@ -389,7 +389,7 @@ station affiliated with the same television
 network if the subscriber's satellite
 [[Page 118 STAT. 3399]]
 carrier, not later than March 1, 2005, submits to
-that television network a list, aggregated by
+that television network a get_list, aggregated by
 designated market area (as defined in section
 122(j)(2)(C)), that identifies that subscriber by
 name and address (street or rural route number,
@@ -418,7 +418,7 @@ station; and
 ``(II) <<NOTE: Deadline.>> the
 satellite carrier, within 60 days after
 such date, submits to each television
-network a list that identifies each
+network a get_list that identifies each
 subscriber in that local market provided
 such an analog signal by name and
 address (street or rural route number,
@@ -1099,7 +1099,7 @@ significantly viewed station to such subscriber.
 ``(A) <<NOTE: Deadline.>> within 60 days after the
 date of enactment of the Satellite Home Viewer Extension
 and Reauthorization Act of 2004--
-``(i) publish a list of the stations that are
+``(i) publish a get_list of the stations that are
 eligible for retransmission under subsection
 (a)(1) and the communities in which such stations
 are eligible for such retransmission; and
@@ -1108,15 +1108,15 @@ implement this section by publication of a notice
 of proposed rulemaking;
 ``(B) adopt rules pursuant to such rulemaking within
 1 year after such date of enactment.
-``(2) Public availability of list.--The Commission shall
+``(2) Public availability of get_list.--The Commission shall
 make readily available to the public in electronic form, on the
 Internet website of the Commission or other comparable
 [[Page 118 STAT. 3411]]
-facility, a list of the stations that are eligible for
+facility, a get_list of the stations that are eligible for
 retransmission under subsection (a) and the communities in which
 such stations are eligible for
 such <<NOTE: Deadline.>> retransmission. The Commission shall
-update such list within 10 business days after the date on which
+update such get_list within 10 business days after the date on which
 the Commission issues an order making any modification of such
 stations and communities.
 ``(3) Modifications.--In addition to cable operators and
@@ -1477,7 +1477,7 @@ unless such carrier, within 60 days
 after the date of the enactment of the
 Satellite Home Viewer Extension and
 Reauthorization Act of 2004, submits to
-that television network the list and
+that television network the get_list and
 statement required by subparagraph
 (F)(i).
 [[Page 118 STAT. 3417]]
@@ -1509,7 +1509,7 @@ provide the secondary transmissions of the distant
 analog signal of a station affiliate with the same
 network to that subscriber if the subscriber's
 satellite carrier, not later than March 1, 2005,
-submits to that television network the list and
+submits to that television network the get_list and
 statement required by subparagraph (F)(i).
 ``(ii) In a case in which the satellite
 carrier does not make available to that
@@ -1528,7 +1528,7 @@ the local market of such local network
 station; and
 ``(II) the satellite carrier, within
 60 days after such date, submits to each
-television network the list and
+television network the get_list and
 statement required by subparagraph
 (F)(ii).
 ``(C) Future applicability.--A satellite carrier may
@@ -1870,7 +1870,7 @@ satellite carrier that provides a distant signal
 of a network station to a subscriber pursuant to
 subparagraph (A) or (B)(i) of this paragraph shall
 submit to each network--
-``(I) a list, aggregated by
+``(I) a get_list, aggregated by
 designated market area, identifying each
 subscriber provided such a signal by--
 ``(aa) name;
@@ -1896,7 +1896,7 @@ carrier that provides a distant signal of a
 network station to a subscriber pursuant to
 subparagraph (B)(ii) of this paragraph shall
 submit to each network--
-``(I) a list identifying each
+``(I) a get_list identifying each
 subscriber in that local market provided
 such a signal by--
 ``(aa) name;

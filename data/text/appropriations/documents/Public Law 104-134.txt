@@ -1392,7 +1392,7 @@ operations, research, and facilities
 For necessary expenses of activities authorized by law for the
 National Oceanic and Atmospheric Administration, including
 acquisition, <<NOTE: 33 USC 851.>> maintenance, operation, and hire of
-aircraft; not to exceed 358 commissioned officers on the active list;
+aircraft; not to exceed 358 commissioned officers on the active get_list;
 grants, contracts, or other payments to nonprofit organizations for the
 purposes of conducting activities pursuant to cooperative agreements;
 and alteration, modernization, and relocation of facilities as
@@ -2833,7 +2833,7 @@ State or local legislative body or committee, or a member thereof,
 regarding funding for the recipient, including a pending or proposed
 legislative or agency proposal to fund such recipient.
 (c) Not later than 30 days after the date of enactment of this Act,
-the Legal Services Corporation shall promulgate a suggested list of
+the Legal Services Corporation shall promulgate a suggested get_list of
 priorities that boards of directors may use in setting priorities under
 subsection (a)(9).
 (d)(1) The Legal Services Corporation shall not accept any non-
@@ -3503,12 +3503,12 @@ warrant the appointment.
 ``(2) Appointment.--(A) If the court determines that the
 appointment of a special master is necessary, the court shall
 request that the defendant institution and the plaintiff each
-submit a list of not more than 5 persons to serve as a special
+submit a get_list of not more than 5 persons to serve as a special
 master.
 ``(B) Each party shall have the opportunity to remove up to
-3 persons from the opposing party's list.
+3 persons from the opposing party's get_list.
 ``(C) The court shall select the master from the persons
-remaining on the list after the operation of subparagraph (B).
+remaining on the get_list after the operation of subparagraph (B).
 ``(3) Interlocutory appeal.--Any party shall have the right
 to an interlocutory appeal of the judge's selection of the
 special master under this subsection, on the ground of
@@ -4778,7 +4778,7 @@ bargaining units to reduce employee compensation;
 (3) actions to apportion the spending reductions anticipated
 by the directives of this Act to the executive for unallocated
 reductions; and
-(4) a list of any position that is backfilled including
+(4) a get_list of any position that is backfilled including
 description, title, and salary of the position.
 Monthly Reporting Requirements--Board of Education
 Sec. 138. The Board of Education shall submit to the Congress,
@@ -4794,11 +4794,11 @@ class, and for all funds, including capital financing.
 current pay period broken out on the basis of control center,
 responsibility center, and agency reporting code within each
 responsibility center, for all funds, including capital funds;
-(3) a list of each account for which spending is frozen and
+(3) a get_list of each account for which spending is frozen and
 the amount of funds frozen, broken out by control center,
 responsibility center, detailed object, and agency reporting
 code, and for all funding sources;
-(4) a list of all active contracts in excess of $10,000
+(4) a get_list of all active contracts in excess of $10,000
 annually, which contains; the name of each contractor; the
 budget to which the contract is charged broken out on the basis
 of control center, responsibility center, and agency reporting
@@ -4831,11 +4831,11 @@ funds, including capital financing;
 most current pay period broken out on the basis of control
 center, responsibility center, for all funds, including capital
 funds;
-(3) a list of each account for which spending is frozen and
+(3) a get_list of each account for which spending is frozen and
 the amount of funds frozen, broken out by control center,
 responsibility center, detailed object, and for all funding
 sources;
-(4) a list of all active contracts in excess of $10,000
+(4) a get_list of all active contracts in excess of $10,000
 annually, which contains; the name of each contractor; the
 budget to which the contract is charged broken out on the basis
 of control center and responsibility center, and contract
@@ -5002,7 +5002,7 @@ the Senate a report with respect to the employees on the capital project
 budget for the previous quarter.
 (b) Each report submitted pursuant to subsection (a) of this section
 shall include the following information--
-(1) a list of all employees by position, title, grade and
+(1) a get_list of all employees by position, title, grade and
 step;
 (2) a job description, including the capital project for
 which each employee is working;
@@ -6393,7 +6393,7 @@ financial audits issued by the Comptroller General
 of the United States.
 (x) A report on school staff indicating the
 qualifications and responsibilities of such staff.
-(xi) A list of all donors and grantors that
+(xi) A get_list of all donors and grantors that
 have contributed monetary or in-kind donations
 having a value equal to or exceeding $500 during
 the year that is the subject of the report.
@@ -6797,9 +6797,9 @@ submit a report to the Mayor, the District of Columbia Council, the
 Board of Education, the Secretary of Education, the appropriate
 congressional committees, and the Consensus Commission that includes the
 following information:
-(1) A list of the members of the eligible chartering
+(1) A get_list of the members of the eligible chartering
 authority and the addresses of such members.
-(2) A list of the dates and places of each meeting of the
+(2) A get_list of the dates and places of each meeting of the
 eligible chartering authority during the year preceding the
 report.
 [[Page 110 STAT. 1321-129]]
@@ -6987,10 +6987,10 @@ SEC. 2214. PUBLIC CHARTER SCHOOL BOARD.
 Columbia Government a Public Charter School Board (in this
 section referred to as the ``Board'').
 (2) Membership.--The Secretary of Education shall present
-the Mayor a list of 15 individuals the Secretary determines are
+the Mayor a get_list of 15 individuals the Secretary determines are
 qualified to serve on the Board. The Mayor, in consultation with
 the District of Columbia Council, shall appoint 7 individuals
-from the list to serve on the Board. The Secretary of Education
+from the get_list to serve on the Board. The Secretary of Education
 shall recommend, and the Mayor shall appoint, members to serve
 on the Board so that a knowledge of each of the following areas
 is represented on the Board:
@@ -7009,10 +7009,10 @@ involving parents and other members of the community in
 individual schools.
 (3) Vacancies.--Any time there is a vacancy in the
 membership of the Board, the Secretary of Education shall
-present the Mayor a list of 3 individuals the Secretary
+present the Mayor a get_list of 3 individuals the Secretary
 determines are qualified to serve on the Board. The Mayor, in
 consultation with the District of Columbia Council, shall
-appoint 1 individual from the list to serve on the Board. The
+appoint 1 individual from the get_list to serve on the Board. The
 Secretary shall recommend and the Mayor shall appoint, such
 member of the Board taking into consideration the criteria
 described in paragraph (2). Any member appointed to fill a
@@ -7506,7 +7506,7 @@ developing a systemic and comprehensive facilities
 revitalization program, for the repair and improvement of
 District of Columbia public school facilities, which program
 shall--
-(A) include a list of facilities to be repaired and
+(A) include a get_list of facilities to be repaired and
 improved in a recommended order of priority;
 (B) provide the repair and improvement required to
 support modern technology; and
@@ -8079,10 +8079,10 @@ be appointed in accordance with paragraph (2).
 (2) <<NOTE: President.>> Membership.--The Consensus
 Commission shall consist of the following members:
 (A) 1 member to be appointed by the President chosen
-from a list of 3 proposed members submitted by the
+from a get_list of 3 proposed members submitted by the
 Majority Leader of the Senate.
 (B) 1 member to be appointed by the President chosen
-from a list of 3 proposed members submitted by the
+from a get_list of 3 proposed members submitted by the
 Speaker of the House of Representatives.
 [[Page 110 STAT. 1321-152]]
 (C) 2 members to be appointed by the President, of
@@ -15640,11 +15640,11 @@ available for the Agency for Toxic Substances and Disease Registry to
 issue in excess of 40 toxicological profiles pursuant to section 104(i)
 of CERCLA during fiscal year 1996: Provided further, That none of the
 funds made available under this heading may be used by the Environmental
-Protection Agency to propose for listing or to list any additional
+Protection Agency to propose for listing or to get_list any additional
 facilities on the National Priorities List established by section 105 of
 the Comprehensive Environmental Response, Compensation and Liability Act
 (CERCLA), as amended (42 U.S.C. 9605), unless the Administrator receives
-a written request to propose for listing or to list a facility from the
+a written request to propose for listing or to get_list a facility from the
 Governor of the State in which the facility is located, or unless
 legislation to reauthorize CERCLA is enacted.
 leaking underground storage tank trust fund
@@ -16195,10 +16195,10 @@ order issued pursuant to an existing law, the obligation or expenditure
 of any appropriation under this Act for contracts for any consulting
 service shall be limited to contracts which are (1) a matter of public
 record and available for public inspection, and (2) thereafter included
-in a publicly available list of all contracts entered into within
-twenty-four months prior to the date on which the list is made available
+in a publicly available get_list of all contracts entered into within
+twenty-four months prior to the date on which the get_list is made available
 to the public and of all contracts on which performance has not been
-completed by such date. <<NOTE: Records.>> The list required by the
+completed by such date. <<NOTE: Records.>> The get_list required by the
 preceding sentence shall be updated quarterly and shall include a
 narrative description of the work to be performed under each such
 contract.
@@ -16527,7 +16527,7 @@ European Free Trade Association) if the drug or device is
 marketed in that country or the drug or device is authorized for
 general marketing in the European Economic Area.
 ``(B) The Secretary may designate an additional country to be
-included in the list of countries described in clauses (i) and
+included in the get_list of countries described in clauses (i) and
 [[Page 110 STAT. 1321-316]]
 (ii) of subparagraph (A) if all of the following requirements are met in
 such country:
@@ -16566,7 +16566,7 @@ The Secretary shall not delegate the authority granted under this
 subparagraph.
 ``(C) An appropriate country official, manufacturer, or exporter may
 request the Secretary to take action under subparagraph (B) to designate
-an additional country or countries to be added to the list of countries
+an additional country or countries to be added to the get_list of countries
 described in clauses (i) and (ii) of subparagraph (A) by submitting
 documentation to the Secretary in support of such designation. Any
 person other than a country requesting such designation shall include,

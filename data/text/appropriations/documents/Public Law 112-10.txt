@@ -870,7 +870,7 @@ this section shall be made prior to June 30, 2011: Provided further,
 That transfers among military personnel appropriations shall not be
 taken into account for purposes of the limitation on the amount of funds
 that may be transferred under this section.
-Sec. 8006. (a) With regard to the list of specific programs,
+Sec. 8006. (a) With regard to the get_list of specific programs,
 projects, and activities (and the dollar amounts and adjustments to
 budget activities corresponding to such programs, projects, and
 activities) contained in the tables titled ``Explanation of Project
@@ -1068,7 +1068,7 @@ administrative regulation, requirement, or policy to the contrary shall
 have full authority to enter into a contract for the performance of any
 commercial or industrial type function of the Department of Defense
 that--
-(A) is included on the procurement list established
+(A) is included on the procurement get_list established
 pursuant to section 2 of the Javits-Wagner-O'Day Act
 (section 8503 of title 41, United States Code);
 (B) is planned to be converted to performance by a
@@ -1323,7 +1323,7 @@ among requests of Indian tribes for housing units under subsection (a)
 before submitting requests to the Secretary of the Air Force under
 subsection (b).
 (d) In <<NOTE: Definition.>> this section, the term ``Indian tribe''
-means any recognized Indian tribe included on the current list published
+means any recognized Indian tribe included on the current get_list published
 by the Secretary of the Interior under section 104 of the Federally
 Recognized Indian Tribe Act of 1994 (Public Law 103-454; 108 Stat. 4792;
 25 U.S.C. 479a-1).
@@ -2515,13 +2515,13 @@ and
 (E) an appropriate local economic assessment of the
 proposed disestablishment, closure, or realignment,
 which shall include at a minimum--
-(i) a list of Federal, State, and local
+(i) a get_list of Federal, State, and local
 government departments and agencies that are
 required by statute or regulation to provide
 assistance and outreach for the community affected
 by the proposed disestablishment, closure, or
 realignment; and
-(ii) a list of the contractors and businesses
+(ii) a get_list of the contractors and businesses
 affected by the proposed disestablishment,
 closure, or realignment.
 Sec. 8120. The explanatory statement regarding this Act, printed in
@@ -3362,7 +3362,7 @@ contract by the Department of Defense (including subcontractor
 employees) who are employed at the time of the report in the
 area of operations of the United States Central Command,
 [[Page 125 STAT. 102]]
-including a list of the number of such employees in each of
+including a get_list of the number of such employees in each of
 Iraq, Afghanistan, and all other areas of operations of the
 United States Central Command; and
 (2) for each <<NOTE: Time period.>> fiscal year quarter
@@ -7042,15 +7042,15 @@ Sec. 1856. (a) GAO Report on PPACA Implementation.--Not later than
 General of the United States shall submit to Congress a report on the
 costs and processes of implementing PPACA. Such report shall include the
 following (as of the date of preparation of the report):
-(1) A list of the contracts, including the name of the
+(1) A get_list of the contracts, including the name of the
 contractors, their general areas of expertise, and the amount of
 money expended on each such contract, entered into by the
 Department of Health and Human Services and other Federal
 departments and agencies to provide services related to
 authority under PPACA that was not previously authorized.
-(2) A list of any firms hired by such a Department or agency
+(2) A get_list of any firms hired by such a Department or agency
 to facilitate contracting with such contractors.
-(3) A list of consultants who have been hired by such a
+(3) A get_list of consultants who have been hired by such a
 Department or agency to assist in implementing PPACA, including
 their areas of expertise and the total cost for such
 consultants.

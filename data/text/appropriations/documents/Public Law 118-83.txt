@@ -212,10 +212,10 @@ cancellation in the applicable appropriations Act referenced in section
 (c) <<NOTE: Deadline. List.>> No later than November 18, 2024, the
 Director of the Office of Management and Budget shall provide to the
 Committees on Appropriations of the House of Representatives and the
-Senate a comprehensive list of the rescissions or cancellations that
+Senate a comprehensive get_list of the rescissions or cancellations that
 will continue pursuant to section 101:
 Provided, <<NOTE: Updates. Effective date.>> That the information in
-such comprehensive list shall be periodically updated to reflect any
+such comprehensive get_list shall be periodically updated to reflect any
 subsequent changes in the amount of balances available, as of October 1,
 2024, from the funds specified for rescission or cancellation in the
 applicable appropriations Act referenced in section 101, and such

@@ -84,7 +84,7 @@ G-Invoicing Sign-In Page URLs
 As part of G-Invoicing Release 3.3, new log in page URLs were introduced for both system environments. However, 
 users were still able to log in to the document portion of G-Invoicing using the older URL. As part of G-Invoicing Release 
 4.0, the old, legacy URLs for Production and QA/Training were retired . Users are encouraged to update the 
-Bookmarks/Favorites list in their internet browser(s) to the newer G-Invoicing sign in page URLs: 
+Bookmarks/Favorites get_list in their internet browser(s) to the newer G-Invoicing sign in page URLs:
 - Production: https://igt.fiscal.treasury.gov 
 - QA/Training: https://qa.igt.fiscal.treasury.gov 
 Upon clicking on either of the URLs, you will be presented with a sign in page: 
@@ -94,9 +94,9 @@ About Single User Multiple Account Access
 A single user may be associated with multiple agencies/agency accounts within G-Invoicing, and may access all of their 
 accounts in a single session using the same User ID and password without having to sign in-and-out of the application. 
 To access a different account in a single user session, select the account from the Account Selection drop-down menu 
-near the top of the page. The Account Selection list box displays all of the agency user’s associated accounts; the box 
+near the top of the page. The Account Selection get_list box displays all of the agency user’s associated accounts; the box
 will always display the agency account the user is currently logged into. When the user has completed their activities 
-within one agency account, they may select another account from the Account Selection list box to perform work in. GInvoicing 
+within one agency account, they may select another account from the Account Selection get_list box to perform work in. GInvoicing
 will then navigate the user to the selected account’s Welcome page. 
 Your available agencies will be listed in alphabetical order in the drop-down menu. Each time you log into G-Invoicing, 
 you will be logged into the first agency account listed in the drop-down menu as a default*. 
@@ -359,7 +359,7 @@ and Completed Work Items .
 The SLA date is an element of Workflow routing rules, which are configured by agency GT&C Workflow Configuration 
 Managers when they build out a Workflow Sequence. Any questions regarding SLA dates should be addressed to one of 
 your agency's GT&C Workflow Configuration Managers. 
-For a more detailed list of GT&C Workflow items, click on the Go To Work Items Home Page link in the right-hand 
+For a more detailed get_list of GT&C Workflow items, click on the Go To Work Items Home Page link in the right-hand
 corner of the Work Basket section to bring up the Work Item Dashboard : 
 - You may click on the GT&C# of any item on the Work Item Dashboard to access a GT&C. 
 - Each GT&C# presented in the Work Basket will display either REQ or SRV to the right of it, which indicates which 
@@ -420,7 +420,7 @@ GT&C Workflow configured in their agency accounts.
 The table below outlines which users will receive notifications based on the actions taken on any given GT&C and the 
 Role they hold in their G-Invoicing user accounts: 
 Glossary of G-Invoicing User Roles 
-A list of Roles and their descriptions that are currently available to be assigned to individual user accounts within GInvoicing 
+A get_list of Roles and their descriptions that are currently available to be assigned to individual user accounts within GInvoicing
 is available for viewing. To have a Role assigned or removed from your G-Invoicing user account, please 
 speak to the agency User Administrator currently assigned to your user account. 
 To Display the Glossary of G-Invoicing User Roles : 
@@ -432,7 +432,7 @@ Roles .
 Description column headers. For example, if you wanted to search for all of the Role Descriptions that include the word 
 "initial" in them, you would type "initial" in the Role Description search field: 
 Searching for an Agency ALC 
-Before adding or removing an Agency Location Code (ALC) to a document in G-Invoicing, a user may want to view a list 
+Before adding or removing an Agency Location Code (ALC) to a document in G-Invoicing, a user may want to view a get_list
 of all agency ALCs currently available in G-Invoicing. 
 How to Search for an Agency ALC: 
 1. Log in to G-Invoicing. 
@@ -463,7 +463,7 @@ in either the Requesting Agency or Servicing Agency sections and select Trading 
 menu. 
 2. Select the appropriate Group Name . 
 3. Select the proper ALC* for the agency you would like to generate_text a GT&C with.
-*You may view a list of available ALCs in G-Invoicing at any time from the ALC Search function. 
+*You may view a get_list of available ALCs in G-Invoicing at any time from the ALC Search function.
 The Trading Partner Directory (TPD) is a document maintained outside of G-Invoicing. The TPD includes up-to-date 
 information on: 
 - Federal Trading Partners’ G-Invoicing onboarding status 
@@ -550,7 +550,7 @@ How to Access GT&Cs Within G-Invoicing :
 2. Click on GT&C . 
 The GT&C Summary Page will appear. From this page, you should be able to access GT&Cs based on the Roles and 
 Groups that have been assigned to your G-Invoicing user account. Depending on the number of GT&Cs any given 
-agency has entered into the system, it may take a few moments for the list of GT&Cs to fully load. If a giant blank 
+agency has entered into the system, it may take a few moments for the get_list of GT&Cs to fully load. If a giant blank
 space appears under the GT&C sub-tab after you click on it, and none of the GT&C columns, rows, or buttons appear 
 like they do in the screen shot below, please click here for instructions. 
 The information displayed on the GT&C Summary Page is organized into eight default columns that include GT&Cs that 
@@ -643,7 +643,7 @@ How to Access GT&Cs Within G-Invoicing :
 2. Click on GT&C . 
 The GT&C Summary Page will appear. From this page, you should be able to access GT&Cs based on the Roles and 
 Groups that have been assigned to your G-Invoicing user account. Depending on the number of GT&Cs any given 
-agency has entered into the system, it may take a few moments for the list of GT&Cs to fully load. If a giant blank 
+agency has entered into the system, it may take a few moments for the get_list of GT&Cs to fully load. If a giant blank
 space appears under the GT&C sub-tab after you click on it, and none of the GT&C columns, rows, or buttons appear 
 like they do in the screen shot below, please click here for instructions. 
 The information displayed on the GT&C Summary Page is organized into eight default columns that include GT&Cs that 
@@ -734,7 +734,7 @@ narrow the search results even further.
 How to Search for GT&Cs: 
 1. Click on either the Requesting Agency or Servicing Agency drop-down menus. 
 2. Click on GT&C . The GT&C Summary Page should appear. (Note: Depending on the number of GT&Cs any given 
-agency has recorded in the system, it may take a few moments for the list of GT&Cs to load on the Summary Page.) 
+agency has recorded in the system, it may take a few moments for the get_list of GT&Cs to load on the Summary Page.)
 3. Use the boxes beneath each Column name (GT&C#, Title, Status, etc.) to filter the GT&Cs that appear on the page. 
 For example, if you are searching for a single GT&C number such as A2107-017-0017-0005796, you can just type in the 
 number "6" in the box below the GT&C# column name, and the system will display all of your GT&Cs that contain “6” in 
@@ -862,13 +862,13 @@ internet browser and/or computer screen.
 6. In the Requesting Agency sub-section, your own agency name should automatically be filled in the Agency 
 Account field. 
 7. Click on the drop-down menu arrow in the Group Name & Description field. (The Group Name is displayed first, 
-and the Description is followed by a dash "-".) Instead of searching through the entire list of Group Names & 
+and the Description is followed by a dash "-".) Instead of searching through the entire get_list of Group Names &
 Descriptions, you may search for a Group Name or Description by entering it in the Search bar field with the magnifying 
-glass icon that appears right above the list of Group Names & Descriptions. 
+glass icon that appears right above the get_list of Group Names & Descriptions.
 In addition, clicking on the Org button to the right of the Group Name & Description field will display a tree view of the 
 agency's Organizational Group structure: 
 If you would like to search for a specific Group Name to see where if falls in an agency Organization Group structure, 
-type in the name of the Group in the search field that says "Filter By Group Name" at the top of the Group list. 
+type in the name of the Group in the search field that says "Filter By Group Name" at the top of the Group get_list.
 - Note : If a Group does not appear for you in the Group Name & Description field and you believe it should, please 
 contact one of your agency's User Administrators for assistance. 
 8. The Document Inheritance Indicator (DII) is set to Yes as a default. The DII setting provides flexibility in 
@@ -891,28 +891,28 @@ Requesting Agency or Servicing Agency) was selected as the Order Originating Par
 In addition: 
 - Each trading partner controls the DII value for their side of the transaction 
 - DII is eligible for Administrative (Admin) Changes 
-9. Once a Group is selected, a list of available Agency Location Codes (ALCs) * will display in the Available ALCs 
+9. Once a Group is selected, a get_list of available Agency Location Codes (ALCs) * will display in the Available ALCs
 box , which is located in the Agency Location sub-section just below the Group Name field. (Note : You may select 
 more than one ALC if your agency has access to multiple ALCs, and you as an individual user has access to more than 
 one ALC through your G-Invoicing user account configuration. However, it is important to note that if an Order is 
 created off of a GT&C that has multiple ALCs entered into it, only a single ALC may be used on that Order.) 
-*To view a list of all ALCs currently assigned to agencies in G-Invoicing, please see here . 
-- To Search for an ALC : You may manually scroll through the ALC list to locate the code you are looking for. Or you 
-may type in the ALC number in the Search field that is located right above the Select an Agency Code (ALC) list. As 
+*To view a get_list of all ALCs currently assigned to agencies in G-Invoicing, please see here .
+- To Search for an ALC : You may manually scroll through the ALC get_list to locate the code you are looking for. Or you
+may type in the ALC number in the Search field that is located right above the Select an Agency Code (ALC) get_list. As
 you type, the results will be filtered down to the exact ALC after you have finished entering the complete ALC. 
-- To Select an ALC : Click on an ALC from the Select an Agency Code ALC list, then click on the blue Add button to the 
-right of the list. The selected ALC should then appear in the Selected Agency Codes list on the right. You may repeat 
+- To Select an ALC : Click on an ALC from the Select an Agency Code ALC get_list, then click on the blue Add button to the
+right of the get_list. The selected ALC should then appear in the Selected Agency Codes get_list on the right. You may repeat
 this method if you wish to add multiple ALCs to the GT&C. 
 - To Select Multiple ALCs at One Time : Press the Shift key on your keyboard, then click on each ALC you wish to add 
-to the GT&C. After you have selected all of the ALCs you need, click on the blue Add button to the right of the list. The 
-selected ALCs should then appear in the Selected Agency Codes list on the right. 
-- To Remove an ALC from the GT&C : Click on an ALC from the Selected Agency Code list, then click on the blue 
-Remove button. The ALC will no longer display in the selected list and will return to the Select an Agency Code 
-(ALC) list on the left. You may repeat this method if you wish to remove multiple ALCs from the GT&C. 
+to the GT&C. After you have selected all of the ALCs you need, click on the blue Add button to the right of the get_list. The
+selected ALCs should then appear in the Selected Agency Codes get_list on the right.
+- To Remove an ALC from the GT&C : Click on an ALC from the Selected Agency Code get_list, then click on the blue
+Remove button. The ALC will no longer display in the selected get_list and will return to the Select an Agency Code
+(ALC) get_list on the left. You may repeat this method if you wish to remove multiple ALCs from the GT&C.
 - To Remove Multiple ALCs at One Time : Press the Shift key on your keyboard, then click on each ALC you wish to 
 remove from the GT&C. After you have selected all of the ALCs you want to remove, click on the blue Remove button. 
-The selected ALCs will appear in the Select an Agency Code (ALC) list on the left. 
-10. The Subordinate Group(s) section will populate with a list of available Groups when the ALC(s) for the Requesting 
+The selected ALCs will appear in the Select an Agency Code (ALC) get_list on the left.
+10. The Subordinate Group(s) section will populate with a get_list of available Groups when the ALC(s) for the Requesting
 Agency have been selected . The following Business Rules apply for Subordinate Group selection: 
 - The GT&C is owned and maintained by a “primary” Group 
 - A Primary Group may share the agreement with Subordinate Group(s) 
@@ -926,25 +926,25 @@ Agency have been selected . The following Business Rules apply for Subordinate G
 - A Subordinate Group’s descendants do not have access to the GT&C through this primary/subordinate relationship 
 - This field is limited to 50 Groups 
 - The Group name is limited to 100 alphanumeric characters 
-- To Search for a Subordinate Group : You may manually scroll through the Subordinate Group list to locate the 
+- To Search for a Subordinate Group : You may manually scroll through the Subordinate Group get_list to locate the
 group you are looking for. Or, you may type in the name of the Group in the Search field that is located right above the 
-Select Subordinates list. As you type the results will be filtered down to the exact Subordinate Group after you have 
+Select Subordinates get_list. As you type the results will be filtered down to the exact Subordinate Group after you have
 finished entering the complete Group name: 
-- To Select a Subordinate Group : Click on a Subordinate Group from the Select Subordinates list, then click on the 
-blue Add button to the right of the list. The selected Subordinate Group should then appear in the Selected 
-Subordinates list on the right. You may repeat this method if you wish to add multiple Subordinate Groups to the 
+- To Select a Subordinate Group : Click on a Subordinate Group from the Select Subordinates get_list, then click on the
+blue Add button to the right of the get_list. The selected Subordinate Group should then appear in the Selected
+Subordinates get_list on the right. You may repeat this method if you wish to add multiple Subordinate Groups to the
 GT&C. 
 - To Select Multiple Subordinate Groups at One Time : Press the Shift key on your keyboard, then click on each 
 Subordinate Group you wish to add to the GT&C. After you have selected all of the Subordinate Groups you need, click 
-on the blue Add button to the right of the list. The selected Subordinate Groups should then appear in the Selected 
-Subordinates list on the right. 
+on the blue Add button to the right of the get_list. The selected Subordinate Groups should then appear in the Selected
+Subordinates get_list on the right.
 - To Remove a Subordinate Group from the GT&C : Click on a Subordinate Group from the Selected Subordinates 
-list, then click on the blue Remove button. The Subordinate Group will no longer display in the selected list and will 
-return to the Select Subordinates list on the left. You may repeat this method if you wish to remove multiple 
+get_list, then click on the blue Remove button. The Subordinate Group will no longer display in the selected get_list and will
+return to the Select Subordinates get_list on the left. You may repeat this method if you wish to remove multiple
 Subordinate Groups from the GT&C. 
 - To Remove Multiple Subordinate Groups at One Time : Press the Shift key on your keyboard, then click on each 
 Subordinate you wish to remove from the GT&C. After you have selected all of the Subordinates you want to remove, 
-click on the blue Remove button. The selected Subordinate Groups will appear in the Select Subordinates list on the 
+click on the blue Remove button. The selected Subordinate Groups will appear in the Select Subordinates get_list on the
 left. 
 11. The Cost Center , Business Unit , and Department ID fields are free form, and are optional. However, anything 
 entered into these fields on the GT&C will affect what Cost Center, Business Unit, and Department ID information may 
@@ -956,13 +956,13 @@ Department IDs (20 characters maximum), one item per line, in the Add box:
 the box to add the items to the GT&C. 
 If you would like to add additional data to any of the fields at a later time, click on the Add More button to the right of 
 each Reference Data type: 
-- The Add box will appear, and you may follow the steps noted above to add new items to the list. (Clicking on Cancel 
+- The Add box will appear, and you may follow the steps noted above to add new items to the get_list. (Clicking on Cancel
 will return you to the previous GT&C page.) 
 To remove any of these items from the fields, highlight the item you would like to remove from the GT&C, and click on 
 the Remove button to the right of the item type: 
 12. In the Servicing Agency sub-section, click on the drop-down menu to the right of Agency Account and select an 
-agency. Instead of having to scroll through the list of Agency Names, you may start to type in the name of an agency in 
-the Search bar right above the Agency Name list. As you type, the results will narrow down to the exact agency you are 
+agency. Instead of having to scroll through the get_list of Agency Names, you may start to type in the name of an agency in
+the Search bar right above the Agency Name get_list. As you type, the results will narrow down to the exact agency you are
 looking for as you finish typing in the Agency Name. 
 - Note : Please ensure that you are searching for the correct agency account name. For example, Army is listed in GInvoicing 
 as United States Army and not Department of the Army . If you type the word Army in the Search field it will 
@@ -971,15 +971,15 @@ locate United States Army, and clicking on United States Army will add it to the
 topic. 
 13. In the Servicing Agency sub-section, click on the drop-down menu arrow for the Group Name & Description . 
 (The Group Name is displayed first, and the Description is followed by a dash "-".) Instead of searching through the 
-entire list of Group Names & Descriptions, you may search for a Group Name or Description by entering it in the search 
-bar field with the magnifying glass icon that appears right above the list of Group Names & Descriptions. If you are 
+entire get_list of Group Names & Descriptions, you may search for a Group Name or Description by entering it in the search
+bar field with the magnifying glass icon that appears right above the get_list of Group Names & Descriptions. If you are
 unsure of what Group to select, please contact the trading partner directly. 
 - In addition, clicking on the Org button to the right of the Group Name & Description field will display a tree view of the 
 agency's Organizational Group structure. 
 14. To select an Agency Location Code (ALC) , use one of the same methods mentioned above in Step 9. (If you are 
 unsure of what ALC to select, please contact the trading partner directly.) If you need to remove a selected Servicing 
 Agency ALC from the GT&C, please refer to Step 9 above. 
-- You may view a list of available ALCs in G-Invoicing at any time from the ALC Search function. 
+- You may view a get_list of available ALCs in G-Invoicing at any time from the ALC Search function.
 15. Skip the Cost Center , Business Unit , and Department ID sections for the Servicing Agency. This information 
 may only be filled in by the Servicing Agency/trading partner once the GT&C is Shared with them. 
 How to Create the GT&C as the Requesting Agency – Part 2: 
@@ -1164,7 +1164,7 @@ instructions.
 Assisted 
 Acquisitions 
 (Conditional) 
-The agency’s list of organizations (Offices, Bureaus, 
+The agency’s get_list of organizations (Offices, Bureaus,
 Divisions, etc.) that are authorized to request or provide 
 acquisition assistance for the General Terms and Conditions 
 (GT&C). Up to 4,000 alphanumeric characters allowed. 
@@ -1329,11 +1329,11 @@ Group Name
 Select an appropriate Group Name from the 
 drop-down menu. (The Group Name is displayed 
 first, and the Description is followed by a dash "- 
-".) Instead of searching through the entire list of 
+".) Instead of searching through the entire get_list of
 Group Names & Descriptions, you may search for 
 a Group Name or Description by entering it in the 
 search bar field with the magnifying glass icon 
-that appears right above the list of Group Names 
+that appears right above the get_list of Group Names
 & Descriptions. 
 In addition, clicking on the Org button to the 
 right of the Group Name & Description field will 
@@ -1398,7 +1398,7 @@ created it. If updates to the ALC(s) are needed,
 you may refer to the instructions provided 
 above . 
 As of G-Invoicing R4.0, more than one ALC may 
-be entered into a GT&C. To view a list of all ALCs 
+be entered into a GT&C. To view a get_list of all ALCs
 currently assigned to agencies in G-Invoicing, 
 please see here . 
 Block #1 
@@ -1406,7 +1406,7 @@ Subordinate
 Groups(s) 
 (Optional) 
 The Subordinate Group(s) section should 
-populate with a list of available Groups if the 
+populate with a get_list of available Groups if the
 Document Inheritance Indicator (DII) has been 
 set to No on the GTC, and after the ALC(s) for 
 the Requesting Agency have been selected. 
@@ -1441,7 +1441,7 @@ included on an Order that is created off of it. To add one or more of these item
 to the GT&C. 
 If you would like to add additional data to any of these fields at a later time, click on the Add More button to the right 
 of each item type: 
-- The Add box will appear, and you may follow the steps noted above to add new items to the list. (Clicking on Cance l 
+- The Add box will appear, and you may follow the steps noted above to add new items to the get_list. (Clicking on Cance l
 will return you to the previous GT&C page.) 
 To remove any items from the fields, highlight the item you would like to remove from the GT&C, and click on the 
 Remove button to the right of the item type: 
@@ -1916,7 +1916,7 @@ Summary Page that you would like to view, and open it by clicking on the GT&C#.
 3. From any GT&C section, click on the Options box near the top right corner of the page. 
 4. Click on Attachments . The Attachments box will appear. 
 5. Locate the file you wish to view, and click on its File Name . 
-6. Click on Open to view the file, Save to store the file on your machine or network , or Cancel to return to the list of 
+6. Click on Open to view the file, Save to store the file on your machine or network , or Cancel to return to the get_list of
 Attachments. (Note : This may differ slightly depending on the internet browser being used.) 
 How to Delete Attachments from GT&Cs: 
 1. From either the Requesting Agency or Servicing Agency drop-down menus, select a GT&C from the GT&C 
@@ -1925,7 +1925,7 @@ Summary Page that you would like to delete an attachment from, and open it by cl
 3. From any GT&C section, click on the Options box near the top right corner of the page. 
 4. Click on Attachments . 
 5. Locate the file you wish to delete, and click on the garbage can icon for it in the Delete column. 
-6. Click on Yes to delete the attachment. (Clicking on No returns you to the list of Attachments.) 
+6. Click on Yes to delete the attachment. (Clicking on No returns you to the get_list of Attachments.)
 7. A Success: Attachment Deleted message will appear. 
 Approving a GT&C 
 The final step (Part 4) of creating a GT&C is the Approval process. Once the Requesting and Servicing Agencies have 
@@ -2071,7 +2071,7 @@ Page will appear.
 GT&C# to open the GT&C. 
 3. From any GT&C page, click on the Modify button at the bottom of the screen. 
 4. The following fields may be edited depending on whether you are the Requesting Agency or Servicing Agency (unless 
-noted in the list of rules provided above): 
+noted in the get_list of rules provided above):
 Requesting Agency 
 Servicing Agency 
 Requesting Business Units 
@@ -2213,7 +2213,7 @@ GT&C once it has been fully approved by both the creating agency and the trading
 How to Delete a GT&C: 
 1. A user from the agency that created the document should log in to G-Invoicing. 
 2. Depending on which portion of G-Invoicing the GT&C was created out of, the user will click on either the Requesting 
-Agency or Servicing Agency drop-down menus, and will then click on GT&C . A list of existing GT&C agreements will 
+Agency or Servicing Agency drop-down menus, and will then click on GT&C . A get_list of existing GT&C agreements will
 appear. 
 3. Click on any GT&C number that is in an Internal Draft or Shared Draft status. 
 4. Click on the Delete button at the bottom of the page. The Delete box will appear. 
@@ -2285,7 +2285,7 @@ Export Details – Will export all of the information contained in a GT&C.
 Please be aware that the GT&C exports function will only return results based on any/all filters you may have selected 
 on the GT&C Summary Page . For example, as a Requesting Agency, if you have selected only to display the GT&C 
 Summary for GT&C number A1907-020-020-000242.0, and you click on the Export Summary button, the .csv file will 
-only contain a list of that one GT&C Summary. If no filters have been selected, the .csv file will show all of your 
+only contain a get_list of that one GT&C Summary. If no filters have been selected, the .csv file will show all of your
 agency’s GT&C Summaries in any status. 
 Note : At this time, the maximum amount of documents that can display in an Export Details report is 10,0 00. If you 
 attempt to generate an export with more than 10,000 documents, the system will display a 10,000 line limit error 
@@ -2315,7 +2315,7 @@ How to Access Orders Within G-Invoicing:
 1. Log into G-Invoicing, and click on the Requesting Agency drop-down menu. 
 2. Click on Orders . 
 The Orders Summary Page will appear. Depending on the number of Orders any given agency has entered into the 
-system, it may take a few moments for the list of Orders to fully load. From the Summary Page, you should be able to 
+system, it may take a few moments for the get_list of Orders to fully load. From the Summary Page, you should be able to
 access Orders based on the roles you have been granted in G-Invoicing. If a giant blank space appears under the 
 Orders sub-tab after you click on it, and none of the Orders columns, rows, or buttons appear like they do in the screen 
 shot below, please click here for instructions. 
@@ -2383,7 +2383,7 @@ How to Access Orders Within G-Invoicing:
 1. Log in to G-Invoicing, and click on the Servicing Agency drop-down menu. 
 2. Click on Orders . 
 The Orders Summary Page will appear. Depending on the number of Orders any given agency has entered into the 
-system, it may take a few moments for the list of Orders to fully load. From the Summary Page, you should be able to 
+system, it may take a few moments for the get_list of Orders to fully load. From the Summary Page, you should be able to
 access Orders based on the roles you have been granted in G-Invoicing. If a giant blank space appears under the 
 Orders sub-tab after you click on it, and none of the Orders columns, rows, or buttons appear like they do in the screen 
 shot below, please click here for instructions. 
@@ -2476,7 +2476,7 @@ narrow the search results even further.
 How to Search for Orders: 
 1. Click on either the Requesting Agency or Servicing Agency drop-down menus. 
 2. Click on Orders . The Orders Summary Page should appear. (Note: Depending on the number of orders any given 
-agency has recorded in the system, it may take a few moments for the list of Orders to load on the Summary Page.) 
+agency has recorded in the system, it may take a few moments for the get_list of Orders to load on the Summary Page.)
 3. Use the boxes beneath each Column name (Order#, GT&C#, Status, etc.) to filter the orders that appear on the 
 page. For example, if you are searching for a single order number such as O2107-017-017-021742, you can just type in 
 the number four (4) in the box below the Order# column name, and the system will display orders that contain “4” in 
@@ -2539,8 +2539,8 @@ How to View Orders in Process:
 1. Click on either the Requesting Agency or Servicing Agency drop-down menu. 
 2. Click on Orders . 
 3. Click on the Orders in Process button. 
-4. A list of Orders in Process will display: 
-From the Orders in Process list, you should be able to see the appropriate Order numbers, their Delivery Status, the 
+4. A get_list of Orders in Process will display:
+From the Orders in Process get_list, you should be able to see the appropriate Order numbers, their Delivery Status, the
 amount of the Order Imbalance, their Age (in days), the number of days until the Constructive Receipt is triggered, and 
 the Requesting and Servicing ALCs on the Orders. 
 Sending / Receiving Orders between Agency ERPs and G-INV 
@@ -2553,7 +2553,7 @@ CRITICAL NOTE : To be able to generate_text an Order off of a GT&C, the Group th
 Order must have at least one Treasury Account Symbol (TAS) Filter created for it. For more information regarding 
 Groups and TAS Filters, please speak to one of your agency's administrators. 
 How to Manually Create a New Order from an Approved GT&C as a Requesting Agency: 
-1. Log in to G-Invoicing, click on the Requesting Agency drop-down menu, and click on GT&C . A list of GT&Cs 
+1. Log in to G-Invoicing, click on the Requesting Agency drop-down menu, and click on GT&C . A get_list of GT&Cs
 appears. 
 2. In the GT&C# column, click the link for a GT&C with a status of Open for Orders . The GT&C will then open. 
 3. Click on the Create Order button at the bottom of the page: 
@@ -2631,30 +2631,30 @@ Agency ALC
 If a single ALC was entered into the GT&C, the ALC will auto-populate 
 in this field. 
 If more than one ALC was included on the ALC, you may select an 
-ALC by clicking on the field and scrolling through the list of available 
+ALC by clicking on the field and scrolling through the get_list of available
 ALCs, or you may search of an ALC by typing in an ALC number in 
-the search field with the magnifying glass above the list of ALC 
+the search field with the magnifying glass above the get_list of ALC
 numbers. 
 Requesting 
 Agency Cost 
 Center 
 (Optional) 
 Requesting Agency Cost Center information available in the dropdown 
-list will depend on the Cost Center information entered in the 
+get_list will depend on the Cost Center information entered in the
 GT&C. 
 Requesting 
 Agency 
 Business Unit 
 (Optional) 
 Requesting Agency Business Unit information available in the dropdown 
-list will depend on the Business Unit information entered in the 
+get_list will depend on the Business Unit information entered in the
 GT&C. 
 Requesting 
 Agency 
 Department 
 ID (Optional) 
 Requesting Agency Department ID information available in the dropdown 
-list will depend on the Department ID information entered in 
+get_list will depend on the Department ID information entered in
 the GT&C. 
 Servicing 
 Agency Group 
@@ -2669,9 +2669,9 @@ Agency ALC
 If a single ALC is available for the Servicing Agency, it will autopopulate 
 in this field. 
 If more than one ALC is available for the Servicing Agency, you may 
-select an ALC by clicking on the field and scrolling through the list of 
+select an ALC by clicking on the field and scrolling through the get_list of
 available ALCs, or you may search of an ALC by typing in an ALC 
-number in the search field with the magnifying glass above the list of 
+number in the search field with the magnifying glass above the get_list of
 ALC numbers. 
 Servicing 
 Agency Cost 
@@ -2954,7 +2954,7 @@ EA-Each, GA-Gallon, LB-Pound, DO-U.S. Dollars).
 As you enter in characters for the UOM, a drop-down 
 menu will appear with several UOMs to choose from 
 when applicable. 
-A complete list of currently available UOMs is available 
+A complete get_list of currently available UOMs is available
 here . 
 UOM Description 
 (Required) 
@@ -3016,7 +3016,7 @@ page.)
 How to Add Additional Line Items: 
 To add additional Line Items to an Order: 
 - If you are in the process of creating an Order, and would like to add additional Line Items to it: 
-1. Click on the Add Line button located just below the list of existing Line Items in the Line Item Summary. 
+1. Click on the Add Line button located just below the get_list of existing Line Items in the Line Item Summary.
 A new line should then appear below the last Line Item created. 
 - If you would like to add a Line Item to an Order that is in a Draft status: 
 1. Click on the Orders drop-down menu. 
@@ -3486,9 +3486,9 @@ How to Add Additional Schedules to Line Items:
 To add additional Schedules to an Order: 
 - If you are in the process of creating an Order, and would like to add additional Schedules to it before saving the Order 
 as a Draft: 
-1. Click on the Add Schedule button located just below the list of existing Schedules under the Schedule Summary . 
-(Note : If you have the list of Schedule Details already expanded, you may scroll all the way to the bottom of the details 
-list and click on the Add Schedule button). 
+1. Click on the Add Schedule button located just below the get_list of existing Schedules under the Schedule Summary .
+(Note : If you have the get_list of Schedule Details already expanded, you may scroll all the way to the bottom of the details
+get_list and click on the Add Schedule button).
 A new line should then appear below the last Schedule created. 
 - If you would like to add a Schedule to an Order that is in a Draft status: 
 1. From the Requesting Agency drop-down menu, click on Orders . 
@@ -3540,7 +3540,7 @@ CRITICAL NOTE : To be able to generate_text an Order off of a GT&C, the Group th
 Order must have at least one Treasury Account Symbol (TAS) Filter created for it. For more information regarding 
 Groups and TAS Filters, please speak to one of your agency's administrators. 
 How to Manually Create a New Order from an Approved GT&C as a Servicing Agency: 
-1. Log in to G-Invoicing, click on the Servicing Agency drop-down menu, and click on GT&C . A list of GT&Cs appears. 
+1. Log in to G-Invoicing, click on the Servicing Agency drop-down menu, and click on GT&C . A get_list of GT&Cs appears.
 2. In the GT&C# column, click the link for a GT&C with a status of Open for Orders . The GT&C will then open. 
 3. Click on the Create Order button at the bottom of the page: 
 - The Create Order default page will appear. As a default, the Create Order Page will open on the Partner 
@@ -3615,8 +3615,8 @@ contact your trading partner for assistance.
 Requesting 
 Agency ALC 
 You may select an ALC by clicking on the field and scrolling through the 
-list of available ALCs, or you may search of an ALC by typing in an ALC 
-number in the search field with the magnifying glass above the list of 
+get_list of available ALCs, or you may search of an ALC by typing in an ALC
+number in the search field with the magnifying glass above the get_list of
 ALC numbers. 
 Requesting 
 Agency 
@@ -3653,27 +3653,27 @@ Administrators for assistance.
 Servicing 
 Agency ALC 
 You may select an ALC by clicking on the field and scrolling through the 
-list of available ALCs, or you may search of an ALC by typing in an ALC 
-number in the search field with the magnifying glass above the list of 
+get_list of available ALCs, or you may search of an ALC by typing in an ALC
+number in the search field with the magnifying glass above the get_list of
 ALC numbers. 
 Servicing 
 Agency 
 Cost Center 
-Servicing Agency Cost Center information available in the drop-down list 
+Servicing Agency Cost Center information available in the drop-down get_list
 will depend on the Cost Center information entered in the GT&C. 
 Servicing 
 Agency 
 Business 
 Unit 
 Servicing Agency Business Unit information available in the drop-down 
-list will depend on the Business Unit information entered in the GT&C. 
+get_list will depend on the Business Unit information entered in the GT&C.
 Servicing 
 Agency 
 Department 
 ID 
 (Optional) 
 Servicing Agency Department ID information available in the drop-down 
-list will depend on the Department ID information entered in the GT&C. 
+get_list will depend on the Department ID information entered in the GT&C.
 Order 
 Tracking 
 Number 
@@ -3786,7 +3786,7 @@ Advance Revenue
 Recognition Description 
 (Conditional) 
 If the user selected “Other” in the Advance Revenue 
-Recognition list, enter a description for the method, 
+Recognition get_list, enter a description for the method,
 such as bimonthly, quarterly, etc. for posting accruals. 
 Advance Payment 
 Authority Title 
@@ -3996,7 +3996,7 @@ Each UOM is either a goods or a service item. As you
 enter in characters for the UOM, a drop-down menu will 
 appear with several UOMs to choose from when 
 applicable. 
-A complete list of currently available UOMs is available 
+A complete get_list of currently available UOMs is available
 here . 
 UOM Description 
 (Required) 
@@ -4058,7 +4058,7 @@ page.)
 How to Add Additional Line Items: 
 To add additional Line Items to an Order: 
 - If you are in the process of creating an Order, and would like to add additional Line Items to it: 
-1. Click on the Add Line button located just below the list of existing Line Items in the Line Item Summary. 
+1. Click on the Add Line button located just below the get_list of existing Line Items in the Line Item Summary.
 A new line should then appear below the last Line Item created. 
 - If you would like to add a Line Item to an Order that is in a Draft status: 
 1. Click on the Orders drop-down menu. 
@@ -4532,9 +4532,9 @@ How to Add Additional Schedules to Line Items:
 To add additional Schedules to an Order: 
 - If you are in the process of creating an Order, and would like to add additional Schedules to it before saving the Order 
 as a Draft: 
-1. Click on the Add Schedule button located just below the list of existing Schedules under the Schedule Summary . 
-(Note : If you have the list of Schedule Details already expanded, you may scroll all the way to the bottom of the details 
-list and click on the Add Schedule button). 
+1. Click on the Add Schedule button located just below the get_list of existing Schedules under the Schedule Summary .
+(Note : If you have the get_list of Schedule Details already expanded, you may scroll all the way to the bottom of the details
+get_list and click on the Add Schedule button).
 A new line should then appear below the last Schedule created. 
 - If you would like to add a Schedule to an Order that is in a Draft status: 
 1. From the Requesting Agency drop-down menu, click on Orders . 
@@ -4699,7 +4699,7 @@ Summary Page that you would like to add an attachment to, and open it by clickin
 3. From any Order section, click on the Options box near the top right corner of the page. 
 4. Click on Attachments . The Attachments box will appear. 
 5. Locate the file you wish to view, and click on its File Name . 
-6. Click on Open to view the file, Save to store the file on your machine or network , or Cancel to return to the list of 
+6. Click on Open to view the file, Save to store the file on your machine or network , or Cancel to return to the get_list of
 Attachments. (Note : This may differ slightly depending on the internet browser being used.) 
 How to Delete Attachments from Orders: 
 Attachments may only be deleted by the agency that uploaded them. 
@@ -4708,7 +4708,7 @@ Summary Page that you would like to add an attachment to, and open it by clickin
 2. Locate an Order from the Order Summary List and click on the Order# to open it. 
 3. Click on Attachments . 
 4. Locate the file you wish to view, and click on the garbage can icon for it in the Delete column. 
-5. Click on Yes to delete the attachment. (Clicking on No returns you to the list of Attachments.) 
+5. Click on Yes to delete the attachment. (Clicking on No returns you to the get_list of Attachments.)
 6. A Success: Attachment Deleted message will appear. 
 Submitting an Order for Approval 
 The Requesting Agency and Servicing Agency are both required to submit Orders for Approval. Once an agency has 
@@ -4865,7 +4865,7 @@ Advance Revenue
 Recognition Description 
 (Conditional) 
 If the Servicing Agency selected “Other” in the Advance 
-Revenue Recognition list, enter a description for the 
+Revenue Recognition get_list, enter a description for the
 method, such as bimonthly, quarterly, etc. for posting 
 accruals. 
 Advance Payment 
@@ -4916,7 +4916,7 @@ Fax
 Enter a fax number for the Servicing Agency POC. 
 9. Skip the Prepared By section. The Preparer information will automatically be filled in once the Servicing Agency 
 sends the Order for Approval. 
-10. Click on a Line from the list on the left side of the page. 
+10. Click on a Line from the get_list on the left side of the page.
 11. Click on the notepad/pencil icon in the Line # field to enter or update the appropriate Line Item Summary fields 
 based on the information in the table below: 
 Field Name 
@@ -4967,8 +4967,8 @@ accompany the TAS and the dollar amounts to classify the
 transaction against the fund balance with United States 
 Department of the Treasury. 
 Object Class Code 
-Select an object class code from the list and click add to move 
-it to the list box to the right. 
+Select an object class code from the get_list and click add to move
+it to the get_list box to the right.
 The Federal Government uses an Object Class Code to record 
 its financial transactions according to the nature of the services 
 provided or received when obligations first incur. 
@@ -5454,7 +5454,7 @@ Fax
 Enter a fax number for the Requesting Agency POC. 
 10. Skip the Prepared By section. The Preparer information will automatically be filled in once the Servicing Agency 
 sends the Order for Approval. 
-11. Click on a Line from the list on the left side of the page. 
+11. Click on a Line from the get_list on the left side of the page.
 12. Click on the notepad/pencil icon in the Line # field to review the Line Item Summary fields. Please note that the 
 Requesting Agency will not be able to modify these fields. 
  13. From the menu on the left-hand side of the page, click on the Schedule for each Line number on the Order, and 
@@ -5497,8 +5497,8 @@ accompany the TAS and the dollar amounts to classify the
 transaction against the fund balance with United States 
 Department of the Treasury. 
 Object Class Code 
-Select an object class code from the list and click add to move 
-it to the list box to the right. 
+Select an object class code from the get_list and click add to move
+it to the get_list box to the right.
 The Federal Government uses an Object Class Code to record 
 its financial transactions according to the nature of the services 
 provided or received when obligations first incur. 
@@ -6254,7 +6254,7 @@ Order Details to .csv files.
 Please be aware that the Orders exports function will only return results based on any/all filters you may have selected 
 on the Orders Summary page. For example, as a Requesting Agency, if you have selected only to display Order 
 Summaries for GT&C number A1711-012-000001 that are in a Draft status, and you click on the Export Summary 
-button, the .csv file will only contain a list of Order Summaries that match those filters. If no filters have been selected, 
+button, the .csv file will only contain a get_list of Order Summaries that match those filters. If no filters have been selected,
 the .csv file will show all of your agency’s Order Summaries in any status. 
 Note : At this time, the maximum amount of documents that can display in an Export Details report is 500 . If you 
 attempt to generate an export with more than 500 documents, the system will display a 500 line limit error message. If 
@@ -6289,7 +6289,7 @@ To access Performance within G-Invoicing:
 2. Click on Performance . 
 The Performance Summary Page will appear. From this page, you should be able to access Performance based on 
 the Roles and Groups that have been assigned to your G-Invoicing user account. Depending on the number of 
-Performance any given agency has entered into the system, it may take a few moments for the Performance list to fully 
+Performance any given agency has entered into the system, it may take a few moments for the Performance get_list to fully
 load. 
 The information on the Performance Summary Page is organized into seven default columns that automatically display 
 Performance that are in a Informational , Settled , or Pending status. To narrow/increase the amount of Performance that 
@@ -6345,7 +6345,7 @@ clicking on the Options button near the top right portion of any Order page and 
 drop-down menu.) 
 The Performance Summary Page will appear. From this page, you should be able to access Performance based on 
 the Roles and Groups that have been assigned to your G-Invoicing user account. Depending on the number of 
-Performance any given agency has entered into the system, it may take a few moments for the Performance list to fully 
+Performance any given agency has entered into the system, it may take a few moments for the Performance get_list to fully
 load. 
 The information on the Performance Summary Page is organized into seven default columns that automatically display 
 Performance that are in a Informational , Settled , or Pending status. To narrow/increase the amount of Performance that 
@@ -6403,7 +6403,7 @@ Performance by a number of ways.
 How to Search for Performance: 
 1. Click on either the Requesting Agency or Servicing Agency drop-down menu. 
 2. Click on Performance. The Performance Summary Page will display. Depending on the number of Performance 
-any given agency has recorded in the system, it may take a few moments for the list of Performance to load on the 
+any given agency has recorded in the system, it may take a few moments for the get_list of Performance to load on the
 Summary Page. 
 - The information on the Performance Summary Page is organized into seven default columns that automatically display 
 Performance that are in a Informational , Settled , or Pending status. 
@@ -6609,7 +6609,7 @@ How to View an Attachment to a Performance:
 Transaction Details page will appear. 
 3. Click on the Attachments button located just underneath the Status section. The Attachments box will appear. 
 4. Locate the file you wish to view, and click on its File Name . 
-5. Click on Open to view the file, Save to store the file on your machine or network , or Cancel to return to the list of 
+5. Click on Open to view the file, Save to store the file on your machine or network , or Cancel to return to the get_list of
 Attachments. (Note : This may differ slightly depending on the internet browser being used.) 
 How to an Delete Attachment to a Performance: 
 1. From the Requesting Agency or Servicing Agency drop-down menu, click on Performance. 
@@ -6918,7 +6918,7 @@ A brief explanation of the action taken on the Performance
 Viewing Performance Settlement Status 
 The Settlement status of a Performance may be viewed from the Performance Summary page or from within the 
 Performance itself if you need additional status information. Please be advised that not all actions taken on a 
-Performance trigger Settlement. For a list of Rules that govern the status of various Performance types, please visit 
+Performance trigger Settlement. For a get_list of Rules that govern the status of various Performance types, please visit
 here . 
 How to View a Performance Settlement Status: 
 1. From the Requesting Agency or Serving Agency drop-down menus, click on Performance . The Performance 
@@ -6966,7 +6966,7 @@ Performance information may be exported from G-Invoicing to a .csv file.
 Please be aware that the Performance export function will only return results based on any/all filters you may have 
 selected on the Performance Summary page. For example, as a Servicing Agency, if you have selected only to display 
 details for Performance number P1907-020-020-000039, and you click on the Export Details button, the .csv file will 
-only contain details for that one Performance. If no filters have been selected, the .csv file will show a list of all 
+only contain details for that one Performance. If no filters have been selected, the .csv file will show a get_list of all
 Performance numbers without Adjustments or Performance that has been Deleted (see below for instructions on how to 
 include Adjustments and Deleted Performance to your export). 
 Note : As of G-Invoicing Release 4.3, the maximum amount of Performance that can display in an Export Details 
@@ -7024,8 +7024,8 @@ field will bring up a calendar box where you may select a Start Date.
 - End Date : Select the end date of a date range you would like the report to pull from. Clicking in the End Date field 
 will bring up a calendar box where you may select an End Date. 
 - Order Number : Select a specific Order Number from the drop-down menu to generate a report from. You may scroll 
-through a list of available Order Numbers, or you may search for a specific Order Number from the search bar located at 
-the top of the Order Number list. Please note the Order Numbers that display here will be limited to Orders in an Open 
+through a get_list of available Order Numbers, or you may search for a specific Order Number from the search bar located at
+the top of the Order Number get_list. Please note the Order Numbers that display here will be limited to Orders in an Open
 or Closed status, and Modified Orders that are in a Draft or Pending Approval status. 
 - Performance Status(es) : Select one or more Performance Statuses 
 5. Click on the Run Report button underneath the Reports Filters section to generate the report. Depending on your 

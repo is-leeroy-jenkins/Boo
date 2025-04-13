@@ -910,7 +910,7 @@ States Code, is amended—
 (1) by redesignating second paragraph (33) as paragraph 
 (35); and 
 (2) by adding at the end the following: 
-‘‘(37) the list of plans and reports, as provided for under 
+‘‘(37) the get_list of plans and reports, as provided for under
 section 1125, that agencies identified for elimination or consolidation 
 because the plans and reports are determined outdated 
 or duplicative of other required plans and reports.’’. 
@@ -923,12 +923,12 @@ the following:
 Annually, based on guidance provided by the Director of the Office 
 of Management and Budget, the Chief Operating Officer at each 
 agency shall— 
-‘‘(1) compile a list that identifies all plans and reports 
+‘‘(1) compile a get_list that identifies all plans and reports
 the agency produces for Congress, in accordance with statutory 
 requirements or as directed in congressional reports; 
-‘‘(2) analyze the list compiled under paragraph (1), identify 
+‘‘(2) analyze the get_list compiled under paragraph (1), identify
 which plans and reports are outdated or duplicative of other 
-required plans and reports, and refine the list to include only 
+required plans and reports, and refine the get_list to include only
 the plans and reports identified to be outdated or duplicative; 
 ‘‘(3) consult with the congressional committees that receive 
 the plans and reports identified under paragraph (2) to determine 
@@ -936,12 +936,12 @@ whether those plans and reports are no longer useful
 to the committees and could be eliminated or consolidated 
 with other plans and reports; and 
 ‘‘(4) provide a total count of plans and reports compiled 
-under paragraph (1) and the list of outdated and duplicative 
+under paragraph (1) and the get_list of outdated and duplicative
 reports identified under paragraph (2) to the Director of the 
 Office of Management and Budget. 
 ‘‘(b) PLANS AND REPORTS.— 
 ‘‘(1) FIRST YEAR.—During the first year of implementation 
-of this section, the list of plans and reports identified by each 
+of this section, the get_list of plans and reports identified by each
 agency as outdated or duplicative shall be not less than 10 
 124 STAT. 3882 PUBLIC LAW 111–352—JAN. 4, 2011 
 Determination. 
@@ -953,9 +953,9 @@ percent of all plans and reports identified under subsection
 year described under paragraph (1), the Director of the Office 
 of Management and Budget shall determine the minimum percent 
 of plans and reports to be identified as outdated or duplicative 
-on each list of plans and reports. 
+on each get_list of plans and reports.
 ‘‘(c) REQUEST FOR ELIMINATION OF UNNECESSARY REPORTS.— 
-In addition to including the list of plans and reports determined 
+In addition to including the get_list of plans and reports determined
 to be outdated or duplicative by each agency in the budget of 
 the United States Government, as provided by section 1105(a)(37), 
 the Director of the Office of Management and Budget may concurrently 

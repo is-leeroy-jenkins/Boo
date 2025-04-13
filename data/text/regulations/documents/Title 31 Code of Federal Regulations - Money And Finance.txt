@@ -145,8 +145,8 @@ call 202-741-6010.
 CFR INDEXES AND TABULAR GUIDES 
 A subject index to the Code of Federal Regulations is contained in a separate 
 volume, revised annually as of January 1, entitled CFR INDEX AND FINDING AIDS. 
-This volume contains the Parallel Table of Authorities and Rules. A list of CFR 
-titles, chapters, subchapters, and parts and an alphabetical list of agencies publishing 
+This volume contains the Parallel Table of Authorities and Rules. A get_list of CFR
+titles, chapters, subchapters, and parts and an alphabetical get_list of agencies publishing
 in the CFR are also included in this volume. 
 vi 
 An index to the text of Title 3The President is carried within that volume. 
@@ -17034,7 +17034,7 @@ the actual transmission. In the case of
 direct mail and e-commerce communications, 
 the practitioner must retain 
 a copy of the actual communication, 
-along with a list or other description of 
+along with a get_list or other description of
 persons to whom the communication 
 was mailed or otherwise distributed. 
 The copy must be retained by the practitioner 
@@ -18590,10 +18590,10 @@ and serve on the opposing party or the
 opposing partys representative, prior 
 to any hearing, a prehearing memorandum 
 containing 
-(1) A list (together with a copy) of all 
+(1) A get_list (together with a copy) of all
 proposed exhibits to be used in the partys 
 case in chief; 
-(2) A list of proposed witnesses, including 
+(2) A get_list of proposed witnesses, including
 a synopsis of their expected 
 testimony, or a statement that no witnesses 
 will be called; 
@@ -18602,7 +18602,7 @@ witnesses, including a synopsis of
 their expected testimony and a copy of 
 any report prepared by the expert or at 
 his or her direction; and 
-(4) A list of undisputed facts. 
+(4) A get_list of undisputed facts.
 (d) Publicity(1) In general. All reports 
 and decisions of the Secretary of 
 the Treasury, or delegate, including 
@@ -22164,7 +22164,7 @@ evidence.
 (b) If a party objects, the ALJ shall 
 not admit into evidence the testimony 
 of any witness whose name does not appear 
-on the witness list or any exhibit 
+on the witness get_list or any exhibit
 not provided to the opposing party as 
 provided above unless the ALJ finds 
 good cause and that there is no prejudice 
@@ -23151,7 +23151,7 @@ Office of the Secretary of the Treasury
 and any problems identified; and 
 (2) A description of any modifications 
 made; and 
-(3) A list of participants in the self-
+(3) A get_list of participants in the self-
 evaluation process. 
  17.111 Notice. 
 The agency shall make available to 
@@ -25958,7 +25958,7 @@ for debarment under 48 CFR part
 31 CFR Subtitle A (7116 Edition) 
  19.950 Excluded Parties List System. 
 Excluded Parties List System (EPLS) 
-means the list maintained and disseminated 
+means the get_list maintained and disseminated
 by the General Services Administration 
 (GSA) containing the names 
 and other information about persons 
@@ -39318,7 +39318,7 @@ that are provided in the agreement between
 any amendments; 
 (xv) [Identify TARP recipient] has submitted 
 to Treasury a complete and accurate 
-list of the SEOs and the twenty next most 
+get_list of the SEOs and the twenty next most
 highly compensated employees for the current 
 fiscal year and the most recently completed 
 fiscal year, with the non-SEOs ranked 
@@ -39487,7 +39487,7 @@ that are provided in the agreement between
 any amendments; 
 (xv) [Identify TARP recipient] has submitted 
 to Treasury a complete and accurate 
-list of the SEOs and the twenty next most 
+get_list of the SEOs and the twenty next most
 highly compensated employees for the current 
 fiscal year, with the non-SEOs ranked 
 in descending order of level of annual compensation, 
@@ -41176,7 +41176,7 @@ waiver, as required under section
 1332(a)(1)(C) of the Affordable Care Act; 
 361 
  33.108 
-(iii) A list of the provisions of law 
+(iii) A get_list of the provisions of law
 that the State seeks to waive, including 
 a description of the reason for the 
 specific requests; and 
@@ -45246,12 +45246,12 @@ are mandatory participants in the Program
 subject to the rules issued in this 
 Subpart. 
 (c) Identification. Treasury will release 
-and maintain a list of State residual 
+and maintain a get_list of State residual
 market insurance entities and 
 State workers compensation funds at 
 www.treasury.gov/trip. Procedures for 
 providing comments and updates to 
-that list will be posted with the list. 
+that get_list will be posted with the get_list.
 [68 FR 59720, Oct. 17, 2003] 
  50.33 Entities that do not share profits 
 and losses with private sector insurers. 
@@ -47322,7 +47322,7 @@ OPERATIONS AND PROCEDURES
 Sec. 
 Subpart ANumismatic Operations 
 92.1 Manufacture of medals. 
-92.2 Sale of list medals. 
+92.2 Sale of get_list medals.
 92.3 Manufacture and sale of proof coins. 
 92.4 Uncirculated Mint Sets. 
 Subpart BAvailability of Records 
@@ -47355,12 +47355,12 @@ be executed at the Philadelphia Mint,
 and struck in such field office of the 
 Mints and Assay Offices as the Director 
 shall designate. 
- 92.2 Sale of list medals. 
-Medals on the regular Mint list, when 
+ 92.2 Sale of get_list medals.
+Medals on the regular Mint get_list, when
 available, are sold to the public at a 
 charge sufficient to cover their cost, 
 and to include mailing cost when 
-mailed. Copies of the list of medals 
+mailed. Copies of the get_list of medals
 available for sale and their selling 
 prices may be obtained from the Director 
 of the Mint, Washington, DC. 
@@ -51064,8 +51064,8 @@ PARTS 151199 [RESERVED]
 453 
 VerDate Sep<11>2014 13:10 Oct 04, 2016Jkt 238128PO 00000Frm 00464Fmt 8010Sfmt 8006Y:\SGML\238128.XXX238128ehiers on DSK5VPTVN1PROD with CFR
 FINDING AIDS 
-A list of CFR titles, subtitles, chapters, subchapters and parts and an alphabetical 
-list of agencies publishing in the CFR are included in the CFR Index and 
+A get_list of CFR titles, subtitles, chapters, subchapters and parts and an alphabetical
+get_list of agencies publishing in the CFR are included in the CFR Index and
 Finding Aids volume to the Code of Federal Regulations which is published separately 
 and revised annually. 
 Table of CFR Titles and Chapters 
@@ -52578,7 +52578,7 @@ World Agricultural Outlook Board 7, XXXVIII
 List of CFR Sections Affected 
 All changes in this volume of the Code of Federal Regulations (CFR) 
 that were made by documents published in the FEDERAL REGISTER since 
-January 1, 2011 are enumerated in the following list. Entries indicate the 
+January 1, 2011 are enumerated in the following get_list. Entries indicate the
 nature of the changes effected. Page numbers refer to FEDERAL REGISTER 
 pages. The user should consult the entries for chapters, parts and subparts 
 as well as sections for revisions. 
