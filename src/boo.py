@@ -175,9 +175,10 @@ class Models( ):
 		                           'gpt-4o-audio-preview-2024-10-01',
 		                           'gpt-4o-mini-audio-preview-2024-12-17' ]
 		self.transcription = [ 'whisper-1', 'gpt-4o-mini-transcribe', ' gpt-4o-transcribe' ]
-		self.translation = [ 'whisper-1', 'documents-davinci-003',
+		self.translation = [ 'whisper-1', 'text-davinci-003',
 		                     'gpt-4-0613', 'gpt-4-0314',
 		                     'gpt-4-turbo-2024-04-09' ]
+		self.reasoning  = [ 'o1-2024-12-17', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 		self.finetuning = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18',
 		                    'gpt-4-0613', 'gpt-3.5-turbo-0125',
 		                    'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-0613' ]
@@ -361,7 +362,7 @@ class Perceptron( ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Perceptron'
-			exception.method = 'fit( self, values, y )'
+			exception.method = 'fit( self, X y )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -387,14 +388,14 @@ class Perceptron( ):
 		"""
 		try:
 			if X is None:
-				raise Exception( 'values is not provided.' )
+				raise Exception( 'Aurguent "X" is not provided.' )
 			else:
 				return np.dot( X, self.w_ ) + self.b_
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Perceptron'
-			exception.method = 'net_input( self, values ):'
+			exception.method = 'net_input( self, X ):'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -420,14 +421,14 @@ class Perceptron( ):
 		"""
 		try:
 			if X is None:
-				raise Exception( 'values is not provided.' )
+				raise Exception( 'Aurguent "X" is not provided.' )
 			else:
 				return np.where( self.net_input( X ) >= 0.0, 1, 0 )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Perceptron'
-			exception.method = 'predict( self, values )'
+			exception.method = 'predict( self, X )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -521,7 +522,7 @@ class AdaptiveLinearNeuron( ):
 		"""
 		try:
 			if X is None:
-				raise Exception( 'values is not provided.' )
+				raise Exception( 'Aurguent "X" is not provided.' )
 			elif y is None:
 				raise Exception( 'y is not provided.' )
 			else:
@@ -544,7 +545,7 @@ class AdaptiveLinearNeuron( ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'AdaptiveLinearNeuron'
-			exception.method = 'fit( self, values, y )'
+			exception.method = 'fit( self, X, y )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -577,7 +578,7 @@ class AdaptiveLinearNeuron( ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'AdaptiveLinearNeuron'
-			exception.method = 'net_input( self, values )'
+			exception.method = 'net_input( self, X )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -605,14 +606,14 @@ class AdaptiveLinearNeuron( ):
 		"""
 		try:
 			if X is None:
-				raise Exception( 'values is not provided.' )
+				raise Exception( 'Aurguent "X" is not provided.' )
 			else:
 				return X
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'AdaptiveLinearNeuron'
-			exception.method = 'activation( self, values)'
+			exception.method = 'activation( self, X )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -638,7 +639,7 @@ class AdaptiveLinearNeuron( ):
 		"""
 		try:
 			if X is None:
-				raise Exception( 'values is not provided.' )
+				raise Exception( 'Aurguent "X" is not provided.' )
 			else:
 				return np.where( self.activation( self.net_input( X ) ) >= 0.5, 1, 0 )
 		except Exception as e:
@@ -659,7 +660,8 @@ class AdaptiveLinearNeuron( ):
 		'''
 		return [ 'fit', 'net_input', 'activation',
 		         'predict', 'losses_', 'b_', 'w_',
-		         'n_iter', 'eta', 'random_state', 'embedding-3-small' ]
+		         'n_iter', 'eta', 'random_state'  ]
+
 
 class Chat( AI ):
 	"""
@@ -703,6 +705,8 @@ class Chat( AI ):
 		summarize( self, prompt: str, path: str ) -> str
 		search_web( self, prompt: str ) -> str
 		search_file( self, prompt: str ) -> str
+		dump( self ) -> str
+		get_data( self ) -> { }
 		
 	
 	"""
@@ -773,7 +777,8 @@ class Chat( AI ):
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
-				self.response = self.client.responses.create( model=self.model, input=prompt )
+				self.prompt = prompt
+				self.response = self.client.responses.create( model=self.model, input=self.prompt )
 				return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
@@ -791,17 +796,19 @@ class Chat( AI ):
 			elif url is None:
 				raise Exception( 'Argument "url" cannot be None' )
 			else:
+				self.prompt = prompt
+				self.image_url = url
 				self.input = [
 					{
 						'role': 'user',
 						'content':
 							[
 								{ 'type': 'input_text',
-								  'text': prompt
+								  'text': self.prompt
 								  },
 								{
 									'type': 'input_image',
-									'image_url': url
+									'image_url': self.image_url
 								}
 							]
 					}
@@ -905,8 +912,40 @@ class Chat( AI ):
 			exception.method = 'search_file( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
-		
+	
+	
+	def get_data( self ) -> dict:
+		'''
 
+			Returns: dict[ str ] of members
+
+		'''
+		return { 'number': self.number,
+		         'temperature': self.temperature,
+		         'top_percent': self.top_percent,
+		         'frequency_penalty': self.frequency_penalty,
+		         'presence_penalty': self.presence_penalty,
+		         'store': self.store,
+		         'stream': self.stream,
+		         'size': self.size }
+	
+	
+	def dump( self ) -> str:
+		'''
+			Returns: dict of members
+		'''
+		new = '\r\n'
+		return 'number' + f' = {self.number}' + new + \
+			'temperature' + f' = {self.temperature}' + new + \
+			'top_percent' + f' = {self.top_percent}' + new + \
+			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+			'presence_penalty' + f' = {self.presence_penalty}' + new + \
+			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
+			'store' + f' = {self.store}' + new + \
+			'stream' + f' = {self.stream}' + new + \
+			'size' + f' = {self.size}' + new
+	
+	
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
@@ -921,7 +960,7 @@ class Chat( AI ):
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'size', 'api_key', 'client', 'model',
 		         'generate_text', 'analyze_image', 'summarize',
-		         'search_web' ]
+		         'search_web', 'search_file', 'get_data', 'dump' ]
 
 
 class LargeImage( AI ):
@@ -944,19 +983,10 @@ class LargeImage( AI ):
 		store: bool
 		stream: bool
 		
-		Attributes
-		-----------
-		self.api_key, self.client, self.model,  self.embedding,
-		self.response, self.number, self.temperature, self.top_percent,
-		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.prompt, self.response, self.completion, self.file, self.file_path,
-		self.input, self.messages, self.image_url, self.response_format,
-		self.tools, self.vector_store_ids, self.input_text, self.file_path, self.image_url
-		
 		Methods
 		------------
 		generate( self, input: str ) -> str:
+		analyze( self, input: str, path: str ) -> str
 		get_detail_options( self ) -> list[ str ]
 		get_format_options( self ) -> list[ str ]:
 		get_size_options( self ) -> list[ str ]
@@ -972,6 +1002,7 @@ class LargeImage( AI ):
 		self.client.api_key = Header( ).api_key
 		self.quality = 'hd'
 		self.model = 'dall-e-3'
+		self.size = '1024X1024'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -987,7 +1018,27 @@ class LargeImage( AI ):
 	
 	
 	def generate( self, input: str ) -> str:
-		pass
+		try:
+			if input is None:
+				raise Exception( 'The "input" argument is required.' )
+			else:
+				self.input_text = input
+				self.response = self.client.images.generate(
+					model=self.model,
+					prompt=self.input_text,
+					size=self.size,
+					quality=self.quality,
+					n=self.number
+				)
+				
+				return self.response.data[ 0 ].url
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Image'
+			exception.method = 'generate( self, input: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def analyze( self, input: str, path: str ) -> str:
@@ -1062,7 +1113,7 @@ class LargeImage( AI ):
 			Method that returns a  list of reasoning effort options
 
 		'''
-		return [ 'low', 'high', 'auto' ]
+		return [ 'auto', 'low', 'high' ]
 	
 	
 	def get_size_options( self ) -> list[ str ]:
@@ -1071,8 +1122,8 @@ class LargeImage( AI ):
 			Method that returns a  list of sizes
 		
 		'''
-		return [ '1024 x 2048', '2048 x 4096',
-		         '4096 x 8192']
+		return [ '1024x1024', '1024x1792',
+		         '1792x1024']
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -1184,7 +1235,27 @@ class Image( AI ):
 			Image object
 		
 		"""
-		pass
+		try:
+			if input is None:
+				raise Exception( 'The "input" argument is required.' )
+			else:
+				self.input_text = input
+				self.response = self.client.images.generate(
+					model=self.model,
+					prompt=self.input_text,
+					size=self.size,
+					quality=self.quality,
+					n=self.number
+				)
+				
+				return self.response.data[ 0 ].url
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Image'
+			exception.method = 'generate( self, input: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def analyze( self, input: str, path: str ) -> str:
@@ -1217,12 +1288,33 @@ class Image( AI ):
 					}
 				]
 				
-				self.response = self.client.responses.create(
-					model='gpt-4o-mini',
-					input=self.input,
-				)
+				self.response = self.client.responses.create( model='gpt-4o-mini',
+					input=self.input )
 				
-				return response.output_text
+				return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Image'
+			exception.method = 'analyze( self, input: str, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def edit( self, input: str, path: str, size: str='1024X1024' ) -> str:
+		try:
+			if input is None:
+				raise Exception('The argument "input" cannot be None')
+			elif path is None:
+				raise Exception('The argument "path" cannot be None')
+			else:
+				self.input_text = input
+				self.file_path = path
+				self.response = self.client.images.edit( model=self.model,
+					image=open( self.file_path, "rb" ), prompt=self.input_text, n=self.number,
+					size=self.size )
+				
+				return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
@@ -1243,7 +1335,7 @@ class Image( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'api_key', 'client', 'model', 'input', 'analyze',
-		         'input_text', 'image_url', 'file_path',
+		         'input_text', 'image_url', 'file_path', 'edit',
 		         'generate', 'quality', 'detail', 'model', 'get_model_options',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
@@ -1254,8 +1346,7 @@ class Image( AI ):
 			Method that returns a  list of model options
 		
 		'''
-		return [ '512 x 512', '1024 x 1024 ',
-		         '1024 x 2048' ]
+		return [ '256x256', '512x512', '1024x1024' ]
 	
 	
 	def get_format_options( self ) -> list[  str ]:
@@ -1274,7 +1365,7 @@ class Image( AI ):
 			Method that returns a  list of reasoning effort options
 		
 		'''
-		return [ 'low', 'high', 'auto' ]
+		return [ 'auto', 'low', 'high' ]
 	
 	
 class Assistant( AI ):
@@ -1296,19 +1387,6 @@ class Assistant( AI ):
 		max: int=2048
 		store: bool=True
 		stream: bool=True
-		
-		Attributes
-		-----------
-		self.self.number, self.self.temperature, self.self.top_percent,
-		self.frequency_penalty, self.presence_penalty, self.system_instructions,
-		self.store, self.stream, self.maximum_completion_tokens,
-		self.api_key, self.client, self.model,  self.embedding,
-		self.response, self.number, self.temperature, self.top_percent,
-		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.prompt, self.response, self.completion, self.file, self.file_path,
-		self.input, self.messages, self.image_url, self.response_format,
-		self.tools, self.vector_store_ids, self.descriptions, self.assistants
 		
 		Methods
 		------------
@@ -1344,7 +1422,7 @@ class Assistant( AI ):
 		self.response_format = 'auto'
 		self.reasoning_effort = 'auto'
 		self.input_text = None
-		self.name = None
+		self.name = 'Boo'
 		self.description = 'Generic Assistant'
 		self.id = None
 		self.metadata = { }
@@ -1411,7 +1489,7 @@ class Assistant( AI ):
 			Method that returns a list of formatting options
 		
 		'''
-		pass
+		return [ 'auto', 'text', 'json' ]
 	
 	
 	def get_model_options( ):
@@ -1420,7 +1498,11 @@ class Assistant( AI ):
 			Method that returns a list of available models
 
 		'''
-		pass
+		return [ 'gpt-4-0613', 'gpt-4-0314',
+                 'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
+                 'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
+                 'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+                 'o1-mini-2024-09-12', 'o3-mini-2025-01-31'  ]
 	
 	
 	def get_effort_options( ):
@@ -1429,10 +1511,42 @@ class Assistant( AI ):
 			Method that returns a list of available models
 
 		'''
-		pass
+		return [ 'auto', 'low', 'high' ]
 	
 	
-	def __dir__(self):
+	def get_data( self ) -> dict:
+		'''
+
+			Returns: dict[ str ] of members
+
+		'''
+		return { 'number': self.number,
+		         'temperature': self.temperature,
+		         'top_percent': self.top_percent,
+		         'frequency_penalty': self.frequency_penalty,
+		         'presence_penalty': self.presence_penalty,
+		         'store': self.store,
+		         'stream': self.stream,
+		         'size': self.size }
+	
+	
+	def dump( self ) -> str:
+		'''
+			Returns: dict of members
+		'''
+		new = '\r\n'
+		return 'number' + f' = {self.number}' + new + \
+			'temperature' + f' = {self.temperature}' + new + \
+			'top_percent' + f' = {self.top_percent}' + new + \
+			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+			'presence_penalty' + f' = {self.presence_penalty}' + new + \
+			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
+			'store' + f' = {self.store}' + new + \
+			'stream' + f' = {self.stream}' + new + \
+			'size' + f' = {self.size}' + new
+	
+	
+	def __dir__( self ):
 		'''
 		
 			Method that returns a list of members
@@ -1445,7 +1559,8 @@ class Assistant( AI ):
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
-		         'get_list', 'get_effort_options', 'input_text', 'metadata' ]
+		         'get_list', 'get_effort_options', 'input_text', 'metadata',
+		         'get_data', 'dump' ]
 	
 	
 class Bubba( AI ):
@@ -1467,18 +1582,6 @@ class Bubba( AI ):
 		store: bool=True
 		stream: bool=True
 		
-		Attributes
-		-----------
-		self.self.number, self.self.temperature, self.self.top_percent,
-		self.frequency_penalty, self.presence_penalty,
-		self.store, self.stream, self.maximum_completion_tokens,
-		self.api_key, self.client, self.model,  self.embedding, self.system_instructions,
-		self.response, self.number, self.temperature, self.top_percent,
-		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.prompt, self.response, self.completion, self.file, self.file_path,
-		self.input, self.messages, self.image_url, self.response_format,
-		self.tools, self.vector_store_ids, self.descriptions, self.assistants
 		
 		Methods
 		------------
@@ -1488,6 +1591,9 @@ class Bubba( AI ):
 		summarize( self, prompt: str, path: str ) -> str
 		search_web( self, prompt: str ) -> str
 		search_file( self, prompt: str ) -> str
+		dump( self ) -> str
+		get_data( self ) -> { }
+		
 		
 	
 	"""
@@ -1562,7 +1668,7 @@ class Bubba( AI ):
 			Method that returns a list of formatting options
 		
 		'''
-		pass
+		return [ 'auto', 'text', 'json' ]
 	
 	
 	def get_model_options( ):
@@ -1571,7 +1677,11 @@ class Bubba( AI ):
 			Method that returns a list of available models
 
 		'''
-		pass
+		return [ 'gpt-4-0613', 'gpt-4-0314',
+                 'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
+                 'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
+                 'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+                 'o1-mini-2024-09-12', 'o3-mini-2025-01-31'  ]
 	
 	
 	def get_effort_options( ):
@@ -1580,7 +1690,40 @@ class Bubba( AI ):
 			Method that returns a list of available models
 
 		'''
-		pass
+		return [ 'auto', 'low', 'high' ]
+	
+	
+	def get_data( self ) -> dict:
+		'''
+
+			Returns: dict[ str ] of members
+
+		'''
+		return { 'number': self.number,
+		         'temperature': self.temperature,
+		         'top_percent': self.top_percent,
+		         'frequency_penalty': self.frequency_penalty,
+		         'presence_penalty': self.presence_penalty,
+		         'store': self.store,
+		         'stream': self.stream,
+		         'size': self.size }
+	
+	
+	def dump( self ) -> str:
+		'''
+			Returns: dict of members
+		'''
+		new = '\r\n'
+		return 'number' + f' = {self.number}' + new + \
+			'temperature' + f' = {self.temperature}' + new + \
+			'top_percent' + f' = {self.top_percent}' + new + \
+			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+			'presence_penalty' + f' = {self.presence_penalty}' + new + \
+			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
+			'store' + f' = {self.store}' + new + \
+			'stream' + f' = {self.stream}' + new + \
+			'size' + f' = {self.size}' + new
+	
 	
 	def __dir__(self):
 		'''
@@ -1595,7 +1738,8 @@ class Bubba( AI ):
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
-		         'get_list', 'get_effort_options', 'input_text', 'metadata' ]
+		         'get_list', 'get_effort_options', 'input_text', 'metadata',
+		          'get_data', 'dump' ]
 
 
 class Bro( AI ):
@@ -1617,18 +1761,6 @@ class Bro( AI ):
 		store: bool=True
 		stream: bool=True
 		
-		Attributes
-		-----------
-		self.self.number, self.self.temperature, self.self.top_percent,
-		self.frequency_penalty, self.presence_penalty, self.system_instructions,
-		self.store, self.stream, self.maximum_completion_tokens,
-		self.api_key, self.client, self.model,  self.embedding, self.reasoning_effort,
-		self.response, self.number, self.temperature, self.top_percent,
-		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.prompt, self.response, self.completion, self.file, self.file_path,
-		self.input, self.messages, self.image_url, self.response_format,
-		self.tools, self.vector_store_ids, self.descriptions, self.assistants
 		
 		Methods
 		------------
@@ -1638,6 +1770,9 @@ class Bro( AI ):
 		summarize( self, prompt: str, path: str ) -> str
 		search_web( self, prompt: str ) -> str
 		search_file( self, prompt: str ) -> str
+		dump( self ) -> str
+		get_data( self ) -> { }
+		
 		
 	
 	"""
@@ -1712,7 +1847,7 @@ class Bro( AI ):
 			Method that returns a list of formatting options
 		
 		'''
-		pass
+		return [ 'auto', 'text', 'json' ]
 	
 	
 	def get_model_options( ):
@@ -1721,7 +1856,11 @@ class Bro( AI ):
 			Method that returns a list of available models
 
 		'''
-		pass
+		return [ 'gpt-4-0613', 'gpt-4-0314',
+                 'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
+                 'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
+                 'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+                 'o1-mini-2024-09-12', 'o3-mini-2025-01-31'  ]
 	
 	
 	def get_effort_options( ):
@@ -1730,9 +1869,42 @@ class Bro( AI ):
 			Method that returns a list of available models
 
 		'''
-		pass
+		return [ 'auto', 'low', 'high' ]
 	
 	
+	def get_data( self ) -> dict:
+		'''
+
+			Returns: dict[ str ] of members
+
+		'''
+		return { 'number': self.number,
+		         'temperature': self.temperature,
+		         'top_percent': self.top_percent,
+		         'frequency_penalty': self.frequency_penalty,
+		         'presence_penalty': self.presence_penalty,
+		         'store': self.store,
+		         'stream': self.stream,
+		         'size': self.size }
+	
+	
+	def dump( self ) -> str:
+		'''
+			Returns: dict of members
+		'''
+		new = '\r\n'
+		return 'number' + f' = {self.number}' + new + \
+			'temperature' + f' = {self.temperature}' + new + \
+			'top_percent' + f' = {self.top_percent}' + new + \
+			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+			'presence_penalty' + f' = {self.presence_penalty}' + new + \
+			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
+			'store' + f' = {self.store}' + new + \
+			'stream' + f' = {self.stream}' + new + \
+			'size' + f' = {self.size}' + new
+	
+	
+
 	def __dir__(self):
 		'''
 		
@@ -1746,7 +1918,8 @@ class Bro( AI ):
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
-		         'get_list', 'get_effort_options', 'input_text', 'metadata' ]
+		         'get_list', 'get_effort_options', 'input_text', 'metadata',
+		          'get_data', 'dump' ]
 
 
 class TextToSpeech( AI ):
@@ -1793,7 +1966,6 @@ class TextToSpeech( AI ):
 			Constructor to  create TextToSpeech objects
 		'''
 		super( ).__init__( )
-		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'tts-1-hd'
@@ -1819,7 +1991,21 @@ class TextToSpeech( AI ):
 			Methods that returns a list of model names
 		
 		'''
-		return [ ]
+		return [ 'tts-1', 'tts-1-hd',
+                 'gpt-4o-audio-preview-2024-12-17',
+                 'gpt-4o-audio-preview-2024-10-01',
+                 'gpt-4o-mini-audio-preview-2024-12-17' ]
+	
+	
+	def get_voice_options( self ):
+		'''
+		
+			Method that returns a list of voice names
+		
+		'''
+		return [ 'alloy', 'ash', 'ballad', 'coral',
+		         'echo', 'fable', 'onyx', 'nova',
+		         'sage', 'shiver' ]
 	
 	
 	def create( self, prompt: str, path: str ):
@@ -1847,7 +2033,7 @@ class TextToSpeech( AI ):
 			elif prompt is None:
 				raise Exception( 'Argument "prompt" is required.' )
 			else:
-				self.audio_path = Path( path ).parent  # 'speech.mp3'
+				self.audio_path = Path( path ).parent
 				self.prompt = prompt
 				self.response = self.client.audio.speech.with_streaming_response( model=self.model,
 					voice='alloy', input=self.prompt )
@@ -1859,6 +2045,38 @@ class TextToSpeech( AI ):
 			exception.method = 'create( self, prompt: str, input: str )]'
 			error = ErrorDialog( exception )
 			error.show( )
+	
+	
+	def get_data( self ) -> dict:
+		'''
+
+			Returns: dict[ str ] of members
+
+		'''
+		return { 'number': self.number,
+		         'temperature': self.temperature,
+		         'top_percent': self.top_percent,
+		         'frequency_penalty': self.frequency_penalty,
+		         'presence_penalty': self.presence_penalty,
+		         'store': self.store,
+		         'stream': self.stream,
+		         'size': self.size }
+	
+	
+	def dump( self ) -> str:
+		'''
+			Returns: dict of members
+		'''
+		new = '\r\n'
+		return 'number' + f' = {self.number}' + new + \
+			'temperature' + f' = {self.temperature}' + new + \
+			'top_percent' + f' = {self.top_percent}' + new + \
+			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+			'presence_penalty' + f' = {self.presence_penalty}' + new + \
+			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
+			'store' + f' = {self.store}' + new + \
+			'stream' + f' = {self.stream}' + new + \
+			'size' + f' = {self.size}' + new
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -1902,14 +2120,13 @@ class Transcription( AI ):
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.input_text, self.response, self.completion, self.file, self.file_path,
-		self.input, self.messages, self.image_url, self.response_format,
-		self.tools, self.vector_store_ids, self.descriptions, self.assistants
+		self.input_text, self.response, self.completion, self.audio_file, self.transcript
+		
 		
 		Methods
 		------------
 		get_model_options( self ) -> str
-		create( self, prompt: str, path: str ) -> str
+		create( self, input: str  ) -> str
 		
 	
 	"""
@@ -1918,7 +2135,6 @@ class Transcription( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
-		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'whisper-1'
@@ -1935,6 +2151,7 @@ class Transcription( AI ):
 		self.input_text = None
 		self.audio_file = None
 		self.transcript = None
+		self.response = None
 	
 	
 	def get_model_options( self ) -> str:
@@ -1943,7 +2160,7 @@ class Transcription( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ ]
+		return [ 'whisper-1', 'gpt-4o-mini-transcribe', ' gpt-4o-transcribe' ]
 	
 	
 	def create( self, input: str ) -> str:
@@ -1982,6 +2199,38 @@ class Transcription( AI ):
 			error.show( )
 	
 	
+	def get_data( self ) -> dict:
+		'''
+
+			Returns: dict[ str ] of members
+
+		'''
+		return { 'number': self.number,
+		         'temperature': self.temperature,
+		         'top_percent': self.top_percent,
+		         'frequency_penalty': self.frequency_penalty,
+		         'presence_penalty': self.presence_penalty,
+		         'store': self.store,
+		         'stream': self.stream,
+		         'size': self.size }
+	
+	
+	def dump( self ) -> str:
+		'''
+			Returns: dict of members
+		'''
+		new = '\r\n'
+		return 'number' + f' = {self.number}' + new + \
+			'temperature' + f' = {self.temperature}' + new + \
+			'top_percent' + f' = {self.top_percent}' + new + \
+			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+			'presence_penalty' + f' = {self.presence_penalty}' + new + \
+			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
+			'store' + f' = {self.store}' + new + \
+			'stream' + f' = {self.stream}' + new + \
+			'size' + f' = {self.size}' + new
+	
+	
 	def __dir__( self ) -> list[ str ]:
 		'''
 		
@@ -1992,9 +2241,10 @@ class Transcription( AI ):
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
-		         'prompt', 'response', 'completion', 'audio_path',
-		         'input', 'messages', 'respose_format', 'tools',
-		         'size', 'api_key', 'client', 'model', 'create' ]
+		         'prompt', 'response', 'audio_file',
+		         'input', 'messages', 'respose_format',
+		         'api_key', 'client', 'model', 'create',
+		         'input_text', 'transcript' ]
 
 
 class Translation( AI ):
@@ -2037,7 +2287,6 @@ class Translation( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
-		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'whisper-1'
@@ -2053,6 +2302,7 @@ class Translation( AI ):
 		self.stops = [ '#', ';' ]
 		self.audio_file = None
 		self.response = None
+		self.voice = None
 	
 	
 	def get_model_options( self ) -> str:
@@ -2061,7 +2311,20 @@ class Translation( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ ]
+		return [ 'whisper-1', 'text-davinci-003',
+		         'gpt-4-0613', 'gpt-4-0314',
+		         'gpt-4-turbo-2024-04-09' ]
+	
+	
+	def get_voice_options( self ):
+		'''
+		
+			Method that returns a list of voice names
+		
+		'''
+		return [ 'alloy', 'ash', 'ballad', 'coral',
+		         'echo', 'fable', 'onyx', 'nova',
+		         'sage', 'shiver' ]
 	
 	
 	def create( self, input: str ):
@@ -2096,6 +2359,38 @@ class Translation( AI ):
 			exception.method = 'create( self, input: str )'
 			error = ErrorDialog( exception )
 			error.show( )
+	
+	
+	def get_data( self ) -> dict:
+		'''
+
+			Returns: dict[ str ] of members
+
+		'''
+		return { 'number': self.number,
+		         'temperature': self.temperature,
+		         'top_percent': self.top_percent,
+		         'frequency_penalty': self.frequency_penalty,
+		         'presence_penalty': self.presence_penalty,
+		         'store': self.store,
+		         'stream': self.stream,
+		         'size': self.size }
+	
+	
+	def dump( self ) -> str:
+		'''
+			Returns: dict of members
+		'''
+		new = '\r\n'
+		return 'number' + f' = {self.number}' + new + \
+			'temperature' + f' = {self.temperature}' + new + \
+			'top_percent' + f' = {self.top_percent}' + new + \
+			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+			'presence_penalty' + f' = {self.presence_penalty}' + new + \
+			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
+			'store' + f' = {self.store}' + new + \
+			'stream' + f' = {self.stream}' + new + \
+			'size' + f' = {self.size}' + new
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -2142,28 +2437,20 @@ class SmallEmbedding( AI ):
 	"""
 	
 	
-	def __init__( self ):
-		"""
-
-			Purpose
-			_______
-			Initializes SmallEmbedding opbjects
-
-
-			Parameters
-			----------
-			None
-
-
-			Returns
-			-------
-			None
-
-		"""
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
-		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
+		self.client.api_key = Header( ).api_key
 		self.model = 'embedding-3-small'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
 		self.embedding = None
 		self.response = None
 	
@@ -2174,7 +2461,7 @@ class SmallEmbedding( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ ]
+		return [ 'embedding-3-small', ]
 	
 	
 	def create( self, input: str ) -> list[ float ]:
@@ -2210,6 +2497,38 @@ class SmallEmbedding( AI ):
 			exception.method = 'create( self, input: str ) -> get_list[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
+	
+	
+	def get_data( self ) -> dict:
+		'''
+
+			Returns: dict[ str ] of members
+
+		'''
+		return { 'number': self.number,
+		         'temperature': self.temperature,
+		         'top_percent': self.top_percent,
+		         'frequency_penalty': self.frequency_penalty,
+		         'presence_penalty': self.presence_penalty,
+		         'store': self.store,
+		         'stream': self.stream,
+		         'size': self.size }
+	
+	
+	def dump( self ) -> str:
+		'''
+			Returns: dict of members
+		'''
+		new = '\r\n'
+		return 'number' + f' = {self.number}' + new + \
+			'temperature' + f' = {self.temperature}' + new + \
+			'top_percent' + f' = {self.top_percent}' + new + \
+			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+			'presence_penalty' + f' = {self.presence_penalty}' + new + \
+			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
+			'store' + f' = {self.store}' + new + \
+			'stream' + f' = {self.stream}' + new + \
+			'size' + f' = {self.size}' + new
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -2253,6 +2572,24 @@ class AdaEmbedding( AI ):
 	'''
 	
 	
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
+		super( ).__init__( )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI( self.api_key )
+		self.model = 'embedding-ada-02'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.embedding = None
+		self.response = None
+	
+	
 	def create( self, input: str ) -> list[ float ]:
 		"""
 
@@ -2294,9 +2631,9 @@ class AdaEmbedding( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ ]
+		return [ 'embedding-ada-02']
 	
-	
+
 	def __dir__( self ) -> list[ str ]:
 		'''
 
@@ -2335,11 +2672,20 @@ class LargeEmbedding( AI ):
 	'''
 	
 	
-	def __init__( self ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( self.api_key )
-		self.model = 'text-embedding-3-large'
+		self.model = 'embedding-3-large'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
 		self.embedding = None
 		self.response = None
 	
@@ -2350,7 +2696,7 @@ class LargeEmbedding( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ ]
+		return [ 'embedding-3-large', ]
 	
 	
 	def create( self, input: str ) -> list[ float ]:
