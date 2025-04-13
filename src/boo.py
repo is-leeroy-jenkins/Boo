@@ -952,7 +952,7 @@ class LargeImage( AI ):
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.prompt, self.response, self.completion, self.file, self.file_path,
 		self.input, self.messages, self.image_url, self.response_format,
-		self.tools, self.vector_store_ids
+		self.tools, self.vector_store_ids, self.input_text, self.file_path, self.image_url
 		
 		Methods
 		------------
@@ -980,6 +980,9 @@ class LargeImage( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
+		self.input_text = None
+		self.file_path = None
+		self.image_url = None
 		
 	
 	
@@ -987,40 +990,89 @@ class LargeImage( AI ):
 		pass
 	
 	
-	def get_model_options( self ) -> str:
+	def analyze( self, input: str, path: str ) -> str:
+		'''
+		
+			Method providing image analysis functionality given a prompt and filepath
+		
+		'''
+		try:
+			if input is None:
+				raise Exception( 'The argument "input" cannot be None' )
+			elif path is None:
+				raise Exception( 'The argument "path" cannot be None' )
+			else:
+				self.input_text = input
+				self.file_path = path
+				self.input = \
+					[ {
+							'role': 'user',
+							'content':
+							[
+								{ 'type': 'input_text',
+								  'text': self.input_text
+								},
+								{
+									'type': 'input_image',
+									'image_url': self.file_path
+								},
+							],
+						}
+					]
+				
+				self.response = self.client.responses.create(
+					model='gpt-4o-mini',
+					input=self.input,
+				)
+				
+				return response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Image'
+			exception.method = 'analyze( self, input: str, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def get_model_options( self ) -> list[ str ]:
 		'''
 		
 			Methods that returns a list of model names
 		
 		'''
-		return [ ]
+		return [ 'dall-e-3', 'gpt-4-0613',
+		         'gpt-4-0314', 'gpt-4o-mini',
+                 'gpt-4o-mini-2024-07-18' ]
 		
+		
+	def get_format_options( self ) -> list[ str ]:
+		'''
 
-	def get_detail_options( self ) -> list[  str ]:
-		'''
-		
-			Method that returns a  list of detail options
-		
-		'''
-		return [ ]
-	
-	
-	def get_format_options( self ):
-		'''
-		
 			Method that returns a  list of format options
-		
+
 		'''
-		return [ ]
+		return [ '.png', '.mpeg', '.jpeg',
+		         '.webp', '.gif' ]
 	
 	
-	def get_size_options( self ):
+	def get_detail_options( self ) -> list[ str ]:
+		'''
+
+			Method that returns a  list of reasoning effort options
+
+		'''
+		return [ 'low', 'high', 'auto' ]
+	
+	
+	def get_size_options( self ) -> list[ str ]:
 		'''
 		
 			Method that returns a  list of sizes
 		
 		'''
-		return [ ]
+		return [ '1024 x 2048', '2048 x 4096',
+		         '4096 x 8192']
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -1033,6 +1085,7 @@ class LargeImage( AI ):
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
+		         'input_text', 'image_url', 'file_path',
 				 'api_key', 'client', 'model', 'input', 'generate',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
@@ -1065,14 +1118,15 @@ class Image( AI ):
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.prompt, self.response, self.completion, self.file, self.file_path,
 		self.input, self.messages, self.image_url, self.response_format,
-		self.tools, self.vector_store_ids
+		self.tools, self.vector_store_ids, self.input_text, self.file_path, self.image_url
 		
 		Methods
 		------------
 		get_model_options( self ) -> str
-		generate( self, input: str ) -> str:
+		generate( self, input: str ) -> str
+		analyze( self, input: str, path: str ) -> str
 		get_detail_options( self ) -> list[ str ]
-		get_format_options( self ) -> list[ str ]:
+		get_format_options( self ) -> list[ str ]
 		get_size_options( self ) -> list[ str ]
 		
 	"""
@@ -1095,15 +1149,21 @@ class Image( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
+		self.input = [ ]
+		self.input_text = None
+		self.file_path = None
+		self.image_url = None
 	
 	
-	def get_model_options( self ) -> str:
+	def get_model_options( self ) -> list[ str ]:
 		'''
 		
 			Methods that returns a list of model names
 		
 		'''
-		return [ ]
+		return [ 'dall-e-2', 'gpt-4-0613',
+		         'gpt-4-0314', 'gpt-4o-mini',
+                 'gpt-4o-mini-2024-07-18' ]
 	
 	
 	def generate( self, input: str ) -> str:
@@ -1127,6 +1187,51 @@ class Image( AI ):
 		pass
 	
 	
+	def analyze( self, input: str, path: str ) -> str:
+		'''
+		
+			Method providing image analysis functionality given a prompt and filepath
+		
+		'''
+		try:
+			if input is None:
+				raise Exception('The argument "input" cannot be None')
+			elif path is None:
+				raise Exception('The argument "path" cannot be None')
+			else:
+				self.input_text = input
+				self.file_path = path
+				self.input = \
+				[ {
+						'role': 'user',
+						'content':
+						[
+							{ 'type': 'input_text',
+							  'text': self.input_text
+						    },
+							{
+								'type': 'input_image',
+								'image_url': self.file_path
+							},
+						],
+					}
+				]
+				
+				self.response = self.client.responses.create(
+					model='gpt-4o-mini',
+					input=self.input,
+				)
+				
+				return response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Image'
+			exception.method = 'analyze( self, input: str, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
 	def __dir__( self ) -> list[ str ]:
 		'''
 
@@ -1137,7 +1242,8 @@ class Image( AI ):
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
-		         'api_key', 'client', 'model', 'input',
+		         'api_key', 'client', 'model', 'input', 'analyze',
+		         'input_text', 'image_url', 'file_path',
 		         'generate', 'quality', 'detail', 'model', 'get_model_options',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
@@ -1148,25 +1254,27 @@ class Image( AI ):
 			Method that returns a  list of model options
 		
 		'''
-		return [ ]
+		return [ '512 x 512', '1024 x 1024 ',
+		         '1024 x 2048' ]
 	
 	
-	def get_format_options( self ):
+	def get_format_options( self ) -> list[  str ]:
 		'''
 		
 			Method that returns a  list of format options
 		
 		'''
-		return [ ]
+		return [ '.png', '.mpeg', '.jpeg',
+		         '.webp', '.gif' ]
 	
 	
-	def get_effort_options( self ):
+	def get_detail_options( self ) -> list[  str ]:
 		'''
 		
 			Method that returns a  list of reasoning effort options
 		
 		'''
-		return [ ]
+		return [ 'low', 'high', 'auto' ]
 	
 	
 class Assistant( AI ):
@@ -1240,8 +1348,8 @@ class Assistant( AI ):
 		self.description = 'Generic Assistant'
 		self.id = None
 		self.metadata = { }
-		self.tools = list
-		self.assistants = list
+		self.tools = [ ]
+		self.assistants = [ ]
 	
 	
 	def generate_text( self, prompt: str ) -> str:
@@ -1335,9 +1443,9 @@ class Assistant( AI ):
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'file_path',
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
-		         'vector_store_ids', 'name', 'description', 'generate_text',
-		         'get_format_options', 'get_model_options',
-		         'get_list', 'get_effort_options' ]
+		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
+		         'get_format_options', 'get_model_options', 'reasoning_effort'
+		         'get_list', 'get_effort_options', 'input_text', 'metadata' ]
 	
 	
 class Bubba( AI ):
@@ -1480,14 +1588,14 @@ class Bubba( AI ):
 			Method that returns a list of members
 		
 		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return  [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'file_path',
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
-		         'vector_store_ids', 'name', 'description', 'generate_text',
-		         'get_format_options', 'get_model_options',
-		         'get_list', 'get_effort_options' ]
+		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
+		         'get_format_options', 'get_model_options', 'reasoning_effort'
+		         'get_list', 'get_effort_options', 'input_text', 'metadata' ]
 
 
 class Bro( AI ):
@@ -1631,14 +1739,14 @@ class Bro( AI ):
 			Method that returns a list of members
 		
 		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return  [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'file_path',
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
-		         'vector_store_ids', 'name', 'description', 'generate_text',
-		         'get_format_options', 'get_model_options',
-		         'get_list', 'get_effort_options' ]
+		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
+		         'get_format_options', 'get_model_options', 'reasoning_effort'
+		         'get_list', 'get_effort_options', 'input_text', 'metadata' ]
 
 
 class TextToSpeech( AI ):
