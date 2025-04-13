@@ -182,8 +182,8 @@ class Models( ):
 		self.finetuning = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18',
 		                    'gpt-4-0613', 'gpt-3.5-turbo-0125',
 		                    'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-0613' ]
-		self.embeddings = [ 'embedding-3-small', 'embedding-3-large',
-		                    'embedding-ada-002' ]
+		self.embeddings = [ 'text-embedding-3-small', 'text-embedding-3-large',
+		                    'text-embedding-ada-002' ]
 		self.uploads = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
 		                 'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
@@ -1982,7 +1982,7 @@ class TextToSpeech( AI ):
 		self.audio_path = None
 		self.response = None
 		self.prompt = None
-		self.voice = None
+		self.voice = 'alloy'
 	
 	
 	def get_model_options( self ) -> str:
@@ -2006,6 +2006,15 @@ class TextToSpeech( AI ):
 		return [ 'alloy', 'ash', 'ballad', 'coral',
 		         'echo', 'fable', 'onyx', 'nova',
 		         'sage', 'shiver' ]
+	
+	
+	def get_format_options( self ):
+		'''
+		
+			Method that returns a list of image formats
+		
+		'''
+		return [ 'mp3', 'wav', 'aac', 'flac', 'opus', 'pcm']
 	
 	
 	def create( self, prompt: str, path: str ):
@@ -2036,7 +2045,7 @@ class TextToSpeech( AI ):
 				self.audio_path = Path( path ).parent
 				self.prompt = prompt
 				self.response = self.client.audio.speech.with_streaming_response( model=self.model,
-					voice='alloy', input=self.prompt )
+					voice=self.voice, input=self.prompt )
 				return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
@@ -2442,7 +2451,8 @@ class SmallEmbedding( AI ):
 		super( ).__init__( )
 		self.client = OpenAI( self.api_key )
 		self.client.api_key = Header( ).api_key
-		self.model = 'embedding-3-small'
+		self.model = 'text-embedding-3-small'
+		self.encoding_format = 'float'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -2461,7 +2471,7 @@ class SmallEmbedding( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ 'embedding-3-small', ]
+		return [ 'text-embedding-3-small', ]
 	
 	
 	def create( self, input: str ) -> list[ float ]:
@@ -2577,7 +2587,7 @@ class AdaEmbedding( AI ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( self.api_key )
-		self.model = 'embedding-ada-02'
+		self.model = 'text-embedding-ada-02'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -2631,7 +2641,7 @@ class AdaEmbedding( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ 'embedding-ada-02']
+		return [ 'text-embedding-ada-02']
 	
 
 	def __dir__( self ) -> list[ str ]:
@@ -2677,7 +2687,8 @@ class LargeEmbedding( AI ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( self.api_key )
-		self.model = 'embedding-3-large'
+		self.model = 'text-embedding-3-large'
+		self.encoding_format = 'float'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -2696,7 +2707,7 @@ class LargeEmbedding( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ 'embedding-3-large', ]
+		return [ 'text-embedding-3-large', ]
 	
 	
 	def create( self, input: str ) -> list[ float ]:
