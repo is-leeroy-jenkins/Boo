@@ -2120,6 +2120,7 @@ class PdfForm( Dark ):
 		         'button_forecolor', 'icon_path', 'theme_font',
 		         'scrollbar_color', 'input_text', 'show' ]
 	
+
 	
 	def show( self ):
 		'''
@@ -2132,111 +2133,145 @@ class PdfForm( Dark ):
 
 		'''
 		try:
-			_oldpage = 0
-			_zoom = 0
-			_oldzoom = 0
-			
-			_filename = sg.popup_get_file( 'Select file', ' PDF Viewer',
-				icon=self.icon_path,
-				font=self.theme_font,
-				file_types=(('PDF', '*.pdf'),) )
-			
-			if _filename is None:
+			fname = sg.popup_get_file( 'PDF Browser', 'PDF file to open', 
+				file_types=(( 'PDF Files', '*.pdf' ),) )
+			if fname is None:
 				sg.popup_cancel( 'Cancelling' )
-				exit( 0 )
-			
-			_pdf = fitz.open( _filename )
-			_pages = len( _pdf )
-			_displaylist = [ None ] * _pages
-			_title = ' Booger'
-			
-			
-			def getpage( pno, zoom=0 ):
-				_display = _displaylist[ pno ]
-				if _display:
-					_displaylist[ pno ] = _pdf[ pno ].get_displaylist( )
-					_display = _displaylist[ pno ]
-					_r = _display.rect
-					_mp = _r.tl + (_r.br - _r.tl) * 0.5  # rect middle point
-					_mt = _r.tl + (_r.tr - _r.tl) * 0.5  # middle of top_p edge
-					_ml = _r.tl + (_r.bl - _r.tl) * 0.5  # middle of left edge
-					_mr = _r.tr + (_r.br - _r.tr) * 0.5  # middle of right egde
-					_mb = _r.bl + (_r.br - _r.bl) * 0.5  # middle of bottom edge
-					_mat = fitz.Matrix( 2, 2 )
-					if zoom == 1:
-						_clip = fitz.Rect( _r.tl, _mp )
-					elif zoom == 4:
-						_clip = fitz.Rect( _mp, _r.br )
-					elif zoom == 2:
-						_clip = fitz.Rect( _mt, _mr )
-					elif zoom == 3:
-						_clip = fitz.Rect( _ml, _mb )
-					if zoom == 0:
-						_pix = _display.get_pixmap( alpha=False )
+				exit(0)
+			else:
+				doc = fitz.open( fname )
+				page_count = len( doc )
+				
+				# storage for page display lists
+				dlist_tab = [ None ] * page_count
+				title = 'PyMuPDF display of "%s", pages: %i' % (fname, page_count)
+				
+				
+				def get_page( pno, zoom=0 ):
+					"""
+					
+						Return a PNG image for a document page number.
+						If zoom is other than 0, one of the 4 page quadrants
+						are zoomed-in instead and the corresponding clip returned.
+
+					"""
+					dlist = dlist_tab[ pno ]  # get display list
+					if not dlist:  # create if not yet there
+						dlist_tab[ pno ] = doc[ pno ].get_displaylist( )
+						dlist = dlist_tab[ pno ]
+					r = dlist.rect  # page rectangle
+					mp = r.tl + (r.br - r.tl) * 0.5  # rect middle point
+					mt = r.tl + (r.tr - r.tl) * 0.5  # middle of top edge
+					ml = r.tl + (r.bl - r.tl) * 0.5  # middle of left edge
+					mr = r.tr + (r.br - r.tr) * 0.5  # middle of right egde
+					mb = r.bl + (r.br - r.bl) * 0.5  # middle of bottom edge
+					mat = fitz.Matrix( 2, 2 )  # zoom matrix
+					if zoom == 1:  # top-left quadrant
+						clip = fitz.Rect( r.tl, mp )
+					elif zoom == 4:  # bot-right quadrant
+						clip = fitz.Rect( mp, r.br )
+					elif zoom == 2:  # top-right
+						clip = fitz.Rect( mt, mr )
+					elif zoom == 3:  # bot-left
+						clip = fitz.Rect( ml, mb )
+					if zoom == 0:  # total page
+						pix = dlist.get_pixmap( alpha=False )
 					else:
-						_pix = _display.get_pixmap( alpha=False, matrix=_mat )
-					return _pix.tobytes( )
-			
-			
-			_current = 0
-			_data = getpage( _current )
-			_image = sg.Image( data=_data )
-			_goto = sg.InputText( f'{str( _current + 1 )} of {str( _pages )}', size=(10, 1) )
-			_layout = [ [ sg.Button( 'Prev' ), sg.Button( 'Next' ),
-			              sg.Text( ),
-			              sg.Text( 'Page:' ), _goto,
-			              sg.Text( size=(10, 1) ), sg.Text( 'Zoom: ' ),
-			              sg.Button( ' In ', key='-IN-' ), sg.Button( ' Out', key='-OUT-' ), ],
-			            [ _image ], ]
-			
-			_keys = ('Next', 'Next:34', 'Prev', 'Prior:33', 'MouseWheel:Down', 'MouseWheel:Up',
-			         '-IN-', '-OUT-')
-			
-			_window = sg.Window( _title, _layout,
-				size=self.form_size,
-				font=self.theme_font,
-				modal=True,
-				resizable=True,
-				grab_anywhere=True,
-				icon=self.icon_path )
-			
-			while True:
-				_event, _values = _window.read( )
-				_forcepage = False
-				if _event == sg.WIN_CLOSED:
-					break
-				elif _event in ('Next', 'Next:34', 'MouseWheel:Down'):
-					_current += 1
-					_goto.Update( f'{str( _current + 1 )} of {str( _pages )}' )
-				elif _event in ('Prev', 'Prior:33', 'MouseWheel:Up'):
-					_current -= 1
-					_goto.Update( f'{str( _current + 1 )} of {str( _pages )}' )
-				elif _event == '-IN-':
-					_zoom += 1
-				elif _event == '-OUT-':
-					_zoom -= 1
+						pix = dlist.get_pixmap( alpha=False, matrix=mat, clip=clip )
+					return pix.tobytes( )  # return the PNG image
 				
-				if _current >= _pages:
-					_current = 0
 				
-				while _current < 0:
-					_current += _pages
+				cur_page = 0
+				data = get_page( cur_page )  # show page 1 for start
+				image_elem = sg.Image( data=data )
+				goto = sg.InputText( str( cur_page + 1 ), size=(5, 1) )
+				layout = [
+					[
+						sg.Button( 'Prev' ),
+						sg.Button( 'Next' ),
+						sg.Text( 'Page:' ),
+						goto,
+					],
+					[
+						sg.Text( "Zoom:" ),
+						sg.Button( 'Top-L' ),
+						sg.Button( 'Top-R' ),
+						sg.Button( 'Bot-L' ),
+						sg.Button( 'Bot-R' ),
+					],
+					[ image_elem ],
+				]
+				my_keys = ('Next', 'Next:34', 'Prev', 'Prior:33', 'Top-L', 'Top-R',
+				           'Bot-L', 'Bot-R', 'MouseWheel:Down', 'MouseWheel:Up')
+				zoom_buttons = ('Top-L', 'Top-R', 'Bot-L', 'Bot-R')
 				
-				if _current != _oldpage:
-					_zoom = _oldzoom = 0
-					_forcepage = True
-					if _zoom != _oldzoom:
-						_forcepage = True
+				window = sg.Window( title, layout,
+					return_keyboard_events=True, use_default_focus=False )
 				
-				if _forcepage:
-					_data = getpage( _current, _zoom )
-					_image.update( data=_data )
-					_oldpage = _current
-				
-				_oldzoom = _zoom
-				
-				if _event in _keys or not _values[ 0 ]:
-					_goto.update( f'{str( _current + 1 )} of {str( _pages )}' )
+				old_page = 0
+				old_zoom = 0  # used for zoom on/off
+				# the zoom buttons work in on/off mode.
+				while True:
+					event, values = window.read( timeout=100 )
+					zoom = 0
+					force_page = False
+					if event == sg.WIN_CLOSED:
+						break
+					
+					if event in ("Escape:27",):  # this spares me a 'Quit' button!
+						break
+					if event[ 0 ] == chr( 13 ):  # surprise: this is 'Enter'!
+						try:
+							cur_page = int( values[ 0 ] ) - 1  # check if valid
+							while cur_page < 0:
+								cur_page += page_count
+						except:
+							cur_page = 0  # this guy's trying to fool me
+						goto.update( str( cur_page + 1 ) )
+					# goto.TKStringVar.set(str(cur_page + 1))
+					
+					elif event in ('Next', 'Next:34', 'MouseWheel:Down'):
+						cur_page += 1
+					elif event in ('Prev', 'Prior:33', 'MouseWheel:Up'):
+						cur_page -= 1
+					elif event == 'Top-L':
+						zoom = 1
+					elif event == 'Top-R':
+						zoom = 2
+					elif event == 'Bot-L':
+						zoom = 3
+					elif event == 'Bot-R':
+						zoom = 4
+					
+					# sanitize page number
+					if cur_page >= page_count:  # wrap around
+						cur_page = 0
+					while cur_page < 0:  # we show conventional page numbers
+						cur_page += page_count
+					
+					# prevent creating same data again
+					if cur_page != old_page:
+						zoom = old_zoom = 0
+						force_page = True
+					
+					if event in zoom_buttons:
+						if 0 < zoom == old_zoom:
+							zoom = 0
+							force_page = True
+						
+						if zoom != old_zoom:
+							force_page = True
+					
+					if force_page:
+						data = get_page( cur_page, zoom )
+						image_elem.update( data=data )
+						old_page = cur_page
+					old_zoom = zoom
+					
+					# update page number field
+					if event in my_keys or not values[ 0 ]:
+						goto.update( str( cur_page + 1 ) )
+					# goto.TKStringVar.set(str(cur_page + 1))
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Booger'

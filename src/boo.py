@@ -52,6 +52,29 @@ from static import GptRequests, GptRoles, GptLanguages
 from booger import ErrorDialog, Error
 
 
+class EndPoint( ):
+	'''
+		The class containing endpoints for OpenAI
+	'''
+	
+	
+	def __init__( self ):
+		self.base_url = f'https://api.openai.com/'
+		self.text_generation = f'https://api.openai.com/v1/chat/completions'
+		self.image_generation = f'https://api.openai.com/v1/images/generations'
+		self.chat_completion = f'https://api.openai.com/v1/chat/completions'
+		self.responses = f'https://api.openai.com/v1/responses'
+		self.speech_generation = f'https://api.openai.com/v1/audio/speech'
+		self.translations = f'https://api.openai.com/v1/audio/translations'
+		self.assistants = f'https://api.openai.com/v1/assistants'
+		self.transcriptions = f'https://api.openai.com/v1/audio/transcriptions'
+		self.finetuning = f'https://api.openai.com/v1/fineTuning/jobs'
+		self.embeddings = f'https://api.openai.com/v1/embeddings'
+		self.uploads = f'https://api.openai.com/v1/uploads'
+		self.files = f'https://api.openai.com/v1/files'
+		self.vector_stores = f'https://api.openai.com/v1/vector_stores'
+
+
 class Header( ):
 	'''
 		Class used to encapsulate GPT headers
@@ -262,6 +285,29 @@ class Perceptron( ):
 	
 	
 	def __init__( self, eta=0.01, n_iter=50, random_state=1 ):
+		"""
+		
+			Purpose
+			_______
+			Initializes Perceptron opbjects
+			
+			
+			Parameters
+			----------
+			eta: flaot.
+			The learning rate (between 0.0 and 1.0)
+			
+			n_iter: int
+			Target values.
+			
+			random_state: int
+			Epochs.
+			
+			Returns
+			-------
+			self : object
+		
+		"""
 		self.eta = eta
 		self.n_iter = n_iter
 		self.random_state = random_state
@@ -322,7 +368,22 @@ class Perceptron( ):
 	
 	def net_input( self, X ):
 		"""
-			Calculate net input
+		
+			Purpose
+			_______
+			Calculates net input
+			
+			Parameters
+			----------
+			X : {array-like}, shape = [n_examples, n_features]
+			Training vectors, where n_examples is the number of
+			examples and n_features is the number of features.
+			
+
+			Returns
+			-------
+			np.array
+		
 		"""
 		try:
 			if X is None:
@@ -340,7 +401,22 @@ class Perceptron( ):
 	
 	def predict( self, X ):
 		"""
-		Return class label after unit step
+		
+			Purpose
+			_______
+			Calculates prediction
+			
+			Parameters
+			----------
+			X : {array-like}, shape = [n_examples, n_features]
+			Training vectors, where n_examples is the number of
+			examples and n_features is the number of features.
+			
+
+			Returns
+			-------
+			np.array
+		
 		"""
 		try:
 			if X is None:
@@ -395,6 +471,29 @@ class AdaptiveLinearNeuron( ):
 	
 	
 	def __init__( self, eta=0.01, n_iter=50, random_state=1 ):
+		"""
+		
+			Purpose
+			_______
+			Initializes AdaptiveLinearNeuron opbjects
+			
+			
+			Parameters
+			----------
+			eta: flaot=0.01
+			The learning rate (between 0.0 and 1.0)
+			
+			n_iter: int: 50
+			Target values.
+			
+			random_state: int:1
+			Epochs.
+			
+			Returns
+			-------
+			self : object
+		
+		"""
 		self.eta = eta
 		self.n_iter = n_iter
 		self.random_state = random_state
@@ -411,7 +510,9 @@ class AdaptiveLinearNeuron( ):
 			Training vectors, where n_examples
 			is the number of examples and
 			n_features is the number of features.
-			y : array-like, shape = [n_examples] Target values.
+			
+			y : array-like, shape = [n_examples]
+			Target values.
 	
 			Returns
 			-------
@@ -450,9 +551,22 @@ class AdaptiveLinearNeuron( ):
 	
 	def net_input( self, X ):
 		"""
+		
+			Purpose
+			_______
+			Calculates net input
 			
-			Calculate net
+			Parameters
+			----------
+			X : {array-like}, shape = [n_examples, n_features]
+			Training vectors, where n_examples is the number of
+			examples and n_features is the number of features.
 			
+
+			Returns
+			-------
+			np.array
+		
 		"""
 		try:
 			if X is None:
@@ -471,7 +585,22 @@ class AdaptiveLinearNeuron( ):
 	def activation( self, X ):
 		"""
 		
-			Compute linear activation
+			Purpose
+			_______
+			Computes linear activation
+			
+			Parameters
+			----------
+			X : {array-like}, shape = [n_examples, n_features]
+			Training vectors, where n_examples is the number of
+			examples and n_features is the number of features.
+			
+
+			Returns
+			-------
+			X : {array-like}, shape = [n_examples, n_features]
+			Training vectors, where n_examples is the number of
+			examples and n_features is the number of features.
 		
 		"""
 		try:
@@ -490,8 +619,21 @@ class AdaptiveLinearNeuron( ):
 	
 	def predict( self, X ):
 		"""
+		
+			Purpose
+			_______
+			Computes linear activation
 			
-			Return class label after unit step
+			Parameters
+			----------
+			X : {array-like}, shape = [n_examples, n_features]
+			Training vectors, where n_examples is the number of
+			examples and n_features is the number of features.
+			
+
+			Returns
+			-------
+			np.array
 		
 		"""
 		try:
@@ -521,14 +663,51 @@ class AdaptiveLinearNeuron( ):
 
 
 class SmallEmbedding( AI ):
-	'''
-
-		Class proiding embedding objects
-
-	'''
+	"""
+		
+		Purpose
+		___________
+		Class used for creating embeddings using
+		OpenAI' embedding-3-small embedding model
+		
+		Parameters
+		------------
+		None
+		
+		Attributes
+		-----------
+		self.api_key
+		self.client
+		self.model
+		self.embedding
+		self.response
+		
+		Methods
+		------------
+		create( self, input: str ) -> list[ float ]
+		
+	
+	"""
 	
 	
 	def __init__( self ):
+		"""
+		
+			Purpose
+			_______
+			Initializes SmallEmbedding opbjects
+			
+			
+			Parameters
+			----------
+			None
+			
+			
+			Returns
+			-------
+			None
+		
+		"""
 		super( ).__init__( )
 		self.api_key = super( ).api_key
 		self.client = OpenAI( self.api_key )
@@ -538,6 +717,23 @@ class SmallEmbedding( AI ):
 	
 	
 	def create( self, input: str ) -> list[ float ]:
+		"""
+		
+			Purpose
+			_______
+			Creates an embedding ginve a string input
+			
+			
+			Parameters
+			----------
+			input: str
+			
+			
+			Returns
+			-------
+			list[ float
+		
+		"""
 		try:
 			if input is None:
 				raise Exception( 'Argument "input" is required.' )
@@ -567,22 +763,48 @@ class SmallEmbedding( AI ):
 
 class AdaEmbedding( AI ):
 	'''
-
-		Class proiding embedding objects
-
+		
+		Purpose
+		___________
+		Class used for creating ADA embeddings using
+		OpenAI's embedding-ada-02 embedding model
+		
+		Parameters
+		------------
+		None
+		
+		Attributes
+		-----------
+		self.api_key
+		self.client
+		self.model
+		self.embedding
+		self.response
+		
+		Methods
+		------------
+		create( self, input: str ) -> list[ float ]
+		
 	'''
 	
-	
-	def __init__( self ):
-		super( ).__init__( )
-		self.api_key = super( ).api_key
-		self.client = OpenAI( self.api_key )
-		self.model = 'embedding-ada-002'
-		self.embedding = None
-		self.response = None
-	
-	
 	def create( self, input: str ) -> list[ float ]:
+		"""
+		
+			Purpose
+			_______
+			Creates an ADA embedding given a string input
+			
+			
+			Parameters
+			----------
+			input: str
+			
+			
+			Returns
+			-------
+			list[ float
+		
+		"""
 		try:
 			if input is None:
 				raise Exception( 'Argument "input" is required.' )
@@ -612,15 +834,34 @@ class AdaEmbedding( AI ):
 
 class LargeEmbedding( AI ):
 	'''
-	
-		Class proiding embedding objects
+		
+		Purpose
+		___________
+		Class used for creating ADA embeddings using
+		OpenAI's embedding-ada-02 embedding model
+		
+		Parameters
+		------------
+		None
+		
+		Attributes
+		-----------
+		self.api_key
+		self.client
+		self.model
+		self.embedding
+		self.response
+		
+		Methods
+		------------
+		create( self, input: str ) -> list[ float ]
 		
 	'''
 	
 	
 	def __init__( self ):
 		super( ).__init__( )
-		self.api_key = super( ).api_key
+		self.api_key = Header( ).api_key
 		self.client = OpenAI( self.api_key )
 		self.model = 'text-embedding-3-large'
 		self.embedding = None
@@ -628,6 +869,23 @@ class LargeEmbedding( AI ):
 	
 	
 	def create( self, input: str ) -> list[ float ]:
+		"""
+		
+			Purpose
+			_______
+			Creates an Large embedding given a string input
+			
+			
+			Parameters
+			----------
+			input: str
+			
+			
+			Returns
+			-------
+			list[ float ]
+		
+		"""
 		try:
 			if input is None:
 				raise Exception( 'Argument "input" is required.' )
@@ -655,49 +913,67 @@ class LargeEmbedding( AI ):
 		return [ 'api_key', 'client', 'model', 'input', 'create' ]
 
 
-class Response( AI ):
-	'''
-
-		Class proiding Response objects
-
-	'''
-	
-	
-	def __init__( self ):
-		super( ).__init__( )
-		self.api_key = super( ).api_key
-		self.client = OpenAI( self.api_key )
-		self.model = 'gpt-4o-mini'
-	
-	
-	def create( self, input: str ) -> str:
-		pass
-	
-	
-	def __dir__( self ) -> list[ str ]:
-		'''
-		
-			Methods that returns a list of member names
-			Returns: list[ str ]
-			
-		'''
-		return [ 'api_key', 'client', 'model', 'input', 'create' ]
-
-
 class Chat( AI ):
-	'''
-
-		Class proiding Chat object functionality
-
-	'''
+	"""
+		
+		Purpose
+		___________
+		Class used for interacting with OpenAI's
+		Chat Completions API
+		
+		
+		Parameters
+		------------
+		num: int=1
+		temp: float=0.8
+		top: float=0.9
+		freq: float=0.0
+		pres: float=0.0
+		max: int=2048
+		store: bool=True
+		stream: bool=True
+		
+		Attributes
+		-----------
+		self.api_key, self.client, self.model,  self.embedding,
+		self.response, self.number, self.temperature, self.top_percent,
+		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+		self.store, self.stream, self.modalities, self.stops, self.content,
+		self.prompt, self.response, self.completion, self.file, self.file_path,
+		self.input, self.messages, self.image_url, self.response_format,
+		self.tools, self.vector_store_ids
+		
+		Methods
+		------------
+		generate_text( self, prompt: str ) -> str:
+		analyze_image( self, prompt: str, url: str ) -> str:
+		summarize( self, prompt: str, path: str ) -> str
+		search_web( self, prompt: str ) -> str
+		search_file( self, prompt: str ) -> str
+		
+	
+	"""
 	
 	
-	def __init__( self ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'gpt-4o-mini'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
+		self.content = None
+		self.prompt = None
 		self.response = None
 		self.completion = None
 		self.file = None
@@ -708,11 +984,26 @@ class Chat( AI ):
 		self.response_format = 'auto'
 		self.tools = [ ]
 		self.vector_store_ids = [ 'vs_712r5W5833G6aLxIYIbuvVcK', 'vs_8fEoYp1zVvk5D8atfWLbEupN' ]
-		self.top_p = 0.9
-		self.temperature = 0.8
 	
 	
 	def generate_text( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Generates a chat completion given a string prompt
+			
+			
+			Parameters
+			----------
+			prompt: str
+			
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
@@ -877,6 +1168,7 @@ class LargeImage( AI ):
 		self.client.api_key = Header( ).api_key
 		self.quality = 'hd'
 		self.model = 'dall-e-3'
+		
 	
 	
 	def generate( self, input: str ) -> str:
@@ -911,6 +1203,23 @@ class Image( AI ):
 	
 	
 	def generate( self, input: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Generates an image given a string input
+			
+			
+			Parameters
+			----------
+			input: str
+			
+			
+			Returns
+			-------
+			Image object
+		
+		"""
 		pass
 	
 	
@@ -925,20 +1234,65 @@ class Image( AI ):
 
 
 class Assistant( AI ):
-	'''
-
-		Class proiding Transciprtion objects
-
-	'''
+	"""
+		
+		Purpose
+		___________
+		Class used for interacting with OpenAI's
+		Assistants API
+		
+		
+		Parameters
+		------------
+		num: int=1
+		temp: float=0.8
+		top: float=0.9
+		freq: float=0.0
+		pres: float=0.0
+		max: int=2048
+		store: bool=True
+		stream: bool=True
+		
+		Attributes
+		-----------
+		self.api_key, self.system_instructions, self.client, self.model,  self.reasoning_effort,
+		self.response, self.number, self.temperature, self.top_percent,
+		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+		self.store, self.stream, self.modalities, self.stops, self.content,
+		self.input_text, self.response, self.completion, self.file, self.file_path,
+		self.input, self.messages, self.image_url, self.response_format,
+		self.tools, self.vector_store_ids, self.descriptions, self.assistants
+		
+		Methods
+		------------
+		generate_text( self, prompt: str ) -> str:
+		analyze_image( self, prompt: str, url: str ) -> str:
+		summarize( self, prompt: str, path: str ) -> str
+		search_web( self, prompt: str ) -> str
+		search_file( self, prompt: str ) -> str
+		
+	
+	"""
 	
 	
-	def __init__( self ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.system_instructions = AI( ).bubba_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'gpt-4o-mini'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.reasoning_effort = None
 		self.input_text = None
@@ -947,12 +1301,27 @@ class Assistant( AI ):
 		self.id = None
 		self.metadata = { }
 		self.tools = [ ]
-		self.assistants = None
-		self.top_p = 0.9
-		self.temperature = 0.8
+		self.assistants = None\
 	
 	
 	def generate_text( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Generates a chat completion given a string prompt
+			
+			
+			Parameters
+			----------
+			prompt: str
+			
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
@@ -989,33 +1358,92 @@ class Assistant( AI ):
 
 
 class Bubba( AI ):
-	'''
-
-		Class proiding Transciprtion objects
-
-	'''
+	"""
+		
+		Purpose
+		___________
+		Class used for interacting with a Budget Execution Assistant
+		
+		
+		Parameters
+		------------
+		num: int=1
+		temp: float=0.8
+		top: float=0.9
+		freq: float=0.0
+		pres: float=0.0
+		max: int=2048
+		store: bool=True
+		stream: bool=True
+		
+		Attributes
+		-----------
+		self.api_key, self.system_instructions, self.client, self.model,  self.reasoning_effort,
+		self.response, self.number, self.temperature, self.top_percent,
+		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+		self.store, self.stream, self.modalities, self.stops, self.content,
+		self.input_text, self.response, self.completion, self.file, self.file_path,
+		self.input, self.messages, self.image_url, self.response_format,
+		self.tools, self.vector_store_ids, self.descriptions, self.assistants
+		
+		Methods
+		------------
+		generate_text( self, prompt: str ) -> str:
+		analyze_image( self, prompt: str, url: str ) -> str:
+		summarize( self, prompt: str, path: str ) -> str
+		search_web( self, prompt: str ) -> str
+		search_file( self, prompt: str ) -> str
+		
+	
+	"""
 	
 	
-	def __init__( self ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.system_instructions = AI( ).bubba_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'gpt-4o-mini'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.reasoning_effort = None
 		self.input_text = None
 		self.name = 'Bubba'
-		self.description = None
+		self.description = 'A Budget Execution & Data Analysis Assistant'
 		self.id = 'asst_J6SAABzDixkTYi2k39OGgjPv'
 		self.metadata = { }
 		self.tools = [ ]
-		self.top_p = 0.9
-		self.temperature = 0.8
 	
 	
 	def generate_text( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Generates a chat completion given a string prompt
+			
+			
+			Parameters
+			----------
+			prompt: str
+			
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
@@ -1034,33 +1462,92 @@ class Bubba( AI ):
 
 
 class Bro( AI ):
-	'''
-
-		Class proiding Transciprtion objects
-
-	'''
+	"""
+		
+		Purpose
+		___________
+		Class used for interacting with a Data Science & Programming assistant
+		
+		
+		Parameters
+		------------
+		num: int=1
+		temp: float=0.8
+		top: float=0.9
+		freq: float=0.0
+		pres: float=0.0
+		max: int=2048
+		store: bool=True
+		stream: bool=True
+		
+		Attributes
+		-----------
+		self.api_key, self.system_instructions, self.client, self.model,  self.reasoning_effort,
+		self.response, self.number, self.temperature, self.top_percent,
+		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+		self.store, self.stream, self.modalities, self.stops, self.content,
+		self.input_text, self.response, self.completion, self.file, self.file_path,
+		self.input, self.messages, self.image_url, self.response_format,
+		self.tools, self.vector_store_ids, self.descriptions, self.assistants
+		
+		Methods
+		------------
+		generate_text( self, prompt: str ) -> str:
+		analyze_image( self, prompt: str, url: str ) -> str:
+		summarize( self, prompt: str, path: str ) -> str
+		search_web( self, prompt: str ) -> str
+		search_file( self, prompt: str ) -> str
+		
+	
+	"""
 	
 	
-	def __init__( self ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.system_instructions = AI( ).bro_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'gpt-4o-mini'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.reasoning_effort = None
 		self.input_text = None
 		self.name = 'Bro'
-		self.description = None
+		self.description = 'A Programming & Data Science Assistant'
 		self.id = 'asst_2Yu2yfINGD5en4e0aUXAKxyu'
 		self.metadata = { }
 		self.tools = [ ]
-		self.top_p = 0.9
-		self.temperature = 0.8
 	
 	
 	def generate_text( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Generates a chat completion given a string prompt
+			
+			
+			Parameters
+			----------
+			prompt: str
+			
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
@@ -1079,31 +1566,87 @@ class Bro( AI ):
 
 
 class TextToSpeech( AI ):
-	'''
-
-		Class proiding Response objects
-
-	'''
+	"""
+		
+		Purpose
+		___________
+		Class used for interacting with OpenAI's Audio API (TTS)
+		
+		
+		Parameters
+		------------
+		num: int=1
+		temp: float=0.8
+		top: float=0.9
+		freq: float=0.0
+		pres: float=0.0
+		max: int=2048
+		store: bool=True
+		stream: bool=True
+		
+		Attributes
+		-----------
+		self.api_key, self.system_instructions, self.client, self.model,  self.reasoning_effort,
+		self.response, self.number, self.temperature, self.top_percent,
+		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+		self.store, self.stream, self.modalities, self.stops, self.content,
+		self.input_text, self.response, self.completion, self.file, self.file_path,
+		self.input, self.messages, self.image_url, self.response_format,
+		self.tools, self.vector_store_ids, self.descriptions, self.assistants
+		
+		Methods
+		------------
+		create( self, prompt: str, path: str )
+		
+	
+	"""
 	
 	
-	def __init__( self ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		'''
-			Constructor to generate_text TextToSpeech objects
+			Constructor to  create TextToSpeech objects
 		'''
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'tts-1-hd'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
 		self.audio_path = None
 		self.response = None
 		self.prompt = None
+		self.voice = None
 	
 	
 	def create( self, prompt: str, path: str ):
-		'''
-			method providing TextToSpeech functionality
-		'''
+		"""
+		
+			Purpose
+			_______
+			Generates audio given a string prompt and path to audio file
+			
+			
+			Parameters
+			----------
+			prompt: str
+			path: str
+			
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if path is None:
 				raise Exception( 'Argument "url" is required.' )
@@ -1135,28 +1678,82 @@ class TextToSpeech( AI ):
 
 
 class Transcription( AI ):
-	'''
-
-		Class proiding Transciprtion objects
-
-	'''
+	"""
+		
+		Purpose
+		___________
+		Class used for interacting with OpenAI's Audio API (whisper-1)
+		
+		
+		Parameters
+		------------
+		num: int=1
+		temp: float=0.8
+		top: float=0.9
+		freq: float=0.0
+		pres: float=0.0
+		max: int=2048
+		store: bool=True
+		stream: bool=True
+		
+		Attributes
+		-----------
+		self.api_key, self.system_instructions, self.client, self.model,  self.reasoning_effort,
+		self.response, self.number, self.temperature, self.top_percent,
+		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+		self.store, self.stream, self.modalities, self.stops, self.content,
+		self.input_text, self.response, self.completion, self.file, self.file_path,
+		self.input, self.messages, self.image_url, self.response_format,
+		self.tools, self.vector_store_ids, self.descriptions, self.assistants
+		
+		Methods
+		------------
+		create( self, prompt: str, path: str ) -> str
+		
+	
+	"""
 	
 	
-	def __init__( self ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'whisper-1'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
 		self.input_text = None
 		self.audio_file = None
 		self.transcript = None
 	
 	
-	def create( self, input: str ):
-		'''
-			method creating transciption object given an input: str
-		'''
+	def create( self, input: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Generates a transcription given a string path to an audio file
+			
+			
+			Parameters
+			----------
+			input: str
+			
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if input is None:
 				raise Exception( 'Argument "input" is required.' )
@@ -1170,7 +1767,7 @@ class Transcription( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Transcription'
-			exception.method = 'creat( self, input: str )'
+			exception.method = 'create( self, input: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1186,27 +1783,81 @@ class Transcription( AI ):
 
 
 class Translation( AI ):
-	'''
-
-		Class proiding Response objects
-
-	'''
+	"""
+		
+		Purpose
+		___________
+		Class used for interacting with OpenAI's Audio API (whisper-1)
+		
+		
+		Parameters
+		------------
+		num: int=1
+		temp: float=0.8
+		top: float=0.9
+		freq: float=0.0
+		pres: float=0.0
+		max: int=2048
+		store: bool=True
+		stream: bool=True
+		
+		Attributes
+		-----------
+		self.api_key, self.system_instructions, self.client, self.model,  self.reasoning_effort,
+		self.response, self.number, self.temperature, self.top_percent,
+		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+		self.store, self.stream, self.modalities, self.stops, self.content,
+		self.input_text, self.response, self.completion, self.file, self.file_path,
+		self.input, self.messages, self.image_url, self.response_format,
+		self.tools, self.vector_store_ids, self.descriptions, self.assistants
+		
+		Methods
+		------------
+		create( self, prompt: str, path: str )
+		
+	
+	"""
 	
 	
-	def __init__( self ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.model = 'whisper-1'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.modalities = [ 'text', 'audio' ]
+		self.stops = [ '#', ';' ]
 		self.audio_file = None
 		self.response = None
 	
 	
 	def create( self, input: str ):
-		'''
-			Method creating a translation from one language to another
-		'''
+		"""
+		
+			Purpose
+			_______
+			Generates a transcription given a string path to an audio file
+			
+			
+			Parameters
+			----------
+			input: str
+			
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if input is None:
 				raise Exception( 'Argument "input" is required.' )

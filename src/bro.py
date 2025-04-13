@@ -75,6 +75,61 @@ class EndPoint( ):
 		self.vector_stores = f'https://api.openai.com/v1/vector_stores'
 
 
+class Header( ):
+	'''
+		Class used to encapsulate GPT headers
+	'''
+	
+	
+	def __init__( self ):
+		self.content_type = 'application/json'
+		self.api_key = os.environ.get( 'OPENAI_API_KEY' )
+		self.authoriztion = 'Bearer ' + os.environ.get( 'OPENAI_API_KEY' )
+		self.data = { 'content-type': self.content_type,
+		              'Authorization': self.authoriztion }
+	
+	
+	def __dir__( self ):
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'content_type', 'api_key', 'authorization', 'values' ]
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+			Methods that returns a list of member names
+			Returns: list[ str ]
+		'''
+		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completions',
+		         'speech_generation', 'translations', 'assistants', 'transcriptions',
+		         'finetuning', 'embeddings', 'uploads', 'files', 'vector_stores',
+		         'responses', 'get_data', 'dump' ]
+	
+	
+	def get_data( self ) -> dict:
+		'''
+
+			Returns: dict[ str ] of members
+
+		'''
+		return { 'base_url': self.base_url,
+		         'text_generation': self.text_generation,
+		         'image_generation': self.image_generation,
+		         'chat_completion': self.chat_completion,
+		         'responses': self.responses,
+		         'speech_generation': self.speech_generation,
+		         'translations': self.translations,
+		         'assistants': self.assistants,
+		         'transcriptions': self.transcriptions,
+		         'finetuning': self.finetuning,
+		         'embeddings': self.embeddings,
+		         'uploads': self.uploads,
+		         'files': self.files,
+		         'vector_stores': self.vector_stores }
+
+
 class AI( ):
 	'''
 	AI is the base class for all OpenAI functionalityl
@@ -86,7 +141,15 @@ class AI( ):
 		self.endpoint = EndPoint( )
 		self.api_key = self.header.api_key
 		self.client = OpenAI( api_key=self.api_key )
-		self.system_instructions = '''You are the most knowledgeable Budget Analyst in the federal
+		self.bro_instructions = '''
+		You are an assistant who is the most knowledgeable Data Scientist in the world.   You
+		provide detailed responses based on your vast knowledge of federal appropriations and your
+		knowledge of computer programming.  Your responses to questions are always complete and
+		detailed using an academic format.  Your vast knowledge of and experience in Data Science
+		makes you the best Analyst in the world. You are an expert programmer proficient in C#,
+		Python, SQL, C++, JavaScript, and VBA.  Your name is Bro because your code just works!
+		'''
+		self.bubba_instructions = '''You are the most knowledgeable Budget Analyst in the federal
 		government who provides detailed responses based on your vast knowledge of budget
 		legislation, and federal appropriations. Your responses to questions about federal finance
 		are complete, transparent, and very detailed using an academic format. Your vast knowledge
