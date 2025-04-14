@@ -2,6 +2,8 @@ FreeSimpleGUI
 typing
 numpy
 openai
+groq
+gemini
 requests
 Pygments
 pyodbc
@@ -27,3 +29,6 @@ langchain-openai
 langchain-community
 langgraph
 tiktoken
+pinecone
+beautifulsoup4
+requests

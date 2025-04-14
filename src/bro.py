@@ -285,7 +285,7 @@ class Payload( ):
 	'''
 	
 	
-	def __init__( self, model: str = 'gpt-4o', number: int = 1, temp: float = 0.80,
+	def __init__( self, model: str = 'openai-4o', number: int = 1, temp: float = 0.80,
 	              top_p: float = 0.90, freq: float = 0.00, max: int = 2048,
 	              presence: float = 0.00, store: bool = False,
 	              stream: bool = True, size: str = '1024X1024' ):
@@ -641,7 +641,7 @@ class TextRequest( GptRequest ):
 		self.header = super( ).header
 		self.instructions = super( ).system_instructions
 		self.client = OpenAI( self.api_key )
-		self.model = 'gpt-4o-mini'
+		self.model = 'openai-4o-mini'
 		self.endpoint = EndPoint( ).text_generation
 		self.number = num
 		self.temperature = temp
@@ -744,7 +744,7 @@ class CompletionRequest( GptRequest ):
 		self.header = super( ).header
 		self.instructions = super( ).system_instructions
 		self.client = OpenAI( self.api_key )
-		self.model = 'gpt-4o-mini'
+		self.model = 'openai-4o-mini'
 		self.endpoint = EndPoint( ).chat_completion
 		self.number = num
 		self.temperature = temp
@@ -1303,7 +1303,7 @@ class UploadRequest( GptRequest ):
 		self.header = super( ).header
 		self.instructions = super( ).system_instructions
 		self.client = OpenAI( self.api_key )
-		self.model = 'gpt-4o-mini'
+		self.model = 'openai-4o-mini'
 		self.endpoint = EndPoint( ).uploads
 		self.number = num
 		self.temperature = temp
@@ -1363,7 +1363,7 @@ class FineTuningRequest( GptRequest ):
 		self.header = super( ).header
 		self.instructions = super( ).system_instructions
 		self.client = OpenAI( self.api_key )
-		self.model = 'gpt-4o-mini'
+		self.model = 'openai-4o-mini'
 		self.endpoint = EndPoint( ).finetuning
 		self.number = num
 		self.temperature = temp

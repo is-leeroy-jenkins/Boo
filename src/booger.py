@@ -4210,7 +4210,7 @@ class ExcelForm( Dark ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
-		self.form_size = (1250, 650)
+		self.form_size = (1250, 700)
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -4243,7 +4243,7 @@ class ExcelForm( Dark ):
 			_spc = (25, 1)
 			_dialog = FileDialog( )
 			_dialog.show( )
-			_filename = _dialog.selected_path
+			_filename = _dialog.selected_item
 			
 			if _filename == '':
 				_msg = MessageDialog( 'No file was provided!' )
@@ -4256,7 +4256,7 @@ class ExcelForm( Dark ):
 			_button = sg.popup_yes_no( 'First Row Has Headers?',
 				title='Headers?',
 				icon=self.icon_path,
-				font=('Roboto', 9) )
+				font=('Roboto', 10) )
 			if _filename is not None:
 				try:
 					_dataframe = ExcelReader( _filename, index_col=0 )
@@ -4264,7 +4264,7 @@ class ExcelForm( Dark ):
 					if _button == 'Yes':
 						_header = [ f'{i} ' for i in _dataframe.columns ]
 					elif _button == 'No':
-						_header = [ 'Column - ' + str( x ) for x in range( len( _data[ 0 ] ) ) ]
+						_header = [ 'Column-' + str( x ) for x in range( len( _data[ 0 ] ) ) ]
 				except:
 					sg.popup_error( 'Error reading file' )
 					return
@@ -4274,10 +4274,10 @@ class ExcelForm( Dark ):
 				row_height=18, display_row_numbers=True, vertical_scroll_only=False,
 				header_background_color='#1B262E', header_relief=sg.RELIEF_FLAT,
 				header_border_width=1, selected_row_colors=('#FFFFFF', '#4682B4'),
-				header_text_color='#FFFFFF', header_font=('Roboto', 8, 'bold'),
+				header_text_color='#FFFFFF', header_font=('Roboto', 10, 'bold'),
 				font=('Roboto', 8), background_color='#EDF3F8',
 				alternating_row_color='#EDF3F8', border_width=1, text_color='#000000',
-				expand_x=True, expand_y=True, sbar_relief=sg.RELIEF_FLAT,
+				expand_x=False, expand_y=True, sbar_relief=sg.RELIEF_FLAT,
 				num_rows=min( 26, len( _data ) ) ), ], ]
 			_layout = [ [ sg.Text( size=(3, 3) ) ],
 			            [ sg.Column( _left, expand_x=True ),

@@ -157,43 +157,43 @@ class Models( ):
 	
 	def __init__( self ):
 		self.text_generation = [ 'text-davinci-003', 'text-curie-001',
-		                         'gpt-4-0613', 'gpt-4-0314',
-		                         'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
-		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
-		                         'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+		                         'openai-4-0613', 'openai-4-0314',
+		                         'openai-4-turbo-2024-04-09', 'openai-4o-2024-08-06',
+		                         'openai-4o-2024-11-20', 'openai-4o-2024-05-13',
+		                         'openai-4o-mini-2024-07-18', 'o1-2024-12-17',
 		                         'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 		self.image_generation = [ 'dall-e-2', 'dall-e-3',
-		                          'gpt-4-0613', 'gpt-4-0314',
-		                          'gpt-4o-mini-2024-07-18' ]
-		self.chat_completion = [ 'gpt-4-0613', 'gpt-4-0314',
-		                         'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
-		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
-		                         'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+		                          'openai-4-0613', 'openai-4-0314',
+		                          'openai-4o-mini-2024-07-18' ]
+		self.chat_completion = [ 'openai-4-0613', 'openai-4-0314',
+		                         'openai-4-turbo-2024-04-09', 'openai-4o-2024-08-06',
+		                         'openai-4o-2024-11-20', 'openai-4o-2024-05-13',
+		                         'openai-4o-mini-2024-07-18', 'o1-2024-12-17',
 		                         'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 		self.speech_generation = [ 'tts-1', 'tts-1-hd',
-		                           'gpt-4o-audio-preview-2024-12-17',
-		                           'gpt-4o-audio-preview-2024-10-01',
-		                           'gpt-4o-mini-audio-preview-2024-12-17' ]
-		self.transcription = [ 'whisper-1', 'gpt-4o-mini-transcribe', ' gpt-4o-transcribe' ]
+		                           'openai-4o-audio-preview-2024-12-17',
+		                           'openai-4o-audio-preview-2024-10-01',
+		                           'openai-4o-mini-audio-preview-2024-12-17' ]
+		self.transcription = [ 'whisper-1', 'openai-4o-mini-transcribe', ' openai-4o-transcribe' ]
 		self.translation = [ 'whisper-1', 'text-davinci-003',
-		                     'gpt-4-0613', 'gpt-4-0314',
-		                     'gpt-4-turbo-2024-04-09' ]
+		                     'openai-4-0613', 'openai-4-0314',
+		                     'openai-4-turbo-2024-04-09' ]
 		self.reasoning  = [ 'o1-2024-12-17', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
-		self.finetuning = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18',
-		                    'gpt-4-0613', 'gpt-3.5-turbo-0125',
-		                    'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-0613' ]
+		self.finetuning = [ 'openai-4o-2024-08-06', 'openai-4o-mini-2024-07-18',
+		                    'openai-4-0613', 'openai-3.5-turbo-0125',
+		                    'openai-3.5-turbo-1106', 'openai-3.5-turbo-0613' ]
 		self.embeddings = [ 'text-embedding-3-small', 'text-embedding-3-large',
 		                    'text-embedding-ada-002' ]
-		self.uploads = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
-		                 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
-		                 'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
+		self.uploads = [ 'openai-4-0613', 'openai-4-0314', 'openai-4-turbo-2024-04-09',
+		                 'openai-4o-2024-08-06', 'openai-4o-2024-11-20',
+		                 'openai-4o-2024-05-13', 'openai-4o-mini-2024-07-18',
 		                 'o1-2024-12-17', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
-		self.files = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
-		               'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
+		self.files = [ 'openai-4-0613', 'openai-4-0314', 'openai-4o-2024-08-06', 'openai-4o-2024-11-20',
+		               'openai-4o-2024-05-13', 'openai-4o-mini-2024-07-18',
 		               'o1-2024-12-17', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
-		self.vector_stores = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
-		                       'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
-		                       'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+		self.vector_stores = [ 'openai-4-0613', 'openai-4-0314', 'openai-4-turbo-2024-04-09',
+		                       'openai-4o-2024-11-20', 'openai-4o-2024-05-13',
+		                       'openai-4o-mini-2024-07-18', 'o1-2024-12-17',
 		                       'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 	
 	
@@ -718,7 +718,7 @@ class Chat( AI ):
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'gpt-4o-mini'
+		self.model = 'openai-4o-mini'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -748,10 +748,10 @@ class Chat( AI ):
 			Methods that returns a list of model names
 		
 		'''
-		return [ 'gpt-4-0613', 'gpt-4-0314',
-                 'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
-                 'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
-                 'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+		return [ 'openai-4-0613', 'openai-4-0314',
+                 'openai-4-turbo-2024-04-09', 'openai-4o-2024-08-06',
+                 'openai-4o-2024-11-20', 'openai-4o-2024-05-13',
+                 'openai-4o-mini-2024-07-18', 'o1-2024-12-17',
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 	
 	
@@ -789,6 +789,41 @@ class Chat( AI ):
 			error.show( )
 	
 	
+	def generate_image( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Generates a chat completion given a string prompt
+			
+			
+			Parameters
+			----------
+			prompt: str
+			
+			
+			Returns
+			-------
+			str
+		
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.prompt = prompt
+				self.response = self.client.images.generate( model='dall-e-3',
+					prompt=self.prompt, size='1024x1024', quality='standard', n=1 )
+
+			return self.response.data[0].url
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'generate_text( self, prompt: str )'
+			error = ErrorDialog( exception )
+			error.show( )
+		
 	def analyze_image( self, prompt: str, url: str ) -> str:
 		try:
 			if prompt is None:
@@ -833,7 +868,7 @@ class Chat( AI ):
 				raise Exception( 'Argument "path" cannot be None' )
 			else:
 				self.file_path = path
-				self.file = client.files.create( file=open( self.file_path, 'rb' ),
+				self.file = self.client.files.create( file=open( self.file_path, 'rb' ),
 					purpose='user_data' )
 				
 				self.messages = [
@@ -855,7 +890,7 @@ class Chat( AI ):
 					}
 				]
 				
-				self.completion = client.chat.completions.create( model=self.model,
+				self.completion = self.client.chat.completions.create( model=self.model,
 					messages=self.messages )
 				return self.completion.choices[ 0 ].message.content
 		except Exception as e:
@@ -865,6 +900,7 @@ class Chat( AI ):
 			exception.method = 'summarize( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
+	
 	
 	def search_web( self, prompt: str ) -> str:
 		try:
@@ -877,7 +913,7 @@ class Chat( AI ):
 		            'content': prompt,
 		        } ]
 				
-				self.response = client.chat.completions.create( model=self.model,
+				self.response = self.client.chat.completions.create( model=self.model,
 					web_search_options={ }, messages=self.messages )
 				
 				return  self.response.output_text
@@ -902,7 +938,7 @@ class Chat( AI ):
 					'max_num_results': 20
 				} ]
 				
-				self.response = client.responses.create( model=self.model,
+				self.response = self.client.responses.create( model=self.model,
 					tools=self.tools, input=prompt )
 				return self.response.output_text
 		except Exception as e:
@@ -959,7 +995,7 @@ class Chat( AI ):
 		         'prompt', 'response', 'completion', 'file', 'file_path',
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'size', 'api_key', 'client', 'model',
-		         'generate_text', 'analyze_image', 'summarize',
+		         'generate_text', 'analyze_image', 'summarize', 'generate_image',
 		         'search_web', 'search_file', 'get_data', 'dump' ]
 
 
@@ -1072,7 +1108,7 @@ class LargeImage( AI ):
 					]
 				
 				self.response = self.client.responses.create(
-					model='gpt-4o-mini',
+					model='openai-4o-mini',
 					input=self.input,
 				)
 				
@@ -1092,9 +1128,9 @@ class LargeImage( AI ):
 			Methods that returns a list of model names
 		
 		'''
-		return [ 'dall-e-3', 'gpt-4-0613',
-		         'gpt-4-0314', 'gpt-4o-mini',
-                 'gpt-4o-mini-2024-07-18' ]
+		return [ 'dall-e-3', 'openai-4-0613',
+		         'openai-4-0314', 'openai-4o-mini',
+                 'openai-4o-mini-2024-07-18' ]
 		
 		
 	def get_format_options( self ) -> list[ str ]:
@@ -1212,9 +1248,9 @@ class Image( AI ):
 			Methods that returns a list of model names
 		
 		'''
-		return [ 'dall-e-2', 'gpt-4-0613',
-		         'gpt-4-0314', 'gpt-4o-mini',
-                 'gpt-4o-mini-2024-07-18' ]
+		return [ 'dall-e-2', 'openai-4-0613',
+		         'openai-4-0314', 'openai-4o-mini',
+                 'openai-4o-mini-2024-07-18' ]
 	
 	
 	def generate( self, input: str ) -> str:
@@ -1288,7 +1324,7 @@ class Image( AI ):
 					}
 				]
 				
-				self.response = self.client.responses.create( model='gpt-4o-mini',
+				self.response = self.client.responses.create( model='openai-4o-mini',
 					input=self.input )
 				
 				return self.response.output_text
@@ -1408,7 +1444,7 @@ class Assistant( AI ):
 		self.system_instructions = AI( ).bubba_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'gpt-4o-mini'
+		self.model = 'openai-4o-mini'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -1498,10 +1534,10 @@ class Assistant( AI ):
 			Method that returns a list of available models
 
 		'''
-		return [ 'gpt-4-0613', 'gpt-4-0314',
-                 'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
-                 'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
-                 'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+		return [ 'openai-4-0613', 'openai-4-0314',
+                 'openai-4-turbo-2024-04-09', 'openai-4o-2024-08-06',
+                 'openai-4o-2024-11-20', 'openai-4o-2024-05-13',
+                 'openai-4o-mini-2024-07-18', 'o1-2024-12-17',
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31'  ]
 	
 	
@@ -1606,7 +1642,7 @@ class Bubba( AI ):
 		self.system_instructions = AI( ).bubba_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'gpt-4o-mini'
+		self.model = 'openai-4o-mini'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -1623,6 +1659,7 @@ class Bubba( AI ):
 		self.name = 'Bubba'
 		self.description = 'A Budget Execution & Data Analysis Assistant'
 		self.id = 'asst_J6SAABzDixkTYi2k39OGgjPv'
+		self.vector_store_ids = ['vs_8fEoYp1zVvk5D8atfWLbEupN', 'vs_712r5W5833G6aLxIYIbuvVcK' ]
 		self.metadata = { }
 		self.tools = [ ]
 	
@@ -1677,10 +1714,10 @@ class Bubba( AI ):
 			Method that returns a list of available models
 
 		'''
-		return [ 'gpt-4-0613', 'gpt-4-0314',
-                 'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
-                 'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
-                 'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+		return [ 'openai-4-0613', 'openai-4-0314',
+                 'openai-4-turbo-2024-04-09', 'openai-4o-2024-08-06',
+                 'openai-4o-2024-11-20', 'openai-4o-2024-05-13',
+                 'openai-4o-mini-2024-07-18', 'o1-2024-12-17',
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31'  ]
 	
 	
@@ -1785,7 +1822,7 @@ class Bro( AI ):
 		self.system_instructions = AI( ).bro_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'gpt-4o-mini'
+		self.model = 'openai-4o-mini'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -1802,6 +1839,7 @@ class Bro( AI ):
 		self.name = 'Bro'
 		self.description = 'A Programming & Data Science Assistant'
 		self.id = 'asst_2Yu2yfINGD5en4e0aUXAKxyu'
+		self.vector_store_ids = [ 'vs_67e83bdf8abc81918bda0d6b39a19372', ]
 		self.metadata = { }
 		self.tools = [ ]
 	
@@ -1856,10 +1894,10 @@ class Bro( AI ):
 			Method that returns a list of available models
 
 		'''
-		return [ 'gpt-4-0613', 'gpt-4-0314',
-                 'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
-                 'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
-                 'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+		return [ 'openai-4-0613', 'openai-4-0314',
+                 'openai-4-turbo-2024-04-09', 'openai-4o-2024-08-06',
+                 'openai-4o-2024-11-20', 'openai-4o-2024-05-13',
+                 'openai-4o-mini-2024-07-18', 'o1-2024-12-17',
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31'  ]
 	
 	
@@ -1922,7 +1960,7 @@ class Bro( AI ):
 		          'get_data', 'dump' ]
 
 
-class TextToSpeech( AI ):
+class TTS( AI ):
 	"""
 		
 		Purpose
@@ -1963,7 +2001,7 @@ class TextToSpeech( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		'''
-			Constructor to  create TextToSpeech objects
+			Constructor to  create TTS objects
 		'''
 		super( ).__init__( )
 		self.client = OpenAI( )
@@ -1992,9 +2030,9 @@ class TextToSpeech( AI ):
 		
 		'''
 		return [ 'tts-1', 'tts-1-hd',
-                 'gpt-4o-audio-preview-2024-12-17',
-                 'gpt-4o-audio-preview-2024-10-01',
-                 'gpt-4o-mini-audio-preview-2024-12-17' ]
+                 'openai-4o-audio-preview-2024-12-17',
+                 'openai-4o-audio-preview-2024-10-01',
+                 'openai-4o-mini-audio-preview-2024-12-17' ]
 	
 	
 	def get_voice_options( self ):
@@ -2050,7 +2088,7 @@ class TextToSpeech( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'TextToSpeech'
+			exception.cause = 'TTS'
 			exception.method = 'create( self, prompt: str, input: str )]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2169,7 +2207,7 @@ class Transcription( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ 'whisper-1', 'gpt-4o-mini-transcribe', ' gpt-4o-transcribe' ]
+		return [ 'whisper-1', 'openai-4o-mini-transcribe', ' openai-4o-transcribe' ]
 	
 	
 	def create( self, input: str ) -> str:
@@ -2321,8 +2359,8 @@ class Translation( AI ):
 
 		'''
 		return [ 'whisper-1', 'text-davinci-003',
-		         'gpt-4-0613', 'gpt-4-0314',
-		         'gpt-4-turbo-2024-04-09' ]
+		         'openai-4-0613', 'openai-4-0314',
+		         'openai-4-turbo-2024-04-09' ]
 	
 	
 	def get_voice_options( self ):
@@ -2651,7 +2689,10 @@ class AdaEmbedding( AI ):
 			Returns: get_list[ str ]
 
 		'''
-		return [ 'api_key', 'client', 'model',
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'modalities', 'stops',
+		         'api_key', 'client', 'model',
 		         'input', 'create', 'get_model_options' ]
 
 
@@ -2752,6 +2793,9 @@ class LargeEmbedding( AI ):
 			Returns: get_list[ str ]
 
 		'''
-		return [ 'api_key', 'client', 'model',
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'modalities', 'stops',
+		         'api_key', 'client', 'model',
 		         'input', 'create', 'get_model_options' ]
 
