@@ -81,7 +81,26 @@ class Text:
 	    compute_tfidf(corpus: get_list, max_features=1000, prep=True) -> tuple
 	    
 	'''
+	raw_input: [ str ]
+	cleaned: [ str ]
+	normalized: [ str ]
+	lowercase:  str
+	translator: None
+	lemmatizer: None
+	stemmer: None
+	tokenizer: None
+	corrected: None
+	vectorizer: None
+	words: [ str ]
+	tokens: [ str ]
+	lines: [ str ]
+	chunks: [ str ]
+	stop_words: [ str ]
+	
 	def __init__( self ):
+		'''
+			Constructor for creating Text objects
+		'''
 		self.raw_input = None
 		self.cleaned = [ str ]
 		self.removed = [ str ]
@@ -125,7 +144,7 @@ class Text:
 
 			Returns:
 			--------
-			str
+			
 				A cleaned text string with:
 					- Consecutive whitespace reduced to a single space
 					- Leading/trailing spaces removed
@@ -683,7 +702,8 @@ class Text:
 	
 	def train_word2vec( self, tokens: list, size=100, window=5, min=1 ) -> Word2Vec:
 		"""
-			Train a Word2Vec embedding model from tokenized sentences.
+			Purpose:
+				Train a Word2Vec embedding model from tokenized sentences.
 	
 			Args:
 				sentences (get_list of get_list of str): List of tokenized sentences.
@@ -696,21 +716,22 @@ class Text:
 		"""
 		try:
 			if tokens is None:
-				raise Exception( 'The input argument "sentences" is required.' )
+				raise Exception( 'The input argument "tokens" is required.' )
 			else:
 				return Word2Vec( sentences=tokens, vector_size=size, window=window, min_count=min )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Token'
-			_exc.method = 'train_word2vec( self, tokens: get_list, size=100, window=5, min=1 ) -> Word2Vec'
+			_exc.method = ( 'train_word2vec( self, tokens: get_list, '
+			               'size=100, window=5, min=1 ) -> Word2Vec' )
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
 	def compute_tfidf( self, corpus: list, max: int=1000, prep: bool=True ) -> tuple:
 		"""
-	
+			Purpose:
 			Compute TF-IDF matrix with optional full preprocessing pipeline.
 	
 			Args:

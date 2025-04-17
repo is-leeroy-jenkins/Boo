@@ -824,7 +824,26 @@ class Chat( AI ):
 			error = ErrorDialog( exception )
 			error.show( )
 		
+		
 	def analyze_image( self, prompt: str, url: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			url: str
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
@@ -861,6 +880,26 @@ class Chat( AI ):
 	
 	
 	def summarize( self, prompt: str, path: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that summarizes a document given a
+			string prompt, and a path
+	
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			path: str
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
@@ -903,6 +942,24 @@ class Chat( AI ):
 	
 	
 	def search_web( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			url: str
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
@@ -927,6 +984,24 @@ class Chat( AI ):
 
 
 	def search_file( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			url: str
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
@@ -1054,6 +1129,24 @@ class LargeImage( AI ):
 	
 	
 	def generate( self, input: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			url: str
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if input is None:
 				raise Exception( 'The "input" argument is required.' )
@@ -1338,6 +1431,24 @@ class Image( AI ):
 	
 	
 	def edit( self, input: str, path: str, size: str='1024X1024' ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			url: str
+			
+			Returns
+			-------
+			str
+		
+		"""
 		try:
 			if input is None:
 				raise Exception('The argument "input" cannot be None')
