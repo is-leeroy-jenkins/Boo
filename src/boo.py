@@ -42,6 +42,8 @@
   ******************************************************************************************
   '''
 import os
+import numpy as np
+import pandas as pd
 import datetime as dt
 from openai import OpenAI, AssistantEventHandler
 from typing_extensions import override
@@ -54,7 +56,9 @@ from booger import ErrorDialog, Error
 
 class EndPoint( ):
 	'''
+	
 		The class containing endpoints for OpenAI
+		
 	'''
 	
 	
@@ -77,7 +81,9 @@ class EndPoint( ):
 
 class Header( ):
 	'''
+	
 		Class used to encapsulate GPT headers
+		
 	'''
 	
 	
@@ -91,15 +97,19 @@ class Header( ):
 	
 	def __dir__( self ):
 		'''
+		
 			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
+			Returns: list[ str ]
+			
 		'''
 		return [ 'content_type', 'api_key', 'authorization', 'values' ]
 
 	def __dir__( self ) -> list[ str ]:
 		'''
+		
 			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
+			Returns: list[ str ]
+			
 		'''
 		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completions',
 		         'speech_generation', 'translations', 'assistants', 'transcriptions',
@@ -131,7 +141,9 @@ class Header( ):
 	
 	def dump( self ) -> str:
 		'''
+		
 			Returns: string of "member = value", pairs
+			
 		'''
 		new = r'\r\n'
 		return 'base_url' + f' = {self.base_url}' + new + \
@@ -151,7 +163,9 @@ class Header( ):
 
 class Models( ):
 	'''
+	
 		Class containing lists of OpenAI models by generation
+		
 	'''
 	
 	
@@ -160,7 +174,9 @@ class Models( ):
 		                         'gpt-4-0613', 'gpt-4-0314',
 		                         'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
 		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
-		                         'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+		                         'gpt-4o-mini-2024-07-18', 'gpt-4.1-mini-2025-04-14',
+		                         'gpt-4.1-nano-2025-04-14',
+		                         'o1-pro-2025-03-19', 'o1-2024-12-17',
 		                         'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 		self.image_generation = [ 'dall-e-2', 'dall-e-3',
 		                          'gpt-4-0613', 'gpt-4-0314',
@@ -168,7 +184,8 @@ class Models( ):
 		self.chat_completion = [ 'gpt-4-0613', 'gpt-4-0314',
 		                         'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
 		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
-		                         'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
+		                         'gpt-4o-mini-2024-07-18', 'gpt-4.1-mini-2025-04-14',
+		                         'gpt-4.1-nano-2025-04-14', 'o1-2024-12-17',
 		                         'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 		self.speech_generation = [ 'tts-1', 'tts-1-hd', 'gpt-4o-mini-tts',
 		                           'gpt-4o-audio-preview-2024-12-17',
@@ -178,7 +195,8 @@ class Models( ):
 		self.translation = [ 'whisper-1', 'text-davinci-003',
 		                     'gpt-4-0613', 'gpt-4-0314',
 		                     'gpt-4-turbo-2024-04-09' ]
-		self.reasoning  = [ 'o1-2024-12-17', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31', 'o1-pro-2025-03-19' ]
+		self.reasoning  = [ 'o1-2024-12-17', 'o1-mini-2024-09-12',
+		                    'o3-mini-2025-01-31', 'o1-pro-2025-03-19' ]
 		self.finetuning = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18',
 		                    'gpt-4-0613', 'gpt-3.5-turbo-0125',
 		                    'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-0613' ]
@@ -209,7 +227,9 @@ class Models( ):
 	
 	def get_data( self ) -> dict:
 		'''
+			
 			Method that returns a get_list of dictionaries
+		
 		'''
 		_data = { 'text_generation': self.text_generation,
 		          'image_generation': self.image_generation,
@@ -225,7 +245,9 @@ class Models( ):
 
 class AI( ):
 	'''
-	AI is the base class for all OpenAI functionalityl
+		
+		AI is the base class for all OpenAI functionalityl
+	
 	'''
 	
 	
@@ -344,14 +366,14 @@ class Perceptron( ):
 			else:
 				rgen = np.random.RandomState( self.random_state )
 				self.w_ = rgen.normal( loc=0.0, scale=0.01, size=X.shape[ 1 ] )
-				self.b_ = np.float_( 0. )
+				self.b_ = np.float64( 0. )
 				self.errors_ = [ ]
 				
 				for _ in range( self.n_iter ):
 					errors = 0
 				
 				for xi, target in zip( X, y ):
-					update = self.eta * (target - self.predict( xi ))
+					update = self.eta * ( target - self.predict( xi ) )
 				
 				self.w_ += update * xi
 				self.b_ += update
@@ -729,6 +751,7 @@ class Chat( AI ):
 		self.stream = stream
 		self.modalities = [ 'text', 'audio' ]
 		self.stops = [ '#', ';' ]
+		self.tool_choice = None
 		self.content = None
 		self.prompt = None
 		self.response = None
@@ -2537,7 +2560,9 @@ class Translation( AI ):
 	
 	def dump( self ) -> str:
 		'''
+		
 			Returns: dict of members
+			
 		'''
 		new = '\r\n'
 		return 'number' + f' = {self.number}' + new + \
@@ -2676,7 +2701,9 @@ class SmallEmbedding( AI ):
 	
 	def dump( self ) -> str:
 		'''
+		
 			Returns: dict of members
+			
 		'''
 		new = '\r\n'
 		return 'number' + f' = {self.number}' + new + \

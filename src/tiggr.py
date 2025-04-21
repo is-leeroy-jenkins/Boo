@@ -81,57 +81,76 @@ class Text:
 	    compute_tfidf(corpus: get_list, max_features=1000, prep=True) -> tuple
 	    
 	'''
-	raw_input: [ str ]
-	cleaned: [ str ]
-	normalized: [ str ]
-	lowercase:  str
-	translator: None
-	lemmatizer: None
-	stemmer: None
-	tokenizer: None
-	corrected: None
-	vectorizer: None
-	words: [ str ]
-	tokens: [ str ]
-	lines: [ str ]
-	chunks: [ str ]
-	stop_words: [ str ]
 	
 	def __init__( self ):
 		'''
 			Constructor for creating Text objects
 		'''
 		self.raw_input = None
-		self.cleaned = [ str ]
-		self.removed = [ str ]
 		self.normalized = None
-		self.lowercase = None
-		self.translator = None
-		self.lemmatizer = WordNetLemmatizer( )
-		self.stemmer = PorterStemmer( )
-		self.tokenizer = None
 		self.lemmatized = None
 		self.tokenized = None
 		self.corrected = None
-		self.vectorizer = None
 		self.words = [ str ]
 		self.tokens = [ str ]
 		self.lines = [ str ]
 		self.chunks = [ str ]
 		self.stop_words = [ str ]
+		self.cleaned = [ str ]
+		self.removed = [ str ]
+		self.lowercase = None
+		self.translator = None
+		self.lemmatizer = WordNetLemmatizer( )
+		self.stemmer = PorterStemmer( )
+		self.tokenizer = None
+		self.vectorizer = None
 	
 	
-	def __dir__( self ):
-		'''
-			returns a get_list[ str ] of members
-		'''
-		return [ 'raw_input', 'cleaned', 'removed',
-		         'lowercase', 'normalized', 'translator',
-		         'lemmatizer', 'tokenizer', 'vectorizer',
-		         'stemmer', 'lemmatized', 'tokens',
-		         'tokenized', 'corrected', 'words',
-		         'stop_words', 'lines', 'chunks' ]
+	def load_text( self, path: str ) -> str:
+		try:
+			if path is None:
+				raise Exception( 'The input argument "path" is required' )
+			else:
+				self.raw_input = path
+				return Path( path ).read_text( encoding='utf-8' )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Text'
+			_exc.method = 'load_text( self, path: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
+	
+	def split_lines( self, text: str ) -> list[ str ]:
+		"""
+		
+			Splits the input text into lines
+
+			Parameters:
+			-----------
+			text : str
+
+			Returns:
+			--------
+			list[ str ]
+			
+		"""
+		try:
+			if text is None:
+				raise Exception( 'The input argument "text" is required' )
+			else:
+				with open( text, 'r', encoding='utf-8' ) as f:
+					self.lines = f.readlines( )
+					return self.lines
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Text'
+			_exc.method = 'load_text( self, path: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+			
 	
 	def collapse_whitespace( self, text: str ) -> str:
 		"""
@@ -140,7 +159,6 @@ class Text:
 			Parameters:
 			-----------
 			text : str
-				The raw input text string to be cleaned.
 
 			Returns:
 			--------
@@ -578,7 +596,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Token'
-			_exc.method = 'chunk( self, tokens: get_list, max: int=800, over: int=50 ) -> get_list[ str ]'
+			_exc.method = 'chunk( self, tokens: get_list, max: int=800, over: int=50 ) -> list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -643,7 +661,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize_words( self, text: str ) -> get_list[ str ]'
+			_exc.method = 'tokenize_words( self, text: str ) -> list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -669,7 +687,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize_sentences( self, text: str ) -> get_list[ str ]'
+			_exc.method = 'tokenize_sentences( self, text: str ) -> list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
@@ -723,7 +741,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Token'
-			_exc.method = ( 'train_word2vec( self, tokens: get_list, '
+			_exc.method = ( 'train_word2vec( self, tokens: list, '
 			               'size=100, window=5, min=1 ) -> Word2Vec' )
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -765,35 +783,9 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Token'
-			_exc.method = 'compute_tfidf( self, corpus: get_list, max: int=1000, prep: bool=True ) -> tuple'
+			_exc.method = 'compute_tfidf( self, corpus: list, max: int=1000, prep: bool=True ) -> tuple'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
-
-	def load_file( self, path: str ) -> str:
-		"""
-		
-			Load the content of a document's file.
-	
-			Args:
-				path (str): The url to the documents file.
-	
-			Returns:
-				str: The contents of the file as a string.
-				
-		"""
-		try:
-			if path is None:
-				raise Exception( 'Input parameter "url" is required.' )
-			else:
-				self.raw_input = path
-				return Path( path ).read_text( encoding='utf-8' )
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'load_file( self, url: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
 	
 
