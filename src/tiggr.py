@@ -57,6 +57,7 @@ from nltk.stem import WordNetLemmatizer, PorterStemmer
 from collections import Counter
 from gensim.models import Word2Vec
 
+
 class Text:
 	'''
 	
@@ -82,6 +83,7 @@ class Text:
 	    
 	'''
 	
+	
 	def __init__( self ):
 		'''
 			Constructor for creating Text objects
@@ -95,6 +97,7 @@ class Text:
 		self.tokens = [ str ]
 		self.lines = [ str ]
 		self.chunks = [ str ]
+		self.chunk_size = 0
 		self.stop_words = [ str ]
 		self.cleaned = [ str ]
 		self.removed = [ str ]
@@ -150,7 +153,7 @@ class Text:
 			_exc.method = 'load_text( self, path: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
-			
+	
 	
 	def collapse_whitespace( self, text: str ) -> str:
 		"""
@@ -218,8 +221,8 @@ class Text:
 			_exc.method = 'remove_punctuation( self, text: str ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
-			
-			
+	
+	
 	def remove_special( self, text: str ) -> str:
 		"""
 
@@ -401,7 +404,7 @@ class Text:
 			else:
 				self.raw_input = text
 				self.removed = (BeautifulSoup( self.raw_input, "raw_html.parser" )
-				                    .get_text( separator=' ', strip=True ))
+				                .get_text( separator=' ', strip=True ))
 				return self.removed
 		except Exception as e:
 			_exc = Error( e )
@@ -565,227 +568,265 @@ class Text:
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
-	
-	def chunk( self, tokens: list, max: int=800, over: int=50 ) -> list[ str ]:
-		"""
-			Purpose:
-				Split a get_list of tokens into overlapping chunks based on token limits.
 
-			Args:
-				tokens (list): Tokenized input documents.
-				max (int): Max token size per chunk.
-				over (int): Overlapping token count between chunks.
+def tokenize_text( self, text: str ) -> list[ str ]:
+	'''
+
+		Splits the raw input.
+		removes non-words and returns tokens
+		Args:
+			cleaned_line: (str) - clean documents.
+
+		Returns:
+			list: Cleaned and normalized documents.
+
+	'''
+	try:
+		if text is None:
+			raise Exception( 'The input argument "text" was None' )
+		else:
+			self.tokens.clear( )
+			self.raw_input = text
+			self.lowercase = self.raw_input.lower( )
+			self.tokens = word_tokenize( self.lowercase )
+			self.words = [ w for w in self.tokens.split( ' ' ) ]
+			self.tokens = [ re.sub( r'[^\w"-]', '', word ) for word in self.words if
+			                word.strip( ) ]
+			return self.tokens
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'tokenize_text( self, text: str ) -> get_list'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def tokenize_words( self, text: str ) -> list[ str ]:
+	"""
+	
+		Tokenize a sentence or paragraph into word tokens.
+
+		Args:
+			text (str): Input text.
+
+		Returns:
+			list: List of word tokens.
+			
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The input argument "text" was None' )
+		else:
+			self.tokens.clear( )
+			self.raw_input = text
+			self.lowercase = self.raw_input.lower( )
+			self.tokens = word_tokenize( self.lowercase )
+			self.words = [ w for w in self.tokens.split( ' ' ) ]
+			self.tokens = [ re.sub( r'[^\w"-]', '', word ) for word in self.words if
+			                word.strip( ) ]
+			return self.tokens
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'tokenize_words( self, text: str ) -> list[ str ]'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def tokenize_sentences( self, text: str ) -> list[ str ]:
+	"""
+	
+		Tokenize a paragraph or document into a get_list of sentence strings.
+
+		Args:
+			text (str): Input text.
+
+		Returns:
+			list: List of sentence strings.
+			
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The input argument "text" is required.' )
+		else:
+			self.tokens = sent_tokenize( text )
+			return self.tokens
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'tokenize_sentences( self, text: str ) -> list[ str ]'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+	
+	
+	def chunk_text( self, text: str, max: int = 800 ) -> list[ str ]:
+		'''
+
+			Simple chunking by words assuming ~1.3 words per token
+
+			Parameters:
+			-----------
+			text : str
+				The input text string to be chunked
 
 			Returns:
-				list: A get_list of token chunks.
-		"""
+			--------
+			list[ str ]
+				A list with all words chunked.
+
+		'''
 		try:
-			if tokens is None:
-				raise Exception( 'Input parameter "tokens" is required.' )
+			if (text is None):
+				raise Exception( 'The input argument "text" is required.' )
 			else:
-				chunks = [ ]
-				start = 0
-				while start < len( tokens ):
-					end = start + max
-					chunk = tokens[ start:end ]
-					chunks.append( chunk )
-					start += max - over
-				
+				self.raw_input = text
+				self.lines = self.raw_input.split( )
+				self.chunk_size = int( max * 1.3 )
+				self.chunks = [ ' '.join( words[ i:i + chunk_size ] ) for i in
+				                range( 0, len( words ), chunk_size ) ]
 				return chunks
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'chunk( self, tokens: get_list, max: int=800, over: int=50 ) -> list[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def tokenize( self, text: str ) -> list[ str ]:
-		'''
-
-			Splits the raw input.
-			removes non-words and returns tokens
-			Args:
-				cleaned_line: (str) - clean documents.
-
-			Returns:
-				list: Cleaned and normalized documents.
-
-		'''
-		try:
-			if text is None:
-				raise Exception( 'The input argument "text" was None' )
-			else:
-				self.tokens.clear( )
-				self.raw_input = text
-				self.lowercase = self.raw_input.lower( )
-				self.tokens = word_tokenize( self.lowercase )
-				self.words = [ w for w in self.tokens.split( ' ' ) ]
-				self.tokens = [ re.sub( r'[^\w"-]', '', word ) for word in self.words if
-				                word.strip( ) ]
-				return self.tokens
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize( self, text: str ) -> get_list'
+			_exc.method = 'chunk_text( self, text: str, max: int = 512 ) -> list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
+
+
+def chunk_tokens( self, tokens: list[ str ], max: int = 800, over: int = 50 ) -> list[ str ]:
+	"""
+		Purpose:
+			Split a get_list of tokens into overlapping chunks based on token limits.
+
+		Args:
+			tokens (list): Tokenized input documents.
+			max (int): Max token size per chunk_tokens.
+			over (int): Overlapping token count between chunks.
+
+		Returns:
+			list: A get_list of token chunks.
+	"""
+	try:
+		if tokens is None:
+			raise Exception( 'Input parameter "tokens" is required.' )
+		else:
+			_start = 0
+			while _start < len( tokens ):
+				_end = _start + max
+				_chunk = tokens[ start:end ]
+				self.chunks.append( _chunck )
+				_start += max - over
+			
+			return self.chunks
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Token'
+		_exc.method = (
+			'chunk_tokens( self, tokens: list[ str ], max: int=800, over: int=50 ) -> list[ '
+			'str ]')
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def bag_of_words( self, tokens: list[ str ] ) -> dict:
+	"""
 	
-	
-	def tokenize_words( self, text: str ) -> list[ str ]:
-		"""
+		Construct a Bag-of-Words (BoW) frequency dictionary from tokens.
+
+		Args:
+			tokens (list): List of tokens from a document.
+
+		Returns:
+			dict: Word frequency dictionary.
+			
+	"""
+	try:
+		if tokens is None:
+			raise Exception( 'The input argument "tokens" is required.' )
+		else:
+			return dict( Counter( tokens ) )
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Token'
+		_exc.method = 'bag_of_words( self, tokens: get_list ) -> dict'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def train_word2vec( self, tokens: list, size=100, window=5, min=1 ) -> Word2Vec:
+	"""
+		Purpose:
+			Train a Word2Vec embedding model from tokenized sentences.
+
+		Args:
+			sentences (get_list of get_list of str): List of tokenized sentences.
+			vector_size (int): Dimensionality of word vectors.
+			window (int): Max distance between current and predicted word.
+			min_count (int): Minimum frequency for inclusion in vocabulary.
+
+		Returns:
+			Word2Vec: Trained Gensim Word2Vec model.
+	"""
+	try:
+		if tokens is None:
+			raise Exception( 'The input argument "tokens" is required.' )
+		else:
+			return Word2Vec( sentences=tokens, vector_size=size, window=window, min_count=min )
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Token'
+		_exc.method = ('train_word2vec( self, tokens: list, '
+		               'size=100, window=5, min=1 ) -> Word2Vec')
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def compute_tfidf( self, corpus: list, max: int = 1000, prep: bool = True ) -> tuple:
+	"""
+		Purpose:
+		Compute TF-IDF matrix with optional full preprocessing pipeline.
+
+		Args:
+			corpus (list): List of raw or preprocessed text documents.
+			max_features (int): Max number of terms to include (vocabulary size).
+			prep (bool): If True, normalize, tokenize_text, clean, and lemmatize input.
+
+		Returns:
+			tuple:
+				- tfidf_matrix (scipy.sparse.csr_matrix): TF-IDF feature matrix.
+				- feature_names (get_list): Vocabulary terms.
+				- vectorizer (TfidfVectorizer): Fitted vectorizer instance.
+
+	"""
+	try:
+		if corpus is None:
+			raise Exception( 'The input argument "corpus" is required.' )
+		elif prep:
+			cleaned_docs = [ ]
+			for doc in corpus:
+				norm = self.normalize( doc )
+				self.tokens = self.tokenize_words( norm )
+				_lemma = [ self.lemmatize( token ) for token in self.tokens ]
+				cleaned_doc = " ".join( _lemma )
+				cleaned_docs.append( cleaned_doc )
 		
-			Tokenize a sentence or paragraph into word tokens.
-
-			Args:
-				text (str): Input text.
-
-			Returns:
-				list: List of word tokens.
-				
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The input argument "text" was None' )
-			else:
-				self.raw_input = text
-				self.lowercase = self.raw_input.lower( )
-				self.tokens = word_tokenize( self.lowercase )
-				self.words = [ w for w in self.tokens.split( ' ' ) ]
-				self.tokens = [ re.sub( r'[^\w"-]', '', word ) for word in self.words if
-				                word.strip( ) ]
-				return self.tokens
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'tokenize_words( self, text: str ) -> list[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def tokenize_sentences( self, text: str ) -> list[ str ]:
-		"""
-		
-			Tokenize a paragraph or document into a get_list of sentence strings.
-	
-			Args:
-				text (str): Input text.
-	
-			Returns:
-				list: List of sentence strings.
-				
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The input argument "text" is required.' )
-			else:
-				return sent_tokenize( text )
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'tokenize_sentences( self, text: str ) -> list[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-
-	
-	def bag_of_words( self, tokens: list[ str ] ) -> dict:
-		"""
-		
-			Construct a Bag-of-Words (BoW) frequency dictionary from tokens.
-	
-			Args:
-				tokens (list): List of tokens from a document.
-	
-			Returns:
-				dict: Word frequency dictionary.
-				
-		"""
-		try:
-			if tokens is None:
-				raise Exception( 'The input argument "tokens" is required.' )
-			else:
-				return dict( Counter( tokens ) )
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'bag_of_words( self, tokens: get_list ) -> dict'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def train_word2vec( self, tokens: list, size=100, window=5, min=1 ) -> Word2Vec:
-		"""
-			Purpose:
-				Train a Word2Vec embedding model from tokenized sentences.
-	
-			Args:
-				sentences (get_list of get_list of str): List of tokenized sentences.
-				vector_size (int): Dimensionality of word vectors.
-				window (int): Max distance between current and predicted word.
-				min_count (int): Minimum frequency for inclusion in vocabulary.
-	
-			Returns:
-				Word2Vec: Trained Gensim Word2Vec model.
-		"""
-		try:
-			if tokens is None:
-				raise Exception( 'The input argument "tokens" is required.' )
-			else:
-				return Word2Vec( sentences=tokens, vector_size=size, window=window, min_count=min )
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
-			_exc.method = ( 'train_word2vec( self, tokens: list, '
-			               'size=100, window=5, min=1 ) -> Word2Vec' )
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def compute_tfidf( self, corpus: list, max: int=1000, prep: bool=True ) -> tuple:
-		"""
-			Purpose:
-			Compute TF-IDF matrix with optional full preprocessing pipeline.
-	
-			Args:
-				corpus (list): List of raw or preprocessed text documents.
-				max_features (int): Max number of terms to include (vocabulary size).
-				prep (bool): If True, normalize, tokenize, clean, and lemmatize input.
-	
-			Returns:
-				tuple:
-					- tfidf_matrix (scipy.sparse.csr_matrix): TF-IDF feature matrix.
-					- feature_names (get_list): Vocabulary terms.
-					- vectorizer (TfidfVectorizer): Fitted vectorizer instance.
-	
-		"""
-		try:
-			if corpus is None:
-				raise Exception( 'The input argument "corpus" is required.' )
-			elif prep:
-				cleaned_docs = [ ]
-				for doc in corpus:
-					norm = self.normalize( doc )
-					self.tokens = self.tokenize_words( norm )
-					_lemma = [ self.lemmatize( token ) for token in self.tokens ]
-					cleaned_doc = " ".join( _lemma )
-					cleaned_docs.append( cleaned_doc )
-					
-			self.vectorizer = TfidfVectorizer( max_features=max, stop_words='english' )
-			tfidf_matrix = self.vectorizer.fit_transform( cleaned_docs )
-			return tfidf_matrix, self.vectorizer.get_feature_names_out( ).tolist( ), self.vectorizer
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'compute_tfidf( self, corpus: list, max: int=1000, prep: bool=True ) -> tuple'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-
-	
+		self.vectorizer = TfidfVectorizer( max_features=max, stop_words='english' )
+		tfidf_matrix = self.vectorizer.fit_transform( cleaned_docs )
+		return (tfidf_matrix, self.vectorizer.get_feature_names_out( ).tolist( ),
+		        self.vectorizer)
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Token'
+		_exc.method = ('compute_tfidf( self, corpus: list, max: int=1000, prep: bool=True ) -> '
+		               'tuple')
+		_err = ErrorDialog( _exc )
+		_err.show( )
 
