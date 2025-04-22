@@ -347,7 +347,7 @@ class Perceptron( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vectors, where n_examples is the number of
+			Training vec, where n_examples is the number of
 			examples and n_features is the number of features.
 			
 			y : array-like, shape = [n_examples]
@@ -399,7 +399,7 @@ class Perceptron( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vectors, where n_examples is the number of
+			Training vec, where n_examples is the number of
 			examples and n_features is the number of features.
 			
 
@@ -432,7 +432,7 @@ class Perceptron( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vectors, where n_examples is the number of
+			Training vec, where n_examples is the number of
 			examples and n_features is the number of features.
 			
 
@@ -530,7 +530,7 @@ class AdaptiveLinearNeuron( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vectors, where n_examples
+			Training vec, where n_examples
 			is the number of examples and
 			n_features is the number of features.
 			
@@ -582,7 +582,7 @@ class AdaptiveLinearNeuron( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vectors, where n_examples is the number of
+			Training vec, where n_examples is the number of
 			examples and n_features is the number of features.
 			
 
@@ -615,14 +615,14 @@ class AdaptiveLinearNeuron( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vectors, where n_examples is the number of
+			Training vec, where n_examples is the number of
 			examples and n_features is the number of features.
 			
 
 			Returns
 			-------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vectors, where n_examples is the number of
+			Training vec, where n_examples is the number of
 			examples and n_features is the number of features.
 		
 		"""
@@ -650,7 +650,7 @@ class AdaptiveLinearNeuron( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vectors, where n_examples is the number of
+			Training vec, where n_examples is the number of
 			examples and n_features is the number of features.
 			
 

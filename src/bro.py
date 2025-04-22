@@ -1173,7 +1173,7 @@ class EmbeddingRequest( GptRequest ):
 
 class VectorStoreRequest( GptRequest ):
 	'''
-		Class encapsulating requests for vectors.
+		Class encapsulating requests for vec.
 	'''
 	
 	

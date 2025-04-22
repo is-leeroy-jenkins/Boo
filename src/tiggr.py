@@ -766,7 +766,7 @@ def train_word2vec( self, tokens: list, size=100, window=5, min=1 ) -> Word2Vec:
 
 		Args:
 			sentences (get_list of get_list of str): List of tokenized sentences.
-			vector_size (int): Dimensionality of word vectors.
+			vector_size (int): Dimensionality of word vec.
 			window (int): Max distance between current and predicted word.
 			min_count (int): Minimum frequency for inclusion in vocabulary.
 
