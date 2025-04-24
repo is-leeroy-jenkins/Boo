@@ -170,7 +170,7 @@ class Models( ):
 	
 	
 	def __init__( self ):
-		self.text_generation = [ 'text-davinci-003', 'text-curie-001',
+		self.text_generation = [ 'pages-davinci-003', 'pages-curie-001',
 		                         'gpt-4-0613', 'gpt-4-0314',
 		                         'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
 		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
@@ -192,7 +192,7 @@ class Models( ):
 		                           'gpt-4o-audio-preview-2024-10-01',
 		                           'gpt-4o-mini-audio-preview-2024-12-17' ]
 		self.transcription = [ 'whisper-1', 'gpt-4o-mini-transcribe', ' openai-4o-transcribe' ]
-		self.translation = [ 'whisper-1', 'text-davinci-003',
+		self.translation = [ 'whisper-1', 'pages-davinci-003',
 		                     'gpt-4-0613', 'gpt-4-0314',
 		                     'gpt-4-turbo-2024-04-09' ]
 		self.reasoning  = [ 'o1-2024-12-17', 'o1-mini-2024-09-12',
@@ -200,8 +200,8 @@ class Models( ):
 		self.finetuning = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18',
 		                    'gpt-4-0613', 'gpt-3.5-turbo-0125',
 		                    'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-0613' ]
-		self.embeddings = [ 'text-embedding-3-small', 'text-embedding-3-large',
-		                    'text-embedding-ada-002' ]
+		self.embeddings = [ 'pages-embedding-3-small', 'pages-embedding-3-large',
+		                    'pages-embedding-ada-002' ]
 		self.uploads = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
 		                 'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
@@ -498,7 +498,7 @@ class AdaptiveLinearNeuron( ):
 		
 			Purpose
 			_______
-			Initializes AdaptiveLinearNeuron opbjects
+			Initializes LinearGradientDescent opbjects
 			
 			
 			Parameters
@@ -566,7 +566,7 @@ class AdaptiveLinearNeuron( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'AdaptiveLinearNeuron'
+			exception.cause = 'LinearGradientDescent'
 			exception.method = 'fit( self, X, y )'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -599,7 +599,7 @@ class AdaptiveLinearNeuron( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'AdaptiveLinearNeuron'
+			exception.cause = 'LinearGradientDescent'
 			exception.method = 'net_input( self, X )'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -634,7 +634,7 @@ class AdaptiveLinearNeuron( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'AdaptiveLinearNeuron'
+			exception.cause = 'LinearGradientDescent'
 			exception.method = 'activation( self, X )'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -667,7 +667,7 @@ class AdaptiveLinearNeuron( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'AdaptiveLinearNeuron'
+			exception.cause = 'LinearGradientDescent'
 			exception.method = 'predict( self, values )'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -715,7 +715,7 @@ class Chat( AI ):
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.prompt, self.response, self.completion, self.file, self.file_path,
+		self.prompt, self.response, self.completion, self.file, self.path,
 		self.input, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids
 		
@@ -749,7 +749,7 @@ class Chat( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.tool_choice = None
 		self.content = None
@@ -881,7 +881,7 @@ class Chat( AI ):
 						'content':
 							[
 								{ 'type': 'input_text',
-								  'text': self.prompt
+								  'pages': self.prompt
 								  },
 								{
 									'type': 'input_image',
@@ -945,8 +945,8 @@ class Chat( AI ):
 									}
 							},
 							{
-								'type': 'text',
-								'text': 'What is the first dragon in the book?',
+								'type': 'pages',
+								'pages': 'What is the first dragon in the book?',
 							},
 						]
 					}
@@ -1090,7 +1090,7 @@ class Chat( AI ):
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops', 'content',
-		         'prompt', 'response', 'completion', 'file', 'file_path',
+		         'prompt', 'response', 'completion', 'file', 'path',
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'size', 'api_key', 'client', 'model',
 		         'generate_text', 'analyze_image', 'summarize', 'generate_image',
@@ -1213,7 +1213,7 @@ class LargeImage( AI ):
 							'content':
 							[
 								{ 'type': 'input_text',
-								  'text': self.input_text
+								  'pages': self.input_text
 								},
 								{
 									'type': 'input_image',
@@ -1288,7 +1288,7 @@ class LargeImage( AI ):
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
-		         'input_text', 'image_url', 'file_path',
+		         'input_text', 'image_url', 'path',
 				 'api_key', 'client', 'model', 'input', 'generate',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
@@ -1319,9 +1319,9 @@ class Image( AI ):
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.prompt, self.response, self.completion, self.file, self.file_path,
+		self.prompt, self.response, self.completion, self.file, self.path,
 		self.input, self.messages, self.image_url, self.response_format,
-		self.tools, self.vector_store_ids, self.input_text, self.file_path, self.image_url
+		self.tools, self.vector_store_ids, self.input_text, self.path, self.image_url
 		
 		Methods
 		------------
@@ -1430,7 +1430,7 @@ class Image( AI ):
 						'content':
 						[
 							{ 'type': 'input_text',
-							  'text': self.input_text
+							  'pages': self.input_text
 						    },
 							{
 								'type': 'input_image',
@@ -1505,7 +1505,7 @@ class Image( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'api_key', 'client', 'model', 'input', 'analyze',
-		         'input_text', 'image_url', 'file_path', 'edit',
+		         'input_text', 'image_url', 'path', 'edit',
 		         'generate', 'quality', 'detail', 'model', 'get_model_options',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
@@ -1587,7 +1587,7 @@ class Assistant( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio', 'auto' ]
+		self.modalities = [ 'pages', 'audio', 'auto' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.reasoning_effort = 'auto'
@@ -1659,7 +1659,7 @@ class Assistant( AI ):
 			Method that returns a list of formatting options
 		
 		'''
-		return [ 'auto', 'text', 'json' ]
+		return [ 'auto', 'pages', 'json' ]
 	
 	
 	def get_model_options( ):
@@ -1725,7 +1725,7 @@ class Assistant( AI ):
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
-		         'prompt', 'response', 'completion', 'file', 'file_path',
+		         'prompt', 'response', 'completion', 'file', 'path',
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
@@ -1785,7 +1785,7 @@ class Bubba( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.reasoning_effort = 'auto'
@@ -1839,7 +1839,7 @@ class Bubba( AI ):
 			Method that returns a list of formatting options
 		
 		'''
-		return [ 'auto', 'text', 'json' ]
+		return [ 'auto', 'pages', 'json' ]
 	
 	
 	def get_model_options( ):
@@ -1905,7 +1905,7 @@ class Bubba( AI ):
 		return  [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
-		         'prompt', 'response', 'completion', 'file', 'file_path',
+		         'prompt', 'response', 'completion', 'file', 'path',
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
@@ -1965,7 +1965,7 @@ class Bro( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.reasoning_effort = None
@@ -2019,7 +2019,7 @@ class Bro( AI ):
 			Method that returns a list of formatting options
 		
 		'''
-		return [ 'auto', 'text', 'json' ]
+		return [ 'auto', 'pages', 'json' ]
 	
 	
 	def get_model_options( ):
@@ -2086,7 +2086,7 @@ class Bro( AI ):
 		return  [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
-		         'prompt', 'response', 'completion', 'file', 'file_path',
+		         'prompt', 'response', 'completion', 'file', 'path',
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
@@ -2119,7 +2119,7 @@ class TTS( AI ):
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.input_text, self.response, self.completion, self.file, self.file_path,
+		self.input_text, self.response, self.completion, self.file, self.path,
 		self.input, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids, self.descriptions, self.assistants
 		
@@ -2149,7 +2149,7 @@ class TTS( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.audio_path = None
 		self.response = None
@@ -2327,7 +2327,7 @@ class Transcription( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.input_text = None
 		self.audio_file = None
@@ -2453,7 +2453,7 @@ class Translation( AI ):
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.input_text, self.response, self.completion, self.file, self.file_path,
+		self.input_text, self.response, self.completion, self.file, self.path,
 		self.input, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids, self.descriptions, self.assistants
 		
@@ -2479,7 +2479,7 @@ class Translation( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.audio_file = None
 		self.response = None
@@ -2492,7 +2492,7 @@ class Translation( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ 'whisper-1', 'text-davinci-003',
+		return [ 'whisper-1', 'pages-davinci-003',
 		         'gpt-4-0613', 'gpt-4-0314',
 		         'gpt-4-turbo-2024-04-09' ]
 	
@@ -2625,7 +2625,7 @@ class SmallEmbedding( AI ):
 		super( ).__init__( )
 		self.client = OpenAI( self.api_key )
 		self.client.api_key = Header( ).api_key
-		self.model = 'text-embedding-3-small'
+		self.model = 'pages-embedding-3-small'
 		self.encoding_format = 'float'
 		self.number = num
 		self.temperature = temp
@@ -2645,7 +2645,7 @@ class SmallEmbedding( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ 'text-embedding-3-small', ]
+		return [ 'pages-embedding-3-small', ]
 	
 	
 	def create( self, input: str ) -> list[ float ]:
@@ -2763,7 +2763,7 @@ class AdaEmbedding( AI ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( self.api_key )
-		self.model = 'text-embedding-ada-02'
+		self.model = 'pages-embedding-ada-02'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -2817,7 +2817,7 @@ class AdaEmbedding( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ 'text-embedding-ada-02']
+		return [ 'pages-embedding-ada-02']
 	
 
 	def __dir__( self ) -> list[ str ]:
@@ -2866,7 +2866,7 @@ class LargeEmbedding( AI ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( self.api_key )
-		self.model = 'text-embedding-3-large'
+		self.model = 'pages-embedding-3-large'
 		self.encoding_format = 'float'
 		self.number = num
 		self.temperature = temp
@@ -2886,7 +2886,7 @@ class LargeEmbedding( AI ):
 			Methods that returns a list of model names
 
 		'''
-		return [ 'text-embedding-3-large', ]
+		return [ 'pages-embedding-3-large', ]
 	
 	
 	def create( self, input: str ) -> list[ float ]:

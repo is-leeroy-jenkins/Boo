@@ -75,7 +75,7 @@ class Embedding( ):
 			- model (str): OpenAI embedding model to use
 		
 		"""
-		self.model = 'text-embedding-3-small'
+		self.model = 'pages-embedding-3-small'
 		self.client = OpenAI( )
 		self.cache = { }
 		self.response = None
@@ -94,13 +94,13 @@ class Embedding( ):
 			Generate and normalize embeddings for a list of input texts.
 	
 			Parameters:
-			- texts (List[str]): List of input text strings
+			- texts (List[str]): List of input pages strings
 			- batch (int): Number of texts per API request batch
 			- max (int): Number of retries on API failure
 			- time (float): Seconds to wait between retries
 	
 			Returns:
-			- pd.DataFrame: DataFrame containing original text, raw embeddings,
+			- pd.DataFrame: DataFrame containing original pages, raw embeddings,
 			and normalized embeddings
 			
 		"""
@@ -123,7 +123,7 @@ class Embedding( ):
 		normed = self._normalize( embeddings_np )
 		
 		return pd.DataFrame( {
-			'text': texts,
+			'pages': texts,
 			'embedding': list( embeddings_np ),
 			'normed_embedding': list( normed )
 		} )
@@ -139,7 +139,7 @@ class Embedding( ):
 			- batch (int): Desired batch size
 	
 			Returns:
-			- List of text batches
+			- List of pages batches
 		
 		"""
 		return [ texts[ i:i + size ] for i in range( 0, len( texts ), size ) ]
@@ -235,30 +235,30 @@ class Embedding( ):
 		"""
 		matrix = np.vstack( dataframe[ 'normed_embedding' ] )
 		similarity_matrix = np.dot( matrix, matrix.T )
-		return pd.DataFrame( similarity_matrix, index=dataframe[ 'text' ],
-			columns=dataframe[ 'text' ] )
+		return pd.DataFrame( similarity_matrix, index=dataframe[ 'pages' ],
+			columns=dataframe[ 'pages' ] )
 	
 	
 	def export_jsonl( self, dataframe: pd.DataFrame, path: str ) -> None:
 		"""
 			
-			Export DataFrame of text and embeddings to a JSONL file.
+			Export DataFrame of pages and embeddings to a JSONL file.
 	
 			Parameters:
-			- dataframe (pd.DataFrame): DataFrame with 'text' and 'embedding'
+			- dataframe (pd.DataFrame): DataFrame with 'pages' and 'embedding'
 			- path (str): Output path for .jsonl file
 		
 		"""
 		with open( path, 'w', encoding='utf-8' ) as f:
 			for _, row in dataframe.iterrows( ):
-				record = { 'text': row[ 'text' ], 'embedding': row[ 'embedding' ] }
+				record = { 'pages': row[ 'pages' ], 'embedding': row[ 'embedding' ] }
 				f.write( json.dumps( record ) + '\n' )
 	
 	
 	def import_jsonl( self, path: str ) -> pd.DataFrame:
 		"""
 		
-			Import text and embeddings from a JSONL file into a DataFrame.
+			Import pages and embeddings from a JSONL file into a DataFrame.
 	
 			Parameters:
 			- path (str): Path to the .jsonl file
@@ -271,11 +271,11 @@ class Embedding( ):
 		with open( path, 'r', encoding='utf-8' ) as f:
 			for line in f:
 				record = json.loads( line.strip( ) )
-				texts.append( record[ 'text' ] )
+				texts.append( record[ 'pages' ] )
 				embeddings.append( record[ 'embedding' ] )
 		normed = self._normalize( np.array( embeddings ) )
 		return pd.DataFrame(
-			{ 'text': texts, 'embedding': embeddings, 'normed_embedding': list( normed ) } )
+			{ 'pages': texts, 'embedding': embeddings, 'normed_embedding': list( normed ) } )
 	
 	
 	def create_vector_store( self, name: str ) -> str:
@@ -313,12 +313,12 @@ class Embedding( ):
 			Upload documents to a given OpenAI vector store.
 	
 			Parameters:
-			- dataframe (pd.DataFrame): DataFrame with 'text' column
+			- dataframe (pd.DataFrame): DataFrame with 'pages' column
 			- storeids (str): OpenAI vector store ID
 			
 		"""
 		documents = [
-			{ 'content': row[ 'text' ], 'metadata': { 'source': f'row_{i}' } }
+			{ 'content': row[ 'pages' ], 'metadata': { 'source': f'row_{i}' } }
 			for i, row in dataframe.iterrows( )
 		]
 		self.client.beta.vector_stores.file_batches.create( store_id=storeids,
@@ -341,7 +341,7 @@ class Embedding( ):
 		"""
 		self.response = self.client.beta.vector_stores.query( store_id=id, query=query, top_k=top )
 		return [
-			{ 'text': result[ 'document' ], 'score': result[ 'score' ] }
+			{ 'pages': result[ 'document' ], 'score': result[ 'score' ] }
 			for result in self.response.get( 'data', [ ] )
 		]
 	
@@ -365,7 +365,7 @@ class Extractor( ):
 	
 		Extractor
 		----------------
-		A utility class for extracting clean text from PDF files into a list of strings.
+		A utility class for extracting clean pages from PDF files into a list of strings.
 		Handles nuances such as layout artifacts, page separation, optional filtering,
 		and includes table detection capabilities.
 		
@@ -376,12 +376,12 @@ class Extractor( ):
 	              tables: bool = True ):
 		"""
 			
-			Initialize the PDF text extractor with configurable settings.
+			Initialize the PDF pages extractor with configurable settings.
 	
 			Parameters:
 			- headers (bool): If True, attempts to strip recurring headers/footers.
 			- length (int): Minimum number of characters for a line to be included.
-			- tables (bool): If True, extract text from detected tables using block
+			- tables (bool): If True, extract pages from detected tables using block
 			grouping.
 			
 		"""
@@ -395,7 +395,7 @@ class Extractor( ):
 	def extract_lines( self, path: str, max: Optional[ int ] = None ) -> List[ str ]:
 		"""
 			
-			Extract lines of text from a PDF, optionally limiting to the first N pages.
+			Extract lines of pages from a PDF, optionally limiting to the first N pages.
 	
 			Parameters:
 			- path (str): Path to the PDF file
@@ -412,7 +412,7 @@ class Extractor( ):
 				if self.extract_tables:
 					page_lines = self._extract_table_blocks( page )
 				else:
-					text = page.get_text( "text" )
+					text = page.get_text( "pages" )
 					page_lines = text.splitlines( )
 				self.clean_lines = self._filter_lines( page_lines )
 				self.lines.extend( self.clean_lines )
@@ -440,10 +440,10 @@ class Extractor( ):
 	def _filter_lines( self, lines: List[ str ] ) -> List[ str ]:
 		"""
 		
-			Filter and clean lines from a page of text.
+			Filter and clean lines from a page of pages.
 	
 			Parameters:
-			- lines (List[str]): Raw lines of text
+			- lines (List[str]): Raw lines of pages
 	
 			Returns:
 			- List[str]: Filtered, non-trivial lines
@@ -466,7 +466,7 @@ class Extractor( ):
 			Heuristic to detect common headers/footers (basic implementation).
 	
 			Parameters:
-			- line (str): A line of text
+			- line (str): A line of pages
 	
 			Returns:
 			- bool: True if line is likely a header or footer
@@ -479,14 +479,14 @@ class Extractor( ):
 	def extract_text( self, path: str, max: Optional[ int ] = None ) -> str:
 		"""
 		
-			Extract the entire text from a PDF into one continuous string.
+			Extract the entire pages from a PDF into one continuous string.
 	
 			Parameters:
 			- path (str): Path to the PDF file
 			- max (Optional[int]): Maximum number of pages to process
 	
 			Returns:
-			- str: Full concatenated text
+			- str: Full concatenated pages
 		
 		"""
 		self.lines = self.extract_lines( path, max=max )
@@ -536,11 +536,11 @@ class Extractor( ):
 	def export_text( self, lines: List[ str ], path: str ) -> None:
 		"""
 			
-			Export extracted lines of text to a plain text file.
+			Export extracted lines of pages to a plain pages file.
 	
 			Parameters:
-			- lines (List[str]): List of text lines
-			- path (str): Path to output text file
+			- lines (List[str]): List of pages lines
+			- path (str): Path to output pages file
 		
 		"""
 		with open( path, "w", encoding="utf-8" ) as f:

@@ -68,17 +68,17 @@ class Data( ):
         - close: Closes the database connection.
     """
 
-    def __init__(self, db_name: str = "Data.db"):
+    def __init__( self, db_name: str="Data.db" ):
         """
         Initializes the connection to the SQLite database.
         
         Args:
             db_name (str): The name of the database file.
         """
-        self.conn = sqlite3.connect(db_name)
-        self.cursor = self.conn.cursor()
+        self.conn = sqlite3.connect( db_name )
+        self.cursor = self.conn.cursor( )
 
-    def create_table(self, table_sql: str) -> None:
+    def create_table( self, table_sql: str ) -> None:
         """
         Creates a table using a provided SQL statement.
 
@@ -88,7 +88,7 @@ class Data( ):
         self.cursor.execute( table_sql )
         self.conn.commit( )
 
-    def insert(self, table: str, columns: List[str], values: Tuple[Any, ...]) -> None:
+    def insert(self, table: str, columns: List[ str ], values: Tuple[Any, ...] ) -> None:
         """
         Inserts a new record into a table.
 
@@ -97,8 +97,8 @@ class Data( ):
             columns (List[str]): Column names.
             values (Tuple): Corresponding values.
         """
-        placeholders = ", ".join("?" for _ in values)
-        col_names = ", ".join(columns)
+        placeholders = ", ".join( "?" for _ in values )
+        col_names = ", ".join( columns )
         sql = f"INSERT INTO {table} ({col_names}) VALUES ({placeholders})"
         self.cursor.execute( sql, values )
         self.conn.commit()
@@ -143,6 +143,7 @@ class Data( ):
             params (Tuple): Parameters for both clauses.
         """
         sql = f"UPDATE {table} SET {set_clause} WHERE {where_clause}"
+        
         self.cursor.execute(sql, params)
         self.conn.commit()
 

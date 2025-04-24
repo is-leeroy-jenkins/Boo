@@ -180,7 +180,7 @@ class GptOptions( ):
 		self.store = store
 		self.stream = stream
 		self.size = size
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.response_format = 'auto'
 	
 	
@@ -224,7 +224,7 @@ class GptOptions( ):
 			Returns: get_list[ str ] of response formats used by the GPT
 
 		'''
-		return [ 'text', 'audio', 'url' ]
+		return [ 'pages', 'audio', 'url' ]
 	
 	
 	def get_output_formats( self ) -> list[ str ]:
@@ -603,9 +603,9 @@ class GptRequest( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
-		self.response_format = 'text'
+		self.response_format = 'pages'
 		self.content = None
 		self.response = None
 		self.prompt = None
@@ -651,9 +651,9 @@ class TextRequest( GptRequest ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
-		self.response_format = 'text'
+		self.response_format = 'pages'
 		self.content = None
 		self.response = None
 		self.prompt = None
@@ -754,9 +754,9 @@ class CompletionRequest( GptRequest ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
-		self.response_format = 'text'
+		self.response_format = 'pages'
 		self.content = None
 		self.response = None
 		self.prompt = None
@@ -859,9 +859,9 @@ class ImageRequest( GptRequest ):
 		self.stream = stream
 		self.size = '1024X1024'
 		self.detail = 'standard'
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
-		self.response_format = 'text'
+		self.response_format = 'pages'
 		self.content = None
 		self.response = None
 		self.prompt = None
@@ -969,7 +969,7 @@ class SpeechRequest( GptRequest ):
 		self.stream = stream
 		self.size = None
 		self.detail = None
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'mp3'
 		self.content = None
@@ -1020,7 +1020,7 @@ class TranslationRequest( GptRequest ):
 		self.stream = stream
 		self.size = None
 		self.detail = None
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'mp3'
 		self.content = None
@@ -1078,9 +1078,9 @@ class TranscriptionRequest( GptRequest ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
-		self.response_format = 'text'
+		self.response_format = 'pages'
 		self.content = None
 		self.response = None
 		self.prompt = None
@@ -1124,7 +1124,7 @@ class EmbeddingRequest( GptRequest ):
 		self.header = super( ).header
 		self.instructions = super( ).system_instructions
 		self.client = OpenAI( self.api_key )
-		self.model = 'text-embedding-3-large'
+		self.model = 'pages-embedding-3-large'
 		self.endpoint = EndPoint( ).embeddings
 		self.number = num
 		self.temperature = temp
@@ -1134,9 +1134,9 @@ class EmbeddingRequest( GptRequest ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
-		self.response_format = 'text'
+		self.response_format = 'pages'
 		self.messages = [ GptMessage ]
 		self.content = None
 		self.response = None
@@ -1194,9 +1194,9 @@ class VectorStoreRequest( GptRequest ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
-		self.response_format = 'text'
+		self.response_format = 'pages'
 		self.messages = [ GptMessage ]
 		self.content = None
 		self.response = None
@@ -1254,7 +1254,7 @@ class GptFileRequest( GptRequest ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.messages = [ GptMessage ]
@@ -1313,9 +1313,9 @@ class UploadRequest( GptRequest ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
-		self.response_format = 'text'
+		self.response_format = 'pages'
 		self.messages = [ GptMessage ]
 		self.content = None
 		self.response = None
@@ -1373,9 +1373,9 @@ class FineTuningRequest( GptRequest ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'pages', 'audio' ]
 		self.stops = [ '#', ';' ]
-		self.response_format = 'text'
+		self.response_format = 'pages'
 		self.messages = [ GptMessage ]
 		self.content = None
 		self.response = None
@@ -1473,7 +1473,7 @@ class SystemMessage( GptMessage ):
 	'''
 	
 	
-	def __init__( self, prompt: str, role: str = 'system', type: str = 'text' ) -> None:
+	def __init__( self, prompt: str, role: str = 'system', type: str = 'pages' ) -> None:
 		super( ).__init__( prompt, role, type )
 		self.content = prompt
 		self.role = role
@@ -1528,7 +1528,7 @@ class UserMessage( GptMessage ):
 	'''
 	
 	
-	def __init__( self, prompt: str, role: str = 'user', type: str = 'text' ) -> None:
+	def __init__( self, prompt: str, role: str = 'user', type: str = 'pages' ) -> None:
 		super( ).__init__( prompt, role, type )
 		self.content = prompt
 		self.role = role
@@ -1585,7 +1585,7 @@ class DeveloperMessage( GptMessage ):
 	'''
 	
 	
-	def __init__( self, prompt: str, role: str = 'developer', type: str = 'text' ) -> None:
+	def __init__( self, prompt: str, role: str = 'developer', type: str = 'pages' ) -> None:
 		super( ).__init__( prompt, role, type )
 		self.content = prompt
 		self.role = role
@@ -1640,7 +1640,7 @@ class AssistantMessage( GptMessage ):
 	'''
 	
 	
-	def __init__( self, prompt: str, role: str = 'assistant', type: str = 'text' ) -> None:
+	def __init__( self, prompt: str, role: str = 'assistant', type: str = 'pages' ) -> None:
 		super( ).__init__( prompt, role, type )
 		self.content = prompt
 		self.role = role

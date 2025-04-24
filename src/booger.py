@@ -297,7 +297,7 @@ class FileDialog( Dark ):
 		         'button_forecolor', 'icon_path', 'theme_font',
 		         'scrollbar_color', 'original', 'selected_item', 'show',
 		         'message', 'extension', 'excel', 'csv', 'pdf', 'sql',
-		         'text', 'access', 'sqlite', 'sqlserver' ]
+		         'pages', 'access', 'sqlite', 'sqlserver' ]
 	
 	
 	def show( self ):

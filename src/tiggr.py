@@ -56,6 +56,7 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 from collections import Counter
 from gensim.models import Word2Vec
+from collections import defaultdict
 
 
 class Text:
@@ -65,16 +66,16 @@ class Text:
 		
 	    Methods:
 	    --------
-	    collapse_whitespace( self, text: str ) -> str
-	    remove_punctuation( self, text: str ) -> str:
-		remove_special( self, text: str ) -> str:
-		remove_html( self, text: str ) -> str
-		remove_errors( self, text: str ) -> str
-		correct_errors( self, text: str ) -> str:
-		remove_markdown( self, text: str ) -> str
-	    normalize(text: str) -> str
-	    tokenize_sentences(text: str) -> str
-	    tokenize_words(text: str) -> get_list
+	    collapse_whitespace( self, pages: str ) -> str
+	    remove_punctuation( self, pages: str ) -> str:
+		remove_special( self, pages: str ) -> str:
+		remove_html( self, pages: str ) -> str
+		remove_errors( self, pages: str ) -> str
+		correct_errors( self, pages: str ) -> str:
+		remove_markdown( self, pages: str ) -> str
+	    normalize(pages: str) -> str
+	    tokenize_sentences(pages: str) -> str
+	    tokenize_words(pages: str) -> get_list
 	    load_file( url: str) -> li
 	    lemmatize(tokens: get_list) -> str
 	    bag_of_words(tokens: get_list) -> dict
@@ -89,6 +90,7 @@ class Text:
 			Constructor for creating Text objects
 		'''
 		self.raw_input = None
+		self.raw_pages = None
 		self.normalized = None
 		self.lemmatized = None
 		self.tokenized = None
@@ -96,6 +98,7 @@ class Text:
 		self.words = [ str ]
 		self.tokens = [ str ]
 		self.lines = [ str ]
+		self.pages = [ str ]
 		self.chunks = [ str ]
 		self.chunk_size = 0
 		self.stop_words = [ str ]
@@ -128,11 +131,11 @@ class Text:
 	def split_lines( self, text: str ) -> list[ str ]:
 		"""
 		
-			Splits the input text into lines
+			Splits the input pages into lines
 
 			Parameters:
 			-----------
-			text : str
+			pages : str
 
 			Returns:
 			--------
@@ -141,7 +144,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "text" is required' )
+				raise Exception( 'The input argument "pages" is required' )
 			else:
 				with open( text, 'r', encoding='utf-8' ) as f:
 					self.lines = f.readlines( )
@@ -150,30 +153,72 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'load_text( self, path: str ) -> str'
+			_exc.method = 'split_lines( self, text: str ) -> list[ str ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def split_pages( self, path: str, delimiter: str = '\f' ) -> list[ str ]:
+		"""
+		
+			Reads text from a file, splits it into lines, and groups them into pages.
+	
+			Args:
+				path (str): Path to the text file.
+				delimiter (str): Page separator string (default is '\f' for form feed).
+	
+			Returns:
+				list of str: List where each element is the text of one page.
+				
+		"""
+		try:
+			if path is None:
+				raise Exception( 'The input argument "path" is required' )
+			else:
+				with open( path, 'r', encoding='utf-8' ) as f:
+					self.raw_input = f.read( )
+		except UnicodeDecodeError:
+			with open( path, 'r', encoding='latin1' ) as f:
+				self.raw_input = f.read( )
+			
+			# Split by pages
+			self.raw_pages = self.raw_input.split( delimiter )
+			
+			# Clean and consolidate lines per page
+			for page in self.raw_pages:
+				self.lines = page.strip( ).splitlines( )
+				self.cleaned = "\n".join( [ line.strip( ) for line in self.lines if line.strip( ) ] )
+				self.pages.append( self.cleaned )
+			
+			return self.pages
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Text'
+			_exc.method = 'split_pages( self, path: str, delimiter: str = "/f" ) -> list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
 	def collapse_whitespace( self, text: str ) -> str:
 		"""
-			Removes extra spaces and blank lines from the input text.
+			Removes extra spaces and blank lines from the input pages.
 
 			Parameters:
 			-----------
-			text : str
+			pages : str
 
 			Returns:
 			--------
 			
-				A cleaned text string with:
+				A cleaned pages string with:
 					- Consecutive whitespace reduced to a single space
 					- Leading/trailing spaces removed
 					- Blank lines removed
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "text" is required.' )
+				raise Exception( 'The input argument "pages" is required.' )
 			else:
 				self.raw_input = text
 				self.words = re.sub( r'[ \t]+', ' ', self.raw_input )
@@ -185,7 +230,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'collapse_whitespace( self, text: str ) -> str:'
+			_exc.method = 'collapse_whitespace( self, pages: str ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -193,22 +238,22 @@ class Text:
 	def remove_punctuation( self, text: str ) -> str:
 		"""
 
-			Removes all punctuation characters from the input text string.
+			Removes all punctuation characters from the input pages string.
 
 			Parameters:
 			-----------
-			text : str
-				The input text string to be cleaned.
+			pages : str
+				The input pages string to be cleaned.
 
 			Returns:
 			--------
 			str
-				The text string with all punctuation removed.
+				The pages string with all punctuation removed.
 
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "text" is required.' )
+				raise Exception( 'The input argument "pages" is required.' )
 			else:
 				self.raw_input = text
 				self.translator = str.maketrans( '', '', string.punctuation )
@@ -218,15 +263,15 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_punctuation( self, text: str ) -> str:'
+			_exc.method = 'remove_punctuation( self, pages: str ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def remove_special( self, text: str ) -> str:
+	def remove_special( self, text: str, keep_spaces=True ) -> str:
 		"""
 
-			Removes special characters from the input text string.
+			Removes special characters from the input pages string.
 
 			This function:
 			  - Retains only alphanumeric characters and whitespace
@@ -235,8 +280,8 @@ class Text:
 
 			Parameters:
 			-----------
-			text : str
-				The raw input text string potentially containing special characters.
+			pages : str
+				The raw input pages string potentially containing special characters.
 
 			Returns:
 			--------
@@ -246,328 +291,380 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "text" is required.' )
-			else:
+				raise Exception( 'The input argument "pages" is required.' )
+			elif keep_spaces:
 				self.raw_input = text
-				self.removed = re.sub( r'[^A-Za-z0-9\s]', '', self.raw_input )
-				return self.removed
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_special( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def remove_html( self, text: str ) -> str:
-		"""
-
-			Removes HTML tags from the input text string.
-
-			This function:
-			  - Parses the text as HTML
-			  - Extracts and returns only the visible content without tags
-
-			Parameters:
-			-----------
-			text : str
-				The input text containing HTML tags.
-
-			Returns:
-			--------
-			str
-				A cleaned string with all HTML tags removed.
-
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The input argument "text" is required.' )
+				return re.sub( r'[^a-zA-Z0-9\s]', '', text )
 			else:
-				self.raw_html = text
-				self.cleaned_html = BeautifulSoup( self.raw_html, "raw_html.parser" )
-				self.removed = self.cleaned_html.get_text( separator=' ', strip=True )
-				return self.removed
+				return re.sub( r'[^a-zA-Z0-9]', '', text )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_html( self, text: str ) -> str'
+			_exc.method = 'remove_punctuation( self, pages: str ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
+
+
+def remove_html( self, text: str ) -> str:
+	"""
+
+		Removes HTML tags from the input pages string.
+
+		This function:
+		  - Parses the pages as HTML
+		  - Extracts and returns only the visible content without tags
+
+		Parameters:
+		-----------
+		pages : str
+			The input pages containing HTML tags.
+
+		Returns:
+		--------
+		str
+			A cleaned string with all HTML tags removed.
+
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The input argument "pages" is required.' )
+		else:
+			self.raw_html = text
+			self.cleaned_html = BeautifulSoup( self.raw_html, "raw_html.parser" )
+			self.removed = self.cleaned_html.get_text( separator=' ', strip=True )
+			return self.removed
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'remove_html( self, pages: str ) -> str'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def remove_errors( self, text: str ) -> str:
+	"""
+
+		Removes misspelled or non-English words from the input pages.
+
+		This function:
+		  - Converts pages to lowercase
+		  - Tokenizes the pages into words
+		  - Filters out words not recognized as valid English using TextBlob
+		  - Returns a string with only correctly spelled words
+
+		Parameters:
+		-----------
+		pages : str
+			The input pages to clean.
+
+		Returns:
+		--------
+		str
+			A cleaned string containing only valid English words.
+
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The input argument "pages" is required.' )
+		else:
+			self.raw_input = text
+			self.lowercase = self.raw_input.lower( )
+			self.tokens = word_tokenize( self.lowercase )
+			self.words = [ w for w in self.tokens if Word( w ).spellcheck( )[ 0 ][ 1 ] > 0.9 ]
+			self.removed = ' '.join( self.words )
+			return self.removed
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'remove_errors( self, pages: str ) -> str'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def correct_errors( self, text: str ) -> str:
+	"""
+
+		Corrects misspelled words in the input pages string.
+
+		This function:
+		  - Converts pages to lowercase
+		  - Tokenizes the pages into words
+		  - Applies spelling correction using TextBlob
+		  - Reconstructs and returns the corrected pages
+
+		Parameters:
+		-----------
+		pages : str
+			The input pages string with potential spelling mistakes.
+
+		Returns:
+		--------
+		str
+			A corrected version of the input string with proper English words.
+
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The input argument "pages" is required.' )
+		else:
+			self.raw_input = text
+			self.lowercase = self.raw_input.lower( )
+			self.tokens = word_tokenize( self.lowercase )
+			self.words = [ str( Word( w ).correct( ) ) for w in self.tokens ]
+			self.corrected = ' '.join( self.words )
+			return self.corrected
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'correct_errors( self, pages: str ) -> str'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def remove_html( self, text: str ) -> str:
+	"""
+
+		Removes HTML  from pages.
+
+		This function:
+		  - Strips HTML tags
+
+		Parameters:
+		-----------
+		pages : str
+			The formatted input pages.
+
+		Returns:
+		--------
+		str
+			A cleaned version of the pages with formatting removed.
+
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The input argument "pages" is required.' )
+		else:
+			self.raw_input = text
+			self.removed = (BeautifulSoup( self.raw_input, "raw_html.parser" )
+			                .get_text( separator=' ', strip=True ))
+			return self.removed
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'remove_html( self, pages: str ) -> str'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def remove_markdown( self, text: str ) -> str:
+	"""
+
+		Removes Markdown
+		
+		This function:
+		  - Removes Markdown syntax (e.g., *, #, [], etc.)
+
+		Parameters:
+		-----------
+		pages : str
+			The formatted input pages.
+
+		Returns:
+		--------
+		str
+			A cleaned version of the pages with formatting removed.
+
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The input argument "pages" is required.' )
+		else:
+			self.raw_input = text
+			self.cleaned = re.sub( r'\[.*?\]\(.*?\)', '', self.raw_input )
+			self.corrected = re.sub( r'[`_*#~>-]', '', self.cleaned )
+			self.removed = re.sub( r'!\[.*?\]\(.*?\)', '', self.corrected )
+			return self.removed
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'remove_markdown( self, pages: str ) -> str'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def remove_stopwords( self, text: str ) -> str:
+	"""
+
+		Removes English stopwords from the input pages string.
+
+		This function:
+		  - Tokenizes the input pages
+		  - Removes common stopwords (e.g., "the", "is", "and", etc.)
+		  - Returns the pages with only meaningful words
+
+		Parameters:
+		-----------
+		pages : str
+			The input pages string.
+
+		Returns:
+		--------
+		str
+			A cleaned version of the input pages without stopwords.
+
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The input argument "pages" is required.' )
+		else:
+			self.raw_input = text
+			self.stopwords = set( stopwords.words( 'english' ) )
+			self.lowercase = self.raw_input.lower( )
+			self.tokens = word_tokenize( self.lowercase )
+			self.words = [ w for w in self.tokens if w.isalnum( ) and w not in self.stopwords ]
+			self.removed = ' '.join( self.words )
+			return self.removed
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'remove_stopwords( self, pages: str ) -> str'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def remove_headers( self, pages: list[ str ], min_occurrences: int = 3 ) -> list[ str ]:
+	"""
+		
+		Removes repetitive headers and footers across a list of pages by frequency analysis.
 	
+		Args:
+			pages (list of str): A list where each element is the full text of one page.
+			min_occurrences (int): Minimum number of times a line must appear at the top/bottom to
+			be considered a header/footer.
 	
-	def remove_errors( self, text: str ) -> str:
-		"""
-
-			Removes misspelled or non-English words from the input text.
-
-			This function:
-			  - Converts text to lowercase
-			  - Tokenizes the text into words
-			  - Filters out words not recognized as valid English using TextBlob
-			  - Returns a string with only correctly spelled words
-
-			Parameters:
-			-----------
-			text : str
-				The input text to clean.
-
-			Returns:
-			--------
-			str
-				A cleaned string containing only valid English words.
-
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The input argument "text" is required.' )
-			else:
-				self.raw_input = text
-				self.lowercase = self.raw_input.lower( )
-				self.tokens = word_tokenize( self.lowercase )
-				self.words = [ w for w in self.tokens if Word( w ).spellcheck( )[ 0 ][ 1 ] > 0.9 ]
-				self.removed = ' '.join( self.words )
-				return self.removed
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_errors( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+		Returns:
+			list of str: List of cleaned page texts without detected headers/footers.
+		
+	"""
+	header_counts = defaultdict( int )
+	footer_counts = defaultdict( int )
 	
+	# First pass: collect frequency of top/bottom lines
+	for page in pages:
+		lines = page.strip( ).splitlines( )
+		if lines:
+			header_counts[ lines[ 0 ].strip( ) ] += 1
+			footer_counts[ lines[ -1 ].strip( ) ] += 1
 	
-	def correct_errors( self, text: str ) -> str:
-		"""
-
-			Corrects misspelled words in the input text string.
-
-			This function:
-			  - Converts text to lowercase
-			  - Tokenizes the text into words
-			  - Applies spelling correction using TextBlob
-			  - Reconstructs and returns the corrected text
-
-			Parameters:
-			-----------
-			text : str
-				The input text string with potential spelling mistakes.
-
-			Returns:
-			--------
-			str
-				A corrected version of the input string with proper English words.
-
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The input argument "text" is required.' )
-			else:
-				self.raw_input = text
-				self.lowercase = self.raw_input.lower( )
-				self.tokens = word_tokenize( self.lowercase )
-				self.words = [ str( Word( w ).correct( ) ) for w in self.tokens ]
-				self.corrected = ' '.join( self.words )
-				return self.corrected
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'correct_errors( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+	# Identify candidates for removal
+	headers_to_remove = { line for line, count in header_counts.items( ) if
+	                      count >= min_occurrences }
+	footers_to_remove = { line for line, count in footer_counts.items( ) if
+	                      count >= min_occurrences }
 	
+	# Second pass: clean pages
+	cleaned_pages = [ ]
+	for page in pages:
+		lines = page.strip( ).splitlines( )
+		if not lines:
+			cleaned_pages.append( page )
+			continue
+		
+		# Remove header
+		if lines[ 0 ].strip( ) in headers_to_remove:
+			lines = lines[ 1: ]
+		
+		# Remove footer
+		if lines and lines[ -1 ].strip( ) in footers_to_remove:
+			lines = lines[ :-1 ]
+		
+		cleaned_pages.append( "\n".join( lines ) )
 	
-	def remove_html( self, text: str ) -> str:
-		"""
+	return cleaned_pages
 
-			Removes HTML  from text.
 
-			This function:
-			  - Strips HTML tags
+def normalize( self, text: str ) -> str:
+	"""
 
-			Parameters:
-			-----------
-			text : str
-				The formatted input text.
+		Performs normalization on the input pages string.
 
-			Returns:
-			--------
-			str
-				A cleaned version of the text with formatting removed.
+		This function:
+		  - Converts pages to lowercase
 
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The input argument "text" is required.' )
-			else:
-				self.raw_input = text
-				self.removed = (BeautifulSoup( self.raw_input, "raw_html.parser" )
-				                .get_text( separator=' ', strip=True ))
-				return self.removed
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_html( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def remove_markdown( self, text: str ) -> str:
-		"""
+		Parameters:
+		-----------
+		pages : str
+			The input pages string to be lemmatized.
 
-			Removes Markdown
-			
-			This function:
-			  - Removes Markdown syntax (e.g., *, #, [], etc.)
+		Returns:
+		--------
+		str
+			A string with all words lemmatized.
 
-			Parameters:
-			-----------
-			text : str
-				The formatted input text.
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The input argument "pages" is required.' )
+		else:
+			self.raw_input = text
+			self.normalized = self.raw_input.lower( )
+			return self.normalized
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'normalize_text( self, pages: str ) -> str'
+		_err = ErrorDialog( _exc )
+		_err.show( )
 
-			Returns:
-			--------
-			str
-				A cleaned version of the text with formatting removed.
 
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The input argument "text" is required.' )
-			else:
-				self.raw_input = text
-				self.cleaned = re.sub( r'\[.*?\]\(.*?\)', '', self.raw_input )
-				self.corrected = re.sub( r'[`_*#~>-]', '', self.cleaned )
-				self.removed = re.sub( r'!\[.*?\]\(.*?\)', '', self.corrected )
-				return self.removed
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_markdown( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def remove_stopwords( self, text: str ) -> str:
-		"""
+def lemmatize( self, text: str ) -> str:
+	"""
 
-			Removes English stopwords from the input text string.
+		Performs lemmatization on the input pages string.
 
-			This function:
-			  - Tokenizes the input text
-			  - Removes common stopwords (e.g., "the", "is", "and", etc.)
-			  - Returns the text with only meaningful words
+		This function:
+		  - Converts pages to lowercase
+		  - Tokenizes the lowercased pages into words
+		  - Lemmatizes each token using WordNetLemmatizer
+		  - Reconstructs the lemmatized tokens into a single string
 
-			Parameters:
-			-----------
-			text : str
-				The input text string.
+		Parameters:
+		-----------
+		pages : str
+			The input pages string to be lemmatized.
 
-			Returns:
-			--------
-			str
-				A cleaned version of the input text without stopwords.
+		Returns:
+		--------
+		str
+			A string with all words lemmatized.
 
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The input argument "text" is required.' )
-			else:
-				self.raw_input = text
-				self.stopwords = set( stopwords.words( 'english' ) )
-				self.lowercase = self.raw_input.lower( )
-				self.tokens = word_tokenize( self.lowercase )
-				self.words = [ w for w in self.tokens if w.isalnum( ) and w not in self.stopwords ]
-				self.removed = ' '.join( self.words )
-				return self.removed
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_stopwords( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def normalize( self, text: str ) -> str:
-		"""
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The input argument "pages" is required.' )
+		else:
+			self.raw_input = text
+			self.lowercase = self.raw_input.lower( )
+			self.tokens = word_tokenize( self.lowercase )
+			self.words = [ self.lemmatizer.lemmatize( token ) for token in self.tokens ]
+			self.lemmatized = ' '.join( self.words )
+			return self.lemmatized
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'tokenize_words( self, pages: str ) -> str'
+		_err = ErrorDialog( _exc )
+		_err.show( )
 
-			Performs normalization on the input text string.
-
-			This function:
-			  - Converts text to lowercase
-
-			Parameters:
-			-----------
-			text : str
-				The input text string to be lemmatized.
-
-			Returns:
-			--------
-			str
-				A string with all words lemmatized.
-
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The input argument "text" is required.' )
-			else:
-				self.raw_input = text
-				self.normalized = self.raw_input.lower( )
-				return self.normalized
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'normalize_text( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def lemmatize( self, text: str ) -> str:
-		"""
-
-			Performs lemmatization on the input text string.
-
-			This function:
-			  - Converts text to lowercase
-			  - Tokenizes the lowercased text into words
-			  - Lemmatizes each token using WordNetLemmatizer
-			  - Reconstructs the lemmatized tokens into a single string
-
-			Parameters:
-			-----------
-			text : str
-				The input text string to be lemmatized.
-
-			Returns:
-			--------
-			str
-				A string with all words lemmatized.
-
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The input argument "text" is required.' )
-			else:
-				self.raw_input = text
-				self.lowercase = self.raw_input.lower( )
-				self.tokens = word_tokenize( self.lowercase )
-				self.words = [ self.lemmatizer.lemmatize( token ) for token in self.tokens ]
-				self.lemmatized = ' '.join( self.words )
-				return self.lemmatized
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'tokenize_words( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
 
 def tokenize_text( self, text: str ) -> list[ str ]:
 	'''
@@ -583,7 +680,7 @@ def tokenize_text( self, text: str ) -> list[ str ]:
 	'''
 	try:
 		if text is None:
-			raise Exception( 'The input argument "text" was None' )
+			raise Exception( 'The input argument "pages" was None' )
 		else:
 			self.tokens.clear( )
 			self.raw_input = text
@@ -597,7 +694,7 @@ def tokenize_text( self, text: str ) -> list[ str ]:
 		_exc = Error( e )
 		_exc.module = 'Tiggr'
 		_exc.cause = 'Text'
-		_exc.method = 'tokenize_text( self, text: str ) -> get_list'
+		_exc.method = 'tokenize_text( self, pages: str ) -> get_list'
 		_err = ErrorDialog( _exc )
 		_err.show( )
 
@@ -608,7 +705,7 @@ def tokenize_words( self, text: str ) -> list[ str ]:
 		Tokenize a sentence or paragraph into word tokens.
 
 		Args:
-			text (str): Input text.
+			text (str): Input pages.
 
 		Returns:
 			list: List of word tokens.
@@ -616,7 +713,7 @@ def tokenize_words( self, text: str ) -> list[ str ]:
 	"""
 	try:
 		if text is None:
-			raise Exception( 'The input argument "text" was None' )
+			raise Exception( 'The input argument "pages" was None' )
 		else:
 			self.tokens.clear( )
 			self.raw_input = text
@@ -630,7 +727,7 @@ def tokenize_words( self, text: str ) -> list[ str ]:
 		_exc = Error( e )
 		_exc.module = 'Tiggr'
 		_exc.cause = 'Text'
-		_exc.method = 'tokenize_words( self, text: str ) -> list[ str ]'
+		_exc.method = 'tokenize_words( self, pages: str ) -> list[ str ]'
 		_err = ErrorDialog( _exc )
 		_err.show( )
 
@@ -641,7 +738,7 @@ def tokenize_sentences( self, text: str ) -> list[ str ]:
 		Tokenize a paragraph or document into a get_list of sentence strings.
 
 		Args:
-			text (str): Input text.
+			text (str): Input pages.
 
 		Returns:
 			list: List of sentence strings.
@@ -649,7 +746,7 @@ def tokenize_sentences( self, text: str ) -> list[ str ]:
 	"""
 	try:
 		if text is None:
-			raise Exception( 'The input argument "text" is required.' )
+			raise Exception( 'The input argument "pages" is required.' )
 		else:
 			self.tokens = sent_tokenize( text )
 			return self.tokens
@@ -657,7 +754,7 @@ def tokenize_sentences( self, text: str ) -> list[ str ]:
 		_exc = Error( e )
 		_exc.module = 'Tiggr'
 		_exc.cause = 'Text'
-		_exc.method = 'tokenize_sentences( self, text: str ) -> list[ str ]'
+		_exc.method = 'tokenize_sentences( self, pages: str ) -> list[ str ]'
 		_err = ErrorDialog( _exc )
 		_err.show( )
 	
@@ -669,8 +766,8 @@ def tokenize_sentences( self, text: str ) -> list[ str ]:
 
 			Parameters:
 			-----------
-			text : str
-				The input text string to be chunked
+			pages : str
+				The input pages string to be chunked
 
 			Returns:
 			--------
@@ -680,7 +777,7 @@ def tokenize_sentences( self, text: str ) -> list[ str ]:
 		'''
 		try:
 			if (text is None):
-				raise Exception( 'The input argument "text" is required.' )
+				raise Exception( 'The input argument "pages" is required.' )
 			else:
 				self.raw_input = text
 				self.lines = self.raw_input.split( )
@@ -692,7 +789,7 @@ def tokenize_sentences( self, text: str ) -> list[ str ]:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'chunk_text( self, text: str, max: int = 512 ) -> list[ str ]'
+			_exc.method = 'chunk_text( self, pages: str, max: int = 512 ) -> list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
@@ -794,7 +891,7 @@ def compute_tfidf( self, corpus: list, max: int = 1000, prep: bool = True ) -> t
 		Compute TF-IDF matrix with optional full preprocessing pipeline.
 
 		Args:
-			corpus (list): List of raw or preprocessed text documents.
+			corpus (list): List of raw or preprocessed pages documents.
 			max_features (int): Max number of terms to include (vocabulary size).
 			prep (bool): If True, normalize, tokenize_text, clean, and lemmatize input.
 
@@ -829,4 +926,3 @@ def compute_tfidf( self, corpus: list, max: int = 1000, prep: bool = True ) -> t
 		               'tuple')
 		_err = ErrorDialog( _exc )
 		_err.show( )
-
