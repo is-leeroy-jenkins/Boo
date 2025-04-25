@@ -53,13 +53,13 @@ import tiktoken
 from typing import List, Optional
 
 
-class VectorEmbedding( ):
+class Vector( ):
 	"""
 		
-		VectorEmbedding
+		Vector
 		---------
 		A class for generating OpenAI embeddings, performing normalization, computing similarity,
-		and interacting with OpenAI VectorEmbedding Stores via the OpenAI API. Includes local
+		and interacting with OpenAI Vector Stores via the OpenAI API. Includes local
 		export/import,
 		vector diagnostics, and bulk querying functionality.
 	
@@ -69,7 +69,7 @@ class VectorEmbedding( ):
 	def __init__( self ):
 		"""
 			
-			Initialize the VectorEmbedding object with
+			Initialize the Vector object with
 			OpenAI API credentials and embedding model.
 	
 			Parameters:
@@ -140,7 +140,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = ('embed( self, texts: List[ str ], batch: int=10, max: int=3, '
 			               'time: float=2.0 ) -> pd.DataFrame')
 			_err = ErrorDialog( _exc )
@@ -170,7 +170,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = (' _batch_chunks( self, texts: List[ str ], size: int ) -> [ List[ str '
 			               '] ]')
 			_err = ErrorDialog( _exc )
@@ -198,7 +198,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = '_normalize( self, vector: np.ndarray ) -> np.ndarray'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -229,7 +229,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = ('_cosine_similarity_matrix( self, vector: np.ndarray, matrix: np.ndarray '
 			               ') -> np.ndarray')
 			_err = ErrorDialog( _exc )
@@ -265,7 +265,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = ('most_similar( self, query: str, table: pd.DataFrame, top: int = 5 ) -> '
 			               'pd.DataFrame')
 			_err = ErrorDialog( _exc )
@@ -299,7 +299,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = ('bulk_similar( self, queries: List[ str ], dataframe: pd.DataFrame, '
 			               'top: int = 5 ) -> { }')
 			_err = ErrorDialog( _exc )
@@ -329,7 +329,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = 'similarity_heatmap( self, dataframe: pd.DataFrame ) -> pd.DataFrame'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -358,7 +358,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = 'export_jsonl( self, dataframe: pd.DataFrame, path: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -367,7 +367,8 @@ class VectorEmbedding( ):
 	def import_jsonl( self, path: str ) -> pd.DataFrame:
 		"""
 		
-			Import pages and embeddings from a JSONL file into a DataFrame.
+			Import pages and embeddings
+			from a JSONL file into a DataFrame.
 	
 			Parameters:
 			- path (str): Path to the .jsonl file
@@ -398,7 +399,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = 'import_jsonl( self, path: str ) -> pd.DataFrame'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -407,7 +408,8 @@ class VectorEmbedding( ):
 	def create_vector_store( self, name: str ) -> str:
 		"""
 		
-			Create a new OpenAI vector store.
+			Create a new
+			OpenAI vector store.
 	
 			Parameters:
 			- name (str): Name for the vector store
@@ -425,7 +427,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = 'create_vector_store( self, name: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -434,7 +436,8 @@ class VectorEmbedding( ):
 	def list_vector_stores( self ) -> List[ str ]:
 		"""
 		
-			List all available OpenAI vector vector_stores.
+			List all available
+			OpenAI vector vector_stores.
 	
 			Returns:
 			- List[str]: List of vector store IDs
@@ -446,7 +449,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = 'list_vector_stores( self ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -455,7 +458,8 @@ class VectorEmbedding( ):
 	def upload_vector_store( self, dataframe: pd.DataFrame, ids: str ) -> None:
 		"""
 		
-			Upload documents to a given OpenAI vector store.
+			Upload documents to a
+			 given OpenAI vector store.
 	
 			Parameters:
 			- table (pd.DataFrame): DataFrame with 'pages' column
@@ -477,7 +481,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = 'upload_vector_store( self, dataframe: pd.DataFrame, ids: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -512,7 +516,7 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = ('query_vector_store( self, id: str, query: str, top: int = 5 ) -> List[ '
 			               'dict ]')
 			_err = ErrorDialog( _exc )
@@ -540,16 +544,16 @@ class VectorEmbedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'VectorEmbedding'
+			_exc.cause = 'Vector'
 			_exc.method = 'delete_vector_store( self, storeid: str, ids: List[ str ] ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
 
-class PdfExtractor( ):
+class Xtractor( ):
 	"""
 	
-		PdfExtractor
+		Xtractor
 		----------------
 		A utility class for extracting clean pages from PDF files into a list of strings.
 		Handles nuances such as layout artifacts, page separation, optional filtering,
@@ -586,7 +590,8 @@ class PdfExtractor( ):
 	def extract_lines( self, path: str, max: Optional[ int ] = None ) -> List[ str ]:
 		"""
 			
-			Extract lines of pages from a PDF, optionally limiting to the first N pages.
+			Extract lines of pages from a PDF,
+			optionally limiting to the first N pages.
 	
 			Parameters:
 			- path (str): Path to the PDF file
@@ -618,7 +623,7 @@ class PdfExtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'PdfExtractor'
+			_exc.cause = 'Xtractor'
 			_exc.method = ('extract_lines( self, path: str, max: Optional[ int ] = None ) -> List[ '
 			               'str ]')
 			_err = ErrorDialog( _exc )
@@ -649,7 +654,7 @@ class PdfExtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'PdfExtractor'
+			_exc.cause = 'Xtractor'
 			_exc.method = '_extract_table_blocks( self, page ) -> List[ str ]:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -658,7 +663,8 @@ class PdfExtractor( ):
 	def _filter_lines( self, lines: List[ str ] ) -> List[ str ]:
 		"""
 		
-			Filter and clean lines from a page of pages.
+			Filter and clean lines
+			 from a page of pages.
 	
 			Parameters:
 			- lines (List[str]): Raw lines of pages
@@ -683,7 +689,7 @@ class PdfExtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'PdfExtractor'
+			_exc.cause = 'Xtractor'
 			_exc.method = '_filter_lines( self, lines: List[ str ] ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -711,7 +717,7 @@ class PdfExtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'PdfExtractor'
+			_exc.cause = 'Xtractor'
 			_exc.method = '_is_repeated_header_or_footer( self, line: str ) -> bool'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -743,7 +749,7 @@ class PdfExtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'PdfExtractor'
+			_exc.cause = 'Xtractor'
 			_exc.method = 'extract_text( self, path: str, max: Optional[ int ] = None ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -782,7 +788,7 @@ class PdfExtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'PdfExtractor'
+			_exc.cause = 'Xtractor'
 			_exc.method = ('extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ '
 			               'pd.DataFrame ]')
 			_err = ErrorDialog( _exc )
@@ -812,7 +818,7 @@ class PdfExtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'PdfExtractor'
+			_exc.cause = 'Xtractor'
 			_exc.method = 'export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -843,7 +849,7 @@ class PdfExtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'PdfExtractor'
+			_exc.cause = 'Xtractor'
 			_exc.method = 'export_text( self, lines: List[ str ], path: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -876,7 +882,7 @@ class PdfExtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'PdfExtractor'
+			_exc.cause = 'Xtractor'
 			_exc.method = 'export_excel( self, tables: List[ pd.DataFrame ], path: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
