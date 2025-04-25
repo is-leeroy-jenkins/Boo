@@ -53,13 +53,14 @@ import tiktoken
 from typing import List, Optional
 
 
-class Embedding( ):
+class VectorEmbedding( ):
 	"""
 		
-		Embedding
+		VectorEmbedding
 		---------
 		A class for generating OpenAI embeddings, performing normalization, computing similarity,
-		and interacting with OpenAI Vector Stores via the OpenAI API. Includes local export/import,
+		and interacting with OpenAI VectorEmbedding Stores via the OpenAI API. Includes local
+		export/import,
 		vector diagnostics, and bulk querying functionality.
 	
 	"""
@@ -68,7 +69,7 @@ class Embedding( ):
 	def __init__( self ):
 		"""
 			
-			Initialize the Embedding object with
+			Initialize the VectorEmbedding object with
 			OpenAI API credentials and embedding model.
 	
 			Parameters:
@@ -90,8 +91,8 @@ class Embedding( ):
 		self.tables = List[ pd.DataFrame ]
 	
 	
-	def embed( self, texts: List[ str ], batch: int=10, max: int=3,
-	           time: float=2.0 ) -> pd.DataFrame:
+	def embed( self, texts: List[ str ], batch: int = 10, max: int = 3,
+	           time: float = 2.0 ) -> pd.DataFrame:
 		"""
 		
 			Generate and normalize embeddings for a list of input texts.
@@ -108,35 +109,38 @@ class Embedding( ):
 			
 		"""
 		try:
-			self.batches = self._batch_chunks( texts, batch )
-			for index, batch in enumerate( self.batches ):
-				for attempt in range( max ):
-					try:
-						self.response = self.client.embeddings.create( input=batch,
-							model=self.model )
-						self.vectors = [ record.embedding for record in self.response.data ]
-						self.vectors.extend( self.vectors )
-						break
-					except Exception as e:
-						print( f'[Batch {index + 1}] Retry {attempt + 1}/{max}: {e}' )
-						time.sleep( time )
-				else:
-					raise RuntimeError( f'Failed after {max} attempts on batch {index + 1}' )
-			
-			_embeddings = np.array( self.vectors )
-			_normed = self._normalize( _embeddings )
-			_data = \
-				{
-					'pages': texts,
-					'embedding': list( _embeddings ),
-					'normed_embedding': list( _normed )
-				}
-			
-			return pd.DataFrame( _data )
+			if texts is None:
+				raise Exception( 'Input "texts" cannot be None' )
+			else:
+				self.batches = self._batch_chunks( texts, batch )
+				for index, batch in enumerate( self.batches ):
+					for attempt in range( max ):
+						try:
+							self.response = self.client.embeddings.create( input=batch,
+								model=self.model )
+							_vectors = [ record.embedding for record in self.response.data ]
+							self.vectors.extend( _vectors )
+							break
+						except Exception as e:
+							print( f'[Batch {index + 1}] Retry {attempt + 1}/{max}: {e}' )
+							time.sleep( time )
+					else:
+						raise RuntimeError( f'Failed after {max} attempts on batch {index + 1}' )
+				
+				_embeddings = np.array( self.vectors )
+				_normed = self._normalize( _embeddings )
+				_data = \
+					{
+						'pages': texts,
+						'embedding': list( _embeddings ),
+						'normed_embedding': list( _normed )
+					}
+				
+				return pd.DataFrame( _data )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'VectorEmbedding'
 			_exc.method = ('embed( self, texts: List[ str ], batch: int=10, max: int=3, '
 			               'time: float=2.0 ) -> pd.DataFrame')
 			_err = ErrorDialog( _exc )
@@ -150,13 +154,27 @@ class Embedding( ):
 	
 			Parameters:
 			- texts (List[str]): Full list of input strings
-			- batch (int): Desired batch size
+			- size (int): Desired batch size
 	
 			Returns:
 			- List of pages batches
 		
 		"""
-		return [ texts[ i:i + size ] for i in range( 0, len( texts ), size ) ]
+		try:
+			if texts is None:
+				raise Exception( 'Input "texts" cannot be None' )
+			elif size is None:
+				raise Exception( 'Input "size" cannot be None' )
+			else:
+				return [ texts[ i:i + size ] for i in range( 0, len( texts ), size ) ]
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = (' _batch_chunks( self, texts: List[ str ], size: int ) -> [ List[ str '
+			               '] ]')
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def _normalize( self, vector: np.ndarray ) -> np.ndarray:
@@ -171,8 +189,19 @@ class Embedding( ):
 			- np.ndarray: Normalized vector
 			
 		"""
-		_norms = np.linalg.norm( vector, axis=1, dims=True )
-		return vector / np.clip( _norms, 1e-10, None )
+		try:
+			if vector is None:
+				raise Exception( 'Input "vector" cannot be None' )
+			else:
+				_norms = np.linalg.norm( vector, axis=1, dims=True )
+				return vector / np.clip( _norms, 1e-10, None )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = '_normalize( self, vector: np.ndarray ) -> np.ndarray'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def _cosine_similarity_matrix( self, vector: np.ndarray, matrix: np.ndarray ) -> np.ndarray:
@@ -188,9 +217,23 @@ class Embedding( ):
 			- np.ndarray: Cosine similarity scores
 			
 		"""
-		_query = vector / np.linalg.norm( vector )
-		_matrix = matrix / np.linalg.norm( matrix, axis=1, dims=True )
-		return np.dot( _matrix, _query )
+		try:
+			if vector is None:
+				raise Exception( 'Input "vector" cannot be None' )
+			elif matrix is None:
+				raise Exception( 'Input "matrix" cannot be None' )
+			else:
+				_query = vector / np.linalg.norm( vector )
+				_matrix = matrix / np.linalg.norm( matrix, axis=1, dims=True )
+				return np.dot( _matrix, _query )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = ('_cosine_similarity_matrix( self, vector: np.ndarray, matrix: np.ndarray '
+			               ') -> np.ndarray')
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def most_similar( self, query: str, table: pd.DataFrame, top: int = 5 ) -> pd.DataFrame:
@@ -207,11 +250,26 @@ class Embedding( ):
 			- pd.DataFrame: Top-k results sorted by similarity
 			
 		"""
-		_embd = self.embed( [ query ] )[ 'normed_embedding' ].iloc[ 0 ]
-		_scores = self._cosine_similarity_matrix( _embd, np.vstack( table[ 'normed_embedding' ] ) )
-		df_copy = table.copy( )
-		df_copy[ 'similarity' ] = _scores
-		return df_copy.sort_values( 'similarity', ascending=False ).head( top )
+		try:
+			if query is None:
+				raise Exception( 'Input "query" cannot be None' )
+			elif table is None:
+				raise Exception( 'Input "table" cannot be None' )
+			else:
+				_embd = self.embed( [ query ] )[ 'normed_embedding' ].iloc[ 0 ]
+				_scores = self._cosine_similarity_matrix( _embd,
+					np.vstack( table[ 'normed_embedding' ] ) )
+				_copy = table.copy( )
+				_copy[ 'similarity' ] = _scores
+				return _copy.sort_values( 'similarity', ascending=False ).head( top )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = ('most_similar( self, query: str, table: pd.DataFrame, top: int = 5 ) -> '
+			               'pd.DataFrame')
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def bulk_similar( self, queries: List[ str ], dataframe: pd.DataFrame, top: int = 5 ) -> { }:
@@ -228,10 +286,24 @@ class Embedding( ):
 			- Dict[str, pd.DataFrame]: Dictionary of query to top-k results
 			
 		"""
-		results = { }
-		for query in queries:
-			results[ query ] = self.most_similar( query, dataframe, top )
-		return results
+		try:
+			if queries is None:
+				raise Exception( 'Input "queries" cannot be None' )
+			elif dataframe is None:
+				raise Exception( 'Input "dataframe" cannot be None' )
+			else:
+				_results = { }
+				for query in queries:
+					_results[ query ] = self.most_similar( query, dataframe, top )
+				return _results
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = ('bulk_similar( self, queries: List[ str ], dataframe: pd.DataFrame, '
+			               'top: int = 5 ) -> { }')
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def similarity_heatmap( self, dataframe: pd.DataFrame ) -> pd.DataFrame:
@@ -246,10 +318,21 @@ class Embedding( ):
 			- pd.DataFrame: Pairwise cosine similarity heatmap
 			
 		"""
-		matrix = np.vstack( dataframe[ 'normed_embedding' ] )
-		similarity_matrix = np.dot( matrix, matrix.T )
-		return pd.DataFrame( similarity_matrix, index=dataframe[ 'pages' ],
-			columns=dataframe[ 'pages' ] )
+		try:
+			if dataframe is None:
+				raise Exception( 'Input "dataframe" cannot be None' )
+			else:
+				_matrix = np.vstack( dataframe[ 'normed_embedding' ] )
+				_similarity = np.dot( _matrix, _matrix.T )
+				return pd.DataFrame( _similarity, index=dataframe[ 'pages' ],
+					columns=dataframe[ 'pages' ] )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = 'similarity_heatmap( self, dataframe: pd.DataFrame ) -> pd.DataFrame'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def export_jsonl( self, dataframe: pd.DataFrame, path: str ) -> None:
@@ -262,10 +345,23 @@ class Embedding( ):
 			- path (str): Output path for .jsonl file
 		
 		"""
-		with open( path, 'w', encoding='utf-8' ) as f:
-			for _, row in dataframe.iterrows( ):
-				record = { 'pages': row[ 'pages' ], 'embedding': row[ 'embedding' ] }
-				f.write( json.dumps( record ) + '\n' )
+		try:
+			if dataframe is None:
+				raise Exception( 'Input "dataframe" is required.' )
+			elif path is None:
+				raise Exception( 'Output "path" is required.' )
+			else:
+				with open( path, 'w', encoding='utf-8' ) as f:
+					for _, row in dataframe.iterrows( ):
+						record = { 'pages': row[ 'pages' ], 'embedding': row[ 'embedding' ] }
+						f.write( json.dumps( record ) + '\n' )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = 'export_jsonl( self, dataframe: pd.DataFrame, path: str ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def import_jsonl( self, path: str ) -> pd.DataFrame:
@@ -280,21 +376,32 @@ class Embedding( ):
 			- pd.DataFrame: DataFrame with normalized embeddings
 			
 		"""
-		texts, embeddings = [ ], [ ]
-		with open( path, 'r', encoding='utf-8' ) as f:
-			for line in f:
-				record = json.loads( line.strip( ) )
-				texts.append( record[ 'pages' ] )
-				embeddings.append( record[ 'embedding' ] )
-		normed = self._normalize( np.array( embeddings ) )
-		_data = \
-			{
-				'pages': texts,
-				'embedding': embeddings,
-				'normed_embedding': list( normed )
-			}
-		
-		return pd.DataFrame( _data )
+		try:
+			if path is None:
+				raise Exception( 'Input "path" must be provided.' )
+			else:
+				texts, embeddings = [ ], [ ]
+				with open( path, 'r', encoding='utf-8' ) as f:
+					for line in f:
+						_record = json.loads( line.strip( ) )
+						texts.append( _record[ 'pages' ] )
+						embeddings.append( _record[ 'embedding' ] )
+				_normed = self._normalize( np.array( embeddings ) )
+				_data = \
+					{
+						'pages': texts,
+						'embedding': embeddings,
+						'normed_embedding': list( _normed )
+					}
+				
+				return pd.DataFrame( _data )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = 'import_jsonl( self, path: str ) -> pd.DataFrame'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def create_vector_store( self, name: str ) -> str:
@@ -309,8 +416,19 @@ class Embedding( ):
 			- str: ID of the created vector store
 			
 		"""
-		self.response = self.client.beta.vector_stores.create( name=name )
-		return self.response[ 'id' ]
+		try:
+			if name is None:
+				raise Exception( 'Input "name" is required' )
+			else:
+				self.response = self.client.beta.vector_stores.create( name=name )
+				return self.response[ 'id' ]
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def list_vector_stores( self ) -> List[ str ]:
@@ -322,8 +440,16 @@ class Embedding( ):
 			- List[str]: List of vector store IDs
 			
 		"""
-		self.response = self.client.beta.vector_stores.list( )
-		return [ item[ 'id' ] for item in self.response.get( 'data', [ ] ) ]
+		try:
+			self.response = self.client.beta.vector_stores.list( )
+			return [ item[ 'id' ] for item in self.response.get( 'data', [ ] ) ]
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = 'list_vector_stores( self ) -> List[ str ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def upload_vector_store( self, dataframe: pd.DataFrame, ids: str ) -> None:
@@ -336,12 +462,25 @@ class Embedding( ):
 			- ids (str): OpenAI vector store ID
 			
 		"""
-		documents = [
-			{ 'content': row[ 'pages' ], 'metadata': { 'source': f'row_{i}' } }
-			for i, row in dataframe.iterrows( )
-		]
-		self.client.beta.vector_stores.file_batches.create( store_id=ids,
-			documents=documents )
+		try:
+			if dataframe is None:
+				raise Exception( 'Input "dataframe" cannot be None' )
+			elif ids is None:
+				raise Exception( 'Input "ids" cannot be None' )
+			else:
+				documents = [
+					{ 'content': row[ 'pages' ], 'metadata': { 'source': f'row_{i}' } }
+					for i, row in dataframe.iterrows( )
+				]
+				self.client.beta.vector_stores.file_batches.create( store_id=ids,
+					documents=documents )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = 'upload_vector_store( self, dataframe: pd.DataFrame, ids: str ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def query_vector_store( self, id: str, query: str, top: int = 5 ) -> List[ dict ]:
@@ -358,11 +497,26 @@ class Embedding( ):
 			- List[dict]: List of matching documents and similarity scores
 			
 		"""
-		self.response = self.client.beta.vector_stores.query( store_id=id, query=query, top_k=top )
-		return [
-			{ 'pages': result[ 'document' ], 'score': result[ 'score' ] }
-			for result in self.response.get( 'data', [ ] )
-		]
+		try:
+			if id is None:
+				raise Exception( 'Input "id" must be provided' )
+			elif query is None:
+				raise Exception( 'Input "query" must be provided' )
+			else:
+				self.response = self.client.beta.vector_stores.query( store_id=id, query=query,
+					top_k=top )
+				return [
+					{ 'pages': result[ 'document' ], 'score': result[ 'score' ] }
+					for result in self.response.get( 'data', [ ] )
+				]
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = ('query_vector_store( self, id: str, query: str, top: int = 5 ) -> List[ '
+			               'dict ]')
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def delete_vector_store( self, storeid: str, ids: List[ str ] ) -> None:
@@ -375,13 +529,27 @@ class Embedding( ):
 			- ids (List[str]): List of document IDs to delete
 			
 		"""
-		self.client.beta.vector_stores.documents.delete( store_id=storeid, document_ids=ids )
+		try:
+			if storeid is None:
+				raise Exception( 'Input "storeid" cannot be None' )
+			elif ids is None:
+				raise Exception( 'Input "ids" cannot be None' )
+			else:
+				self.client.beta.vector_stores.documents.delete( store_id=storeid,
+					document_ids=ids )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'VectorEmbedding'
+			_exc.method = 'delete_vector_store( self, storeid: str, ids: List[ str ] ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 
 
-class Extractor( ):
+class PdfExtractor( ):
 	"""
 	
-		Extractor
+		PdfExtractor
 		----------------
 		A utility class for extracting clean pages from PDF files into a list of strings.
 		Handles nuances such as layout artifacts, page separation, optional filtering,
@@ -423,18 +591,27 @@ class Extractor( ):
 			- List[str]: Cleaned list of non-empty lines
 			
 		"""
-		with fitz.open( path ) as doc:
-			for i, page in enumerate( doc ):
-				if max is not None and i >= max:
-					break
-				if self.extract_tables:
-					self.extracted_lines = self._extract_table_blocks( page )
-				else:
-					_text = page.get_text( 'pages' )
-					self.lines = _text.splitlines( )
-				self.clean_lines = self._filter_lines( self.lines )
-				self.extracted_lines.extend( self.clean_lines )
-		return self.extracted_lines
+		try:
+			with fitz.open( path ) as doc:
+				for i, page in enumerate( doc ):
+					if max is not None and i >= max:
+						break
+					if self.extract_tables:
+						self.extracted_lines = self._extract_table_blocks( page )
+					else:
+						_text = page.get_text( 'pages' )
+						self.lines = _text.splitlines( )
+					self.clean_lines = self._filter_lines( self.lines )
+					self.extracted_lines.extend( self.clean_lines )
+			return self.extracted_lines
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'PdfExtractor'
+			_exc.method = ('extract_lines( self, path: str, max: Optional[ int ] = None ) -> List[ '
+			               'str ]')
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def _extract_table_blocks( self, page ) -> List[ str ]:
@@ -450,10 +627,18 @@ class Extractor( ):
 			- List[str]: Grouped blocks including potential tables
 			
 		"""
-		_blocks = page.get_text( 'blocks' )
-		_sorted = sorted( _blocks, key=lambda b: (round( b[ 1 ], 1 ), round( b[ 0 ], 1 )) )
-		self.lines = [ b[ 4 ].strip( ) for b in _sorted if b[ 4 ].strip( ) ]
-		return self.lines
+		try:
+			_blocks = page.get_text( 'blocks' )
+			_sorted = sorted( _blocks, key=lambda b: (round( b[ 1 ], 1 ), round( b[ 0 ], 1 )) )
+			self.lines = [ b[ 4 ].strip( ) for b in _sorted if b[ 4 ].strip( ) ]
+			return self.lines
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'PdfExtractor'
+			_exc.method = '_extract_table_blocks( self, page ) -> List[ str ]:'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def _filter_lines( self, lines: List[ str ] ) -> List[ str ]:
@@ -468,15 +653,23 @@ class Extractor( ):
 			- List[str]: Filtered, non-trivial lines
 			
 		"""
-		self.lines = lines
-		for line in self.lines:
-			line = line.strip( )
-			if len( line ) < self.minimum_length:
-				continue
-			if self.strip_headers and self._is_repeated_header_or_footer( line ):
-				continue
-			self.clean_lines.append( line )
-		return self.clean_lines
+		try:
+			self.lines = lines
+			for line in self.lines:
+				line = line.strip( )
+				if len( line ) < self.minimum_length:
+					continue
+				if self.strip_headers and self._is_repeated_header_or_footer( line ):
+					continue
+				self.clean_lines.append( line )
+			return self.clean_lines
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'PdfExtractor'
+			_exc.method = '_filter_lines( self, lines: List[ str ] ) -> List[ str ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def _is_repeated_header_or_footer( self, line: str ) -> bool:
@@ -492,8 +685,16 @@ class Extractor( ):
 			- bool: True if line is likely a header or footer
 		
 		"""
-		_keywords = [ "page", "public law", "u.s. government", "united states" ]
-		return any( kw in line.lower( ) for kw in _keywords )
+		try:
+			_keywords = [ "page", "public law", "u.s. government", "united states" ]
+			return any( kw in line.lower( ) for kw in _keywords )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'PdfExtractor'
+			_exc.method = '_is_repeated_header_or_footer( self, line: str ) -> bool'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def extract_text( self, path: str, max: Optional[ int ] = None ) -> str:
@@ -510,8 +711,16 @@ class Extractor( ):
 			- str: Full concatenated pages
 		
 		"""
-		self.lines = self.extract_lines( path, max=max )
-		return "\n".join( self.lines )
+		try:
+			self.lines = self.extract_lines( path, max=max )
+			return "\n".join( self.lines )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'PdfExtractor'
+			_exc.method = 'extract_text( self, path: str, max: Optional[ int ] = None ) -> str:'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ pd.DataFrame ]:
@@ -528,15 +737,24 @@ class Extractor( ):
 			- List[pd.DataFrame]: List of DataFrames representing detected tables
 			
 		"""
-		with fitz.open( path ) as _doc:
-			for i, page in enumerate( _doc ):
-				if max is not None and i >= max:
-					break
-				_blocks = page.find_tables( )
-				for _tb in _blocks.tables:
-					_df = pd.DataFrame( _tb.extract( ) )
-					self.tables.append( _df )
-		return self.tables
+		try:
+			with fitz.open( path ) as _doc:
+				for i, page in enumerate( _doc ):
+					if max is not None and i >= max:
+						break
+					_blocks = page.find_tables( )
+					for _tb in _blocks.tables:
+						_df = pd.DataFrame( _tb.extract( ) )
+						self.tables.append( _df )
+			return self.tables
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'PdfExtractor'
+			_exc.method = ('extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ '
+			               'pd.DataFrame ]')
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None:
@@ -550,9 +768,17 @@ class Extractor( ):
 			- filename (str): Prefix for output filenames (e.g., 'output_table')
 		
 		"""
-		self.tables = tables
-		for i, df in enumerate( self.tables ):
-			df.to_csv( f'{filename}_{i + 1}.csv', index=False )
+		try:
+			self.tables = tables
+			for i, df in enumerate( self.tables ):
+				df.to_csv( f'{filename}_{i + 1}.csv', index=False )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'PdfExtractor'
+			_exc.method = 'export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def export_text( self, lines: List[ str ], path: str ) -> None:
@@ -566,9 +792,17 @@ class Extractor( ):
 			- path (str): Path to output pages file
 		
 		"""
-		with open( path, 'w', encoding='utf-8' ) as f:
-			for line in lines:
-				f.write( line + "\n" )
+		try:
+			with open( path, 'w', encoding='utf-8' ) as f:
+				for line in lines:
+					f.write( line + "\n" )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'PdfExtractor'
+			_exc.method = 'export_text( self, lines: List[ str ], path: str ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def export_excel( self, tables: List[ pd.DataFrame ], path: str ) -> None:
@@ -582,9 +816,17 @@ class Extractor( ):
 			- path (str): Path to the output Excel file
 		
 		"""
-		self.tables = tables
-		with pd.ExcelWriter( path, engine='xlsxwriter' ) as _writer:
-			for i, df in enumerate( self.tables ):
-				_sheet = f'Table_{i + 1}'
-				df.to_excel( writer, sheet_name=_sheet, index=False )
-			_writer.save( )
+		try:
+			self.tables = tables
+			with pd.ExcelWriter( path, engine='xlsxwriter' ) as _writer:
+				for i, df in enumerate( self.tables ):
+					_sheet = f'Table_{i + 1}'
+					df.to_excel( writer, sheet_name=_sheet, index=False )
+				_writer.save( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'PdfExtractor'
+			_exc.method = 'export_excel( self, tables: List[ pd.DataFrame ], path: str ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
