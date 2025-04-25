@@ -574,9 +574,13 @@ class PdfExtractor( ):
 		self.minimum_length = length
 		self.extract_tables = tables
 		self.file_path = None
+		self.page = None
+		self.pages = [ ]
 		self.lines = [ ]
 		self.clean_lines = [ ]
 		self.extracted_lines = [ ]
+		self.extracted_tables = [ ]
+		self.extracted_pages = [ ]
 	
 	
 	def extract_lines( self, path: str, max: Optional[ int ] = None ) -> List[ str ]:
