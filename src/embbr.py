@@ -8,7 +8,7 @@
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="tiggr.py" company="Terry D. Eppler">
+  <copyright file="embrr.py" company="Terry D. Eppler">
 
      This is a Budget Execution and Data Analysis Application for Federal Analysts
      Copyright ©  2024  Terry Eppler
@@ -75,16 +75,18 @@ class Embedding( ):
 			- model (str): OpenAI embedding model to use
 		
 		"""
-		self.model = 'pages-embedding-3-small'
+		self.model = 'text-embedding-3-small'
 		self.client = OpenAI( )
+		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 		self.cache = { }
+		self.results = { }
 		self.response = None
 		self.vector_stores = List[ str ]
 		self.store_ids = List[ str ]
 		self.file_ids = List[ str ]
 		self.vectors = [ ]
 		self.batches = List[ List[ str ] ]
-		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.tables = List[ pd.DataFrame ]
 	
 	
 	def embed( self, texts: List[ str ], batch: int = 10, max: int = 3,
@@ -104,9 +106,8 @@ class Embedding( ):
 			and normalized embeddings
 			
 		"""
-		self.vectors = [ ]
 		self.batches = self._batch_chunks( texts, batch )
-		for idx, batch in enumerate( self.batches ):
+		for index, batch in enumerate( self.batches ):
 			for attempt in range( max ):
 				try:
 					self.response = self.client.embeddings.create( input=batch, model=self.model )
@@ -114,19 +115,21 @@ class Embedding( ):
 					self.vectors.extend( self.vectors )
 					break
 				except Exception as e:
-					print( f'[Batch {idx + 1}] Retry {attempt + 1}/{max}: {e}' )
+					print( f'[Batch {index + 1}] Retry {attempt + 1}/{max}: {e}' )
 					time.sleep( time )
 			else:
-				raise RuntimeError( f'Failed after {max} attempts on batch {idx + 1}' )
+				raise RuntimeError( f'Failed after {max} attempts on batch {index + 1}' )
 		
-		embeddings_np = np.array( self.vectors )
-		normed = self._normalize( embeddings_np )
-		
-		return pd.DataFrame( {
+		_embeddings = np.array( self.vectors )
+		_normed = self._normalize( _embeddings )
+		_data = \
+		{
 			'pages': texts,
-			'embedding': list( embeddings_np ),
-			'normed_embedding': list( normed )
-		} )
+			'embedding': list( _embeddings ),
+			'normed_embedding': list( _normed )
+		}
+		
+		return pd.DataFrame( _data )
 	
 	
 	def _batch_chunks( self, texts: List[ str ], size: int ) -> List[ List[ str ] ]:
@@ -157,8 +160,8 @@ class Embedding( ):
 			- np.ndarray: Normalized vector
 			
 		"""
-		norms = np.linalg.norm( vector, axis=1, dims=True )
-		return vector / np.clip( norms, 1e-10, None )
+		_norms = np.linalg.norm( vector, axis=1, dims=True )
+		return vector / np.clip( _norms, 1e-10, None )
 	
 	
 	def _cosine_similarity_matrix( self, vector: np.ndarray, matrix: np.ndarray ) -> np.ndarray:
@@ -174,41 +177,40 @@ class Embedding( ):
 			- np.ndarray: Cosine similarity scores
 			
 		"""
-		query_norm = vector / np.linalg.norm( vector )
-		matrix_norm = matrix / np.linalg.norm( matrix, axis=1, dims=True )
-		return np.dot( matrix_norm, query_norm )
+		_query = vector / np.linalg.norm( vector )
+		_matrix = matrix / np.linalg.norm( matrix, axis=1, dims=True )
+		return np.dot( _matrix, _query )
 	
 	
-	def most_similar( self, query: str, dataframe: pd.DataFrame, top: int = 5 ) -> pd.DataFrame:
+	def most_similar( self, query: str, table: pd.DataFrame, top: int=5 ) -> pd.DataFrame:
 		"""
 		
 			Compute most similar rows in a DataFrame using cosine similarity.
 	
 			Parameters:
 			- query (str): Query string to compare
-			- dataframe (pd.DataFrame): DataFrame with 'normed_embedding'
+			- table (pd.DataFrame): DataFrame with 'normed_embedding'
 			- toptop_k (int): Number of top matches to return
 	
 			Returns:
 			- pd.DataFrame: Top-k results sorted by similarity
 			
 		"""
-		query_embedding = self.embed( [ query ] )[ 'normed_embedding' ].iloc[ 0 ]
-		similarity_scores = self._cosine_similarity_matrix( query_embedding,
-			np.vstack( dataframe[ 'normed_embedding' ] ) )
-		df_copy = dataframe.copy( )
-		df_copy[ 'similarity' ] = similarity_scores
+		_embd = self.embed( [ query ] )[ 'normed_embedding' ].iloc[ 0 ]
+		_scores = self._cosine_similarity_matrix( _embd, np.vstack( table[ 'normed_embedding' ] ) )
+		df_copy = table.copy( )
+		df_copy[ 'similarity' ] = _scores
 		return df_copy.sort_values( 'similarity', ascending=False ).head( top )
 	
 	
-	def bulk_similar( self, queries: List[ str ], dataframe: pd.DataFrame, top: int = 5 ) -> { }:
+	def bulk_similar( self, queries: List[ str ], dataframe: pd.DataFrame, top: int=5 ) -> { }:
 		"""
 		
 			Perform most_similar for a list of queries.
 	
 			Parameters:
 			- queries (List[str]): List of query strings
-			- dataframe (pd.DataFrame): DataFrame to search
+			- table (pd.DataFrame): DataFrame to search
 			- toptop_k (int): Number of top results per query
 	
 			Returns:
@@ -227,7 +229,7 @@ class Embedding( ):
 			Compute full pairwise cosine similarity heatmap from normed embeddings.
 	
 			Parameters:
-			- dataframe (pd.DataFrame): DataFrame with 'normed_embedding' column
+			- table (pd.DataFrame): DataFrame with 'normed_embedding' column
 	
 			Returns:
 			- pd.DataFrame: Pairwise cosine similarity heatmap
@@ -245,7 +247,7 @@ class Embedding( ):
 			Export DataFrame of pages and embeddings to a JSONL file.
 	
 			Parameters:
-			- dataframe (pd.DataFrame): DataFrame with 'pages' and 'embedding'
+			- table (pd.DataFrame): DataFrame with 'pages' and 'embedding'
 			- path (str): Output path for .jsonl file
 		
 		"""
@@ -274,8 +276,14 @@ class Embedding( ):
 				texts.append( record[ 'pages' ] )
 				embeddings.append( record[ 'embedding' ] )
 		normed = self._normalize( np.array( embeddings ) )
-		return pd.DataFrame(
-			{ 'pages': texts, 'embedding': embeddings, 'normed_embedding': list( normed ) } )
+		_data =\
+		{
+			'pages': texts,
+			'embedding': embeddings,
+			'normed_embedding': list( normed )
+		}
+		
+		return pd.DataFrame( _data )
 	
 	
 	def create_vector_store( self, name: str ) -> str:
@@ -307,31 +315,31 @@ class Embedding( ):
 		return [ item[ 'id' ] for item in self.response.get( 'data', [ ] ) ]
 	
 	
-	def upload_vector_store( self, dataframe: pd.DataFrame, storeids: str ) -> None:
+	def upload_vector_store( self, dataframe: pd.DataFrame, ids: str ) -> None:
 		"""
 		
 			Upload documents to a given OpenAI vector store.
 	
 			Parameters:
-			- dataframe (pd.DataFrame): DataFrame with 'pages' column
-			- storeids (str): OpenAI vector store ID
+			- table (pd.DataFrame): DataFrame with 'pages' column
+			- ids (str): OpenAI vector store ID
 			
 		"""
 		documents = [
 			{ 'content': row[ 'pages' ], 'metadata': { 'source': f'row_{i}' } }
 			for i, row in dataframe.iterrows( )
 		]
-		self.client.beta.vector_stores.file_batches.create( store_id=storeids,
+		self.client.beta.vector_stores.file_batches.create( store_id=ids,
 			documents=documents )
 	
 	
-	def query_vector_store( self, id: str, query: str, top: int = 5 ) -> List[ dict ]:
+	def query_vector_store( self, id: str, query: str, top: int=5 ) -> List[ dict ]:
 		"""
 		
 			Query a vector store using a natural language string.
 	
 			Parameters:
-			- storeids (str): OpenAI vector store ID
+			- ids (str): OpenAI vector store ID
 			- query (str): Search query
 			- top (int): Number of results to return
 	
@@ -346,18 +354,17 @@ class Embedding( ):
 		]
 	
 	
-	def delete_vector_store( self, storeid: str, docids
-	: List[ str ] ) -> None:
+	def delete_vector_store( self, storeid: str, ids: List[ str ] ) -> None:
 		"""
 		
 			Delete specific documents from a vector store.
 	
 			Parameters:
-			- storeids (str): OpenAI vector store ID
-			- docids (List[str]): List of document IDs to delete
+			- ids (str): OpenAI vector store ID
+			- ids (List[str]): List of document IDs to delete
 			
 		"""
-		self.client.beta.vector_stores.documents.delete( store_id=storeid, document_ids=docids )
+		self.client.beta.vector_stores.documents.delete( store_id=storeid, document_ids=ids )
 
 
 class Extractor( ):
@@ -372,8 +379,7 @@ class Extractor( ):
 	"""
 	
 	
-	def __init__( self, headers: bool = False, length: int = 10,
-	              tables: bool = True ):
+	def __init__( self, headers: bool=False, length: int=10, tables: bool=True ):
 		"""
 			
 			Initialize the PDF pages extractor with configurable settings.
@@ -390,9 +396,10 @@ class Extractor( ):
 		self.extract_tables = tables
 		self.lines = [ ]
 		self.clean_lines = [ ]
+		self.extracted_lines = [ ]
 	
 	
-	def extract_lines( self, path: str, max: Optional[ int ] = None ) -> List[ str ]:
+	def extract_lines( self, path: str, max: Optional[ int ]=None ) -> List[ str ]:
 		"""
 			
 			Extract lines of pages from a PDF, optionally limiting to the first N pages.
@@ -410,19 +417,20 @@ class Extractor( ):
 				if max is not None and i >= max:
 					break
 				if self.extract_tables:
-					page_lines = self._extract_table_blocks( page )
+					self.extracted_lines = self._extract_table_blocks( page )
 				else:
-					text = page.get_text( "pages" )
-					page_lines = text.splitlines( )
-				self.clean_lines = self._filter_lines( page_lines )
-				self.lines.extend( self.clean_lines )
-		return self.lines
+					_text = page.get_text( 'pages' )
+					self.lines = _text.splitlines( )
+				self.clean_lines = self._filter_lines( self.lines )
+				self.extracted_lines.extend( self.clean_lines )
+		return self.extracted_lines
 	
 	
 	def _extract_table_blocks( self, page ) -> List[ str ]:
 		"""
 			
-			Attempt to extract structured blocks such as tables using spatial grouping.
+			Attempt to extract structured blocks
+			such as tables using spatial grouping.
 	
 			Parameters:
 			- page: PyMuPDF page object
@@ -431,9 +439,9 @@ class Extractor( ):
 			- List[str]: Grouped blocks including potential tables
 			
 		"""
-		blocks = page.get_text( "blocks" )
-		sorted_blocks = sorted( blocks, key=lambda b: (round( b[ 1 ], 1 ), round( b[ 0 ], 1 )) )
-		self.lines = [ b[ 4 ].strip( ) for b in sorted_blocks if b[ 4 ].strip( ) ]
+		_blocks = page.get_text( 'blocks' )
+		_sorted = sorted( _blocks, key=lambda b: ( round( b[ 1 ], 1 ), round( b[ 0 ], 1 ) ) )
+		self.lines = [ b[ 4 ].strip( ) for b in _sorted if b[ 4 ].strip( ) ]
 		return self.lines
 	
 	
@@ -463,7 +471,8 @@ class Extractor( ):
 	def _is_repeated_header_or_footer( self, line: str ) -> bool:
 		"""
 			
-			Heuristic to detect common headers/footers (basic implementation).
+			Heuristic to detect common
+			headers/footers (basic implementation).
 	
 			Parameters:
 			- line (str): A line of pages
@@ -472,14 +481,15 @@ class Extractor( ):
 			- bool: True if line is likely a header or footer
 		
 		"""
-		keywords = [ "page", "public law", "u.s. government", "united states" ]
-		return any( kw in line.lower( ) for kw in keywords )
+		_keywords = [ "page", "public law", "u.s. government", "united states" ]
+		return any( kw in line.lower( ) for kw in _keywords )
 	
 	
-	def extract_text( self, path: str, max: Optional[ int ] = None ) -> str:
+	def extract_text( self, path: str, max: Optional[ int ]=None ) -> str:
 		"""
 		
-			Extract the entire pages from a PDF into one continuous string.
+			Extract the entire pages from a
+			PDF into one continuous string.
 	
 			Parameters:
 			- path (str): Path to the PDF file
@@ -493,11 +503,11 @@ class Extractor( ):
 		return "\n".join( self.lines )
 	
 	
-	def extract_dataframes( self, path: str, max: Optional[ int ] = None ) -> \
-	List[ pd.DataFrame ]:
+	def extract_tables( self, path: str, max: Optional[ int ]=None ) -> List[ pd.DataFrame ]:
 		"""
 			
-			Extract tables from the PDF and return them as a list of DataFrames.
+			Extract tables from the PDF
+			and return them as a list of DataFrames.
 	
 			Parameters:
 			- path (str): Path to the PDF file
@@ -507,43 +517,45 @@ class Extractor( ):
 			- List[pd.DataFrame]: List of DataFrames representing detected tables
 			
 		"""
-		tables = [ ]
-		with fitz.open( path ) as doc:
-			for i, page in enumerate( doc ):
+		with fitz.open( path ) as _doc:
+			for i, page in enumerate( _doc ):
 				if max is not None and i >= max:
 					break
-				table_blocks = page.find_tables( )
-				for tb in table_blocks.tables:
-					df = pd.DataFrame( tb.extract( ) )
-					tables.append( df )
-		return tables
+				_blocks = page.find_tables( )
+				for _tb in _blocks.tables:
+					_df = pd.DataFrame( _tb.extract( ) )
+					self.tables.append( _df )
+		return self.tables
 	
 	
 	def export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None:
 		"""
 			
-			Export a list of DataFrames (tables) to individual CSV files.
+			Export a list of DataFrames (tables)
+			to individual CSV files.
 	
 			Parameters:
 			- tables (List[pd.DataFrame]): List of tables to export
 			- filename (str): Prefix for output filenames (e.g., 'output_table')
 		
 		"""
-		for i, df in enumerate( tables ):
-			df.to_csv( f"{filename}_{i + 1}.csv", index=False )
+		self.tables = tables
+		for i, df in enumerate( self.tables ):
+			df.to_csv( f'{filename}_{i + 1}.csv', index=False )
 	
 	
 	def export_text( self, lines: List[ str ], path: str ) -> None:
 		"""
 			
-			Export extracted lines of pages to a plain pages file.
+			Export extracted lines of
+			pages to a plain pages file.
 	
 			Parameters:
 			- lines (List[str]): List of pages lines
 			- path (str): Path to output pages file
 		
 		"""
-		with open( path, "w", encoding="utf-8" ) as f:
+		with open( path, 'w', encoding='utf-8' ) as f:
 			for line in lines:
 				f.write( line + "\n" )
 	
@@ -551,15 +563,17 @@ class Extractor( ):
 	def export_excel( self, tables: List[ pd.DataFrame ], path: str ) -> None:
 		"""
 			
-			Export all extracted tables into a single Excel workbook with one sheet per table.
+			Export all extracted tables into a single
+			Excel workbook with one sheet per table.
 	
 			Parameters:
 			- tables (List[pd.DataFrame]): List of tables to export
 			- path (str): Path to the output Excel file
 		
 		"""
-		with pd.ExcelWriter( path, engine="xlsxwriter" ) as writer:
-			for i, df in enumerate( tables ):
-				sheet_name = f"Table_{i + 1}"
-				df.to_excel( writer, sheet_name=sheet_name, index=False )
-			writer.save( )
+		self.tables = tables
+		with pd.ExcelWriter( path, engine='xlsxwriter' ) as _writer:
+			for i, df in enumerate( self.tables ):
+				_sheet = f'Table_{i + 1}'
+				df.to_excel( writer, sheet_name=_sheet, index=False )
+			_writer.save( )

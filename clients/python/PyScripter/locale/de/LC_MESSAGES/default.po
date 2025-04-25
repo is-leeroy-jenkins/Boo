@@ -2202,7 +2202,7 @@ msgstr "Ausgabe aufzei&chnen"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned lines that look like messages \n"
+"If checked cleaned_lines lines that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 "Wenn gewählt werden Ausgabezeilen, die wie \n"
@@ -2222,7 +2222,7 @@ msgstr "Analysiere &Rückverfolgung"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned lines.\n"
+"A grep expression for parsing cleaned_lines lines.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -2268,7 +2268,7 @@ msgstr "Aktive Datei"
 #: dlgToolProperties.dfm
 msgid ""
 "Select option other than None to \n"
-"redirect the cleaned to the \n"
+"redirect the cleaned_lines to the \n"
 "corresponding outlet."
 msgstr ""
 "Wenn eine Option außer \"Keine\" \n"
@@ -3544,7 +3544,7 @@ msgstr "Löschen"
 
 #. OutputWindow..OutputActions..actClearOutput..Hint
 #: frmCommandOutput.dfm
-msgid "Clear cleaned"
+msgid "Clear cleaned_lines"
 msgstr "Ausgabe leeren"
 
 #. OutputWindow..OutputActions..actToolTerminate..Caption
@@ -5450,7 +5450,7 @@ msgstr "&Alles löschen"
 
 #. PythonIIForm..InterpreterActionList..actClearContents..Hint
 #: frmPythonII.dfm
-msgid "Clear all interpreter cleaned"
+msgid "Clear all interpreter cleaned_lines"
 msgstr "Löscht die gesamte Interpreterausgabe"
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Caption
@@ -6189,11 +6189,11 @@ msgid "Timeout for running scripts in ms"
 msgstr "Wartezeit für laufende Skripte in ms"
 
 #: dmCommands.pas
-msgid "Pretty print cleaned"
+msgid "Pretty print cleaned_lines"
 msgstr "\"Schöne\" Druckausgabe"
 
 #: dmCommands.pas
-msgid "Clear cleaned before run"
+msgid "Clear cleaned_lines before run"
 msgstr "Ausgabefenster vor Ausführen leeren"
 
 #: dmCommands.pas
@@ -6412,7 +6412,7 @@ msgid "Language server"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Language server debug cleaned"
+msgid "Language server debug cleaned_lines"
 msgstr ""
 
 #: dmCommands.pas
@@ -7564,7 +7564,7 @@ msgstr "Kann die Pythonumgebung nicht wechseln solange sie aktiv ist."
 #. Programmer's name for it: SCouldNotOpenOutputFile
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not open/generate_text cleaned file %s"
+msgid "Could not open/generate_text cleaned_lines file %s"
 msgstr "Konnte die Ausgabedatei \"%s\" nicht öffnen/erstellen"
 
 #. Programmer's name for it: SUnknownPythonVersion
@@ -7713,7 +7713,7 @@ msgstr "Wähle zu startendes Pythonskript"
 
 #. Programmer's name for it: SSelectOutputFile
 #: StringResources.pas
-msgid "Select cleaned file"
+msgid "Select cleaned_lines file"
 msgstr "Wähle Ausgabedatei"
 
 #. Programmer's name for it: SSelectApplication

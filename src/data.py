@@ -77,7 +77,7 @@ class Pascal( ):
 			Retunes a get_list[ str ] of member names.
 		
 		'''
-		return [ 'input', 'cleaned', 'split', 'join' ]
+		return [ 'input', 'cleaned_lines', 'split', 'join' ]
 
 
 	def split( self ) -> str:

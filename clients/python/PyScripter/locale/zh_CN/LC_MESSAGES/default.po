@@ -2179,7 +2179,7 @@ msgstr "截获输出(&C)"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned lines that look like messages \n"
+"If checked cleaned_lines lines that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 "当选中时象信息一样的输出行\n"
@@ -2198,7 +2198,7 @@ msgstr "解析追溯(&T)"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned lines.\n"
+"A grep expression for parsing cleaned_lines lines.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -2244,7 +2244,7 @@ msgstr "激活的文件"
 #: dlgToolProperties.dfm
 msgid ""
 "Select option other than None to \n"
-"redirect the cleaned to the \n"
+"redirect the cleaned_lines to the \n"
 "corresponding outlet."
 msgstr ""
 "选择None以外的选项时\n"
@@ -3517,7 +3517,7 @@ msgstr "清除"
 
 #. OutputWindow..OutputActions..actClearOutput..Hint
 #: frmCommandOutput.dfm
-msgid "Clear cleaned"
+msgid "Clear cleaned_lines"
 msgstr "清除输出"
 
 #. OutputWindow..OutputActions..actToolTerminate..Caption
@@ -5412,7 +5412,7 @@ msgstr "全部清除(&A)"
 
 #. PythonIIForm..InterpreterActionList..actClearContents..Hint
 #: frmPythonII.dfm
-msgid "Clear all interpreter cleaned"
+msgid "Clear all interpreter cleaned_lines"
 msgstr "清除所有解释器输出"
 
 #. PythonIIForm..InterpreterActionList..actCopyWithoutPrompts..Caption
@@ -6145,11 +6145,11 @@ msgid "Timeout for running scripts in ms"
 msgstr "脚本运行超时的时间ms"
 
 #: dmCommands.pas
-msgid "Pretty print cleaned"
+msgid "Pretty print cleaned_lines"
 msgstr "Pretty print输出"
 
 #: dmCommands.pas
-msgid "Clear cleaned before run"
+msgid "Clear cleaned_lines before run"
 msgstr "运行前清除输出"
 
 #: dmCommands.pas
@@ -6368,7 +6368,7 @@ msgid "Language server"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Language server debug cleaned"
+msgid "Language server debug cleaned_lines"
 msgstr ""
 
 #: dmCommands.pas
@@ -7500,7 +7500,7 @@ msgstr "不能变更正激活的Python引擎"
 #. Programmer's name for it: SCouldNotOpenOutputFile
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not open/generate_text cleaned file %s"
+msgid "Could not open/generate_text cleaned_lines file %s"
 msgstr "不能打开/生成输出文件 %s "
 
 #. Programmer's name for it: SUnknownPythonVersion
@@ -7645,7 +7645,7 @@ msgstr "选择要运行Python脚本"
 
 #. Programmer's name for it: SSelectOutputFile
 #: StringResources.pas
-msgid "Select cleaned file"
+msgid "Select cleaned_lines file"
 msgstr "选择输出文件"
 
 #. Programmer's name for it: SSelectApplication

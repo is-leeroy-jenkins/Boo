@@ -1056,7 +1056,7 @@ class ScrollingDialog( Dark ):
 
         Purpose:
 
-            Provides form for multiline input/cleaned
+            Provides form for multiline input/cleaned_lines
 
 	'''
 	
@@ -5091,7 +5091,7 @@ class Executable( ):
 							'close this window and copy command line from documents printed out '
 							'in '
 							'main window',
-							'Here is the cleaned from the run', out )
+							'Here is the cleaned_lines from the run', out )
 						print(
 							'Copy and paste this line into the command prompt to manually run '
 							'PyInstaller:\n\n',
@@ -5113,7 +5113,7 @@ class Executable( ):
             @param cmd: command to execute
             @param timeout: timeout for command execution
 
-            @return: (return code from command, command cleaned)
+            @return: (return code from command, command cleaned_lines)
 
 		"""
 		try:
