@@ -68,7 +68,8 @@ class Embedding( ):
 	def __init__( self ):
 		"""
 			
-			Initialize the Embedding object with OpenAI API credentials and embedding model.
+			Initialize the Embedding object with
+			OpenAI API credentials and embedding model.
 	
 			Parameters:
 			- api_key (Optional[str]): OpenAI API key (uses global config if None)
@@ -81,16 +82,16 @@ class Embedding( ):
 		self.cache = { }
 		self.results = { }
 		self.response = None
-		self.vector_stores = List[ str ]
-		self.store_ids = List[ str ]
-		self.file_ids = List[ str ]
+		self.vector_stores = [ ]
+		self.store_ids = [ ]
+		self.file_ids = [ ]
 		self.vectors = [ ]
-		self.batches = List[ List[ str ] ]
+		self.batches = [ List[ str ] ]
 		self.tables = List[ pd.DataFrame ]
 	
 	
-	def embed( self, texts: List[ str ], batch: int = 10, max: int = 3,
-	           time: float = 2.0 ) -> pd.DataFrame:
+	def embed( self, texts: List[ str ], batch: int=10, max: int=3,
+	           time: float=2.0 ) -> pd.DataFrame:
 		"""
 		
 			Generate and normalize embeddings for a list of input texts.
@@ -106,30 +107,40 @@ class Embedding( ):
 			and normalized embeddings
 			
 		"""
-		self.batches = self._batch_chunks( texts, batch )
-		for index, batch in enumerate( self.batches ):
-			for attempt in range( max ):
-				try:
-					self.response = self.client.embeddings.create( input=batch, model=self.model )
-					self.vectors = [ record.embedding for record in self.response.data ]
-					self.vectors.extend( self.vectors )
-					break
-				except Exception as e:
-					print( f'[Batch {index + 1}] Retry {attempt + 1}/{max}: {e}' )
-					time.sleep( time )
-			else:
-				raise RuntimeError( f'Failed after {max} attempts on batch {index + 1}' )
-		
-		_embeddings = np.array( self.vectors )
-		_normed = self._normalize( _embeddings )
-		_data = \
-		{
-			'pages': texts,
-			'embedding': list( _embeddings ),
-			'normed_embedding': list( _normed )
-		}
-		
-		return pd.DataFrame( _data )
+		try:
+			self.batches = self._batch_chunks( texts, batch )
+			for index, batch in enumerate( self.batches ):
+				for attempt in range( max ):
+					try:
+						self.response = self.client.embeddings.create( input=batch,
+							model=self.model )
+						self.vectors = [ record.embedding for record in self.response.data ]
+						self.vectors.extend( self.vectors )
+						break
+					except Exception as e:
+						print( f'[Batch {index + 1}] Retry {attempt + 1}/{max}: {e}' )
+						time.sleep( time )
+				else:
+					raise RuntimeError( f'Failed after {max} attempts on batch {index + 1}' )
+			
+			_embeddings = np.array( self.vectors )
+			_normed = self._normalize( _embeddings )
+			_data = \
+				{
+					'pages': texts,
+					'embedding': list( _embeddings ),
+					'normed_embedding': list( _normed )
+				}
+			
+			return pd.DataFrame( _data )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Embedding'
+			_exc.method = ('embed( self, texts: List[ str ], batch: int=10, max: int=3, '
+			               'time: float=2.0 ) -> pd.DataFrame')
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def _batch_chunks( self, texts: List[ str ], size: int ) -> List[ List[ str ] ]:
@@ -182,7 +193,7 @@ class Embedding( ):
 		return np.dot( _matrix, _query )
 	
 	
-	def most_similar( self, query: str, table: pd.DataFrame, top: int=5 ) -> pd.DataFrame:
+	def most_similar( self, query: str, table: pd.DataFrame, top: int = 5 ) -> pd.DataFrame:
 		"""
 		
 			Compute most similar rows in a DataFrame using cosine similarity.
@@ -203,7 +214,7 @@ class Embedding( ):
 		return df_copy.sort_values( 'similarity', ascending=False ).head( top )
 	
 	
-	def bulk_similar( self, queries: List[ str ], dataframe: pd.DataFrame, top: int=5 ) -> { }:
+	def bulk_similar( self, queries: List[ str ], dataframe: pd.DataFrame, top: int = 5 ) -> { }:
 		"""
 		
 			Perform most_similar for a list of queries.
@@ -276,12 +287,12 @@ class Embedding( ):
 				texts.append( record[ 'pages' ] )
 				embeddings.append( record[ 'embedding' ] )
 		normed = self._normalize( np.array( embeddings ) )
-		_data =\
-		{
-			'pages': texts,
-			'embedding': embeddings,
-			'normed_embedding': list( normed )
-		}
+		_data = \
+			{
+				'pages': texts,
+				'embedding': embeddings,
+				'normed_embedding': list( normed )
+			}
 		
 		return pd.DataFrame( _data )
 	
@@ -333,7 +344,7 @@ class Embedding( ):
 			documents=documents )
 	
 	
-	def query_vector_store( self, id: str, query: str, top: int=5 ) -> List[ dict ]:
+	def query_vector_store( self, id: str, query: str, top: int = 5 ) -> List[ dict ]:
 		"""
 		
 			Query a vector store using a natural language string.
@@ -379,7 +390,7 @@ class Extractor( ):
 	"""
 	
 	
-	def __init__( self, headers: bool=False, length: int=10, tables: bool=True ):
+	def __init__( self, headers: bool = False, length: int = 10, tables: bool = True ):
 		"""
 			
 			Initialize the PDF pages extractor with configurable settings.
@@ -399,7 +410,7 @@ class Extractor( ):
 		self.extracted_lines = [ ]
 	
 	
-	def extract_lines( self, path: str, max: Optional[ int ]=None ) -> List[ str ]:
+	def extract_lines( self, path: str, max: Optional[ int ] = None ) -> List[ str ]:
 		"""
 			
 			Extract lines of pages from a PDF, optionally limiting to the first N pages.
@@ -440,7 +451,7 @@ class Extractor( ):
 			
 		"""
 		_blocks = page.get_text( 'blocks' )
-		_sorted = sorted( _blocks, key=lambda b: ( round( b[ 1 ], 1 ), round( b[ 0 ], 1 ) ) )
+		_sorted = sorted( _blocks, key=lambda b: (round( b[ 1 ], 1 ), round( b[ 0 ], 1 )) )
 		self.lines = [ b[ 4 ].strip( ) for b in _sorted if b[ 4 ].strip( ) ]
 		return self.lines
 	
@@ -485,7 +496,7 @@ class Extractor( ):
 		return any( kw in line.lower( ) for kw in _keywords )
 	
 	
-	def extract_text( self, path: str, max: Optional[ int ]=None ) -> str:
+	def extract_text( self, path: str, max: Optional[ int ] = None ) -> str:
 		"""
 		
 			Extract the entire pages from a
@@ -503,7 +514,7 @@ class Extractor( ):
 		return "\n".join( self.lines )
 	
 	
-	def extract_tables( self, path: str, max: Optional[ int ]=None ) -> List[ pd.DataFrame ]:
+	def extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ pd.DataFrame ]:
 		"""
 			
 			Extract tables from the PDF
