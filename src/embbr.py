@@ -573,6 +573,7 @@ class PdfExtractor( ):
 		self.strip_headers = headers
 		self.minimum_length = length
 		self.extract_tables = tables
+		self.file_path = None
 		self.lines = [ ]
 		self.clean_lines = [ ]
 		self.extracted_lines = [ ]
@@ -592,7 +593,8 @@ class PdfExtractor( ):
 			
 		"""
 		try:
-			with fitz.open( path ) as doc:
+			self.file_path = path
+			with fitz.open( self.file_path ) as doc:
 				for i, page in enumerate( doc ):
 					if max is not None and i >= max:
 						break
@@ -656,12 +658,12 @@ class PdfExtractor( ):
 		try:
 			self.lines = lines
 			for line in self.lines:
-				line = line.strip( )
-				if len( line ) < self.minimum_length:
+				_line = line.strip( )
+				if len( _line ) < self.minimum_length:
 					continue
-				if self.strip_headers and self._is_repeated_header_or_footer( line ):
+				if self.strip_headers and self._is_repeated_header_or_footer( _line ):
 					continue
-				self.clean_lines.append( line )
+				self.clean_lines.append( _line )
 			return self.clean_lines
 		except Exception as e:
 			_exc = Error( e )
@@ -686,7 +688,7 @@ class PdfExtractor( ):
 		
 		"""
 		try:
-			_keywords = [ "page", "public law", "u.s. government", "united states" ]
+			_keywords = [ 'page', 'public law', 'u.s. government', 'united states' ]
 			return any( kw in line.lower( ) for kw in _keywords )
 		except Exception as e:
 			_exc = Error( e )
@@ -712,7 +714,8 @@ class PdfExtractor( ):
 		
 		"""
 		try:
-			self.lines = self.extract_lines( path, max=max )
+			self.file_path = path
+			self.lines = self.extract_lines( self.file_path, max=max )
 			return "\n".join( self.lines )
 		except Exception as e:
 			_exc = Error( e )
@@ -738,7 +741,8 @@ class PdfExtractor( ):
 			
 		"""
 		try:
-			with fitz.open( path ) as _doc:
+			self.file_path = path
+			with fitz.open( self.file_path ) as _doc:
 				for i, page in enumerate( _doc ):
 					if max is not None and i >= max:
 						break
@@ -793,8 +797,10 @@ class PdfExtractor( ):
 		
 		"""
 		try:
-			with open( path, 'w', encoding='utf-8' ) as f:
-				for line in lines:
+			self.file_path = path
+			self.lines = lines
+			with open( self.file_path, 'w', encoding='utf-8' ) as f:
+				for line in self.lines:
 					f.write( line + "\n" )
 		except Exception as e:
 			_exc = Error( e )
@@ -818,7 +824,8 @@ class PdfExtractor( ):
 		"""
 		try:
 			self.tables = tables
-			with pd.ExcelWriter( path, engine='xlsxwriter' ) as _writer:
+			self.file_path = path
+			with pd.ExcelWriter( self.file_path, engine='xlsxwriter' ) as _writer:
 				for i, df in enumerate( self.tables ):
 					_sheet = f'Table_{i + 1}'
 					df.to_excel( writer, sheet_name=_sheet, index=False )
