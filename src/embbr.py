@@ -593,19 +593,24 @@ class PdfExtractor( ):
 			
 		"""
 		try:
-			self.file_path = path
-			with fitz.open( self.file_path ) as doc:
-				for i, page in enumerate( doc ):
-					if max is not None and i >= max:
-						break
-					if self.extract_tables:
-						self.extracted_lines = self._extract_table_blocks( page )
-					else:
-						_text = page.get_text( 'pages' )
-						self.lines = _text.splitlines( )
-					self.clean_lines = self._filter_lines( self.lines )
-					self.extracted_lines.extend( self.clean_lines )
-			return self.extracted_lines
+			if path is None:
+				raise Exception( 'Input "path" must be specified' )
+			elif max is None:
+				raise Exception( 'Input "max" must be specified' )
+			else:
+				self.file_path = path
+				with fitz.open( self.file_path ) as doc:
+					for i, page in enumerate( doc ):
+						if max is not None and i >= max:
+							break
+						if self.extract_tables:
+							self.extracted_lines = self._extract_table_blocks( page )
+						else:
+							_text = page.get_text( 'pages' )
+							self.lines = _text.splitlines( )
+						self.clean_lines = self._filter_lines( self.lines )
+						self.extracted_lines.extend( self.clean_lines )
+				return self.extracted_lines
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -630,10 +635,13 @@ class PdfExtractor( ):
 			
 		"""
 		try:
-			_blocks = page.get_text( 'blocks' )
-			_sorted = sorted( _blocks, key=lambda b: (round( b[ 1 ], 1 ), round( b[ 0 ], 1 )) )
-			self.lines = [ b[ 4 ].strip( ) for b in _sorted if b[ 4 ].strip( ) ]
-			return self.lines
+			if page is None:
+				raise Exception( 'Input "page" cannot be None' )
+			else:
+				_blocks = page.get_text( 'blocks' )
+				_sorted = sorted( _blocks, key=lambda b: (round( b[ 1 ], 1 ), round( b[ 0 ], 1 )) )
+				self.lines = [ b[ 4 ].strip( ) for b in _sorted if b[ 4 ].strip( ) ]
+				return self.lines
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -656,15 +664,18 @@ class PdfExtractor( ):
 			
 		"""
 		try:
-			self.lines = lines
-			for line in self.lines:
-				_line = line.strip( )
-				if len( _line ) < self.minimum_length:
-					continue
-				if self.strip_headers and self._is_repeated_header_or_footer( _line ):
-					continue
-				self.clean_lines.append( _line )
-			return self.clean_lines
+			if line is None:
+				raise Exception( 'Input "line" is None' )
+			else:
+				self.lines = lines
+				for line in self.lines:
+					_line = line.strip( )
+					if len( _line ) < self.minimum_length:
+						continue
+					if self.strip_headers and self._is_repeated_header_or_footer( _line ):
+						continue
+					self.clean_lines.append( _line )
+				return self.clean_lines
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -688,8 +699,11 @@ class PdfExtractor( ):
 		
 		"""
 		try:
-			_keywords = [ 'page', 'public law', 'u.s. government', 'united states' ]
-			return any( kw in line.lower( ) for kw in _keywords )
+			if line is None:
+				raise Exception( 'Input "line" is None' )
+			else:
+				_keywords = [ 'page', 'public law', 'u.s. government', 'united states' ]
+				return any( kw in line.lower( ) for kw in _keywords )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -714,9 +728,14 @@ class PdfExtractor( ):
 		
 		"""
 		try:
-			self.file_path = path
-			self.lines = self.extract_lines( self.file_path, max=max )
-			return "\n".join( self.lines )
+			if path is None:
+				raise Exception( 'Input "path" must be specified' )
+			elif max is None:
+				raise Exception( 'Input "max" must be specified' )
+			else:
+				self.file_path = path
+				self.lines = self.extract_lines( self.file_path, max=max )
+				return "\n".join( self.lines )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -741,16 +760,21 @@ class PdfExtractor( ):
 			
 		"""
 		try:
-			self.file_path = path
-			with fitz.open( self.file_path ) as _doc:
-				for i, page in enumerate( _doc ):
-					if max is not None and i >= max:
-						break
-					_blocks = page.find_tables( )
-					for _tb in _blocks.tables:
-						_df = pd.DataFrame( _tb.extract( ) )
-						self.tables.append( _df )
-			return self.tables
+			if path is None:
+				raise Exception( 'Input "path" must be specified' )
+			elif max is None:
+				raise Exception( 'Input "max" must be specified' )
+			else:
+				self.file_path = path
+				with fitz.open( self.file_path ) as _doc:
+					for i, page in enumerate( _doc ):
+						if max is not None and i >= max:
+							break
+						_blocks = page.find_tables( )
+						for _tb in _blocks.tables:
+							_df = pd.DataFrame( _tb.extract( ) )
+							self.tables.append( _df )
+				return self.tables
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -773,9 +797,14 @@ class PdfExtractor( ):
 		
 		"""
 		try:
-			self.tables = tables
-			for i, df in enumerate( self.tables ):
-				df.to_csv( f'{filename}_{i + 1}.csv', index=False )
+			if tables is None:
+				raise Exception( 'Input "tables" must not be None' )
+			elif filename is None:
+				raise Exception( 'Input "filename" must not be None' )
+			else:
+				self.tables = tables
+				for i, df in enumerate( self.tables ):
+					df.to_csv( f'{filename}_{i + 1}.csv', index=False )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -797,11 +826,16 @@ class PdfExtractor( ):
 		
 		"""
 		try:
-			self.file_path = path
-			self.lines = lines
-			with open( self.file_path, 'w', encoding='utf-8' ) as f:
-				for line in self.lines:
-					f.write( line + "\n" )
+			if lines is None:
+				raise Exception( 'Input "lines" must be provided.' )
+			elif path is None:
+				raise Exception( 'Input "path" must be provided.' )
+			else:
+				self.file_path = path
+				self.lines = lines
+				with open( self.file_path, 'w', encoding='utf-8' ) as f:
+					for line in self.lines:
+						f.write( line + "\n" )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -823,13 +857,18 @@ class PdfExtractor( ):
 		
 		"""
 		try:
-			self.tables = tables
-			self.file_path = path
-			with pd.ExcelWriter( self.file_path, engine='xlsxwriter' ) as _writer:
-				for i, df in enumerate( self.tables ):
-					_sheet = f'Table_{i + 1}'
-					df.to_excel( writer, sheet_name=_sheet, index=False )
-				_writer.save( )
+			if tables is None:
+				raise Exception( 'Input "tables" must not be None' )
+			elif path is None:
+				raise Exception( 'Input "path" must not be None' )
+			else:
+				self.tables = tables
+				self.file_path = path
+				with pd.ExcelWriter( self.file_path, engine='xlsxwriter' ) as _writer:
+					for i, df in enumerate( self.tables ):
+						_sheet = f'Table_{i + 1}'
+						df.to_excel( writer, sheet_name=_sheet, index=False )
+					_writer.save( )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
