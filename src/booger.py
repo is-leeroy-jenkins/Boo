@@ -2228,7 +2228,7 @@ class PdfForm( Dark ):
 						except:
 							cur_page = 0  # this guy's trying to fool me
 						goto.update( str( cur_page + 1 ) )
-					# goto.TKStringVar.set(str(cur_page + 1))
+					# goto.TKStringVar.pairs(str(cur_page + 1))
 					
 					elif event in ('Next', 'Next:34', 'MouseWheel:Down'):
 						cur_page += 1
@@ -2271,7 +2271,7 @@ class PdfForm( Dark ):
 					# update page number field
 					if event in my_keys or not values[ 0 ]:
 						goto.update( str( cur_page + 1 ) )
-					# goto.TKStringVar.set(str(cur_page + 1))
+					# goto.TKStringVar.pairs(str(cur_page + 1))
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Booger'
@@ -4730,7 +4730,7 @@ class ChatWindow( ):
 class ChatBot( ):
 	
 	# -------  Make a new Window  ------- #
-	# give our form a spiffy set of colors
+	# give our form a spiffy pairs of colors
 	def __init__( self ):
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )

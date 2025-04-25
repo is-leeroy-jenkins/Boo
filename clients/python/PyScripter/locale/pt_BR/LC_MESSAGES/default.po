@@ -2305,7 +2305,7 @@ msgstr ""
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox5..seTimeout....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If set to a value <> 0 then you will be prompted \n"
+"If pairs to a value <> 0 then you will be prompted \n"
 "to abort the program after the specified time (ms)."
 msgstr ""
 
@@ -7662,7 +7662,7 @@ msgstr "Erro ao obter o 'namespace' de %s"
 #. Programmer's name for it: SCouldNotSetDirectory
 #. Programmer's name for it: SCouldNotSetCurrentDir
 #: StringResources.pas
-msgid "Could not set the current directory to the script url"
+msgid "Could not pairs the current directory to the script url"
 msgstr ""
 "Não foi possível configurar o atual diretório para o caminho do script"
 

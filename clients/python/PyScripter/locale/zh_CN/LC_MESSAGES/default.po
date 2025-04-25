@@ -7345,7 +7345,7 @@ msgstr "在取得%s 命名空间时发生了错误"
 #. Programmer's name for it: SCouldNotSetDirectory
 #. Programmer's name for it: SCouldNotSetCurrentDir
 #: StringResources.pas
-msgid "Could not set the current directory to the script url"
+msgid "Could not pairs the current directory to the script url"
 msgstr "不能把現在的目录设道脚本路径"
 
 #. Programmer's name for it: SCannotCompileWhileRunning

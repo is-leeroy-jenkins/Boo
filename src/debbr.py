@@ -46,6 +46,7 @@ import re
 import fitz
 import string
 import spacy
+import openpyxl
 from openai import OpenAI
 from booger import Error, ErrorDialog
 from pathlib import Path
@@ -54,115 +55,265 @@ import sqlite3
 from typing import Any, List, Tuple, Optional
 
 
-class Data( ):
-    """
-    DataAccess provides CRUD operations for a SQLite database.
+class SQLite( ):
+	"""
+	
+		Class providing CRUD
+		operations for a SQLite database.
+	
+		Methods:
+			- create_table: Creates a table with specified schema.
+			- insert: Inserts a record into a table.
+			- fetch_all: Fetches all records from a table.
+			- fetch_one: Fetches a single record matching the query.
+			- update: Updates records that match a given condition.
+			- delete: Deletes records that match a given condition.
+			- close: Closes the database connection.
+		
+	"""
+	
+	
+	def __init__( self  ):
+		"""
+			
+			Pupose:
+			Initializes the connection to the SQLite database.
+			
+			Args:
+				db_name (str): The name of the database file.
+			
+		"""
+		self.db_path = r'C:\Users\terry\source\repos\Boo\data\sqlite\datamodels\Data.db'
+		self.conn = sqlite3.connect( db_path )
+		self.cursor = self.conn.cursor( )
+		self.file_path = None
+		self.where = None
+		self.pairs = None
+		self.sql = None
+		self.file_name = None
+		self.table_name = None
+		self.placeholders = None
+		self.columns = None
+		self.params = ( )
+		self.column_names = [ ]
+		self.tables = [ ]
+	
+	
+	def __dir__( self ):
+		'''
 
-    Methods:
-        - create_table: Creates a table with specified schema.
-        - insert: Inserts a record into a table.
-        - fetch_all: Fetches all records from a table.
-        - fetch_one: Fetches a single record matching the query.
-        - update: Updates records that match a given condition.
-        - delete: Deletes records that match a given condition.
-        - close: Closes the database connection.
-    """
+			Purpose:
+			Returns a list of members
 
-    def __init__( self, db_name: str="Data.db" ):
-        """
-        Initializes the connection to the SQLite database.
-        
-        Args:
-            db_name (str): The name of the database file.
-        """
-        self.conn = sqlite3.connect( db_name )
-        self.cursor = self.conn.cursor( )
+		'''
+		return [ 'db_path', 'conn', 'cursor', 'file_path', 'where',
+		         'pairs', 'sql', 'file_name', 'table_name', 'placeholders',
+		         'columns', 'params', 'column_names', 'tables',
+				 'close', 'import_excel', 'delete', 'update',
+		         'insert', 'create_table', 'fetch_one', 'fetch_all' ]
+	
+	
+	def create_table( self, sql: str ) -> None:
+		"""
+			
+			Purpose:
+			Creates a table using a provided SQL statement.
+	
+			Args:
+				sql (str): The CREATE TABLE SQL statement.
+		"""
+		try:
+			self.sql = sql
+			self.cursor.execute( self.sql )
+			self.conn.commit( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'debbr'
+			_exc.cause = 'SQLite'
+			_exc.method = 'create_table( self, sql: str ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 
-    def create_table( self, table_sql: str ) -> None:
-        """
-        Creates a table using a provided SQL statement.
+	
+	def insert( self, table: str, columns: List[ str ], values: Tuple[ Any, ... ] ) -> None:
+		"""
+			
+			Purpose:
+			Inserts a new record into a table.
+	
+			Args:
+				table (str): The name of the table.
+				columns (List[str]): Column names.
+				values (Tuple): Corresponding values.
+			
+		"""
+		try:
+			self.placeholders = ", ".join( "?" for _ in values )
+			col_names = ", ".join( columns )
+			sql = f"INSERT INTO {table} ({col_names}) VALUES ({placeholders})"
+			self.cursor.execute( sql, values )
+			self.conn.commit( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'debbr'
+			_exc.cause = 'SQLite'
+			_exc.method = ('insert( self, table: str, columns: List[ str ], values: Tuple[ Any, '
+			               '... ] ) -> None')
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def fetch_all( self, table: str ) -> List[ Tuple ]:
+		"""
+		
+			Purpose:
+			Retrieves all records from a table.
+	
+			Args:
+				table (str): The name of the table.
+			
+			Returns:
+				List[Tuple]: List of rows.
+			
+		"""
+		try:
+			self.cursor.execute( f"SELECT * FROM {table}" )
+			return self.cursor.fetchall( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'debbr'
+			_exc.cause = 'SQLite'
+			_exc.method = 'fetch_all( self, table: str ) -> List[ Tuple ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def fetch_one( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> Optional[ Tuple ]:
+		"""
+		
+			Purpose:
+			Retrieves a single row matching a WHERE clause.
+	
+			Args:
+				table (str): Table name.
+				where (str): WHERE clause (excluding 'WHERE').
+				params (Tuple): Parameters for the clause.
+			
+			Returns:
+				Optional[Tuple]: The fetched row or None.
+			
+		"""
+		try:
+			self.table_name = table
+			self.where = where
+			self.sql = f"SELECT * FROM {self.table_name} WHERE {self.where} LIMIT 1"
+			self.cursor.execute( self.sql, self.params )
+			return self.cursor.fetchone( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'debbr'
+			_exc.cause = 'SQLite'
+			_exc.method = ('fetch_one( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> '
+			               'Optional[ Tuple ]')
+			_err = ErrorDialog( _exc )
+			_err.show( )
 
-        Args:
-            table_sql (str): The CREATE TABLE SQL statement.
-        """
-        self.cursor.execute( table_sql )
-        self.conn.commit( )
+	
+	def update( self, table: str, pairs: str, where: str, params: Tuple[ Any, ... ] ) -> None:
+		"""
+		
+			Purpose:
+			Updates records in a table.
+	
+			Args:
+				table (str): Table name.
+				pairs (str): SET clause with placeholders.
+				where (str): WHERE clause with placeholders.
+				params (Tuple): Parameters for both clauses.
+			
+		"""
+		try:
+			self.table_name = table
+			self.where = where
+			self.params = params
+			self.sql = f'UPDATE {self.table_name} SET {pairs} WHERE {self.where}'
+			self.cursor.execute( sql, params )
+			self.conn.commit( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'debbr'
+			_exc.cause = 'SQLite'
+			_exc.method = ('update( self, table: str, pairs: str, where: str, params: Tuple[ Any, '
+			               '... ] ) -> None')
+			_err = ErrorDialog( _exc )
+			_err.show( )
 
-    def insert(self, table: str, columns: List[ str ], values: Tuple[Any, ...] ) -> None:
-        """
-        Inserts a new record into a table.
 
-        Args:
-            table (str): The name of the table.
-            columns (List[str]): Column names.
-            values (Tuple): Corresponding values.
-        """
-        placeholders = ", ".join( "?" for _ in values )
-        col_names = ", ".join( columns )
-        sql = f"INSERT INTO {table} ({col_names}) VALUES ({placeholders})"
-        self.cursor.execute( sql, values )
-        self.conn.commit()
+	def delete( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> None:
+		"""
+		
+			Purpose:
+			Deletes records matching the given WHERE clause.
+	
+			Args:
+				table (str): Table name.
+				where (str): WHERE clause (excluding 'WHERE').
+				params (Tuple): Parameters for clause.
+				
+		"""
+		try:
+			self.table_name = table
+			self.where = where
+			self.params = params
+			self.sql = f"DELETE FROM {self.table_name} WHERE {self.where}"
+			self.cursor.execute( sql, self.params )
+			self.conn.commit( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'debbr'
+			_exc.cause = 'SQLite'
+			_exc.method = 'delete( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 
-    def fetch_all(self, table: str) -> List[Tuple]:
-        """
-        Retrieves all records from a table.
 
-        Args:
-            table (str): The name of the table.
-        
-        Returns:
-            List[Tuple]: List of rows.
-        """
-        self.cursor.execute(f"SELECT * FROM {table}")
-        return self.cursor.fetchall()
+	def import_excel( self, path: str ) -> None:
+		"""
+		
+			Purpose:
+			Reads all worksheets from an Excel file into pandas DataFrames and
+			stores each as a table in the SQLite database.
+		
+			Args:
+				path (str): Path to the Excel workbook.
+			
+		"""
+		try:
+			self.file_path = path
+			self.file_name = os.path.basename( self.file_path )
+			xls = pd.ExcelFile( path )
+			for sheet_name in xls.sheet_names:
+				df = xls.parse( sheet_name )
+				df.to_sql( sheet_name, self.conn, if_exists='replace', index=False )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'debbr'
+			_exc.cause = 'SQLite'
+			_exc.method = 'import_excel( self, path: str ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 
-    def fetch_one(self, table: str, where_clause: str, params: Tuple[Any, ...]) -> Optional[Tuple]:
-        """
-        Retrieves a single row matching a WHERE clause.
 
-        Args:
-            table (str): Table name.
-            where_clause (str): WHERE clause (excluding 'WHERE').
-            params (Tuple): Parameters for the clause.
-        
-        Returns:
-            Optional[Tuple]: The fetched row or None.
-        """
-        sql = f"SELECT * FROM {table} WHERE {where_clause} LIMIT 1"
-        self.cursor.execute(sql, params)
-        return self.cursor.fetchone()
-
-    def update(self, table: str, set_clause: str, where_clause: str, params: Tuple[Any, ...]) -> None:
-        """
-        Updates records in a table.
-
-        Args:
-            table (str): Table name.
-            set_clause (str): SET clause with placeholders.
-            where_clause (str): WHERE clause with placeholders.
-            params (Tuple): Parameters for both clauses.
-        """
-        sql = f"UPDATE {table} SET {set_clause} WHERE {where_clause}"
-        
-        self.cursor.execute(sql, params)
-        self.conn.commit()
-
-    def delete(self, table: str, where_clause: str, params: Tuple[Any, ...]) -> None:
-        """
-        Deletes records matching the given WHERE clause.
-
-        Args:
-            table (str): Table name.
-            where_clause (str): WHERE clause (excluding 'WHERE').
-            params (Tuple): Parameters for clause.
-        """
-        sql = f"DELETE FROM {table} WHERE {where_clause}"
-        self.cursor.execute(sql, params)
-        self.conn.commit()
-
-    def close(self) -> None:
-        """
-        Closes the database connection.
-        """
-        self.conn.close()
-
+	def close( self ) -> None:
+		"""
+		Closes the database connection.
+		"""
+		try:
+			self.conn.close( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'debbr'
+			_exc.cause = 'SQLite'
+			_exc.method = 'close( self ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )

@@ -62,7 +62,7 @@ from collections import defaultdict
 class Text:
 	'''
 	
-		Class providing documents preprocessing functionality
+		Class providing document preprocessing functionality
 		
 	    Methods:
 	    --------
@@ -73,14 +73,14 @@ class Text:
 		remove_errors( self, pages: str ) -> str
 		correct_errors( self, pages: str ) -> str:
 		remove_markdown( self, pages: str ) -> str
-	    normalize(pages: str) -> str
-	    tokenize_sentences(pages: str) -> str
-	    tokenize_words(pages: str) -> get_list
-	    load_file( url: str) -> li
-	    lemmatize(tokens: get_list) -> str
-	    bag_of_words(tokens: get_list) -> dict
-	    train_word2vec(sentences: get_list, vector_size=100, window=5, min_count=1) -> Word2Vec
-	    compute_tfidf(corpus: get_list, max_features=1000, prep=True) -> tuple
+	    normalize( pages: str ) -> str
+	    tokenize_sentences( pages: str ) -> str
+	    tokenize_words( pages: str ) -> get_list
+	    load_file( url: str ) -> li
+	    lemmatize( tokens: get_list ) -> str
+	    bag_of_words( tokens: get_list ) -> dict
+	    train_word2vec( sentences: get_list, vector_size=100, window=5, min_count=1 ) -> Word2Vec
+	    compute_tfidf( corpus: get_list, max_features=1000, prep=True ) -> tuple
 	    
 	'''
 	
@@ -89,6 +89,7 @@ class Text:
 		'''
 			Constructor for creating Text objects
 		'''
+		self.file_path = None
 		self.raw_input = None
 		self.raw_pages = None
 		self.normalized = None
@@ -104,6 +105,7 @@ class Text:
 		self.chunk_size = 0
 		self.stop_words = [ str ]
 		self.cleaned_lines = [ str ]
+		self.cleaned_pages = [ str ]
 		self.removed = [ str ]
 		self.lowercase = None
 		self.translator = None
@@ -113,13 +115,34 @@ class Text:
 		self.vectorizer = None
 	
 	
+	def __dir__(self):
+		'''
+		
+			Purpose:
+			Returns a list of class members.
+			
+		'''
+		return [ 'file_path', 'raw_input', 'raw_pages', 'normalized', 'lemmatized',
+		         'tokenized', 'corrected', 'cleaned_text', 'words',
+		         'tokens', 'lines', 'pages', 'chunks', 'chunk_size',
+		         'stop_words', 'cleaned_lines', 'removed', 'lowercase',
+		         'translator', 'lemmatizer', 'stemmer', 'tokenizer', 'vectorizer',
+		         'load_text', 'split_lines', 'split_pages', 'collapse_whitespace',
+		         'remove_punctuation', 'remove_special', 'remove_html', 'remove_errors',
+		         'remove_markdown', 'remove_stopwords', 'remove_headers',
+		         'normalize', 'lemmatize', 'tokenize_text', 'tokenize_words',
+		         'tokenize_sentences', 'chunk_text', 'chunk_tokens',
+		         'bag_of_words', 'train_word2vec', 'compute_tfidf' ]
+	
+	
 	def load_text( self, path: str ) -> str:
 		try:
 			if path is None:
 				raise Exception( 'The input argument "path" is required' )
 			else:
-				self.raw_input = path
-				return Path( path ).read_text( encoding='utf-8' )
+				self.file_path = path
+				self.raw_input = Path( self.file_path ).read_text( encoding='utf-8' )
+				return self.raw_input
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -147,7 +170,8 @@ class Text:
 			if text is None:
 				raise Exception( 'The input argument "pages" is required' )
 			else:
-				with open( text, 'r', encoding='utf-8' ) as f:
+				self.raw_input = text
+				with open( self.raw_input, 'r', encoding='utf-8' ) as f:
 					self.lines = f.readlines( )
 					return self.lines
 		except Exception as e:
@@ -179,16 +203,13 @@ class Text:
 			if path is None:
 				raise Exception( 'The input argument "path" is required' )
 			else:
-				with open( path, 'r', encoding='utf-8' ) as f:
+				self.file_path = path
+				with open( self.file_path, 'r', encoding='utf-8' ) as f:
 					self.raw_input = f.read( )
 		except UnicodeDecodeError:
-			with open( path, 'r', encoding='latin1' ) as f:
+			with open( self.file_path, 'r', encoding='latin1' ) as f:
 				self.raw_input = f.read( )
-			
-			# Split by pages
 			self.raw_pages = self.raw_input.split( delimiter )
-			
-			# Clean and consolidate lines per page
 			for page in self.raw_pages:
 				self.lines = page.strip( ).splitlines( )
 				self.cleaned_text = "\n".join( [ line.strip( ) for line in self.lines if line.strip( ) ] )
@@ -229,8 +250,8 @@ class Text:
 				self.words = re.sub( r'[ \t]+', ' ', self.raw_input )
 				self.cleaned_lines = [ line.strip( ) for line in self.words.splitlines( ) ]
 				self.lines = [ line for line in self.cleaned_lines if line ]
-				self.removed = '\n'.join( self.lines )
-				return self.removed
+				self.cleaned_text = '\n'.join( self.lines )
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -263,8 +284,8 @@ class Text:
 			else:
 				self.raw_input = text
 				self.translator = str.maketrans( '', '', string.punctuation )
-				self.removed = self.raw_input.translate( self.translator )
-				return self.removed
+				self.cleaned_text = self.raw_input.translate( self.translator )
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -274,7 +295,7 @@ class Text:
 			_err.show( )
 	
 	
-	def remove_special( self, text: str, keep_spaces=True ) -> str:
+	def remove_special( self, text: str ) -> str:
 		"""
 
 			Removes special characters
@@ -300,11 +321,10 @@ class Text:
 		try:
 			if text is None:
 				raise Exception( 'The input argument "pages" is required.' )
-			elif keep_spaces:
-				self.raw_input = text
-				return re.sub( r'[^a-zA-Z0-9\s]', '', text )
 			else:
-				return re.sub( r'[^a-zA-Z0-9]', '', text )
+				self.raw_input = text
+				self.cleaned_text = re.sub( r'[^a-zA-Z0-9\s]', '', self.raw_input )
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -317,7 +337,8 @@ class Text:
 	def remove_html( self, text: str ) -> str:
 		"""
 	
-			Removes HTML tags from the input pages string.
+			Removes HTML tags
+			from the input pages string.
 	
 			This function:
 			  - Parses the pages as HTML
@@ -340,8 +361,8 @@ class Text:
 			else:
 				self.raw_html = text
 				self.cleaned_html = BeautifulSoup( self.raw_html, "raw_html.parser" )
-				self.removed = self.cleaned_html.get_text( separator=' ', strip=True )
-				return self.removed
+				self.cleaned_text = self.cleaned_html.get_text( separator=' ', strip=True )
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -382,8 +403,8 @@ class Text:
 				self.lowercase = self.raw_input.lower( )
 				self.tokens = word_tokenize( self.lowercase )
 				self.words = [ w for w in self.tokens if Word( w ).spellcheck( )[ 0 ][ 1 ] > 0.9 ]
-				self.removed = ' '.join( self.words )
-				return self.removed
+				self.cleaned_text = ' '.join( self.words )
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -396,7 +417,8 @@ class Text:
 	def correct_errors( self, text: str ) -> str:
 		"""
 	
-			Corrects misspelled words in the input pages string.
+			Corrects misspelled words
+			in the input pages string.
 	
 			This function:
 			  - Converts pages to lowercase
@@ -437,10 +459,10 @@ class Text:
 	def remove_html( self, text: str ) -> str:
 		"""
 	
-			Removes HTML  from pages.
+			
 	
 			This function:
-			  - Strips HTML tags
+			  - Removes HTML from pages.
 	
 			Parameters:
 			-----------
@@ -458,9 +480,9 @@ class Text:
 				raise Exception( 'The input argument "pages" is required.' )
 			else:
 				self.raw_input = text
-				self.removed = (BeautifulSoup( self.raw_input, "raw_html.parser" )
+				self.cleaned_text = (BeautifulSoup( self.raw_input, "raw_html.parser" )
 				                .get_text( separator=' ', strip=True ))
-				return self.removed
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -496,8 +518,8 @@ class Text:
 				self.raw_input = text
 				self.cleaned_text = re.sub( r'\[.*?\]\(.*?\)', '', self.raw_input )
 				self.corrected = re.sub( r'[`_*#~>-]', '', self.cleaned_text )
-				self.removed = re.sub( r'!\[.*?\]\(.*?\)', '', self.corrected )
-				return self.removed
+				self.cleaned_text = re.sub( r'!\[.*?\]\(.*?\)', '', self.corrected )
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -510,7 +532,8 @@ class Text:
 	def remove_stopwords( self, text: str ) -> str:
 		"""
 	
-			Removes English stopwords from the input pages string.
+			Removes English stopwords
+			from the input pages string.
 	
 			This function:
 			  - Tokenizes the input pages
@@ -548,7 +571,7 @@ class Text:
 			_err.show( )
 	
 	
-	def remove_headers( self, pages: List[ str ], min_occurrences: int=3 ) -> List[ str ]:
+	def remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]:
 		"""
 			
 			Removes repetitive headers and footers
@@ -557,7 +580,7 @@ class Text:
 			Args:
 				pages (list of str): A list where each
 				element is the full text of one page.
-				min_occurrences (int): Minimum number of times
+				min (int): Minimum number of times
 				a line must appear at the top/bottom to
 				be considered a header/footer.
 		
@@ -566,21 +589,21 @@ class Text:
 				texts without detected headers/footers.
 			
 		"""
-		header_counts = defaultdict( int )
-		footer_counts = defaultdict( int )
+		_headers = defaultdict( int )
+		_footers = defaultdict( int )
 		
 		# First pass: collect frequency of top/bottom lines
 		for page in pages:
 			lines = page.strip( ).splitlines( )
 			if lines:
-				header_counts[ lines[ 0 ].strip( ) ] += 1
-				footer_counts[ lines[ -1 ].strip( ) ] += 1
+				_headers[ lines[ 0 ].strip( ) ] += 1
+				_footers[ lines[ -1 ].strip( ) ] += 1
 		
 		# Identify candidates for removal
-		headers_to_remove = { line for line, count in header_counts.items( ) if
-		                      count >= min_occurrences }
-		footers_to_remove = { line for line, count in footer_counts.items( ) if
-		                      count >= min_occurrences }
+		_head = { line for line, count in _headers.items( ) if
+		          count >= min }
+		_foot = { line for line, count in _footers.items( ) if
+		          count >= min }
 		
 		# Second pass: clean pages
 		cleaned_pages = [ ]
@@ -591,11 +614,11 @@ class Text:
 				continue
 			
 			# Remove header
-			if lines[ 0 ].strip( ) in headers_to_remove:
+			if lines[ 0 ].strip( ) in _head:
 				lines = lines[ 1: ]
 			
 			# Remove footer
-			if lines and lines[ -1 ].strip( ) in footers_to_remove:
+			if lines and lines[ -1 ].strip( ) in _foot:
 				lines = lines[ :-1 ]
 			
 			cleaned_pages.append( "\n".join( lines ) )

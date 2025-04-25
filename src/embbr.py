@@ -91,6 +91,22 @@ class Vector( ):
 		self.tables = List[ pd.DataFrame ]
 	
 	
+	def __dir__( self ):
+		'''
+		
+			Purpose:
+			Returns a list of class members
+		
+		'''
+		return [ 'model', 'client', 'cache', 'results',
+		         'response', 'vector_stores', 'file_ids',
+		         'batches', 'tables', 'vectors', 'embedd',
+		         'most_similar', 'bulk_similar', 'similarity_heatmap',
+		         'export_jsonl', 'import_jsonl', 'create_vector_store',
+		         'list_vector_stores', 'upload_vector_store',
+		         'query_vector_store', 'delete_vector_store' ]
+	
+	
 	def embed( self, texts: List[ str ], batch: int = 10, max: int = 3,
 	           time: float = 2.0 ) -> pd.DataFrame:
 		"""
@@ -230,8 +246,9 @@ class Vector( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Vector'
-			_exc.method = ('_cosine_similarity_matrix( self, vector: np.ndarray, matrix: np.ndarray '
-			               ') -> np.ndarray')
+			_exc.method = (
+				'_cosine_similarity_matrix( self, vector: np.ndarray, matrix: np.ndarray '
+				') -> np.ndarray')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -266,7 +283,8 @@ class Vector( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Vector'
-			_exc.method = ('most_similar( self, query: str, table: pd.DataFrame, top: int = 5 ) -> '
+			_exc.method = ('most_similar( self, query: str, table: pd.DataFrame, top: int = 5 ) '
+			               '-> '
 			               'pd.DataFrame')
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -517,7 +535,8 @@ class Vector( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Vector'
-			_exc.method = ('query_vector_store( self, id: str, query: str, top: int = 5 ) -> List[ '
+			_exc.method = ('query_vector_store( self, id: str, query: str, top: int = 5 ) -> '
+			               'List[ '
 			               'dict ]')
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -587,6 +606,20 @@ class Xtractor( ):
 		self.extracted_pages = [ ]
 	
 	
+	def __dir__( self ):
+		'''
+			
+			Purpose:
+			Returns a list of class member names.
+		
+		'''
+		return [ 'strip_headers', 'minimum_length', 'extract_tables',
+		         'file_path', 'page', 'pages', 'lines', 'clean_lines', 'extracted_lines',
+		         'extracted_tables', 'extracted_pages', 'extract_lines',
+		         'extract_text', 'extract_tables', 'export_csv',
+		         'export_text', 'export_excel' ]
+	
+	
 	def extract_lines( self, path: str, max: Optional[ int ] = None ) -> List[ str ]:
 		"""
 			
@@ -624,7 +657,8 @@ class Xtractor( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Xtractor'
-			_exc.method = ('extract_lines( self, path: str, max: Optional[ int ] = None ) -> List[ '
+			_exc.method = ('extract_lines( self, path: str, max: Optional[ int ] = None ) -> '
+			               'List[ '
 			               'str ]')
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -789,8 +823,9 @@ class Xtractor( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Xtractor'
-			_exc.method = ('extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ '
-			               'pd.DataFrame ]')
+			_exc.method = (
+				'extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ '
+				'pd.DataFrame ]')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	

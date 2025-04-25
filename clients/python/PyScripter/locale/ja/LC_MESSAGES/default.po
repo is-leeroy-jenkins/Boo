@@ -7349,7 +7349,7 @@ msgstr "%s ネームスペースの取得時にエラーが発生しました"
 #. Programmer's name for it: SCouldNotSetDirectory
 #. Programmer's name for it: SCouldNotSetCurrentDir
 #: StringResources.pas
-msgid "Could not set the current directory to the script url"
+msgid "Could not pairs the current directory to the script url"
 msgstr "現在のディレクトリをスクリプトパスに設定できません"
 
 #. Programmer's name for it: SCannotCompileWhileRunning

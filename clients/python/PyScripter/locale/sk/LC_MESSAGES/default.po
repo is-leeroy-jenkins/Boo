@@ -7360,7 +7360,7 @@ msgstr "Chyba pri získavaní priestoru mien mena %s"
 #. Programmer's name for it: SCouldNotSetDirectory
 #. Programmer's name for it: SCouldNotSetCurrentDir
 #: StringResources.pas
-msgid "Could not set the current directory to the script url"
+msgid "Could not pairs the current directory to the script url"
 msgstr "Aktuálny priečinok sa nadá nastaviť ako cesta k skriptom"
 
 #. Programmer's name for it: SCannotCompileWhileRunning

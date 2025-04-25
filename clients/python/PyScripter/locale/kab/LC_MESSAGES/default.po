@@ -7393,7 +7393,7 @@ msgstr "Erreur en cherchant l'espace de travail de %s"
 #. Programmer's name for it: SCouldNotSetDirectory
 #. Programmer's name for it: SCouldNotSetCurrentDir
 #: StringResources.pas
-msgid "Could not set the current directory to the script url"
+msgid "Could not pairs the current directory to the script url"
 msgstr "Impossible de définir le répertoire actuel au chemin du script"
 
 #. Programmer's name for it: SCannotCompileWhileRunning
