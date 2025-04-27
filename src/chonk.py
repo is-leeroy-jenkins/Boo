@@ -67,7 +67,7 @@ class Fetch:
 			Initializes the Fetch system.
 			:param db_uri: URI for the SQLite database
 			:param doc_paths: List of file paths to documents (txt, pdf, csv, raw_html)
-			:param model: OpenAI model to use (default: openai-4)
+			:param model: OpenAI small_model to use (default: openai-4)
 			:param temperature: LLM temperature setting for creativity
 		'''
 		self.llm = ChatOpenAI( model=model, temperature=temperature, streaming=True )

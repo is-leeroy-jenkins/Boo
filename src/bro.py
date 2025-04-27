@@ -299,7 +299,7 @@ class Payload( ):
 		self.store = store
 		self.stream = stream
 		self.size = size
-		self.data = { 'model': f'{self.model}',
+		self.data = { 'small_model': f'{self.model}',
 		              'number': f'{self.number}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
@@ -317,7 +317,7 @@ class Payload( ):
 		Methods that returns a get_list of member names
 		Returns: get_list[ str ]
 		'''
-		return [ 'number', 'model', 'temperature',
+		return [ 'number', 'small_model', 'temperature',
 		         'top_percent', 'frequency_penalty',
 		         'max_completion_tokens', 'presence_penalty',
 		         'store', 'stream', 'endpoint',
@@ -332,7 +332,7 @@ class Payload( ):
 		'''
 		new = '\r\n'
 		return 'n' + f' = {self.number}' + new + \
-			'model' + f' = {self.model}' + new + \
+			'small_model' + f' = {self.model}' + new + \
 			'endpoint' + f' = {self.endpoint}' + new + \
 			'temperature' + f' = {self.temperature}' + new + \
 			'top_p' + f' = {self.top_percent}' + new + \
@@ -361,7 +361,7 @@ class GptResponse( ):
 		self.created = created
 		self.data = { 'id': f'{self.id}',
 		              'object': f'{self.object}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'created': f'{self.created}' }
 	
 	
@@ -370,7 +370,7 @@ class GptResponse( ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created', 'data' ]
+		return [ 'id', 'object', 'small_model', 'created', 'data' ]
 
 
 class CompletionResponse( GptResponse ):
@@ -387,7 +387,7 @@ class CompletionResponse( GptResponse ):
 		self.created = created
 		self.data = { 'id': f'{self.id}',
 		              'object': f'{self.object}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'created': f'{self.created}' }
 	
 	
@@ -396,7 +396,7 @@ class CompletionResponse( GptResponse ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created', 'data' ]
+		return [ 'id', 'object', 'small_model', 'created', 'data' ]
 
 
 class TextResponse( GptResponse ):
@@ -413,7 +413,7 @@ class TextResponse( GptResponse ):
 		self.created = created
 		self.data = { 'id': f'{self.id}',
 		              'object': f'{self.object}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'created': f'{self.created}' }
 	
 	
@@ -422,7 +422,7 @@ class TextResponse( GptResponse ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created', 'data' ]
+		return [ 'id', 'object', 'small_model', 'created', 'data' ]
 
 
 class EmbeddingResponse( GptResponse ):
@@ -439,7 +439,7 @@ class EmbeddingResponse( GptResponse ):
 		self.created = created
 		self.data = { 'id': f'{self.id}',
 		              'object': f'{self.object}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'created': f'{self.created}' }
 	
 	
@@ -448,7 +448,7 @@ class EmbeddingResponse( GptResponse ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created', 'data' ]
+		return [ 'id', 'object', 'small_model', 'created', 'data' ]
 
 
 class FineTuningResponse( GptResponse ):
@@ -465,7 +465,7 @@ class FineTuningResponse( GptResponse ):
 		self.created = created
 		self.data = { 'id': f'{self.id}',
 		              'object': f'{self.object}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'created': f'{self.created}' }
 	
 	
@@ -474,7 +474,7 @@ class FineTuningResponse( GptResponse ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created', 'data' ]
+		return [ 'id', 'object', 'small_model', 'created', 'data' ]
 
 
 class VectorResponse( GptResponse ):
@@ -491,7 +491,7 @@ class VectorResponse( GptResponse ):
 		self.created = created
 		self.data = { 'id': f'{self.id}',
 		              'object': f'{self.object}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'created': f'{self.created}' }
 	
 	
@@ -500,7 +500,7 @@ class VectorResponse( GptResponse ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created', 'data' ]
+		return [ 'id', 'object', 'small_model', 'created', 'data' ]
 
 
 class FileResponse( GptResponse ):
@@ -517,7 +517,7 @@ class FileResponse( GptResponse ):
 		self.created = created
 		self.data = { 'id': f'{self.id}',
 		              'object': f'{self.object}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'created': f'{self.created}' }
 	
 	
@@ -526,7 +526,7 @@ class FileResponse( GptResponse ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created' ]
+		return [ 'id', 'object', 'small_model', 'created' ]
 
 
 class UploadResponse( GptResponse ):
@@ -543,7 +543,7 @@ class UploadResponse( GptResponse ):
 		self.created = created
 		self.data = { 'id': f'{self.id}',
 		              'object': f'{self.object}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'created': f'{self.created}' }
 	
 	
@@ -554,7 +554,7 @@ class UploadResponse( GptResponse ):
 			Returns: get_list[ str ]
 
 		'''
-		return [ 'id', 'object', 'model', 'created' ]
+		return [ 'id', 'object', 'small_model', 'created' ]
 
 
 class ImageResponse( GptResponse ):
@@ -571,7 +571,7 @@ class ImageResponse( GptResponse ):
 		self.created = created
 		self.data = { 'id': f'{self.id}',
 		              'object': f'{self.object}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'created': f'{self.created}' }
 	
 	
@@ -580,7 +580,7 @@ class ImageResponse( GptResponse ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'model', 'created' ]
+		return [ 'id', 'object', 'small_model', 'created' ]
 
 
 class GptRequest( AI ):
@@ -658,7 +658,7 @@ class TextRequest( GptRequest ):
 		self.response = None
 		self.prompt = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -680,7 +680,7 @@ class TextRequest( GptRequest ):
 				Methods that returns a get_list of member names
 				Returns: get_list[ str ]
 		'''
-		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'number', 'messages',
 		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values' ]
 	
 	
@@ -761,7 +761,7 @@ class CompletionRequest( GptRequest ):
 		self.response = None
 		self.prompt = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -784,7 +784,7 @@ class CompletionRequest( GptRequest ):
 				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint',
-		         'model', 'number', 'messages',
+		         'small_model', 'number', 'messages',
 		         'content', 'response', 'instructions', 'prompt',
 		         'size', 'generate_text', 'messages', 'values' ]
 	
@@ -866,7 +866,7 @@ class ImageRequest( GptRequest ):
 		self.response = None
 		self.prompt = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -890,7 +890,7 @@ class ImageRequest( GptRequest ):
 				Methods that returns a get_list of member names
 				Returns: get_list[ str ]
 		'''
-		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'number', 'messages',
 		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values',
 		         'instructions' ]
 	
@@ -976,7 +976,7 @@ class SpeechRequest( GptRequest ):
 		self.response = None
 		self.prompt = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -1027,7 +1027,7 @@ class TranslationRequest( GptRequest ):
 		self.response = None
 		self.prompt = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -1051,7 +1051,7 @@ class TranslationRequest( GptRequest ):
 				Methods that returns a get_list of member names
 				Returns: get_list[ str ]
 		'''
-		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'number', 'messages',
 		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values' ]
 
 
@@ -1085,7 +1085,7 @@ class TranscriptionRequest( GptRequest ):
 		self.response = None
 		self.prompt = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -1107,7 +1107,7 @@ class TranscriptionRequest( GptRequest ):
 				Methods that returns a get_list of member names
 				Returns: get_list[ str ]
 		'''
-		return [ 'header', 'client', 'endpoint', 'model', 'number', 'messages',
+		return [ 'header', 'client', 'endpoint', 'small_model', 'number', 'messages',
 		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values' ]
 
 
@@ -1142,7 +1142,7 @@ class EmbeddingRequest( GptRequest ):
 		self.response = None
 		self.prompt = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -1164,7 +1164,7 @@ class EmbeddingRequest( GptRequest ):
 				Methods that returns a get_list of member names
 				Returns: get_list[ str ]
 		'''
-		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
 		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values',
@@ -1202,7 +1202,7 @@ class VectorStoreRequest( GptRequest ):
 		self.response = None
 		self.prompt = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -1224,7 +1224,7 @@ class VectorStoreRequest( GptRequest ):
 				Methods that returns a get_list of member names
 				Returns: get_list[ str ]
 		'''
-		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
 		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values',
@@ -1262,7 +1262,7 @@ class GptFileRequest( GptRequest ):
 		self.response = None
 		self.prompt = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -1284,7 +1284,7 @@ class GptFileRequest( GptRequest ):
 				Methods that returns a get_list of member names
 				Returns: get_list[ str ]
 		'''
-		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
 		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values' ]
@@ -1321,7 +1321,7 @@ class UploadRequest( GptRequest ):
 		self.response = None
 		self.prompt = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -1343,7 +1343,7 @@ class UploadRequest( GptRequest ):
 				Methods that returns a get_list of member names
 				Returns: get_list[ str ]
 		'''
-		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
 		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values',
@@ -1381,7 +1381,7 @@ class FineTuningRequest( GptRequest ):
 		self.response = None
 		self.prompt = None
 		self.data = { 'number': f'{self.number}',
-		              'model': f'{self.model}',
+		              'small_model': f'{self.model}',
 		              'endpoint': f'{self.endpoint}',
 		              'temperature': f'{self.temperature}',
 		              'top_percent': f'{self.top_percent}',
@@ -1403,7 +1403,7 @@ class FineTuningRequest( GptRequest ):
 				Methods that returns a get_list of member names
 				Returns: get_list[ str ]
 		'''
-		return [ 'header', 'client', 'request_type', 'endpoint', 'model', 'number', 'messages',
+		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'number', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
 		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values',

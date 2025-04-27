@@ -57,6 +57,7 @@ from nltk.stem import WordNetLemmatizer, PorterStemmer
 from collections import Counter
 from gensim.models import Word2Vec
 from collections import defaultdict
+from typing import Any, List, Tuple, Optional
 
 
 class Text:
@@ -896,7 +897,7 @@ class Text:
 	def train_word2vec( self, tokens: List[ str ], size=100, window=5, min=1 ) -> Word2Vec:
 		"""
 			Purpose:
-				Train a Word2Vec embedding model from tokenized sentences.
+				Train a Word2Vec embedding small_model from tokenized sentences.
 	
 			Args:
 				sentences (get_list of get_list of str): List of tokenized sentences.
@@ -905,7 +906,7 @@ class Text:
 				min_count (int): Minimum frequency for inclusion in vocabulary.
 	
 			Returns:
-				Word2Vec: Trained Gensim Word2Vec model.
+				Word2Vec: Trained Gensim Word2Vec small_model.
 		"""
 		try:
 			if tokens is None:

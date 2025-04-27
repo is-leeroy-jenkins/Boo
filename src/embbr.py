@@ -70,14 +70,16 @@ class Vector( ):
 		"""
 			
 			Initialize the Vector object with
-			OpenAI API credentials and embedding model.
+			OpenAI API credentials and embedding small_model.
 	
 			Parameters:
 			- api_key (Optional[str]): OpenAI API key (uses global config if None)
-			- model (str): OpenAI embedding model to use
+			- small_model (str): OpenAI embedding small_model to use
 		
 		"""
-		self.model = 'text-embedding-3-small'
+		self.small_model = 'text-embedding-3-small'
+		self.large_model = 'text-embedding-3-large'
+		self.ada_model = 'text-embedding-3-ada'
 		self.client = OpenAI( )
 		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 		self.cache = { }
@@ -98,7 +100,8 @@ class Vector( ):
 			Returns a list of class members
 		
 		'''
-		return [ 'model', 'client', 'cache', 'results',
+		return [ 'small_model', 'large_model', 'ada_model',
+		         'client', 'cache', 'results',
 		         'response', 'vector_stores', 'file_ids',
 		         'batches', 'tables', 'vectors', 'embedd',
 		         'most_similar', 'bulk_similar', 'similarity_heatmap',
@@ -133,7 +136,7 @@ class Vector( ):
 					for attempt in range( max ):
 						try:
 							self.response = self.client.embeddings.create( input=batch,
-								model=self.model )
+								model=self.small_model )
 							_vectors = [ record.embedding for record in self.response.data ]
 							self.vectors.extend( _vectors )
 							break
@@ -223,6 +226,7 @@ class Vector( ):
 	def _cosine_similarity_matrix( self, vector: np.ndarray, matrix: np.ndarray ) -> np.ndarray:
 		"""
 		
+			Purpose:
 			Compute cosine similarity between a query vector and a matrix of vector.
 	
 			Parameters:
@@ -256,6 +260,7 @@ class Vector( ):
 	def most_similar( self, query: str, table: pd.DataFrame, top: int = 5 ) -> pd.DataFrame:
 		"""
 		
+			Purpose:
 			Compute most similar rows in a DataFrame using cosine similarity.
 	
 			Parameters:
@@ -293,6 +298,7 @@ class Vector( ):
 	def bulk_similar( self, queries: List[ str ], dataframe: pd.DataFrame, top: int = 5 ) -> { }:
 		"""
 		
+			Purpose:
 			Perform most_similar for a list of queries.
 	
 			Parameters:
@@ -327,6 +333,7 @@ class Vector( ):
 	def similarity_heatmap( self, dataframe: pd.DataFrame ) -> pd.DataFrame:
 		"""
 		
+			Purpose:
 			Compute full pairwise cosine similarity heatmap from normed embeddings.
 	
 			Parameters:
@@ -355,7 +362,8 @@ class Vector( ):
 	
 	def export_jsonl( self, dataframe: pd.DataFrame, path: str ) -> None:
 		"""
-			
+		
+			Purpose:
 			Export DataFrame of pages and embeddings to a JSONL file.
 	
 			Parameters:
@@ -407,11 +415,11 @@ class Vector( ):
 						embeddings.append( _record[ 'embedding' ] )
 				_normed = self._normalize( np.array( embeddings ) )
 				_data = \
-					{
-						'pages': texts,
-						'embedding': embeddings,
-						'normed_embedding': list( _normed )
-					}
+				{
+					'pages': texts,
+					'embedding': embeddings,
+					'normed_embedding': list( _normed )
+				}
 				
 				return pd.DataFrame( _data )
 		except Exception as e:
@@ -508,6 +516,7 @@ class Vector( ):
 	def query_vector_store( self, id: str, query: str, top: int = 5 ) -> List[ dict ]:
 		"""
 		
+			Purpose:
 			Query a vector store using a natural language string.
 	
 			Parameters:
@@ -545,6 +554,7 @@ class Vector( ):
 	def delete_vector_store( self, storeid: str, ids: List[ str ] ) -> None:
 		"""
 		
+			Purpose:
 			Delete specific documents from a vector store.
 	
 			Parameters:
@@ -583,7 +593,8 @@ class Xtractor( ):
 	
 	def __init__( self, headers: bool = False, length: int = 10, tables: bool = True ):
 		"""
-			
+		
+			Purpose:
 			Initialize the PDF pages extractor with configurable settings.
 	
 			Parameters:
@@ -757,7 +768,7 @@ class Xtractor( ):
 			_err.show( )
 	
 	
-	def extract_text( self, path: str, max: Optional[ int ] = None ) -> str:
+	def extract_text( self, path: str, max: Optional[ int ]=None ) -> str:
 		"""
 		
 			Extract the entire pages from a
@@ -789,7 +800,7 @@ class Xtractor( ):
 			_err.show( )
 	
 	
-	def extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ pd.DataFrame ]:
+	def extract_tables( self, path: str, max: Optional[ int ]=None ) -> List[ pd.DataFrame ]:
 		"""
 			
 			Extract tables from the PDF

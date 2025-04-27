@@ -46,6 +46,7 @@ import zipfile as zp
 from openpyxl import Workbook
 import shutil as sh
 from booger import Error, ErrorDialog
+from typing import Any, List, Tuple, Optional
 
 
 class Path( ):
@@ -80,7 +81,7 @@ class Path( ):
 			return str( self.input )
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 
 		Returns a get_list[ str ] of member names.
@@ -93,7 +94,7 @@ class Path( ):
 		         'is_relative', 'verify', 'join', 'copy_tree' ]
 	
 	
-	def exists( self ) -> bool:
+	def exists( self ) -> bool | None:
 		'''
 			Purpose:
 	
@@ -109,14 +110,14 @@ class Path( ):
 				return True
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Path'
 			_exc.method = 'exists( self ) -> bool'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def is_folder( self ) -> bool:
+	def is_folder( self ) -> bool | None:
 		'''
 			Purpose:
 	
@@ -128,20 +129,20 @@ class Path( ):
 			if self.input is None:
 				_msg = "The 'input' is None!"
 				raise Exception( _msg )
-			if os.path.isdir( self.input ) == False:
+			if not os.path.isdir( self.input ):
 				return False
 			else:
 				return True
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Path'
 			_exc.method = 'is_folder( self ) -> bool'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def is_file( self ) -> bool:
+	def is_file( self ) -> bool | None:
 		'''
 			Purpose:
 	
@@ -153,20 +154,20 @@ class Path( ):
 			if self.input is None:
 				_msg = "The 'input' is None!"
 				raise Exception( _msg )
-			elif os.path.isfile( self.input ) == False:
+			elif not os.path.isfile( self.input ):
 				return False
 			else:
 				return True
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Path'
 			_exc.method = 'is_file( self ) -> bool'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def is_absolute( self ) -> bool:
+	def is_absolute( self ) -> bool | None:
 		'''
 			Purpose:
 	
@@ -182,14 +183,14 @@ class Path( ):
 				return True
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Path'
 			_exc.method = 'is_absolute( self ) -> bool'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def is_relative( self ) -> None:
+	def is_relative( self ) -> bool | None:
 		'''
 			Purpose:
 	
@@ -201,22 +202,29 @@ class Path( ):
 			if not os.path.isabs( self.input ):
 				_msg = "The object 'self' is not a file!"
 				raise Exception( _msg )
+			else:
+				return True
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Path'
 			_exc.method = 'is_relative( self ) -> bool'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def verify( self, other: str ) -> bool:
+	def verify( self, other: str ) -> bool | None:
 		'''
+		
+		
 			Purpose:
+			Verifies the file 'other' exists
 	
 			Parameters:
 	
 			Returns:
+			
+			
 		'''
 		try:
 			if not os.path.exists( other ):
@@ -226,17 +234,18 @@ class Path( ):
 				return True
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Path'
 			_exc.method = 'verify( self, other: str ) -> bool'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def join( self, first: str, second: str ) -> str:
+	def join( self, first: str, second: str ) -> str | None:
 		'''
 
-			Purpose: Joins two paths into one.
+			Purpose:
+			Joins two paths into one.
 	
 			Parameters: 'first: str' representing the first url
 			that is joined to the second url 'second: str'.
@@ -252,27 +261,27 @@ class Path( ):
 				return os.path.join( first, second )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Path'
 			_exc.method = 'join( self, first: str, second: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def copy_tree( self, destination: str ):
+	def copy_tree( self, destination: str ) -> None:
 		'''
 
-		Purpose:
 
-		    Copies directory tree to 'destination'
-
-		Parameters:
-
-		    destination: str
-
-		Returns:
-
-		Void
+			Purpose:
+			    Copies directory tree to 'destination'
+	
+			Parameters:
+	
+			    destination: str
+	
+			Returns:
+	
+			Void
 
 		'''
 		try:
@@ -283,9 +292,9 @@ class Path( ):
 				sh.copytree( self.input, destination )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Path'
-			_exc.method = 'copy_tree( self, destination: str )'
+			_exc.method = 'copy_tree( self, destination: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -293,14 +302,14 @@ class Path( ):
 	def create_link( self, path: str, name: str ):
 		'''
 
-		Purpose:
-		Creates a symbolic link of 'url' given the name 'name'
-
-		Parameters:
-		url: str, name: str
-
-		Returns:
-		str
+			Purpose:
+			Creates a symbolic link of 'url' given the name 'name'
+	
+			Parameters:
+			url: str, name: str
+	
+			Returns:
+			str
 
 		'''
 		try:
@@ -314,7 +323,7 @@ class Path( ):
 				os.link( path, name )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Path'
 			_exc.method = 'create_link( self, url: str, name: str )'
 			_err = ErrorDialog( _exc )
@@ -324,17 +333,17 @@ class Path( ):
 	def read_link( self, path: str ):
 		'''
 
-		Purpose:
-
-			reads a symbolic link of 'url'
-
-		Parameters:
-
-			path: str, name: str
-
-		Returns:
-
-			str
+			Purpose:
+	
+				reads a symbolic link of 'url'
+	
+			Parameters:
+	
+				path: str, name: str
+	
+			Returns:
+	
+				str
 
 		'''
 		try:
@@ -345,7 +354,7 @@ class Path( ):
 				os.readlink( path )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Path'
 			_exc.method = 'read_link( self, url: str )'
 			_err = ErrorDialog( _exc )
@@ -354,6 +363,7 @@ class Path( ):
 
 class File( Path ):
 	'''
+	
 		Constructor:
 	
 			File( url: str )
@@ -383,7 +393,7 @@ class File( Path ):
 			return self.relative_path
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 
 		Returns a get_list[ str ] of member names.
@@ -422,7 +432,7 @@ class File( Path ):
 				return _dest
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'File'
 			_exc.method = 'rename( self, other: str ) -> str'
 			_err = ErrorDialog( _exc )
@@ -446,25 +456,29 @@ class File( Path ):
 				return os.path.join( self.name, destination )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'File'
 			_exc.method = 'move( self, destination ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def create( self, other: str, lines: list[ str ] = None ):
+	def create( self, other: str, lines: List[ str ]):
 		'''
-			Purpose: creates a file 'other' and writes 'lines' to it
+		
+			Purpose:
+			creates a file 'other' and writes 'lines' to it
 	
 			Parameters: other: str
 	
 			Returns: void
+			
 		'''
 		try:
-			_msg = " The argument 'other' has not been specified!"
 			if other is None:
-				raise Exception( _msg )
+				raise Exception( 'The argument "other" has not been specified!' )
+			elif lines is None:
+				raise Exception( 'The argument "lines" has not been specified!' )
 			else:
 				_file = open( other, 'r+' )
 				if len( lines ) > 0:
@@ -474,7 +488,7 @@ class File( Path ):
 					_file.close( )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'File'
 			_exc.method = 'generate_text( self, other, lines = None )'
 			_err = ErrorDialog( _exc )
@@ -483,35 +497,41 @@ class File( Path ):
 	
 	def delete( self, other: str ):
 		'''
-			Purpose: deletes a file provided its url 'other'
+		
+			Purpose:
+			deletes a file provided its url 'other'
 	
-			Parameters: other: str
+			Parameters:
+			other: str
 	
-			Returns: void
+			Returns:
+			void
+			
 		'''
 		try:
-			if other is None or other is not os.path.isfile( other ):
-				_msg = " The argument 'other' does not exist! " \
-				       "or is not a file!"
-				raise Exception( _msg )
+			if other is None:
+				raise Exception( "The argument 'other' does not exist!" )
 			else:
 				os.remove( other )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'File'
 			_exc.method = 'delete( self, other )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def get_lines( self ) -> list[ str ]:
+	def get_lines( self ) -> List[ str ]:
 		'''
-			Purpose: reads 'self.input' appending each line to a get_list
+		
+			Purpose:
+			reads 'self.input' appending each line to a get_list
 	
 			Parameters: void
 	
 			Returns: get_list[ str ]
+			
 		'''
 		_lines = list( )
 		try:
@@ -525,7 +545,7 @@ class File( Path ):
 				return _lines
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'File'
 			_exc.method = 'get_lines( self ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
@@ -534,11 +554,16 @@ class File( Path ):
 	
 	def iterlines( self ) -> iter:
 		'''
-			Purpose: iterates lines of 'self.input'
+		
+			Purpose:
+			iterates lines of 'self.input'
 	
-			Parameters: void
+			Parameters:
+			void
 	
-			Returns: Generator
+			Returns:
+			Generator
+			
 		'''
 		try:
 			if os.path.isfile( self.input ) == False:
@@ -550,14 +575,14 @@ class File( Path ):
 					yield i
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'File'
 			_exc.method = 'iterlines( self ) -> iter'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def readlines( self ) -> list[ str ]:
+	def readlines( self ) -> List[ str ]:
 		'''
 			Purpose:
 	
@@ -567,8 +592,8 @@ class File( Path ):
 		'''
 		try:
 			_contents = list( )
-			if os.path.isfile( self.input ) == False:
-				_msg = "The 'url' is not a file!"
+			if self.input is None  :
+				_msg = "The 'text' is not a file!"
 				raise Exception( _msg )
 			else:
 				_file = open( self.input )
@@ -578,7 +603,7 @@ class File( Path ):
 				return _contents
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'File'
 			_exc.method = 'readlines( self ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
@@ -587,15 +612,17 @@ class File( Path ):
 	
 	def readall( self ) -> str:
 		'''
+		
 			Purpose:
 	
 			Parameters:
 	
 			Returns:
+			
 		'''
 		try:
 			_contents = ''
-			if os.path.isfile( self.input ) == False:
+			if not os.path.isfile( self.input ):
 				_msg = "The 'input' is not a file!"
 				raise Exception( _msg )
 			else:
@@ -605,20 +632,23 @@ class File( Path ):
 				return _contents
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'File'
 			_exc.method = 'readall( self ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def writelines( self, lines: list[ str ] ):
+	def writelines( self, lines: List[ str ] ):
 		'''
-			Purpose: writes lines in 'lines' to file 'self.input'
+		
+			Purpose:
+			writes lines in 'lines' to file 'self.input'
 	
 			Parameters: get_list[ str ]
 	
 			Returns: void
+			
 		'''
 		try:
 			if lines is None or os.path.isfile( self.input ) == False:
@@ -633,17 +663,18 @@ class File( Path ):
 				_contents.close( )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'File'
 			_exc.method = 'writelines( self, lines: get_list[ str ] ):'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def writeall( self, other: str ) -> list[ str ]:
+	def writeall( self, other: str ) -> List[ str ]:
 		'''
 
-			Purpose: writes all documents in 'other' to file 'self.input'
+			Purpose:
+			writes all documents in 'other' to file 'self.input'
 	
 			Parameters: str
 	
@@ -668,7 +699,7 @@ class File( Path ):
 				return _contents
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'File'
 			_exc.method = 'writeall( self, other: str ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
@@ -701,7 +732,7 @@ class Folder( Path ):
 			return self.input
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 
 		Returns a get_list[ str ] of member names.
@@ -718,7 +749,7 @@ class Folder( Path ):
 		         'delete', 'iterate' ]
 	
 	
-	def get_files( self ) -> list[ str ]:
+	def get_files( self ) -> List[ str ]:
 		'''
 			Purpose:
 	
@@ -739,14 +770,14 @@ class Folder( Path ):
 				return _names
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Folder'
 			_exc.method = 'get_files( self ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def get_subfiles( self ) -> list[ str ]:
+	def get_subfiles( self ) -> List[ str ]:
 		'''
 			Purpose:
 	
@@ -769,14 +800,14 @@ class Folder( Path ):
 					return _names
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Folder'
 			_exc.method = 'get_subfiles( self ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def get_subfolders( self ) -> list[ str ]:
+	def get_subfolders( self ) -> List[ str ]:
 		'''
 			Purpose:
 	
@@ -799,7 +830,7 @@ class Folder( Path ):
 				return _names
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Folder'
 			_exc.method = 'get_subfolders( self ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
@@ -822,7 +853,7 @@ class Folder( Path ):
 				return os.rename( self.name, name )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Folder'
 			_exc.method = 'rename( self, name: str )'
 			_err = ErrorDialog( _exc )
@@ -845,7 +876,7 @@ class Folder( Path ):
 				return os.path.join( self.name, destination )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Folder'
 			_exc.method = 'move( self, destination: str )'
 			_err = ErrorDialog( _exc )
@@ -869,7 +900,7 @@ class Folder( Path ):
 				os.mkdir( other )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Folder'
 			_exc.method = 'generate_text( self, other: str )'
 			_err = ErrorDialog( _exc )
@@ -893,7 +924,7 @@ class Folder( Path ):
 				os.rmdir( other )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Folder'
 			_exc.method = 'delete( self, other: str )'
 			_err = ErrorDialog( _exc )
@@ -918,7 +949,7 @@ class Folder( Path ):
 					yield i
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Folder'
 			_exc.method = 'iterate( self ) -> iter'
 			_err = ErrorDialog( _exc )
@@ -938,8 +969,8 @@ class Message( ):
 		    Class providing email behavior
 
 	'''
-	def __init__( self, sender: str, receiver: list[ str ], body: list[ str ],
-	              subject: str, copy: list[ str ] = None ):
+	def __init__( self, sender: str, receiver: List[ str ], body: List[ str ],
+	              subject: str, copy: List[ str ]=None ):
 		self.sender = sender
 		self.receiver = receiver
 		self.body = body
@@ -947,12 +978,12 @@ class Message( ):
 		self.subject = subject
 	
 	
-	def __str__( self ) -> list[ str ]:
+	def __str__( self ) -> List[ str ] | None:
 		if self.body is not None:
 			return self.body
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 
 			Returns a get_list[ str ] of member names.
@@ -975,17 +1006,17 @@ class Email( Message ):
 			Class providing email behavior
 
 	'''
-	def __init__( self, sender: str, receiver: list[ str ], body: list[ str ],
-	              subject: str, copy: list[ str ] = None ):
+	def __init__( self, sender: str, receiver: List[ str ], body: List[ str ],
+	              subject: str, copy: List[ str ]=None ):
 		super( ).__init__( sender, receiver, body, subject, copy )
 		self.sender = super( ).sender
 		self.receiver = super( ).receiver
 		self.body = super( ).body
-		self.others = super( ).copy
+		self.others = super( ).others
 		self.subject = super( ).subject
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 
 			Returns a get_list[ str ] of member names.
@@ -1016,15 +1047,15 @@ class Excel( ):
 		self.worksheet = Workbook( ).create_sheet( self.title, 0 )
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
 		if self.external_path is not None:
 			return self.external_path
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 
-		Returns a get_list[ str ] of member names.
+			Returns a get_list[ str ] of member names.
 
 		'''
 		return [ 'internal_path', 'external_path', 'name',
@@ -1034,18 +1065,18 @@ class Excel( ):
 	def save( self ):
 		'''
 
-		Purpose:
-
-		Parameters:
-
-		Returns:
+			Purpose:
+	
+			Parameters:
+	
+			Returns:
 
 		'''
 		try:
 			self.workbook.save( self.external_path )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'Excel'
 			_exc.method = 'save( self )'
 			_err = ErrorDialog( _exc )
@@ -1064,7 +1095,7 @@ class ExcelReport( Excel ):
 			Class providing spreadsheet for reports
 
 	'''
-	def __init__( self, path: str = None, rows: int = 46, cols: int = 12 ):
+	def __init__( self, path: str, rows: int=46, cols: int=12 ):
 		super( ).__init__( path )
 		self.internal = super( ).internal_path
 		self.path = super( ).external_path
@@ -1077,7 +1108,7 @@ class ExcelReport( Excel ):
 		self.worksheet = super( ).worksheet
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 
 		Returns a get_list[ str ] of member names.
@@ -1113,10 +1144,10 @@ class ZipFile( ):
 			return self.file_path
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 
-		Returns a get_list[ str ] of member names.
+			Returns a get_list[ str ] of member names.
 
 		'''
 		return [ 'file_name', 'authority_filepath', 'file_extenstion',
@@ -1140,7 +1171,7 @@ class ZipFile( ):
 				 .write( self.file_path, self.file_name ) )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'ZipFile'
 			_exc.method = 'generate_text( self )'
 			_err = ErrorDialog( _exc )
@@ -1149,11 +1180,13 @@ class ZipFile( ):
 	
 	def unzip( self ):
 		'''
-			Purpose: Un-zips the file
-	
-			Parameters: void
-	
-			Returns: void
+		
+				Purpose: Un-zips the file
+		
+				Parameters: void
+		
+				Returns: void
+				
 		'''
 		try:
 			if os.path.exists( self.zip_path ):
@@ -1161,7 +1194,7 @@ class ZipFile( ):
 				_file.extractall( self.zip_path )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'FileSys'
+			_exc.module = 'fsys'
 			_exc.cause = 'ZipFile'
 			_exc.method = 'unzip( self )'
 			_err = ErrorDialog( _exc )

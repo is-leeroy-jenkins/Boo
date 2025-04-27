@@ -711,7 +711,7 @@ class Chat( AI ):
 		self.self.number, self.self.temperature, self.self.top_percent,
 		self.frequency_penalty, self.presence_penalty,
 		self.store, self.stream, self.maximum_completion_tokens,
-		self.api_key, self.client, self.model,  self.embedding,
+		self.api_key, self.client, self.small_model,  self.embedding,
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
@@ -768,7 +768,7 @@ class Chat( AI ):
 	def get_model_options( self ) -> str:
 		'''
 		
-			Methods that returns a list of model names
+			Methods that returns a list of small_model names
 		
 		'''
 		return [ 'gpt-4-0613', 'gpt-4-0314',
@@ -1092,7 +1092,7 @@ class Chat( AI ):
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
-		         'vector_store_ids', 'size', 'api_key', 'client', 'model',
+		         'vector_store_ids', 'size', 'api_key', 'client', 'small_model',
 		         'generate_text', 'analyze_image', 'summarize', 'generate_image',
 		         'search_web', 'search_file', 'get_data', 'dump' ]
 
@@ -1241,7 +1241,7 @@ class LargeImage( AI ):
 	def get_model_options( self ) -> list[ str ]:
 		'''
 		
-			Methods that returns a list of model names
+			Methods that returns a list of small_model names
 		
 		'''
 		return [ 'dall-e-3', 'gpt-4-0613',
@@ -1289,7 +1289,7 @@ class LargeImage( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'input_text', 'image_url', 'path',
-				 'api_key', 'client', 'model', 'input', 'generate',
+				 'api_key', 'client', 'small_model', 'input', 'generate',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
 
@@ -1315,7 +1315,7 @@ class Image( AI ):
 		
 		Attributes
 		-----------
-		self.api_key, self.client, self.model,  self.embedding,
+		self.api_key, self.client, self.small_model,  self.embedding,
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
@@ -1361,7 +1361,7 @@ class Image( AI ):
 	def get_model_options( self ) -> list[ str ]:
 		'''
 		
-			Methods that returns a list of model names
+			Methods that returns a list of small_model names
 		
 		'''
 		return [ 'dall-e-2', 'gpt-4-0613',
@@ -1504,16 +1504,16 @@ class Image( AI ):
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
-		         'api_key', 'client', 'model', 'input', 'analyze',
+		         'api_key', 'client', 'small_model', 'input', 'analyze',
 		         'input_text', 'image_url', 'path', 'edit',
-		         'generate', 'quality', 'detail', 'model', 'get_model_options',
+		         'generate', 'quality', 'detail', 'small_model', 'get_model_options',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
 
 	def get_size_options( self ) -> list[  str ]:
 		'''
 		
-			Method that returns a  list of model options
+			Method that returns a  list of small_model options
 		
 		'''
 		return [ '256x256', '512x512', '1024x1024' ]
@@ -2115,7 +2115,7 @@ class TTS( AI ):
 		
 		Attributes
 		-----------
-		self.api_key, self.system_instructions, self.client, self.model,  self.reasoning_effort,
+		self.api_key, self.system_instructions, self.client, self.small_model,  self.reasoning_effort,
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
@@ -2160,7 +2160,7 @@ class TTS( AI ):
 	def get_model_options( self ) -> str:
 		'''
 		
-			Methods that returns a list of model names
+			Methods that returns a list of small_model names
 		
 		'''
 		return [ 'tts-1', 'tts-1-hd',
@@ -2272,7 +2272,7 @@ class TTS( AI ):
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'completion', 'audio_path',
 		         'input', 'messages', 'respose_format', 'tools',
-		         'size', 'api_key', 'client', 'model', 'voice',
+		         'size', 'api_key', 'client', 'small_model', 'voice',
 		         'generate_text', 'get_model_options' ]
 
 
@@ -2297,7 +2297,7 @@ class Transcription( AI ):
 		
 		Attributes
 		-----------
-		self.api_key, self.system_instructions, self.client, self.model,  self.reasoning_effort,
+		self.api_key, self.system_instructions, self.client, self.small_model,  self.reasoning_effort,
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
@@ -2338,7 +2338,7 @@ class Transcription( AI ):
 	def get_model_options( self ) -> str:
 		'''
 
-			Methods that returns a list of model names
+			Methods that returns a list of small_model names
 
 		'''
 		return [ 'whisper-1', 'gpt-4o-mini-transcribe', ' openai-4o-transcribe' ]
@@ -2424,7 +2424,7 @@ class Transcription( AI ):
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'audio_file',
 		         'input', 'messages', 'respose_format',
-		         'api_key', 'client', 'model', 'create',
+		         'api_key', 'client', 'small_model', 'create',
 		         'input_text', 'transcript' ]
 
 
@@ -2449,7 +2449,7 @@ class Translation( AI ):
 		
 		Attributes
 		-----------
-		self.api_key, self.system_instructions, self.client, self.model,  self.reasoning_effort,
+		self.api_key, self.system_instructions, self.client, self.small_model,  self.reasoning_effort,
 		self.response, self.number, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
@@ -2489,7 +2489,7 @@ class Translation( AI ):
 	def get_model_options( self ) -> str:
 		'''
 
-			Methods that returns a list of model names
+			Methods that returns a list of small_model names
 
 		'''
 		return [ 'whisper-1', 'pages-davinci-003',
@@ -2589,7 +2589,7 @@ class Translation( AI ):
 		         'prompt', 'response', 'completion', 'audio_path',
 		         'input', 'messages', 'respose_format', 'tools',
 		         'size', 'api_key', 'client',
-		         'model', 'create', 'get_model_options' ]
+		         'small_model', 'create', 'get_model_options' ]
 
 
 class SmallEmbedding( AI ):
@@ -2598,7 +2598,7 @@ class SmallEmbedding( AI ):
 		Purpose
 		___________
 		Class used for creating embeddings using
-		OpenAI' embedding-3-small embedding model
+		OpenAI' embedding-3-small embedding small_model
 
 		Parameters
 		------------
@@ -2608,7 +2608,7 @@ class SmallEmbedding( AI ):
 		-----------
 		self.api_key
 		self.client
-		self.model
+		self.small_model
 		self.embedding
 		self.response
 
@@ -2642,7 +2642,7 @@ class SmallEmbedding( AI ):
 	def get_model_options( self ) -> str:
 		'''
 
-			Methods that returns a list of model names
+			Methods that returns a list of small_model names
 
 		'''
 		return [ 'pages-embedding-3-small', ]
@@ -2727,7 +2727,7 @@ class SmallEmbedding( AI ):
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
-		         'api_key', 'client', 'model',
+		         'api_key', 'client', 'small_model',
 		         'input', 'create', 'get_model_options' ]
 
 
@@ -2737,7 +2737,7 @@ class AdaEmbedding( AI ):
 		Purpose
 		___________
 		Class used for creating ADA embeddings using
-		OpenAI's embedding-ada-02 embedding model
+		OpenAI's embedding-ada-02 embedding small_model
 
 		Parameters
 		------------
@@ -2747,7 +2747,7 @@ class AdaEmbedding( AI ):
 		-----------
 		self.api_key
 		self.client
-		self.model
+		self.small_model
 		self.embedding
 		self.response
 
@@ -2814,7 +2814,7 @@ class AdaEmbedding( AI ):
 	def get_model_options( self ) -> str:
 		'''
 
-			Methods that returns a list of model names
+			Methods that returns a list of small_model names
 
 		'''
 		return [ 'pages-embedding-ada-02']
@@ -2830,7 +2830,7 @@ class AdaEmbedding( AI ):
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
-		         'api_key', 'client', 'model',
+		         'api_key', 'client', 'small_model',
 		         'input', 'create', 'get_model_options' ]
 
 
@@ -2840,7 +2840,7 @@ class LargeEmbedding( AI ):
 		Purpose
 		___________
 		Class used for creating ADA embeddings using
-		OpenAI's embedding-ada-02 embedding model
+		OpenAI's embedding-ada-02 embedding small_model
 
 		Parameters
 		------------
@@ -2850,7 +2850,7 @@ class LargeEmbedding( AI ):
 		-----------
 		self.api_key
 		self.client
-		self.model
+		self.small_model
 		self.embedding
 		self.response
 
@@ -2883,7 +2883,7 @@ class LargeEmbedding( AI ):
 	def get_model_options( self ) -> str:
 		'''
 
-			Methods that returns a list of model names
+			Methods that returns a list of small_model names
 
 		'''
 		return [ 'pages-embedding-3-large', ]
@@ -2934,6 +2934,6 @@ class LargeEmbedding( AI ):
 		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
-		         'api_key', 'client', 'model',
+		         'api_key', 'client', 'small_model',
 		         'input', 'create', 'get_model_options' ]
 

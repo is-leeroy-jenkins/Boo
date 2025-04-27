@@ -123,9 +123,12 @@ class SQLite( ):
 				sql (str): The CREATE TABLE SQL statement.
 		"""
 		try:
-			self.sql = sql
-			self.cursor.execute( self.sql )
-			self.conn.commit( )
+			if sql is None:
+				raise Exception( 'The input "sql" cannot be None' )
+			else:
+				self.sql = sql
+				self.cursor.execute( self.sql )
+				self.conn.commit( )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'debbr'
@@ -148,11 +151,18 @@ class SQLite( ):
 			
 		"""
 		try:
-			self.placeholders = ", ".join( "?" for _ in values )
-			col_names = ", ".join( columns )
-			sql = f"INSERT INTO {table} ({col_names}) VALUES ({placeholders})"
-			self.cursor.execute( sql, values )
-			self.conn.commit( )
+			if table is None:
+				raise Exception( 'The input "table" cannot be None' )
+			elif columns is None:
+				raise Exception( 'The input "columns" cannot be None' )
+			elif values is None:
+				raise Exception( 'The input "values" cannot be None' )
+			else:
+				self.placeholders = ', '.join( '?' for _ in values )
+				col_names = ', '.join( columns )
+				sql = f'INSERT INTO {table} ({col_names}) VALUES ({placeholders})'
+				self.cursor.execute( sql, values )
+				self.conn.commit( )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'debbr'
@@ -188,7 +198,7 @@ class SQLite( ):
 			_err.show( )
 	
 	
-	def fetch_one( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> Optional[ Tuple ]:
+	def fetch_one( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> Tuple:
 		"""
 		
 			Purpose:
@@ -204,11 +214,18 @@ class SQLite( ):
 			
 		"""
 		try:
-			self.table_name = table
-			self.where = where
-			self.sql = f"SELECT * FROM {self.table_name} WHERE {self.where} LIMIT 1"
-			self.cursor.execute( self.sql, self.params )
-			return self.cursor.fetchone( )
+			if table is None:
+				raise Exception( 'The input "table" cannot be None' )
+			elif where is None:
+				raise Exception( 'The input "where" cannot be None' )
+			elif params is None:
+				raise Exception( 'The input "params" cannot be None' )
+			else:
+				self.table_name = table
+				self.where = where
+				self.sql = f'SELECT * FROM {self.table_name} WHERE {self.where} LIMIT 1'
+				self.cursor.execute( self.sql, self.params )
+				return self.cursor.fetchone( )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'debbr'
@@ -233,12 +250,21 @@ class SQLite( ):
 			
 		"""
 		try:
-			self.table_name = table
-			self.where = where
-			self.params = params
-			self.sql = f'UPDATE {self.table_name} SET {pairs} WHERE {self.where}'
-			self.cursor.execute( sql, params )
-			self.conn.commit( )
+			if table is None:
+				raise Exception( 'The input "table" cannot be None' )
+			elif where is None:
+				raise Exception( 'The input "where" cannot be None' )
+			elif params is None:
+				raise Exception( 'The input "params" cannot be None' )
+			elif pairs is None:
+				raise Exception( 'The input "pairs" cannot be None' )
+			else:
+				self.table_name = table
+				self.where = where
+				self.params = params
+				self.sql = f'UPDATE {self.table_name} SET {pairs} WHERE {self.where}'
+				self.cursor.execute( sql, params )
+				self.conn.commit( )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'debbr'
@@ -262,12 +288,19 @@ class SQLite( ):
 				
 		"""
 		try:
-			self.table_name = table
-			self.where = where
-			self.params = params
-			self.sql = f"DELETE FROM {self.table_name} WHERE {self.where}"
-			self.cursor.execute( sql, self.params )
-			self.conn.commit( )
+			if table is None:
+				raise Exception( 'The input "table" cannot be None' )
+			elif where is None:
+				raise Exception( 'The input "where" cannot be None' )
+			elif params is None:
+				raise Exception( 'The input "params" cannot be None' )
+			else:
+				self.table_name = table
+				self.where = where
+				self.params = params
+				self.sql = f"DELETE FROM {self.table_name} WHERE {self.where}"
+				self.cursor.execute( sql, self.params )
+				self.conn.commit( )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'debbr'
@@ -289,12 +322,15 @@ class SQLite( ):
 			
 		"""
 		try:
-			self.file_path = path
-			self.file_name = os.path.basename( self.file_path )
-			xls = pd.ExcelFile( path )
-			for sheet_name in xls.sheet_names:
-				df = xls.parse( sheet_name )
-				df.to_sql( sheet_name, self.conn, if_exists='replace', index=False )
+			if path is None:
+				raise Exception( 'The input "path" cannot be None' )
+			else:
+				self.file_path = path
+				self.file_name = os.path.basename( self.file_path )
+				xls = pd.ExcelFile( path )
+				for sheet_name in xls.sheet_names:
+					df = xls.parse( sheet_name )
+					df.to_sql( sheet_name, self.conn, if_exists='replace', index=False )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'debbr'
