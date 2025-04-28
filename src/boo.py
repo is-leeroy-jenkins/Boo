@@ -465,7 +465,7 @@ class Perceptron( ):
 		         'n_iter', 'random_state', 'eta' ]
 
 
-class AdaptiveLinearNeuron( ):
+class LinearGradientDescent( ):
 	"""
 		
 		Purpose
