@@ -92,8 +92,8 @@ class SQLite( ):
 		self.sql = None
 		self.file_name = None
 		self.table_name = None
-		self.placeholders = None
-		self.columns = None
+		self.placeholders = [ ]
+		self.columns = [ ]
 		self.params = ( )
 		self.column_names = [ ]
 		self.tables = [ ]

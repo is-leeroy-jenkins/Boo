@@ -156,7 +156,7 @@ class Text:
 	def split_lines( self, text: str ) -> list[ str ]:
 		"""
 		
-			Splits the input pages into lines
+			Splits the input text into lines
 
 			Parameters:
 			-----------
@@ -281,7 +281,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.translator = str.maketrans( '', '', string.punctuation )
@@ -590,41 +590,51 @@ class Text:
 				texts without detected headers/footers.
 			
 		"""
-		_headers = defaultdict( int )
-		_footers = defaultdict( int )
-		
-		# First pass: collect frequency of top/bottom lines
-		for page in pages:
-			lines = page.strip( ).splitlines( )
-			if lines:
-				_headers[ lines[ 0 ].strip( ) ] += 1
-				_footers[ lines[ -1 ].strip( ) ] += 1
-		
-		# Identify candidates for removal
-		_head = { line for line, count in _headers.items( ) if
-		          count >= min }
-		_foot = { line for line, count in _footers.items( ) if
-		          count >= min }
-		
-		# Second pass: clean pages
-		cleaned_pages = [ ]
-		for page in pages:
-			lines = page.strip( ).splitlines( )
-			if not lines:
-				cleaned_pages.append( page )
-				continue
-			
-			# Remove header
-			if lines[ 0 ].strip( ) in _head:
-				lines = lines[ 1: ]
-			
-			# Remove footer
-			if lines and lines[ -1 ].strip( ) in _foot:
-				lines = lines[ :-1 ]
-			
-			cleaned_pages.append( "\n".join( lines ) )
-		
-		return cleaned_pages
+		try:
+			if pages is None:
+				raise Exception( 'The argument "pages" is required.' )
+			else:
+				_headers = defaultdict( int )
+				_footers = defaultdict( int )
+				
+				# First pass: collect frequency of top/bottom lines
+				for _page in self.pages:
+					self.lines = _page.strip( ).splitlines( )
+					if not self.lines:
+						_headers[ self.lines[ 0 ].strip( ) ] += 1
+						_footers[ self.lines[ -1 ].strip( ) ] += 1
+				
+				# Identify candidates for removal
+				_head = { line for line, count in _headers.items( ) if
+				          count >= min }
+				_foot = { line for line, count in _footers.items( ) if
+				          count >= min }
+				
+				# Second pass: clean pages
+				for _page in self.pages:
+					self.lines = _page.strip( ).splitlines( )
+					if not self.lines:
+						self.cleaned_pages.append( _page )
+						continue
+					
+					# Remove header
+					if self.lines[ 0 ].strip( ) in _head:
+						self.lines = self_node.lines[ 1: ]
+					
+					# Remove footer
+					if self.lines and self.lines[ -1 ].strip( ) in _foot:
+						self.lines = self_node.lines[ :-1 ]
+					
+					self.cleaned_pages.append( "\n".join( lines ) )
+				
+				return self.cleaned_pages
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Text'
+			_exc.method = 'remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def normalize( self, text: str ) -> str:
@@ -665,7 +675,8 @@ class Text:
 	def lemmatize( self, text: str ) -> str:
 		"""
 	
-			Performs lemmatization on the input pages string.
+			Performs lemmatization on the input string into a string
+			of word-tokens.
 	
 			This function:
 			  - Converts pages to lowercase
