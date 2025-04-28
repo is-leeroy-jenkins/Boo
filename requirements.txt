@@ -55,3 +55,4 @@ textblob
 transformers
 sentence-transformers
 mglearn
+fastapi
