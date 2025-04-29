@@ -628,7 +628,7 @@ class Xtract( ):
 		
 		'''
 		return [ 'strip_headers', 'minimum_length', 'extract_tables',
-		         'file_path', 'page', 'pages', 'lines', 'clean_lines', 'extracted_lines',
+		         'path', 'page', 'pages', 'lines', 'clean_lines', 'extracted_lines',
 		         'extracted_tables', 'extracted_pages', 'extract_lines',
 		         'extract_text', 'extract_tables', 'export_csv',
 		         'export_text', 'export_excel' ]

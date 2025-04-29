@@ -106,7 +106,7 @@ class SQLite( ):
 			Returns a list of members
 
 		'''
-		return [ 'db_path', 'conn', 'cursor', 'file_path', 'where',
+		return [ 'db_path', 'conn', 'cursor', 'path', 'where',
 		         'pairs', 'sql', 'file_name', 'table_name', 'placeholders',
 		         'columns', 'params', 'column_names', 'tables',
 				 'close', 'import_excel', 'delete', 'update',
