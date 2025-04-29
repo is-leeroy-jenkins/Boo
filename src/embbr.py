@@ -50,7 +50,7 @@ from openai import OpenAI
 from booger import Error, ErrorDialog
 from pathlib import Path
 import tiktoken
-from typing import List, Optional
+from typing import Any, List, Tuple, Optional
 
 
 class Vector( ):
@@ -110,11 +110,12 @@ class Vector( ):
 		         'query_vector_store', 'delete_vector_store' ]
 	
 	
-	def embed( self, texts: List[ str ], batch: int = 10, max: int = 3,
+	def embed( self, texts: List[ str ], batch: int=10, max: int=3,
 	           time: float = 2.0 ) -> pd.DataFrame:
 		"""
 		
-			Generate and normalize embeddings for a list of input texts.
+			Generate and normalize
+			embeddings for a list of input texts.
 	
 			Parameters:
 			- texts (List[str]): List of input pages strings
@@ -149,11 +150,11 @@ class Vector( ):
 				_embeddings = np.array( self.vectors )
 				_normed = self._normalize( _embeddings )
 				_data = \
-					{
-						'pages': texts,
-						'embedding': list( _embeddings ),
-						'normed_embedding': list( _normed )
-					}
+				{
+					'pages': texts,
+					'embedding': list( _embeddings ),
+					'normed_embedding': list( _normed )
+				}
 				
 				return pd.DataFrame( _data )
 		except Exception as e:
@@ -169,7 +170,8 @@ class Vector( ):
 	def _batch_chunks( self, texts: List[ str ], size: int ) -> List[ List[ str ] ]:
 		"""
 		
-			Split a list of texts into batches of specified size.
+			Split a list of texts
+			into batches of specified size.
 	
 			Parameters:
 			- texts (List[str]): Full list of input strings
@@ -199,7 +201,8 @@ class Vector( ):
 	def _normalize( self, vector: np.ndarray ) -> np.ndarray:
 		"""
 		
-			Normalize a matrix of vector using L2 norm.
+			Normalize a matrix
+			of vector using L2 norm.
 	
 			Parameters:
 			- vector (np.ndarray): Matrix of vector
@@ -257,7 +260,7 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def most_similar( self, query: str, table: pd.DataFrame, top: int = 5 ) -> pd.DataFrame:
+	def most_similar( self, query: str, table: pd.DataFrame, top: int=5 ) -> pd.DataFrame:
 		"""
 		
 			Purpose:
@@ -295,7 +298,7 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def bulk_similar( self, queries: List[ str ], dataframe: pd.DataFrame, top: int = 5 ) -> { }:
+	def bulk_similar( self, queries: List[ str ], dataframe: pd.DataFrame, top: int=5 ) -> { }:
 		"""
 		
 			Purpose:
@@ -513,7 +516,7 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def query_vector_store( self, id: str, query: str, top: int = 5 ) -> List[ dict ]:
+	def query_vector_store( self, id: str, query: str, top: int=5 ) -> List[ dict ]:
 		"""
 		
 			Purpose:
@@ -579,10 +582,10 @@ class Vector( ):
 			_err.show( )
 
 
-class Xtractor( ):
+class Xtract( ):
 	"""
 	
-		Xtractor
+		Xtract
 		----------------
 		A utility class for extracting clean pages from PDF files into a list of strings.
 		Handles nuances such as layout artifacts, page separation, optional filtering,
@@ -591,7 +594,7 @@ class Xtractor( ):
 	"""
 	
 	
-	def __init__( self, headers: bool = False, length: int = 10, tables: bool = True ):
+	def __init__( self, headers: bool=False, length: int=10, tables: bool=True ):
 		"""
 		
 			Purpose:
@@ -631,7 +634,7 @@ class Xtractor( ):
 		         'export_text', 'export_excel' ]
 	
 	
-	def extract_lines( self, path: str, max: Optional[ int ] = None ) -> List[ str ]:
+	def extract_lines( self, path: str, max: Optional[ int ]=None ) -> List[ str ]:
 		"""
 			
 			Extract lines of pages from a PDF,
@@ -667,7 +670,7 @@ class Xtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtractor'
+			_exc.cause = 'Xtract'
 			_exc.method = ('extract_lines( self, path: str, max: Optional[ int ] = None ) -> '
 			               'List[ '
 			               'str ]')
@@ -699,7 +702,7 @@ class Xtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtractor'
+			_exc.cause = 'Xtract'
 			_exc.method = '_extract_table_blocks( self, page ) -> List[ str ]:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -734,7 +737,7 @@ class Xtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtractor'
+			_exc.cause = 'Xtract'
 			_exc.method = '_filter_lines( self, lines: List[ str ] ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -762,7 +765,7 @@ class Xtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtractor'
+			_exc.cause = 'Xtract'
 			_exc.method = '_is_repeated_header_or_footer( self, line: str ) -> bool'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -794,7 +797,7 @@ class Xtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtractor'
+			_exc.cause = 'Xtract'
 			_exc.method = 'extract_text( self, path: str, max: Optional[ int ] = None ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -833,7 +836,7 @@ class Xtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtractor'
+			_exc.cause = 'Xtract'
 			_exc.method = (
 				'extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ '
 				'pd.DataFrame ]')
@@ -864,7 +867,7 @@ class Xtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtractor'
+			_exc.cause = 'Xtract'
 			_exc.method = 'export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -895,7 +898,7 @@ class Xtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtractor'
+			_exc.cause = 'Xtract'
 			_exc.method = 'export_text( self, lines: List[ str ], path: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -928,7 +931,7 @@ class Xtractor( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtractor'
+			_exc.cause = 'Xtract'
 			_exc.method = 'export_excel( self, tables: List[ pd.DataFrame ], path: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )

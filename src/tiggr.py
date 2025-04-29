@@ -67,16 +67,16 @@ class Text:
 		
 	    Methods:
 	    --------
-	    collapse_whitespace( self, pages: str ) -> str
-	    remove_punctuation( self, pages: str ) -> str:
-		remove_special( self, pages: str ) -> str:
-		remove_html( self, pages: str ) -> str
-		remove_errors( self, pages: str ) -> str
-		correct_errors( self, pages: str ) -> str:
-		remove_markdown( self, pages: str ) -> str
-	    normalize( pages: str ) -> str
-	    tokenize_sentences( pages: str ) -> str
-	    tokenize_words( pages: str ) -> get_list
+	    collapse_whitespace( self, text: str ) -> str
+	    remove_punctuation( self, text: str ) -> str:
+		remove_special( self, text: str ) -> str:
+		remove_html( self, text: str ) -> str
+		remove_errors( self, text: str ) -> str
+		correct_errors( self, text: str ) -> str:
+		remove_markdown( self, text: str ) -> str
+	    normalize( text: str ) -> str
+	    tokenize_sentences( text: str ) -> str
+	    tokenize_words( text: str ) -> get_list
 	    load_file( url: str ) -> li
 	    lemmatize( tokens: get_list ) -> str
 	    bag_of_words( tokens: get_list ) -> dict
@@ -88,7 +88,7 @@ class Text:
 	
 	def __init__( self ):
 		'''
-			Constructor for creating Text objects
+			Constructor for 'Text' objects
 		'''
 		self.file_path = None
 		self.raw_input = None
@@ -116,11 +116,12 @@ class Text:
 		self.vectorizer = None
 	
 	
-	def __dir__(self):
+	def __dir__( self ):
 		'''
 		
 			Purpose:
-			Returns a list of class members.
+			Returns a list of strings
+			representing class members.
 			
 		'''
 		return [ 'file_path', 'raw_input', 'raw_pages', 'normalized', 'lemmatized',
@@ -160,7 +161,7 @@ class Text:
 
 			Parameters:
 			-----------
-			pages : str
+			text : str
 
 			Returns:
 			--------
@@ -169,7 +170,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required' )
+				raise Exception( 'The input argument "text" is required' )
 			else:
 				self.raw_input = text
 				with open( self.raw_input, 'r', encoding='utf-8' ) as f:
@@ -184,11 +185,11 @@ class Text:
 			_err.show( )
 	
 	
-	def split_pages( self, path: str, delimiter: str = '\f' ) -> list[ str ]:
+	def split_pages( self, path: str, delimiter: str='\f' ) -> list[ str ]:
 		"""
 		
 			Reads text from a file, splits it into lines,
-			and groups them into pages.
+			and groups them into text.
 	
 			Args:
 				path (str): Path to the text file.
@@ -197,7 +198,7 @@ class Text:
 	
 			Returns:
 				list of str: List where each element
-				is the text of one page.
+				is the text.
 				
 		"""
 		try:
@@ -228,24 +229,26 @@ class Text:
 	
 	def collapse_whitespace( self, text: str ) -> str:
 		"""
+		
 			Removes extra spaces and
-			blank lines from the input pages.
+			blank lines from the input text.
 
 			Parameters:
 			-----------
-			pages : str
+			text : str
 
 			Returns:
 			--------
 			
-				A cleaned_lines pages string with:
+				A cleaned_lines text string with:
 					- Consecutive whitespace reduced to a single space
 					- Leading/trailing spaces removed
 					- Blank lines removed
+					
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.words = re.sub( r'[ \t]+', ' ', self.raw_input )
@@ -257,7 +260,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'collapse_whitespace( self, pages: str ) -> str:'
+			_exc.method = 'collapse_whitespace( self, text: str ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -266,17 +269,17 @@ class Text:
 		"""
 
 			Removes all punctuation characters
-			 from the input pages string.
+			 from the input text string.
 
 			Parameters:
 			-----------
 			pages : str
-				The input pages string to be cleaned_lines.
+				The input text string to be cleaned_lines.
 
 			Returns:
 			--------
 			str
-				The pages string with all punctuation removed.
+				The text string with all punctuation removed.
 
 		"""
 		try:
@@ -291,7 +294,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_punctuation( self, pages: str ) -> str:'
+			_exc.method = 'remove_punctuation( self, text: str ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -300,7 +303,7 @@ class Text:
 		"""
 
 			Removes special characters
-			from the input pages string.
+			from the input text string.
 
 			This function:
 			  - Retains only alphanumeric characters and whitespace
@@ -310,18 +313,19 @@ class Text:
 			Parameters:
 			-----------
 			pages : str
-				The raw input pages string potentially
+				The raw input text string potentially
 				containing special characters.
 
 			Returns:
 			--------
 			str
-				A cleaned_lines string containing only letters, numbers, and spaces.
+				A cleaned_lines string containing
+				only letters, numbers, and spaces.
 
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.cleaned_text = re.sub( r'[^a-zA-Z0-9\s]', '', self.raw_input )
@@ -330,7 +334,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_punctuation( self, pages: str ) -> str:'
+			_exc.method = 'remove_punctuation( self, text: str ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
@@ -339,16 +343,16 @@ class Text:
 		"""
 	
 			Removes HTML tags
-			from the input pages string.
+			from the input text string.
 	
 			This function:
-			  - Parses the pages as HTML
+			  - Parses the text as HTML
 			  - Extracts and returns only the visible content without tags
 	
 			Parameters:
 			-----------
 			pages : str
-				The input pages containing HTML tags.
+				The input text containing HTML tags.
 	
 			Returns:
 			--------
@@ -358,7 +362,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_html = text
 				self.cleaned_html = BeautifulSoup( self.raw_html, "raw_html.parser" )
@@ -368,7 +372,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_html( self, pages: str ) -> str'
+			_exc.method = 'remove_html( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -377,11 +381,11 @@ class Text:
 		"""
 	
 			Removes misspelled or non-English
-			words from the input pages.
+			words from the input text.
 	
 			This function:
-			  - Converts pages to lowercase
-			  - Tokenizes the pages into words
+			  - Converts text to lowercase
+			  - Tokenizes the text into words
 			  - Filters out words not recognized as valid English using TextBlob
 			  - Returns a string with only correctly spelled words
 	
@@ -398,7 +402,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.lowercase = self.raw_input.lower( )
@@ -410,7 +414,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_errors( self, pages: str ) -> str'
+			_exc.method = 'remove_errors( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -419,13 +423,13 @@ class Text:
 		"""
 	
 			Corrects misspelled words
-			in the input pages string.
+			in the input text string.
 	
 			This function:
-			  - Converts pages to lowercase
-			  - Tokenizes the pages into words
+			  - Converts text to lowercase
+			  - Tokenizes the text into words
 			  - Applies spelling correction using TextBlob
-			  - Reconstructs and returns the corrected pages
+			  - Reconstructs and returns the corrected text
 	
 			Parameters:
 			-----------
@@ -440,7 +444,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.lowercase = self.raw_input.lower( )
@@ -452,7 +456,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'correct_errors( self, pages: str ) -> str'
+			_exc.method = 'correct_errors( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -478,17 +482,17 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.cleaned_text = (BeautifulSoup( self.raw_input, "raw_html.parser" )
-				                .get_text( separator=' ', strip=True ))
+				                .get_text( separator=' ', strip=True ) )
 				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_html( self, pages: str ) -> str'
+			_exc.method = 'remove_html( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -514,7 +518,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.cleaned_text = re.sub( r'\[.*?\]\(.*?\)', '', self.raw_input )
@@ -525,7 +529,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_markdown( self, pages: str ) -> str'
+			_exc.method = 'remove_markdown( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -554,7 +558,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.stopwords = set( stopwords.words( 'english' ) )
@@ -567,7 +571,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_stopwords( self, pages: str ) -> str'
+			_exc.method = 'remove_stopwords( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -658,7 +662,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.normalized = self.raw_input.lower( )
@@ -667,7 +671,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'normalize_text( self, pages: str ) -> str'
+			_exc.method = 'normalize_text( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -697,7 +701,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.lowercase = self.raw_input.lower( )
@@ -709,7 +713,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize_words( self, pages: str ) -> str'
+			_exc.method = 'tokenize_words( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -728,7 +732,7 @@ class Text:
 		'''
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" was None' )
+				raise Exception( 'The input argument "text" was None' )
 			else:
 				self.tokens.clear( )
 				self.raw_input = text
@@ -742,7 +746,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize_text( self, pages: str ) -> get_list'
+			_exc.method = 'tokenize_text( self, text: str ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -750,7 +754,8 @@ class Text:
 	def tokenize_words( self, text: str ) -> List[ str ]:
 		"""
 		
-			Tokenize a sentence or paragraph into word tokens.
+			Tokenize a sentence or
+			paragraph into word tokens.
 	
 			Args:
 				text (str): Input pages.
@@ -761,7 +766,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" was None' )
+				raise Exception( 'The input argument "text" was None' )
 			else:
 				self.tokens.clear( )
 				self.raw_input = text
@@ -775,7 +780,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize_words( self, pages: str ) -> list[ str ]'
+			_exc.method = 'tokenize_words( self, text: str ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -783,7 +788,8 @@ class Text:
 	def tokenize_sentences( self, text: str ) -> List[ str ]:
 		"""
 		
-			Tokenize a paragraph or document into a get_list of sentence strings.
+			Tokenize a paragraph or
+			document into a get_list of sentence strings.
 	
 			Args:
 				text (str): Input pages.
@@ -794,7 +800,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.tokens = sent_tokenize( text )
 				return self.tokens
@@ -802,7 +808,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize_sentences( self, pages: str ) -> list[ str ]'
+			_exc.method = 'tokenize_sentences( self, text: str ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -810,7 +816,8 @@ class Text:
 	def chunk_text( self, text: str, max: int=800 ) -> List[ str ]:
 		'''
 
-			Simple chunking by words assuming ~1.3 words per token
+			Simple chunking by words
+			 assuming ~1.3 words per token
 
 			Parameters:
 			-----------
@@ -825,7 +832,7 @@ class Text:
 		'''
 		try:
 			if (text is None):
-				raise Exception( 'The input argument "pages" is required.' )
+				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.lines = self.raw_input.split( )
@@ -837,12 +844,12 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'chunk_text( self, pages: str, max: int = 512 ) -> list[ str ]'
+			_exc.method = 'chunk_text( self, text: str, max: int = 512 ) -> list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
 	
-	def chunk_tokens( self, tokens: [ str ], max: int=800, over: int=50 ) -> List[ str ]:
+	def chunk_tokens( self, tokens: List[ str ], max: int=800, over: int=50 ) -> List[ str ]:
 		"""
 			Purpose:
 				Split a get_list of tokens into overlapping chunks based on token limits.
@@ -881,7 +888,8 @@ class Text:
 	def bag_of_words( self, tokens: List[ str ] ) -> dict:
 		"""
 		
-			Construct a Bag-of-Words (BoW) frequency dictionary from tokens.
+			Construct a Bag-of-Words (BoW)
+			frequency dictionary from tokens.
 	
 			Args:
 				tokens (list): List of tokens from a document.
@@ -936,7 +944,7 @@ class Text:
 			_err.show( )
 
 
-	def compute_tfidf( self, corpus: [ str ], max: int=1000, prep: bool=True ) -> Tuple:
+	def compute_tfidf( self, corpus: List[ str ], max: int=1000, prep: bool=True ) -> Tuple:
 		"""
 			Purpose:
 			Compute TF-IDF matrix with optional full preprocessing pipeline.

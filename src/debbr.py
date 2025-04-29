@@ -342,7 +342,9 @@ class SQLite( ):
 
 	def close( self ) -> None:
 		"""
-		Closes the database connection.
+
+			Closes the database connection.
+
 		"""
 		try:
 			self.conn.close( )

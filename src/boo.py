@@ -52,6 +52,7 @@ import tiktoken
 from pygments.lexers.csound import newline
 from static import GptRequests, GptRoles, GptLanguages
 from booger import ErrorDialog, Error
+from typing import Any, List, Tuple, Optional
 
 
 class EndPoint( ):
@@ -104,7 +105,7 @@ class Header( ):
 		'''
 		return [ 'content_type', 'api_key', 'authorization', 'values' ]
 
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 		
 			Methods that returns a get_list of member names
@@ -186,7 +187,9 @@ class Models( ):
 		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
 		                         'gpt-4o-mini-2024-07-18', 'gpt-4.1-mini-2025-04-14',
 		                         'gpt-4.1-nano-2025-04-14', 'o1-2024-12-17',
-		                         'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
+		                         'o1-mini-2024-09-12', 'o3-mini-2025-01-31',
+		                         'gpt-4o-search-preview-2025-03-11',
+		                         'gpt-4o-mini-search-preview-2025-03-11' ]
 		self.speech_generation = [ 'tts-1', 'tts-1-hd', 'gpt-4o-mini-tts',
 		                           'gpt-4o-audio-preview-2024-12-17',
 		                           'gpt-4o-audio-preview-2024-10-01',
@@ -195,6 +198,9 @@ class Models( ):
 		self.translation = [ 'whisper-1', 'pages-davinci-003',
 		                     'gpt-4-0613', 'gpt-4-0314',
 		                     'gpt-4-turbo-2024-04-09' ]
+		self.responses = [ 'gpt-4o-mini-search-preview-2025-03-11',
+		                   'gpt-4o-search-preview-2025-03-11',
+		                   'computer-use-preview-2025-03-11' ]
 		self.reasoning  = [ 'o1-2024-12-17', 'o1-mini-2024-09-12',
 		                    'o3-mini-2025-01-31', 'o1-pro-2025-03-19' ]
 		self.finetuning = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18',
@@ -213,15 +219,19 @@ class Models( ):
 		                       'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
 		                       'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
 		                       'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
+		self.custom = [ 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
+		                'ft:gpt-4o-2024-08-06:leeroy-jenkins:budget-base-training:BGVk5Ii1',
+		                'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57' ]
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
 		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completion',
-		         'speech_generation', 'translations', 'assistants', 'transcriptions',
+		         'speech_generation', 'responses', 'reasoning',
+		         'translations', 'assistants', 'transcriptions',
 		         'finetuning', 'embeddings', 'uploads', 'files', 'vector_stores' ]
 	
 	
@@ -455,7 +465,7 @@ class Perceptron( ):
 			error.show( )
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
@@ -683,6 +693,225 @@ class LinearGradientDescent( ):
 		return [ 'fit', 'net_input', 'activation',
 		         'predict', 'losses_', 'b_', 'w_',
 		         'n_iter', 'eta', 'random_state'  ]
+
+class SystemMessage(  ):
+	'''
+
+		Class representing the system message
+
+	'''
+	
+	
+	def __init__( self, prompt: str, role: str='system', type: str='text' ) -> None:
+		self.content = prompt
+		self.role = role
+		self.type = type
+		self.data = { 'role': f'{self.role}',
+		              'type': f'{self.type}',
+		              'content': f'{self.content}' }
+	
+	
+	def __str__( self ) -> str:
+		'''
+
+			Returns: the json string representation of the message.
+
+		'''
+		new = '\r\n'
+		if not self.content is None:
+			_pair = f'''
+            'role': '{self.role}', \r\n
+            'type': '{self.type}', \r\n
+            'content': '{self.content}'
+            '''
+			_retval = '{ ' + _pair + ' }'
+			return _retval
+	
+	
+	def dump( self ) -> str:
+		'''
+
+			Returns: key value pairs in a string
+
+		'''
+		new = '\r\n'
+		return 'role' + f' = {self.role}' + new + \
+			'type' + f' = {self.type}' + new + \
+			'content' + f' = {self.content}'
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+		
+			Methods that returns a get_list of member names
+			Returns: List[ str ]
+			
+		'''
+		return [ 'role', 'content', 'type' ]
+
+
+class UserMessage( ):
+	'''
+
+		Class representing the system message
+
+	'''
+	
+	
+	def __init__( self, prompt: str, role: str='user', type: str='text' ) -> None:
+		self.content = prompt
+		self.role = role
+		self.type = type
+		self.data = { 'role': f'{self.role}',
+		              'type': f'{self.type}',
+		              'content': f'{self.content}' }
+	
+	
+	def __str__( self ) -> str:
+		'''
+
+			Returns: the json string representation of the message.
+
+		'''
+		new = '\r\n'
+		if not self.content is None:
+			_pair = f'''
+            'role': '{self.role}', \r\n
+            'type': '{self.type}', \r\n
+            'content': '{self.content}'
+            '''
+			_retval = '{ ' + _pair + ' }'
+			return _retval
+	
+	
+	def dump( self ) -> str:
+		'''
+
+			Returns: key value pairs in a string
+
+		'''
+		new = '\r\n'
+		return 'role' + f' = {self.role}' + new + \
+			'type' + f' = {self.type}' + new + \
+			'content' + f' = {self.content}'
+	
+	
+	def __dir__( self ) -> List[ str ]:
+		'''
+
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
+
+		'''
+		return [ 'role', 'content', 'type' ]
+
+
+class DeveloperMessage( ):
+	'''
+
+		Class representing the system message
+
+	'''
+	def __init__( self, prompt: str, role: str='developer', type: str='text' ) -> None:
+		self.content = prompt
+		self.role = role
+		self.type = type
+		self.data = { 'role': f'{self.role}',
+		              'type': f'{self.type}',
+		              'content': f'{self.content}' }
+	
+	
+	def __str__( self ) -> str:
+		'''
+
+			Returns: the json string representation of the message.
+
+		'''
+		new = '\r\n'
+		if not self.content is None:
+			_pair = f'''
+            'role': '{self.role}', \r\n
+            'type': '{self.type}', \r\n
+            'content': '{self.content}'
+            '''
+			_retval = '{ ' + _pair + ' }'
+			return _retval
+	
+	
+	def dump( self ) -> str:
+		'''
+
+			Returns: key value pairs in a string
+
+		'''
+		new = '\r\n'
+		return 'role' + f' = {self.role}' + new + \
+			'type' + f' = {self.type}' + new + \
+			'content' + f' = {self.content}'
+	
+	
+	def __dir__( self ) -> List[ str ]:
+		'''
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
+		'''
+		return [ 'role', 'content', 'type' ]
+
+
+class AssistantMessage( GptMessage ):
+	'''
+
+		Class representing the system message
+
+	'''
+	
+	
+	def __init__( self, prompt: str, role: str='assistant', type: str='pages' ) -> None:
+		self.content = prompt
+		self.role = role
+		self.type = type
+		self.data = { 'role': f'{self.role}',
+		              'type': f'{self.type}',
+		              'content': f'{self.content}' }
+	
+	
+	def __str__( self ) -> str:
+		'''
+
+			Returns: the json string representation of the message.
+
+		'''
+		new = '\r\n'
+		if not self.content is None:
+			_pair = f'''
+            'role': '{self.role}', \r\n
+            'type': '{self.type}', \r\n
+            'content': '{self.content}'
+            '''
+			_retval = '{ ' + _pair + ' }'
+			return _retval
+	
+	
+	def dump( self ) -> str:
+		'''
+
+			Returns: key value pairs in a string
+
+		'''
+		new = '\r\n'
+		return 'role' + f' = {self.role}' + new + \
+			'type' + f' = {self.type}' + new + \
+			'content' + f' = {self.content}'
+	
+	
+	def __dir__( self ) -> List[ str ]:
+		'''
+		
+			Methods that returns a get_list of member names
+			Returns: List[ str ]
+			
+		'''
+		return [ 'role', 'content', 'type' ]
 
 
 class Chat( AI ):
@@ -945,7 +1174,7 @@ class Chat( AI ):
 									}
 							},
 							{
-								'type': 'pages',
+								'type': 'text',
 								'pages': 'What is the first dragon in the book?',
 							},
 						]
@@ -1048,6 +1277,14 @@ class Chat( AI ):
 			error.show( )
 	
 	
+	def translate( self, text: str ) -> str:
+		pass
+	
+	
+	def transcribe( self, text: str ) -> str:
+		pass
+	
+	
 	def get_data( self ) -> dict:
 		'''
 
@@ -1094,448 +1331,8 @@ class Chat( AI ):
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'size', 'api_key', 'client', 'small_model',
 		         'generate_text', 'analyze_image', 'summarize', 'generate_image',
+		         'translate', 'transcribe',
 		         'search_web', 'search_file', 'get_data', 'dump' ]
-
-
-class LargeImage( AI ):
-	"""
-		
-		Purpose
-		___________
-		Class used for generating images OpenAI's
-		Images API and dall-e-3
-		
-		
-		Parameters
-		------------
-		number: int
-		temperature: float
-		top_percent: float
-		frequency_penalty: float
-		presence_penalty: float
-		maximum_completion_tokens: int
-		store: bool
-		stream: bool
-		
-		Methods
-		------------
-		generate( self, input: str ) -> str:
-		analyze( self, input: str, path: str ) -> str
-		get_detail_options( self ) -> list[ str ]
-		get_format_options( self ) -> list[ str ]:
-		get_size_options( self ) -> list[ str ]
-		
-	"""
-	
-	
-	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=False):
-		super( ).__init__( )
-		self.api_key = Header( ).api_key
-		self.client = OpenAI( )
-		self.client.api_key = Header( ).api_key
-		self.quality = 'hd'
-		self.model = 'dall-e-3'
-		self.size = '1024X1024'
-		self.number = num
-		self.temperature = temp
-		self.top_percent = top
-		self.frequency_penalty = freq
-		self.presence_penalty = pres
-		self.max_completion_tokens = max
-		self.store = store
-		self.stream = stream
-		self.input_text = None
-		self.file_path = None
-		self.image_url = None
-		
-	
-	
-	def generate( self, input: str ) -> str:
-		"""
-		
-			Purpose
-			_______
-			Method that analyzeses an image given a string prompt,
-			
-			
-			
-			Parameters
-			----------
-			prompt: str
-			url: str
-			
-			Returns
-			-------
-			str
-		
-		"""
-		try:
-			if input is None:
-				raise Exception( 'The "input" argument is required.' )
-			else:
-				self.input_text = input
-				self.response = self.client.images.generate(
-					model=self.model,
-					prompt=self.input_text,
-					size=self.size,
-					quality=self.quality,
-					n=self.number
-				)
-				
-				return self.response.data[ 0 ].url
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'Image'
-			exception.method = 'generate( self, input: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def analyze( self, input: str, path: str ) -> str:
-		'''
-		
-			Method providing image analysis functionality given a prompt and filepath
-		
-		'''
-		try:
-			if input is None:
-				raise Exception( 'The argument "input" cannot be None' )
-			elif path is None:
-				raise Exception( 'The argument "path" cannot be None' )
-			else:
-				self.input_text = input
-				self.file_path = path
-				self.input = \
-					[ {
-							'role': 'user',
-							'content':
-							[
-								{ 'type': 'input_text',
-								  'pages': self.input_text
-								},
-								{
-									'type': 'input_image',
-									'image_url': self.file_path
-								},
-							],
-						}
-					]
-				
-				self.response = self.client.responses.create(
-					model='gpt-4o-mini',
-					input=self.input,
-				)
-				
-				return response.output_text
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'Image'
-			exception.method = 'analyze( self, input: str, path: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def get_model_options( self ) -> list[ str ]:
-		'''
-		
-			Methods that returns a list of small_model names
-		
-		'''
-		return [ 'dall-e-3', 'gpt-4-0613',
-		         'gpt-4-0314', 'gpt-4o-mini',
-                 'gpt-4o-mini-2024-07-18' ]
-		
-		
-	def get_format_options( self ) -> list[ str ]:
-		'''
-
-			Method that returns a  list of format options
-
-		'''
-		return [ '.png', '.mpeg', '.jpeg',
-		         '.webp', '.gif' ]
-	
-	
-	def get_detail_options( self ) -> list[ str ]:
-		'''
-
-			Method that returns a  list of reasoning effort options
-
-		'''
-		return [ 'auto', 'low', 'high' ]
-	
-	
-	def get_size_options( self ) -> list[ str ]:
-		'''
-		
-			Method that returns a  list of sizes
-		
-		'''
-		return [ '1024x1024', '1024x1792',
-		         '1792x1024']
-	
-	
-	def __dir__( self ) -> list[ str ]:
-		'''
-		
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-			
-		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
-		         'presence_penalty', 'max_completion_tokens',
-		         'store', 'stream', 'modalities', 'stops',
-		         'input_text', 'image_url', 'path',
-				 'api_key', 'client', 'small_model', 'input', 'generate',
-		         'get_detail_options', 'get_format_options', 'get_size_options' ]
-
-
-class Image( AI ):
-	"""
-		
-		Purpose
-		___________
-		Class used for generating images OpenAI's
-		Images API and dall-e-2
-		
-		
-		Parameters
-		------------
-		num: int=1
-		temp: float=0.8
-		top: float=0.9
-		freq: float=0.0
-		pres: float=0.0
-		max: int=2048
-		store: bool=True
-		stream: bool=True
-		
-		Attributes
-		-----------
-		self.api_key, self.client, self.small_model,  self.embedding,
-		self.response, self.number, self.temperature, self.top_percent,
-		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-		self.store, self.stream, self.modalities, self.stops, self.content,
-		self.prompt, self.response, self.completion, self.file, self.path,
-		self.input, self.messages, self.image_url, self.response_format,
-		self.tools, self.vector_store_ids, self.input_text, self.path, self.image_url
-		
-		Methods
-		------------
-		get_model_options( self ) -> str
-		generate( self, input: str ) -> str
-		analyze( self, input: str, path: str ) -> str
-		get_detail_options( self ) -> list[ str ]
-		get_format_options( self ) -> list[ str ]
-		get_size_options( self ) -> list[ str ]
-		
-	"""
-	
-	
-	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=False):
-		super( ).__init__( )
-		self.api_key = Header( ).api_key
-		self.client = OpenAI( )
-		self.client.api_key = Header( ).api_key
-		self.quality = 'standard'
-		self.detail = 'auto'
-		self.model = 'dall-e-2'
-		self.number = num
-		self.temperature = temp
-		self.top_percent = top
-		self.frequency_penalty = freq
-		self.presence_penalty = pres
-		self.max_completion_tokens = max
-		self.store = store
-		self.stream = stream
-		self.input = [ ]
-		self.input_text = None
-		self.file_path = None
-		self.image_url = None
-	
-	
-	def get_model_options( self ) -> list[ str ]:
-		'''
-		
-			Methods that returns a list of small_model names
-		
-		'''
-		return [ 'dall-e-2', 'gpt-4-0613',
-		         'gpt-4-0314', 'gpt-4o-mini',
-                 'gpt-4o-mini-2024-07-18' ]
-	
-	
-	def generate( self, input: str ) -> str:
-		"""
-		
-			Purpose
-			_______
-			Generates an image given a string input
-			
-			
-			Parameters
-			----------
-			input: str
-			
-			
-			Returns
-			-------
-			Image object
-		
-		"""
-		try:
-			if input is None:
-				raise Exception( 'The "input" argument is required.' )
-			else:
-				self.input_text = input
-				self.response = self.client.images.generate(
-					model=self.model,
-					prompt=self.input_text,
-					size=self.size,
-					quality=self.quality,
-					n=self.number
-				)
-				
-				return self.response.data[ 0 ].url
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'Image'
-			exception.method = 'generate( self, input: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def analyze( self, input: str, path: str ) -> str:
-		'''
-		
-			Method providing image analysis functionality given a prompt and filepath
-		
-		'''
-		try:
-			if input is None:
-				raise Exception('The argument "input" cannot be None')
-			elif path is None:
-				raise Exception('The argument "path" cannot be None')
-			else:
-				self.input_text = input
-				self.file_path = path
-				self.input = \
-				[ {
-						'role': 'user',
-						'content':
-						[
-							{ 'type': 'input_text',
-							  'pages': self.input_text
-						    },
-							{
-								'type': 'input_image',
-								'image_url': self.file_path
-							},
-						],
-					}
-				]
-				
-				self.response = self.client.responses.create( model='gpt-4o-mini',
-					input=self.input )
-				
-				return self.response.output_text
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'Image'
-			exception.method = 'analyze( self, input: str, path: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def edit( self, input: str, path: str, size: str='1024X1024' ) -> str:
-		"""
-		
-			Purpose
-			_______
-			Method that analyzeses an image given a string prompt,
-			
-			
-			
-			Parameters
-			----------
-			prompt: str
-			url: str
-			
-			Returns
-			-------
-			str
-		
-		"""
-		try:
-			if input is None:
-				raise Exception('The argument "input" cannot be None')
-			elif path is None:
-				raise Exception('The argument "path" cannot be None')
-			else:
-				self.input_text = input
-				self.file_path = path
-				self.response = self.client.images.edit( model=self.model,
-					image=open( self.file_path, "rb" ), prompt=self.input_text, n=self.number,
-					size=self.size )
-				
-				return self.response.data[ 0 ].url
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'Image'
-			exception.method = 'analyze( self, input: str, path: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def __dir__( self ) -> list[ str ]:
-		'''
-
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-
-		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
-		         'presence_penalty', 'max_completion_tokens',
-		         'store', 'stream', 'modalities', 'stops',
-		         'api_key', 'client', 'small_model', 'input', 'analyze',
-		         'input_text', 'image_url', 'path', 'edit',
-		         'generate', 'quality', 'detail', 'small_model', 'get_model_options',
-		         'get_detail_options', 'get_format_options', 'get_size_options' ]
-
-
-	def get_size_options( self ) -> list[  str ]:
-		'''
-		
-			Method that returns a  list of small_model options
-		
-		'''
-		return [ '256x256', '512x512', '1024x1024' ]
-	
-	
-	def get_format_options( self ) -> list[  str ]:
-		'''
-		
-			Method that returns a  list of format options
-		
-		'''
-		return [ '.png', '.mpeg', '.jpeg',
-		         '.webp', '.gif' ]
-	
-	
-	def get_detail_options( self ) -> list[  str ]:
-		'''
-		
-			Method that returns a  list of reasoning effort options
-		
-		'''
-		return [ 'auto', 'low', 'high' ]
 	
 	
 class Assistant( AI ):
@@ -1633,9 +1430,251 @@ class Assistant( AI ):
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
+	def generate_image( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Generates a chat completion given a string prompt
+			
+			
+			Parameters
+			----------
+			prompt: str
+			
+			
+			Returns
+			-------
+			str
+		
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.prompt = prompt
+				self.response = self.client.images.generate( model='dall-e-3',
+					prompt=self.prompt, size='1024x1024', quality='standard', n=1 )
+
+			return self.response.data[0].url
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'generate_text( self, prompt: str )'
+			error = ErrorDialog( exception )
+			error.show( )
+		
+		
+	def analyze_image( self, prompt: str, url: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			url: str
+			
+			Returns
+			-------
+			str
+		
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			elif url is None:
+				raise Exception( 'Argument "url" cannot be None' )
+			else:
+				self.prompt = prompt
+				self.image_url = url
+				self.input = [
+					{
+						'role': 'user',
+						'content':
+							[
+								{ 'type': 'input_text',
+								  'pages': self.prompt
+								  },
+								{
+									'type': 'input_image',
+									'image_url': self.image_url
+								}
+							]
+					}
+				]
+				
+				self.response = self.client.responses.create( model=self.model, input=self.input )
+				return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'analyze_image( self, prompt: str, url: str )'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
-	def get_list( self ) -> list:
+	def summarize( self, prompt: str, path: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that summarizes a document given a
+			string prompt, and a path
+	
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			path: str
+			
+			Returns
+			-------
+			str
+		
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			elif path is None:
+				raise Exception( 'Argument "path" cannot be None' )
+			else:
+				self.file_path = path
+				self.file = self.client.files.create( file=open( self.file_path, 'rb' ),
+					purpose='user_data' )
+				
+				self.messages = [
+					{
+						'role': 'user',
+						'content': [
+							{
+								'type': 'file',
+								'file':
+									{
+										'file_id': file.id,
+									}
+							},
+							{
+								'type': 'text',
+								'pages': 'What is the first dragon in the book?',
+							},
+						]
+					}
+				]
+				
+				self.completion = self.client.chat.completions.create( model=self.model,
+					messages=self.messages )
+				return self.completion.choices[ 0 ].message.content
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'summarize( self, prompt: str, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def search_web( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			url: str
+			
+			Returns
+			-------
+			str
+		
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.messages = [
+		        {
+		            'role': 'user',
+		            'content': prompt,
+		        } ]
+				
+				self.response = self.client.chat.completions.create( model=self.model,
+					web_search_options={ }, messages=self.messages )
+				
+				return  self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'search_web( self, prompt: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def search_file( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			url: str
+			
+			Returns
+			-------
+			str
+		
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.tools = [
+				{
+					'type': 'file_search',
+					'vector_store_ids': self.vector_store_ids,
+					'max_num_results': 20
+				} ]
+				
+				self.response = self.client.responses.create( model=self.model,
+					tools=self.tools, input=prompt )
+				return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'search_file( self, prompt: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def translate( self, text: str ) -> str:
+		pass
+	
+	
+	def transcribe( self, text: str ) -> str:
+		pass
+	
+
+	def get_list( self ) -> List[ str ]:
 		'''
 		
 			Method that returns a list of available assistants
@@ -1648,7 +1687,7 @@ class Assistant( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
-			exception.method = 'generate_text( self, prompt: str )'
+			exception.method = 'get_list( ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1659,7 +1698,7 @@ class Assistant( AI ):
 			Method that returns a list of formatting options
 		
 		'''
-		return [ 'auto', 'pages', 'json' ]
+		return [ 'auto', 'text', 'json' ]
 	
 	
 	def get_model_options( ):
@@ -1729,8 +1768,8 @@ class Assistant( AI ):
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
-		         'get_list', 'get_effort_options', 'input_text', 'metadata',
-		         'get_data', 'dump' ]
+		         'get_effort_options', 'input_text', 'metadata', 'get_list'
+		         'get_data', 'dump', 'translate', 'transcribe' ]
 	
 	
 class Bubba( AI ):
@@ -1831,6 +1870,250 @@ class Bubba( AI ):
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
+	def generate_image( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Generates a chat completion given a string prompt
+			
+			
+			Parameters
+			----------
+			prompt: str
+			
+			
+			Returns
+			-------
+			str
+		
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.prompt = prompt
+				self.response = self.client.images.generate( model='dall-e-3',
+					prompt=self.prompt, size='1024x1024', quality='standard', n=1 )
+
+			return self.response.data[0].url
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'generate_text( self, prompt: str )'
+			error = ErrorDialog( exception )
+			error.show( )
+		
+		
+	def analyze_image( self, prompt: str, url: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			url: str
+			
+			Returns
+			-------
+			str
+		
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			elif url is None:
+				raise Exception( 'Argument "url" cannot be None' )
+			else:
+				self.prompt = prompt
+				self.image_url = url
+				self.input = [
+					{
+						'role': 'user',
+						'content':
+							[
+								{ 'type': 'input_text',
+								  'pages': self.prompt
+								  },
+								{
+									'type': 'input_image',
+									'image_url': self.image_url
+								}
+							]
+					}
+				]
+				
+				self.response = self.client.responses.create( model=self.model, input=self.input )
+				return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'analyze_image( self, prompt: str, url: str )'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def summarize( self, prompt: str, path: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that summarizes a document given a
+			string prompt, and a path
+	
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			path: str
+			
+			Returns
+			-------
+			str
+		
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			elif path is None:
+				raise Exception( 'Argument "path" cannot be None' )
+			else:
+				self.file_path = path
+				self.file = self.client.files.create( file=open( self.file_path, 'rb' ),
+					purpose='user_data' )
+				
+				self.messages = [
+					{
+						'role': 'user',
+						'content': [
+							{
+								'type': 'file',
+								'file':
+									{
+										'file_id': file.id,
+									}
+							},
+							{
+								'type': 'text',
+								'pages': 'What is the first dragon in the book?',
+							},
+						]
+					}
+				]
+				
+				self.completion = self.client.chat.completions.create( model=self.model,
+					messages=self.messages )
+				return self.completion.choices[ 0 ].message.content
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'summarize( self, prompt: str, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def search_web( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			url: str
+			
+			Returns
+			-------
+			str
+		
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.messages = [
+		        {
+		            'role': 'user',
+		            'content': prompt,
+		        } ]
+				
+				self.response = self.client.chat.completions.create( model=self.model,
+					web_search_options={ }, messages=self.messages )
+				
+				return  self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'search_web( self, prompt: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def search_file( self, prompt: str ) -> str:
+		"""
+		
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+			
+			
+			
+			Parameters
+			----------
+			prompt: str
+			url: str
+			
+			Returns
+			-------
+			str
+		
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.tools = [
+				{
+					'type': 'file_search',
+					'vector_store_ids': self.vector_store_ids,
+					'max_num_results': 20
+				} ]
+				
+				self.response = self.client.responses.create( model=self.model,
+					tools=self.tools, input=prompt )
+				return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'search_file( self, prompt: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def translate( self, text: str ) -> str:
+		pass
+	
+	
+	def transcribe( self, text: str ) -> str:
+		pass
+	
+
 
 
 	def get_format_options( ):
@@ -1839,7 +2122,7 @@ class Bubba( AI ):
 			Method that returns a list of formatting options
 		
 		'''
-		return [ 'auto', 'pages', 'json' ]
+		return [ 'auto', 'text', 'json' ]
 	
 	
 	def get_model_options( ):
@@ -1896,7 +2179,7 @@ class Bubba( AI ):
 			'size' + f' = {self.size}' + new
 	
 	
-	def __dir__(self):
+	def __dir__( self ):
 		'''
 		
 			Method that returns a list of members
@@ -1909,8 +2192,8 @@ class Bubba( AI ):
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
-		         'get_list', 'get_effort_options', 'input_text', 'metadata',
-		          'get_data', 'dump' ]
+		         'get_effort_options', 'input_text', 'metadata', 'get_data', 'dump',
+		          'translate', 'transcribe' ]
 
 
 class Bro( AI ):
@@ -1965,13 +2248,13 @@ class Bro( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'pages', 'audio' ]
+		self.modalities = [ 'text', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.reasoning_effort = None
 		self.input_text = None
 		self.name = 'Bro'
-		self.description = 'A Programming & Data Science Assistant'
+		self.description = 'A Computer Programming, Data Science and Analysis Assistant'
 		self.id = 'asst_2Yu2yfINGD5en4e0aUXAKxyu'
 		self.vector_store_ids = [ 'vs_67e83bdf8abc81918bda0d6b39a19372', ]
 		self.metadata = { }
@@ -2011,15 +2294,259 @@ class Bro( AI ):
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
+	
+	
+	def generate_image( self, prompt: str ) -> str:
+		"""
+
+			Purpose
+			_______
+			Generates a chat completion given a string prompt
 
 
+			Parameters
+			----------
+			prompt: str
+
+
+			Returns
+			-------
+			str
+
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.prompt = prompt
+				self.response = self.client.images.generate( model='dall-e-3',
+					prompt=self.prompt, size='1024x1024', quality='standard', n=1 )
+			
+			return self.response.data[ 0 ].url
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'generate_text( self, prompt: str )'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze_image( self, prompt: str, url: str ) -> str:
+		"""
+
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+
+
+
+			Parameters
+			----------
+			prompt: str
+			url: str
+
+			Returns
+			-------
+			str
+
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			elif url is None:
+				raise Exception( 'Argument "url" cannot be None' )
+			else:
+				self.prompt = prompt
+				self.image_url = url
+				self.input = [
+					{
+						'role': 'user',
+						'content':
+							[
+								{ 'type': 'input_text',
+								  'pages': self.prompt
+								  },
+								{
+									'type': 'input_image',
+									'image_url': self.image_url
+								}
+							]
+					}
+				]
+				
+				self.response = self.client.responses.create( model=self.model, input=self.input )
+				return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'analyze_image( self, prompt: str, url: str )'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def summarize( self, prompt: str, path: str ) -> str:
+		"""
+
+			Purpose
+			_______
+			Method that summarizes a document given a
+			string prompt, and a path
+
+
+
+
+			Parameters
+			----------
+			prompt: str
+			path: str
+
+			Returns
+			-------
+			str
+
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			elif path is None:
+				raise Exception( 'Argument "path" cannot be None' )
+			else:
+				self.file_path = path
+				self.file = self.client.files.create( file=open( self.file_path, 'rb' ),
+					purpose='user_data' )
+				
+				self.messages = [
+					{
+						'role': 'user',
+						'content': [
+							{
+								'type': 'file',
+								'file':
+									{
+										'file_id': file.id,
+									}
+							},
+							{
+								'type': 'text',
+								'pages': 'What is the first dragon in the book?',
+							},
+						]
+					}
+				]
+				
+				self.completion = self.client.chat.completions.create( model=self.model,
+					messages=self.messages )
+				return self.completion.choices[ 0 ].message.content
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'summarize( self, prompt: str, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def search_web( self, prompt: str ) -> str:
+		"""
+
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+
+
+
+			Parameters
+			----------
+			prompt: str
+			url: str
+
+			Returns
+			-------
+			str
+
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.messages = [
+					{
+						'role': 'user',
+						'content': prompt,
+					} ]
+				
+				self.response = self.client.chat.completions.create( model=self.model,
+					web_search_options={ }, messages=self.messages )
+				
+				return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'search_web( self, prompt: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def search_file( self, prompt: str ) -> str:
+		"""
+
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+
+
+
+			Parameters
+			----------
+			prompt: str
+			url: str
+
+			Returns
+			-------
+			str
+
+		"""
+		try:
+			if prompt is None:
+				raise Exception( 'Argument "prompt" cannot be None' )
+			else:
+				self.tools = [
+					{
+						'type': 'file_search',
+						'vector_store_ids': self.vector_store_ids,
+						'max_num_results': 20
+					} ]
+				
+				self.response = self.client.responses.create( model=self.model,
+					tools=self.tools, input=prompt )
+				return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Chat'
+			exception.method = 'search_file( self, prompt: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def translate( self, text: str ) -> str:
+		pass
+	
+	
+	def transcribe( self, text: str ) -> str:
+		pass
+	
+	
 	def get_format_options( ):
 		'''
 		
 			Method that returns a list of formatting options
 		
 		'''
-		return [ 'auto', 'pages', 'json' ]
+		return [ 'auto', 'text', 'json' ]
 	
 	
 	def get_model_options( ):
@@ -2090,7 +2617,7 @@ class Bro( AI ):
 		         'input', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
-		         'get_list', 'get_effort_options', 'input_text', 'metadata',
+		         'get_effort_options', 'input_text', 'metadata',
 		          'get_data', 'dump' ]
 
 
@@ -2149,7 +2676,7 @@ class TTS( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'pages', 'audio' ]
+		self.modalities = [ 'text', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.audio_path = None
 		self.response = None
@@ -2576,7 +3103,7 @@ class Translation( AI ):
 			'size' + f' = {self.size}' + new
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 		
 			Methods that returns a get_list of member names
@@ -2625,7 +3152,7 @@ class SmallEmbedding( AI ):
 		super( ).__init__( )
 		self.client = OpenAI( self.api_key )
 		self.client.api_key = Header( ).api_key
-		self.model = 'pages-embedding-3-small'
+		self.model = 'text-embedding-3-small'
 		self.encoding_format = 'float'
 		self.number = num
 		self.temperature = temp
@@ -2645,10 +3172,10 @@ class SmallEmbedding( AI ):
 			Methods that returns a list of small_model names
 
 		'''
-		return [ 'pages-embedding-3-small', ]
+		return [ 'text-embedding-3-small', ]
 	
 	
-	def create( self, input: str ) -> list[ float ]:
+	def create( self, input: str ) -> List[ float ]:
 		"""
 
 			Purpose
@@ -2717,7 +3244,7 @@ class SmallEmbedding( AI ):
 			'size' + f' = {self.size}' + new
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 
 			Methods that returns a get_list of member names
@@ -2763,7 +3290,7 @@ class AdaEmbedding( AI ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( self.api_key )
-		self.model = 'pages-embedding-ada-02'
+		self.model = 'text-embedding-ada-02'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -2817,7 +3344,7 @@ class AdaEmbedding( AI ):
 			Methods that returns a list of small_model names
 
 		'''
-		return [ 'pages-embedding-ada-02']
+		return [ 'text-embedding-ada-02']
 	
 
 	def __dir__( self ) -> list[ str ]:
@@ -2866,7 +3393,7 @@ class LargeEmbedding( AI ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( self.api_key )
-		self.model = 'pages-embedding-3-large'
+		self.model = 'text-embedding-3-large'
 		self.encoding_format = 'float'
 		self.number = num
 		self.temperature = temp
@@ -2886,7 +3413,7 @@ class LargeEmbedding( AI ):
 			Methods that returns a list of small_model names
 
 		'''
-		return [ 'pages-embedding-3-large', ]
+		return [ 'text-embedding-3-large', ]
 	
 	
 	def create( self, input: str ) -> list[ float ]:
@@ -2936,4 +3463,444 @@ class LargeEmbedding( AI ):
 		         'store', 'stream', 'modalities', 'stops',
 		         'api_key', 'client', 'small_model',
 		         'input', 'create', 'get_model_options' ]
+
+
+class LargeImage( AI ):
+	"""
+
+		Purpose
+		___________
+		Class used for generating images OpenAI's
+		Images API and dall-e-3
+
+
+		Parameters
+		------------
+		number: int
+		temperature: float
+		top_percent: float
+		frequency_penalty: float
+		presence_penalty: float
+		maximum_completion_tokens: int
+		store: bool
+		stream: bool
+
+		Methods
+		------------
+		generate( self, input: str ) -> str:
+		analyze( self, input: str, path: str ) -> str
+		get_detail_options( self ) -> list[ str ]
+		get_format_options( self ) -> list[ str ]:
+		get_size_options( self ) -> list[ str ]
+
+	"""
+	
+	
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
+	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = False ):
+		super( ).__init__( )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI( )
+		self.client.api_key = Header( ).api_key
+		self.quality = 'hd'
+		self.model = 'dall-e-3'
+		self.size = '1024X1024'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.input_text = None
+		self.file_path = None
+		self.image_url = None
+	
+	
+	def generate( self, input: str ) -> str:
+		"""
+
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+
+
+
+			Parameters
+			----------
+			prompt: str
+			url: str
+
+			Returns
+			-------
+			str
+
+		"""
+		try:
+			if input is None:
+				raise Exception( 'The "input" argument is required.' )
+			else:
+				self.input_text = input
+				self.response = self.client.images.generate(
+					model=self.model,
+					prompt=self.input_text,
+					size=self.size,
+					quality=self.quality,
+					n=self.number
+				)
+				
+				return self.response.data[ 0 ].url
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Image'
+			exception.method = 'generate( self, input: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze( self, input: str, path: str ) -> str:
+		'''
+
+			Method providing image analysis functionality given a prompt and filepath
+
+		'''
+		try:
+			if input is None:
+				raise Exception( 'The argument "input" cannot be None' )
+			elif path is None:
+				raise Exception( 'The argument "path" cannot be None' )
+			else:
+				self.input_text = input
+				self.file_path = path
+				self.input = \
+					[ {
+						'role': 'user',
+						'content':
+							[
+								{ 'type': 'input_text',
+								  'pages': self.input_text
+								  },
+								{
+									'type': 'input_image',
+									'image_url': self.file_path
+								},
+							],
+					}
+					]
+				
+				self.response = self.client.responses.create(
+					model='gpt-4o-mini',
+					input=self.input,
+				)
+				
+				return response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Image'
+			exception.method = 'analyze( self, input: str, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def get_model_options( self ) -> List[ str ]:
+		'''
+
+			Methods that returns a list of small_model names
+
+		'''
+		return [ 'dall-e-3', 'gpt-4-0613',
+		         'gpt-4-0314', 'gpt-4o-mini',
+		         'gpt-4o-mini-2024-07-18' ]
+	
+	
+	def get_format_options( self ) -> list[ str ]:
+		'''
+
+			Method that returns a  list of format options
+
+		'''
+		return [ '.png', '.mpeg', '.jpeg',
+		         '.webp', '.gif' ]
+	
+	
+	def get_detail_options( self ) -> list[ str ]:
+		'''
+
+			Method that returns a  list of reasoning effort options
+
+		'''
+		return [ 'auto', 'low', 'high' ]
+	
+	
+	def get_size_options( self ) -> list[ str ]:
+		'''
+
+			Method that returns a  list of sizes
+
+		'''
+		return [ '1024x1024', '1024x1792',
+		         '1792x1024' ]
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
+
+		'''
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'modalities', 'stops',
+		         'input_text', 'image_url', 'path',
+		         'api_key', 'client', 'small_model', 'input', 'generate',
+		         'get_detail_options', 'get_format_options', 'get_size_options' ]
+
+
+class Image( AI ):
+	"""
+
+		Purpose
+		___________
+		Class used for generating images OpenAI's
+		Images API and dall-e-2
+
+
+		Parameters
+		------------
+		num: int=1
+		temp: float=0.8
+		top: float=0.9
+		freq: float=0.0
+		pres: float=0.0
+		max: int=2048
+		store: bool=True
+		stream: bool=True
+
+		Attributes
+		-----------
+		self.api_key, self.client, self.small_model,  self.embedding,
+		self.response, self.number, self.temperature, self.top_percent,
+		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+		self.store, self.stream, self.modalities, self.stops, self.content,
+		self.prompt, self.response, self.completion, self.file, self.path,
+		self.input, self.messages, self.image_url, self.response_format,
+		self.tools, self.vector_store_ids, self.input_text, self.path, self.image_url
+
+		Methods
+		------------
+		get_model_options( self ) -> str
+		generate( self, input: str ) -> str
+		analyze( self, input: str, path: str ) -> str
+		get_detail_options( self ) -> list[ str ]
+		get_format_options( self ) -> list[ str ]
+		get_size_options( self ) -> list[ str ]
+
+	"""
+	
+	
+	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
+	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = False ):
+		super( ).__init__( )
+		self.api_key = Header( ).api_key
+		self.client = OpenAI( )
+		self.client.api_key = Header( ).api_key
+		self.quality = 'standard'
+		self.detail = 'auto'
+		self.model = 'dall-e-2'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.input = [ ]
+		self.input_text = None
+		self.file_path = None
+		self.image_url = None
+	
+	
+	def get_model_options( self ) -> list[ str ]:
+		'''
+
+			Methods that returns a list of small_model names
+
+		'''
+		return [ 'dall-e-2', 'gpt-4-0613',
+		         'gpt-4-0314', 'gpt-4o-mini',
+		         'gpt-4o-mini-2024-07-18' ]
+	
+	
+	def generate( self, input: str ) -> str:
+		"""
+
+			Purpose
+			_______
+			Generates an image given a string input
+
+
+			Parameters
+			----------
+			input: str
+
+
+			Returns
+			-------
+			Image object
+
+		"""
+		try:
+			if input is None:
+				raise Exception( 'The "input" argument is required.' )
+			else:
+				self.input_text = input
+				self.response = self.client.images.generate(
+					model=self.model,
+					prompt=self.input_text,
+					size=self.size,
+					quality=self.quality,
+					n=self.number
+				)
+				
+				return self.response.data[ 0 ].url
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Image'
+			exception.method = 'generate( self, input: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze( self, input: str, path: str ) -> str:
+		'''
+
+			Method providing image analysis functionality given a prompt and filepath
+
+		'''
+		try:
+			if input is None:
+				raise Exception( 'The argument "input" cannot be None' )
+			elif path is None:
+				raise Exception( 'The argument "path" cannot be None' )
+			else:
+				self.input_text = input
+				self.file_path = path
+				self.input = \
+					[ {
+						'role': 'user',
+						'content':
+							[
+								{ 'type': 'input_text',
+								  'pages': self.input_text
+								  },
+								{
+									'type': 'input_image',
+									'image_url': self.file_path
+								},
+							],
+					}
+					]
+				
+				self.response = self.client.responses.create( model='gpt-4o-mini',
+					input=self.input )
+				
+				return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Image'
+			exception.method = 'analyze( self, input: str, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def edit( self, input: str, path: str, size: str = '1024X1024' ) -> str:
+		"""
+
+			Purpose
+			_______
+			Method that analyzeses an image given a string prompt,
+
+
+
+			Parameters
+			----------
+			prompt: str
+			url: str
+
+			Returns
+			-------
+			str
+
+		"""
+		try:
+			if input is None:
+				raise Exception( 'The argument "input" cannot be None' )
+			elif path is None:
+				raise Exception( 'The argument "path" cannot be None' )
+			else:
+				self.input_text = input
+				self.file_path = path
+				self.response = self.client.images.edit( model=self.model,
+					image=open( self.file_path, "rb" ), prompt=self.input_text, n=self.number,
+					size=self.size )
+				
+				return self.response.data[ 0 ].url
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Image'
+			exception.method = 'analyze( self, input: str, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def __dir__( self ) -> list[ str ]:
+		'''
+
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
+
+		'''
+		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'modalities', 'stops',
+		         'api_key', 'client', 'small_model', 'input', 'analyze',
+		         'input_text', 'image_url', 'path', 'edit',
+		         'generate', 'quality', 'detail', 'small_model', 'get_model_options',
+		         'get_detail_options', 'get_format_options', 'get_size_options' ]
+	
+	
+	def get_size_options( self ) -> list[ str ]:
+		'''
+
+			Method that returns a  list of small_model options
+
+		'''
+		return [ '256x256', '512x512', '1024x1024' ]
+	
+	
+	def get_format_options( self ) -> list[ str ]:
+		'''
+
+			Method that returns a  list of format options
+
+		'''
+		return [ '.png', '.mpeg', '.jpeg',
+		         '.webp', '.gif' ]
+	
+	
+	def get_detail_options( self ) -> list[ str ]:
+		'''
+
+			Method that returns a  list of reasoning effort options
+
+		'''
+		return [ 'auto', 'low', 'high' ]
 

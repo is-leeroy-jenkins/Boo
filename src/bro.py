@@ -50,6 +50,7 @@ import tiktoken
 from pygments.lexers.csound import newline
 from static import GptRequests, GptRoles, GptLanguages
 from booger import ErrorDialog, Error
+from typing import Any, List, Tuple, Optional
 
 
 class EndPoint( ):
@@ -67,6 +68,7 @@ class EndPoint( ):
 		self.speech_generation = f'https://api.openai.com/v1/audio/speech'
 		self.translations = f'https://api.openai.com/v1/audio/translations'
 		self.assistants = f'https://api.openai.com/v1/assistants'
+		self.responses = f'https://api.openai.com/v1/responses'
 		self.transcriptions = f'https://api.openai.com/v1/audio/transcriptions'
 		self.finetuning = f'https://api.openai.com/v1/fineTuning/jobs'
 		self.embeddings = f'https://api.openai.com/v1/embeddings'
@@ -180,11 +182,11 @@ class GptOptions( ):
 		self.store = store
 		self.stream = stream
 		self.size = size
-		self.modalities = [ 'pages', 'audio' ]
+		self.modalities = [ 'text', 'audio' ]
 		self.response_format = 'auto'
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 
 			Methods that returns a get_list of member names
@@ -199,7 +201,7 @@ class GptOptions( ):
 		         'get_output_formats', 'get_input_formats', 'get_data' ]
 	
 	
-	def get_voices( self ) -> list[ str ]:
+	def get_voices( self ) -> List[ str ]:
 		'''
 
 			Returns: get_list[ str ] of voices used by the audio api
@@ -209,7 +211,7 @@ class GptOptions( ):
 		         'onyx', 'fable', 'nova', 'sage' ]
 	
 	
-	def get_sizes( self ) -> list[ str ]:
+	def get_sizes( self ) -> List[ str ]:
 		'''
 
 			Returns: get_list[ str ] of size used by the audio api
@@ -218,7 +220,7 @@ class GptOptions( ):
 		return [ '256X256', '512X512', '1024X1024', '1024x1792', '1792x1024' ]
 	
 	
-	def get_response_formats( self ) -> list[ str ]:
+	def get_response_formats( self ) -> List[ str ]:
 		'''
 
 			Returns: get_list[ str ] of response formats used by the GPT
@@ -227,7 +229,7 @@ class GptOptions( ):
 		return [ 'pages', 'audio', 'url' ]
 	
 	
-	def get_output_formats( self ) -> list[ str ]:
+	def get_output_formats( self ) -> List[ str ]:
 		'''
 
 			Returns: get_list[ str ] of audio formats cleaned_lines by the audio api
@@ -236,7 +238,7 @@ class GptOptions( ):
 		return [ 'mp3', 'opus', 'aac', 'flac', 'pcm' ]
 	
 	
-	def get_input_formats( self ) -> list[ str ]:
+	def get_input_formats( self ) -> List[ str ]:
 		'''
 
 			Returns: get_list[ str ] of audio formats uploaded into the audio api
