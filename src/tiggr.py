@@ -60,6 +60,7 @@ from gensim.models import Word2Vec
 from collections import defaultdict
 from typing import Any, List, Tuple, Optional
 from sklearn.feature_extraction.text import TfidfVectorizer
+from pymupdf import Page
 
 
 class Text:
@@ -83,7 +84,7 @@ class Text:
 	    lemmatize( tokens: get_list ) -> str
 	    bag_of_words( tokens: get_list ) -> dict
 	    train_word2vec( sentences: get_list, vector_size=100, window=5, min_count=1 ) -> Word2Vec
-	    compute_tfidf( lines: get_list, max_features=1000, prep=True ) -> tuple
+	    compute_tfidf( tokens: get_list, max_features=1000, prep=True ) -> tuple
 	    
 	'''
 	
@@ -131,7 +132,7 @@ class Text:
 		'''
 		return [ 'path', 'raw_input', 'raw_pages', 'normalized', 'lemmatized',
 		         'tokenized', 'corrected', 'cleaned_text', 'words', 'paragraphs',
-		         'tokens', 'lines', 'pages', 'chunks', 'chunk_size', 'cleaned_pages',
+		         'tokens', 'tokens', 'pages', 'chunks', 'chunk_size', 'cleaned_pages',
 		         'stop_words', 'cleaned_lines', 'removed', 'lowercase',
 		         'translator', 'lemmatizer', 'stemmer', 'tokenizer', 'vectorizer',
 		         'load_text', 'split_lines', 'split_pages', 'collapse_whitespace',
@@ -162,7 +163,7 @@ class Text:
 	def split_lines( self, text: str ) -> List[ str ]:
 		"""
 		
-			Splits the input text into lines
+			Splits the input text into tokens
 
 			Parameters:
 			-----------
@@ -193,7 +194,7 @@ class Text:
 	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
 		"""
 
-			Reads text from a file, splits it into lines,
+			Reads text from a file, splits it into tokens,
 			and groups them into text.
 
 			Args:
@@ -218,7 +219,7 @@ class Text:
 				for _page in self.raw_pages:
 					self.lines = _page.strip( ).splitlines( )
 					self.cleaned_text = '\n'.join(
-						[ line.strip( ) for line in lines if line.strip( ) ] )
+						[ line.strip( ) for line in self.lines if line.strip( ) ] )
 					self.pages.append( self.cleaned_text )
 				
 				return self.pages
@@ -235,7 +236,7 @@ class Text:
 		"""
 		
 			Removes extra spaces and
-			blank lines from the input text.
+			blank tokens from the input text.
 
 			Parameters:
 			-----------
@@ -247,7 +248,7 @@ class Text:
 				A cleaned_lines text string with:
 					- Consecutive whitespace reduced to a single space
 					- Leading/trailing spaces removed
-					- Blank lines removed
+					- Blank tokens removed
 					
 		"""
 		try:
@@ -345,8 +346,8 @@ class Text:
 			_exc.method = 'remove_special( self, text: str, keep_spaces: bool = True ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
-
-
+	
+	
 	def remove_html( self, text: str ) -> str:
 		"""
 	
@@ -494,7 +495,7 @@ class Text:
 			else:
 				self.raw_input = text
 				self.cleaned_text = (BeautifulSoup( self.raw_input, "raw_html.parser" )
-				                .get_text( separator=' ', strip=True ) )
+				                     .get_text( separator=' ', strip=True ))
 				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
@@ -593,13 +594,13 @@ class Text:
 			Args:
 				pages (list of str): A list where each
 				element is the full text of one page.
-				min (int): Minimum number of times
+				min (int): Minimum num of times
 				a line must appear at the top/bottom to
 				be considered a header/footer.
 		
 			Returns:
 				list of str: List of cleaned_lines page
-				texts without detected headers/footers.
+				tokens without detected headers/footers.
 			
 		"""
 		try:
@@ -610,7 +611,7 @@ class Text:
 				_footers = defaultdict( int )
 				self.pages = pages
 				
-				# First pass: collect frequency of top/bottom lines
+				# First pass: collect frequency of top/bottom tokens
 				for _page in self.pages:
 					self.lines = _page.strip( ).splitlines( )
 					if not self.lines:
@@ -638,7 +639,7 @@ class Text:
 					if self.lines and self.lines[ -1 ].strip( ) in _foot:
 						self.lines = self_node.lines[ :-1 ]
 					
-					self.cleaned_pages.append( "\n".join( lines ) )
+					self.cleaned_pages.append( "\n".join( self.lines ) )
 				
 				return self.cleaned_pages
 		except Exception as e:
@@ -674,7 +675,8 @@ class Text:
 				raise Exception( 'The input argument "text" is required.' )
 			else:
 				self.raw_input = text
-				self.normalized = self.raw_input.lower( ).translate( str.maketrans( '', '', string.punctuation ) )
+				self.normalized = self.raw_input.lower( ).translate(
+					str.maketrans( '', '', string.punctuation ) )
 				return self.normalized
 		except Exception as e:
 			_exc = Error( e )
@@ -708,7 +710,8 @@ class Text:
 					_err = ErrorDialog( _exc )
 					_err.show( )
 	
-	def lemmatize_tokens( self, tokens: List[ str ]) -> List[ str ]:
+	
+	def lemmatize_tokens( self, tokens: List[ str ] ) -> List[ str ]:
 		"""
 	
 			Performs lemmatization on the input List[ str ] into a string
@@ -739,7 +742,7 @@ class Text:
 				self.tokens = tokens
 				pos_tags = pos_tag( self.tokens )
 				self.lemmatized = [ self.lemmatizer.lemmatize( word, get_wordnet_pos( tag ) ) for
-				               word, tag in pos_tags ]
+				                    word, tag in pos_tags ]
 				return self.lemmatized
 		except Exception as e:
 			_exc = Error( e )
@@ -849,8 +852,8 @@ class Text:
 
 			Parameters:
 			-----------
-			pages : str
-				The input pages string to be chunked
+			text : str
+				The input text to be chunked
 
 			Returns:
 			--------
@@ -865,22 +868,24 @@ class Text:
 				self.raw_input = text
 				self.lines = self.raw_input.split( )
 				self.chunk_size = int( max * 1.3 )
-				self.chunks = [ ' '.join( words[ i:i + chunk_size ] ) for i in
-				                range( 0, len( words ), chunk_size ) ]
+				self.chunks = [ ' '.join( self.words[ i:i + chunk_size ] ) for i in
+				                range( 0, len( self.words ), chunk_size ) ]
 				return self.chunks
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'chunk_text( self, text: str, max: int = 512 ) -> list[ str ]'
+			_exc.method = 'chunk_text( self, text: str, max: int=512 ) -> list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
-
+	
 	
 	def chunk_tokens( self, tokens: List[ str ], max: int=800, over: int=50 ) -> List[ str ]:
 		"""
+		
 			Purpose:
-				Split a get_list of tokens into overlapping chunks based on token limits.
+				Split a list of strings into
+				overlapping chunks based on token limits.
 	
 			Args:
 				tokens (list): Tokenized input documents.
@@ -889,6 +894,7 @@ class Text:
 	
 			Returns:
 				list: A get_list of token chunks.
+				
 		"""
 		try:
 			if tokens is None:
@@ -912,12 +918,13 @@ class Text:
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
+	
 	def split_paragraphs( self, path: str ) -> List[ str ]:
 		"""
 		
-			Reads text from a file and
+			Reads  a file and
 			splits it into paragraphs. A paragraph is defined as a block
-			of text separated by one or more empty lines.
+			of text separated by one or more empty tokens.
 	
 			Args:
 				path (str): Path to the text file.
@@ -933,14 +940,16 @@ class Text:
 				self.file_path = path
 				with open( self.file_path, 'r', encoding='utf-8' ) as _file:
 					self.raw_input = _file.read( )
-			
+					
 					# Normalize line breaks and split on multiple newlines
-					self.paragraphs = [ para.strip( ) for para in self.raw_input.split( '\n\n' ) if para.strip( ) ]
+					self.paragraphs = [ para.strip( ) for para in self.raw_input.split( '\n\n' ) if
+					                    para.strip( ) ]
 					return paragraphs
 		except UnicodeDecodeError:
 			with open( self.file_path, 'r', encoding='latin1' ) as _file:
 				self.raw_input = _file.read( )
-				self.paragraphs = [ para.strip( ) for para in self.raw_input.split( '\n\n' ) if para.strip( ) ]
+				self.paragraphs = [ para.strip( ) for para in self.raw_input.split( '\n\n' ) if
+				                    para.strip( ) ]
 				return paragraphs
 	
 	
@@ -961,7 +970,7 @@ class Text:
 		"""
 		try:
 			if lines is None:
-				raise Exception( 'The input argument "lines" is required.' )
+				raise Exception( 'The input argument "tokens" is required.' )
 			else:
 				self.lines = lines
 				for _line in self.lines:
@@ -978,12 +987,14 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'compute_frequency_distribution( self, documents: list, process: bool=True) -> FreqDist'
+			_exc.method = ('compute_frequency_distribution( self, documents: list, process: '
+			               'bool=True) -> FreqDist')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def compute_conditional_distribution( self, lines: List[ str ], condition=None, process: bool=True ) -> ConditionalFreqDist:
+	def compute_conditional_distribution( self, lines: List[ str ], condition=None,
+	                                      process: bool=True ) -> ConditionalFreqDist:
 		"""
 
 			Computes a Conditional Frequency Distribution (CFD)
@@ -1007,7 +1018,7 @@ class Text:
 		"""
 		try:
 			if lines is None:
-				raise Exception( 'The input argument "lines" is required.' )
+				raise Exception( 'The input argument "tokens" is required.' )
 			else:
 				self.lines = lines
 				self.conditional_distribution = ConditionalFreqDist( )
@@ -1030,7 +1041,8 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'compute_conditional_distribution( self, lines: List[ str ], condition=None, process: bool=True ) -> ConditionalFreqDist'
+			_exc.method = ('compute_conditional_distribution( self, tokens: List[ str ], '
+			               'condition=None, process: bool=True ) -> ConditionalFreqDist')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -1044,7 +1056,7 @@ class Text:
 			Args:
 				freq_dist (dict):
 				A dictionary mapping words to their frequencies.
-				min (int): Minimum number
+				min (int): Minimum num
 				of occurrences required for a word to be included.
 	
 			Returns:
@@ -1056,7 +1068,8 @@ class Text:
 				raise Exception( 'The input argument "freq_dist" is required.' )
 			else:
 				self.frequency_distribution = freq_dist
-				self.words = [ word for word, freq in self.frequency_distribution.items( ) if freq >= min ]
+				self.words = [ word for word, freq in self.frequency_distribution.items( ) if
+				               freq >= min ]
 				self.vocabulary = sorted( self.words )
 				return self.vocabulary
 		except Exception as e:
@@ -1068,11 +1081,12 @@ class Text:
 			_err.show( )
 	
 	
-	def bag_of_words( self, tokens: List[ str ]) -> dict:
+	def bag_of_words( self, tokens: List[ str ] ) -> dict:
 		"""
-		
+			
+			Purpose:
 			Construct a Bag-of-Words (BoW)
-			frequency dictionary from tokens.
+			frequency dictionary from a list of strings.
 	
 			Args:
 				tokens (list): List of tokens from a document.
@@ -1094,7 +1108,7 @@ class Text:
 			_exc.method = 'bag_of_words( self, tokens: List[ str ] ) -> dict'
 			_err = ErrorDialog( _exc )
 			_err.show( )
-
+	
 	
 	def train_word2vec( self, tokens: List[ str ], size=100, window=5, min=1 ) -> Word2Vec:
 		"""
@@ -1125,8 +1139,8 @@ class Text:
 			               'size=100, window=5, min=1 ) -> Word2Vec')
 			_err = ErrorDialog( _exc )
 			_err.show( )
-
-
+	
+	
 	def compute_tfidf( self, lines: List[ str ], max: int=1000, prep: bool=True ) -> Tuple:
 		"""
 			Purpose:
@@ -1134,7 +1148,7 @@ class Text:
 	
 			Args:
 				lines (list): List of raw or preprocessed pages documents.
-				max_features (int): Max number of terms to include (vocabulary size).
+				max_features (int): Max num of terms to include (vocabulary size).
 				prep (bool): If True, normalize, tokenize_text, clean, and lemmatize input.
 	
 			Returns:
@@ -1146,7 +1160,7 @@ class Text:
 		"""
 		try:
 			if lines is None:
-				raise Exception( 'The input argument "lines" is required.' )
+				raise Exception( 'The input argument "tokens" is required.' )
 			elif prep:
 				self.lines = lines
 				for _doc in self.lines:
@@ -1155,16 +1169,371 @@ class Text:
 					self.words = [ self.lemmatize( token ) for token in self.tokens ]
 					self.cleaned_text = " ".join( self.words )
 					self.cleaned_lines.append( cleaned_text )
-					
+				
 				self.vectorizer = TfidfVectorizer( max_features=max, stop_words='english' )
 				_matrix = self.vectorizer.fit_transform( self.cleaned_lines )
-				return ( _matrix, self.vectorizer.get_feature_names_out( ).tolist( ),
+				return (_matrix, self.vectorizer.get_feature_names_out( ).tolist( ),
 				        self.vectorizer)
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Token'
-			_exc.method = ('compute_tfidf( self, lines: list, max: int=1000, prep: bool=True ) -> '
+			_exc.method = ('compute_tfidf( self, tokens: list, max: int=1000, prep: bool=True ) -> '
 			               'Tuple')
+			_err = ErrorDialog( _exc )
+			_err.show( )
+
+
+class PDF( ):
+	"""
+
+		PDF
+		----------------
+		A utility class for extracting clean pages from PDF files into a list of strings.
+		Handles nuances such as layout artifacts, page separation, optional filtering,
+		and includes df detection capabilities.
+
+	"""
+	
+	
+	def __init__( self, headers: bool=False, min: int=10, tables: bool=True ):
+		"""
+
+			Purpose:
+			Initialize the PDF pages extractor with configurable settings.
+
+			Parameters:
+			- headers (bool): If True, attempts to strip recurring headers/footers.
+			- min (int): Minimum num of characters for a line to be included.
+			- tables (bool): If True, extract pages from detected tables using block
+			grouping.
+
+		"""
+		self.strip_headers = headers
+		self.minimum_length = min
+		self.extract_tables = tables
+		self.file_path = None
+		self.page = None
+		self.pages = [ ]
+		self.lines = [ ]
+		self.clean_lines = [ ]
+		self.extracted_lines = [ ]
+		self.extracted_tables = [ ]
+		self.extracted_pages = [ ]
+	
+	
+	def __dir__( self ):
+		'''
+
+			Purpose:
+			Returns a list of class member names.
+
+		'''
+		return [ 'strip_headers', 'minimum_length', 'extract_tables',
+		         'path', 'page', 'pages', 'tokens', 'clean_lines', 'extracted_lines',
+		         'extracted_tables', 'extracted_pages', 'extract_lines',
+		         'extract_text', 'extract_tables', 'export_csv',
+		         'export_text', 'export_excel' ]
+	
+	
+	def extract_lines( self, path: str, max: Optional[ int ]=None ) -> List[ str ]:
+		"""
+
+			Extract tokens of pages from a PDF,
+			optionally limiting to the first N pages.
+
+			Parameters:
+			- path (str): Path to the PDF file
+			- max (Optional[int]): Max num of pages to process (None for all pages)
+
+			Returns:
+			- List[str]: Cleaned list of non-empty tokens
+
+		"""
+		try:
+			if path is None:
+				raise Exception( 'Input "path" must be specified' )
+			elif max is None:
+				raise Exception( 'Input "max" must be specified' )
+			else:
+				self.file_path = path
+				with fitz.open( self.file_path ) as doc:
+					for i, page in enumerate( doc ):
+						if max is not None and i >= max:
+							break
+						if self.extract_tables:
+							self.extracted_lines = self._extract_table_blocks( page )
+						else:
+							_text = page.get_text( 'pages' )
+							self.lines = _text.splitlines( )
+						self.clean_lines = self._filter_lines( self.lines )
+						self.extracted_lines.extend( self.clean_lines )
+				return self.extracted_lines
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'tiggr'
+			_exc.cause = 'PDF'
+			_exc.method = ('extract_lines( self, path: str, max: Optional[ int ] = None ) -> '
+			               'List[ '
+			               'str ]')
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def _extract_table_blocks( self, page: Page  ) -> List[ str ]:
+		"""
+
+			Attempt to extract structured blocks
+			such as tables using spatial grouping.
+
+			Parameters:
+			- page: PyMuPDF page object
+
+			Returns:
+			- List[str]: Grouped blocks including potential tables
+
+		"""
+		try:
+			if page is None:
+				raise Exception( 'Input "page" cannot be None' )
+			else:
+				_blocks = page.get_text( 'blocks' )
+				_sorted = sorted( _blocks, key=lambda b: ( round( b[ 1 ], 1 ), round( b[ 0 ], 1 ) ) )
+				self.lines = [ b[ 4 ].strip( ) for b in _sorted if b[ 4 ].strip( ) ]
+				return self.lines
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'tiggr'
+			_exc.cause = 'PDF'
+			_exc.method = '_extract_table_blocks( self, page ) -> List[ str ]:'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def _filter_lines( self, lines: List[ str ] ) -> List[ str ]:
+		"""
+
+			Filter and clean tokens
+			 from a page of pages.
+
+			Parameters:
+			- tokens (List[str]): Raw tokens of pages
+
+			Returns:
+			- List[str]: Filtered, non-trivial tokens
+
+		"""
+		try:
+			if line is None:
+				raise Exception( 'Input "line" is None' )
+			else:
+				self.lines = lines
+				for line in self.lines:
+					_line = line.strip( )
+					if len( _line ) < self.minimum_length:
+						continue
+					if self.strip_headers and self._is_repeated_header_or_footer( _line ):
+						continue
+					self.clean_lines.append( _line )
+				return self.clean_lines
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'tiggr'
+			_exc.cause = 'PDF'
+			_exc.method = '_filter_lines( self, tokens: List[ str ] ) -> List[ str ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def _is_repeated_header_or_footer( self, line: str ) -> bool:
+		"""
+
+			Heuristic to detect common
+			headers/footers (basic implementation).
+
+			Parameters:
+			- line (str): A line of pages
+
+			Returns:
+			- bool: True if line is likely a header or footer
+
+		"""
+		try:
+			if line is None:
+				raise Exception( 'Input "line" is None' )
+			else:
+				_keywords = [ 'page', 'public law', 'u.s. government', 'united states' ]
+				return any( kw in line.lower( ) for kw in _keywords )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'tiggr'
+			_exc.cause = 'PDF'
+			_exc.method = '_is_repeated_header_or_footer( self, line: str ) -> bool'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def extract_text( self, path: str, max: Optional[ int ]=None ) -> str:
+		"""
+
+			Extract the entire pages from a
+			PDF into one continuous string.
+
+			Parameters:
+			- path (str): Path to the PDF file
+			- max (Optional[int]): Maximum num of pages to process
+
+			Returns:
+			- str: Full concatenated pages
+
+		"""
+		try:
+			if path is None:
+				raise Exception( 'Input "path" must be specified' )
+			elif max is None:
+				raise Exception( 'Input "max" must be specified' )
+			else:
+				self.file_path = path
+				self.lines = self.extract_lines( self.file_path, max=max )
+				return "\n".join( self.lines )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'tiggr'
+			_exc.cause = 'PDF'
+			_exc.method = 'extract_text( self, path: str, max: Optional[ int ] = None ) -> str:'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def extract_tables( self, path: str, max: Optional[ int ]=None ) -> List[ pd.DataFrame ]:
+		"""
+
+			Extract tables from the PDF
+			and return them as a list of DataFrames.
+
+			Parameters:
+			- path (str): Path to the PDF file
+			- max (Optional[int]): Maximum num of pages to process
+
+			Returns:
+			- List[pd.DataFrame]: List of DataFrames representing detected tables
+
+		"""
+		try:
+			if path is None:
+				raise Exception( 'Input "path" must be specified' )
+			elif max is None:
+				raise Exception( 'Input "max" must be specified' )
+			else:
+				self.file_path = path
+				with fitz.open( self.file_path ) as _doc:
+					for i, page in enumerate( _doc ):
+						if max is not None and i >= max:
+							break
+						_blocks = page.find_tables( )
+						for _tb in _blocks.tables:
+							_df = pd.DataFrame( _tb.extract( ) )
+							self.tables.append( _df )
+				return self.tables
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'tiggr'
+			_exc.cause = 'PDF'
+			_exc.method = (
+				'extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ '
+				'pd.DataFrame ]')
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None:
+		"""
+
+			Export a list of DataFrames (tables)
+			to individual CSV files.
+
+			Parameters:
+			- tables (List[pd.DataFrame]): List of tables to export
+			- filename (str): Prefix for output filenames (e.g., 'output_table')
+
+		"""
+		try:
+			if tables is None:
+				raise Exception( 'Input "tables" must not be None' )
+			elif filename is None:
+				raise Exception( 'Input "filename" must not be None' )
+			else:
+				self.tables = tables
+				for i, df in enumerate( self.tables ):
+					df.to_csv( f'{filename}_{i + 1}.csv', index=False )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'tiggr'
+			_exc.cause = 'PDF'
+			_exc.method = 'export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def export_text( self, lines: List[ str ], path: str ) -> None:
+		"""
+
+			Export extracted tokens of
+			pages to a plain pages file.
+
+			Parameters:
+			- tokens (List[str]): List of pages tokens
+			- path (str): Path to output pages file
+
+		"""
+		try:
+			if lines is None:
+				raise Exception( 'Input "tokens" must be provided.' )
+			elif path is None:
+				raise Exception( 'Input "path" must be provided.' )
+			else:
+				self.file_path = path
+				self.lines = lines
+				with open( self.file_path, 'w', encoding='utf-8' ) as f:
+					for line in self.lines:
+						f.write( line + "\n" )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'tiggr'
+			_exc.cause = 'PDF'
+			_exc.method = 'export_text( self, tokens: List[ str ], path: str ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def export_excel( self, tables: List[ pd.DataFrame ], path: str ) -> None:
+		"""
+
+			Export all extracted tables into a single
+			Excel workbook with one sheet per df.
+
+			Parameters:
+			- tables (List[pd.DataFrame]): List of tables to export
+			- path (str): Path to the output Excel file
+
+		"""
+		try:
+			if tables is None:
+				raise Exception( 'Input "tables" must not be None' )
+			elif path is None:
+				raise Exception( 'Input "path" must not be None' )
+			else:
+				self.tables = tables
+				self.file_path = path
+				with pd.ExcelWriter( self.file_path, engine='xlsxwriter' ) as _writer:
+					for i, df in enumerate( self.tables ):
+						_sheet = f'Table_{i + 1}'
+						df.to_excel( writer, sheet_name=_sheet, index=False )
+					_writer.save( )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'tiggr'
+			_exc.cause = 'PDF'
+			_exc.method = 'export_excel( self, tables: List[ pd.DataFrame ], path: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )

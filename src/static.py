@@ -333,7 +333,7 @@ class GptRoles( Enum ):
 
 class Source( Enum ):
 	'''
-	Enumeration of table names
+	Enumeration of df names
 	'''
 	Appropriations = auto( )
 	BudgetFunctions = auto( )

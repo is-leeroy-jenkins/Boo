@@ -717,7 +717,7 @@ msgstr "Display de contexto das combinações"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..lblContextLines..Caption
 #: dlgFindResultsOptions.dfm
-msgid "Number of context lines"
+msgid "Number of context tokens"
 msgstr "Numero de linhas de contexto"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..pnlContextFont..Caption
@@ -1343,7 +1343,7 @@ msgstr ""
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckAutoIndent....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Will indent the caret on new lines with the same amount of leading white "
+"Will indent the caret on new tokens with the same amount of leading white "
 "space as the preceding line"
 msgstr ""
 "Recua o cursor em novas linhas, com a mesma quantidade de espaço em "
@@ -1426,7 +1426,7 @@ msgstr "Alt habilita o modo coluna"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckTabsToSpaces..Hint
 #: dlgSynEditOptions.dfm
-msgid "Converts a tab character to the number of spaces in Tab Width"
+msgid "Converts a tab character to the num of spaces in Tab Width"
 msgstr "Converte o caractere tab para o seu equivalente em espaços"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckTabsToSpaces..Caption
@@ -1436,7 +1436,7 @@ msgstr "Tab para espaços"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the values position will always stay the same"
+msgid "When moving through tokens the values position will always stay the same"
 msgstr ""
 "Ao mover linhas para cima e para baixo o cursor se mantem na mesma coluna"
 
@@ -1495,7 +1495,7 @@ msgstr "Rolar metade da página"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Hint
 #: dlgSynEditOptions.dfm
-msgid "Spaces at the end of lines will be trimmed and not saved"
+msgid "Spaces at the end of tokens will be trimmed and not saved"
 msgstr "Espaços no final das linhas serão removidos e não salvos"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Caption
@@ -1737,7 +1737,7 @@ msgstr ""
 
 #. PageSetupDlg..TabControl..tbMargins..CBWrap..Caption
 #: dlgSynPageSetup.dfm
-msgid "Wrap lines"
+msgid "Wrap tokens"
 msgstr ""
 
 #. PageSetupDlg..TabControl..tbHeaderFooter..GroupBox1..Caption
@@ -1819,7 +1819,7 @@ msgstr ""
 #. PageSetupDlg..ActionList1..PageNumCmd..Caption
 #. PageSetupDlg..ActionList1..PageNumCmd..Hint
 #: dlgSynPageSetup.dfm
-msgid "Page number"
+msgid "Page num"
 msgstr ""
 
 #. PageSetupDlg..ActionList1..PagesCmd..Caption
@@ -2199,7 +2199,7 @@ msgstr ""
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned_lines lines that look like messages \n"
+"If checked cleaned_lines tokens that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 
@@ -2216,7 +2216,7 @@ msgstr ""
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned_lines lines.\n"
+"A grep expression for parsing cleaned_lines tokens.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -2321,22 +2321,22 @@ msgstr ""
 
 #. ToolProperties..FormatsPopup..Linenumber1..Caption
 #: dlgToolProperties.dfm
-msgid "Line number"
+msgid "Line num"
 msgstr ""
 
 #. ToolProperties..FormatsPopup..Linenumber1..Hint
 #: dlgToolProperties.dfm
-msgid "Placeholder for the line number"
+msgid "Placeholder for the line num"
 msgstr ""
 
 #. ToolProperties..FormatsPopup..Columnnumber1..Caption
 #: dlgToolProperties.dfm
-msgid "Column number"
+msgid "Column num"
 msgstr ""
 
 #. ToolProperties..FormatsPopup..Columnnumber1..Hint
 #: dlgToolProperties.dfm
-msgid "Placeholder for the column number"
+msgid "Placeholder for the column num"
 msgstr ""
 
 #. UnitTestWizard..Caption
@@ -2820,7 +2820,7 @@ msgstr ""
 #. CommandsDataModule..actlMain..actSearchGoToLine..Hint
 #. Programmer's name for it: SGoToLineNumber
 #: dmCommands.dfm StringResources.pas
-msgid "Go to line number"
+msgid "Go to line num"
 msgstr ""
 
 #. CommandsDataModule..actlMain..actSearchGoToSyntaxError..Caption
@@ -6792,7 +6792,7 @@ msgstr ""
 
 #. Programmer's name for it: SInvalidIndex
 #: frmFunctionList.pas
-msgid "Invalid index number"
+msgid "Invalid index num"
 msgstr ""
 
 #. Programmer's name for it: SFileTemplateCategoryOther
@@ -7736,7 +7736,7 @@ msgstr ""
 
 #. Programmer's name for it: SInvalidNumber
 #: StringResources.pas
-msgid "Invalid number!"
+msgid "Invalid num!"
 msgstr ""
 
 #. Programmer's name for it: SEmptyTokenTextError
@@ -7761,7 +7761,7 @@ msgstr ""
 
 #. Programmer's name for it: SEnterLineNumber
 #: StringResources.pas
-msgid "Enter line number:"
+msgid "Enter line num:"
 msgstr ""
 
 #. Programmer's name for it: SFileRenamedOrDeleted
@@ -8282,7 +8282,7 @@ msgstr ""
 
 #. Programmer's name for it: SMatchContextNotAvail
 #: StringResources.pas
-msgid "Unable to load match context lines"
+msgid "Unable to load match context tokens"
 msgstr ""
 
 #. Programmer's name for it: SProcessing
@@ -8999,7 +8999,7 @@ msgid "Current line in the active document"
 msgstr ""
 
 #: uParams.pas
-msgid "Current line number in the active document"
+msgid "Current line num in the active document"
 msgstr ""
 
 #: uParams.pas

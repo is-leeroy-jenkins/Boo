@@ -701,7 +701,7 @@ msgstr "Zobraziť kontext zhôd"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..lblContextLines..Caption
 #: dlgFindResultsOptions.dfm
-msgid "Number of context lines"
+msgid "Number of context tokens"
 msgstr "Počet kontextových riadkov"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..pnlContextFont..Caption
@@ -1108,7 +1108,7 @@ msgstr "Farby pre zvýraznenie syntaxe"
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckAutoIndent....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Will indent the caret on new lines with the same amount of leading white "
+"Will indent the caret on new tokens with the same amount of leading white "
 "space as the preceding line"
 msgstr ""
 "Bude odsadzovať kurzor na nových riadkoch na rovnakú pozíciu, ako v "
@@ -1191,7 +1191,7 @@ msgstr "Alt nastaví režim stĺpcových úprav"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckTabsToSpaces..Hint
 #: dlgSynEditOptions.dfm
-msgid "Converts a tab character to the number of spaces in Tab Width"
+msgid "Converts a tab character to the num of spaces in Tab Width"
 msgstr ""
 "Previesť znak tabulátora na medzery, ktorých počet je zadaný v poli Šírka "
 "tabulátora"
@@ -1203,7 +1203,7 @@ msgstr "Tabulátory na medzery"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the values position will always stay the same"
+msgid "When moving through tokens the values position will always stay the same"
 msgstr "Pri pohybe naprieč riadkami zostáva rovnaká pozícia stĺpca"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
@@ -1260,7 +1260,7 @@ msgstr "Rolovanie o polovicu strany"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Hint
 #: dlgSynEditOptions.dfm
-msgid "Spaces at the end of lines will be trimmed and not saved"
+msgid "Spaces at the end of tokens will be trimmed and not saved"
 msgstr "Medzery za koncami riadkov budú odstránené a nebudú uložené"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Caption
@@ -1799,7 +1799,7 @@ msgstr "Použiť farby"
 
 #. PageSetupDlg..TabControl..tbMargins..CBWrap..Caption
 #: dlgSynPageSetup.dfm
-msgid "Wrap lines"
+msgid "Wrap tokens"
 msgstr "Zalomiť riadky"
 
 #. PageSetupDlg..TabControl..tbMargins..CBUnits....Items.Strings
@@ -1815,7 +1815,7 @@ msgstr ""
 #. PageSetupDlg..ActionList1..PageNumCmd..Caption
 #. PageSetupDlg..ActionList1..PageNumCmd..Hint
 #: dlgSynPageSetup.dfm
-msgid "Page number"
+msgid "Page num"
 msgstr "Číslo strany"
 
 #. PageSetupDlg..ActionList1..PagesCmd..Caption
@@ -2197,11 +2197,11 @@ msgstr "&Zachytiť výstup"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned_lines lines that look like messages \n"
+"If checked cleaned_lines tokens that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 "Keď je zaškrtnuté, tak výstupné riadky, ktoré vyzerajú ako správy,\n"
-"budú analyzované a zobrazované na table Správy"
+"budú analyzované a zobrazované na df Správy"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseMessages..Caption
 #: dlgToolProperties.dfm
@@ -2216,7 +2216,7 @@ msgstr "Spätné sledovanie &analýzy"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned_lines lines.\n"
+"A grep expression for parsing cleaned_lines tokens.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -2315,22 +2315,22 @@ msgstr "Zástupný symbol pre meno súboru"
 
 #. ToolProperties..FormatsPopup..Linenumber1..Caption
 #: dlgToolProperties.dfm
-msgid "Line number"
+msgid "Line num"
 msgstr ""
 
 #. ToolProperties..FormatsPopup..Linenumber1..Hint
 #: dlgToolProperties.dfm
-msgid "Placeholder for the line number"
+msgid "Placeholder for the line num"
 msgstr ""
 
 #. ToolProperties..FormatsPopup..Columnnumber1..Caption
 #: dlgToolProperties.dfm
-msgid "Column number"
+msgid "Column num"
 msgstr ""
 
 #. ToolProperties..FormatsPopup..Columnnumber1..Hint
 #: dlgToolProperties.dfm
-msgid "Placeholder for the column number"
+msgid "Placeholder for the column num"
 msgstr ""
 
 #. UnitTestWizard..Caption
@@ -2722,7 +2722,7 @@ msgstr "Ísť na &riadok..."
 #. CommandsDataModule..actlMain..actSearchGoToLine..Hint
 #. Programmer's name for it: SGoToLineNumber
 #: dmCommands.dfm StringResources.pas
-msgid "Go to line number"
+msgid "Go to line num"
 msgstr "Ísť na riadok so zadaným číslom"
 
 #. CommandsDataModule..actlMain..actSearchGoToSyntaxError..Caption
@@ -6466,7 +6466,7 @@ msgstr "Modul spracovaný za %g sekúnd"
 
 #. Programmer's name for it: SInvalidIndex
 #: frmFunctionList.pas
-msgid "Invalid index number"
+msgid "Invalid index num"
 msgstr ""
 
 #. Programmer's name for it: SFileTemplateCategoryOther
@@ -7431,7 +7431,7 @@ msgstr ""
 
 #. Programmer's name for it: SInvalidNumber
 #: StringResources.pas
-msgid "Invalid number!"
+msgid "Invalid num!"
 msgstr "Chybné číslo"
 
 #. Programmer's name for it: SEmptyTokenTextError
@@ -7456,7 +7456,7 @@ msgstr "\"%s\" nie je platným celým číslom"
 
 #. Programmer's name for it: SEnterLineNumber
 #: StringResources.pas
-msgid "Enter line number:"
+msgid "Enter line num:"
 msgstr "Zadajte číslo riadka:"
 
 #. Programmer's name for it: SFileRenamedOrDeleted
@@ -7985,7 +7985,7 @@ msgstr "%d zhôd"
 
 #. Programmer's name for it: SMatchContextNotAvail
 #: StringResources.pas
-msgid "Unable to load match context lines"
+msgid "Unable to load match context tokens"
 msgstr "Nedajú sa načítať riadky kontextu (okolia) zhôd"
 
 #. Programmer's name for it: SProcessing
@@ -8700,7 +8700,7 @@ msgid "Current line in the active document"
 msgstr ""
 
 #: uParams.pas
-msgid "Current line number in the active document"
+msgid "Current line num in the active document"
 msgstr ""
 
 #: uParams.pas

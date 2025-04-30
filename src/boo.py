@@ -114,7 +114,7 @@ class Header( ):
 		'''
 		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completions',
 		         'speech_generation', 'translations', 'assistants', 'transcriptions',
-		         'finetuning', 'embeddings', 'uploads', 'files', 'vector_stores',
+		         'finetuning', 'vectors', 'uploads', 'files', 'vector_stores',
 		         'responses', 'get_data', 'dump' ]
 	
 	
@@ -134,7 +134,7 @@ class Header( ):
 		         'assistants': self.assistants,
 		         'transcriptions': self.transcriptions,
 		         'finetuning': self.finetuning,
-		         'embeddings': self.embeddings,
+		         'vectors': self.embeddings,
 		         'uploads': self.uploads,
 		         'files': self.files,
 		         'vector_stores': self.vector_stores }
@@ -156,7 +156,7 @@ class Header( ):
 			'assistants' + f' = {self.assistants}' + new + \
 			'transcriptions' + f' = {self.transcriptions}' + new + \
 			'finetuning' + f' = {self.finetuning}' + new + \
-			'embeddings' + f' = {self.files}' + new + \
+			'vectors' + f' = {self.files}' + new + \
 			'uploads' + f' = {self.uploads}' + new + \
 			'files' + f' = {self.files}' + new + \
 			'vector_stores' + f' = {self.vector_stores}' + new
@@ -232,7 +232,7 @@ class Models( ):
 		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completion',
 		         'speech_generation', 'responses', 'reasoning',
 		         'translations', 'assistants', 'transcriptions',
-		         'finetuning', 'embeddings', 'uploads', 'files', 'vector_stores' ]
+		         'finetuning', 'vectors', 'uploads', 'files', 'vector_stores' ]
 	
 	
 	def get_data( self ) -> dict:
@@ -247,7 +247,7 @@ class Models( ):
 		          'speech_generation': self.speech_generation,
 		          'translations': self.translation,
 		          'finetuning': self.finetuning,
-		          'embeddings': self.embeddings,
+		          'vectors': self.embeddings,
 		          'uploads': self.uploads,
 		          'files': self.files,
 		          'vector_stores': self.vector_stores }
@@ -300,7 +300,7 @@ class Perceptron( ):
 		n_iter : int
 		Passes over the training dataset.
 		random_state : int
-		Random number generator seed for random weight
+		Random num generator seed for random weight
 		initialization.
 		
 		
@@ -357,8 +357,8 @@ class Perceptron( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the number of
-			examples and n_features is the number of features.
+			Training vec, where n_examples is the num of
+			examples and n_features is the num of features.
 			
 			y : array-like, shape = [n_examples]
 			Target values.
@@ -409,8 +409,8 @@ class Perceptron( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the number of
-			examples and n_features is the number of features.
+			Training vec, where n_examples is the num of
+			examples and n_features is the num of features.
 			
 
 			Returns
@@ -442,8 +442,8 @@ class Perceptron( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the number of
-			examples and n_features is the number of features.
+			Training vec, where n_examples is the num of
+			examples and n_features is the num of features.
 			
 
 			Returns
@@ -489,7 +489,7 @@ class LinearGradientDescent( ):
 		n_iter : int
 		Passes over the training dataset.
 		random_state : int
-		Random number generator seed for random weight initialization.
+		Random num generator seed for random weight initialization.
 		
 		Attributes
 		-----------
@@ -541,8 +541,8 @@ class LinearGradientDescent( ):
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
 			Training vec, where n_examples
-			is the number of examples and
-			n_features is the number of features.
+			is the num of examples and
+			n_features is the num of features.
 			
 			y : array-like, shape = [n_examples]
 			Target values.
@@ -592,8 +592,8 @@ class LinearGradientDescent( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the number of
-			examples and n_features is the number of features.
+			Training vec, where n_examples is the num of
+			examples and n_features is the num of features.
 			
 
 			Returns
@@ -625,15 +625,15 @@ class LinearGradientDescent( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the number of
-			examples and n_features is the number of features.
+			Training vec, where n_examples is the num of
+			examples and n_features is the num of features.
 			
 
 			Returns
 			-------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the number of
-			examples and n_features is the number of features.
+			Training vec, where n_examples is the num of
+			examples and n_features is the num of features.
 		
 		"""
 		try:
@@ -660,8 +660,8 @@ class LinearGradientDescent( ):
 			Parameters
 			----------
 			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the number of
-			examples and n_features is the number of features.
+			Training vec, where n_examples is the num of
+			examples and n_features is the num of features.
 			
 
 			Returns
@@ -858,7 +858,7 @@ class DeveloperMessage( ):
 		return [ 'role', 'content', 'type' ]
 
 
-class AssistantMessage( GptMessage ):
+class AssistantMessage( ):
 	'''
 
 		Class representing the system message
@@ -937,11 +937,11 @@ class Chat( AI ):
 		Attributes
 		-----------
 		
-		self.self.number, self.self.temperature, self.self.top_percent,
+		self.self.num, self.self.temperature, self.self.top_percent,
 		self.frequency_penalty, self.presence_penalty,
 		self.store, self.stream, self.maximum_completion_tokens,
 		self.api_key, self.client, self.small_model,  self.embedding,
-		self.response, self.number, self.temperature, self.top_percent,
+		self.response, self.num, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.prompt, self.response, self.completion, self.file, self.path,
@@ -1291,7 +1291,7 @@ class Chat( AI ):
 			Returns: dict[ str ] of members
 
 		'''
-		return { 'number': self.number,
+		return { 'num': self.number,
 		         'temperature': self.temperature,
 		         'top_percent': self.top_percent,
 		         'frequency_penalty': self.frequency_penalty,
@@ -1306,7 +1306,7 @@ class Chat( AI ):
 			Returns: dict of members
 		'''
 		new = '\r\n'
-		return 'number' + f' = {self.number}' + new + \
+		return 'num' + f' = {self.number}' + new + \
 			'temperature' + f' = {self.temperature}' + new + \
 			'top_percent' + f' = {self.top_percent}' + new + \
 			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
@@ -1324,7 +1324,7 @@ class Chat( AI ):
 			Returns: get_list[ str ]
 			
 		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
@@ -1430,6 +1430,8 @@ class Assistant( AI ):
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
+			
+			
 	def generate_image( self, prompt: str ) -> str:
 		"""
 		
@@ -1729,7 +1731,7 @@ class Assistant( AI ):
 			Returns: dict[ str ] of members
 
 		'''
-		return { 'number': self.number,
+		return { 'num': self.number,
 		         'temperature': self.temperature,
 		         'top_percent': self.top_percent,
 		         'frequency_penalty': self.frequency_penalty,
@@ -1744,7 +1746,7 @@ class Assistant( AI ):
 			Returns: dict of members
 		'''
 		new = '\r\n'
-		return 'number' + f' = {self.number}' + new + \
+		return 'num' + f' = {self.number}' + new + \
 			'temperature' + f' = {self.temperature}' + new + \
 			'top_percent' + f' = {self.top_percent}' + new + \
 			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
@@ -1761,7 +1763,7 @@ class Assistant( AI ):
 			Method that returns a list of members
 		
 		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
@@ -1870,6 +1872,8 @@ class Bubba( AI ):
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
+			
+			
 	def generate_image( self, prompt: str ) -> str:
 		"""
 		
@@ -2113,9 +2117,7 @@ class Bubba( AI ):
 	def transcribe( self, text: str ) -> str:
 		pass
 	
-
-
-
+	
 	def get_format_options( ):
 		'''
 		
@@ -2153,7 +2155,7 @@ class Bubba( AI ):
 			Returns: dict[ str ] of members
 
 		'''
-		return { 'number': self.number,
+		return { 'num': self.number,
 		         'temperature': self.temperature,
 		         'top_percent': self.top_percent,
 		         'frequency_penalty': self.frequency_penalty,
@@ -2168,7 +2170,7 @@ class Bubba( AI ):
 			Returns: dict of members
 		'''
 		new = '\r\n'
-		return 'number' + f' = {self.number}' + new + \
+		return 'num' + f' = {self.number}' + new + \
 			'temperature' + f' = {self.temperature}' + new + \
 			'top_percent' + f' = {self.top_percent}' + new + \
 			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
@@ -2185,7 +2187,7 @@ class Bubba( AI ):
 			Method that returns a list of members
 		
 		'''
-		return  [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return  [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
@@ -2418,23 +2420,22 @@ class Bro( AI ):
 					purpose='user_data' )
 				
 				self.messages = [
-					{
-						'role': 'user',
-						'content': [
-							{
-								'type': 'file',
-								'file':
-									{
-										'file_id': file.id,
-									}
-							},
-							{
-								'type': 'text',
-								'pages': 'What is the first dragon in the book?',
-							},
-						]
-					}
-				]
+				{
+					'role': 'user',
+					'content': [
+						{
+							'type': 'file',
+							'file':
+								{
+									'file_id': file.id,
+								}
+						},
+						{
+							'type': 'text',
+							'pages': 'What is the first dragon in the book?',
+						},
+					]
+				} ]
 				
 				self.completion = self.client.chat.completions.create( model=self.model,
 					messages=self.messages )
@@ -2514,11 +2515,11 @@ class Bro( AI ):
 				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
 				self.tools = [
-					{
-						'type': 'file_search',
-						'vector_store_ids': self.vector_store_ids,
-						'max_num_results': 20
-					} ]
+				{
+					'type': 'file_search',
+					'vector_store_ids': self.vector_store_ids,
+					'max_num_results': 20
+				} ]
 				
 				self.response = self.client.responses.create( model=self.model,
 					tools=self.tools, input=prompt )
@@ -2577,7 +2578,7 @@ class Bro( AI ):
 			Returns: dict[ str ] of members
 
 		'''
-		return { 'number': self.number,
+		return { 'num': self.number,
 		         'temperature': self.temperature,
 		         'top_percent': self.top_percent,
 		         'frequency_penalty': self.frequency_penalty,
@@ -2592,7 +2593,7 @@ class Bro( AI ):
 			Returns: dict of members
 		'''
 		new = '\r\n'
-		return 'number' + f' = {self.number}' + new + \
+		return 'num' + f' = {self.number}' + new + \
 			'temperature' + f' = {self.temperature}' + new + \
 			'top_percent' + f' = {self.top_percent}' + new + \
 			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
@@ -2610,7 +2611,7 @@ class Bro( AI ):
 			Method that returns a list of members
 		
 		'''
-		return  [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return  [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
@@ -2643,7 +2644,7 @@ class TTS( AI ):
 		Attributes
 		-----------
 		self.api_key, self.system_instructions, self.client, self.small_model,  self.reasoning_effort,
-		self.response, self.number, self.temperature, self.top_percent,
+		self.response, self.num, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.input_text, self.response, self.completion, self.file, self.path,
@@ -2653,7 +2654,7 @@ class TTS( AI ):
 		Methods
 		------------
 		get_model_options( self ) -> str
-		create( self, prompt: str, path: str )
+		create_vector( self, prompt: str, path: str )
 		
 	
 	"""
@@ -2662,7 +2663,7 @@ class TTS( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		'''
-			Constructor to  create TTS objects
+			Constructor to  create_vector TTS objects
 		'''
 		super( ).__init__( )
 		self.client = OpenAI( )
@@ -2750,7 +2751,7 @@ class TTS( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'TTS'
-			exception.method = 'create( self, prompt: str, input: str )]'
+			exception.method = 'create_vector( self, prompt: str, input: str )]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2761,7 +2762,7 @@ class TTS( AI ):
 			Returns: dict[ str ] of members
 
 		'''
-		return { 'number': self.number,
+		return { 'num': self.number,
 		         'temperature': self.temperature,
 		         'top_percent': self.top_percent,
 		         'frequency_penalty': self.frequency_penalty,
@@ -2776,7 +2777,7 @@ class TTS( AI ):
 			Returns: dict of members
 		'''
 		new = '\r\n'
-		return 'number' + f' = {self.number}' + new + \
+		return 'num' + f' = {self.number}' + new + \
 			'temperature' + f' = {self.temperature}' + new + \
 			'top_percent' + f' = {self.top_percent}' + new + \
 			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
@@ -2794,7 +2795,7 @@ class TTS( AI ):
 			Returns: get_list[ str ]
 			
 		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'completion', 'audio_path',
@@ -2825,7 +2826,7 @@ class Transcription( AI ):
 		Attributes
 		-----------
 		self.api_key, self.system_instructions, self.client, self.small_model,  self.reasoning_effort,
-		self.response, self.number, self.temperature, self.top_percent,
+		self.response, self.num, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.input_text, self.response, self.completion, self.audio_file, self.transcript
@@ -2834,7 +2835,7 @@ class Transcription( AI ):
 		Methods
 		------------
 		get_model_options( self ) -> str
-		create( self, input: str  ) -> str
+		create_vector( self, input: str  ) -> str
 		
 	
 	"""
@@ -2902,7 +2903,7 @@ class Transcription( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Transcription'
-			exception.method = 'create( self, input: str ) -> str'
+			exception.method = 'create_vector( self, input: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2913,7 +2914,7 @@ class Transcription( AI ):
 			Returns: dict[ str ] of members
 
 		'''
-		return { 'number': self.number,
+		return { 'num': self.number,
 		         'temperature': self.temperature,
 		         'top_percent': self.top_percent,
 		         'frequency_penalty': self.frequency_penalty,
@@ -2928,7 +2929,7 @@ class Transcription( AI ):
 			Returns: dict of members
 		'''
 		new = '\r\n'
-		return 'number' + f' = {self.number}' + new + \
+		return 'num' + f' = {self.number}' + new + \
 			'temperature' + f' = {self.temperature}' + new + \
 			'top_percent' + f' = {self.top_percent}' + new + \
 			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
@@ -2946,12 +2947,12 @@ class Transcription( AI ):
 			Returns: get_list[ str ]
 			
 		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'audio_file',
 		         'input', 'messages', 'respose_format',
-		         'api_key', 'client', 'small_model', 'create',
+		         'api_key', 'client', 'small_model', 'create_vector',
 		         'input_text', 'transcript' ]
 
 
@@ -2977,7 +2978,7 @@ class Translation( AI ):
 		Attributes
 		-----------
 		self.api_key, self.system_instructions, self.client, self.small_model,  self.reasoning_effort,
-		self.response, self.number, self.temperature, self.top_percent,
+		self.response, self.num, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.input_text, self.response, self.completion, self.file, self.path,
@@ -2986,7 +2987,7 @@ class Translation( AI ):
 		
 		Methods
 		------------
-		create( self, prompt: str, path: str )
+		create_vector( self, prompt: str, path: str )
 		
 	
 	"""
@@ -3064,7 +3065,7 @@ class Translation( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Translation'
-			exception.method = 'create( self, input: str )'
+			exception.method = 'create_vector( self, input: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3075,7 +3076,7 @@ class Translation( AI ):
 			Returns: dict[ str ] of members
 
 		'''
-		return { 'number': self.number,
+		return { 'num': self.number,
 		         'temperature': self.temperature,
 		         'top_percent': self.top_percent,
 		         'frequency_penalty': self.frequency_penalty,
@@ -3092,7 +3093,7 @@ class Translation( AI ):
 			
 		'''
 		new = '\r\n'
-		return 'number' + f' = {self.number}' + new + \
+		return 'num' + f' = {self.number}' + new + \
 			'temperature' + f' = {self.temperature}' + new + \
 			'top_percent' + f' = {self.top_percent}' + new + \
 			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
@@ -3110,13 +3111,13 @@ class Translation( AI ):
 			Returns: get_list[ str ]
 			
 		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'completion', 'audio_path',
 		         'input', 'messages', 'respose_format', 'tools',
 		         'size', 'api_key', 'client',
-		         'small_model', 'create', 'get_model_options' ]
+		         'small_model', 'create_vector', 'get_model_options' ]
 
 
 class SmallEmbedding( AI ):
@@ -3124,7 +3125,7 @@ class SmallEmbedding( AI ):
 
 		Purpose
 		___________
-		Class used for creating embeddings using
+		Class used for creating vectors using
 		OpenAI' embedding-3-small embedding small_model
 
 		Parameters
@@ -3141,7 +3142,7 @@ class SmallEmbedding( AI ):
 
 		Methods
 		------------
-		create( self, input: str ) -> get_list[ float ]
+		create_vector( self, input: str ) -> get_list[ float ]
 
 
 	"""
@@ -3205,7 +3206,7 @@ class SmallEmbedding( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'SmallEmbedding'
-			exception.method = 'create( self, input: str ) -> get_list[ float ]'
+			exception.method = 'create_vector( self, input: str ) -> get_list[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3216,7 +3217,7 @@ class SmallEmbedding( AI ):
 			Returns: dict[ str ] of members
 
 		'''
-		return { 'number': self.number,
+		return { 'num': self.number,
 		         'temperature': self.temperature,
 		         'top_percent': self.top_percent,
 		         'frequency_penalty': self.frequency_penalty,
@@ -3233,7 +3234,7 @@ class SmallEmbedding( AI ):
 			
 		'''
 		new = '\r\n'
-		return 'number' + f' = {self.number}' + new + \
+		return 'num' + f' = {self.number}' + new + \
 			'temperature' + f' = {self.temperature}' + new + \
 			'top_percent' + f' = {self.top_percent}' + new + \
 			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
@@ -3251,11 +3252,11 @@ class SmallEmbedding( AI ):
 			Returns: get_list[ str ]
 
 		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'api_key', 'client', 'small_model',
-		         'input', 'create', 'get_model_options' ]
+		         'input', 'create_vector', 'get_model_options' ]
 
 
 class AdaEmbedding( AI ):
@@ -3263,7 +3264,7 @@ class AdaEmbedding( AI ):
 
 		Purpose
 		___________
-		Class used for creating ADA embeddings using
+		Class used for creating ADA vectors using
 		OpenAI's embedding-ada-02 embedding small_model
 
 		Parameters
@@ -3280,7 +3281,7 @@ class AdaEmbedding( AI ):
 
 		Methods
 		------------
-		create( self, input: str ) -> get_list[ float ]
+		create_vector( self, input: str ) -> get_list[ float ]
 
 	'''
 	
@@ -3333,7 +3334,7 @@ class AdaEmbedding( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'AdaEmbedding'
-			exception.method = 'create( self, input: str ) -> get_list[ float ]'
+			exception.method = 'create_vector( self, input: str ) -> get_list[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3354,11 +3355,11 @@ class AdaEmbedding( AI ):
 			Returns: get_list[ str ]
 
 		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'api_key', 'client', 'small_model',
-		         'input', 'create', 'get_model_options' ]
+		         'input', 'create_vector', 'get_model_options' ]
 
 
 class LargeEmbedding( AI ):
@@ -3366,7 +3367,7 @@ class LargeEmbedding( AI ):
 
 		Purpose
 		___________
-		Class used for creating ADA embeddings using
+		Class used for creating ADA vectors using
 		OpenAI's embedding-ada-02 embedding small_model
 
 		Parameters
@@ -3383,7 +3384,7 @@ class LargeEmbedding( AI ):
 
 		Methods
 		------------
-		create( self, input: str ) -> get_list[ float ]
+		create_vector( self, input: str ) -> get_list[ float ]
 
 	'''
 	
@@ -3446,7 +3447,7 @@ class LargeEmbedding( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'LargeEmbedding'
-			exception.method = 'create( self, input: str ) -> get_list[ float ]'
+			exception.method = 'create_vector( self, input: str ) -> get_list[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3458,11 +3459,11 @@ class LargeEmbedding( AI ):
 			Returns: get_list[ str ]
 
 		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'api_key', 'client', 'small_model',
-		         'input', 'create', 'get_model_options' ]
+		         'input', 'create_vector', 'get_model_options' ]
 
 
 class LargeImage( AI ):
@@ -3476,7 +3477,7 @@ class LargeImage( AI ):
 
 		Parameters
 		------------
-		number: int
+		num: int
 		temperature: float
 		top_percent: float
 		frequency_penalty: float
@@ -3652,7 +3653,7 @@ class LargeImage( AI ):
 			Returns: get_list[ str ]
 
 		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'input_text', 'image_url', 'path',
@@ -3683,7 +3684,7 @@ class Image( AI ):
 		Attributes
 		-----------
 		self.api_key, self.client, self.small_model,  self.embedding,
-		self.response, self.number, self.temperature, self.top_percent,
+		self.response, self.num, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.prompt, self.response, self.completion, self.file, self.path,
@@ -3868,7 +3869,7 @@ class Image( AI ):
 			Returns: get_list[ str ]
 
 		'''
-		return [ 'number', 'temperature', 'top_percent', 'frequency_penalty',
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'api_key', 'client', 'small_model', 'input', 'analyze',

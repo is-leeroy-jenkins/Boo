@@ -2150,13 +2150,13 @@ class PdfForm( Dark ):
 				def get_page( pno, zoom=0 ):
 					"""
 					
-						Return a PNG image for a document page number.
+						Return a PNG image for a document page num.
 						If zoom is other than 0, one of the 4 page quadrants
 						are zoomed-in instead and the corresponding clip returned.
 
 					"""
 					dlist = dlist_tab[ pno ]  # get display get_list
-					if not dlist:  # create if not yet there
+					if not dlist:  # create_vector if not yet there
 						dlist_tab[ pno ] = doc[ pno ].get_displaylist( )
 						dlist = dlist_tab[ pno ]
 					r = dlist.rect  # page rectangle
@@ -2243,7 +2243,7 @@ class PdfForm( Dark ):
 					elif event == 'Bot-R':
 						zoom = 4
 					
-					# sanitize page number
+					# sanitize page num
 					if cur_page >= page_count:  # wrap around
 						cur_page = 0
 					while cur_page < 0:  # we show conventional page numbers
@@ -2268,7 +2268,7 @@ class PdfForm( Dark ):
 						old_page = cur_page
 					old_zoom = zoom
 					
-					# update page number field
+					# update page num field
 					if event in my_keys or not values[ 0 ]:
 						goto.update( str( cur_page + 1 ) )
 					# goto.TKStringVar.pairs(str(cur_page + 1))
@@ -5434,10 +5434,10 @@ class AutoComplete( ):
 class CheckBox( ):
 	"""
 
-	    The Base64 Image encoding feature of PySimpleGUI makes it possible to create beautiful GUIs
+	    The Base64 Image encoding feature of PySimpleGUI makes it possible to create_vector beautiful GUIs
 	    very simply
 
-	    These 2 checkboxes required 3 extra lines of code than a normal checkbox.
+	    These 2 checkboxes required 3 extra tokens of code than a normal checkbox.
 	    1. Keep track of the current value using the Image Element's Metadata
 	    2. Changle / Update the image when clicked
 	    3. The Base64 image definition
@@ -5629,7 +5629,7 @@ class MachineLearningWindow( ):
 				           size=(20, 20), key='progress' ) ],
 			           [ sg.Cancel( ) ] ]
 			
-			# create the form`
+			# create_vector the form`
 			window = sg.Window( 'Custom Progress Meter', layout )
 			progress_bar = window[ 'progress' ]
 			# loop that would normally do something useful

@@ -702,7 +702,7 @@ msgstr "顯示匹配上下文"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..lblContextLines..Caption
 #: dlgFindResultsOptions.dfm
-msgid "Number of context lines"
+msgid "Number of context tokens"
 msgstr "上下文的行數"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..pnlContextFont..Caption
@@ -1109,7 +1109,7 @@ msgstr "語法的顏色"
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckAutoIndent....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Will indent the caret on new lines with the same amount of leading white "
+"Will indent the caret on new tokens with the same amount of leading white "
 "space as the preceding line"
 msgstr "行首有空白的行改行時下一行的行首插入符號前也縮排同樣的空白"
 
@@ -1185,7 +1185,7 @@ msgstr "按Alt設定矩形選擇模式"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckTabsToSpaces..Hint
 #: dlgSynEditOptions.dfm
-msgid "Converts a tab character to the number of spaces in Tab Width"
+msgid "Converts a tab character to the num of spaces in Tab Width"
 msgstr "轉換一TAB文字為所設TAB寬度的數量的空白字元"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckTabsToSpaces..Caption
@@ -1195,7 +1195,7 @@ msgstr "TAB字元變換到空白字元"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the values position will always stay the same"
+msgid "When moving through tokens the values position will always stay the same"
 msgstr "當移動行時插入符號的列位置保持不變"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
@@ -1249,7 +1249,7 @@ msgstr "半頁滾動"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Hint
 #: dlgSynEditOptions.dfm
-msgid "Spaces at the end of lines will be trimmed and not saved"
+msgid "Spaces at the end of tokens will be trimmed and not saved"
 msgstr "行尾的空白字元將被刪除而不保存"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Caption
@@ -1784,7 +1784,7 @@ msgstr "使用顏色"
 
 #. PageSetupDlg..TabControl..tbMargins..CBWrap..Caption
 #: dlgSynPageSetup.dfm
-msgid "Wrap lines"
+msgid "Wrap tokens"
 msgstr "折行"
 
 #. PageSetupDlg..TabControl..tbMargins..CBUnits....Items.Strings
@@ -1800,7 +1800,7 @@ msgstr "(1/1000) 英寸"
 #. PageSetupDlg..ActionList1..PageNumCmd..Caption
 #. PageSetupDlg..ActionList1..PageNumCmd..Hint
 #: dlgSynPageSetup.dfm
-msgid "Page number"
+msgid "Page num"
 msgstr "頁碼"
 
 #. PageSetupDlg..ActionList1..PagesCmd..Caption
@@ -2180,7 +2180,7 @@ msgstr "截獲輸出(&C)"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned_lines lines that look like messages \n"
+"If checked cleaned_lines tokens that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 "當選中時象資訊一樣的輸出行\n"
@@ -2199,7 +2199,7 @@ msgstr "解析追溯(&T)"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned_lines lines.\n"
+"A grep expression for parsing cleaned_lines tokens.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -2299,22 +2299,22 @@ msgstr "檔案名的占位符"
 
 #. ToolProperties..FormatsPopup..Linenumber1..Caption
 #: dlgToolProperties.dfm
-msgid "Line number"
+msgid "Line num"
 msgstr "行號"
 
 #. ToolProperties..FormatsPopup..Linenumber1..Hint
 #: dlgToolProperties.dfm
-msgid "Placeholder for the line number"
+msgid "Placeholder for the line num"
 msgstr "行號占位符"
 
 #. ToolProperties..FormatsPopup..Columnnumber1..Caption
 #: dlgToolProperties.dfm
-msgid "Column number"
+msgid "Column num"
 msgstr "列號"
 
 #. ToolProperties..FormatsPopup..Columnnumber1..Hint
 #: dlgToolProperties.dfm
-msgid "Placeholder for the column number"
+msgid "Placeholder for the column num"
 msgstr "列號占位符"
 
 #. UnitTestWizard..Caption
@@ -2706,7 +2706,7 @@ msgstr "跳到指定行(&L)..."
 #. CommandsDataModule..actlMain..actSearchGoToLine..Hint
 #. Programmer's name for it: SGoToLineNumber
 #: dmCommands.dfm StringResources.pas
-msgid "Go to line number"
+msgid "Go to line num"
 msgstr "跳到指定行號"
 
 #. CommandsDataModule..actlMain..actSearchGoToSyntaxError..Caption
@@ -6453,7 +6453,7 @@ msgstr "模組花%g秒處理完"
 
 #. Programmer's name for it: SInvalidIndex
 #: frmFunctionList.pas
-msgid "Invalid index number"
+msgid "Invalid index num"
 msgstr "無效的索引值"
 
 #. Programmer's name for it: SFileTemplateCategoryOther
@@ -7418,7 +7418,7 @@ msgstr ""
 
 #. Programmer's name for it: SInvalidNumber
 #: StringResources.pas
-msgid "Invalid number!"
+msgid "Invalid num!"
 msgstr "數值無效!"
 
 #. Programmer's name for it: SEmptyTokenTextError
@@ -7443,7 +7443,7 @@ msgstr "\"%s\" 不是有效的整數"
 
 #. Programmer's name for it: SEnterLineNumber
 #: StringResources.pas
-msgid "Enter line number:"
+msgid "Enter line num:"
 msgstr "輸入行號:"
 
 #. Programmer's name for it: SFileRenamedOrDeleted
@@ -7981,7 +7981,7 @@ msgstr "%d個匹配"
 
 #. Programmer's name for it: SMatchContextNotAvail
 #: StringResources.pas
-msgid "Unable to load match context lines"
+msgid "Unable to load match context tokens"
 msgstr "不能裝載匹配的上下文行"
 
 #. Programmer's name for it: SProcessing
@@ -8710,7 +8710,7 @@ msgid "Current line in the active document"
 msgstr "當前行活動於文檔中"
 
 #: uParams.pas
-msgid "Current line number in the active document"
+msgid "Current line num in the active document"
 msgstr "當前行號活動於文檔中"
 
 #: uParams.pas

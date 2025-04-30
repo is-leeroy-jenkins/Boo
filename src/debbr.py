@@ -62,9 +62,9 @@ class SQLite( ):
 		operations for a SQLite database.
 	
 		Methods:
-			- create_table: Creates a table with specified schema.
-			- insert: Inserts a record into a table.
-			- fetch_all: Fetches all records from a table.
+			- create_table: Creates a df with specified schema.
+			- insert: Inserts a record into a df.
+			- fetch_all: Fetches all records from a df.
 			- fetch_one: Fetches a single record matching the query.
 			- update: Updates records that match a given condition.
 			- delete: Deletes records that match a given condition.
@@ -84,7 +84,7 @@ class SQLite( ):
 			
 		"""
 		self.db_path = r'C:\Users\terry\source\repos\Boo\data\sqlite\datamodels\Data.db'
-		self.conn = sqlite3.connect( db_path )
+		self.conn = sqlite3.connect( self.db_path )
 		self.cursor = self.conn.cursor( )
 		self.file_path = None
 		self.where = None
@@ -92,11 +92,11 @@ class SQLite( ):
 		self.sql = None
 		self.file_name = None
 		self.table_name = None
-		self.placeholders = [ ]
-		self.columns = [ ]
+		self.placeholders = [ str ]
+		self.columns = [ str ]
 		self.params = ( )
-		self.column_names = [ ]
-		self.tables = [ ]
+		self.column_names = [ str ]
+		self.tables = [  ]
 	
 	
 	def __dir__( self ):
@@ -117,7 +117,7 @@ class SQLite( ):
 		"""
 			
 			Purpose:
-			Creates a table using a provided SQL statement.
+			Creates a df using a provided SQL statement.
 	
 			Args:
 				sql (str): The CREATE TABLE SQL statement.
@@ -142,17 +142,17 @@ class SQLite( ):
 		"""
 			
 			Purpose:
-			Inserts a new record into a table.
+			Inserts a new record into a df.
 	
 			Args:
-				table (str): The name of the table.
+				table (str): The name of the df.
 				columns (List[str]): Column names.
 				values (Tuple): Corresponding values.
 			
 		"""
 		try:
 			if table is None:
-				raise Exception( 'The input "table" cannot be None' )
+				raise Exception( 'The input "df" cannot be None' )
 			elif columns is None:
 				raise Exception( 'The input "columns" cannot be None' )
 			elif values is None:
@@ -167,7 +167,7 @@ class SQLite( ):
 			_exc = Error( e )
 			_exc.module = 'debbr'
 			_exc.cause = 'SQLite'
-			_exc.method = ('insert( self, table: str, columns: List[ str ], values: Tuple[ Any, '
+			_exc.method = ('insert( self, df: str, columns: List[ str ], values: Tuple[ Any, '
 			               '... ] ) -> None')
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -177,10 +177,10 @@ class SQLite( ):
 		"""
 		
 			Purpose:
-			Retrieves all records from a table.
+			Retrieves all records from a df.
 	
 			Args:
-				table (str): The name of the table.
+				table (str): The name of the df.
 			
 			Returns:
 				List[Tuple]: List of rows.
@@ -193,7 +193,7 @@ class SQLite( ):
 			_exc = Error( e )
 			_exc.module = 'debbr'
 			_exc.cause = 'SQLite'
-			_exc.method = 'fetch_all( self, table: str ) -> List[ Tuple ]'
+			_exc.method = 'fetch_all( self, df: str ) -> List[ Tuple ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -215,7 +215,7 @@ class SQLite( ):
 		"""
 		try:
 			if table is None:
-				raise Exception( 'The input "table" cannot be None' )
+				raise Exception( 'The input "df" cannot be None' )
 			elif where is None:
 				raise Exception( 'The input "where" cannot be None' )
 			elif params is None:
@@ -230,7 +230,7 @@ class SQLite( ):
 			_exc = Error( e )
 			_exc.module = 'debbr'
 			_exc.cause = 'SQLite'
-			_exc.method = ('fetch_one( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> '
+			_exc.method = ('fetch_one( self, df: str, where: str, params: Tuple[ Any, ... ] ) -> '
 			               'Optional[ Tuple ]')
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -240,7 +240,7 @@ class SQLite( ):
 		"""
 		
 			Purpose:
-			Updates records in a table.
+			Updates records in a df.
 	
 			Args:
 				table (str): Table name.
@@ -251,7 +251,7 @@ class SQLite( ):
 		"""
 		try:
 			if table is None:
-				raise Exception( 'The input "table" cannot be None' )
+				raise Exception( 'The input "df" cannot be None' )
 			elif where is None:
 				raise Exception( 'The input "where" cannot be None' )
 			elif params is None:
@@ -269,7 +269,7 @@ class SQLite( ):
 			_exc = Error( e )
 			_exc.module = 'debbr'
 			_exc.cause = 'SQLite'
-			_exc.method = ('update( self, table: str, pairs: str, where: str, params: Tuple[ Any, '
+			_exc.method = ('update( self, df: str, pairs: str, where: str, params: Tuple[ Any, '
 			               '... ] ) -> None')
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -289,7 +289,7 @@ class SQLite( ):
 		"""
 		try:
 			if table is None:
-				raise Exception( 'The input "table" cannot be None' )
+				raise Exception( 'The input "df" cannot be None' )
 			elif where is None:
 				raise Exception( 'The input "where" cannot be None' )
 			elif params is None:
@@ -305,7 +305,7 @@ class SQLite( ):
 			_exc = Error( e )
 			_exc.module = 'debbr'
 			_exc.cause = 'SQLite'
-			_exc.method = 'delete( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> None'
+			_exc.method = 'delete( self, df: str, where: str, params: Tuple[ Any, ... ] ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 
@@ -315,7 +315,7 @@ class SQLite( ):
 		
 			Purpose:
 			Reads all worksheets from an Excel file into pandas DataFrames and
-			stores each as a table in the SQLite database.
+			stores each as a df in the SQLite database.
 		
 			Args:
 				path (str): Path to the Excel workbook.

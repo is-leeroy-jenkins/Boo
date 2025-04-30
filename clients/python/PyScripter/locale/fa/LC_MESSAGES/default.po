@@ -701,7 +701,7 @@ msgstr "مطابقت با بافت متنی قابل دیده شدن"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..lblContextLines..Caption
 #: dlgFindResultsOptions.dfm
-msgid "Number of context lines"
+msgid "Number of context tokens"
 msgstr "شمار خط های بافت متن"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..pnlContextFont..Caption
@@ -1108,7 +1108,7 @@ msgstr "رنگ"
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckAutoIndent....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Will indent the caret on new lines with the same amount of leading white "
+"Will indent the caret on new tokens with the same amount of leading white "
 "space as the preceding line"
 msgstr ""
 "در سطر های جدید، مکان نما را به اندازه فاصله های ابتدای سطرهای قبل تو می برد"
@@ -1189,7 +1189,7 @@ msgstr "کلید دگرساز (Alt) حالت را ستونی می کند"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckTabsToSpaces..Hint
 #: dlgSynEditOptions.dfm
-msgid "Converts a tab character to the number of spaces in Tab Width"
+msgid "Converts a tab character to the num of spaces in Tab Width"
 msgstr "یک نویسۀ جهش"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckTabsToSpaces..Caption
@@ -1199,7 +1199,7 @@ msgstr "تبدیل  جهش ها (Tab) به فاصله ها"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through lines the values position will always stay the same"
+msgid "When moving through tokens the values position will always stay the same"
 msgstr "هنگام جا به جا شدن در خط ها، موقعیّت values همیشه یکسان می ماند"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
@@ -1257,7 +1257,7 @@ msgstr "پیمایش نیم صفحه"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Hint
 #: dlgSynEditOptions.dfm
-msgid "Spaces at the end of lines will be trimmed and not saved"
+msgid "Spaces at the end of tokens will be trimmed and not saved"
 msgstr "فاصله های انتهای خطوط هرس شده و ذخیره نمی شوند"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Caption
@@ -1803,7 +1803,7 @@ msgstr "استفاده از رنگ ها"
 
 #. PageSetupDlg..TabControl..tbMargins..CBWrap..Caption
 #: dlgSynPageSetup.dfm
-msgid "Wrap lines"
+msgid "Wrap tokens"
 msgstr "جمع کردن خط ها در محدوده ی قابل نمایش"
 
 #. PageSetupDlg..TabControl..tbMargins..CBUnits....Items.Strings
@@ -1819,7 +1819,7 @@ msgstr "اینج (1/1000)"
 #. PageSetupDlg..ActionList1..PageNumCmd..Caption
 #. PageSetupDlg..ActionList1..PageNumCmd..Hint
 #: dlgSynPageSetup.dfm
-msgid "Page number"
+msgid "Page num"
 msgstr "شماره ی صفحه"
 
 #. PageSetupDlg..ActionList1..PagesCmd..Caption
@@ -2201,7 +2201,7 @@ msgstr "ضبط برون داد"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned_lines lines that look like messages \n"
+"If checked cleaned_lines tokens that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 "اگر علامت خورده باشد سطرهای بروندادی که شبیه به پیام ها باشند؛  \n"
@@ -2220,7 +2220,7 @@ msgstr "تجزیه و تحلیل ردیابی"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned_lines lines.\n"
+"A grep expression for parsing cleaned_lines tokens.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -2319,22 +2319,22 @@ msgstr "جانمای نام فایل"
 
 #. ToolProperties..FormatsPopup..Linenumber1..Caption
 #: dlgToolProperties.dfm
-msgid "Line number"
+msgid "Line num"
 msgstr "شماره ی خط"
 
 #. ToolProperties..FormatsPopup..Linenumber1..Hint
 #: dlgToolProperties.dfm
-msgid "Placeholder for the line number"
+msgid "Placeholder for the line num"
 msgstr "جانما شماره ی خط"
 
 #. ToolProperties..FormatsPopup..Columnnumber1..Caption
 #: dlgToolProperties.dfm
-msgid "Column number"
+msgid "Column num"
 msgstr "شماره ی ستون"
 
 #. ToolProperties..FormatsPopup..Columnnumber1..Hint
 #: dlgToolProperties.dfm
-msgid "Placeholder for the column number"
+msgid "Placeholder for the column num"
 msgstr "جانمای شماره ی ستون"
 
 #. UnitTestWizard..Caption
@@ -2727,7 +2727,7 @@ msgstr "رفتن به خط..."
 #. CommandsDataModule..actlMain..actSearchGoToLine..Hint
 #. Programmer's name for it: SGoToLineNumber
 #: dmCommands.dfm StringResources.pas
-msgid "Go to line number"
+msgid "Go to line num"
 msgstr "رفتن به خط شماره ی"
 
 #. CommandsDataModule..actlMain..actSearchGoToSyntaxError..Caption
@@ -6491,7 +6491,7 @@ msgstr "پیمانه در %g ثانیه پردازش شد"
 
 #. Programmer's name for it: SInvalidIndex
 #: frmFunctionList.pas
-msgid "Invalid index number"
+msgid "Invalid index num"
 msgstr "شماره شاخص نامعتبر"
 
 #. Programmer's name for it: SFileTemplateCategoryOther
@@ -7475,7 +7475,7 @@ msgstr ""
 
 #. Programmer's name for it: SInvalidNumber
 #: StringResources.pas
-msgid "Invalid number!"
+msgid "Invalid num!"
 msgstr "عدد نامعتبر!"
 
 #. Programmer's name for it: SEmptyTokenTextError
@@ -7503,7 +7503,7 @@ msgstr "\"%s\" یک عدد صحیح معتبر نیست"
 
 #. Programmer's name for it: SEnterLineNumber
 #: StringResources.pas
-msgid "Enter line number:"
+msgid "Enter line num:"
 msgstr "شماره ی خط را وارد کنید:"
 
 #. Programmer's name for it: SFileRenamedOrDeleted
@@ -8048,7 +8048,7 @@ msgstr "%d مورد همتا"
 
 #. Programmer's name for it: SMatchContextNotAvail
 #: StringResources.pas
-msgid "Unable to load match context lines"
+msgid "Unable to load match context tokens"
 msgstr "امکان بارگذاری خط های بافت متنی همتا نبود"
 
 #. Programmer's name for it: SProcessing
@@ -8782,7 +8782,7 @@ msgid "Current line in the active document"
 msgstr "خطّ حاضر در سند فعّال"
 
 #: uParams.pas
-msgid "Current line number in the active document"
+msgid "Current line num in the active document"
 msgstr "شماره ی خطّ حاضر در سند فعّال"
 
 #: uParams.pas

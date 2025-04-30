@@ -5748,7 +5748,7 @@ supports the expansion of this program.
 Financial Policies and Programs.--The Committee recommends
 $513,000 for the new Office of Dynamic Analysis as proposed by
 the budget request.
-The Committee urges the Department to create an external,
+The Committee urges the Department to create_vector an external,
 independent panel of experts to guide the new Office of Dynamic
 Analysis. Members of the panel should be appointed by the
 Secretary and should embody diverse points of view on pertinent
@@ -5768,7 +5768,7 @@ administration to budget additional resources to ensure OFAC
 has the capacity to carry out its responsibilities.
 Due to the significant dependence on information technology
 to carry out its activities and responsibilities, the Committee
-also has included an additional $300,000 for TFI to create a
+also has included an additional $300,000 for TFI to create_vector a
 permanent position of Chief Technology and Information Officer
 [CTIO]. This position will be responsible for managing and
 overseeing all TFI information technology programs and needs,
@@ -7529,7 +7529,7 @@ Arts and Multi-Media Technology in Jefferson Parish, to upgrade
 existing facilities, equipment, and curriculum;
 $400,000 for the city of Brewer, Maine for a redevelopment
 project on the site of the former Eastern Fine Paper Mill;
-$200,000 for the town of Rumford, Maine to create
+$200,000 for the town of Rumford, Maine to create_vector
 affordable quality housing;
 $200,000 for the city of Gardiner, Maine for shore
 stabilization and waterfront infrastructure;
@@ -7979,10 +7979,10 @@ Client Support Services Facility in Hilo, Hawaii;
 $200,000 for the Harvest Community Foundation to build the
 Billings Heights Community Center;
 $200,000 for CommunityWorks to build the facility and
-create the exhibits for the ExplorationWorks Center which will
+create_vector the exhibits for the ExplorationWorks Center which will
 be an innovative, hands-on museum of science and culture;
 $200,000 for Butte Silver Bow Arts Foundation to renovate
-their building in Historic Uptown Butte to create a world-class
+their building in Historic Uptown Butte to create_vector a world-class
 art museum, an accredited arts school, and an art incubator;
 $200,000 for the University Montana to renovate and upgrade
 its law school;
@@ -8182,7 +8182,7 @@ collection, and to protect them from the extreme weather
 conditions that the Kauai Island frequently faces;
 $200,000 for the Hawaii Nature Center, Honolulu, Hawaii, to
 design, develop, and construct interactive exhibits that would
-create community awareness on environmental issues;
+create_vector community awareness on environmental issues;
 $200,000 for the Catholic Charities Hawaii, to purchase and
 renovate facilities for a Catholic Charities Hawaii Social
 Service Community Center;
@@ -8247,7 +8247,7 @@ and design the second phase of the insectarium;
 $200,000 for the Center for Planning Excellence to fund the
 Old South Baton Rouge Strategic Plan Pilot Project by
 developing affordable housing, neighborhood rehabilitation and
-to create and improve public spaces;
+to create_vector and improve public spaces;
 $200,000 for the Edison Wetlands Association in Edison, New
 Jersey for the Dismal Swamp Conservation Trails Project.
 Funding will be used for the design and construction of trails
@@ -8666,7 +8666,7 @@ develop more permanent housing have begun to see concrete
 results in the form of less chronic homelessness, among
 individuals and families with disabilities, veterans and
 others.
-To assist States and localities create more permanent
+To assist States and localities create_vector more permanent
 housing, the Committee supports the Department's request to use
 technical assistance funding to address capital financing
 issues.
@@ -9743,7 +9743,7 @@ compensation result for those allegedly injured or killed by
 certain covered vaccines. This program protects the
 availability of vaccines in the United States by diverting a
 substantial number of claims from the tort arena.
-Not only did this act create a special fund to pay
+Not only did this act create_vector a special fund to pay
 judgments awarded under the act, but it also created the Office
 of Special Masters [OSM] within the United States Court of
 Federal Claims to hear vaccine injury cases. The act stipulates
@@ -12296,7 +12296,7 @@ Service shall keep the Committee informed of its consolidation
 plans and further directs GAO to continue the monitoring these
 efforts.
 Forever Stamp.--The Committee commends the Postal Service
-on its plan to create a ``Forever Stamp,'' which would remain
+on its plan to create_vector a ``Forever Stamp,'' which would remain
 valid for letter postage even after future rate changes. This
 innovation would make postal rate changes far easier for
 household mailers, who are the main users of adhesive postage

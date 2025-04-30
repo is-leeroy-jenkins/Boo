@@ -46,11 +46,18 @@ import re
 import fitz
 import string
 import spacy
+import matplotlib.pyplot as plt
+import plotly.express as px
+from scipy import spatial
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from sklearn.metrics import average_precision_score, precision_recall_curve
 from openai import OpenAI
 from booger import Error, ErrorDialog
 from pathlib import Path
 import tiktoken
 from typing import Any, List, Tuple, Optional
+import textwrap as tr
 
 
 class Vector( ):
@@ -58,7 +65,7 @@ class Vector( ):
 		
 		Vector
 		---------
-		A class for generating OpenAI embeddings, performing normalization, computing similarity,
+		A class for generating OpenAI vectors, performing normalization, computing similarity,
 		and interacting with OpenAI Vector Stores via the OpenAI API. Includes local
 		export/import,
 		vector diagnostics, and bulk querying functionality.
@@ -79,17 +86,28 @@ class Vector( ):
 		"""
 		self.small_model = 'text-embedding-3-small'
 		self.large_model = 'text-embedding-3-large'
-		self.ada_model = 'text-embedding-3-ada'
+		self.ada_model = 'text-embedding-3-ada-002'
 		self.client = OpenAI( )
-		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.raw_text = None
+		self.file_path = None
+		self.file_name = None
+		self.file_ids = None
+		self.directory = None
 		self.cache = { }
 		self.results = { }
+		self.stats = { }
+		self.data = { }
+		self.id = None
 		self.response = None
-		self.vector_stores = [ ]
+		self.dataframe = None
+		self.vector_stores = [ str ]
 		self.store_ids = [ ]
 		self.file_ids = [ ]
-		self.vectors = [ ]
-		self.batches = [ List[ str ] ]
+		self.files = [ str ]
+		self.tokens = List[ str ]
+		self.array = List[ float ]
+		self.vectors = List[ List[ float ] ]
+		self.batches = List[ List[ str ] ]
 		self.tables = List[ pd.DataFrame ]
 	
 	
@@ -101,38 +119,42 @@ class Vector( ):
 		
 		'''
 		return [ 'small_model', 'large_model', 'ada_model',
-		         'client', 'cache', 'results',
-		         'response', 'vector_stores', 'file_ids',
-		         'batches', 'tables', 'vectors', 'embedd',
+		         'id', 'files', 'tokens', 'array', 'store_ids',
+		         'client', 'cache', 'results', 'directory', 'stats'
+		         'response', 'vector_stores', 'file_ids', 'data',
+		         'batches', 'tables', 'vectors', 'create', 'dataframe',
 		         'most_similar', 'bulk_similar', 'similarity_heatmap',
 		         'export_jsonl', 'import_jsonl', 'create_vector_store',
 		         'list_vector_stores', 'upload_vector_store',
-		         'query_vector_store', 'delete_vector_store' ]
+		         'query_vector_store', 'delete_vector_store',
+		         'upload_document', 'upload_documents' ]
 	
 	
-	def embed( self, texts: List[ str ], batch: int=10, max: int=3,
-	           time: float = 2.0 ) -> pd.DataFrame:
+	def create( self, tokens: List[ str ], batch: int=10, max: int=3, time: float=2.0 ) -> pd.DataFrame:
 		"""
 		
 			Generate and normalize
-			embeddings for a list of input texts.
+			vectors for a list of input tokens.
 	
 			Parameters:
-			- texts (List[str]): List of input pages strings
-			- batch (int): Number of texts per API request batch
+			- tokens (List[str]): List of input pages strings
+			- batch (int): Number of tokens per API request batch
 			- max (int): Number of retries on API failure
 			- time (float): Seconds to wait between retries
 	
 			Returns:
-			- pd.DataFrame: DataFrame containing original pages, raw embeddings,
-			and normalized embeddings
+			- pd.DataFrame: DataFrame containin
+			g original pages, raw vectors,
+			and normalized vectors
 			
 		"""
 		try:
-			if texts is None:
-				raise Exception( 'Input "texts" cannot be None' )
+			if tokens is None:
+				raise Exception( 'Input "tokens" cannot be None' )
 			else:
-				self.batches = self._batch_chunks( texts, batch )
+				self.tokens = tokens
+				self.batches = self._batch_chunks( self.tokens, batch )
+				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				for index, batch in enumerate( self.batches ):
 					for attempt in range( max ):
 						try:
@@ -147,21 +169,21 @@ class Vector( ):
 					else:
 						raise RuntimeError( f'Failed after {max} attempts on batch {index + 1}' )
 				
-				_embeddings = np.array( self.vectors )
+				_embeddings = np.array( self.array )
 				_normed = self._normalize( _embeddings )
-				_data = \
+				self.data = \
 				{
-					'pages': texts,
+					'pages': tokens,
 					'embedding': list( _embeddings ),
 					'normed_embedding': list( _normed )
 				}
 				
-				return pd.DataFrame( _data )
+				return pd.DataFrame( self.data )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Vector'
-			_exc.method = ('embed( self, texts: List[ str ], batch: int=10, max: int=3, '
+			_exc.method = ('create_vector( self, tokens: List[ str ], batch: int=10, max: int=3, '
 			               'time: float=2.0 ) -> pd.DataFrame')
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -170,11 +192,11 @@ class Vector( ):
 	def _batch_chunks( self, texts: List[ str ], size: int ) -> List[ List[ str ] ]:
 		"""
 		
-			Split a list of texts
+			Split a list of tokens
 			into batches of specified size.
 	
 			Parameters:
-			- texts (List[str]): Full list of input strings
+			- tokens (List[str]): Full list of input strings
 			- size (int): Desired batch size
 	
 			Returns:
@@ -183,7 +205,7 @@ class Vector( ):
 		"""
 		try:
 			if texts is None:
-				raise Exception( 'Input "texts" cannot be None' )
+				raise Exception( 'Input "tokens" cannot be None' )
 			elif size is None:
 				raise Exception( 'Input "size" cannot be None' )
 			else:
@@ -192,10 +214,53 @@ class Vector( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Vector'
-			_exc.method = (' _batch_chunks( self, texts: List[ str ], size: int ) -> [ List[ str '
+			_exc.method = (' _batch_chunks( self, tokens: List[ str ], size: int ) -> [ List[ str '
 			               '] ]')
 			_err = ErrorDialog( _exc )
 			_err.show( )
+	
+	def get_purpose_options( self ) -> List[ str ]:
+		'''
+		
+			Returns a list of string representing the purpose of the file
+		
+		'''
+		return [ 'assistants', 'assistants_output', 'batch',
+		 'batch_output', 'fine-tune', 'fine-tune-results',
+		 'vision' ]
+	
+	
+	def get_type_options( self ) -> { }:
+		'''
+			
+			Returns a dictionary of file formats and types
+			
+		'''
+		return \
+		{
+			'.c': 'text/x-c',
+			'.cpp': 'text/x-c++',
+			'.cs': 'text/x-csharp',
+			'.css': 'text/css',
+			'.doc': 'application/msword',
+			'.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+			'.go': 'text/x-golang',
+			'.html': 'text/html',
+			'.java': 'text/x-java',
+			'.js': 'text/javascript',
+			'.json': 'application/json',
+			'.md': 'text/markdown',
+			'.pdf': 'application/pdf',
+			'.php': 'text/x-php',
+			'.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+			'.py': 'text/x-python',
+			'.py': 'text/x-script.python',
+			'.rb': 'text/x-ruby',
+			'.sh': 'application/x-sh',
+			'.tex': 'text/x-tex',
+			'.ts': 'application/typescript',
+			'.txt': 'text/plain'
+		}
 	
 	
 	def _normalize( self, vector: np.ndarray ) -> np.ndarray:
@@ -215,8 +280,9 @@ class Vector( ):
 			if vector is None:
 				raise Exception( 'Input "vector" cannot be None' )
 			else:
-				_norms = np.linalg.norm( vector, axis=1, dims=True )
-				return vector / np.clip( _norms, 1e-10, None )
+				self.array = vector
+				_norms = np.linalg.norm( self.array, axis=1, dims=True )
+				return self.array / np.clip( _norms, 1e-10, None )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -246,7 +312,8 @@ class Vector( ):
 			elif matrix is None:
 				raise Exception( 'Input "matrix" cannot be None' )
 			else:
-				_query = vector / np.linalg.norm( vector )
+				self.array = vector
+				_query = self.array / np.linalg.norm( self.array )
 				_matrix = matrix / np.linalg.norm( matrix, axis=1, dims=True )
 				return np.dot( _matrix, _query )
 		except Exception as e:
@@ -260,7 +327,7 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def most_similar( self, query: str, table: pd.DataFrame, top: int=5 ) -> pd.DataFrame:
+	def most_similar( self, query: str, df: pd.DataFrame, top: int=5 ) -> pd.DataFrame:
 		"""
 		
 			Purpose:
@@ -268,7 +335,7 @@ class Vector( ):
 	
 			Parameters:
 			- query (str): Query string to compare
-			- table (pd.DataFrame): DataFrame with 'normed_embedding'
+			- df (pd.DataFrame): DataFrame with 'normed_embedding'
 			- toptop_k (int): Number of top matches to return
 	
 			Returns:
@@ -278,27 +345,28 @@ class Vector( ):
 		try:
 			if query is None:
 				raise Exception( 'Input "query" cannot be None' )
-			elif table is None:
-				raise Exception( 'Input "table" cannot be None' )
+			elif df is None:
+				self.dataframe = df
+				raise Exception( 'Input "df" cannot be None' )
 			else:
-				_embd = self.embed( [ query ] )[ 'normed_embedding' ].iloc[ 0 ]
+				_embd = self.create( [ query ] )[ 'normed_embedding' ].iloc[ 0 ]
 				_scores = self._cosine_similarity_matrix( _embd,
-					np.vstack( table[ 'normed_embedding' ] ) )
-				_copy = table.copy( )
+					np.vstack( self.dataframe[ 'normed_embedding' ] ) )
+				_copy = self.dataframe.copy( )
 				_copy[ 'similarity' ] = _scores
 				return _copy.sort_values( 'similarity', ascending=False ).head( top )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Vector'
-			_exc.method = ('most_similar( self, query: str, table: pd.DataFrame, top: int = 5 ) '
+			_exc.method = ('most_similar( self, query: str, df: pd.DataFrame, top: int = 5 ) '
 			               '-> '
 			               'pd.DataFrame')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def bulk_similar( self, queries: List[ str ], dataframe: pd.DataFrame, top: int=5 ) -> { }:
+	def bulk_similar( self, queries: List[ str ], df: pd.DataFrame, top: int=5 ) -> { }:
 		"""
 		
 			Purpose:
@@ -306,7 +374,7 @@ class Vector( ):
 	
 			Parameters:
 			- queries (List[str]): List of query strings
-			- table (pd.DataFrame): DataFrame to search
+			- df (pd.DataFrame): DataFrame to search
 			- toptop_k (int): Number of top results per query
 	
 			Returns:
@@ -316,79 +384,85 @@ class Vector( ):
 		try:
 			if queries is None:
 				raise Exception( 'Input "queries" cannot be None' )
-			elif dataframe is None:
-				raise Exception( 'Input "dataframe" cannot be None' )
+			elif df is None:
+				raise Exception( 'Input "df" cannot be None' )
 			else:
+				self.dataframe = df
 				_results = { }
 				for query in queries:
-					_results[ query ] = self.most_similar( query, dataframe, top )
+					_results[ query ] = self.most_similar( query, self.dataframe, top )
 				return _results
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Vector'
-			_exc.method = ('bulk_similar( self, queries: List[ str ], dataframe: pd.DataFrame, '
+			_exc.method = ('bulk_similar( self, queries: List[ str ], df: pd.DataFrame, '
 			               'top: int = 5 ) -> { }')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def similarity_heatmap( self, dataframe: pd.DataFrame ) -> pd.DataFrame:
+	def similarity_heatmap( self, df: pd.DataFrame ) -> pd.DataFrame:
 		"""
 		
 			Purpose:
-			Compute full pairwise cosine similarity heatmap from normed embeddings.
+			Compute full pairwise cosine similarity heatmap from normed vectors.
 	
 			Parameters:
-			- table (pd.DataFrame): DataFrame with 'normed_embedding' column
+			- df (pd.DataFrame): DataFrame with 'normed_embedding' column
 	
 			Returns:
 			- pd.DataFrame: Pairwise cosine similarity heatmap
 			
 		"""
 		try:
-			if dataframe is None:
-				raise Exception( 'Input "dataframe" cannot be None' )
+			if df is None:
+				raise Exception( 'Input "df" cannot be None' )
 			else:
-				_matrix = np.vstack( dataframe[ 'normed_embedding' ] )
+				self.dataframe = df
+				_matrix = np.vstack( self.dataframe[ 'normed_embedding' ] )
 				_similarity = np.dot( _matrix, _matrix.T )
-				return pd.DataFrame( _similarity, index=dataframe[ 'pages' ],
-					columns=dataframe[ 'pages' ] )
+				return pd.DataFrame( _similarity, index=self.dataframe[ 'pages' ],
+					columns=self.dataframe[ 'pages' ] )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Vector'
-			_exc.method = 'similarity_heatmap( self, dataframe: pd.DataFrame ) -> pd.DataFrame'
+			_exc.method = 'similarity_heatmap( self, df: pd.DataFrame ) -> pd.DataFrame'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def export_jsonl( self, dataframe: pd.DataFrame, path: str ) -> None:
+	def export_jsonl( self, df: pd.DataFrame, path: str ) -> None:
 		"""
 		
 			Purpose:
-			Export DataFrame of pages and embeddings to a JSONL file.
+			Export DataFrame of pages and vectors to a JSONL file.
 	
 			Parameters:
-			- table (pd.DataFrame): DataFrame with 'pages' and 'embedding'
+			- df (pd.DataFrame): DataFrame with 'pages' and 'embedding'
 			- path (str): Output path for .jsonl file
 		
 		"""
 		try:
-			if dataframe is None:
-				raise Exception( 'Input "dataframe" is required.' )
+			if df is None:
+				raise Exception( 'Input "df" is required.' )
 			elif path is None:
 				raise Exception( 'Output "path" is required.' )
 			else:
+				self.dataframe = df
+				self.file_path = path
+				self.file_name = os.path.basename( self.file_path )
+				self.directory = os.path.dirname( self.file_path )
 				with open( path, 'w', encoding='utf-8' ) as f:
-					for _, row in dataframe.iterrows( ):
-						record = { 'pages': row[ 'pages' ], 'embedding': row[ 'embedding' ] }
+					for _, row in self.dataframe.iterrows( ):
+						_record = { 'pages': row[ 'pages' ], 'embedding': row[ 'embedding' ] }
 						f.write( json.dumps( record ) + '\n' )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Vector'
-			_exc.method = 'export_jsonl( self, dataframe: pd.DataFrame, path: str ) -> None'
+			_exc.method = 'export_jsonl( self, df: pd.DataFrame, path: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -396,14 +470,14 @@ class Vector( ):
 	def import_jsonl( self, path: str ) -> pd.DataFrame:
 		"""
 		
-			Import pages and embeddings
+			Import pages and vectors
 			from a JSONL file into a DataFrame.
 	
 			Parameters:
 			- path (str): Path to the .jsonl file
 	
 			Returns:
-			- pd.DataFrame: DataFrame with normalized embeddings
+			- pd.DataFrame: DataFrame with normalized vectors
 			
 		"""
 		try:
@@ -417,14 +491,14 @@ class Vector( ):
 						texts.append( _record[ 'pages' ] )
 						embeddings.append( _record[ 'embedding' ] )
 				_normed = self._normalize( np.array( embeddings ) )
-				_data = \
+				self.data = \
 				{
 					'pages': texts,
 					'embedding': embeddings,
 					'normed_embedding': list( _normed )
 				}
 				
-				return pd.DataFrame( _data )
+				return pd.DataFrame( self.data )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -451,7 +525,8 @@ class Vector( ):
 			if name is None:
 				raise Exception( 'Input "name" is required' )
 			else:
-				self.response = self.client.beta.vector_stores.create( name=name )
+				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+				self.response = self.client.beta.vector_stores.create_vector( name=name )
 				return self.response[ 'id' ]
 		except Exception as e:
 			_exc = Error( e )
@@ -473,6 +548,7 @@ class Vector( ):
 			
 		"""
 		try:
+			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 			self.response = self.client.beta.vector_stores.list( )
 			return [ item[ 'id' ] for item in self.response.get( 'data', [ ] ) ]
 		except Exception as e:
@@ -484,34 +560,37 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def upload_vector_store( self, dataframe: pd.DataFrame, ids: str ) -> None:
+	def upload_vector_store( self, df: pd.DataFrame, id: str ) -> None:
 		"""
 		
 			Upload documents to a
 			 given OpenAI vector store.
 	
 			Parameters:
-			- table (pd.DataFrame): DataFrame with 'pages' column
+			- df (pd.DataFrame): DataFrame with 'pages' column
 			- ids (str): OpenAI vector store ID
 			
 		"""
 		try:
-			if dataframe is None:
-				raise Exception( 'Input "dataframe" cannot be None' )
+			if df is None:
+				raise Exception( 'Input "df" cannot be None' )
 			elif ids is None:
 				raise Exception( 'Input "ids" cannot be None' )
 			else:
+				self.dataframe = df
+				self.id = id
 				documents = [
 					{ 'content': row[ 'pages' ], 'metadata': { 'source': f'row_{i}' } }
-					for i, row in dataframe.iterrows( )
-				]
-				self.client.beta.vector_stores.file_batches.create( store_id=ids,
+						for i, row in self.dataframe.iterrows( ) ]
+				
+				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+				self.client.beta.vector_stores.file_batches.create_vector( store_id=self.id,
 					documents=documents )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Vector'
-			_exc.method = 'upload_vector_store( self, dataframe: pd.DataFrame, ids: str ) -> None'
+			_exc.method = 'upload_vector_store( self, df: pd.DataFrame, ids: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -537,7 +616,9 @@ class Vector( ):
 			elif query is None:
 				raise Exception( 'Input "query" must be provided' )
 			else:
-				self.response = self.client.beta.vector_stores.query( store_id=id, query=query,
+				self.id = id
+				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+				self.response = self.client.beta.vector_stores.query( store_id=self.id, query=query,
 					top_k=top )
 				return [
 					{ 'pages': result[ 'document' ], 'score': result[ 'score' ] }
@@ -571,8 +652,10 @@ class Vector( ):
 			elif ids is None:
 				raise Exception( 'Input "ids" cannot be None' )
 			else:
+				self.file_ids = ids
+				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				self.client.beta.vector_stores.documents.delete( store_id=storeid,
-					document_ids=ids )
+					document_ids=self.file_ids )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -580,358 +663,389 @@ class Vector( ):
 			_exc.method = 'delete_vector_store( self, storeid: str, ids: List[ str ] ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
+	
+	
+	def upload_document( self, path: str, id: str ) -> None:
+		try:
+			self.file_path = path
+			self.file_name = os.path.basename( self.file_path )
+			self.response = self.client.files.create( file=open( self.file_path, 'rb' ),
+				purpose="assistants" )
+			attach_response = self.client.vector_stores.files.create( vector_store_id=id,
+				file_id=self.response.id )
+			return { "file": self.file_name, "status": "success" }
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Vector'
+			_exc.method = 'upload_document( self, path: str, id: str ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def upload_documents( self, path: str, id: str ) -> None:
+		try:
+			self.file_path = path
+			self.id = id
+			self.file_name = os.path.basename( self.file_path )
+			self.directory = os.path.dirname( self.file_path )
+			self.files = [ os.path.join( self.directory, f ) for f in os.listdir( self.directory ) ]
+			self.stats = \
+			{
+				'total_files': len( self.files ),
+				'successful_uploads': 0,
+				'failed_uploads': 0,
+				'errors': [ ]
+			}
+			
+			with concurrent.futures.ThreadPoolExecutor( max_workers=10 ) as executor:
+				_futures = { executor.submit( self.upload_document, self.file_path, self.id ): self.file_path
+				            for self.file_path in self.files }
+				for future in tqdm( concurrent.futures.as_completed( _futures ),
+						total=len( self.files ) ):
+					result = future.result( )
+					if result[ 'status' ] == 'success':
+						self.stats[ 'successful_uploads' ] += 1
+					else:
+						self.stats[ 'failed_uploads' ] += 1
+						self.stats[ 'errors' ].append( result )
+			
+			return self.stats
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Vector'
+			_exc.method = 'upload_documents( self, path: str, id: str ) -> None'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
 
 
-class Xtract( ):
-	"""
-	
-		Xtract
-		----------------
-		A utility class for extracting clean pages from PDF files into a list of strings.
-		Handles nuances such as layout artifacts, page separation, optional filtering,
-		and includes table detection capabilities.
-		
-	"""
+class Embedding( ):
+	'''
 	
 	
-	def __init__( self, headers: bool=False, length: int=10, tables: bool=True ):
-		"""
-		
-			Purpose:
-			Initialize the PDF pages extractor with configurable settings.
+	'''
 	
-			Parameters:
-			- headers (bool): If True, attempts to strip recurring headers/footers.
-			- length (int): Minimum number of characters for a line to be included.
-			- tables (bool): If True, extract pages from detected tables using block
-			grouping.
+	
+	def __init__( self ):
+		self.client = OpenAI( )
+		self.model = "text-embedding-3-small"
+		self.response = None
+		self.raw_input = None
+		self.tokens = [ str ]
+		self.lines = [ str ]
+		self.labels = [ str ]
+		self.distances = [ float ]
+		self.distance_metrics = [ float ]
+		self.n_classes = None
+		self.data = [ float ]
+		self.precision = { }
+		self.aeverage_precision = { }
+		self.recall = None
+	
+	
+	def create_vector( self, text: str ) -> List[ float ]:
+		try:
+			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+			self.raw_input = text.replace( '\n', ' ' )
+			self.response = self.client.embeddings.create( input=[ self.raw_input ],
+				model=self.model )
 			
-		"""
-		self.strip_headers = headers
-		self.minimum_length = length
-		self.extract_tables = tables
-		self.file_path = None
-		self.page = None
-		self.pages = [ ]
-		self.lines = [ ]
-		self.clean_lines = [ ]
-		self.extracted_lines = [ ]
-		self.extracted_tables = [ ]
-		self.extracted_pages = [ ]
+			return self.response.data[ 0 ].embedding
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Embedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
-	def __dir__( self ):
+	async def vector_async( self, text: str ) -> List[ float ]:
+		try:
+			self.raw_input = text.replace( '\n', ' ' )
+			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+			
+			return (
+				await self.client.embeddings.create( input=[ self.raw_input ], model=self.model ))
+			[ 'data' ][ 0 ][ 'embedding' ]
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Embedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def create_vectors( self, tokens: List[ str ] ) -> List[ List[ float ] ]:
 		'''
 			
-			Purpose:
-			Returns a list of class member names.
-		
+			
+			purpose:
+			
 		'''
-		return [ 'strip_headers', 'minimum_length', 'extract_tables',
-		         'path', 'page', 'pages', 'lines', 'clean_lines', 'extracted_lines',
-		         'extracted_tables', 'extracted_pages', 'extract_lines',
-		         'extract_text', 'extract_tables', 'export_csv',
-		         'export_text', 'export_excel' ]
-	
-	
-	def extract_lines( self, path: str, max: Optional[ int ]=None ) -> List[ str ]:
-		"""
-			
-			Extract lines of pages from a PDF,
-			optionally limiting to the first N pages.
-	
-			Parameters:
-			- path (str): Path to the PDF file
-			- max (Optional[int]): Max number of pages to process (None for all pages)
-	
-			Returns:
-			- List[str]: Cleaned list of non-empty lines
-			
-		"""
 		try:
-			if path is None:
-				raise Exception( 'Input "path" must be specified' )
-			elif max is None:
-				raise Exception( 'Input "max" must be specified' )
-			else:
-				self.file_path = path
-				with fitz.open( self.file_path ) as doc:
-					for i, page in enumerate( doc ):
-						if max is not None and i >= max:
-							break
-						if self.extract_tables:
-							self.extracted_lines = self._extract_table_blocks( page )
-						else:
-							_text = page.get_text( 'pages' )
-							self.lines = _text.splitlines( )
-						self.clean_lines = self._filter_lines( self.lines )
-						self.extracted_lines.extend( self.clean_lines )
-				return self.extracted_lines
+			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+			self.tokens = [ t.replace( '\n', ' ' ) for t in tokens ]
+			self.data = self.client.embeddings.create( input=self.tokens, model=self.model ).data
+			return [ d.embedding for d in self.data ]
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtract'
-			_exc.method = ('extract_lines( self, path: str, max: Optional[ int ] = None ) -> '
-			               'List[ '
-			               'str ]')
+			_exc.cause = 'Embedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def _extract_table_blocks( self, page ) -> List[ str ]:
-		"""
-			
-			Attempt to extract structured blocks
-			such as tables using spatial grouping.
-	
-			Parameters:
-			- page: PyMuPDF page object
-	
-			Returns:
-			- List[str]: Grouped blocks including potential tables
-			
-		"""
+	async def async_embeddings( self, text: List[ str ] ) -> List[ List[ float ] ]:
 		try:
-			if page is None:
-				raise Exception( 'Input "page" cannot be None' )
-			else:
-				_blocks = page.get_text( 'blocks' )
-				_sorted = sorted( _blocks, key=lambda b: (round( b[ 1 ], 1 ), round( b[ 0 ], 1 )) )
-				self.lines = [ b[ 4 ].strip( ) for b in _sorted if b[ 4 ].strip( ) ]
-				return self.lines
+			self.raw_input = [ t.replace( '\n', " " ) for t in text ]
+			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+			data = (await self.client.embeddings.create( input=text, model=self.model )).data
+			return [ d.embedding for d in data ]
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtract'
-			_exc.method = '_extract_table_blocks( self, page ) -> List[ str ]:'
+			_exc.cause = 'Embedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def _filter_lines( self, lines: List[ str ] ) -> List[ str ]:
+	def calculate_cosine_similarity( self, a, b ):
+		try:
+			return np.dot( a, b ) / (np.linalg.norm( a ) * np.linalg.norm( b ))
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Embedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def plot_multiclass_precision( self, y_score, y_original, classes, classifier ):
+		try:
+			self.n_classes = len( classes )
+			y_true = pd.concat(
+				[ (y_original == classes[ i ]) for i in range( self.n_classes ) ], axis=1
+			).values
+			
+			self.precision = dict( )
+			self.recall = dict( )
+			self.average_precision = dict( )
+			for i in range( self.n_classes ):
+				self.precision[ i ], self.recall[ i ], _ = precision_recall_curve( y_true[ :, i ],
+					y_score[ :, i ] )
+				self.average_precision[ i ] = average_precision_score( y_true[ :, i ],
+					y_score[ :, i ] )
+			
+			precision_micro, recall_micro, _ = precision_recall_curve( y_true.ravel( ),
+				y_score.ravel( ) )
+			self.average_precision = average_precision_score( y_true, y_score, average='micro' )
+			print( str( classifier )
+			       + ' - Average precision score over all classes: {0:0.2f}'.format(
+				self.average_precision
+			)
+			       )
+			
+			plt.figure( figsize=(9, 10) )
+			f_scores = np.linspace( 0.2, 0.8, num=4 )
+			self.lines = [ ]
+			self.labels = [ ]
+			for f_score in f_scores:
+				x = np.linspace( 0.01, 1 )
+				y = f_score * x / (2 * x - f_score)
+				(l,) = plt.plot( x[ y >= 0 ], y[ y >= 0 ], color='gray', alpha=0.2 )
+				plt.annotate( 'f1={0:0.1f}'.format( f_score ), xy=(0.9, y[ 45 ] + 0.02) )
+			
+			self.lines.append( l )
+			self.labels.append( 'iso-f1 curves' )
+			(l,) = plt.plot( recall_micro, precision_micro, color="gold", lw=2 )
+			self.lines.append( l )
+			self.labels.append(
+				"average Precision-recall (auprc = {0:0.2f})" "".format( average_precision_micro )
+			)
+			
+			for i in range( self.n_classes ):
+				(l,) = plt.plot( self.recall[ i ], self.precision[ i ], lw=2 )
+				self.lines.append( l )
+				self.labels.append(
+					"Precision-recall for class `{0}` (auprc = {1:0.2f})"
+					"".format( classes[ i ], self.average_precision[ i ] ) )
+			
+			fig = plt.gcf( )
+			fig.subplots_adjust( bottom=0.25 )
+			plt.xlim( [ 0.0, 1.0 ] )
+			plt.ylim( [ 0.0, 1.05 ] )
+			plt.xlabel( 'Recall' )
+			plt.ylabel( 'Precision' )
+			plt.title( f'{classifier}: Precision-Recall curve for each class' )
+			plt.legend( self.lines, self.labels )
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Embedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def calculate_distances( self,
+	                         query_embedding: List[ float ],
+	                         embeddings: List[ List[ float ] ],
+	                         distance_metric='cosine' ) -> List[ List[ float ] ]:
+		try:
+			self.distance_metrics = \
+				{
+					'cosine': spatial.distance.cosine,
+					'L1': spatial.distance.cityblock,
+					'L2': spatial.distance.euclidean,
+					'Linf': spatial.distance.chebyshev,
+				}
+			
+			self.distances = [
+				self.distance_metrics[ distance_metric ]( query_embedding, embedding )
+				for embedding in embeddings ]
+			return self.distances
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Embedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def calculate_nearest_neighbor( self, distances: [ float ] ) -> np.ndarray:
 		"""
 		
-			Filter and clean lines
-			 from a page of pages.
-	
-			Parameters:
-			- lines (List[str]): Raw lines of pages
-	
-			Returns:
-			- List[str]: Filtered, non-trivial lines
-			
-		"""
-		try:
-			if line is None:
-				raise Exception( 'Input "line" is None' )
-			else:
-				self.lines = lines
-				for line in self.lines:
-					_line = line.strip( )
-					if len( _line ) < self.minimum_length:
-						continue
-					if self.strip_headers and self._is_repeated_header_or_footer( _line ):
-						continue
-					self.clean_lines.append( _line )
-				return self.clean_lines
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Xtract'
-			_exc.method = '_filter_lines( self, lines: List[ str ] ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def _is_repeated_header_or_footer( self, line: str ) -> bool:
-		"""
-			
-			Heuristic to detect common
-			headers/footers (basic implementation).
-	
-			Parameters:
-			- line (str): A line of pages
-	
-			Returns:
-			- bool: True if line is likely a header or footer
-		
-		"""
-		try:
-			if line is None:
-				raise Exception( 'Input "line" is None' )
-			else:
-				_keywords = [ 'page', 'public law', 'u.s. government', 'united states' ]
-				return any( kw in line.lower( ) for kw in _keywords )
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Xtract'
-			_exc.method = '_is_repeated_header_or_footer( self, line: str ) -> bool'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def extract_text( self, path: str, max: Optional[ int ]=None ) -> str:
-		"""
-		
-			Extract the entire pages from a
-			PDF into one continuous string.
-	
-			Parameters:
-			- path (str): Path to the PDF file
-			- max (Optional[int]): Maximum number of pages to process
-	
-			Returns:
-			- str: Full concatenated pages
+			Return a list of indices of
+			nearest neighbors from a list of distances.
 		
 		"""
 		try:
-			if path is None:
-				raise Exception( 'Input "path" must be specified' )
-			elif max is None:
-				raise Exception( 'Input "max" must be specified' )
-			else:
-				self.file_path = path
-				self.lines = self.extract_lines( self.file_path, max=max )
-				return "\n".join( self.lines )
+			self.distances = distances
+			return np.argsort( self.distances )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtract'
-			_exc.method = 'extract_text( self, path: str, max: Optional[ int ] = None ) -> str:'
+			_exc.cause = 'Embedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def extract_tables( self, path: str, max: Optional[ int ]=None ) -> List[ pd.DataFrame ]:
+	def create_pca_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray:
 		"""
-			
-			Extract tables from the PDF
-			and return them as a list of DataFrames.
-	
-			Parameters:
-			- path (str): Path to the PDF file
-			- max (Optional[int]): Maximum number of pages to process
-	
-			Returns:
-			- List[pd.DataFrame]: List of DataFrames representing detected tables
-			
-		"""
-		try:
-			if path is None:
-				raise Exception( 'Input "path" must be specified' )
-			elif max is None:
-				raise Exception( 'Input "max" must be specified' )
-			else:
-				self.file_path = path
-				with fitz.open( self.file_path ) as _doc:
-					for i, page in enumerate( _doc ):
-						if max is not None and i >= max:
-							break
-						_blocks = page.find_tables( )
-						for _tb in _blocks.tables:
-							_df = pd.DataFrame( _tb.extract( ) )
-							self.tables.append( _df )
-				return self.tables
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Xtract'
-			_exc.method = (
-				'extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ '
-				'pd.DataFrame ]')
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None:
-		"""
-			
-			Export a list of DataFrames (tables)
-			to individual CSV files.
-	
-			Parameters:
-			- tables (List[pd.DataFrame]): List of tables to export
-			- filename (str): Prefix for output filenames (e.g., 'output_table')
+		
+			Return the PCA components of a list of vectors.
 		
 		"""
 		try:
-			if tables is None:
-				raise Exception( 'Input "tables" must not be None' )
-			elif filename is None:
-				raise Exception( 'Input "filename" must not be None' )
-			else:
-				self.tables = tables
-				for i, df in enumerate( self.tables ):
-					df.to_csv( f'{filename}_{i + 1}.csv', index=False )
+			self.vectors = vectors
+			pca = PCA( n_components=num )
+			array_of_embeddings = np.array( self.vectors )
+			return pca.fit_transform( array_of_embeddings )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtract'
-			_exc.method = 'export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None'
+			_exc.cause = 'Embedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def export_text( self, lines: List[ str ], path: str ) -> None:
-		"""
-			
-			Export extracted lines of
-			pages to a plain pages file.
-	
-			Parameters:
-			- lines (List[str]): List of pages lines
-			- path (str): Path to output pages file
-		
-		"""
+	def create_tsne_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray:
 		try:
-			if lines is None:
-				raise Exception( 'Input "lines" must be provided.' )
-			elif path is None:
-				raise Exception( 'Input "path" must be provided.' )
-			else:
-				self.file_path = path
-				self.lines = lines
-				with open( self.file_path, 'w', encoding='utf-8' ) as f:
-					for line in self.lines:
-						f.write( line + "\n" )
+			self.vectors = vectors
+			tsne = TSNE( n_components=num )
+			array_of_embeddings = np.array( self.vectors )
+			return tsne.fit_transform( array_of_embeddings )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtract'
-			_exc.method = 'export_text( self, lines: List[ str ], path: str ) -> None'
+			_exc.cause = 'Embedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def export_excel( self, tables: List[ pd.DataFrame ], path: str ) -> None:
-		"""
-			
-			Export all extracted tables into a single
-			Excel workbook with one sheet per table.
-	
-			Parameters:
-			- tables (List[pd.DataFrame]): List of tables to export
-			- path (str): Path to the output Excel file
-		
-		"""
+	def create_chart( self, components: np.ndarray,
+	                  labels: Optional[ List[ str ] ] = None,
+	                  strings: Optional[ List[ str ] ] = None,
+	                  x_title='Component 0',
+	                  y_title='Component 1',
+	                  mark_size=5 ):
 		try:
-			if tables is None:
-				raise Exception( 'Input "tables" must not be None' )
-			elif path is None:
-				raise Exception( 'Input "path" must not be None' )
-			else:
-				self.tables = tables
-				self.file_path = path
-				with pd.ExcelWriter( self.file_path, engine='xlsxwriter' ) as _writer:
-					for i, df in enumerate( self.tables ):
-						_sheet = f'Table_{i + 1}'
-						df.to_excel( writer, sheet_name=_sheet, index=False )
-					_writer.save( )
+			empty_list = [ "" for _ in components ]
+			data = pd.DataFrame(
+				{
+					x_title: components[ :, 0 ],
+					y_title: components[ :, 1 ],
+					'label': labels if labels else empty_list,
+					'string': [ '<br>'.join( tr.wrap( string, width=30 ) ) for string in strings ]
+					if strings
+					else empty_list,
+				} )
+			
+			chart = px.scatter(
+				data,
+				x=x_title,
+				y=y_title,
+				color='label' if labels else None,
+				symbol='label' if labels else None,
+				hover_data=[ 'string' ] if strings else None
+			).update_traces( marker=dict( size=mark_size ) )
+			return chart
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Xtract'
-			_exc.method = 'export_excel( self, tables: List[ pd.DataFrame ], path: str ) -> None'
+			_exc.cause = 'Embedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def creat_3dchart( self,
+	                   components: np.ndarray,
+	                   labels: Optional[ List[ str ] ] = None,
+	                   strings: Optional[ List[ str ] ] = None,
+	                   x_title: str = 'Component 0',
+	                   y_title: str = 'Component 1',
+	                   z_title: str = 'Compontent 2',
+	                   mark_size: int = 5 ):
+		try:
+			empty_list = [ "" for _ in components ]
+			_contents = \
+				{
+					x_title: components[ :, 0 ],
+					y_title: components[ :, 1 ],
+					z_title: components[ :, 2 ],
+					'label': labels if labels else empty_list,
+					'string': [ '<br>'.join( tr.wrap( string, width=30 ) ) for string in strings ]
+					if strings
+					else empty_list,
+				}
+			
+			data = pd.DataFrame( _contents )
+			chart = px.scatter_3d(
+				data,
+				x=x_title,
+				y=y_title,
+				z=z_title,
+				color='label' if labels else None,
+				symbol='label' if labels else None,
+				hover_data=[ 'string' ] if strings else None ).update_traces(
+				marker=dict( size=mark_size ) )
+			return chart
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Embedding'
+			_exc.method = 'create_vector_store( self, name: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
