@@ -673,7 +673,7 @@ class Vector( ):
 				purpose="assistants" )
 			attach_response = self.client.vector_stores.files.create( vector_store_id=id,
 				file_id=self.response.id )
-			return { "file": self.file_name, "status": "success" }
+			return { 'file': self.file_name, 'status': 'success' }
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -698,8 +698,8 @@ class Vector( ):
 				'errors': [ ]
 			}
 			
-			with concurrent.futures.ThreadPoolExecutor( max_workers=10 ) as executor:
-				_futures = { executor.submit( self.upload_document, self.file_path, self.id ): self.file_path
+			with concurrent.futures.ThreadPoolExecutor( max_workers=10 ) as thread:
+				_futures = { thread.submit( self.upload_document, self.file_path, self.id ): self.file_path
 				            for self.file_path in self.files }
 				for future in tqdm( concurrent.futures.as_completed( _futures ),
 						total=len( self.files ) ):
@@ -730,7 +730,7 @@ class Embedding( ):
 	
 	def __init__( self ):
 		self.client = OpenAI( )
-		self.model = "text-embedding-3-small"
+		self.model = 'text-embedding-3-small'
 		self.response = None
 		self.raw_input = None
 		self.tokens = [ str ]
@@ -802,7 +802,7 @@ class Embedding( ):
 	
 	async def async_embeddings( self, text: List[ str ] ) -> List[ List[ float ] ]:
 		try:
-			self.raw_input = [ t.replace( '\n', " " ) for t in text ]
+			self.raw_input = [ t.replace( '\n', ' ' ) for t in text ]
 			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 			data = (await self.client.embeddings.create( input=text, model=self.model )).data
 			return [ d.embedding for d in data ]
@@ -867,7 +867,7 @@ class Embedding( ):
 			(l,) = plt.plot( recall_micro, precision_micro, color="gold", lw=2 )
 			self.lines.append( l )
 			self.labels.append(
-				"average Precision-recall (auprc = {0:0.2f})" "".format( average_precision_micro )
+				'average Precision-recall (auprc = {0:0.2f})' ''.format( average_precision_micro )
 			)
 			
 			for i in range( self.n_classes ):
@@ -977,8 +977,8 @@ class Embedding( ):
 	def create_chart( self, components: np.ndarray,
 	                  labels: Optional[ List[ str ] ] = None,
 	                  strings: Optional[ List[ str ] ] = None,
-	                  x_title='Component 0',
-	                  y_title='Component 1',
+	                  x_title='Component-0',
+	                  y_title='Component-1',
 	                  mark_size=5 ):
 		try:
 			empty_list = [ "" for _ in components ]
