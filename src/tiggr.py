@@ -1253,8 +1253,6 @@ class PDF( ):
 		try:
 			if path is None:
 				raise Exception( 'Input "path" must be specified' )
-			elif max is None:
-				raise Exception( 'Input "max" must be specified' )
 			else:
 				self.file_path = path
 				with fitz.open( self.file_path ) as doc:
@@ -1262,7 +1260,7 @@ class PDF( ):
 						if max is not None and i >= max:
 							break
 						if self.extract_tables:
-							self.extracted_lines = self._extract_table_blocks( page )
+							self.extracted_lines = self._extract_tables( page )
 						else:
 							_text = page.get_text( 'pages' )
 							self.lines = _text.splitlines( )
@@ -1280,7 +1278,7 @@ class PDF( ):
 			_err.show( )
 	
 	
-	def _extract_table_blocks( self, page: Page  ) -> List[ str ]:
+	def _extract_tables( self, page: Page ) -> List[ str ]:
 		"""
 
 			Attempt to extract structured blocks
@@ -1305,7 +1303,7 @@ class PDF( ):
 			_exc = Error( e )
 			_exc.module = 'tiggr'
 			_exc.cause = 'PDF'
-			_exc.method = '_extract_table_blocks( self, page ) -> List[ str ]:'
+			_exc.method = '_extract_tables( self, page ) -> List[ str ]:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -1332,7 +1330,7 @@ class PDF( ):
 					_line = line.strip( )
 					if len( _line ) < self.minimum_length:
 						continue
-					if self.strip_headers and self._is_repeated_header_or_footer( _line ):
+					if self.strip_headers and self._has_repeating_header( _line ):
 						continue
 					self.clean_lines.append( _line )
 				return self.clean_lines
@@ -1345,7 +1343,7 @@ class PDF( ):
 			_err.show( )
 	
 	
-	def _is_repeated_header_or_footer( self, line: str ) -> bool:
+	def _has_repeating_header( self, line: str ) -> bool:
 		"""
 
 			Heuristic to detect common
@@ -1368,12 +1366,12 @@ class PDF( ):
 			_exc = Error( e )
 			_exc.module = 'tiggr'
 			_exc.cause = 'PDF'
-			_exc.method = '_is_repeated_header_or_footer( self, line: str ) -> bool'
+			_exc.method = '_has_repeating_header( self, line: str ) -> bool'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def extract_text( self, path: str, max: Optional[ int ]=None ) -> str:
+	def extract_text( self, path: str, max_pages: Optional[ int ]=None ) -> str:
 		"""
 
 			Extract the entire pages from a
@@ -1390,12 +1388,15 @@ class PDF( ):
 		try:
 			if path is None:
 				raise Exception( 'Input "path" must be specified' )
-			elif max is None:
-				raise Exception( 'Input "max" must be specified' )
 			else:
-				self.file_path = path
-				self.lines = self.extract_lines( self.file_path, max=max )
-				return "\n".join( self.lines )
+				if max_pages is not None and max_pages > 0:
+					self.file_path = path
+					self.lines = self.extract_lines( self.file_path, max=max_pages )
+					return "\n".join( self.lines )
+				elif max_pages is None or max_pages <= 0:
+					self.file_path = path
+					self.lines = self.extract_lines( self.file_path )
+					return "\n".join( self.lines )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'tiggr'

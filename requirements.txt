@@ -57,6 +57,5 @@ sentence-transformers
 mglearn
 fastapi
 PyPDF2
-base64
 camelot-py
 PyMuPDF
