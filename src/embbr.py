@@ -350,6 +350,7 @@ class Vector( ):
 				raise Exception( 'Input "df" cannot be None' )
 			else:
 				_embd = self.create( [ query ] )[ 'normed_embedding' ].iloc[ 0 ]
+				_series = np.vstack( self.dataframe[ 'normed_embedding' ] )
 				_scores = self._cosine_similarity_matrix( _embd,
 					np.vstack( self.dataframe[ 'normed_embedding' ] ) )
 				_copy = self.dataframe.copy( )
@@ -388,10 +389,9 @@ class Vector( ):
 				raise Exception( 'Input "df" cannot be None' )
 			else:
 				self.dataframe = df
-				_results = { }
 				for query in queries:
-					_results[ query ] = self.most_similar( query, self.dataframe, top )
-				return _results
+					self.results[ query ] = self.most_similar( query, self.dataframe, top )
+				return self.results
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -800,12 +800,13 @@ class Embedding( ):
 			_err.show( )
 	
 	
-	async def async_embeddings( self, text: List[ str ] ) -> List[ List[ float ] ]:
+	async def async_vectors( self, text: List[ str ] ) -> List[ List[ float ] ]:
 		try:
 			self.raw_input = [ t.replace( '\n', ' ' ) for t in text ]
 			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-			data = (await self.client.embeddings.create( input=text, model=self.model )).data
-			return [ d.embedding for d in data ]
+			self.data = (await self.client.embeddings.create( input=self.raw_input,
+				model=self.model )).data
+			return [ d.embedding for d in self.data ]
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -830,9 +831,8 @@ class Embedding( ):
 	def plot_multiclass_precision( self, y_score, y_original, classes, classifier ):
 		try:
 			self.n_classes = len( classes )
-			y_true = pd.concat(
-				[ (y_original == classes[ i ]) for i in range( self.n_classes ) ], axis=1
-			).values
+			_data = [ ( y_original == classes[ i ] ) for i in range( self.n_classes ) ]
+			y_true = pd.concat( _data, axis=1 ).values
 			
 			self.precision = dict( )
 			self.recall = dict( )
@@ -852,13 +852,13 @@ class Embedding( ):
 			)
 			       )
 			
-			plt.figure( figsize=(9, 10) )
+			plt.figure( figsize=( 9, 10 ) )
 			f_scores = np.linspace( 0.2, 0.8, num=4 )
 			self.lines = [ ]
 			self.labels = [ ]
 			for f_score in f_scores:
 				x = np.linspace( 0.01, 1 )
-				y = f_score * x / (2 * x - f_score)
+				y = f_score * x / ( 2 * x - f_score )
 				(l,) = plt.plot( x[ y >= 0 ], y[ y >= 0 ], color='gray', alpha=0.2 )
 				plt.annotate( 'f1={0:0.1f}'.format( f_score ), xy=(0.9, y[ 45 ] + 0.02) )
 			
@@ -900,12 +900,12 @@ class Embedding( ):
 	                         distance_metric='cosine' ) -> List[ List[ float ] ]:
 		try:
 			self.distance_metrics = \
-				{
-					'cosine': spatial.distance.cosine,
-					'L1': spatial.distance.cityblock,
-					'L2': spatial.distance.euclidean,
-					'Linf': spatial.distance.chebyshev,
-				}
+			{
+				'cosine': spatial.distance.cosine,
+				'L1': spatial.distance.cityblock,
+				'L2': spatial.distance.euclidean,
+				'Linf': spatial.distance.chebyshev,
+			}
 			
 			self.distances = [
 				self.distance_metrics[ distance_metric ]( query_embedding, embedding )
@@ -983,14 +983,14 @@ class Embedding( ):
 		try:
 			empty_list = [ "" for _ in components ]
 			data = pd.DataFrame(
-				{
-					x_title: components[ :, 0 ],
-					y_title: components[ :, 1 ],
-					'label': labels if labels else empty_list,
-					'string': [ '<br>'.join( tr.wrap( string, width=30 ) ) for string in strings ]
-					if strings
-					else empty_list,
-				} )
+			{
+				x_title: components[ :, 0 ],
+				y_title: components[ :, 1 ],
+				'label': labels if labels else empty_list,
+				'string': [ '<br>'.join( tr.wrap( s, width=30 ) ) for s in strings ]
+				if strings
+				else empty_list,
+			} )
 			
 			chart = px.scatter(
 				data,
@@ -1014,22 +1014,22 @@ class Embedding( ):
 	                   components: np.ndarray,
 	                   labels: Optional[ List[ str ] ] = None,
 	                   strings: Optional[ List[ str ] ] = None,
-	                   x_title: str = 'Component 0',
-	                   y_title: str = 'Component 1',
-	                   z_title: str = 'Compontent 2',
+	                   x_title: str = 'Component-0',
+	                   y_title: str = 'Component-1',
+	                   z_title: str = 'Compontent-2',
 	                   mark_size: int = 5 ):
 		try:
 			empty_list = [ "" for _ in components ]
 			_contents = \
-				{
-					x_title: components[ :, 0 ],
-					y_title: components[ :, 1 ],
-					z_title: components[ :, 2 ],
-					'label': labels if labels else empty_list,
-					'string': [ '<br>'.join( tr.wrap( string, width=30 ) ) for string in strings ]
-					if strings
-					else empty_list,
-				}
+			{
+				x_title: components[ :, 0 ],
+				y_title: components[ :, 1 ],
+				z_title: components[ :, 2 ],
+				'label': labels if labels else empty_list,
+				'string': [ '<br>'.join( tr.wrap( s, width=30 ) ) for s in strings ]
+				if strings
+				else empty_list,
+			}
 			
 			data = pd.DataFrame( _contents )
 			chart = px.scatter_3d(
