@@ -11933,7 +11933,7 @@ Community Policing Development (CPD).The agreement provides
 $45,000,000 for CPD, which is directed to be provided in competitive
 grants, including directly to law enforcement agencies, in
 the following manner: $11,000,000 is to expand the use of crisis
-intervention teams in order to create_vector mental and behavioral health
+intervention teams in order to create_small_embedding mental and behavioral health
 services with law enforcement, including funding for specialized
 training; $16,000,000 is for officer training in de-escalation, including
 scenario-based training developed in collaboration with community-

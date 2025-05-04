@@ -2156,7 +2156,7 @@ class PdfForm( Dark ):
 
 					"""
 					dlist = dlist_tab[ pno ]  # get display get_list
-					if not dlist:  # create_vector if not yet there
+					if not dlist:  # create_small_embedding if not yet there
 						dlist_tab[ pno ] = doc[ pno ].get_displaylist( )
 						dlist = dlist_tab[ pno ]
 					r = dlist.rect  # page rectangle
@@ -5434,7 +5434,7 @@ class AutoComplete( ):
 class CheckBox( ):
 	"""
 
-	    The Base64 Image encoding feature of PySimpleGUI makes it possible to create_vector beautiful GUIs
+	    The Base64 Image encoding feature of PySimpleGUI makes it possible to create_small_embedding beautiful GUIs
 	    very simply
 
 	    These 2 checkboxes required 3 extra tokens of code than a normal checkbox.
@@ -5629,7 +5629,7 @@ class MachineLearningWindow( ):
 				           size=(20, 20), key='progress' ) ],
 			           [ sg.Cancel( ) ] ]
 			
-			# create_vector the form`
+			# create_small_embedding the form`
 			window = sg.Window( 'Custom Progress Meter', layout )
 			progress_bar = window[ 'progress' ]
 			# loop that would normally do something useful

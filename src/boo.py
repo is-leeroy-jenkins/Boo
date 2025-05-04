@@ -2654,7 +2654,7 @@ class TTS( AI ):
 		Methods
 		------------
 		get_model_options( self ) -> str
-		create_vector( self, prompt: str, path: str )
+		create_small_embedding( self, prompt: str, path: str )
 		
 	
 	"""
@@ -2663,7 +2663,7 @@ class TTS( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
 		'''
-			Constructor to  create_vector TTS objects
+			Constructor to  create_small_embedding TTS objects
 		'''
 		super( ).__init__( )
 		self.client = OpenAI( )
@@ -2751,7 +2751,7 @@ class TTS( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'TTS'
-			exception.method = 'create_vector( self, prompt: str, input: str )]'
+			exception.method = 'create_small_embedding( self, prompt: str, input: str )]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2835,7 +2835,7 @@ class Transcription( AI ):
 		Methods
 		------------
 		get_model_options( self ) -> str
-		create_vector( self, input: str  ) -> str
+		create_small_embedding( self, input: str  ) -> str
 		
 	
 	"""
@@ -2903,7 +2903,7 @@ class Transcription( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Transcription'
-			exception.method = 'create_vector( self, input: str ) -> str'
+			exception.method = 'create_small_embedding( self, input: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2952,7 +2952,7 @@ class Transcription( AI ):
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'audio_file',
 		         'input', 'messages', 'respose_format',
-		         'api_key', 'client', 'small_model', 'create_vector',
+		         'api_key', 'client', 'small_model', 'create_small_embedding',
 		         'input_text', 'transcript' ]
 
 
@@ -2987,7 +2987,7 @@ class Translation( AI ):
 		
 		Methods
 		------------
-		create_vector( self, prompt: str, path: str )
+		create_small_embedding( self, prompt: str, path: str )
 		
 	
 	"""
@@ -3065,7 +3065,7 @@ class Translation( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Translation'
-			exception.method = 'create_vector( self, input: str )'
+			exception.method = 'create_small_embedding( self, input: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3117,7 +3117,7 @@ class Translation( AI ):
 		         'prompt', 'response', 'completion', 'audio_path',
 		         'input', 'messages', 'respose_format', 'tools',
 		         'size', 'api_key', 'client',
-		         'small_model', 'create_vector', 'get_model_options' ]
+		         'small_model', 'create_small_embedding', 'get_model_options' ]
 
 
 class SmallEmbedding( AI ):
@@ -3142,7 +3142,7 @@ class SmallEmbedding( AI ):
 
 		Methods
 		------------
-		create_vector( self, input: str ) -> get_list[ float ]
+		create_small_embedding( self, input: str ) -> get_list[ float ]
 
 
 	"""
@@ -3206,7 +3206,7 @@ class SmallEmbedding( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'SmallEmbedding'
-			exception.method = 'create_vector( self, input: str ) -> get_list[ float ]'
+			exception.method = 'create_small_embedding( self, input: str ) -> get_list[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3256,7 +3256,7 @@ class SmallEmbedding( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'api_key', 'client', 'small_model',
-		         'input', 'create_vector', 'get_model_options' ]
+		         'input', 'create_small_embedding', 'get_model_options' ]
 
 
 class AdaEmbedding( AI ):
@@ -3281,7 +3281,7 @@ class AdaEmbedding( AI ):
 
 		Methods
 		------------
-		create_vector( self, input: str ) -> get_list[ float ]
+		create_small_embedding( self, input: str ) -> get_list[ float ]
 
 	'''
 	
@@ -3334,7 +3334,7 @@ class AdaEmbedding( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'AdaEmbedding'
-			exception.method = 'create_vector( self, input: str ) -> get_list[ float ]'
+			exception.method = 'create_small_embedding( self, input: str ) -> get_list[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3359,7 +3359,7 @@ class AdaEmbedding( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'api_key', 'client', 'small_model',
-		         'input', 'create_vector', 'get_model_options' ]
+		         'input', 'create_small_embedding', 'get_model_options' ]
 
 
 class LargeEmbedding( AI ):
@@ -3384,7 +3384,7 @@ class LargeEmbedding( AI ):
 
 		Methods
 		------------
-		create_vector( self, input: str ) -> get_list[ float ]
+		create_small_embedding( self, input: str ) -> get_list[ float ]
 
 	'''
 	
@@ -3447,7 +3447,7 @@ class LargeEmbedding( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'LargeEmbedding'
-			exception.method = 'create_vector( self, input: str ) -> get_list[ float ]'
+			exception.method = 'create_small_embedding( self, input: str ) -> get_list[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3463,7 +3463,7 @@ class LargeEmbedding( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'api_key', 'client', 'small_model',
-		         'input', 'create_vector', 'get_model_options' ]
+		         'input', 'create_small_embedding', 'get_model_options' ]
 
 
 class LargeImage( AI ):

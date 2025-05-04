@@ -86,7 +86,7 @@ class Vector( ):
 		"""
 		self.small_model = 'text-embedding-3-small'
 		self.large_model = 'text-embedding-3-large'
-		self.ada_model = 'text-embedding-3-ada-002'
+		self.ada_model = 'text-embedding-ada-002'
 		self.client = OpenAI( )
 		self.raw_text = None
 		self.file_path = None
@@ -130,7 +130,8 @@ class Vector( ):
 		         'upload_document', 'upload_documents' ]
 	
 	
-	def create( self, tokens: List[ str ], batch: int=10, max: int=3, time: float=2.0 ) -> pd.DataFrame:
+	def create( self, tokens: List[ str ], batch: int=10, max: int=3,
+	            time: float=2.0 ) -> pd.DataFrame:
 		"""
 		
 			Generate and normalize
@@ -183,7 +184,7 @@ class Vector( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Vector'
-			_exc.method = ('create_vector( self, tokens: List[ str ], batch: int=10, max: int=3, '
+			_exc.method = ('create_small_embedding( self, tokens: List[ str ], batch: int=10, max: int=3, '
 			               'time: float=2.0 ) -> pd.DataFrame')
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -219,6 +220,7 @@ class Vector( ):
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
+	
 	def get_purpose_options( self ) -> List[ str ]:
 		'''
 		
@@ -226,8 +228,8 @@ class Vector( ):
 		
 		'''
 		return [ 'assistants', 'assistants_output', 'batch',
-		 'batch_output', 'fine-tune', 'fine-tune-results',
-		 'vision' ]
+		         'batch_output', 'fine-tune', 'fine-tune-results',
+		         'vision' ]
 	
 	
 	def get_type_options( self ) -> { }:
@@ -237,30 +239,31 @@ class Vector( ):
 			
 		'''
 		return \
-		{
-			'.c': 'text/x-c',
-			'.cpp': 'text/x-c++',
-			'.cs': 'text/x-csharp',
-			'.css': 'text/css',
-			'.doc': 'application/msword',
-			'.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-			'.go': 'text/x-golang',
-			'.html': 'text/html',
-			'.java': 'text/x-java',
-			'.js': 'text/javascript',
-			'.json': 'application/json',
-			'.md': 'text/markdown',
-			'.pdf': 'application/pdf',
-			'.php': 'text/x-php',
-			'.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-			'.py': 'text/x-python',
-			'.py': 'text/x-script.python',
-			'.rb': 'text/x-ruby',
-			'.sh': 'application/x-sh',
-			'.tex': 'text/x-tex',
-			'.ts': 'application/typescript',
-			'.txt': 'text/plain'
-		}
+			{
+				'.c': 'text/x-c',
+				'.cpp': 'text/x-c++',
+				'.cs': 'text/x-csharp',
+				'.css': 'text/css',
+				'.doc': 'application/msword',
+				'.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+				'.go': 'text/x-golang',
+				'.html': 'text/html',
+				'.java': 'text/x-java',
+				'.js': 'text/javascript',
+				'.json': 'application/json',
+				'.md': 'text/markdown',
+				'.pdf': 'application/pdf',
+				'.php': 'text/x-php',
+				'.pptx': 'application/vnd.openxmlformats-officedocument.presentationml'
+				         '.presentation',
+				'.py': 'text/x-python',
+				'.py': 'text/x-script.python',
+				'.rb': 'text/x-ruby',
+				'.sh': 'application/x-sh',
+				'.tex': 'text/x-tex',
+				'.ts': 'application/typescript',
+				'.txt': 'text/plain'
+			}
 	
 	
 	def _normalize( self, vector: np.ndarray ) -> np.ndarray:
@@ -470,6 +473,7 @@ class Vector( ):
 	def import_jsonl( self, path: str ) -> pd.DataFrame:
 		"""
 		
+			Purpose:
 			Import pages and vectors
 			from a JSONL file into a DataFrame.
 	
@@ -511,8 +515,9 @@ class Vector( ):
 	def create_vector_store( self, name: str ) -> str:
 		"""
 		
-			Create a new
-			OpenAI vector store.
+			Purpose:
+			Creates a new
+			OpenAI vector store given a name.
 	
 			Parameters:
 			- name (str): Name for the vector store
@@ -526,7 +531,7 @@ class Vector( ):
 				raise Exception( 'Input "name" is required' )
 			else:
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-				self.response = self.client.beta.vector_stores.create_vector( name=name )
+				self.response = self.client.beta.vector_stores.create_small_embedding( name=name )
 				return self.response[ 'id' ]
 		except Exception as e:
 			_exc = Error( e )
@@ -574,17 +579,17 @@ class Vector( ):
 		try:
 			if df is None:
 				raise Exception( 'Input "df" cannot be None' )
-			elif ids is None:
+			elif id is None:
 				raise Exception( 'Input "ids" cannot be None' )
 			else:
 				self.dataframe = df
 				self.id = id
 				documents = [
 					{ 'content': row[ 'pages' ], 'metadata': { 'source': f'row_{i}' } }
-						for i, row in self.dataframe.iterrows( ) ]
+					for i, row in self.dataframe.iterrows( ) ]
 				
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-				self.client.beta.vector_stores.file_batches.create_vector( store_id=self.id,
+				self.client.beta.vector_stores.file_batches.create_small_embedding( store_id=self.id,
 					documents=documents )
 		except Exception as e:
 			_exc = Error( e )
@@ -618,7 +623,8 @@ class Vector( ):
 			else:
 				self.id = id
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-				self.response = self.client.beta.vector_stores.query( store_id=self.id, query=query,
+				self.response = self.client.beta.vector_stores.query( store_id=self.id,
+					query=query,
 					top_k=top )
 				return [
 					{ 'pages': result[ 'document' ], 'score': result[ 'score' ] }
@@ -642,7 +648,7 @@ class Vector( ):
 			Delete specific documents from a vector store.
 	
 			Parameters:
-			- ids (str): OpenAI vector store ID
+			- storeid (str): OpenAI vector store ID
 			- ids (List[str]): List of document IDs to delete
 			
 		"""
@@ -666,14 +672,32 @@ class Vector( ):
 	
 	
 	def upload_document( self, path: str, id: str ) -> None:
+		"""
+		
+			Purpose:
+			Uploads document to vector store given path and id.
+	
+			Parameters:
+			- path (str):  local path to the document
+	
+			Returns:
+			- str:  ID of the  vector store
+			
+		"""
 		try:
-			self.file_path = path
-			self.file_name = os.path.basename( self.file_path )
-			self.response = self.client.files.create( file=open( self.file_path, 'rb' ),
-				purpose="assistants" )
-			attach_response = self.client.vector_stores.files.create( vector_store_id=id,
-				file_id=self.response.id )
-			return { 'file': self.file_name, 'status': 'success' }
+			if path is None:
+				raise Exception( 'Input "path" cannot be None' )
+			elif id is None:
+				raise Exception( 'Input "id" cannot be None' )
+			else:
+				self.file_path = path
+				self.file_name = os.path.basename( self.file_path )
+				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+				self.response = self.client.files.create( file=open( self.file_path, 'rb' ),
+					purpose="assistants" )
+				attach_response = self.client.vector_stores.files.create( vector_store_id=id,
+					file_id=self.response.id )
+				return { 'file': self.file_name, 'status': 'success' }
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -684,33 +708,52 @@ class Vector( ):
 	
 	
 	def upload_documents( self, path: str, id: str ) -> None:
+		"""
+		
+			Purpose:
+			Uploads documents to vector store given path and id.
+	
+			Parameters:
+			- path (str):  local path to the document
+	
+			Returns:
+			- str:  ID of the  vector store
+			
+		"""
 		try:
-			self.file_path = path
-			self.id = id
-			self.file_name = os.path.basename( self.file_path )
-			self.directory = os.path.dirname( self.file_path )
-			self.files = [ os.path.join( self.directory, f ) for f in os.listdir( self.directory ) ]
-			self.stats = \
-			{
-				'total_files': len( self.files ),
-				'successful_uploads': 0,
-				'failed_uploads': 0,
-				'errors': [ ]
-			}
-			
-			with concurrent.futures.ThreadPoolExecutor( max_workers=10 ) as thread:
-				_futures = { thread.submit( self.upload_document, self.file_path, self.id ): self.file_path
-				            for self.file_path in self.files }
-				for future in tqdm( concurrent.futures.as_completed( _futures ),
-						total=len( self.files ) ):
-					result = future.result( )
-					if result[ 'status' ] == 'success':
-						self.stats[ 'successful_uploads' ] += 1
-					else:
-						self.stats[ 'failed_uploads' ] += 1
-						self.stats[ 'errors' ].append( result )
-			
-			return self.stats
+			if path is None:
+				raise Exception( 'Input "path" cannot be None' )
+			elif id is None:
+				raise Exception( 'Input "id" cannot be None' )
+			else:
+				self.file_path = path
+				self.id = id
+				self.file_name = os.path.basename( self.file_path )
+				self.directory = os.path.dirname( self.file_path )
+				self.files = [ os.path.join( self.directory, f ) for f in os.listdir( self.directory
+				) ]
+				self.stats = \
+				{
+					'total_files': len( self.files ),
+					'successful_uploads': 0,
+					'failed_uploads': 0,
+					'errors': [ ]
+				}
+				
+				with concurrent.futures.ThreadPoolExecutor( max_workers=10 ) as thread:
+					_futures = {
+						thread.submit( self.upload_document, self.file_path, self.id ): self.file_path
+						for self.file_path in self.files }
+					for future in tqdm( concurrent.futures.as_completed( _futures ),
+							total=len( self.files ) ):
+						result = future.result( )
+						if result[ 'status' ] == 'success':
+							self.stats[ 'successful_uploads' ] += 1
+						else:
+							self.stats[ 'failed_uploads' ] += 1
+							self.stats[ 'errors' ].append( result )
+				
+				return self.stats
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
@@ -718,19 +761,20 @@ class Vector( ):
 			_exc.method = 'upload_documents( self, path: str, id: str ) -> None'
 			_err = ErrorDialog( _exc )
 			_err.show( )
-	
 
 
-class Embedding( ):
+class Xtractor( ):
 	'''
 	
+		Purpose:
+		Class providing Feature Extraction functionality
 	
 	'''
-	
-	
 	def __init__( self ):
 		self.client = OpenAI( )
-		self.model = 'text-embedding-3-small'
+		self.small_model = 'text-embedding-3-small'
+		self.large_model = 'text-embedding-3-large'
+		self.ada_model = 'text-embedding-3-ada'
 		self.response = None
 		self.raw_input = None
 		self.tokens = [ str ]
@@ -745,93 +789,308 @@ class Embedding( ):
 		self.recall = None
 	
 	
-	def create_vector( self, text: str ) -> List[ float ]:
+	def create_small_embedding( self, text: str ) -> List[ float ]:
+		"""
+		
+			Purpose:
+			Create embeddings using the small model from OpenAI.
+	
+			Parameters:
+			- text (str):  the text to be embedded
+	
+			Returns:
+			- List[ float ]:  embedded embeddings
+			
+		"""
 		try:
-			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 			self.raw_input = text.replace( '\n', ' ' )
+			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 			self.response = self.client.embeddings.create( input=[ self.raw_input ],
-				model=self.model )
+				model=self.small_model )
 			
 			return self.response.data[ 0 ].embedding
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'create_small_embedding( self, text: str ) -> List[ float ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	async def vector_async( self, text: str ) -> List[ float ]:
+	def create_small_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]:
+		"""
+		
+			Purpose:
+			Create embeddings using the small model from OpenAI.
+	
+			Parameters:
+			- tokens List[ str ]:  the list of strings (ie., tokens) to be embedded
+	
+			Returns:
+			- List[ List[ float ] ]:  embedded embeddings
+			
+		"""
+		try:
+			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+			self.tokens = [ t.replace( '\n', ' ' ) for t in tokens ]
+			self.data = self.client.embeddings.create( input=self.tokens,
+				model=self.small_model ).data
+			return [ d.embedding for d in self.data ]
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'create_small_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def create_large_embedding( self, text: str ) -> List[ float ]:
+		"""
+		
+			Purpose:
+			Create embeddings using the large model from OpenAI.
+	
+			Parameters:
+			- text (str):  the string (ie, token) to be embedded
+	
+			Returns:
+			- List[ List[ float ] ]:  embedded embeddings
+			
+		"""
+		try:
+			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+			self.raw_input = text.replace( '\n', ' ' )
+			self.response = self.client.embeddings.create( input=[ self.raw_input ],
+				model=self.large_model)
+			
+			return self.response.data[ 0 ].embedding
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'create_large_embedding( self, text: str ) -> List[ float ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def create_large_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]:
+		"""
+		
+			Purpose:
+			Create embeddings using the large model from OpenAI.
+	
+			Parameters:
+			- tokens List[ str ]:  the list of strings (ie., tokens) to be embedded
+	
+			Returns:
+			- List[ List[ float ] ]:  embedded embeddings
+			
+		"""
+		try:
+			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+			self.tokens = [ t.replace( '\n', ' ' ) for t in tokens ]
+			self.data = self.client.embeddings.create( input=self.tokens,
+				model=self.large_model ).data
+			return [ d.embedding for d in self.data ]
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'create_large_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+			
+			
+	def create_ada_embedding( self, text: str ) -> List[ float ]:
+		"""
+		
+			Purpose:
+			Create embeddings using the ada model from OpenAI.
+	
+			Parameters:
+			- text (str) :  the text (ie., token) to be embedded
+	
+			Returns:
+			- List[ float ] :  embedded embeddings
+			
+		"""
+		try:
+			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+			self.raw_input = text.replace( '\n', ' ' )
+			self.response = self.client.embeddings.create( input=[ self.raw_input ],
+				model=self.ada_model )
+			
+			return self.response.data[ 0 ].embedding
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'create_ada_embedding( self, text: str ) -> List[ float ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]:
+		"""
+		
+			Purpose:
+			Create embeddings using the ada model from OpenAI.
+	
+			Parameters:
+			- tokens List[ str ]:  the list of strings (ie., tokens) to be embedded
+	
+			Returns:
+			- List[ List[ float ] ]:  embedded embeddings
+			
+		"""
+		try:
+			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+			self.tokens = [ t.replace( '\n', ' ' ) for t in tokens ]
+			self.data = self.client.embeddings.create( input=self.tokens,
+				model=self.ada_model ).data
+			return [ d.embedding for d in self.data ]
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'embbr'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	async def create_small_async( self, text: str ) -> List[ float ]:
+		"""
+		
+			Purpose:
+			Asynchronously creates embeddings using the small model from OpenAI.
+	
+			Parameters:
+			- text (str):  the text to be embedded
+	
+			Returns:
+			- List[ float ]:  embedded embeddings
+			
+		"""
 		try:
 			self.raw_input = text.replace( '\n', ' ' )
 			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 			
 			return (
-				await self.client.embeddings.create( input=[ self.raw_input ], model=self.model ))
+				await self.client.embeddings.create( input=[ self.raw_input ], model=self.small_model ))
 			[ 'data' ][ 0 ][ 'embedding' ]
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'ccreate_small_async( self, text: str ) -> List[ float ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def create_vectors( self, tokens: List[ str ] ) -> List[ List[ float ] ]:
-		'''
+	async def create_large_async( self, text: str ) -> List[ float ]:
+		"""
+		
+			Purpose:
+			Asynchronously creates embeddings using the large model from OpenAI.
+	
+			Parameters:
+			- text (str):  the text to be embedded
+	
+			Returns:
+			- List[ float ]:  embedded embeddings
 			
-			
-			purpose:
-			
-		'''
+		"""
 		try:
+			self.raw_input = text.replace( '\n', ' ' )
 			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-			self.tokens = [ t.replace( '\n', ' ' ) for t in tokens ]
-			self.data = self.client.embeddings.create( input=self.tokens, model=self.model ).data
-			return [ d.embedding for d in self.data ]
+			
+			return (
+				await self.client.embeddings.create( input=[ self.raw_input ],
+					model=self.large_model ))
+			[ 'data' ][ 0 ][ 'embedding' ]
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'create_large_async( self, text: str ) -> List[ float ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	async def async_vectors( self, text: List[ str ] ) -> List[ List[ float ] ]:
+	async def create_ada_async( self, text: str ) -> List[ float ]:
+		"""
+		
+			Purpose:
+			Asynchronously creates embeddings using the ada model from OpenAI.
+	
+			Parameters:
+			- text (str):  the text to be embedded
+	
+			Returns:
+			- List[ float ]:  embedded embeddings
+			
+		"""
 		try:
-			self.raw_input = [ t.replace( '\n', ' ' ) for t in text ]
+			self.raw_input = text.replace( '\n', ' ' )
 			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-			self.data = (await self.client.embeddings.create( input=self.raw_input,
-				model=self.model )).data
-			return [ d.embedding for d in self.data ]
+			
+			return (
+				await self.client.embeddings.create( input=[ self.raw_input ],
+					model=self.ada_model ))
+			[ 'data' ][ 0 ][ 'embedding' ]
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'create_ada_async( self, text: str ) -> List[ float ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def calculate_cosine_similarity( self, a, b ):
+	def calculate_cosine_similarity( self, a: List[ float ], b: List[ float ] ):
+		"""
+		
+			Purpose:
+			Calculates cosine similarity between two vectors 'a' and 'b'.
+	
+			Parameters:
+			- a List[ float ]:  vector 'a',
+			- b List[ float ]:  vector 'b'
+	
+			Returns:
+			- List[ float ]:  embedded embeddings
+			
+		"""
 		try:
 			return np.dot( a, b ) / (np.linalg.norm( a ) * np.linalg.norm( b ))
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'c calculate_cosine_similarity( self, a, b )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
 	def plot_multiclass_precision( self, y_score, y_original, classes, classifier ):
+		"""
+		
+			Purpose:
+			Calculates cosine similarity between two vectors 'a' and 'b'.
+	
+			Parameters:
+			- a List[ float ]:  vector 'a',
+			- b List[ float ]:  vector 'b'
+	
+			Returns:
+			- List[ float ]:  embedded embeddings
+			
+		"""
 		try:
 			self.n_classes = len( classes )
-			_data = [ ( y_original == classes[ i ] ) for i in range( self.n_classes ) ]
+			_data = [ (y_original == classes[ i ]) for i in range( self.n_classes ) ]
 			y_true = pd.concat( _data, axis=1 ).values
 			
 			self.precision = dict( )
@@ -852,13 +1111,13 @@ class Embedding( ):
 			)
 			       )
 			
-			plt.figure( figsize=( 9, 10 ) )
+			plt.figure( figsize=( 9, 6 ) )
 			f_scores = np.linspace( 0.2, 0.8, num=4 )
 			self.lines = [ ]
 			self.labels = [ ]
 			for f_score in f_scores:
 				x = np.linspace( 0.01, 1 )
-				y = f_score * x / ( 2 * x - f_score )
+				y = f_score * x / (2 * x - f_score)
 				(l,) = plt.plot( x[ y >= 0 ], y[ y >= 0 ], color='gray', alpha=0.2 )
 				plt.annotate( 'f1={0:0.1f}'.format( f_score ), xy=(0.9, y[ 45 ] + 0.02) )
 			
@@ -888,16 +1147,27 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'plot_multiclass_precision( self, y_score, y_original, classes, classifier )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def calculate_distances( self,
-	                         query_embedding: List[ float ],
-	                         embeddings: List[ List[ float ] ],
+	def calculate_distances( self, query: List[ float ], embeddings: List[ List[ float ] ],
 	                         distance_metric='cosine' ) -> List[ List[ float ] ]:
+		"""
+		
+			Purpose:
+			Calculates cosine similarity between two vectors 'a' and 'b'.
+	
+			Parameters:
+			- a List[ float ]:  vector 'a',
+			- b List[ float ]:  vector 'b'
+	
+			Returns:
+			- List[ float ]:  embedded embeddings
+			
+		"""
 		try:
 			self.distance_metrics = \
 			{
@@ -908,40 +1178,41 @@ class Embedding( ):
 			}
 			
 			self.distances = [
-				self.distance_metrics[ distance_metric ]( query_embedding, embedding )
+				self.distance_metrics[ distance_metric ]( query, embedding )
 				for embedding in embeddings ]
 			return self.distances
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_exc.cause = 'Xtractor'
+			_exc.method = ('calculate_distances( self, query: List[ float ], embeddings: '
+			               'List[ List[ float ] ],  distance_metric=')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def calculate_nearest_neighbor( self, distances: [ float ] ) -> np.ndarray:
-		"""
-		
-			Return a list of indices of
-			nearest neighbors from a list of distances.
-		
-		"""
+	def calculate_nearest_neighbor( self, distances: List[ float ] ) -> np.ndarray:
+		'''
+
+			purpose:
+
+		'''
 		try:
 			self.distances = distances
 			return np.argsort( self.distances )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'calculate_nearest_neighbor( self, distances: List[ float ] ) -> np.ndarray'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
 	def create_pca_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray:
 		"""
-		
+			
+			Purpose:
 			Return the PCA components of a list of vectors.
 		
 		"""
@@ -953,13 +1224,18 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'create_pca_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
 	def create_tsne_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray:
+		'''
+
+			purpose:
+
+		'''
 		try:
 			self.vectors = vectors
 			tsne = TSNE( n_components=num )
@@ -968,29 +1244,34 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_exc.cause = 'Xtractor'
+			_exc.method = 'create_tsne_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
 	def create_chart( self, components: np.ndarray,
-	                  labels: Optional[ List[ str ] ] = None,
-	                  strings: Optional[ List[ str ] ] = None,
+	                  labels: Optional[ List[ str ] ]=None,
+	                  strings: Optional[ List[ str ] ]=None,
 	                  x_title='Component-0',
 	                  y_title='Component-1',
-	                  mark_size=5 ):
+	                  mark_size=5 ) -> None:
+		'''
+
+			purpose:
+
+		'''
 		try:
 			empty_list = [ "" for _ in components ]
 			data = pd.DataFrame(
-			{
-				x_title: components[ :, 0 ],
-				y_title: components[ :, 1 ],
-				'label': labels if labels else empty_list,
-				'string': [ '<br>'.join( tr.wrap( s, width=30 ) ) for s in strings ]
-				if strings
-				else empty_list,
-			} )
+				{
+					x_title: components[ :, 0 ],
+					y_title: components[ :, 1 ],
+					'label': labels if labels else empty_list,
+					'string': [ '<br>'.join( tr.wrap( s, width=30 ) ) for s in strings ]
+					if strings
+					else empty_list,
+				} )
 			
 			chart = px.scatter(
 				data,
@@ -1004,32 +1285,37 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
+			_exc.cause = 'Xtractor'
+			_exc.method = "('create_chart( self, components: np.ndarray  mark_size=5 ) -> None')"
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
 	def creat_3dchart( self,
 	                   components: np.ndarray,
-	                   labels: Optional[ List[ str ] ] = None,
-	                   strings: Optional[ List[ str ] ] = None,
-	                   x_title: str = 'Component-0',
-	                   y_title: str = 'Component-1',
-	                   z_title: str = 'Compontent-2',
-	                   mark_size: int = 5 ):
+	                   labels: Optional[ List[ str ] ]=None,
+	                   strings: Optional[ List[ str ] ]=None,
+	                   x_title: str='Component-0',
+	                   y_title: str='Component-1',
+	                   z_title: str='Compontent-2',
+	                   mark_size: int=5 ):
+		'''
+
+			purpose:
+
+		'''
 		try:
 			empty_list = [ "" for _ in components ]
 			_contents = \
-			{
-				x_title: components[ :, 0 ],
-				y_title: components[ :, 1 ],
-				z_title: components[ :, 2 ],
-				'label': labels if labels else empty_list,
-				'string': [ '<br>'.join( tr.wrap( s, width=30 ) ) for s in strings ]
-				if strings
-				else empty_list,
-			}
+				{
+					x_title: components[ :, 0 ],
+					y_title: components[ :, 1 ],
+					z_title: components[ :, 2 ],
+					'label': labels if labels else empty_list,
+					'string': [ '<br>'.join( tr.wrap( s, width=30 ) ) for s in strings ]
+					if strings
+					else empty_list,
+				}
 			
 			data = pd.DataFrame( _contents )
 			chart = px.scatter_3d(
@@ -1045,7 +1331,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Xtractor'
 			_exc.method = 'create_vector_store( self, name: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
