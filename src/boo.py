@@ -1839,7 +1839,7 @@ class Bubba( AI ):
 		self.name = 'Bubba'
 		self.description = 'A Budget Execution & Data Analysis Assistant'
 		self.id = 'asst_J6SAABzDixkTYi2k39OGgjPv'
-		self.vector_store_ids = ['vs_8fEoYp1zVvk5D8atfWLbEupN', 'vs_712r5W5833G6aLxIYIbuvVcK' ]
+		self.vector_store_ids = [ 'vs_8fEoYp1zVvk5D8atfWLbEupN', 'vs_712r5W5833G6aLxIYIbuvVcK' ]
 		self.metadata = { }
 		self.tools = [ ]
 	
