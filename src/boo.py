@@ -1114,7 +1114,7 @@ class Chat( AI ):
 						'content':
 							[
 								{ 'type': 'input_text',
-								  'pages': self.prompt
+								  'text': self.prompt
 								  },
 								{
 									'type': 'input_image',
@@ -1179,7 +1179,7 @@ class Chat( AI ):
 							},
 							{
 								'type': 'text',
-								'pages': 'What is the first dragon in the book?',
+								'text': 'What is the first dragon in the book?',
 							},
 						]
 					}
@@ -1388,7 +1388,7 @@ class Assistant( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'pages', 'audio', 'auto' ]
+		self.modalities = [ 'text', 'audio', 'auto' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.reasoning_effort = 'auto'
@@ -1505,7 +1505,7 @@ class Assistant( AI ):
 						'content':
 							[
 								{ 'type': 'input_text',
-								  'pages': self.prompt
+								  'text': self.prompt
 								  },
 								{
 									'type': 'input_image',
@@ -1570,7 +1570,7 @@ class Assistant( AI ):
 							},
 							{
 								'type': 'text',
-								'pages': 'What is the first dragon in the book?',
+								'text': 'What is the first dragon in the book?',
 							},
 						]
 					}
@@ -1687,7 +1687,7 @@ class Assistant( AI ):
 			
 		'''
 		try:
-			self.assistants = self.client.beta.assistants.list( order="desc", limit="20" )
+			self.assistants = self.client.beta.assistants.list( order='desc', limit='20' )
 			return self.assistants.data
 		except Exception as e:
 			exception = Error( e )
@@ -1822,7 +1822,7 @@ class Bubba( AI ):
 		self.system_instructions = AI( ).bubba_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'gpt-4o-mini'
+		self.model = 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -1837,7 +1837,7 @@ class Bubba( AI ):
 		self.reasoning_effort = 'auto'
 		self.input_text = None
 		self.name = 'Bubba'
-		self.description = 'A Budget Execution & Data Analysis Assistant'
+		self.description = 'A Budget Execution Assistant'
 		self.id = 'asst_J6SAABzDixkTYi2k39OGgjPv'
 		self.vector_store_ids = [ 'vs_8fEoYp1zVvk5D8atfWLbEupN', 'vs_712r5W5833G6aLxIYIbuvVcK' ]
 		self.metadata = { }
@@ -1947,7 +1947,7 @@ class Bubba( AI ):
 					'role': 'user',
 					'content': [
 					{ 'type': 'input_text',
-					  'pages': self.prompt
+					  'text': self.prompt
 					},
 					{
 						'type': 'input_image',
@@ -2010,7 +2010,7 @@ class Bubba( AI ):
 							},
 							{
 								'type': 'text',
-								'pages': 'What is the first dragon in the book?',
+								'text': 'What is the first dragon in the book?',
 							},
 						]
 					}
@@ -2139,7 +2139,10 @@ class Bubba( AI ):
                  'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
                  'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
                  'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
-                 'o1-mini-2024-09-12', 'o3-mini-2025-01-31'  ]
+                 'o1-mini-2024-09-12', 'o3-mini-2025-01-31',
+		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
+		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:budget-base-training:BGVk5Ii1',
+		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57' ]
 	
 	
 	def get_effort_options( ):
@@ -2243,7 +2246,7 @@ class Bro( AI ):
 		self.system_instructions = AI( ).bro_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'gpt-4o-mini'
+		self.model = 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -2434,7 +2437,7 @@ class Bro( AI ):
 						},
 						{
 							'type': 'text',
-							'pages': 'What is the first dragon in the book?',
+							'text': 'What is the first dragon in the book?',
 						},
 					]
 				} ]
@@ -2562,7 +2565,10 @@ class Bro( AI ):
                  'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
                  'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
                  'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
-                 'o1-mini-2024-09-12', 'o3-mini-2025-01-31'  ]
+                 'o1-mini-2024-09-12', 'o3-mini-2025-01-31',
+		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx',
+		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY',
+		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx' ]
 	
 	
 	def get_effort_options( ):
@@ -2921,7 +2927,7 @@ class TTS( AI ):
 		return [ 'mp3', 'wav', 'aac', 'flac', 'opus', 'pcm']
 	
 	
-	def create( self, prompt: str, path: str ):
+	def create( self, prompt: str, filepath: str ):
 		"""
 		
 			Purpose
@@ -2932,7 +2938,7 @@ class TTS( AI ):
 			Parameters
 			----------
 			prompt: str
-			path: str
+			filepath: str
 			
 			
 			Returns
@@ -2941,12 +2947,12 @@ class TTS( AI ):
 		
 		"""
 		try:
-			if path is None:
+			if filepath is None:
 				raise Exception( 'Argument "url" is required.' )
 			elif prompt is None:
 				raise Exception( 'Argument "prompt" is required.' )
 			else:
-				self.audio_path = Path( path ).parent
+				self.audio_path = Path( filepath ).parent
 				self.prompt = prompt
 				self.response = self.client.audio.speech.with_streaming_response( model=self.model,
 					voice=self.voice, input=self.prompt )
@@ -3073,7 +3079,9 @@ class Transcription( AI ):
 			Methods that returns a list of small_model names
 
 		'''
-		return [ 'whisper-1', 'gpt-4o-mini-transcribe', ' openai-4o-transcribe' ]
+		return [ 'whisper-1',
+		         'gpt-4o-mini-transcribe',
+		         ' openai-4o-transcribe' ]
 	
 	
 	def create( self, input: str ) -> str:
@@ -3422,7 +3430,7 @@ class LargeImage( AI ):
 	def analyze( self, input: str, path: str ) -> str:
 		'''
 
-			Method providing image analysis functionality given a prompt and filepath
+			Method providing image analysis functionality given a prompt and path
 
 		'''
 		try:
@@ -3500,7 +3508,8 @@ class LargeImage( AI ):
 			Method that returns a  list of sizes
 
 		'''
-		return [ '1024x1024', '1024x1792',
+		return [ '1024x1024',
+		         '1024x1792',
 		         '1792x1024' ]
 	
 	
@@ -3639,7 +3648,7 @@ class Image( AI ):
 	def analyze( self, input: str, path: str ) -> str:
 		'''
 
-			Method providing image analysis functionality given a prompt and filepath
+			Method providing image analysis functionality given a prompt and path
 
 		'''
 		try:
@@ -3707,7 +3716,7 @@ class Image( AI ):
 				self.input_text = input
 				self.file_path = path
 				self.response = self.client.images.edit( model=self.model,
-					image=open( self.file_path, "rb" ), prompt=self.input_text, n=self.number,
+					image=open( self.file_path, 'rb' ), prompt=self.input_text, n=self.number,
 					size=self.size )
 				
 				return self.response.data[ 0 ].url
@@ -3715,7 +3724,7 @@ class Image( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'analyze( self, text: str, path: str ) -> str'
+			exception.method = 'edit( self, input: str, path: str, size: str=1024X1024 ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	

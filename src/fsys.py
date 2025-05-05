@@ -54,7 +54,7 @@ class Path( ):
 
 	Constructor:
 
-		Path( filepath: str )
+		Path( path: str )
 
 	Purpose:
 
@@ -711,7 +711,7 @@ class Folder( Path ):
 	
 		Constructor:
 	
-		    Folder( filepath: str )
+		    Folder( path: str )
 	
 	    Purpose:
 	

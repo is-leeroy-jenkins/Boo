@@ -237,7 +237,7 @@ class FileDialog( Dark ):
 
 	    Construcotr: FileDialog( )
 
-	    Purpose: Class that creates dialog to get filepath
+	    Purpose: Class that creates dialog to get path
 
 	'''
 	
