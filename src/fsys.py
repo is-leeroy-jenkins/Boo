@@ -87,7 +87,7 @@ class Path( ):
 		Returns a get_list[ str ] of member names.
 
 		'''
-		return [ 'input', 'name', 'current_directory', 'extension',
+		return [ 'text', 'name', 'current_directory', 'extension',
 		         'parent_directory', 'path_separator', 'drive',
 		         'drive_separator', 'extension_separator', 'internal_path',
 		         'exists', 'is_folder', 'is_file', 'is_absolute',
@@ -127,7 +127,7 @@ class Path( ):
 		'''
 		try:
 			if self.input is None:
-				_msg = "The 'input' is None!"
+				_msg = "The 'text' is None!"
 				raise Exception( _msg )
 			if not os.path.isdir( self.input ):
 				return False
@@ -152,7 +152,7 @@ class Path( ):
 		'''
 		try:
 			if self.input is None:
-				_msg = "The 'input' is None!"
+				_msg = "The 'text' is None!"
 				raise Exception( _msg )
 			elif not os.path.isfile( self.input ):
 				return False
@@ -526,7 +526,7 @@ class File( Path ):
 		'''
 		
 			Purpose:
-			reads 'self.input' appending each line to a get_list
+			reads 'self.text' appending each line to a get_list
 	
 			Parameters: void
 	
@@ -556,7 +556,7 @@ class File( Path ):
 		'''
 		
 			Purpose:
-			iterates tokens of 'self.input'
+			iterates tokens of 'self.text'
 	
 			Parameters:
 			void
@@ -623,7 +623,7 @@ class File( Path ):
 		try:
 			_contents = ''
 			if not os.path.isfile( self.input ):
-				_msg = "The 'input' is not a file!"
+				_msg = "The 'text' is not a file!"
 				raise Exception( _msg )
 			else:
 				_file = open( self.input )
@@ -643,7 +643,7 @@ class File( Path ):
 		'''
 		
 			Purpose:
-			writes tokens in 'tokens' to file 'self.input'
+			writes tokens in 'tokens' to file 'self.text'
 	
 			Parameters: get_list[ str ]
 	
@@ -674,7 +674,7 @@ class File( Path ):
 		'''
 
 			Purpose:
-			writes all documents in 'other' to file 'self.input'
+			writes all documents in 'other' to file 'self.text'
 	
 			Parameters: str
 	
@@ -787,7 +787,7 @@ class Folder( Path ):
 		'''
 		try:
 			_names = [ ]
-			_msg = "The input url 'input' is not a directory!"
+			_msg = "The text url 'text' is not a directory!"
 			if not os.path.isdir( self.input ):
 				raise Exception( _msg )
 			else:

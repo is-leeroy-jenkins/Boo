@@ -53,7 +53,7 @@ class App( ):
 
     Purpose:
     Class defines object providing factory methods run( ) and run( args ) that run
-    processes based on 'Client' enumeration input args
+    processes based on 'Client' enumeration text args
     '''
 
     def __init__( self, client: Client ):

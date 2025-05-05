@@ -52,7 +52,7 @@ import tiktoken
 from pygments.lexers.csound import newline
 from static import GptRequests, GptRoles, GptLanguages
 from booger import ErrorDialog, Error
-from typing import Any, List, Tuple, Optional
+from typing import Any, List, Tuple, Optional, Dict
 
 
 class EndPoint( ):
@@ -165,10 +165,12 @@ class Header( ):
 class Models( ):
 	'''
 	
+		Purpose
+		_______
+		
 		Class containing lists of OpenAI models by generation
 		
 	'''
-	
 	
 	def __init__( self ):
 		self.text_generation = [ 'pages-davinci-003', 'pages-curie-001',
@@ -219,9 +221,13 @@ class Models( ):
 		                       'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
 		                       'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
 		                       'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
-		self.custom = [ 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
+		self.bubba = [ 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
 		                'ft:gpt-4o-2024-08-06:leeroy-jenkins:budget-base-training:BGVk5Ii1',
 		                'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57' ]
+
+		self.bro = [ 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
+		                    'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned:BTc3PMb5',
+		                    'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY' ]
 	
 	
 	def __dir__( self ) -> List[ str ]:
@@ -232,7 +238,8 @@ class Models( ):
 		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completion',
 		         'speech_generation', 'responses', 'reasoning',
 		         'translations', 'assistants', 'transcriptions',
-		         'finetuning', 'vectors', 'uploads', 'files', 'vector_stores' ]
+		         'finetuning', 'vectors', 'uploads', 'files', 'vector_stores',
+		         'bubba', 'bro' ]
 	
 	
 	def get_data( self ) -> dict:
@@ -404,7 +411,7 @@ class Perceptron( ):
 		
 			Purpose
 			_______
-			Calculates net input
+			Calculates net text
 			
 			Parameters
 			----------
@@ -587,7 +594,7 @@ class LinearGradientDescent( ):
 		
 			Purpose
 			_______
-			Calculates net input
+			Calculates net text
 			
 			Parameters
 			----------
@@ -700,11 +707,9 @@ class SystemMessage(  ):
 		Class representing the system message
 
 	'''
-	
-	
-	def __init__( self, prompt: str, role: str='system', type: str='text' ) -> None:
+	def __init__( self, prompt: str, type: str='text' ) -> None:
 		self.content = prompt
-		self.role = role
+		self.role = 'system'
 		self.type = type
 		self.data = { 'role': f'{self.role}',
 		              'type': f'{self.type}',
@@ -756,11 +761,9 @@ class UserMessage( ):
 		Class representing the system message
 
 	'''
-	
-	
-	def __init__( self, prompt: str, role: str='user', type: str='text' ) -> None:
+	def __init__( self, prompt: str, type: str='text' ) -> None:
 		self.content = prompt
-		self.role = role
+		self.role = 'user'
 		self.type = type
 		self.data = { 'role': f'{self.role}',
 		              'type': f'{self.type}',
@@ -812,9 +815,9 @@ class DeveloperMessage( ):
 		Class representing the system message
 
 	'''
-	def __init__( self, prompt: str, role: str='developer', type: str='text' ) -> None:
+	def __init__( self, prompt: str, type: str='text' ) -> None:
 		self.content = prompt
-		self.role = role
+		self.role = 'developer'
 		self.type = type
 		self.data = { 'role': f'{self.role}',
 		              'type': f'{self.type}',
@@ -866,9 +869,9 @@ class AssistantMessage( ):
 	'''
 	
 	
-	def __init__( self, prompt: str, role: str='assistant', type: str='pages' ) -> None:
+	def __init__( self, prompt: str, type: str='text' ) -> None:
 		self.content = prompt
-		self.role = role
+		self.role = 'assistant'
 		self.type = type
 		self.data = { 'role': f'{self.role}',
 		              'type': f'{self.type}',
@@ -945,7 +948,7 @@ class Chat( AI ):
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.prompt, self.response, self.completion, self.file, self.path,
-		self.input, self.messages, self.image_url, self.response_format,
+		self.text, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids
 		
 		Methods
@@ -955,7 +958,7 @@ class Chat( AI ):
 		analyze_image( self, prompt: str, url: str ) -> str:
 		summarize( self, prompt: str, path: str ) -> str
 		search_web( self, prompt: str ) -> str
-		search_file( self, prompt: str ) -> str
+		search_files( self, prompt: str ) -> str
 		dump( self ) -> str
 		get_data( self ) -> { }
 		
@@ -978,7 +981,7 @@ class Chat( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'pages', 'audio' ]
+		self.modalities = [ 'text', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.tool_choice = None
 		self.content = None
@@ -993,6 +996,7 @@ class Chat( AI ):
 		self.response_format = 'auto'
 		self.tools = [ ]
 		self.vector_store_ids = [ 'vs_712r5W5833G6aLxIYIbuvVcK', 'vs_8fEoYp1zVvk5D8atfWLbEupN' ]
+	
 	
 	def get_model_options( self ) -> str:
 		'''
@@ -1272,7 +1276,7 @@ class Chat( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
-			exception.method = 'search_file( self, prompt: str ) -> str'
+			exception.method = 'search_files( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1328,11 +1332,11 @@ class Chat( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
-		         'input', 'messages', 'image_url', 'respose_format', 'tools',
+		         'text', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'size', 'api_key', 'client', 'small_model',
 		         'generate_text', 'analyze_image', 'summarize', 'generate_image',
 		         'translate', 'transcribe',
-		         'search_web', 'search_file', 'get_data', 'dump' ]
+		         'search_web', 'search_files', 'get_data', 'dump' ]
 	
 	
 class Assistant( AI ):
@@ -1362,7 +1366,7 @@ class Assistant( AI ):
 		analyze_image( self, prompt: str, url: str ) -> str:
 		summarize( self, prompt: str, path: str ) -> str
 		search_web( self, prompt: str ) -> str
-		search_file( self, prompt: str ) -> str
+		search_files( self, prompt: str ) -> str
 		
 	
 	"""
@@ -1663,7 +1667,7 @@ class Assistant( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
-			exception.method = 'search_file( self, prompt: str ) -> str'
+			exception.method = 'search_files( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1767,11 +1771,12 @@ class Assistant( AI ):
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
-		         'input', 'messages', 'image_url', 'respose_format', 'tools',
+		         'text', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
-		         'get_effort_options', 'input_text', 'metadata', 'get_list'
-		         'get_data', 'dump', 'translate', 'transcribe' ]
+		         'get_effort_options', 'input_text', 'metadata',
+		         'get_list', 'get_data',
+		         'dump', 'translate', 'transcribe' ]
 	
 	
 class Bubba( AI ):
@@ -1801,7 +1806,7 @@ class Bubba( AI ):
 		analyze_image( self, prompt: str, url: str ) -> str:
 		summarize( self, prompt: str, path: str ) -> str
 		search_web( self, prompt: str ) -> str
-		search_file( self, prompt: str ) -> str
+		search_files( self, prompt: str ) -> str
 		dump( self ) -> str
 		get_data( self ) -> { }
 		
@@ -1826,7 +1831,7 @@ class Bubba( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'pages', 'audio' ]
+		self.modalities = [ 'text', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.reasoning_effort = 'auto'
@@ -1938,20 +1943,17 @@ class Bubba( AI ):
 				self.prompt = prompt
 				self.image_url = url
 				self.input = [
+				{
+					'role': 'user',
+					'content': [
+					{ 'type': 'input_text',
+					  'pages': self.prompt
+					},
 					{
-						'role': 'user',
-						'content':
-							[
-								{ 'type': 'input_text',
-								  'pages': self.prompt
-								  },
-								{
-									'type': 'input_image',
-									'image_url': self.image_url
-								}
-							]
-					}
-				]
+						'type': 'input_image',
+						'image_url': self.image_url
+					} ]
+				} ]
 				
 				self.response = self.client.responses.create( model=self.model, input=self.input )
 				return self.response.output_text
@@ -2068,7 +2070,7 @@ class Bubba( AI ):
 			error.show( )
 
 
-	def search_file( self, prompt: str ) -> str:
+	def search_files( self, prompt: str ) -> str:
 		"""
 		
 			Purpose
@@ -2105,7 +2107,7 @@ class Bubba( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
-			exception.method = 'search_file( self, prompt: str ) -> str'
+			exception.method = 'search_files( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2191,7 +2193,7 @@ class Bubba( AI ):
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
-		         'input', 'messages', 'image_url', 'respose_format', 'tools',
+		         'text', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
 		         'get_effort_options', 'input_text', 'metadata', 'get_data', 'dump',
@@ -2225,7 +2227,7 @@ class Bro( AI ):
 		analyze_image( self, prompt: str, url: str ) -> str:
 		summarize( self, prompt: str, path: str ) -> str
 		search_web( self, prompt: str ) -> str
-		search_file( self, prompt: str ) -> str
+		search_files( self, prompt: str ) -> str
 		dump( self ) -> str
 		get_data( self ) -> { }
 		
@@ -2528,7 +2530,7 @@ class Bro( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
-			exception.method = 'search_file( self, prompt: str ) -> str'
+			exception.method = 'search_files( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2615,11 +2617,213 @@ class Bro( AI ):
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
-		         'input', 'messages', 'image_url', 'respose_format', 'tools',
+		         'text', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
 		         'get_effort_options', 'input_text', 'metadata',
 		          'get_data', 'dump' ]
+
+
+class Embedding( AI ):
+	"""
+
+		Purpose
+		___________
+		Class used for creating vectors using
+		OpenAI' embedding-3-small embedding small_model
+
+		Parameters
+		------------
+		None
+
+		Attributes
+		-----------
+		self.api_key
+		self.client
+		self.small_model
+		self.embedding
+		self.response
+
+		Methods
+		------------
+		create_small_embedding( self, text: str ) -> get_list[ float ]
+
+
+	"""
+	
+	
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
+		super( ).__init__( )
+		self.client = OpenAI( self.api_key )
+		self.client.api_key = Header( ).api_key
+		self.small_model = 'text-embedding-3-small'
+		self.large_model = 'text-embedding-3-large'
+		self.ada_model = 'text-embedding-ada-002'
+		self.encoding_format = 'float'
+		self.number = num
+		self.temperature = temp
+		self.top_percent = top
+		self.frequency_penalty = freq
+		self.presence_penalty = pres
+		self.max_completion_tokens = max
+		self.store = store
+		self.stream = stream
+		self.embedding = None
+		self.response = None
+	
+	
+	def create_small( self, text: str ) -> List[ float ]:
+		"""
+
+			Purpose
+			_______
+			Creates an embedding ginve a string text
+
+
+			Parameters
+			----------
+			text: str
+
+
+			Returns
+			-------
+			get_list[ float
+
+		"""
+		try:
+			if text is None:
+				raise Exception( 'Argument "text" is required.' )
+			else:
+				self.input = text
+				self.response = self.client.embeddings.create( self.input, self.small_model )
+				self.embedding = self.response.data[ 0 ].embedding
+				return self.embedding
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Embedding'
+			exception.method = 'create_small( self, text: str ) -> List[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def create_large( self, text: str ) -> List[ float ]:
+		"""
+
+			Purpose
+			_______
+			Creates an Large embedding given a string text
+
+
+			Parameters
+			----------
+			text: str
+
+
+			Returns
+			-------
+			list[ float ]
+
+		"""
+		try:
+			if text is None:
+				raise Exception( 'Argument "text" is required.' )
+			else:
+				self.input = text
+				self.response = self.client.embeddings.create( self.input, self.large_model )
+				self.embedding = self.response.data[ 0 ].embedding
+				return self.embedding
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Embedding'
+			exception.method = 'create_large( self, text: str ) -> List[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def create_ada( self, text: str ) -> List[ float ]:
+		"""
+
+			Purpose
+			_______
+			Creates an ADA embedding given a string text
+
+
+			Parameters
+			----------
+			text: str
+
+
+			Returns
+			-------
+			get_list[ float
+
+		"""
+		try:
+			if text is None:
+				raise Exception( 'Argument "text" is required.' )
+			else:
+				self.input = text
+				self.response = self.client.embeddings.create( self.input, self.ada_model )
+				self.embedding = self.response.data[ 0 ].embedding
+				return self.embedding
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Embedding'
+			exception.method = 'create_ada( self, text: str ) -> List[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def get_data( self ) -> Dict:
+		'''
+
+			Returns: dict[ str ] of members
+
+		'''
+		return { 'num': self.number,
+		         'temperature': self.temperature,
+		         'top_percent': self.top_percent,
+		         'frequency_penalty': self.frequency_penalty,
+		         'presence_penalty': self.presence_penalty,
+		         'store': self.store,
+		         'stream': self.stream,
+		         'size': self.size }
+	
+	
+	def dump( self ) -> str:
+		'''
+
+			Returns: dict of members
+
+		'''
+		new = '\r\n'
+		return 'num' + f' = {self.number}' + new + \
+			'temperature' + f' = {self.temperature}' + new + \
+			'top_percent' + f' = {self.top_percent}' + new + \
+			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
+			'presence_penalty' + f' = {self.presence_penalty}' + new + \
+			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
+			'store' + f' = {self.store}' + new + \
+			'stream' + f' = {self.stream}' + new + \
+			'size' + f' = {self.size}' + new
+	
+	
+	def __dir__( self ) -> List[ str ]:
+		'''
+
+			Methods that returns a get_list of member names
+			Returns: get_list[ str ]
+
+		'''
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens',
+		         'store', 'stream', 'modalities', 'stops',
+		         'api_key', 'client', 'small_model',
+		         'text', 'create_small_embedding', 'get_model_options' ]
 
 
 class TTS( AI ):
@@ -2648,7 +2852,7 @@ class TTS( AI ):
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.input_text, self.response, self.completion, self.file, self.path,
-		self.input, self.messages, self.image_url, self.response_format,
+		self.text, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids, self.descriptions, self.assistants
 		
 		Methods
@@ -2751,7 +2955,7 @@ class TTS( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'TTS'
-			exception.method = 'create_small_embedding( self, prompt: str, input: str )]'
+			exception.method = 'create_small_embedding( self, prompt: str, text: str )]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2799,7 +3003,7 @@ class TTS( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'completion', 'audio_path',
-		         'input', 'messages', 'respose_format', 'tools',
+		         'text', 'messages', 'respose_format', 'tools',
 		         'size', 'api_key', 'client', 'small_model', 'voice',
 		         'generate_text', 'get_model_options' ]
 
@@ -2835,7 +3039,7 @@ class Transcription( AI ):
 		Methods
 		------------
 		get_model_options( self ) -> str
-		create_small_embedding( self, input: str  ) -> str
+		create_small_embedding( self, text: str  ) -> str
 		
 	
 	"""
@@ -2855,7 +3059,7 @@ class Transcription( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'pages', 'audio' ]
+		self.modalities = [ 'text', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.input_text = None
 		self.audio_file = None
@@ -2892,7 +3096,7 @@ class Transcription( AI ):
 		"""
 		try:
 			if input is None:
-				raise Exception( 'Argument "input" is required.' )
+				raise Exception( 'Argument "text" is required.' )
 			else:
 				self.audio_file = open( 'boo.mp3', 'rb' )
 				self.input_text = input
@@ -2903,7 +3107,7 @@ class Transcription( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Transcription'
-			exception.method = 'create_small_embedding( self, input: str ) -> str'
+			exception.method = 'create_small_embedding( self, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2951,7 +3155,7 @@ class Transcription( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'audio_file',
-		         'input', 'messages', 'respose_format',
+		         'text', 'messages', 'respose_format',
 		         'api_key', 'client', 'small_model', 'create_small_embedding',
 		         'input_text', 'transcript' ]
 
@@ -2982,7 +3186,7 @@ class Translation( AI ):
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.input_text, self.response, self.completion, self.file, self.path,
-		self.input, self.messages, self.image_url, self.response_format,
+		self.text, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids, self.descriptions, self.assistants
 		
 		Methods
@@ -3007,7 +3211,7 @@ class Translation( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'pages', 'audio' ]
+		self.modalities = [ 'text', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.audio_file = None
 		self.response = None
@@ -3020,7 +3224,7 @@ class Translation( AI ):
 			Methods that returns a list of small_model names
 
 		'''
-		return [ 'whisper-1', 'pages-davinci-003',
+		return [ 'whisper-1', 'text-davinci-003',
 		         'gpt-4-0613', 'gpt-4-0314',
 		         'gpt-4-turbo-2024-04-09' ]
 	
@@ -3056,7 +3260,7 @@ class Translation( AI ):
 		"""
 		try:
 			if input is None:
-				raise Exception( 'Argument "input" is required.' )
+				raise Exception( 'Argument "text" is required.' )
 			else:
 				self.audio_file = open( 'boo.mp3', 'rb' )
 				self.response = self.client.audio.translations.create( model='whisper-1',
@@ -3065,7 +3269,7 @@ class Translation( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Translation'
-			exception.method = 'create_small_embedding( self, input: str )'
+			exception.method = 'create_small_embedding( self, text: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3115,355 +3319,9 @@ class Translation( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'completion', 'audio_path',
-		         'input', 'messages', 'respose_format', 'tools',
+		         'text', 'messages', 'respose_format', 'tools',
 		         'size', 'api_key', 'client',
 		         'small_model', 'create_small_embedding', 'get_model_options' ]
-
-
-class SmallEmbedding( AI ):
-	"""
-
-		Purpose
-		___________
-		Class used for creating vectors using
-		OpenAI' embedding-3-small embedding small_model
-
-		Parameters
-		------------
-		None
-
-		Attributes
-		-----------
-		self.api_key
-		self.client
-		self.small_model
-		self.embedding
-		self.response
-
-		Methods
-		------------
-		create_small_embedding( self, input: str ) -> get_list[ float ]
-
-
-	"""
-	
-	
-	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
-		super( ).__init__( )
-		self.client = OpenAI( self.api_key )
-		self.client.api_key = Header( ).api_key
-		self.model = 'text-embedding-3-small'
-		self.encoding_format = 'float'
-		self.number = num
-		self.temperature = temp
-		self.top_percent = top
-		self.frequency_penalty = freq
-		self.presence_penalty = pres
-		self.max_completion_tokens = max
-		self.store = store
-		self.stream = stream
-		self.embedding = None
-		self.response = None
-	
-	
-	def get_model_options( self ) -> str:
-		'''
-
-			Methods that returns a list of small_model names
-
-		'''
-		return [ 'text-embedding-3-small', ]
-	
-	
-	def create( self, input: str ) -> List[ float ]:
-		"""
-
-			Purpose
-			_______
-			Creates an embedding ginve a string input
-
-
-			Parameters
-			----------
-			input: str
-
-
-			Returns
-			-------
-			get_list[ float
-
-		"""
-		try:
-			if input is None:
-				raise Exception( 'Argument "input" is required.' )
-			else:
-				self.input = input
-				self.response = self.client.embeddings.create( input, self.model )
-				self.embedding = self.response.data[ 0 ].embedding
-				return self.embedding
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'SmallEmbedding'
-			exception.method = 'create_small_embedding( self, input: str ) -> get_list[ float ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def get_data( self ) -> dict:
-		'''
-
-			Returns: dict[ str ] of members
-
-		'''
-		return { 'num': self.number,
-		         'temperature': self.temperature,
-		         'top_percent': self.top_percent,
-		         'frequency_penalty': self.frequency_penalty,
-		         'presence_penalty': self.presence_penalty,
-		         'store': self.store,
-		         'stream': self.stream,
-		         'size': self.size }
-	
-	
-	def dump( self ) -> str:
-		'''
-		
-			Returns: dict of members
-			
-		'''
-		new = '\r\n'
-		return 'num' + f' = {self.number}' + new + \
-			'temperature' + f' = {self.temperature}' + new + \
-			'top_percent' + f' = {self.top_percent}' + new + \
-			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
-			'presence_penalty' + f' = {self.presence_penalty}' + new + \
-			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
-			'store' + f' = {self.store}' + new + \
-			'stream' + f' = {self.stream}' + new + \
-			'size' + f' = {self.size}' + new
-	
-	
-	def __dir__( self ) -> List[ str ]:
-		'''
-
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-
-		'''
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
-		         'presence_penalty', 'max_completion_tokens',
-		         'store', 'stream', 'modalities', 'stops',
-		         'api_key', 'client', 'small_model',
-		         'input', 'create_small_embedding', 'get_model_options' ]
-
-
-class AdaEmbedding( AI ):
-	'''
-
-		Purpose
-		___________
-		Class used for creating ADA vectors using
-		OpenAI's embedding-ada-02 embedding small_model
-
-		Parameters
-		------------
-		None
-
-		Attributes
-		-----------
-		self.api_key
-		self.client
-		self.small_model
-		self.embedding
-		self.response
-
-		Methods
-		------------
-		create_small_embedding( self, input: str ) -> get_list[ float ]
-
-	'''
-	
-	
-	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
-		super( ).__init__( )
-		self.api_key = Header( ).api_key
-		self.client = OpenAI( self.api_key )
-		self.model = 'text-embedding-ada-02'
-		self.number = num
-		self.temperature = temp
-		self.top_percent = top
-		self.frequency_penalty = freq
-		self.presence_penalty = pres
-		self.max_completion_tokens = max
-		self.store = store
-		self.stream = stream
-		self.embedding = None
-		self.response = None
-	
-	
-	def create( self, input: str ) -> list[ float ]:
-		"""
-
-			Purpose
-			_______
-			Creates an ADA embedding given a string input
-
-
-			Parameters
-			----------
-			input: str
-
-
-			Returns
-			-------
-			get_list[ float
-
-		"""
-		try:
-			if input is None:
-				raise Exception( 'Argument "input" is required.' )
-			else:
-				self.input = input
-				self.response = self.client.embeddings.create( input, self.model )
-				self.embedding = self.response.data[ 0 ].embedding
-				return self.embedding
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'AdaEmbedding'
-			exception.method = 'create_small_embedding( self, input: str ) -> get_list[ float ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def get_model_options( self ) -> str:
-		'''
-
-			Methods that returns a list of small_model names
-
-		'''
-		return [ 'text-embedding-ada-02']
-	
-
-	def __dir__( self ) -> list[ str ]:
-		'''
-
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-
-		'''
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
-		         'presence_penalty', 'max_completion_tokens',
-		         'store', 'stream', 'modalities', 'stops',
-		         'api_key', 'client', 'small_model',
-		         'input', 'create_small_embedding', 'get_model_options' ]
-
-
-class LargeEmbedding( AI ):
-	'''
-
-		Purpose
-		___________
-		Class used for creating ADA vectors using
-		OpenAI's embedding-ada-02 embedding small_model
-
-		Parameters
-		------------
-		None
-
-		Attributes
-		-----------
-		self.api_key
-		self.client
-		self.small_model
-		self.embedding
-		self.response
-
-		Methods
-		------------
-		create_small_embedding( self, input: str ) -> get_list[ float ]
-
-	'''
-	
-	
-	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
-		super( ).__init__( )
-		self.api_key = Header( ).api_key
-		self.client = OpenAI( self.api_key )
-		self.model = 'text-embedding-3-large'
-		self.encoding_format = 'float'
-		self.number = num
-		self.temperature = temp
-		self.top_percent = top
-		self.frequency_penalty = freq
-		self.presence_penalty = pres
-		self.max_completion_tokens = max
-		self.store = store
-		self.stream = stream
-		self.embedding = None
-		self.response = None
-	
-	
-	def get_model_options( self ) -> str:
-		'''
-
-			Methods that returns a list of small_model names
-
-		'''
-		return [ 'text-embedding-3-large', ]
-	
-	
-	def create( self, input: str ) -> list[ float ]:
-		"""
-
-			Purpose
-			_______
-			Creates an Large embedding given a string input
-
-
-			Parameters
-			----------
-			input: str
-
-
-			Returns
-			-------
-			list[ float ]
-
-		"""
-		try:
-			if input is None:
-				raise Exception( 'Argument "input" is required.' )
-			else:
-				self.input = input
-				self.response = self.client.embeddings.create( input, self.model )
-				self.embedding = self.response.data[ 0 ].embedding
-				return self.embedding
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'LargeEmbedding'
-			exception.method = 'create_small_embedding( self, input: str ) -> get_list[ float ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def __dir__( self ) -> list[ str ]:
-		'''
-
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-
-		'''
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
-		         'presence_penalty', 'max_completion_tokens',
-		         'store', 'stream', 'modalities', 'stops',
-		         'api_key', 'client', 'small_model',
-		         'input', 'create_small_embedding', 'get_model_options' ]
 
 
 class LargeImage( AI ):
@@ -3488,8 +3346,8 @@ class LargeImage( AI ):
 
 		Methods
 		------------
-		generate( self, input: str ) -> str:
-		analyze( self, input: str, path: str ) -> str
+		generate( self, text: str ) -> str:
+		analyze( self, text: str, path: str ) -> str
 		get_detail_options( self ) -> list[ str ]
 		get_format_options( self ) -> list[ str ]:
 		get_size_options( self ) -> list[ str ]
@@ -3497,8 +3355,8 @@ class LargeImage( AI ):
 	"""
 	
 	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = False ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=False ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
@@ -3556,7 +3414,7 @@ class LargeImage( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'generate( self, input: str ) -> str'
+			exception.method = 'generate( self, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3569,7 +3427,7 @@ class LargeImage( AI ):
 		'''
 		try:
 			if input is None:
-				raise Exception( 'The argument "input" cannot be None' )
+				raise Exception( 'The argument "text" cannot be None' )
 			elif path is None:
 				raise Exception( 'The argument "path" cannot be None' )
 			else:
@@ -3581,7 +3439,7 @@ class LargeImage( AI ):
 						'content':
 							[
 								{ 'type': 'input_text',
-								  'pages': self.input_text
+								  'text': self.input_text
 								  },
 								{
 									'type': 'input_image',
@@ -3601,7 +3459,7 @@ class LargeImage( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'analyze( self, input: str, path: str ) -> str'
+			exception.method = 'analyze( self, text: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3657,7 +3515,7 @@ class LargeImage( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'input_text', 'image_url', 'path',
-		         'api_key', 'client', 'small_model', 'input', 'generate',
+		         'api_key', 'client', 'small_model', 'text', 'generate',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
 
@@ -3688,14 +3546,14 @@ class Image( AI ):
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.prompt, self.response, self.completion, self.file, self.path,
-		self.input, self.messages, self.image_url, self.response_format,
+		self.text, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids, self.input_text, self.path, self.image_url
 
 		Methods
 		------------
 		get_model_options( self ) -> str
-		generate( self, input: str ) -> str
-		analyze( self, input: str, path: str ) -> str
+		generate( self, text: str ) -> str
+		analyze( self, text: str, path: str ) -> str
 		get_detail_options( self ) -> list[ str ]
 		get_format_options( self ) -> list[ str ]
 		get_size_options( self ) -> list[ str ]
@@ -3703,8 +3561,8 @@ class Image( AI ):
 	"""
 	
 	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-	              pres: float = 0.0, max: int = 2048, store: bool = False, stream: bool = False ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=False ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
@@ -3742,7 +3600,7 @@ class Image( AI ):
 
 			Purpose
 			_______
-			Generates an image given a string input
+			Generates an image given a string text
 
 
 			Parameters
@@ -3773,7 +3631,7 @@ class Image( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'generate( self, input: str ) -> str'
+			exception.method = 'generate( self, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3798,7 +3656,7 @@ class Image( AI ):
 						'content':
 							[
 								{ 'type': 'input_text',
-								  'pages': self.input_text
+								  'text': self.input_text
 								  },
 								{
 									'type': 'input_image',
@@ -3816,7 +3674,7 @@ class Image( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'analyze( self, input: str, path: str ) -> str'
+			exception.method = 'analyze( self, text: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3857,7 +3715,7 @@ class Image( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'analyze( self, input: str, path: str ) -> str'
+			exception.method = 'analyze( self, text: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3872,7 +3730,7 @@ class Image( AI ):
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
-		         'api_key', 'client', 'small_model', 'input', 'analyze',
+		         'api_key', 'client', 'small_model', 'text', 'analyze',
 		         'input_text', 'image_url', 'path', 'edit',
 		         'generate', 'quality', 'detail', 'small_model', 'get_model_options',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]

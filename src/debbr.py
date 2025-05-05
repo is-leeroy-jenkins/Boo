@@ -124,7 +124,7 @@ class SQLite( ):
 		"""
 		try:
 			if sql is None:
-				raise Exception( 'The input "sql" cannot be None' )
+				raise Exception( 'The text "sql" cannot be None' )
 			else:
 				self.sql = sql
 				self.cursor.execute( self.sql )
@@ -152,11 +152,11 @@ class SQLite( ):
 		"""
 		try:
 			if table is None:
-				raise Exception( 'The input "df" cannot be None' )
+				raise Exception( 'The text "df" cannot be None' )
 			elif columns is None:
-				raise Exception( 'The input "columns" cannot be None' )
+				raise Exception( 'The text "columns" cannot be None' )
 			elif values is None:
-				raise Exception( 'The input "values" cannot be None' )
+				raise Exception( 'The text "values" cannot be None' )
 			else:
 				self.placeholders = ', '.join( '?' for _ in values )
 				col_names = ', '.join( columns )
@@ -215,11 +215,11 @@ class SQLite( ):
 		"""
 		try:
 			if table is None:
-				raise Exception( 'The input "df" cannot be None' )
+				raise Exception( 'The text "df" cannot be None' )
 			elif where is None:
-				raise Exception( 'The input "where" cannot be None' )
+				raise Exception( 'The text "where" cannot be None' )
 			elif params is None:
-				raise Exception( 'The input "params" cannot be None' )
+				raise Exception( 'The text "params" cannot be None' )
 			else:
 				self.table_name = table
 				self.where = where
@@ -251,13 +251,13 @@ class SQLite( ):
 		"""
 		try:
 			if table is None:
-				raise Exception( 'The input "df" cannot be None' )
+				raise Exception( 'The text "df" cannot be None' )
 			elif where is None:
-				raise Exception( 'The input "where" cannot be None' )
+				raise Exception( 'The text "where" cannot be None' )
 			elif params is None:
-				raise Exception( 'The input "params" cannot be None' )
+				raise Exception( 'The text "params" cannot be None' )
 			elif pairs is None:
-				raise Exception( 'The input "pairs" cannot be None' )
+				raise Exception( 'The text "pairs" cannot be None' )
 			else:
 				self.table_name = table
 				self.where = where
@@ -289,11 +289,11 @@ class SQLite( ):
 		"""
 		try:
 			if table is None:
-				raise Exception( 'The input "df" cannot be None' )
+				raise Exception( 'The text "df" cannot be None' )
 			elif where is None:
-				raise Exception( 'The input "where" cannot be None' )
+				raise Exception( 'The text "where" cannot be None' )
 			elif params is None:
-				raise Exception( 'The input "params" cannot be None' )
+				raise Exception( 'The text "params" cannot be None' )
 			else:
 				self.table_name = table
 				self.where = where
@@ -323,7 +323,7 @@ class SQLite( ):
 		"""
 		try:
 			if path is None:
-				raise Exception( 'The input "path" cannot be None' )
+				raise Exception( 'The text "path" cannot be None' )
 			else:
 				self.file_path = path
 				self.file_name = os.path.basename( self.file_path )

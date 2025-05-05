@@ -2206,7 +2206,7 @@ msgstr ""
 msgid ""
 "Select option other than None to \n"
 "feed the corresponding information\n"
-"to the standard input."
+"to the standard text."
 msgstr ""
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbStandardInput....Items.Strings

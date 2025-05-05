@@ -2247,11 +2247,11 @@ msgstr ""
 msgid ""
 "Select option other than None to \n"
 "feed the corresponding information\n"
-"to the standard input."
+"to the standard text."
 msgstr ""
 "Seleziona un'opzione diversa da Nessuno per\n"
 "inviare le informazioni corrispondenti\n"
-"all'input standard."
+"all'text standard."
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbStandardInput....Items.Strings
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbStandardOutput....Items.Strings

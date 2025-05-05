@@ -79,7 +79,7 @@ class Error( Exception ):
 
         Purpose:
 
-            Class wrapping error used as the input argument for ErrorDialog class
+            Class wrapping error used as the text argument for ErrorDialog class
 
     '''
 	
@@ -952,7 +952,7 @@ class InputDialog( Dark ):
 
 	    Construcotr:  Input( question )
 
-	    Purpose:  class that produces a contact input form
+	    Purpose:  class that produces a contact text form
 
 	'''
 	# Fields
@@ -1056,7 +1056,7 @@ class ScrollingDialog( Dark ):
 
         Purpose:
 
-            Provides form for multiline input/cleaned_lines
+            Provides form for multiline text/cleaned_lines
 
 	'''
 	
@@ -1155,7 +1155,7 @@ class ContactForm( Dark ):
 
         Construcotr: ContactForm( contact )
 
-        Purpose:  class that produces a contact input form
+        Purpose:  class that produces a contact text form
 
 	'''
 	
@@ -4791,7 +4791,7 @@ class ChatBot( ):
 				return_keyboard_events=True,
 				size=self.form_size )
 			
-			# ---===--- Loop taking in user input and using it  --- #
+			# ---===--- Loop taking in user text and using it  --- #
 			command_history = [ ]
 			history_offset = 0
 			
@@ -4804,7 +4804,7 @@ class ChatBot( ):
 					print( 'The command you entered was {}'.format( query ) )
 					command_history.append( query )
 					history_offset = len( command_history ) - 1
-					# manually clear input because keyboard events blocks clear
+					# manually clear text because keyboard events blocks clear
 					window[ '-QUERY-' ].update( '' )
 					window[ '-HISTORY-' ].update( '\n'.join( command_history[ -3: ] ) )
 				
@@ -5058,7 +5058,7 @@ class Executable( ):
 				auto_size_buttons=False,
 				default_element_size=(20, 1),
 				text_justification='right' )
-			# ---===--- Loop taking in user input --- #
+			# ---===--- Loop taking in user text --- #
 			while True:
 				event, values = window.read( )
 				if event in ('Exit', 'Quit', None):
@@ -5298,12 +5298,12 @@ class UrlImageViewer( ):
 
 class AutoComplete( ):
 	"""
-	    Autocomplete input
+	    Autocomplete text
 	
 	    There are 3 keyboard characters to be aware of:
 	    * Arrow up - Change selected item in get_list
 	    * Arrow down - Change selected item in get_list
-	    * Escape - Erase the input and start over
+	    * Escape - Erase the text and start over
 	    * Return/Enter - use the current item selected from the get_list
 	
 	    You can easily remove the ignore case option by searching for the "Irnore Case" Check box

@@ -122,7 +122,7 @@ class Vector( ):
 		         'id', 'files', 'tokens', 'array', 'store_ids',
 		         'client', 'cache', 'results', 'directory', 'stats'
 		         'response', 'vector_stores', 'file_ids', 'data',
-		         'batches', 'tables', 'vectors', 'create', 'dataframe',
+		         'batches', 'tables', 'vectors', 'create_small', 'dataframe',
 		         'most_similar', 'bulk_similar', 'similarity_heatmap',
 		         'export_jsonl', 'import_jsonl', 'create_vector_store',
 		         'list_vector_stores', 'upload_vector_store',
@@ -135,10 +135,10 @@ class Vector( ):
 		"""
 		
 			Generate and normalize
-			vectors for a list of input tokens.
+			vectors for a list of text tokens.
 	
 			Parameters:
-			- tokens (List[str]): List of input pages strings
+			- tokens (List[str]): List of text pages strings
 			- batch (int): Number of tokens per API request batch
 			- max (int): Number of retries on API failure
 			- time (float): Seconds to wait between retries
@@ -197,7 +197,7 @@ class Vector( ):
 			into batches of specified size.
 	
 			Parameters:
-			- tokens (List[str]): Full list of input strings
+			- tokens (List[str]): Full list of text strings
 			- size (int): Desired batch size
 	
 			Returns:
@@ -740,10 +740,12 @@ class Vector( ):
 					'errors': [ ]
 				}
 				
-				with concurrent.futures.ThreadPoolExecutor( max_workers=10 ) as thread:
-					_futures = {
+				with (concurrent.futures.ThreadPoolExecutor( max_workers=10 ) as thread):
+					_futures =\
+					{
 						thread.submit( self.upload_document, self.file_path, self.id ): self.file_path
-						for self.file_path in self.files }
+						for self.file_path in self.files
+					}
 					for future in tqdm( concurrent.futures.as_completed( _futures ),
 							total=len( self.files ) ):
 						result = future.result( )
@@ -793,7 +795,7 @@ class Xtractor( ):
 		"""
 		
 			Purpose:
-			Create embeddings using the small model from OpenAI.
+			Create embeddings using the small small_model from OpenAI.
 	
 			Parameters:
 			- text (str):  the text to be embedded
@@ -822,7 +824,7 @@ class Xtractor( ):
 		"""
 		
 			Purpose:
-			Create embeddings using the small model from OpenAI.
+			Create embeddings using the small small_model from OpenAI.
 	
 			Parameters:
 			- tokens List[ str ]:  the list of strings (ie., tokens) to be embedded
@@ -850,7 +852,7 @@ class Xtractor( ):
 		"""
 		
 			Purpose:
-			Create embeddings using the large model from OpenAI.
+			Create embeddings using the large small_model from OpenAI.
 	
 			Parameters:
 			- text (str):  the string (ie, token) to be embedded
@@ -879,7 +881,7 @@ class Xtractor( ):
 		"""
 		
 			Purpose:
-			Create embeddings using the large model from OpenAI.
+			Create embeddings using the large small_model from OpenAI.
 	
 			Parameters:
 			- tokens List[ str ]:  the list of strings (ie., tokens) to be embedded
@@ -907,7 +909,7 @@ class Xtractor( ):
 		"""
 		
 			Purpose:
-			Create embeddings using the ada model from OpenAI.
+			Create embeddings using the ada small_model from OpenAI.
 	
 			Parameters:
 			- text (str) :  the text (ie., token) to be embedded
@@ -936,7 +938,7 @@ class Xtractor( ):
 		"""
 		
 			Purpose:
-			Create embeddings using the ada model from OpenAI.
+			Create embeddings using the ada small_model from OpenAI.
 	
 			Parameters:
 			- tokens List[ str ]:  the list of strings (ie., tokens) to be embedded
@@ -964,7 +966,7 @@ class Xtractor( ):
 		"""
 		
 			Purpose:
-			Asynchronously creates embeddings using the small model from OpenAI.
+			Asynchronously creates embeddings using the small small_model from OpenAI.
 	
 			Parameters:
 			- text (str):  the text to be embedded
@@ -993,7 +995,7 @@ class Xtractor( ):
 		"""
 		
 			Purpose:
-			Asynchronously creates embeddings using the large model from OpenAI.
+			Asynchronously creates embeddings using the large small_model from OpenAI.
 	
 			Parameters:
 			- text (str):  the text to be embedded
@@ -1023,7 +1025,7 @@ class Xtractor( ):
 		"""
 		
 			Purpose:
-			Asynchronously creates embeddings using the ada model from OpenAI.
+			Asynchronously creates embeddings using the ada small_model from OpenAI.
 	
 			Parameters:
 			- text (str):  the text to be embedded

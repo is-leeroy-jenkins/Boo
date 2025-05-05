@@ -46,11 +46,12 @@ tenacity
 termcolor
 jupyterlab
 playwright
+langchain
 langchain-community
 langchain-openai
+langchain-core
 datasets
 protobuf
-langchain-core
 textblob
 transformers
 sentence-transformers

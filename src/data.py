@@ -53,10 +53,10 @@ class Pascal( ):
 	'''
 	
 		Constructor:
-		Pascal( input: str )
+		Pascal( text: str )
 	
 		Purpose:
-		Class splits string 'input' argument into Pascal Casing
+		Class splits string 'text' argument into Pascal Casing
 
 	'''
 
@@ -77,7 +77,7 @@ class Pascal( ):
 			Retunes a get_list[ str ] of member names.
 		
 		'''
-		return [ 'input', 'cleaned_lines', 'split', 'join' ]
+		return [ 'text', 'cleaned_lines', 'split', 'join' ]
 
 
 	def split( self ) -> str:

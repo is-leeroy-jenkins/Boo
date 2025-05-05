@@ -689,7 +689,7 @@ class TextRequest( GptRequest ):
 	def create( self, prompt: str ) -> str:
 		'''
 
-			Given an input prompt 'prompt', function generates a documents generation
+			Given an text prompt 'prompt', function generates a documents generation
 			request from the openai api.
 
 		Args:
