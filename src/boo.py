@@ -745,7 +745,7 @@ class SystemMessage(  ):
 			'content' + f' = {self.content}'
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 		
 			Methods that returns a get_list of member names
@@ -3596,7 +3596,7 @@ class Image( AI ):
 		self.image_url = None
 	
 	
-	def get_model_options( self ) -> list[ str ]:
+	def get_model_options( self ) -> List[ str ]:
 		'''
 
 			Methods that returns a list of small_model names
