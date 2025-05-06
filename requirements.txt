@@ -60,3 +60,5 @@ fastapi
 PyPDF2
 camelot-py
 PyMuPDF
+mwclient
+mwparserfromhell

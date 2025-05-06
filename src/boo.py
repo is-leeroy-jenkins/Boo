@@ -1822,7 +1822,7 @@ class Bubba( AI ):
 		self.system_instructions = AI( ).bubba_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv'
+		self.model = 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-fine-tuned-2025-05-05:BU7RK1Dq'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -1993,28 +1993,28 @@ class Bubba( AI ):
 			elif path is None:
 				raise Exception( 'Argument "path" cannot be None' )
 			else:
+				self.prompt = prompt
 				self.file_path = path
 				self.file = self.client.files.create( file=open( self.file_path, 'rb' ),
 					purpose='user_data' )
 				
 				self.messages = [
-					{
-						'role': 'user',
-						'content': [
-							{
-								'type': 'file',
-								'file':
-									{
-										'file_id': file.id,
-									}
-							},
-							{
-								'type': 'text',
-								'text': 'What is the first dragon in the book?',
-							},
-						]
-					}
-				]
+				{
+					'role': 'user',
+					'content': [
+						{
+							'type': 'file',
+							'file':
+								{
+									'file_id': self.file.id,
+								}
+						},
+						{
+							'type': 'text',
+							'text': self.prompt,
+						},
+					]
+				} ]
 				
 				self.completion = self.client.chat.completions.create( model=self.model,
 					messages=self.messages )
@@ -2051,10 +2051,11 @@ class Bubba( AI ):
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
+				self.prompt = prompt
 				self.messages = [
 		        {
 		            'role': 'user',
-		            'content': prompt,
+		            'content': self.prompt,
 		        } ]
 				
 				self.response = self.client.chat.completions.create( model=self.model,
@@ -2093,6 +2094,7 @@ class Bubba( AI ):
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
+				self.prompt = prompt
 				self.tools = [
 				{
 					'type': 'file_search',
@@ -2101,7 +2103,7 @@ class Bubba( AI ):
 				} ]
 				
 				self.response = self.client.responses.create( model=self.model,
-					tools=self.tools, input=prompt )
+					tools=self.tools, input=self.prompt )
 				return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
@@ -2140,6 +2142,7 @@ class Bubba( AI ):
                  'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
                  'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31',
+		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-fine-tuned-2025-05-05:BU7RK1Dq'
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:budget-base-training:BGVk5Ii1',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57' ]
