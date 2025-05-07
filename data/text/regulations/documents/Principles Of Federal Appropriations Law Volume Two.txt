@@ -1885,7 +1885,7 @@ purpose; and to restrict the use of annual appropriations to
 expenditures required for the service of the particular fiscal 
 year for which they are made.” 
 42 Comp. Gen. 272, 275 (1962). 
-To the extent it is possible to summarize appropriations law in a single 
+To the extent it is possible to summarize_document appropriations law in a single
 paragraph, this is it. Viewed in the aggregate, the Antideficiency Act and 
 related funding statutes “[restrict] in every possible way the expenditures 
 and expenses and liabilities of the government, so far as executive offices 
@@ -7718,7 +7718,7 @@ no case had GAO approved agency retention of recovered funds where the
 reprocurement or corrective costs “had already been paid from an 
 appropriation which, at the time of the recovery, was no longer available 
 for obligation.” Id. at 841 n.5. 
-Before leaving the subject, it may be helpful to again summarize the rules in 
+Before leaving the subject, it may be helpful to again summarize_document the rules in
 a slightly different manner. Considering the status and the timing of agency 
 action, in the following five categories, an agency may retain amounts 
 recovered to the extent necessary to fund the reprocurement or corrective 
@@ -16305,7 +16305,7 @@ access to the safe combination.
 Page 9-67 GAO-06-382SP Appropriations Law—Vol. II 
 Chapter 9 
 Liability and Relief of Accountable Officers 
-To summarize the “cash box” cases, the disappearance of an entire cash 
+To summarize_document the “cash box” cases, the disappearance of an entire cash
 box suggests theft but is not conclusive. In such cases, even though the 
 cause of the loss cannot be definitely attributed, relief will probably be 
 granted if there is uncontroverted evidence that the safe was locked, no 
@@ -24706,7 +24706,7 @@ Grantee
 Indebtedness 
 1. Government’s Duty to 
 Recover 
-This section is intended to summarize the application of “debt collection 
+This section is intended to summarize_document the application of “debt collection
 law” in the context of assistance programs, and to highlight a few issues in 
 which the fact that a grant is involved may be of special relevance.98 
 Claims in favor of the United States against an assistance recipient may 
@@ -24845,7 +24845,7 @@ discussed hereafter, the government’s right to recover has come under
 attack by recipients, particularly during the 1980s, but such attacks rarely 
 succeed. 
 What we present here is by no means an exhaustive cataloguing of the 
-cases. Our selection is designed to serve three purposes: (1) summarize 
+cases. Our selection is designed to serve three purposes: (1) summarize_document
 what the law appears to be as of the date of this publication; (2) reflect any 
 discernible trends; and (3) point out some issues that may be of more 
 general relevance. As a general proposition, the courts have looked first to 

@@ -4484,7 +4484,7 @@ sections listed above or in a separate section of the MD&A.
 The MD&A should contain a brief description of the mission(s) of the entity and describe its 
 related organizational structure, consistent with the entity's strategic plan. 
 11.1E Performance Goals, Objectives, and Results 
-This section should summarize the more detailed performance information reported in the 
+This section should summarize_document the more detailed performance information reported in the
 Performance Section of the PAR. The MD&A should include (in no specific order): 
 • Highlights of “most important” performance goals and results (positive and negative) for 
 the applicable year related to and consistent with major goals and objectives in the 

@@ -12976,7 +12976,7 @@ of the House of Representatives, the Committee on Transportation and
 Infrastructure of the House of Representatives, the Committees on
 Appropriations of the Senate and the House of Representatives, and
 publish on the website of the Federal Emergency Management Agency, a
-report regarding that decision, which shall summarize
+report regarding that decision, which shall summarize_document
 [[Page 121 STAT. 2093]]
 damage assessment information used to determine whether to declare a
 major disaster.

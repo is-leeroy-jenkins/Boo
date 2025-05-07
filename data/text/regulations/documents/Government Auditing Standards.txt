@@ -3166,7 +3166,7 @@ enable it to assess compliance with professional standards and quality
 control policies and procedures for GAGAS engagements. Individuals 
 performing monitoring should have sufficient expertise and authority 
 within the audit organization. 
-5.44 The audit organization should analyze and summarize the results 
+5.44 The audit organization should analyze and summarize_document the results
 of its monitoring process at least annually, with identification of any 
 systemic or repetitive issues needing improvement, along with 
 recommendations for corrective action. The audit organization should 
@@ -6628,7 +6628,7 @@ and precision in stating facts and in drawing conclusions assist in
 the report’s clarity and understandability. Effective use of titles and 
 captions and topic sentences makes the report easier to read and 
 understand. Visual aids (such as pictures, charts, graphs, and 
-maps) may help clarify and summarize complex material. 
+maps) may help clarify and summarize_document complex material.
 f. Concise: Being concise means that the report is no longer than 
 necessary to convey and support the message. Extraneous detail 
 detracts from a report and may even conceal the real message 

@@ -1281,7 +1281,7 @@ an aggregated or summary log of all identified internal control deficiencies fro
 sources of information listed in Section B above and the results of their assessment 
 process. The log may support the evaluation of the Green Book’s Internal Control 
 Components and Principles. 
-3. Conclude on Internal Control Principle Evaluation. Management must summarize its 
+3. Conclude on Internal Control Principle Evaluation. Management must summarize_document its
 determination of whether each principle is designed, implemented, and operating 
 effectively. That determination is a function of management judgment based on: 
 a. the applicability of the principle to the Agency’s circumstances, 
@@ -1294,14 +1294,14 @@ its objectives and meet its mission and goals.
 Evaluation of whether each principle is designed, implemented, and operating effectively 
 must be of the “yes/no” type. 
 4. Conclude on Internal Control Component Evaluation. Management must also 
-summarize its determination of whether each component is designed, implemented, and 
+summarize_document its determination of whether each component is designed, implemented, and
 operating effectively. Similar to item three above, evaluation of internal control 
 components is a function of management judgment and qualitative determinations. If an 
 internal control principle is not designed, implemented, and operating effectively, 
 management is unable to conclude that the internal control component is operating 
 effectively. 
 5. Conclude on Overall Assessment of a System of Internal Control. Management 
-must summarize its determination of whether each of the Green Book’s components and 
+must summarize_document its determination of whether each of the Green Book’s components and
 principles are designed, implemented, and operating effectively and components are 
 operating together in an integrated manner. In addition, management must determine the 
 severity of internal control deficiencies or combination of deficiencies when aggregated 

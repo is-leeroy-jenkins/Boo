@@ -9104,7 +9104,7 @@ except as provided in subsection (b), and 30 days after the date on
 which the President determines whether to declare a major disaster
 because of an event and any appeal is completed, the Administrator shall
 publish on the Web site of the Federal Emergency Management Agency a
-report regarding that decision that shall summarize damage assessment
+report regarding that decision that shall summarize_document damage assessment
 information used to determine whether to declare a major disaster.
 (b) The Administrator may redact from a report under subsection (a)
 any data that the Administrator determines would compromise national
@@ -9411,7 +9411,7 @@ vulnerabilities to information systems described in subsection (a).
 thereafter, the head of each Federal agency shall submit to the Director
 of the Office of Management and Budget a report on the execution of the
 expenditure plan for that agency required by subsection (c): Provided,
-That the Director of the Office of Management and Budget shall summarize
+That the Director of the Office of Management and Budget shall summarize_document
 such execution reports and annually submit such summaries to Congress in
 conjunction with the annual progress report on implementation of the E-
 Government Act of 2002 (Public Law 107-347), as required by section 3606

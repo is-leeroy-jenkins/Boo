@@ -29033,7 +29033,7 @@ made in periodic meetings convened by
 the BIC. Information concerning these 
 meetings may be obtained by contacting 
 the BIC or the MDB Office. The 
-MDB Office will summarize and present 
+MDB Office will summarize_document and present
 such comments in the WGMA meetings 
 described in  26.4(c). 
 (b) U.S. agency comments. Comments 

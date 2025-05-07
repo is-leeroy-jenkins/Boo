@@ -183,7 +183,8 @@ class Text:
 	def split_lines( self, text: str ) -> List[ str ]:
 		"""
 		
-			Splits the text text into tokens
+			Splits the text
+			into tokens
 
 			Parameters:
 			-----------
@@ -211,7 +212,7 @@ class Text:
 			_err.show( )
 	
 	
-	def split_pages( self, path: str, delimit: str = '\f' ) -> List[ str ]:
+	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
 		"""
 
 			Reads text from a file, splits it into tokens,
@@ -1162,7 +1163,7 @@ class Text:
 			_err.show( )
 	
 	
-	def compute_tfidf( self, lines: List[ str ], max: int = 1000, prep: bool = True ) -> Tuple:
+	def compute_tfidf( self, lines: List[ str ], max: int=1000, prep: bool=True ) -> Tuple:
 		"""
 		
 			Purpose:
@@ -1229,7 +1230,7 @@ class PDF( ):
 	"""
 	
 	
-	def __init__( self, headers: bool = False, min: int = 10, tables: bool = True ):
+	def __init__( self, headers: bool=False, min: int=10, tables: bool=True ):
 		"""
 
 			Purpose:
@@ -1424,11 +1425,11 @@ class PDF( ):
 				if max is not None and max > 0:
 					self.file_path = path
 					self.lines = self.extract_lines( self.file_path, max=max )
-					return "\n".join( self.lines )
+					return '\n'.join( self.lines )
 				elif max is None or max <= 0:
 					self.file_path = path
 					self.lines = self.extract_lines( self.file_path )
-					return "\n".join( self.lines )
+					return '\n'.join( self.lines )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'tiggr'
@@ -1529,7 +1530,7 @@ class PDF( ):
 				self.lines = lines
 				with open( self.file_path, 'w', encoding='utf-8' ) as f:
 					for line in self.lines:
-						f.write( line + "\n" )
+						f.write( line + '\n' )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'tiggr'
@@ -1585,7 +1586,7 @@ class Token( ):
 	    Methods:
 	    _______
 	    
-	    sentence_tokenize( self, text: str ) -> List[str]
+	    tokenize_sentences( self, text: str ) -> List[str]
 	    tokenize( self, text: str ) -> List[str]
 	    encode( self, text: str ) -> List[str]
 	    batch_encode( self, text: str ) -> List[str]
@@ -1683,7 +1684,7 @@ class Token( ):
 			_err.show( )
 	
 	
-	def sentence_tokenize( self, text: str ) -> List[ str ]:
+	def tokenize_sentences( self, text: str ) -> List[ str ]:
 		"""
 		
 			Segments the text
@@ -1706,7 +1707,7 @@ class Token( ):
 			_exc = Error( e )
 			_exc.module = 'tiggr'
 			_exc.cause = 'Token'
-			_exc.method = 'sentence_tokenize( self, text: str ) -> List[ str ]'
+			_exc.method = 'tokenize_sentences( self, text: str ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	

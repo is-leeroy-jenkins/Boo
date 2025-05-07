@@ -9815,7 +9815,7 @@ except as provided in subsection (b), and 30 days after the date on
 which the President determines whether to declare a major disaster
 because of an event and any appeal is completed, the Administrator shall
 publish on the Web site of the Federal Emergency Management Agency a
-report regarding that decision that shall summarize damage assessment
+report regarding that decision that shall summarize_document damage assessment
 information used to determine whether to declare a major disaster.
 [[Page 125 STAT. 976]]
 (b) The Administrator may redact from a report under subsection (a)

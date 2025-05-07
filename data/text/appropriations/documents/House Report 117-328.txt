@@ -36561,7 +36561,7 @@ filed; and
 (2) the total number of such applications that have been pending
 for 60 or fewer days, 6190 days, 91120 days, 121179 days, and
 180 or more days.
-The website shall also summarize, on an annual basis, all existing
+The website shall also summarize_document, on an annual basis, all existing
 processing time goals, the source of the time goal, and whether
 the agency met the time goal for the prior fiscal year.
 Fee Waivers and Exemptions.Within 60 days of the date of enactment

@@ -9478,7 +9478,7 @@ the Director of the Office of Management and Budget shall submit to
 Congress and make publicly available on the Office of Management and
 Budget website a report on the inventories submitted. The report shall
 identify whether each agency required to submit an inventory under
-subsection (a)(3) has met such requirement and summarize the information
+subsection (a)(3) has met such requirement and summarize_document the information
 submitted by each executive agency required to have a Chief Financial
 Officer pursuant to section 901 of title 31, United States Code.
 (e) Review and Planning Requirements.--Not later than 180 days after

@@ -2376,7 +2376,7 @@ OMB Circular No. A–11 (2019) Page xxiii
 PREPARATION AND SUBMISSION 
 Guide to OMB Circular No. A–11 OF BUDGET ESTIMATES 
 There is also a table of contents at the beginning of each section that identifies the subsections and exhibits 
-contained in that section. We summarize major changes in policies and requirements at the beginning of 
+contained in that section. We summarize_document major changes in policies and requirements at the beginning of
 the Circular. In addition, we describe the changes that affect each section at the beginning of that section 
 and use vertical revision bars in the margins to highlight new requirements and significant changes. At the 
 end of the Circular, there is an index. 

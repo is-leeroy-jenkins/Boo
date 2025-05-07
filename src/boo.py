@@ -956,7 +956,7 @@ class Chat( AI ):
 		get_model_options( self ) -> list[ str ]
 		generate_text( self, prompt: str ) -> str:
 		analyze_image( self, prompt: str, url: str ) -> str:
-		summarize( self, prompt: str, path: str ) -> str
+		summarize_document( self, prompt: str, path: str ) -> str
 		search_web( self, prompt: str ) -> str
 		search_files( self, prompt: str ) -> str
 		dump( self ) -> str
@@ -1192,7 +1192,7 @@ class Chat( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
-			exception.method = 'summarize( self, prompt: str, path: str ) -> str'
+			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1334,7 +1334,7 @@ class Chat( AI ):
 		         'prompt', 'response', 'completion', 'file', 'path',
 		         'text', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'size', 'api_key', 'client', 'small_model',
-		         'generate_text', 'analyze_image', 'summarize', 'generate_image',
+		         'generate_text', 'analyze_image', 'summarize_document', 'generate_image',
 		         'translate', 'transcribe',
 		         'search_web', 'search_files', 'get_data', 'dump' ]
 	
@@ -1364,7 +1364,7 @@ class Assistant( AI ):
 		get_model_options( self ) -> str
 		generate_text( self, prompt: str ) -> str:
 		analyze_image( self, prompt: str, url: str ) -> str:
-		summarize( self, prompt: str, path: str ) -> str
+		summarize_document( self, prompt: str, path: str ) -> str
 		search_web( self, prompt: str ) -> str
 		search_files( self, prompt: str ) -> str
 		
@@ -1526,7 +1526,7 @@ class Assistant( AI ):
 			error.show( )
 	
 	
-	def summarize( self, prompt: str, path: str ) -> str:
+	def summarize_document( self, prompt: str, path: str ) -> str:
 		"""
 		
 			Purpose
@@ -1554,6 +1554,7 @@ class Assistant( AI ):
 				raise Exception( 'Argument "path" cannot be None' )
 			else:
 				self.file_path = path
+				self.input_text = prompt
 				self.file = self.client.files.create( file=open( self.file_path, 'rb' ),
 					purpose='user_data' )
 				
@@ -1565,12 +1566,12 @@ class Assistant( AI ):
 								'type': 'file',
 								'file':
 									{
-										'file_id': file.id,
+										'file_id': self.file.id,
 									}
 							},
 							{
 								'type': 'text',
-								'text': 'What is the first dragon in the book?',
+								'text': self.input_text,
 							},
 						]
 					}
@@ -1583,7 +1584,7 @@ class Assistant( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
-			exception.method = 'summarize( self, prompt: str, path: str ) -> str'
+			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1611,10 +1612,11 @@ class Assistant( AI ):
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
+				self.input_text = prompt
 				self.messages = [
 		        {
 		            'role': 'user',
-		            'content': prompt,
+		            'content': self.input_text,
 		        } ]
 				
 				self.response = self.client.chat.completions.create( model=self.model,
@@ -1630,7 +1632,7 @@ class Assistant( AI ):
 			error.show( )
 
 
-	def search_file( self, prompt: str ) -> str:
+	def search_files( self, prompt: str ) -> str:
 		"""
 		
 			Purpose
@@ -1804,7 +1806,7 @@ class Bubba( AI ):
 		get_model_options( self ) -> str
 		generate_text( self, prompt: str ) -> str:
 		analyze_image( self, prompt: str, url: str ) -> str:
-		summarize( self, prompt: str, path: str ) -> str
+		summarize_document( self, prompt: str, path: str ) -> str
 		search_web( self, prompt: str ) -> str
 		search_files( self, prompt: str ) -> str
 		dump( self ) -> str
@@ -1822,7 +1824,7 @@ class Bubba( AI ):
 		self.system_instructions = AI( ).bubba_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-fine-tuned-2025-05-05:BU7RK1Dq'
+		self.model = 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-fine-tuned-2025-05-06:BUF6o5Xa'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -1966,7 +1968,7 @@ class Bubba( AI ):
 			error.show( )
 	
 	
-	def summarize( self, prompt: str, path: str ) -> str:
+	def summarize_document( self, prompt: str, path: str ) -> str:
 		"""
 		
 			Purpose
@@ -2023,7 +2025,7 @@ class Bubba( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
-			exception.method = 'summarize( self, prompt: str, path: str ) -> str'
+			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2142,6 +2144,7 @@ class Bubba( AI ):
                  'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
                  'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31',
+		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-fine-tuned-2025-05-06:BUF6o5Xa',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-fine-tuned-2025-05-05:BU7RK1Dq'
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:budget-base-training:BGVk5Ii1',
@@ -2231,7 +2234,7 @@ class Bro( AI ):
 		get_model_options( self ) -> str
 		generate_text( self, prompt: str ) -> str:
 		analyze_image( self, prompt: str, url: str ) -> str:
-		summarize( self, prompt: str, path: str ) -> str
+		summarize_document( self, prompt: str, path: str ) -> str
 		search_web( self, prompt: str ) -> str
 		search_files( self, prompt: str ) -> str
 		dump( self ) -> str
@@ -2375,7 +2378,7 @@ class Bro( AI ):
 						'content':
 							[
 								{ 'type': 'input_text',
-								  'pages': self.prompt
+								  'text': self.prompt
 								  },
 								{
 									'type': 'input_image',
@@ -2423,6 +2426,7 @@ class Bro( AI ):
 			elif path is None:
 				raise Exception( 'Argument "path" cannot be None' )
 			else:
+				self.input_text = prompt
 				self.file_path = path
 				self.file = self.client.files.create( file=open( self.file_path, 'rb' ),
 					purpose='user_data' )
@@ -2435,12 +2439,12 @@ class Bro( AI ):
 							'type': 'file',
 							'file':
 								{
-									'file_id': file.id,
+									'file_id': self.file.id,
 								}
 						},
 						{
 							'type': 'text',
-							'text': 'What is the first dragon in the book?',
+							'text': self.input_text,
 						},
 					]
 				} ]
@@ -2452,7 +2456,7 @@ class Bro( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
-			exception.method = 'summarize( self, prompt: str, path: str ) -> str'
+			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	

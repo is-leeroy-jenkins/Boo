@@ -14208,7 +14208,7 @@ Committee on Transportation and Infrastructure of the House of
 Representatives, the Committees on Appropriations of the Senate
 and the House of Representatives, and publish on the website of
 the Federal Emergency Management Agency, a report regarding
-that decision, which shall summarize damage assessment
+that decision, which shall summarize_document damage assessment
 information used to determine whether to declare a major
 disaster.
 (b) The Administrator may redact from a report under

@@ -8397,7 +8397,7 @@ review, negotiate, and approve, public assistance cost allocation plans in accor
 CFR Part 95. The plan will include all programs administered by the state public assistance agency. Where 
 a letter of approval or disapproval is transmitted to a state public assistance agency in accordance with 
 Subpart E, the letter will apply to all Federal agencies and programs. The remaining sections of this 
-Appendix (except for the requirement for certification) summarize the provisions of Subpart E of45 CFR 
+Appendix (except for the requirement for certification) summarize_document the provisions of Subpart E of45 CFR
 Part 95. 
 D. Submission, Documentation, and Approval of Public Assistance Cost Allocation Plans 
 1. 
