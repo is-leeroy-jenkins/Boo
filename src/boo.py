@@ -2399,7 +2399,7 @@ class Bro( AI ):
 			error.show( )
 	
 	
-	def summarize( self, prompt: str, path: str ) -> str:
+	def summmarize_document( self, prompt: str, path: str ) -> str:
 		"""
 
 			Purpose
@@ -2503,7 +2503,7 @@ class Bro( AI ):
 			error.show( )
 	
 	
-	def search_file( self, prompt: str ) -> str:
+	def search_files( self, prompt: str ) -> str:
 		"""
 
 			Purpose
