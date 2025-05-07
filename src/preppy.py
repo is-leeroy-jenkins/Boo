@@ -123,7 +123,8 @@ class StandardScaler( Preprocessor ):
         super( ).__init__( )
         self.standard_scaler = StandardScaler( )
 
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
+
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
         
             Fits the standard_scaler
@@ -134,7 +135,9 @@ class StandardScaler( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
                 
         """
-        self.standard_scaler.fit( X )
+        _pipeline: Pipeline = self.standard_scaler.fit( X )
+        return _pipeline
+
 
     def transform( self, X: np.ndarray ) -> np.ndarray:
         """
@@ -175,7 +178,7 @@ class MinMaxScaler( Preprocessor ):
         super( ).__init__( )
         self.minmax_scaler = MinMaxScaler( )
 
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
         
             Fits the standard_scaler
@@ -186,7 +189,8 @@ class MinMaxScaler( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
             
         """
-        self.minmax_scaler.fit( X )
+        _pipeline: Pipeline = self.minmax_scaler.fit( X )
+        return _pipeline
 
     def transform( self, X: np.ndarray ) -> np.ndarray:
         """
@@ -228,7 +232,7 @@ class RobustScaler( Preprocessor ):
         self.robust_scaler = RobustScaler( )
 
 
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
         
                 Fits the standard_scaler
@@ -239,7 +243,8 @@ class RobustScaler( Preprocessor ):
                     y (Optional[np.ndarray]): Ignored.
                     
         """
-        self.robust_scaler.fit( X )
+        _pipeline: Pipeline = self.robust_scaler.fit( X )
+        return _pipeline
 
 
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -281,7 +286,7 @@ class Normalizer( Preprocessor ):
         self.normal_scaler: Normalizer = Normalizer( norm=norm )
 
 
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
         
             Fits the normalizer
@@ -292,7 +297,8 @@ class Normalizer( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
             
         """
-        self.normal_scaler.fit( X )
+        _pipeline: Pipeline = self.normal_scaler.fit( X )
+        return _pipeline
 
 
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -336,7 +342,7 @@ class OneHotEncoder( Preprocessor ):
         self.hot_encoder = OneHotEncoder( sparse=False, handle_unknown=handle_unknown )
 
 
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
         
             Fits the hot_encoder
@@ -347,7 +353,8 @@ class OneHotEncoder( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
             
         """
-        self.hot_encoder.fit( X )
+        _pipeline: Pipeline = self.hot_encoder.fit( X )
+        return _pipeline
 
 
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -391,7 +398,7 @@ class OrdinalEncoder( Preprocessor ):
         self.ordinal_encoder = OrdinalEncoder( )
 
 
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
             
             Fits the ordial_encoder
@@ -402,7 +409,8 @@ class OrdinalEncoder( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
             
         """
-        self.ordinal_encoder.fit( X )
+        _pipeline: Pipeline = self.ordinal_encoder.fit( X )
+        return _pipeline
 
 
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -447,7 +455,7 @@ class SimpleImputer( Preprocessor ):
         self.simple_imputer = SimpleImputer( strategy=strategy )
 
 
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
         
             Fits the simple_imputer
@@ -458,7 +466,8 @@ class SimpleImputer( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
             
         """
-        self.simple_imputer.fit( X )
+        _pipeline: Pipeline = self.simple_imputer.fit( X )
+        return _pipeline
 
 
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -503,7 +512,7 @@ class KnnImputer( Preprocessor ):
         self.knn_imputer = KNNImputer( )
 
 
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
         
             Fits the simple_imputer
@@ -514,7 +523,8 @@ class KnnImputer( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
             
         """
-        self.knn_imputer.fit( X )
+        _pipeline: Pipeline = self.knn_imputer.fit( X )
+        return _pipeline
 
 
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -558,8 +568,8 @@ class MultiProcessor( Preprocessor ):
                 y (Optional[np.ndarray]): Optional target array.
             
         """
-        _retfit: Pipeline = self.pipeline.fit( X, y )
-        return _retfit
+        _pipeline: Pipeline = self.pipeline.fit( X, y )
+        return _pipeline
 
 
     def transform( self, X: np.ndarray ) -> np.ndarray:

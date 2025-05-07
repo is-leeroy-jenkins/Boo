@@ -102,7 +102,7 @@ class Fetch:
 			)
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'Chonk'
+			_exc.module = 'glew'
 			_exc.cause = 'Fetch'
 			_exc.method = '_init_sql_tool( self ) -> Tool'
 			_err = ErrorDialog( _exc )
@@ -131,7 +131,7 @@ class Fetch:
 			return all_docs
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'Chonk'
+			_exc.module = 'glew'
 			_exc.cause = 'Fetch'
 			_exc.method = '_load_documents( self )'
 			_err = ErrorDialog( _exc )
@@ -157,7 +157,7 @@ class Fetch:
 			return Tool( name, func, description )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'Chonk'
+			_exc.module = 'glew'
 			_exc.cause = 'Fetch'
 			_exc.method = '_init_doc_tool( self ) -> Tool:'
 			_err = ErrorDialog( _exc )
@@ -173,7 +173,7 @@ class Fetch:
 			return [ ]
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'Chonk'
+			_exc.module = 'glew'
 			_exc.cause = 'Fetch'
 			_exc.method = '_init_api_tools( self ) -> List[ Tool ]'
 			_err = ErrorDialog( _exc )
@@ -196,7 +196,7 @@ class Fetch:
 				return self.agent.run( question )
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'Chonk'
+			_exc.module = 'glew'
 			_exc.cause = 'Fetch'
 			_exc.method = 'query( self, question: str ) -> str'
 			_err = ErrorDialog( _exc )
@@ -215,7 +215,7 @@ class Fetch:
 			         self.memory.chat_memory.messages ]
 		except Exception as e:
 			_exc = Error( e )
-			_exc.module = 'Chonk'
+			_exc.module = 'glew'
 			_exc.cause = 'Fetch'
 			_exc.method = 'chat_history( self ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
