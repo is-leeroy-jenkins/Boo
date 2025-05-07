@@ -47,7 +47,7 @@ from pandas import read_sql as sqlreader
 import pyodbc as db
 import os
 from static import Source, Provider, SQL, ParamStyle
-from booger import Error, ErrorDialog
+from booggr import Error, ErrorDialog
 
 class Pascal( ):
 	'''

@@ -46,7 +46,7 @@ import string
 from bs4 import BeautifulSoup
 from lxml.xsltext import self_node
 import spacy
-from booger import Error, ErrorDialog
+from booggr import Error, ErrorDialog
 from pathlib import Path
 import tiktoken
 import string

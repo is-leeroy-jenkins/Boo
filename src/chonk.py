@@ -50,7 +50,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import TextLoader, PyPDFLoader, CSVLoader, UnstructuredHTMLLoader
 from langchain.memory import ConversationBufferMemory
 from typing import List
-from booger import Error, ErrorDialog
+from booggr import Error, ErrorDialog
 
 
 class Fetch:

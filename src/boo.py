@@ -51,7 +51,7 @@ import requests
 import tiktoken
 from pygments.lexers.csound import newline
 from static import GptRequests, GptRoles, GptLanguages
-from booger import ErrorDialog, Error
+from booggr import ErrorDialog, Error
 from typing import Any, List, Tuple, Optional, Dict
 
 
@@ -1398,7 +1398,21 @@ class Assistant( AI ):
 		self.id = None
 		self.metadata = { }
 		self.tools = [ ]
-		self.assistants = [ ]
+		self.vector_stores = \
+		{
+			'Apporopriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
+			'Guidance': 'vs_712r5W5833G6aLxIYIbuvVcK',
+			'Financials': '',
+			'Code': 'vs_67e83bdf8abc81918bda0d6b39a19372',
+			'Hawaii': 'vs_67a777291d548191b9fa42956a7f6cb9'
+		}
+		self.vector_store_ids = [ 'vs_67a777291d548191b9fa42956a7f6cb9' ]
+		self.assistants = \
+		{
+			'Bro':'asst_2Yu2yfINGD5en4e0aUXAKxyu',
+            'Bubba': 'asst_2IpP4nE85lXLKbY6Zewwqtqe',
+			'FNG': 'asst_FQXRnDVgvnBxslZQit8hIbXY'
+        }
 	
 	
 	def generate_text( self, prompt: str ) -> str:
@@ -2716,7 +2730,7 @@ class Embedding( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Embedding'
-			exception.method = 'create_small( self, text: str ) -> List[ float ]'
+			exception.method = 'create_small_embedding( self, text: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2751,7 +2765,7 @@ class Embedding( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Embedding'
-			exception.method = 'create_large( self, text: str ) -> List[ float ]'
+			exception.method = 'create_large_embedding( self, text: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2786,7 +2800,7 @@ class Embedding( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Embedding'
-			exception.method = 'create_ada( self, text: str ) -> List[ float ]'
+			exception.method = 'create_ada_embedding( self, text: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	

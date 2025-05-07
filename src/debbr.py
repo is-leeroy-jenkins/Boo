@@ -1,7 +1,7 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                embbr.py
+      Filename:                embddr.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
@@ -48,7 +48,7 @@ import string
 import spacy
 import openpyxl
 from openai import OpenAI
-from booger import Error, ErrorDialog
+from booggr import Error, ErrorDialog
 from pathlib import Path
 import tiktoken
 import sqlite3
