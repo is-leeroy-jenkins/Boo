@@ -1,3 +1,5 @@
+beautifulsoup4
+crawl4ai
 FreeSimpleGUI
 typing
 numpy
@@ -27,7 +29,6 @@ langchain
 langgraph
 tiktoken
 pinecone
-beautifulsoup4
 requests
 tqdm
 ipywidgets
@@ -35,7 +36,6 @@ google-genai
 typing_extensions
 pathlib
 nltk
-bs4
 lxml
 gensim
 plotly

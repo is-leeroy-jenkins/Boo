@@ -149,7 +149,18 @@ class StandardScaler( Preprocessor ):
                 np.ndarray: Scaled data.
             
         """
-        return self.standard_scaler.transform( X )
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.standard_scaler.transform( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class MinMaxScaler( Preprocessor ):
@@ -190,7 +201,18 @@ class MinMaxScaler( Preprocessor ):
                 np.ndarray: Scaled data.
                 
         """
-        return self.minmax_scaler.transform( X )
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.minmax_scaler.transform( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class RobustScaler( Preprocessor ):
@@ -233,7 +255,18 @@ class RobustScaler( Preprocessor ):
                 np.ndarray: Scaled data.
             
         """
-        return self.robust_scaler.transform( X )
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.robust_scaler.transform( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class Normalizer( Preprocessor ):
@@ -275,7 +308,18 @@ class Normalizer( Preprocessor ):
                 np.ndarray: Normalized data.
             
         """
-        return self.normal_scaler.transform( X )
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.normal_scaler.transform( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 
@@ -319,7 +363,19 @@ class OneHotEncoder( Preprocessor ):
                 np.ndarray: One-hot encoded matrix.
             
         """
-        return self.hot_encoder.transform( X )
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.hot_encoder.transform( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
+
 
 
 class OrdinalEncoder( Preprocessor ):
@@ -362,8 +418,19 @@ class OrdinalEncoder( Preprocessor ):
                 np.ndarray: Ordinal-encoded matrix.
             
         """
-        _retval = self.ordinal_encoder.transform( X )
-        return _retval
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _retval = self.ordinal_encoder.transform( X )
+                return _retval
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 
@@ -407,8 +474,20 @@ class SimpleImputer( Preprocessor ):
                 np.ndarray: Imputed data.
             
         """
-        _retval: np.ndarray = self.simple_imputer.transform( X )
-        return _retval
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _retval: np.ndarray = self.simple_imputer.transform( X )
+                return _retval
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
+
 
 
 class KnnImputer( Preprocessor ):
