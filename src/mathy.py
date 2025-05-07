@@ -1,3 +1,46 @@
+'''
+******************************************************************************************
+  Assembly:                Boo
+  Filename:                mathy.py
+  Author:                  Terry D. Eppler
+  Created:                 05-31-2023
+
+  Last Modified By:        Terry D. Eppler
+  Last Modified On:        06-01-2023
+******************************************************************************************
+<copyright file="mathy.py" company="Terry D. Eppler">
+
+ Bobo is a values analysis tool for EPA Analysts.
+ Copyright ©  2024  Terry Eppler
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the “Software”),
+ to deal in the Software without restriction,
+ including without limitation the rights to use,
+ copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software,
+ and to permit persons to whom the Software is furnished to do so,
+ subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+
+ You can contact me at:  terryeppler@gmail.com or eppler.terry@epa.gov
+
+</copyright>
+<summary>
+boo.py
+</summary>
+******************************************************************************************
+'''
 from sklearn.linear_model import (
     LinearRegression, LogisticRegression, Ridge, Lasso, ElasticNet,
     BayesianRidge, SGDClassifier, SGDRegressor, Perceptron
@@ -10,14 +53,16 @@ from typing import Optional
 class BaseModel( ):
     """
     
-	    Abstract base class that defines the interface for all model wrappers.
+	    Abstract base class
+	    that defines the interface for all linerar_model wrappers.
     
     """
 
-    def fit(self, X: np.ndarray, y: np.ndarray) -> None:
+    def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
 	        
-	        Fit the model to the training data.
+	        Fit the linerar_model to
+	        the training data.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix of shape (n_samples, n_features).
@@ -29,10 +74,11 @@ class BaseModel( ):
         """
         raise NotImplementedError
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
+    def predict( self, X: np.ndarray ) -> np.ndarray:
         """
 	        
-	        Generate predictions from the trained model.
+	        Generate predictions from
+	         the trained linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix of shape (n_samples, n_features).
@@ -47,7 +93,7 @@ class BaseModel( ):
 class LinearRegression( BaseModel ):
     """
     
-	    Wrapper for Ordinary Least Squares Regression.
+	    Ordinary Least Squares Regression.
     
     """
 
@@ -55,22 +101,23 @@ class LinearRegression( BaseModel ):
         """
         
 	        Initialize the Linear
-	        Regression model.
+	        Regression linerar_model.
 	
 	        Attributes:
-	            model (LinearRegression): Internal OLS model using least squares.
+	            linerar_model (LinearRegression): Internal OLS linerar_model using least squares.
 	                Parameters:
 	                    fit_intercept (bool): Whether to include an intercept term. Default is True.
 	                    copy_X (bool): Whether to copy the feature matrix. Default is True.
                     
         """
-        self.model = LinearRegression( )
+        self.linerar_model = LinearRegression( )
+
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
         
 	        Fit the OLS
-	        regression model.
+	        regression linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -80,14 +127,14 @@ class LinearRegression( BaseModel ):
 	            None
             
         """
-        self.model.fit( X, y )
+        self.linerar_model.fit( X, y )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
         """
         
         Predict target values
-        using the OLS model.
+        using the OLS linerar_model.
 
         Parameters:
             X (np.ndarray): Feature matrix.
@@ -96,93 +143,94 @@ class LinearRegression( BaseModel ):
             np.ndarray: Predicted target values.
             
         """
-        return self.model.predict( X )
+        return self.linerar_model.predict( X )
 
 
 class RidgeRegression( BaseModel ):
     """
-    
-    Wrapper for RidgeRegression Regression (L2 regularization).
-    
+        
+        RidgeRegression Regression
+        (L2 regularization).
+        
     """
 
     def __init__( self ) -> None:
         """
         
 	        Initialize the
-	        RidgeRegression model.
+	        RidgeRegression linerar_model.
 	
 	        Attributes:
-	            model (Ridge): Internal RidgeRegression regression model.
+	            linerar_model (Ridge): Internal RidgeRegression regression linerar_model.
 	                Parameters:
 	                    alpha (float): Regularization strength. Default is 1.0.
 	                    solver (str): Solver to use. Default is 'auto'.
                     
         """
-        self.model = RidgeRegression( alpha=1.0 )
+        self.ridge_model = RidgeRegression( alpha=1.0 )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
-        
-        Fit the RidgeRegression
-        regression model.
-
-        Parameters:
-            X (np.ndarray): Feature matrix.
-            y (np.ndarray): Target vector.
-
-        Returns:
-            None
             
+            Fit the RidgeRegression
+            regression linerar_model.
+    
+            Parameters:
+                X (np.ndarray): Feature matrix.
+                y (np.ndarray): Target vector.
+    
+            Returns:
+                None
+                
         """
-        self.model.fit( X, y )
+        self.ridge_model.fit( X, y )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
         """
-        
-        Predict target values
-        using the RidgeRegression model.
-
-        Parameters:
-            X (np.ndarray): Feature matrix.
-
-        Returns:
-            np.ndarray: Predicted target values.
+            
+            Predict target values
+            using the RidgeRegression linerar_model.
+    
+            Parameters:
+                X (np.ndarray): Feature matrix.
+    
+            Returns:
+                np.ndarray: Predicted target values.
             
         """
-        return self.model.predict( X )
+        return self.ridge_model.predict( X )
 
 
 class LassoReression( BaseModel ):
     """
-    
-    Wrapper for LassoReression Regression (L1 regularization).
-    
+        
+        Wrapper for LassoReression Regression (L1 regularization).
+        
     """
 
     def __init__( self ) -> None:
         """
         
 	        Initialize the
-	        LassoReression model.
+	        LassoReression linerar_model.
 	
 	        Attributes:
-	            model (Lasso): Internal LassoReression regression model.
+	            linerar_model (Lasso): Internal LassoReression regression linerar_model.
 	                Parameters:
 	                    alpha (float): Regularization strength. Default is 1.0.
 	                    max_iter (int): Maximum number of iterations. Default is 1000.
                     
         """
-        self.model = LassoReression( alpha=1.0 )
+        self.lasso_model = LassoReression( alpha=1.0 )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
         
         Fit the LassoReression
-        regression model.
+        regression linerar_model.
 
         Parameters:
             X (np.ndarray): Feature matrix.
@@ -192,14 +240,14 @@ class LassoReression( BaseModel ):
             None
             
         """
-        self.model.fit( X, y )
+        self.lasso_model.fit( X, y )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
         """
         
 	        Predict target values
-	        using the LassoReression model.
+	        using the LassoReression linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -208,7 +256,7 @@ class LassoReression( BaseModel ):
 	            np.ndarray: Predicted target values.
             
         """
-        return self.model.predict( X )
+        return self.lasso_model.predict( X )
 
 
 class ElasticNetRegressor( BaseModel ):
@@ -222,22 +270,23 @@ class ElasticNetRegressor( BaseModel ):
         """
 	        
 	        Initialize the
-	        ElasticNetRegressor model.
+	        ElasticNetRegressor linerar_model.
 	
 	        Attributes:
-	            model (ElasticNet): Internal ElasticNetRegressor regression model.
+	            linerar_model (ElasticNet): Internal ElasticNetRegressor regression linerar_model.
 	                Parameters:
 	                    alpha (float): Overall regularization strength. Default is 1.0.
 	                    l1_ratio (float): Mixing parameter (0 = RidgeRegression, 1 = LassoReression). Default is 0.5.
                     
         """
-        self.model = ElasticNetRegressor( alpha=1.0, l1_ratio=0.5 )
+        self.elasticnet_model = ElasticNetRegressor( alpha=1.0, l1_ratio=0.5 )
+
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
         
 	        Fit the ElasticNetRegressor
-	        regression model.
+	        regression linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -247,13 +296,14 @@ class ElasticNetRegressor( BaseModel ):
 	            None
             
         """
-        self.model.fit( X, y )
+        self.elasticnet_model.fit( X, y )
+
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
         """
         
 	        Predict target values
-	        using the ElasticNetRegressor model.
+	        using the ElasticNetRegressor linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -262,7 +312,7 @@ class ElasticNetRegressor( BaseModel ):
 	            np.ndarray: Predicted target values.
 	            
         """
-        return self.model.predict( X )
+        return self.elasticnet_model.predict( X )
 
 
 class LogisticRegressor( BaseModel ):
@@ -276,23 +326,23 @@ class LogisticRegressor( BaseModel ):
         """
         
         Initialize the Logistic
-        Regression model.
+        Regression linerar_model.
 
         Attributes:
-            model (LogisticRegression): Internal logistic regression classifier.
+            linerar_model (LogisticRegression): Internal logistic regression classifier.
                 Parameters:
                     max_iter (int): Maximum number of iterations. Default is 1000.
                     solver (str): Algorithm to use in optimization. Default is 'lbfgs'.
                     
         """
-        self.model = LogisticRegression( max_iter=1000 )
+        self.logistic_model = LogisticRegression( max_iter=1000 )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
         
         Fit the logistic
-        regression model.
+        regression linerar_model.
 
         Parameters:
             X (np.ndarray): Feature matrix.
@@ -302,14 +352,14 @@ class LogisticRegressor( BaseModel ):
             None
             
         """
-        self.model.fit( X, y )
+        self.logistic_model.fit( X, y )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
         """
         
         Predict class labels using
-        the logistic regression model.
+        the logistic regression linerar_model.
 
         Parameters:
             X (np.ndarray): Feature matrix.
@@ -318,7 +368,7 @@ class LogisticRegressor( BaseModel ):
             np.ndarray: Predicted class labels.
             
         """
-        return self.model.predict( X )
+        return self.logistic_model.predict( X )
 
 
 class BayesianRidge( BaseModel ):
@@ -332,23 +382,23 @@ class BayesianRidge( BaseModel ):
         """
         
 	        Initialize the
-	        BayesianRidge model.
+	        BayesianRidge linerar_model.
 	
 	        Attributes:
-	            model (BayesianRidge): Internal probabilistic linear regression model.
+	            linerar_model (BayesianRidge): Internal probabilistic linear regression linerar_model.
 	                Parameters:
 	                    compute_score (bool): If True, compute marginal
 	                    log-likelihood. Default is False.
                     
         """
-        self.model = BayesianRidge( )
+        self.bayesian_model = BayesianRidge( )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
         
         Fit the Bayesian RidgeRegression
-        regression model.
+        regression linerar_model.
 
         Parameters:
             X (np.ndarray): Feature matrix.
@@ -358,14 +408,14 @@ class BayesianRidge( BaseModel ):
             None
             
         """
-        self.model.fit( X, y )
+        self.bayesian_model.fit( X, y )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
         """
         
 	        Predict target values
-	        using the Bayesian model.
+	        using the Bayesian linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -374,13 +424,13 @@ class BayesianRidge( BaseModel ):
 	            np.ndarray: Predicted values.
             
         """
-        return self.model.predict( X )
+        return self.bayesian_model.predict( X )
 
 
 class SgdClassifier( BaseModel ):
     """
     
-    Wrapper for SGD-based linear classifiers.
+    SGD-based linear classifiers.
     
     """
 
@@ -388,23 +438,23 @@ class SgdClassifier( BaseModel ):
         """
         
 	        Initialize the
-	        SGDClassifier model.
+	        SGDClassifier linerar_model.
 	
 	        Attributes:
-	            model (SGDClassifier): Internal linear classifier trained via SGD.
+	            linerar_model (SGDClassifier): Internal linear classifier trained via SGD.
 	                Parameters:
 	                    loss (str): Loss function to use. Default is 'log_loss'.
 	                    max_iter (int): Maximum number of passes over the data. Default is 1000.
                     
         """
-        self.model = SGDClassifier( loss='log_loss', max_iter=1000 )
+        self.sgd_classification_model = SGDClassifier( loss='log_loss', max_iter=1000 )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
 	        
 	        Fit the SGD
-	        classifier model.
+	        classifier linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -414,7 +464,7 @@ class SgdClassifier( BaseModel ):
 	            None
             
         """
-        self.model.fit( X, y )
+        self.sgd_classification_model.fit( X, y )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -430,7 +480,7 @@ class SgdClassifier( BaseModel ):
 		            np.ndarray: Predicted class labels.
             
         """
-        return self.model.predict( X )
+        return self.sgd_classification_model.predict( X )
 
 
 class SgdRegressor( BaseModel ):
@@ -445,22 +495,22 @@ class SgdRegressor( BaseModel ):
         
         
 	        Initialize the
-	        SGDRegressor model.
+	        SGDRegressor linerar_model.
 	
 	        Attributes:
-	            model (SGDRegressor): Internal linear regressor trained via SGD.
+	            linerar_model (SGDRegressor): Internal linear regressor trained via SGD.
 	                Parameters:
 	                    penalty (str): Regularization term. Default is 'l2'.
 	                    max_iter (int): Maximum number of passes. Default is 1000.
                     
         """
-        self.model = SGDRegressor( max_iter=1000 )
+        self.sgd_regression_model = SGDRegressor( max_iter=1000 )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
 	        
-	        Fit the SGD regressor model.
+	        Fit the SGD regressor linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -470,14 +520,14 @@ class SgdRegressor( BaseModel ):
 	            None
             
         """
-        self.model.fit(X, y)
+        self.sgd_regression_model.fit(X, y )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
         """
         
         Predict values using
-        the SGD regressor model.
+        the SGD regressor linerar_model.
 
         Parameters:
             X (np.ndarray): Feature matrix.
@@ -486,7 +536,7 @@ class SgdRegressor( BaseModel ):
             np.ndarray: Predicted values.
             
         """
-        return self.model.predict( X )
+        return self.sgd_regression_model.predict( X )
 
 
 class Perceptron( BaseModel ):
@@ -500,23 +550,23 @@ class Perceptron( BaseModel ):
         """
         
 	        Initialize the
-	        Perceptron model.
+	        Perceptron linerar_model.
 	
 	        Attributes:
-	            model (Perceptron): Internal linear binary classifier.
+	            linerar_model (Perceptron): Internal linear binary classifier.
 	                Parameters:
 	                    max_iter (int): Maximum number of iterations.
 	                    Default is 1000.
                     
         """
-        self.model = Perceptron( max_iter=1000 )
+        self.perceptron_model = Perceptron( max_iter=1000 )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
 	        
 	        Fit the
-	        Perceptron model.
+	        Perceptron linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -526,7 +576,7 @@ class Perceptron( BaseModel ):
 	            None
 	            
         """
-        self.model.fit( X, y )
+        self.perceptron_model.fit( X, y )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -542,7 +592,7 @@ class Perceptron( BaseModel ):
 	            np.ndarray: Predicted binary labels.
 	            
         """
-        return self.model.predict( X )
+        return self.perceptron_model.predict( X )
 
 
 class NearestNeighborClassifier( BaseModel ):
@@ -555,22 +605,22 @@ class NearestNeighborClassifier( BaseModel ):
     def __init__( self ) -> None:
         """
         
-        Initialize the KNeighborsClassifier model.
+        Initialize the KNeighborsClassifier linerar_model.
 
         Attributes:
-            model (KNeighborsClassifier): Internal non-parametric classifier.
+            linerar_model (KNeighborsClassifier): Internal non-parametric classifier.
                 Parameters:
                     n_neighbors (int): Number of neighbors to use. Default is 5.
                     
         """
-        self.model = KNeighborsClassifier( n_neighbors=5 )
+        self.knn_classification_model = KNeighborsClassifier( n_neighbors=5 )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
         
 	        Fit the KNN
-	        classifier model.
+	        classifier linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -580,7 +630,7 @@ class NearestNeighborClassifier( BaseModel ):
 	            None
             
         """
-        self.model.fit( X, y )
+        self.knn_classification_model.fit( X, y )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -596,7 +646,7 @@ class NearestNeighborClassifier( BaseModel ):
 	            np.ndarray: Predicted class labels.
             
         """
-        return self.model.predict( X )
+        return self.knn_classification_model.predict( X )
 
 
 class NearestNeighborRegressor( BaseModel ):
@@ -610,22 +660,22 @@ class NearestNeighborRegressor( BaseModel ):
         """
         
 	        Initialize the
-	        KNeighborsRegressor model.
+	        KNeighborsRegressor linerar_model.
 	
 	        Attributes:
-	            model (KNeighborsRegressor): Internal non-parametric regressor.
+	            linerar_model (KNeighborsRegressor): Internal non-parametric regressor.
 	                Parameters:
 	                    n_neighbors (int): Number of neighbors to use. Default is 5.
                     
         """
-        self.model = KNeighborsRegressor( n_neighbors=5 )
+        self.knn_regression_model = KNeighborsRegressor( n_neighbors=5 )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
 	        
 	        Fit the KNN
-	        regressor model.
+	        regressor linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -635,7 +685,7 @@ class NearestNeighborRegressor( BaseModel ):
 	            None
             
         """
-        self.model.fit( X, y )
+        self.knn_regression_model.fit( X, y )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -651,4 +701,4 @@ class NearestNeighborRegressor( BaseModel ):
 	            np.ndarray: Predicted values.
             
         """
-        return self.model.predict( X )
+        return self.knn_regression_model.predict( X )

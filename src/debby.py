@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                embddr.py
+      Filename:                debby.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="tiggr.py" company="Terry D. Eppler">
+  <copyright file="tigrr.py" company="Terry D. Eppler">
 
      This is a Budget Execution and Data Analysis Application for Federal Analysts
      Copyright ©  2024  Terry Eppler
@@ -83,7 +83,7 @@ class SQLite( ):
 				db_name (str): The name of the database file.
 			
 		"""
-		self.db_path = r'C:\Users\terry\source\repos\Boo\data\sqlite\datamodels\Data.db'
+		self.db_path = r'data\sqlite\datamodels\Data.db'
 		self.conn = sqlite3.connect( self.db_path )
 		self.cursor = self.conn.cursor( )
 		self.file_path = None

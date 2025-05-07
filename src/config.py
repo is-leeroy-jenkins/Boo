@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                boo.py
+      Filename:                config.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="boo.py" company="Terry D. Eppler">
+  <copyright file="config.py" company="Terry D. Eppler">
 
      Bobo is a values analysis tool for EPA Analysts.
      Copyright ©  2024  Terry Eppler
@@ -47,17 +47,21 @@ APPLICATION_WIDTH = 85
 THEME = "DarkGray12"
 OUTPUT_FILE_NAME = "record.wav"
 SAMPLE_RATE = 48000
-MODELS = [ "openai-4o-mini", "openai-4o", "openai-4-turbo", "openai-3.5-turbo" ]
+MODELS = [ "gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo" ]
 DEFAULT_MODEL = MODELS[ 0 ]
 DEFAULT_POSITION = "Python Developer"
 
 OPENAI_API_KEY = os.getenv( 'OPENAI_API_KEY' )
 GEMINI_API_KEY = os.getenv( 'GEMINI_API_KEY' )
 GROQ_API_KEY = os.getenv( 'GROQ_API_KEY' )
+HUGGINGFACE_API_KEY = os.getenv( 'HUGGINGFACE_API_KEY' )
+PINECONE_API_KEY = os.getenv( 'PINECONE_API_KEY' )
+MISTRAL_API_KEY = os.getenv( 'MISTRAL_API_KEY' )
+LANGSMITH_API_KEY = os.getenv( 'LANGSMITH_API_KEY' )
 
 def set_environment( ):
 	variable_dict = globals( ).items( )
 	for key, value in variable_dict:
-		if "API" in key or "ID" in key:
+		if 'API' in key or 'ID' in key:
 			os.environ[ key ] = value
 
