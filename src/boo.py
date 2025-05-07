@@ -2729,7 +2729,7 @@ class Embedding( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Embedding'
+			exception.cause = 'Embeddy'
 			exception.method = 'create_small_embedding( self, text: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2764,7 +2764,7 @@ class Embedding( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Embedding'
+			exception.cause = 'Embeddy'
 			exception.method = 'create_large_embedding( self, text: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2799,7 +2799,7 @@ class Embedding( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Embedding'
+			exception.cause = 'Embeddy'
 			exception.method = 'create_ada_embedding( self, text: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )

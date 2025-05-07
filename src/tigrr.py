@@ -2600,7 +2600,7 @@ class Vector( ):
 			_err.show( )
 
 
-class Embedding( ):
+class Embeddy( ):
 	'''
 
 		Purpose:
@@ -2651,7 +2651,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'create_small_embedding( self, text: str ) -> List[ float ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -2679,7 +2679,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'create_small_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -2708,7 +2708,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'create_large_embedding( self, text: str ) -> List[ float ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -2736,7 +2736,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'create_large_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -2765,7 +2765,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'create_ada_embedding( self, text: str ) -> List[ float ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -2793,7 +2793,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -2823,7 +2823,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'ccreate_small_async( self, text: str ) -> List[ float ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -2853,7 +2853,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'create_large_async( self, text: str ) -> List[ float ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -2883,7 +2883,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'create_ada_async( self, text: str ) -> List[ float ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -2908,7 +2908,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'c calculate_cosine_similarity( self, a, b )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -2987,7 +2987,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'plot_multiclass_precision( self, y_score, y_original, classes, classifier )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -3024,7 +3024,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = ('calculate_distances( self, query: List[ float ], embeddings: '
 			               'List[ List[ float ] ],  distance_metric=')
 			_err = ErrorDialog( _exc )
@@ -3043,7 +3043,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'calculate_nearest_neighbor( self, distances: List[ float ] ) -> np.ndarray'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -3064,7 +3064,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'create_pca_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -3084,7 +3084,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'create_tsne_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -3125,7 +3125,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = "('create_chart( self, components: np.ndarray  mark_size=5 ) -> None')"
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -3171,7 +3171,7 @@ class Embedding( ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
+			_exc.cause = 'Embeddy'
 			_exc.method = 'create_vector_store( self, name: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
