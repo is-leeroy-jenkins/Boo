@@ -55,13 +55,15 @@ from booggr import Error, ErrorDialog
 
 class Fetch:
 	'''
+	
 		Class providing lang chain functionality below:
 			- OpenAI LLM initialization
 			- SQL database agent (via LangChain’s SQL toolkit)
 			- Document retriever using FAISS + RetrievalQA
 			- Unified agent with a .query() method
+			
 	'''
-	def __init__( self, db_uri: str, doc_paths: List[ str ], model: str='openai-4o',
+	def __init__( self, db_uri: str, doc_paths: List[ str ], model: str='gpt-4o',
 	              temperature: float=0.8 ):
 		'''
 			Initializes the Fetch system.

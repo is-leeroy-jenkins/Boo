@@ -49,6 +49,7 @@ from openai import OpenAI, AssistantEventHandler
 from typing_extensions import override
 import requests
 import tiktoken
+from pydantic import BaseModel
 from pygments.lexers.csound import newline
 from static import GptRequests, GptRoles, GptLanguages
 from booggr import ErrorDialog, Error
@@ -916,6 +917,15 @@ class AssistantMessage( ):
 		'''
 		return [ 'role', 'content', 'type' ]
 
+class Function( BaseModel ):
+	name: Optional[ str ]
+	type: Optional[ str ]
+	description: Optional[ str ]
+	parameters: Optional[ List[ str ] ]
+	strict: Optional[ bool ]
+	
+	def __init__( self ) -> None:
+		pass
 
 class Chat( AI ):
 	"""

@@ -41,13 +41,13 @@ boo.py
 </summary>
 ******************************************************************************************
 '''
+import numpy as np
+from typing import Optional
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.linear_model import (
     LinearRegression, LogisticRegression, Ridge, Lasso, ElasticNet,
     BayesianRidge, SGDClassifier, SGDRegressor, Perceptron
 )
-from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
-import numpy as np
-from typing import Optional
 
 
 class BaseModel( ):
@@ -146,6 +146,47 @@ class LinearRegression( BaseModel ):
         return self.linerar_model.predict( X )
 
 
+    def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+        """
+        
+            Compute the R-squared
+            score of the OLS model.
+    
+            Parameters:
+                X (np.ndarray): Test features.
+                y (np.ndarray): True target values.
+    
+            Returns:
+                float: R-squared score.
+            
+        """
+        return r2_score( y, self.linerar_model.predict( X ) )
+
+
+    def plot( self, X: np.ndarray, y: np.ndarray ) -> None:
+        """
+        
+            Plot actual vs. predicted
+            values for visual inspection.
+    
+            Parameters:
+                X (np.ndarray): Input features.
+                y (np.ndarray): True target values.
+    
+            Returns:
+                None
+            
+        """
+        y_pred = self.predict(  X )
+        plt.scatter( y, y_pred )
+        plt.xlabel( 'Actual' )
+        plt.ylabel( 'Predicted' )
+        plt.title( 'OLS: Actual vs Predicted' )
+        plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+        plt.grid( True )
+        plt.show( )
+
+
 class RidgeRegression( BaseModel ):
     """
         
@@ -203,6 +244,47 @@ class RidgeRegression( BaseModel ):
         return self.ridge_model.predict( X )
 
 
+    def score(self, X: np.ndarray, y: np.ndarray) -> float:
+        """
+        
+            Compute the R-squared
+            score for the Ridge model.
+    
+            Parameters:
+                X (np.ndarray): Test features.
+                y (np.ndarray): Ground truth values.
+    
+            Returns:
+                float: R-squared score.
+                
+        """
+        return r2_score( y, self.ridge_model.predict( X ) )
+
+
+    def plot(self, X: np.ndarray, y: np.ndarray) -> None:
+        """
+        
+            Plot predicted vs
+            actual values.
+    
+            Parameters:
+                X (np.ndarray): Input features.
+                y (np.ndarray): Ground truth target values.
+    
+            Returns:
+                None
+            
+        """
+        y_pred = self.predict(X)
+        plt.scatter(y, y_pred)
+        plt.xlabel("Actual")
+        plt.ylabel("Predicted")
+        plt.title("Ridge: Actual vs Predicted")
+        plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--")
+        plt.grid(True)
+        plt.show()
+
+
 class LassoReression( BaseModel ):
     """
         
@@ -257,6 +339,45 @@ class LassoReression( BaseModel ):
             
         """
         return self.lasso_model.predict( X )
+    
+    
+    def score(self, X: np.ndarray, y: np.ndarray) -> float:
+        """
+            Compute R^2 score
+            for the Lasso model.
+    
+            Parameters:
+                X (np.ndarray): Input features.
+                y (np.ndarray): Ground truth values.
+    
+            Returns:
+                float: R^2 score.
+        """
+        return r2_score(y, self.predict(X))
+
+
+    def plot(self, X: np.ndarray, y: np.ndarray) -> None:
+        """
+        
+            Plot predicted vs
+            actual target values.
+    
+            Parameters:
+                X (np.ndarray): Input features.
+                y (np.ndarray): True target values.
+    
+            Returns:
+                None
+            
+        """
+        y_pred = self.predict(X)
+        plt.scatter(y, y_pred)
+        plt.xlabel("Actual")
+        plt.ylabel("Predicted")
+        plt.title("Lasso: Actual vs Predicted")
+        plt.plot([y.min(), y.max()], [y.min(), y.max()], 'r--')
+        plt.grid(True)
+        plt.show()
 
 
 class ElasticNetRegressor( BaseModel ):
@@ -315,6 +436,47 @@ class ElasticNetRegressor( BaseModel ):
         return self.elasticnet_model.predict( X )
 
 
+    def score(self, X: np.ndarray, y: np.ndarray) -> float:
+        """
+        
+            Compute R^2 score
+            on the test set.
+    
+            Parameters:
+                X (np.ndarray): Test features.
+                y (np.ndarray): Ground truth target values.
+    
+            Returns:
+                float: R^2 score.
+                
+        """
+        return r2_score(y, self.elasticnet_model.predict(X))
+
+
+    def plot(self, X: np.ndarray, y: np.ndarray) -> None:
+        """
+            
+            Plot actual vs. predicted
+            target values for ElasticNet.
+    
+            Parameters:
+                X (np.ndarray): Input features.
+                y (np.ndarray): True target values.
+    
+            Returns:
+                None
+            
+        """
+        y_pred = self.predict(X)
+        plt.scatter(y, y_pred)
+        plt.xlabel("Actual")
+        plt.ylabel("Predicted")
+        plt.title("ElasticNet: Actual vs Predicted")
+        plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--")
+        plt.grid(True)
+        plt.show()
+
+
 class LogisticRegressor( BaseModel ):
     """
     
@@ -369,6 +531,46 @@ class LogisticRegressor( BaseModel ):
             
         """
         return self.logistic_model.predict( X )
+
+
+    def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+        """
+            
+            Compute classification
+            accuracy.
+    
+            Parameters:
+                X (np.ndarray): Test features.
+                y (np.ndarray): True class labels.
+    
+            Returns:
+                float: Accuracy score.
+                
+        """
+        return accuracy_score( y, self.logistic_model.predict( X ) )
+
+
+    def plot_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
+        """
+        
+            Plot confusion matrix
+            for classifier predictions.
+    
+            Parameters:
+                X (np.ndarray): Input features.
+                y (np.ndarray): True class labels.
+    
+            Returns:
+                None
+            
+        """
+        y_pred = self.predict(X)
+        cm = confusion_matrix(y, y_pred)
+        ConfusionMatrixDisplay(confusion_matrix=cm).plot()
+        plt.title("Logistic Regression Confusion Matrix")
+        plt.grid(False)
+        plt.show()
+
 
 
 class BayesianRidge( BaseModel ):
@@ -427,10 +629,51 @@ class BayesianRidge( BaseModel ):
         return self.bayesian_model.predict( X )
 
 
+    def score(self, X: np.ndarray, y: np.ndarray) -> float:
+        """
+        
+            Compute the R^2 score
+            of the model on test data.
+    
+            Parameters:
+                X (np.ndarray): Test features.
+                y (np.ndarray): True values.
+    
+            Returns:
+                float: R^2 score.
+            
+        """
+        return r2_score(y, self.bayesian_model.predict( X ) )
+
+
+    def plot(self, X: np.ndarray, y: np.ndarray) -> None:
+        """
+        
+            Plot predicted vs. actual
+            values for the Bayesian Ridge model.
+    
+            Parameters:
+                X (np.ndarray): Input features.
+                y (np.ndarray): True target values.
+    
+            Returns:
+                None
+            
+        """
+        y_pred = self.predict(X)
+        plt.scatter(y, y_pred)
+        plt.xlabel("Actual")
+        plt.ylabel("Predicted")
+        plt.title("Bayesian Ridge: Actual vs Predicted")
+        plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--")
+        plt.grid(True)
+        plt.show()
+
+
 class SgdClassifier( BaseModel ):
     """
     
-    SGD-based linear classifiers.
+        SGD-based linear classifiers.
     
     """
 
@@ -481,6 +724,23 @@ class SgdClassifier( BaseModel ):
             
         """
         return self.sgd_classification_model.predict( X )
+
+
+    def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+        """
+        
+            Compute R^2 score
+            for the SGDRegressor.
+    
+            Parameters:
+                X (np.ndarray): Test features.
+                y (np.ndarray): Ground truth target values.
+    
+            Returns:
+                float: R^2 score.
+            
+        """
+        return r2_score( y, self.sgd_classification_modelpredict( X ) )
 
 
 class SgdRegressor( BaseModel ):
@@ -595,6 +855,23 @@ class Perceptron( BaseModel ):
         return self.perceptron_model.predict( X )
 
 
+    def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+        """
+        
+            Compute accuracy of the
+            Perceptron classifier.
+    
+            Parameters:
+                X (np.ndarray): Test features.
+                y (np.ndarray): True class labels.
+    
+            Returns:
+                float: Accuracy score.
+            
+        """
+        return accuracy_score( y, self.perceptron_model.predict( X ) )
+
+
 class NearestNeighborClassifier( BaseModel ):
     """
     
@@ -647,6 +924,23 @@ class NearestNeighborClassifier( BaseModel ):
             
         """
         return self.knn_classification_model.predict( X )
+
+
+    def score(self, X: np.ndarray, y: np.ndarray) -> float:
+        """
+            
+            Compute classification
+            accuracy for k-NN.
+    
+            Parameters:
+                X (np.ndarray): Test features.
+                y (np.ndarray): Ground truth labels.
+    
+            Returns:
+                float: Accuracy score.
+            
+        """
+        return accuracy_score(y, self.predict(X))
 
 
 class NearestNeighborRegressor( BaseModel ):
@@ -702,3 +996,20 @@ class NearestNeighborRegressor( BaseModel ):
             
         """
         return self.knn_regression_model.predict( X )
+
+
+    def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+        """
+            
+            Compute R^2 score
+            for k-NN regressor.
+    
+            Parameters:
+                X (np.ndarray): Test features.
+                y (np.ndarray): Ground truth values.
+    
+            Returns:
+                float: R-squared score.
+                
+        """
+        return r2_score( y, self.knn_regression_model,predict( X ) )
