@@ -917,6 +917,7 @@ class AssistantMessage( ):
 		'''
 		return [ 'role', 'content', 'type' ]
 
+
 class Function( BaseModel ):
 	name: Optional[ str ]
 	type: Optional[ str ]
@@ -924,8 +925,15 @@ class Function( BaseModel ):
 	parameters: Optional[ List[ str ] ]
 	strict: Optional[ bool ]
 	
-	def __init__( self ) -> None:
-		pass
+	
+	def __init__( self, name: str=None, type: str=None, descrp: str=None,
+	              params: List[ str ]=None, strict: bool=False ) -> None:
+		self.name = name
+		self.type = type
+		self.description = descrp
+		self.parameters = params
+		self.strict = strict
+
 
 class Chat( AI ):
 	"""

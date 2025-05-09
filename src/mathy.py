@@ -1269,15 +1269,15 @@ class LogisticRegression( BaseModel ):
                     - Confusion Matrix (List[List[int]])
                 
         """
-        y_pred = self.predict(X)
+        y_pred = self.logistic_model.predict( X )
         return {
-            "Accuracy": accuracy_score(y, y_pred),
-            "Precision": precision_score(y, y_pred, average='binary'),
-            "Recall": recall_score(y, y_pred, average='binary'),
-            "F1 Score": f1_score(y, y_pred, average='binary'),
-            "ROC AUC": roc_auc_score(y, y_pred),
-            "Matthews Corrcoef": matthews_corrcoef(y, y_pred),
-            "Confusion Matrix": confusion_matrix(y, y_pred).tolist()
+            'Accuracy': accuracy_score( y, y_pred ),
+            'Precision': precision_score( y, y_pred, average='binary' ),
+            'Recall': recall_score( y, y_pred, average='binary' ),
+            'F1 Score': f1_score( y, y_pred, average='binary' ),
+            'ROC AUC': roc_auc_score( y, y_pred ),
+            'Matthews Corrcoef': matthews_corrcoef( y, y_pred ),
+            'Confusion Matrix': confusion_matrix( y, y_pred ).tolist( )
         }
 
 
@@ -1307,7 +1307,7 @@ class LogisticRegression( BaseModel ):
 class BayesianRidge( BaseModel ):
     """
     
-    Wrapper for Bayesian RidgeRegression Regression.
+        Wrapper for Bayesian RidgeRegression Regression.
     
     """
 
@@ -1519,13 +1519,13 @@ class SgdClassification( BaseModel ):
         """
         y_pred = self.predict(X)
         return {
-            "Accuracy": accuracy_score(y, y_pred),
-            "Precision": precision_score(y, y_pred, average='binary'),
-            "Recall": recall_score(y, y_pred, average='binary'),
-            "F1 Score": f1_score(y, y_pred, average='binary'),
-            "ROC AUC": roc_auc_score(y, y_pred),
-            "Matthews Corrcoef": matthews_corrcoef(y, y_pred),
-            "Confusion Matrix": confusion_matrix(y, y_pred).tolist()
+            'Accuracy': accuracy_score(y, y_pred),
+            'Precision': precision_score(y, y_pred, average='binary'),
+            'Recall': recall_score(y, y_pred, average='binary'),
+            'F1 Score': f1_score(y, y_pred, average='binary'),
+            'ROC AUC': roc_auc_score(y, y_pred),
+            'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
+            'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
         }
 
 
@@ -1708,13 +1708,13 @@ class Perceptron( BaseModel ):
         """
         y_pred = self.predict(X)
         return {
-            "Accuracy": accuracy_score(y, y_pred),
-            "Precision": precision_score(y, y_pred, average='binary'),
-            "Recall": recall_score(y, y_pred, average='binary'),
-            "F1 Score": f1_score(y, y_pred, average='binary'),
-            "ROC AUC": roc_auc_score(y, y_pred),
-            "Matthews Corrcoef": matthews_corrcoef(y, y_pred),
-            "Confusion Matrix": confusion_matrix(y, y_pred).tolist()
+            'Accuracy': accuracy_score(y, y_pred),
+            'Precision': precision_score(y, y_pred, average='binary'),
+            'Recall': recall_score(y, y_pred, average='binary'),
+            'F1 Score': f1_score(y, y_pred, average='binary'),
+            'ROC AUC': roc_auc_score(y, y_pred),
+            'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
+            'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
         }
 
 
@@ -1813,13 +1813,13 @@ class KnnClassification( BaseModel ):
         """
         y_pred = self.predict(X)
         return {
-            "Accuracy": accuracy_score(y, y_pred),
-            "Precision": precision_score(y, y_pred, average='binary'),
-            "Recall": recall_score(y, y_pred, average='binary'),
-            "F1 Score": f1_score(y, y_pred, average='binary'),
-            "ROC AUC": roc_auc_score(y, y_pred),
-            "Matthews Corrcoef": matthews_corrcoef(y, y_pred),
-            "Confusion Matrix": confusion_matrix(y, y_pred).tolist()
+            'Accuracy': accuracy_score(y, y_pred),
+            'Precision': precision_score(y, y_pred, average='binary'),
+            'Recall': recall_score(y, y_pred, average='binary'),
+            'F1 Score': f1_score(y, y_pred, average='binary'),
+            'ROC AUC': roc_auc_score(y, y_pred),
+            'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
+            'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
         }
 
 
