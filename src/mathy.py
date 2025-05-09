@@ -1092,7 +1092,15 @@ class ElasticNetRegressor( BaseModel ):
 	            None
             
         """
-        self.elasticnet_model.fit( X, y )
+        try:
+            self.elasticnet_model.fit( X, y )
+        except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = ''
+			exception.method = ''
+			error = ErrorDialog( exception )
+			error.show( )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -1108,7 +1116,15 @@ class ElasticNetRegressor( BaseModel ):
 	            np.ndarray: Predicted target values.
 	            
         """
-        return self.elasticnet_model.predict( X )
+        try:
+            return self.elasticnet_model.predict( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def score(self, X: np.ndarray, y: np.ndarray) -> float:
@@ -1125,7 +1141,15 @@ class ElasticNetRegressor( BaseModel ):
                 float: R^2 score.
                 
         """
-        return r2_score(y, self.elasticnet_model.predict(X))
+        try:
+            return r2_score( y, self.elasticnet_model.predict( X ) )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def evaluate(self, X: np.ndarray, y: np.ndarray) -> dict:
@@ -1142,15 +1166,23 @@ class ElasticNetRegressor( BaseModel ):
                 dict: Evaluation metrics.
             
         """
-        y_pred = self.elasticnet_model.predict(X)
-        return {
-            'MAE': mean_absolute_error(y, y_pred),
-            'MSE': mean_squared_error(y, y_pred),
-            'RMSE': mean_squared_error(y, y_pred, squared=False),
-            'R2': r2_score(y, y_pred),
-            'Explained Variance': explained_variance_score(y, y_pred),
-            'Median Absolute Error': median_absolute_error(y, y_pred)
-        }
+        try:
+            y_pred = self.elasticnet_model.predict(X)
+            return {
+                'MAE': mean_absolute_error(y, y_pred),
+                'MSE': mean_squared_error(y, y_pred),
+                'RMSE': mean_squared_error(y, y_pred, squared=False),
+                'R2': r2_score(y, y_pred),
+                'Explained Variance': explained_variance_score(y, y_pred),
+                'Median Absolute Error': median_absolute_error(y, y_pred)
+            }
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def plot(self, X: np.ndarray, y: np.ndarray) -> None:
@@ -1164,14 +1196,22 @@ class ElasticNetRegressor( BaseModel ):
                 y (np.ndarray): True target values.
                 
         """
-        y_pred = self.predict(X)
-        plt.scatter(y, y_pred)
-        plt.xlabel("Actual")
-        plt.ylabel("Predicted")
-        plt.title("ElasticNet: Actual vs Predicted")
-        plt.plot([y.min(), y.max()], [y.min(), y.max()], 'r--')
-        plt.grid(True)
-        plt.show()
+        try:
+            y_pred = self.predict(X)
+            plt.scatter(y, y_pred)
+            plt.xlabel("Actual")
+            plt.ylabel("Predicted")
+            plt.title("ElasticNet: Actual vs Predicted")
+            plt.plot([y.min(), y.max()], [y.min(), y.max()], 'r--')
+            plt.grid(True)
+            plt.show()
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 
@@ -1212,7 +1252,15 @@ class LogisticRegression( BaseModel ):
             None
             
         """
-        self.logistic_model.fit( X, y )
+        try:
+            self.logistic_model.fit( X, y )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -1228,7 +1276,15 @@ class LogisticRegression( BaseModel ):
             np.ndarray: Predicted class labels.
             
         """
-        return self.logistic_model.predict( X )
+        try:
+            return self.logistic_model.predict( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def score( self, X: np.ndarray, y: np.ndarray ) -> float:
@@ -1245,7 +1301,15 @@ class LogisticRegression( BaseModel ):
                 float: Accuracy score.
                 
         """
-        return accuracy_score( y, self.logistic_model.predict( X ) )
+        try:
+            return accuracy_score( y, self.logistic_model.predict( X ) )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
@@ -1269,16 +1333,24 @@ class LogisticRegression( BaseModel ):
                     - Confusion Matrix (List[List[int]])
                 
         """
-        y_pred = self.logistic_model.predict( X )
-        return {
-            'Accuracy': accuracy_score( y, y_pred ),
-            'Precision': precision_score( y, y_pred, average='binary' ),
-            'Recall': recall_score( y, y_pred, average='binary' ),
-            'F1 Score': f1_score( y, y_pred, average='binary' ),
-            'ROC AUC': roc_auc_score( y, y_pred ),
-            'Matthews Corrcoef': matthews_corrcoef( y, y_pred ),
-            'Confusion Matrix': confusion_matrix( y, y_pred ).tolist( )
-        }
+        try:
+            y_pred = self.logistic_model.predict( X )
+            return {
+                'Accuracy': accuracy_score( y, y_pred ),
+                'Precision': precision_score( y, y_pred, average='binary' ),
+                'Recall': recall_score( y, y_pred, average='binary' ),
+                'F1 Score': f1_score( y, y_pred, average='binary' ),
+                'ROC AUC': roc_auc_score( y, y_pred ),
+                'Matthews Corrcoef': matthews_corrcoef( y, y_pred ),
+                'Confusion Matrix': confusion_matrix( y, y_pred ).tolist( )
+            }
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def plot_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1295,12 +1367,20 @@ class LogisticRegression( BaseModel ):
                 None
             
         """
-        y_pred = self.predict(X)
-        cm = confusion_matrix(y, y_pred)
-        ConfusionMatrixDisplay(confusion_matrix=cm).plot()
-        plt.title("Logistic Regression Confusion Matrix")
-        plt.grid(False)
-        plt.show()
+        try:
+            y_pred = self.predict(X)
+            cm = confusion_matrix(y, y_pred)
+            ConfusionMatrixDisplay( confusion_matrix=cm ).plot( )
+            plt.title('Logistic Regression Confusion Matrix')
+            plt.grid( False )
+            plt.show( )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 
@@ -1341,7 +1421,15 @@ class BayesianRidge( BaseModel ):
             None
             
         """
-        self.bayesian_model.fit( X, y )
+        try:
+            self.bayesian_model.fit( X, y )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -1357,7 +1445,15 @@ class BayesianRidge( BaseModel ):
 	            np.ndarray: Predicted values.
             
         """
-        return self.bayesian_model.predict( X )
+        try:
+            return self.bayesian_model.predict( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def score( self, X: np.ndarray, y: np.ndarray ) -> float:
@@ -1374,7 +1470,15 @@ class BayesianRidge( BaseModel ):
                 float: R^2 score.
             
         """
-        return r2_score(y, self.bayesian_model.predict( X ) )
+        try:
+            return r2_score(y, self.bayesian_model.predict( X ) )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
@@ -1391,15 +1495,23 @@ class BayesianRidge( BaseModel ):
                 dict: Dictionary of evaluation metrics.
             
         """
-        y_pred = self.predict(X)
-        return {
-            'MAE': mean_absolute_error(y, y_pred),
-            'MSE': mean_squared_error(y, y_pred),
-            'RMSE': mean_squared_error(y, y_pred, squared=False),
-            'R2': r2_score(y, y_pred),
-            'Explained Variance': explained_variance_score(y, y_pred),
-            'Median Absolute Error': median_absolute_error(y, y_pred)
-        }
+        try:
+            y_pred = self.predict(X)
+            return {
+                'MAE': mean_absolute_error(y, y_pred),
+                'MSE': mean_squared_error(y, y_pred),
+                'RMSE': mean_squared_error(y, y_pred, squared=False),
+                'R2': r2_score(y, y_pred),
+                'Explained Variance': explained_variance_score(y, y_pred),
+                'Median Absolute Error': median_absolute_error(y, y_pred)
+            }
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def plot( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1413,14 +1525,22 @@ class BayesianRidge( BaseModel ):
                 y (np.ndarray): True target values.
                 
         """
-        y_pred = self.predict(X)
-        plt.scatter(y, y_pred)
-        plt.xlabel("Actual")
-        plt.ylabel("Predicted")
-        plt.title("Bayesian Ridge: Actual vs Predicted")
-        plt.plot([y.min(), y.max()], [y.min(), y.max()], 'r--')
-        plt.grid(True)
-        plt.show()
+        try:
+            y_pred = self.predict( X )
+            plt.scatter( y, y_pred )
+            plt.xlabel( 'Actual' )
+            plt.ylabel( 'Predicted' )
+            plt.title( 'Bayesian Ridge: Actual vs Predicted' )
+            plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+            plt.grid( True )
+            plt.show( )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class SgdClassification( BaseModel ):
@@ -1460,7 +1580,15 @@ class SgdClassification( BaseModel ):
 	            None
             
         """
-        self.sgd_classification_model.fit( X, y )
+        try:
+            self.sgd_classification_model.fit( X, y )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -1476,7 +1604,15 @@ class SgdClassification( BaseModel ):
 		            np.ndarray: Predicted class labels.
             
         """
-        return self.sgd_classification_model.predict( X )
+        try:
+            return self.sgd_classification_model.predict( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def score( self, X: np.ndarray, y: np.ndarray ) -> float:
@@ -1493,7 +1629,15 @@ class SgdClassification( BaseModel ):
                 float: R^2 score.
             
         """
-        return r2_score( y, self.sgd_classification_model.predict( X ) )
+        try:
+            return r2_score( y, self.sgd_classification_model.predict( X ) )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
@@ -1517,16 +1661,24 @@ class SgdClassification( BaseModel ):
                     - Confusion Matrix (List[List[int]])
                 
         """
-        y_pred = self.predict(X)
-        return {
-            'Accuracy': accuracy_score(y, y_pred),
-            'Precision': precision_score(y, y_pred, average='binary'),
-            'Recall': recall_score(y, y_pred, average='binary'),
-            'F1 Score': f1_score(y, y_pred, average='binary'),
-            'ROC AUC': roc_auc_score(y, y_pred),
-            'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
-            'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
-        }
+        try:
+            y_pred = self.predict(X)
+            return {
+                'Accuracy': accuracy_score(y, y_pred),
+                'Precision': precision_score(y, y_pred, average='binary'),
+                'Recall': recall_score(y, y_pred, average='binary'),
+                'F1 Score': f1_score(y, y_pred, average='binary'),
+                'ROC AUC': roc_auc_score(y, y_pred),
+                'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
+                'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
+            }
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class SgdRegression( BaseModel ):
@@ -1567,7 +1719,15 @@ class SgdRegression( BaseModel ):
 	            None
             
         """
-        self.sgd_regression_model.fit(X, y )
+        try:
+            self.sgd_regression_model.fit(X, y )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -1583,7 +1743,15 @@ class SgdRegression( BaseModel ):
             np.ndarray: Predicted values.
             
         """
-        return self.sgd_regression_model.predict( X )
+        try:
+            return self.sgd_regression_model.predict( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
@@ -1600,16 +1768,24 @@ class SgdRegression( BaseModel ):
                 dict: Evaluation metrics dictionary.
             
         """
-        y_pred = self.predict(X)
-        return {
-            'MAE': mean_absolute_error(y, y_pred),
-            'MSE': mean_squared_error(y, y_pred),
-            'RMSE': mean_squared_error(y, y_pred, squared=False),
-            'R2': r2_score(y, y_pred),
-            'Explained Variance': explained_variance_score(y, y_pred),
-            'Median Absolute Error': median_absolute_error(y, y_pred)
-        }
-
+        try:
+            y_pred = self.predict(X)
+            return \
+            {
+                'MAE': mean_absolute_error(y, y_pred),
+                'MSE': mean_squared_error(y, y_pred),
+                'RMSE': mean_squared_error(y, y_pred, squared=False),
+                'R2': r2_score(y, y_pred),
+                'Explained Variance': explained_variance_score(y, y_pred),
+                'Median Absolute Error': median_absolute_error(y, y_pred)
+            }
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class Perceptron( BaseModel ):
@@ -1649,7 +1825,15 @@ class Perceptron( BaseModel ):
 	            None
 	            
         """
-        self.perceptron_model.fit( X, y )
+        try:
+            self.perceptron_model.fit( X, y )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -1665,7 +1849,15 @@ class Perceptron( BaseModel ):
 	            np.ndarray: Predicted binary labels.
 	            
         """
-        return self.perceptron_model.predict( X )
+        try:
+            return self.perceptron_model.predict( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def score( self, X: np.ndarray, y: np.ndarray ) -> float:
@@ -1682,7 +1874,15 @@ class Perceptron( BaseModel ):
                 float: Accuracy score.
             
         """
-        return accuracy_score( y, self.perceptron_model.predict( X ) )
+        try:
+            return accuracy_score( y, self.perceptron_model.predict( X ) )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def evaluate(self, X: np.ndarray, y: np.ndarray) -> dict:
@@ -1706,16 +1906,24 @@ class Perceptron( BaseModel ):
                     - Confusion Matrix (List[List[int]])
                     
         """
-        y_pred = self.predict(X)
-        return {
-            'Accuracy': accuracy_score(y, y_pred),
-            'Precision': precision_score(y, y_pred, average='binary'),
-            'Recall': recall_score(y, y_pred, average='binary'),
-            'F1 Score': f1_score(y, y_pred, average='binary'),
-            'ROC AUC': roc_auc_score(y, y_pred),
-            'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
-            'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
-        }
+        try:
+            y_pred = self.predict(X)
+            return {
+                'Accuracy': accuracy_score(y, y_pred),
+                'Precision': precision_score(y, y_pred, average='binary'),
+                'Recall': recall_score(y, y_pred, average='binary'),
+                'F1 Score': f1_score(y, y_pred, average='binary'),
+                'ROC AUC': roc_auc_score(y, y_pred),
+                'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
+                'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
+            }
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class KnnClassification( BaseModel ):
@@ -1754,7 +1962,15 @@ class KnnClassification( BaseModel ):
 	            None
             
         """
-        self.knn_classification_model.fit( X, y )
+        try:
+            self.knn_classification_model.fit( X, y )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -1770,7 +1986,15 @@ class KnnClassification( BaseModel ):
 	            np.ndarray: Predicted class labels.
             
         """
-        return self.knn_classification_model.predict( X )
+        try:
+            return self.knn_classification_model.predict( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def score( self, X: np.ndarray, y: np.ndarray ) -> float:
@@ -1787,7 +2011,15 @@ class KnnClassification( BaseModel ):
                 float: Accuracy score.
             
         """
-        return accuracy_score( y, self.knn_classification_model.predict( X ))
+        try:
+            return accuracy_score( y, self.knn_classification_model.predict( X ) )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
@@ -1811,16 +2043,24 @@ class KnnClassification( BaseModel ):
                     - Confusion Matrix (List[List[int]])
                 
         """
-        y_pred = self.predict(X)
-        return {
-            'Accuracy': accuracy_score(y, y_pred),
-            'Precision': precision_score(y, y_pred, average='binary'),
-            'Recall': recall_score(y, y_pred, average='binary'),
-            'F1 Score': f1_score(y, y_pred, average='binary'),
-            'ROC AUC': roc_auc_score(y, y_pred),
-            'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
-            'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
-        }
+        try:
+            y_pred = self.predict(X)
+            return {
+                'Accuracy': accuracy_score(y, y_pred),
+                'Precision': precision_score(y, y_pred, average='binary'),
+                'Recall': recall_score(y, y_pred, average='binary'),
+                'F1 Score': f1_score(y, y_pred, average='binary'),
+                'ROC AUC': roc_auc_score(y, y_pred),
+                'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
+                'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
+            }
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class KnnRegression( BaseModel ):
@@ -1859,7 +2099,15 @@ class KnnRegression( BaseModel ):
 	            None
             
         """
-        self.knn_regression_model.fit( X, y )
+        try:
+            self.knn_regression_model.fit( X, y )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -1875,7 +2123,15 @@ class KnnRegression( BaseModel ):
 	            np.ndarray: Predicted values.
             
         """
-        return self.knn_regression_model.predict( X )
+        try:
+            return self.knn_regression_model.predict( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def score( self, X: np.ndarray, y: np.ndarray ) -> float:
@@ -1892,7 +2148,15 @@ class KnnRegression( BaseModel ):
                 float: R-squared score.
                 
         """
-        return r2_score( y, self.knn_regression_model,predict( X ) )
+        try:
+            return r2_score( y, self.knn_regression_model,predict( X ) )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
@@ -1909,12 +2173,20 @@ class KnnRegression( BaseModel ):
                 dict: Dictionary of evaluation scores.
             
         """
-        y_pred = self.predict(X)
-        return {
-            'MAE': mean_absolute_error(y, y_pred),
-            'MSE': mean_squared_error(y, y_pred),
-            'RMSE': mean_squared_error(y, y_pred, squared=False),
-            'R2': r2_score(y, y_pred),
-            'Explained Variance': explained_variance_score(y, y_pred),
-            'Median Absolute Error': median_absolute_error(y, y_pred)
-        }
+        try:
+            y_pred = self.predict(X)
+            return {
+                'MAE': mean_absolute_error(y, y_pred),
+                'MSE': mean_squared_error(y, y_pred),
+                'RMSE': mean_squared_error(y, y_pred, squared=False),
+                'R2': r2_score(y, y_pred),
+                'Explained Variance': explained_variance_score(y, y_pred),
+                'Median Absolute Error': median_absolute_error(y, y_pred)
+            }
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
