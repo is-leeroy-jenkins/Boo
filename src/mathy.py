@@ -192,8 +192,16 @@ class Preprocessor( ):
                 np.ndarray: Transformed feature matrix.
 
         """
-        self.fit( X, y )
-        return self.transform( X )
+        try:
+            self.fit( X, y )
+            return self.transform( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class StandardScaler( Preprocessor ):
@@ -210,7 +218,7 @@ class StandardScaler( Preprocessor ):
         self.standard_scaler = StandardScaler( )
     
     
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
 
             Fits the standard_scaler
@@ -222,8 +230,11 @@ class StandardScaler( Preprocessor ):
 
         """
         try:
-            _pipeline: Pipeline = self.standard_scaler.fit( X )
-            return _pipeline
+            if X is None:
+                raise Exception( 'Argument "X" is None' )
+            else:
+                _pipeline: Pipeline = self.standard_scaler.fit( X )
+                return _pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -274,7 +285,7 @@ class MinMaxScaler( Preprocessor ):
         self.minmax_scaler = MinMaxScaler( )
     
     
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
 
             Fits the standard_scaler
@@ -286,8 +297,11 @@ class MinMaxScaler( Preprocessor ):
 
         """
         try:
-            _pipeline: Pipeline = self.minmax_scaler.fit( X )
-            return _pipeline
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _pipeline: Pipeline = self.minmax_scaler.fit( X )
+                return _pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -338,7 +352,7 @@ class RobustScaler( Preprocessor ):
         self.robust_scaler = RobustScaler( )
     
     
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
 
                 Fits the standard_scaler
@@ -350,8 +364,11 @@ class RobustScaler( Preprocessor ):
 
         """
         try:
-            _pipeline: Pipeline = self.robust_scaler.fit( X )
-            return _pipeline
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _pipeline: Pipeline = self.robust_scaler.fit( X )
+                return _pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -413,8 +430,11 @@ class Normalizer( Preprocessor ):
 
         """
         try:
-            _pipeline: Pipeline = self.normal_scaler.fit( X )
-            return _pipeline
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _pipeline: Pipeline = self.normal_scaler.fit( X )
+                return _pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -477,8 +497,11 @@ class OneHotEncoder( Preprocessor ):
 
         """
         try:
-            _pipeline: Pipeline = self.hot_encoder.fit( X )
-            return _pipeline
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _pipeline: Pipeline = self.hot_encoder.fit( X )
+                return _pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -541,8 +564,11 @@ class OrdinalEncoder( Preprocessor ):
 
         """
         try:
-            _pipeline: Pipeline = self.ordinal_encoder.fit( X )
-            return _pipeline
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _pipeline: Pipeline = self.ordinal_encoder.fit( X )
+                return _pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -606,8 +632,11 @@ class SimpleImputer( Preprocessor ):
 
         """
         try:
-            _pipeline: Pipeline = self.simple_imputer.fit( X )
-            return _pipeline
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _pipeline: Pipeline = self.simple_imputer.fit( X )
+                return _pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -697,8 +726,11 @@ class KnnImputer( Preprocessor ):
 
         """
         try:
-            _retval: np.ndarray = self.knn_imputer.transform( X )
-            return _retval
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _retval: np.ndarray = self.knn_imputer.transform( X )
+                return _retval
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -733,8 +765,11 @@ class MultiProcessor( Preprocessor ):
 
         """
         try:
-            _pipeline: Pipeline = self.pipeline.fit( X, y )
-            return _pipeline
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _pipeline: Pipeline = self.pipeline.fit( X, y )
+                return _pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -758,8 +793,11 @@ class MultiProcessor( Preprocessor ):
 
         """
         try:
-            _retform: np.ndarray = self.pipeline.transform( X )
-            return _retform
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _retform: np.ndarray = self.pipeline.transform( X )
+                return _retform
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -784,8 +822,11 @@ class MultiProcessor( Preprocessor ):
 
         """
         try:
-            _retval: np.ndarray = self.pipeline.fit_transform( X, y )
-            return _retval
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _retval: np.ndarray = self.pipeline.fit_transform( X, y )
+                return _retval
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -833,7 +874,10 @@ class LinearRegression( BaseModel ):
             
         """
         try:
-            self.linerar_model.fit( X, y )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                self.linerar_model.fit( X, y )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -857,7 +901,10 @@ class LinearRegression( BaseModel ):
             
         """
         try:
-            return self.linerar_model.predict( X )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.linerar_model.predict( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -882,7 +929,12 @@ class LinearRegression( BaseModel ):
             
         """
         try:
-            return r2_score( y, self.linerar_model.predict( X ) )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                return r2_score( y, self.linerar_model.predict( X ) )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -907,15 +959,20 @@ class LinearRegression( BaseModel ):
             
         """
         try:
-            y_pred = self.linerar_model.predict( X )
-            return {
-                'MAE': mean_absolute_error( y, y_pred ),
-                'MSE': mean_squared_error( y, y_pred ),
-                'RMSE': mean_squared_error( y, y_pred, squared=False ),
-                'R2': r2_score( y, y_pred ),
-                'Explained Variance': explained_variance_score( y, y_pred ),
-                'Median Absolute Error': median_absolute_error( y, y_pred )
-            }
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.linerar_model.predict( X )
+                return {
+                    'MAE': mean_absolute_error( y, y_pred ),
+                    'MSE': mean_squared_error( y, y_pred ),
+                    'RMSE': mean_squared_error( y, y_pred, squared=False ),
+                    'R2': r2_score( y, y_pred ),
+                    'Explained Variance': explained_variance_score( y, y_pred ),
+                    'Median Absolute Error': median_absolute_error( y, y_pred )
+                }
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -936,14 +993,19 @@ class LinearRegression( BaseModel ):
             
         """
         try:
-            y_pred = self.predict(X)
-            plt.scatter(y, y_pred)
-            plt.xlabel("Actual")
-            plt.ylabel("Predicted")
-            plt.title("OLS: Actual vs Predicted")
-            plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--")
-            plt.grid(True)
-            plt.show()
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict(X)
+                plt.scatter(y, y_pred)
+                plt.xlabel("Actual")
+                plt.ylabel("Predicted")
+                plt.title("OLS: Actual vs Predicted")
+                plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--")
+                plt.grid(True)
+                plt.show()
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -992,7 +1054,12 @@ class RidgeRegression( BaseModel ):
                 
         """
         try:
-            self.ridge_model.fit( X, y )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                self.ridge_model.fit( X, y )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1016,7 +1083,10 @@ class RidgeRegression( BaseModel ):
             
         """
         try:
-            return self.ridge_model.predict( X )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.ridge_model.predict( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1041,7 +1111,12 @@ class RidgeRegression( BaseModel ):
                 
         """
         try:
-            return r2_score( y, self.ridge_model.predict( X ) )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                return r2_score( y, self.ridge_model.predict( X ) )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1066,15 +1141,20 @@ class RidgeRegression( BaseModel ):
             
         """
         try:
-            y_pred = self.predict(X)
-            return {
-                'MAE': mean_absolute_error( y, y_pred ),
-                'MSE': mean_squared_error( y, y_pred ),
-                'RMSE': mean_squared_error( y, y_pred, squared=False ),
-                'R2': r2_score( y, y_pred ),
-                'Explained Variance': explained_variance_score( y, y_pred ),
-                'Median Absolute Error': median_absolute_error( y, y_pred )
-            }
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict(X)
+                return {
+                    'MAE': mean_absolute_error( y, y_pred ),
+                    'MSE': mean_squared_error( y, y_pred ),
+                    'RMSE': mean_squared_error( y, y_pred, squared=False ),
+                    'R2': r2_score( y, y_pred ),
+                    'Explained Variance': explained_variance_score( y, y_pred ),
+                    'Median Absolute Error': median_absolute_error( y, y_pred )
+                }
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1099,14 +1179,19 @@ class RidgeRegression( BaseModel ):
             
         """
         try:
-            y_pred = self.predict( X )
-            plt.scatter( y, y_pred )
-            plt.xlabel( 'Actual' )
-            plt.ylabel( 'Predicted' )
-            plt.title( 'Ridge: Actual vs Predicted' )
-            plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
-            plt.grid( True )
-            plt.show( )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict( X )
+                plt.scatter( y, y_pred )
+                plt.xlabel( 'Actual' )
+                plt.ylabel( 'Predicted' )
+                plt.title( 'Ridge: Actual vs Predicted' )
+                plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+                plt.grid( True )
+                plt.show( )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1136,15 +1221,7 @@ class LassoRegression( BaseModel ):
 	                    max_iter (int): Maximum number of iterations. Default is 1000.
                     
         """
-        try:
-            self.lasso_model = LassoRegression( alpha=1.0 )
-        except Exception as e:
-            exception = Error( e )
-            exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
-            error = ErrorDialog( exception )
-            error.show( )
+        self.lasso_model = LassoRegression( alpha=1.0 )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1162,7 +1239,12 @@ class LassoRegression( BaseModel ):
             
         """
         try:
-            self.lasso_model.fit( X, y )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                self.lasso_model.fit( X, y )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1186,7 +1268,10 @@ class LassoRegression( BaseModel ):
             
         """
         try:
-            return self.lasso_model.predict( X )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.lasso_model.predict( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1209,7 +1294,12 @@ class LassoRegression( BaseModel ):
                 float: R^2 score.
         """
         try:
-            return r2_score( y, self.predict( X ) )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                return r2_score( y, self.predict( X ) )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1234,15 +1324,20 @@ class LassoRegression( BaseModel ):
             
         """
         try:
-            y_pred = self.predict(X)
-            return {
-                'MAE': mean_absolute_error( y, y_pred ),
-                'MSE': mean_squared_error( y, y_pred ),
-                'RMSE': mean_squared_error( y, y_pred, squared=False ),
-                'R2': r2_score( y, y_pred ),
-                'Explained Variance': explained_variance_score( y, y_pred ),
-                'Median Absolute Error': median_absolute_error( y, y_pred )
-            }
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict(X)
+                return {
+                    'MAE': mean_absolute_error( y, y_pred ),
+                    'MSE': mean_squared_error( y, y_pred ),
+                    'RMSE': mean_squared_error( y, y_pred, squared=False ),
+                    'R2': r2_score( y, y_pred ),
+                    'Explained Variance': explained_variance_score( y, y_pred ),
+                    'Median Absolute Error': median_absolute_error( y, y_pred )
+                }
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1263,14 +1358,27 @@ class LassoRegression( BaseModel ):
                 y (np.ndarray): Ground truth values.
                 
         """
-        y_pred = self.predict(X)
-        plt.scatter(y, y_pred)
-        plt.xlabel( 'Actual' )
-        plt.ylabel( 'Predicted' )
-        plt.title( 'Lasso: Actual vs Predicted' )
-        plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
-        plt.grid( True )
-        plt.show( )
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict(X)
+                plt.scatter(y, y_pred)
+                plt.xlabel( 'Actual' )
+                plt.ylabel( 'Predicted' )
+                plt.title( 'Lasso: Actual vs Predicted' )
+                plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+                plt.grid( True )
+                plt.show( )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class ElasticNetRegressor( BaseModel ):
@@ -1311,7 +1419,12 @@ class ElasticNetRegressor( BaseModel ):
             
         """
         try:
-            self.elasticnet_model.fit( X, y )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                self.elasticnet_model.fit( X, y )
         except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -1335,7 +1448,10 @@ class ElasticNetRegressor( BaseModel ):
 	            
         """
         try:
-            return self.elasticnet_model.predict( X )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.elasticnet_model.predict( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1360,7 +1476,10 @@ class ElasticNetRegressor( BaseModel ):
                 
         """
         try:
-            return r2_score( y, self.elasticnet_model.predict( X ) )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return r2_score( y, self.elasticnet_model.predict( X ) )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1385,15 +1504,20 @@ class ElasticNetRegressor( BaseModel ):
             
         """
         try:
-            y_pred = self.elasticnet_model.predict(X)
-            return {
-                'MAE': mean_absolute_error(y, y_pred),
-                'MSE': mean_squared_error(y, y_pred),
-                'RMSE': mean_squared_error(y, y_pred, squared=False),
-                'R2': r2_score(y, y_pred),
-                'Explained Variance': explained_variance_score(y, y_pred),
-                'Median Absolute Error': median_absolute_error(y, y_pred)
-            }
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.elasticnet_model.predict(X)
+                return {
+                    'MAE': mean_absolute_error(y, y_pred),
+                    'MSE': mean_squared_error(y, y_pred),
+                    'RMSE': mean_squared_error(y, y_pred, squared=False),
+                    'R2': r2_score(y, y_pred),
+                    'Explained Variance': explained_variance_score(y, y_pred),
+                    'Median Absolute Error': median_absolute_error(y, y_pred)
+                }
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1415,14 +1539,19 @@ class ElasticNetRegressor( BaseModel ):
                 
         """
         try:
-            y_pred = self.predict(X)
-            plt.scatter(y, y_pred)
-            plt.xlabel("Actual")
-            plt.ylabel("Predicted")
-            plt.title("ElasticNet: Actual vs Predicted")
-            plt.plot([y.min(), y.max()], [y.min(), y.max()], 'r--')
-            plt.grid(True)
-            plt.show()
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict(X)
+                plt.scatter(y, y_pred)
+                plt.xlabel("Actual")
+                plt.ylabel("Predicted")
+                plt.title("ElasticNet: Actual vs Predicted")
+                plt.plot([y.min(), y.max()], [y.min(), y.max()], 'r--')
+                plt.grid(True)
+                plt.show( )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1471,7 +1600,12 @@ class LogisticRegression( BaseModel ):
             
         """
         try:
-            self.logistic_model.fit( X, y )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                self.logistic_model.fit( X, y )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1495,7 +1629,10 @@ class LogisticRegression( BaseModel ):
             
         """
         try:
-            return self.logistic_model.predict( X )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.logistic_model.predict( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1520,7 +1657,12 @@ class LogisticRegression( BaseModel ):
                 
         """
         try:
-            return accuracy_score( y, self.logistic_model.predict( X ) )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                return accuracy_score( y, self.logistic_model.predict( X ) )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1552,16 +1694,21 @@ class LogisticRegression( BaseModel ):
                 
         """
         try:
-            y_pred = self.logistic_model.predict( X )
-            return {
-                'Accuracy': accuracy_score( y, y_pred ),
-                'Precision': precision_score( y, y_pred, average='binary' ),
-                'Recall': recall_score( y, y_pred, average='binary' ),
-                'F1 Score': f1_score( y, y_pred, average='binary' ),
-                'ROC AUC': roc_auc_score( y, y_pred ),
-                'Matthews Corrcoef': matthews_corrcoef( y, y_pred ),
-                'Confusion Matrix': confusion_matrix( y, y_pred ).tolist( )
-            }
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.logistic_model.predict( X )
+                return {
+                    'Accuracy': accuracy_score( y, y_pred ),
+                    'Precision': precision_score( y, y_pred, average='binary' ),
+                    'Recall': recall_score( y, y_pred, average='binary' ),
+                    'F1 Score': f1_score( y, y_pred, average='binary' ),
+                    'ROC AUC': roc_auc_score( y, y_pred ),
+                    'Matthews Corrcoef': matthews_corrcoef( y, y_pred ),
+                    'Confusion Matrix': confusion_matrix( y, y_pred ).tolist( )
+                }
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1586,12 +1733,17 @@ class LogisticRegression( BaseModel ):
             
         """
         try:
-            y_pred = self.predict(X)
-            cm = confusion_matrix(y, y_pred)
-            ConfusionMatrixDisplay( confusion_matrix=cm ).plot( )
-            plt.title('Logistic Regression Confusion Matrix')
-            plt.grid( False )
-            plt.show( )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict(X)
+                cm = confusion_matrix(y, y_pred)
+                ConfusionMatrixDisplay( confusion_matrix=cm ).plot( )
+                plt.title('Logistic Regression Confusion Matrix')
+                plt.grid( False )
+                plt.show( )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1640,7 +1792,12 @@ class BayesianRidge( BaseModel ):
             
         """
         try:
-            self.bayesian_model.fit( X, y )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                self.bayesian_model.fit( X, y )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1664,7 +1821,10 @@ class BayesianRidge( BaseModel ):
             
         """
         try:
-            return self.bayesian_model.predict( X )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.bayesian_model.predict( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1689,7 +1849,12 @@ class BayesianRidge( BaseModel ):
             
         """
         try:
-            return r2_score(y, self.bayesian_model.predict( X ) )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                return r2_score(y, self.bayesian_model.predict( X ) )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1714,15 +1879,20 @@ class BayesianRidge( BaseModel ):
             
         """
         try:
-            y_pred = self.predict(X)
-            return {
-                'MAE': mean_absolute_error(y, y_pred),
-                'MSE': mean_squared_error(y, y_pred),
-                'RMSE': mean_squared_error(y, y_pred, squared=False),
-                'R2': r2_score(y, y_pred),
-                'Explained Variance': explained_variance_score(y, y_pred),
-                'Median Absolute Error': median_absolute_error(y, y_pred)
-            }
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict(X)
+                return {
+                    'MAE': mean_absolute_error(y, y_pred),
+                    'MSE': mean_squared_error(y, y_pred),
+                    'RMSE': mean_squared_error(y, y_pred, squared=False),
+                    'R2': r2_score(y, y_pred),
+                    'Explained Variance': explained_variance_score(y, y_pred),
+                    'Median Absolute Error': median_absolute_error(y, y_pred)
+                }
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1744,14 +1914,19 @@ class BayesianRidge( BaseModel ):
                 
         """
         try:
-            y_pred = self.predict( X )
-            plt.scatter( y, y_pred )
-            plt.xlabel( 'Actual' )
-            plt.ylabel( 'Predicted' )
-            plt.title( 'Bayesian Ridge: Actual vs Predicted' )
-            plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
-            plt.grid( True )
-            plt.show( )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict( X )
+                plt.scatter( y, y_pred )
+                plt.xlabel( 'Actual' )
+                plt.ylabel( 'Predicted' )
+                plt.title( 'Bayesian Ridge: Actual vs Predicted' )
+                plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+                plt.grid( True )
+                plt.show( )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1799,7 +1974,12 @@ class SgdClassification( BaseModel ):
             
         """
         try:
-            self.sgd_classification_model.fit( X, y )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                self.sgd_classification_model.fit( X, y )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1823,7 +2003,12 @@ class SgdClassification( BaseModel ):
             
         """
         try:
-            return self.sgd_classification_model.predict( X )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                return self.sgd_classification_model.predict( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1848,7 +2033,12 @@ class SgdClassification( BaseModel ):
             
         """
         try:
-            return r2_score( y, self.sgd_classification_model.predict( X ) )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                return r2_score( y, self.sgd_classification_model.predict( X ) )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1880,16 +2070,21 @@ class SgdClassification( BaseModel ):
                 
         """
         try:
-            y_pred = self.predict(X)
-            return {
-                'Accuracy': accuracy_score(y, y_pred),
-                'Precision': precision_score(y, y_pred, average='binary'),
-                'Recall': recall_score(y, y_pred, average='binary'),
-                'F1 Score': f1_score(y, y_pred, average='binary'),
-                'ROC AUC': roc_auc_score(y, y_pred),
-                'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
-                'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
-            }
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict(X)
+                return {
+                    'Accuracy': accuracy_score(y, y_pred),
+                    'Precision': precision_score(y, y_pred, average='binary'),
+                    'Recall': recall_score(y, y_pred, average='binary'),
+                    'F1 Score': f1_score(y, y_pred, average='binary'),
+                    'ROC AUC': roc_auc_score(y, y_pred),
+                    'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
+                    'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
+                }
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1938,7 +2133,12 @@ class SgdRegression( BaseModel ):
             
         """
         try:
-            self.sgd_regression_model.fit(X, y )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                self.sgd_regression_model.fit(X, y )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1962,7 +2162,10 @@ class SgdRegression( BaseModel ):
             
         """
         try:
-            return self.sgd_regression_model.predict( X )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.sgd_regression_model.predict( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1987,16 +2190,21 @@ class SgdRegression( BaseModel ):
             
         """
         try:
-            y_pred = self.predict(X)
-            return \
-            {
-                'MAE': mean_absolute_error(y, y_pred),
-                'MSE': mean_squared_error(y, y_pred),
-                'RMSE': mean_squared_error(y, y_pred, squared=False),
-                'R2': r2_score(y, y_pred),
-                'Explained Variance': explained_variance_score(y, y_pred),
-                'Median Absolute Error': median_absolute_error(y, y_pred)
-            }
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict(X)
+                return \
+                {
+                    'MAE': mean_absolute_error(y, y_pred),
+                    'MSE': mean_squared_error(y, y_pred),
+                    'RMSE': mean_squared_error(y, y_pred, squared=False),
+                    'R2': r2_score(y, y_pred),
+                    'Explained Variance': explained_variance_score(y, y_pred),
+                    'Median Absolute Error': median_absolute_error(y, y_pred)
+                }
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2044,7 +2252,12 @@ class Perceptron( BaseModel ):
 	            
         """
         try:
-            self.perceptron_model.fit( X, y )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                self.perceptron_model.fit( X, y )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2068,7 +2281,10 @@ class Perceptron( BaseModel ):
 	            
         """
         try:
-            return self.perceptron_model.predict( X )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.perceptron_model.predict( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2093,7 +2309,12 @@ class Perceptron( BaseModel ):
             
         """
         try:
-            return accuracy_score( y, self.perceptron_model.predict( X ) )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                return accuracy_score( y, self.perceptron_model.predict( X ) )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2125,16 +2346,21 @@ class Perceptron( BaseModel ):
                     
         """
         try:
-            y_pred = self.predict(X)
-            return {
-                'Accuracy': accuracy_score(y, y_pred),
-                'Precision': precision_score(y, y_pred, average='binary'),
-                'Recall': recall_score(y, y_pred, average='binary'),
-                'F1 Score': f1_score(y, y_pred, average='binary'),
-                'ROC AUC': roc_auc_score(y, y_pred),
-                'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
-                'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
-            }
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict(X)
+                return {
+                    'Accuracy': accuracy_score(y, y_pred),
+                    'Precision': precision_score(y, y_pred, average='binary'),
+                    'Recall': recall_score(y, y_pred, average='binary'),
+                    'F1 Score': f1_score(y, y_pred, average='binary'),
+                    'ROC AUC': roc_auc_score(y, y_pred),
+                    'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
+                    'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
+                }
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2181,7 +2407,12 @@ class KnnClassification( BaseModel ):
             
         """
         try:
-            self.knn_classification_model.fit( X, y )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                self.knn_classification_model.fit( X, y )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2205,7 +2436,12 @@ class KnnClassification( BaseModel ):
             
         """
         try:
-            return self.knn_classification_model.predict( X )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                return self.knn_classification_model.predict( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2230,7 +2466,12 @@ class KnnClassification( BaseModel ):
             
         """
         try:
-            return accuracy_score( y, self.knn_classification_model.predict( X ) )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                return accuracy_score( y, self.knn_classification_model.predict( X ) )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2262,16 +2503,21 @@ class KnnClassification( BaseModel ):
                 
         """
         try:
-            y_pred = self.predict(X)
-            return {
-                'Accuracy': accuracy_score(y, y_pred),
-                'Precision': precision_score(y, y_pred, average='binary'),
-                'Recall': recall_score(y, y_pred, average='binary'),
-                'F1 Score': f1_score(y, y_pred, average='binary'),
-                'ROC AUC': roc_auc_score(y, y_pred),
-                'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
-                'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
-            }
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict(X)
+                return {
+                    'Accuracy': accuracy_score(y, y_pred),
+                    'Precision': precision_score(y, y_pred, average='binary'),
+                    'Recall': recall_score(y, y_pred, average='binary'),
+                    'F1 Score': f1_score(y, y_pred, average='binary'),
+                    'ROC AUC': roc_auc_score(y, y_pred),
+                    'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
+                    'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
+                }
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2318,7 +2564,12 @@ class KnnRegression( BaseModel ):
             
         """
         try:
-            self.knn_regression_model.fit( X, y )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                self.knn_regression_model.fit( X, y )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2342,7 +2593,10 @@ class KnnRegression( BaseModel ):
             
         """
         try:
-            return self.knn_regression_model.predict( X )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.knn_regression_model.predict( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2367,7 +2621,12 @@ class KnnRegression( BaseModel ):
                 
         """
         try:
-            return r2_score( y, self.knn_regression_model,predict( X ) )
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                return r2_score( y, self.knn_regression_model,predict( X ) )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2392,15 +2651,20 @@ class KnnRegression( BaseModel ):
             
         """
         try:
-            y_pred = self.predict(X)
-            return {
-                'MAE': mean_absolute_error(y, y_pred),
-                'MSE': mean_squared_error(y, y_pred),
-                'RMSE': mean_squared_error(y, y_pred, squared=False),
-                'R2': r2_score(y, y_pred),
-                'Explained Variance': explained_variance_score(y, y_pred),
-                'Median Absolute Error': median_absolute_error(y, y_pred)
-            }
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            elif y is None:
+                raise Exception( 'The argument "y" is required!' )
+            else:
+                y_pred = self.predict(X)
+                return {
+                    'MAE': mean_absolute_error(y, y_pred),
+                    'MSE': mean_squared_error(y, y_pred),
+                    'RMSE': mean_squared_error(y, y_pred, squared=False),
+                    'R2': r2_score(y, y_pred),
+                    'Explained Variance': explained_variance_score(y, y_pred),
+                    'Median Absolute Error': median_absolute_error(y, y_pred)
+                }
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
