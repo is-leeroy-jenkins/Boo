@@ -48,6 +48,16 @@ from sklearn.linear_model import (
     LinearRegression, LogisticRegression, Ridge, Lasso, ElasticNet,
     BayesianRidge, SGDClassifier, SGDRegressor, Perceptron
 )
+from sklearn.metrics import (
+    r2_score, mean_squared_error, mean_absolute_error,
+    explained_variance_score, median_absolute_error
+)
+from sklearn.impute import SimpleImputer, KNNImputer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import (
+    StandardScaler, MinMaxScaler, RobustScaler, Normalizer,
+    OneHotEncoder, OrdinalEncoder
+)
 
 
 class BaseModel( ):
@@ -88,6 +98,605 @@ class BaseModel( ):
             
         """
         raise NotImplementedError
+
+
+    def score(self, X: np.ndarray, y: np.ndarray) -> float:
+        """
+        
+            Compute the core metric
+            (e.g., R²) of the model on test data.
+    
+            Parameters:
+                X (np.ndarray): Feature matrix.
+                y (np.ndarray): True target values.
+    
+            Returns:
+                float: Score value (e.g., R² for regressors).
+            
+        """
+        raise NotImplementedError
+
+
+    def evaluate(self, X: np.ndarray, y: np.ndarray) -> dict:
+        """
+            
+            Evaluate the model using
+             multiple performance metrics.
+    
+            Parameters:
+                X (np.ndarray): Feature matrix.
+                y (np.ndarray): Ground truth values.
+    
+            Returns:
+                dict: Dictionary containing multiple evaluation metrics.
+            
+        """
+        raise NotImplementedError
+
+
+class Preprocessor( ):
+    """
+
+        Base interface for all
+        preprocessors. Provides standard `fit`, `transform`, and
+        `fit_transform` methods.
+
+    """
+    
+    
+    def __init__( self ):
+        pass
+    
+    
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> None:
+        """
+
+            Fits the preprocessor
+            to the input data.
+
+            Args:
+                X (np.ndarray): Feature matrix.
+                y (Optional[np.ndarray]): Optional target array.
+
+        """
+        raise NotImplementedError
+    
+    
+    def transform( self, X: np.ndarray ) -> np.ndarray:
+        """
+
+            Transforms the input
+            data using the fitted preprocessor.
+
+            Args:
+                X (np.ndarray): Feature matrix.
+
+            Returns:
+                np.ndarray: Transformed feature matrix.
+
+        """
+        raise NotImplementedError
+    
+    
+    def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> np.ndarray:
+        """
+
+            Fits the preprocessor and
+            then transforms the input data.
+
+            Args:
+                X (np.ndarray): Feature matrix.
+                y (Optional[np.ndarray]): Optional target array.
+
+            Returns:
+                np.ndarray: Transformed feature matrix.
+
+        """
+        self.fit( X, y )
+        return self.transform( X )
+
+
+class StandardScaler( Preprocessor ):
+    """
+
+        Standardizes features by
+        removing the mean and scaling to unit variance.
+
+    """
+    
+    
+    def __init__( self ) -> None:
+        super( ).__init__( )
+        self.standard_scaler = StandardScaler( )
+    
+    
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+        """
+
+            Fits the standard_scaler
+            to the data.
+
+            Args:
+                X (np.ndarray): Input data.
+                y (Optional[np.ndarray]): Ignored.
+
+        """
+        _pipeline: Pipeline = self.standard_scaler.fit( X )
+        return _pipeline
+    
+    
+    def transform( self, X: np.ndarray ) -> np.ndarray:
+        """
+
+            Transforms the data
+            using the fitted StandardScaler.
+
+            Args:
+                X (np.ndarray): Input data.
+
+            Returns:
+                np.ndarray: Scaled data.
+
+        """
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.standard_scaler.transform( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
+
+
+class MinMaxScaler( Preprocessor ):
+    """
+
+        Scales features to
+        a given range (default is [0, 1]).
+
+    """
+    
+    
+    def __init__( self ) -> None:
+        super( ).__init__( )
+        self.minmax_scaler = MinMaxScaler( )
+    
+    
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+        """
+
+            Fits the standard_scaler
+            to the data.
+
+            Args:
+                X (np.ndarray): Input data.
+                y (Optional[np.ndarray]): Ignored.
+
+        """
+        _pipeline: Pipeline = self.minmax_scaler.fit( X )
+        return _pipeline
+    
+    
+    def transform( self, X: np.ndarray ) -> np.ndarray:
+        """
+
+            Transforms the data
+            using the fitted MinMaxScaler.
+
+            Args:
+                X (np.ndarray): Input data.
+
+            Returns:
+                np.ndarray: Scaled data.
+
+        """
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.minmax_scaler.transform( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
+
+
+class RobustScaler( Preprocessor ):
+    """
+
+        Scales features using statistics
+        that are robust to outliers.
+
+    """
+    
+    
+    def __init__( self ) -> None:
+        super( ).__init__( )
+        self.robust_scaler = RobustScaler( )
+    
+    
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+        """
+
+                Fits the standard_scaler
+                to the data.
+
+                Args:
+                    X (np.ndarray): Input data.
+                    y (Optional[np.ndarray]): Ignored.
+
+        """
+        _pipeline: Pipeline = self.robust_scaler.fit( X )
+        return _pipeline
+    
+    
+    def transform( self, X: np.ndarray ) -> np.ndarray:
+        """
+
+            Transforms the data
+            using the fitted RobustScaler.
+
+            Args:
+                X (np.ndarray): Input data.
+
+            Returns:
+                np.ndarray: Scaled data.
+
+        """
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.robust_scaler.transform( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
+
+
+class Normalizer( Preprocessor ):
+    """
+
+        Scales input vectors individually to unit norm.
+
+    """
+    
+    
+    def __init__( self, norm: str = 'l2' ) -> None:
+        super( ).__init__( )
+        self.normal_scaler: Normalizer = Normalizer( norm=norm )
+    
+    
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+        """
+
+            Fits the normalizer
+            (no-op for Normalizer).
+
+            Args:
+                X (np.ndarray): Input data.
+                y (Optional[np.ndarray]): Ignored.
+
+        """
+        _pipeline: Pipeline = self.normal_scaler.fit( X )
+        return _pipeline
+    
+    
+    def transform( self, X: np.ndarray ) -> np.ndarray:
+        """
+
+            Applies normalization
+            to each sample.
+
+            Args:
+                X (np.ndarray): Input data.
+
+            Returns:
+                np.ndarray: Normalized data.
+
+        """
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.normal_scaler.transform( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
+
+
+class OneHotEncoder( Preprocessor ):
+    """
+
+        Encodes categorical features
+         as a one-hot numeric array.
+
+    """
+    
+    
+    def __init__( self, handle_unknown: str = 'ignore' ) -> None:
+        super( ).__init__( )
+        self.hot_encoder = OneHotEncoder( sparse=False, handle_unknown=handle_unknown )
+    
+    
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+        """
+
+            Fits the hot_encoder
+            to the categorical data.
+
+            Args:
+                X (np.ndarray): Categorical input data.
+                y (Optional[np.ndarray]): Ignored.
+
+        """
+        _pipeline: Pipeline = self.hot_encoder.fit( X )
+        return _pipeline
+    
+    
+    def transform( self, X: np.ndarray ) -> np.ndarray:
+        """
+
+            Transforms the input
+            data into a one-hot encoded format.
+
+            Args:
+                X (np.ndarray): Categorical input data.
+
+            Returns:
+                np.ndarray: One-hot encoded matrix.
+
+        """
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                return self.hot_encoder.transform( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
+
+
+class OrdinalEncoder( Preprocessor ):
+    """
+
+        Encodes categorical
+        features as ordinal integers.
+
+    """
+    
+    
+    def __init__( self ) -> None:
+        super( ).__init__( )
+        self.ordinal_encoder = OrdinalEncoder( )
+    
+    
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+        """
+
+            Fits the ordial_encoder
+            to the categorical data.
+
+            Args:
+                X (np.ndarray): Categorical input data.
+                y (Optional[np.ndarray]): Ignored.
+
+        """
+        _pipeline: Pipeline = self.ordinal_encoder.fit( X )
+        return _pipeline
+    
+    
+    def transform( self, X: np.ndarray ) -> np.ndarray:
+        """
+
+            Transforms the input
+            data into ordinal-encoded format.
+
+            Args:
+                X (np.ndarray): Categorical input data.
+
+            Returns:
+                np.ndarray: Ordinal-encoded matrix.
+
+        """
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _retval = self.ordinal_encoder.transform( X )
+                return _retval
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
+
+
+class SimpleImputer( Preprocessor ):
+    """
+
+        Fills missing values
+        using a specified strategy.
+
+    """
+    
+    
+    def __init__( self, strategy: str = 'mean' ) -> None:
+        super( ).__init__( )
+        self.simple_imputer = SimpleImputer( strategy=strategy )
+    
+    
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+        """
+
+            Fits the simple_imputer
+            to the data.
+
+            Args:
+                X (np.ndarray): Input data with missing values.
+                y (Optional[np.ndarray]): Ignored.
+
+        """
+        _pipeline: Pipeline = self.simple_imputer.fit( X )
+        return _pipeline
+    
+    
+    def transform( self, X: np.ndarray ) -> np.ndarray:
+        """
+
+            Transforms the input
+            data by filling in missing values.
+
+            Args:
+                X (np.ndarray): Input data with missing values.
+
+            Returns:
+                np.ndarray: Imputed data.
+
+        """
+        try:
+            if X is None:
+                raise Exception( 'The argument "X" is required!' )
+            else:
+                _retval: np.ndarray = self.simple_imputer.transform( X )
+                return _retval
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'preppy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
+
+
+class KnnImputer( Preprocessor ):
+    """
+
+        Fills missing values
+        using k-nearest neighbors.
+
+    """
+    
+    
+    def __init__( self ) -> None:
+        super( ).__init__( )
+        self.knn_imputer = KNNImputer( )
+    
+    
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+        """
+
+            Fits the simple_imputer
+            to the data.
+
+            Args:
+                X (np.ndarray): Input data with missing values.
+                y (Optional[np.ndarray]): Ignored.
+
+        """
+        _pipeline: Pipeline = self.knn_imputer.fit( X )
+        return _pipeline
+    
+    
+    def transform( self, X: np.ndarray ) -> np.ndarray:
+        """
+
+            Transforms the input
+            data by imputing missing values.
+
+            Args:
+                X (np.ndarray): Input data
+                with missing values.
+
+            Returns:
+                np.ndarray: Imputed data.
+
+        """
+        _retval: np.ndarray = self.knn_imputer.transform( X )
+        return _retval
+
+
+class MultiProcessor( Preprocessor ):
+    """
+
+        Chains multiple preprocessing
+        steps into a pipeline.
+
+    """
+    
+    
+    def __init__( self, steps: List[ Tuple[ str, Preprocessor ] ] ) -> None:
+        self.pipeline = Pipeline( steps )
+    
+    
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+        """
+
+            Fits all pipeline
+            steps to the input data.
+
+            Args:
+                X (np.ndarray): Input feature matrix.
+                y (Optional[np.ndarray]): Optional target array.
+
+        """
+        _pipeline: Pipeline = self.pipeline.fit( X, y )
+        return _pipeline
+    
+    
+    def transform( self, X: np.ndarray ) -> np.ndarray:
+        """
+
+            Applies all transformations
+            in the pipeline to the input data.
+
+            Args:
+                X (np.ndarray): Input feature matrix.
+
+            Returns:
+                np.ndarray: Transformed feature matrix.
+
+        """
+        _retform: np.ndarray = self.pipeline.transform( X )
+        return _retform
+    
+    
+    def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> np.ndarray:
+        """
+
+            Fits and transforms all
+            pipeline steps on the input data.
+
+            Args:
+                X (np.ndarray): Input feature matrix.
+                y (Optional[np.ndarray]): Optional target array.
+
+            Returns:
+                np.ndarray: Transformed feature matrix.
+
+        """
+        _retval: np.ndarray = self.pipeline.fit_transform( X, y )
+        return _retval
 
 
 class LinearRegression( BaseModel ):
@@ -163,28 +772,49 @@ class LinearRegression( BaseModel ):
         return r2_score( y, self.linerar_model.predict( X ) )
 
 
-    def plot( self, X: np.ndarray, y: np.ndarray ) -> None:
+    def evaluate(self, X: np.ndarray, y: np.ndarray ) -> dict:
         """
         
-            Plot actual vs. predicted
-            values for visual inspection.
+            Evaluate the model using
+            multiple regression metrics.
+    
+            Parameters:
+                X (np.ndarray): Feature matrix.
+                y (np.ndarray): Ground truth values.
+    
+            Returns:
+                dict: Dictionary of MAE, MSE, RMSE, R², etc.
+            
+        """
+        y_pred = self.linerar_model.predict( X )
+        return {
+            'MAE': mean_absolute_error( y, y_pred ),
+            'MSE': mean_squared_error( y, y_pred ),
+            'RMSE': mean_squared_error( y, y_pred, squared=False ),
+            'R2': r2_score( y, y_pred ),
+            'Explained Variance': explained_variance_score( y, y_pred ),
+            'Median Absolute Error': median_absolute_error( y, y_pred )
+        }
+
+
+    def plot(self, X: np.ndarray, y: np.ndarray) -> None:
+        """
+            
+            Plot actual vs predicted values.
     
             Parameters:
                 X (np.ndarray): Input features.
                 y (np.ndarray): True target values.
-    
-            Returns:
-                None
             
         """
-        y_pred = self.predict(  X )
-        plt.scatter( y, y_pred )
-        plt.xlabel( 'Actual' )
-        plt.ylabel( 'Predicted' )
-        plt.title( 'OLS: Actual vs Predicted' )
-        plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
-        plt.grid( True )
-        plt.show( )
+        y_pred = self.predict(X)
+        plt.scatter(y, y_pred)
+        plt.xlabel("Actual")
+        plt.ylabel("Predicted")
+        plt.title("OLS: Actual vs Predicted")
+        plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--")
+        plt.grid(True)
+        plt.show()
 
 
 class RidgeRegression( BaseModel ):
@@ -244,7 +874,7 @@ class RidgeRegression( BaseModel ):
         return self.ridge_model.predict( X )
 
 
-    def score(self, X: np.ndarray, y: np.ndarray) -> float:
+    def score( self, X: np.ndarray, y: np.ndarray ) -> float:
         """
         
             Compute the R-squared
@@ -259,6 +889,31 @@ class RidgeRegression( BaseModel ):
                 
         """
         return r2_score( y, self.ridge_model.predict( X ) )
+
+
+    def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+        """
+            
+            Evaluate the Ridge model
+            using multiple metrics.
+    
+            Parameters:
+                X (np.ndarray): Feature matrix.
+                y (np.ndarray): Ground truth target values.
+    
+            Returns:
+                dict: Evaluation metrics including MAE, RMSE, R², etc.
+            
+        """
+        y_pred = self.predict(X)
+        return {
+            'MAE': mean_absolute_error( y, y_pred ),
+            'MSE': mean_squared_error( y, y_pred ),
+            'RMSE': mean_squared_error( y, y_pred, squared=False ),
+            'R2': r2_score( y, y_pred ),
+            'Explained Variance': explained_variance_score( y, y_pred ),
+            'Median Absolute Error': median_absolute_error( y, y_pred )
+        }
 
 
     def plot(self, X: np.ndarray, y: np.ndarray) -> None:
@@ -355,20 +1010,40 @@ class LassoReression( BaseModel ):
         """
         return r2_score(y, self.predict(X))
 
+    def evaluate(self, X: np.ndarray, y: np.ndarray) -> dict:
+        """
+        
+            Evaluate the Lasso model
+            using multiple regression metrics.
+    
+            Parameters:
+                X (np.ndarray): Input features.
+                y (np.ndarray): Ground truth target values.
+    
+            Returns:
+                dict: Dictionary of MAE, RMSE, R², etc.
+            
+        """
+        y_pred = self.predict(X)
+        return {
+            'MAE': mean_absolute_error(y, y_pred),
+            'MSE': mean_squared_error(y, y_pred),
+            'RMSE': mean_squared_error(y, y_pred, squared=False),
+            'R2': r2_score(y, y_pred),
+            'Explained Variance': explained_variance_score(y, y_pred),
+            'Median Absolute Error': median_absolute_error(y, y_pred)
+        }
 
     def plot(self, X: np.ndarray, y: np.ndarray) -> None:
         """
         
-            Plot predicted vs
-            actual target values.
+            Plot actual vs.
+            predicted values.
     
             Parameters:
-                X (np.ndarray): Input features.
-                y (np.ndarray): True target values.
-    
-            Returns:
-                None
-            
+                X (np.ndarray): Input feature matrix.
+                y (np.ndarray): Ground truth values.
+                
         """
         y_pred = self.predict(X)
         plt.scatter(y, y_pred)
@@ -453,31 +1128,54 @@ class ElasticNetRegressor( BaseModel ):
         return r2_score(y, self.elasticnet_model.predict(X))
 
 
+    def evaluate(self, X: np.ndarray, y: np.ndarray) -> dict:
+        """
+        
+            Evaluate model performance
+            using regression metrics.
+    
+            Parameters:
+                X (np.ndarray): Input features.
+                y (np.ndarray): Ground truth values.
+    
+            Returns:
+                dict: Evaluation metrics.
+            
+        """
+        y_pred = self.elasticnet_model.predict(X)
+        return {
+            'MAE': mean_absolute_error(y, y_pred),
+            'MSE': mean_squared_error(y, y_pred),
+            'RMSE': mean_squared_error(y, y_pred, squared=False),
+            'R2': r2_score(y, y_pred),
+            'Explained Variance': explained_variance_score(y, y_pred),
+            'Median Absolute Error': median_absolute_error(y, y_pred)
+        }
+
+
     def plot(self, X: np.ndarray, y: np.ndarray) -> None:
         """
-            
+        
             Plot actual vs. predicted
-            target values for ElasticNet.
+            regression output.
     
             Parameters:
                 X (np.ndarray): Input features.
                 y (np.ndarray): True target values.
-    
-            Returns:
-                None
-            
+                
         """
         y_pred = self.predict(X)
         plt.scatter(y, y_pred)
         plt.xlabel("Actual")
         plt.ylabel("Predicted")
         plt.title("ElasticNet: Actual vs Predicted")
-        plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--")
+        plt.plot([y.min(), y.max()], [y.min(), y.max()], 'r--')
         plt.grid(True)
         plt.show()
 
 
-class LogisticRegressor( BaseModel ):
+
+class LogisticRegression( BaseModel ):
     """
     
     Wrapper for Logistic Regression.
@@ -548,6 +1246,39 @@ class LogisticRegressor( BaseModel ):
                 
         """
         return accuracy_score( y, self.logistic_model.predict( X ) )
+
+
+    def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+        """
+            
+            Evaluate the classifier
+            using multiple classification metrics.
+    
+            Parameters:
+                X (np.ndarray): Input features of shape (n_samples, n_features).
+                y (np.ndarray): True labels of shape (n_samples,).
+    
+            Returns:
+                dict: Dictionary containing:
+                    - Accuracy (float)
+                    - Precision (float)
+                    - Recall (float)
+                    - F1 Score (float)
+                    - ROC AUC (float)
+                    - Matthews Corrcoef (float)
+                    - Confusion Matrix (List[List[int]])
+                
+        """
+        y_pred = self.predict(X)
+        return {
+            "Accuracy": accuracy_score(y, y_pred),
+            "Precision": precision_score(y, y_pred, average='binary'),
+            "Recall": recall_score(y, y_pred, average='binary'),
+            "F1 Score": f1_score(y, y_pred, average='binary'),
+            "ROC AUC": roc_auc_score(y, y_pred),
+            "Matthews Corrcoef": matthews_corrcoef(y, y_pred),
+            "Confusion Matrix": confusion_matrix(y, y_pred).tolist()
+        }
 
 
     def plot_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -629,7 +1360,7 @@ class BayesianRidge( BaseModel ):
         return self.bayesian_model.predict( X )
 
 
-    def score(self, X: np.ndarray, y: np.ndarray) -> float:
+    def score( self, X: np.ndarray, y: np.ndarray ) -> float:
         """
         
             Compute the R^2 score
@@ -646,31 +1377,53 @@ class BayesianRidge( BaseModel ):
         return r2_score(y, self.bayesian_model.predict( X ) )
 
 
-    def plot(self, X: np.ndarray, y: np.ndarray) -> None:
+    def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+        """
+            
+            Evaluate the Bayesian model
+            with regression metrics.
+    
+            Parameters:
+                X (np.ndarray): Feature matrix.
+                y (np.ndarray): True target values.
+    
+            Returns:
+                dict: Dictionary of evaluation metrics.
+            
+        """
+        y_pred = self.predict(X)
+        return {
+            'MAE': mean_absolute_error(y, y_pred),
+            'MSE': mean_squared_error(y, y_pred),
+            'RMSE': mean_squared_error(y, y_pred, squared=False),
+            'R2': r2_score(y, y_pred),
+            'Explained Variance': explained_variance_score(y, y_pred),
+            'Median Absolute Error': median_absolute_error(y, y_pred)
+        }
+
+
+    def plot( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
         
-            Plot predicted vs. actual
-            values for the Bayesian Ridge model.
+            Plot predicted vs.
+            actual values.
     
             Parameters:
                 X (np.ndarray): Input features.
                 y (np.ndarray): True target values.
-    
-            Returns:
-                None
-            
+                
         """
         y_pred = self.predict(X)
         plt.scatter(y, y_pred)
         plt.xlabel("Actual")
         plt.ylabel("Predicted")
         plt.title("Bayesian Ridge: Actual vs Predicted")
-        plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--")
+        plt.plot([y.min(), y.max()], [y.min(), y.max()], 'r--')
         plt.grid(True)
         plt.show()
 
 
-class SgdClassifier( BaseModel ):
+class SgdClassification( BaseModel ):
     """
     
         SGD-based linear classifiers.
@@ -740,10 +1493,43 @@ class SgdClassifier( BaseModel ):
                 float: R^2 score.
             
         """
-        return r2_score( y, self.sgd_classification_modelpredict( X ) )
+        return r2_score( y, self.sgd_classification_model.predict( X ) )
 
 
-class SgdRegressor( BaseModel ):
+    def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+        """
+           
+            Evaluate the classifier
+            using standard metrics.
+    
+            Parameters:
+                X (np.ndarray): Feature matrix of shape (n_samples, n_features).
+                y (np.ndarray): True class labels of shape (n_samples,).
+    
+            Returns:
+                dict: Dictionary containing:
+                    - Accuracy (float)
+                    - Precision (float)
+                    - Recall (float)
+                    - F1 Score (float)
+                    - ROC AUC (float)
+                    - Matthews Corrcoef (float)
+                    - Confusion Matrix (List[List[int]])
+                
+        """
+        y_pred = self.predict(X)
+        return {
+            "Accuracy": accuracy_score(y, y_pred),
+            "Precision": precision_score(y, y_pred, average='binary'),
+            "Recall": recall_score(y, y_pred, average='binary'),
+            "F1 Score": f1_score(y, y_pred, average='binary'),
+            "ROC AUC": roc_auc_score(y, y_pred),
+            "Matthews Corrcoef": matthews_corrcoef(y, y_pred),
+            "Confusion Matrix": confusion_matrix(y, y_pred).tolist()
+        }
+
+
+class SgdRegression( BaseModel ):
     """
     
     Wrapper for SGD-based linear regressors.
@@ -797,6 +1583,32 @@ class SgdRegressor( BaseModel ):
             
         """
         return self.sgd_regression_model.predict( X )
+
+
+    def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+        """
+            
+            Evaluate regression model
+            performance.
+    
+            Parameters:
+                X (np.ndarray): Input features.
+                y (np.ndarray): True target values.
+    
+            Returns:
+                dict: Evaluation metrics dictionary.
+            
+        """
+        y_pred = self.predict(X)
+        return {
+            'MAE': mean_absolute_error(y, y_pred),
+            'MSE': mean_squared_error(y, y_pred),
+            'RMSE': mean_squared_error(y, y_pred, squared=False),
+            'R2': r2_score(y, y_pred),
+            'Explained Variance': explained_variance_score(y, y_pred),
+            'Median Absolute Error': median_absolute_error(y, y_pred)
+        }
+
 
 
 class Perceptron( BaseModel ):
@@ -872,7 +1684,40 @@ class Perceptron( BaseModel ):
         return accuracy_score( y, self.perceptron_model.predict( X ) )
 
 
-class NearestNeighborClassifier( BaseModel ):
+    def evaluate(self, X: np.ndarray, y: np.ndarray) -> dict:
+        """
+        
+            Evaluate classifier performance
+            using standard classification metrics.
+    
+            Parameters:
+                X (np.ndarray): Input features of shape (n_samples, n_features).
+                y (np.ndarray): Ground truth class labels.
+    
+            Returns:
+                dict: Dictionary of evaluation metrics including:
+                    - Accuracy (float)
+                    - Precision (float)
+                    - Recall (float)
+                    - F1 Score (float)
+                    - ROC AUC (float)
+                    - Matthews Corrcoef (float)
+                    - Confusion Matrix (List[List[int]])
+                    
+        """
+        y_pred = self.predict(X)
+        return {
+            "Accuracy": accuracy_score(y, y_pred),
+            "Precision": precision_score(y, y_pred, average='binary'),
+            "Recall": recall_score(y, y_pred, average='binary'),
+            "F1 Score": f1_score(y, y_pred, average='binary'),
+            "ROC AUC": roc_auc_score(y, y_pred),
+            "Matthews Corrcoef": matthews_corrcoef(y, y_pred),
+            "Confusion Matrix": confusion_matrix(y, y_pred).tolist()
+        }
+
+
+class KnnClassification( BaseModel ):
     """
     
     Wrapper for k-Nearest Neighbors Classifier.
@@ -926,7 +1771,7 @@ class NearestNeighborClassifier( BaseModel ):
         return self.knn_classification_model.predict( X )
 
 
-    def score(self, X: np.ndarray, y: np.ndarray) -> float:
+    def score( self, X: np.ndarray, y: np.ndarray ) -> float:
         """
             
             Compute classification
@@ -940,10 +1785,42 @@ class NearestNeighborClassifier( BaseModel ):
                 float: Accuracy score.
             
         """
-        return accuracy_score(y, self.predict(X))
+        return accuracy_score( y, self.knn_classification_model.predict( X ))
 
 
-class NearestNeighborRegressor( BaseModel ):
+    def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+        """
+        
+            Evaluate classification performance
+            using various metrics.
+    
+            Parameters:
+                X (np.ndarray): Feature matrix of shape (n_samples, n_features).
+                y (np.ndarray): True class labels of shape (n_samples,).
+    
+            Returns:
+                dict: Dictionary containing:
+                    - Accuracy (float)
+                    - Precision (float)
+                    - Recall (float)
+                    - F1 Score (float)
+                    - ROC AUC (float)
+                    - Matthews Corrcoef (float)
+                    - Confusion Matrix (List[List[int]])
+                
+        """
+        y_pred = self.predict(X)
+        return {
+            "Accuracy": accuracy_score(y, y_pred),
+            "Precision": precision_score(y, y_pred, average='binary'),
+            "Recall": recall_score(y, y_pred, average='binary'),
+            "F1 Score": f1_score(y, y_pred, average='binary'),
+            "ROC AUC": roc_auc_score(y, y_pred),
+            "Matthews Corrcoef": matthews_corrcoef(y, y_pred),
+            "Confusion Matrix": confusion_matrix(y, y_pred).tolist()
+        }
+
+class KnnRegression( BaseModel ):
     """
     
     Wrapper for k-Nearest Neighbors Regressor.
@@ -1013,3 +1890,28 @@ class NearestNeighborRegressor( BaseModel ):
                 
         """
         return r2_score( y, self.knn_regression_model,predict( X ) )
+
+
+    def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+        """
+            
+            Evaluate k-NN regression
+            performance with multiple metrics.
+    
+            Parameters:
+                X (np.ndarray): Test features.
+                y (np.ndarray): True target values.
+    
+            Returns:
+                dict: Dictionary of evaluation scores.
+            
+        """
+        y_pred = self.predict(X)
+        return {
+            'MAE': mean_absolute_error(y, y_pred),
+            'MSE': mean_squared_error(y, y_pred),
+            'RMSE': mean_squared_error(y, y_pred, squared=False),
+            'R2': r2_score(y, y_pred),
+            'Explained Variance': explained_variance_score(y, y_pred),
+            'Median Absolute Error': median_absolute_error(y, y_pred)
+        }
