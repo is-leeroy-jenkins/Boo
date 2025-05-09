@@ -221,8 +221,16 @@ class StandardScaler( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
 
         """
-        _pipeline: Pipeline = self.standard_scaler.fit( X )
-        return _pipeline
+        try:
+            _pipeline: Pipeline = self.standard_scaler.fit( X )
+            return _pipeline
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
     
     
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -277,8 +285,16 @@ class MinMaxScaler( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
 
         """
-        _pipeline: Pipeline = self.minmax_scaler.fit( X )
-        return _pipeline
+        try:
+            _pipeline: Pipeline = self.minmax_scaler.fit( X )
+            return _pipeline
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
     
     
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -333,8 +349,16 @@ class RobustScaler( Preprocessor ):
                     y (Optional[np.ndarray]): Ignored.
 
         """
-        _pipeline: Pipeline = self.robust_scaler.fit( X )
-        return _pipeline
+        try:
+            _pipeline: Pipeline = self.robust_scaler.fit( X )
+            return _pipeline
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
     
     
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -388,8 +412,16 @@ class Normalizer( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
 
         """
-        _pipeline: Pipeline = self.normal_scaler.fit( X )
-        return _pipeline
+        try:
+            _pipeline: Pipeline = self.normal_scaler.fit( X )
+            return _pipeline
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
     
     
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -444,8 +476,16 @@ class OneHotEncoder( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
 
         """
-        _pipeline: Pipeline = self.hot_encoder.fit( X )
-        return _pipeline
+        try:
+            _pipeline: Pipeline = self.hot_encoder.fit( X )
+            return _pipeline
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
     
     
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -500,8 +540,16 @@ class OrdinalEncoder( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
 
         """
-        _pipeline: Pipeline = self.ordinal_encoder.fit( X )
-        return _pipeline
+        try:
+            _pipeline: Pipeline = self.ordinal_encoder.fit( X )
+            return _pipeline
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
     
     
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -557,8 +605,16 @@ class SimpleImputer( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
 
         """
-        _pipeline: Pipeline = self.simple_imputer.fit( X )
-        return _pipeline
+        try:
+            _pipeline: Pipeline = self.simple_imputer.fit( X )
+            return _pipeline
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
     
     
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -614,8 +670,16 @@ class KnnImputer( Preprocessor ):
                 y (Optional[np.ndarray]): Ignored.
 
         """
-        _pipeline: Pipeline = self.knn_imputer.fit( X )
-        return _pipeline
+        try:
+            _pipeline: Pipeline = self.knn_imputer.fit( X )
+            return _pipeline
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
     
     
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -632,8 +696,16 @@ class KnnImputer( Preprocessor ):
                 np.ndarray: Imputed data.
 
         """
-        _retval: np.ndarray = self.knn_imputer.transform( X )
-        return _retval
+        try:
+            _retval: np.ndarray = self.knn_imputer.transform( X )
+            return _retval
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class MultiProcessor( Preprocessor ):
@@ -660,8 +732,16 @@ class MultiProcessor( Preprocessor ):
                 y (Optional[np.ndarray]): Optional target array.
 
         """
-        _pipeline: Pipeline = self.pipeline.fit( X, y )
-        return _pipeline
+        try:
+            _pipeline: Pipeline = self.pipeline.fit( X, y )
+            return _pipeline
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
     
     
     def transform( self, X: np.ndarray ) -> np.ndarray:
@@ -677,8 +757,16 @@ class MultiProcessor( Preprocessor ):
                 np.ndarray: Transformed feature matrix.
 
         """
-        _retform: np.ndarray = self.pipeline.transform( X )
-        return _retform
+        try:
+            _retform: np.ndarray = self.pipeline.transform( X )
+            return _retform
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
     
     
     def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> np.ndarray:
@@ -695,8 +783,16 @@ class MultiProcessor( Preprocessor ):
                 np.ndarray: Transformed feature matrix.
 
         """
-        _retval: np.ndarray = self.pipeline.fit_transform( X, y )
-        return _retval
+        try:
+            _retval: np.ndarray = self.pipeline.fit_transform( X, y )
+            return _retval
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class LinearRegression( BaseModel ):
@@ -736,7 +832,15 @@ class LinearRegression( BaseModel ):
 	            None
             
         """
-        self.linerar_model.fit( X, y )
+        try:
+            self.linerar_model.fit( X, y )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -752,7 +856,15 @@ class LinearRegression( BaseModel ):
             np.ndarray: Predicted target values.
             
         """
-        return self.linerar_model.predict( X )
+        try:
+            return self.linerar_model.predict( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def score( self, X: np.ndarray, y: np.ndarray ) -> float:
@@ -769,7 +881,15 @@ class LinearRegression( BaseModel ):
                 float: R-squared score.
             
         """
-        return r2_score( y, self.linerar_model.predict( X ) )
+        try:
+            return r2_score( y, self.linerar_model.predict( X ) )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def evaluate(self, X: np.ndarray, y: np.ndarray ) -> dict:
@@ -786,15 +906,23 @@ class LinearRegression( BaseModel ):
                 dict: Dictionary of MAE, MSE, RMSE, R², etc.
             
         """
-        y_pred = self.linerar_model.predict( X )
-        return {
-            'MAE': mean_absolute_error( y, y_pred ),
-            'MSE': mean_squared_error( y, y_pred ),
-            'RMSE': mean_squared_error( y, y_pred, squared=False ),
-            'R2': r2_score( y, y_pred ),
-            'Explained Variance': explained_variance_score( y, y_pred ),
-            'Median Absolute Error': median_absolute_error( y, y_pred )
-        }
+        try:
+            y_pred = self.linerar_model.predict( X )
+            return {
+                'MAE': mean_absolute_error( y, y_pred ),
+                'MSE': mean_squared_error( y, y_pred ),
+                'RMSE': mean_squared_error( y, y_pred, squared=False ),
+                'R2': r2_score( y, y_pred ),
+                'Explained Variance': explained_variance_score( y, y_pred ),
+                'Median Absolute Error': median_absolute_error( y, y_pred )
+            }
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def plot(self, X: np.ndarray, y: np.ndarray) -> None:
@@ -807,14 +935,22 @@ class LinearRegression( BaseModel ):
                 y (np.ndarray): True target values.
             
         """
-        y_pred = self.predict(X)
-        plt.scatter(y, y_pred)
-        plt.xlabel("Actual")
-        plt.ylabel("Predicted")
-        plt.title("OLS: Actual vs Predicted")
-        plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--")
-        plt.grid(True)
-        plt.show()
+        try:
+            y_pred = self.predict(X)
+            plt.scatter(y, y_pred)
+            plt.xlabel("Actual")
+            plt.ylabel("Predicted")
+            plt.title("OLS: Actual vs Predicted")
+            plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--")
+            plt.grid(True)
+            plt.show()
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
 class RidgeRegression( BaseModel ):
@@ -855,7 +991,15 @@ class RidgeRegression( BaseModel ):
                 None
                 
         """
-        self.ridge_model.fit( X, y )
+        try:
+            self.ridge_model.fit( X, y )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
@@ -871,7 +1015,15 @@ class RidgeRegression( BaseModel ):
                 np.ndarray: Predicted target values.
             
         """
-        return self.ridge_model.predict( X )
+        try:
+            return self.ridge_model.predict( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def score( self, X: np.ndarray, y: np.ndarray ) -> float:
@@ -888,7 +1040,15 @@ class RidgeRegression( BaseModel ):
                 float: R-squared score.
                 
         """
-        return r2_score( y, self.ridge_model.predict( X ) )
+        try:
+            return r2_score( y, self.ridge_model.predict( X ) )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
@@ -905,15 +1065,23 @@ class RidgeRegression( BaseModel ):
                 dict: Evaluation metrics including MAE, RMSE, R², etc.
             
         """
-        y_pred = self.predict(X)
-        return {
-            'MAE': mean_absolute_error( y, y_pred ),
-            'MSE': mean_squared_error( y, y_pred ),
-            'RMSE': mean_squared_error( y, y_pred, squared=False ),
-            'R2': r2_score( y, y_pred ),
-            'Explained Variance': explained_variance_score( y, y_pred ),
-            'Median Absolute Error': median_absolute_error( y, y_pred )
-        }
+        try:
+            y_pred = self.predict(X)
+            return {
+                'MAE': mean_absolute_error( y, y_pred ),
+                'MSE': mean_squared_error( y, y_pred ),
+                'RMSE': mean_squared_error( y, y_pred, squared=False ),
+                'R2': r2_score( y, y_pred ),
+                'Explained Variance': explained_variance_score( y, y_pred ),
+                'Median Absolute Error': median_absolute_error( y, y_pred )
+            }
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def plot(self, X: np.ndarray, y: np.ndarray) -> None:
@@ -930,20 +1098,28 @@ class RidgeRegression( BaseModel ):
                 None
             
         """
-        y_pred = self.predict(X)
-        plt.scatter(y, y_pred)
-        plt.xlabel("Actual")
-        plt.ylabel("Predicted")
-        plt.title("Ridge: Actual vs Predicted")
-        plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--")
-        plt.grid(True)
-        plt.show()
+        try:
+            y_pred = self.predict( X )
+            plt.scatter( y, y_pred )
+            plt.xlabel( 'Actual' )
+            plt.ylabel( 'Predicted' )
+            plt.title( 'Ridge: Actual vs Predicted' )
+            plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+            plt.grid( True )
+            plt.show( )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
-class LassoReression( BaseModel ):
+class LassoRegression( BaseModel ):
     """
         
-        Wrapper for LassoReression Regression (L1 regularization).
+        Wrapper for LassoRegression Regression (L1 regularization).
         
     """
 
@@ -951,22 +1127,30 @@ class LassoReression( BaseModel ):
         """
         
 	        Initialize the
-	        LassoReression linerar_model.
+	        LassoRegression linerar_model.
 	
 	        Attributes:
-	            linerar_model (Lasso): Internal LassoReression regression linerar_model.
+	            linerar_model (Lasso): Internal LassoRegression regression linerar_model.
 	                Parameters:
 	                    alpha (float): Regularization strength. Default is 1.0.
 	                    max_iter (int): Maximum number of iterations. Default is 1000.
                     
         """
-        self.lasso_model = LassoReression( alpha=1.0 )
+        try:
+            self.lasso_model = LassoRegression( alpha=1.0 )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
         
-        Fit the LassoReression
+        Fit the LassoRegression
         regression linerar_model.
 
         Parameters:
@@ -977,14 +1161,22 @@ class LassoReression( BaseModel ):
             None
             
         """
-        self.lasso_model.fit( X, y )
+        try:
+            self.lasso_model.fit( X, y )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
 
     def predict( self, X: np.ndarray ) -> np.ndarray:
         """
         
 	        Predict target values
-	        using the LassoReression linerar_model.
+	        using the LassoRegression linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -993,7 +1185,15 @@ class LassoReression( BaseModel ):
 	            np.ndarray: Predicted target values.
             
         """
-        return self.lasso_model.predict( X )
+        try:
+            return self.lasso_model.predict( X )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
     
     
     def score(self, X: np.ndarray, y: np.ndarray) -> float:
@@ -1008,9 +1208,18 @@ class LassoReression( BaseModel ):
             Returns:
                 float: R^2 score.
         """
-        return r2_score(y, self.predict(X))
+        try:
+            return r2_score( y, self.predict( X ) )
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
 
-    def evaluate(self, X: np.ndarray, y: np.ndarray) -> dict:
+
+    def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
         """
         
             Evaluate the Lasso model
@@ -1024,15 +1233,24 @@ class LassoReression( BaseModel ):
                 dict: Dictionary of MAE, RMSE, R², etc.
             
         """
-        y_pred = self.predict(X)
-        return {
-            'MAE': mean_absolute_error(y, y_pred),
-            'MSE': mean_squared_error(y, y_pred),
-            'RMSE': mean_squared_error(y, y_pred, squared=False),
-            'R2': r2_score(y, y_pred),
-            'Explained Variance': explained_variance_score(y, y_pred),
-            'Median Absolute Error': median_absolute_error(y, y_pred)
-        }
+        try:
+            y_pred = self.predict(X)
+            return {
+                'MAE': mean_absolute_error( y, y_pred ),
+                'MSE': mean_squared_error( y, y_pred ),
+                'RMSE': mean_squared_error( y, y_pred, squared=False ),
+                'R2': r2_score( y, y_pred ),
+                'Explained Variance': explained_variance_score( y, y_pred ),
+                'Median Absolute Error': median_absolute_error( y, y_pred )
+            }
+        except Exception as e:
+            exception = Error( e )
+            exception.module = 'Mathy'
+            exception.cause = ''
+            exception.method = ''
+            error = ErrorDialog( exception )
+            error.show( )
+
 
     def plot(self, X: np.ndarray, y: np.ndarray) -> None:
         """
@@ -1047,12 +1265,12 @@ class LassoReression( BaseModel ):
         """
         y_pred = self.predict(X)
         plt.scatter(y, y_pred)
-        plt.xlabel("Actual")
-        plt.ylabel("Predicted")
-        plt.title("Lasso: Actual vs Predicted")
-        plt.plot([y.min(), y.max()], [y.min(), y.max()], 'r--')
-        plt.grid(True)
-        plt.show()
+        plt.xlabel( 'Actual' )
+        plt.ylabel( 'Predicted' )
+        plt.title( 'Lasso: Actual vs Predicted' )
+        plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+        plt.grid( True )
+        plt.show( )
 
 
 class ElasticNetRegressor( BaseModel ):
@@ -1072,7 +1290,7 @@ class ElasticNetRegressor( BaseModel ):
 	            linerar_model (ElasticNet): Internal ElasticNetRegressor regression linerar_model.
 	                Parameters:
 	                    alpha (float): Overall regularization strength. Default is 1.0.
-	                    l1_ratio (float): Mixing parameter (0 = RidgeRegression, 1 = LassoReression). Default is 0.5.
+	                    l1_ratio (float): Mixing parameter (0 = RidgeRegression, 1 = LassoRegression). Default is 0.5.
                     
         """
         self.elasticnet_model = ElasticNetRegressor( alpha=1.0, l1_ratio=0.5 )
