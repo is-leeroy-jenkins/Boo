@@ -1556,7 +1556,8 @@ class SgdRegression( BaseModel ):
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
 	        
-	        Fit the SGD regressor linerar_model.
+	        Fit the SGD
+	        regressor linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -1726,13 +1727,14 @@ class KnnClassification( BaseModel ):
 
     def __init__( self ) -> None:
         """
-        
-        Initialize the KNeighborsClassifier linerar_model.
-
-        Attributes:
-            linerar_model (KNeighborsClassifier): Internal non-parametric classifier.
-                Parameters:
-                    n_neighbors (int): Number of neighbors to use. Default is 5.
+            
+            Initialize the KNeighborsClassifier l
+            inerar_model.
+    
+            Attributes:
+                linerar_model (KNeighborsClassifier): Internal non-parametric classifier.
+                    Parameters:
+                        n_neighbors (int): Number of neighbors to use. Default is 5.
                     
         """
         self.knn_classification_model = KNeighborsClassifier( n_neighbors=5 )
@@ -1819,6 +1821,7 @@ class KnnClassification( BaseModel ):
             "Matthews Corrcoef": matthews_corrcoef(y, y_pred),
             "Confusion Matrix": confusion_matrix(y, y_pred).tolist()
         }
+
 
 class KnnRegression( BaseModel ):
     """
