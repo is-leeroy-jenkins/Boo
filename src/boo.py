@@ -3699,20 +3699,20 @@ class Image( AI ):
 				self.input_text = input
 				self.file_path = path
 				self.input = \
-					[ {
+				[{
 						'role': 'user',
 						'content':
 							[
-								{ 'type': 'input_text',
-								  'text': self.input_text
-								  },
+								{
+									'type': 'input_text',
+									'text': self.input_text
+								},
 								{
 									'type': 'input_image',
 									'image_url': self.file_path
 								},
 							],
-					}
-					]
+					}]
 				
 				self.response = self.client.responses.create( model='gpt-4o-mini',
 					input=self.input )
