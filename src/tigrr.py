@@ -1962,8 +1962,8 @@ class Vector( ):
 		         'upload_document', 'upload_documents' ]
 	
 	
-	def create( self, tokens: List[ str ], batch: int = 10, max: int = 3,
-	            time: float = 2.0 ) -> pd.DataFrame:
+	def create( self, tokens: List[ str ], batch: int=10, max: int=3,
+	            time: float=2.0 ) -> pd.DataFrame:
 		"""
 
 			Generate and normalize
@@ -2163,7 +2163,7 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def most_similar( self, query: str, df: pd.DataFrame, top: int = 5 ) -> pd.DataFrame:
+	def most_similar( self, query: str, df: pd.DataFrame, top: int=5 ) -> pd.DataFrame:
 		"""
 
 			Purpose:
@@ -2203,7 +2203,7 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def bulk_similar( self, queries: List[ str ], df: pd.DataFrame, top: int = 5 ) -> { }:
+	def bulk_similar( self, queries: List[ str ], df: pd.DataFrame, top: int=5 ) -> Dict:
 		"""
 
 			Purpose:
@@ -2434,7 +2434,7 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def query_vector_store( self, id: str, query: str, top: int = 5 ) -> List[ dict ]:
+	def query_vector_store( self, id: str, query: str, top: int=5 ) -> List[ dict ]:
 		"""
 
 			Purpose:
