@@ -354,7 +354,10 @@ class GptResponse( ):
 	'''
 		Base class for GPT responses.
 	'''
-	
+	id: str
+	object: object
+	model: str
+	created: dt.datetime
 	
 	def __init__( self, respid: str, obj: object, model: str, created: dt.datetime ):
 		self.id = respid

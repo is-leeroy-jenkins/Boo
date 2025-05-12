@@ -56,6 +56,25 @@ from booggr import ErrorDialog, Error
 from typing import Any, List, Tuple, Optional, Dict
 
 
+class Response( BaseModel ):
+	'''
+		Base class for GPT responses.
+	'''
+	id: Optional[ str ]
+	object: Optional[ object ]
+	model: Optional[ str ]
+	created: Optional[ dt.datetime ]
+	data: Optional[ Dict ]
+
+
+class Function( BaseModel ):
+	name: Optional[ str ]
+	type: Optional[ str ]
+	description: Optional[ str ]
+	parameters: Optional[ List[ str ] ]
+	strict: Optional[ bool ]
+
+
 class EndPoint( ):
 	'''
 	
@@ -97,7 +116,7 @@ class Header( ):
 		              'Authorization': self.authoriztion }
 	
 	
-	def __dir__( self ):
+	def __dir__( self ) -> List[ str ]:
 		'''
 		
 			Methods that returns a get_list of member names
@@ -106,18 +125,6 @@ class Header( ):
 		'''
 		return [ 'content_type', 'api_key', 'authorization', 'values' ]
 
-	def __dir__( self ) -> List[ str ]:
-		'''
-		
-			Methods that returns a get_list of member names
-			Returns: list[ str ]
-			
-		'''
-		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completions',
-		         'speech_generation', 'translations', 'assistants', 'transcriptions',
-		         'finetuning', 'vectors', 'uploads', 'files', 'vector_stores',
-		         'responses', 'get_data', 'dump' ]
-	
 	
 	def get_data( self ) -> dict:
 		'''
@@ -916,23 +923,6 @@ class AssistantMessage( ):
 			
 		'''
 		return [ 'role', 'content', 'type' ]
-
-
-class Function( BaseModel ):
-	name: Optional[ str ]
-	type: Optional[ str ]
-	description: Optional[ str ]
-	parameters: Optional[ List[ str ] ]
-	strict: Optional[ bool ]
-	
-	
-	def __init__( self, name: str=None, type: str=None, descrp: str=None,
-	              params: List[ str ]=None, strict: bool=False ) -> None:
-		self.name = name
-		self.type = type
-		self.description = descrp
-		self.parameters = params
-		self.strict = strict
 
 
 class Chat( AI ):
