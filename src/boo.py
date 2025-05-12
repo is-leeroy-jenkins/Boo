@@ -75,6 +75,66 @@ class Function( BaseModel ):
 	strict: Optional[ bool ]
 
 
+class SystemMessage( BaseModel ):
+	'''
+
+		Class representing the system message
+
+	'''
+	content: str
+	role: Optional[ str ] = 'system'
+	type: Optional[ str ] = 'text'
+	data: Optional[ Dict ]
+
+
+class UserMessage( BaseModel ):
+	'''
+
+		Class representing the system message
+
+	'''
+	content: str
+	role: Optional[ str ] = 'user'
+	type: Optional[ str ] = 'text'
+	data: Optional[ Dict ]
+
+
+class DeveloperMessage( BaseModel ):
+	'''
+
+		Class representing the developoer message
+
+	'''
+	content: str
+	role: Optional[ str ] = 'developer'
+	type: Optional[ str ] = 'text'
+	data: Optional[ Dict ]
+
+
+class AssistantMessage( BaseModel ):
+	'''
+
+		Class representing the assistantmessage
+
+	'''
+	content: str
+	role: Optional[ str ] = 'assistant'
+	type: Optional[ str ] = 'text'
+	data: Optional[ Dict ]
+
+
+class ToolMessage( BaseModel ):
+	'''
+
+		Class representing the tool message
+
+	'''
+	content: str
+	role: Optional[ str ] = 'tool'
+	type: Optional[ str ] = 'text'
+	data: Optional[ Dict ]
+
+
 class EndPoint( ):
 	'''
 	
@@ -176,7 +236,8 @@ class Models( ):
 		Purpose
 		_______
 		
-		Class containing lists of OpenAI models by generation
+		Class containing lists
+		of OpenAI models by generation
 		
 	'''
 	
@@ -332,7 +393,7 @@ class Perceptron( ):
 	'''
 	
 	
-	def __init__( self, eta=0.01, n_iter=50, random_state=1 ):
+	def __init__( self, eta=0.01, n_iter=50, random_state=42 ):
 		"""
 		
 			Purpose
@@ -708,221 +769,6 @@ class LinearGradientDescent( ):
 		return [ 'fit', 'net_input', 'activation',
 		         'predict', 'losses_', 'b_', 'w_',
 		         'n_iter', 'eta', 'random_state'  ]
-
-class SystemMessage(  ):
-	'''
-
-		Class representing the system message
-
-	'''
-	def __init__( self, prompt: str, type: str='path' ) -> None:
-		self.content = prompt
-		self.role = 'system'
-		self.type = type
-		self.data = { 'role': f'{self.role}',
-		              'type': f'{self.type}',
-		              'content': f'{self.content}' }
-	
-	
-	def __str__( self ) -> str:
-		'''
-
-			Returns: the json path representation of the message.
-
-		'''
-		new = '\r\n'
-		if not self.content is None:
-			_pair = f'''
-            'role': '{self.role}', \r\n
-            'type': '{self.type}', \r\n
-            'content': '{self.content}'
-            '''
-			_retval = '{ ' + _pair + ' }'
-			return _retval
-	
-	
-	def dump( self ) -> str:
-		'''
-
-			Returns: key value pairs in a path
-
-		'''
-		new = '\r\n'
-		return 'role' + f' = {self.role}' + new + \
-			'type' + f' = {self.type}' + new + \
-			'content' + f' = {self.content}'
-	
-	
-	def __dir__( self ) -> List[ str ]:
-		'''
-		
-			Methods that returns a get_list of member names
-			Returns: List[ str ]
-			
-		'''
-		return [ 'role', 'content', 'type' ]
-
-
-class UserMessage( ):
-	'''
-
-		Class representing the system message
-
-	'''
-	def __init__( self, prompt: str, type: str='path' ) -> None:
-		self.content = prompt
-		self.role = 'user'
-		self.type = type
-		self.data = { 'role': f'{self.role}',
-		              'type': f'{self.type}',
-		              'content': f'{self.content}' }
-	
-	
-	def __str__( self ) -> str:
-		'''
-
-			Returns: the json path representation of the message.
-
-		'''
-		new = '\r\n'
-		if not self.content is None:
-			_pair = f'''
-            'role': '{self.role}', \r\n
-            'type': '{self.type}', \r\n
-            'content': '{self.content}'
-            '''
-			_retval = '{ ' + _pair + ' }'
-			return _retval
-	
-	
-	def dump( self ) -> str:
-		'''
-
-			Returns: key value pairs in a path
-
-		'''
-		new = '\r\n'
-		return 'role' + f' = {self.role}' + new + \
-			'type' + f' = {self.type}' + new + \
-			'content' + f' = {self.content}'
-	
-	
-	def __dir__( self ) -> List[ str ]:
-		'''
-
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-
-		'''
-		return [ 'role', 'content', 'type' ]
-
-
-class DeveloperMessage( ):
-	'''
-
-		Class representing the system message
-
-	'''
-	def __init__( self, prompt: str, type: str='path' ) -> None:
-		self.content = prompt
-		self.role = 'developer'
-		self.type = type
-		self.data = { 'role': f'{self.role}',
-		              'type': f'{self.type}',
-		              'content': f'{self.content}' }
-	
-	
-	def __str__( self ) -> str:
-		'''
-
-			Returns: the json path representation of the message.
-
-		'''
-		new = '\r\n'
-		if not self.content is None:
-			_pair = f'''
-            'role': '{self.role}', \r\n
-            'type': '{self.type}', \r\n
-            'content': '{self.content}'
-            '''
-			_retval = '{ ' + _pair + ' }'
-			return _retval
-	
-	
-	def dump( self ) -> str:
-		'''
-
-			Returns: key value pairs in a path
-
-		'''
-		new = '\r\n'
-		return 'role' + f' = {self.role}' + new + \
-			'type' + f' = {self.type}' + new + \
-			'content' + f' = {self.content}'
-	
-	
-	def __dir__( self ) -> List[ str ]:
-		'''
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-		'''
-		return [ 'role', 'content', 'type' ]
-
-
-class AssistantMessage( ):
-	'''
-
-		Class representing the system message
-
-	'''
-	
-	
-	def __init__( self, prompt: str, type: str='path' ) -> None:
-		self.content = prompt
-		self.role = 'assistant'
-		self.type = type
-		self.data = { 'role': f'{self.role}',
-		              'type': f'{self.type}',
-		              'content': f'{self.content}' }
-	
-	
-	def __str__( self ) -> str:
-		'''
-
-			Returns: the json path representation of the message.
-
-		'''
-		new = '\r\n'
-		if not self.content is None:
-			_pair = f'''
-            'role': '{self.role}', \r\n
-            'type': '{self.type}', \r\n
-            'content': '{self.content}'
-            '''
-			_retval = '{ ' + _pair + ' }'
-			return _retval
-	
-	
-	def dump( self ) -> str:
-		'''
-
-			Returns: key value pairs in a path
-
-		'''
-		new = '\r\n'
-		return 'role' + f' = {self.role}' + new + \
-			'type' + f' = {self.type}' + new + \
-			'content' + f' = {self.content}'
-	
-	
-	def __dir__( self ) -> List[ str ]:
-		'''
-		
-			Methods that returns a get_list of member names
-			Returns: List[ str ]
-			
-		'''
-		return [ 'role', 'content', 'type' ]
 
 
 class Chat( AI ):
