@@ -145,10 +145,10 @@ class Preprocessor( ):
     
     
     def __init__( self ):
-        pass
+        self.pipeline = None
     
     
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> None:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
         """
 
             Fits the preprocessor
@@ -178,7 +178,7 @@ class Preprocessor( ):
         raise NotImplementedError
     
     
-    def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> np.ndarray:
+    def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> np.ndarray:
         """
 
             Fits the preprocessor and
@@ -233,8 +233,8 @@ class StandardScaler( Preprocessor ):
             if X is None:
                 raise Exception( 'Argument "X" is None' )
             else:
-                _pipeline: Pipeline = self.standard_scaler.fit( X )
-                return _pipeline
+                self.pipeline = self.standard_scaler.fit( X )
+                return self.pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -300,8 +300,8 @@ class MinMaxScaler( Preprocessor ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                _pipeline: Pipeline = self.minmax_scaler.fit( X )
-                return _pipeline
+                self.pipeline = self.minmax_scaler.fit( X )
+                return self.pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -367,8 +367,8 @@ class RobustScaler( Preprocessor ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                _pipeline: Pipeline = self.robust_scaler.fit( X )
-                return _pipeline
+                self.pipeline = self.robust_scaler.fit( X )
+                return self.pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -413,12 +413,12 @@ class Normalizer( Preprocessor ):
     """
     
     
-    def __init__( self, norm: str = 'l2' ) -> None:
+    def __init__( self, norm: str='l2' ) -> None:
         super( ).__init__( )
         self.normal_scaler: Normalizer = Normalizer( norm=norm )
     
     
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
 
             Fits the normalizer
@@ -433,8 +433,8 @@ class Normalizer( Preprocessor ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                _pipeline: Pipeline = self.normal_scaler.fit( X )
-                return _pipeline
+                self.pipeline = self.normal_scaler.fit( X )
+                return self.pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -480,12 +480,12 @@ class OneHotEncoder( Preprocessor ):
     """
     
     
-    def __init__( self, handle_unknown: str = 'ignore' ) -> None:
+    def __init__( self, handle_unknown: str='ignore' ) -> None:
         super( ).__init__( )
         self.hot_encoder = OneHotEncoder( sparse=False, handle_unknown=handle_unknown )
     
     
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
 
             Fits the hot_encoder
@@ -500,8 +500,8 @@ class OneHotEncoder( Preprocessor ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                _pipeline: Pipeline = self.hot_encoder.fit( X )
-                return _pipeline
+                self.pipeline = self.hot_encoder.fit( X )
+                return self.pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -552,7 +552,7 @@ class OrdinalEncoder( Preprocessor ):
         self.ordinal_encoder = OrdinalEncoder( )
     
     
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
 
             Fits the ordial_encoder
@@ -567,8 +567,8 @@ class OrdinalEncoder( Preprocessor ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                _pipeline: Pipeline = self.ordinal_encoder.fit( X )
-                return _pipeline
+                self.pipeline = self.ordinal_encoder.fit( X )
+                return self.pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -620,7 +620,7 @@ class SimpleImputer( Preprocessor ):
         self.simple_imputer = SimpleImputer( strategy=strategy )
     
     
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
 
             Fits the simple_imputer
@@ -688,7 +688,7 @@ class KnnImputer( Preprocessor ):
         self.knn_imputer = KNNImputer( )
     
     
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
 
             Fits the simple_imputer
@@ -753,7 +753,7 @@ class MultiProcessor( Preprocessor ):
         self.pipeline = Pipeline( steps )
     
     
-    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+    def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
         """
 
             Fits all pipeline
@@ -807,7 +807,7 @@ class MultiProcessor( Preprocessor ):
             error.show( )
     
     
-    def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> np.ndarray:
+    def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> np.ndarray:
         """
 
             Fits and transforms all
@@ -998,12 +998,12 @@ class LinearRegression( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict(X)
-                plt.scatter(y, y_pred)
-                plt.xlabel("Actual")
-                plt.ylabel("Predicted")
-                plt.title("OLS: Actual vs Predicted")
-                plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--")
+                y_pred = self.predict( X )
+                plt.scatter( y, y_pred )
+                plt.xlabel( 'Actual' )
+                plt.ylabel( 'Predicted' )
+                plt.title( 'OLS: Actual vs Predicted' )
+                plt.plot( [ y.min( ), y.max( ) ] , [ y.min( ), y.max( ) ], 'r--' )
                 plt.grid(True)
                 plt.show()
         except Exception as e:
@@ -1461,7 +1461,7 @@ class ElasticNetRegressor( BaseModel ):
             error.show( )
 
 
-    def score(self, X: np.ndarray, y: np.ndarray) -> float:
+    def score( self, X: np.ndarray, y: np.ndarray ) -> float:
         """
         
             Compute R^2 score
@@ -1489,7 +1489,7 @@ class ElasticNetRegressor( BaseModel ):
             error.show( )
 
 
-    def evaluate(self, X: np.ndarray, y: np.ndarray) -> dict:
+    def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
         """
         
             Evaluate model performance
@@ -1509,14 +1509,14 @@ class ElasticNetRegressor( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.elasticnet_model.predict(X)
+                y_pred = self.elasticnet_model.predict( X )
                 return {
-                    'MAE': mean_absolute_error(y, y_pred),
-                    'MSE': mean_squared_error(y, y_pred),
-                    'RMSE': mean_squared_error(y, y_pred, squared=False),
-                    'R2': r2_score(y, y_pred),
-                    'Explained Variance': explained_variance_score(y, y_pred),
-                    'Median Absolute Error': median_absolute_error(y, y_pred)
+                    'MAE': mean_absolute_error( y, y_pred ),
+                    'MSE': mean_squared_error( y, y_pred ),
+                    'RMSE': mean_squared_error( y, y_pred, squared=False ),
+                    'R2': r2_score( y, y_pred ),
+                    'Explained Variance': explained_variance_score( y, y_pred ),
+                    'Median Absolute Error': median_absolute_error( y, y_pred )
                 }
         except Exception as e:
             exception = Error( e )
@@ -1544,12 +1544,12 @@ class ElasticNetRegressor( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict(X)
-                plt.scatter(y, y_pred)
-                plt.xlabel("Actual")
-                plt.ylabel("Predicted")
-                plt.title("ElasticNet: Actual vs Predicted")
-                plt.plot([y.min(), y.max()], [y.min(), y.max()], 'r--')
+                y_pred = self.predict( X )
+                plt.scatter( y, y_pred )
+                plt.xlabel( 'Actual' )
+                plt.ylabel( 'Predicted' )
+                plt.title( 'ElasticNet: Actual vs Predicted' )
+                plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
                 plt.grid(True)
                 plt.show( )
         except Exception as e:
@@ -1741,7 +1741,7 @@ class LogisticRegression( BaseModel ):
                 y_pred = self.predict(X)
                 cm = confusion_matrix(y, y_pred)
                 ConfusionMatrixDisplay( confusion_matrix=cm ).plot( )
-                plt.title('Logistic Regression Confusion Matrix')
+                plt.title( 'Logistic Regression Confusion Matrix' )
                 plt.grid( False )
                 plt.show( )
         except Exception as e:
@@ -1854,7 +1854,7 @@ class BayesianRidge( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                return r2_score(y, self.bayesian_model.predict( X ) )
+                return r2_score( y, self.bayesian_model.predict( X ) )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1884,14 +1884,14 @@ class BayesianRidge( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict(X)
+                y_pred = self.predict( X )
                 return {
-                    'MAE': mean_absolute_error(y, y_pred),
-                    'MSE': mean_squared_error(y, y_pred),
-                    'RMSE': mean_squared_error(y, y_pred, squared=False),
-                    'R2': r2_score(y, y_pred),
-                    'Explained Variance': explained_variance_score(y, y_pred),
-                    'Median Absolute Error': median_absolute_error(y, y_pred)
+                    'MAE': mean_absolute_error( y, y_pred ),
+                    'MSE': mean_squared_error( y, y_pred ),
+                    'RMSE': mean_squared_error( y, y_pred, squared=False ),
+                    'R2': r2_score( y, y_pred ),
+                    'Explained Variance': explained_variance_score( y, y_pred ),
+                    'Median Absolute Error': median_absolute_error( y, y_pred )
                 }
         except Exception as e:
             exception = Error( e )

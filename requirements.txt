@@ -62,3 +62,4 @@ camelot-py
 PyMuPDF
 mwclient
 mwparserfromhell
+accelerate

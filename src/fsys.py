@@ -87,7 +87,7 @@ class Path( ):
 		Returns a get_list[ str ] of member names.
 
 		'''
-		return [ 'text', 'name', 'current_directory', 'extension',
+		return [ 'path', 'name', 'current_directory', 'extension',
 		         'parent_directory', 'path_separator', 'drive',
 		         'drive_separator', 'extension_separator', 'internal_path',
 		         'exists', 'is_folder', 'is_file', 'is_absolute',
@@ -127,7 +127,7 @@ class Path( ):
 		'''
 		try:
 			if self.input is None:
-				_msg = "The 'text' is None!"
+				_msg = "The 'path' is None!"
 				raise Exception( _msg )
 			if not os.path.isdir( self.input ):
 				return False
@@ -152,7 +152,7 @@ class Path( ):
 		'''
 		try:
 			if self.input is None:
-				_msg = "The 'text' is None!"
+				_msg = "The 'path' is None!"
 				raise Exception( _msg )
 			elif not os.path.isfile( self.input ):
 				return False
@@ -250,7 +250,7 @@ class Path( ):
 			Parameters: 'first: str' representing the first url
 			that is joined to the second url 'second: str'.
 	
-			Returns: a single string representing a url
+			Returns: a single path representing a url
 
 		'''
 		try:
@@ -526,7 +526,7 @@ class File( Path ):
 		'''
 		
 			Purpose:
-			reads 'self.text' appending each line to a get_list
+			reads 'self.path' appending each line to a get_list
 	
 			Parameters: void
 	
@@ -556,7 +556,7 @@ class File( Path ):
 		'''
 		
 			Purpose:
-			iterates tokens of 'self.text'
+			iterates tokens of 'self.path'
 	
 			Parameters:
 			void
@@ -593,7 +593,7 @@ class File( Path ):
 		try:
 			_contents = list( )
 			if self.input is None  :
-				_msg = "The 'text' is not a file!"
+				_msg = "The 'path' is not a file!"
 				raise Exception( _msg )
 			else:
 				_file = open( self.input )
@@ -623,7 +623,7 @@ class File( Path ):
 		try:
 			_contents = ''
 			if not os.path.isfile( self.input ):
-				_msg = "The 'text' is not a file!"
+				_msg = "The 'path' is not a file!"
 				raise Exception( _msg )
 			else:
 				_file = open( self.input )
@@ -643,7 +643,7 @@ class File( Path ):
 		'''
 		
 			Purpose:
-			writes tokens in 'tokens' to file 'self.text'
+			writes tokens in 'tokens' to file 'self.path'
 	
 			Parameters: get_list[ str ]
 	
@@ -674,7 +674,7 @@ class File( Path ):
 		'''
 
 			Purpose:
-			writes all documents in 'other' to file 'self.text'
+			writes all documents in 'other' to file 'self.path'
 	
 			Parameters: str
 	
@@ -787,7 +787,7 @@ class Folder( Path ):
 		'''
 		try:
 			_names = [ ]
-			_msg = "The text url 'text' is not a directory!"
+			_msg = "The path url 'path' is not a directory!"
 			if not os.path.isdir( self.input ):
 				raise Exception( _msg )
 			else:

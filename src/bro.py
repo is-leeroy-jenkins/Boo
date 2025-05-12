@@ -182,7 +182,7 @@ class GptOptions( ):
 		self.store = store
 		self.stream = stream
 		self.size = size
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'path', 'audio' ]
 		self.response_format = 'auto'
 	
 	
@@ -329,7 +329,7 @@ class Payload( ):
 	def dump( self ) -> str:
 		'''
 
-			Returns: a string of key value pairs
+			Returns: a path of key value pairs
 
 		'''
 		new = '\r\n'
@@ -689,7 +689,7 @@ class TextRequest( GptRequest ):
 	def create( self, prompt: str ) -> str:
 		'''
 
-			Given an text prompt 'prompt', function generates a documents generation
+			Given an path prompt 'prompt', function generates a documents generation
 			request from the openai api.
 
 		Args:
@@ -1433,7 +1433,7 @@ class GptMessage( ):
 	def __str__( self ) -> str:
 		'''
 
-			Returns: the json string representation of the message.
+			Returns: the json path representation of the message.
 
 		'''
 		new = '\r\n'
@@ -1450,7 +1450,7 @@ class GptMessage( ):
 	def dump( self ) -> str:
 		'''
 
-			Returns: key value pairs in a string
+			Returns: key value pairs in a path
 
 		'''
 		new = '\r\n'
@@ -1488,7 +1488,7 @@ class SystemMessage( GptMessage ):
 	def __str__( self ) -> str:
 		'''
 
-			Returns: the json string representation of the message.
+			Returns: the json path representation of the message.
 
 		'''
 		new = '\r\n'
@@ -1505,7 +1505,7 @@ class SystemMessage( GptMessage ):
 	def dump( self ) -> str:
 		'''
 
-			Returns: key value pairs in a string
+			Returns: key value pairs in a path
 
 		'''
 		new = '\r\n'
@@ -1543,7 +1543,7 @@ class UserMessage( GptMessage ):
 	def __str__( self ) -> str:
 		'''
 
-			Returns: the json string representation of the message.
+			Returns: the json path representation of the message.
 
 		'''
 		new = '\r\n'
@@ -1560,7 +1560,7 @@ class UserMessage( GptMessage ):
 	def dump( self ) -> str:
 		'''
 
-			Returns: key value pairs in a string
+			Returns: key value pairs in a path
 
 		'''
 		new = '\r\n'
@@ -1600,7 +1600,7 @@ class DeveloperMessage( GptMessage ):
 	def __str__( self ) -> str:
 		'''
 
-			Returns: the json string representation of the message.
+			Returns: the json path representation of the message.
 
 		'''
 		new = '\r\n'
@@ -1617,7 +1617,7 @@ class DeveloperMessage( GptMessage ):
 	def dump( self ) -> str:
 		'''
 
-			Returns: key value pairs in a string
+			Returns: key value pairs in a path
 
 		'''
 		new = '\r\n'
@@ -1655,7 +1655,7 @@ class AssistantMessage( GptMessage ):
 	def __str__( self ) -> str:
 		'''
 
-			Returns: the json string representation of the message.
+			Returns: the json path representation of the message.
 
 		'''
 		new = '\r\n'
@@ -1672,7 +1672,7 @@ class AssistantMessage( GptMessage ):
 	def dump( self ) -> str:
 		'''
 
-			Returns: key value pairs in a string
+			Returns: key value pairs in a path
 
 		'''
 		new = '\r\n'

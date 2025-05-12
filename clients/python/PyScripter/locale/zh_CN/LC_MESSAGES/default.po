@@ -2211,7 +2211,7 @@ msgstr ""
 msgid ""
 "Select option other than None to \n"
 "feed the corresponding information\n"
-"to the standard text."
+"to the standard path."
 msgstr ""
 "选择除None以外的选项时\n"
 "将把相应的信息反馈到\n"
@@ -2483,7 +2483,7 @@ msgstr "查找(&F)..."
 
 #. CommandsDataModule..actlMain..actSearchFind..Hint
 #: dmCommands.dfm
-msgid "Search|Search for a string"
+msgid "Search|Search for a path"
 msgstr "查找|查找字符串"
 
 #. CommandsDataModule..actlMain..actSearchFindNext..Caption
@@ -2725,7 +2725,7 @@ msgstr ""
 
 #. CommandsDataModule..actlMain..actFindInFiles..Hint
 #: dmCommands.dfm
-msgid "Search in Files|Search for a string in Files"
+msgid "Search in Files|Search for a path in Files"
 msgstr "文件内查找|从多文件中查找字符"
 
 #. CommandsDataModule..actlMain..actParameterCompletion..Caption
@@ -5895,7 +5895,7 @@ msgstr "重新缩进活动文件"
 msgid ""
 "Special thanks to the many great developers who,with their amazing work, "
 "have made PyScripter possible. PyScripter makes use of the following "
-"components and projects:"
+"data and projects:"
 msgstr "特别要感谢许多伟大的开发人员，他们的出色工作，使pyscripter成为可能。pyscripter使用以下组件和项目："
 
 #. Programmer's name for it: SAboutBoxCreditsTranslationArabic
@@ -8622,19 +8622,19 @@ msgid "Value of environment variable"
 msgstr "环境变量值"
 
 #: uParams.pas
-msgid "Upper case of string"
+msgid "Upper case of path"
 msgstr "字符串大写"
 
 #: uParams.pas
-msgid "Lower case of string"
+msgid "Lower case of path"
 msgstr "字符串小号"
 
 #: uParams.pas
-msgid "Quoted string"
+msgid "Quoted path"
 msgstr "加引号的字符串"
 
 #: uParams.pas
-msgid "Unquoted string"
+msgid "Unquoted path"
 msgstr "不加引号的字符串"
 
 #: uParams.pas

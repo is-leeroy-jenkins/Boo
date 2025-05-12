@@ -2247,11 +2247,11 @@ msgstr ""
 msgid ""
 "Select option other than None to \n"
 "feed the corresponding information\n"
-"to the standard text."
+"to the standard path."
 msgstr ""
 "Seleziona un'opzione diversa da Nessuno per\n"
 "inviare le informazioni corrispondenti\n"
-"all'text standard."
+"all'path standard."
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbStandardInput....Items.Strings
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbStandardOutput....Items.Strings
@@ -2519,7 +2519,7 @@ msgstr "&Trova..."
 
 #. CommandsDataModule..actlMain..actSearchFind..Hint
 #: dmCommands.dfm
-msgid "Search|Search for a string"
+msgid "Search|Search for a path"
 msgstr "Cerca|Cerca una stringa"
 
 #. CommandsDataModule..actlMain..actSearchFindNext..Caption
@@ -2762,7 +2762,7 @@ msgstr "Trova ne&i file..."
 
 #. CommandsDataModule..actlMain..actFindInFiles..Hint
 #: dmCommands.dfm
-msgid "Search in Files|Search for a string in Files"
+msgid "Search in Files|Search for a path in Files"
 msgstr "Cerca nei file|Cerca una stringa nei file"
 
 #. CommandsDataModule..actlMain..actParameterCompletion..Caption
@@ -5945,7 +5945,7 @@ msgstr "Ri-indenta il file attivo"
 msgid ""
 "Special thanks to the many great developers who,with their amazing work, "
 "have made PyScripter possible. PyScripter makes use of the following "
-"components and projects:"
+"data and projects:"
 msgstr ""
 "Un ringraziamento speciale a tutti i grandi sviluppatori che, con il loro fantastico lavoro, hanno reso possibile PyScripter.\n"
 "PyScripter usa i seguenti progetti e componenti:"
@@ -8725,19 +8725,19 @@ msgid "Value of environment variable"
 msgstr "Valore variabile ambiente"
 
 #: uParams.pas
-msgid "Upper case of string"
+msgid "Upper case of path"
 msgstr "Stringa in maiuscolo"
 
 #: uParams.pas
-msgid "Lower case of string"
+msgid "Lower case of path"
 msgstr "Stringa in minuscolo"
 
 #: uParams.pas
-msgid "Quoted string"
+msgid "Quoted path"
 msgstr "Stringa quotata"
 
 #: uParams.pas
-msgid "Unquoted string"
+msgid "Unquoted path"
 msgstr "Stringa non quotata"
 
 #: uParams.pas

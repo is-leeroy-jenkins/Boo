@@ -2206,7 +2206,7 @@ msgstr ""
 msgid ""
 "Select option other than None to \n"
 "feed the corresponding information\n"
-"to the standard text."
+"to the standard path."
 msgstr ""
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbStandardInput....Items.Strings
@@ -2472,7 +2472,7 @@ msgstr "ا&وجد..."
 
 #. CommandsDataModule..actlMain..actSearchFind..Hint
 #: dmCommands.dfm
-msgid "Search|Search for a string"
+msgid "Search|Search for a path"
 msgstr "بحث | بحث عن نص"
 
 #. CommandsDataModule..actlMain..actSearchFindNext..Caption
@@ -2714,7 +2714,7 @@ msgstr ""
 
 #. CommandsDataModule..actlMain..actFindInFiles..Hint
 #: dmCommands.dfm
-msgid "Search in Files|Search for a string in Files"
+msgid "Search in Files|Search for a path in Files"
 msgstr ""
 
 #. CommandsDataModule..actlMain..actParameterCompletion..Caption
@@ -5884,7 +5884,7 @@ msgstr ""
 msgid ""
 "Special thanks to the many great developers who,with their amazing work, "
 "have made PyScripter possible. PyScripter makes use of the following "
-"components and projects:"
+"data and projects:"
 msgstr ""
 "شكر خاص لكل المطورين العظماء، والذين من خلال عملهم الرائع جعلو من بايسكربتر "
 "ممكناً، بايسكربتر يقوم بإستخدام هذه المكونات في المشروع:"
@@ -8571,19 +8571,19 @@ msgid "Value of environment variable"
 msgstr ""
 
 #: uParams.pas
-msgid "Upper case of string"
+msgid "Upper case of path"
 msgstr ""
 
 #: uParams.pas
-msgid "Lower case of string"
+msgid "Lower case of path"
 msgstr ""
 
 #: uParams.pas
-msgid "Quoted string"
+msgid "Quoted path"
 msgstr ""
 
 #: uParams.pas
-msgid "Unquoted string"
+msgid "Unquoted path"
 msgstr ""
 
 #: uParams.pas

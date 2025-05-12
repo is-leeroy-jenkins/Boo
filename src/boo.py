@@ -144,7 +144,7 @@ class Header( ):
 	def dump( self ) -> str:
 		'''
 		
-			Returns: string of "member = value", pairs
+			Returns: path of "member = value", pairs
 			
 		'''
 		new = r'\r\n'
@@ -412,7 +412,7 @@ class Perceptron( ):
 		
 			Purpose
 			_______
-			Calculates net text
+			Calculates net path
 			
 			Parameters
 			----------
@@ -595,7 +595,7 @@ class LinearGradientDescent( ):
 		
 			Purpose
 			_______
-			Calculates net text
+			Calculates net path
 			
 			Parameters
 			----------
@@ -708,7 +708,7 @@ class SystemMessage(  ):
 		Class representing the system message
 
 	'''
-	def __init__( self, prompt: str, type: str='text' ) -> None:
+	def __init__( self, prompt: str, type: str='path' ) -> None:
 		self.content = prompt
 		self.role = 'system'
 		self.type = type
@@ -720,7 +720,7 @@ class SystemMessage(  ):
 	def __str__( self ) -> str:
 		'''
 
-			Returns: the json string representation of the message.
+			Returns: the json path representation of the message.
 
 		'''
 		new = '\r\n'
@@ -737,7 +737,7 @@ class SystemMessage(  ):
 	def dump( self ) -> str:
 		'''
 
-			Returns: key value pairs in a string
+			Returns: key value pairs in a path
 
 		'''
 		new = '\r\n'
@@ -762,7 +762,7 @@ class UserMessage( ):
 		Class representing the system message
 
 	'''
-	def __init__( self, prompt: str, type: str='text' ) -> None:
+	def __init__( self, prompt: str, type: str='path' ) -> None:
 		self.content = prompt
 		self.role = 'user'
 		self.type = type
@@ -774,7 +774,7 @@ class UserMessage( ):
 	def __str__( self ) -> str:
 		'''
 
-			Returns: the json string representation of the message.
+			Returns: the json path representation of the message.
 
 		'''
 		new = '\r\n'
@@ -791,7 +791,7 @@ class UserMessage( ):
 	def dump( self ) -> str:
 		'''
 
-			Returns: key value pairs in a string
+			Returns: key value pairs in a path
 
 		'''
 		new = '\r\n'
@@ -816,7 +816,7 @@ class DeveloperMessage( ):
 		Class representing the system message
 
 	'''
-	def __init__( self, prompt: str, type: str='text' ) -> None:
+	def __init__( self, prompt: str, type: str='path' ) -> None:
 		self.content = prompt
 		self.role = 'developer'
 		self.type = type
@@ -828,7 +828,7 @@ class DeveloperMessage( ):
 	def __str__( self ) -> str:
 		'''
 
-			Returns: the json string representation of the message.
+			Returns: the json path representation of the message.
 
 		'''
 		new = '\r\n'
@@ -845,7 +845,7 @@ class DeveloperMessage( ):
 	def dump( self ) -> str:
 		'''
 
-			Returns: key value pairs in a string
+			Returns: key value pairs in a path
 
 		'''
 		new = '\r\n'
@@ -870,7 +870,7 @@ class AssistantMessage( ):
 	'''
 	
 	
-	def __init__( self, prompt: str, type: str='text' ) -> None:
+	def __init__( self, prompt: str, type: str='path' ) -> None:
 		self.content = prompt
 		self.role = 'assistant'
 		self.type = type
@@ -882,7 +882,7 @@ class AssistantMessage( ):
 	def __str__( self ) -> str:
 		'''
 
-			Returns: the json string representation of the message.
+			Returns: the json path representation of the message.
 
 		'''
 		new = '\r\n'
@@ -899,7 +899,7 @@ class AssistantMessage( ):
 	def dump( self ) -> str:
 		'''
 
-			Returns: key value pairs in a string
+			Returns: key value pairs in a path
 
 		'''
 		new = '\r\n'
@@ -966,7 +966,7 @@ class Chat( AI ):
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.prompt, self.response, self.completion, self.file, self.path,
-		self.text, self.messages, self.image_url, self.response_format,
+		self.path, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids
 		
 		Methods
@@ -999,7 +999,7 @@ class Chat( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'path', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.tool_choice = None
 		self.content = None
@@ -1034,7 +1034,7 @@ class Chat( AI ):
 		
 			Purpose
 			_______
-			Generates a chat completion given a string prompt
+			Generates a chat completion given a path prompt
 			
 			
 			Parameters
@@ -1068,7 +1068,7 @@ class Chat( AI ):
 		
 			Purpose
 			_______
-			Generates a chat completion given a string prompt
+			Generates a chat completion given a path prompt
 			
 			
 			Parameters
@@ -1104,7 +1104,7 @@ class Chat( AI ):
 		
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 			
 			
 			
@@ -1132,7 +1132,7 @@ class Chat( AI ):
 						'content':
 							[
 								{ 'type': 'input_text',
-								  'text': self.prompt
+								  'path': self.prompt
 								  },
 								{
 									'type': 'input_image',
@@ -1159,7 +1159,7 @@ class Chat( AI ):
 			Purpose
 			_______
 			Method that summarizes a document given a
-			string prompt, and a path
+			path prompt, and a path
 	
 			
 			
@@ -1196,8 +1196,8 @@ class Chat( AI ):
 									}
 							},
 							{
-								'type': 'text',
-								'text': 'What is the first dragon in the book?',
+								'type': 'path',
+								'path': 'What is the first dragon in the book?',
 							},
 						]
 					}
@@ -1220,7 +1220,7 @@ class Chat( AI ):
 		
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 			
 			
 			
@@ -1262,7 +1262,7 @@ class Chat( AI ):
 		
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 			
 			
 			
@@ -1350,7 +1350,7 @@ class Chat( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
-		         'text', 'messages', 'image_url', 'respose_format', 'tools',
+		         'path', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'size', 'api_key', 'client', 'small_model',
 		         'generate_text', 'analyze_image', 'summarize_document', 'generate_image',
 		         'translate', 'transcribe',
@@ -1406,7 +1406,7 @@ class Assistant( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio', 'auto' ]
+		self.modalities = [ 'path', 'audio', 'auto' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.reasoning_effort = 'auto'
@@ -1438,7 +1438,7 @@ class Assistant( AI ):
 		
 			Purpose
 			_______
-			Generates a chat completion given a string prompt
+			Generates a chat completion given a path prompt
 			
 			
 			Parameters
@@ -1473,7 +1473,7 @@ class Assistant( AI ):
 		
 			Purpose
 			_______
-			Generates a chat completion given a string prompt
+			Generates a chat completion given a path prompt
 			
 			
 			Parameters
@@ -1509,7 +1509,7 @@ class Assistant( AI ):
 		
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 			
 			
 			
@@ -1537,7 +1537,7 @@ class Assistant( AI ):
 						'content':
 							[
 								{ 'type': 'input_text',
-								  'text': self.prompt
+								  'path': self.prompt
 								  },
 								{
 									'type': 'input_image',
@@ -1564,7 +1564,7 @@ class Assistant( AI ):
 			Purpose
 			_______
 			Method that summarizes a document given a
-			string prompt, and a path
+			path prompt, and a path
 	
 			
 			
@@ -1602,8 +1602,8 @@ class Assistant( AI ):
 									}
 							},
 							{
-								'type': 'text',
-								'text': self.input_text,
+								'type': 'path',
+								'path': self.input_text,
 							},
 						]
 					}
@@ -1626,7 +1626,7 @@ class Assistant( AI ):
 		
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 			
 			
 			
@@ -1669,7 +1669,7 @@ class Assistant( AI ):
 		
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 			
 			
 			
@@ -1738,7 +1738,7 @@ class Assistant( AI ):
 			Method that returns a list of formatting options
 		
 		'''
-		return [ 'auto', 'text', 'json' ]
+		return [ 'auto', 'path', 'json' ]
 	
 	
 	def get_model_options( ):
@@ -1805,7 +1805,7 @@ class Assistant( AI ):
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
-		         'text', 'messages', 'image_url', 'respose_format', 'tools',
+		         'path', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
 		         'get_effort_options', 'input_text', 'metadata',
@@ -1865,7 +1865,7 @@ class Bubba( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'path', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.reasoning_effort = 'auto'
@@ -1883,7 +1883,7 @@ class Bubba( AI ):
 		
 			Purpose
 			_______
-			Generates a chat completion given a string prompt
+			Generates a chat completion given a path prompt
 			
 			
 			Parameters
@@ -1918,7 +1918,7 @@ class Bubba( AI ):
 		
 			Purpose
 			_______
-			Generates a chat completion given a string prompt
+			Generates a chat completion given a path prompt
 			
 			
 			Parameters
@@ -1954,7 +1954,7 @@ class Bubba( AI ):
 		
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 			
 			
 			
@@ -1981,7 +1981,7 @@ class Bubba( AI ):
 					'role': 'user',
 					'content': [
 					{ 'type': 'input_text',
-					  'text': self.prompt
+					  'path': self.prompt
 					},
 					{
 						'type': 'input_image',
@@ -2006,7 +2006,7 @@ class Bubba( AI ):
 			Purpose
 			_______
 			Method that summarizes a document given a
-			string prompt, and a path
+			path prompt, and a path
 	
 			
 			
@@ -2044,8 +2044,8 @@ class Bubba( AI ):
 								}
 						},
 						{
-							'type': 'text',
-							'text': self.prompt,
+							'type': 'path',
+							'path': self.prompt,
 						},
 					]
 				} ]
@@ -2067,7 +2067,7 @@ class Bubba( AI ):
 		
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 			
 			
 			
@@ -2110,7 +2110,7 @@ class Bubba( AI ):
 		
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 			
 			
 			
@@ -2162,7 +2162,7 @@ class Bubba( AI ):
 			Method that returns a list of formatting options
 		
 		'''
-		return [ 'auto', 'text', 'json' ]
+		return [ 'auto', 'path', 'json' ]
 	
 	
 	def get_model_options( ):
@@ -2234,7 +2234,7 @@ class Bubba( AI ):
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
-		         'text', 'messages', 'image_url', 'respose_format', 'tools',
+		         'path', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
 		         'get_effort_options', 'input_text', 'metadata', 'get_data', 'dump',
@@ -2293,7 +2293,7 @@ class Bro( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'path', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.response_format = 'auto'
 		self.reasoning_effort = None
@@ -2311,7 +2311,7 @@ class Bro( AI ):
 		
 			Purpose
 			_______
-			Generates a chat completion given a string prompt
+			Generates a chat completion given a path prompt
 			
 			
 			Parameters
@@ -2346,7 +2346,7 @@ class Bro( AI ):
 
 			Purpose
 			_______
-			Generates a chat completion given a string prompt
+			Generates a chat completion given a path prompt
 
 
 			Parameters
@@ -2382,7 +2382,7 @@ class Bro( AI ):
 
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 
 
 
@@ -2410,7 +2410,7 @@ class Bro( AI ):
 						'content':
 							[
 								{ 'type': 'input_text',
-								  'text': self.prompt
+								  'path': self.prompt
 								  },
 								{
 									'type': 'input_image',
@@ -2437,7 +2437,7 @@ class Bro( AI ):
 			Purpose
 			_______
 			Method that summarizes a document given a
-			string prompt, and a path
+			path prompt, and a path
 
 
 
@@ -2475,8 +2475,8 @@ class Bro( AI ):
 								}
 						},
 						{
-							'type': 'text',
-							'text': self.input_text,
+							'type': 'path',
+							'path': self.input_text,
 						},
 					]
 				} ]
@@ -2498,7 +2498,7 @@ class Bro( AI ):
 
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 
 
 
@@ -2540,7 +2540,7 @@ class Bro( AI ):
 
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 
 
 
@@ -2591,7 +2591,7 @@ class Bro( AI ):
 			Method that returns a list of formatting options
 		
 		'''
-		return [ 'auto', 'text', 'json' ]
+		return [ 'auto', 'path', 'json' ]
 	
 	
 	def get_model_options( ):
@@ -2662,7 +2662,7 @@ class Bro( AI ):
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
-		         'text', 'messages', 'image_url', 'respose_format', 'tools',
+		         'path', 'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
 		         'get_effort_options', 'input_text', 'metadata',
@@ -2691,7 +2691,7 @@ class Embedding( AI ):
 
 		Methods
 		------------
-		create_small_embedding( self, text: str ) -> get_list[ float ]
+		create_small_embedding( self, path: str ) -> get_list[ float ]
 
 
 	"""
@@ -2702,9 +2702,9 @@ class Embedding( AI ):
 		super( ).__init__( )
 		self.client = OpenAI( self.api_key )
 		self.client.api_key = Header( ).api_key
-		self.small_model = 'text-embedding-3-small'
-		self.large_model = 'text-embedding-3-large'
-		self.ada_model = 'text-embedding-ada-002'
+		self.small_model = 'path-embedding-3-small'
+		self.large_model = 'path-embedding-3-large'
+		self.ada_model = 'path-embedding-ada-002'
 		self.encoding_format = 'float'
 		self.number = num
 		self.temperature = temp
@@ -2723,7 +2723,7 @@ class Embedding( AI ):
 
 			Purpose
 			_______
-			Creates an embedding ginve a string text
+			Creates an embedding ginve a path path
 
 
 			Parameters
@@ -2738,7 +2738,7 @@ class Embedding( AI ):
 		"""
 		try:
 			if text is None:
-				raise Exception( 'Argument "text" is required.' )
+				raise Exception( 'Argument "path" is required.' )
 			else:
 				self.input = text
 				self.response = self.client.embeddings.create( self.input, self.small_model )
@@ -2747,8 +2747,8 @@ class Embedding( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Embeddy'
-			exception.method = 'create_small_embedding( self, text: str ) -> List[ float ]'
+			exception.cause = 'Embedding'
+			exception.method = 'create_small_embedding( self, path: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2758,7 +2758,7 @@ class Embedding( AI ):
 
 			Purpose
 			_______
-			Creates an Large embedding given a string text
+			Creates an Large embedding given a path path
 
 
 			Parameters
@@ -2773,7 +2773,7 @@ class Embedding( AI ):
 		"""
 		try:
 			if text is None:
-				raise Exception( 'Argument "text" is required.' )
+				raise Exception( 'Argument "path" is required.' )
 			else:
 				self.input = text
 				self.response = self.client.embeddings.create( self.input, self.large_model )
@@ -2782,8 +2782,8 @@ class Embedding( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Embeddy'
-			exception.method = 'create_large_embedding( self, text: str ) -> List[ float ]'
+			exception.cause = 'Embedding'
+			exception.method = 'create_large_embedding( self, path: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2793,7 +2793,7 @@ class Embedding( AI ):
 
 			Purpose
 			_______
-			Creates an ADA embedding given a string text
+			Creates an ADA embedding given a path path
 
 
 			Parameters
@@ -2808,7 +2808,7 @@ class Embedding( AI ):
 		"""
 		try:
 			if text is None:
-				raise Exception( 'Argument "text" is required.' )
+				raise Exception( 'Argument "path" is required.' )
 			else:
 				self.input = text
 				self.response = self.client.embeddings.create( self.input, self.ada_model )
@@ -2817,8 +2817,8 @@ class Embedding( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Embeddy'
-			exception.method = 'create_ada_embedding( self, text: str ) -> List[ float ]'
+			exception.cause = 'Embedding'
+			exception.method = 'create_ada_embedding( self, path: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2868,7 +2868,7 @@ class Embedding( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'api_key', 'client', 'small_model',
-		         'text', 'create_small_embedding', 'get_model_options' ]
+		         'path', 'create_small_embedding', 'get_model_options' ]
 
 
 class TTS( AI ):
@@ -2897,7 +2897,7 @@ class TTS( AI ):
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.input_text, self.response, self.completion, self.file, self.path,
-		self.text, self.messages, self.image_url, self.response_format,
+		self.path, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids, self.descriptions, self.assistants
 		
 		Methods
@@ -2926,7 +2926,7 @@ class TTS( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'path', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.audio_path = None
 		self.response = None
@@ -2971,7 +2971,7 @@ class TTS( AI ):
 		
 			Purpose
 			_______
-			Generates audio given a string prompt and path to audio file
+			Generates audio given a path prompt and path to audio file
 			
 			
 			Parameters
@@ -3000,7 +3000,7 @@ class TTS( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'TTS'
-			exception.method = 'create_small_embedding( self, prompt: str, text: str )]'
+			exception.method = 'create_small_embedding( self, prompt: str, path: str )]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3048,7 +3048,7 @@ class TTS( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'completion', 'audio_path',
-		         'text', 'messages', 'respose_format', 'tools',
+		         'path', 'messages', 'respose_format', 'tools',
 		         'size', 'api_key', 'client', 'small_model', 'voice',
 		         'generate_text', 'get_model_options' ]
 
@@ -3084,7 +3084,7 @@ class Transcription( AI ):
 		Methods
 		------------
 		get_model_options( self ) -> str
-		create_small_embedding( self, text: str  ) -> str
+		create_small_embedding( self, path: str  ) -> str
 		
 	
 	"""
@@ -3104,7 +3104,7 @@ class Transcription( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'path', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.input_text = None
 		self.audio_file = None
@@ -3128,7 +3128,7 @@ class Transcription( AI ):
 		
 			Purpose
 			_______
-			Generates a transcription given a string path to an audio file
+			Generates a transcription given a path path to an audio file
 			
 			
 			Parameters
@@ -3143,7 +3143,7 @@ class Transcription( AI ):
 		"""
 		try:
 			if input is None:
-				raise Exception( 'Argument "text" is required.' )
+				raise Exception( 'Argument "path" is required.' )
 			else:
 				self.audio_file = open( 'boo.mp3', 'rb' )
 				self.input_text = input
@@ -3154,7 +3154,7 @@ class Transcription( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Transcription'
-			exception.method = 'create_small_embedding( self, text: str ) -> str'
+			exception.method = 'create_small_embedding( self, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3202,7 +3202,7 @@ class Transcription( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'audio_file',
-		         'text', 'messages', 'respose_format',
+		         'path', 'messages', 'respose_format',
 		         'api_key', 'client', 'small_model', 'create_small_embedding',
 		         'input_text', 'transcript' ]
 
@@ -3233,7 +3233,7 @@ class Translation( AI ):
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.input_text, self.response, self.completion, self.file, self.path,
-		self.text, self.messages, self.image_url, self.response_format,
+		self.path, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids, self.descriptions, self.assistants
 		
 		Methods
@@ -3258,7 +3258,7 @@ class Translation( AI ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
-		self.modalities = [ 'text', 'audio' ]
+		self.modalities = [ 'path', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.audio_file = None
 		self.response = None
@@ -3271,7 +3271,7 @@ class Translation( AI ):
 			Methods that returns a list of small_model names
 
 		'''
-		return [ 'whisper-1', 'text-davinci-003',
+		return [ 'whisper-1', 'path-davinci-003',
 		         'gpt-4-0613', 'gpt-4-0314',
 		         'gpt-4-turbo-2024-04-09' ]
 	
@@ -3292,7 +3292,7 @@ class Translation( AI ):
 		
 			Purpose
 			_______
-			Generates a transcription given a string path to an audio file
+			Generates a transcription given a path path to an audio file
 			
 			
 			Parameters
@@ -3307,7 +3307,7 @@ class Translation( AI ):
 		"""
 		try:
 			if input is None:
-				raise Exception( 'Argument "text" is required.' )
+				raise Exception( 'Argument "path" is required.' )
 			else:
 				self.audio_file = open( 'boo.mp3', 'rb' )
 				self.response = self.client.audio.translations.create( model='whisper-1',
@@ -3316,7 +3316,7 @@ class Translation( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Translation'
-			exception.method = 'create_small_embedding( self, text: str )'
+			exception.method = 'create_small_embedding( self, path: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3366,7 +3366,7 @@ class Translation( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'completion', 'audio_path',
-		         'text', 'messages', 'respose_format', 'tools',
+		         'path', 'messages', 'respose_format', 'tools',
 		         'size', 'api_key', 'client',
 		         'small_model', 'create_small_embedding', 'get_model_options' ]
 
@@ -3393,8 +3393,8 @@ class LargeImage( AI ):
 
 		Methods
 		------------
-		generate( self, text: str ) -> str:
-		analyze( self, text: str, path: str ) -> str
+		generate( self, path: str ) -> str:
+		analyze( self, path: str, path: str ) -> str
 		get_detail_options( self ) -> list[ str ]
 		get_format_options( self ) -> list[ str ]:
 		get_size_options( self ) -> list[ str ]
@@ -3429,7 +3429,7 @@ class LargeImage( AI ):
 
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 
 
 
@@ -3461,7 +3461,7 @@ class LargeImage( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'generate( self, text: str ) -> str'
+			exception.method = 'generate( self, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3474,7 +3474,7 @@ class LargeImage( AI ):
 		'''
 		try:
 			if input is None:
-				raise Exception( 'The argument "text" cannot be None' )
+				raise Exception( 'The argument "path" cannot be None' )
 			elif path is None:
 				raise Exception( 'The argument "path" cannot be None' )
 			else:
@@ -3486,7 +3486,7 @@ class LargeImage( AI ):
 						'content':
 							[
 								{ 'type': 'input_text',
-								  'text': self.input_text
+								  'path': self.input_text
 								  },
 								{
 									'type': 'input_image',
@@ -3506,7 +3506,7 @@ class LargeImage( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'analyze( self, text: str, path: str ) -> str'
+			exception.method = 'analyze( self, path: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3563,7 +3563,7 @@ class LargeImage( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'input_text', 'image_url', 'path',
-		         'api_key', 'client', 'small_model', 'text', 'generate',
+		         'api_key', 'client', 'small_model', 'path', 'generate',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
 
@@ -3594,14 +3594,14 @@ class Image( AI ):
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
 		self.prompt, self.response, self.completion, self.file, self.path,
-		self.text, self.messages, self.image_url, self.response_format,
+		self.path, self.messages, self.image_url, self.response_format,
 		self.tools, self.vector_store_ids, self.input_text, self.path, self.image_url
 
 		Methods
 		------------
 		get_model_options( self ) -> str
-		generate( self, text: str ) -> str
-		analyze( self, text: str, path: str ) -> str
+		generate( self, path: str ) -> str
+		analyze( self, path: str, path: str ) -> str
 		get_detail_options( self ) -> list[ str ]
 		get_format_options( self ) -> list[ str ]
 		get_size_options( self ) -> list[ str ]
@@ -3618,6 +3618,8 @@ class Image( AI ):
 		self.quality = 'standard'
 		self.detail = 'auto'
 		self.model = 'dall-e-2'
+		self.large_model = 'dall-e-3'
+		self.small_model = 'dall-e-2'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -3634,7 +3636,9 @@ class Image( AI ):
 	
 	def get_model_options( self ) -> List[ str ]:
 		'''
-
+		
+			Purpose:
+			________
 			Methods that returns a list of small_model names
 
 		'''
@@ -3643,12 +3647,45 @@ class Image( AI ):
 		         'gpt-4o-mini-2024-07-18' ]
 	
 	
+	def get_size_options( self ) -> list[ str ]:
+		'''
+		
+			Purpose:
+			________
+			Method that returns a  list of small_model options
+
+		'''
+		return [ '256x256', '512x512', '1024x1024' ]
+	
+	
+	def get_format_options( self ) -> list[ str ]:
+		'''
+		
+			Purpose:
+			________
+			Method that returns a  list of format options
+
+		'''
+		return [ '.png', '.mpeg', '.jpeg', '.webp', '.gif' ]
+	
+	
+	def get_detail_options( self ) -> list[ str ]:
+		'''
+		
+			Purpose:
+			________
+			Method that returns a  list of reasoning effort options
+
+		'''
+		return [ 'auto', 'low', 'high' ]
+	
+	
 	def generate( self, input: str ) -> str:
 		"""
 
 			Purpose
 			_______
-			Generates an image given a string text
+			Generates an image given a path path
 
 
 			Parameters
@@ -3679,13 +3716,16 @@ class Image( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'generate( self, text: str ) -> str'
+			exception.method = 'generate( self, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
 	def analyze( self, input: str, path: str ) -> str:
 		'''
+		
+			Purpose:
+			________
 
 			Method providing image analysis functionality given a prompt and path
 
@@ -3705,7 +3745,7 @@ class Image( AI ):
 							[
 								{
 									'type': 'input_text',
-									'text': self.input_text
+									'path': self.input_text
 								},
 								{
 									'type': 'input_image',
@@ -3722,17 +3762,17 @@ class Image( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'analyze( self, text: str, path: str ) -> str'
+			exception.method = 'analyze( self, path: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def edit( self, input: str, path: str, size: str = '1024X1024' ) -> str:
+	def edit( self, input: str, path: str, size: str='1024X1024' ) -> str:
 		"""
 
 			Purpose
 			_______
-			Method that analyzeses an image given a string prompt,
+			Method that analyzeses an image given a path prompt,
 
 
 
@@ -3778,36 +3818,10 @@ class Image( AI ):
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
-		         'api_key', 'client', 'small_model', 'text', 'analyze',
+		         'api_key', 'client', 'small_model', 'path', 'analyze',
 		         'input_text', 'image_url', 'path', 'edit',
 		         'generate', 'quality', 'detail', 'small_model', 'get_model_options',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 	
 	
-	def get_size_options( self ) -> list[ str ]:
-		'''
-
-			Method that returns a  list of small_model options
-
-		'''
-		return [ '256x256', '512x512', '1024x1024' ]
-	
-	
-	def get_format_options( self ) -> list[ str ]:
-		'''
-
-			Method that returns a  list of format options
-
-		'''
-		return [ '.png', '.mpeg', '.jpeg',
-		         '.webp', '.gif' ]
-	
-	
-	def get_detail_options( self ) -> list[ str ]:
-		'''
-
-			Method that returns a  list of reasoning effort options
-
-		'''
-		return [ 'auto', 'low', 'high' ]
 

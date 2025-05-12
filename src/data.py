@@ -53,10 +53,10 @@ class Pascal( ):
 	'''
 	
 		Constructor:
-		Pascal( text: str )
+		Pascal( path: str )
 	
 		Purpose:
-		Class splits string 'text' argument into Pascal Casing
+		Class splits path 'path' argument into Pascal Casing
 
 	'''
 
@@ -77,7 +77,7 @@ class Pascal( ):
 			Retunes a get_list[ str ] of member names.
 		
 		'''
-		return [ 'text', 'cleaned_lines', 'split', 'join' ]
+		return [ 'path', 'cleaned_lines', 'split', 'join' ]
 
 
 	def split( self ) -> str:
@@ -408,7 +408,7 @@ class DbConfig( ):
 		'''
 	
 			Purpose:
-				Returns a string defining the driverinfo being used
+				Returns a path defining the driverinfo being used
 	
 			Parameters:  None
 	
@@ -526,7 +526,7 @@ class Connection( DbConfig ):
 		'''
 			Purpose:
 				Establishes a values connections using the connecdtion
-				string.
+				path.
 	
 			Parameters:
 				self

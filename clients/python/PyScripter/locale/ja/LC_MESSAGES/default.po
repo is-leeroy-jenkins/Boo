@@ -2212,7 +2212,7 @@ msgstr ""
 msgid ""
 "Select option other than None to \n"
 "feed the corresponding information\n"
-"to the standard text."
+"to the standard path."
 msgstr ""
 "標準入力に使用する情報を指定する場合は\n"
 "なし以外のオプションを選択します。"
@@ -2482,7 +2482,7 @@ msgstr "検索(&F)..."
 
 #. CommandsDataModule..actlMain..actSearchFind..Hint
 #: dmCommands.dfm
-msgid "Search|Search for a string"
+msgid "Search|Search for a path"
 msgstr "検索|文字列を検索します"
 
 #. CommandsDataModule..actlMain..actSearchFindNext..Caption
@@ -2724,7 +2724,7 @@ msgstr ""
 
 #. CommandsDataModule..actlMain..actFindInFiles..Hint
 #: dmCommands.dfm
-msgid "Search in Files|Search for a string in Files"
+msgid "Search in Files|Search for a path in Files"
 msgstr "ファイル内検索|ファイル内から文字列を検索します"
 
 #. CommandsDataModule..actlMain..actParameterCompletion..Caption
@@ -5894,7 +5894,7 @@ msgstr "アクティブなファイルを再インデント"
 msgid ""
 "Special thanks to the many great developers who,with their amazing work, "
 "have made PyScripter possible. PyScripter makes use of the following "
-"components and projects:"
+"data and projects:"
 msgstr ""
 "PyScripterの開発に関わって頂いたすべての開発者へ感謝の意を表したいと思います。PyScripterは以下のプロジェクトとコンポーネントを使用しています。"
 
@@ -8592,19 +8592,19 @@ msgid "Value of environment variable"
 msgstr "環境変数の値"
 
 #: uParams.pas
-msgid "Upper case of string"
+msgid "Upper case of path"
 msgstr "文字列の大文字"
 
 #: uParams.pas
-msgid "Lower case of string"
+msgid "Lower case of path"
 msgstr "文字列の小文字"
 
 #: uParams.pas
-msgid "Quoted string"
+msgid "Quoted path"
 msgstr "クオートで囲まれた文字列"
 
 #: uParams.pas
-msgid "Unquoted string"
+msgid "Unquoted path"
 msgstr "クオートを取り除いた文字列"
 
 #: uParams.pas
