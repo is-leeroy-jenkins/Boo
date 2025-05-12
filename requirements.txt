@@ -58,6 +58,7 @@ sentence-transformers
 mglearn
 fastapi
 PyPDF2
+pdfminer
 camelot-py
 PyMuPDF
 mwclient

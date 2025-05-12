@@ -198,8 +198,8 @@ class Preprocessor( ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'Preprocess'
+            exception.method = 'fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> np.ndarray'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -238,8 +238,8 @@ class StandardScaler( Preprocessor ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'StandardScaler'
+            exception.method = 'fit( self, X: np.ndarray, y: Optional[np.ndarray]=None ) -> Pipeline'
             error = ErrorDialog( exception )
             error.show( )
     
@@ -264,9 +264,9 @@ class StandardScaler( Preprocessor ):
                 return self.standard_scaler.transform( X )
         except Exception as e:
             exception = Error( e )
-            exception.module = 'preppy'
-            exception.cause = ''
-            exception.method = ''
+            exception.module = 'Mathy'
+            exception.cause = 'StandardScaler'
+            exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -305,8 +305,8 @@ class MinMaxScaler( Preprocessor ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'MinMaxScaler'
+            exception.method = 'fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline'
             error = ErrorDialog( exception )
             error.show( )
     
@@ -331,9 +331,9 @@ class MinMaxScaler( Preprocessor ):
                 return self.minmax_scaler.transform( X )
         except Exception as e:
             exception = Error( e )
-            exception.module = 'preppy'
-            exception.cause = ''
-            exception.method = ''
+            exception.module = 'Mathy'
+            exception.cause = 'MinMaxScaler'
+            exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -372,8 +372,8 @@ class RobustScaler( Preprocessor ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'RobustScaler'
+            exception.method = 'fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline'
             error = ErrorDialog( exception )
             error.show( )
     
@@ -398,7 +398,7 @@ class RobustScaler( Preprocessor ):
                 return self.robust_scaler.transform( X )
         except Exception as e:
             exception = Error( e )
-            exception.module = 'preppy'
+            exception.module = 'Mathy'
             exception.cause = ''
             exception.method = ''
             error = ErrorDialog( exception )
@@ -464,7 +464,7 @@ class Normalizer( Preprocessor ):
                 return self.normal_scaler.transform( X )
         except Exception as e:
             exception = Error( e )
-            exception.module = 'preppy'
+            exception.module = 'Mathy'
             exception.cause = ''
             exception.method = ''
             error = ErrorDialog( exception )
@@ -531,7 +531,7 @@ class OneHotEncoder( Preprocessor ):
                 return self.hot_encoder.transform( X )
         except Exception as e:
             exception = Error( e )
-            exception.module = 'preppy'
+            exception.module = 'Mathy'
             exception.cause = ''
             exception.method = ''
             error = ErrorDialog( exception )
@@ -599,7 +599,7 @@ class OrdinalEncoder( Preprocessor ):
                 return _retval
         except Exception as e:
             exception = Error( e )
-            exception.module = 'preppy'
+            exception.module = 'Mathy'
             exception.cause = ''
             exception.method = ''
             error = ErrorDialog( exception )
@@ -667,14 +667,14 @@ class SimpleImputer( Preprocessor ):
                 return _retval
         except Exception as e:
             exception = Error( e )
-            exception.module = 'preppy'
+            exception.module = 'Mathy'
             exception.cause = ''
             exception.method = ''
             error = ErrorDialog( exception )
             error.show( )
 
 
-class KnnImputer( Preprocessor ):
+class NearestNeighborImputer( Preprocessor ):
     """
 
         Fills missing values
@@ -836,7 +836,7 @@ class MultiProcessor( Preprocessor ):
             error.show( )
 
 
-class LinearRegression( BaseModel ):
+class LinearRegressor( BaseModel ):
     """
     
 	    Ordinary Least Squares Regression.
@@ -856,7 +856,7 @@ class LinearRegression( BaseModel ):
 	                    copy_X (bool): Whether to copy the feature matrix. Default is True.
                     
         """
-        self.linerar_model = LinearRegression( )
+        self.linerar_model = LinearRegressor( )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -908,8 +908,8 @@ class LinearRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'LinearRegressor'
+            exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -938,8 +938,8 @@ class LinearRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'LinearRegressor'
+            exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -976,8 +976,8 @@ class LinearRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'LinearRegressor'
+            exception.method = 'evaluate(self, X: np.ndarray, y: np.ndarray ) -> dict'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -985,7 +985,8 @@ class LinearRegression( BaseModel ):
     def plot(self, X: np.ndarray, y: np.ndarray) -> None:
         """
             
-            Plot actual vs predicted values.
+            Purpose:
+                Plot actual vs predicted values.
     
             Parameters:
                 X (np.ndarray): Input features.
@@ -1009,16 +1010,16 @@ class LinearRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'LinearRegressor'
+            exception.method = 'plot(self, X: np.ndarray, y: np.ndarray) -> None'
             error = ErrorDialog( exception )
             error.show( )
 
 
-class RidgeRegression( BaseModel ):
+class RidgeRegressor( BaseModel ):
     """
         
-        RidgeRegression Regression
+        RidgeRegressor Regression
         (L2 regularization).
         
     """
@@ -1027,22 +1028,22 @@ class RidgeRegression( BaseModel ):
         """
         
 	        Initialize the
-	        RidgeRegression linerar_model.
+	        RidgeRegressor linerar_model.
 	
 	        Attributes:
-	            linerar_model (Ridge): Internal RidgeRegression regression linerar_model.
+	            linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
 	                Parameters:
 	                    alpha (float): Regularization strength. Default is 1.0.
 	                    solver (str): Solver to use. Default is 'auto'.
                     
         """
-        self.ridge_model = RidgeRegression( alpha=1.0 )
+        self.ridge_model = RidgeRegressor( alpha=1.0 )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
             
-            Fit the RidgeRegression
+            Fit the RidgeRegressor
             regression linerar_model.
     
             Parameters:
@@ -1063,8 +1064,8 @@ class RidgeRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'RidgeRegressor'
+            exception.method = 'fit( self, X: np.ndarray, y: np.ndarray ) -> None'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -1073,7 +1074,7 @@ class RidgeRegression( BaseModel ):
         """
             
             Predict target values
-            using the RidgeRegression linerar_model.
+            using the RidgeRegressor linerar_model.
     
             Parameters:
                 X (np.ndarray): Feature matrix.
@@ -1090,8 +1091,8 @@ class RidgeRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'RidgeRegressor'
+            exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -1120,8 +1121,8 @@ class RidgeRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'RidgeRegressor'
+            exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -1158,13 +1159,13 @@ class RidgeRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'RidgeRegressor'
+            exception.method = 'evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict'
             error = ErrorDialog( exception )
             error.show( )
 
 
-    def plot(self, X: np.ndarray, y: np.ndarray) -> None:
+    def plot( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
         
             Plot predicted vs
@@ -1195,16 +1196,16 @@ class RidgeRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'RidgeRegressor'
+            exception.method = 'plot( self, X: np.ndarray, y: np.ndarray ) -> None'
             error = ErrorDialog( exception )
             error.show( )
 
 
-class LassoRegression( BaseModel ):
+class LassoRegressor( BaseModel ):
     """
         
-        Wrapper for LassoRegression Regression (L1 regularization).
+        Wrapper for LassoRegressor Regression (L1 regularization).
         
     """
 
@@ -1212,22 +1213,22 @@ class LassoRegression( BaseModel ):
         """
         
 	        Initialize the
-	        LassoRegression linerar_model.
+	        LassoRegressor linerar_model.
 	
 	        Attributes:
-	            linerar_model (Lasso): Internal LassoRegression regression linerar_model.
+	            linerar_model (Lasso): Internal LassoRegressor regression linerar_model.
 	                Parameters:
 	                    alpha (float): Regularization strength. Default is 1.0.
 	                    max_iter (int): Maximum number of iterations. Default is 1000.
                     
         """
-        self.lasso_model = LassoRegression( alpha=1.0 )
+        self.lasso_model = LassoRegressor( alpha=1.0 )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
         
-        Fit the LassoRegression
+        Fit the LassoRegressor
         regression linerar_model.
 
         Parameters:
@@ -1248,8 +1249,8 @@ class LassoRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'RidgeRegressor'
+            exception.method = 'fit( self, X: np.ndarray, y: np.ndarray ) -> None'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -1258,7 +1259,7 @@ class LassoRegression( BaseModel ):
         """
         
 	        Predict target values
-	        using the LassoRegression linerar_model.
+	        using the LassoRegressor linerar_model.
 	
 	        Parameters:
 	            X (np.ndarray): Feature matrix.
@@ -1275,13 +1276,13 @@ class LassoRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'LassoRegressor'
+            exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
             error = ErrorDialog( exception )
             error.show( )
     
     
-    def score(self, X: np.ndarray, y: np.ndarray) -> float:
+    def score( self, X: np.ndarray, y: np.ndarray) -> float:
         """
             Compute R^2 score
             for the Lasso model.
@@ -1303,8 +1304,8 @@ class LassoRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'LassoRegressor'
+            exception.method = 'score(self, X: np.ndarray, y: np.ndarray) -> float'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -1341,13 +1342,13 @@ class LassoRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'LassoRegressor'
+            exception.method = 'evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict'
             error = ErrorDialog( exception )
             error.show( )
 
 
-    def plot(self, X: np.ndarray, y: np.ndarray) -> None:
+    def plot( self, X: np.ndarray, y: np.ndarray) -> None:
         """
         
             Plot actual vs.
@@ -1375,8 +1376,8 @@ class LassoRegression( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'LassoRegressor'
+            exception.method = 'plot( self, X: np.ndarray, y: np.ndarray) -> None'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -1398,7 +1399,7 @@ class ElasticNetRegressor( BaseModel ):
 	            linerar_model (ElasticNet): Internal ElasticNetRegressor regression linerar_model.
 	                Parameters:
 	                    alpha (float): Overall regularization strength. Default is 1.0.
-	                    l1_ratio (float): Mixing parameter (0 = RidgeRegression, 1 = LassoRegression). Default is 0.5.
+	                    l1_ratio (float): Mixing parameter (0 = RidgeRegressor, 1 = LassoRegressor). Default is 0.5.
                     
         """
         self.elasticnet_model = ElasticNetRegressor( alpha=1.0, l1_ratio=0.5 )
@@ -1428,8 +1429,8 @@ class ElasticNetRegressor( BaseModel ):
         except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
-			exception.method = ''
+			exception.cause = 'ElasticNetRegression'
+			exception.method = 'fit( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1455,8 +1456,8 @@ class ElasticNetRegressor( BaseModel ):
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
-            exception.cause = ''
-            exception.method = ''
+            exception.cause = 'ElasticNetRegression'
+            exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -1562,7 +1563,7 @@ class ElasticNetRegressor( BaseModel ):
 
 
 
-class LogisticRegression( BaseModel ):
+class LogisticRegressor( BaseModel ):
     """
     
     Wrapper for Logistic Regression.
@@ -1582,7 +1583,7 @@ class LogisticRegression( BaseModel ):
                     solver (str): Algorithm to use in optimization. Default is 'lbfgs'.
                     
         """
-        self.logistic_model = LogisticRegression( max_iter=1000 )
+        self.logistic_model = LogisticRegressor( max_iter=1000 )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1754,10 +1755,10 @@ class LogisticRegression( BaseModel ):
 
 
 
-class BayesianRidge( BaseModel ):
+class BayesianRegressor( BaseModel ):
     """
     
-        Wrapper for Bayesian RidgeRegression Regression.
+        Wrapper for Bayesian RidgeRegressor Regression.
     
     """
 
@@ -1765,7 +1766,7 @@ class BayesianRidge( BaseModel ):
         """
         
 	        Initialize the
-	        BayesianRidge linerar_model.
+	        BayesianRegressor linerar_model.
 	
 	        Attributes:
 	            linerar_model (BayesianRidge): Internal probabilistic linear regression linerar_model.
@@ -1774,13 +1775,13 @@ class BayesianRidge( BaseModel ):
 	                    log-likelihood. Default is False.
                     
         """
-        self.bayesian_model = BayesianRidge( )
+        self.bayesian_model = BayesianRegressor( )
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
         """
         
-        Fit the Bayesian RidgeRegression
+        Fit the Bayesian RidgeRegressor
         regression linerar_model.
 
         Parameters:
@@ -1936,7 +1937,7 @@ class BayesianRidge( BaseModel ):
             error.show( )
 
 
-class SgdClassification( BaseModel ):
+class SgdClassifier( BaseModel ):
     """
     
         SGD-based linear classifiers.
@@ -2094,7 +2095,7 @@ class SgdClassification( BaseModel ):
             error.show( )
 
 
-class SgdRegression( BaseModel ):
+class SgdRegressor( BaseModel ):
     """
     
     Wrapper for SGD-based linear regressors.
@@ -2370,7 +2371,7 @@ class Perceptron( BaseModel ):
             error.show( )
 
 
-class KnnClassification( BaseModel ):
+class NearestNeighborClassifier( BaseModel ):
     """
     
     Wrapper for k-Nearest Neighbors Classifier.
@@ -2527,7 +2528,7 @@ class KnnClassification( BaseModel ):
             error.show( )
 
 
-class KnnRegression( BaseModel ):
+class NearestNeighborClassifier( BaseModel ):
     """
     
     Wrapper for k-Nearest Neighbors Regressor.
