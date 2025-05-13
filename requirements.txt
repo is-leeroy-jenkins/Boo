@@ -64,3 +64,4 @@ PyMuPDF
 mwclient
 mwparserfromhell
 accelerate
+agents
