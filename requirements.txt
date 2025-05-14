@@ -2,7 +2,7 @@ beautifulsoup4
 crawl4ai
 FreeSimpleGUI
 typing
-numpy
+numpy==1.26.4
 openai
 groq
 requests
@@ -13,13 +13,14 @@ fitz
 matplotlib
 pillow
 openpyxl
-scikit-learn
 torch
 tensorflow
 scipy
+scikit-learn
 seaborn
 soundfile
 sounddevice
+spacy
 loguru
 statsmodels
 dotenv

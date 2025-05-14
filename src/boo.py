@@ -242,7 +242,7 @@ class Models( ):
 	'''
 	
 	def __init__( self ):
-		self.text_generation = [ 'pages-davinci-003', 'pages-curie-001',
+		self.text_generation = [ 'text-davinci-003', 'text-curie-001',
 		                         'gpt-4-0613', 'gpt-4-0314',
 		                         'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
 		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
@@ -277,8 +277,8 @@ class Models( ):
 		self.finetuning = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18',
 		                    'gpt-4-0613', 'gpt-3.5-turbo-0125',
 		                    'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-0613' ]
-		self.embeddings = [ 'pages-embedding-3-small', 'pages-embedding-3-large',
-		                    'pages-embedding-ada-002' ]
+		self.embeddings = [ 'text-embedding-3-small', 'text-embedding-3-large',
+		                    'texts-embedding-ada-002' ]
 		self.uploads = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
 		                 'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',

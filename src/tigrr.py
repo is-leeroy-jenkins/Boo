@@ -42,8 +42,8 @@ from collections import defaultdict
 import re
 import json
 import pandas as pd
+import numpy as np
 from bs4 import BeautifulSoup
-from lxml.xsltext import self_node
 from booggr import Error, ErrorDialog
 from pathlib import Path
 import nltk
@@ -52,7 +52,6 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords, wordnet
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 from collections import Counter, defaultdict
-from gensim.models import Word2Vec
 import string
 import spacy
 from scipy import spatial
@@ -62,6 +61,7 @@ from sklearn.metrics import average_precision_score, precision_recall_curve
 from sklearn.feature_extraction.text import TfidfVectorizer
 from pymupdf import Page, Document
 import tiktoken
+from gensim.models import Word2Vec
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 import textwrap as tr
 from typing import Any, List, Tuple, Optional, Union, Dict
