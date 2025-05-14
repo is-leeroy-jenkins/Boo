@@ -250,7 +250,7 @@ class Text:
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
+			_exc.cause = 'Text'
 			_exc.method = 'split_pages( self, path: str, delimit: str="\f" ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -277,7 +277,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The path argument "path" is required.' )
+				raise Exception( 'The path argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.words = re.sub( r'[ \t]+', ' ', self.raw_input )
@@ -395,7 +395,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The path argument "path" is required.' )
+				raise Exception( 'The path argument "text" is required.' )
 			else:
 				self.raw_html = text
 				self.cleaned_html = BeautifulSoup( self.raw_html, 'raw_html.parser' )
@@ -405,7 +405,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_html( self, path: str ) -> str'
+			_exc.method = 'remove_html( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -435,7 +435,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The path argument "path" is required.' )
+				raise Exception( 'The path argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.lowercase = self.raw_input.lower( )
@@ -447,7 +447,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_errors( self, path: str ) -> str'
+			_exc.method = 'remove_errors( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -477,7 +477,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The path argument "path" is required.' )
+				raise Exception( 'The path argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.lowercase = self.raw_input.lower( )
@@ -489,7 +489,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'correct_errors( self, path: str ) -> str'
+			_exc.method = 'correct_errors( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -591,7 +591,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The argument "path" is required.' )
+				raise Exception( 'The argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.stopwords = set( stopwords.words( 'english' ) )
@@ -678,9 +678,10 @@ class Text:
 	def normalize_text( self, text: str ) -> str:
 		"""
 	
-			Performs normalization on the path pages path.
+			
 	
 			This function:
+			  - Performs normalization on the path pages path.
 			  - Converts pages to lowercase
 	
 			Parameters:
@@ -696,7 +697,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The path argument "path" is required.' )
+				raise Exception( 'The path argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.normalized = self.raw_input.lower( ).translate(
@@ -761,7 +762,7 @@ class Text:
 		
 		try:
 			if tokens is None:
-				raise Exception( 'The path argument "path" is required.' )
+				raise Exception( 'The path argument "tokens" is required.' )
 			else:
 				self.tokens = tokens
 				pos_tags = pos_tag( self.tokens )
@@ -772,7 +773,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize_words( self, path: str ) -> str'
+			_exc.method = 'tokenize_words( self, tokens: List[ str  ] ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -791,7 +792,7 @@ class Text:
 		'''
 		try:
 			if text is None:
-				raise Exception( 'The path argument "path" was None' )
+				raise Exception( 'The path argument "text" was None' )
 			else:
 				self.tokens.clear( )
 				self.raw_input = text
@@ -825,7 +826,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The path argument "path" was None' )
+				raise Exception( 'The path argument "text" was None' )
 			else:
 				self.raw_input = text
 				self.tokens = word_tokenize( self.raw_input )
@@ -854,7 +855,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The path argument "path" is required.' )
+				raise Exception( 'The path argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.tokens = sent_tokenize( self.raw_input )
@@ -863,12 +864,12 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize_sentences( self, path: str ) -> List[ str ]'
+			_exc.method = 'tokenize_sentences( self, text: str ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def chunk_text( self, text: str, max: int = 800 ) -> List[ str ]:
+	def chunk_text( self, text: str, max: int=800 ) -> List[ str ]:
 		'''
 
 			Simple chunking by words
@@ -887,7 +888,7 @@ class Text:
 		'''
 		try:
 			if (text is None):
-				raise Exception( 'The path argument "path" is required.' )
+				raise Exception( 'The path argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.lines = self.raw_input.split( )
@@ -899,12 +900,12 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'chunk_text( self, path: str, max: int=512 ) -> list[ str ]'
+			_exc.method = 'chunk_text( self, text: str, max: int=800 ) -> list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
-	def chunk_tokens( self, tokens: List[ str ], max: int = 800, over: int = 50 ) -> List[ str ]:
+	def chunk_tokens( self, tokens: List[ str ], max: int=800, over: int=50 ) -> List[ str ]:
 		"""
 		
 			Purpose:
@@ -965,17 +966,15 @@ class Text:
 				self.file_path = path
 				with open( self.file_path, 'r', encoding='utf-8' ) as _file:
 					self.raw_input = _file.read( )
-					
-					# Normalize line breaks and split on multiple newlines
 					self.paragraphs = [ para.strip( ) for para in self.raw_input.split( '\n\n' ) if
 					                    para.strip( ) ]
-					return paragraphs
+					return self.paragraphs
 		except UnicodeDecodeError:
 			with open( self.file_path, 'r', encoding='latin1' ) as _file:
 				self.raw_input = _file.read( )
 				self.paragraphs = [ para.strip( ) for para in self.raw_input.split( '\n\n' ) if
 				                    para.strip( ) ]
-				return paragraphs
+				return self.paragraphs
 	
 	
 	def compute_frequency_distribution( self, lines: List[ str ],
@@ -996,7 +995,7 @@ class Text:
 		"""
 		try:
 			if lines is None:
-				raise Exception( 'The path argument "tokens" is required.' )
+				raise Exception( 'The path argument "lines" is required.' )
 			else:
 				self.lines = lines
 				for _line in self.lines:
@@ -1020,7 +1019,7 @@ class Text:
 	
 	
 	def compute_conditional_distribution( self, lines: List[ str ], condition=None,
-	                                      process: bool = True ) -> ConditionalFreqDist:
+	                                      process: bool=True ) -> ConditionalFreqDist:
 		"""
 
 			Computes a Conditional Frequency Distribution (CFD)
@@ -1044,7 +1043,7 @@ class Text:
 		"""
 		try:
 			if lines is None:
-				raise Exception( 'The path argument "tokens" is required.' )
+				raise Exception( 'The path argument "lines" is required.' )
 			else:
 				self.lines = lines
 				self.conditional_distribution = ConditionalFreqDist( )
@@ -1073,7 +1072,7 @@ class Text:
 			_err.show( )
 	
 	
-	def create_vocabulary( self, freq_dist: dict, min: int = 1 ) -> List[ str ]:
+	def create_vocabulary( self, freq_dist: dict, min: int=1 ) -> List[ str ]:
 		"""
 		
 			Builds a vocabulary list from a frequency
@@ -1171,8 +1170,9 @@ class Text:
 		"""
 		
 			Purpose:
-			
-			Compute TF-IDF matrix with optional full preprocessing pipeline.
+			________
+			Compute TF-IDF matrix with
+			optional full preprocessing pipeline.
 	
 			Args:
 				lines (list): List of raw or preprocessed pages documents.
