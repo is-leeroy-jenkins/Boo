@@ -1649,6 +1649,7 @@ class Token( ):
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
+	
 	def get_vocab( self ) -> Dict[ str, int ]:
 		"""
 			
@@ -1794,7 +1795,7 @@ class Token( ):
 		"""
 		try:
 			if text is None:
-				raise Exception( 'Input "path" must be provided.' )
+				raise Exception( 'Input "text" must be provided.' )
 			else:
 				return self.tokenizer( text, truncation=trunc, padding=padd,
 					max_length=max, return_tensors=tensors )
@@ -1802,7 +1803,7 @@ class Token( ):
 			_exc = Error( e )
 			_exc.module = 'tiggr'
 			_exc.cause = 'Token'
-			_exc.method = 'encode( self, path: str ) -> Dict[ str, Union[ List[ int ], any ] ]'
+			_exc.method = 'encode( self, text: str ) -> Dict[ str, Union[ List[ int ], any ] ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -1835,7 +1836,8 @@ class Token( ):
 			_exc = Error( e )
 			_exc.module = 'tiggr'
 			_exc.cause = 'Token'
-			_exc.method = 'batch_encode( self, path: List[ str ] ) -> Dict[ str, any ]-> None'
+			_exc.method = '''batch_encode( self, texts: List[ str ], max: int=512, trunc: bool=True,
+	                  pad: Union[ bool, str ]='max', tensors: str=None ) -> Dict[ str, any ]'''
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -2013,7 +2015,7 @@ class Vector( ):
 		"""
 		try:
 			if tokens is None:
-				raise Exception( 'Input "tokens" cannot be None' )
+				raise Exception( 'The argument "tokens" cannot be None' )
 			else:
 				self.tokens = tokens
 				self.batches = self._batch_chunks( self.tokens, batch )
