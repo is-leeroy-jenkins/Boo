@@ -246,6 +246,32 @@ class Text:
 				clean.write( p )
 	
 	
+	def convert_jsonl( self, src: str, dest: str ):
+		ext = '.jsonl'
+		source = src
+		destination = dest
+		files = os.listdir( source )
+		for f in files:
+			count = 0
+			processed = [ ]
+			basename = os.path.basename( f )
+			text = open( source + basename, 'rt', encoding='utf-8', errors='ignore' ).read( )
+			stops = remove_stopwords( text )
+			chunks = chunk_text( stops )
+			tokens = tokenize( chunks )
+			lines = chunk_tokens( tokens )
+			filename = basename.rstrip( '.txt' ) + ext
+			clean = open( destination + filename, 'wt', encoding='utf-8', errors='ignore' )
+			for i, c in enumerate( lines ):
+				part = ' '.join( c )
+				line = '{ ' + f'"{i}"' + ' : ' + '"' + part + '"' + ' },' + '\r'
+				processed.append( line )
+			
+			for t in processed:
+				clean.write( t )
+			clean.close( )
+			
+			
 	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
 		"""
 
