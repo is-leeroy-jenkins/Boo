@@ -209,7 +209,7 @@ class Text:
 				raise Exception( 'The argument "path" is required' )
 			else:
 				self.file_path = path
-				with open( self.file_path, 'r', encoding='utf-8' ) as _file:
+				with open( self.file_path, 'r', encoding='utf-8', errors='ignore' ) as _file:
 					self.lines = _file.readlines( ).strip( ).splitlines( )
 					return self.lines
 		except Exception as e:
@@ -219,6 +219,31 @@ class Text:
 			_exc.method = 'split_lines( self, path: str ) -> list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
+	
+	
+	def clean_files( self, src: str, dest: str ):
+		source = src
+		destination = dest
+		files = os.listdir( source )
+		for f in files:
+			processed = [ ]
+			filename = os.path.basename( f )
+			source_path = source + '\\' + filename
+			text = open( source_path, 'r', encoding='utf-8', errors='ignore' ).read( )
+			punc = remove_punctuation( text )
+			dirty = split_sentences( punc )
+			for d in dirty:
+				if d != " ":
+					lower = d.lower( )
+					normal = normalize( lower )
+					spec = remove_special( normal )
+					slim = collapse_space( spec )
+					processed.append( slim )
+			
+			dest_path = destination + '\\' + filename
+			clean = open( dest_path, 'wt', encoding='utf-8', errors='ignore' )
+			for p in processed:
+				clean.write( p )
 	
 	
 	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
@@ -242,7 +267,7 @@ class Text:
 				raise Exception( 'The path argument "path" is required' )
 			else:
 				self.file_path = path
-				with open( self.file_path, 'r', encoding='utf-8' ) as _file:
+				with open( self.file_path, 'r', encoding='utf-8', errors='ignore'  ) as _file:
 					_content = _file.read( )
 				self.raw_pages = _content.split( delimit )
 				for _page in self.raw_pages:
@@ -372,7 +397,7 @@ class Text:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_special( self, text: str, keep_spaces: bool = True ) -> str:'
+			_exc.method = 'remove_special( self, text: str, keep_spaces: bool=True ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
