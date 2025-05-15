@@ -70,7 +70,12 @@ from typing import Any, List, Tuple, Optional, Union, Dict
 try:
     nltk.data.find( 'tokenizers/punkt' )
 except LookupError:
-    nltk.download( 'punkt' )
+	nltk.download( 'punkt' )
+	nltk.download( 'punkt_tab' )
+	nltk.download( 'stopwords' )
+	nltk.download( 'wordnet' )
+	nltk.download( 'omw-1.4' )
+	nltk.download( 'words' )
 
 
 class Text:
@@ -170,7 +175,7 @@ class Text:
 	def load_text( self, path: str ) -> str:
 		try:
 			if path is None:
-				raise Exception( 'The path argument "path" is required' )
+				raise Exception( 'The argument "path" is required' )
 			else:
 				self.file_path = path
 				self.raw_input = Path( self.file_path ).read_text( encoding='utf-8' )
@@ -354,14 +359,14 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'Theargument "text" is required.' )
+				raise Exception( 'The argument "text" is required.' )
 			elif keep_spaces:
 				self.raw_input = text
 				_retval = re.sub( r'[^a-zA-Z0-9\s]', '', self.raw_input )
 				return _retval
 			else:
 				self.raw_input = text
-				_retval = re.sub( r'[^a-zA-Z0-9]', '', self.raw_input )
+				_retval = re.sub( r'[^a-zA-Z0-9]', ' ', self.raw_input )
 				return _retval
 		except Exception as e:
 			_exc = Error( e )
