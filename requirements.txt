@@ -66,3 +66,4 @@ mwclient
 mwparserfromhell
 accelerate
 agents
+tf-keras
