@@ -66,9 +66,10 @@ from transformers import AutoTokenizer, PreTrainedTokenizerBase
 import textwrap as tr
 from typing import Any, List, Tuple, Optional, Union, Dict
 
+
 # Ensure punkt tokenizer is available for sentence splitting
 try:
-    nltk.data.find( 'tokenizers/punkt' )
+	nltk.data.find( 'tokenizers/punkt' )
 except LookupError:
 	nltk.download( 'punkt' )
 	nltk.download( 'punkt_tab' )
@@ -111,7 +112,8 @@ class Text:
 	    proc: bool=True ) -> List[ str ]
 	    create_vocabulary( self, frequency, min: int=1 ) -> List[ str ]
 	    create_wordbag( tokens: List[ str ] ) -> dict
-	    create_word2vec( sentences: List[ str ], vector_size=100, window=5, min_count=1 ) -> Word2Vec
+	    create_word2vec( sentences: List[ str ], vector_size=100, window=5, min_count=1 ) ->
+	    Word2Vec
 	    create_tfidf( tokens: List[ str ], max_features=1000, prep=True ) -> tuple
 	    
 	'''
@@ -270,8 +272,8 @@ class Text:
 			for t in processed:
 				clean.write( t )
 			clean.close( )
-			
-			
+	
+	
 	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
 		"""
 
@@ -290,10 +292,10 @@ class Text:
 		"""
 		try:
 			if path is None:
-				raise Exception( 'The path argument "path" is required' )
+				raise Exception( 'The argument "path" is required' )
 			else:
 				self.file_path = path
-				with open( self.file_path, 'r', encoding='utf-8', errors='ignore'  ) as _file:
+				with open( self.file_path, 'r', encoding='utf-8', errors='ignore' ) as _file:
 					_content = _file.read( )
 				self.raw_pages = _content.split( delimit )
 				for _page in self.raw_pages:
@@ -575,7 +577,7 @@ class Text:
 			else:
 				self.raw_input = text
 				_retval = (BeautifulSoup( self.raw_input, 'raw_html.parser' )
-				                     .get_text( separator=' ', strip=True ))
+				           .get_text( separator=' ', strip=True ))
 				return _retval
 		except Exception as e:
 			_exc = Error( e )
@@ -589,8 +591,8 @@ class Text:
 	def remove_markdown( self, text: str ) -> str:
 		"""
 	
+	
 			Removes Markdown
-			
 			This function:
 			  - Removes Markdown syntax (e.g., *, #, [], etc.)
 	
@@ -626,36 +628,32 @@ class Text:
 	def remove_stopwords( self, text: str ) -> str:
 		"""
 	
-			Removes English stopwords
-			from the path pages path.
+	        This function:
+	          - Removes English stopwords from the path pages path.
+	          - Tokenizes the path pages
+	          - Removes common stopwords (e.g., "the", "is", "and", etc.)
+	          - Returns the pages with only meaningful words
 	
-			This function:
-			  - Tokenizes the path pages
-			  - Removes common stopwords (e.g., "the", "is", "and", etc.)
-			  - Returns the pages with only meaningful words
+	        Parameters:
+	        -----------
+	        pages : str
+	            The text string.
 	
-			Parameters:
-			-----------
-			pages : str
-				The path pages path.
+	        Returns:
+	        --------
+	        str
+	            A text string without stopwords.
 	
-			Returns:
-			--------
-			str
-				A cleaned_lines version of the path pages without stopwords.
-	
-		"""
+	    """
 		try:
 			if text is None:
 				raise Exception( 'The argument "text" is required.' )
 			else:
-				self.raw_input = text
-				self.stopwords = set( stopwords.words( 'english' ) )
-				self.lowercase = self.raw_input.lower( )
-				self.tokens = word_tokenize( self.lowercase )
-				self.words = [ w for w in self.tokens if w.isalnum( ) and w not in self.stopwords ]
-				_retval = ' '.join( self.words )
-				return _retval
+				stop_words = set( stopwords.words( 'english' ) )
+				self.tokens = word_tokenize( text.lower( ) )
+				filtered_tokens = [ w for w in tokens if w.isalnum( ) and w not in stop_words ]
+				cleaned_text = ' '.join( filtered_tokens )
+				return cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -665,7 +663,7 @@ class Text:
 			_err.show( )
 	
 	
-	def remove_headers( self, pages: List[ str ], min: int = 3 ) -> List[ str ]:
+	def remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]:
 		"""
 			
 			Removes repetitive headers and footers
@@ -734,62 +732,63 @@ class Text:
 	def normalize_text( self, text: str ) -> str:
 		"""
 	
-			
+	        This function:
+	        Normalizes the path pages path.
+	          - Converts pages to lowercase
+	          - Removes accented characters (e.g., é -> e)
+	          - Removes leading/trailing spaces
+	          - Collapses multiple whitespace characters into a single space
 	
-			This function:
-			  - Performs normalization on the path pages path.
-			  - Converts pages to lowercase
+	        Parameters:
+	        -----------
+	        pages : str
+	            The raw path pages path to be normalized.
 	
-			Parameters:
-			-----------
-			pages : str
-				The path pages path to be lemmatized.
+	        Returns:
+	        --------
+	        str
+	            A normalized, cleaned_lines version of the path path.
 	
-			Returns:
-			--------
-			str
-				A path with all words lemmatized.
-	
-		"""
+	    """
 		try:
 			if text is None:
 				raise Exception( 'The path argument "text" is required.' )
 			else:
 				self.raw_input = text
-				self.normalized = self.raw_input.lower( ).translate(
-					str.maketrans( '', '', string.punctuation ) )
+				self.normalized = (unicodedata.normalize( 'NFKD', text )
+				                   .encode( 'ascii', 'ignore' ).decode( 'utf-8' ))
 				return self.normalized
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'normalize_text( self, path: str ) -> str'
+			_exc.method = 'normalize_text( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
-		
-		
-		def get_wordnet_pos( tag: str ) -> Any | None:
-			if tag is None:
-				raise Exception( 'The argument "tag" is required.' )
-			else:
-				try:
-					if tag.startswith( 'J' ):
-						return wordnet.ADJ
-					elif tag.startswith( 'V' ):
-						return wordnet.VERB
-					elif tag.startswith( 'N' ):
-						return wordnet.NOUN
-					elif tag.startswith( 'R' ):
-						return wordnet.ADV
-					else:
-						return wordnet.NOUN
-				except Exception as e:
-					_exc = Error( e )
-					_exc.module = 'Tiggr'
-					_exc.cause = 'Text'
-					_exc.method = 'normalize_text( self, path: str ) -> str'
-					_err = ErrorDialog( _exc )
-					_err.show( )
+	
+	
+	def get_wordnet_pos( tag: str ) -> Any | None:
+		if tag is None:
+			raise Exception( 'The argument "tag" is required.' )
+		else:
+			try:
+				if tag.startswith( 'J' ):
+					return wordnet.ADJ
+				elif tag.startswith( 'V' ):
+					return wordnet.VERB
+				elif tag.startswith( 'N' ):
+					return wordnet.NOUN
+				elif tag.startswith( 'R' ):
+					return wordnet.ADV
+				else:
+					return wordnet.NOUN
+			except Exception as e:
+				_exc = Error( e )
+				_exc.module = 'Tiggr'
+				_exc.cause = 'Text'
+				_exc.method = 'normalize_text( self, path: str ) -> str'
+				_err = ErrorDialog( _exc )
+				_err.show( )
 	
 	
 	def lemmatize_tokens( self, tokens: List[ str ] ) -> List[ str ]:
@@ -867,26 +866,36 @@ class Text:
 			_err.show( )
 	
 	
-	def tokenize_words( self, text: str ) -> List[ str ]:
+	def tokenize_words( self, words: List[ str ] ) -> List[ str ]:
 		"""
-		
-			Tokenize a sentence or
-			paragraph into word tokens.
 	
-			Args:
-				text (str): Input pages.
+	        This function:
+	          - Tokenizes the path pages path into individual word tokens.
+	          - Converts pages to lowercase
+	          - Uses NLTK's word_tokenize to split
+	          the pages into words and punctuation tokens
 	
-			Returns:
-				list: List of word tokens.
-				
-		"""
+	        Parameters:
+	        -----------
+	        words : List[ str ]
+	            A list of strings to be tokenized.
+	
+	        Returns:
+	        --------
+	            A list of token strings (words and punctuation)
+	            extracted from the pages.
+	
+	    """
 		try:
-			if text is None:
-				raise Exception( 'The path argument "text" was None' )
+			if words is None:
+				raise Exception( 'The path argument "words" was None' )
 			else:
-				self.raw_input = text
-				self.tokens = word_tokenize( self.raw_input )
-				return self.tokens
+				# Convert to lowercase
+				_wordtokens = [ ]
+				for w in words:
+					_token = nltk.word_tokenize( w )
+					_wordtokens.append( _token )
+				return _wordtokens
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -925,33 +934,49 @@ class Text:
 			_err.show( )
 	
 	
-	def chunk_text( self, text: str, max: int=800 ) -> List[ str ]:
-		'''
+	def chunk_text( self, text: str, chunk_size: int=50, return_as_string: bool=True ) -> List[
+		str ]:
+		"""
 
-			Simple chunking by words
-			 assuming ~1.3 words per token
+			This function:
+			Tokenizes cleaned_lines pages and breaks it into chunks for downstream vectors.
+			  - Converts pages to lowercase
+			  - Tokenizes pages using NLTK's word_tokenize
+			  - Breaks tokens into chunks of a specified size
+			  - Optionally joins tokens into strings (for transformer models)
 
 			Parameters:
 			-----------
-			path : str
-				The path path to be chunked
+			pages : str
+				The cleaned_lines path pages to be tokenized and chunked.
+
+			chunk_size : int, optional (default=50)
+				Number of tokens per chunk_tokens.
+
+			return_string : bool, optional (default=True)
+				If True, returns each chunk_tokens as a path; otherwise, returns a get_list of
+				tokens.
 
 			Returns:
 			--------
-			list[ str ]
-				A list with all words chunked.
+			get_list
+				A get_list of token chunks. Each chunk_tokens is either a get_list of tokens or a
+				path.
 
-		'''
+		"""
 		try:
-			if (text is None):
+			if text is None:
 				raise Exception( 'The path argument "text" is required.' )
 			else:
-				self.raw_input = text
-				self.lines = self.raw_input.split( )
-				self.chunk_size = int( max * 1.3 )
-				_retval = [ ' '.join( self.words[ i:i + chunk_size ] ) for i in
-				                range( 0, len( self.words ), chunk_size ) ]
-				return _retval
+				# Download tokenizer models (only once)
+				nltk.download( 'punkt', quiet=True )
+				tokens = word_tokenize( text )
+				token_chunks = [ tokens[ i:i + chunk_size ] for i in
+				                 range( 0, len( tokens ), chunk_size ) ]
+				if return_as_string:
+					return [ ' '.join( chunk ) for chunk in token_chunks ]
+				else:
+					return token_chunks
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -961,35 +986,41 @@ class Text:
 			_err.show( )
 	
 	
-	def chunk_tokens( self, tokens: List[ str ], max: int=800, over: int=50 ) -> List[ str ]:
+	def chunk_tokens( self, words: List[ str ], chunk_size: int=50 ) -> List[ List[ str ] ]:
 		"""
-		
-			Purpose:
-				Split a list of strings into
-				overlapping chunks based on token limits.
-	
-			Args:
-				tokens (list): Tokenized path documents.
-				max (int): Max token size per chunk_tokens.
-				over (int): Overlapping token count between chunks.
-	
+
+
+			Breaks a list of
+			tokenized strings into a
+			list of lists.
+
+			This function:
+			  - Groups tokens into chunks of min `chunk_size`
+			  - Returns a list of lists of tokens
+
+			Parameters:
+			-----------
+			words : a list of tokenizd words
+
+			chunk_size : int, optional (default=50)
+				Number of tokens per chunk_tokens.
+
 			Returns:
-				list: A get_list of token chunks.
-				
+			--------
+			List[ List[ str ] ]
+				A list of a list of token chunks. Each chunk is a list of tokens.
+
 		"""
 		try:
-			if tokens is None:
-				raise Exception( 'Input parameter "tokens" is required.' )
+			if words is None:
+				raise Exception( 'The path argument "words" is required.' )
 			else:
-				_start = 0
-				while _start < len( tokens ):
-					_end = _start + max
-					self.tokens = tokens[ start:end ]
-					self.chunks.append( self.tokens )
-					_start += max - over
+				_all = [ token for sublist in words for token in sublist ]
+				_retchunks = [
+					_all[ i: i + chunk_size ]
+					for i in range( 0, len( _all ), chunk_size ) ]
 				
-				_retval = self.chunks
-				return _retval
+				return _retchunks
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -997,6 +1028,48 @@ class Text:
 			_exc.method = (
 				'chunk_tokens( self, tokens: list[ str ], max: int=800, over: int=50 ) -> list[ '
 				'str ]')
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
+		"""
+
+			Purpose:
+			________
+			Reads path from a file, splits it into tokens,
+			and groups them into path.
+
+			Args:
+				path (str): Path to the path file.
+				delimiter (str): Page separator path
+				(default is '\f' for form feed).
+
+			Returns:
+				list[ str ]  where each element
+				is the path.
+
+		"""
+		try:
+			if path is None:
+				raise Exception( 'The argument "path" is required' )
+			else:
+				self.file_path = path
+				with open( self.file_path, 'r', encoding='utf-8', errors='ignore' ) as _file:
+					_content = _file.read( )
+				self.raw_pages = _content.split( delimit )
+				for _page in self.raw_pages:
+					self.lines = _page.strip( ).splitlines( )
+					self.cleaned_text = '\n'.join( [ line.strip( )
+					                                 for line in self.lines if line.strip( ) ] )
+					self.cleaned_pages.append( self.cleaned_text )
+					_retval = self.cleaned_pages
+				return _retval
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Text'
+			_exc.method = 'split_pages( self, path: str, delimit: str="\f" ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -1034,7 +1107,7 @@ class Text:
 	
 	
 	def compute_frequency_distribution( self, lines: List[ str ],
-	                                    process: bool = True ) -> FreqDist:
+	                                    process: bool=True ) -> FreqDist:
 		"""
 		
 			Creates a word frequency freq_dist
@@ -1128,7 +1201,7 @@ class Text:
 			_err.show( )
 	
 	
-	def create_vocabulary( self, freq_dist: dict, min: int=1 ) -> List[ str ]:
+	def create_vocabulary( self, freq_dist: Dict, min: int=1 ) -> List[ str ]:
 		"""
 		
 			Builds a vocabulary list from a frequency
@@ -1668,7 +1741,8 @@ class Token( ):
 	        Initializes the tokenizer wrapper using a pre-trained small_model from Hugging Face.
 	
 	        Args:
-	            model_name (str): The name of the pre-trained small_model (e.g., "bert-base-uncased").
+	            model_name (str): The name of the pre-trained small_model (e.g.,
+	            "bert-base-uncased").
         '''
 		self.model_name = 'google-bert/bert-base-uncased'
 		self.tokenizer = AutoTokenizer.from_pretrained( self.model_name, trust_remote_code=True )
@@ -1892,7 +1966,8 @@ class Token( ):
 			_exc = Error( e )
 			_exc.module = 'tiggr'
 			_exc.cause = 'Token'
-			_exc.method = '''batch_encode( self, texts: List[ str ], max: int=512, trunc: bool=True,
+			_exc.method = '''batch_encode( self, texts: List[ str ], max: int=512,
+			trunc: bool=True,
 	                  pad: Union[ bool, str ]='max', tensors: str=None ) -> Dict[ str, any ]'''
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -2041,7 +2116,8 @@ class Vector( ):
 		return [ 'small_model', 'large_model', 'ada_model',
 		         'id', 'files', 'tokens', 'array', 'store_ids',
 		         'client', 'cache', 'results', 'directory', 'stats'
-		                                                    'response', 'vector_stores', 'file_ids',
+		                                                    'response', 'vector_stores',
+		         'file_ids',
 		         'data', 'batches', 'tables', 'vectors', 'create_small_embedding', 'dataframe',
 		         'most_similar', 'bulk_similar', 'similarity_heatmap',
 		         'export_jsonl', 'import_jsonl', 'create_vector_store',
@@ -2652,7 +2728,8 @@ class Vector( ):
 				self.id = id
 				self.file_name = os.path.basename( self.file_path )
 				self.directory = os.path.dirname( self.file_path )
-				self.files = [ os.path.join( self.directory, f ) for f in os.listdir( self.directory
+				self.files = [ os.path.join( self.directory, f ) for f in os.listdir(
+					self.directory
 				) ]
 				self.stats = \
 					{
@@ -2695,6 +2772,7 @@ class Embeddy( ):
 		Class providing Feature Extraction functionality
 
 	'''
+	
 	
 	def __init__( self ):
 		self.client = OpenAI( )
@@ -2768,7 +2846,8 @@ class Embeddy( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Embeddy'
-			_exc.method = 'create_small_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]'
+			_exc.method = ('create_small_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
+			               'float ] ]')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -2825,7 +2904,8 @@ class Embeddy( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Embeddy'
-			_exc.method = 'create_large_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]'
+			_exc.method = ('create_large_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
+			               'float ] ]')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -2882,7 +2962,8 @@ class Embeddy( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Embeddy'
-			_exc.method = 'create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]'
+			_exc.method = ('create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ float'
+			               ' ] ]')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -3076,7 +3157,8 @@ class Embeddy( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Embeddy'
-			_exc.method = 'plot_multiclass_precision( self, y_score, y_original, classes, classifier )'
+			_exc.method = ('plot_multiclass_precision( self, y_score, y_original, classes, '
+			               'classifier )')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -3098,12 +3180,12 @@ class Embeddy( ):
 		"""
 		try:
 			self.distance_metrics = \
-			{
-				'cosine': spatial.distance.cosine,
-				'L1': spatial.distance.cityblock,
-				'L2': spatial.distance.euclidean,
-				'Linf': spatial.distance.chebyshev,
-			}
+				{
+					'cosine': spatial.distance.cosine,
+					'L1': spatial.distance.cityblock,
+					'L2': spatial.distance.euclidean,
+					'Linf': spatial.distance.chebyshev,
+				}
 			
 			self.distances = [
 				self.distance_metrics[ metric ]( query, embedding )
@@ -3132,7 +3214,8 @@ class Embeddy( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Embeddy'
-			_exc.method = 'calculate_nearest_neighbor( self, distances: List[ float ] ) -> np.ndarray'
+			_exc.method = ('calculate_nearest_neighbor( self, distances: List[ float ] ) -> '
+			               'np.ndarray')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -3153,7 +3236,8 @@ class Embeddy( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Embeddy'
-			_exc.method = 'create_pca_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray'
+			_exc.method = ('create_pca_components( self, vectors: List[ List[ float ] ], num=2 ) ->'
+			               ' np.ndarray')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -3173,14 +3257,15 @@ class Embeddy( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Embeddy'
-			_exc.method = 'create_tsne_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray'
+			_exc.method = ('create_tsne_components( self, vectors: List[ List[ float ] ], num=2 ) '
+			               '-> np.ndarray')
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
 	
 	def create_chart( self, data: np.ndarray,
-	                  labels: Optional[ List[ str ] ]=None,
-	                  strings: Optional[ List[ str ] ]=None,
+	                  labels: Optional[ List[ str ] ] = None,
+	                  strings: Optional[ List[ str ] ] = None,
 	                  x_title='Component-0',
 	                  y_title='Component-1',
 	                  mark_size=5 ) -> None:
@@ -3192,14 +3277,14 @@ class Embeddy( ):
 		try:
 			empty_list = [ "" for _ in data ]
 			data = pd.DataFrame(
-			{
-				x_title: data[ :, 0 ],
-				y_title: data[ :, 1 ],
-				'label': labels if labels else empty_list,
-				'path': [ '<br>'.join( tr.wrap( s, width=30 ) ) for s in strings ]
-				if strings
-				else empty_list,
-			} )
+				{
+					x_title: data[ :, 0 ],
+					y_title: data[ :, 1 ],
+					'label': labels if labels else empty_list,
+					'path': [ '<br>'.join( tr.wrap( s, width=30 ) ) for s in strings ]
+					if strings
+					else empty_list,
+				} )
 			
 			chart = px.scatter( data, x=x_title, y=y_title, color='label' if labels else None,
 				symbol='label' if labels else None, hover_data=[ 'path' ] if strings else None
