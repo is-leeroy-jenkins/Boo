@@ -38,6 +38,7 @@
   </copyright>
   <summary>
   '''
+import os
 from collections import defaultdict
 import re
 import json
@@ -221,58 +222,6 @@ class Text:
 			_exc.method = 'split_lines( self, path: str ) -> list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
-	
-	
-	def clean_files( self, src: str, dest: str ):
-		source = src
-		destination = dest
-		files = os.listdir( source )
-		for f in files:
-			processed = [ ]
-			filename = os.path.basename( f )
-			source_path = source + '\\' + filename
-			text = open( source_path, 'r', encoding='utf-8', errors='ignore' ).read( )
-			punc = remove_punctuation( text )
-			dirty = split_sentences( punc )
-			for d in dirty:
-				if d != " ":
-					lower = d.lower( )
-					normal = normalize( lower )
-					spec = remove_special( normal )
-					slim = collapse_space( spec )
-					processed.append( slim )
-			
-			dest_path = destination + '\\' + filename
-			clean = open( dest_path, 'wt', encoding='utf-8', errors='ignore' )
-			for p in processed:
-				clean.write( p )
-	
-	
-	def convert_jsonl( self, src: str, dest: str ):
-		ext = '.jsonl'
-		source = src
-		destination = dest
-		files = os.listdir( source )
-		for f in files:
-			count = 0
-			processed = [ ]
-			basename = os.path.basename( f )
-			text = open( source + basename, 'rt', encoding='utf-8', errors='ignore' ).read( )
-			stops = remove_stopwords( text )
-			chunks = chunk_text( stops )
-			tokens = tokenize( chunks )
-			lines = chunk_tokens( tokens )
-			filename = basename.rstrip( '.txt' ) + ext
-			clean = open( destination + filename, 'wt', encoding='utf-8', errors='ignore' )
-			for i, c in enumerate( lines ):
-				part = ' '.join( c )
-				line = '{ ' + f'"{i}"' + ' : ' + '"' + part + '"' + ' }' + '\r'
-				processed.append( line )
-			
-			for t in processed:
-				clean.write( t )
-			clean.close( )
-	
 	
 	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
 		"""
@@ -1340,6 +1289,59 @@ class Text:
 			               'Tuple')
 			_err = ErrorDialog( _exc )
 			_err.show( )
+	
+	
+	def clean_files( self, src: str, dest: str ):
+		source = src
+		destination = dest
+		files = os.listdir( source )
+		for f in files:
+			processed = [ ]
+			filename = os.path.basename( f )
+			source_path = source + '\\' + filename
+			text = open( source_path, 'r', encoding='utf-8', errors='ignore' ).read( )
+			punc = remove_punctuation( text )
+			dirty = split_sentences( punc )
+			for d in dirty:
+				if d != " ":
+					lower = d.lower( )
+					normal = normalize( lower )
+					spec = remove_special( normal )
+					slim = collapse_space( spec )
+					processed.append( slim )
+			
+			dest_path = destination + '\\' + filename
+			clean = open( dest_path, 'wt', encoding='utf-8', errors='ignore' )
+			for p in processed:
+				clean.write( p )
+	
+	
+	def convert_jsonl( self, src: str, dest: str ):
+		ext = '.jsonl'
+		source = src
+		destination = dest
+		files = os.listdir( source )
+		for f in files:
+			count = 0
+			processed = [ ]
+			basename = os.path.basename( f )
+			source_path = source + '\\' + basename
+			text = open( source_path, 'rt', encoding='utf-8', errors='ignore' ).read( )
+			stops = remove_stopwords( text )
+			chunks = chunk_text( stops )
+			tokens = tokenize( chunks )
+			lines = chunk_tokens( tokens )
+			filename = basename.rstrip( '.txt' ) + ext
+			dest_path = destination + '\\' + filename
+			clean = open( dest_path, 'wt', encoding='utf-8', errors='ignore' )
+			for i, c in enumerate( lines ):
+				part = ' '.join( c )
+				line = '{ ' + f'"{i}"' + ' : ' + '"' + part + '"' + ' }' + '\r'
+				processed.append( line )
+			
+			for t in processed:
+				clean.write( t )
+			clean.close( )
 
 
 class PDF( ):
