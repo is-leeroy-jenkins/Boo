@@ -266,7 +266,7 @@ class Text:
 			clean = open( destination + filename, 'wt', encoding='utf-8', errors='ignore' )
 			for i, c in enumerate( lines ):
 				part = ' '.join( c )
-				line = '{ ' + f'"{i}"' + ' : ' + '"' + part + '"' + ' },' + '\r'
+				line = '{ ' + f'"{i}"' + ' : ' + '"' + part + '"' + ' }' + '\r'
 				processed.append( line )
 			
 			for t in processed:
