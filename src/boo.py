@@ -579,7 +579,7 @@ class Perceptron( ):
 		         'n_iter', 'random_state', 'eta' ]
 
 
-class LinearGradientDescent( ):
+class LinearRegression( ):
 	"""
 		
 		Purpose
@@ -612,7 +612,7 @@ class LinearGradientDescent( ):
 		
 			Purpose
 			_______
-			Initializes LinearGradientDescent opbjects
+			Initializes LinearRegression opbjects
 			
 			
 			Parameters
@@ -671,16 +671,16 @@ class LinearGradientDescent( ):
 					net_input = self.net_input( X )
 				
 				output = self.activation( net_input )
-				errors = (y - output)
+				errors = ( y - output )
 				self.w_ += self.eta * 2.0 * X.T.dot( errors ) / X.shape[ 0 ]
 				self.b_ += self.eta * 2.0 * errors.mean( )
-				loss = (errors ** 2).mean( )
+				loss = ( errors ** 2).mean( )
 				self.losses_.append( loss )
 				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'LinearGradientDescent'
+			exception.cause = 'LinearRegression'
 			exception.method = 'fit( self, X, y )'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -713,7 +713,7 @@ class LinearGradientDescent( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'LinearGradientDescent'
+			exception.cause = 'LinearRegression'
 			exception.method = 'net_input( self, X )'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -748,7 +748,7 @@ class LinearGradientDescent( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'LinearGradientDescent'
+			exception.cause = 'LinearRegression'
 			exception.method = 'activation( self, X )'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -781,7 +781,7 @@ class LinearGradientDescent( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'LinearGradientDescent'
+			exception.cause = 'LinearRegression'
 			exception.method = 'predict( self, values )'
 			error = ErrorDialog( exception )
 			error.show( )
