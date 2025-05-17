@@ -69,6 +69,58 @@ class UserLocation( BaseModel ):
 	timezone: Optional[ str ]
 
 
+class Text( BaseModel ):
+	'''
+	
+		 A class used to generate text responses.
+		 
+	'''
+	type: str='text'
+
+
+class Error( BaseModel ):
+	'''
+	
+		A class for exceptions
+	
+	'''
+	code: Optional[ str ]
+	message: Optional[ str ]
+
+
+class JsonSchema( BaseModel ):
+	'''
+	
+		A class used to generate json schema responses.
+		
+	'''
+	type: str
+	schema: str
+	name: str
+	description: Optional[ str ]
+
+
+class JsonObject( BaseModel ):
+	'''
+	
+		A class used to generate json schema responses.
+		
+	'''
+	type: str
+
+
+class Format( BaseModel ):
+	'''
+	
+		A class for objects specifying
+		 the format that the model must output.
+		 
+	'''
+	text: Optional[ object ]
+	json_schema: Optional[ object ]
+	json_object: Optional[ object ]
+	
+	
 class Reasoning( BaseModel ):
 	'''
 
@@ -85,7 +137,9 @@ class Response( BaseModel ):
 	'''
 	id: Optional[ str ]
 	object: Optional[ object ]
+	input: Optional[ str ]
 	model: Optional[ str ]
+	include: Optional[ [] ]
 	instructions: Optional[ str ]
 	max_output_tokens: Optional[ int ]
 	previous_response_id: Optional[ int ]
@@ -93,11 +147,13 @@ class Response( BaseModel ):
 	role: Optional[ str ]
 	store: Optional[ bool ]
 	stream: Optional[ bool ]
+	parallel_tool_calls: Optional[ bool ]
 	tool_choice: Optional[ str ]
 	tools: Optional[ List[ str ] ]
 	top_p: Optional[ int ]
 	truncation: Optional[ str ]
 	text: Optional[ object ]
+	status: Optional[ str ]
 	created: Optional[ dt.datetime ]
 	data: Optional[ Dict ]
 
@@ -105,7 +161,8 @@ class Response( BaseModel ):
 class FileSearch( BaseModel ):
 	'''
 	
-		Class for the file search tool
+		A tool that searches for
+		relevant content from uploaded file
 	
 	'''
 	type: Optional[ str ]
@@ -116,7 +173,8 @@ class FileSearch( BaseModel ):
 class WebSearch( BaseModel ):
 	'''
 
-		Class for the file search tool
+		Class for a tool that searches the web
+		for relevant results to use in a response.
 
 	'''
 	type: Optional[ str ]
@@ -127,7 +185,7 @@ class WebSearch( BaseModel ):
 class ComputerUse( BaseModel ):
 	'''
 	
-		A class for the computer use tool.
+		A class for a tool that controls a virtual computer
 		
 	'''
 	type: str
@@ -139,7 +197,7 @@ class ComputerUse( BaseModel ):
 class Function( BaseModel ):
 	'''
 
-		Class for the function tool
+		Class for a function the model can choose to call
 
 	'''
 	name: Optional[ str ]
@@ -156,7 +214,7 @@ class Message( BaseModel ):
 
 	'''
 	content: str
-	role: Optional[ str ]
+	role: str
 	type: Optional[ str ]
 	instructions: Optional[ str ]
 	data: Optional[ Dict ]
