@@ -149,63 +149,16 @@ class Function( BaseModel ):
 	strict: Optional[ bool ]
 
 
-class SystemMessage( BaseModel ):
+class Message( BaseModel ):
 	'''
 
 		Class representing the system message
 
 	'''
 	content: str
-	role: Optional[ str ]='system'
-	type: Optional[ str ]='text'
-	data: Optional[ Dict ]
-
-
-class UserMessage( BaseModel ):
-	'''
-
-		Class representing the system message
-
-	'''
-	content: str
-	role: Optional[ str ]='user'
-	type: Optional[ str ]='text'
-	data: Optional[ Dict ]
-
-
-class DeveloperMessage( BaseModel ):
-	'''
-
-		Class representing the developoer message
-
-	'''
-	content: str
-	role: Optional[ str ]='developer'
-	type: Optional[ str ]='text'
-	data: Optional[ Dict ]
-
-
-class AssistantMessage( BaseModel ):
-	'''
-
-		Class representing the assistantmessage
-
-	'''
-	content: str
-	role: Optional[ str ]='assistant'
-	type: Optional[ str ]='text'
-	data: Optional[ Dict ]
-
-
-class ToolMessage( BaseModel ):
-	'''
-
-		Class representing the tool message
-
-	'''
-	content: str
-	role: Optional[ str ]='tool'
-	type: Optional[ str ]='text'
+	role: Optional[ str ]
+	type: Optional[ str ]
+	instructions: Optional[ str ]
 	data: Optional[ Dict ]
 
 
@@ -521,9 +474,9 @@ class Perceptron( ):
 		"""
 		try:
 			if X is None:
-				raise Exception( 'values is not provided.' )
+				raise Exception( 'Data not provided.' )
 			elif y is None:
-				raise Exception( 'y is not provided.' )
+				raise Exception( 'Targets not provided.' )
 			else:
 				rgen = np.random.RandomState( self.random_state )
 				self.w_ = rgen.normal( loc=0.0, scale=0.01, size=X.shape[ 1 ] )
@@ -571,7 +524,7 @@ class Perceptron( ):
 		"""
 		try:
 			if X is None:
-				raise Exception( 'Aurguent "X" is not provided.' )
+				raise Exception( 'Data is not provided.' )
 			else:
 				return np.dot( X, self.w_ ) + self.b_
 		except Exception as e:
