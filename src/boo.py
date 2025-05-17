@@ -56,7 +56,6 @@ from booggr import ErrorDialog, Error
 from typing import Any, List, Tuple, Optional, Dict
 
 
-	
 class UserLocation( BaseModel ):
 	'''
 	
