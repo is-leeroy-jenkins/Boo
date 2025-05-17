@@ -66,6 +66,7 @@ from gensim.models import Word2Vec
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 import textwrap as tr
 from typing import Any, List, Tuple, Optional, Union, Dict
+import unicodedata
 
 
 # Ensure punkt tokenizer is available for sentence splitting
@@ -136,9 +137,11 @@ class Text:
 		self.chunk_size = 0
 		self.vocabulary = List[ str ]
 		self.cleaned_lines = List[ str ]
+		self.cleaned_tokens = List[ str ]
 		self.cleaned_pages = List[ str ]
 		self.removed = List[ str ]
 		self.raw_pages = List[ str ]
+		self.stop_words = List[ str ]
 		self.frequency_distribution = { }
 		self.conditional_distribution = { }
 		self.file_path = None
@@ -172,7 +175,8 @@ class Text:
 		         'remove_markdown', 'remove_stopwords', 'remove_headers',
 		         'normalize_text', 'lemmatize', 'tokenize_text', 'tokenize_words',
 		         'tokenize_sentences', 'chunk_text', 'chunk_tokens',
-		         'create_wordbag', 'create_word2vec', 'create_tfidf' ]
+		         'create_wordbag', 'create_word2vec', 'create_tfidf',
+		         'clean_files', 'convert_jsonl' ]
 	
 	
 	def load_text( self, path: str ) -> str:
@@ -188,77 +192,6 @@ class Text:
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
 			_exc.method = 'load_text( self, path: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def split_lines( self, path: str ) -> List[ str ]:
-		"""
-		
-			Splits the path
-			into tokens
-
-			Parameters:
-			-----------
-			path : str
-
-			Returns:
-			--------
-			list[ str ]
-			
-		"""
-		try:
-			if path is None:
-				raise Exception( 'The argument "path" is required' )
-			else:
-				self.file_path = path
-				with open( self.file_path, 'r', encoding='utf-8', errors='ignore' ) as _file:
-					self.lines = _file.readlines( ).strip( ).splitlines( )
-					return self.lines
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'split_lines( self, path: str ) -> list[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
-		"""
-
-			Reads path from a file, splits it into tokens,
-			and groups them into path.
-
-			Args:
-				path (str): Path to the path file.
-				delimiter (str): Page separator path
-				(default is '\f' for form feed).
-
-			Returns:
-				list[ str ]  where each element
-				is the path.
-
-		"""
-		try:
-			if path is None:
-				raise Exception( 'The argument "path" is required' )
-			else:
-				self.file_path = path
-				with open( self.file_path, 'r', encoding='utf-8', errors='ignore' ) as _file:
-					_content = _file.read( )
-				self.raw_pages = _content.split( delimit )
-				for _page in self.raw_pages:
-					self.lines = _page.strip( ).splitlines( )
-					self.cleaned_text = '\n'.join( [ line.strip( )
-					                                 for line in self.lines if line.strip( ) ] )
-					self.cleaned_pages.append( self.cleaned_text )
-					_retval = self.cleaned_pages
-				return _retval
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'split_pages( self, path: str, delimit: str="\f" ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -284,19 +217,60 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The path argument "text" is required.' )
+				raise Exception( 'The argument "text" is required.' )
 			else:
 				self.raw_input = text
 				self.words = re.sub( r'[ \t]+', ' ', self.raw_input )
 				self.cleaned_lines = [ line.strip( ) for line in self.words.splitlines( ) ]
 				self.lines = [ line for line in self.cleaned_lines if line ]
-				_retval = '\n'.join( self.lines )
-				return _retval
+				return ' '.join( self.lines )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
 			_exc.method = 'collapse_whitespace( self, path: str ) -> str:'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
+	def correct_errors( self, text: str ) -> str:
+		"""
+
+			Corrects misspelled words
+			in the path path path.
+
+			This function:
+			  - Converts path to lowercase
+			  - Tokenizes the path into words
+			  - Applies spelling correction using TextBlob
+			  - Reconstructs and returns the corrected path
+
+			Parameters:
+			-----------
+			pages : str
+				The path pages path with potential spelling mistakes.
+
+			Returns:
+			--------
+			str
+				A corrected version of the path path with proper English words.
+
+		"""
+		try:
+			if text is None:
+				raise Exception( 'The argument "text" is required.' )
+			else:
+				self.raw_input = text
+				self.lowercase = self.raw_input.lower( )
+				self.tokens = nltk.word_tokenize( self.lowercase )
+				self.words = [ str( Word( w ).correct( ) ) for w in self.tokens ]
+				_retval = ' '.join( self.words )
+				return _retval
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Text'
+			_exc.method = 'correct_errors( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -324,8 +298,8 @@ class Text:
 			else:
 				self.raw_input = text
 				self.translator = str.maketrans( '', '', string.punctuation )
-				_retval = self.raw_input.translate( self.translator )
-				return _retval
+				self.cleaned_text = self.raw_input.translate( self.translator )
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -335,7 +309,7 @@ class Text:
 			_err.show( )
 	
 	
-	def remove_special( self, text: str, keep_spaces: bool=True ) -> str:
+	def remove_special( self, text: str, keep_spaces: bool = True ) -> str:
 		"""
 
 			Removes special characters
@@ -364,12 +338,12 @@ class Text:
 				raise Exception( 'The argument "text" is required.' )
 			elif keep_spaces:
 				self.raw_input = text
-				_retval = re.sub( r'[^a-zA-Z0-9\s]', '', self.raw_input )
-				return _retval
+				self.cleaned_text = re.sub( r'[^a-zA-Z0-9\s]', ' ', self.raw_input )
+				return self.cleaned_text
 			else:
 				self.raw_input = text
-				_retval = re.sub( r'[^a-zA-Z0-9]', ' ', self.raw_input )
-				return _retval
+				self.cleaned_text = re.sub( r'[^a-zA-Z0-9]', '', self.raw_input )
+				return self.cleaned_text
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -402,7 +376,7 @@ class Text:
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The path argument "text" is required.' )
+				raise Exception( 'The argument "text" is required.' )
 			else:
 				self.raw_html = text
 				self.cleaned_html = BeautifulSoup( self.raw_html, 'raw_html.parser' )
@@ -419,37 +393,34 @@ class Text:
 	
 	def remove_errors( self, text: str ) -> str:
 		"""
-	
-			Removes misspelled or non-English
-			words from the path path.
-	
-			This function:
-			  - Converts path to lowercase
-			  - Tokenizes the path into words
-			  - Filters out words not recognized as valid English using TextBlob
-			  - Returns a path with only correctly spelled words
-	
-			Parameters:
-			-----------
-			pages : str
-				The path pages to clean.
-	
+			
+			Purpose:
+			_______
+				Remove non-English/misspelled words,
+				but preserve numbers and selected symbols.
+				Preserved symbols: ( ) $
+			
+			Args:
+				text (str): Input text string.
+		
 			Returns:
-			--------
-			str
-				A cleaned_lines path containing only valid English words.
-	
+				str: Cleaned text.
+				
 		"""
 		try:
 			if text is None:
-				raise Exception( 'The path argument "text" is required.' )
+				raise Exception( 'The argument "text" is required.' )
 			else:
 				self.raw_input = text
-				self.lowercase = self.raw_input.lower( )
-				self.tokens = word_tokenize( self.lowercase )
-				self.words = [ w for w in self.tokens if Word( w ).spellcheck( )[ 0 ][ 1 ] > 0.9 ]
-				_retval = ' '.join( self.words )
-				return _retval
+				self.lowercase = self.lowercase.lower( )
+				self.vocabulary = set( w.lower( ) for w in words.words( ) )
+				allowed_symbols = { '(', ')', '$' }
+				self.tokens = re.findall( r'\b[\w.]+\b|[()$]', self.lowercase )
+				def is_valid_token( token: str ) -> bool:
+					return (token in self.vocabulary or token.replace( '.', '',
+						1 ).isdigit( ) or token in allowed_symbols)
+			self.cleaned_lines = [ tok for tok in self.tokens if is_valid_token( tok ) ]
+			return ' '.join( self.cleaned_lines )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
@@ -457,891 +428,903 @@ class Text:
 			_exc.method = 'remove_errors( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
-	
-	
-	def correct_errors( self, text: str ) -> str:
-		"""
-	
-			Corrects misspelled words
-			in the path path path.
-	
-			This function:
-			  - Converts path to lowercase
-			  - Tokenizes the path into words
-			  - Applies spelling correction using TextBlob
-			  - Reconstructs and returns the corrected path
-	
-			Parameters:
-			-----------
-			pages : str
-				The path pages path with potential spelling mistakes.
-	
-			Returns:
-			--------
-			str
-				A corrected version of the path path with proper English words.
-	
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The path argument "text" is required.' )
-			else:
-				self.raw_input = text
-				self.lowercase = self.raw_input.lower( )
-				self.tokens = word_tokenize( self.lowercase )
-				self.words = [ str( Word( w ).correct( ) ) for w in self.tokens ]
-				_retval = ' '.join( self.words )
-				return _retval
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'correct_errors( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def remove_html( self, text: str ) -> str:
-		"""
-	
-			
-	
-			This function:
-			  - Removes HTML from pages.
-	
-			Parameters:
-			-----------
-			pages : str
-				The formatted path pages.
-	
-			Returns:
-			--------
-			str
-				A cleaned_lines version of the pages with formatting removed.
-	
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The argument "text" is required.' )
-			else:
-				self.raw_input = text
-				_retval = (BeautifulSoup( self.raw_input, 'raw_html.parser' )
-				           .get_text( separator=' ', strip=True ))
-				return _retval
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_html( self, path: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def remove_markdown( self, text: str ) -> str:
-		"""
-	
-	
-			Removes Markdown
-			This function:
-			  - Removes Markdown syntax (e.g., *, #, [], etc.)
-	
-			Parameters:
-			-----------
-			pages : str
-				The formatted path pages.
-	
-			Returns:
-			--------
-			str
-				A cleaned_lines version of the pages with formatting removed.
-	
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The argument "text" is required.' )
-			else:
-				self.raw_input = text
-				self.cleaned_text = re.sub( r'\[.*?\]\(.*?\)', '', self.raw_input )
-				self.corrected = re.sub( r'[`_*#~>-]', '', self.cleaned_text )
-				_retval = re.sub( r'!\[.*?\]\(.*?\)', '', self.corrected )
-				return _retval
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_markdown( self, path: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def remove_stopwords( self, text: str ) -> str:
-		"""
-	
-	        This function:
-	          - Removes English stopwords from the path pages path.
-	          - Tokenizes the path pages
-	          - Removes common stopwords (e.g., "the", "is", "and", etc.)
-	          - Returns the pages with only meaningful words
-	
-	        Parameters:
-	        -----------
-	        pages : str
-	            The text string.
-	
-	        Returns:
-	        --------
-	        str
-	            A text string without stopwords.
-	
-	    """
-		try:
-			if text is None:
-				raise Exception( 'The argument "text" is required.' )
-			else:
-				stop_words = set( stopwords.words( 'english' ) )
-				self.tokens = word_tokenize( text.lower( ) )
-				filtered_tokens = [ w for w in tokens if w.isalnum( ) and w not in stop_words ]
-				cleaned_text = ' '.join( filtered_tokens )
-				return cleaned_text
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_stopwords( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]:
-		"""
-			
-			Removes repetitive headers and footers
-			across a list of pages by frequency analysis.
+
+
+def remove_html( self, text: str ) -> str:
+	"""
+
 		
-			Args:
-				pages (list of str): A list where each
-				element is the full path of one page.
-				min (int): Minimum num of times
-				a line must appear at the top/bottom to
-				be considered a header/footer.
-		
-			Returns:
-				list of str: List of cleaned_lines page
-				tokens without detected headers/footers.
-			
-		"""
-		try:
-			if pages is None:
-				raise Exception( 'The argument "pages" is required.' )
-			else:
-				_headers = defaultdict( int )
-				_footers = defaultdict( int )
-				self.pages = pages
-				
-				# First pass: collect frequency of top/bottom tokens
-				for _page in self.pages:
-					self.lines = _page.strip( ).splitlines( )
-					if not self.lines:
-						_headers[ self.lines[ 0 ].strip( ) ] += 1
-						_footers[ self.lines[ -1 ].strip( ) ] += 1
-				
-				# Identify candidates for removal
-				_head = { line for line, count in _headers.items( ) if
-				          count >= min }
-				_foot = { line for line, count in _footers.items( ) if
-				          count >= min }
-				
-				# Second pass: clean pages
-				for _page in self.pages:
-					self.lines = _page.strip( ).splitlines( )
-					if not self.lines:
-						self.cleaned_pages.append( _page )
-						continue
-					
-					# Remove header
-					if self.lines[ 0 ].strip( ) in _head:
-						self.lines = self_node.lines[ 1: ]
-					
-					# Remove footer
-					if self.lines and self.lines[ -1 ].strip( ) in _foot:
-						self.lines = self_node.lines[ :-1 ]
-					
-					self.cleaned_pages.append( "\n".join( self.lines ) )
-				_retval = self.cleaned_pages
-				return _retval
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def normalize_text( self, text: str ) -> str:
-		"""
-	
-	        This function:
-	        Normalizes the path pages path.
-	          - Converts pages to lowercase
-	          - Removes accented characters (e.g., é -> e)
-	          - Removes leading/trailing spaces
-	          - Collapses multiple whitespace characters into a single space
-	
-	        Parameters:
-	        -----------
-	        pages : str
-	            The raw path pages path to be normalized.
-	
-	        Returns:
-	        --------
-	        str
-	            A normalized, cleaned_lines version of the path path.
-	
-	    """
-		try:
-			if text is None:
-				raise Exception( 'The path argument "text" is required.' )
-			else:
-				self.raw_input = text
-				self.normalized = (unicodedata.normalize( 'NFKD', text )
-				                   .encode( 'ascii', 'ignore' ).decode( 'utf-8' ))
-				return self.normalized
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'normalize_text( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def get_wordnet_pos( tag: str ) -> Any | None:
-		if tag is None:
-			raise Exception( 'The argument "tag" is required.' )
+
+		This function:
+		  - Removes HTML from pages.
+
+		Parameters:
+		-----------
+		pages : str
+			The formatted path pages.
+
+		Returns:
+		--------
+		str
+			A cleaned_lines version of the pages with formatting removed.
+
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The argument "text" is required.' )
 		else:
-			try:
-				if tag.startswith( 'J' ):
-					return wordnet.ADJ
-				elif tag.startswith( 'V' ):
-					return wordnet.VERB
-				elif tag.startswith( 'N' ):
-					return wordnet.NOUN
-				elif tag.startswith( 'R' ):
-					return wordnet.ADV
-				else:
-					return wordnet.NOUN
-			except Exception as e:
-				_exc = Error( e )
-				_exc.module = 'Tiggr'
-				_exc.cause = 'Text'
-				_exc.method = 'normalize_text( self, path: str ) -> str'
-				_err = ErrorDialog( _exc )
-				_err.show( )
-	
-	
-	def lemmatize_tokens( self, tokens: List[ str ] ) -> List[ str ]:
-		"""
-	
-			Performs lemmatization on the path List[ str ] into a path
-			of word-tokens.
-	
-			This function:
-			  - Converts pages to lowercase
-			  - Tokenizes the lowercased pages into words
-			  - Lemmatizes each token using WordNetLemmatizer
-			  - Reconstructs the lemmatized tokens into a single path
-	
-			Parameters:
-			-----------
-			pages : str
-				The path pages path to be lemmatized.
-	
-			Returns:
-			--------
-			str
-				A path with all words lemmatized.
-	
-		"""
+			self.raw_input = text
+			_retval = (BeautifulSoup( self.raw_input, 'raw_html.parser' )
+			           .get_text( separator=' ', strip=True ))
+			return _retval
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'remove_html( self, path: str ) -> str'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def remove_markdown( self, text: str ) -> str:
+	"""
+
+
+		Removes Markdown
+		This function:
+		  - Removes Markdown syntax (e.g., *, #, [], etc.)
+
+		Parameters:
+		-----------
+		pages : str
+			The formatted path pages.
+
+		Returns:
+		--------
+		str
+			A cleaned_lines version of the pages with formatting removed.
+
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The argument "text" is required.' )
+		else:
+			self.raw_input = text
+			self.cleaned_text = re.sub( r'\[.*?\]\(.*?\)', '', self.raw_input )
+			self.corrected = re.sub( r'[`_*#~>-]', '', self.cleaned_text )
+			_retval = re.sub( r'!\[.*?\]\(.*?\)', '', self.corrected )
+			return _retval
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tigrr'
+		_exc.cause = 'Text'
+		_exc.method = 'remove_markdown( self, path: str ) -> str'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def remove_stopwords( self, text: str ) -> str:
+	"""
+
+		This function:
+		  - Removes English stopwords from the path pages path.
+		  - Tokenizes the path pages
+		  - Removes common stopwords (e.g., "the", "is", "and", etc.)
+		  - Returns the pages with only meaningful words
+
+		Parameters:
+		-----------
+		pages : str
+			The text string.
+
+		Returns:
+		--------
+		str
+			A text string without stopwords.
+
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The argument "text" is required.' )
+		else:
+			self.raw_input = text.lower( )
+			self.stop_words = set( stopwords.words( 'english' ) )
+			self.tokens = nltk.word_tokenize( self.raw_input )
+			self.cleaned_tokens = [ w for w in self.tokens
+			                        if w.isalnum( ) and w not in self.stop_words ]
+			self.cleaned_text = ' '.join( self.cleaned_tokens )
+			return self.cleaned_text
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tigrr'
+		_exc.cause = 'Text'
+		_exc.method = 'remove_stopwords( self, text: str ) -> str'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def remove_headers( self, pages: List[ str ], min: int = 3 ) -> List[ str ]:
+	"""
 		
-		try:
-			if tokens is None:
-				raise Exception( 'The path argument "tokens" is required.' )
-			else:
-				self.tokens = tokens
-				pos_tags = pos_tag( self.tokens )
-				self.lemmatized = [ self.lemmatizer.lemmatize( word, get_wordnet_pos( tag ) ) for
-				                    word, tag in pos_tags ]
-				return self.lemmatized
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'tokenize_words( self, tokens: List[ str  ] ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+		Removes repetitive headers and footers
+		across a list of pages by frequency analysis.
 	
+		Args:
+			pages (list of str): A list where each
+			element is the full path of one page.
+			min (int): Minimum num of times
+			a line must appear at the top/bottom to
+			be considered a header/footer.
 	
-	def tokenize_text( self, text: str ) -> List[ str ]:
-		'''
-	
-			Splits the raw path.
-			removes non-words and returns tokens
-			Args:
-				cleaned_line: (str) - clean documents.
-	
-			Returns:
-				list: Cleaned and normalized documents.
-	
-		'''
-		try:
-			if text is None:
-				raise Exception( 'The path argument "text" was None' )
-			else:
-				self.tokens.clear( )
-				self.raw_input = text
-				self.lowercase = self.raw_input.lower( )
-				self.tokens = word_tokenize( self.lowercase )
-				self.words = [ w for w in self.tokens.split( ' ' ) ]
-				self.tokens = [ re.sub( r'[^\w"-]', '', word ) for word in self.words if
-				                word.strip( ) ]
-				return self.tokens
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'tokenize_text( self, path: str ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def tokenize_words( self, words: List[ str ] ) -> List[ str ]:
-		"""
-	
-	        This function:
-	          - Tokenizes the path pages path into individual word tokens.
-	          - Converts pages to lowercase
-	          - Uses NLTK's word_tokenize to split
-	          the pages into words and punctuation tokens
-	
-	        Parameters:
-	        -----------
-	        words : List[ str ]
-	            A list of strings to be tokenized.
-	
-	        Returns:
-	        --------
-	            A list of token strings (words and punctuation)
-	            extracted from the pages.
-	
-	    """
-		try:
-			if words is None:
-				raise Exception( 'The path argument "words" was None' )
-			else:
-				# Convert to lowercase
-				_wordtokens = [ ]
-				for w in words:
-					_token = nltk.word_tokenize( w )
-					_wordtokens.append( _token )
-				return _wordtokens
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'tokenize_words( self, path: str ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def tokenize_sentences( self, text: str ) -> List[ str ]:
-		"""
+		Returns:
+			list of str: List of cleaned_lines page
+			tokens without detected headers/footers.
 		
-			Tokenize a paragraph or
-			document into a list[ str ] of sentence strings.
-	
-			Args:
-				text (str): Input pages.
-	
-			Returns:
-				list: List of sentence strings.
+	"""
+	try:
+		if pages is None:
+			raise Exception( 'The argument "pages" is required.' )
+		else:
+			_headers = defaultdict( int )
+			_footers = defaultdict( int )
+			self.pages = pages
+			
+			# First pass: collect frequency of top/bottom tokens
+			for _page in self.pages:
+				self.lines = _page.strip( ).splitlines( )
+				if not self.lines:
+					_headers[ self.lines[ 0 ].strip( ) ] += 1
+					_footers[ self.lines[ -1 ].strip( ) ] += 1
+			
+			# Identify candidates for removal
+			_head = { line for line, count in _headers.items( ) if
+			          count >= min }
+			_foot = { line for line, count in _footers.items( ) if
+			          count >= min }
+			
+			# Second pass: clean pages
+			for _page in self.pages:
+				self.lines = _page.strip( ).splitlines( )
+				if not self.lines:
+					self.cleaned_pages.append( _page )
+					continue
 				
-		"""
+				# Remove header
+				if self.lines[ 0 ].strip( ) in _head:
+					self.lines = self_node.lines[ 1: ]
+				
+				# Remove footer
+				if self.lines and self.lines[ -1 ].strip( ) in _foot:
+					self.lines = self_node.lines[ :-1 ]
+				
+				self.cleaned_pages.append( "\n".join( self.lines ) )
+			_retval = self.cleaned_pages
+			return _retval
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def normalize_text( self, text: str ) -> str:
+	"""
+
+		This function:
+		Normalizes the path pages path.
+		  - Converts pages to lowercase
+		  - Removes accented characters (e.g., é -> e)
+		  - Removes leading/trailing spaces
+		  - Collapses multiple whitespace characters into a single space
+
+		Parameters:
+		-----------
+		pages : str
+			The raw path pages path to be normalized.
+
+		Returns:
+		--------
+		str
+			A normalized, cleaned_lines version of the path path.
+
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The argument "text" is required.' )
+		else:
+			self.raw_input = text
+			self.normalized = (unicodedata.normalize( 'NFKD', text )
+			                   .encode( 'ascii', 'ignore' ).decode( 'utf-8' ))
+			return self.normalized
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'normalize_text( self, text: str ) -> str'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def get_wordnet_pos( tag: str ) -> Any | None:
+	if tag is None:
+		raise Exception( 'The argument "tag" is required.' )
+	else:
 		try:
-			if text is None:
-				raise Exception( 'The path argument "text" is required.' )
+			if tag.startswith( 'J' ):
+				return wordnet.ADJ
+			elif tag.startswith( 'V' ):
+				return wordnet.VERB
+			elif tag.startswith( 'N' ):
+				return wordnet.NOUN
+			elif tag.startswith( 'R' ):
+				return wordnet.ADV
 			else:
-				self.raw_input = text
-				self.tokens = sent_tokenize( self.raw_input )
-				return self.tokens
+				return wordnet.NOUN
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'tokenize_sentences( self, text: str ) -> List[ str ]'
+			_exc.method = 'normalize_text( self, path: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
+
+
+def lemmatize_tokens( self, tokens: List[ str ] ) -> List[ str ]:
+	"""
+
+		Performs lemmatization on the path List[ str ] into a path
+		of word-tokens.
+
+		This function:
+		  - Converts pages to lowercase
+		  - Tokenizes the lowercased pages into words
+		  - Lemmatizes each token using WordNetLemmatizer
+		  - Reconstructs the lemmatized tokens into a single path
+
+		Parameters:
+		-----------
+		pages : str
+			The path pages path to be lemmatized.
+
+		Returns:
+		--------
+		str
+			A path with all words lemmatized.
+
+	"""
 	
+	try:
+		if tokens is None:
+			raise Exception( 'The argument "tokens" is required.' )
+		else:
+			self.tokens = tokens
+			pos_tags = pos_tag( self.tokens )
+			self.lemmatized = [ self.lemmatizer.lemmatize( word, get_wordnet_pos( tag ) ) for
+			                    word, tag in pos_tags ]
+			return self.lemmatized
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'tokenize_words( self, tokens: List[ str  ] ) -> List[ str ]'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def tokenize_text( self, text: str ) -> List[ str ]:
+	'''
+
+		Splits the raw path.
+		removes non-words and returns tokens
+		Args:
+			cleaned_line: (str) - clean documents.
+
+		Returns:
+			list: Cleaned and normalized documents.
+
+	'''
+	try:
+		if text is None:
+			raise Exception( 'The argument "text" was None' )
+		else:
+			self.tokens = nltk.word_tokenize( text )
+			self.words = [ w for w in self.tokens ]
+			_retokens = [ re.sub( r'[^\w"-]', '', word ) for word in self.words if
+			              word.strip( ) ]
+			return _retokens
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'tokenize_text( self, path: str ) -> List[ str ]'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def tokenize_words( self, words: List[ str ] ) -> List[ str ]:
+	"""
+
+		This function:
+		  - Tokenizes the path pages path into individual word tokens.
+		  - Converts pages to lowercase
+		  - Uses NLTK's word_tokenize to split
+		  the pages into words and punctuation tokens
+
+		Parameters:
+		-----------
+		words : List[ str ]
+			A list of strings to be tokenized.
+
+		Returns:
+		--------
+			A list of token strings (words and punctuation)
+			extracted from the pages.
+
+	"""
+	try:
+		if words is None:
+			raise Exception( 'The argument "words" was None' )
+		else:
+			self.words = words
+			for w in self.words:
+				_tokens = nltk.word_tokenize( w )
+				self.tokens.append( _tokens )
+			return self.tokens
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'tokenize_words( self, path: str ) -> List[ str ]'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def tokenize_sentences( self, text: str ) -> List[ str ]:
+	"""
 	
-	def chunk_text( self, text: str, chunk_size: int=50, return_as_string: bool=True ) -> List[
-		str ]:
-		"""
+		Tokenize a paragraph or
+		document into a list[ str ] of sentence strings.
 
-			This function:
-			Tokenizes cleaned_lines pages and breaks it into chunks for downstream vectors.
-			  - Converts pages to lowercase
-			  - Tokenizes pages using NLTK's word_tokenize
-			  - Breaks tokens into chunks of a specified size
-			  - Optionally joins tokens into strings (for transformer models)
+		Args:
+			text (str): Input pages.
 
-			Parameters:
-			-----------
-			pages : str
-				The cleaned_lines path pages to be tokenized and chunked.
+		Returns:
+			list: List of sentence strings.
+			
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The argument "text" is required.' )
+		else:
+			self.raw_input = text
+			self.tokens = nltk.sent_tokenize( self.raw_input )
+			return self.tokens
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'tokenize_sentences( self, text: str ) -> List[ str ]'
+		_err = ErrorDialog( _exc )
+		_err.show( )
 
-			chunk_size : int, optional (default=50)
-				Number of tokens per chunk_tokens.
 
-			return_string : bool, optional (default=True)
-				If True, returns each chunk_tokens as a path; otherwise, returns a get_list of
-				tokens.
+def chunk_text( self, text: str, size: int = 50, return_as_string: bool = True ) -> List[
+	List[ str ] ]:
+	"""
 
-			Returns:
-			--------
-			get_list
-				A get_list of token chunks. Each chunk_tokens is either a get_list of tokens or a
-				path.
+		This function:
+		Tokenizes cleaned_lines pages and breaks it into chunks for downstream vectors.
+		  - Converts pages to lowercase
+		  - Tokenizes pages using NLTK's word_tokenize
+		  - Breaks tokens into chunks of a specified size
+		  - Optionally joins tokens into strings (for transformer models)
 
-		"""
-		try:
-			if text is None:
-				raise Exception( 'The path argument "text" is required.' )
+		Parameters:
+		-----------
+		pages : str
+			The cleaned_lines path pages to be tokenized and chunked.
+
+		chunk_size : int, optional (default=50)
+			Number of tokens per chunk_tokens.
+
+		return_string : bool, optional (default=True)
+			If True, returns each chunk_tokens as a path; otherwise, returns a get_list of
+			tokens.
+
+		Returns:
+		--------
+		a list
+			A list of token chunks. Each chunk_tokens is either a get_list of tokens or a
+			path.
+
+	"""
+	try:
+		if text is None:
+			raise Exception( 'The argument "text" is required.' )
+		else:
+			self.tokens = nltk.word_tokenize( text )
+			self.chunks = [ self.tokens[ i: i + size ] for i in
+			                range( 0, len( self.tokens ), size ) ]
+			if return_as_string:
+				return [ ' '.join( chunk ) for chunk in self.chunks ]
 			else:
-				# Download tokenizer models (only once)
-				nltk.download( 'punkt', quiet=True )
-				tokens = word_tokenize( text )
-				token_chunks = [ tokens[ i:i + chunk_size ] for i in
-				                 range( 0, len( tokens ), chunk_size ) ]
-				if return_as_string:
-					return [ ' '.join( chunk ) for chunk in token_chunks ]
-				else:
-					return token_chunks
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'chunk_text( self, text: str, max: int=800 ) -> list[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def chunk_tokens( self, words: List[ str ], chunk_size: int=50 ) -> List[ List[ str ] ]:
-		"""
+				return self.chunks
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'chunk_text( self, text: str, max: int=800 ) -> list[ str ]'
+		_err = ErrorDialog( _exc )
+		_err.show( )
 
 
-			Breaks a list of
-			tokenized strings into a
-			list of lists.
+def chunk_tokens( self, words: List[ str ], size: int = 50, as_string: bool = True ) -> List[
+	List[ str ] ]:
+	"""
 
-			This function:
-			  - Groups tokens into chunks of min `chunk_size`
-			  - Returns a list of lists of tokens
 
-			Parameters:
-			-----------
-			words : a list of tokenizd words
+		Breaks a list of
+		tokenized strings into a
+		list of lists.
 
-			chunk_size : int, optional (default=50)
-				Number of tokens per chunk_tokens.
+		This function:
+		  - Groups tokens into chunks of min `chunk_size`
+		  - Returns a list of lists of tokens
 
-			Returns:
-			--------
-			List[ List[ str ] ]
-				A list of a list of token chunks. Each chunk is a list of tokens.
+		Parameters:
+		-----------
+		words : a list of tokenizd words
 
-		"""
-		try:
-			if words is None:
-				raise Exception( 'The path argument "words" is required.' )
+		chunk_size : int, optional (default=50)
+			Number of tokens per chunk_tokens.
+
+		Returns:
+		--------
+		List[ List[ str ] ]
+			A list of a list of token chunks. Each chunk is a list of tokens.
+
+	"""
+	try:
+		if words is None:
+			raise Exception( 'The argument "words" is required.' )
+		else:
+			self.tokens = [ token for sublist in words for token in sublist ]
+			self.chunks = [ self.tokens[ i: i + size ]
+			                for i in range( 0, len( self.tokens ), size ) ]
+			if as_string:
+				return [ ' '.join( chunk ) for chunk in self.chunks ]
 			else:
-				_all = [ token for sublist in words for token in sublist ]
-				_retchunks = [
-					_all[ i: i + chunk_size ]
-					for i in range( 0, len( _all ), chunk_size ) ]
-				
-				return _retchunks
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
-			_exc.method = (
-				'chunk_tokens( self, tokens: list[ str ], max: int=800, over: int=50 ) -> list[ '
-				'str ]')
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
-		"""
+				return self.chunks
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Token'
+		_exc.method = (
+			'chunk_tokens( self, tokens: list[ str ], max: int=800, over: int=50 ) -> list[ '
+			'str ]')
+		_err = ErrorDialog( _exc )
+		_err.show( )
 
-			Purpose:
-			________
-			Reads path from a file, splits it into tokens,
-			and groups them into path.
 
-			Args:
-				path (str): Path to the path file.
-				delimiter (str): Page separator path
-				(default is '\f' for form feed).
+def split_lines( self, path: str ) -> List[ str ]:
+	"""
 
-			Returns:
-				list[ str ]  where each element
-				is the path.
+		Splits the path
+		into tokens
 
-		"""
-		try:
-			if path is None:
-				raise Exception( 'The argument "path" is required' )
-			else:
-				self.file_path = path
-				with open( self.file_path, 'r', encoding='utf-8', errors='ignore' ) as _file:
-					_content = _file.read( )
-				self.raw_pages = _content.split( delimit )
-				for _page in self.raw_pages:
-					self.lines = _page.strip( ).splitlines( )
-					self.cleaned_text = '\n'.join( [ line.strip( )
-					                                 for line in self.lines if line.strip( ) ] )
-					self.cleaned_pages.append( self.cleaned_text )
-					_retval = self.cleaned_pages
-				return _retval
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'split_pages( self, path: str, delimit: str="\f" ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+		Parameters:
+		-----------
+		path : str
+
+		Returns:
+		--------
+		list[ str ]
+
+	"""
+	try:
+		if path is None:
+			raise Exception( 'The argument "path" is required' )
+		else:
+			self.file_path = path
+			with open( self.file_path, 'r', encoding='utf-8', errors='ignore' ) as _file:
+				self.lines = _file.readlines( ).strip( ).splitlines( )
+				return self.lines
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'split_lines( self, path: str ) -> list[ str ]'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def split_pages( self, path: str, delimit: str = '\f' ) -> List[ str ]:
+	"""
+
+		Reads path from a file, splits it into tokens,
+		and groups them into path.
+
+		Args:
+			path (str): Path to the path file.
+			delimiter (str): Page separator path
+			(default is '\f' for form feed).
+
+		Returns:
+			list[ str ]  where each element
+			is the path.
+
+	"""
+	try:
+		if path is None:
+			raise Exception( 'The argument "path" is required' )
+		else:
+			self.file_path = path
+			with open( self.file_path, 'r', encoding='utf-8', errors='ignore' ) as _file:
+				_content = _file.read( )
+			self.raw_pages = _content.split( delimit )
+			for _page in self.raw_pages:
+				self.lines = _page.strip( ).splitlines( )
+				self.cleaned_text = '\n'.join( [ line.strip( )
+				                                 for line in self.lines if line.strip( ) ] )
+				self.cleaned_pages.append( self.cleaned_text )
+			return self.cleaned_pages
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'split_pages( self, path: str, delimit: str="\f" ) -> List[ str ]'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def split_paragraphs( self, path: str ) -> List[ str ]:
+	"""
 	
-	
-	def split_paragraphs( self, path: str ) -> List[ str ]:
-		"""
-		
-			Reads  a file and
-			splits it into paragraphs. A paragraph is defined as a block
-			of path separated by one or more empty tokens.
-	
-			Args:
-				path (str): Path to the path file.
-	
-			Returns:
-				list of str: List of paragraph strings.
-				
-		"""
-		try:
-			if path is None:
-				raise Exception( 'The path argument "path" is required.' )
-			else:
-				self.file_path = path
-				with open( self.file_path, 'r', encoding='utf-8' ) as _file:
-					self.raw_input = _file.read( )
-					self.paragraphs = [ para.strip( ) for para in self.raw_input.split( '\n\n' ) if
-					                    para.strip( ) ]
-					return self.paragraphs
-		except UnicodeDecodeError:
-			with open( self.file_path, 'r', encoding='latin1' ) as _file:
+		Reads  a file and
+		splits it into paragraphs. A paragraph is defined as a block
+		of path separated by one or more empty tokens.
+
+		Args:
+			path (str): Path to the path file.
+
+		Returns:
+			list of str: List of paragraph strings.
+			
+	"""
+	try:
+		if path is None:
+			raise Exception( 'The argument "path" is required.' )
+		else:
+			self.file_path = path
+			with open( self.file_path, 'r', encoding='utf-8' ) as _file:
 				self.raw_input = _file.read( )
 				self.paragraphs = [ para.strip( ) for para in self.raw_input.split( '\n\n' ) if
 				                    para.strip( ) ]
 				return self.paragraphs
-	
-	
-	def compute_frequency_distribution( self, lines: List[ str ],
-	                                    process: bool=True ) -> FreqDist:
-		"""
-		
-			Creates a word frequency freq_dist
-			from a list of documents.
-	
-			Args:
-				documents (list): List of raw or preprocessed path documents.
-				process (bool): If True, applies normalization,
-				tokenization, stopword removal, and lemmatization.
-	
-			Returns:
-				dict: Dictionary of words and their corresponding frequencies.
-				
-		"""
-		try:
-			if lines is None:
-				raise Exception( 'The path argument "lines" is required.' )
-			else:
-				self.lines = lines
-				for _line in self.lines:
-					if process:
-						self.normalized = self.normalize_text( _line )
-						self.words = self.tokenize_words( self.normalized )
-						self.tokens = self.lemmatize_tokens( self.words )
-					else:
-						self.words = self.tokenize_words( _line )
-						self.tokens.append( self.words )
-				self.frequency_distribution = dict( Counter( self.tokens ) )
-				return self.frequency_distribution
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = ('compute_frequency_distribution( self, documents: list, process: '
-			               'bool=True) -> FreqDist')
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def compute_conditional_distribution( self, lines: List[ str ], condition=None,
-	                                      process: bool=True ) -> ConditionalFreqDist:
-		"""
+	except UnicodeDecodeError:
+		with open( self.file_path, 'r', encoding='latin1' ) as _file:
+			self.raw_input = _file.read( )
+			self.paragraphs = [ para.strip( ) for para in self.raw_input.split( '\n\n' ) if
+			                    para.strip( ) ]
+			return self.paragraphs
 
-			Computes a Conditional Frequency Distribution (CFD)
-			 over a collection of documents.
 
-			Args:
-				documents (list):
-				A list of path sections (pages, paragraphs, etc.).
+def compute_frequency_distribution( self, lines: List[ str ],
+                                    process: bool = True ) -> FreqDist:
+	"""
+	
+		Creates a word frequency freq_dist
+		from a list of documents.
 
-				condition (function):
-				A function to determine the condition/grouping. If None, uses document index.
+		Args:
+			documents (list): List of raw or preprocessed path documents.
+			process (bool): If True, applies normalization,
+			tokenization, stopword removal, and lemmatization.
 
-				process (bool):
-				If True, applies normalization, tokenization,
-				stopword removal, and lemmatization.
-
-			Returns:
-				ConditionalFreqDist:
-				An NLTK ConditionalFreqDist object mapping conditions to word frequencies.
-
-		"""
-		try:
-			if lines is None:
-				raise Exception( 'The path argument "lines" is required.' )
-			else:
-				self.lines = lines
-				self.conditional_distribution = ConditionalFreqDist( )
-				
-				for idx, _line in enumerate( self.lines ):
-					condition = condition( _line ) if condition else f'Doc_{idx}'
-					
-					if process:
-						self.normalized = self.normalize_text( _line )
-						self.words = self.tokenize_words( self.normalized )
-						self.tokens = self.lemmatize_tokens( self.words )
-					else:
-						self.tokens = self.tokenize_words( _line )
-					
-					for _token in self.tokens:
-						self.conditional_distribution[ condition ][ _token ] += 1
-				
-				return self.conditional_distribution
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = ('compute_conditional_distribution( self, tokens: List[ str ], '
-			               'condition=None, process: bool=True ) -> ConditionalFreqDist')
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def create_vocabulary( self, freq_dist: Dict, min: int=1 ) -> List[ str ]:
-		"""
-		
-			Builds a vocabulary list from a frequency
-			distribution by applying a minimum frequency threshold.
-	
-			Args:
-				freq_dist (dict):
-				A dictionary mapping words to their frequencies.
-				min (int): Minimum num
-				of occurrences required for a word to be included.
-	
-			Returns:
-				list: Sorted list of unique vocabulary words.
-				
-		"""
-		try:
-			if freq_dist is None:
-				raise Exception( 'The path argument "freq_dist" is required.' )
-			else:
-				self.frequency_distribution = freq_dist
-				self.words = [ word for word, freq in self.frequency_distribution.items( ) if
-				               freq >= min ]
-				self.vocabulary = sorted( self.words )
-				return self.vocabulary
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'create_vocabulary( self, freq_dist: dict, min: int=1 ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def create_wordbag( self, tokens: List[ str ] ) -> dict:
-		"""
+		Returns:
+			dict: Dictionary of words and their corresponding frequencies.
 			
-			Purpose:
-			Construct a Bag-of-Words (BoW)
-			frequency dictionary from a list of strings.
-	
-			Args:
-				tokens (list): List of tokens from a document.
-	
-			Returns:
-				dict: Word frequency dictionary.
+	"""
+	try:
+		if lines is None:
+			raise Exception( 'The argument "lines" is required.' )
+		else:
+			self.lines = lines
+			for _line in self.lines:
+				if process:
+					self.normalized = self.normalize_text( _line )
+					self.words = self.tokenize_words( self.normalized )
+					self.tokens = self.lemmatize_tokens( self.words )
+				else:
+					self.words = self.tokenize_words( _line )
+					self.tokens.append( self.words )
+			self.frequency_distribution = dict( Counter( self.tokens ) )
+			return self.frequency_distribution
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = ('compute_frequency_distribution( self, documents: list, process: '
+		               'bool=True) -> FreqDist')
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def compute_conditional_distribution( self, lines: List[ str ], condition=None,
+                                      process: bool = True ) -> ConditionalFreqDist:
+	"""
+
+		Computes a Conditional Frequency Distribution (CFD)
+		 over a collection of documents.
+
+		Args:
+			documents (list):
+			A list of path sections (pages, paragraphs, etc.).
+
+			condition (function):
+			A function to determine the condition/grouping. If None, uses document index.
+
+			process (bool):
+			If True, applies normalization, tokenization,
+			stopword removal, and lemmatization.
+
+		Returns:
+			ConditionalFreqDist:
+			An NLTK ConditionalFreqDist object mapping conditions to word frequencies.
+
+	"""
+	try:
+		if lines is None:
+			raise Exception( 'The argument "lines" is required.' )
+		else:
+			self.lines = lines
+			self.conditional_distribution = ConditionalFreqDist( )
+			
+			for idx, _line in enumerate( self.lines ):
+				condition = condition( _line ) if condition else f'Doc_{idx}'
 				
-		"""
-		try:
-			if tokens is None:
-				raise Exception( 'The path argument "tokens" is required.' )
-			else:
-				self.tokens = tokens
-				return dict( Counter( self.tokens ) )
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'create_wordbag( self, tokens: List[ str ] ) -> dict'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+				if process:
+					self.normalized = self.normalize_text( _line )
+					self.words = self.tokenize_words( self.normalized )
+					self.tokens = self.lemmatize_tokens( self.words )
+				else:
+					self.tokens = self.tokenize_words( _line )
+				
+				for _token in self.tokens:
+					self.conditional_distribution[ condition ][ _token ] += 1
+			
+			return self.conditional_distribution
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = ('compute_conditional_distribution( self, tokens: List[ str ], '
+		               'condition=None, process: bool=True ) -> ConditionalFreqDist')
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def create_vocabulary( self, freq_dist: Dict, min: int = 1 ) -> List[ str ]:
+	"""
 	
-	
-	def create_word2vec( self, tokens: List[ str ], size=100, window=5, min=1 ) -> Word2Vec:
-		"""
-			Purpose:
-				Train a Word2Vec embedding small_model from tokenized sentences.
-	
-			Args:
-				sentences (get_list of get_list of str): List of tokenized sentences.
-				vector_size (int): Dimensionality of word vec.
-				window (int): Max distance between current and predicted word.
-				min_count (int): Minimum frequency for inclusion in vocabulary.
-	
-			Returns:
-				Word2Vec: Trained Gensim Word2Vec small_model.
-		"""
-		try:
-			if tokens is None:
-				raise Exception( 'The path argument "tokens" is required.' )
-			else:
-				self.tokens = tokens
-				return Word2Vec( sentences=self.tokens, vector_size=size,
-					window=window, min_count=min )
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = ('create_word2vec( self, tokens: list, '
-			               'size=100, window=5, min=1 ) -> Word2Vec')
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def create_tfidf( self, lines: List[ str ], max: int=1000, prep: bool=True ) -> Tuple:
-		"""
+		Builds a vocabulary list from a frequency
+		distribution by applying a minimum frequency threshold.
+
+		Args:
+			freq_dist (dict):
+			A dictionary mapping words to their frequencies.
+			min (int): Minimum num
+			of occurrences required for a word to be included.
+
+		Returns:
+			list: Sorted list of unique vocabulary words.
+			
+	"""
+	try:
+		if freq_dist is None:
+			raise Exception( 'The argument "freq_dist" is required.' )
+		else:
+			self.frequency_distribution = freq_dist
+			self.words = [ word for word, freq in self.frequency_distribution.items( ) if
+			               freq >= min ]
+			self.vocabulary = sorted( self.words )
+			return self.vocabulary
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'create_vocabulary( self, freq_dist: dict, min: int=1 ) -> List[ str ]'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def create_wordbag( self, tokens: List[ str ] ) -> dict:
+	"""
 		
-			Purpose:
-			________
-			Compute TF-IDF matrix with
-			optional full preprocessing pipeline.
+		Purpose:
+		Construct a Bag-of-Words (BoW)
+		frequency dictionary from a list of strings.
+
+		Args:
+			tokens (list): List of tokens from a document.
+
+		Returns:
+			dict: Word frequency dictionary.
+			
+	"""
+	try:
+		if tokens is None:
+			raise Exception( 'The argument "tokens" is required.' )
+		else:
+			self.tokens = tokens
+			return dict( Counter( self.tokens ) )
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'create_wordbag( self, tokens: List[ str ] ) -> dict'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def create_word2vec( self, tokens: List[ str ], size=100, window=5, min=1 ) -> Word2Vec:
+	"""
+		Purpose:
+			Train a Word2Vec embedding small_model from tokenized sentences.
+
+		Args:
+			sentences (get_list of get_list of str): List of tokenized sentences.
+			vector_size (int): Dimensionality of word vec.
+			window (int): Max distance between current and predicted word.
+			min_count (int): Minimum frequency for inclusion in vocabulary.
+
+		Returns:
+			Word2Vec: Trained Gensim Word2Vec small_model.
+	"""
+	try:
+		if tokens is None:
+			raise Exception( 'The argument "tokens" is required.' )
+		else:
+			self.tokens = tokens
+			return Word2Vec( sentences=self.tokens, vector_size=size,
+				window=window, min_count=min )
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = ('create_word2vec( self, tokens: list, '
+		               'size=100, window=5, min=1 ) -> Word2Vec')
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def create_tfidf( self, lines: List[ str ], max: int = 1000, prep: bool = True ) -> Tuple:
+	"""
 	
-			Args:
-				lines (list): List of raw or preprocessed pages documents.
-				max (int): Max num of terms to include (vocabulary size).
-				prep (bool): If True, normalize, tokenize_text, clean, and lemmatize path.
-	
-			Returns:
-				tuple:
-					- tfidf_matrix (scipy.sparse.csr_matrix): TF-IDF feature matrix.
-					- feature_names (list): Vocabulary terms.
-					- vectorizer (TfidfVectorizer): Fitted vectorizer instance.
-	
-		"""
-		try:
-			if lines is None:
-				raise Exception( 'The path argument "tokens" is required.' )
-			elif prep:
-				self.lines = lines
-				for _doc in self.lines:
-					self.normalized = self.normalize( _doc )
-					self.tokens = self.tokenize_words( self.normalized )
-					self.words = [ self.lemmatize( token ) for token in self.tokens ]
-					self.cleaned_text = " ".join( self.words )
-					self.cleaned_lines.append( cleaned_text )
+		Purpose:
+		________
+		Compute TF-IDF matrix with
+		optional full preprocessing pipeline.
+
+		Args:
+			lines (list): List of raw or preprocessed pages documents.
+			max (int): Max num of terms to include (vocabulary size).
+			prep (bool): If True, normalize, tokenize_text, clean, and lemmatize path.
+
+		Returns:
+			tuple:
+				- tfidf_matrix (scipy.sparse.csr_matrix): TF-IDF feature matrix.
+				- feature_names (list): Vocabulary terms.
+				- vectorizer (TfidfVectorizer): Fitted vectorizer instance.
+
+	"""
+	try:
+		if lines is None:
+			raise Exception( 'The argument "tokens" is required.' )
+		elif prep:
+			self.lines = lines
+			for _doc in self.lines:
+				self.normalized = self.normalize( _doc )
+				self.tokens = self.tokenize_words( self.normalized )
+				self.words = [ self.lemmatize( token ) for token in self.tokens ]
+				self.cleaned_text = " ".join( self.words )
+				self.cleaned_lines.append( cleaned_text )
+			
+			self.vectorizer = TfidfVectorizer( max_features=max, stop_words='english' )
+			_matrix = self.vectorizer.fit_transform( self.cleaned_lines )
+			return (_matrix, self.vectorizer.get_feature_names_out( ).tolist( ),
+			        self.vectorizer)
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = ('create_tfidf( self, tokens: list, max: int=1000, prep: bool=True ) '
+		               '-> '
+		               'Tuple')
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def clean_files( self, src: str, dest: str ):
+	try:
+		if src is None:
+			raise Exception( 'The argument "src" is required.' )
+		elif dest is None:
+			raise Exception( 'The argument "dest" is required.' )
+		else:
+			source = src
+			destination = dest
+			files = os.listdir( source )
+			for f in files:
+				processed = [ ]
+				filename = os.path.basename( f )
+				source_path = source + '\\' + filename
+				text = open( source_path, 'r', encoding='utf-8', errors='ignore' ).read( )
+				punc = self.remove_punctuation( text )
+				dirty = self.split_sentences( punc )
+				for d in dirty:
+					if d != " ":
+						lower = d.lower( )
+						normal = self.normalize_text( lower )
+						spec = self.remove_special( normal )
+						slim = self.collapse_space( spec )
+						processed.append( slim )
 				
-				self.vectorizer = TfidfVectorizer( max_features=max, stop_words='english' )
-				_matrix = self.vectorizer.fit_transform( self.cleaned_lines )
-				return (_matrix, self.vectorizer.get_feature_names_out( ).tolist( ),
-				        self.vectorizer)
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = ('create_tfidf( self, tokens: list, max: int=1000, prep: bool=True ) '
-			               '-> '
-			               'Tuple')
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def clean_files( self, src: str, dest: str ):
-		source = src
-		destination = dest
-		files = os.listdir( source )
-		for f in files:
-			processed = [ ]
-			filename = os.path.basename( f )
-			source_path = source + '\\' + filename
-			text = open( source_path, 'r', encoding='utf-8', errors='ignore' ).read( )
-			punc = remove_punctuation( text )
-			dirty = split_sentences( punc )
-			for d in dirty:
-				if d != " ":
-					lower = d.lower( )
-					normal = normalize( lower )
-					spec = remove_special( normal )
-					slim = collapse_space( spec )
-					processed.append( slim )
-			
-			dest_path = destination + '\\' + filename
-			clean = open( dest_path, 'wt', encoding='utf-8', errors='ignore' )
-			for p in processed:
-				clean.write( p )
-	
-	
-	def convert_jsonl( self, src: str, dest: str ):
-		ext = '.jsonl'
-		source = src
-		destination = dest
-		files = os.listdir( source )
-		for f in files:
-			count = 0
-			processed = [ ]
-			basename = os.path.basename( f )
-			source_path = source + '\\' + basename
-			text = open( source_path, 'rt', encoding='utf-8', errors='ignore' ).read( )
-			stops = remove_stopwords( text )
-			chunks = chunk_text( stops )
-			tokens = tokenize( chunks )
-			lines = chunk_tokens( tokens )
-			filename = basename.rstrip( '.txt' ) + ext
-			dest_path = destination + '\\' + filename
-			clean = open( dest_path, 'wt', encoding='utf-8', errors='ignore' )
-			for i, c in enumerate( lines ):
-				part = ' '.join( c )
-				line = '{ ' + f'"{i}"' + ' : ' + '"' + part + '"' + ' }' + '\r'
-				processed.append( line )
-			
-			for t in processed:
-				clean.write( t )
-			clean.close( )
+				dest_path = destination + '\\' + filename
+				clean = open( dest_path, 'wt', encoding='utf-8', errors='ignore' )
+				for p in processed:
+					clean.write( p )
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'clean_files( self, src: str, dest: str )'
+		_err = ErrorDialog( _exc )
+		_err.show( )
+
+
+def convert_jsonl( self, source: str, desination: str ):
+	try:
+		if source is None:
+			raise Exception( 'The argument "sourc" is required.' )
+		elif desination is None:
+			raise Exception( 'The argument "desination" is required.' )
+		else:
+			_source = source
+			_destination = desination
+			self.files = os.listdir( _source )
+			_processed = [ ]
+			for _f in self.files:
+				_count = 0
+				_basename = os.path.basename( _f )
+				_sourcepath = _source + f'\\{_basename}'
+				_text = open( _sourcepath, 'r', encoding='utf-8', errors='ignore' ).read( )
+				_stops = self.remove_stopwords( _text )
+				_tokens = self.tokenize_text( _stops )
+				_chunks = self.chunk_text( _text )
+				_filename = _basename.rstrip( '.txt' )
+				_destinationpath = _destination + f'\\{_filename}.jsonl'
+				_clean = open( _destinationpath, 'wt', encoding='utf-8', errors='ignore' )
+				for _i in range( len( _chunks ) ):
+					_list = _chunks[ _i ]
+					_part = ''.join( _list )
+					_row = '{' + f'\"Line-{_i}\":\"{_part}\"' + '}' + '\r'
+					_processed.append( _row )
+				
+				for _t in _processed:
+					_clean.write( _t )
+				
+				_clean.flush( )
+				_clean.close( )
+	except Exception as e:
+		_exc = Error( e )
+		_exc.module = 'Tiggr'
+		_exc.cause = 'Text'
+		_exc.method = 'convert_jsonl( self, source: str, desination: str )'
+		_err = ErrorDialog( _exc )
+		_err.show( )
 
 
 class PDF( ):
@@ -1365,7 +1348,7 @@ class PDF( ):
 	"""
 	
 	
-	def __init__( self, headers: bool=False, min: int=10, tables: bool=True ):
+	def __init__( self, headers: bool = False, min: int = 10, tables: bool = True ):
 		"""
 
 			Purpose:
@@ -1405,7 +1388,7 @@ class PDF( ):
 		         'export_text', 'export_excel' ]
 	
 	
-	def extract_lines( self, path: str, max: Optional[ int ]=None ) -> List[ str ]:
+	def extract_lines( self, path: str, max: Optional[ int ] = None ) -> List[ str ]:
 		"""
 
 			Extract tokens of pages from a PDF,
@@ -1539,7 +1522,7 @@ class PDF( ):
 			_err.show( )
 	
 	
-	def extract_text( self, path: str, max: Optional[ int ]=None ) -> str:
+	def extract_text( self, path: str, max: Optional[ int ] = None ) -> str:
 		"""
 
 			Extract the entire pages from a
@@ -1574,7 +1557,7 @@ class PDF( ):
 			_err.show( )
 	
 	
-	def extract_tables( self, path: str, max: Optional[ int ]=None ) -> List[ pd.DataFrame ]:
+	def extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ pd.DataFrame ]:
 		"""
 
 			Extract tables from the PDF
@@ -1721,8 +1704,6 @@ class Token( ):
 	    Methods:
 	    _______
 	    
-	    tokenize_sentences( self, path: str ) -> List[str]
-	    tokenize( self, path: str ) -> List[str]
 	    encode( self, path: str ) -> List[str]
 	    batch_encode( self, path: str ) -> List[str]
 	    decode( self, ids: List[ str ], skip: bool=True ) -> List[str]
@@ -1851,63 +1832,8 @@ class Token( ):
 			_err.show( )
 	
 	
-	def tokenize_sentences( self, text: str ) -> List[ str ]:
-		"""
-		
-			Segments the path
-			path into individual sentences.
-	
-			Args:
-				text (str): The path document as a path.
-	
-			Returns:
-				List[str]: List of sentence strings.
-			
-		"""
-		try:
-			if text is None:
-				raise Exception( 'Input "path" must be provided.' )
-			else:
-				self.raw_input = text
-				return nltk.sent_tokenize( self.raw_input )
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'tokenize_sentences( self, path: str ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def tokenize( self, text: str ) -> List[ str ]:
-		"""
-		
-			Tokenizes path into subword
-			tokens using the tokenizer's vocabulary.
-	
-			Args:
-				text (str): The raw path path.
-	
-			Returns:
-				List[str]: Tokenized list of word-pieces/subwords.
-			
-		"""
-		try:
-			if text is None:
-				raise Exception( 'Input "path" must be provided.' )
-			else:
-				return self.tokenizer.tokenize( text )
-		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'tokenize( self, path: str ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
-	
-	
-	def encode( self, text: str, max: int=512, trunc: bool=True,
-	            padd: Union[ bool, str ]=False, tensors: str=None ) -> Dict[
+	def encode( self, text: str, max: int = 512, trunc: bool = True,
+	            padd: Union[ bool, str ] = False, tensors: str = None ) -> Dict[
 		str, Union[ List[ int ], any ] ]:
 		"""
 		
@@ -1940,8 +1866,8 @@ class Token( ):
 			_err.show( )
 	
 	
-	def batch_encode( self, texts: List[ str ], max: int=512, trunc: bool=True,
-	                  pad: Union[ bool, str ]='max', tensors: str=None ) -> Dict[ str, any ]:
+	def batch_encode( self, texts: List[ str ], max: int = 512, trunc: bool = True,
+	                  pad: Union[ bool, str ] = 'max', tensors: str = None ) -> Dict[ str, any ]:
 		"""
 			
 			Encodes a list of
@@ -1975,7 +1901,7 @@ class Token( ):
 			_err.show( )
 	
 	
-	def decode( self, ids: List[ int ], skip: bool=True ) -> str:
+	def decode( self, ids: List[ int ], skip: bool = True ) -> str:
 		"""
 			
 			Converts a list of
@@ -2128,8 +2054,8 @@ class Vector( ):
 		         'upload_document', 'upload_documents' ]
 	
 	
-	def create( self, tokens: List[ str ], batch: int=10, max: int=3,
-	            time: float=2.0 ) -> pd.DataFrame:
+	def create( self, tokens: List[ str ], batch: int = 10, max: int = 3,
+	            time: float = 2.0 ) -> pd.DataFrame:
 		"""
 
 			Generate and normalize
@@ -2329,7 +2255,7 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def most_similar( self, query: str, df: pd.DataFrame, top: int=5 ) -> pd.DataFrame:
+	def most_similar( self, query: str, df: pd.DataFrame, top: int = 5 ) -> pd.DataFrame:
 		"""
 
 			Purpose:
@@ -2369,7 +2295,7 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def bulk_similar( self, queries: List[ str ], df: pd.DataFrame, top: int=5 ) -> Dict:
+	def bulk_similar( self, queries: List[ str ], df: pd.DataFrame, top: int = 5 ) -> Dict:
 		"""
 
 			Purpose:
@@ -2600,7 +2526,7 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def query_vector_store( self, id: str, query: str, top: int=5 ) -> List[ dict ]:
+	def query_vector_store( self, id: str, query: str, top: int = 5 ) -> List[ dict ]:
 		"""
 
 			Purpose:
@@ -2964,7 +2890,8 @@ class Embeddy( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Embeddy'
-			_exc.method = ('create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ float'
+			_exc.method = ('create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
+			               'float'
 			               ' ] ]')
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -3238,7 +3165,8 @@ class Embeddy( ):
 			_exc = Error( e )
 			_exc.module = 'embbr'
 			_exc.cause = 'Embeddy'
-			_exc.method = ('create_pca_components( self, vectors: List[ List[ float ] ], num=2 ) ->'
+			_exc.method = ('create_pca_components( self, vectors: List[ List[ float ] ], '
+			               'num=2 ) ->'
 			               ' np.ndarray')
 			_err = ErrorDialog( _exc )
 			_err.show( )
