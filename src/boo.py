@@ -56,6 +56,30 @@ from booggr import ErrorDialog, Error
 from typing import Any, List, Tuple, Optional, Dict
 
 
+	
+class UserLocation( BaseModel ):
+	'''
+	
+		Class for the user's location
+		
+	'''
+	type: Optional[ str ]
+	city: Optional[ str ]
+	country: Optional[ str ]
+	region: Optional[ str ]
+	timezone: Optional[ str ]
+
+
+class Reasoning( BaseModel ):
+	'''
+
+		Class providing reasoning functionality.
+
+	'''
+	effort: Optional[ str ]
+	summary: Optional[ str ]
+
+
 class Response( BaseModel ):
 	'''
 		Base class for GPT responses.
@@ -63,11 +87,62 @@ class Response( BaseModel ):
 	id: Optional[ str ]
 	object: Optional[ object ]
 	model: Optional[ str ]
+	instructions: Optional[ str ]
+	max_output_tokens: Optional[ int ]
+	previous_response_id: Optional[ int ]
+	reasoning: Optional[ object ]
+	role: Optional[ str ]
+	store: Optional[ bool ]
+	stream: Optional[ bool ]
+	tool_choice: Optional[ str ]
+	tools: Optional[ List[ str ] ]
+	top_p: Optional[ int ]
+	truncation: Optional[ str ]
+	text: Optional[ object ]
 	created: Optional[ dt.datetime ]
 	data: Optional[ Dict ]
 
 
+class FileSearch( BaseModel ):
+	'''
+	
+		Class for the file search tool
+	
+	'''
+	type: Optional[ str ]
+	vector_store_ids: Optional[ List[ str ] ]
+	max_num_results: Optional[ int ]
+
+
+class WebSearch( BaseModel ):
+	'''
+
+		Class for the file search tool
+
+	'''
+	type: Optional[ str ]
+	search_context_size: Optional[ str ]
+	user_location: Optional[ object ]
+	
+	
+class ComputerUse( BaseModel ):
+	'''
+	
+		A class for the computer use tool.
+		
+	'''
+	type: str
+	display_height: int
+	display_width: int
+	environment: str
+	
+	
 class Function( BaseModel ):
+	'''
+
+		Class for the function tool
+
+	'''
 	name: Optional[ str ]
 	type: Optional[ str ]
 	description: Optional[ str ]
