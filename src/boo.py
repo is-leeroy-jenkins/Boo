@@ -158,6 +158,50 @@ class EndPoint( ):
 		self.uploads = f'https://api.openai.com/v1/uploads'
 		self.files = f'https://api.openai.com/v1/files'
 		self.vector_stores = f'https://api.openai.com/v1/vector_stores'
+		
+		
+	def get_data( self ) -> dict:
+		'''
+
+			Returns: dict[ str ] of members
+
+		'''
+		return { 'base_url': self.base_url,
+		         'text_generation': self.text_generation,
+		         'image_generation': self.image_generation,
+		         'chat_completion': self.chat_completion,
+		         'responses': self.responses,
+		         'speech_generation': self.speech_generation,
+		         'translations': self.translations,
+		         'assistants': self.assistants,
+		         'transcriptions': self.transcriptions,
+		         'finetuning': self.finetuning,
+		         'vectors': self.embeddings,
+		         'uploads': self.uploads,
+		         'files': self.files,
+		         'vector_stores': self.vector_stores }
+		
+		
+	def dump( self ) -> str:
+		'''
+
+			Returns: path of "member = value", pairs
+
+		'''
+		new = r'\r\n'
+		return 'base_url' + f' = {self.base_url}' + new + \
+			'text_generation' + f' = {self.text_generation}' + new + \
+			'image_generation' + f' = {self.image_generation}' + new + \
+			'chat_completion' + f' = {self.chat_completion}' + new + \
+			'speech_generation' + f' = {self.speech_generation}' + new + \
+			'translations' + f' = {self.translations}' + new + \
+			'assistants' + f' = {self.assistants}' + new + \
+			'transcriptions' + f' = {self.transcriptions}' + new + \
+			'finetuning' + f' = {self.finetuning}' + new + \
+			'vectors' + f' = {self.files}' + new + \
+			'uploads' + f' = {self.uploads}' + new + \
+			'files' + f' = {self.files}' + new + \
+			'vector_stores' + f' = {self.vector_stores}' + new
 
 
 class Header( ):
@@ -183,51 +227,8 @@ class Header( ):
 			Returns: list[ str ]
 			
 		'''
-		return [ 'content_type', 'api_key', 'authorization', 'values' ]
+		return [ 'content_type', 'api_key', 'authorization', 'data' ]
 
-	
-	def get_data( self ) -> dict:
-		'''
-
-			Returns: dict[ str ] of members
-
-		'''
-		return { 'base_url': self.base_url,
-		         'text_generation': self.text_generation,
-		         'image_generation': self.image_generation,
-		         'chat_completion': self.chat_completion,
-		         'responses': self.responses,
-		         'speech_generation': self.speech_generation,
-		         'translations': self.translations,
-		         'assistants': self.assistants,
-		         'transcriptions': self.transcriptions,
-		         'finetuning': self.finetuning,
-		         'vectors': self.embeddings,
-		         'uploads': self.uploads,
-		         'files': self.files,
-		         'vector_stores': self.vector_stores }
-	
-	
-	def dump( self ) -> str:
-		'''
-		
-			Returns: path of "member = value", pairs
-			
-		'''
-		new = r'\r\n'
-		return 'base_url' + f' = {self.base_url}' + new + \
-			'text_generation' + f' = {self.text_generation}' + new + \
-			'image_generation' + f' = {self.image_generation}' + new + \
-			'chat_completion' + f' = {self.chat_completion}' + new + \
-			'speech_generation' + f' = {self.speech_generation}' + new + \
-			'translations' + f' = {self.translations}' + new + \
-			'assistants' + f' = {self.assistants}' + new + \
-			'transcriptions' + f' = {self.transcriptions}' + new + \
-			'finetuning' + f' = {self.finetuning}' + new + \
-			'vectors' + f' = {self.files}' + new + \
-			'uploads' + f' = {self.uploads}' + new + \
-			'files' + f' = {self.files}' + new + \
-			'vector_stores' + f' = {self.vector_stores}' + new
 
 
 class Models( ):
