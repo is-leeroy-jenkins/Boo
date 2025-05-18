@@ -873,12 +873,12 @@ class LinearRegressor( BaseModel ):
 		"""
 		self.linerar_model = LinearRegressor( )
 		self.prediction = None
-		self.mean_absolute_error = None
-		self.mean_squared_error = None
-		self.r_mean_squared_error = None
-		self.r2_score = None
-		self.explained_variance_score = None
-		self.median_absolute_error = None
+		self.mean_absolute_error = 0.0
+		self.mean_squared_error = 0.0
+		self.r_mean_squared_error = 0.0
+		self.r2_score = 0.0
+		self.explained_variance_score = 0.0
+		self.median_absolute_error = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1077,12 +1077,12 @@ class RidgeRegressor( BaseModel ):
 		"""
 		self.ridge_model = RidgeRegressor( alpha=1.0 )
 		self.prediction = None
-		self.mean_absolute_error = None
-		self.mean_squared_error = None
-		self.r_mean_squared_error = None
-		self.r2_score = None
-		self.explained_variance_score = None
-		self.median_absolute_error = None
+		self.mean_absolute_error = 0.0
+		self.mean_squared_error = 0.0
+		self.r_mean_squared_error = 0.0
+		self.r2_score = 0.0
+		self.explained_variance_score = 0.0
+		self.median_absolute_error = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1285,12 +1285,12 @@ class LassoRegressor( BaseModel ):
 		"""
 		self.lasso_model = LassoRegressor( alpha=1.0 )
 		self.prediction = None
-		self.mean_absolute_error = None
-		self.mean_squared_error = None
-		self.r_mean_squared_error = None
-		self.r2_score = None
-		self.explained_variance_score = None
-		self.median_absolute_error = None
+		self.mean_absolute_error = 0.0
+		self.mean_squared_error = 0.0
+		self.r_mean_squared_error = 0.0
+		self.r2_score = 0.0
+		self.explained_variance_score = 0.0
+		self.median_absolute_error = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1488,12 +1488,12 @@ class ElasticNetRegressor( BaseModel ):
 		"""
 		self.elasticnet_model = ElasticNetRegressor( alpha=1.0, l1_ratio=0.5 )
 		self.prediction = None
-		self.mean_absolute_error = None
-		self.mean_squared_error = None
-		self.r_mean_squared_error = None
-		self.r2_score = None
-		self.explained_variance_score = None
-		self.median_absolute_error = None
+		self.mean_absolute_error = 0.0
+		self.mean_squared_error = 0.0
+		self.r_mean_squared_error = 0.0
+		self.r2_score = 0.0
+		self.explained_variance_score = 0.0
+		self.median_absolute_error = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1690,12 +1690,12 @@ class LogisticRegressor( BaseModel ):
 		"""
 		self.logistic_model = LogisticRegressor( max_iter=1000 )
 		self.prediction = None
-		self.mean_absolute_error = None
-		self.mean_squared_error = None
-		self.r_mean_squared_error = None
-		self.r2_score = None
-		self.explained_variance_score = None
-		self.median_absolute_error = None
+		self.mean_absolute_error = 0.0
+		self.mean_squared_error = 0.0
+		self.r_mean_squared_error = 0.0
+		self.r2_score = 0.0
+		self.explained_variance_score = 0.0
+		self.median_absolute_error = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1903,12 +1903,12 @@ class BayesianRegressor( BaseModel ):
 		"""
 		self.bayesian_model = BayesianRegressor( )
 		self.prediction = None
-		self.mean_absolute_error = None
-		self.mean_squared_error = None
-		self.r_mean_squared_error = None
-		self.r2_score = None
-		self.explained_variance_score = None
-		self.median_absolute_error = None
+		self.mean_absolute_error = 0.0
+		self.mean_squared_error = 0.0
+		self.r_mean_squared_error = 0.0
+		self.r2_score = 0.0
+		self.explained_variance_score = 0.0
+		self.median_absolute_error = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2108,12 +2108,12 @@ class SgdClassifier( BaseModel ):
 		"""
 		self.sgd_classification_model = SGDClassifier( loss='log_loss', max_iter=1000 )
 		self.prediction = None
-		self.mean_absolute_error = None
-		self.mean_squared_error = None
-		self.r_mean_squared_error = None
-		self.r2_score = None
-		self.explained_variance_score = None
-		self.median_absolute_error = None
+		self.mean_absolute_error = 0.0
+		self.mean_squared_error = 0.0
+		self.r_mean_squared_error = 0.0
+		self.r2_score = 0.0
+		self.explained_variance_score = 0.0
+		self.median_absolute_error = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2287,12 +2287,12 @@ class SgdRegressor( BaseModel ):
 		"""
 		self.sgd_regression_model = SGDRegressor( max_iter=1000 )
 		self.prediction = None
-		self.mean_absolute_error = None
-		self.mean_squared_error = None
-		self.r_mean_squared_error = None
-		self.r2_score = None
-		self.explained_variance_score = None
-		self.median_absolute_error = None
+		self.mean_absolute_error = 0.0
+		self.mean_squared_error = 0.0
+		self.r_mean_squared_error = 0.0
+		self.r2_score = 0.0
+		self.explained_variance_score = 0.0
+		self.median_absolute_error = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2427,12 +2427,12 @@ class Perceptron( BaseModel ):
 		"""
 		self.perceptron_model = Perceptron( max_iter=1000 )
 		self.prediction = None
-		self.mean_absolute_error = None
-		self.mean_squared_error = None
-		self.r_mean_squared_error = None
-		self.r2_score = None
-		self.explained_variance_score = None
-		self.median_absolute_error = None
+		self.mean_absolute_error = 0.0
+		self.mean_squared_error = 0.0
+		self.r_mean_squared_error = 0.0
+		self.r2_score = 0.0
+		self.explained_variance_score = 0.0
+		self.median_absolute_error = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2603,12 +2603,12 @@ class NearestNeighborClassifier( BaseModel ):
 		"""
 		self.knn_classification_model = KNeighborsClassifier( n_neighbors=5 )
 		self.prediction = None
-		self.mean_absolute_error = None
-		self.mean_squared_error = None
-		self.r_mean_squared_error = None
-		self.r2_score = None
-		self.explained_variance_score = None
-		self.median_absolute_error = None
+		self.mean_absolute_error = 0.0
+		self.mean_squared_error = 0.0
+		self.r_mean_squared_error = 0.0
+		self.r2_score = 0.0
+		self.explained_variance_score = 0.0
+		self.median_absolute_error = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2781,12 +2781,12 @@ class NearestNeighborRegressor( BaseModel ):
 		"""
 		self.knn_regression_model = KNeighborsRegressor( n_neighbors=5 )
 		self.prediction = None
-		self.mean_absolute_error = None
-		self.mean_squared_error = None
-		self.r_mean_squared_error = None
-		self.r2_score = None
-		self.explained_variance_score = None
-		self.median_absolute_error = None
+		self.mean_absolute_error = 0.0
+		self.mean_squared_error = 0.0
+		self.r_mean_squared_error = 0.0
+		self.r2_score = 0.0
+		self.explained_variance_score = 0.0
+		self.median_absolute_error = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
