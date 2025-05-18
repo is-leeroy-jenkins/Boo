@@ -135,7 +135,6 @@ class Text:
 		self.paragraphs = List[ str ]
 		self.chunks = List[ str ]
 		self.chunk_size = 0
-		self.vocabulary = List[ str ]
 		self.cleaned_lines = List[ str ]
 		self.cleaned_tokens = List[ str ]
 		self.cleaned_pages = List[ str ]
@@ -144,6 +143,7 @@ class Text:
 		self.stop_words = List[ str ]
 		self.frequency_distribution = { }
 		self.conditional_distribution = { }
+		self.vocabulary = None
 		self.file_path = None
 		self.raw_input = None
 		self.normalized = None
@@ -309,7 +309,7 @@ class Text:
 			_err.show( )
 	
 	
-	def remove_special( self, text: str, keep_spaces: bool = True ) -> str:
+	def remove_special( self, text: str ) -> str:
 		"""
 
 			Removes special characters
@@ -336,19 +336,20 @@ class Text:
 		try:
 			if text is None:
 				raise Exception( 'The argument "text" is required.' )
-			elif keep_spaces:
-				self.raw_input = text
-				self.cleaned_text = re.sub( r'[^a-zA-Z0-9\s]', ' ', self.raw_input )
-				return self.cleaned_text
 			else:
-				self.raw_input = text
-				self.cleaned_text = re.sub( r'[^a-zA-Z0-9]', '', self.raw_input )
-				return self.cleaned_text
+				cleaned = [ ]
+				keepers = [ '(', ')', '$', '.', ';', ':' ]
+				for char in text:
+					if char in keepers:
+						cleaned.append( char )
+					elif char.isalnum( ) or char.isspace( ):
+						cleaned.append( char )
+				return ''.join( cleaned )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'remove_special( self, text: str, keep_spaces: bool=True ) -> str:'
+			_exc.method = 'remove_special( self, text: str ) -> str:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -412,7 +413,7 @@ class Text:
 				raise Exception( 'The argument "text" is required.' )
 			else:
 				self.raw_input = text
-				self.lowercase = self.lowercase.lower( )
+				self.lowercase = self.raw_input.lower( )
 				self.vocabulary = set( w.lower( ) for w in words.words( ) )
 				allowed_symbols = { '(', ')', '$' }
 				self.tokens = re.findall( r'\b[\w.]+\b|[()$]', self.lowercase )
@@ -541,6 +542,46 @@ class Text:
 			_exc.method = 'remove_stopwords( self, text: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
+		
+		
+	def clean_space( self, text: str ) -> str:
+		"""
+
+			This function:
+			_____________
+	        Removes extra spaces and blank tokens from the path pages.
+
+	        Parameters:
+	        -----------
+	        pages : str
+	            The raw path pages path to be cleaned_lines.
+
+	        Returns:
+	        --------
+	        str
+	            A cleaned_lines pages path with:
+	                - Consecutive whitespace reduced to a single space
+	                - Leading/trailing spaces removed
+	                - Blank tokens removed
+
+	    """
+		try:
+			if text is None:
+				raise Exception( 'The argument "text" is required.' )
+			else:
+				self.raw_input = text.lower()
+				tabs = re.sub( r'[ \t+]', ' ', self.raw_input )
+				collapsed = re.sub( r'\s+', ' ', tabs )
+				self.cleaned_lines = [ line for line in collapsed if line ]
+				self.cleaned_text = ''.join( cleaned_lines )
+				return self.cleaned_text
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tigrr'
+			_exc.cause = 'Text'
+			_exc.method = 'remove_errors( self, text: str ) -> str'
+			_err = ErrorDialog( _exc )
+			_err.show( )
 	
 	
 	def remove_headers( self, pages: List[ str ], min: int = 3 ) -> List[ str ]:
@@ -647,7 +688,7 @@ class Text:
 			_err.show( )
 	
 	
-	def get_wordnet_pos( tag: str ) -> Any | None:
+	def get_wordnet_pos( self, tag: str ) -> Any | None:
 		if tag is None:
 			raise Exception( 'The argument "tag" is required.' )
 		else:
@@ -700,7 +741,7 @@ class Text:
 				raise Exception( 'The argument "tokens" is required.' )
 			else:
 				self.tokens = tokens
-				pos_tags = pos_tag( self.tokens )
+				pos_tags = nltk.pos_tag( self.tokens )
 				self.lemmatized = [ self.lemmatizer.lemmatize( word, get_wordnet_pos( tag ) ) for
 				                    word, tag in pos_tags ]
 				return self.lemmatized
@@ -908,34 +949,35 @@ class Text:
 			_err.show( )
 	
 	
-	def split_lines( self, path: str ) -> List[ str ]:
+	def split_sentences( self, text: str ) -> List[ str ]:
 		"""
-	
-			Splits the path
-			into tokens
-	
-			Parameters:
-			-----------
-			path : str
-	
-			Returns:
-			--------
-			list[ str ]
-	
+
+			Purpose:
+			________
+			Splits the input text string into a list of
+			individual sentences using NLTK's Punkt sentence tokenizer.
+			This function is useful for preparing text for further linguistic processing,
+			such as tokenization, parsing, or named entity recognition.
+
+			Parameters
+			----------
+			text : str
+				The raw text string to be segmented into sentences.
+
+			Returns
+			-------
+			List[str]
+				A list of sentence strings, each corresponding to a single sentence detected
+				in the input text.
+
 		"""
 		try:
-			if path is None:
-				raise Exception( 'The argument "path" is required' )
-			else:
-				self.file_path = path
-				with open( self.file_path, 'r', encoding='utf-8', errors='ignore' ) as _file:
-					self.lines = _file.readlines( ).strip( ).splitlines( )
-					return self.lines
+			return nltk.sent_tokenize( text )
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Text'
-			_exc.method = 'split_lines( self, path: str ) -> list[ str ]'
+			_exc.method = 'split_sentences( self, text: str ) -> List[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -2079,7 +2121,7 @@ class Vector( ):
 		return [ 'small_model', 'large_model', 'ada_model',
 		         'id', 'files', 'tokens', 'array', 'store_ids',
 		         'client', 'cache', 'results', 'directory', 'stats',
-		         'response', 'vector_stores','file_ids',
+		         'response', 'vectorstores','file_ids',
 		         'data', 'batches', 'tables', 'vectors',
 		         'create_small_embedding', 'dataframe',
 		         'most_similar', 'bulk_similar', 'similarity_heatmap',
@@ -2491,7 +2533,7 @@ class Vector( ):
 				raise Exception( 'The argument "name" is required' )
 			else:
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-				self.response = self.client.beta.vector_stores.create_small_embedding( name=name )
+				self.response = self.client.beta.vectorstores.create_small_embedding( name=name )
 				return self.response[ 'id' ]
 		except Exception as e:
 			_exc = Error( e )
@@ -2506,7 +2548,7 @@ class Vector( ):
 		"""
 
 			List all available
-			OpenAI vector vector_stores.
+			OpenAI vector vectorstores.
 
 			Returns:
 			- List[str]: List of vector store IDs
@@ -2514,7 +2556,7 @@ class Vector( ):
 		"""
 		try:
 			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-			self.response = self.client.beta.vector_stores.list( )
+			self.response = self.client.beta.vectorstores.list( )
 			return [ item[ 'id' ] for item in self.response.get( 'data', [ ] ) ]
 		except Exception as e:
 			_exc = Error( e )
@@ -2549,7 +2591,7 @@ class Vector( ):
 					for i, row in self.dataframe.iterrows( ) ]
 				
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-				self.client.beta.vector_stores.file_batches.create_small_embedding(
+				self.client.beta.vectorstores.file_batches.create_small_embedding(
 					store_id=self.id,
 					documents=documents )
 		except Exception as e:
@@ -2584,7 +2626,7 @@ class Vector( ):
 			else:
 				self.id = id
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-				self.response = self.client.beta.vector_stores.query( store_id=self.id,
+				self.response = self.client.beta.vectorstores.query( store_id=self.id,
 					query=query,
 					top_k=top )
 				return [
@@ -2621,7 +2663,7 @@ class Vector( ):
 			else:
 				self.file_ids = ids
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-				self.client.beta.vector_stores.documents.delete( store_id=storeid,
+				self.client.beta.vectorstores.documents.delete( store_id=storeid,
 					document_ids=self.file_ids )
 		except Exception as e:
 			_exc = Error( e )
@@ -2656,7 +2698,7 @@ class Vector( ):
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				self.response = self.client.files.create( file=open( self.file_path, 'rb' ),
 					purpose="assistants" )
-				attach_response = self.client.vector_stores.files.create( vector_store_id=id,
+				attach_response = self.client.vectorstores.files.create( vector_store_id=id,
 					file_id=self.response.id )
 				return { 'file': self.file_name, 'status': 'success' }
 		except Exception as e:

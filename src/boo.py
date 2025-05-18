@@ -264,7 +264,7 @@ class EndPoint( ):
 		         'vectors': self.embeddings,
 		         'uploads': self.uploads,
 		         'files': self.files,
-		         'vector_stores': self.vector_stores }
+		         'vectorstores': self.vector_stores }
 		
 		
 	def dump( self ) -> str:
@@ -286,7 +286,7 @@ class EndPoint( ):
 			'vectors' + f' = {self.files}' + new + \
 			'uploads' + f' = {self.uploads}' + new + \
 			'files' + f' = {self.files}' + new + \
-			'vector_stores' + f' = {self.vector_stores}' + new
+			'vectorstores' + f' = {self.vector_stores}' + new
 
 
 class Header( ):
@@ -308,7 +308,7 @@ class Header( ):
 	def __dir__( self ) -> List[ str ]:
 		'''
 		
-			Methods that returns a get_list of member names
+			Methods that returns a list of member names
 			Returns: list[ str ]
 			
 		'''
@@ -364,7 +364,7 @@ class Models( ):
 		                    'gpt-4-0613', 'gpt-3.5-turbo-0125',
 		                    'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-0613' ]
 		self.embeddings = [ 'text-embedding-3-small', 'text-embedding-3-large',
-		                    'texts-embedding-ada-002' ]
+		                    'text-embedding-ada-002' ]
 		self.uploads = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
 		                 'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
@@ -372,7 +372,7 @@ class Models( ):
 		self.files = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
 		               'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
 		               'o1-2024-12-17', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
-		self.vector_stores = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
+		self.vectorstores = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                       'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
 		                       'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
 		                       'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
@@ -393,7 +393,7 @@ class Models( ):
 		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completion',
 		         'speech_generation', 'responses', 'reasoning',
 		         'translations', 'assistants', 'transcriptions',
-		         'finetuning', 'vectors', 'uploads', 'files', 'vector_stores',
+		         'finetuning', 'vectors', 'uploads', 'files', 'vectorstores',
 		         'bubba', 'bro' ]
 	
 	
@@ -412,7 +412,7 @@ class Models( ):
 		          'vectors': self.embeddings,
 		          'uploads': self.uploads,
 		          'files': self.files,
-		          'vector_stores': self.vector_stores }
+		          'vectorstores': self.vectorstores }
 
 
 class AI( ):

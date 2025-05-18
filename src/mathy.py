@@ -42,7 +42,7 @@ boo.py
 ******************************************************************************************
 '''
 import numpy as np
-from typing import Optional
+from typing import Optional, List, Dict
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.linear_model import (
     LinearRegression, LogisticRegression, Ridge, Lasso, ElasticNet,
@@ -142,7 +142,7 @@ class Preprocessor( ):
         `fit_transform` methods.
 
     """
-    
+    pipeline: Optional[ Pipeline ]
     
     def __init__( self ):
         self.pipeline = None
@@ -415,7 +415,7 @@ class Normalizer( Preprocessor ):
     
     def __init__( self, norm: str='l2' ) -> None:
         super( ).__init__( )
-        self.normal_scaler: Normalizer = Normalizer( norm=norm )
+        self.normal_scaler = Normalizer( norm=norm )
     
     
     def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
@@ -595,8 +595,7 @@ class OrdinalEncoder( Preprocessor ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                _retval = self.ordinal_encoder.transform( X )
-                return _retval
+                return self.ordinal_encoder.transform( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -615,7 +614,7 @@ class SimpleImputer( Preprocessor ):
     """
     
     
-    def __init__( self, strategy: str = 'mean' ) -> None:
+    def __init__( self, strategy: str='mean' ) -> None:
         super( ).__init__( )
         self.simple_imputer = SimpleImputer( strategy=strategy )
     
@@ -635,8 +634,8 @@ class SimpleImputer( Preprocessor ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                _pipeline: Pipeline = self.simple_imputer.fit( X )
-                return _pipeline
+                self.pipeline = self.simple_imputer.fit( X )
+                return self.pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -663,8 +662,7 @@ class SimpleImputer( Preprocessor ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                _retval: np.ndarray = self.simple_imputer.transform( X )
-                return _retval
+                return self.simple_imputer.transform( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -700,8 +698,8 @@ class NearestNeighborImputer( Preprocessor ):
 
         """
         try:
-            _pipeline: Pipeline = self.knn_imputer.fit( X )
-            return _pipeline
+            self.pipeline = self.knn_imputer.fit( X )
+            return self.pipeline
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -714,8 +712,10 @@ class NearestNeighborImputer( Preprocessor ):
     def transform( self, X: np.ndarray ) -> np.ndarray:
         """
 
-            Transforms the input
-            data by imputing missing values.
+            Purpose:
+            _________
+            
+            Transforms the input data by imputing missing values.
 
             Args:
                 X (np.ndarray): Input data
@@ -729,8 +729,7 @@ class NearestNeighborImputer( Preprocessor ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                _retval: np.ndarray = self.knn_imputer.transform( X )
-                return _retval
+                return self.knn_imputer.transform( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -740,17 +739,18 @@ class NearestNeighborImputer( Preprocessor ):
             error.show( )
 
 
-class MultiProcessor( Preprocessor ):
+class MultiLayerPerceptron( Preprocessor ):
     """
 
         Chains multiple preprocessing
         steps into a pipeline.
 
     """
-    
+    pipeline: Optional[ Pipeline ]
     
     def __init__( self, steps: List[ Tuple[ str, Preprocessor ] ] ) -> None:
         self.pipeline = Pipeline( steps )
+        
     
     
     def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
@@ -796,8 +796,7 @@ class MultiProcessor( Preprocessor ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                _retform: np.ndarray = self.pipeline.transform( X )
-                return _retform
+                return self.pipeline.transform( X )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -825,8 +824,7 @@ class MultiProcessor( Preprocessor ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                _retval: np.ndarray = self.pipeline.fit_transform( X, y )
-                return _retval
+                return self.pipeline.fit_transform( X, y )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -842,7 +840,16 @@ class LinearRegressor( BaseModel ):
 	    Ordinary Least Squares Regression.
     
     """
-
+    score: Optional[ float ]
+    prediction: Optional[ np.ndarray ]
+    mean_absolute_error: Optional[ float ]
+    mean_squared_error: Optional[ float ]
+    r_mean_squared_error: Optional[ float ]
+    r2_score: Optional[ float ]
+    explained_variance_score: Optional[ float ]
+    median_absolute_error: Optional[ float ]
+    
+    
     def __init__( self ) -> None:
         """
         
@@ -857,6 +864,13 @@ class LinearRegressor( BaseModel ):
                     
         """
         self.linerar_model = LinearRegressor( )
+        self.prediction = None
+        self.mean_absolute_error = None
+        self.mean_squared_error = None
+        self.r_mean_squared_error = None
+        self.r2_score = None
+        self.explained_variance_score = None
+        self.median_absolute_error = None
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -904,7 +918,8 @@ class LinearRegressor( BaseModel ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                return self.linerar_model.predict( X )
+                self.prediction = self.linerar_model.predict( X )
+                return self.prediction
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -944,7 +959,7 @@ class LinearRegressor( BaseModel ):
             error.show( )
 
 
-    def evaluate(self, X: np.ndarray, y: np.ndarray ) -> dict:
+    def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
         """
         
             Evaluate the model using
@@ -964,14 +979,19 @@ class LinearRegressor( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.linerar_model.predict( X )
+                self.mean_absolute_error = mean_absolute_error( y, self.prediction )
+                self.mean_squared_error = mean_squared_error( y, self.prediction )
+                self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
+                self.r2_score = r2_score( y, self.prediction )
+                self.explained_variance_score = explained_variance_score( y, self.prediction )
+                self.median_absolute_error = median_absolute_error( y, self.prediction, squared=False  )
                 return {
-                    'MAE': mean_absolute_error( y, y_pred ),
-                    'MSE': mean_squared_error( y, y_pred ),
-                    'RMSE': mean_squared_error( y, y_pred, squared=False ),
-                    'R2': r2_score( y, y_pred ),
-                    'Explained Variance': explained_variance_score( y, y_pred ),
-                    'Median Absolute Error': median_absolute_error( y, y_pred )
+                    'MAE': self.mean_absolute_error,
+                    'MSE': self.mean_squared_error,
+                    'RMSE': self.r_mean_squared_error,
+                    'R2': self.r2_score,
+                    'Explained Variance': self.explained_variance_score,
+                    'Median Absolute Error': self.median_absolute_error,
                 }
         except Exception as e:
             exception = Error( e )
@@ -999,19 +1019,19 @@ class LinearRegressor( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict( X )
-                plt.scatter( y, y_pred )
+                self.prediction = self.predict( X )
+                plt.scatter( y, self.prediction )
                 plt.xlabel( 'Actual' )
                 plt.ylabel( 'Predicted' )
                 plt.title( 'OLS: Actual vs Predicted' )
                 plt.plot( [ y.min( ), y.max( ) ] , [ y.min( ), y.max( ) ], 'r--' )
                 plt.grid(True)
-                plt.show()
+                plt.show( )
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
             exception.cause = 'LinearRegressor'
-            exception.method = 'plot(self, X: np.ndarray, y: np.ndarray) -> None'
+            exception.method = 'plot( self, X: np.ndarray, y: np.ndarray ) -> None'
             error = ErrorDialog( exception )
             error.show( )
 
@@ -1023,6 +1043,15 @@ class RidgeRegressor( BaseModel ):
         (L2 regularization).
         
     """
+    score: Optional[ float ]
+    prediction: Optional[ np.ndarray ]
+    mean_absolute_error: Optional[ float ]
+    mean_squared_error: Optional[ float ]
+    r_mean_squared_error: Optional[ float ]
+    r2_score: Optional[ float ]
+    explained_variance_score: Optional[ float ]
+    median_absolute_error: Optional[ float ]
+
 
     def __init__( self ) -> None:
         """
@@ -1038,6 +1067,13 @@ class RidgeRegressor( BaseModel ):
                     
         """
         self.ridge_model = RidgeRegressor( alpha=1.0 )
+        self.prediction = None
+        self.mean_absolute_error = None
+        self.mean_squared_error = None
+        self.r_mean_squared_error = None
+        self.r2_score = None
+        self.explained_variance_score = None
+        self.median_absolute_error = None
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1087,7 +1123,8 @@ class RidgeRegressor( BaseModel ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                return self.ridge_model.predict( X )
+                self.prediction = self.ridge_model.predict( X )
+                return self.prediction
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1147,14 +1184,19 @@ class RidgeRegressor( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict(X)
+                self.mean_absolute_error = mean_absolute_error( y, self.prediction )
+                self.mean_squared_error = mean_squared_error( y, self.prediction )
+                self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
+                self.r2_score = r2_score( y, self.prediction )
+                self.explained_variance_score = explained_variance_score( y, self.prediction )
+                self.median_absolute_error = median_absolute_error( y, self.prediction, squared=False  )
                 return {
-                    'MAE': mean_absolute_error( y, y_pred ),
-                    'MSE': mean_squared_error( y, y_pred ),
-                    'RMSE': mean_squared_error( y, y_pred, squared=False ),
-                    'R2': r2_score( y, y_pred ),
-                    'Explained Variance': explained_variance_score( y, y_pred ),
-                    'Median Absolute Error': median_absolute_error( y, y_pred )
+                    'MAE': self.mean_absolute_error,
+                    'MSE': self.mean_squared_error,
+                    'RMSE': self.r_mean_squared_error,
+                    'R2': self.r2_score,
+                    'Explained Variance': self.explained_variance_score,
+                    'Median Absolute Error': self.median_absolute_error,
                 }
         except Exception as e:
             exception = Error( e )
@@ -1208,6 +1250,15 @@ class LassoRegressor( BaseModel ):
         Wrapper for LassoRegressor Regression (L1 regularization).
         
     """
+    score: Optional[ float ]
+    prediction: Optional[ np.ndarray ]
+    mean_absolute_error: Optional[ float ]
+    mean_squared_error: Optional[ float ]
+    r_mean_squared_error: Optional[ float ]
+    r2_score: Optional[ float ]
+    explained_variance_score: Optional[ float ]
+    median_absolute_error: Optional[ float ]
+
 
     def __init__( self ) -> None:
         """
@@ -1223,6 +1274,13 @@ class LassoRegressor( BaseModel ):
                     
         """
         self.lasso_model = LassoRegressor( alpha=1.0 )
+        self.prediction = None
+        self.mean_absolute_error = None
+        self.mean_squared_error = None
+        self.r_mean_squared_error = None
+        self.r2_score = None
+        self.explained_variance_score = None
+        self.median_absolute_error = None
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1330,14 +1388,19 @@ class LassoRegressor( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict(X)
+                self.mean_absolute_error = mean_absolute_error( y, self.prediction )
+                self.mean_squared_error = mean_squared_error( y, self.prediction )
+                self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
+                self.r2_score = r2_score( y, self.prediction )
+                self.explained_variance_score = explained_variance_score( y, self.prediction )
+                self.median_absolute_error = median_absolute_error( y, self.prediction, squared=False  )
                 return {
-                    'MAE': mean_absolute_error( y, y_pred ),
-                    'MSE': mean_squared_error( y, y_pred ),
-                    'RMSE': mean_squared_error( y, y_pred, squared=False ),
-                    'R2': r2_score( y, y_pred ),
-                    'Explained Variance': explained_variance_score( y, y_pred ),
-                    'Median Absolute Error': median_absolute_error( y, y_pred )
+                    'MAE': self.mean_absolute_error,
+                    'MSE': self.mean_squared_error,
+                    'RMSE': self.r_mean_squared_error,
+                    'R2': self.r2_score,
+                    'Explained Variance': self.explained_variance_score,
+                    'Median Absolute Error': self.median_absolute_error,
                 }
         except Exception as e:
             exception = Error( e )
@@ -1388,6 +1451,15 @@ class ElasticNetRegressor( BaseModel ):
     Wrapper for ElasticNetRegressor Regression (L1 + L2 regularization).
     
     """
+    score: Optional[ float ]
+    prediction: Optional[ np.ndarray ]
+    mean_absolute_error: Optional[ float ]
+    mean_squared_error: Optional[ float ]
+    r_mean_squared_error: Optional[ float ]
+    r2_score: Optional[ float ]
+    explained_variance_score: Optional[ float ]
+    median_absolute_error: Optional[ float ]
+
 
     def __init__( self ) -> None:
         """
@@ -1403,6 +1475,13 @@ class ElasticNetRegressor( BaseModel ):
                     
         """
         self.elasticnet_model = ElasticNetRegressor( alpha=1.0, l1_ratio=0.5 )
+        self.prediction = None
+        self.mean_absolute_error = None
+        self.mean_squared_error = None
+        self.r_mean_squared_error = None
+        self.r2_score = None
+        self.explained_variance_score = None
+        self.median_absolute_error = None
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1510,14 +1589,19 @@ class ElasticNetRegressor( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.elasticnet_model.predict( X )
+                self.mean_absolute_error = mean_absolute_error( y, self.prediction )
+                self.mean_squared_error = mean_squared_error( y, self.prediction )
+                self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
+                self.r2_score = r2_score( y, self.prediction )
+                self.explained_variance_score = explained_variance_score( y, self.prediction )
+                self.median_absolute_error = median_absolute_error( y, self.prediction, squared=False  )
                 return {
-                    'MAE': mean_absolute_error( y, y_pred ),
-                    'MSE': mean_squared_error( y, y_pred ),
-                    'RMSE': mean_squared_error( y, y_pred, squared=False ),
-                    'R2': r2_score( y, y_pred ),
-                    'Explained Variance': explained_variance_score( y, y_pred ),
-                    'Median Absolute Error': median_absolute_error( y, y_pred )
+                    'MAE': self.mean_absolute_error,
+                    'MSE': self.mean_squared_error,
+                    'RMSE': self.r_mean_squared_error,
+                    'R2': self.r2_score,
+                    'Explained Variance': self.explained_variance_score,
+                    'Median Absolute Error': self.median_absolute_error,
                 }
         except Exception as e:
             exception = Error( e )
@@ -1566,9 +1650,17 @@ class ElasticNetRegressor( BaseModel ):
 class LogisticRegressor( BaseModel ):
     """
     
-    Wrapper for Logistic Regression.
+    Wrapper for a Logistic Regression.
     
     """
+    score: Optional[ float ]
+    prediction: Optional[ np.ndarray ]
+    mean_absolute_error: Optional[ float ]
+    mean_squared_error: Optional[ float ]
+    r_mean_squared_error: Optional[ float ]
+    r2_score: Optional[ float ]
+    explained_variance_score: Optional[ float ]
+    median_absolute_error: Optional[ float ]
 
     def __init__( self ) -> None:
         """
@@ -1584,6 +1676,13 @@ class LogisticRegressor( BaseModel ):
                     
         """
         self.logistic_model = LogisticRegressor( max_iter=1000 )
+        self.prediction = None
+        self.mean_absolute_error = None
+        self.mean_squared_error = None
+        self.r_mean_squared_error = None
+        self.r2_score = None
+        self.explained_variance_score = None
+        self.median_absolute_error = None
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1700,15 +1799,19 @@ class LogisticRegressor( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.logistic_model.predict( X )
+                self.mean_absolute_error = mean_absolute_error( y, self.prediction )
+                self.mean_squared_error = mean_squared_error( y, self.prediction )
+                self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
+                self.r2_score = r2_score( y, self.prediction )
+                self.explained_variance_score = explained_variance_score( y, self.prediction )
+                self.median_absolute_error = median_absolute_error( y, self.prediction, squared=False  )
                 return {
-                    'Accuracy': accuracy_score( y, y_pred ),
-                    'Precision': precision_score( y, y_pred, average='binary' ),
-                    'Recall': recall_score( y, y_pred, average='binary' ),
-                    'F1 Score': f1_score( y, y_pred, average='binary' ),
-                    'ROC AUC': roc_auc_score( y, y_pred ),
-                    'Matthews Corrcoef': matthews_corrcoef( y, y_pred ),
-                    'Confusion Matrix': confusion_matrix( y, y_pred ).tolist( )
+                    'MAE': self.mean_absolute_error,
+                    'MSE': self.mean_squared_error,
+                    'RMSE': self.r_mean_squared_error,
+                    'R2': self.r2_score,
+                    'Explained Variance': self.explained_variance_score,
+                    'Median Absolute Error': self.median_absolute_error,
                 }
         except Exception as e:
             exception = Error( e )
@@ -1739,8 +1842,8 @@ class LogisticRegressor( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict(X)
-                cm = confusion_matrix(y, y_pred)
+                self.prediction = self.predict( X )
+                cm = confusion_matrix( y, self.prediction )
                 ConfusionMatrixDisplay( confusion_matrix=cm ).plot( )
                 plt.title( 'Logistic Regression Confusion Matrix' )
                 plt.grid( False )
@@ -1761,6 +1864,17 @@ class BayesianRegressor( BaseModel ):
         Wrapper for Bayesian RidgeRegressor Regression.
     
     """
+    score: Optional[ float ]
+    prediction: Optional[ np.ndarray ]
+    mean_absolute_error: Optional[ float ]
+    mean_squared_error: Optional[ float ]
+    r_mean_squared_error: Optional[ float ]
+    r2_score: Optional[ float ]
+    explained_variance_score: Optional[ float ]
+    median_absolute_error: Optional[ float ]
+    
+    
+
 
     def __init__( self ) -> None:
         """
@@ -1776,6 +1890,13 @@ class BayesianRegressor( BaseModel ):
                     
         """
         self.bayesian_model = BayesianRegressor( )
+        self.prediction = None
+        self.mean_absolute_error = None
+        self.mean_squared_error = None
+        self.r_mean_squared_error = None
+        self.r2_score = None
+        self.explained_variance_score = None
+        self.median_absolute_error = None
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1825,7 +1946,8 @@ class BayesianRegressor( BaseModel ):
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
             else:
-                return self.bayesian_model.predict( X )
+                self.prediction = self.bayesian_model.predict( X )
+                return self.prediction
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -1885,14 +2007,19 @@ class BayesianRegressor( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict( X )
+                self.mean_absolute_error = mean_absolute_error( y, self.prediction )
+                self.mean_squared_error = mean_squared_error( y, self.prediction )
+                self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
+                self.r2_score = r2_score( y, self.prediction )
+                self.explained_variance_score = explained_variance_score( y, self.prediction )
+                self.median_absolute_error = median_absolute_error( y, self.prediction, squared=False  )
                 return {
-                    'MAE': mean_absolute_error( y, y_pred ),
-                    'MSE': mean_squared_error( y, y_pred ),
-                    'RMSE': mean_squared_error( y, y_pred, squared=False ),
-                    'R2': r2_score( y, y_pred ),
-                    'Explained Variance': explained_variance_score( y, y_pred ),
-                    'Median Absolute Error': median_absolute_error( y, y_pred )
+                    'MAE': self.mean_absolute_error,
+                    'MSE': self.mean_squared_error,
+                    'RMSE': self.r_mean_squared_error,
+                    'R2': self.r2_score,
+                    'Explained Variance': self.explained_variance_score,
+                    'Median Absolute Error': self.median_absolute_error,
                 }
         except Exception as e:
             exception = Error( e )
@@ -1920,8 +2047,8 @@ class BayesianRegressor( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict( X )
-                plt.scatter( y, y_pred )
+                self.prediction = self.predict( X )
+                plt.scatter( y, self.prediction )
                 plt.xlabel( 'Actual' )
                 plt.ylabel( 'Predicted' )
                 plt.title( 'Bayesian Ridge: Actual vs Predicted' )
@@ -1943,6 +2070,15 @@ class SgdClassifier( BaseModel ):
         SGD-based linear classifiers.
     
     """
+    score: Optional[ float ]
+    prediction: Optional[ np.ndarray ]
+    mean_absolute_error: Optional[ float ]
+    mean_squared_error: Optional[ float ]
+    r_mean_squared_error: Optional[ float ]
+    r2_score: Optional[ float ]
+    explained_variance_score: Optional[ float ]
+    median_absolute_error: Optional[ float ]
+
 
     def __init__(self) -> None:
         """
@@ -1958,6 +2094,13 @@ class SgdClassifier( BaseModel ):
                     
         """
         self.sgd_classification_model = SGDClassifier( loss='log_loss', max_iter=1000 )
+        self.prediction = None
+        self.mean_absolute_error = None
+        self.mean_squared_error = None
+        self.r_mean_squared_error = None
+        self.r2_score = None
+        self.explained_variance_score = None
+        self.median_absolute_error = None
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2006,10 +2149,9 @@ class SgdClassifier( BaseModel ):
         try:
             if X is None:
                 raise Exception( 'The argument "X" is required!' )
-            elif y is None:
-                raise Exception( 'The argument "y" is required!' )
             else:
-                return self.sgd_classification_model.predict( X )
+                self.prediction = self.sgd_classification_model.predict( X )
+                return self.prediction
         except Exception as e:
             exception = Error( e )
             exception.module = 'Mathy'
@@ -2076,15 +2218,19 @@ class SgdClassifier( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict(X)
+                self.mean_absolute_error = mean_absolute_error( y, self.prediction )
+                self.mean_squared_error = mean_squared_error( y, self.prediction )
+                self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
+                self.r2_score = r2_score( y, self.prediction )
+                self.explained_variance_score = explained_variance_score( y, self.prediction )
+                self.median_absolute_error = median_absolute_error( y, self.prediction, squared=False  )
                 return {
-                    'Accuracy': accuracy_score(y, y_pred),
-                    'Precision': precision_score(y, y_pred, average='binary'),
-                    'Recall': recall_score(y, y_pred, average='binary'),
-                    'F1 Score': f1_score(y, y_pred, average='binary'),
-                    'ROC AUC': roc_auc_score(y, y_pred),
-                    'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
-                    'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
+                    'MAE': self.mean_absolute_error,
+                    'MSE': self.mean_squared_error,
+                    'RMSE': self.r_mean_squared_error,
+                    'R2': self.r2_score,
+                    'Explained Variance': self.explained_variance_score,
+                    'Median Absolute Error': self.median_absolute_error,
                 }
         except Exception as e:
             exception = Error( e )
@@ -2101,6 +2247,15 @@ class SgdRegressor( BaseModel ):
     Wrapper for SGD-based linear regressors.
     
     """
+    score: Optional[ float ]
+    prediction: Optional[ np.ndarray ]
+    mean_absolute_error: Optional[ float ]
+    mean_squared_error: Optional[ float ]
+    r_mean_squared_error: Optional[ float ]
+    r2_score: Optional[ float ]
+    explained_variance_score: Optional[ float ]
+    median_absolute_error: Optional[ float ]
+    
 
     def __init__( self ) -> None:
         """
@@ -2117,6 +2272,13 @@ class SgdRegressor( BaseModel ):
                     
         """
         self.sgd_regression_model = SGDRegressor( max_iter=1000 )
+        self.prediction = None
+        self.mean_absolute_error = None
+        self.mean_squared_error = None
+        self.r_mean_squared_error = None
+        self.r2_score = None
+        self.explained_variance_score = None
+        self.median_absolute_error = None
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2176,7 +2338,7 @@ class SgdRegressor( BaseModel ):
             error.show( )
 
 
-    def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+    def evaluate( self, X: np.ndarray, y: np.ndarray ) -> Dict:
         """
             
             Evaluate regression model
@@ -2196,15 +2358,19 @@ class SgdRegressor( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict(X)
-                return \
-                {
-                    'MAE': mean_absolute_error(y, y_pred),
-                    'MSE': mean_squared_error(y, y_pred),
-                    'RMSE': mean_squared_error(y, y_pred, squared=False),
-                    'R2': r2_score(y, y_pred),
-                    'Explained Variance': explained_variance_score(y, y_pred),
-                    'Median Absolute Error': median_absolute_error(y, y_pred)
+                self.mean_absolute_error = mean_absolute_error( y, self.prediction )
+                self.mean_squared_error = mean_squared_error( y, self.prediction )
+                self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
+                self.r2_score = r2_score( y, self.prediction )
+                self.explained_variance_score = explained_variance_score( y, self.prediction )
+                self.median_absolute_error = median_absolute_error( y, self.prediction, squared=False  )
+                return {
+                    'MAE': self.mean_absolute_error,
+                    'MSE': self.mean_squared_error,
+                    'RMSE': self.r_mean_squared_error,
+                    'R2': self.r2_score,
+                    'Explained Variance': self.explained_variance_score,
+                    'Median Absolute Error': self.median_absolute_error,
                 }
         except Exception as e:
             exception = Error( e )
@@ -2221,6 +2387,15 @@ class Perceptron( BaseModel ):
     Perceptron classifier.
     
     """
+    score: Optional[ float ]
+    prediction: Optional[ np.ndarray ]
+    mean_absolute_error: Optional[ float ]
+    mean_squared_error: Optional[ float ]
+    r_mean_squared_error: Optional[ float ]
+    r2_score: Optional[ float ]
+    explained_variance_score: Optional[ float ]
+    median_absolute_error: Optional[ float ]
+
 
     def __init__( self ) -> None:
         """
@@ -2236,6 +2411,13 @@ class Perceptron( BaseModel ):
                     
         """
         self.perceptron_model = Perceptron( max_iter=1000 )
+        self.prediction = None
+        self.mean_absolute_error = None
+        self.mean_squared_error = None
+        self.r_mean_squared_error = None
+        self.r2_score = None
+        self.explained_variance_score = None
+        self.median_absolute_error = None
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2352,15 +2534,19 @@ class Perceptron( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict(X)
+                self.mean_absolute_error = mean_absolute_error( y, self.prediction )
+                self.mean_squared_error = mean_squared_error( y, self.prediction )
+                self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
+                self.r2_score = r2_score( y, self.prediction )
+                self.explained_variance_score = explained_variance_score( y, self.prediction )
+                self.median_absolute_error = median_absolute_error( y, self.prediction, squared=False  )
                 return {
-                    'Accuracy': accuracy_score(y, y_pred),
-                    'Precision': precision_score(y, y_pred, average='binary'),
-                    'Recall': recall_score(y, y_pred, average='binary'),
-                    'F1 Score': f1_score(y, y_pred, average='binary'),
-                    'ROC AUC': roc_auc_score(y, y_pred),
-                    'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
-                    'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
+                    'MAE': self.mean_absolute_error,
+                    'MSE': self.mean_squared_error,
+                    'RMSE': self.r_mean_squared_error,
+                    'R2': self.r2_score,
+                    'Explained Variance': self.explained_variance_score,
+                    'Median Absolute Error': self.median_absolute_error,
                 }
         except Exception as e:
             exception = Error( e )
@@ -2377,6 +2563,15 @@ class NearestNeighborClassifier( BaseModel ):
     Wrapper for k-Nearest Neighbors Classifier.
     
     """
+    score: Optional[ float ]
+    prediction: Optional[ np.ndarray ]
+    mean_absolute_error: Optional[ float ]
+    mean_squared_error: Optional[ float ]
+    r_mean_squared_error: Optional[ float ]
+    r2_score: Optional[ float ]
+    explained_variance_score: Optional[ float ]
+    median_absolute_error: Optional[ float ]
+
 
     def __init__( self ) -> None:
         """
@@ -2391,6 +2586,13 @@ class NearestNeighborClassifier( BaseModel ):
                     
         """
         self.knn_classification_model = KNeighborsClassifier( n_neighbors=5 )
+        self.prediction = None
+        self.mean_absolute_error = None
+        self.mean_squared_error = None
+        self.r_mean_squared_error = None
+        self.r2_score = None
+        self.explained_variance_score = None
+        self.median_absolute_error = None
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2509,15 +2711,19 @@ class NearestNeighborClassifier( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict(X)
+                self.mean_absolute_error = mean_absolute_error( y, self.prediction )
+                self.mean_squared_error = mean_squared_error( y, self.prediction )
+                self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
+                self.r2_score = r2_score( y, self.prediction )
+                self.explained_variance_score = explained_variance_score( y, self.prediction )
+                self.median_absolute_error = median_absolute_error( y, self.prediction, squared=False  )
                 return {
-                    'Accuracy': accuracy_score(y, y_pred),
-                    'Precision': precision_score(y, y_pred, average='binary'),
-                    'Recall': recall_score(y, y_pred, average='binary'),
-                    'F1 Score': f1_score(y, y_pred, average='binary'),
-                    'ROC AUC': roc_auc_score(y, y_pred),
-                    'Matthews Corrcoef': matthews_corrcoef(y, y_pred),
-                    'Confusion Matrix': confusion_matrix(y, y_pred).tolist()
+                    'MAE': self.mean_absolute_error,
+                    'MSE': self.mean_squared_error,
+                    'RMSE': self.r_mean_squared_error,
+                    'R2': self.r2_score,
+                    'Explained Variance': self.explained_variance_score,
+                    'Median Absolute Error': self.median_absolute_error,
                 }
         except Exception as e:
             exception = Error( e )
@@ -2528,12 +2734,21 @@ class NearestNeighborClassifier( BaseModel ):
             error.show( )
 
 
-class NearestNeighborClassifier( BaseModel ):
+class NearestNeighborRegressor( BaseModel ):
     """
     
     Wrapper for k-Nearest Neighbors Regressor.
     
     """
+    score: Optional[ float ]
+    prediction: Optional[ np.ndarray ]
+    mean_absolute_error: Optional[ float ]
+    mean_squared_error: Optional[ float ]
+    r_mean_squared_error: Optional[ float ]
+    r2_score: Optional[ float ]
+    explained_variance_score: Optional[ float ]
+    median_absolute_error: Optional[ float ]
+    
 
     def __init__( self ) -> None:
         """
@@ -2548,6 +2763,13 @@ class NearestNeighborClassifier( BaseModel ):
                     
         """
         self.knn_regression_model = KNeighborsRegressor( n_neighbors=5 )
+        self.prediction = None
+        self.mean_absolute_error = None
+        self.mean_squared_error = None
+        self.r_mean_squared_error = None
+        self.r2_score = None
+        self.explained_variance_score = None
+        self.median_absolute_error = None
 
 
     def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2657,14 +2879,19 @@ class NearestNeighborClassifier( BaseModel ):
             elif y is None:
                 raise Exception( 'The argument "y" is required!' )
             else:
-                y_pred = self.predict(X)
+                self.mean_absolute_error = mean_absolute_error( y, self.prediction )
+                self.mean_squared_error = mean_squared_error( y, self.prediction )
+                self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
+                self.r2_score = r2_score( y, self.prediction )
+                self.explained_variance_score = explained_variance_score( y, self.prediction )
+                self.median_absolute_error = median_absolute_error( y, self.prediction, squared=False  )
                 return {
-                    'MAE': mean_absolute_error(y, y_pred),
-                    'MSE': mean_squared_error(y, y_pred),
-                    'RMSE': mean_squared_error(y, y_pred, squared=False),
-                    'R2': r2_score(y, y_pred),
-                    'Explained Variance': explained_variance_score(y, y_pred),
-                    'Median Absolute Error': median_absolute_error(y, y_pred)
+                    'MAE': self.mean_absolute_error,
+                    'MSE': self.mean_squared_error,
+                    'RMSE': self.r_mean_squared_error,
+                    'R2': self.r2_score,
+                    'Explained Variance': self.explained_variance_score,
+                    'Median Absolute Error': self.median_absolute_error,
                 }
         except Exception as e:
             exception = Error( e )

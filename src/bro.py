@@ -106,7 +106,7 @@ class Header( ):
 		'''
 		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completions',
 		         'speech_generation', 'translations', 'assistants', 'transcriptions',
-		         'finetuning', 'vectors', 'uploads', 'files', 'vector_stores',
+		         'finetuning', 'vectors', 'uploads', 'files', 'vectorstores',
 		         'responses', 'get_data', 'dump' ]
 	
 	
@@ -129,7 +129,7 @@ class Header( ):
 		         'vectors': self.embeddings,
 		         'uploads': self.uploads,
 		         'files': self.files,
-		         'vector_stores': self.vector_stores }
+		         'vectorstores': self.vector_stores }
 
 
 class AI( ):
