@@ -136,7 +136,7 @@ class BaseModel( ):
 		raise NotImplementedError
 
 
-class Preprocessor( ):
+class BaseData( ):
 	"""
 
 		Base interface for all
@@ -145,10 +145,12 @@ class Preprocessor( ):
 
 	"""
 	pipeline: Optional[ Pipeline ]
+	scaled_values: Optional[ np.ndarray ]
 	
 	
 	def __init__( self ):
 		self.pipeline = None
+		self.scaled_values = None
 	
 	
 	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> None:
@@ -201,14 +203,14 @@ class Preprocessor( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'Preprocess'
+			exception.cause = 'BaseData'
 			exception.method = ('fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ]=None '
 			                    ') -> np.ndarray')
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class StandardScaler( Preprocessor ):
+class StandardScaler( BaseData ):
 	"""
 
 		Standardizes features by
@@ -266,7 +268,8 @@ class StandardScaler( Preprocessor ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				return self.standard_scaler.transform( X )
+				self.scaled_values = self.standard_scaler.transform( X )
+				return self.scaled_values
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -276,7 +279,7 @@ class StandardScaler( Preprocessor ):
 			error.show( )
 
 
-class MinMaxScaler( Preprocessor ):
+class MinMaxScaler( BaseData ):
 	"""
 
 		Scales features to
@@ -334,7 +337,8 @@ class MinMaxScaler( Preprocessor ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				return self.minmax_scaler.transform( X )
+				self.scaled_values = self.minmax_scaler.transform( X )
+				return self.scaled_values
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -344,7 +348,7 @@ class MinMaxScaler( Preprocessor ):
 			error.show( )
 
 
-class RobustScaler( Preprocessor ):
+class RobustScaler( BaseData ):
 	"""
 
 		Scales features using statistics
@@ -412,7 +416,7 @@ class RobustScaler( Preprocessor ):
 			error.show( )
 
 
-class Normalizer( Preprocessor ):
+class Normalizer( BaseData ):
 	"""
 
 		Scales input vectors individually to unit norm.
@@ -478,7 +482,7 @@ class Normalizer( Preprocessor ):
 			error.show( )
 
 
-class OneHotEncoder( Preprocessor ):
+class OneHotEncoder( BaseData ):
 	"""
 
 		Encodes categorical features
@@ -545,7 +549,7 @@ class OneHotEncoder( Preprocessor ):
 			error.show( )
 
 
-class OrdinalEncoder( Preprocessor ):
+class OrdinalEncoder( BaseData ):
 	"""
 
 		Encodes categorical
@@ -612,7 +616,7 @@ class OrdinalEncoder( Preprocessor ):
 			error.show( )
 
 
-class SimpleImputer( Preprocessor ):
+class SimpleImputer( BaseData ):
 	"""
 
 		Fills missing values
@@ -679,7 +683,7 @@ class SimpleImputer( Preprocessor ):
 			error.show( )
 
 
-class NearestNeighborImputer( Preprocessor ):
+class NearestNeighborImputer( BaseData ):
 	"""
 
 		Fills missing values
@@ -746,7 +750,7 @@ class NearestNeighborImputer( Preprocessor ):
 			error.show( )
 
 
-class MultiLayerPerceptron( Preprocessor ):
+class MultiLayerPerceptron( BaseData ):
 	"""
 
 		Chains multiple preprocessing
@@ -756,7 +760,7 @@ class MultiLayerPerceptron( Preprocessor ):
 	pipeline: Optional[ Pipeline ]
 	
 	
-	def __init__( self, steps: List[ Tuple[ str, Preprocessor ] ] ) -> None:
+	def __init__( self, steps: List[ Tuple[ str, BaseData ] ] ) -> None:
 		self.pipeline = Pipeline( steps )
 	
 	
@@ -1317,7 +1321,7 @@ class LassoRegressor( BaseModel ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RidgeRegressor'
+			exception.cause = 'LassoRegressor'
 			exception.method = 'fit( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1520,7 +1524,7 @@ class ElasticNetRegressor( BaseModel ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'ElasticNetRegression'
+			exception.cause = 'ElasticNetRegressor'
 			exception.method = 'fit( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1547,7 +1551,7 @@ class ElasticNetRegressor( BaseModel ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'ElasticNetRegression'
+			exception.cause = 'ElasticNetRegressor'
 			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1575,13 +1579,13 @@ class ElasticNetRegressor( BaseModel ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
-			exception.method = ''
+			exception.cause = 'ElasticNetRegressor'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 		
 			Evaluate model performance
@@ -1619,8 +1623,8 @@ class ElasticNetRegressor( BaseModel ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
-			exception.method = ''
+			exception.cause = 'ElasticNetRegressor'
+			exception.method = 'evaluate( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1653,8 +1657,8 @@ class ElasticNetRegressor( BaseModel ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
-			exception.method = ''
+			exception.cause = 'ElasticNetRegressor'
+			exception.method = 'plot( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -2032,7 +2036,7 @@ class BayesianRegressor( BaseModel ):
 					'RMSE': self.r_mean_squared_error,
 					'R2': self.r2_score,
 					'Explained Variance': self.explained_variance_score,
-					'Median Absolute Error': self.median_absolute_error,
+					'Median Error': self.median_absolute_error,
 				}
 		except Exception as e:
 			exception = Error( e )

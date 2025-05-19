@@ -43,6 +43,7 @@
   '''
 import os
 
+# Constants
 APPLICATION_WIDTH = 85
 THEME = "DarkGray12"
 OUTPUT_FILE_NAME = "record.wav"
@@ -51,13 +52,22 @@ MODELS = [ "gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo" ]
 DEFAULT_MODEL = MODELS[ 0 ]
 DEFAULT_POSITION = "Python Developer"
 
-OPENAI_API_KEY = os.getenv( 'OPENAI_API_KEY' )
+# Keys
+GEOAPIFY_API_KEY = os.getenv( 'GEOAPIFY_API_KEY' )
 GEMINI_API_KEY = os.getenv( 'GEMINI_API_KEY' )
 GROQ_API_KEY = os.getenv( 'GROQ_API_KEY' )
 HUGGINGFACE_API_KEY = os.getenv( 'HUGGINGFACE_API_KEY' )
+IPINFO_API_KEY = os.getenv( 'IPINFO_API_KEY' )
+OPENAI_API_KEY = os.getenv( 'OPENAI_API_KEY' )
 PINECONE_API_KEY = os.getenv( 'PINECONE_API_KEY' )
-MISTRAL_API_KEY = os.getenv( 'MISTRAL_API_KEY' )
 LANGSMITH_API_KEY = os.getenv( 'LANGSMITH_API_KEY' )
+LLAMAINDEX_API_KEY = os.getenv( 'LLAMAINDEX_API_KEY' )
+LLAMACLOUD_API_KEY = os.getenv( 'LLAMACLOUD_API_KEY' )
+MISTRAL_API_KEY = os.getenv( 'MISTRAL_API_KEY' )
+NASA_API_KEY = os.getenv( 'NASA_API_KEY' )
+NEWSAPI_API_KEY = os.getenv( 'NEWSAPI_API_KEY' )
+WEATHERAPI_API_KEY = os.getenv( 'WEATHERAPI_API_KEY' )
+WEAVIEATE_API_KEY = os.getenv( 'WEAVIEATE_API_KEY' )
 
 def set_environment( ):
 	variable_dict = globals( ).items( )
