@@ -616,7 +616,7 @@ class OneHotEncoder( Metric ):
 	"""
 	
 	
-	def __init__( self, handle_unknown: str = 'ignore' ) -> None:
+	def __init__( self, handle_unknown: str='ignore' ) -> None:
 		super( ).__init__( )
 		self.hot_encoder = OneHotEncoder( sparse=False, handle_unknown=handle_unknown )
 	
@@ -641,8 +641,8 @@ class OneHotEncoder( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
-			exception.method = ''
+			exception.cause = 'OneHotEncoder'
+			exception.method = 'fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -668,8 +668,8 @@ class OneHotEncoder( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
-			exception.method = ''
+			exception.cause = 'OneHotEncoder'
+			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -708,7 +708,7 @@ class OrdinalEncoder( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'OrdinalEncoder'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -735,7 +735,7 @@ class OrdinalEncoder( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'OrdinalEncoder'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -775,7 +775,7 @@ class SimpleImputer( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'SimpleImputer'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -802,7 +802,7 @@ class SimpleImputer( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'SimpleImputer'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -839,7 +839,7 @@ class NearestNeighborImputer( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'NearestNeighborImputer'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -869,7 +869,7 @@ class NearestNeighborImputer( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'NearestNeighborImputer'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -909,7 +909,7 @@ class MultiLayerPerceptron( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'MultiLayerPerceptron'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -936,7 +936,7 @@ class MultiLayerPerceptron( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'MultiLayerPerceptron'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -964,7 +964,7 @@ class MultiLayerPerceptron( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'MultiLayerPerceptron'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1032,7 +1032,7 @@ class LinearRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'LinearRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1850,7 +1850,7 @@ class LogisticRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'LogisticRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1877,7 +1877,7 @@ class LogisticRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'LogisticRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1907,7 +1907,7 @@ class LogisticRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'LogisticRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1958,7 +1958,7 @@ class LogisticRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'LogisticRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1993,7 +1993,7 @@ class LogisticRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'LogisticRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2063,7 +2063,7 @@ class BayesianRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'BayesianRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2091,7 +2091,7 @@ class BayesianRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'BayesianRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2121,7 +2121,7 @@ class BayesianRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'BayesianRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2165,7 +2165,7 @@ class BayesianRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'BayesianRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2199,7 +2199,7 @@ class BayesianRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'BayesianRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2268,7 +2268,7 @@ class SgdClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'SgdClassifier'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2296,7 +2296,7 @@ class SgdClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'SgdClassifier'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2326,7 +2326,7 @@ class SgdClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'SgdClassifier'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2377,7 +2377,7 @@ class SgdClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'SgdClassifier'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2474,7 +2474,7 @@ class SgdRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'SgdRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2518,7 +2518,7 @@ class SgdRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'SgdRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2587,7 +2587,7 @@ class Perceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'Perceptron'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2614,7 +2614,7 @@ class Perceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'Perceptron'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2644,7 +2644,7 @@ class Perceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'Perceptron'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2695,7 +2695,7 @@ class Perceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'Perceptron'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2763,7 +2763,7 @@ class NearestNeighborClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'NearestNeighborClassifier'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2792,7 +2792,7 @@ class NearestNeighborClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'NearestNeighborClassifier'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2822,7 +2822,7 @@ class NearestNeighborClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'NearestNeighborClassifier'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2873,7 +2873,7 @@ class NearestNeighborClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'NearestNeighborClassifier'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2941,7 +2941,7 @@ class NearestNeighborRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'NearestNeighborRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2968,7 +2968,7 @@ class NearestNeighborRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'NearestNeighborRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2998,7 +2998,7 @@ class NearestNeighborRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'NearestNeighborRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3042,7 +3042,7 @@ class NearestNeighborRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
+			exception.cause = 'NearestNeighborRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
