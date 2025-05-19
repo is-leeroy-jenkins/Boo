@@ -59,6 +59,118 @@ from sklearn.preprocessing import (
 	OneHotEncoder, OrdinalEncoder
 )
 
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from pydantic import BaseModel, Field, validator
+from typing import Optional, List, Tuple
+
+
+class DataSet( BaseModel ):
+    """
+        
+        Purpose:
+        Utility class for preparing machine learning
+        datasets from a pandas DataFrame.
+        
+    """
+    dataframe: pd.DataFrame=Field( description='Full input dataset as pandas DataFrame.' )
+    target: str=Field( description='Name of the target column in the DataFrame.' )
+    features: Optional[ List[ str ] ]=Field( default=None  )
+    size: float=Field( default=0.2, description='Proportion of test set split.' )
+    random_state: int=Field( default=42, description='Random seed for reproducibility.')
+    X_data: pd.DataFrame = Field( init=False )
+    y_values: pd.Series = Field( init=False )
+    X_train: pd.DataFrame = Field( init=False )
+    X_test: pd.DataFrame = Field( init=False )
+    y_train: pd.Series = Field(init=False )
+    y_test: pd.Series = Field( init=False )
+    
+
+    def __init__( self, dataframe: pd.DataFrame, target: str, features: Optional[ List[ str ] ]=None,
+                  size: float=0.2, random_state: int=42 ):
+	    """
+		
+			Purpose:
+			Initialize and split the dataset.
+	
+			Parameters:
+				dataframe (pd.DataFrame): Input dataset as a pandas DataFrame.
+				targets (str): Name of the target column.
+				features (Optional[List[str]]): Specific feature columns to use.
+				size (float): Proportion of data to use as test set.
+				random_state (int): Seed for reproducibility.
+			
+		"""
+	    self.dataframe  = dataframe
+	    self.target = target
+	    self.features = features
+	    self.X_data = self.dataframe[ self.feature_columns ]
+	    self.y_values = self.dataframe[ self.target ]
+	    self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+            self.X, self.y, test_size=size, random_state=random_state)
+
+    def get_features(self) -> pd.DataFrame:
+        """
+	        
+	        Purpose:
+	        Get the complete feature matrix.
+	
+	        Returns:
+	            pd.DataFrame: All features (X).
+            
+        """
+        return self.X
+
+    def get_target(self) -> pd.Series:
+        """
+	        
+	        Purpose:
+	        Get the complete target vector.
+	
+	        Returns:
+	            pd.Series: All target values (y).
+            
+        """
+        return self.y
+
+
+    def get_train_split(self) -> Tuple[pd.DataFrame, pd.Series]:
+        """
+	        
+	        Purpose:
+	        Get the training split of the dataset.
+	
+	        Returns:
+	            Tuple[pd.DataFrame, pd.Series]: (X_train, y_train)
+	            
+        """
+        return self.X_train, self.y_train
+
+
+    def get_test_split(self) -> Tuple[pd.DataFrame, pd.Series]:
+        """
+	        
+	        Purpose:
+	        Get the test split of the dataset.
+	
+	        Returns:
+	            Tuple[pd.DataFrame, pd.Series]: (X_test, y_test)
+	            
+        """
+        return self.X_test, self.y_test
+
+
+    def summary(self) -> None:
+        """
+        
+	        Purpose:
+	        Print basic summary of the dataset structure.
+	        
+        """
+        print("🧮 Features:", self.feature_columns)
+        print("🎯 Target:", self.targets )
+        print("🧪 X_train:", self.X_train.shape, " | X_test:", self.X_test.shape)
+        print("🔢 y_train:", self.y_train.shape, " | y_test:", self.y_test.shape)
 
 class BaseModel( ):
 	"""
