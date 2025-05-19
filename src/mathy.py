@@ -65,78 +65,6 @@ from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Tuple
 
 
-class Data( ):
-    """
-        
-        Purpose:
-        Utility class for preparing machine learning
-        datasets from a pandas DataFrame.
-        
-    """
-    data: pd.DataFrame
-    target: str
-    features: List[ str ]
-    size: float
-    random_state: int
-    data: pd.DataFrame
-    values: pd.Series
-    X_train: pd.DataFrame
-    X_test: pd.DataFrame
-    y_train: pd.Series
-    y_test: pd.Series
-
-
-    def __init__( self, df: pd.DataFrame, target: str, size: float=0.2, state: int=42 ):
-	    """
-		
-			Purpose:
-			Initialize and split the dataset.
-	
-			Parameters:
-				dataframe (pd.DataFrame): Input dataset as a pandas DataFrame.
-				targets (str): Name of the target column.
-				features (Optional[List[str]]): Specific feature columns to use.
-				size (float): Proportion of data to use as test set.
-				random_state (int): Seed for reproducibility.
-			
-		"""
-	    self.dataframe = df
-	    self.target = target
-	    self.features = [ name for name in df.columns ]
-	    self.size = size
-	    self.random_state = state
-	    self.data = self.dataframe[ 1:, self.features ]
-	    self.values = self.dataframe[ 1:, self.target ]
-	    self.X_train = None
-	    self.X_test = None
-	    self.y_train = None
-	    self.y_test = None
-    
-    
-    def split_data( self ) -> Tuple[ pd.DataFrame, pd.Series, pd.DataFrame, pd.Series ]:
-	    """
-			
-			Purpose:
-			Split the dataset into training and test sets.
-	
-			Returns:
-				Tuple[ pd.DataFrame, pd.Series, pd.DataFrame, pd.Series ]
-				
-		"""
-	    try:
-		    self.X_train, self.X_test, self.y_train, self.y_test = train_test_split( self.data,
-			    self.values, self.size, self.random_state )
-		    return ( self.X_train, self.X_test, self.y_train, self.y_test )
-	    except Exception as e:
-		    exception = Error( e )
-		    exception.module = 'Mathy'
-		    exception.cause = 'Data'
-		    exception.method = ('split_data( self ) -> Tuple[ DataFrame, Series, DataFrame, '
-		                        'Series ]')
-		    error = ErrorDialog( exception )
-		    error.show( )
-
-
 class Model( BaseModel ):
 	"""
 	
@@ -297,6 +225,114 @@ class Metric( BaseModel):
 			                    ') -> np.ndarray')
 			error = ErrorDialog( exception )
 			error.show( )
+
+
+class Dataset( ):
+	"""
+
+		Purpose:
+		Utility class for preparing machine learning
+		datasets from a pandas DataFrame.
+
+	"""
+	data: pd.DataFrame
+	records: int
+	fields: int
+	target: str
+	features: List[ str ]
+	size: float
+	random_state: int
+	data: pd.DataFrame
+	values: pd.Series
+	X_train: pd.DataFrame
+	X_test: pd.DataFrame
+	y_train: pd.Series
+	y_test: pd.Series
+	
+	
+	def __init__( self, df: pd.DataFrame, target: str, size: float=0.2, state: int=42 ):
+		"""
+
+			Purpose:
+			Initialize and split the dataset.
+
+			Parameters:
+				df (pd.DataFrame): Input dataset as a pandas DataFrame.
+				target (str): Name of the target column.
+				size (float): Proportion of data to use as test set.
+				random_state (int): Seed for reproducibility.
+
+		"""
+		self.dataframe = df
+		self.records = len( df )
+		self.fields = len( df.columns )
+		self.target = target
+		self.features = [ name for name in df.columns ]
+		self.size = size
+		self.random_state = state
+		self.data = self.dataframe[ 1:, : ]
+		self.values = self.dataframe[ 1:, target ]
+		self.X_train = None
+		self.X_test = None
+		self.y_train = None
+		self.y_test = None
+	
+	
+	def split_data( self ) -> Tuple[ pd.DataFrame, pd.Series, pd.DataFrame, pd.Series ]:
+		"""
+
+			Purpose:
+			Split the dataset into training and test sets.
+
+			Returns:
+				Tuple[ pd.DataFrame, pd.Series, pd.DataFrame, pd.Series ]
+
+		"""
+		try:
+			self.X_train, self.X_test, self.y_train, self.y_test = train_test_split( self.data,
+				self.values, self.size, self.random_state )
+			return (self.X_train, self.X_test, self.y_train, self.y_test)
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'Data'
+			exception.method = ('split_data( self ) -> Tuple[ DataFrame, Series, DataFrame, '
+			                    'Series ]')
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def calculate_metrics( self ) -> Dict:
+		"""
+
+			Purpose:
+			Split the dataset into training and test sets.
+
+			Returns:
+				Tuple[ pd.DataFrame, pd.Series, pd.DataFrame, pd.Series ]
+
+		"""
+		try:
+			return df.describe( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'Data'
+			exception.method = 'caluclate_metrics( ) -> Dict'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def __dir__( self ):
+		'''
+
+			Purpose:
+			This function retuns a list of strings (members of the class)
+
+		'''
+		return [ 'dataframe', 'records', 'fields', 'target',
+		         'features', 'size', 'random_state', 'data',
+		         'values', 'X_train', 'X_test', 'y_train', 'y_test' ]
 
 
 class StandardScaler( Metric ):
