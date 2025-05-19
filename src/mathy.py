@@ -221,7 +221,7 @@ class Metric( BaseModel):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Metric'
-			exception.method = ('fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ]=None '
+			exception.method = ('fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ]=None'
 			                    ') -> np.ndarray')
 			error = ErrorDialog( exception )
 			error.show( )
@@ -236,10 +236,10 @@ class Dataset( ):
 
 	"""
 	data: pd.DataFrame
+	target: pd.Series
 	records: Optional[ int ]
 	fields: Otional[ int ]
-	target: str
-	features: Otional[ List[ str ] ]
+	features: Optional[ List[ str ] ]
 	size: float
 	random_state: int
 	data: pd.DataFrame
@@ -250,7 +250,7 @@ class Dataset( ):
 	y_test: Optional[ pd.Series ]
 	
 	
-	def __init__( self, df: pd.DataFrame, target: str, size: float=0.2, state: int=42 ):
+	def __init__( self, df: pd.DataFrame, target: pd.Series, size: float=0.2, state: int=42 ):
 		"""
 
 			Purpose:
@@ -267,15 +267,28 @@ class Dataset( ):
 		self.records = len( df )
 		self.fields = len( df.columns )
 		self.target = target
-		self.features = [ name for name in df.columns ]
-		self.size = size
-		self.random_state = state
+		self.features = [ column for column in df.columns ]
 		self.data = self.dataframe[ 1:, : ]
 		self.values = self.dataframe[ 1:, target ]
+		self.size = size
+		self.random_state = state
 		self.X_train = None
 		self.X_test = None
 		self.y_train = None
 		self.y_test = None
+	
+	
+	def __dir__( self ):
+		'''
+
+			Purpose:
+			This function retuns a list of strings (members of the class)
+
+		'''
+		return [ 'dataframe', 'records', 'fields', 'target', 'split_data',
+		         'features', 'size', 'random_state', 'data', 'calculate_metrics',
+		         'get_training_data', 'get_testing_data',
+		         'values', 'X_train', 'X_test', 'y_train', 'y_test' ]
 	
 	
 	def split_data( self ) -> Tuple[ pd.DataFrame, pd.Series, pd.DataFrame, pd.Series ]:
@@ -296,8 +309,8 @@ class Dataset( ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Data'
-			exception.method = ('split_data( self ) -> Tuple[ DataFrame, Series, DataFrame, '
-			                    'Series ]')
+			exception.method = ('split_data( self ) -> Tuple[ pd.DataFrame, pd.Series, pd.DataFrame,'
+			                    ' pd.Series ]')
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -323,16 +336,29 @@ class Dataset( ):
 			error.show( )
 	
 	
-	def __dir__( self ):
-		'''
-
+	def get_training_data( self ) -> Tuple[ pd.DataFrame, pd.Series ]:
+		"""
+		
 			Purpose:
-			This function retuns a list of strings (members of the class)
-
-		'''
-		return [ 'dataframe', 'records', 'fields', 'target',
-		         'features', 'size', 'random_state', 'data',
-		         'values', 'X_train', 'X_test', 'y_train', 'y_test' ]
+				Return the training features and labels.
+	
+			Returns:
+				Tuple[pd.DataFrame, pd.Series]: X_train, y_train
+		"""
+		return self.X_train, self.y_train
+	
+	
+	def get_testing_data( self ) -> Tuple[ pd.DataFrame, pd.Series ]:
+		"""
+		
+			Purpose:
+			Return the test features and labels.
+	
+			Returns:
+				Tuple[pd.DataFrame, pd.Series]: X_test, y_test
+				
+		"""
+		return self.X_test, self.y_test
 
 
 class StandardScaler( Metric ):
@@ -349,7 +375,7 @@ class StandardScaler( Metric ):
 		self.standard_scaler = StandardScaler( )
 	
 	
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Fits the standard_scaler
