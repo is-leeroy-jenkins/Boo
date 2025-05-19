@@ -851,13 +851,13 @@ class LinearRegressor( BaseModel ):
 		Ordinary Least Squares Regression.
 	
 	"""
-	score: Optional[ float ]
 	prediction: Optional[ np.ndarray ]
-	mean_absolute_error: Optional[ float ]
-	mean_squared_error: Optional[ float ]
-	r_mean_squared_error: Optional[ float ]
-	r2_score: Optional[ float ]
-	explained_variance_score: Optional[ float ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
 	median_absolute_error: Optional[ float ]
 	
 	
@@ -877,12 +877,12 @@ class LinearRegressor( BaseModel ):
 		"""
 		self.linerar_model = LinearRegressor( )
 		self.prediction = None
-		self.mean_absolute_error = 0.0
-		self.mean_squared_error = 0.0
-		self.r_mean_squared_error = 0.0
-		self.r2_score = 0.0
-		self.explained_variance_score = 0.0
-		self.median_absolute_error = 0.0
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -991,20 +991,20 @@ class LinearRegressor( BaseModel ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.mean_absolute_error = mean_absolute_error( y, self.prediction )
-				self.mean_squared_error = mean_squared_error( y, self.prediction )
-				self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
-				self.r2_score = r2_score( y, self.prediction )
-				self.explained_variance_score = explained_variance_score( y, self.prediction )
-				self.median_absolute_error = median_absolute_error( y, self.prediction,
-					squared=False )
-				return {
-					'MAE': self.mean_absolute_error,
-					'MSE': self.mean_squared_error,
-					'RMSE': self.r_mean_squared_error,
-					'R2': self.r2_score,
-					'Explained Variance': self.explained_variance_score,
-					'Median Absolute Error': self.median_absolute_error,
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
 				}
 		except Exception as e:
 			exception = Error( e )
@@ -1056,13 +1056,13 @@ class RidgeRegressor( BaseModel ):
 		(L2 regularization).
 		
 	"""
-	score: Optional[ float ]
 	prediction: Optional[ np.ndarray ]
-	mean_absolute_error: Optional[ float ]
-	mean_squared_error: Optional[ float ]
-	r_mean_squared_error: Optional[ float ]
-	r2_score: Optional[ float ]
-	explained_variance_score: Optional[ float ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
 	median_absolute_error: Optional[ float ]
 	
 	
@@ -1081,12 +1081,12 @@ class RidgeRegressor( BaseModel ):
 		"""
 		self.ridge_model = RidgeRegressor( alpha=1.0 )
 		self.prediction = None
-		self.mean_absolute_error = 0.0
-		self.mean_squared_error = 0.0
-		self.r_mean_squared_error = 0.0
-		self.r2_score = 0.0
-		self.explained_variance_score = 0.0
-		self.median_absolute_error = 0.0
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1197,20 +1197,20 @@ class RidgeRegressor( BaseModel ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.mean_absolute_error = mean_absolute_error( y, self.prediction )
-				self.mean_squared_error = mean_squared_error( y, self.prediction )
-				self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
-				self.r2_score = r2_score( y, self.prediction )
-				self.explained_variance_score = explained_variance_score( y, self.prediction )
-				self.median_absolute_error = median_absolute_error( y, self.prediction,
-					squared=False )
-				return {
-					'MAE': self.mean_absolute_error,
-					'MSE': self.mean_squared_error,
-					'RMSE': self.r_mean_squared_error,
-					'R2': self.r2_score,
-					'Explained Variance': self.explained_variance_score,
-					'Median Absolute Error': self.median_absolute_error,
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
 				}
 		except Exception as e:
 			exception = Error( e )
@@ -1264,14 +1264,13 @@ class LassoRegressor( BaseModel ):
 		Wrapper for LassoRegressor Regression (L1 regularization).
 		
 	"""
-	score: Optional[ float ]
 	prediction: Optional[ np.ndarray ]
-	mean_absolute_error: Optional[ float ]
-	mean_squared_error: Optional[ float ]
-	r_mean_squared_error: Optional[ float ]
-	r2_score: Optional[ float ]
-	explained_variance_score: Optional[ float ]
-	median_absolute_error: Optional[ float ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
 	
 	
 	def __init__( self ) -> None:
@@ -1289,12 +1288,12 @@ class LassoRegressor( BaseModel ):
 		"""
 		self.lasso_model = LassoRegressor( alpha=1.0 )
 		self.prediction = None
-		self.mean_absolute_error = 0.0
-		self.mean_squared_error = 0.0
-		self.r_mean_squared_error = 0.0
-		self.r2_score = 0.0
-		self.explained_variance_score = 0.0
-		self.median_absolute_error = 0.0
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1402,20 +1401,20 @@ class LassoRegressor( BaseModel ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.mean_absolute_error = mean_absolute_error( y, self.prediction )
-				self.mean_squared_error = mean_squared_error( y, self.prediction )
-				self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
-				self.r2_score = r2_score( y, self.prediction )
-				self.explained_variance_score = explained_variance_score( y, self.prediction )
-				self.median_absolute_error = median_absolute_error( y, self.prediction,
-					squared=False )
-				return {
-					'MAE': self.mean_absolute_error,
-					'MSE': self.mean_squared_error,
-					'RMSE': self.r_mean_squared_error,
-					'R2': self.r2_score,
-					'Explained Variance': self.explained_variance_score,
-					'Median Absolute Error': self.median_absolute_error,
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
 				}
 		except Exception as e:
 			exception = Error( e )
@@ -1466,13 +1465,13 @@ class ElasticNetRegressor( BaseModel ):
 	Wrapper for ElasticNetRegressor Regression (L1 + L2 regularization).
 	
 	"""
-	score: Optional[ float ]
 	prediction: Optional[ np.ndarray ]
-	mean_absolute_error: Optional[ float ]
-	mean_squared_error: Optional[ float ]
-	r_mean_squared_error: Optional[ float ]
-	r2_score: Optional[ float ]
-	explained_variance_score: Optional[ float ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
 	median_absolute_error: Optional[ float ]
 	
 	
@@ -1492,12 +1491,12 @@ class ElasticNetRegressor( BaseModel ):
 		"""
 		self.elasticnet_model = ElasticNetRegressor( alpha=1.0, l1_ratio=0.5 )
 		self.prediction = None
-		self.mean_absolute_error = 0.0
-		self.mean_squared_error = 0.0
-		self.r_mean_squared_error = 0.0
-		self.r2_score = 0.0
-		self.explained_variance_score = 0.0
-		self.median_absolute_error = 0.0
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1605,20 +1604,20 @@ class ElasticNetRegressor( BaseModel ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.mean_absolute_error = mean_absolute_error( y, self.prediction )
-				self.mean_squared_error = mean_squared_error( y, self.prediction )
-				self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
-				self.r2_score = r2_score( y, self.prediction )
-				self.explained_variance_score = explained_variance_score( y, self.prediction )
-				self.median_absolute_error = median_absolute_error( y, self.prediction,
-					squared=False )
-				return {
-					'MAE': self.mean_absolute_error,
-					'MSE': self.mean_squared_error,
-					'RMSE': self.r_mean_squared_error,
-					'R2': self.r2_score,
-					'Explained Variance': self.explained_variance_score,
-					'Median Absolute Error': self.median_absolute_error,
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
 				}
 		except Exception as e:
 			exception = Error( e )
@@ -1669,13 +1668,13 @@ class LogisticRegressor( BaseModel ):
 	Wrapper for a Logistic Regression.
 	
 	"""
-	score: Optional[ float ]
 	prediction: Optional[ np.ndarray ]
-	mean_absolute_error: Optional[ float ]
-	mean_squared_error: Optional[ float ]
-	r_mean_squared_error: Optional[ float ]
-	r2_score: Optional[ float ]
-	explained_variance_score: Optional[ float ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
 	median_absolute_error: Optional[ float ]
 	
 	
@@ -1694,12 +1693,12 @@ class LogisticRegressor( BaseModel ):
 		"""
 		self.logistic_model = LogisticRegressor( max_iter=1000 )
 		self.prediction = None
-		self.mean_absolute_error = 0.0
-		self.mean_squared_error = 0.0
-		self.r_mean_squared_error = 0.0
-		self.r2_score = 0.0
-		self.explained_variance_score = 0.0
-		self.median_absolute_error = 0.0
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -1816,20 +1815,20 @@ class LogisticRegressor( BaseModel ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.mean_absolute_error = mean_absolute_error( y, self.prediction )
-				self.mean_squared_error = mean_squared_error( y, self.prediction )
-				self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
-				self.r2_score = r2_score( y, self.prediction )
-				self.explained_variance_score = explained_variance_score( y, self.prediction )
-				self.median_absolute_error = median_absolute_error( y, self.prediction,
-					squared=False )
-				return {
-					'MAE': self.mean_absolute_error,
-					'MSE': self.mean_squared_error,
-					'RMSE': self.r_mean_squared_error,
-					'R2': self.r2_score,
-					'Explained Variance': self.explained_variance_score,
-					'Median Absolute Error': self.median_absolute_error,
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
 				}
 		except Exception as e:
 			exception = Error( e )
@@ -1881,13 +1880,13 @@ class BayesianRegressor( BaseModel ):
 		Wrapper for Bayesian RidgeRegressor Regression.
 	
 	"""
-	score: Optional[ float ]
 	prediction: Optional[ np.ndarray ]
-	mean_absolute_error: Optional[ float ]
-	mean_squared_error: Optional[ float ]
-	r_mean_squared_error: Optional[ float ]
-	r2_score: Optional[ float ]
-	explained_variance_score: Optional[ float ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
 	median_absolute_error: Optional[ float ]
 	
 	
@@ -1907,12 +1906,12 @@ class BayesianRegressor( BaseModel ):
 		"""
 		self.bayesian_model = BayesianRegressor( )
 		self.prediction = None
-		self.mean_absolute_error = 0.0
-		self.mean_squared_error = 0.0
-		self.r_mean_squared_error = 0.0
-		self.r2_score = 0.0
-		self.explained_variance_score = 0.0
-		self.median_absolute_error = 0.0
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2023,20 +2022,20 @@ class BayesianRegressor( BaseModel ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.mean_absolute_error = mean_absolute_error( y, self.prediction )
-				self.mean_squared_error = mean_squared_error( y, self.prediction )
-				self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
-				self.r2_score = r2_score( y, self.prediction )
-				self.explained_variance_score = explained_variance_score( y, self.prediction )
-				self.median_absolute_error = median_absolute_error( y, self.prediction,
-					squared=False )
-				return {
-					'MAE': self.mean_absolute_error,
-					'MSE': self.mean_squared_error,
-					'RMSE': self.r_mean_squared_error,
-					'R2': self.r2_score,
-					'Explained Variance': self.explained_variance_score,
-					'Median Error': self.median_absolute_error,
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
 				}
 		except Exception as e:
 			exception = Error( e )
@@ -2265,13 +2264,13 @@ class SgdRegressor( BaseModel ):
 	Wrapper for SGD-based linear regressors.
 	
 	"""
-	score: Optional[ float ]
 	prediction: Optional[ np.ndarray ]
-	mean_absolute_error: Optional[ float ]
-	mean_squared_error: Optional[ float ]
-	r_mean_squared_error: Optional[ float ]
-	r2_score: Optional[ float ]
-	explained_variance_score: Optional[ float ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
 	median_absolute_error: Optional[ float ]
 	
 	
@@ -2291,12 +2290,12 @@ class SgdRegressor( BaseModel ):
 		"""
 		self.sgd_regression_model = SGDRegressor( max_iter=1000 )
 		self.prediction = None
-		self.mean_absolute_error = 0.0
-		self.mean_squared_error = 0.0
-		self.r_mean_squared_error = 0.0
-		self.r2_score = 0.0
-		self.explained_variance_score = 0.0
-		self.median_absolute_error = 0.0
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2376,20 +2375,20 @@ class SgdRegressor( BaseModel ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.mean_absolute_error = mean_absolute_error( y, self.prediction )
-				self.mean_squared_error = mean_squared_error( y, self.prediction )
-				self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
-				self.r2_score = r2_score( y, self.prediction )
-				self.explained_variance_score = explained_variance_score( y, self.prediction )
-				self.median_absolute_error = median_absolute_error( y, self.prediction,
-					squared=False )
-				return {
-					'MAE': self.mean_absolute_error,
-					'MSE': self.mean_squared_error,
-					'RMSE': self.r_mean_squared_error,
-					'R2': self.r2_score,
-					'Explained Variance': self.explained_variance_score,
-					'Median Absolute Error': self.median_absolute_error,
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
 				}
 		except Exception as e:
 			exception = Error( e )
@@ -2761,13 +2760,13 @@ class NearestNeighborRegressor( BaseModel ):
 	Wrapper for k-Nearest Neighbors Regressor.
 	
 	"""
-	score: Optional[ float ]
 	prediction: Optional[ np.ndarray ]
-	mean_absolute_error: Optional[ float ]
-	mean_squared_error: Optional[ float ]
-	r_mean_squared_error: Optional[ float ]
-	r2_score: Optional[ float ]
-	explained_variance_score: Optional[ float ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
 	median_absolute_error: Optional[ float ]
 	
 	
@@ -2785,12 +2784,12 @@ class NearestNeighborRegressor( BaseModel ):
 		"""
 		self.knn_regression_model = KNeighborsRegressor( n_neighbors=5 )
 		self.prediction = None
-		self.mean_absolute_error = 0.0
-		self.mean_squared_error = 0.0
-		self.r_mean_squared_error = 0.0
-		self.r2_score = 0.0
-		self.explained_variance_score = 0.0
-		self.median_absolute_error = 0.0
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -2900,20 +2899,20 @@ class NearestNeighborRegressor( BaseModel ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.mean_absolute_error = mean_absolute_error( y, self.prediction )
-				self.mean_squared_error = mean_squared_error( y, self.prediction )
-				self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
-				self.r2_score = r2_score( y, self.prediction )
-				self.explained_variance_score = explained_variance_score( y, self.prediction )
-				self.median_absolute_error = median_absolute_error( y, self.prediction,
-					squared=False )
-				return {
-					'MAE': self.mean_absolute_error,
-					'MSE': self.mean_squared_error,
-					'RMSE': self.r_mean_squared_error,
-					'R2': self.r2_score,
-					'Explained Variance': self.explained_variance_score,
-					'Median Absolute Error': self.median_absolute_error,
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
 				}
 		except Exception as e:
 			exception = Error( e )
