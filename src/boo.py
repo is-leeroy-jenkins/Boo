@@ -49,7 +49,7 @@ from openai import OpenAI, AssistantEventHandler
 from typing_extensions import override
 import requests
 import tiktoken
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 from pygments.lexers.csound import newline
 from static import GptRequests, GptRoles, GptLanguages
 from booggr import ErrorDialog, Error
@@ -873,7 +873,7 @@ class Chat( AI ):
 		top: float=0.9
 		freq: float=0.0
 		pres: float=0.0
-		max: int=2048
+		max: int=10000
 		store: bool=True
 		stream: bool=True
 		
@@ -907,7 +907,7 @@ class Chat( AI ):
 	
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
+	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
@@ -1075,7 +1075,7 @@ class Chat( AI ):
 			error.show( )
 	
 	
-	def summarize( self, prompt: str, path: str ) -> str:
+	def summarize_document( self, prompt: str, path: str ) -> str:
 		"""
 		
 			Purpose
@@ -1103,27 +1103,23 @@ class Chat( AI ):
 				raise Exception( 'Argument "path" cannot be None' )
 			else:
 				self.file_path = path
-				self.file = self.client.files.create( file=open( self.file_path, 'rb' ),
-					purpose='user_data' )
-				
+				self.file = self.client.files.create( file=open( path, 'rb' ), purpose='user_data' )
 				self.messages = [
+				{
+					'role': 'user',
+					'content': [
 					{
-						'role': 'user',
-						'content': [
-							{
-								'type': 'file',
-								'file':
-								{
-									'file_id': file.id,
-								}
-							},
-							{
-								'type': 'text',
-								'text': 'What is the first dragon in the book?',
-							},
-						]
-					}
-				]
+						'type': 'file',
+						'file':
+						{
+							'file_id': file.id,
+						}
+					},
+					{
+						'type': 'text',
+						'text': 'What is the first dragon in the book?',
+					}, ]
+				} ]
 				
 				self.completion = self.client.chat.completions.create( model=self.model,
 					messages=self.messages )
@@ -1295,7 +1291,7 @@ class Assistant( AI ):
 		top: float=0.9
 		freq: float=0.0
 		pres: float=0.0
-		max: int=2048
+		max: int=10000
 		store: bool=True
 		stream: bool=True
 		
@@ -1313,7 +1309,7 @@ class Assistant( AI ):
 	
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
+	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.system_instructions = AI( ).bubba_instructions
@@ -1750,7 +1746,7 @@ class Bubba( AI ):
 		top: float=0.9
 		freq: float=0.0
 		pres: float=0.0
-		max: int=2048
+		max: int=10000
 		store: bool=True
 		stream: bool=True
 		
@@ -1772,7 +1768,7 @@ class Bubba( AI ):
 	
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
+	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.system_instructions = AI( ).bubba_instructions
@@ -2178,7 +2174,7 @@ class Bro( AI ):
 		top: float=0.9
 		freq: float=0.0
 		pres: float=0.0
-		max: int=2048
+		max: int=10000
 		store: bool=True
 		stream: bool=True
 		
@@ -2200,7 +2196,7 @@ class Bro( AI ):
 	
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
+	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.system_instructions = AI( ).bro_instructions
@@ -2618,7 +2614,7 @@ class Embedding( AI ):
 	
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
+	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.client = OpenAI( self.api_key )
 		self.client.api_key = Header( ).api_key
@@ -2806,7 +2802,7 @@ class TTS( AI ):
 		top: float=0.9
 		freq: float=0.0
 		pres: float=0.0
-		max: int=2048
+		max: int=10000
 		store: bool=True
 		stream: bool=True
 		
@@ -2830,7 +2826,7 @@ class TTS( AI ):
 	
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
+	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		'''
 			Constructor to  create_small_embedding TTS objects
 		'''
@@ -2988,7 +2984,7 @@ class Transcription( AI ):
 		top: float=0.9
 		freq: float=0.0
 		pres: float=0.0
-		max: int=2048
+		max: int=10000
 		store: bool=True
 		stream: bool=True
 		
@@ -3011,7 +3007,7 @@ class Transcription( AI ):
 	
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
+	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
@@ -3142,7 +3138,7 @@ class Translation( AI ):
 		top: float=0.9
 		freq: float=0.0
 		pres: float=0.0
-		max: int=2048
+		max: int=10000
 		store: bool=True
 		stream: bool=True
 		
@@ -3165,7 +3161,7 @@ class Translation( AI ):
 	
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=True, stream: bool=True ):
+	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
@@ -3323,7 +3319,7 @@ class LargeImage( AI ):
 	
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=False ):
+	              pres: float=0.0, max: int=10000, store: bool=False, stream: bool=False ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( )
@@ -3503,7 +3499,7 @@ class Image( AI ):
 		top: float=0.9
 		freq: float=0.0
 		pres: float=0.0
-		max: int=2048
+		max: int=10000
 		store: bool=True
 		stream: bool=True
 
@@ -3530,7 +3526,7 @@ class Image( AI ):
 	
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-	              pres: float=0.0, max: int=2048, store: bool=False, stream: bool=False ):
+	              pres: float=0.0, max: int=10000, store: bool=False, stream: bool=False ):
 		super( ).__init__( )
 		self.api_key = Header( ).api_key
 		self.client = OpenAI( )

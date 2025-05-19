@@ -107,7 +107,7 @@ class Text:
 	    tokenize_words( path: str ) -> List[ str ]
 	    tokenize_sentences( path: str ) -> str
 	    chunk_text( self, path: str, max: int=800 ) -> List[ str ]
-	    chunk_tokens( self, path: str, max: int=800, over: int=50 ) -> List[ str ]
+	    chunk_words( self, path: str, max: int=800, over: int=50 ) -> List[ str ]
 	    split_paragraphs( self, path: str ) -> List[ str ]
 	    compute_frequency_distribution( self, lines: List[ str ], proc: bool=True ) -> List[ str ]
 	    compute_conditional_distribution( self, lines: List[ str ], condition: str=None,
@@ -143,6 +143,7 @@ class Text:
 		self.stop_words = List[ str ]
 		self.frequency_distribution = { }
 		self.conditional_distribution = { }
+		self.encoding = None
 		self.vocabulary = None
 		self.file_path = None
 		self.raw_input = None
@@ -168,13 +169,13 @@ class Text:
 		return [ 'file_path', 'raw_input', 'raw_pages', 'normalized', 'lemmatized',
 		         'tokenized', 'corrected', 'cleaned_text', 'words', 'paragraphs',
 		         'tokens', 'tokens', 'pages', 'chunks', 'chunk_size', 'cleaned_pages',
-		         'stop_words', 'cleaned_lines', 'removed', 'lowercase',
+		         'stop_words', 'cleaned_lines', 'removed', 'lowercase', 'encoding', 'vocabulary',
 		         'translator', 'lemmatizer', 'stemmer', 'tokenizer', 'vectorizer',
 		         'load_text', 'split_lines', 'split_pages', 'collapse_whitespace',
 		         'remove_punctuation', 'remove_special', 'remove_html', 'remove_errors',
-		         'remove_markdown', 'remove_stopwords', 'remove_headers',
+		         'remove_markdown', 'remove_stopwords', 'remove_headers', 'tiktokenize'
 		         'normalize_text', 'lemmatize', 'tokenize_text', 'tokenize_words',
-		         'tokenize_sentences', 'chunk_text', 'chunk_tokens',
+		         'tokenize_sentences', 'chunk_text', 'chunk_words',
 		         'create_wordbag', 'create_word2vec', 'create_tfidf',
 		         'clean_files', 'convert_jsonl' ]
 	
@@ -491,7 +492,7 @@ class Text:
 				raise Exception( 'The argument "text" is required.' )
 			else:
 				self.raw_input = text
-				self.cleaned_text = re.sub( r'\[.*?\]\(.*?\)', '', self.raw_input )
+				self.cleaned_text = re.sub( r'\[.*?\]\(.*?\)', '', text )
 				self.corrected = re.sub( r'[`_*#~>-]', '', self.cleaned_text )
 				_retval = re.sub( r'!\[.*?\]\(.*?\)', '', self.corrected )
 				return _retval
@@ -530,7 +531,7 @@ class Text:
 			else:
 				self.raw_input = text.lower( )
 				self.stop_words = set( stopwords.words( 'english' ) )
-				self.tokens = nltk.word_tokenize( self.raw_input )
+				self.tokens = nltk.word_tokenize( text )
 				self.cleaned_tokens = [ w for w in self.tokens
 				                        if w.isalnum( ) and w not in self.stop_words ]
 				self.cleaned_text = ' '.join( self.cleaned_tokens )
@@ -569,7 +570,7 @@ class Text:
 			if text is None:
 				raise Exception( 'The argument "text" is required.' )
 			else:
-				self.raw_input = text.lower()
+				self.raw_input = text.lower( )
 				tabs = re.sub( r'[ \t+]', ' ', self.raw_input )
 				collapsed = re.sub( r'\s+', ' ', tabs )
 				self.cleaned_lines = [ line for line in collapsed if line ]
@@ -584,7 +585,7 @@ class Text:
 			_err.show( )
 	
 	
-	def remove_headers( self, pages: List[ str ], min: int = 3 ) -> List[ str ]:
+	def remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]:
 		"""
 			
 			Removes repetitive headers and footers
@@ -784,6 +785,52 @@ class Text:
 			_err.show( )
 	
 	
+	def tiktokenize( self, text: str, model: str='cl100k_base' ) -> List[ str ]:
+		"""
+		
+		    Tokenizes input text into subword tokens
+		    using OpenAI's tiktoken tokenizer.
+		    This function leverages the tiktoken library,
+		    which provides byte-pair encoding (BPE)
+		    tokenization used in models such as GPT-3.5 and GPT-4.
+		    Unlike standard word tokenization,
+		    this function splits text into model-specific subword units.
+		
+		    Parameters
+		    ----------
+		    text : str
+		        The input string to be tokenized.
+		
+		    model : str, optional
+		        The tokenizer model to use. Examples include 'cl100k_base' (default),
+		        'gpt-3.5-turbo', or 'gpt-4'. Ensure the model is supported by tiktoken.
+		
+		    Returns
+		    -------
+		    List[str]
+		        A list of string tokens representing BPE subword units.
+
+        """
+		try:
+			if text is None:
+				raise Exception( 'The argument "text" was None' )
+			else:
+				self.encoding = tiktoken.get_encoding( model )
+				_token_ids = self.encoding.encode( text )
+				self.tokens = nltk.word_tokenize( text )
+				self.words = [ w for w in self.tokens ]
+				_retokens = [ re.sub( r'[^\w"-]', '', word ) for word in self.words if
+				              word.strip( ) ]
+				return _retokens
+		except Exception as e:
+			_exc = Error( e )
+			_exc.module = 'Tiggr'
+			_exc.cause = 'Text'
+			_exc.method = 'tokenize_text( self, path: str ) -> List[ str ]'
+			_err = ErrorDialog( _exc )
+			_err.show( )
+	
+	
 	def tokenize_words( self, words: List[ str ] ) -> List[ str ]:
 		"""
 	
@@ -851,7 +898,7 @@ class Text:
 			_err.show( )
 	
 	
-	def chunk_text( self, text: str, size: int = 50, return_as_string: bool = True ) -> List[
+	def chunk_text( self, text: str, size: int=50, return_as_string: bool=True ) -> List[
 		List[ str ] ]:
 		"""
 	
@@ -868,16 +915,16 @@ class Text:
 				The cleaned_lines path pages to be tokenized and chunked.
 	
 			chunk_size : int, optional (default=50)
-				Number of tokens per chunk_tokens.
+				Number of tokens per chunk_words.
 	
 			return_string : bool, optional (default=True)
-				If True, returns each chunk_tokens as a path; otherwise, returns a get_list of
+				If True, returns each chunk_words as a path; otherwise, returns a get_list of
 				tokens.
 	
 			Returns:
 			--------
 			a list
-				A list of token chunks. Each chunk_tokens is either a get_list of tokens or a
+				A list of token chunks. Each chunk_words is either a get_list of tokens or a
 				path.
 	
 		"""
@@ -901,7 +948,7 @@ class Text:
 			_err.show( )
 	
 	
-	def chunk_tokens( self, words: List[ str ], size: int = 50, as_string: bool = True ) -> List[
+	def chunk_words( self, words: List[ str ], size: int=50, as_string: bool=True ) -> List[
 		List[ str ] ]:
 		"""
 	
@@ -919,7 +966,7 @@ class Text:
 			words : a list of tokenizd words
 	
 			chunk_size : int, optional (default=50)
-				Number of tokens per chunk_tokens.
+				Number of tokens per chunk_words.
 	
 			Returns:
 			--------
@@ -943,7 +990,7 @@ class Text:
 			_exc.module = 'Tiggr'
 			_exc.cause = 'Token'
 			_exc.method = (
-				'chunk_tokens( self, tokens: list[ str ], max: int=800, over: int=50 ) -> list[ '
+				'chunk_words( self, tokens: list[ str ], max: int=800, over: int=50 ) -> list[ '
 				'str ]')
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -1044,6 +1091,7 @@ class Text:
 					self.raw_input = _file.read( )
 					self.paragraphs = [ para.strip( ) for para in self.raw_input.split( '\n\n' ) if
 					                    para.strip( ) ]
+					
 					return self.paragraphs
 		except UnicodeDecodeError:
 			with open( self.file_path, 'r', encoding='latin1' ) as _file:
@@ -1053,8 +1101,7 @@ class Text:
 				return self.paragraphs
 	
 	
-	def compute_frequency_distribution( self, lines: List[ str ],
-	                                    process: bool = True ) -> FreqDist:
+	def compute_frequency_distribution( self, lines: List[ str ], process: bool=True ) -> FreqDist:
 		"""
 		
 			Creates a word frequency freq_dist
@@ -1095,7 +1142,7 @@ class Text:
 	
 	
 	def compute_conditional_distribution( self, lines: List[ str ], condition=None,
-	                                      process: bool = True ) -> ConditionalFreqDist:
+	                                      process: bool=True ) -> ConditionalFreqDist:
 		"""
 	
 			Computes a Conditional Frequency Distribution (CFD)
@@ -1126,7 +1173,6 @@ class Text:
 				
 				for idx, _line in enumerate( self.lines ):
 					condition = condition( _line ) if condition else f'Doc_{idx}'
-					
 					if process:
 						self.normalized = self.normalize_text( _line )
 						self.words = self.tokenize_words( self.normalized )
@@ -1148,7 +1194,7 @@ class Text:
 			_err.show( )
 	
 	
-	def create_vocabulary( self, freq_dist: Dict, min: int = 1 ) -> List[ str ]:
+	def create_vocabulary( self, freq_dist: Dict, min: int=1 ) -> List[ str ]:
 		"""
 		
 			Builds a vocabulary list from a frequency
@@ -1169,8 +1215,7 @@ class Text:
 				raise Exception( 'The argument "freq_dist" is required.' )
 			else:
 				self.frequency_distribution = freq_dist
-				self.words = [ word for word, freq in self.frequency_distribution.items( ) if
-				               freq >= min ]
+				self.words = [ word for word, freq in freq_dist.items( ) if freq >= min ]
 				self.vocabulary = sorted( self.words )
 				return self.vocabulary
 		except Exception as e:
@@ -1271,9 +1316,8 @@ class Text:
 					self.normalized = self.normalize( _doc )
 					self.tokens = self.tokenize_words( self.normalized )
 					self.words = [ self.lemmatize( token ) for token in self.tokens ]
-					self.cleaned_text = " ".join( self.words )
+					self.cleaned_text = ' '.join( self.words )
 					self.cleaned_lines.append( cleaned_text )
-				
 				self.vectorizer = TfidfVectorizer( max_features=max, stop_words='english' )
 				_matrix = self.vectorizer.fit_transform( self.cleaned_lines )
 				return (_matrix, self.vectorizer.get_feature_names_out( ).tolist( ),

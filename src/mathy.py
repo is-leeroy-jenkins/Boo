@@ -80,7 +80,7 @@ class Model( BaseModel ):
 		allow_mutation = True
 	
 	
-	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 			
 			Fit the linerar_model to
@@ -97,7 +97,7 @@ class Model( BaseModel ):
 		raise NotImplementedError
 	
 	
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Generate predictions from
@@ -130,7 +130,7 @@ class Model( BaseModel ):
 		raise NotImplementedError
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
 		"""
 			
 			Evaluate the model using
@@ -1010,7 +1010,7 @@ class LinearRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Fit the OLS
@@ -1038,7 +1038,7 @@ class LinearRegressor( Model ):
 			error.show( )
 	
 	
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
 		Predict target values
@@ -1061,7 +1061,7 @@ class LinearRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LinearRegressor'
-			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1096,7 +1096,7 @@ class LinearRegressor( Model ):
 			error.show( )
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
 		"""
 		
 			Evaluate the model using
@@ -1140,7 +1140,7 @@ class LinearRegressor( Model ):
 			error.show( )
 	
 	
-	def plot( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 			
 			Purpose:
@@ -1214,7 +1214,7 @@ class RidgeRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 			
 			Fit the RidgeRegressor
@@ -1244,10 +1244,10 @@ class RidgeRegressor( Model ):
 			error.show( )
 	
 	
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
-			Predict target values
+			Project target values
 			using the RidgeRegressor linerar_model.
 	
 			Parameters:
@@ -1267,7 +1267,7 @@ class RidgeRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RidgeRegressor'
-			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1302,10 +1302,10 @@ class RidgeRegressor( Model ):
 			error.show( )
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
 		"""
 			
-			Evaluate the Ridge model
+			Evaluates the Ridge model
 			using multiple metrics.
 	
 			Parameters:
@@ -1346,7 +1346,7 @@ class RidgeRegressor( Model ):
 			error.show( )
 	
 	
-	def plot( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot predicted vs
@@ -1421,7 +1421,7 @@ class LassoRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 		Fit the LassoRegressor
@@ -1451,7 +1451,7 @@ class LassoRegressor( Model ):
 			error.show( )
 	
 	
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
 			Predict target values
@@ -1473,7 +1473,7 @@ class LassoRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LassoRegressor'
-			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1506,7 +1506,7 @@ class LassoRegressor( Model ):
 			error.show( )
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
 		"""
 		
 			Evaluate the Lasso model
@@ -1550,7 +1550,7 @@ class LassoRegressor( Model ):
 			error.show( )
 	
 	
-	def plot( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot actual vs.
@@ -1624,7 +1624,7 @@ class ElasticNetRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Fit the ElasticNetRegressor
@@ -1654,7 +1654,7 @@ class ElasticNetRegressor( Model ):
 			error.show( )
 	
 	
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
 			Predict target values
@@ -1676,7 +1676,7 @@ class ElasticNetRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'ElasticNetRegressor'
-			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1753,7 +1753,7 @@ class ElasticNetRegressor( Model ):
 			error.show( )
 	
 	
-	def plot( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot actual vs. predicted
@@ -1826,7 +1826,7 @@ class LogisticRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 		Fit the logistic
@@ -1856,7 +1856,7 @@ class LogisticRegressor( Model ):
 			error.show( )
 	
 	
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
 		Predict class labels using
@@ -1913,7 +1913,7 @@ class LogisticRegressor( Model ):
 			error.show( )
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
 		"""
 			
 			Evaluate the classifier
@@ -2039,7 +2039,7 @@ class BayesianRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 		Fit the Bayesian RidgeRegressor
@@ -2069,7 +2069,7 @@ class BayesianRegressor( Model ):
 			error.show( )
 	
 	
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
 			Predict target values
@@ -2127,7 +2127,7 @@ class BayesianRegressor( Model ):
 			error.show( )
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
 		"""
 			
 			Evaluate the Bayesian model
@@ -2171,7 +2171,7 @@ class BayesianRegressor( Model ):
 			error.show( )
 	
 	
-	def plot( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot predicted vs.
@@ -2244,7 +2244,7 @@ class SgdClassifier( Model ):
 		self.median_absolute_error = 0.0
 	
 	
-	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 			
 			Fit the SGD
@@ -2274,7 +2274,7 @@ class SgdClassifier( Model ):
 			error.show( )
 	
 	
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 				Predict class labels
@@ -2332,7 +2332,7 @@ class SgdClassifier( Model ):
 			error.show( )
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
 		"""
 		 
 			Evaluate the classifier
@@ -2423,7 +2423,7 @@ class SgdRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 			
 			Fit the SGD
@@ -2453,7 +2453,7 @@ class SgdRegressor( Model ):
 			error.show( )
 	
 	
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
 		Predict values using
@@ -2563,7 +2563,7 @@ class Perceptron( Model ):
 		self.median_absolute_error = 0.0
 	
 	
-	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 			
 			Fit the
@@ -2593,7 +2593,7 @@ class Perceptron( Model ):
 			error.show( )
 	
 	
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Predict binary class
@@ -2650,7 +2650,7 @@ class Perceptron( Model ):
 			error.show( )
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
 		"""
 		
 			Evaluate classifier performance
@@ -2739,7 +2739,7 @@ class NearestNeighborClassifier( Model ):
 		self.median_absolute_error = 0.0
 	
 	
-	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Fit the KNN
@@ -2769,7 +2769,7 @@ class NearestNeighborClassifier( Model ):
 			error.show( )
 	
 	
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Predict class labels
@@ -2828,7 +2828,7 @@ class NearestNeighborClassifier( Model ):
 			error.show( )
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
 		"""
 		
 			Evaluate classification performance
@@ -2917,7 +2917,7 @@ class NearestNeighborRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 			
 			Fit the KNN
@@ -2947,7 +2947,7 @@ class NearestNeighborRegressor( Model ):
 			error.show( )
 	
 	
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
 			Predict values using
@@ -3004,7 +3004,7 @@ class NearestNeighborRegressor( Model ):
 			error.show( )
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
 		"""
 			
 			Evaluate k-NN regression

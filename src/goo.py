@@ -50,6 +50,9 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import TextLoader, PyPDFLoader, CSVLoader, UnstructuredHTMLLoader
 from langchain.memory import ConversationBufferMemory
 from typing import List
+
+from langchain_core.tools import Tool
+
 from booggr import Error, ErrorDialog
 
 
@@ -64,8 +67,10 @@ class Fetch:
 			- Unified agent with a .query() method
 			
 	'''
-	def __init__( self, db_uri: str, doc_paths: List[ str ], model: str='gpt-4o',
-	              temperature: float=0.8 ):
+	
+	
+	def __init__( self, db_uri: str, doc_paths: List[ str ], model: str = 'gpt-4o',
+	              temperature: float = 0.8 ):
 		'''
 			Initializes the Fetch system.
 			:param db_uri: URI for the SQLite database
