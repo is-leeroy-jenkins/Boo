@@ -65,7 +65,7 @@ from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Tuple
 
 
-class DataSet( BaseModel ):
+class Data( ):
     """
         
         Purpose:
@@ -73,21 +73,20 @@ class DataSet( BaseModel ):
         datasets from a pandas DataFrame.
         
     """
-    dataframe: pd.DataFrame=Field( description='Full input dataset as pandas DataFrame.' )
-    target: str=Field( description='Name of the target column in the DataFrame.' )
-    features: Optional[ List[ str ] ]=Field( default=None  )
-    size: float=Field( default=0.2, description='Proportion of test set split.' )
-    random_state: int=Field( default=42, description='Random seed for reproducibility.')
-    X_data: pd.DataFrame = Field( init=False )
-    y_values: pd.Series = Field( init=False )
-    X_train: pd.DataFrame = Field( init=False )
-    X_test: pd.DataFrame = Field( init=False )
-    y_train: pd.Series = Field(init=False )
-    y_test: pd.Series = Field( init=False )
-    
+    data: pd.DataFrame
+    target: str
+    features: List[ str ]
+    size: float
+    random_state: int
+    data: pd.DataFrame
+    values: pd.Series
+    X_train: pd.DataFrame
+    X_test: pd.DataFrame
+    y_train: pd.Series
+    y_test: pd.Series
 
-    def __init__( self, dataframe: pd.DataFrame, target: str, features: Optional[ List[ str ] ]=None,
-                  size: float=0.2, random_state: int=42 ):
+
+    def __init__( self, df: pd.DataFrame, target: str, size: float=0.2, state: int=42 ):
 	    """
 		
 			Purpose:
@@ -101,84 +100,56 @@ class DataSet( BaseModel ):
 				random_state (int): Seed for reproducibility.
 			
 		"""
-	    self.dataframe  = dataframe
+	    self.dataframe = df
 	    self.target = target
-	    self.features = features
-	    self.X_data = self.dataframe[ self.feature_columns ]
-	    self.y_values = self.dataframe[ self.target ]
-	    self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-            self.X, self.y, test_size=size, random_state=random_state)
-
-    def get_features(self) -> pd.DataFrame:
-        """
-	        
-	        Purpose:
-	        Get the complete feature matrix.
+	    self.features = [ name for name in df.columns ]
+	    self.size = size
+	    self.random_state = state
+	    self.data = self.dataframe[ 1:, self.features ]
+	    self.values = self.dataframe[ 1:, self.target ]
+	    self.X_train = None
+	    self.X_test = None
+	    self.y_train = None
+	    self.y_test = None
+    
+    
+    def split_data( self ) -> Tuple[ pd.DataFrame, pd.Series, pd.DataFrame, pd.Series ]:
+	    """
+			
+			Purpose:
+			Split the dataset into training and test sets.
 	
-	        Returns:
-	            pd.DataFrame: All features (X).
-            
-        """
-        return self.X
-
-    def get_target(self) -> pd.Series:
-        """
-	        
-	        Purpose:
-	        Get the complete target vector.
-	
-	        Returns:
-	            pd.Series: All target values (y).
-            
-        """
-        return self.y
-
-
-    def get_train_split(self) -> Tuple[pd.DataFrame, pd.Series]:
-        """
-	        
-	        Purpose:
-	        Get the training split of the dataset.
-	
-	        Returns:
-	            Tuple[pd.DataFrame, pd.Series]: (X_train, y_train)
-	            
-        """
-        return self.X_train, self.y_train
+			Returns:
+				Tuple[ pd.DataFrame, pd.Series, pd.DataFrame, pd.Series ]
+				
+		"""
+	    try:
+		    self.X_train, self.X_test, self.y_train, self.y_test = train_test_split( self.data,
+			    self.values, self.size, self.random_state )
+		    return ( self.X_train, self.X_test, self.y_train, self.y_test )
+	    except Exception as e:
+		    exception = Error( e )
+		    exception.module = 'Mathy'
+		    exception.cause = 'Data'
+		    exception.method = ('split_data( self ) -> Tuple[ DataFrame, Series, DataFrame, '
+		                        'Series ]')
+		    error = ErrorDialog( exception )
+		    error.show( )
 
 
-    def get_test_split(self) -> Tuple[pd.DataFrame, pd.Series]:
-        """
-	        
-	        Purpose:
-	        Get the test split of the dataset.
-	
-	        Returns:
-	            Tuple[pd.DataFrame, pd.Series]: (X_test, y_test)
-	            
-        """
-        return self.X_test, self.y_test
-
-
-    def summary(self) -> None:
-        """
-        
-	        Purpose:
-	        Print basic summary of the dataset structure.
-	        
-        """
-        print("🧮 Features:", self.feature_columns)
-        print("🎯 Target:", self.targets )
-        print("🧪 X_train:", self.X_train.shape, " | X_test:", self.X_test.shape)
-        print("🔢 y_train:", self.y_train.shape, " | y_test:", self.y_test.shape)
-
-class BaseModel( ):
+class Model( BaseModel ):
 	"""
 	
 		Abstract base class
 		that defines the interface for all linerar_model wrappers.
 	
 	"""
+	
+	
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
 	
 	
 	def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
@@ -248,7 +219,7 @@ class BaseModel( ):
 		raise NotImplementedError
 
 
-class BaseData( ):
+class Metric( BaseModel):
 	"""
 
 		Base interface for all
@@ -258,6 +229,12 @@ class BaseData( ):
 	"""
 	pipeline: Optional[ Pipeline ]
 	scaled_values: Optional[ np.ndarray ]
+	
+	
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
 	
 	
 	def __init__( self ):
@@ -315,14 +292,14 @@ class BaseData( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaseData'
+			exception.cause = 'Metric'
 			exception.method = ('fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ]=None '
 			                    ') -> np.ndarray')
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class StandardScaler( BaseData ):
+class StandardScaler( Metric ):
 	"""
 
 		Standardizes features by
@@ -391,7 +368,7 @@ class StandardScaler( BaseData ):
 			error.show( )
 
 
-class MinMaxScaler( BaseData ):
+class MinMaxScaler( Metric ):
 	"""
 
 		Scales features to
@@ -460,7 +437,7 @@ class MinMaxScaler( BaseData ):
 			error.show( )
 
 
-class RobustScaler( BaseData ):
+class RobustScaler( Metric ):
 	"""
 
 		Scales features using statistics
@@ -528,7 +505,7 @@ class RobustScaler( BaseData ):
 			error.show( )
 
 
-class Normalizer( BaseData ):
+class Normalizer( Metric ):
 	"""
 
 		Scales input vectors individually to unit norm.
@@ -594,7 +571,7 @@ class Normalizer( BaseData ):
 			error.show( )
 
 
-class OneHotEncoder( BaseData ):
+class OneHotEncoder( Metric ):
 	"""
 
 		Encodes categorical features
@@ -661,7 +638,7 @@ class OneHotEncoder( BaseData ):
 			error.show( )
 
 
-class OrdinalEncoder( BaseData ):
+class OrdinalEncoder( Metric ):
 	"""
 
 		Encodes categorical
@@ -728,7 +705,7 @@ class OrdinalEncoder( BaseData ):
 			error.show( )
 
 
-class SimpleImputer( BaseData ):
+class SimpleImputer( Metric ):
 	"""
 
 		Fills missing values
@@ -795,7 +772,7 @@ class SimpleImputer( BaseData ):
 			error.show( )
 
 
-class NearestNeighborImputer( BaseData ):
+class NearestNeighborImputer( Metric ):
 	"""
 
 		Fills missing values
@@ -862,7 +839,7 @@ class NearestNeighborImputer( BaseData ):
 			error.show( )
 
 
-class MultiLayerPerceptron( BaseData ):
+class MultiLayerPerceptron( Metric ):
 	"""
 
 		Chains multiple preprocessing
@@ -872,7 +849,7 @@ class MultiLayerPerceptron( BaseData ):
 	pipeline: Optional[ Pipeline ]
 	
 	
-	def __init__( self, steps: List[ Tuple[ str, BaseData ] ] ) -> None:
+	def __init__( self, steps: List[ Tuple[ str, Metric ] ] ) -> None:
 		self.pipeline = Pipeline( steps )
 	
 	
@@ -957,7 +934,7 @@ class MultiLayerPerceptron( BaseData ):
 			error.show( )
 
 
-class LinearRegressor( BaseModel ):
+class LinearRegressor( Model ):
 	"""
 	
 		Ordinary Least Squares Regression.
@@ -1161,7 +1138,7 @@ class LinearRegressor( BaseModel ):
 			error.show( )
 
 
-class RidgeRegressor( BaseModel ):
+class RidgeRegressor( Model ):
 	"""
 		
 		RidgeRegressor Regression
@@ -1370,7 +1347,7 @@ class RidgeRegressor( BaseModel ):
 			error.show( )
 
 
-class LassoRegressor( BaseModel ):
+class LassoRegressor( Model ):
 	"""
 		
 		Wrapper for LassoRegressor Regression (L1 regularization).
@@ -1571,7 +1548,7 @@ class LassoRegressor( BaseModel ):
 			error.show( )
 
 
-class ElasticNetRegressor( BaseModel ):
+class ElasticNetRegressor( Model ):
 	"""
 	
 	Wrapper for ElasticNetRegressor Regression (L1 + L2 regularization).
@@ -1774,7 +1751,7 @@ class ElasticNetRegressor( BaseModel ):
 			error.show( )
 
 
-class LogisticRegressor( BaseModel ):
+class LogisticRegressor( Model ):
 	"""
 	
 	Wrapper for a Logistic Regression.
@@ -1986,7 +1963,7 @@ class LogisticRegressor( BaseModel ):
 			error.show( )
 
 
-class BayesianRegressor( BaseModel ):
+class BayesianRegressor( Model ):
 	"""
 	
 		Wrapper for Bayesian RidgeRegressor Regression.
@@ -2192,7 +2169,7 @@ class BayesianRegressor( BaseModel ):
 			error.show( )
 
 
-class SgdClassifier( BaseModel ):
+class SgdClassifier( Model ):
 	"""
 	
 		SGD-based linear classifiers.
@@ -2370,7 +2347,7 @@ class SgdClassifier( BaseModel ):
 			error.show( )
 
 
-class SgdRegressor( BaseModel ):
+class SgdRegressor( Model ):
 	"""
 	
 	Wrapper for SGD-based linear regressors.
@@ -2511,7 +2488,7 @@ class SgdRegressor( BaseModel ):
 			error.show( )
 
 
-class Perceptron( BaseModel ):
+class Perceptron( Model ):
 	"""
 	
 	Perceptron classifier.
@@ -2688,7 +2665,7 @@ class Perceptron( BaseModel ):
 			error.show( )
 
 
-class NearestNeighborClassifier( BaseModel ):
+class NearestNeighborClassifier( Model ):
 	"""
 	
 	Wrapper for k-Nearest Neighbors Classifier.
@@ -2866,7 +2843,7 @@ class NearestNeighborClassifier( BaseModel ):
 			error.show( )
 
 
-class NearestNeighborRegressor( BaseModel ):
+class NearestNeighborRegressor( Model ):
 	"""
 	
 	Wrapper for k-Nearest Neighbors Regressor.
