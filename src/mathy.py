@@ -170,7 +170,7 @@ class Metric( BaseModel):
 		self.scaled_values = None
 	
 	
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> None:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
 		"""
 
 			Fits the preprocessor
@@ -200,7 +200,7 @@ class Metric( BaseModel):
 		raise NotImplementedError
 	
 	
-	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> np.ndarray:
+	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> np.ndarray:
 		"""
 
 			Fits the preprocessor and
@@ -236,18 +236,18 @@ class Dataset( ):
 
 	"""
 	data: pd.DataFrame
-	records: int
-	fields: int
+	records: Optional[ int ]
+	fields: Otional[ int ]
 	target: str
-	features: List[ str ]
+	features: Otional[ List[ str ] ]
 	size: float
 	random_state: int
 	data: pd.DataFrame
 	values: pd.Series
-	X_train: pd.DataFrame
-	X_test: pd.DataFrame
-	y_train: pd.Series
-	y_test: pd.Series
+	X_train: Optional[ pd.DataFrame ]
+	X_test: Optional[ pd.DataFrame ]
+	y_train: Optional[ pd.Series ]
+	y_test: Optional[ pd.Series ]
 	
 	
 	def __init__( self, df: pd.DataFrame, target: str, size: float=0.2, state: int=42 ):
