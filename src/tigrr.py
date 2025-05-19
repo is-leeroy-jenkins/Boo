@@ -571,7 +571,7 @@ class Text:
 				raise Exception( 'The argument "text" is required.' )
 			else:
 				self.raw_input = text.lower( )
-				tabs = re.sub( r'[ \t+]', ' ', self.raw_input )
+				tabs = re.sub( r'[ \t+]', ' ', text.lower( ) )
 				collapsed = re.sub( r'\s+', ' ', tabs )
 				self.cleaned_lines = [ line for line in collapsed if line ]
 				self.cleaned_text = ''.join( cleaned_lines )
@@ -1029,7 +1029,7 @@ class Text:
 			_err.show( )
 	
 	
-	def split_pages( self, path: str, delimit: str = '\f' ) -> List[ str ]:
+	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
 		"""
 	
 			Reads path from a file, splits it into tokens,
@@ -1170,7 +1170,6 @@ class Text:
 			else:
 				self.lines = lines
 				self.conditional_distribution = ConditionalFreqDist( )
-				
 				for idx, _line in enumerate( self.lines ):
 					condition = condition( _line ) if condition else f'Doc_{idx}'
 					if process:

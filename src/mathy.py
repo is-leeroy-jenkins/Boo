@@ -80,7 +80,7 @@ class Model( BaseModel ):
 		allow_mutation = True
 	
 	
-	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the linerar_model to
@@ -130,7 +130,7 @@ class Model( BaseModel ):
 		raise NotImplementedError
 	
 	
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluate the model using
@@ -875,7 +875,7 @@ class NearestNeighborImputer( Metric ):
 			error.show( )
 
 
-class MultiLayerPerceptron( Metric ):
+class MultiLayerPerceptron( Model ):
 	"""
 
 		Chains multiple preprocessing
@@ -904,13 +904,13 @@ class MultiLayerPerceptron( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				_pipeline: Pipeline = self.pipeline.fit( X, y )
-				return _pipeline
+				self.pipeline = self.pipeline.fit( X, y )
+				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'MultiLayerPerceptron'
-			exception.method = ''
+			exception.method = 'fit( self, X: np.ndarray, y: Optional[ np.ndarray ] ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -932,17 +932,18 @@ class MultiLayerPerceptron( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				return self.pipeline.transform( X )
+				self.prediction = self.pipeline.transform( X )
+				return self.prediction
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'MultiLayerPerceptron'
-			exception.method = ''
+			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> np.ndarray:
+	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] ) -> np.ndarray:
 		"""
 
 			Fits and transforms all
@@ -960,12 +961,14 @@ class MultiLayerPerceptron( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				return self.pipeline.fit_transform( X, y )
+				self.prediction = self.pipeline.fit_transform( X, y )
+				return self.prediction
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'MultiLayerPerceptron'
-			exception.method = ''
+			exception.method = ('fit_transform( self, X: np.ndarray, y: '
+			                    'Optional[ np.ndarray ]=None ) -> np.ndarray')
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1010,7 +1013,7 @@ class LinearRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 		
 			Fit the OLS
@@ -1028,27 +1031,28 @@ class LinearRegressor( Model ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.linerar_model.fit( X, y )
+				self.pipeline = self.linerar_model.fit( X, y )
+				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LinearRegressor'
-			exception.method = ''
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-		
-		Predict target values
-		using the OLS linerar_model.
-
-		Parameters:
-			X (np.ndarray): Feature matrix.
-
-		Returns:
-			np.ndarray: Predicted target values.
+			
+			Predict target values
+			using the OLS linerar_model.
+	
+			Parameters:
+				X (np.ndarray): Feature matrix.
+	
+			Returns:
+				np.ndarray: Predicted target values.
 			
 		"""
 		try:
@@ -1086,7 +1090,8 @@ class LinearRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				return r2_score( y, self.linerar_model.predict( X ) )
+				self.prediction = self.linerar_model.predict( X )
+				return r2_score( y, self.prediction )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -1096,7 +1101,7 @@ class LinearRegressor( Model ):
 			error.show( )
 	
 	
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 		
 			Evaluate the model using
@@ -1135,12 +1140,12 @@ class LinearRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LinearRegressor'
-			exception.method = 'evaluate(self, X: np.ndarray, y: np.ndarray ) -> dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def graph( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 			
 			Purpose:
@@ -1169,7 +1174,7 @@ class LinearRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LinearRegressor'
-			exception.method = 'plot( self, X: np.ndarray, y: np.ndarray ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1214,7 +1219,7 @@ class RidgeRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the RidgeRegressor
@@ -1234,12 +1239,13 @@ class RidgeRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.ridge_model.fit( X, y )
+				self.pipeline = self.ridge_model.fit( X, y )
+				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RidgeRegressor'
-			exception.method = 'fit( self, X: np.ndarray, y: np.ndarray ) -> None'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1292,7 +1298,8 @@ class RidgeRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				return r2_score( y, self.ridge_model.predict( X ) )
+				self.prediction = self.ridge_model.predict( X )
+				return r2_score( y, self.prediction )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -1302,7 +1309,7 @@ class RidgeRegressor( Model ):
 			error.show( )
 	
 	
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluates the Ridge model
@@ -1341,12 +1348,12 @@ class RidgeRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RidgeRegressor'
-			exception.method = 'evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def graph( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot predicted vs
@@ -1366,8 +1373,8 @@ class RidgeRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				y_pred = self.predict( X )
-				plt.scatter( y, y_pred )
+				self.prediction = self.predict( X )
+				plt.scatter( y, self.prediction )
 				plt.xlabel( 'Actual' )
 				plt.ylabel( 'Predicted' )
 				plt.title( 'Ridge: Actual vs Predicted' )
@@ -1378,7 +1385,7 @@ class RidgeRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RidgeRegressor'
-			exception.method = 'plot( self, X: np.ndarray, y: np.ndarray ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1421,18 +1428,18 @@ class LassoRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 		
-		Fit the LassoRegressor
-		regression linerar_model.
-
-		Parameters:
-			X (np.ndarray): Feature matrix.
-			y (np.ndarray): Target vector.
-
-		Returns:
-			None
+			Fit the LassoRegressor
+			regression linerar_model.
+	
+			Parameters:
+				X (np.ndarray): Feature matrix.
+				y (np.ndarray): Target vector.
+	
+			Returns:
+				None
 			
 		"""
 		try:
@@ -1441,12 +1448,13 @@ class LassoRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.lasso_model.fit( X, y )
+				self.pipeline = self.lasso_model.fit( X, y )
+				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LassoRegressor'
-			exception.method = 'fit( self, X: np.ndarray, y: np.ndarray ) -> None'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1468,7 +1476,8 @@ class LassoRegressor( Model ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				return self.lasso_model.predict( X )
+				self.prediction = self.lasso_model.predict( X )
+				return self.prediction
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -1480,6 +1489,7 @@ class LassoRegressor( Model ):
 	
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
+		
 			Compute R^2 score
 			for the Lasso model.
 	
@@ -1489,6 +1499,7 @@ class LassoRegressor( Model ):
 	
 			Returns:
 				float: R^2 score.
+				
 		"""
 		try:
 			if X is None:
@@ -1506,7 +1517,7 @@ class LassoRegressor( Model ):
 			error.show( )
 	
 	
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 		
 			Evaluate the Lasso model
@@ -1545,12 +1556,12 @@ class LassoRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LassoRegressor'
-			exception.method = 'evaluate( self, X: np.ndarray, y: np.ndarray ) -> dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def graph( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot actual vs.
@@ -1567,8 +1578,8 @@ class LassoRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				y_pred = self.predict( X )
-				plt.scatter( y, y_pred )
+				self.prediction = self.predict( X )
+				plt.scatter( y, self.prediction )
 				plt.xlabel( 'Actual' )
 				plt.ylabel( 'Predicted' )
 				plt.title( 'Lasso: Actual vs Predicted' )
@@ -1579,7 +1590,7 @@ class LassoRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LassoRegressor'
-			exception.method = 'plot( self, X: np.ndarray, y: np.ndarray) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1587,7 +1598,7 @@ class LassoRegressor( Model ):
 class ElasticNetRegressor( Model ):
 	"""
 	
-	Wrapper for ElasticNetRegressor Regression (L1 + L2 regularization).
+		Wrapper for ElasticNetRegressor Regression (L1 + L2 regularization).
 	
 	"""
 	prediction: Optional[ np.ndarray ]
@@ -1624,7 +1635,7 @@ class ElasticNetRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 		
 			Fit the ElasticNetRegressor
@@ -1644,12 +1655,13 @@ class ElasticNetRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.elasticnet_model.fit( X, y )
+				self.pipeline = self.elasticnet_model.fit( X, y )
+				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'ElasticNetRegressor'
-			exception.method = 'fit( self, X: np.ndarray, y: np.ndarray ) -> None'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1671,7 +1683,8 @@ class ElasticNetRegressor( Model ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				return self.elasticnet_model.predict( X )
+				self.prediction = self.elasticnet_model.predict( X )
+				return self.prediction
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -1699,7 +1712,8 @@ class ElasticNetRegressor( Model ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				return r2_score( y, self.elasticnet_model.predict( X ) )
+				self.prediction = self.elasticnet_model.predict( X )
+				return r2_score( y, self.prediction )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -1709,7 +1723,7 @@ class ElasticNetRegressor( Model ):
 			error.show( )
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 		
 			Evaluate model performance
@@ -1748,12 +1762,12 @@ class ElasticNetRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'ElasticNetRegressor'
-			exception.method = 'evaluate( self, X: np.ndarray, y: np.ndarray ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def graph( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot actual vs. predicted
@@ -1770,8 +1784,8 @@ class ElasticNetRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				y_pred = self.predict( X )
-				plt.scatter( y, y_pred )
+				self.prediction = self.predict( X )
+				plt.scatter( y, self.prediction )
 				plt.xlabel( 'Actual' )
 				plt.ylabel( 'Predicted' )
 				plt.title( 'ElasticNet: Actual vs Predicted' )
@@ -1782,7 +1796,7 @@ class ElasticNetRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'ElasticNetRegressor'
-			exception.method = 'plot( self, X: np.ndarray, y: np.ndarray ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1790,7 +1804,7 @@ class ElasticNetRegressor( Model ):
 class LogisticRegressor( Model ):
 	"""
 	
-	Wrapper for a Logistic Regression.
+		Wrapper for a Logistic Regression.
 	
 	"""
 	prediction: Optional[ np.ndarray ]
@@ -1806,14 +1820,14 @@ class LogisticRegressor( Model ):
 	def __init__( self ) -> None:
 		"""
 		
-		Initialize the Logistic
-		Regression linerar_model.
-
-		Attributes:
-			linerar_model (LogisticRegression): Internal logistic regression classifier.
-				Parameters:
-					max_iter (int): Maximum number of iterations. Default is 1000.
-					solver (str): Algorithm to use in optimization. Default is 'lbfgs'.
+			Initialize the Logistic
+			Regression linerar_model.
+	
+			Attributes:
+				linerar_model (LogisticRegression): Internal logistic regression classifier.
+					Parameters:
+						max_iter (int): Maximum number of iterations. Default is 1000.
+						solver (str): Algorithm to use in optimization. Default is 'lbfgs'.
 					
 		"""
 		self.logistic_model = LogisticRegressor( max_iter=1000 )
@@ -1826,19 +1840,19 @@ class LogisticRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-		
-		Fit the logistic
-		regression linerar_model.
-
-		Parameters:
-			X (np.ndarray): Feature matrix.
-			y (np.ndarray): Target class labels.
-
-		Returns:
-			None
 			
+			Fit the logistic
+			regression linerar_model.
+	
+			Parameters:
+				X (np.ndarray): Feature matrix.
+				y (np.ndarray): Target class labels.
+	
+			Returns:
+				None
+				
 		"""
 		try:
 			if X is None:
@@ -1846,12 +1860,13 @@ class LogisticRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.logistic_model.fit( X, y )
+				self.prediction = self.logistic_model.fit( X, y )
+				return self.prediction
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LogisticRegressor'
-			exception.method = ''
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1859,26 +1874,27 @@ class LogisticRegressor( Model ):
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
-		Predict class labels using
-		the logistic regression linerar_model.
-
-		Parameters:
-			X (np.ndarray): Feature matrix.
-
-		Returns:
-			np.ndarray: Predicted class labels.
+			Predict class labels using
+			the logistic regression linerar_model.
+	
+			Parameters:
+				X (np.ndarray): Feature matrix.
+	
+			Returns:
+				np.ndarray: Predicted class labels.
 			
 		"""
 		try:
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				return self.logistic_model.predict( X )
+				self.prediction = self.logistic_model.predict( X )
+				return self.prediction
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LogisticRegressor'
-			exception.method = ''
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1908,12 +1924,12 @@ class LogisticRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LogisticRegressor'
-			exception.method = ''
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluate the classifier
@@ -1959,12 +1975,12 @@ class LogisticRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LogisticRegressor'
-			exception.method = ''
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def plot_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot confusion matrix
@@ -1994,7 +2010,7 @@ class LogisticRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LogisticRegressor'
-			exception.method = ''
+			exception.method = 'create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -2039,18 +2055,18 @@ class BayesianRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-		
-		Fit the Bayesian RidgeRegressor
-		regression linerar_model.
-
-		Parameters:
-			X (np.ndarray): Feature matrix.
-			y (np.ndarray): Target vector.
-
-		Returns:
-			None
+			
+			Fit the Bayesian RidgeRegressor
+			regression linerar_model.
+	
+			Parameters:
+				X (np.ndarray): Feature matrix.
+				y (np.ndarray): Target vector.
+	
+			Returns:
+				None
 			
 		"""
 		try:
@@ -2059,12 +2075,13 @@ class BayesianRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.bayesian_model.fit( X, y )
+				self.pipeline = self.bayesian_model.fit( X, y )
+				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BayesianRegressor'
-			exception.method = ''
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2072,7 +2089,7 @@ class BayesianRegressor( Model ):
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
-			Predict target values
+			Predicts target values
 			using the Bayesian linerar_model.
 	
 			Parameters:
@@ -2092,7 +2109,7 @@ class BayesianRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BayesianRegressor'
-			exception.method = ''
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2122,12 +2139,12 @@ class BayesianRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BayesianRegressor'
-			exception.method = ''
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluate the Bayesian model
@@ -2166,12 +2183,12 @@ class BayesianRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BayesianRegressor'
-			exception.method = ''
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def graph( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot predicted vs.
@@ -2200,7 +2217,7 @@ class BayesianRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BayesianRegressor'
-			exception.method = ''
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -2244,7 +2261,7 @@ class SgdClassifier( Model ):
 		self.median_absolute_error = 0.0
 	
 	
-	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the SGD
@@ -2264,12 +2281,13 @@ class SgdClassifier( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.sgd_classification_model.fit( X, y )
+				self.pipeline = self.sgd_classification_model.fit( X, y )
+				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'SgdClassifier'
-			exception.method = ''
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2386,7 +2404,7 @@ class SgdClassifier( Model ):
 class SgdRegressor( Model ):
 	"""
 	
-	Wrapper for SGD-based linear regressors.
+		Wrapper for SGD-based linear regressors.
 	
 	"""
 	prediction: Optional[ np.ndarray ]
@@ -2423,7 +2441,7 @@ class SgdRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the SGD
@@ -2443,34 +2461,36 @@ class SgdRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.sgd_regression_model.fit( X, y )
+				self.pipeline = self.sgd_regression_model.fit( X, y )
+				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
-			exception.method = ''
+			exception.cause = 'SgdRegressor'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-		
-		Predict values using
-		the SGD regressor linerar_model.
-
-		Parameters:
-			X (np.ndarray): Feature matrix.
-
-		Returns:
-			np.ndarray: Predicted values.
+			
+			Predict values using
+			the SGD regressor linerar_model.
+	
+			Parameters:
+				X (np.ndarray): Feature matrix.
+	
+			Returns:
+				np.ndarray: Predicted values.
 			
 		"""
 		try:
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				return self.sgd_regression_model.predict( X )
+				self.prediction = self.sgd_regression_model.predict( X )
+				return self.prediction
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -2480,7 +2500,7 @@ class SgdRegressor( Model ):
 			error.show( )
 	
 	
-	def evaluate( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluate regression model
@@ -2527,7 +2547,7 @@ class SgdRegressor( Model ):
 class Perceptron( Model ):
 	"""
 	
-	Perceptron classifier.
+		Perceptron classifier.
 	
 	"""
 	score: Optional[ float ]
@@ -2563,7 +2583,7 @@ class Perceptron( Model ):
 		self.median_absolute_error = 0.0
 	
 	
-	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the
@@ -2583,12 +2603,13 @@ class Perceptron( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.perceptron_model.fit( X, y )
+				self.pipeline = self.perceptron_model.fit( X, y )
+				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Perceptron'
-			exception.method = ''
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2610,12 +2631,13 @@ class Perceptron( Model ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				return self.perceptron_model.predict( X )
+				self.prediction = self.perceptron_model.predict( X )
+				return self.prediction
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Perceptron'
-			exception.method = ''
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2645,12 +2667,12 @@ class Perceptron( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Perceptron'
-			exception.method = ''
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 		
 			Evaluate classifier performance
@@ -2696,7 +2718,7 @@ class Perceptron( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Perceptron'
-			exception.method = ''
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -2704,7 +2726,7 @@ class Perceptron( Model ):
 class NearestNeighborClassifier( Model ):
 	"""
 	
-	Wrapper for k-Nearest Neighbors Classifier.
+		Wrapper for k-Nearest Neighbors Classifier.
 	
 	"""
 	score: Optional[ float ]
@@ -2759,12 +2781,13 @@ class NearestNeighborClassifier( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.knn_classification_model.fit( X, y )
+				self.pipeline = self.knn_classification_model.fit( X, y )
+				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborClassifier'
-			exception.method = ''
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2788,12 +2811,13 @@ class NearestNeighborClassifier( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				return self.knn_classification_model.predict( X )
+				self.prediction = self.knn_classification_model.predict( X )
+				return self.prediction
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborClassifier'
-			exception.method = ''
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2823,12 +2847,12 @@ class NearestNeighborClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborClassifier'
-			exception.method = ''
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 		
 			Evaluate classification performance
@@ -2874,7 +2898,7 @@ class NearestNeighborClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborClassifier'
-			exception.method = ''
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -2882,7 +2906,7 @@ class NearestNeighborClassifier( Model ):
 class NearestNeighborRegressor( Model ):
 	"""
 	
-	Wrapper for k-Nearest Neighbors Regressor.
+		Wrapper for k-Nearest Neighbors Regressor.
 	
 	"""
 	prediction: Optional[ np.ndarray ]
@@ -2917,7 +2941,7 @@ class NearestNeighborRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the KNN
@@ -2937,12 +2961,13 @@ class NearestNeighborRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.knn_regression_model.fit( X, y )
+				self.pipeline = self.knn_regression_model.fit( X, y )
+				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborRegressor'
-			exception.method = ''
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2964,12 +2989,13 @@ class NearestNeighborRegressor( Model ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				return self.knn_regression_model.predict( X )
+				self.prediction = self.knn_regression_model.predict( X )
+				return self.prediction
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborRegressor'
-			exception.method = ''
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2999,7 +3025,7 @@ class NearestNeighborRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborRegressor'
-			exception.method = ''
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3043,6 +3069,6 @@ class NearestNeighborRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborRegressor'
-			exception.method = ''
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> dict'
 			error = ErrorDialog( exception )
 			error.show( )
