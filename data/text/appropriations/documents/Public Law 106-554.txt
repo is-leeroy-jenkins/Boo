@@ -16860,7 +16860,7 @@ scientific information on the environmental effects of the regulated
 discharges and the availability of new technologies for wastewater
 treatment. Until such time as the Administrator promulgates such
 effluent standards, treated sewage effluent discharges shall not have a
-fecal coliform bacterial count of greater than 200 per 100 milliliters
+fecal coliform bacterial tiktoken_count of greater than 200 per 100 milliliters
 nor suspended solids greater than 150 milligrams per liter.
 SEC. 1408. REPORTS.
 (a) Any owner, operator or master, or other person in charge of a

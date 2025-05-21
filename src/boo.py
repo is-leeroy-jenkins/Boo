@@ -1338,14 +1338,13 @@ class Assistant( AI ):
 		{
 			'Apporopriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
 			'Guidance': 'vs_712r5W5833G6aLxIYIbuvVcK',
-			'Financials': '',
 			'Code': 'vs_67e83bdf8abc81918bda0d6b39a19372',
 			'Hawaii': 'vs_67a777291d548191b9fa42956a7f6cb9'
 		}
 		self.vector_store_ids = [ 'vs_67a777291d548191b9fa42956a7f6cb9' ]
 		self.assistants = \
 		{
-			'Bro':'asst_2Yu2yfINGD5en4e0aUXAKxyu',
+			'Bro': 'asst_2Yu2yfINGD5en4e0aUXAKxyu',
             'Bubba': 'asst_2IpP4nE85lXLKbY6Zewwqtqe',
 			'FNG': 'asst_FQXRnDVgvnBxslZQit8hIbXY'
         }
@@ -1791,10 +1790,13 @@ class Bubba( AI ):
 		self.name = 'Bubba'
 		self.description = 'A Budget Execution Assistant'
 		self.id = 'asst_J6SAABzDixkTYi2k39OGgjPv'
-		self.vector_store_ids = [ 'vs_8fEoYp1zVvk5D8atfWLbEupN', 'vs_712r5W5833G6aLxIYIbuvVcK' ]
 		self.metadata = { }
 		self.tools = [ ]
-	
+		self.vector_stores = \
+		{
+			'Apporopriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
+			'Guidance': 'vs_712r5W5833G6aLxIYIbuvVcK'
+		}
 	
 	def generate_text( self, prompt: str ) -> str:
 		"""
@@ -2074,6 +2076,29 @@ class Bubba( AI ):
 		pass
 	
 	
+	def get_files( self ) -> list:
+		'''
+
+			Method that returns a list of files in the vector stores
+
+		'''
+		try:
+			_aid = self.vector_stores[ 'Appropriations' ]
+			_approp_files = self.client.vector_stores.files.list( vector_store_id=_aid )
+			_approp_list = [ f for f in _approp_files  ]
+			_did = self.vector_stores[ 'Guidance' ]
+			_doc_files = self.client.vector_stores.files.list( vector_store_id=_did )
+			_doc_list = [ d for d in _doc_files  ]
+			return  _approp_list.extend( _doc_list )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Bubba'
+			exception.method = 'get_files'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
 	def get_format_options( ):
 		'''
 		
@@ -2217,11 +2242,15 @@ class Bro( AI ):
 		self.reasoning_effort = None
 		self.input_text = None
 		self.name = 'Bro'
-		self.description = 'A Computer Programming, Data Science and Analysis Assistant'
+		self.description = 'A Computer Programming and Data Science Assistant'
 		self.id = 'asst_2Yu2yfINGD5en4e0aUXAKxyu'
 		self.vector_store_ids = [ 'vs_67e83bdf8abc81918bda0d6b39a19372', ]
 		self.metadata = { }
 		self.tools = [ ]
+		self.vector_stores = \
+		{
+			'Code': 'vs_67e83bdf8abc81918bda0d6b39a19372',
+		}
 	
 	
 	def generate_text( self, prompt: str ) -> str:

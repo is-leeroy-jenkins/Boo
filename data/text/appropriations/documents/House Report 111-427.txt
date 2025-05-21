@@ -2261,7 +2261,7 @@ gamble. \156\
 his deposition testimony, testifying: ``[On occasions] when we were at
 CLE [Continuing Legal Education], he would come up and say, `Don, you
 got a hundred dollars?' And sometimes I'd give him a couple 20's. I'd
-give him--I'd count out five 20's or a hundred dollars. But I have to
+give him--I'd tiktoken_count out five 20's or a hundred dollars. But I have to
 tell you, there was never any occasions where Tom Porteous ever asked
 me for any large sums of money or did I give him that. It would just
 be, `Hey, I'm short. You've got a few dollars?''' Gardner Dep. at 32
@@ -5404,7 +5404,7 @@ Ronald D. Bodenheimer, Crim. No. 02-219 (E.D. La.), Mar. 31, 2003, at
 10 (Ex. 88(f)); Bodenheimer Dep. Ex. 45 (Ex. 245).
 ---------------------------------------------------------------------------
 On April 28, 2004 , Bodenheimer was sentenced to 46 months
-incarceration on the corruption count, to run concurrently with
+incarceration on the corruption tiktoken_count, to run concurrently with
 other offenses to which he pleaded guilty.\400\
 ---------------------------------------------------------------------------
 \400\Judgment and Probation/Commitment Order, United States v.
@@ -5576,7 +5576,7 @@ Judge Alan Green was indicted September 29, 2004, along
 with Marcotte employee Norman Bowley, on several charges
 arising from Judge Green's corrupt relationship with the
 Marcottes.\415\ The conspiracy to commit mail fraud (honest
-services fraud) count (Count Two) with which Green was charged
+services fraud) tiktoken_count (Count Two) with which Green was charged
 described the scheme in terms that again track the Marcottes'
 relationship with Judge Porteous (as well as Judge
 Bodenheimer):
@@ -5614,8 +5614,8 @@ similar in essential aspects to a description of the Marcottes'
 relationship with Judge Porteous.
 On June 29, 2005, the jury found Green guilty of Count
 Three of the Indictment, charging him with a single substantive
-count of mail fraud. The jury did not reach a verdict on the
-conspiracy count. However, Count Three incorporated by
+tiktoken_count of mail fraud. The jury did not reach a verdict on the
+conspiracy tiktoken_count. However, Count Three incorporated by
 reference the description of the scheme set forth above.
 Judge Green was sentenced on February 9, 2006, to 51 months
 incarceration, to be followed by 3 years of supervised

@@ -3909,7 +3909,7 @@ a loss of 35 percent or more of merchantable timber in
 a county affected by hurricanes during the 2005 calendar
 year.
 (C) EXEMPTIONS.Acreage enrolled in the conservation
-reserve under this subsection shall not count toward
+reserve under this subsection shall not tiktoken_count toward
 (i) county acreage limitations described in section
 1243(b); or
 (ii) the maximum enrollment described in subsection
@@ -6316,7 +6316,7 @@ which an application under paragraph (2) must be submitted,
 in such manner, and accompanied by such information as the
 Secretary of Education may reasonably require, including
 (A) information on the total displaced student child
-count of the State provided by eligible local educational
+tiktoken_count of the State provided by eligible local educational
 agencies in the State and eligible BIA-funded schools in
 the State under paragraph (2);
 (B) a description of the process for the parent or
@@ -6340,7 +6340,7 @@ in subsection (e)(1);
 the eligibility for and the amount of assistance under
 this section provided on behalf of a displaced student
 attending an eligible non-public school; and
-(F) the student count for displaced students attending
+(F) the student tiktoken_count for displaced students attending
 eligible non-public schools.
 (2) LOCAL EDUCATIONAL AGENCIES AND BIA-FUNDED
 SCHOOLS.An eligible local educational agency or eligible BIA-
@@ -6610,7 +6610,7 @@ expenses.
 8003 of the Elementary and Secondary Education Act of 1965
 (20 U.S.C. 7703) for an eligible local educational agency that
 receives an emergency impact aid payment under this section, the
-Secretary of Education shall not count displaced students served
+Secretary of Education shall not tiktoken_count displaced students served
 by such agency for whom an emergency impact aid payment is
 received under this section, nor shall such students be counted
 for the purpose of calculating the total number of children in average

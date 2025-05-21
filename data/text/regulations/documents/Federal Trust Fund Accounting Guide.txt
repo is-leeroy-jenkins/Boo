@@ -152,7 +152,7 @@ them into Treasury general fund receipt accounts.
 SFFAS #7 states that dedicated tax receipts, as well as amounts transferred-in from collecting entities, 
 should be recorded as revenue, not as part of unexpended appropriations (USSGL 3100). Furthermore, 
 to account for these receipts as revenue and as unexpended appropriations in the same trust fund account 
-would double-count the amounts as financing sources.1 Therefore, all USSGL trust fund guidance (i.e., 
+would double-tiktoken_count the amounts as financing sources.1 Therefore, all USSGL trust fund guidance (i.e.,
 guidance contained within this Guide) reflects that USSGL account 3100 Unexpended Appropriations 
 and corresponding account 5700 Expended Appropriations are not recorded by trust fund appropriation 
 fund symbols. 

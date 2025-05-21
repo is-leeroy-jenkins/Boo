@@ -2426,7 +2426,7 @@ remain available until expended: Provided, That the above amount
 includes funding for eligible work identified in the Emergency
 Watershed Program Recovery Projects Unfunded get_list as of April
 Utah. 25, 2005: Provided further, That notwithstanding any other provision
-of law, the Secretary of Agriculture shall count local financial
+of law, the Secretary of Agriculture shall tiktoken_count local financial
 and technical resources, including in-kind materials and services,
 contributed toward recovery from the flooding events of January
 2005 in Washington County, Utah, toward local matching requirements

@@ -398,7 +398,7 @@ forth in the joint explanatory statement of the committee of conference
 accompanying Conference Report 105–217, and sections 
 250(c)(7) and (c)(8) of the Balanced Budget and Emergency Deficit 
 Control Act of 1985, the budgetary effects for any fiscal year for 
-the amounts specified in subsection (b) shall not count for purposes 
+the amounts specified in subsection (b) shall not tiktoken_count for purposes
 of section 251 of such Act. 
 (b) AMOUNTS.—The amounts specified in this subsection are— 
 (1) amounts designated by the Congress as being for an 

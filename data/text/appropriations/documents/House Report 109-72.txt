@@ -2460,7 +2460,7 @@ Provided, That the above amount includes funding for eligible
 work identified in the Emergency Watershed Program Recovery
 Projects Unfunded get_list as of April 25, 2005: Provided further,
 That notwithstanding any other provision of law, the Secretary
-of Agriculture shall count local financial and technical
+of Agriculture shall tiktoken_count local financial and technical
 resources, including in-kind materials and services,
 contributed toward recovery from the flooding events of January
 2005 in Washington County, Utah, toward local matching
@@ -7034,7 +7034,7 @@ Program, Recovery Projects Unfunded get_list, including full
 funding for eligible needs in the state of Utah. The Senate
 proposed $103,000,000 for this account and the House proposed
 no funding. The conference agreement directs the Secretary of
-Agriculture to count certain local financial and technical
+Agriculture to tiktoken_count certain local financial and technical
 resources contributed toward flood recovery in Utah toward
 local matching requirements, as proposed by the Senate.
 GENERAL PROVISIONS, THIS CHAPTER

@@ -48,6 +48,12 @@ from sklearn.linear_model import (
 	LinearRegression, LogisticRegression, Ridge, Lasso, ElasticNet,
 	BayesianRidge, SGDClassifier, SGDRegressor, Perceptron
 )
+from sklearn.ensemble import (
+    RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier,
+    BaggingClassifier, VotingClassifier, StackingClassifier,
+    RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor,
+    BaggingRegressor, VotingRegressor, StackingRegressor
+)
 from sklearn.metrics import (
 	r2_score, mean_squared_error, mean_absolute_error,
 	explained_variance_score, median_absolute_error
@@ -59,8 +65,9 @@ from sklearn.preprocessing import (
 	OneHotEncoder, OrdinalEncoder
 )
 
-import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.base import  ClassifierMixin
+import pandas as pd
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Tuple
 
@@ -72,6 +79,7 @@ class Model( BaseModel ):
 		that defines the interface for all linerar_model wrappers.
 	
 	"""
+	pipeline: Optional[ Pipeline ]
 	
 	
 	class Config:
@@ -79,6 +87,8 @@ class Model( BaseModel ):
 		extra = 'ignore'
 		allow_mutation = True
 	
+	def __init__( self ):
+		self.pipeline = None
 	
 	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
 		"""
@@ -120,7 +130,7 @@ class Model( BaseModel ):
 			(e.g., R²) of the model on test data.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): True target values.
 	
 			Returns:
@@ -137,7 +147,7 @@ class Model( BaseModel ):
 			 multiple performance metrics.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth values.
 	
 			Returns:
@@ -177,7 +187,7 @@ class Metric( BaseModel):
 			to the input data.
 
 			Args:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (Optional[np.ndarray]): Optional target array.
 
 		"""
@@ -191,7 +201,7 @@ class Metric( BaseModel):
 			data using the fitted preprocessor.
 
 			Args:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 
 			Returns:
 				np.ndarray: Transformed feature matrix.
@@ -207,7 +217,7 @@ class Metric( BaseModel):
 			then transforms the input data.
 
 			Args:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (Optional[np.ndarray]): Optional target array.
 
 			Returns:
@@ -912,6 +922,7 @@ class MultiLayerPerceptron( Model ):
 	
 	
 	def __init__( self, steps: List[ Tuple[ str, Metric ] ] ) -> None:
+		super( ).__init__( )
 		self.pipeline = Pipeline( steps )
 	
 	
@@ -1029,6 +1040,7 @@ class LinearRegressor( Model ):
 						copy_X (bool): Whether to copy the feature matrix. Default is True.
 					
 		"""
+		super( ).__init__( )
 		self.linerar_model = LinearRegressor( )
 		self.prediction = None
 		self.accuracy = 0.0
@@ -1046,7 +1058,7 @@ class LinearRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
@@ -1075,7 +1087,7 @@ class LinearRegressor( Model ):
 			using the OLS linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
 				np.ndarray: Predicted target values.
@@ -1134,7 +1146,7 @@ class LinearRegressor( Model ):
 			multiple regression metrics.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth values.
 	
 			Returns:
@@ -1235,6 +1247,7 @@ class RidgeRegressor( Model ):
 						solver (str): Solver to use. Default is 'auto'.
 					
 		"""
+		super( ).__init__( )
 		self.ridge_model = RidgeRegressor( alpha=1.0 )
 		self.prediction = None
 		self.accuracy = 0.0
@@ -1252,7 +1265,7 @@ class RidgeRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
@@ -1283,7 +1296,7 @@ class RidgeRegressor( Model ):
 			using the RidgeRegressor linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
 				np.ndarray: Predicted target values.
@@ -1342,7 +1355,7 @@ class RidgeRegressor( Model ):
 			using multiple metrics.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target values.
 	
 			Returns:
@@ -1444,6 +1457,7 @@ class LassoRegressor( Model ):
 						max_iter (int): Maximum number of iterations. Default is 1000.
 					
 		"""
+		super( ).__init__( )
 		self.lasso_model = LassoRegressor( alpha=1.0 )
 		self.prediction = None
 		self.accuracy = 0.0
@@ -1461,7 +1475,7 @@ class LassoRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
@@ -1492,7 +1506,7 @@ class LassoRegressor( Model ):
 			using the LassoRegressor linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
 				np.ndarray: Predicted target values.
@@ -1651,6 +1665,7 @@ class ElasticNetRegressor( Model ):
 						1 = LassoRegressor). Default is 0.5.
 					
 		"""
+		super( ).__init__( )
 		self.elasticnet_model = ElasticNetRegressor( alpha=1.0, l1_ratio=0.5 )
 		self.prediction = None
 		self.accuracy = 0.0
@@ -1668,7 +1683,7 @@ class ElasticNetRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
@@ -1699,7 +1714,7 @@ class ElasticNetRegressor( Model ):
 			using the ElasticNetRegressor linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
 				np.ndarray: Predicted target values.
@@ -1856,6 +1871,7 @@ class LogisticRegressor( Model ):
 						solver (str): Algorithm to use in optimization. Default is 'lbfgs'.
 					
 		"""
+		super( ).__init__( )
 		self.logistic_model = LogisticRegressor( max_iter=1000 )
 		self.prediction = None
 		self.accuracy = 0.0
@@ -1873,7 +1889,7 @@ class LogisticRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target class labels.
 	
 			Returns:
@@ -1904,7 +1920,7 @@ class LogisticRegressor( Model ):
 			the logistic regression linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
 				np.ndarray: Predicted class labels.
@@ -2071,6 +2087,7 @@ class BayesianRegressor( Model ):
 						log-likelihood. Default is False.
 					
 		"""
+		super( ).__init__( )
 		self.bayesian_model = BayesianRegressor( )
 		self.prediction = None
 		self.accuracy = 0.0
@@ -2088,7 +2105,7 @@ class BayesianRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
@@ -2119,7 +2136,7 @@ class BayesianRegressor( Model ):
 			using the Bayesian linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
 				np.ndarray: Predicted values.
@@ -2177,7 +2194,7 @@ class BayesianRegressor( Model ):
 			with regression metrics.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): True target values.
 	
 			Returns:
@@ -2277,6 +2294,7 @@ class SgdClassifier( Model ):
 						max_iter (int): Maximum number of passes over the data. Default is 1000.
 					
 		"""
+		super( ).__init__( )
 		self.sgd_classification_model = SGDClassifier( loss='log_loss', max_iter=1000 )
 		self.prediction = None
 		self.mean_absolute_error = 0.0
@@ -2294,7 +2312,7 @@ class SgdClassifier( Model ):
 			classifier linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Class labels.
 	
 			Returns:
@@ -2325,7 +2343,7 @@ class SgdClassifier( Model ):
 				using the SGD classifier.
 		
 				Parameters:
-					X (np.ndarray): Feature matrix.
+					X (pd.DataFrame): Feature matrix.
 		
 				Returns:
 					np.ndarray: Predicted class labels.
@@ -2457,6 +2475,7 @@ class SgdRegressor( Model ):
 						max_iter (int): Maximum number of passes. Default is 1000.
 					
 		"""
+		super( ).__init__( )
 		self.sgd_regression_model = SGDRegressor( max_iter=1000 )
 		self.prediction = None
 		self.accuracy = 0.0
@@ -2474,7 +2493,7 @@ class SgdRegressor( Model ):
 			regressor linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target values.
 	
 			Returns:
@@ -2505,7 +2524,7 @@ class SgdRegressor( Model ):
 			the SGD regressor linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
 				np.ndarray: Predicted values.
@@ -2599,6 +2618,7 @@ class Perceptron( Model ):
 						Default is 1000.
 					
 		"""
+		super( ).__init__( )
 		self.perceptron_model = Perceptron( max_iter=1000 )
 		self.prediction = None
 		self.mean_absolute_error = 0.0
@@ -2616,7 +2636,7 @@ class Perceptron( Model ):
 			Perceptron linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Binary class labels.
 	
 			Returns:
@@ -2647,7 +2667,7 @@ class Perceptron( Model ):
 			labels using the Perceptron.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
 				np.ndarray: Predicted binary labels.
@@ -2777,6 +2797,7 @@ class NearestNeighborClassifier( Model ):
 						n_neighbors (int): Number of neighbors to use. Default is 5.
 					
 		"""
+		super( ).__init__( )
 		self.knn_classification_model = KNeighborsClassifier( n_neighbors=5 )
 		self.prediction = None
 		self.mean_absolute_error = 0.0
@@ -2794,7 +2815,7 @@ class NearestNeighborClassifier( Model ):
 			classifier linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Class labels.
 	
 			Returns:
@@ -2825,7 +2846,7 @@ class NearestNeighborClassifier( Model ):
 			using the KNN classifier.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
 				np.ndarray: Predicted class labels.
@@ -2856,7 +2877,7 @@ class NearestNeighborClassifier( Model ):
 	
 			Parameters:
 				X (np.ndarray): Test features.
-				y (np.ndarray): Ground truth labels.
+				y (pd.Series): Ground truth labels.
 	
 			Returns:
 				float: Accuracy score.
@@ -2957,6 +2978,7 @@ class NearestNeighborRegressor( Model ):
 						n_neighbors (int): Number of neighbors to use. Default is 5.
 					
 		"""
+		super( ).__init__( )
 		self.knn_regression_model = KNeighborsRegressor( n_neighbors=5 )
 		self.prediction = None
 		self.accuracy = 0.0
@@ -2974,7 +2996,7 @@ class NearestNeighborRegressor( Model ):
 			regressor linerar_model.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target values.
 	
 			Returns:
@@ -3005,7 +3027,7 @@ class NearestNeighborRegressor( Model ):
 			the KNN regressor.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix.
+				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
 				np.ndarray: Predicted values.
@@ -3098,3 +3120,2058 @@ class NearestNeighborRegressor( Model ):
 			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> dict'
 			error = ErrorDialog( exception )
 			error.show( )
+
+
+class RandomForestClassifier( Model ):
+	"""
+	
+		Wrapper for scikit-learn RandomForestClassifier.
+	
+	"""
+	score: Optional[ float ]
+	prediction: Optional[ np.ndarray ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
+	
+	
+	def __init__( self ) -> None:
+		"""
+		
+			Initialize the RandomForestClassifier.
+			
+		"""
+		super( ).__init__( )
+		self.random_forest_classifier = RandomForestClassifier( )
+		self.prediction = None
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score = 0.0
+		self.correlation_coefficient = 0.0
+	
+	
+	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+		"""
+		
+			Fit the classifier.
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (pd.Series): Class labels.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.random_forest_classifier.fit( X, y )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestClassifier'
+			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def project( self, X: pd.DataFrame ) -> np.ndarray:
+		"""
+			
+				Predict class labels
+				using the SGD classifier.
+		
+				Parameters:
+					X (pd.DataFrame): Feature matrix.
+		
+				Returns:
+					np.ndarray: Predicted class labels.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.random_forest_classifier.predict( X )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestClassifier'
+			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+		"""
+		
+			Compute R^2 score
+			for the SGDRegressor.
+	
+			Parameters:
+				X (np.ndarray): Test features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				float: R^2 score.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.random_forest_classifier.predict( X )
+				return r2_score( y, self.prediction )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestClassifier'
+			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]:
+		"""
+		
+			Evaluate the Lasso model
+			using multiple regression metrics.
+	
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				dict: Dictionary of MAE, RMSE, R², etc.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
+				}
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestClassifier'
+			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None:
+		"""
+
+			Plot confusion matrix
+			for classifier predictions.
+
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): True class labels.
+
+			Returns:
+				None
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.predict( X )
+				cm = confusion_matrix( y, self.prediction )
+				ConfusionMatrixDisplay( confusion_matrix=cm ).plot( )
+				plt.title( 'Random Forest Confusion Matrix' )
+				plt.grid( False )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestClassifier'
+			exception.method = 'create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+			
+			
+class RandomForestRegressor( Model ):
+	"""
+		
+		RidgeRegressor Regression
+		(L2 regularization).
+		
+	"""
+	prediction: Optional[ np.ndarray ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
+	median_absolute_error: Optional[ float ]
+	
+	
+	def __init__( self ) -> None:
+		"""
+		
+			Initialize the
+			RidgeRegressor linerar_model.
+	
+			Attributes:
+				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
+					Parameters:
+						alpha (float): Regularization strength. Default is 1.0.
+						solver (str): Solver to use. Default is 'auto'.
+					
+		"""
+		super( ).__init__( )
+		self.random_forest_regressor = RandomForestRegressor( )
+		self.prediction = None
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
+	
+	
+	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+		"""
+			
+			Fit the RidgeRegressor
+			regression linerar_model.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Target vector.
+	
+			Returns:
+				None
+				
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.pipeline = self.random_forest_regressor.fit( X, y )
+				return self.pipeline
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestRegressor'
+			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def project( self, X: pd.DataFrame ) -> np.ndarray:
+		"""
+			
+			Project target values
+			using the RidgeRegressor linerar_model.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+	
+			Returns:
+				np.ndarray: Predicted target values.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.random_forest_regressor.predict( X )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestRegressor'
+			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+		"""
+		
+			Compute the R-squared
+			score for the Ridge model.
+	
+			Parameters:
+				X (np.ndarray): Test features.
+				y (np.ndarray): Ground truth values.
+	
+			Returns:
+				float: R-squared score.
+				
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.random_forest_regressor.predict( X )
+				return r2_score( y, self.prediction )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestRegressor'
+			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+		"""
+			
+			Evaluates the Ridge model
+			using multiple metrics.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				dict: Evaluation metrics including MAE, RMSE, R², etc.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
+				}
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestRegressor'
+			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+		"""
+		
+			Plot predicted vs
+			actual values.
+	
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				None
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.predict( X )
+				plt.scatter( y, self.prediction )
+				plt.xlabel( 'Actual' )
+				plt.ylabel( 'Predicted' )
+				plt.title( 'Random Forest: Actual vs Predicted' )
+				plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+				plt.grid( True )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestRegressor'
+			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+			
+			
+class AdaBoostClassifier( Model ):
+	"""
+	
+		Wrapper for scikit-learn RandomForestClassifier.
+	
+	"""
+	score: Optional[ float ]
+	prediction: Optional[ np.ndarray ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
+	
+	
+	def __init__( self ) -> None:
+		"""
+		
+			Initialize the RandomForestClassifier.
+			
+		"""
+		super( ).__init__( )
+		self.ada_boost_classifier = AdaBoostClassifier( )
+		self.prediction = None
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score = 0.0
+		self.correlation_coefficient = 0.0
+	
+	
+	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+		"""
+		
+			Fit the classifier.
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (pd.Series): Class labels.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.pipeline = self.ada_boost_classifier.fit( X, y )
+				return self.pipeline
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AdaBoostClassifier'
+			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def project( self, X: pd.DataFrame ) -> np.ndarray:
+		"""
+			
+				Predict class labels
+				using the SGD classifier.
+		
+				Parameters:
+					X (pd.DataFrame): Feature matrix.
+		
+				Returns:
+					np.ndarray: Predicted class labels.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.ada_boost_classifier.predict( X )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AdaBoostClassifier'
+			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+		"""
+		
+			Compute R^2 score
+			for the SGDRegressor.
+	
+			Parameters:
+				X (np.ndarray): Test features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				float: R^2 score.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.ada_boost_classifier.predict( X )
+				return r2_score( y, self.prediction )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AdaBoostClassifier'
+			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]:
+		"""
+		
+			Evaluate the Lasso model
+			using multiple regression metrics.
+	
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				dict: Dictionary of MAE, RMSE, R², etc.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
+				}
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AdaBoostClassifier'
+			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None:
+		"""
+
+			Plot confusion matrix
+			for classifier predictions.
+
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): True class labels.
+
+			Returns:
+				None
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.predict( X )
+				cm = confusion_matrix( y, self.prediction )
+				ConfusionMatrixDisplay( confusion_matrix=cm ).plot( )
+				plt.title( 'ADA Boost Confusion Matrix' )
+				plt.grid( False )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AdaBoostClassifier'
+			exception.method = 'create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+			
+			
+			
+class AdaBoostRegressor( Model ):
+	"""
+		
+		RidgeRegressor Regression
+		(L2 regularization).
+		
+	"""
+	prediction: Optional[ np.ndarray ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
+	median_absolute_error: Optional[ float ]
+	
+	
+	def __init__( self ) -> None:
+		"""
+		
+			Initialize the
+			RidgeRegressor linerar_model.
+	
+			Attributes:
+				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
+					Parameters:
+						alpha (float): Regularization strength. Default is 1.0.
+						solver (str): Solver to use. Default is 'auto'.
+					
+		"""
+		super( ).__init__( )
+		self.ada_boost_regressor = AdaBoostRegressor( )
+		self.prediction = None
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
+	
+	
+	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+		"""
+			
+			Fit the RidgeRegressor
+			regression linerar_model.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Target vector.
+	
+			Returns:
+				None
+				
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.pipeline = self.ada_boost_regressor.fit( X, y )
+				return self.pipeline
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AdaBoostRegressor'
+			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def project( self, X: pd.DataFrame ) -> np.ndarray:
+		"""
+			
+			Project target values
+			using the RidgeRegressor linerar_model.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+	
+			Returns:
+				np.ndarray: Predicted target values.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.ada_boost_regressor.predict( X )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AdaBoostRegressor'
+			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+		"""
+		
+			Compute the R-squared
+			score for the Ridge model.
+	
+			Parameters:
+				X (np.ndarray): Test features.
+				y (np.ndarray): Ground truth values.
+	
+			Returns:
+				float: R-squared score.
+				
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.ada_boost_regressor.predict( X )
+				return r2_score( y, self.prediction )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AdaBoostRegressor'
+			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+		"""
+			
+			Evaluates the Ridge model
+			using multiple metrics.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				dict: Evaluation metrics including MAE, RMSE, R², etc.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
+				}
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AdaBoostRegressor'
+			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+		"""
+		
+			Plot predicted vs
+			actual values.
+	
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				None
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.predict( X )
+				plt.scatter( y, self.prediction )
+				plt.xlabel( 'Actual' )
+				plt.ylabel( 'Predicted' )
+				plt.title( 'ADA Boost: Actual vs Predicted' )
+				plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+				plt.grid( True )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AdaBoostRegressor'
+			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	
+			
+class BaggingClassifier( Model ):
+	"""
+	
+		Wrapper for scikit-learn BaggingClassifier.
+	
+	"""
+	score: Optional[ float ]
+	prediction: Optional[ np.ndarray ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
+	
+	
+	def __init__( self ) -> None:
+		"""
+		
+			Initialize the RandomForestClassifier.
+			
+		"""
+		super( ).__init__( )
+		self.bagging_classifier = BaggingClassifier( )
+		self.prediction = None
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score = 0.0
+		self.correlation_coefficient = 0.0
+	
+	
+	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+		"""
+		
+			Fit the classifier.
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (pd.Series): Class labels.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.pipeline = self.bagging_classifier.fit( X, y )
+				return self.pipeline
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BaggingClassifier'
+			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def project( self, X: pd.DataFrame ) -> np.ndarray:
+		"""
+			
+				Predict class labels
+				using the SGD classifier.
+		
+				Parameters:
+					X (pd.DataFrame): Feature matrix.
+		
+				Returns:
+					np.ndarray: Predicted class labels.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.bagging_classifier.predict( X )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BaggingClassifier'
+			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+		"""
+		
+			Compute R^2 score
+			for the SGDRegressor.
+	
+			Parameters:
+				X (np.ndarray): Test features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				float: R^2 score.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.bagging_classifier.predict( X )
+				return r2_score( y, self.prediction )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BaggingClassifier'
+			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]:
+		"""
+		
+			Evaluate the Lasso model
+			using multiple regression metrics.
+	
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				dict: Dictionary of MAE, RMSE, R², etc.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
+				}
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BaggingClassifier'
+			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None:
+		"""
+
+			Plot confusion matrix
+			for classifier predictions.
+
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): True class labels.
+
+			Returns:
+				None
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.predict( X )
+				cm = confusion_matrix( y, self.prediction )
+				ConfusionMatrixDisplay( confusion_matrix=cm ).plot( )
+				plt.title( 'Bagging Classifier Confusion Matrix' )
+				plt.grid( False )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BaggingClassifier'
+			exception.method = 'create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+			
+			
+class BaggingRegressor( Model ):
+	"""
+		
+		RidgeRegressor Regression
+		(L2 regularization).
+		
+	"""
+	prediction: Optional[ np.ndarray ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
+	median_absolute_error: Optional[ float ]
+	
+	
+	def __init__( self ) -> None:
+		"""
+		
+			Initialize the
+			RidgeRegressor linerar_model.
+	
+			Attributes:
+				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
+					Parameters:
+						alpha (float): Regularization strength. Default is 1.0.
+						solver (str): Solver to use. Default is 'auto'.
+					
+		"""
+		super( ).__init__( )
+		self.bagging_regressor = BaggingRegressor( )
+		self.prediction = None
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
+	
+	
+	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+		"""
+			
+			Fit the RidgeRegressor
+			regression linerar_model.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Target vector.
+	
+			Returns:
+				None
+				
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.pipeline = self.bagging_regressor.fit( X, y )
+				return self.pipeline
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BaggingRegressor'
+			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def project( self, X: pd.DataFrame ) -> np.ndarray:
+		"""
+			
+			Project target values
+			using the RidgeRegressor linerar_model.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+	
+			Returns:
+				np.ndarray: Predicted target values.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.bagging_regressor.predict( X )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BaggingRegressor'
+			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+		"""
+		
+			Compute the R-squared
+			score for the Ridge model.
+	
+			Parameters:
+				X (np.ndarray): Test features.
+				y (np.ndarray): Ground truth values.
+	
+			Returns:
+				float: R-squared score.
+				
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.bagging_regressor.predict( X )
+				return r2_score( y, self.prediction )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BaggingRegressor'
+			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+		"""
+			
+			Evaluates the Ridge model
+			using multiple metrics.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				dict: Evaluation metrics including MAE, RMSE, R², etc.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
+				}
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BaggingRegressor'
+			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+		"""
+		
+			Plot predicted vs
+			actual values.
+	
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				None
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.predict( X )
+				plt.scatter( y, self.prediction )
+				plt.xlabel( 'Actual' )
+				plt.ylabel( 'Predicted' )
+				plt.title( 'Bagging Regression: Actual vs Predicted' )
+				plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+				plt.grid( True )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BaggingRegressor'
+			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+
+class VotingClassifier( Model ):
+	"""
+	
+		Wrapper for scikit-learn VotingClassifier.
+	
+	"""
+	score: Optional[ float ]
+	prediction: Optional[ np.ndarray ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
+	
+	
+	def __init__( self, estimators=estimators, voting=voting ) -> None:
+		"""
+		
+			Initialize the RandomForestClassifier.
+			
+		"""
+		super( ).__init__( )
+		self.estimators = estimators
+		self.voting = voting
+		self.voting_classifier = VotingClassifier( estimators=self.estimators, voting=self.voting )
+		self.prediction = None
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score = 0.0
+		self.correlation_coefficient = 0.0
+	
+	
+	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+		"""
+		
+			Fit the classifier.
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (pd.Series): Class labels.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.pipeline = self.voting_classifier.fit( X, y )
+				return self.pipeline
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'VotingClassifier'
+			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def project( self, X: pd.DataFrame ) -> np.ndarray:
+		"""
+			
+				Predict class labels
+				using the SGD classifier.
+		
+				Parameters:
+					X (pd.DataFrame): Feature matrix.
+		
+				Returns:
+					np.ndarray: Predicted class labels.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.voting_classifier.predict( X )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'VotingClassifier'
+			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+		"""
+		
+			Compute R^2 score
+			for the SGDRegressor.
+	
+			Parameters:
+				X (np.ndarray): Test features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				float: R^2 score.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.voting_classifier.predict( X )
+				return r2_score( y, self.prediction )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'VotingClassifier'
+			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]:
+		"""
+		
+			Evaluate the Lasso model
+			using multiple regression metrics.
+	
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				dict: Dictionary of MAE, RMSE, R², etc.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
+				}
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'VotingClassifier'
+			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None:
+		"""
+
+			Plot confusion matrix
+			for classifier predictions.
+
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): True class labels.
+
+			Returns:
+				None
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.predict( X )
+				cm = confusion_matrix( y, self.prediction )
+				ConfusionMatrixDisplay( confusion_matrix=cm ).plot( )
+				plt.title( 'Voting Classifer Confusion Matrix' )
+				plt.grid( False )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'VotingClassifier'
+			exception.method = 'create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+			
+			
+class VotingRegressor( Model ):
+	"""
+		
+		RidgeRegressor Regression
+		(L2 regularization).
+		
+	"""
+	prediction: Optional[ np.ndarray ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
+	median_absolute_error: Optional[ float ]
+	
+	
+	def __init__( self ) -> None:
+		"""
+		
+			Initialize the
+			RidgeRegressor linerar_model.
+	
+			Attributes:
+				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
+					Parameters:
+						alpha (float): Regularization strength. Default is 1.0.
+						solver (str): Solver to use. Default is 'auto'.
+					
+		"""
+		super( ).__init__( )
+		self.voting_regressor = VotingRegressor( )
+		self.prediction = None
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
+	
+	
+	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+		"""
+			
+			Fit the RidgeRegressor
+			regression linerar_model.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Target vector.
+	
+			Returns:
+				None
+				
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.pipeline = self.voting_regressor.fit( X, y )
+				return self.pipeline
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'VotingRegressor'
+			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def project( self, X: pd.DataFrame ) -> np.ndarray:
+		"""
+			
+			Project target values
+			using the RidgeRegressor linerar_model.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+	
+			Returns:
+				np.ndarray: Predicted target values.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.voting_regressor.predict( X )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'VotingRegressor'
+			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+		"""
+		
+			Compute the R-squared
+			score for the Ridge model.
+	
+			Parameters:
+				X (np.ndarray): Test features.
+				y (np.ndarray): Ground truth values.
+	
+			Returns:
+				float: R-squared score.
+				
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.voting_regressor.predict( X )
+				return r2_score( y, self.prediction )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'VotingRegressor'
+			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+		"""
+			
+			Evaluates the Ridge model
+			using multiple metrics.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				dict: Evaluation metrics including MAE, RMSE, R², etc.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
+				}
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'VotingRegressor'
+			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+		"""
+		
+			Plot predicted vs
+			actual values.
+	
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				None
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.predict( X )
+				plt.scatter( y, self.prediction )
+				plt.xlabel( 'Actual' )
+				plt.ylabel( 'Predicted' )
+				plt.title( 'Voting Regression: Actual vs Predicted' )
+				plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+				plt.grid( True )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'VotingRegressor'
+			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class StackingClassifier( Model ):
+	"""
+	
+		Wrapper for scikit-learn VotingClassifier.
+	
+	"""
+	estimators: Optional[ List[ Tuple[ str, ClassifierMixin ] ] ]
+	score: Optional[ float ]
+	prediction: Optional[ np.ndarray ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
+	
+	
+	def __init__( self, estimators: List[ Tuple[ str, ClassifierMixin ] ],
+	              final_estimator: Optional[ ClassifierMixin ]=None ) -> None:
+		"""
+		
+			Initialize the RandomForestClassifier.
+			
+		"""
+		super( ).__init__( )
+		self.estimators = estimators
+		self.stacking_classifier = StackingClassifier( )
+		self.prediction = None
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score = 0.0
+		self.correlation_coefficient = 0.0
+	
+	
+	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+		"""
+		
+			Fit the classifier.
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (pd.Series): Class labels.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.pipeline = self.stacking_classifier.fit( X, y )
+				return self.pipeline
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'StackingClassifier'
+			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def project( self, X: pd.DataFrame ) -> np.ndarray:
+		"""
+			
+				Predict class labels
+				using the SGD classifier.
+		
+				Parameters:
+					X (pd.DataFrame): Feature matrix.
+		
+				Returns:
+					np.ndarray: Predicted class labels.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.stacking_classifier.predict( X )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'StackingClassifier'
+			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+		"""
+		
+			Compute R^2 score
+			for the SGDRegressor.
+	
+			Parameters:
+				X (np.ndarray): Test features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				float: R^2 score.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.stacking_classifier.predict( X )
+				return r2_score( y, self.prediction )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'StackingClassifier'
+			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]:
+		"""
+		
+			Evaluate the Lasso model
+			using multiple regression metrics.
+	
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				dict: Dictionary of MAE, RMSE, R², etc.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
+				}
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'StackingClassifier'
+			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None:
+		"""
+
+			Plot confusion matrix
+			for classifier predictions.
+
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): True class labels.
+
+			Returns:
+				None
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.predict( X )
+				cm = confusion_matrix( y, self.prediction )
+				ConfusionMatrixDisplay( confusion_matrix=cm ).plot( )
+				plt.title( 'Stacking Classifer Confusion Matrix' )
+				plt.grid( False )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'StackingClassifier'
+			exception.method = 'create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class StackinRegressor( Model ):
+	"""
+		
+		RidgeRegressor Regression
+		(L2 regularization).
+		
+	"""
+	prediction: Optional[ np.ndarray ]
+	accuracy: Optional[ float ]
+	precision: Optional[ float ]
+	recall: Optional[ float ]
+	roc_auc_score: Optional[ float ]
+	f1_score: Optional[ float ]
+	correlation_coefficient: Optional[ float ]
+	median_absolute_error: Optional[ float ]
+	
+	
+	def __init__( self ) -> None:
+		"""
+		
+			Initialize the
+			RidgeRegressor linerar_model.
+	
+			Attributes:
+				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
+					Parameters:
+						alpha (float): Regularization strength. Default is 1.0.
+						solver (str): Solver to use. Default is 'auto'.
+					
+		"""
+		super( ).__init__( )
+		self.stacking_regressor = StackinRegressor( )
+		self.prediction = None
+		self.accuracy = 0.0
+		self.precision = 0.0
+		self.recall = 0.0
+		self.f1_score = 0.0
+		self.roc_auc_score= 0.0
+		self.correlation_coefficient = 0.0
+	
+	
+	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+		"""
+			
+			Fit the RidgeRegressor
+			regression linerar_model.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Target vector.
+	
+			Returns:
+				None
+				
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.pipeline = self.stacking_regressor.fit( X, y )
+				return self.pipeline
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'StackingRegressor'
+			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def project( self, X: pd.DataFrame ) -> np.ndarray:
+		"""
+			
+			Project target values
+			using the RidgeRegressor linerar_model.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+	
+			Returns:
+				np.ndarray: Predicted target values.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.stacking_regressor.predict( X )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'StackingRegressor'
+			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+		"""
+		
+			Compute the R-squared
+			score for the Ridge model.
+	
+			Parameters:
+				X (np.ndarray): Test features.
+				y (np.ndarray): Ground truth values.
+	
+			Returns:
+				float: R-squared score.
+				
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.stacking_regressor.predict( X )
+				return r2_score( y, self.prediction )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'StackingRegressor'
+			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+		"""
+			
+			Evaluates the Ridge model
+			using multiple metrics.
+	
+			Parameters:
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				dict: Evaluation metrics including MAE, RMSE, R², etc.
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction  )
+				return \
+				{
+		            'Accuracy': self.accuracy,
+		            'Precision': self.precision,
+		            'Recall': self.recall,
+		            'F1 Score': self.f1_score,
+		            'ROC AUC': self.roc_auc_score,
+		            'Correlation Coeff': self.correlation_coefficient
+				}
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'StackingRegressor'
+			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	
+	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+		"""
+		
+			Plot predicted vs
+			actual values.
+	
+			Parameters:
+				X (np.ndarray): Input features.
+				y (np.ndarray): Ground truth target values.
+	
+			Returns:
+				None
+			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.predict( X )
+				plt.scatter( y, self.prediction )
+				plt.xlabel( 'Actual' )
+				plt.ylabel( 'Predicted' )
+				plt.title( 'Stacking Regression: Actual vs Predicted' )
+				plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+				plt.grid( True )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'StackingRegressor'
+			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+

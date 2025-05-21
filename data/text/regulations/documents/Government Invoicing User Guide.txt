@@ -6975,7 +6975,7 @@ export is 20,000 . If you attempt to generate an export with more than 20,000 do
 your Summary Page by using filters (i.e., display documents by Performance Date, Accounting Period, Status, etc.), 
 then running separate reports. Once the separate exports have been run, you may consolidate them into a single file if 
 you wish. In addition, the Performance export includes Header and Details information: if a Performance contains 
-multiple Schedules on it*, they will count against the 20,000 item export limit. 
+multiple Schedules on it*, they will tiktoken_count against the 20,000 item export limit.
 *Please be aware that the number of Performance that is exported may not exactly match the number of Performance 
 displayed on your Performance Summary List. This is due to the fact that the Performance Summary List does not 
 display individual Schedule information. 

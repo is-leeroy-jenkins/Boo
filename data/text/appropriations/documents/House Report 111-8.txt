@@ -12483,7 +12483,7 @@ benefits compared to higher wage workers even though they were
 much more likely to be unemployed. The GAO found this inequity
 was at least partly due to Unemployment Insurance (UT)
 eligibility rules, ``particularly rules in many States that do
-not count workers' most recent earnings toward their minimum
+not tiktoken_count workers' most recent earnings toward their minimum
 earnings required for eligibility.''
 Additionally, the GAO found low levels of UI receipt among
 part-time workers, despite the fact that UI taxes are paid on

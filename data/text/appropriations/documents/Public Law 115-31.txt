@@ -3956,7 +3956,7 @@ National Capital Region: Provided, That the cumulative total amount of
 funds transferred from the Working Capital Fund from fiscal year 2017
 through 2022 pursuant to this section shall not exceed $315,000,000:
 Provided further, That transfers pursuant to this section shall not
-count against any ceiling on the use of unobligated balances transferred
+tiktoken_count against any ceiling on the use of unobligated balances transferred
 to the capital account of the Working Capital Fund in this or any other
 Act in any such fiscal year: Provided further, That any transfer
 pursuant to this section shall be treated as a reprogramming under
@@ -34169,7 +34169,7 @@ Sec. 235. With respect to grant amounts awarded under the heading
 ``Homeless Assistance Grants'' for fiscal years 2015, 2016, and 2017 for
 the continuum of care (CoC) program as authorized under subtitle C of
 title IV of the McKinney-Vento Homeless Assistance Act, costs paid by
-program income of grant recipients may count toward meeting the
+program income of grant recipients may tiktoken_count toward meeting the
 recipient's matching requirements, provided the costs are eligible CoC
 costs that supplement the recipients CoC program.
 Sec. 236. (a) <<NOTE: Grants.>> From amounts made available under

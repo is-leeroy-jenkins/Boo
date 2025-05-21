@@ -1463,7 +1463,7 @@ class Text:
 		"""
 		
 		
-		def __init__( self, headers: bool = False, min: int = 10, tables: bool = True ):
+		def __init__( self, headers: bool=False, min: int=10, tables: bool=True ):
 			"""
 	
 				Purpose:
@@ -1503,7 +1503,7 @@ class Text:
 			         'export_text', 'export_excel' ]
 		
 		
-		def extract_lines( self, path: str, max: Optional[ int ] = None ) -> List[ str ]:
+		def extract_lines( self, path: str, max: Optional[ int ]=None ) -> List[ str ]:
 			"""
 	
 				Extract tokens of pages from a PDF,
@@ -1562,7 +1562,7 @@ class Text:
 				raise Exception( 'The argument "page" cannot be None' )
 			else:
 				_blocks = page.get_text( 'blocks' )
-				_sorted = sorted( _blocks, key=lambda b: (round( b[ 1 ], 1 ), round( b[ 0 ], 1 )) )
+				_sorted = sorted( _blocks, key=lambda b: (round( b[ 1 ], 1 ), round( b[ 0 ], 1 ) ) )
 				self.lines = [ b[ 4 ].strip( ) for b in _sorted if b[ 4 ].strip( ) ]
 				return self.lines
 		except Exception as e:
@@ -1672,7 +1672,7 @@ class Text:
 			_err.show( )
 	
 	
-	def extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ pd.DataFrame ]:
+	def extract_tables( self, path: str, max: Optional[ int ]=None ) -> List[ pd.DataFrame ]:
 		"""
 
 			Extract tables from the PDF
@@ -1845,9 +1845,10 @@ class Token( ):
 		self.model_name = 'google-bert/bert-base-uncased'
 		self.tokenizer = AutoTokenizer.from_pretrained( self.model_name, trust_remote_code=True )
 		self.raw_input = None
+		self.encoding = None
 	
 	
-	def count( self, text: str, encoding: str ) -> int:
+	def tiktoken_count( self, text: str, encoding: Optional[ str ]  ) -> int:
 		"""
 		
 			Purpose:
@@ -1871,14 +1872,14 @@ class Token( ):
 			elif encoding is None:
 				raise Exception( 'The argument "encoding" must not be None' )
 			else:
-				encoding = tiktoken.get_encoding( encoding )
+				self.encoding = tiktoken.get_encoding( encoding )
 				num_tokens = len( encoding.encode( text ) )
 				return num_tokens
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'tiggr'
 			_exc.cause = 'Token'
-			_exc.method = 'count( self, path: str, encoding: str ) -> int:'
+			_exc.method = 'tiktoken_count( self, path: str, encoding: str ) -> int:'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -2021,7 +2022,7 @@ class Token( ):
 			_err.show( )
 	
 	
-	def decode( self, ids: List[ int ], skip: bool = True ) -> str:
+	def decode( self, ids: List[ int ], skip: bool=True ) -> str:
 		"""
 			
 			Converts a list of
@@ -2174,8 +2175,8 @@ class Vector( ):
 		         'upload_document', 'upload_documents' ]
 	
 	
-	def create( self, tokens: List[ str ], batch: int = 10, max: int = 3,
-	            time: float = 2.0 ) -> pd.DataFrame:
+	def create( self, tokens: List[ str ], batch: int=10, max: int=3,
+	            time: float=2.0 ) -> pd.DataFrame:
 		"""
 
 			Generate and normalize
@@ -2375,7 +2376,7 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def most_similar( self, query: str, df: pd.DataFrame, top: int = 5 ) -> pd.DataFrame:
+	def most_similar( self, query: str, df: pd.DataFrame, top: int=5 ) -> pd.DataFrame:
 		"""
 
 			Purpose:
@@ -2415,7 +2416,7 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def bulk_similar( self, queries: List[ str ], df: pd.DataFrame, top: int = 5 ) -> Dict:
+	def bulk_similar( self, queries: List[ str ], df: pd.DataFrame, top: int=5 ) -> Dict:
 		"""
 
 			Purpose:
@@ -3180,7 +3181,6 @@ class Embedding( ):
 			self.n_classes = len( classes )
 			_data = [ (y_original == classes[ i ]) for i in range( self.n_classes ) ]
 			y_true = pd.concat( _data, axis=1 ).values
-			
 			self.precision = dict( )
 			self.recall = dict( )
 			self.average_precision = dict( )
@@ -3384,12 +3384,12 @@ class Embedding( ):
 	
 	def creat_3dchart( self,
 	                   components: np.ndarray,
-	                   labels: Optional[ List[ str ] ] = None,
-	                   strings: Optional[ List[ str ] ] = None,
-	                   x_title: str = 'Component-0',
-	                   y_title: str = 'Component-1',
-	                   z_title: str = 'Compontent-2',
-	                   mark_size: int = 5 ):
+	                   labels: Optional[ List[ str ] ]=None,
+	                   strings: Optional[ List[ str ] ]=None,
+	                   x_title: str='Component-0',
+	                   y_title: str='Component-1',
+	                   z_title: str='Compontent-2',
+	                   mark_size: int=5 ):
 		'''
 
 			purpose:

@@ -16801,7 +16801,7 @@ Page 4-200 GAO-04-261SP Appropriations Law—Vol. I
 Chapter 4 
 Availability of Appropriations: Purpose 
 symposium was to attract thousands of African-Americans, a population 
-the Bureau characterized as “hard-to-count” and therefore targeted in its 
+the Bureau characterized as “hard-to-tiktoken_count” and therefore targeted in its
 outreach activities. The Bureau’s participation in the symposium was 
 limited to responding to questions about the census and giving away 
 promotional items and was therefore legitimate informational activity, not 
@@ -23077,7 +23077,7 @@ time of contract award.25 B-195260, July 11, 1979. This is also true for
 revolving funds, which authorize expenditures without fiscal year 
 limitation. Revolving funds must have sufficient budget authority against 
 which to record the entire amount of long-term contracts at the time of the 
-obligation. 72 Comp. Gen. 59, 61 (1992). A revolving fund may not count 
+obligation. 72 Comp. Gen. 59, 61 (1992). A revolving fund may not tiktoken_count
 anticipated receipts from future customer orders as budget authority. 
 B-288142, Sept. 6, 2001. See also U.S. General Accounting Office, The Air 
 Force Has Incurred Numerous Overobligations In Its Industrial Fund, 

@@ -4658,10 +4658,10 @@ Up to $90.475 billion in appropriations designated under
 for the purposes of section 302 of the Budget Act, with a
 mechanism in place for the Budget Committee to make an
 offsetting adjustment to those allocations. Anything above the
-$90.475 billion cap does not count for the purposes of section
+$90.475 billion cap does not tiktoken_count for the purposes of section
 302. Pursuant to section 423(b), amounts designated as
 emergency (all appropriations in chapters 6, 7, and 8) also do
-not count against section 302 allocations.
+not tiktoken_count against section 302 allocations.
 COMPARISON OF REPORTED BILL TO SECTION 302(b) SUBALLOCATIONS
 [in millions of dollars]
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -4685,9 +4685,9 @@ State/Foreign Operations......................................    46,090    38,1
 ---------------------------------------------------------------------------------------------------------------------------------
 Toal Discretionary......................................  1,012,239   974,833    99,281    27,340     800     422   912,158   947,071   914,646   947,835
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-\1\Previously enacted amounts excludes amounts designated as emergencies under section 301(b)(2) of the FY 2009 concurrent budget resolution (S. Con. Res. 70). These amounts do not count
+\1\Previously enacted amounts excludes amounts designated as emergencies under section 301(b)(2) of the FY 2009 concurrent budget resolution (S. Con. Res. 70). These amounts do not tiktoken_count
 against the section 302(b) allocations.
-\2\Sections 423(a) and 423(b) of the FY 2010 concurrent budget resolution (S. Con. Res. 13). These amounts do not count against the section 302(b) allocations.
+\2\Sections 423(a) and 423(b) of the FY 2010 concurrent budget resolution (S. Con. Res. 13). These amounts do not tiktoken_count against the section 302(b) allocations.
 \3\As approved by the Committee on Appropriations on July 8, 2008.
 Five-Year Outlay Projections
 In compliance with section 308(a)(1)(B) of the

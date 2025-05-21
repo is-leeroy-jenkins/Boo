@@ -23299,7 +23299,7 @@ Sec. 230. With respect to grant amounts awarded under the heading
 "Homeless Assistance Grants'' for fiscal years 2015, 2016, 2017, 2018
 and 2019 for the continuum of care (CoC) program as authorized under
 subtitle C of title IV of the McKinney-Vento Homeless Assistance Act,
-costs paid by program income of grant recipients may count toward
+costs paid by program income of grant recipients may tiktoken_count toward
 meeting the recipient's matching requirements, provided the costs are
 eligible CoC costs that supplement the recipient's CoC program.
 Sec. 231. (a) From amounts made available under this title under the

@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-import PySimpleGUI as sg
+import freesimplegui as sg
 from loguru import logger
 
 from gui import initialize_window

@@ -935,7 +935,7 @@ the plans and reports identified under paragraph (2) to determine
 whether those plans and reports are no longer useful 
 to the committees and could be eliminated or consolidated 
 with other plans and reports; and 
-‘‘(4) provide a total count of plans and reports compiled 
+‘‘(4) provide a total tiktoken_count of plans and reports compiled
 under paragraph (1) and the get_list of outdated and duplicative
 reports identified under paragraph (2) to the Director of the 
 Office of Management and Budget. 

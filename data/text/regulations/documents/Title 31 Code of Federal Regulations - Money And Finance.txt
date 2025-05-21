@@ -15877,14 +15877,14 @@ Credit is granted only for a full contact
 hour, which is 50 minutes or multiples 
 thereof. For example, a program lasting 
 more than 50 minutes but less than 
-100 minutes will count as only one contact 
+100 minutes will tiktoken_count as only one contact
 hour. 
 (3) Individual segments at continuous 
 conferences, conventions and the like 
 will be considered one total program. 
 For example, two 90-minute segments 
 (180 minutes) at a continuous conference 
-will count as three contact 
+will tiktoken_count as three contact
 hours. 
 (4) For university or college courses, 
 each semester hour credit will equal 15 
@@ -37411,7 +37411,7 @@ local, or foreign taxes that are anticipated
 to apply to the income recognized 
 due to this vesting, and the 
 amounts made transferable for this 
-purpose shall not count toward the percentages 
+purpose shall not tiktoken_count toward the percentages
 in the schedule above. 
 31 CFR Subtitle A (7116 Edition) 
 (4) The employee must be required to 

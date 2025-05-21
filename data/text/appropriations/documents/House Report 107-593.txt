@@ -5308,7 +5308,7 @@ nonpriority mainline bypass mail under subparagraph (A)--
 ``(i) shall be eligible for equitable tender of
 such mail only on city pair routes where the carrier
 meets the conditions of subparagraph (A);
-``(ii) may not count the passenger service provided
+``(ii) may not tiktoken_count the passenger service provided
 under subparagraph (A) toward the carrier meeting the
 minimum requirements of this section; and
 ``(iii) shall provide at least 20 percent of the
@@ -5330,7 +5330,7 @@ city pair route.
 ``(D) A carrier operating under a code share agreement on
 the date of enactment of the Rural Service Improvement Act of
 2002 that received tender of nonpriority mainline bypass mail
-on a city pair route in the State of Alaska may count the
+on a city pair route in the State of Alaska may tiktoken_count the
 passenger service provided under the entire code share
 arrangement on such route if the code share agreement
 terminates. That carrier shall continue to provide at least 20

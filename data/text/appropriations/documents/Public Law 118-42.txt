@@ -18203,7 +18203,7 @@ awarded under the heading ``Homeless Assistance Grants'' for fiscal
 years 2015 through 2024 for the continuum of care (CoC) program as
 authorized under subtitle C of title IV of the McKinney-Vento Homeless
 Assistance Act, costs paid by program income of grant recipients may
-count toward meeting the recipient's matching requirements, provided the
+tiktoken_count toward meeting the recipient's matching requirements, provided the
 costs are eligible CoC costs that supplement the recipient's CoC
 program.
 Sec. 227. <<NOTE: Grants.>> (a) From amounts made available under

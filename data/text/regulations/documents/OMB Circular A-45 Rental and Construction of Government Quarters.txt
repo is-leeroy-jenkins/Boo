@@ -114,7 +114,7 @@ quarters occupied by such personnel on a rental basis under 37 U.S.C. section 40
 subsection 1594a(f) and 1594b, and other authorities. 
 k. Room. A room is a living space such as a living room, bedroom, kitchen, finished attic or basement, 
 or other suitable living space. A half room is a small space used for living purposes, such as a dinette, 
-breakfast nook, dressing room, or reception room. No count is made of bathrooms, strip or pullman 
+breakfast nook, dressing room, or reception room. No tiktoken_count is made of bathrooms, strip or pullman
 kitchens, halls or foyers, alcoves, pantries, laundries, storage or utility rooms, or unfinished attics and 
 basements. 
 7. PROCEDURES FOR DETERMINING RENTS AND OTHER CHARGES. 

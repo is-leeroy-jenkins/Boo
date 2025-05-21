@@ -3701,7 +3701,7 @@ Packaging court would apply the Antideficiency Act. In any event, we have
 found no subsequent judicial or administrative decision that cites this 
 aspect of the Southern Packaging opinion. 
 Questions occasionally arise over precisely what assets an agency may 
-count for purposes of determining the amount of available resources 
+tiktoken_count for purposes of determining the amount of available resources
 against which it may incur obligations. 
 The starting point, of course, is the unobligated balance of the relevant 
 appropriation. In section F of this chapter, we discuss the rule that 
@@ -12651,7 +12651,7 @@ the fiscal year 1981 figure.
 Page 8-11 GAO-06-382SP Appropriations Law—Vol. II 
 Chapter 8 
 Continuing Resolutions 
-Prior year supplemental appropriations also count in calculating the 
+Prior year supplemental appropriations also tiktoken_count in calculating the
 current rate. In this regard, section 103 of Public Law 108-309, 118 Stat. 
 1137, 1138 (Sept. 30, 2004), discussed above, provides: “The appropriations 
 Acts listed in section 101 shall be deemed to include miscellaneous and 
@@ -15613,13 +15613,13 @@ B-208888, Sept. 28 1984 (evidence suggested that funds were placed on
 desk and inadvertently knocked into trash can); B-127204, Apr. 13, 1956 
 (pay envelopes left on top of desk in cashier’s cage 19 inches from window 
 opening on hallway to which many persons had access). 
-The best way to know how much cash you have is to count it. Failure to do 
+The best way to know how much cash you have is to tiktoken_count it. Failure to do
 so where reasonable prudence would dictate otherwise is negligence. 
-B-247581, June 4, 1992 (alternate cashier failed to count cash upon receipt 
+B-247581, June 4, 1992 (alternate cashier failed to tiktoken_count cash upon receipt
 from principal or upon return to principal); B-206820, Sept. 9, 1982 
 (accountable officer handed money over to another employee without 
 counting it or obtaining receipt); B-193380, Sept. 25, 1979 (cashier cashed 
-checks at bank and failed to count the cash received). 
+checks at bank and failed to tiktoken_count the cash received).
 A deficiency in an accountable officer’s account caused by the acceptance 
 of a counterfeit note constitutes a physical loss for purposes of 31 U.S.C. 
 § 3527(a). B-140836, Oct. 3, 1960; B-108452, May 15, 1952; B-101301, July 19, 
@@ -15716,10 +15716,10 @@ illustrate:
 • An accountable officer leaves cash visible and unguarded on a desk top 
 while at lunch, during which time the money disappears. There can be 
 no question that the negligence was the proximate cause of the loss. 
-• As noted previously, failure to count cash received at a bank window is 
+• As noted previously, failure to tiktoken_count cash received at a bank window is
 negligence. Suppose, however, that the accountable officer is attacked 
 and robbed by armed marauders while returning to the office. The 
-failure to count the cash, even though negligent, would not be the 
+failure to tiktoken_count the cash, even though negligent, would not be the
 proximate cause of the loss since presumably the robbers would have 
 taken the entire amount anyway. 
 Another good illustration is B-201173, Aug. 18, 1981. Twelve armed men in 
@@ -23330,7 +23330,7 @@ Page 10-96 GAO-06-382SP Appropriations Law—Vol. II
 Chapter 10 
 Federal Assistance: Grants and Cooperative 
 Agreements 
-sources but explicitly states that noncash assets may count toward the 
+sources but explicitly states that noncash assets may tiktoken_count toward the
 nonfederal share. That statute specifically states: 
 “In addition to cash outlays, the Secretary [of the 
 Department of Interior] shall consider as financial 
@@ -26984,7 +26984,7 @@ these securities to prepay part of its outstanding debt to Treasury. This in
 turn reduced Treasury’s outstanding debt, enabling it to borrow an 
 additional $5 billion from the public to meet its obligations. Based on the 
 Bank’s statutory authority and the conclusion that its obligations do not 
-count against the public debt limit set by 31 U.S.C. § 3101(b), the 
+tiktoken_count against the public debt limit set by 31 U.S.C. § 3101(b), the
 Comptroller General found the transaction legally unobjectionable. 
 B-138524, Oct. 30, 1985. 
 The Justice Department’s Office of Legal Counsel cited the above 1985 

@@ -334,11 +334,11 @@ Provided further, That notwithstanding any other provision of law, the
 Chief Financial Officer of the District of Columbia shall apportion from
 the budget of the District of Columbia Public Schools a sum totaling 5
 percent of the total budget to be set aside until the current student
-count for Public
+tiktoken_count for Public
 [[Page 113 STAT. 1508]]
 and Charter schools has been completed, and that this amount shall be
 apportioned between the Public and Charter schools based on their
-respective student population count: Provided further, That the District
+respective student population tiktoken_count: Provided further, That the District
 of Columbia Public Schools may spend $500,000 to engage in a Schools
 Without Violence program based on a model developed by the University of
 North Carolina, located in Greensboro, North Carolina.
@@ -5597,7 +5597,7 @@ Defense, defense services of the Department of Defense, and military
 education and training of an aggregate value of not less than $4,000,000
 under the authority of this proviso for Tunisia for the purposes of part
 II of the Foreign Assistance Act of 1961 and any amount so directed
-shall count toward meeting the earmark in the preceding proviso:
+shall tiktoken_count toward meeting the earmark in the preceding proviso:
 Provided further, That of the funds appropriated by this paragraph up to
 $1,000,000 should be made available for assistance for Ecuador and shall
 be subject to the regular notification procedures of the Committees on
@@ -7250,7 +7250,7 @@ Working Groups: Provided, That any funds that were appropriated under
 such headings in prior fiscal years and that were at the time of the
 enactment of this Act obligated or allocated for other recipients may
 not during fiscal year 2000 be made available for activities that, if
-funded under this Act, would be required to count against this ceiling:
+funded under this Act, would be required to tiktoken_count against this ceiling:
 Provided further, That funds may be made available notwithstanding the
 requirements of this section if the President determines and certifies
 to the Committees on Appropriations that it is important to the national
@@ -14814,7 +14814,7 @@ applicants.
 described in subparagraphs (1)(A) and (B) and paragraph (2) of
 subsection (a), the Secretary shall use the formula contained in section
 8003(b)(1)(C) of ESEA, except that--
-(1) eligible local educational agencies may count all
+(1) eligible local educational agencies may tiktoken_count all
 children described in section 8003(a)(1) in computing the amount
 of those payments;
 (2) maximum payments for any of those agencies that use
@@ -21044,13 +21044,13 @@ indentation; and
 (B) by adding at the end the following new clause:
 ``(ii) Counting primary care residents on
 certain approved leaves of absence in base year
-fte count.--
+fte tiktoken_count.--
 ``(I) In general.--In determining
 the number of such full-time equivalent
 residents for a hospital's most recent
 cost reporting period ending on or
 before December 31, 1996, for purposes
-of clause (i), the Secretary shall count
+of clause (i), the Secretary shall tiktoken_count
 an individual to the extent that the
 individual would have been counted as a
 primary care resident for such period

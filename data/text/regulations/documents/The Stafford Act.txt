@@ -2566,7 +2566,7 @@ under subparagraph (A).
  (2) Amount - After the Administrator submits the report required under paragraph 
 (1), the President shall direct the Administrator to - 
  (A) immediately establish a threshold for eligibility under this section in an 
-appropriate count, without regard to chapter 5 of title 5; and 
+appropriate tiktoken_count, without regard to chapter 5 of title 5; and
  (B) adjust the threshold annually to reflect changes in the Consumer Price Index 
 for all Urban Consumers published by the Department of Labor. 
  (3) Review - Not later than 3 years after the date on which the Administrator establishes 

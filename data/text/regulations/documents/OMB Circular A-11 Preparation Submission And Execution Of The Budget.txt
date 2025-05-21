@@ -3934,7 +3934,7 @@ obligation under law in unexpired accounts. This means that, unless the law expr
 rescissions and cancellations of unobligated balances apply only to unexpired amounts. In cases where 
 Page 18 of Section 20 OMB Circular No. A–11 (2019) 
 SECTION 20—TERMS AND CONCEPTS 
-rescissions or cancellations are determined to apply to expired amounts, such amounts would not count as 
+rescissions or cancellations are determined to apply to expired amounts, such amounts would not tiktoken_count as
 discretionary offsets for appropriations. 
 In budget execution, both the unexpired, unobligated balances of budget authority at the start of the year, 
 (which is available for new obligations) and the expired amounts (which are only available to cover upward 
@@ -6379,7 +6379,7 @@ Frequency (MHz) Weighting Factors
 the service area where the Federal system will be used. Agencies should use U.S. Census Bureau 
 population information by metropolitan statistical area (MSA) or other relevant designation for 
 non-metropolitan areas to develop estimates. Systems that operate partially in the U.S. should only 
-count the U.S. population impacted. For example, a system that only operates in Denver and does 
+tiktoken_count the U.S. population impacted. For example, a system that only operates in Denver and does
 not utilize spectrum outside of the Denver MSA, should only use the population information for 
 the Denver MSA in estimating population affected. Conversely, agencies should use population 
 information for the entire country, if a system is assigned or utilizes spectrum nationwide. 
@@ -9529,7 +9529,7 @@ you have incurred but have not yet paid. Uncollected customer payments are money
 Federal sources plus orders that have been placed with you by Federal sources, but you have not yet 
 Page 8 of Section 82 OMB Circular No. A–11 (2019) 
 SECTION 82—COMBINED SCHEDULE X 
-fulfilled. Only if an account has explicit legal authority to count orders from non-Federal sources as a 
+fulfilled. Only if an account has explicit legal authority to tiktoken_count orders from non-Federal sources as a
 budgetary resource may it do so. 
 Schedule X separately bridges between start and end of year unpaid obligations and uncollected customer 
 payments from Federal sources. For unpaid obligations, new obligations are added to the start of year 
@@ -15407,7 +15407,7 @@ flexibility to manage their FTE levels, within their budget constraints, and to 
 are required to successfully accomplish their mission. In exercising this authority, agencies may put into 
 place internal management controls with respect to FTEs that, among other things, help to ensure that the 
 agency does not exceed its appropriated funding level. Agencies should take steps to assess and, as 
-appropriate, restructure, retrain, and resize its FTE count to achieve its mission as effectively and efficiently 
+appropriate, restructure, retrain, and resize its FTE tiktoken_count to achieve its mission as effectively and efficiently
 as possible. Such steps should be consistent with all Human Capital Management Reports. All increases in 
 FTEs should be accompanied by a detailed justification of its purpose and workload, and should be 
 appropriately commensurate with changes in account funding levels. Generally, if agency account funding 
