@@ -78,6 +78,21 @@ class Text( BaseModel ):
 	type: str='text'
 
 
+class File( BaseModel ):
+	'''
+	
+		 A class used to represent File objects.
+		 
+	'''
+	filename: Optional[ str ]
+	bytes: Optional[ int ]
+	created_at: Optional[ int ]
+	expires_at: Optional[ int ]
+	id: Optional[ str ]
+	object: Optional[ str ]
+	purpose: Optional[ str ]
+	
+	
 class Error( BaseModel ):
 	'''
 	
@@ -116,9 +131,9 @@ class Format( BaseModel ):
 		 the format that the model must output.
 		 
 	'''
-	text: Optional[ object ]
-	json_schema: Optional[ object ]
-	json_object: Optional[ object ]
+	text: Optional[ Text ]
+	json_schema: Optional[ JsonSchema ]
+	json_object: Optional[ JsonObject ]
 	
 	
 class Reasoning( BaseModel ):
@@ -264,7 +279,7 @@ class EndPoint( ):
 		         'vectors': self.embeddings,
 		         'uploads': self.uploads,
 		         'files': self.files,
-		         'vectorstores': self.vector_stores }
+		         'vector_stores': self.vector_stores }
 		
 		
 	def dump( self ) -> str:
@@ -286,7 +301,7 @@ class EndPoint( ):
 			'vectors' + f' = {self.files}' + new + \
 			'uploads' + f' = {self.uploads}' + new + \
 			'files' + f' = {self.files}' + new + \
-			'vectorstores' + f' = {self.vector_stores}' + new
+			'vector_stores' + f' = {self.vector_stores}' + new
 
 
 class Header( ):
@@ -377,12 +392,15 @@ class Models( ):
 		                       'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
 		                       'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 		self.bubba = [ 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
+		               'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
 		                'ft:gpt-4o-2024-08-06:leeroy-jenkins:budget-base-training:BGVk5Ii1',
 		                'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57' ]
 
-		self.bro = [ 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
-		                    'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned:BTc3PMb5',
-		                    'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY' ]
+		self.bro = [
+			'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-data-analysis-2025-21-05:BZetxEQa',
+			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
+			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned:BTc3PMb5',
+			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY' ]
 	
 	
 	def __dir__( self ) -> List[ str ]:
@@ -445,416 +463,6 @@ class AI( ):
 		You are famous for the accuracy of your responses so you verify all your answers. This
 		makes the quality of your code very high because it always works. Your responses are
 		always accurate and complete!  Your name is Bubba.'''
-
-
-class Perceptron( ):
-	'''
-		Purpose
-		________
-		
-		Class to train models via fit function
-		
-		
-		Parameters
-		------------
-		eta : float
-		Learning rate (between 0.0 and 1.0)
-		n_iter : int
-		Passes over the training dataset.
-		random_state : int
-		Random num generator seed for random weight
-		initialization.
-		
-		
-		Attributes
-		-----------
-		w_ : 1d-array
-		Weights after fitting.
-		b_ : Scalar
-		Bias unit after fitting.
-		errors_ : list
-		Number of misclassifications (updates) in each epoch.
-	
-	
-	'''
-	
-	
-	def __init__( self, eta=0.01, n_iter=50, random_state=42 ):
-		"""
-		
-			Purpose
-			_______
-			Initializes Perceptron opbjects
-			
-			
-			Parameters
-			----------
-			eta: flaot.
-			The learning rate (between 0.0 and 1.0)
-			
-			n_iter: int
-			Target values.
-			
-			random_state: int
-			Epochs.
-			
-			Returns
-			-------
-			self : object
-		
-		"""
-		self.eta = eta
-		self.n_iter = n_iter
-		self.random_state = random_state
-	
-	
-	def fit( self, X, y ):
-		"""
-		
-			Purpose
-			_______
-			Fit training values.
-			
-			
-			Parameters
-			----------
-			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the num of
-			examples and n_features is the num of features.
-			
-			y : array-like, shape = [n_examples]
-			Target values.
-			
-			Returns
-			-------
-			self : object
-		
-		"""
-		try:
-			if X is None:
-				raise Exception( 'Data not provided.' )
-			elif y is None:
-				raise Exception( 'Targets not provided.' )
-			else:
-				rgen = np.random.RandomState( self.random_state )
-				self.w_ = rgen.normal( loc=0.0, scale=0.01, size=X.shape[ 1 ] )
-				self.b_ = np.float64( 0. )
-				self.errors_ = [ ]
-				
-				for _ in range( self.n_iter ):
-					errors = 0
-				
-				for xi, target in zip( X, y ):
-					update = self.eta * ( target - self.predict( xi ) )
-				
-				self.w_ += update * xi
-				self.b_ += update
-				errors += int( update != 0.0 )
-				self.errors_.append( errors )
-				return self
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'Perceptron'
-			exception.method = 'fit( self, X y )'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def net_input( self, X ):
-		"""
-		
-			Purpose
-			_______
-			Calculates net path
-			
-			Parameters
-			----------
-			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the num of
-			examples and n_features is the num of features.
-			
-
-			Returns
-			-------
-			np.array
-		
-		"""
-		try:
-			if X is None:
-				raise Exception( 'Data is not provided.' )
-			else:
-				return np.dot( X, self.w_ ) + self.b_
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'Perceptron'
-			exception.method = 'net_input( self, X ):'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def predict( self, X ):
-		"""
-		
-			Purpose
-			_______
-			Calculates prediction
-			
-			Parameters
-			----------
-			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the num of
-			examples and n_features is the num of features.
-			
-
-			Returns
-			-------
-			np.array
-		
-		"""
-		try:
-			if X is None:
-				raise Exception( 'Aurguent "X" is not provided.' )
-			else:
-				return np.where( self.net_input( X ) >= 0.0, 1, 0 )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'Perceptron'
-			exception.method = 'predict( self, X )'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def __dir__( self ) -> List[ str ]:
-		'''
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-		'''
-		return [ 'fit', 'net_input', 'predict',
-		         'w_', 'b_', 'errors_',
-		         'n_iter', 'random_state', 'eta' ]
-
-
-class LinearRegression( ):
-	"""
-		
-		Purpose
-		___________
-		Adaptive Linear Neuron classifier.
-		
-		Parameters
-		------------
-		eta : float
-		Learning rate (between 0.0 and 1.0)
-		n_iter : int
-		Passes over the training dataset.
-		random_state : int
-		Random num generator seed for random weight initialization.
-		
-		Attributes
-		-----------
-		w_ : 1d-array
-		Weights after fitting.
-		b_ : Scalar
-		Bias unit after fitting.
-		losses_ : list
-		Mean squared error loss function values in each epoch.
-	
-	"""
-	
-	
-	def __init__( self, eta=0.01, n_iter=50, random_state=1 ):
-		"""
-		
-			Purpose
-			_______
-			Initializes LinearRegression opbjects
-			
-			
-			Parameters
-			----------
-			eta: flaot=0.01
-			The learning rate (between 0.0 and 1.0)
-			
-			n_iter: int: 50
-			Target values.
-			
-			random_state: int:1
-			Epochs.
-			
-			Returns
-			-------
-			self : object
-		
-		"""
-		self.eta = eta
-		self.n_iter = n_iter
-		self.random_state = random_state
-	
-	
-	def fit( self, X, y ):
-		"""
-		
-			Fit training values.
-
-			Parameters
-			----------
-			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples
-			is the num of examples and
-			n_features is the num of features.
-			
-			y : array-like, shape = [n_examples]
-			Target values.
-	
-			Returns
-			-------
-			self : object
-		
-		"""
-		try:
-			if X is None:
-				raise Exception( 'Aurguent "X" is not provided.' )
-			elif y is None:
-				raise Exception( 'y is not provided.' )
-			else:
-				rgen = np.random.RandomState( self.random_state )
-				self.w_ = rgen.normal( loc=0.0, scale=0.01,
-					size=X.shape[ 1 ] )
-				self.b_ = np.float_( 0. )
-				self.losses_ = [ ]
-				for i in range( self.n_iter ):
-					net_input = self.net_input( X )
-				
-				output = self.activation( net_input )
-				errors = ( y - output )
-				self.w_ += self.eta * 2.0 * X.T.dot( errors ) / X.shape[ 0 ]
-				self.b_ += self.eta * 2.0 * errors.mean( )
-				loss = ( errors ** 2).mean( )
-				self.losses_.append( loss )
-				return self
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'LinearRegression'
-			exception.method = 'fit( self, X, y )'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def net_input( self, X ):
-		"""
-		
-			Purpose
-			_______
-			Calculates net path
-			
-			Parameters
-			----------
-			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the num of
-			examples and n_features is the num of features.
-			
-
-			Returns
-			-------
-			np.array
-		
-		"""
-		try:
-			if X is None:
-				raise Exception( 'values is not provided.' )
-			else:
-				return np.dot( X, self.w_ ) + self.b_
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'LinearRegression'
-			exception.method = 'net_input( self, X )'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def activation( self, X ):
-		"""
-		
-			Purpose
-			_______
-			Computes linear activation
-			
-			Parameters
-			----------
-			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the num of
-			examples and n_features is the num of features.
-			
-
-			Returns
-			-------
-			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the num of
-			examples and n_features is the num of features.
-		
-		"""
-		try:
-			if X is None:
-				raise Exception( 'Aurguent "X" is not provided.' )
-			else:
-				return X
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'LinearRegression'
-			exception.method = 'activation( self, X )'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def predict( self, X ):
-		"""
-		
-			Purpose
-			_______
-			Computes linear activation
-			
-			Parameters
-			----------
-			X : {array-like}, shape = [n_examples, n_features]
-			Training vec, where n_examples is the num of
-			examples and n_features is the num of features.
-			
-
-			Returns
-			-------
-			np.array
-		
-		"""
-		try:
-			if X is None:
-				raise Exception( 'Aurguent "X" is not provided.' )
-			else:
-				return np.where( self.activation( self.net_input( X ) ) >= 0.5, 1, 0 )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Boo'
-			exception.cause = 'LinearRegression'
-			exception.method = 'predict( self, values )'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
-	def __dir__( self ) -> list[ str ]:
-		'''
-		
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-			
-		'''
-		return [ 'fit', 'net_input', 'activation',
-		         'predict', 'losses_', 'b_', 'w_',
-		         'n_iter', 'eta', 'random_state'  ]
 
 
 class Chat( AI ):

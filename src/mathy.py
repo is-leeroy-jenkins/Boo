@@ -786,7 +786,7 @@ class SimpleImputer( Metric ):
 	"""
 	
 	
-	def __init__( self, strategy: str = 'mean' ) -> None:
+	def __init__( self, strategy: str='mean' ) -> None:
 		super( ).__init__( )
 		self.simple_imputer = SimpleImputer( strategy=strategy )
 	
