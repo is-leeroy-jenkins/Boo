@@ -1090,9 +1090,6 @@ class Assistant( AI ):
 			_______
 			Method that summarizes a document given a
 			path prompt, and a path
-	
-			
-			
 			
 			Parameters
 			----------
@@ -1116,23 +1113,21 @@ class Assistant( AI ):
 					purpose='user_data' )
 				
 				self.messages = [
+				{
+					'role': 'user',
+					'content': [
 					{
-						'role': 'user',
-						'content': [
+						'type': 'file',
+						'file':
 						{
-							'type': 'file',
-							'file':
-							{
-								'file_id': self.file.id,
-							}
-						},
-							{
-								'type': 'text',
-								'text': self.input_text,
-							},
-						]
-					}
-				]
+							'file_id': self.file.id,
+						}
+					},
+					{
+						'type': 'text',
+						'text': self.input_text,
+					},]
+				}]
 				
 				self.completion = self.client.chat.completions.create( model=self.model,
 					messages=self.messages )
@@ -1178,7 +1173,6 @@ class Assistant( AI ):
 				
 				self.response = self.client.chat.completions.create( model=self.model,
 					web_search_options={ }, messages=self.messages )
-				
 				return  self.response.output_text
 		except Exception as e:
 			exception = Error( e )
@@ -1195,8 +1189,6 @@ class Assistant( AI ):
 			Purpose
 			_______
 			Method that analyzeses an image given a prompt,
-			
-			
 			
 			Parameters
 			----------
@@ -1217,7 +1209,7 @@ class Assistant( AI ):
 					'type': 'file_search',
 					'vector_store_ids': self.vector_store_ids,
 					'max_num_results': 20
-				} ]
+				}, ]
 				
 				self.response = self.client.responses.create( model=self.model,
 					tools=self.tools, input=prompt )
@@ -1564,18 +1556,17 @@ class Bubba( AI ):
 				{
 					'role': 'user',
 					'content': [
+					{
+						'type': 'file',
+						'file':
 						{
-							'type': 'file',
-							'file':
-							{
-								'file_id': self.file.id,
-							}
-						},
-						{
-							'type': 'texth',
-							'text': self.prompt,
-						},
-					]
+							'file_id': self.file.id,
+						}
+					},
+					{
+						'type': 'texth',
+						'text': self.prompt,
+					}, ]
 				} ]
 				
 				self.completion = self.client.chat.completions.create( model=self.model,
@@ -1622,7 +1613,6 @@ class Bubba( AI ):
 				
 				self.response = self.client.chat.completions.create( model=self.model,
 					web_search_options={ }, messages=self.messages )
-				
 				return  self.response.output_text
 		except Exception as e:
 			exception = Error( e )
@@ -1707,7 +1697,7 @@ class Bubba( AI ):
 			error.show( )
 	
 	
-	def get_format_options( ):
+	def get_format_options( ) -> List[ str ]:
 		'''
 		
 			Method that returns a list of formatting options
@@ -1716,7 +1706,7 @@ class Bubba( AI ):
 		return [ 'auto', 'text', 'json' ]
 	
 	
-	def get_model_options( ):
+	def get_model_options( ) -> List[ str ]:
 		'''
 
 			Method that returns a list of available models
@@ -1727,6 +1717,8 @@ class Bubba( AI ):
                  'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
                  'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31',
+		         'ft:gpt-4.1-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-2025-20-05:BZO7tKJy',
+		         'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-data-analysis-2025-21-05:BZetxEQa',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-fine-tuned-2025-05-06:BUF6o5Xa',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-fine-tuned-2025-05-05:BU7RK1Dq'
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
@@ -1734,7 +1726,7 @@ class Bubba( AI ):
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57' ]
 	
 	
-	def get_effort_options( ):
+	def get_effort_options( ) -> List[ str ]:
 		'''
 
 			Method that returns a list of available models
@@ -1775,7 +1767,7 @@ class Bubba( AI ):
 			'size' + f' = {self.size}' + new
 	
 	
-	def __dir__( self ):
+	def __dir__( self ) -> List[ str ]:
 		'''
 		
 			Method that returns a list of members
@@ -1835,7 +1827,7 @@ class Bro( AI ):
 		self.system_instructions = AI( ).bro_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx'
+		self.model = 'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-data-analysis-2025-21-05:BZetxEQa'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -2020,18 +2012,17 @@ class Bro( AI ):
 				{
 					'role': 'user',
 					'content': [
-						{
-							'type': 'file',
-							'file':
-								{
-									'file_id': self.file.id,
-								}
-						},
-						{
-							'type': 'text',
-							'text': self.input_text,
-						},
-					]
+					{
+						'type': 'file',
+						'file':
+							{
+								'file_id': self.file.id,
+							}
+					},
+					{
+						'type': 'text',
+						'text': self.input_text,
+					}, ]
 				} ]
 				
 				self.completion = self.client.chat.completions.create( model=self.model,
@@ -2138,7 +2129,7 @@ class Bro( AI ):
 		pass
 	
 	
-	def get_format_options( ):
+	def get_format_options( ) -> List[ str ]:
 		'''
 		
 			Method that returns a list of formatting options
@@ -2147,7 +2138,7 @@ class Bro( AI ):
 		return [ 'auto', 'text', 'json' ]
 	
 	
-	def get_model_options( ):
+	def get_model_options( ) -> List[ str ]:
 		'''
 
 			Method that returns a list of available models
@@ -2158,12 +2149,13 @@ class Bro( AI ):
                  'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
                  'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31',
+		         'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-data-analysis-2025-21-05:BZetxEQa',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx' ]
 	
 	
-	def get_effort_options( ):
+	def get_effort_options( ) -> List[ str ]:
 		'''
 
 			Method that returns a list of available models
@@ -2205,7 +2197,7 @@ class Bro( AI ):
 	
 	
 
-	def __dir__(self):
+	def __dir__(self) -> List[ str ]:
 		'''
 		
 			Method that returns a list of members
@@ -2494,6 +2486,7 @@ class TTS( AI ):
 		
 		'''
 		return [ 'tts-1', 'tts-1-hd',
+		         'gpt-4o-mini-tts',
                  'gpt-4o-audio-preview-2024-12-17',
                  'gpt-4o-audio-preview-2024-10-01',
                  'gpt-4o-mini-audio-preview-2024-12-17' ]
@@ -2673,7 +2666,7 @@ class Transcription( AI ):
 		'''
 		return [ 'whisper-1',
 		         'gpt-4o-mini-transcribe',
-		         ' openai-4o-transcribe' ]
+		         'gpt-4o-transcribe' ]
 	
 	
 	def create( self, input: str ) -> str:

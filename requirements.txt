@@ -45,6 +45,9 @@ llama-index
 llama_index.core
 llama-index-postprocessor-flag-embedding-reranker
 llama_index.embeddings.openai
+llama-index-embeddings-google-genai
+llama-index-embeddings-huggingface
+llama-index-embeddings-ollama
 llama-parse
 langchain
 langchain
