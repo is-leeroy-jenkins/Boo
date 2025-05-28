@@ -50,7 +50,6 @@ llama-index-embeddings-huggingface
 llama-index-embeddings-ollama
 llama-parse
 langchain
-langchain
 langchain-community
 langchain-openai
 langchain-core
@@ -64,6 +63,7 @@ sounddevice
 spacy
 statsmodels
 sentence-transformers
+streamlit
 typing_extensions
 textblob
 transformers
