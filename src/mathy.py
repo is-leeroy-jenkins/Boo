@@ -269,7 +269,7 @@ class Dataset( BaseModel ):
 
 
 	def __init__( self, data: np.ndarray, target: List[ str ], size: float=0.2,
-	              state: int=42, type: str='standard' ):
+	              rando: int=42, type: str='standard' ):
 		"""
 
 			Purpose:
@@ -339,43 +339,37 @@ class Dataset( BaseModel ):
 				_values = _standard.fit_transform( self.X[ self.numeric_features ] )
 				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
 				self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
+				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'minmax':
 				_minmax = MinMaxScaler( )
 				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
-				self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.X.index )
+				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'simple':
 				_simple = SimpleImputer( )
 				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
-				self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.X.index )
+				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'neighbor':
 				_nearest = NearestNeighborImputer( )
 				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
-				self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.X.index )
+				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'normal':
 				_normal = Normalizer( )
 				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
-				self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.X.index )
+				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'onehot':
 				_onehot = OneHotEncoder( )
 				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
-				self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.X.index )
+				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
 			else:
 				_standard = StandardScaler( )
 				_values = _standard.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
-				self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.X.index )
+				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -816,7 +810,7 @@ class OrdinalEncoder( Metric ):
 		self.ordinal_encoder = OrdinalEncoder( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Fits the ordial_encoder
@@ -1003,7 +997,7 @@ class NearestNeighborImputer( Metric ):
 			error.show( )
 
 
-class MultiLayerPerceptron( Model ):
+class MlpRegressor( Model ):
 	"""
 
 		Chains multiple preprocessing
@@ -1053,7 +1047,7 @@ class MultiLayerPerceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultiLayerPerceptron'
+			exception.cause = 'MlpRegressor'
 			exception.method = 'fit( self, X: np.ndarray, y: Optional[ np.ndarray ] ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1081,7 +1075,7 @@ class MultiLayerPerceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultiLayerPerceptron'
+			exception.cause = 'MlpRegressor'
 			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1110,7 +1104,7 @@ class MultiLayerPerceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultiLayerPerceptron'
+			exception.cause = 'MlpRegressor'
 			exception.method = ('fit_transform( self, X: np.ndarray, y: '
 			                    'Optional[ np.ndarray ]=None ) -> np.ndarray')
 			error = ErrorDialog( exception )
@@ -1142,7 +1136,7 @@ class MultiLayerPerceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultiLayerPerceptron'
+			exception.cause = 'MlpRegressor'
 			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1169,9 +1163,9 @@ class MultiLayerPerceptron( Model ):
 				raise Exception( 'The argument "y" is required!' )
 			else:
 				self.accuracy = accuracy_score( y, self.prediction )
-				self.precision = precision_score( y, self.prediction, average = 'binary' )
-				self.recall = mean_squared_error( y, self.prediction, average = 'binary' )
-				self.f1_score = f1_score( y, self.prediction, average = 'binary' )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
 				self.roc_auc_score = roc_auc_score( y, self.prediction )
 				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
 				return \
@@ -1186,7 +1180,7 @@ class MultiLayerPerceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultiLayerPerceptron'
+			exception.cause = 'MlpRegressor'
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1220,7 +1214,7 @@ class MultiLayerPerceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultiLayerPerceptron'
+			exception.cause = 'MlpRegressor'
 			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2749,7 +2743,7 @@ class SgdClassifier( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				return r2_score( y, self.sgd_classification_model.predict( X ) )
+				return r2_score( y, self.prediction )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -2994,10 +2988,10 @@ class SgdRegressor( Model ):
 			error.show( )
 
 
-class Perceptron( Model ):
+class PerceptronClassifier( Model ):
 	"""
 	
-		Perceptron classifier.
+		PerceptronClassifier classifier.
 	
 	"""
 	score: Optional[ float ]
@@ -3014,7 +3008,7 @@ class Perceptron( Model ):
 		"""
 		
 			Initialize the
-			Perceptron linerar_model.
+			PerceptronClassifier linerar_model.
 	
 			Attributes:
 				linerar_model (Perceptron): Internal linear binary classifier.
@@ -3024,7 +3018,7 @@ class Perceptron( Model ):
 					
 		"""
 		super( ).__init__( )
-		self.perceptron_model = Perceptron( alpha=alpha, max_iter=max, shuffle=mix )
+		self.perceptron_model = PerceptronClassifier( alpha=alpha, max_iter=max, shuffle=mix )
 		self.prediction = None
 		self.mean_absolute_error = 0.0
 		self.mean_squared_error = 0.0
@@ -3038,7 +3032,7 @@ class Perceptron( Model ):
 		"""
 			
 			Fit the
-			Perceptron linerar_model.
+			PerceptronClassifier linerar_model.
 	
 			Parameters:
 				X (pd.DataFrame): Feature matrix.
@@ -3059,7 +3053,7 @@ class Perceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'Perceptron'
+			exception.cause = 'PerceptronClassifier'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3069,7 +3063,7 @@ class Perceptron( Model ):
 		"""
 			
 			Predict binary class
-			labels using the Perceptron.
+			labels using the PerceptronClassifier.
 	
 			Parameters:
 				X (pd.DataFrame): Feature matrix.
@@ -3087,7 +3081,7 @@ class Perceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'Perceptron'
+			exception.cause = 'PerceptronClassifier'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3097,7 +3091,7 @@ class Perceptron( Model ):
 		"""
 		
 			Compute accuracy of the
-			Perceptron classifier.
+			PerceptronClassifier classifier.
 	
 			Parameters:
 				X (np.ndarray): Test feature_names.
@@ -3117,7 +3111,7 @@ class Perceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'Perceptron'
+			exception.cause = 'PerceptronClassifier'
 			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3169,8 +3163,43 @@ class Perceptron( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'Perceptron'
+			exception.cause = 'PerceptronClassifier'
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
+		"""
+
+			Plot confusion matrix
+			for classifier predictions.
+
+			Parameters:
+				X (np.ndarray): Input feature_names.
+				y (np.ndarray): True class labels.
+
+			Returns:
+				None
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.perceptron_model.predict( X )
+				cm = confusion_matrix( y, self.prediction )
+				ConfusionMatrixDisplay( confusion_matrix = cm ).plot( )
+				plt.title( 'Random Forest Confusion Matrix' )
+				plt.grid( False )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestClassifier'
+			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -3749,7 +3778,7 @@ class RandomForestClassifier( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.prediction = self.predict( X )
+				self.prediction = self.random_forest_classifier.predict( X )
 				cm = confusion_matrix( y, self.prediction )
 				ConfusionMatrixDisplay( confusion_matrix = cm ).plot( )
 				plt.title( 'Random Forest Confusion Matrix' )
@@ -4189,7 +4218,7 @@ class AdaBoostClassifier( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.prediction = self.predict( X )
+				self.prediction = self.ada_boost_classifier.predict( X )
 				cm = confusion_matrix( y, self.prediction )
 				ConfusionMatrixDisplay( confusion_matrix = cm ).plot( )
 				plt.title( 'ADA Boost Confusion Matrix' )
