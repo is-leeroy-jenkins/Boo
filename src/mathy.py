@@ -90,15 +90,15 @@ class Model( BaseModel ):
 	def __init__( self ):
 		self.pipeline = None
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the linerar_model to
 			the training data.
 	
 			Parameters:
-				X (np.ndarray): Feature matrix of shape (n_samples, n_features).
-				y (np.ndarray): Target vector of shape (n_samples,).
+				X (np.ndarray): Feature vector w/shape ( n_samples, n_features ).
+				y (np.ndarray): Target vector w/shape ( n_samples, ).
 	
 			Returns:
 				None
@@ -123,7 +123,7 @@ class Model( BaseModel ):
 		raise NotImplementedError
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute the core metric
@@ -140,7 +140,7 @@ class Model( BaseModel ):
 		raise NotImplementedError
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluate the model using
@@ -180,7 +180,7 @@ class Metric( BaseModel):
 		self.scaled_values = None
 	
 	
-	def fit( self, X: pd.DataFrame, y: Optional[ np.ndarray ]=None ) -> None:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
 		"""
 
 			Fits the preprocessor
@@ -210,7 +210,7 @@ class Metric( BaseModel):
 		raise NotImplementedError
 	
 	
-	def fit_transform( self, X: pd.DataFrame, y: Optional[ pd.Series ]=None ) -> np.ndarray:
+	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> np.ndarray:
 		"""
 
 			Fits the preprocessor and
@@ -231,7 +231,7 @@ class Metric( BaseModel):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Metric'
-			exception.method = ('fit_transform( self, X: pd.DataFrame, y: Optional[ np.ndarray ]=None'
+			exception.method = ('fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ]=None'
 			                    ') -> np.ndarray')
 			error = ErrorDialog( exception )
 			error.show( )
@@ -246,21 +246,21 @@ class Dataset( ):
 
 	"""
 	data: pd.DataFrame
-	target: pd.Series
+	target: np.ndarray
 	records: Optional[ int ]
 	fields: Otional[ int ]
 	features: Optional[ List[ str ] ]
 	size: float
 	random_state: int
 	data: pd.DataFrame
-	values: pd.Series
-	X_train: Optional[ pd.DataFrame ]
-	X_test: Optional[ pd.DataFrame ]
-	y_train: Optional[ pd.Series ]
-	y_test: Optional[ pd.Series ]
+	values: np.ndarray
+	X_train: Optional[ np.ndarray ]
+	X_test: Optional[ np.ndarray ]
+	y_train: Optional[ np.ndarray ]
+	y_test: Optional[ np.ndarray ]
 	
 	
-	def __init__( self, df: pd.DataFrame, target: pd.Series, size: float=0.2, state: int=42 ):
+	def __init__( self, df: np.ndarray, target: np.ndarray, size: float=0.2, state: int=42 ):
 		"""
 
 			Purpose:
@@ -301,14 +301,14 @@ class Dataset( ):
 		         'values', 'X_train', 'X_test', 'y_train', 'y_test' ]
 	
 	
-	def split_data( self ) -> Tuple[ pd.DataFrame, pd.Series, pd.DataFrame, pd.Series ]:
+	def split_data( self ) -> Tuple[ np.ndarray, np.ndarray, np.ndarray, np.ndarray ]:
 		"""
 
 			Purpose:
 			Split the dataset into training and test sets.
 
 			Returns:
-				Tuple[ pd.DataFrame, pd.Series, pd.DataFrame, pd.Series ]
+				Tuple[ pd.DataFrame, np.ndarray, pd.DataFrame, np.ndarray ]
 
 		"""
 		try:
@@ -319,8 +319,8 @@ class Dataset( ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Data'
-			exception.method = ('split_data( self ) -> Tuple[ pd.DataFrame, pd.Series, pd.DataFrame,'
-			                    ' pd.Series ]')
+			exception.method = ('split_data( self ) -> Tuple[ pd.DataFrame, np.ndarray, pd.DataFrame,'
+			                    ' np.ndarray ]')
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -332,7 +332,7 @@ class Dataset( ):
 			Split the dataset into training and test sets.
 
 			Returns:
-				Tuple[ pd.DataFrame, pd.Series, pd.DataFrame, pd.Series ]
+				Tuple[ np.ndarray, np.ndarray, np.ndarray, np.ndarray ]
 
 		"""
 		try:
@@ -346,26 +346,26 @@ class Dataset( ):
 			error.show( )
 	
 	
-	def get_training_data( self ) -> Tuple[ pd.DataFrame, pd.Series ]:
+	def get_training_data( self ) -> Tuple[ np.ndarray, np.ndarray ]:
 		"""
 		
 			Purpose:
 				Return the training features and labels.
 	
 			Returns:
-				Tuple[pd.DataFrame, pd.Series]: X_train, y_train
+				Tuple[pd.DataFrame, np.ndarray]: X_train, y_train
 		"""
 		return self.X_train, self.y_train
 	
 	
-	def get_testing_data( self ) -> Tuple[ pd.DataFrame, pd.Series ]:
+	def get_testing_data( self ) -> Tuple[ np.ndarray, np.ndarray ]:
 		"""
 		
 			Purpose:
 			Return the test features and labels.
 	
 			Returns:
-				Tuple[pd.DataFrame, pd.Series]: X_test, y_test
+				Tuple[ np.ndarray, np.ndarray ]: X_test, y_test
 				
 		"""
 		return self.X_test, self.y_test
@@ -385,7 +385,7 @@ class StandardScaler( Metric ):
 		self.standard_scaler = StandardScaler( )
 	
 	
-	def fit( self, X: pd.DataFrame, y: Optional[ np.ndarray ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Fits the standard_scaler
@@ -406,7 +406,7 @@ class StandardScaler( Metric ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'StandardScaler'
-			exception.method = ('fit( self, X: pd.DataFrame, y: Optional[np.ndarray]=None ) -> '
+			exception.method = ('fit( self, X: np.ndarray, y: Optional[np.ndarray]=None ) -> '
 			                    'Pipeline')
 			error = ErrorDialog( exception )
 			error.show( )
@@ -454,7 +454,7 @@ class MinMaxScaler( Metric ):
 		self.minmax_scaler = MinMaxScaler( )
 	
 	
-	def fit( self, X: pd.DataFrame, y: Optional[ pd.Series ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Fits the standard_scaler
@@ -475,13 +475,13 @@ class MinMaxScaler( Metric ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'MinMaxScaler'
-			exception.method = ('fit( self, X: pd.DataFrame, y: Optional[ np.ndarray ]=None ) -> '
+			exception.method = ('fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> '
 			                    'Pipeline')
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def transform( self, X: pd.DataFrame ) -> np.ndarray:
+	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
 			Transforms the data
@@ -504,7 +504,7 @@ class MinMaxScaler( Metric ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'MinMaxScaler'
-			exception.method = 'transform( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -523,7 +523,7 @@ class RobustScaler( Metric ):
 		self.robust_scaler = RobustScaler( )
 	
 	
-	def fit( self, X: pd.DataFrame, y: Optional[ pd.Series ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 				Fits the standard_scaler
@@ -544,13 +544,13 @@ class RobustScaler( Metric ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RobustScaler'
-			exception.method = ('fit( self, X: pd.DataFrame, y: Optional[ np.ndarray ]=None ) -> '
+			exception.method = ('fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> '
 			                    'Pipeline')
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def transform( self, X: pd.DataFrame ) -> np.ndarray:
+	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
 			Transforms the data
@@ -590,7 +590,7 @@ class Normalizer( Metric ):
 		self.normal_scaler = Normalizer( norm=norm )
 	
 	
-	def fit( self, X: pd.DataFrame, y: Optional[ pd.Series ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Fits the normalizer
@@ -616,7 +616,7 @@ class Normalizer( Metric ):
 			error.show( )
 	
 	
-	def transform( self, X: pd.DataFrame ) -> np.ndarray:
+	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
 			Applies normalization
@@ -657,7 +657,7 @@ class OneHotEncoder( Metric ):
 		self.hot_encoder = OneHotEncoder( sparse=False, handle_unknown=handle_unknown )
 	
 	
-	def fit( self, X: pd.DataFrame, y: Optional[ pd.Series ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Fits the hot_encoder
@@ -678,12 +678,12 @@ class OneHotEncoder( Metric ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'OneHotEncoder'
-			exception.method = 'fit( self, X: pd.DataFrame, y: Optional[ pd.Series ]=None ) -> Pipeline'
+			exception.method = 'fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def transform( self, X: pd.DataFrame ) -> np.ndarray:
+	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
 			Transforms the input
@@ -705,7 +705,7 @@ class OneHotEncoder( Metric ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'OneHotEncoder'
-			exception.method = 'transform( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -724,7 +724,7 @@ class OrdinalEncoder( Metric ):
 		self.ordinal_encoder = OrdinalEncoder( )
 	
 	
-	def fit( self, X: pd.DataFrame, y: Optional[ pd.Series ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Fits the ordial_encoder
@@ -750,7 +750,7 @@ class OrdinalEncoder( Metric ):
 			error.show( )
 	
 	
-	def transform( self, X: pd.DataFrame ) -> np.ndarray:
+	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
 			Transforms the input
@@ -791,7 +791,7 @@ class SimpleImputer( Metric ):
 		self.simple_imputer = SimpleImputer( strategy=strategy )
 	
 	
-	def fit( self, X: pd.DataFrame, y: Optional[ pd.Series ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Fits the simple_imputer
@@ -817,7 +817,7 @@ class SimpleImputer( Metric ):
 			error.show( )
 	
 	
-	def transform( self, X: pd.DataFrame ) -> np.ndarray:
+	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
 			Transforms the input
@@ -858,7 +858,7 @@ class NearestNeighborImputer( Metric ):
 		self.knn_imputer = KNNImputer( )
 	
 	
-	def fit( self, X: pd.DataFrame, y: Optional[ pd.Series ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Fits the simple_imputer
@@ -881,7 +881,7 @@ class NearestNeighborImputer( Metric ):
 			error.show( )
 	
 	
-	def transform( self, X: pd.DataFrame ) -> np.ndarray:
+	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
 			Purpose:
@@ -926,7 +926,7 @@ class MultiLayerPerceptron( Model ):
 		self.pipeline = Pipeline( steps )
 	
 	
-	def fit( self, X: pd.DataFrame, y: Optional[ pd.Series ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Fits all pipeline
@@ -947,12 +947,12 @@ class MultiLayerPerceptron( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'MultiLayerPerceptron'
-			exception.method = 'fit( self, X: pd.DataFrame, y: Optional[ np.ndarray ] ) -> Pipeline'
+			exception.method = 'fit( self, X: np.ndarray, y: Optional[ np.ndarray ] ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def transform( self, X: pd.DataFrame ) -> np.ndarray:
+	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
 			Applies all transformations
@@ -975,12 +975,12 @@ class MultiLayerPerceptron( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'MultiLayerPerceptron'
-			exception.method = 'transform( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def fit_transform( self, X: pd.DataFrame, y: Optional[ np.ndarray ] ) -> np.ndarray:
+	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] ) -> np.ndarray:
 		"""
 
 			Fits and transforms all
@@ -1004,7 +1004,7 @@ class MultiLayerPerceptron( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'MultiLayerPerceptron'
-			exception.method = ('fit_transform( self, X: pd.DataFrame, y: '
+			exception.method = ('fit_transform( self, X: np.ndarray, y: '
 			                    'Optional[ np.ndarray ]=None ) -> np.ndarray')
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1051,7 +1051,7 @@ class LinearRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 		
 			Fit the OLS
@@ -1075,12 +1075,12 @@ class LinearRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LinearRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Predict target values
@@ -1103,12 +1103,12 @@ class LinearRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LinearRegressor'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute the R-squared
@@ -1134,12 +1134,12 @@ class LinearRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LinearRegressor'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 		
 			Evaluate the model using
@@ -1178,12 +1178,12 @@ class LinearRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LinearRegressor'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 			
 			Purpose:
@@ -1212,7 +1212,7 @@ class LinearRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LinearRegressor'
-			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1258,7 +1258,7 @@ class RidgeRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the RidgeRegressor
@@ -1284,12 +1284,12 @@ class RidgeRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RidgeRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Project target values
@@ -1312,12 +1312,12 @@ class RidgeRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RidgeRegressor'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute the R-squared
@@ -1343,12 +1343,12 @@ class RidgeRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RidgeRegressor'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluates the Ridge model
@@ -1387,12 +1387,12 @@ class RidgeRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RidgeRegressor'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot predicted vs
@@ -1424,7 +1424,7 @@ class RidgeRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RidgeRegressor'
-			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1468,7 +1468,7 @@ class LassoRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 		
 			Fit the LassoRegressor
@@ -1494,12 +1494,12 @@ class LassoRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LassoRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
 			Predict target values
@@ -1522,12 +1522,12 @@ class LassoRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LassoRegressor'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute R^2 score
@@ -1552,12 +1552,12 @@ class LassoRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LassoRegressor'
-			exception.method = 'score(self, X: pd.DataFrame, y: pd.Series) -> float'
+			exception.method = 'score(self, X: np.ndarray, y: np.ndarray) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 		
 			Evaluate the Lasso model
@@ -1596,12 +1596,12 @@ class LassoRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LassoRegressor'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot actual vs.
@@ -1630,7 +1630,7 @@ class LassoRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LassoRegressor'
-			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1676,7 +1676,7 @@ class ElasticNetRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 		
 			Fit the ElasticNetRegressor
@@ -1702,12 +1702,12 @@ class ElasticNetRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'ElasticNetRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
 			Predict target values
@@ -1730,12 +1730,12 @@ class ElasticNetRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'ElasticNetRegressor'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute R^2 score
@@ -1759,12 +1759,12 @@ class ElasticNetRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'ElasticNetRegressor'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 		
 			Evaluate model performance
@@ -1803,12 +1803,12 @@ class ElasticNetRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'ElasticNetRegressor'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot actual vs. predicted
@@ -1837,7 +1837,7 @@ class ElasticNetRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'ElasticNetRegressor'
-			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1882,7 +1882,7 @@ class LogisticRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the logistic
@@ -1908,12 +1908,12 @@ class LogisticRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LogisticRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
 			Predict class labels using
@@ -1936,12 +1936,12 @@ class LogisticRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LogisticRegressor'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 			
 			Compute classification
@@ -1966,12 +1966,12 @@ class LogisticRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LogisticRegressor'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluate the classifier
@@ -2017,12 +2017,12 @@ class LogisticRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LogisticRegressor'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot confusion matrix
@@ -2052,7 +2052,7 @@ class LogisticRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'LogisticRegressor'
-			exception.method = 'create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -2098,7 +2098,7 @@ class BayesianRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the Bayesian RidgeRegressor
@@ -2124,12 +2124,12 @@ class BayesianRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BayesianRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
 			Predicts target values
@@ -2152,12 +2152,12 @@ class BayesianRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BayesianRegressor'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute the R^2 score
@@ -2182,12 +2182,12 @@ class BayesianRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BayesianRegressor'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluate the Bayesian model
@@ -2226,12 +2226,12 @@ class BayesianRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BayesianRegressor'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot predicted vs.
@@ -2260,7 +2260,7 @@ class BayesianRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BayesianRegressor'
-			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -2305,7 +2305,7 @@ class SgdClassifier( Model ):
 		self.median_absolute_error = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the SGD
@@ -2331,12 +2331,12 @@ class SgdClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'SgdClassifier'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 				Predict class labels
@@ -2364,7 +2364,7 @@ class SgdClassifier( Model ):
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute R^2 score
@@ -2394,7 +2394,7 @@ class SgdClassifier( Model ):
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
 		"""
 		 
 			Evaluate the classifier
@@ -2486,7 +2486,7 @@ class SgdRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the SGD
@@ -2512,12 +2512,12 @@ class SgdRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'SgdRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Predict values using
@@ -2545,7 +2545,7 @@ class SgdRegressor( Model ):
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluate regression model
@@ -2629,7 +2629,7 @@ class Perceptron( Model ):
 		self.median_absolute_error = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the
@@ -2655,12 +2655,12 @@ class Perceptron( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Perceptron'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Predict binary class
@@ -2683,12 +2683,12 @@ class Perceptron( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Perceptron'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute accuracy of the
@@ -2713,12 +2713,12 @@ class Perceptron( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Perceptron'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 		
 			Evaluate classifier performance
@@ -2764,7 +2764,7 @@ class Perceptron( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Perceptron'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -2808,7 +2808,7 @@ class NearestNeighborClassifier( Model ):
 		self.median_absolute_error = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Fit the KNN
@@ -2834,12 +2834,12 @@ class NearestNeighborClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborClassifier'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Predict class labels
@@ -2864,12 +2864,12 @@ class NearestNeighborClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborClassifier'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 			
 			Compute classification
@@ -2877,7 +2877,7 @@ class NearestNeighborClassifier( Model ):
 	
 			Parameters:
 				X (np.ndarray): Test features.
-				y (pd.Series): Ground truth labels.
+				y (np.ndarray): Ground truth labels.
 	
 			Returns:
 				float: Accuracy score.
@@ -2894,12 +2894,12 @@ class NearestNeighborClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborClassifier'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 		
 			Evaluate classification performance
@@ -2945,7 +2945,7 @@ class NearestNeighborClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborClassifier'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -2989,7 +2989,7 @@ class NearestNeighborRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the KNN
@@ -3015,12 +3015,12 @@ class NearestNeighborRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 		
 			Predict values using
@@ -3043,12 +3043,12 @@ class NearestNeighborRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborRegressor'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 			
 			Compute R^2 score
@@ -3073,12 +3073,12 @@ class NearestNeighborRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborRegressor'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
 		"""
 			
 			Evaluate k-NN regression
@@ -3117,7 +3117,7 @@ class NearestNeighborRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'NearestNeighborRegressor'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> dict'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -3155,13 +3155,13 @@ class RandomForestClassifier( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 		
 			Fit the classifier.
 			Parameters:
 				X (pd.DataFrame): Feature matrix.
-				y (pd.Series): Class labels.
+				y (np.ndarray): Class labels.
 			
 		"""
 		try:
@@ -3176,12 +3176,12 @@ class RandomForestClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RandomForestClassifier'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 				Predict class labels
@@ -3204,12 +3204,12 @@ class RandomForestClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RandomForestClassifier'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute R^2 score
@@ -3235,12 +3235,12 @@ class RandomForestClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RandomForestClassifier'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]:
 		"""
 		
 			Evaluate the Lasso model
@@ -3279,12 +3279,12 @@ class RandomForestClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RandomForestClassifier'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
 			Plot confusion matrix
@@ -3314,7 +3314,7 @@ class RandomForestClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RandomForestClassifier'
-			exception.method = 'create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 			
@@ -3360,7 +3360,7 @@ class RandomForestRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the RidgeRegressor
@@ -3386,12 +3386,12 @@ class RandomForestRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RandomForestRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Project target values
@@ -3414,12 +3414,12 @@ class RandomForestRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RandomForestRegressor'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute the R-squared
@@ -3445,12 +3445,12 @@ class RandomForestRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RandomForestRegressor'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluates the Ridge model
@@ -3489,12 +3489,12 @@ class RandomForestRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RandomForestRegressor'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot predicted vs
@@ -3526,7 +3526,7 @@ class RandomForestRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'RandomForestRegressor'
-			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 			
@@ -3564,13 +3564,13 @@ class AdaBoostClassifier( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 		
 			Fit the classifier.
 			Parameters:
 				X (pd.DataFrame): Feature matrix.
-				y (pd.Series): Class labels.
+				y (np.ndarray): Class labels.
 			
 		"""
 		try:
@@ -3585,12 +3585,12 @@ class AdaBoostClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'AdaBoostClassifier'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 				Predict class labels
@@ -3613,12 +3613,12 @@ class AdaBoostClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'AdaBoostClassifier'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute R^2 score
@@ -3644,12 +3644,12 @@ class AdaBoostClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'AdaBoostClassifier'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]:
 		"""
 		
 			Evaluate the Lasso model
@@ -3688,12 +3688,12 @@ class AdaBoostClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'AdaBoostClassifier'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
 			Plot confusion matrix
@@ -3723,7 +3723,7 @@ class AdaBoostClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'AdaBoostClassifier'
-			exception.method = 'create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 			
@@ -3770,7 +3770,7 @@ class AdaBoostRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the RidgeRegressor
@@ -3796,12 +3796,12 @@ class AdaBoostRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'AdaBoostRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Project target values
@@ -3824,12 +3824,12 @@ class AdaBoostRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'AdaBoostRegressor'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute the R-squared
@@ -3855,12 +3855,12 @@ class AdaBoostRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'AdaBoostRegressor'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluates the Ridge model
@@ -3899,12 +3899,12 @@ class AdaBoostRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'AdaBoostRegressor'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot predicted vs
@@ -3936,7 +3936,7 @@ class AdaBoostRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'AdaBoostRegressor'
-			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3976,13 +3976,13 @@ class BaggingClassifier( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 		
 			Fit the classifier.
 			Parameters:
 				X (pd.DataFrame): Feature matrix.
-				y (pd.Series): Class labels.
+				y (np.ndarray): Class labels.
 			
 		"""
 		try:
@@ -3997,12 +3997,12 @@ class BaggingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BaggingClassifier'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 				Predict class labels
@@ -4025,12 +4025,12 @@ class BaggingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BaggingClassifier'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute R^2 score
@@ -4056,12 +4056,12 @@ class BaggingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BaggingClassifier'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]:
 		"""
 		
 			Evaluate the Lasso model
@@ -4100,12 +4100,12 @@ class BaggingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BaggingClassifier'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
 			Plot confusion matrix
@@ -4135,7 +4135,7 @@ class BaggingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BaggingClassifier'
-			exception.method = 'create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 			
@@ -4181,7 +4181,7 @@ class BaggingRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the RidgeRegressor
@@ -4207,12 +4207,12 @@ class BaggingRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BaggingRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Project target values
@@ -4235,12 +4235,12 @@ class BaggingRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BaggingRegressor'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute the R-squared
@@ -4266,12 +4266,12 @@ class BaggingRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BaggingRegressor'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluates the Ridge model
@@ -4310,12 +4310,12 @@ class BaggingRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BaggingRegressor'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot predicted vs
@@ -4347,7 +4347,7 @@ class BaggingRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'BaggingRegressor'
-			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -4388,13 +4388,13 @@ class VotingClassifier( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 		
 			Fit the classifier.
 			Parameters:
 				X (pd.DataFrame): Feature matrix.
-				y (pd.Series): Class labels.
+				y (np.ndarray): Class labels.
 			
 		"""
 		try:
@@ -4409,12 +4409,12 @@ class VotingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'VotingClassifier'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 				Predict class labels
@@ -4437,12 +4437,12 @@ class VotingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'VotingClassifier'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute R^2 score
@@ -4468,12 +4468,12 @@ class VotingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'VotingClassifier'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]:
 		"""
 		
 			Evaluate the Lasso model
@@ -4512,12 +4512,12 @@ class VotingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'VotingClassifier'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
 			Plot confusion matrix
@@ -4547,7 +4547,7 @@ class VotingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'VotingClassifier'
-			exception.method = 'create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 			
@@ -4593,7 +4593,7 @@ class VotingRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the RidgeRegressor
@@ -4619,12 +4619,12 @@ class VotingRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'VotingRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Project target values
@@ -4647,12 +4647,12 @@ class VotingRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'VotingRegressor'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute the R-squared
@@ -4678,12 +4678,12 @@ class VotingRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'VotingRegressor'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluates the Ridge model
@@ -4722,12 +4722,12 @@ class VotingRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'VotingRegressor'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot predicted vs
@@ -4759,7 +4759,7 @@ class VotingRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'VotingRegressor'
-			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -4800,13 +4800,13 @@ class StackingClassifier( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 		
 			Fit the classifier.
 			Parameters:
 				X (pd.DataFrame): Feature matrix.
-				y (pd.Series): Class labels.
+				y (np.ndarray): Class labels.
 			
 		"""
 		try:
@@ -4821,12 +4821,12 @@ class StackingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'StackingClassifier'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 				Predict class labels
@@ -4849,12 +4849,12 @@ class StackingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'StackingClassifier'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute R^2 score
@@ -4880,12 +4880,12 @@ class StackingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'StackingClassifier'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]:
 		"""
 		
 			Evaluate the Lasso model
@@ -4924,12 +4924,12 @@ class StackingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'StackingClassifier'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict[ str, float ]'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
 			Plot confusion matrix
@@ -4959,7 +4959,7 @@ class StackingClassifier( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'StackingClassifier'
-			exception.method = 'create_confusion_matrix( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -5005,7 +5005,7 @@ class StackinRegressor( Model ):
 		self.correlation_coefficient = 0.0
 	
 	
-	def train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
 			Fit the RidgeRegressor
@@ -5031,12 +5031,12 @@ class StackinRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'StackingRegressor'
-			exception.method = 'train( self, X: pd.DataFrame, y: pd.Series ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def project( self, X: pd.DataFrame ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
 			Project target values
@@ -5059,12 +5059,12 @@ class StackinRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'StackingRegressor'
-			exception.method = 'project( self, X: pd.DataFrame ) -> np.ndarray'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def score( self, X: pd.DataFrame, y: pd.Series ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 		
 			Compute the R-squared
@@ -5090,12 +5090,12 @@ class StackinRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'StackingRegressor'
-			exception.method = 'score( self, X: pd.DataFrame, y: pd.Series ) -> float'
+			exception.method = 'score( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
 			Evaluates the Ridge model
@@ -5134,12 +5134,12 @@ class StackinRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'StackingRegressor'
-			exception.method = 'analyze( self, X: pd.DataFrame, y: pd.Series ) -> Dict'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None:
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot predicted vs
@@ -5171,7 +5171,7 @@ class StackinRegressor( Model ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'StackingRegressor'
-			exception.method = 'create_graph( self, X: pd.DataFrame, y: pd.Series ) -> None'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
