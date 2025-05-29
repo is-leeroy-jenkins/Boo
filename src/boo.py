@@ -52,7 +52,7 @@ import tiktoken
 from pydantic import BaseModel, Field, validator
 from pygments.lexers.csound import newline
 from static import GptRequests, GptRoles, GptLanguages
-from booggr import ErrorDialog, Error
+from boogrr import ErrorDialog, Error, ChatBot
 from typing import Any, List, Tuple, Optional, Dict
 
 
@@ -260,7 +260,7 @@ class EndPoint( ):
 		self.vector_stores = f'https://api.openai.com/v1/vector_stores'
 		
 		
-	def get_data( self ) -> dict:
+	def get_data( self ) -> Dict[ str, str ]:
 		'''
 
 			Returns: dict[ str ] of members
@@ -391,14 +391,16 @@ class Models( ):
 		                       'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
 		                       'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
 		                       'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
-		self.bubba = [ 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
-		               'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
-		                'ft:gpt-4o-2024-08-06:leeroy-jenkins:budget-base-training:BGVk5Ii1',
-		                'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57' ]
-
-		self.bro = [
-			'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-data-analysis-2025-21-05:BZetxEQa',
+		self.bubba = \
+		[
+			'ft:gpt-4.1-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-2025-20-05:BZO7tKJy',
 			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
+	        'ft:gpt-4o-2024-08-06:leeroy-jenkins:budget-base-training:BGVk5Ii1',
+	        'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57' ]
+
+		self.bro = \
+		[
+			'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-data-analysis-2025-21-05:BZetxEQa',
 			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned:BTc3PMb5',
 			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY' ]
 	
@@ -543,7 +545,13 @@ class Chat( AI ):
 		self.image_url = None
 		self.response_format = 'auto'
 		self.tools = [ ]
-		self.vector_store_ids = [ 'vs_712r5W5833G6aLxIYIbuvVcK', 'vs_8fEoYp1zVvk5D8atfWLbEupN' ]
+		self.vector_stores = \
+		{
+			'Apporopriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
+			'Guidance': 'vs_712r5W5833G6aLxIYIbuvVcK',
+			'Code': 'vs_67e83bdf8abc81918bda0d6b39a19372',
+			'Hawaii': 'vs_67a777291d548191b9fa42956a7f6cb9'
+		}
 	
 	
 	def get_model_options( self ) -> str:
@@ -1373,7 +1381,7 @@ class Bubba( AI ):
 		self.system_instructions = AI( ).bubba_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-fine-tuned-2025-05-06:BUF6o5Xa'
+		self.model = 'ft:gpt-4.1-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-2025-20-05:BZO7tKJy'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
