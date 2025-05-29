@@ -268,6 +268,10 @@ class Dataset( BaseModel ):
 	categorical_features: Optional[ List[ str ] ]
 
 
+	class Config:
+		arbitrary_types_allowed = True
+
+
 	def __init__( self, data: np.ndarray, target: List[ str ], size: float=0.2,
 	              rando: int=42, type: str='standard' ):
 		"""
@@ -336,40 +340,39 @@ class Dataset( BaseModel ):
 				raise Exception( 'The input argument "type" is None' )
 			elif self.scaler_type == 'standard':
 				_standard = StandardScaler( )
-				_values = _standard.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
-				self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
+				_values = _standard.fit_transform( self.data[ self.numeric_features ] )
+				_df = pd.DataFrame( _values, columns=self.numeric_features, index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'minmax':
 				_minmax = MinMaxScaler( )
-				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
+				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
+				_df = pd.DataFrame( _values, columns=self.numeric_features, index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'simple':
 				_simple = SimpleImputer( )
-				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
+				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
+				_df = pd.DataFrame( _values, columns=self.numeric_features, index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'neighbor':
 				_nearest = NearestNeighborImputer( )
-				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
+				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'normal':
 				_normal = Normalizer( )
-				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
+				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
+				_df = pd.DataFrame( _values, columns=self.numeric_features, index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'onehot':
 				_onehot = OneHotEncoder( )
-				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
+				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 			else:
 				_standard = StandardScaler( )
 				_values = _standard.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.X.index )
-				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis=1 )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
