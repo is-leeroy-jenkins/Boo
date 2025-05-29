@@ -3219,7 +3219,7 @@ this title under the heading ``Operation and Maintenance, Army'' may be
 used, notwithstanding any other provision of law, to fund the
 Commander's Emergency Response Program (CERP), for the purpose of
 enabling military commanders in Iraq and Afghanistan to respond to
-urgent, small scale, humanitarian relief and reconstruction requirements
+urgent, small scale_data, humanitarian relief and reconstruction requirements
 within their areas of responsibility: Provided, That projects
 (including any ancillary or related elements in connection with such
 project) executed under this authority shall

@@ -828,7 +828,7 @@ expenses, not otherwise provided for, to include program
 management and oversight, to conduct research, development,
 test and evaluation to include proof of concept demonstration;
 engineering, testing, and validation; and transition to full-
-scale production: Provided further, That the Secretary of
+scale_data production: Provided further, That the Secretary of
 Defense may transfer funds provided herein for the Defense
 Rapid Innovation Program to appropriations for research,
 development, test and evaluation to accomplish the purpose
@@ -3600,7 +3600,7 @@ appropriated in this title under the heading ``Operation and
 Maintenance, Army'' may be used, notwithstanding any other
 provision of law, to fund the Commander's Emergency Response
 Program (CERP), for the purpose of enabling military commanders
-in Afghanistan to respond to urgent, small-scale, humanitarian
+in Afghanistan to respond to urgent, small-scale_data, humanitarian
 relief and reconstruction requirements within their areas of
 responsibility: Provided, That each project (including any
 ancillary or related elements in connection with such project)
@@ -22096,7 +22096,7 @@ services as authorized by section 3109 of title 5, United
 States Code, $1,639,100,000, to remain available until
 expended, of which $20,000,000 shall be made available for
 refugees resettling in Israel, and not less than $35,000,000
-shall be made available to respond to small-scale emergency
+shall be made available to respond to small-scale_data emergency
 humanitarian requirements.
 united states emergency refugee and migration assistance fund
 For necessary expenses to carry out the provisions of
@@ -23643,7 +23643,7 @@ application of section 507(4)(D) and (E) of such Act
 should be commensurate with the level of development of
 the recipient country and sector, and shall not
 preclude assistance for the informal sector in such
-country, micro and small-scale enterprise, and
+country, micro and small-scale_data enterprise, and
 smallholder agriculture.
 international financial institutions
 Sec. 7029. (a) None of the funds appropriated under title V
@@ -26184,7 +26184,7 @@ programs and activities.
 under title III of this Act for tropical forest
 programs shall be used to protect biodiversity, and
 shall not be used to support or promote the expansion
-of industrial scale logging into primary tropical
+of industrial scale_data logging into primary tropical
 forests: Provided, That funds that are available for
 the Central African Regional Program for the
 Environment and other tropical forest programs in the
@@ -26265,7 +26265,7 @@ the United States representatives to all
 forest-related multilateral financing
 mechanisms and processes, that it is the policy
 of the United States to vote against the
-expansion of industrial scale logging into
+expansion of industrial scale_data logging into
 primary tropical forests.
 (8) Continuation of prior law.--Section 7081(g)(2)
 and (4) of division F of Public Law 111-117 shall
@@ -28291,7 +28291,7 @@ possible to take advantage of the expected breakthroughs in
 this area and encourage the Department to eventually pursue
 extended multi-year contracts, pursuant to the Financial
 Management Regulation, for biofuels products in order to
-maximize efficiencies of scale for the best purchase price.
+maximize efficiencies of scale_data for the best purchase price.
 ADDITIONAL FUNDING
 The conferees recognize the critical role the Defense
 Production Act program serves in strengthening the Nation's
@@ -36256,7 +36256,7 @@ carry out reorganization authority. This prohibition is not
 intended to prevent the Department from carrying out routine or
 small reallocations of personnel or functions within
 components, subject to Section 503 of this Act. This language
-prevents large scale reorganization of the Department, which
+prevents large scale_data reorganization of the Department, which
 should be acted on legislatively by the relevant Congressional
 committees of jurisdiction.
 Section 524. A provision proposed by the Senate is

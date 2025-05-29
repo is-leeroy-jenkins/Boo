@@ -2709,7 +2709,7 @@ agencies to match funds awarded under this
 subsection.
 (ii) Match amount.--The amount of a match
 described in clause (i) may be established by
-using a sliding scale that takes into account the
+using a sliding scale_data that takes into account the
 relative
 [[Page 114 STAT. 2763A-53]]
 poverty of the population served by the local
@@ -18946,7 +18946,7 @@ and other applicable laws and regulations.
 (8) The Black Rock Desert playa is a unique natural resource
 that serves as the primary destination for the majority of
 visitors to the conservation area, including visitors associated
-with large-scale permitted events. It is expected that such
+with large-scale_data permitted events. It is expected that such
 permitted events will continue to be administered in accordance
 with the management plan for the conservation area and other
 applicable laws and regulations.
@@ -19013,7 +19013,7 @@ only on roads and trails and in other areas designated for use
 of motorized vehicles as part of the management plan prepared
 pursuant to subsection (e).
 (3) Permitted events.--The Secretary may continue to permit
-large-scale events in defined, low impact areas of the Black
+large-scale_data events in defined, low impact areas of the Black
 Rock Desert playa in the conservation area in accordance with
 the management plan prepared pursuant to subsection (e).
 (d) Hunting, Trapping, and Fishing.--Nothing in this Act shall be

@@ -5257,7 +5257,7 @@ certifies that the resources pledged by the United States at the
 upcoming Kosova donors conference shall not exceed 15 percent of the
 total resources pledged by all donors: Provided further, That none of
 the funds made available under this heading for Kosova shall be made
-available for large scale physical infrastructure reconstruction.
+available for large scale_data physical infrastructure reconstruction.
 (b) Funds appropriated under this heading or in prior appropriations
 Acts that are or have been made available for an Enterprise Fund may be
 deposited by such Fund in interest-bearing accounts prior to the Fund's
@@ -6386,7 +6386,7 @@ or area in that country: Provided, That in recognition that the
 application of this subsection should be commensurate with the
 level of development of the recipient country and sector, the
 provisions of this subsection shall not preclude assistance for
-the informal sector in such country, micro and small-scale
+the informal sector in such country, micro and small-scale_data
 enterprise, and smallholder agriculture.
 funding prohibition for serbia
 Sec. 537. None of the funds appropriated by this Act may be made
@@ -7046,7 +7046,7 @@ primarily benefits the nonsanctioned country, entity, or
 municipality and if the portion of the project located
 in the sanctioned country, entity, or municipality is
 necessary only to complete the project;
-(D) small-scale assistance projects or activities
+(D) small-scale_data assistance projects or activities
 requested by United States Armed Forces that promote
 good relations between such forces and the officials and
 citizens of the areas in the United States SFOR sector
@@ -17687,7 +17687,7 @@ treatment and prevention of the leading causes of mortality) and
 to redress environmental degradation;
 (4) to take steps to strengthen and expand the private
 sector, encourage increased trade and investment, support the
-development of free markets, and promote broad-scale economic
+development of free markets, and promote broad-scale_data economic
 growth;
 (5) to implement transparent policy making and budget
 procedures, good governance, and effective anticorruption
@@ -17764,7 +17764,7 @@ redress environmental degradation;
 ``(D) to take steps to strengthen and expand the
 private sector, encourage increased trade and
 investment, support the development of free markets, and
-promote broad-scale economic growth;
+promote broad-scale_data economic growth;
 ``(E) to implement transparent policy making and
 budget procedures, good governance, and effective
 anticorruption measures;
@@ -28712,7 +28712,7 @@ manufacture, transfer, and proliferation of small arms and light
 weapons, including efforts to survey and assess this matter with
 respect to Africa and to survey and assess the scope
 [[Page 113 STAT. 1501A-516]]
-and scale of the issue, including stockpile security and
+and scale_data of the issue, including stockpile security and
 destruction of excess inventory, in NATO and Partnership for
 Peace countries;
 (4) a description of the impact of the reorganization of the

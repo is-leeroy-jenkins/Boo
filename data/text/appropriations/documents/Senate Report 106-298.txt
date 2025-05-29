@@ -835,7 +835,7 @@ of $11,500,000 for Rock Island Arsenal above the budget
 request, and a reduction for Watervliet), and reduced the
 request for industrial preparedness due to under execution. The
 Committee is aware that the Office of the Secretary of Defense
-has directed the Army to study the scale and capacity of the
+has directed the Army to study the scale_data and capacity of the
 arsenals and ammunition plants, in an effort to mitigate the
 need for further cash subsidies. The Army shall provide this
 report to the Committee no later than September 15, 2000.

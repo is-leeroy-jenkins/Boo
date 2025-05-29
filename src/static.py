@@ -68,7 +68,7 @@ class Provider( Enum ):
 	'''
 	Constructor:  Provider.Member
 
-	Purpose:  Enumeration of values providers
+	Purpose:  Enumeration of target_values providers
 	'''
 	SQLite = 0
 	Access = 1

@@ -1224,7 +1224,7 @@ Significant
 Incidents 
 to 
 differentiate 
-large-scale responses from day-to-day response actions. 
+large-scale_data responses from day-to-day response actions.
 Chapter 4. PLANNING CYCLE 
 JANUARY 2016 
 tor. 
@@ -2869,7 +2869,7 @@ management
 objectives. 
 However, 
 senior leadership 
-will play a role during a large-scale response. 
+will play a role during a large-scale_data response.
 The IC may have one or more deputies, who may be from 
 the same agency or from an assisting agency. Deputies may 
 also be used at Section and Branch levels of the Incident 
@@ -11164,7 +11164,7 @@ and Atmospheric Assessment Center (IMAAC)
 dispersion of hazardous materials released into the atmosphere 
 and can predict or map the behavior of radiological 
 and other contaminants on a global, regional, or 
-local scale. 
+local scale_data.
  
 Accident Response Group  This group responds 
 to incidents involving U.S. nuclear weapons. Working 
@@ -12427,7 +12427,7 @@ influenza
 have 
 emerged 
 on 
-a global scale. 
+a global scale_data.
 Strikingly, 75% of emerging infectious diseases have been 
 identified 
 as zoonotic (transmissible 

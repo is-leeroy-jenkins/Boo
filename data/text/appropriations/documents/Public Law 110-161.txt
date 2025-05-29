@@ -11632,7 +11632,7 @@ and deployment of radiological detection systems in accordance with the
 global nuclear detection architecture, $129,750,000, to remain available
 until September 30, 2010:
 Provided, <<NOTE: Reports. Certification.>> That none of the funds
-appropriated under this heading shall be obligated for full-scale
+appropriated under this heading shall be obligated for full-scale_data
 procurement of Advanced Spectroscopic Portal Monitors until the
 Secretary of Homeland Security submits to the Committees on
 Appropriations of the Senate and the House of Representatives a report
@@ -25056,7 +25056,7 @@ designated zone or area in that country: Provided, That the
 application of section 507(4)(D) and (E) of such Act should be
 commensurate with the level of development of the recipient
 country and sector, and shall not preclude assistance for the
-informal sector in such country, micro and small-scale
+informal sector in such country, micro and small-scale_data
 enterprise, and smallholder agriculture.
 COMPREHENSIVE EXPENDITURES REPORT
 Sec. 633. Not later than 180 days after the date of enactment of

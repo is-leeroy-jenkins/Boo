@@ -3858,7 +3858,7 @@ seagrass meadows could help deacidify the oceans;
 and seagrass to deacidify the oceans while providing feedstock
 for agriculture and other commercial and industrial inputs; and
 (3) to coordinate and conduct research to develop and
-enhance pilot-scale research for farming of kelp and seagrass in
+enhance pilot-scale_data research for farming of kelp and seagrass in
 order--
 (A) to deacidify ocean environments;
 (B) to produce a feedstock for agriculture; and
@@ -3878,7 +3878,7 @@ and Renewable Energy.
 the working group shall submit to Congress a report that includes--
 (1) the findings of the research described in subsection
 (a);
-(2) the results of the pilot-scale research described in
+(2) the results of the pilot-scale_data research described in
 subsection (a)(3); and
 (3) any policy recommendations based on those findings and
 results.
@@ -7679,7 +7679,7 @@ prevented if the proposed requirements were adopted;
 (C) whether there is a technical basis for the
 proposal to provide information on a point-of-sale
 hangtag about a ROV's rollover resistance on a
-progressive scale; and
+progressive scale_data; and
 (D) the effect on the utility of ROVs used by the
 United States military if the proposed requirements were
 adopted; and
@@ -13638,7 +13638,7 @@ through 5925 of title 5, United States Code; purchase and hire of
 passenger motor vehicles; and services as authorized by section 3109 of
 title 5, United States Code, $2,027,876,000, to remain available until
 expended, of which not less than $35,000,000 shall be made available to
-respond to small-scale emergency humanitarian requirements, and
+respond to small-scale_data emergency humanitarian requirements, and
 $5,000,000 shall be made available for refugees resettling in Israel.
 united states emergency refugee and migration assistance fund
 For necessary expenses to carry out the provisions of section 2(c)
@@ -18767,7 +18767,7 @@ committees that to do so is in the national security
 interest of the United States.
 (D) Funds appropriated by this Act for biodiversity
 programs shall not be used to support the expansion of
-industrial scale logging or any other industrial scale
+industrial scale_data logging or any other industrial scale_data
 extractive activity into areas that were primary/intact
 tropical forests as of December 30, 2013, and the
 Secretary of the Treasury shall instruct the United
@@ -18866,7 +18866,7 @@ designated zone or area in that country: Provided, That the
 application of section 507(4)(D) and (E) of such Act should be
 commensurate with the level of development of the recipient
 country and sector, and shall not preclude assistance for the
-informal sector in such country, micro and small-scale
+informal sector in such country, micro and small-scale_data
 enterprise, and smallholder agriculture;
 [[Page 133 STAT. 379]]
 (3) any assistance to an entity outside the United States if
@@ -22730,7 +22730,7 @@ of lead-based paint hazards in communities containing high
 concentrations of
 [[Page 133 STAT. 454]]
 both pre-1940 housing and low-income families by achieving economies of
-scale that substantially reduce the cost of lead-based paint remediation
+scale_data that substantially reduce the cost of lead-based paint remediation
 activities and administrative costs for grantees: Provided further,
 That such projects in each of seven communities shall be for five years
 and serve no more than four contiguous census tracts in which there are

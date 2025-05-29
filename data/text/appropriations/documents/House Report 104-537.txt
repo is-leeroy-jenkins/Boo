@@ -26012,7 +26012,7 @@ Secretary of Health and Human Services to certify in writing
 that the exportation is legal. A fee of up to $175 is
 authorized for issuance of each written export certification.
 The conferees intend that fees be established on a sliding
-scale to minimize the impact on small business.
+scale_data to minimize the impact on small business.
 import components used for export
 The conference agreement also allows import of certain
 articles, which cannot now be lawfully imported, used in the
@@ -26559,10 +26559,10 @@ Navy, and Marine Corps forces of the U.S. Atlantic Command in
 1998. The additional funds provided in the conference agreement
 will enable the Navy to test a number of promising technologies
 that would otherwise miss the 1998 exercise completely or else
-be demonstrated at less than full scale. The Navy has indicated
+be demonstrated at less than full scale_data. The Navy has indicated
 that it plans to use $5,000,000 to allow the Advanced
 Lightweight Influence Sweep System to be tested in the 1998
-exercise with a full scale magnet, and $5,000,000 would be used
+exercise with a full scale_data magnet, and $5,000,000 would be used
 for the Explosive Neutralization Advanced Technology
 Demonstration and Advanced Degaussing.
 Army Medical Research

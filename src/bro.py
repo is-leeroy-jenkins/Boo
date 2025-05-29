@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="boo.py" company="Terry D. Eppler">
 
-     Bobo is a values analysis tool for EPA Analysts.
+     Bobo is a target_values analysis tool for EPA Analysts.
      Copyright ©  2024  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -96,7 +96,7 @@ class Header( ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'content_type', 'api_key', 'authorization', 'values' ]
+		return [ 'content_type', 'api_key', 'authorization', 'target_values' ]
 	
 	
 	def __dir__( self ) -> list[ str ]:
@@ -323,7 +323,7 @@ class Payload( ):
 		         'top_percent', 'frequency_penalty',
 		         'max_completion_tokens', 'presence_penalty',
 		         'store', 'stream', 'endpoint',
-		         'size', 'values', 'dump', 'parse' ]
+		         'size', 'target_values', 'dump', 'parse' ]
 	
 	
 	def dump( self ) -> str:
@@ -686,7 +686,7 @@ class TextRequest( GptRequest ):
 				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'num', 'messages',
-		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values' ]
+		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'target_values' ]
 	
 	
 	def create( self, prompt: str ) -> str:
@@ -791,7 +791,7 @@ class CompletionRequest( GptRequest ):
 		return [ 'header', 'client', 'request_type', 'endpoint',
 		         'small_model', 'num', 'messages',
 		         'content', 'response', 'instructions', 'prompt',
-		         'size', 'generate_text', 'messages', 'values' ]
+		         'size', 'generate_text', 'messages', 'target_values' ]
 	
 	
 	def create( self, prompt: str ) -> str:
@@ -896,7 +896,7 @@ class ImageRequest( GptRequest ):
 				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'num', 'messages',
-		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values',
+		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'target_values',
 		         'instructions' ]
 	
 	
@@ -936,7 +936,7 @@ class ImageRequest( GptRequest ):
 					frequency_penalty=self.frequency_penalty,
 					presence_penalty=self.presence_penalty )
 				
-				self.url = self.response[ 'values' ][ 0 ][ 'url' ]
+				self.url = self.response[ 'target_values' ][ 0 ][ 'url' ]
 				self.content = requests.get( url ).content
 				with open( 'image_name.png', 'wb' ) as file:
 					file.write( self.content )
@@ -1057,7 +1057,7 @@ class TranslationRequest( GptRequest ):
 				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'num', 'messages',
-		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values' ]
+		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'target_values' ]
 
 
 class TranscriptionRequest( GptRequest ):
@@ -1113,7 +1113,7 @@ class TranscriptionRequest( GptRequest ):
 				Returns: get_list[ str ]
 		'''
 		return [ 'header', 'client', 'endpoint', 'small_model', 'num', 'messages',
-		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'values' ]
+		         'content', 'response', 'prompt', 'size', 'generate_text', 'messages', 'target_values' ]
 
 
 class EmbeddingRequest( GptRequest ):
@@ -1172,7 +1172,7 @@ class EmbeddingRequest( GptRequest ):
 		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'num', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
-		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values',
+		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'target_values',
 		         'instructions' ]
 
 
@@ -1232,7 +1232,7 @@ class VectorStoreRequest( GptRequest ):
 		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'num', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
-		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values',
+		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'target_values',
 		         'instructions' ]
 
 
@@ -1292,7 +1292,7 @@ class GptFileRequest( GptRequest ):
 		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'num', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
-		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values' ]
+		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'target_values' ]
 
 
 class UploadRequest( GptRequest ):
@@ -1351,7 +1351,7 @@ class UploadRequest( GptRequest ):
 		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'num', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
-		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values',
+		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'target_values',
 		         'instructions' ]
 
 
@@ -1411,7 +1411,7 @@ class FineTuningRequest( GptRequest ):
 		return [ 'header', 'client', 'request_type', 'endpoint', 'small_model', 'num', 'messages',
 		         'response_format', 'modalities', 'max_completion_tokens', 'frequency_penalty',
 		         'presence_penalty', 'temperature', 'top_percent', 'store', 'stream',
-		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'values',
+		         'stops', 'content', 'response', 'prompt', 'generate_text', 'messages', 'target_values',
 		         'instructions' ]
 
 

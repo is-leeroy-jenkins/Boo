@@ -1306,7 +1306,7 @@ msgstr ""
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through tokens the values position will always stay the same"
+msgid "When moving through tokens the target_values position will always stay the same"
 msgstr ""
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
@@ -2875,7 +2875,7 @@ msgstr "&Замінити параметри"
 
 #. CommandsDataModule..actlMain..actReplaceParameters..Hint
 #: dmCommands.dfm
-msgid "Replace parameters with their values"
+msgid "Replace parameters with their target_values"
 msgstr "Замінити параметри на їх значення"
 
 #. CommandsDataModule..actlMain..actHelpParameters..Caption
@@ -5740,7 +5740,7 @@ msgstr ""
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TiClear..Hint
 #: frmRegExpTester.dfm
-msgid "Clear all fields"
+msgid "Clear all column_count"
 msgstr ""
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TBXSubmenuItem2..CI_DOTALL..Hint
@@ -7744,7 +7744,7 @@ msgstr ""
 #, object-pascal-format
 msgid ""
 "Pyscripter needs access to the User Application Data directory: \"%s\". "
-"Certain features such as remote debugging will not function properly "
+"Certain feature_names such as remote debugging will not function properly "
 "otherwise."
 msgstr ""
 

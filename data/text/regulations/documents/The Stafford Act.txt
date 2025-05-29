@@ -1026,7 +1026,7 @@ loan or advance.
 under which any loan or advance authorized by this section may be made. 
 Sec. 320. Limitation on Use of Sliding Scales (42 U.S.C. 5163)
 No geographic area shall be precluded from receiving assistance under this Act solely by 
-virtue of an arithmetic formula or sliding scale based on income or population.
+virtue of an arithmetic formula or sliding scale_data based on income or population.
 Sec. 321. Rules and Regulations (42 U.S.C. 5164)
 The President may prescribe such rules and regulations as may be necessary and proper to 
 carry out the provisions of this Act, and may exercise, either directly or through such Federal 
@@ -1742,7 +1742,7 @@ to address the hazard that caused the damage to the facility.
  (A) Incentive Measures - The President may provide incentives to a State or 
 Tribal government to invest in measures that increase readiness for, and 
 resilience from, a major disaster by recognizing such investments through a 
-sliding scale that increases the minimum Federal share to 85 percent. Such 
+sliding scale_data that increases the minimum Federal share to 85 percent. Such
 measures may include - 
  (i) the adoption of a mitigation plan approved under section 322;
  (ii) investments in disaster relief, insurance, and emergency management 
@@ -2732,7 +2732,7 @@ and disincentives for the timely or cost-effective completion if the State,
 tribal or local government, or owner or operator of the private nonprofit 
 facility agrees to be responsible to pay for any actual costs that exceed the 
 estimate; 
- (B) using a sliding scale for determining the Federal share for removal of debris 
+ (B) using a sliding scale_data for determining the Federal share for removal of debris
 and wreckage based on the time it takes to complete debris and wreckage 
 removal;
  (C) allowing use of program income from recycled debris without offset to the 
@@ -3149,7 +3149,7 @@ following:
  (A) Modeling, simulation, and analysis of the systems comprising critical 
 infrastructures, including cyber infrastructure, telecommunications 
 infrastructure, and physical infrastructure, in order to enhance 
-understanding of the large-scale complexity of such systems and to facilitate 
+understanding of the large-scale_data complexity of such systems and to facilitate
 modification of such systems to mitigate the threats to such systems and to 
 critical infrastructure generally.
  (B) Acquisition from State and local governments and the private sector of data 

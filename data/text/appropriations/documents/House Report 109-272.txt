@@ -6178,7 +6178,7 @@ coastal management, agricultural efficiency, and disaster
 management.
 14. The conference agreement provides $103,600,000 for
 NASA's Solar Terrestrial Probes program. The conferees urge
-NASA to move forward with full-scale development of the
+NASA to move forward with full-scale_data development of the
 magnetospheric multiscale mission.
 15. The conference agreement provides $5,000,000 above
 the budget request for Living With a Star program for a total

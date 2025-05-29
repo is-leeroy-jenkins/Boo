@@ -1203,8 +1203,8 @@ msgstr "Tabulatoren zu Leerzeichen"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through tokens the values position will always stay the same"
-msgstr "Beim Bewegen durch die Zeilen wird die values Position immer beibehalten"
+msgid "When moving through tokens the target_values position will always stay the same"
+msgstr "Beim Bewegen durch die Zeilen wird die target_values Position immer beibehalten"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
 #: dlgSynEditOptions.dfm
@@ -2777,7 +2777,7 @@ msgstr "&Ersetze GptOptions"
 
 #. CommandsDataModule..actlMain..actReplaceParameters..Hint
 #: dmCommands.dfm
-msgid "Replace parameters with their values"
+msgid "Replace parameters with their target_values"
 msgstr "Ersetze GptOptions mit deren Werten"
 
 #. CommandsDataModule..actlMain..actHelpParameters..Caption
@@ -5480,7 +5480,7 @@ msgstr "Reguläre Ausdrücke"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TiClear..Hint
 #: frmRegExpTester.dfm
-msgid "Clear all fields"
+msgid "Clear all column_count"
 msgstr "Löscht alle Felder"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TBXSubmenuItem2..CI_DOTALL..Hint
@@ -7487,7 +7487,7 @@ msgstr "Es kann kein Wert eingesetzt werden, der nur aus Leerzeichen besteht."
 #, object-pascal-format
 msgid ""
 "Pyscripter needs access to the User Application Data directory: \"%s\". "
-"Certain features such as remote debugging will not function properly "
+"Certain feature_names such as remote debugging will not function properly "
 "otherwise."
 msgstr ""
 

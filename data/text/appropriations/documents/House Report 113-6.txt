@@ -163,7 +163,7 @@ projects is structured to be completed in 5 years, while the
 development timeline for wind and solar projects can be as
 short as 18 to 24 months.
 Developers of small hydropower projects told the Committee
-that, due to the lack of economies of scale with smaller
+that, due to the lack of economies of scale_data with smaller
 projects, the costs associated with the licensing process serve
 as a financial disincentive to pursue these facilities. In
 recent years, FERC has taken steps to improve the licensing

@@ -7925,7 +7925,7 @@ or area in that country: Provided, That in recognition that the
 application of this subsection should be commensurate with the
 level of development of the recipient country and sector, the
 provisions of this subsection shall not preclude assistance for
-the informal sector in such country, micro and small-scale
+the informal sector in such country, micro and small-scale_data
 enterprise, and smallholder agriculture.
 authority to assist bosnia and herzegovina
 Sec. 539. (a) The President is authorized to direct the transfer,
@@ -8556,7 +8556,7 @@ prohibit, and shall prohibit United States persons from new investment
 in Burma, if the President determines and certifies to Congress that,
 after the date of enactment of this Act, the Government of Burma has
 physically harmed, rearrested for political acts, or exiled Daw Aung San
-Suu Kyi or has committed large-scale repression of or violence against
+Suu Kyi or has committed large-scale_data repression of or violence against
 the Democratic opposition.
 (c) Multilateral Strategy.--The President shall seek to develop,
 in coordination with members of ASEAN and other countries having major
@@ -20151,7 +20151,7 @@ agents of the Federal Government for EBT is an appropriate and
 reasonable use of the Secretary's authority to designate
 financial agents.
 ``(3) A joint federal-state EBT system offers convenience
-and economies of scale for those states (and their citizens)
+and economies of scale_data for those states (and their citizens)
 that wish to deliver state-administered benefits on a single
 card by entering into a partnership with the federal government.
 ``(4) The Secretary's designation of a financial agent to

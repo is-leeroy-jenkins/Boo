@@ -5543,7 +5543,7 @@ conduct research,
 [[Page 131 STAT. 243]]
 development, test and evaluation to include proof of concept
 demonstration; engineering, testing, and validation; and transition to
-full-scale production: Provided further, That the Secretary of Defense
+full-scale_data production: Provided further, That the Secretary of Defense
 may transfer funds provided herein for the Defense Rapid Innovation
 Program to appropriations for research, development, test and evaluation
 to accomplish the purpose provided herein: Provided further, That this
@@ -7936,7 +7936,7 @@ this title under the heading ``Operation and Maintenance, Army'' may be
 used, notwithstanding any other provision of law, to fund the
 Commanders' Emergency Response Program (CERP), for the purpose of
 enabling military commanders in Afghanistan to respond to urgent, small-
-scale, humanitarian relief and reconstruction requirements within their
+scale_data, humanitarian relief and reconstruction requirements within their
 areas of responsibility: Provided, That each project (including any
 ancillary or related elements in connection with such project) executed
 under this authority shall not exceed $2,000,000: <<NOTE: Deadline. Time
@@ -11222,7 +11222,7 @@ prevented if the proposed requirements were adopted;
 (C) whether there is a technical basis for the
 proposal to provide information on a point-of-sale
 hangtag about a ROV's rollover resistance on a
-progressive scale; and
+progressive scale_data; and
 (D) the effect on the utility of ROVs used by the
 United States military if the proposed requirements were
 adopted; and
@@ -24116,7 +24116,7 @@ personnel and dependents as authorized by the Foreign Service Act of
 United States Code; purchase and hire of passenger motor vehicles; and
 services as authorized by section 3109 of title 5, United States Code,
 $912,802,000, to remain available until expended, of which not less than
-$35,000,000 shall be made available to respond to small-scale emergency
+$35,000,000 shall be made available to respond to small-scale_data emergency
 humanitarian requirements, and $7,500,000 shall be made available for
 refugees resettling in Israel.
 united states emergency refugee and migration assistance fund
@@ -29531,7 +29531,7 @@ Appropriations that to do so is in the national security
 interest of the United States.
 (D) Funds appropriated by this Act for biodiversity
 programs shall not be used to support the expansion of
-industrial scale logging or any other industrial scale
+industrial scale_data logging or any other industrial scale_data
 extractive activity into areas that were primary/intact
 tropical forests as of December 30, 2013, and the
 Secretary of the Treasury shall instruct the United
@@ -30338,7 +30338,7 @@ designated zone or area in that country: Provided, That the
 application of section 507(4)(D) and (E) of such Act should be
 commensurate with the level of development of the recipient
 country and sector, and shall not preclude assistance for the
-informal sector in such country, micro and small-scale
+informal sector in such country, micro and small-scale_data
 enterprise, and smallholder agriculture;
 (3) any assistance to an entity outside the United States if
 such assistance is for the purpose of directly relocating or

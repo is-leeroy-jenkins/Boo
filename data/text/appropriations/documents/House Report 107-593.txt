@@ -6298,7 +6298,7 @@ Immigration Inspectors for the remainder of fiscal year 2002.
 The conferees are concerned that the Administration has failed
 to address law enforcement pay equity issues in a comprehensive
 manner, and expects it to develop and quickly implement an
-equitable pay scale to ensure fair compensation for the
+equitable pay scale_data to ensure fair compensation for the
 Nation's Federal law enforcement officers.
 CONSTRUCTION
 The conference agreement includes $32,100,000 as a

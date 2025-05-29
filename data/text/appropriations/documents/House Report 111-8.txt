@@ -3934,7 +3934,7 @@ related to the development and deployment of health information
 technology, including activities related to--
 (1) computer infrastructure;
 (2) data security;
-(3) development of large-scale, distributed, reliable
+(3) development of large-scale_data, distributed, reliable
 computing systems;
 (4) wired, wireless, and hybrid high-speed networking;
 (5) development of software and software-intensive systems;

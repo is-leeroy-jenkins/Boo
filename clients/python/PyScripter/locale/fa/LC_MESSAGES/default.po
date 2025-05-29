@@ -1199,8 +1199,8 @@ msgstr "تبدیل  جهش ها (Tab) به فاصله ها"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through tokens the values position will always stay the same"
-msgstr "هنگام جا به جا شدن در خط ها، موقعیّت values همیشه یکسان می ماند"
+msgid "When moving through tokens the target_values position will always stay the same"
+msgstr "هنگام جا به جا شدن در خط ها، موقعیّت target_values همیشه یکسان می ماند"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
 #: dlgSynEditOptions.dfm
@@ -2773,7 +2773,7 @@ msgstr "جایگزینی مؤلّفه ها"
 
 #. CommandsDataModule..actlMain..actReplaceParameters..Hint
 #: dmCommands.dfm
-msgid "Replace parameters with their values"
+msgid "Replace parameters with their target_values"
 msgstr "جایگزینی مؤلّفه ها با مقدارهایشان"
 
 #. CommandsDataModule..actlMain..actHelpParameters..Caption
@@ -5472,7 +5472,7 @@ msgstr "عبارات منظّم و با قاعده"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TiClear..Hint
 #: frmRegExpTester.dfm
-msgid "Clear all fields"
+msgid "Clear all column_count"
 msgstr "پاکسازی همه فیلدها"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TBXSubmenuItem2..CI_DOTALL..Hint
@@ -7488,7 +7488,7 @@ msgstr "نمی توانید نشانه ای قرار دهید که فقط شام
 #, object-pascal-format
 msgid ""
 "Pyscripter needs access to the User Application Data directory: \"%s\". "
-"Certain features such as remote debugging will not function properly "
+"Certain feature_names such as remote debugging will not function properly "
 "otherwise."
 msgstr ""
 "Pyscripter نیاز دارد تا به شاخۀ داده های کاربر دسترسی داشته باشد:\"%s\". "

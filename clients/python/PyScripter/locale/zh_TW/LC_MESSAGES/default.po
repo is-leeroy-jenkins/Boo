@@ -614,7 +614,7 @@ msgstr "整個詞"
 #. FindInFilesDialog..Panel1..gbxOptions..cbRegEx..Caption
 #: dlgFindInFiles.dfm
 msgid "Regular e&xpression"
-msgstr "正則運算式(&values)"
+msgstr "正則運算式(&target_values)"
 
 #. FindInFilesDialog..Panel1..gbxWhere..Caption
 #: dlgFindInFiles.dfm
@@ -1195,7 +1195,7 @@ msgstr "TAB字元變換到空白字元"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through tokens the values position will always stay the same"
+msgid "When moving through tokens the target_values position will always stay the same"
 msgstr "當移動行時插入符號的列位置保持不變"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
@@ -2100,7 +2100,7 @@ msgstr "快捷鍵(&S):"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox4..lbContext..Caption
 #: dlgToolProperties.dfm
 msgid "Conte&xt:"
-msgstr "上下文(&values):"
+msgstr "上下文(&target_values):"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox4..Label13..Caption
 #: dlgToolProperties.dfm
@@ -2752,7 +2752,7 @@ msgstr "取代參數(&R)"
 
 #. CommandsDataModule..actlMain..actReplaceParameters..Hint
 #: dmCommands.dfm
-msgid "Replace parameters with their values"
+msgid "Replace parameters with their target_values"
 msgstr "用值取代參數"
 
 #. CommandsDataModule..actlMain..actHelpParameters..Caption
@@ -4239,7 +4239,7 @@ msgstr "運行選擇的配置"
 #. PyIDEMainForm..actlStandard..actExternalRun..Caption
 #: frmProjectExplorer.dfm frmPyIDEMain.dfm
 msgid "E&xternal Run"
-msgstr "外部運行(&values)"
+msgstr "外部運行(&target_values)"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectExternalRun..Hint
 #: frmProjectExplorer.dfm
@@ -4745,7 +4745,7 @@ msgstr "關閉所有檔案"
 #. PyIDEMainForm..actlStandard..actFileExit..Caption
 #: frmPyIDEMain.dfm
 msgid "E&xit"
-msgstr "退出(&values)"
+msgstr "退出(&target_values)"
 
 #. PyIDEMainForm..actlStandard..actFileExit..Hint
 #: frmPyIDEMain.dfm
@@ -5212,7 +5212,7 @@ msgstr "啟動資訊視窗"
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Caption
 #: frmPyIDEMain.dfm
 msgid "File E&xplorer"
-msgstr "檔案瀏覽器(&values)"
+msgstr "檔案瀏覽器(&target_values)"
 
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Hint
 #: frmPyIDEMain.dfm
@@ -5268,7 +5268,7 @@ msgstr "使用SSH遠端Python引擎"
 #. PyIDEMainForm..actlStandard..actExecSelection..Caption
 #: frmPyIDEMain.dfm
 msgid "E&xecute selection"
-msgstr "執行選中的代碼(&values)"
+msgstr "執行選中的代碼(&target_values)"
 
 #. PyIDEMainForm..actlStandard..actExecSelection..Hint
 #: frmPyIDEMain.dfm
@@ -5443,7 +5443,7 @@ msgstr "正規表式"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TiClear..Hint
 #: frmRegExpTester.dfm
-msgid "Clear all fields"
+msgid "Clear all column_count"
 msgstr "清除所有的欄位"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TBXSubmenuItem2..CI_DOTALL..Hint
@@ -7431,7 +7431,7 @@ msgstr "不能插入由空白字元構成的字段."
 #, object-pascal-format
 msgid ""
 "Pyscripter needs access to the User Application Data directory: \"%s\". "
-"Certain features such as remote debugging will not function properly "
+"Certain feature_names such as remote debugging will not function properly "
 "otherwise."
 msgstr ""
 

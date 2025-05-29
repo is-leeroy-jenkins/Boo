@@ -13553,8 +13553,8 @@ Entry Description
 services contract. 
 Exclude: 
 • 
-Information technology consulting services, which have large scale 
-systems acquisition and integration or large scale software 
+Information technology consulting services, which have large scale_data
+systems acquisition and integration or large scale_data software
 development as their primary focus. Classify these in object class 
 31.0, Equipment. 
 • 
@@ -13878,7 +13878,7 @@ Entry Description
 32.0 Land and structures 
 33.0 Investments and loans 
 central processing units (CPUs), modems, signaling equipment, 
-telephone and telegraph equipment, and large scale system 
+telephone and telegraph equipment, and large scale_data system
 integration services. 
 Exclude software that is an integral part of consulting services 
 contracts, as defined in object class 25.1, Advisory and assistance 
@@ -14809,7 +14809,7 @@ and testing of experimental prototypes.
 OMB Circular No. A–11 (2019) Page 3 of Section 84 
 SECTION 84—CHARACTER CLASSIFICATION (SCHEDULE C) 
 • 
-Technology demonstrations, in cases where a system or component is being demonstrated at scale 
+Technology demonstrations, in cases where a system or component is being demonstrated at scale_data
 for the first time, and it is realistic to expect additional refinements to the design (feedback R&D) 
 following the demonstration. However, not all activities that are identified as "technology 
 demonstrations" are R&D. 

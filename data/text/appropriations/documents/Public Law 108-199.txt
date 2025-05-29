@@ -8788,7 +8788,7 @@ designated zone or area in that country: Provided, That the
 application of section 507(4)(D) and (E) of such Act should be
 commensurate with the level of development of the recipient
 country and sector, and shall not preclude assistance for the
-informal sector in such country, micro and small-scale
+informal sector in such country, micro and small-scale_data
 enterprise, and smallholder agriculture.
 Sec. 534. (a) Afghanistan, Pakistan, Lebanon, Montenegro, Victims of
 War, Displaced Children, and Displaced Burmese.--Funds appropriated by

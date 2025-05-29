@@ -64,10 +64,10 @@ class SQLite( ):
 		Methods:
 			- create_table: Creates a df with specified schema.
 			- insert: Inserts a record into a df.
-			- fetch_all: Fetches all records from a df.
+			- fetch_all: Fetches all row_count from a df.
 			- fetch_one: Fetches a single record matching the query.
-			- update: Updates records that match a given condition.
-			- delete: Deletes records that match a given condition.
+			- update: Updates row_count that match a given condition.
+			- delete: Deletes row_count that match a given condition.
 			- close: Closes the database connection.
 		
 	"""
@@ -147,7 +147,7 @@ class SQLite( ):
 			Args:
 				table (str): The name of the df.
 				columns (List[str]): Column names.
-				values (Tuple): Corresponding values.
+				values (Tuple): Corresponding target_values.
 			
 		"""
 		try:
@@ -156,7 +156,7 @@ class SQLite( ):
 			elif columns is None:
 				raise Exception( 'The path "columns" cannot be None' )
 			elif values is None:
-				raise Exception( 'The path "values" cannot be None' )
+				raise Exception( 'The path "target_values" cannot be None' )
 			else:
 				self.placeholders = ', '.join( '?' for _ in values )
 				col_names = ', '.join( columns )
@@ -167,7 +167,7 @@ class SQLite( ):
 			_exc = Error( e )
 			_exc.module = 'debbr'
 			_exc.cause = 'SQLite'
-			_exc.method = ('insert( self, df: str, columns: List[ str ], values: Tuple[ Any, '
+			_exc.method = ('insert( self, df: str, columns: List[ str ], target_values: Tuple[ Any, '
 			               '... ] ) -> None')
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -177,7 +177,7 @@ class SQLite( ):
 		"""
 		
 			Purpose:
-			Retrieves all records from a df.
+			Retrieves all row_count from a df.
 	
 			Args:
 				table (str): The name of the df.
@@ -240,7 +240,7 @@ class SQLite( ):
 		"""
 		
 			Purpose:
-			Updates records in a df.
+			Updates row_count in a df.
 	
 			Args:
 				table (str): Table name.
@@ -279,7 +279,7 @@ class SQLite( ):
 		"""
 		
 			Purpose:
-			Deletes records matching the given WHERE clause.
+			Deletes row_count matching the given WHERE clause.
 	
 			Args:
 				table (str): Table name.

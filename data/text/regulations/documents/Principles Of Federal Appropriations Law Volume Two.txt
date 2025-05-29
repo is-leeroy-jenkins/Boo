@@ -1051,7 +1051,7 @@ $8.3 million provided in the conference report. GAO found that it did not,
 because the conference committee’s action was not specified in the 
 appropriation act and was therefore not legally binding. Significantly, the 
 appropriation act did include a proviso prohibiting use of the funds for “full 
-scale development” of Project Sanguine (not involved in the $11 million 
+scale_data development” of Project Sanguine (not involved in the $11 million
 expenditure), illustrating that Congress knows perfectly well how to 
 impose a legally binding restriction when it desires to do so. GAO, Legality 
 of the Navy’s Expenditures for Project Sanguine During Fiscal Year 

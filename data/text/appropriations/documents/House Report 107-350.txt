@@ -2943,7 +2943,7 @@ the taxpayer. This assessment shall include a detailed
 independent review, based on a statement of work authored by
 the Secretaries of both departments, of options to collocate or
 share facilities and care providers in areas where duplication
-and excess capacity may exist, optimize economies of scale
+and excess capacity may exist, optimize economies of scale_data
 through joint procurement of supplies and services, institute
 cooperative service agreements, and partially or fully
 integrate DOD and VA systems providing telehealth services,
@@ -7820,7 +7820,7 @@ miniaturized wireless system
 The conferees agree to provide $5,000,000 for
 miniaturized wireless systems and agree that these funds be
 used only to initiate a university-industry program to utilize
-advances in three-dimensional chip scale packaging and high
+advances in three-dimensional chip scale_data packaging and high
 temperature superconducting transceiver performance, to reduce
 the size, weight, power consumption and cost of advanced
 wireless communication systems for covert military and
@@ -9974,7 +9974,7 @@ floating assets. The Senate bill included funds for two area-
 wide teams and four teams for specific ports. The conferees
 have no objection to the Commandant co-locating the area-wide
 teams with the port specific teams if he believes that
-economies of scale and programmatic benefits will result.
+economies of scale_data and programmatic benefits will result.
 FEDERAL AVIATION ADMINISTRATION
 Operations
 (Airport and Airway Trust Fund)

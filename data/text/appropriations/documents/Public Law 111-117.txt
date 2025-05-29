@@ -12275,7 +12275,7 @@ Reinvestment Act of 2009 <<NOTE: Ante, p. 284.>> is amended--
 (1) by amending subsection (a)(3) to read as follows:
 ``(3) Purpose of awards.--The Secretary shall make awards to
 eligible entities in order to identify, document, and bring to
-scale innovative best practices based on demonstrated success,
+scale_data innovative best practices based on demonstrated success,
 to allow such eligible entities to--
 ``(A) expand their work and serve as models for best
 practices; and
@@ -15290,7 +15290,7 @@ passenger motor vehicles; and services as authorized by section 3109 of
 title 5, United States Code, $1,685,000,000, to remain available until
 expended, of which $25,000,000 shall be made available for refugees
 resettling in Israel, and not less than $35,000,000 shall be made
-available to respond to small-scale emergency humanitarian requirements
+available to respond to small-scale_data emergency humanitarian requirements
 of international and nongovernmental partners.
 united states emergency refugee and migration assistance fund
 For necessary expenses to carry out the provisions of section 2(c)
@@ -16666,7 +16666,7 @@ designated zone or area in that country: Provided, That the
 application of section 507(4)(D) and (E) of such Act should be
 commensurate with the level of development of the recipient
 country and sector, and shall not preclude assistance for the
-informal sector in such country, micro and small-scale
+informal sector in such country, micro and small-scale_data
 enterprise, and smallholder agriculture.
 international financial institutions
 Sec. 7030. (a) None of the funds appropriated in title V of this Act
@@ -18897,12 +18897,12 @@ the conservation and sustainable management of natural resources in
 landscapes in the Congo Basin area, with a priority on protected area
 and landscape resource management to enable local communities to
 conserve the natural resource base, including programs to substantially
-reduce the impacts of industrial-scale resource extraction on local
+reduce the impacts of industrial-scale_data resource extraction on local
 communities and the natural resource base: Provided further, That none
 of the funds appropriated by this Act may be
 [[Page 123 STAT. 3398]]
-made available, directly or indirectly, to support industrial-scale
-logging or other industrial-scale resource extraction or sector reform
+made available, directly or indirectly, to support industrial-scale_data
+logging or other industrial-scale_data resource extraction or sector reform
 that would promote these activities: Provided further, That funds
 appropriated by this Act to carry out the provisions of sections 103
 through 106, and chapter 4 of part II, of the Foreign Assistance Act of

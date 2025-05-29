@@ -7979,7 +7979,7 @@ Narcotics Control and Law Enforcement'' should not exceed 15 percent of
 the total resources pledged by all donors for calendar year 2003 for
 assistance for Kosovo as of March 31, 2003: Provided further, That none
 of the funds made available under this Act for assistance for Kosovo
-shall be made available for large scale physical infrastructure
+shall be made available for large scale_data physical infrastructure
 reconstruction: Provided further, That of the funds made available under
 this heading for assistance for Kosovo, up to $1,000,000 should be made
 available for assistance to support training programs for Kosovar women:
@@ -9247,7 +9247,7 @@ designated zone or area in that country: Provided, That the
 application of section 507(4)(D) and (E) of such Act should be
 commensurate with the level of development of the recipient
 country and sector, and shall not preclude assistance for the
-informal sector in such country, micro and small-scale
+informal sector in such country, micro and small-scale_data
 enterprise, and smallholder agriculture.
 special authorities
 Sec. 534. (a) Afghanistan, Lebanon, Montenegro, Victims of War,
@@ -21203,7 +21203,7 @@ Navy and vessel traffic service projects: Provided, That such
 acquisition reports shall include an acquisition schedule, estimated
 current and year funding requirements, and a schedule of anticipated
 obligations and outlays for each major acquisition project: Provided
-further, That such acquisition reports shall rate on a relative scale
+further, That such acquisition reports shall rate on a relative scale_data
 the cost risk, schedule risk, and technical risk associated with each
 acquisition project and include a table detailing unobligated balances
 to date and anticipated unobligated balances at the close of the fiscal

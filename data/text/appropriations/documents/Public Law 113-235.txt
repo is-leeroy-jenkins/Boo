@@ -6058,7 +6058,7 @@ Rapid Innovation Program shall only be available for expenses, not
 otherwise provided for, to include program management and oversight, to
 conduct research, development, test and evaluation to include proof of
 concept demonstration; engineering, testing, and validation; and
-transition to full-scale production: Provided further, That the
+transition to full-scale_data production: Provided further, That the
 Secretary of Defense may transfer funds provided herein for the Defense
 Rapid Innovation Program to appropriations for research, development,
 test and evaluation to accomplish the purpose provided herein: Provided
@@ -8642,7 +8642,7 @@ this title under the heading ``Operation and Maintenance, Army'' may be
 used, notwithstanding any other provision of law, to fund the
 Commander's Emergency Response Program (CERP), for the purpose of
 enabling military commanders in Afghanistan to respond to urgent, small-
-scale, humanitarian relief and reconstruction requirements within their
+scale_data, humanitarian relief and reconstruction requirements within their
 areas of responsibility: Provided, That each project (including any
 ancillary or related elements in connection with such project) executed
 under this authority shall not exceed $2,000,000: Provided further,
@@ -23219,7 +23219,7 @@ personnel and dependents as authorized by the Foreign Service Act of
 United States Code; purchase and hire of passenger motor vehicles; and
 services as authorized by section 3109 of title 5, United States Code,
 $931,886,000, to remain available until expended, of which not less than
-$35,000,000 shall be made available to respond to small-scale emergency
+$35,000,000 shall be made available to respond to small-scale_data emergency
 humanitarian requirements, and $10,000,000 shall be made available for
 refugees resettling in Israel.
 united states emergency refugee and migration assistance fund
@@ -27425,7 +27425,7 @@ extending such assignments;
 primary responsibility for developing relationships with, and
 building the capacity of, local nongovernmental and governmental
 entities, and supporting grants to and cooperative agreements
-with such entities to design and implement small-scale,
+with such entities to design and implement small-scale_data,
 sustainable programs, projects, and activities across all
 development sectors;
 (5) incentives, including training, compensation, and career
@@ -27640,8 +27640,8 @@ appropriated under title III of this Act, not less than
 $123,500,000 shall be made available for sustainable landscapes
 programs and, in addition, not less than $250,000,000 shall be
 made available to protect biodiversity, and shall not be used to
-support or promote the expansion of industrial scale logging or
-any other industrial scale extractive activity into areas that
+support or promote the expansion of industrial scale_data logging or
+any other industrial scale_data extractive activity into areas that
 were primary/intact tropical forest as of December 30, 2013:
 Provided, That of the funds made available for the Central
 African Regional Program for the Environment and other tropical
@@ -27729,7 +27729,7 @@ financial institution and the United States
 representatives to all forest-related multilateral
 financing mechanisms and processes to vote against any
 financing to support or promote the expansion of
-industrial scale logging or any other industrial scale
+industrial scale_data logging or any other industrial scale_data
 extractive activity into areas that were primary/intact
 tropical forest as of December 30, 2013.
 (D) The Secretary of the Treasury shall instruct the
@@ -28545,7 +28545,7 @@ designated zone or area in that country: Provided, That the
 application of section 507(4)(D) and (E) of such Act should be
 commensurate with the level of development of the recipient
 country and sector, and shall not preclude assistance for the
-informal sector in such country, micro and small-scale
+informal sector in such country, micro and small-scale_data
 enterprise, and smallholder agriculture;
 (3) any assistance to an entity outside the United States if
 such assistance is for the purpose of directly relocating or

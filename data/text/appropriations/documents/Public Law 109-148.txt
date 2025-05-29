@@ -2780,7 +2780,7 @@ disassembly of a tent city capable of supporting tens
 of thousands of people for a week or longer. Camporees
 at the United States Military Academy for Girl Scouts
 and Boy Scouts provide similar training opportunities on
-a smaller scale.
+a smaller scale_data.
 (2) SUPPORT.Section 2554 of title 10, United States Code,
 is amended by adding at the end the following:
 (i)(1) The Secretary of Defense shall provide at least the same
@@ -7056,7 +7056,7 @@ may be provided through intermediary organizations,
 including those with demonstrated experience in providing
 training and technical assistance to programs serving school-
 age children up to age 13, involved in reinstituting child care
-services on a broad scale in areas affected by a Gulf hurricane
+services on a broad scale_data in areas affected by a Gulf hurricane
 disaster.
 SEC. 303. DEFINITIONS.
 (a) IN GENERAL.Unless otherwise specified in this subtitle,

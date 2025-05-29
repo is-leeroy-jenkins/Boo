@@ -5802,7 +5802,7 @@ True cost savings will be realized by utilization of a
 total turn-key, leased system, which will negate government
 risk associated with the maintenance, technological
 obsolescence, and capital investment of a procured system. The
-anticipated cost-savings and economies of scale associated with
+anticipated cost-savings and economies of scale_data associated with
 the anticipated enhancements of PACMERS are of great interest
 to the conferees. In an expression of support for the PACMERS
 system concept, the Department of Defense is encouraged to
@@ -6636,7 +6636,7 @@ Note: Conferees direct that within these funds, the
 necessary model unmanned testing, and evaluation must
 be conducted to ensure the aircraft is safe for
 vertical takeoff and transition to normal flight
-before proceeding to full scale or manned aircraft
+before proceeding to full scale_data or manned aircraft
 tests.
 RAMJET propulsion NAWC China Lake..................... ...........    4,000      0     3,000
 PRECISION STRIKE AND AIR DEFENSE TECHNOLOGY...............    52,580    82,080    52,580    72,580
@@ -7211,7 +7211,7 @@ materials
 The conferees are aware of the potential for fuel cells
 to reduce the logistics requirements for batteries and liquid
 fuels, and improve operational effectiveness of various
-systems. The conferees note that a full-scale demonstration of
+systems. The conferees note that a full-scale_data demonstration of
 an advanced solid polymer electrolyte fuel cell that uses PBO
 based membranes holds great promise in increasing the
 performance of and reducing the cost of fuel cells. The

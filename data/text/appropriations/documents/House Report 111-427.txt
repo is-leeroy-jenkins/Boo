@@ -9152,7 +9152,7 @@ Louis Marcotte and Lori Marcotte, corroborating court records,
 as well as the depositions of their employees and associates
 relating to the Marcottes' relationship with Judge Porteous.
 Additionally, the Task Force obtained and considered the
-curatorship records that corroborate and expanded the scale of
+curatorship records that corroborate and expanded the scale_data of
 the financial relationship with Creely and Amato that was not
 otherwise developed by the DOJ; it obtained the recusal hearing
 transcript in connection with the Liljeberg case; and, finally,

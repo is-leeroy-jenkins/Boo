@@ -2489,7 +2489,7 @@ rural principal arterials, urban freeways and connecting urban
 principal arterials, and facilities on the Defense Department's
 designated Strategic Highway Network, and roads connecting the
 NHS to intermodal facilities. The Federal share for the NHS
-program is generally 80 percent, subject to the sliding scale
+program is generally 80 percent, subject to the sliding scale_data
 adjustment, with an availability period of 4-years.
 Interstate Maintenance [IM].--The 46,876 mile Dwight D.
 Eisenhower National System of Interstate and Defense Highways
@@ -2498,7 +2498,7 @@ finances projects to rehabilitate, restore, resurface and
 reconstruct the Interstate system. Reconstruction that
 increases capacity, other than HOV lanes, is not eligible for
 IM funds. The Federal share for the IM program is 90 percent,
-subject to the sliding scale adjustment, and funds are
+subject to the sliding scale_data adjustment, and funds are
 available for 4 years.
 Surface Transportation Program [STP].--STP is a flexible
 program that may be used by States and localities for projects
@@ -2507,7 +2507,7 @@ transit capital projects, and intracity and intercity bus
 terminals and facilities. A portion of STP funds are set aside
 for transportation enhancements and State sub-allocations are
 provided. The Federal share for STP is generally 80 percent,
-subject to the sliding scale adjustment, with a 4-year
+subject to the sliding scale_data adjustment, with a 4-year
 availability period.
 Bridge Replacement and Rehabilitation.--The bridge program
 enables States to improve the condition of their bridges
@@ -2517,9 +2517,9 @@ including those on roads functionally classified as rural minor
 collectors and as local. Bridge program funds have a 4-year
 period of availability with a Federal share for all projects,
 except those on the Interstate System, of 80 percent, subject
-to the sliding scale adjustment. For those bridges on the
+to the sliding scale_data adjustment. For those bridges on the
 Interstate System, the Federal share is 90 percent, subject to
-the sliding scale adjustment. There is a set-aside of
+the sliding scale_data adjustment. There is a set-aside of
 $100,000,000 from the fiscal year 2006-2009 funding for
 specific projects listed in SAFETEA-LU.
 Congestion Mitigation and Air Quality Improvement Program
@@ -5884,7 +5884,7 @@ enterprise architecture.
 Working Capital Fund.--The Treasury working capital fund
 [WCF] was established in 1970 to provide centrally common
 administrative services across the Department, achieve
-economies of scale, and eliminate duplication of effort and
+economies of scale_data, and eliminate duplication of effort and
 redundancies. However, the Treasury's WCF lacks adequate
 transparency as identified by the Treasury Inspector General.
 The Committee, therefore, directs the Department to include in

@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                values.py
+      Filename:                target_values.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="values.py" company="Terry D. Eppler">
+  <copyright file="target_values.py" company="Terry D. Eppler">
 
      This is a Federal Budget, Finance, and Accounting application.
      Copyright ©  2024  Terry Eppler
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    values.py
+    target_values.py
   </summary>
   ******************************************************************************************
   '''
@@ -179,7 +179,7 @@ class SqlPath( ):
 
 	def __init__( self ):
 		self.sqlite_driver = 'sqlite3'
-		self.sqlite_path = r'data/sqlite/Boo.values'
+		self.sqlite_path = r'data/sqlite/Boo.target_values'
 		self.access_driver = r'DRIVER={ Microsoft Access Driver (*.mdb, *.accdb) };DBQ='
 		self.access_path = os.getcwd( ) + r'\db\access\Boo.accdb'
 
@@ -368,7 +368,7 @@ class DbConfig( ):
 		self.provider = pro
 		self.source = src
 		self.table_name = src.name
-		self.sqlite_path = os.getcwd( ) + r'\values\sqlite\Boo.values'
+		self.sqlite_path = os.getcwd( ) + r'\target_values\sqlite\Boo.target_values'
 		self.access_driver = r'DRIVER={ Microsoft Access Driver (*.mdb, *.accdb) };DBQ='
 		self.access_path = os.getcwd( ) + r'\db\access\Boo.accdb'
 		self.sqlserver_driver = r'DRIVER={ ODBC Driver 17 for SQL Server };SERVER=.\SQLExpress;'
@@ -525,7 +525,7 @@ class Connection( DbConfig ):
 	def connect( self ):
 		'''
 			Purpose:
-				Establishes a values connections using the connecdtion
+				Establishes a target_values connections using the connecdtion
 				path.
 	
 			Parameters:

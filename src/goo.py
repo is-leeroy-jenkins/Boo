@@ -106,7 +106,7 @@ class Fetch:
 			return Tool(
 				name='SQLDatabase',
 				func=base_tool.func,
-				description='Use this to query structured values like employee records, or payroll'
+				description='Use this to query structured target_values like employee row_count, or payroll'
 			)
 		except Exception as e:
 			_exc = Error( e )

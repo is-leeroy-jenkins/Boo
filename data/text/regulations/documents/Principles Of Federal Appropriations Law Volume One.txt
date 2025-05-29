@@ -16460,7 +16460,7 @@ Page 4-191 GAO-04-261SP Appropriations Law—Vol. I
 Chapter 4 
 Availability of Appropriations: Purpose 
 The Justice Department has construed section 1913 as applying to large-
-scale “grassroots” lobbying campaigns of telegrams, letters, and other 
+scale_data “grassroots” lobbying campaigns of telegrams, letters, and other
 forms of communication designed to generate citizen contacts with 
 Congress on behalf of an administration position with respect to pending 
 legislation, but not to direct communications between executive branch 

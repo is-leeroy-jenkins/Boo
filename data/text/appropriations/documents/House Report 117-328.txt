@@ -3647,7 +3647,7 @@ cover.
 The agreement directs APHIS to work with ARS and stakeholders
 and provides no less than the fiscal year 2022 level to develop
 an integrated management program for control of the Roseau
-cane scale insect pest infestation.
+cane scale_data insect pest infestation.
 The agreement includes no less than the fiscal year 2022 funding
 level to improve understanding of EU1 and NA1 strains of the sudden
 oak death pathogen and treatment methods to inform control
@@ -4407,7 +4407,7 @@ and sanitation because they do not have the capacity or population
 bases to support centralized water systems. Within the funds provided
 for the Rural Water and Wastewater Disposal program, the
 agreement encourages the Department to fund pilot projects intended
-to provide decentralized small-scale water and wastewater
+to provide decentralized small-scale_data water and wastewater
 services to communities in distressed counties within Central Appalachia.
 The agreement provides $70,000,000 for water and waste disposal
 systems grants for Native Americans, including Native Alaskans,
@@ -4542,7 +4542,7 @@ agreement also remains concerned that States and territories outside
 the contiguous United States are having difficulty utilizing
 this program and directs the agency to report back to the Committees
 with recommendations to address these concerns.
-The agreement is concerned that the current weighting scale for
+The agreement is concerned that the current weighting scale_data for
 the ReConnect program disadvantages rural households and com
 92
 munities that are not necessarily located on farms. In addition, the
@@ -4743,7 +4743,7 @@ verification from third-party databases and to enter into an
 agreement in fiscal year 2023 to make a third-party income database
 electronic data matching solution available to all 53 SNAP
 agencies, with a single negotiated price that reduces costs by taking
-advantage of economies of scale, and will facilitate greater efficiency
+advantage of economies of scale_data, and will facilitate greater efficiency
 and streamlined service delivery at the State level.
 The agreement provides the following for SNAP:
 TOTAL OBLIGATIONAL AUTHORITY
@@ -4803,7 +4803,7 @@ and industry engagement in order to develop effective and lasting
 solutions that will allow increased market access for domestic
 peanuts into the European Union.
 The agreement encourages USDA to work with USAID to support
-the scale up of U.S. production and procurement of Ready-to-
+the scale_data up of U.S. production and procurement of Ready-to-
 Use Therapeutic Foods, and to develop a multi-year strategy to
 support this effort. The Secretary shall provide a report to the
 97
@@ -12344,7 +12344,7 @@ needs.
 Optimization of Stitched Composites.The agreement provides
 $10,000,000 to facilitate technology development in stitched composites
 and encourages NASA to partner with industry to further
-NASAs goals in developing large-scale components and high-rate
+NASAs goals in developing large-scale_data components and high-rate
 manufacturing techniques for use in subsonic aircraft.
 337
 Advanced Capabilities for Emergency Response Operations
@@ -12399,7 +12399,7 @@ contained in the explanatory statement accompanying division
 B of Public Law 116260 under the heading Flight Opportunities
 Program.
 Innovative Nanomaterials.The agreement provides up to
-$5,000,000 to advance large scale production and use of innovative
+$5,000,000 to advance large scale_data production and use of innovative
 338
 nanomaterials, including carbon nanotubes and carbon/carbon composites.
 Nuclear Electric Propulsion (NEP).The House language on
@@ -12627,7 +12627,7 @@ Public Law 117167).
 Regional Innovation Engines (NSF Engines).As part of the TIP
 Directorate, the agreement supports the Regional Innovation Engines,
 authorized under section 10388 of Public Law 117167, to
-generate_text regional-scale innovation ecosystems throughout the United
+generate_text regional-scale_data innovation ecosystems throughout the United
 States and help spur economic growth by bringing together the
 344
 science and technology research enterprise and regional-level resources
@@ -12730,7 +12730,7 @@ effort to develop multi-agency plans at GBO and provides no less
 than the requested level to support operations and maintenance at
 GBO through multi-agency plans, or directly through the Foundation.
 Mid-Scale Research Infrastructure.The agreement provides up
-to the request level for the Mid-scale Research Infrastructure program.
+to the request level for the Mid-scale_data Research Infrastructure program.
 Academic Research Infrastructure.The agreement recognizes
 there is considerable support for academic research infrastructure
 construction and modernization across all directorates. Therefore,
@@ -12742,7 +12742,7 @@ the programs benefit broad and diverse segments of the science
 and technology community.
 In particular, NSF is encouraged to support the construction or
 acquisition of local-class research vessels through the Major Research
-Infrastructure program or Mid-scale Research Infrastructure
+Infrastructure program or Mid-scale_data Research Infrastructure
 that will provide outstanding experiential, place-based education
 and to support innovative research and educational programs
 focused on understanding and sustaining the near-coastal
@@ -12852,13 +12852,13 @@ Regional Class Research Vessels, and the High Luminosity-Large
 Hadron Collider Upgrade. The Government Accountability Office is
 directed to continue its annual reviews and semiannual updates of
 programs funded within MREFC and shall report to Congress on
-the status of large-scale NSF projects and activities based on its review
+the status of large-scale_data NSF projects and activities based on its review
 of this information. NSF shall continue to provide quarterly
 briefings to the Committees on the activities funded in this account,
 no later than 60 days after the end of each quarter.
-Mid-scale Research Infrastructure.The agreement includes
-$76,250,000 for Mid-scale Research Infrastructure. The Foundation
-is encouraged to award at least one Mid-scale Research Infrastructure
+Mid-scale_data Research Infrastructure.The agreement includes
+$76,250,000 for Mid-scale_data Research Infrastructure. The Foundation
+is encouraged to award at least one Mid-scale_data Research Infrastructure
 project led by an institution in an EPSCoR State.
 STEM EDUCATION
 The agreement includes $1,246,000,000 for EDU, of which
@@ -18222,7 +18222,7 @@ of smaller satellites, the Space Force has not provided
 sufficient information on the expected life-cycle cost of the new architecture;
 the cost to recapitalize a proliferated architecture every
 three to five years; potential risks and challenges in the supply
-chain; the ability of the Space Force to scale up capabilities to command
+chain; the ability of the Space Force to scale_data up capabilities to command
 and control a much larger number of satellites; and the applicability
 and ability to meet stringent requirements for missile
 warning certification, cybersecurity, and resilience against reversible
@@ -22592,7 +22592,7 @@ The agreement reiterates House direction on the development of
 diverse carbon management technologies and methods.
 The agreement reiterates House direction on the development
 and commercialization of carbon dioxide removal technologies at
-significant scale.
+significant scale_data.
 The agreement reiterates House direction on the carbon removal
 implementation plan and the roles and responsibilities of each program
 participating in the implementation plan.
@@ -22987,7 +22987,7 @@ biofuels and bioproducts with a focus on sustainable aviation fuels.
 The agreement provides not less than $100,000,000 for Conversion
 Technologies. Within available funds for Conversion Technologies,
 the agreement provides $5,000,000 to demonstrate the use
-of and improve the efficiency of community-scale digesters with priority
+of and improve the efficiency of community-scale_data digesters with priority
 given for projects in states and tribal areas that have adopted
 statutory requirements for the diversion of a high percentage of
 food material from municipal waste streams.
@@ -23095,9 +23095,9 @@ of domestically produced photovoltaics.
 The agreement provides not less than $25,000,000 for
 perovskites.
 The Department is directed to support the development of small-
-scale pilot manufacturing plants for perovskite photovoltaics. The
+scale_data pilot manufacturing plants for perovskite photovoltaics. The
 Department is encouraged to issue awards to commercial-ready
-solar perovskite entities that are prepared to scale up solar technologies.
+solar perovskite entities that are prepared to scale_data up solar technologies.
 The agreement notes support for the recently established
 Perovskite Accelerator for Commercializing Technologies (PACT)
 Center, which has been established for testing the durability of
@@ -23120,7 +23120,7 @@ energy research and development facilities. The Department should
 continue to prioritize mission readiness and optimization of the operations
 of the National Wind Technology Center. The agreement
 provides not less than $5,000,000 for research and operations of the
-Integrated Energy System at Scale, a large-scale research platform
+Integrated Energy System at Scale, a large-scale_data research platform
 using high-performance computing, modeling and simulation, including
 improved models that can be used to understand atmospheric
 and wind power plant flow physics, and reliability and grid
@@ -23217,7 +23217,7 @@ Within available funds for Marine Energy, the agreement provides
 not less than $50,000,000 for industry-led competitive solicitations
 to increase energy capture, improve reliability, and to assess
 and monitor environmental effects of marine energy systems
-and components at a variety of scales, including full-scale prototypes.
+and components at a variety of scales, including full-scale_data prototypes.
 Within available funds for Marine Energy, the agreement
 provides up to $20,000,000 for continuation of foundational research
 activities led by universities and research institutions affiliated
@@ -23321,7 +23321,7 @@ to electric vehicle and mobility solutions to meet the national
 urgency for market adoption. The Department is directed to further
 foster the partnership between the MDF, universities, and industry
 in the Great Lakes region for economic growth and technology innovation
-and manufacturing scale up related to mobility and advanced
+and manufacturing scale_data up related to mobility and advanced
 electric vehicles, thereby accelerating technology deployment
 and increasing the competitiveness of U.S. manufacturing industries.
 Within available funds for Clean Energy Manufacturing, the
@@ -23370,7 +23370,7 @@ agreement provides up to $20,000,000 to continue development of
 additive manufacturing involving nanocellulose feedstock materials
 made from forest products. This work shall be conducted in partnership
 with the MDF to leverage expertise and capabilities for
-large scale additive manufacturing.
+large scale_data additive manufacturing.
 Within available funds for Clean Energy Manufacturing, the
 agreement provides $2,000,000 to fund lithium-ion battery rejuvenation,
 recycling, and reuse programs that will focus on research,
@@ -23386,7 +23386,7 @@ low-cost polymer infiltration processes for the fabrication of ceramic
 matrix composites and other advanced material processes for high-
 temperature components, including silicon carbide components.
 The Department is directed to support the expeditious development
-and production of lithium battery technology to scale up the
+and production of lithium battery technology to scale_data up the
 domestic battery supply chain. Within available funds for Clean
 Energy Manufacturing, the agreement provides up to $10,000,000
 for solid state lithium metal battery storage demonstration projects
@@ -23397,8 +23397,8 @@ including nickel and cobalt free cathodes, will further enhance
 energy density, and is intrinsically nonflammable.
 The agreement notes the Departments efforts to expand the capabilities
 of the United States in advanced battery manufacturing
-for long-duration grid-scale energy storage. As the Department continues
-its efforts to scale up a domestic advanced battery supply
+for long-duration grid-scale_data energy storage. As the Department continues
+its efforts to scale_data up a domestic advanced battery supply
 913
 chain, including battery manufacturing demonstration projects, the
 Department is encouraged to seek a broad spectrum of battery
@@ -23424,7 +23424,7 @@ sulfate fertilizer suitable for agricultural use.
 Within available funds for Material Supply Chains, the agreement
 provides not less than $5,000,000 to apply the Office of
 Sciences leadership computing facility expertise in machine learning
-to increase efficiencies in large-scale, high rate manufacturing
+to increase efficiencies in large-scale_data, high rate manufacturing
 processes for aerostructures and other large composite structures.
 The agreement provides not less than $45,000,000 for Technical
 Assistance and Workforce Development.
@@ -23519,7 +23519,7 @@ provides up to $40,000,000 for these activities.
 The agreement provides up to $30,000,000 for energy-related research
 and development in buildings.
 The Department is encouraged to expand efforts within the Advanced
-Building Construction initiative to scale development and
+Building Construction initiative to scale_data development and
 adoption of innovative technologies to produce affordable, energy
 efficient buildings and retrofits with low lifecycle carbon impacts.
 The Department is directed to support technical assistance to state,
@@ -23717,7 +23717,7 @@ The Department is encouraged to establish partnerships among
 universities and national laboratories to advance research on cyber-
 immune critical infrastructure.
 919
-The agreement provides up to $2,500,000 for regional-scale high-
+The agreement provides up to $2,500,000 for regional-scale_data high-
 performance computer simulations of earthquake analysis of the
 energy system.
 Preparedness, Policy, and Risk Analysis.The Department is encouraged
@@ -23850,8 +23850,8 @@ $20,000,000 for a competitive pilot demonstration grant program,
 as authorized in section 3201 of the Energy Act of 2020, for energy
 storage projects that are U.S-controlled, U.S.-made, and North
 American sourced and supplied. The Department is directed to include
-in this program large scale commercial development and deployment
-of long cycle life, lithium-grid scale batteries and their
+in this program large scale_data commercial development and deployment
+of long cycle life, lithium-grid scale_data batteries and their
 components.
 Transformer Resilience and Advanced Components.The agreement
 provides up to $5,000,000 for the Grid Research Integration
@@ -24195,7 +24195,7 @@ of these products. The Department is encouraged to carry
 out these activities in consultation with leading industry specialists
 and in collaboration with national laboratories. The Department is
 encouraged to continue supporting activities to assist communities
-in the design and construction of pilot-scale equipment and systems
+in the design and construction of pilot-scale_data equipment and systems
 necessary to demonstrate CCUS at waste to energy plants.
 The Department is directed to establish a program to support research
 and development of novel, proof-of-principle carbon containment
@@ -24390,7 +24390,7 @@ The Department is directed to continue its external agency activities
 to develop and test advanced separation technologies and
 accelerate the advancement of commercially viable technologies for
 the recovery of rare earth elements and minerals from byproduct
-sources. Research should support pilot-scale and experimental activities
+sources. Research should support pilot-scale_data and experimental activities
 for near-term applications, which encompass the extraction
 and recovery of rare earth elements and minerals.
 The Department is directed to continue the Carbon Ore, Rare
@@ -24635,7 +24635,7 @@ to extreme events and gradual warming and the implications
 for water resilience in the western United States.
 The Department is encouraged to support activities for academia
 to perform independent evaluations of climate models using existing
-data sets and peer-reviewed publications of climate-scale processes
+data sets and peer-reviewed publications of climate-scale_data processes
 in order to determine various models ability to reproduce the
 actual climate.
 The agreement provides $30,000,000 to continue the development
@@ -24669,7 +24669,7 @@ across molecular to ecosystem-relevant scales-under controlled laboratory
 conditions and through remote connections to field observatories.
 The agreement provides $2,000,000 for academia to perform
 independent evaluations of climate models using existing data sets
-and peer-reviewed publications of climate-scale processes to determine
+and peer-reviewed publications of climate-scale_data processes to determine
 various models ability to reproduce the actual climate.
 943
 The agreement provides not less than $120,000,000 for Environmental
@@ -24778,11 +24778,11 @@ Departments technology.
 CLEAN ENERGY DEMONSTRATIONS
 The agreement provides $89,000,000 for Clean Energy Demonstrations.
 The agreement notes support for the Departments activities to
-build capacity to implement large-scale funding opportunities as
+build capacity to implement large-scale_data funding opportunities as
 well as prepare for long-term operation of the office. The Office of
 Clean Energy Demonstrations (OCED) represents an opportunity
 for the Department to provide dedicated expertise and focus to successfully
-implement large-scale, pre-commercial clean energy technology
+implement large-scale_data, pre-commercial clean energy technology
 demonstrations. The Department is encouraged to prioritize
 technology demonstrations for the highest emitting sectors.
 The agreement notes support for the Departments efforts to
@@ -25025,7 +25025,7 @@ Advanced Simulation and Computing.The agreement provides
 $35,000,000 for research in advanced memory technology and near-
 950
 memory computing architectures by a U.S.-based manufacturer of
-very large-scale memory systems and memory semantic storage
+very large-scale_data memory systems and memory semantic storage
 from 100s of terabytes to petabytes that will inspire advancements
 in data marshaling technologies that will dramatically improve effective
 performance for NNSA mission applications.
@@ -26998,7 +26998,7 @@ if the proposed requirements were adopted;
 1103
 (C) whether there is a technical basis for the proposal to
 provide information on a point-of-sale hangtag about a
-ROVs rollover resistance on a progressive scale; and
+ROVs rollover resistance on a progressive scale_data; and
 (D) the effect on the utility of ROVs used by the United
 States military if the proposed requirements were adopted;
 and
@@ -31858,10 +31858,10 @@ such pilot or demonstration into an enduring program or operation.
 is a study, demonstration, experimental program, or trial
 that
 1265
-(1) is a small-scale, short-term experiment conducted in
+(1) is a small-scale_data, short-term experiment conducted in
 order to evaluate feasibility, duration, costs, or adverse events,
 and improve upon the design of an effort prior to implementation
-of a larger scale effort; and
+of a larger scale_data effort; and
 (2) uses more than 10 full-time equivalents or obligates, or
 proposes to obligate, $5,000,000 or more, but does not include
 congressionally directed programs or enhancements and does
@@ -37141,7 +37141,7 @@ that precludes DHS from using funds in this Act to use reorganization
 authority. This prohibition is not intended to prevent the Department
 from carrying out routine or small reallocations of personnel
 or functions within components, subject to section 503 of
-this Act. This section prevents large-scale reorganization of the Department,
+this Act. This section prevents large-scale_data reorganization of the Department,
 which should be acted on legislatively by the relevant
 congressional committees of jurisdiction. Any DHS proposal to reorganize
 components that is included as part of a budget request will

@@ -9348,7 +9348,7 @@ fiscal years 2023, 2024, 2025, and 2026 the following shall be
 available, in addition to amounts otherwise made available for these
 purposes:
 (1)(A) $500,000,000 for not more than two competitive awards
-for commercial utility deployment projects for a grid scale
+for commercial utility deployment projects for a grid scale_data
 Generation 3+ small modular reactor design pursuant to section
 959A of the Energy Policy Act of 2005, of which $200,000,000
 shall be available in fiscal year 2024 and $300,000,000 shall be
@@ -9357,7 +9357,7 @@ available in fiscal year 2025; and
 under subparagraph (A) shall be available in fiscal year 2026.
 (2) $100,000,000 for one or more competitive awards to
 support design, licensing, supplier development, and site
-preparation of a grid-scale Generation 3+ reactor design under
+preparation of a grid-scale_data Generation 3+ reactor design under
 the Advanced Small Modular Reactor RD&D program.
 (3)(A) $50,000,000 for university and college-based nuclear
 reactor safety training as authorized by law, including section
@@ -13835,7 +13835,7 @@ leading a regional university transportation center and a proven record
 of developing, patenting, deploying, and commercializing innovative
 composite materials and technologies for bridge and other transportation
 applications, as well as conducting research and developing prototypes
-using very large-scale polymer-based additive manufacturing: Provided
+using very large-scale_data polymer-based additive manufacturing: Provided
 further, That there may be credited to this appropriation, to be
 available until expended, funds received from States, counties,
 municipalities, other public authorities, and private sources for

@@ -3455,7 +3455,7 @@ Afghanistan Reconstruction Trust Fund (ARTF)/National
 Solidarity Program (NSP).--The Committee recommendation
 includes funding to continue to leverage other international
 donor resources through the ARTF. Not less than $70,000,000
-shall be provided to the NSP to support small-scale development
+shall be provided to the NSP to support small-scale_data development
 initiatives, which is $50,000,000 above the request.
 Agriculture.--In order to cement advances in rule of law
 and security, economic opportunity must be assured to the

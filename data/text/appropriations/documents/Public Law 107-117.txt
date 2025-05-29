@@ -2665,7 +2665,7 @@ Secretaries of both departments,
 [[Page 115 STAT. 2281]]
 of options to collocate or share facilities and care providers in areas
 where duplication and excess capacity may exist, optimize economies of
-scale through joint procurement of supplies and services, institute
+scale_data through joint procurement of supplies and services, institute
 cooperative service agreements, and partially or fully integrate DOD and
 VA systems providing telehealth services, computerized patient records,
 provider credentialing, surgical quality assessment, rehabilitation
