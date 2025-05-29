@@ -245,14 +245,14 @@ class Dataset( ):
 		datasets from a pandas DataFrame.
 
 	"""
-	data: pd.DataFrame
+	data: np.ndarray
 	target: np.ndarray
+	dataframe: Optional[ pd.DataFrame ]
 	records: Optional[ int ]
 	fields: Otional[ int ]
 	features: Optional[ List[ str ] ]
 	size: float
 	random_state: int
-	data: pd.DataFrame
 	values: np.ndarray
 	X_train: Optional[ np.ndarray ]
 	X_test: Optional[ np.ndarray ]
@@ -260,26 +260,25 @@ class Dataset( ):
 	y_test: Optional[ np.ndarray ]
 	
 	
-	def __init__( self, df: np.ndarray, target: np.ndarray, size: float=0.2, state: int=42 ):
+	def __init__( self, data: np.ndarray, target: str=None, size: float=0.2, state: int=42 ):
 		"""
 
 			Purpose:
 			Initialize and split the dataset.
 
 			Parameters:
-				df (pd.DataFrame): Input dataset as a pandas DataFrame.
+				data (np.ndarray): Matrix input vector.
 				target (str): Name of the target column.
 				size (float): Proportion of data to use as test set.
 				random_state (int): Seed for reproducibility.
 
 		"""
-		self.dataframe = df
-		self.records = len( df )
-		self.fields = len( df.columns )
+		self.dataframe = pd.DataFrame( data=data, columns=data[ 0, : ], index=data[ :, 0 ] )
+		self.records = len( self.dataframe )
+		self.fields = len( self.dataframe.columns )
 		self.target = target
-		self.features = [ column for column in df.columns ]
-		self.data = self.dataframe[ 1:, : ]
-		self.values = self.dataframe[ 1:, target ]
+		self.features = [ column for column in self.dataframe.columns ]
+		self.values = self.data[ 1:, target ]
 		self.size = size
 		self.random_state = state
 		self.X_train = None
@@ -336,6 +335,7 @@ class Dataset( ):
 
 		"""
 		try:
+			df = pd.DataFrame( data=self.data, columns=self.features )
 			return df.describe( )
 		except Exception as e:
 			exception = Error( e )
