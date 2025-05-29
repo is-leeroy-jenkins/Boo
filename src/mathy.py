@@ -1001,7 +1001,7 @@ class MultiLayerPerceptron( Model ):
 		self.median_absolute_error = 0.0
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Fits all pipeline
