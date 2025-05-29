@@ -341,32 +341,32 @@ class Dataset( BaseModel ):
 			elif self.scaler_type == 'standard':
 				_standard = StandardScaler( )
 				_values = _standard.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns=self.numeric_features, index=self.data.index )
+				_df = pd.DataFrame( data=_values, columns=self.numeric_features, index=self.data.index )
 				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'minmax':
 				_minmax = MinMaxScaler( )
 				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns=self.numeric_features, index=self.data.index )
+				_df = pd.DataFrame( data=_values, columns=self.numeric_features, index=self.data.index )
 				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'simple':
 				_simple = SimpleImputer( )
 				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns=self.numeric_features, index=self.data.index )
+				_df = pd.DataFrame( data=_values, columns=self.numeric_features, index=self.data.index )
 				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'neighbor':
 				_nearest = NearestNeighborImputer( )
 				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.data.index )
+				_df = pd.DataFrame( data=_values, columns=self.numeric_features, index=self.data.index )
 				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'normal':
 				_normal = Normalizer( )
 				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns=self.numeric_features, index=self.data.index )
+				_df = pd.DataFrame( data=_values, columns=self.numeric_features, index=self.data.index )
 				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 			elif self.scaler_type == 'onehot':
 				_onehot = OneHotEncoder( )
 				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( _values, columns = self.numeric_features, index=self.data.index )
+				_df = pd.DataFrame( data=_values, columns=self.numeric_features, index=self.data.index )
 				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
 			else:
 				_standard = StandardScaler( )
