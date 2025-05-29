@@ -315,13 +315,13 @@ class Dataset( BaseModel ):
 
 		'''
 		return [ 'dataframe', 'row_count', 'column_count', 'target', 'split_data',
-		         'feature_names', 'test_size', 'random_state', 'data',
+		         'feature_names', 'test_size', 'random_state', 'data', 'scale_data',
 		         'numeric_features', 'categorical_features', 'scaler_type',
 		         'create_testing_data', 'calculate_statistics', 'create_training_data',
 		         'target_values', 'X_train', 'X_test', 'y_train', 'y_test' ]
 
 
-	def scale_data( self ) -> None:
+	def scale_data( self, type: str='standard' ) -> None:
 		"""
 
 			Purpose:
@@ -332,7 +332,9 @@ class Dataset( BaseModel ):
 
 		"""
 		try:
-			if self.scaler_type == 'standard':
+			if type is None:
+				raise Exception( 'The input argument "type" is None' )
+			elif self.scaler_type == 'standard':
 				_standard = StandardScaler( )
 				_values = _standard.fit_transform( self.X[ self.numeric_features ] )
 				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
@@ -341,6 +343,36 @@ class Dataset( BaseModel ):
 			elif self.scaler_type == 'minmax':
 				_minmax = MinMaxScaler( )
 				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
+				self.X.index )
+				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
+			elif self.scaler_type == 'simple':
+				_simple = SimpleImputer( )
+				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
+				self.X.index )
+				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
+			elif self.scaler_type == 'neighbor':
+				_nearest = NearestNeighborImputer( )
+				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
+				self.X.index )
+				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
+			elif self.scaler_type == 'normal':
+				_normal = Normalizer( )
+				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
+				self.X.index )
+				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
+			elif self.scaler_type == 'onehot':
+				_onehot = OneHotEncoder( )
+				_values = _minmax.fit_transform( self.X[ self.numeric_features ] )
+				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
+				self.X.index )
+				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
+			else:
+				_standard = StandardScaler( )
+				_values = _standard.fit_transform( self.X[ self.numeric_features ] )
 				_df = pd.DataFrame( _values, columns = self.numeric_features, index =
 				self.X.index )
 				self.X = pd.concat( [ _df, self.X[ self.categorical_features ] ], axis = 1 )
@@ -354,7 +386,7 @@ class Dataset( BaseModel ):
 
 
 	def split_data( self, X: np.ndarray, y: np.ndarray, size: float=0.20,
-	                state: int=42 ) -> Tuple[ np.ndarray, np.ndarray, np.ndarray, np.ndarray ]:
+	                rando: int=42 ) -> Tuple[ np.ndarray, np.ndarray, np.ndarray, np.ndarray ]:
 		"""
 
 			Purpose:
@@ -371,7 +403,7 @@ class Dataset( BaseModel ):
 				raise ArgumentError( 'y is not provided.' )
 			else:
 				self.X_train, self.X_test, self.y_train, self.y_test = train_test_split( X, y,
-					size, state )
+					size, rando )
 				return tuple( self.X_train, self.X_test, self.y_train, self.y_test )
 		except Exception as e:
 			exception = Error( e )
@@ -630,8 +662,8 @@ class RobustScaler( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
-			exception.method = ''
+			exception.cause = 'RobustScaler'
+			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -696,8 +728,8 @@ class Normalizer( Metric ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = ''
-			exception.method = ''
+			exception.cause = 'Normalizer'
+			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -846,7 +878,7 @@ class SimpleImputer( Metric ):
 	"""
 
 
-	def __init__( self, strategy: str = 'mean' ) -> None:
+	def __init__( self, strategy: str='mean' ) -> None:
 		super( ).__init__( )
 		self.simple_imputer = SimpleImputer( strategy = strategy )
 
@@ -1143,14 +1175,14 @@ class MultiLayerPerceptron( Model ):
 				self.roc_auc_score = roc_auc_score( y, self.prediction )
 				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
 				return \
-					{
-							'Accuracy': self.accuracy,
-							'Precision': self.precision,
-							'Recall': self.recall,
-							'F1 Score': self.f1_score,
-							'ROC AUC': self.roc_auc_score,
-							'Correlation Coeff': self.correlation_coefficient
-					}
+				{
+						'Accuracy': self.accuracy,
+						'Precision': self.precision,
+						'Recall': self.recall,
+						'F1 Score': self.f1_score,
+						'ROC AUC': self.roc_auc_score,
+						'Correlation Coeff': self.correlation_coefficient
+				}
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -1212,9 +1244,9 @@ class LinearRegressor( Model ):
 
 	def __init__( self ) -> None:
 		"""
-		
-			Initialize the Linear
-			Regression linerar_model.
+
+			Purpose:
+				Initialize the Linear Regression linerar_model.
 	
 			Attributes:
 				linerar_model (LinearRegression): Internal OLS linerar_model using least squares.
@@ -1237,9 +1269,9 @@ class LinearRegressor( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-		
-			Fit the OLS
-			regression linerar_model.
+
+			Purpose:
+				Fit the OLS regression linerar_model.
 	
 			Parameters:
 				X (pd.DataFrame): Feature matrix.
@@ -1350,14 +1382,14 @@ class LinearRegressor( Model ):
 				self.roc_auc_score = roc_auc_score( y, self.prediction )
 				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
 				return \
-					{
-							'Accuracy': self.accuracy,
-							'Precision': self.precision,
-							'Recall': self.recall,
-							'F1 Score': self.f1_score,
-							'ROC AUC': self.roc_auc_score,
-							'Correlation Coeff': self.correlation_coefficient
-					}
+				{
+						'Accuracy': self.accuracy,
+						'Precision': self.precision,
+						'Recall': self.recall,
+						'F1 Score': self.f1_score,
+						'ROC AUC': self.roc_auc_score,
+						'Correlation Coeff': self.correlation_coefficient
+				}
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -1401,6 +1433,143 @@ class LinearRegressor( Model ):
 			error.show( )
 
 
+class OlsRegressor( Model ):
+    """
+
+        Wrapper for Ordinary Least Squares Regression using LinearRegression.
+
+    """
+    ols_model: LinearRegressor=None
+    prediction: Optional[ np.ndarray ]
+    accuracy: Optional[ float ]
+    precision: Optional[ float ]
+    recall: Optional[ float ]
+    roc_auc_score: Optional[ float ]
+    f1_score: Optional[ float ]
+    correlation_coefficient: Optional[ float ]
+    median_absolute_error: Optional[ float ]
+
+
+    def __init__( self ) -> None:
+	    """
+
+			Purpose:
+				Initialize an instance of OLSModel.
+
+			Returns:
+				None
+		"""
+	    super( ).__init__( )
+	    self.ols_model = LinearRegressor( )
+	    self.prediction = None
+	    self.accuracy = 0.0
+	    self.precision = 0.0
+	    self.recall = 0.0
+	    self.f1_score = 0.0
+	    self.roc_auc_score = 0.0
+	    self.correlation_coefficient = 0.0
+
+
+    def fit( self, X: np.ndarray, y: np.ndarray ) -> None:
+        """
+
+	        Purpose:
+	            Fit the OLS model using training data.
+
+	        Parameters:
+	            X (np.ndarray): Training features of shape (n_samples, n_features).
+	            y (np.ndarray): Training targets of shape (n_samples,).
+
+	        Returns:
+	            None
+
+        """
+        self.ols_model.fit( X, y )
+
+
+    def predict( self, X: np.ndarray ) -> np.ndarray:
+        """
+
+	        Purpose:
+	            Predict using the fitted OLS model.
+
+	        Parameters:
+	            X (np.ndarray): Input feature matrix of shape (n_samples, n_features).
+
+	        Returns:
+	            np.ndarray: Predicted values of shape (n_samples,).
+
+        """
+        return self.ols_model.predict( X )
+
+
+    def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+        """
+
+	        Purpose:
+	            Compute the R^2 score of the model on the given test data.
+
+	        Parameters:
+	            X (np.ndarray): Test features.
+	            y (np.ndarray): True values.
+
+	        Returns:
+	            float: R-squared score.
+
+        """
+        return r2_score(y, self.ols_model.predict( X ) )
+
+
+    def analyze( self, X: np.ndarray, y: np.ndarray ) -> dict:
+        """
+
+	        Purpose:
+	            Evaluate the OLS model using multiple regression metrics.
+
+	        Parameters:
+	            X (np.ndarray): Feature matrix of shape (n_samples, n_features).
+	            y (np.ndarray): True target values of shape (n_samples,).
+
+	        Returns:
+	            dict: Dictionary containing regression evaluation metrics.
+
+        """
+        self.prediction = self.ols_model.predict ( X )
+        return \
+	    {
+            "MAE": mean_absolute_error( y, self.prediction ),
+            "MSE": mean_squared_error( y, self.prediction ),
+            "RMSE": mean_squared_error( y, self.prediction, squared=False),
+            "R2": r2_score( y, self.prediction),
+            "Explained Variance": explained_variance_score(y, self.prediction),
+            "Median Absolute Error": median_absolute_error(y, self.prediction )
+        }
+
+
+    def create_graph(self, X: np.ndarray, y: np.ndarray) -> None:
+        """
+
+	        Purpose:
+	            Plot actual vs predicted values for visual inspection.
+
+	        Parameters:
+	            X (np.ndarray): Input feature matrix.
+	            y (np.ndarray): True target values.
+
+	        Returns:
+	            None
+
+        """
+        self.prediction = self.ols_model.predict( X )
+        plt.scatter( y, self.prediction )
+        plt.xlabel( 'Actual' )
+        plt.ylabel( 'Predicted' )
+        plt.title( 'OLS: Actual vs Predicted' )
+        plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--')
+        plt.grid( True )
+        plt.show( )
+
+
 class RidgeRegressor( Model ):
 	"""
 		
@@ -1418,7 +1587,8 @@ class RidgeRegressor( Model ):
 	median_absolute_error: Optional[ float ]
 
 
-	def __init__( self ) -> None:
+	def __init__( self, alph: float=1.0, solv: str='auto',
+	              max: int=1000, rando: int=42 ) -> None:
 		"""
 		
 			Initialize the
@@ -1432,7 +1602,8 @@ class RidgeRegressor( Model ):
 					
 		"""
 		super( ).__init__( )
-		self.ridge_model = RidgeRegressor( alpha = 1.0 )
+		self.ridge_model = RidgeRegressor( alpha=alph, solver=solv,
+			max_iter=max, random_state=rando )
 		self.prediction = None
 		self.accuracy = 0.0
 		self.precision = 0.0
@@ -1534,9 +1705,10 @@ class RidgeRegressor( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-			
-			Evaluates the Ridge model
-			using multiple metrics.
+
+			Purpose:
+				Evaluates the Ridge model
+				using multiple metrics.
 	
 			Parameters:
 				X (pd.DataFrame): Feature matrix.
@@ -1559,14 +1731,14 @@ class RidgeRegressor( Model ):
 				self.roc_auc_score = roc_auc_score( y, self.prediction )
 				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
 				return \
-					{
-							'Accuracy': self.accuracy,
-							'Precision': self.precision,
-							'Recall': self.recall,
-							'F1 Score': self.f1_score,
-							'ROC AUC': self.roc_auc_score,
-							'Correlation Coeff': self.correlation_coefficient
-					}
+				{
+						'Accuracy': self.accuracy,
+						'Precision': self.precision,
+						'Recall': self.recall,
+						'F1 Score': self.f1_score,
+						'ROC AUC': self.roc_auc_score,
+						'Correlation Coeff': self.correlation_coefficient
+				}
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -1600,7 +1772,7 @@ class RidgeRegressor( Model ):
 				plt.scatter( y, self.prediction )
 				plt.xlabel( 'Actual' )
 				plt.ylabel( 'Predicted' )
-				plt.title( 'Ridge: Actual vs Predicted' )
+				plt.title( 'Ridge Regression: Actual vs Predicted' )
 				plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
 				plt.grid( True )
 				plt.show( )
@@ -1628,7 +1800,8 @@ class LassoRegressor( Model ):
 	correlation_coefficient: Optional[ float ]
 
 
-	def __init__( self ) -> None:
+	def __init__( self, alph: float=1.0, max: int=500, rando: int=42,
+	              mix='random' ) -> None:
 		"""
 		
 			Initialize the
@@ -1642,7 +1815,7 @@ class LassoRegressor( Model ):
 					
 		"""
 		super( ).__init__( )
-		self.lasso_model = LassoRegressor( alpha = 1.0 )
+		self.lasso_model = LassoRegressor( alpha=alph, max_iter=max, random_state=rando )
 		self.prediction = None
 		self.accuracy = 0.0
 		self.precision = 0.0
@@ -1768,14 +1941,14 @@ class LassoRegressor( Model ):
 				self.roc_auc_score = roc_auc_score( y, self.prediction )
 				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
 				return \
-					{
-							'Accuracy': self.accuracy,
-							'Precision': self.precision,
-							'Recall': self.recall,
-							'F1 Score': self.f1_score,
-							'ROC AUC': self.roc_auc_score,
-							'Correlation Coeff': self.correlation_coefficient
-					}
+				{
+						'Accuracy': self.accuracy,
+						'Precision': self.precision,
+						'Recall': self.recall,
+						'F1 Score': self.f1_score,
+						'ROC AUC': self.roc_auc_score,
+						'Correlation Coeff': self.correlation_coefficient
+				}
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -1806,7 +1979,7 @@ class LassoRegressor( Model ):
 				plt.scatter( y, self.prediction )
 				plt.xlabel( 'Actual' )
 				plt.ylabel( 'Predicted' )
-				plt.title( 'Lasso: Actual vs Predicted' )
+				plt.title( 'Lasso Regression: Actual vs Predicted' )
 				plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
 				plt.grid( True )
 				plt.show( )
@@ -1835,22 +2008,25 @@ class ElasticNetRegressor( Model ):
 	median_absolute_error: Optional[ float ]
 
 
-	def __init__( self ) -> None:
+	def __init__( self, alpha: float=1.0, ratio: float=0.5,
+	              rando: int=42, select: str='random' ) -> None:
 		"""
-			
-			Initialize the
-			ElasticNetRegressor linerar_model.
+
+			Purpose:
+				Initialize the
+				ElasticNetRegressor linerar_model.
 	
 			Attributes:
 				linerar_model (ElasticNet): Internal ElasticNetRegressor regression linerar_model.
 					Parameters:
-						alpha (float): Overall regularization strength. Default is 1.0.
-						l1_ratio (float): Mixing parameter (0 = RidgeRegressor,
+						hyper (float): Overall regularization strength. Default is 1.0.
+						ratio (float): Mixing parameter (0 = RidgeRegressor,
 						1 = LassoRegressor). Default is 0.5.
 					
 		"""
 		super( ).__init__( )
-		self.elasticnet_model = ElasticNetRegressor( alpha = 1.0, l1_ratio = 0.5 )
+		self.elasticnet_model = ElasticNetRegressor( alpha=alpha, l1_ratio=ratio,
+			random_state=rando, selection=select )
 		self.prediction = None
 		self.accuracy = 0.0
 		self.precision = 0.0
@@ -1969,20 +2145,20 @@ class ElasticNetRegressor( Model ):
 				raise Exception( 'The argument "y" is required!' )
 			else:
 				self.accuracy = accuracy_score( y, self.prediction )
-				self.precision = precision_score( y, self.prediction, average = 'binary' )
-				self.recall = mean_squared_error( y, self.prediction, average = 'binary' )
-				self.f1_score = f1_score( y, self.prediction, average = 'binary' )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
 				self.roc_auc_score = roc_auc_score( y, self.prediction )
 				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
 				return \
-					{
-							'Accuracy': self.accuracy,
-							'Precision': self.precision,
-							'Recall': self.recall,
-							'F1 Score': self.f1_score,
-							'ROC AUC': self.roc_auc_score,
-							'Correlation Coeff': self.correlation_coefficient
-					}
+				{
+						'Accuracy': self.accuracy,
+						'Precision': self.precision,
+						'Recall': self.recall,
+						'F1 Score': self.f1_score,
+						'ROC AUC': self.roc_auc_score,
+						'Correlation Coeff': self.correlation_coefficient
+				}
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -2042,7 +2218,7 @@ class LogisticRegressor( Model ):
 	median_absolute_error: Optional[ float ]
 
 
-	def __init__( self ) -> None:
+	def __init__( self, c: float=1.0, max: int=1000, strat: str='lbfgs' ) -> None:
 		"""
 		
 			Initialize the Logistic
@@ -2051,12 +2227,12 @@ class LogisticRegressor( Model ):
 			Attributes:
 				linerar_model (LogisticRegression): Internal logistic regression classifier.
 					Parameters:
-						max_iter (int): Maximum number of iterations. Default is 1000.
+						max (int): Maximum number of iterations. Default is 1000.
 						solver (str): Algorithm to use in optimization. Default is 'lbfgs'.
 					
 		"""
 		super( ).__init__( )
-		self.logistic_model = LogisticRegressor( max_iter = 1000 )
+		self.logistic_model = LogisticRegressor( C=c,  max_iter=max, solver=strat  )
 		self.prediction = None
 		self.accuracy = 0.0
 		self.precision = 0.0
@@ -2189,14 +2365,14 @@ class LogisticRegressor( Model ):
 				self.roc_auc_score = roc_auc_score( y, self.prediction )
 				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
 				return \
-					{
-							'Accuracy': self.accuracy,
-							'Precision': self.precision,
-							'Recall': self.recall,
-							'F1 Score': self.f1_score,
-							'ROC AUC': self.roc_auc_score,
-							'Correlation Coeff': self.correlation_coefficient
-					}
+				{
+						'Accuracy': self.accuracy,
+						'Precision': self.precision,
+						'Recall': self.recall,
+						'F1 Score': self.f1_score,
+						'ROC AUC': self.roc_auc_score,
+						'Correlation Coeff': self.correlation_coefficient
+				}
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -2206,7 +2382,7 @@ class LogisticRegressor( Model ):
 			error.show( )
 
 
-	def create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
 			Plot confusion matrix
@@ -2257,11 +2433,12 @@ class BayesianRegressor( Model ):
 	median_absolute_error: Optional[ float ]
 
 
-	def __init__( self ) -> None:
+	def __init__( self, max: int=300, shape_alpha=1e-06,
+			scale_alpha=1e-06, shape_lambda=1e-06, scale_lambda=1e-06  ) -> None:
 		"""
-		
-			Initialize the
-			BayesianRegressor linerar_model.
+
+			Purpose:
+				Initialize the BayesianRegressor linerar_model.
 	
 			Attributes:
 				linerar_model (BayesianRidge): Internal probabilistic linear regression
@@ -2272,7 +2449,8 @@ class BayesianRegressor( Model ):
 					
 		"""
 		super( ).__init__( )
-		self.bayesian_model = BayesianRegressor( )
+		self.bayesian_model = BayesianRegressor( n_iter=max, alpha_1=shape_alpha,
+			alpha_2=scale_alpha, lambda_1=shape_lambda, lambda_2=scale_lambda )
 		self.prediction = None
 		self.accuracy = 0.0
 		self.precision = 0.0
@@ -2284,9 +2462,10 @@ class BayesianRegressor( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-			
-			Fit the Bayesian RidgeRegressor
-			regression linerar_model.
+
+			Purpose:
+				Fit the Bayesian RidgeRegressor
+				regression linerar_model.
 	
 			Parameters:
 				X (pd.DataFrame): Feature matrix.
@@ -2315,9 +2494,10 @@ class BayesianRegressor( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-		
-			Predicts target target_values
-			using the Bayesian linerar_model.
+
+			Purpose:
+				Predicts target target_values
+				using the Bayesian linerar_model.
 	
 			Parameters:
 				X (pd.DataFrame): Feature matrix.
@@ -2343,9 +2523,10 @@ class BayesianRegressor( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
-			Compute the R^2 score
-			of the model on test data.
+
+			Purpose:
+				Compute the R^2 score
+				of the model on test data.
 	
 			Parameters:
 				X (np.ndarray): Test feature_names.
@@ -2398,14 +2579,14 @@ class BayesianRegressor( Model ):
 				self.roc_auc_score = roc_auc_score( y, self.prediction )
 				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
 				return \
-					{
-							'Accuracy': self.accuracy,
-							'Precision': self.precision,
-							'Recall': self.recall,
-							'F1 Score': self.f1_score,
-							'ROC AUC': self.roc_auc_score,
-							'Correlation Coeff': self.correlation_coefficient
-					}
+				{
+						'Accuracy': self.accuracy,
+						'Precision': self.precision,
+						'Recall': self.recall,
+						'F1 Score': self.f1_score,
+						'ROC AUC': self.roc_auc_score,
+						'Correlation Coeff': self.correlation_coefficient
+				}
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -2465,7 +2646,7 @@ class SgdClassifier( Model ):
 	median_absolute_error: Optional[ float ]
 
 
-	def __init__( self ) -> None:
+	def __init__( self, los: str='hinge', max: int=1000, reg: str='l2'  ) -> None:
 		"""
 		
 			Initialize the
@@ -2474,12 +2655,12 @@ class SgdClassifier( Model ):
 			Attributes:
 				linerar_model (SGDClassifier): Internal linear classifier trained via SGD.
 					Parameters:
-						loss (str): Loss function to use. Default is 'log_loss'.
-						max_iter (int): Maximum number of passes over the data. Default is 1000.
+						reg (str): Loss function to use. Default is 'log_loss'.
+						max (int): Maximum number of passes over the data. Default is 1000.
 					
 		"""
 		super( ).__init__( )
-		self.sgd_classification_model = SGDClassifier( loss='log_loss', max_iter=1000 )
+		self.sgd_classification_model = SGDClassifier( loss=los, max_iter=max, penalty=reg )
 		self.prediction = None
 		self.mean_absolute_error = 0.0
 		self.mean_squared_error = 0.0
@@ -2613,7 +2794,8 @@ class SgdClassifier( Model ):
 				self.explained_variance_score = explained_variance_score( y, self.prediction )
 				self.median_absolute_error = median_absolute_error( y, self.prediction,
 					squared = False )
-				return {
+				return \
+				{
 						'MAE': self.mean_absolute_error,
 						'MSE': self.mean_squared_error,
 						'RMSE': self.r_mean_squared_error,
@@ -2629,6 +2811,42 @@ class SgdClassifier( Model ):
 			                    'float ]')
 			error = ErrorDialog( exception )
 			error.show( )
+
+
+	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
+		"""
+
+			Plot confusion matrix
+			for classifier predictions.
+
+			Parameters:
+				X (np.ndarray): Input feature_names.
+				y (np.ndarray): True class labels.
+
+			Returns:
+				None
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.predict( X )
+				cm = confusion_matrix( y, self.prediction )
+				ConfusionMatrixDisplay( confusion_matrix = cm ).plot( )
+				plt.title( 'Random Forest Confusion Matrix' )
+				plt.grid( False )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestClassifier'
+			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
 
 
 class SgdRegressor( Model ):
@@ -2647,7 +2865,7 @@ class SgdRegressor( Model ):
 	median_absolute_error: Optional[ float ]
 
 
-	def __init__( self ) -> None:
+	def __init__( self, alph: float=0.0001, reg: str='l2', max: int=1000  ) -> None:
 		"""
 		
 		
@@ -2657,12 +2875,13 @@ class SgdRegressor( Model ):
 			Attributes:
 				linerar_model (SGDRegressor): Internal linear regressor trained via SGD.
 					Parameters:
+						alpha (float)" Regulation
 						penalty (str): Regularization term. Default is 'l2'.
 						max_iter (int): Maximum number of passes. Default is 1000.
 					
 		"""
 		super( ).__init__( )
-		self.sgd_regression_model = SGDRegressor( max_iter = 1000 )
+		self.sgd_regression_model = SGDRegressor( alpha=alph, max_iter=max, penalty=reg )
 		self.prediction = None
 		self.accuracy = 0.0
 		self.precision = 0.0
@@ -2758,14 +2977,14 @@ class SgdRegressor( Model ):
 				self.roc_auc_score = roc_auc_score( y, self.prediction )
 				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
 				return \
-					{
-							'Accuracy': self.accuracy,
-							'Precision': self.precision,
-							'Recall': self.recall,
-							'F1 Score': self.f1_score,
-							'ROC AUC': self.roc_auc_score,
-							'Correlation Coeff': self.correlation_coefficient
-					}
+				{
+						'Accuracy': self.accuracy,
+						'Precision': self.precision,
+						'Recall': self.recall,
+						'F1 Score': self.f1_score,
+						'ROC AUC': self.roc_auc_score,
+						'Correlation Coeff': self.correlation_coefficient
+				}
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -2791,7 +3010,7 @@ class Perceptron( Model ):
 	median_absolute_error: Optional[ float ]
 
 
-	def __init__( self ) -> None:
+	def __init__( self, alpha: float=0.0001, max: int=1000, mix: bool=True ) -> None:
 		"""
 		
 			Initialize the
@@ -2805,7 +3024,7 @@ class Perceptron( Model ):
 					
 		"""
 		super( ).__init__( )
-		self.perceptron_model = Perceptron( max_iter = 1000 )
+		self.perceptron_model = Perceptron( alpha=alpha, max_iter=max, shuffle=mix )
 		self.prediction = None
 		self.mean_absolute_error = 0.0
 		self.mean_squared_error = 0.0
@@ -2972,7 +3191,7 @@ class NearestNeighborClassifier( Model ):
 	median_absolute_error: Optional[ float ]
 
 
-	def __init__( self ) -> None:
+	def __init__( self, num: int=5 ) -> None:
 		"""
 			
 			Initialize the KNeighborsClassifier l
@@ -2985,7 +3204,7 @@ class NearestNeighborClassifier( Model ):
 					
 		"""
 		super( ).__init__( )
-		self.knn_classification_model = KNeighborsClassifier( n_neighbors = 5 )
+		self.knn_classification_model = KNeighborsClassifier( n_neighbors=num )
 		self.prediction = None
 		self.mean_absolute_error = 0.0
 		self.mean_squared_error = 0.0
@@ -3137,6 +3356,42 @@ class NearestNeighborClassifier( Model ):
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
+
+
+	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
+		"""
+
+			Plot confusion matrix
+			for classifier predictions.
+
+			Parameters:
+				X (np.ndarray): Input feature_names.
+				y (np.ndarray): True class labels.
+
+			Returns:
+				None
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.knn_classification_model.predict( X )
+				cm = confusion_matrix( y, self.prediction )
+				ConfusionMatrixDisplay( confusion_matrix = cm ).plot( )
+				plt.title( 'Random Forest Confusion Matrix' )
+				plt.grid( False )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RandomForestClassifier'
+			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
 
 
 class NearestNeighborRegressor( Model ):
@@ -3914,7 +4169,7 @@ class AdaBoostClassifier( Model ):
 			error.show( )
 
 
-	def create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
 			Plot confusion matrix
@@ -4306,14 +4561,14 @@ class BaggingClassifier( Model ):
 				self.roc_auc_score = roc_auc_score( y, self.prediction )
 				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
 				return \
-					{
-							'Accuracy': self.accuracy,
-							'Precision': self.precision,
-							'Recall': self.recall,
-							'F1 Score': self.f1_score,
-							'ROC AUC': self.roc_auc_score,
-							'Correlation Coeff': self.correlation_coefficient
-					}
+				{
+						'Accuracy': self.accuracy,
+						'Precision': self.precision,
+						'Recall': self.recall,
+						'F1 Score': self.f1_score,
+						'ROC AUC': self.roc_auc_score,
+						'Correlation Coeff': self.correlation_coefficient
+				}
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -4324,7 +4579,7 @@ class BaggingClassifier( Model ):
 			error.show( )
 
 
-	def create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
 			Plot confusion matrix
@@ -4344,7 +4599,7 @@ class BaggingClassifier( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.prediction = self.predict( X )
+				self.prediction = self.bagging_classifier.predict( X )
 				cm = confusion_matrix( y, self.prediction )
 				ConfusionMatrixDisplay( confusion_matrix = cm ).plot( )
 				plt.title( 'Bagging Classifier Confusion Matrix' )
@@ -4737,7 +4992,7 @@ class VotingClassifier( Model ):
 			error.show( )
 
 
-	def create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
 			Plot confusion matrix
@@ -4757,7 +5012,7 @@ class VotingClassifier( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.prediction = self.predict( X )
+				self.prediction = self.voting_classifier.predict( X )
 				cm = confusion_matrix( y, self.prediction )
 				ConfusionMatrixDisplay( confusion_matrix = cm ).plot( )
 				plt.title( 'Voting Classifer Confusion Matrix' )
@@ -5132,14 +5387,14 @@ class StackingClassifier( Model ):
 				self.roc_auc_score = roc_auc_score( y, self.prediction )
 				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
 				return \
-					{
-							'Accuracy': self.accuracy,
-							'Precision': self.precision,
-							'Recall': self.recall,
-							'F1 Score': self.f1_score,
-							'ROC AUC': self.roc_auc_score,
-							'Correlation Coeff': self.correlation_coefficient
-					}
+				{
+						'Accuracy': self.accuracy,
+						'Precision': self.precision,
+						'Recall': self.recall,
+						'F1 Score': self.f1_score,
+						'ROC AUC': self.roc_auc_score,
+						'Correlation Coeff': self.correlation_coefficient
+				}
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -5150,7 +5405,7 @@ class StackingClassifier( Model ):
 			error.show( )
 
 
-	def create_confusion_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
 			Plot confusion matrix
@@ -5170,7 +5425,7 @@ class StackingClassifier( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.prediction = self.predict( X )
+				self.prediction = self.stacking_classifier.predict( X )
 				cm = confusion_matrix( y, self.prediction )
 				ConfusionMatrixDisplay( confusion_matrix = cm ).plot( )
 				plt.title( 'Stacking Classifer Confusion Matrix' )
