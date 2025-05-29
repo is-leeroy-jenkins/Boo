@@ -1561,7 +1561,7 @@ class OlsRegressor( Model ):
         plt.scatter( y, self.prediction )
         plt.xlabel( 'Actual' )
         plt.ylabel( 'Predicted' )
-        plt.title( 'OLS: Actual vs Predicted' )
+        plt.title( 'OLS Regressor: Actual vs Predicted' )
         plt.plot( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--')
         plt.grid( True )
         plt.show( )

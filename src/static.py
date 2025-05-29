@@ -46,7 +46,9 @@ from enum import Enum, auto
 
 class EXT( Enum ):
 	'''
-	Enumeration of database file extensions
+
+		Enumeration of database file extensions
+
 	'''
 	DB = auto( )
 	ACCDB = auto( )
@@ -273,7 +275,9 @@ class Month( Enum ):
 
 class GptRequests( Enum ):
 	'''
-	Type classifying OpenAI requests
+
+		Type classifying OpenAI requests
+
 	'''
 	TextGeneration = auto( )
 	ImageGeneration = auto( )
@@ -289,7 +293,7 @@ class GptRequests( Enum ):
 	Embeddings = auto( )
 
 
-class GptParameters( Enum ):
+class Parameters( Enum ):
 	'''
 	Type classifying hyper-parameters
 	'''
@@ -306,7 +310,7 @@ class GptParameters( Enum ):
 	ResponseFormat = auto( )
 
 
-class GptLanguages( Enum ):
+class Languages( Enum ):
 	'''
 	Type categorizing the languages used in the editor
 	'''
@@ -320,7 +324,7 @@ class GptLanguages( Enum ):
 	VBA = auto( )
 
 
-class GptRoles( Enum ):
+class Roles( Enum ):
 	'''
 	Type classifyig the various content roles
 	'''
@@ -333,7 +337,9 @@ class GptRoles( Enum ):
 
 class Source( Enum ):
 	'''
-	Enumeration of df names
+
+		Enumeration of df names
+
 	'''
 	Appropriations = auto( )
 	BudgetFunctions = auto( )
@@ -347,4 +353,13 @@ class Source( Enum ):
 	Regulations = auto( )
 	ResourceLines = auto( )
 	TreasurySymbols = auto( )
-	
+
+class Scaler( Enum ):
+	'''
+
+		Enumeration of scaling algorythms
+
+	'''
+	Simple = auto( )
+	Standard = auto( )
+	Normal = auto( )

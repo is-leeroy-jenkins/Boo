@@ -950,7 +950,7 @@ class ErrorDialog( Dark ):
 class InputDialog( Dark ):
 	'''
 
-	    Construcotr:  Input( question )
+	    Construcotr:  Input( prompt )
 
 	    Purpose:  class that produces a contact path form
 

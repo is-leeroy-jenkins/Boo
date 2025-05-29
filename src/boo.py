@@ -51,7 +51,7 @@ import requests
 import tiktoken
 from pydantic import BaseModel, Field, validator
 from pygments.lexers.csound import newline
-from static import GptRequests, GptRoles, GptLanguages
+from static import GptRequests, Roles, Languages
 from boogrr import ErrorDialog, Error, ChatBot
 from typing import Any, List, Tuple, Optional, Dict
 
@@ -1306,7 +1306,11 @@ class Assistant( AI ):
 	
 	def dump( self ) -> str:
 		'''
-			Returns: dict of members
+
+			Returns:
+			_______
+				dict of strings representing members
+
 		'''
 		new = '\r\n'
 		return 'num' + f' = {self.number}' + new + \
@@ -1334,7 +1338,7 @@ class Assistant( AI ):
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
 		         'get_format_options', 'get_model_options', 'reasoning_effort'
 		         'get_effort_options', 'input_text', 'metadata',
-		         'get_list', 'get_data',
+		         'get_files', 'get_data',
 		         'dump', 'translate', 'transcribe' ]
 	
 	
@@ -1381,7 +1385,7 @@ class Bubba( AI ):
 		self.system_instructions = AI( ).bubba_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'ft:gpt-4.1-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-2025-20-05:BZO7tKJy'
+		self.model = 'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:bubba-gpt-4-1-mini-2025-05-05:BcekjucJ'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -1409,19 +1413,19 @@ class Bubba( AI ):
 	def generate_text( self, prompt: str ) -> str:
 		"""
 		
-			Purpose
+			Purpose:
 			_______
-			Generates a chat completion given a prompt
+				Generates a chat completion given a prompt
 			
 			
-			Parameters
+			Parameters:
 			----------
-			prompt: str
+				prompt: str
 			
 			
-			Returns
+			Returns:
 			-------
-			str
+				str
 		
 		"""
 		try:
@@ -1466,8 +1470,7 @@ class Bubba( AI ):
 				self.prompt = prompt
 				self.response = self.client.images.generate( model='dall-e-3',
 					prompt=self.prompt, size='1024x1024', quality='standard', n=1 )
-
-			return self.response.data[0].url
+			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
@@ -1508,8 +1511,9 @@ class Bubba( AI ):
 				{
 					'role': 'user',
 					'content': [
-					{ 'type': 'input_text',
-					  'text': self.prompt
+					{
+							'type': 'input_text',
+							'text': self.prompt
 					},
 					{
 						'type': 'input_image',
@@ -1531,22 +1535,20 @@ class Bubba( AI ):
 	def summarize_document( self, prompt: str, path: str ) -> str:
 		"""
 		
-			Purpose
+			Purpose:
 			_______
-			Method that summarizes a document given a
-			path prompt, and a path
-	
+				Method that summarizes a document given a
+				path prompt, and a path
+
 			
-			
-			
-			Parameters
+			Parameters:
 			----------
-			prompt: str
-			path: str
+				prompt: str
+				path: str
 			
-			Returns
+			Returns:
 			-------
-			str
+				str
 		
 		"""
 		try:
@@ -1572,7 +1574,7 @@ class Bubba( AI ):
 						}
 					},
 					{
-						'type': 'texth',
+						'type': 'text',
 						'text': self.prompt,
 					}, ]
 				} ]
@@ -1592,20 +1594,20 @@ class Bubba( AI ):
 	def search_web( self, prompt: str ) -> str:
 		"""
 		
-			Purpose
+			Purpose:
 			_______
-			Method that analyzeses an image given a prompt,
+				Method that analyzeses an image given a prompt,
 			
 			
 			
-			Parameters
+			Parameters:
 			----------
-			prompt: str
-			url: str
+				prompt: str
+				url: str
 			
-			Returns
+			Returns:
 			-------
-			str
+				str
 		
 		"""
 		try:
@@ -1682,20 +1684,20 @@ class Bubba( AI ):
 		pass
 	
 	
-	def get_files( self ) -> list:
+	def get_files( self ) -> List[ str ]:
 		'''
 
-			Method that returns a list of files in the vector stores
+			Method that returns a list of files in a vector stores
 
 		'''
 		try:
 			_aid = self.vector_stores[ 'Appropriations' ]
-			_approp_files = self.client.vector_stores.files.list( vector_store_id=_aid )
-			_approp_list = [ f for f in _approp_files  ]
-			_did = self.vector_stores[ 'Guidance' ]
-			_doc_files = self.client.vector_stores.files.list( vector_store_id=_did )
+			_files = self.client.vector_stores.files.list( vector_store_id=_aid )
+			_list = [ f for f in _files  ]
+			_doc_id = self.vector_stores[ 'Guidance' ]
+			_doc_files = self.client.vector_stores.files.list( vector_store_id=_doc_id )
 			_doc_list = [ d for d in _doc_files  ]
-			return  _approp_list.extend( _doc_list )
+			return  _list.extend( _doc_list )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
@@ -1725,10 +1727,11 @@ class Bubba( AI ):
                  'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
                  'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31',
+		         'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:bubba-gpt-4-1-mini-2025-05-05:BcekjucJ',
+		         'ft:gpt-4.1-nano-2025-04-14:leeroy-jenkins:bubba-gpt-4-1-nano-2025-29-05:BcfJJTtv',
 		         'ft:gpt-4.1-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-2025-20-05:BZO7tKJy',
-		         'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-data-analysis-2025-21-05:BZetxEQa',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-fine-tuned-2025-05-06:BUF6o5Xa',
-		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-fine-tuned-2025-05-05:BU7RK1Dq'
+		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-fine-tuned-2025-05-05:BU7RK1Dq',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:budget-base-training:BGVk5Ii1',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57' ]
@@ -2271,7 +2274,7 @@ class Embedding( AI ):
 		self.response = None
 	
 	
-	def create_small( self, text: str ) -> List[ float ]:
+	def create_small_embedding( self, text: str ) -> List[ float ]:
 		"""
 
 			Purpose
@@ -2306,7 +2309,7 @@ class Embedding( AI ):
 			error.show( )
 	
 	
-	def create_large( self, text: str ) -> List[ float ]:
+	def create_large_embedding( self, text: str ) -> List[ float ]:
 		"""
 
 			Purpose
@@ -2341,7 +2344,7 @@ class Embedding( AI ):
 			error.show( )
 	
 	
-	def create_ada( self, text: str ) -> List[ float ]:
+	def create_ada_embedding( self, text: str ) -> List[ float ]:
 		"""
 
 			Purpose
@@ -2374,8 +2377,40 @@ class Embedding( AI ):
 			exception.method = 'create_ada_embedding( self, text: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
-	
-	
+
+
+	def count_tokens( self, text: str, coding: str ) -> int:
+		'''
+
+			Purpose:
+				Returns the num of tokens in a documents path.
+
+			Parameters:
+				text: str - The string that is tokenized
+				coding: str - The encoding to use for tokenizing
+
+			Returns:
+				int - The number of tokens
+
+		'''
+		try:
+			if text is None:
+				raise Exception( 'Argument "text" is required.' )
+			elif coding is None:
+				raise Exception( 'Argument "coding" is required.' )
+			else:
+				_encoding = tiktoken.get_encoding( coding )
+				_tokens = len( _encoding.encode( text ) )
+				return _tokens
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Boo'
+			exception.cause = 'Embedding'
+			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
 	def get_data( self ) -> Dict:
 		'''
 
@@ -2419,8 +2454,8 @@ class Embedding( AI ):
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
-		         'store', 'stream', 'modalities', 'stops',
-		         'api_key', 'client', 'small_model',
+		         'store', 'stream', 'modalities', 'stops', 'create_ada_embedding',
+		         'api_key', 'client', 'small_model', 'count_tokens', 'create_large_embedding',
 		         'path', 'create_small_embedding', 'get_model_options' ]
 
 
@@ -2429,7 +2464,7 @@ class TTS( AI ):
 		
 		Purpose
 		___________
-		Class used for interacting with OpenAI's Audio API (TTS)
+		Class used for interacting with OpenAI's TTS API (TTS)
 		
 		
 		Parameters
@@ -2612,7 +2647,7 @@ class Transcription( AI ):
 		
 		Purpose
 		___________
-		Class used for interacting with OpenAI's Audio API (whisper-1)
+		Class used for interacting with OpenAI's TTS API (whisper-1)
 		
 		
 		Parameters
@@ -2766,7 +2801,7 @@ class Translation( AI ):
 		
 		Purpose
 		___________
-		Class used for interacting with OpenAI's Audio API (whisper-1)
+		Class used for interacting with OpenAI's TTS API (whisper-1)
 		
 		
 		Parameters
