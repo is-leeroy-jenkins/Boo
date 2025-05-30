@@ -41,18 +41,21 @@
   </summary>
   ******************************************************************************************
   '''
-import os
-import numpy as np
-import pandas as pd
+import asyncio
+from boogrr import ErrorDialog, Error, ChatBot
 import datetime as dt
+import numpy as np
+import os
 from openai import OpenAI, AssistantEventHandler
-from typing_extensions import override
-import requests
-import tiktoken
+from openai import AsyncOpenAI
+from openai.helpers import LocalAudioPlayer
+import pandas as pd
 from pydantic import BaseModel, Field, validator
 from pygments.lexers.csound import newline
+import requests
 from static import Requests, Roles, Languages
-from boogrr import ErrorDialog, Error, ChatBot
+from typing_extensions import override
+import tiktoken
 from typing import Any, List, Tuple, Optional, Dict
 
 
@@ -2506,7 +2509,7 @@ class TTS( AI ):
 		super( ).__init__( )
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'tts-1-hd'
+		self.model = 'gpt-4o-mini-tts'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -2556,7 +2559,7 @@ class TTS( AI ):
 		return [ 'mp3', 'wav', 'aac', 'flac', 'opus', 'pcm']
 	
 	
-	def create( self, prompt: str, filepath: str ):
+	def save_audio( self, prompt: str, filepath: str ) -> str:
 		"""
 		
 			Purpose
@@ -2567,7 +2570,7 @@ class TTS( AI ):
 			Parameters
 			----------
 			prompt: str
-			filepath: str
+			path: str
 			
 			
 			Returns
@@ -2577,7 +2580,7 @@ class TTS( AI ):
 		"""
 		try:
 			if filepath is None:
-				raise Exception( 'Argument "url" is required.' )
+				raise Exception( 'Argument "path" is required.' )
 			elif prompt is None:
 				raise Exception( 'Argument "prompt" is required.' )
 			else:
@@ -2585,17 +2588,18 @@ class TTS( AI ):
 				self.prompt = prompt
 				self.response = self.client.audio.speech.with_streaming_response( model=self.model,
 					voice=self.voice, input=self.prompt )
-				return self.response.output_text
+				_retval = self.response.stream_to_file( self.audio_path )
+				return _retval
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'TTS'
-			exception.method = 'create_small_embedding( self, prompt: str, path: str )]'
+			exception.method = 'save_audio( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def get_data( self ) -> dict:
+	def get_data( self ) -> Dict[ str, str ]:
 		'''
 
 			Returns: dict[ str ] of members
@@ -2713,7 +2717,7 @@ class Transcription( AI ):
 		         'gpt-4o-transcribe' ]
 	
 	
-	def create( self, input: str ) -> str:
+	def create( self, text: str, path: str ) -> str:
 		"""
 		
 			Purpose
@@ -2723,7 +2727,8 @@ class Transcription( AI ):
 			
 			Parameters
 			----------
-			input: str
+			text: str
+			path: str
 			
 			
 			Returns
@@ -2732,11 +2737,13 @@ class Transcription( AI ):
 		
 		"""
 		try:
-			if input is None:
+			if text is None:
 				raise Exception( 'Argument "text" is required.' )
+			elif path is None:
+				raise Exception( 'Argument "path" is required.' )
 			else:
-				self.audio_file = open( 'boo.mp3', 'rb' )
-				self.input_text = input
+				self.audio_file = open( filepath=path, encoding='utf-8', errors='ignore' )
+				self.input_text = text
 				self.response = self.client.audio.speech.create( model=self.model,
 					voice='alloy', input=self.input_text )
 				self.response.stream_to_file( self.audio_path )
@@ -2744,7 +2751,7 @@ class Transcription( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Transcription'
-			exception.method = 'create_small_embedding( self, text: str ) -> str'
+			exception.method = 'create( self, text: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2792,8 +2799,8 @@ class Transcription( AI ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'audio_file',
-		         'path', 'messages', 'respose_format',
-		         'api_key', 'client', 'small_model', 'create_small_embedding',
+		         'messages', 'respose_format',
+		         'api_key', 'client',
 		         'input_text', 'transcript' ]
 
 
@@ -2877,29 +2884,32 @@ class Translation( AI ):
 		         'sage', 'shiver' ]
 	
 	
-	def create( self, input: str ):
+	def create( self, text: str, path: str ) -> str:
 		"""
-		
+
 			Purpose
 			_______
-			Generates a transcription given a text string to an audio file
-			
-			
+			Generates a transcription given a text text to an audio file
+
+
 			Parameters
 			----------
-			input: str
-			
-			
+			text: str
+			path: str
+
+
 			Returns
 			-------
 			str
-		
+
 		"""
 		try:
-			if input is None:
+			if text is None:
 				raise Exception( 'Argument "text" is required.' )
+			elif path is None:
+				raise Exception( 'Argument "path" is required.' )
 			else:
-				self.audio_file = open( 'boo.mp3', 'rb' )
+				self.audio_file = open( filepath=path, mode='rb', encoding='utf-8', errors='ignore' )
 				self.response = self.client.audio.translations.create( model='whisper-1',
 					file=self.audio_file )
 		except Exception as e:
@@ -3275,7 +3285,7 @@ class Image( AI ):
 
 			Purpose
 			_______
-			Generates an image given a input path
+			Generates an image given a text path
 
 
 			Parameters

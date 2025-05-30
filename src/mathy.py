@@ -342,33 +342,45 @@ class Dataset( BaseModel ):
 			elif self.scaler_type == 'standard':
 				_standard = StandardScaler( )
 				_values = _standard.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=_values, columns=self.numeric_features, index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
+				_df = pd.DataFrame( data=_values, columns=self.numeric_features,
+					index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
+					axis=1 )
 			elif self.scaler_type == 'minmax':
 				_minmax = MinMaxScaler( )
 				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=_values, columns=self.numeric_features, index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
+				_df = pd.DataFrame( data=_values, columns=self.numeric_features,
+					index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
+					axis=1 )
 			elif self.scaler_type == 'simple':
 				_simple = SimpleImputer( )
 				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=_values, columns=self.numeric_features, index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
+				_df = pd.DataFrame( data=_values, columns=self.numeric_features,
+					index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
+					axis=1 )
 			elif self.scaler_type == 'neighbor':
 				_nearest = NearestNeighborImputer( )
 				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=_values, columns=self.numeric_features, index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
+				_df = pd.DataFrame( data=_values, columns=self.numeric_features,
+					index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
+					axis=1 )
 			elif self.scaler_type == 'normal':
 				_normal = Normalizer( )
 				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=_values, columns=self.numeric_features, index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
+				_df = pd.DataFrame( data=_values, columns=self.numeric_features,
+					index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
+					axis=1 )
 			elif self.scaler_type == 'onehot':
 				_onehot = OneHotEncoder( )
 				_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=_values, columns=self.numeric_features, index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ], axis=1 )
+				_df = pd.DataFrame( data=_values, columns=self.numeric_features,
+					index=self.data.index )
+				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
+					axis=1 )
 			else:
 				_standard = StandardScaler( )
 				_values = _standard.fit_transform( self.X[ self.numeric_features ] )
@@ -383,7 +395,7 @@ class Dataset( BaseModel ):
 			error.show( )
 
 
-	def split_data( self, X: np.ndarray, y: np.ndarray, size: float=0.20,
+	def split_data( self, data: np.ndarray, target: np.ndarray, size: float=0.20,
 	                rando: int=42 ) -> Tuple[ np.ndarray, np.ndarray, np.ndarray, np.ndarray ]:
 		"""
 
@@ -395,19 +407,19 @@ class Dataset( BaseModel ):
 
 		"""
 		try:
-			if X is None:
-				raise ArgumentError( 'X is not provided.' )
-			elif y is None:
-				raise ArgumentError( 'y is not provided.' )
+			if data is None:
+				raise ArgumentError( 'data is not provided.' )
+			elif target is None:
+				raise ArgumentError( 'target is not provided.' )
 			else:
-				self.X_train, self.X_test, self.y_train, self.y_test = train_test_split( X, y,
+				self.X_train, self.X_test, self.y_train, self.y_test = train_test_split( data, target,
 					size, rando )
 				return tuple( self.X_train, self.X_test, self.y_train, self.y_test )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Dataset'
-			exception.method = 'split_data( self, X: np.ndarray, y: np.ndarray )'
+			exception.method = 'split_data( self, data: np.ndarray, target: np.ndarray )'
 			error = ErrorDialog( exception )
 			error.show( )
 

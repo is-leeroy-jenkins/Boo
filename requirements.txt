@@ -61,6 +61,7 @@ seaborn
 soundfile
 sounddevice
 spacy
+spacepy
 statsmodels
 sentence-transformers
 streamlit

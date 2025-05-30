@@ -2204,7 +2204,7 @@ class Vector( ):
 				for index, batch in enumerate( self.batches ):
 					for attempt in range( max ):
 						try:
-							self.response = self.client.embeddings.create( input=batch,
+							self.response = self.client.embeddings.create_audio( input=batch,
 								model=self.small_model )
 							_vectors = [ record.embedding for record in self.response.data ]
 							self.vectors.extend( _vectors )
@@ -2740,9 +2740,9 @@ class Vector( ):
 				self.file_path = path
 				self.file_name = os.path.basename( self.file_path )
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-				self.response = self.client.files.create( file=open( self.file_path, 'rb' ),
+				self.response = self.client.files.create_audio( file=open( self.file_path, 'rb' ),
 					purpose="assistants" )
-				attach_response = self.client.vectorstores.files.create( vector_store_id=id,
+				attach_response = self.client.vectorstores.files.create_audio( vector_store_id=id,
 					file_id=self.response.id )
 				return { 'file': self.file_name, 'status': 'success' }
 		except Exception as e:
@@ -2862,7 +2862,7 @@ class Embedding( ):
 			else:
 				self.raw_input = text.replace( '\n', ' ' )
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
-				self.response = self.client.embeddings.create( input=[ self.raw_input ],
+				self.response = self.client.embeddings.create_audio( input=[ self.raw_input ],
 					model=self.small_model )
 				
 				return self.response.data[ 0 ].embedding
@@ -2894,7 +2894,7 @@ class Embedding( ):
 			else:
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				self.tokens = [ t.replace( '\n', ' ' ) for t in tokens ]
-				self.data = self.client.embeddings.create( input=self.tokens,
+				self.data = self.client.embeddings.create_audio( input=self.tokens,
 					model=self.small_model ).data
 				return [ d.embedding for d in self.data ]
 		except Exception as e:
@@ -2926,7 +2926,7 @@ class Embedding( ):
 			else:
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				self.raw_input = text.replace( '\n', ' ' )
-				self.response = self.client.embeddings.create( input=[ self.raw_input ],
+				self.response = self.client.embeddings.create_audio( input=[ self.raw_input ],
 					model=self.large_model )
 				
 				return self.response.data[ 0 ].embedding
@@ -2958,7 +2958,7 @@ class Embedding( ):
 			else:
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				self.tokens = [ t.replace( '\n', ' ' ) for t in tokens ]
-				self.data = self.client.embeddings.create( input=self.tokens,
+				self.data = self.client.embeddings.create_audio( input=self.tokens,
 					model=self.large_model ).data
 				return [ d.embedding for d in self.data ]
 		except Exception as e:
@@ -2990,7 +2990,7 @@ class Embedding( ):
 			else:
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				self.raw_input = text.replace( '\n', ' ' )
-				self.response = self.client.embeddings.create( input=[ self.raw_input ],
+				self.response = self.client.embeddings.create_audio( input=[ self.raw_input ],
 					model=self.ada_model )
 				
 				return self.response.data[ 0 ].embedding
@@ -3022,7 +3022,7 @@ class Embedding( ):
 			else:
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				self.tokens = [ t.replace( '\n', ' ' ) for t in tokens ]
-				self.data = self.client.embeddings.create( input=self.tokens,
+				self.data = self.client.embeddings.create_audio( input=self.tokens,
 					model=self.ada_model ).data
 				return [ d.embedding for d in self.data ]
 		except Exception as e:
@@ -3057,7 +3057,7 @@ class Embedding( ):
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				
 				return (
-					await self.client.embeddings.create( input=[ self.raw_input ],
+					await self.client.embeddings.create_audio( input=[ self.raw_input ],
 						model=self.small_model ))
 				[ 'data' ][ 0 ][ 'embedding' ]
 		except Exception as e:
@@ -3089,7 +3089,7 @@ class Embedding( ):
 				self.raw_input = text.replace( '\n', ' ' )
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )				
 				return (
-					await self.client.embeddings.create( input=[ self.raw_input ],
+					await self.client.embeddings.create_audio( input=[ self.raw_input ],
 						model=self.large_model ))[ 'data' ][ 0 ][ 'embedding' ]
 		except Exception as e:
 			_exc = Error( e )
@@ -3121,7 +3121,7 @@ class Embedding( ):
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				
 				return (
-					await self.client.embeddings.create( input=[ self.raw_input ],
+					await self.client.embeddings.create_audio( input=[ self.raw_input ],
 						model=self.ada_model ))
 				[ 'data' ][ 0 ][ 'embedding' ]
 		except Exception as e:
