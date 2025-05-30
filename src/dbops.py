@@ -48,7 +48,7 @@ import string
 import spacy
 import openpyxl
 from openai import OpenAI
-from booggr import Error, ErrorDialog
+from boogrr import Error, ErrorDialog
 from pathlib import Path
 import tiktoken
 import sqlite3

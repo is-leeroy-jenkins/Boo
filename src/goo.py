@@ -52,7 +52,7 @@ from langchain.memory import ConversationBufferMemory
 from typing import List
 
 from langchain_core.tools import Tool
-from booggr import Error, ErrorDialog
+from boogrr import Error, ErrorDialog
 
 
 class Fetch:

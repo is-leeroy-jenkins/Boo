@@ -68,9 +68,10 @@ class EXT( Enum ):
 
 class Provider( Enum ):
 	'''
-	Constructor:  Provider.Member
 
-	Purpose:  Enumeration of target_values providers
+		Purpose:
+			Enumeration of target_values providers
+
 	'''
 	SQLite = 0
 	Access = 1
@@ -81,9 +82,10 @@ class Provider( Enum ):
 
 class ParamStyle( Enum ):
 	'''
-	Constructor:  ParamStyle( )
 
-	Purpose:  Enumeration of parameter styles
+		Purpose:
+			Enumeration of parameter styles
+
 	'''
 	format = 1
 	number = 2
@@ -94,9 +96,10 @@ class ParamStyle( Enum ):
 
 class SQL( Enum ):
 	'''
-	Constructor:  SQL.Member
 
-	Purpose:   Enumeration of sqlstatement commands
+		Purpose:
+			Enumeration of sqlstatement commands
+
 	'''
 	SELECT = 0
 	SELECTALL = 1
@@ -113,9 +116,10 @@ class SQL( Enum ):
 
 class Client( Enum ):
 	'''
-	Constructor:  Client.Member
 
-	Purpose:  Enumeration of auxiliary applications
+		Purpose:
+			Enumeration of auxiliary applications
+
 	'''
 	SQLite = auto( )
 	Access = auto( )
@@ -133,9 +137,10 @@ class Client( Enum ):
 
 class ICO( Enum ):
 	'''
-	Constructor:  ICO.Member
 
-	Purpose:  Enumeration of ICO files
+		Purpose:
+			Enumeration of ICO files
+
 	'''
 	Access = auto( )
 	Browse = auto( )
@@ -151,9 +156,11 @@ class ICO( Enum ):
 
 class ACCDB( Enum ):
 	'''
-	Constructor:  ACCDB.Member
 
-	Purpose:  Enumeration of access database types used in the application
+		Purpose:
+			Enumeration of access database types used in the application
+		Constructor:  ACCDB.Member
+
 	'''
 	INTEGER = auto( )
 	NUMBER = auto( )
@@ -170,9 +177,11 @@ class ACCDB( Enum ):
 
 class DB( Enum ):
 	'''
-	Constructor:  DB.Member
 
-	Purpose:  Enumeration of SQLite database types used in the application
+		Constructor:  DB.Member
+
+		Purpose:  Enumeration of SQLite database types used in the application
+
 	'''
 	REAL = auto( )
 	TEXT = auto( )
@@ -273,7 +282,7 @@ class Month( Enum ):
 	December = 12
 
 
-class GptRequests( Enum ):
+class Requests( Enum ):
 	'''
 
 		Type classifying OpenAI requests
@@ -354,6 +363,7 @@ class Source( Enum ):
 	ResourceLines = auto( )
 	TreasurySymbols = auto( )
 
+
 class Scaler( Enum ):
 	'''
 
@@ -363,3 +373,6 @@ class Scaler( Enum ):
 	Simple = auto( )
 	Standard = auto( )
 	Normal = auto( )
+	OneHot = auto( )
+	Neighbor = auto( )
+	MinMax = auto( )

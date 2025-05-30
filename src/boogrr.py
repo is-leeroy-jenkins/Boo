@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                booggr.py
+      Filename:                boogrr.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="booggr.py" company="Terry D. Eppler">
+  <copyright file="boogrr.py" company="Terry D. Eppler">
 
      This is a Federal Booger and Data Analysis Application for EPA Analysts
      Copyright ©  2024  Terry Eppler
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    booggr.py
+    boogrr.py
   </summary>
   ******************************************************************************************
   '''
@@ -72,14 +72,14 @@ from email.message import EmailMessage
 class Error( Exception ):
 	'''
 
-        Constructor:
-
-            Error( error: Exception, heading: str=None, cause: str=None,
-                    method: str=None, module: str=None )
-
         Purpose:
 
             Class wrapping error used as the path argument for ErrorDialog class
+
+            Constructor:
+
+            Error( error: Exception, heading: str=None, cause: str=None,
+                    method: str=None, module: str=None )
 
     '''
 	

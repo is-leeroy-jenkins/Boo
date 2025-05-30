@@ -51,7 +51,7 @@ import requests
 import tiktoken
 from pydantic import BaseModel, Field, validator
 from pygments.lexers.csound import newline
-from static import GptRequests, Roles, Languages
+from static import Requests, Roles, Languages
 from boogrr import ErrorDialog, Error, ChatBot
 from typing import Any, List, Tuple, Optional, Dict
 
@@ -366,8 +366,8 @@ class Models( ):
 		                           'gpt-4o-audio-preview-2024-12-17',
 		                           'gpt-4o-audio-preview-2024-10-01',
 		                           'gpt-4o-mini-audio-preview-2024-12-17' ]
-		self.transcription = [ 'whisper-1', 'gpt-4o-mini-transcribe', ' openai-4o-transcribe' ]
-		self.translation = [ 'whisper-1', 'pages-davinci-003',
+		self.transcription = [ 'whisper-1', 'gpt-4o-mini-transcribe', 'gpt-4o-transcribe' ]
+		self.translation = [ 'whisper-1', 'text-davinci-003',
 		                     'gpt-4-0613', 'gpt-4-0314',
 		                     'gpt-4-turbo-2024-04-09' ]
 		self.responses = [ 'gpt-4o-mini-search-preview-2025-03-11',
@@ -400,6 +400,7 @@ class Models( ):
 
 		self.bro = \
 		[
+			'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:bro-gpt-4-1-mini-2025-29-05:BcgMfu1w',
 			'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-data-analysis-2025-21-05:BZetxEQa',
 			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned:BTc3PMb5',
 			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY' ]
@@ -2717,7 +2718,7 @@ class Transcription( AI ):
 		
 			Purpose
 			_______
-			Generates a transcription given a text input to an audio file
+			Generates a transcription given a text text to an audio file
 			
 			
 			Parameters
@@ -2732,7 +2733,7 @@ class Transcription( AI ):
 		"""
 		try:
 			if input is None:
-				raise Exception( 'Argument "input" is required.' )
+				raise Exception( 'Argument "text" is required.' )
 			else:
 				self.audio_file = open( 'boo.mp3', 'rb' )
 				self.input_text = input
@@ -2743,7 +2744,7 @@ class Transcription( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Transcription'
-			exception.method = 'create_small_embedding( self, input: str ) -> str'
+			exception.method = 'create_small_embedding( self, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2881,7 +2882,7 @@ class Translation( AI ):
 		
 			Purpose
 			_______
-			Generates a transcription given a input string to an audio file
+			Generates a transcription given a text string to an audio file
 			
 			
 			Parameters
@@ -2896,7 +2897,7 @@ class Translation( AI ):
 		"""
 		try:
 			if input is None:
-				raise Exception( 'Argument "input" is required.' )
+				raise Exception( 'Argument "text" is required.' )
 			else:
 				self.audio_file = open( 'boo.mp3', 'rb' )
 				self.response = self.client.audio.translations.create( model='whisper-1',
@@ -2905,7 +2906,7 @@ class Translation( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Translation'
-			exception.method = 'create_small_embedding( self, input: str )'
+			exception.method = 'create_small_embedding( self, text: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3034,7 +3035,7 @@ class LargeImage( AI ):
 		"""
 		try:
 			if input is None:
-				raise Exception( 'The "input" argument is required.' )
+				raise Exception( 'The "text" argument is required.' )
 			else:
 				self.input_text = input
 				self.response = self.client.images.generate(
@@ -3095,7 +3096,7 @@ class LargeImage( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'analyze( self, input: str, path: str ) -> str'
+			exception.method = 'analyze( self, text: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3190,7 +3191,7 @@ class Image( AI ):
 		------------
 		get_model_options( self ) -> str
 		generate( self, path: str ) -> str
-		analyze( self, path: str, input: str ) -> str
+		analyze( self, path: str, text: str ) -> str
 		get_detail_options( self ) -> list[ str ]
 		get_format_options( self ) -> list[ str ]
 		get_size_options( self ) -> list[ str ]
@@ -3269,7 +3270,7 @@ class Image( AI ):
 		return [ 'auto', 'low', 'high' ]
 	
 	
-	def generate( self, input: str ) -> str:
+	def generate( self, text: str ) -> str:
 		"""
 
 			Purpose
@@ -3279,7 +3280,7 @@ class Image( AI ):
 
 			Parameters
 			----------
-			input: str
+			text: str
 
 
 			Returns
@@ -3288,17 +3289,16 @@ class Image( AI ):
 
 		"""
 		try:
-			if input is None:
-				raise Exception( 'The "input" argument is required.' )
+			if text is None:
+				raise Exception( 'The "text" argument is required.' )
 			else:
-				self.input_text = input
+				self.input_text = text
 				self.response = self.client.images.generate(
 					model=self.model,
 					prompt=self.input_text,
 					size=self.size,
 					quality=self.quality,
-					n=self.number
-				)
+					n=self.number )
 				
 				return self.response.data[ 0 ].url
 		except Exception as e:
@@ -3321,27 +3321,27 @@ class Image( AI ):
 		'''
 		try:
 			if input is None:
-				raise Exception( 'The argument "input" cannot be None' )
+				raise Exception( 'The argument "text" cannot be None' )
 			elif path is None:
 				raise Exception( 'The argument "path" cannot be None' )
 			else:
 				self.input_text = input
 				self.file_path = path
-				self.input = \
-				[{
+				self.input = [
+				{
 						'role': 'user',
 						'content':
-							[
-								{
-									'type': 'input_text',
-									'text': self.input_text
-								},
-								{
-									'type': 'input_image',
-									'image_url': self.file_path
-								},
-							],
-					}]
+						[
+							{
+								'type': 'input_text',
+								'text': self.input_text
+							},
+							{
+								'type': 'input_image',
+								'image_url': self.file_path
+							},
+						],
+				}]
 				
 				self.response = self.client.responses.create( model='gpt-4o-mini',
 					input=self.input )
@@ -3351,7 +3351,7 @@ class Image( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'analyze( self, path: str, input: str ) -> str'
+			exception.method = 'analyze( self, path: str, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3377,7 +3377,7 @@ class Image( AI ):
 		"""
 		try:
 			if input is None:
-				raise Exception( 'The argument "input" cannot be None' )
+				raise Exception( 'The argument "text" cannot be None' )
 			elif path is None:
 				raise Exception( 'The argument "path" cannot be None' )
 			else:
@@ -3392,7 +3392,7 @@ class Image( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
-			exception.method = 'edit( self, input: str, path: str, size: str=1024X1024 ) -> str'
+			exception.method = 'edit( self, text: str, path: str, size: str=1024X1024 ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	

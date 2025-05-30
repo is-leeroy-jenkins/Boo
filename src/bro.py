@@ -48,8 +48,8 @@ from typing_extensions import override
 import requests
 import tiktoken
 from pygments.lexers.csound import newline
-from static import GptRequests, Roles, Languages
-from booggr import ErrorDialog, Error
+from static import Requests, Roles, Languages
+from boogrr import ErrorDialog, Error
 from typing import Any, List, Tuple, Optional
 
 

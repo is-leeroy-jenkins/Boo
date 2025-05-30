@@ -42,7 +42,7 @@
   ******************************************************************************************
   '''
 import subprocess as sp
-from booggr import *
+from boogrr import *
 from static import Client
 
 class App( ):

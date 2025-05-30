@@ -45,7 +45,7 @@ import json
 import pandas as pd
 import numpy as np
 from bs4 import BeautifulSoup
-from booggr import Error, ErrorDialog
+from boogrr import Error, ErrorDialog
 from pathlib import Path
 import nltk
 from nltk import pos_tag, FreqDist, ConditionalFreqDist
@@ -788,7 +788,7 @@ class Text:
 	def tiktokenize( self, text: str, model: str='cl100k_base' ) -> List[ str ]:
 		"""
 		
-		    Tokenizes input text into subword tokens
+		    Tokenizes text text into subword tokens
 		    using OpenAI's tiktoken tokenizer.
 		    This function leverages the tiktoken library,
 		    which provides byte-pair encoding (BPE)
@@ -799,7 +799,7 @@ class Text:
 		    Parameters
 		    ----------
 		    text : str
-		        The input string to be tokenized.
+		        The text string to be tokenized.
 		
 		    model : str, optional
 		        The tokenizer model to use. Examples include 'cl100k_base' (default),
@@ -1001,7 +1001,7 @@ class Text:
 
 			Purpose:
 			________
-			Splits the input text string into a list of
+			Splits the text text string into a list of
 			individual sentences using NLTK's Punkt sentence tokenizer.
 			This function is useful for preparing text for further linguistic processing,
 			such as tokenization, parsing, or named entity recognition.
@@ -1015,7 +1015,7 @@ class Text:
 			-------
 			List[str]
 				A list of sentence strings, each corresponding to a single sentence detected
-				in the input text.
+				in the text text.
 
 		"""
 		try:
@@ -1858,7 +1858,7 @@ class Token( ):
 			
 			Parameters:
 			__________
-			path - a string given as input
+			path - a string given as text
 			encoding - the encoding type
 			
 			Returns:

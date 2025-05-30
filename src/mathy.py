@@ -188,7 +188,7 @@ class Metric( BaseModel ):
 		"""
 
 			Fits the preprocessor
-			to the input data.
+			to the text data.
 
 			Args:
 				X (pd.DataFrame): Feature matrix.
@@ -201,7 +201,7 @@ class Metric( BaseModel ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
-			Transforms the input
+			Transforms the text
 			data using the fitted preprocessor.
 
 			Args:
@@ -218,7 +218,7 @@ class Metric( BaseModel ):
 		"""
 
 			Fits the preprocessor and
-			then transforms the input data.
+			then transforms the text data.
 
 			Args:
 				X (pd.DataFrame): Feature matrix.
@@ -268,6 +268,7 @@ class Dataset( BaseModel ):
 	categorical_features: Optional[ List[ str ] ]
 
 
+
 	class Config:
 		arbitrary_types_allowed = True
 
@@ -280,7 +281,7 @@ class Dataset( BaseModel ):
 			Initialize and split the dataset.
 
 			Parameters:
-				data (np.ndarray): Matrix input vector.
+				data (np.ndarray): Matrix text vector.
 				target List[ str ]: Name of the target columns.
 				size (float): Proportion of data to use as test set.
 				random_state (int): Seed for reproducibility.
@@ -337,7 +338,7 @@ class Dataset( BaseModel ):
 		"""
 		try:
 			if type is None:
-				raise Exception( 'The input argument "type" is None' )
+				raise Exception( 'The text argument "type" is None' )
 			elif self.scaler_type == 'standard':
 				_standard = StandardScaler( )
 				_values = _standard.fit_transform( self.data[ self.numeric_features ] )
@@ -668,7 +669,7 @@ class RobustScaler( Metric ):
 class Normalizer( Metric ):
 	"""
 
-		Scales input vectors individually to unit norm.
+		Scales text vectors individually to unit norm.
 
 	"""
 
@@ -752,7 +753,7 @@ class OneHotEncoder( Metric ):
 			to the categorical data.
 
 			Args:
-				X (np.ndarray): Categorical input data.
+				X (np.ndarray): Categorical text data.
 				y (Optional[np.ndarray]): Ignored.
 
 		"""
@@ -775,11 +776,11 @@ class OneHotEncoder( Metric ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
-			Transforms the input
+			Transforms the text
 			data into a one-hot encoded format.
 
 			Args:
-				X (np.ndarray): Categorical input data.
+				X (np.ndarray): Categorical text data.
 
 			Returns:
 				np.ndarray: One-hot encoded matrix.
@@ -820,7 +821,7 @@ class OrdinalEncoder( Metric ):
 			to the categorical data.
 
 			Args:
-				X (np.ndarray): Categorical input data.
+				X (np.ndarray): Categorical text data.
 				y (Optional[np.ndarray]): Ignored.
 
 		"""
@@ -842,11 +843,11 @@ class OrdinalEncoder( Metric ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
-			Transforms the input
+			Transforms the text
 			data into ordinal-encoded format.
 
 			Args:
-				X (np.ndarray): Categorical input data.
+				X (np.ndarray): Categorical text data.
 
 			Returns:
 				np.ndarray: Ordinal-encoded matrix.
@@ -909,7 +910,7 @@ class SimpleImputer( Metric ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
-			Transforms the input
+			Transforms the text
 			data by filling in missing target_values.
 
 			Args:
@@ -976,7 +977,7 @@ class NearestNeighborImputer( Metric ):
 			Purpose:
 			_________
 			
-			Transforms the input data by imputing missing target_values.
+			Transforms the text data by imputing missing target_values.
 
 			Args:
 				X (np.ndarray): Input data
@@ -1034,7 +1035,7 @@ class MlpRegressor( Model ):
 		"""
 
 			Fits all pipeline
-			steps to the input data.
+			steps to the text data.
 
 			Args:
 				X (np.ndarray): Input feature matrix.
@@ -1060,7 +1061,7 @@ class MlpRegressor( Model ):
 		"""
 
 			Applies all transformations
-			in the pipeline to the input data.
+			in the pipeline to the text data.
 
 			Args:
 				X (np.ndarray): Input feature matrix.
@@ -1088,7 +1089,7 @@ class MlpRegressor( Model ):
 		"""
 
 			Fits and transforms all
-			pipeline steps on the input data.
+			pipeline steps on the text data.
 
 			Args:
 				X (np.ndarray): Input feature matrix.
