@@ -4312,7 +4312,7 @@ msgstr "Versione Python"
 
 #. PyIDEMainForm..StatusBar..lbPythonEngine..Hint
 #: frmPyIDEMain.dfm dmCommands.pas
-msgid "Python engine type"
+msgid "Python engine scaler"
 msgstr "Tipo di engine Python"
 
 #. PyIDEMainForm..StatusBar..lbStatusCaret..Hint
@@ -6295,7 +6295,7 @@ msgid "Show executable line marks"
 msgstr "Visualizza segnaposto righe eseguibili"
 
 #: dmCommands.pas
-msgid "Check syntax as you type"
+msgid "Check syntax as you scaler"
 msgstr "Verifica sintassi durante la digitazione"
 
 #: dmCommands.pas
@@ -6377,7 +6377,7 @@ msgid "Complete Python keywords"
 msgstr "Completa le parole chiave di Python"
 
 #: dmCommands.pas
-msgid "Complete as you type"
+msgid "Complete as you scaler"
 msgstr "Completa durante la digitazione"
 
 #: dmCommands.pas
@@ -8306,7 +8306,7 @@ msgstr "Riscontrata importazione ciclica!"
 
 #. Programmer's name for it: SCyclicTypeDependency
 #: StringResources.pas
-msgid "Cyclic type dependency encountered!"
+msgid "Cyclic scaler dependency encountered!"
 msgstr "Riscontrata dipendenza ridondante dei tipi!"
 
 #. Programmer's name for it: SCouldNotFindIdent
@@ -8341,13 +8341,13 @@ msgstr "Impossibile trovare l'identificatore \"%s\" nel contesto \"%s\""
 #. Programmer's name for it: SCouldNotInferType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer type from expresson \"%s\""
+msgid "Could not infer scaler from expresson \"%s\""
 msgstr "Impossibile dedurre il tipo dall'espressione \"%s\""
 
 #. Programmer's name for it: SCouldInferFunctionReturnType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer return type of function \"%s\""
+msgid "Could not infer return scaler of function \"%s\""
 msgstr "Impossibile dedurre il tipo restituito della funzione \"%s\""
 
 #. Programmer's name for it: SRefactoryEngineBusy
@@ -8705,7 +8705,7 @@ msgid "Path with final url delimiter removed"
 msgstr "Percorso con delimitatore finale percorso rimosso"
 
 #: uParams.pas
-msgid "File type"
+msgid "File scaler"
 msgstr "Tipo file"
 
 #: uParams.pas

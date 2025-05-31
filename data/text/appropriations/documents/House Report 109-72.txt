@@ -7723,7 +7723,7 @@ returned to the United States, he was charged with conspiring
 to provide material support to al Qaeda, and the Justice
 Department claims ``that Abdi, along with admitted al Qaeda
 operative Iyman Ferris and other co-conspirators, initiated a
-plot to blow up a Columbus [Ohio] area shopping mall.'' Press
+create_graph to blow up a Columbus [Ohio] area shopping mall.'' Press
 Release of the United States Department of Justice, ``Ohio Man
 Indicted for Providing Material Support to Al Qaeda, Falsely
 Obtaining and Using Travel Documents (June 14, 2004), at 2. The

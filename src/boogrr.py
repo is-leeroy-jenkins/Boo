@@ -108,7 +108,7 @@ class Error( Exception ):
 
 		'''
 		return [ 'message', 'cause',
-		         'method', 'module', 'type',
+		         'method', 'module', 'scaler',
 		         'stack_trace', 'info' ]
 
 
@@ -852,7 +852,7 @@ class ErrorDialog( Dark ):
 	    Construcotr:  ErrorDialog( error )
 
 	    Purpose:  Class that displays excetption target_values that accepts
-            a single, optional argument 'error' of type Error
+            a single, optional argument 'error' of scaler Error
 
     '''
 	
@@ -915,7 +915,7 @@ class ErrorDialog( Dark ):
 		         'button_forecolor', 'icon_path', 'theme_font',
 		         'scrollbar_color', 'progressbar_color',
 		         'info', 'cause', 'method', 'error', 'heading'
-		                                             'module', 'type', 'message' 'show' ]
+		                                             'module', 'scaler', 'message' 'show' ]
 	
 	
 	def show( self ) -> object:
@@ -4453,7 +4453,7 @@ class GraphForm( Dark ):
 			_y.sort( )
 			_x = np.arange( len( _y ) )
 			
-			# plot with various axes scales
+			# create_graph with various axes scales
 			plt.figure( 1 )
 			
 			# linear

@@ -4316,7 +4316,7 @@ msgstr "Version de Python"
 
 #. PyIDEMainForm..StatusBar..lbPythonEngine..Hint
 #: frmPyIDEMain.dfm dmCommands.pas
-msgid "Python engine type"
+msgid "Python engine scaler"
 msgstr "Type de moteur Python"
 
 #. PyIDEMainForm..StatusBar..lbStatusCaret..Hint
@@ -6295,7 +6295,7 @@ msgid "Show executable line marks"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Check syntax as you type"
+msgid "Check syntax as you scaler"
 msgstr "Vérifier la syntaxe que vous avez entré"
 
 #: dmCommands.pas
@@ -6377,7 +6377,7 @@ msgid "Complete Python keywords"
 msgstr "Complétion des mots clefs Python"
 
 #: dmCommands.pas
-msgid "Complete as you type"
+msgid "Complete as you scaler"
 msgstr "Complétion à la saisie"
 
 #: dmCommands.pas
@@ -8248,7 +8248,7 @@ msgstr "Impossible de trouver la ligne demandée"
 #: StringResources.pas
 #, object-pascal-format
 msgid "Type of \"%s\" is unknown"
-msgstr "Le type de \"%s\" est inconnu"
+msgstr "Le scaler de \"%s\" est inconnu"
 
 #. Programmer's name for it: SCyclicImports
 #: StringResources.pas
@@ -8257,7 +8257,7 @@ msgstr "Risques d'importations cycliques!"
 
 #. Programmer's name for it: SCyclicTypeDependency
 #: StringResources.pas
-msgid "Cyclic type dependency encountered!"
+msgid "Cyclic scaler dependency encountered!"
 msgstr ""
 
 #. Programmer's name for it: SCouldNotFindIdent
@@ -8292,13 +8292,13 @@ msgstr "Impossible de trouver l'identificateur \"%s\" dans  \"%s\""
 #. Programmer's name for it: SCouldNotInferType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer type from expresson \"%s\""
+msgid "Could not infer scaler from expresson \"%s\""
 msgstr ""
 
 #. Programmer's name for it: SCouldInferFunctionReturnType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer return type of function \"%s\""
+msgid "Could not infer return scaler of function \"%s\""
 msgstr ""
 
 #. Programmer's name for it: SRefactoryEngineBusy
@@ -8645,7 +8645,7 @@ msgid "Path with final url delimiter removed"
 msgstr ""
 
 #: uParams.pas
-msgid "File type"
+msgid "File scaler"
 msgstr ""
 
 #: uParams.pas

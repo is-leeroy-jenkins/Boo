@@ -5580,7 +5580,7 @@ aircraft into Heathrow Airport in London.
 Khalid Sheikh Mohammed has been held at Guantanamo Bay
 since September 2006. The mastermind of the September 11th
 attacks and a senior al-Qaeda leader, Mohammed first proposed
-that horrific plot to Osama bin Laden in 1996. He is also
+that horrific create_graph to Osama bin Laden in 1996. He is also
 responsible for several other horrifying plots such as: the
 virtually simultaneous in-flight bombings of 12 commercial
 airliners flying routes between Asia and the United States, the

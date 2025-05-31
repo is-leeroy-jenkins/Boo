@@ -137,7 +137,10 @@ class Format( BaseModel ):
 	text: Optional[ Text ]
 	json_schema: Optional[ JsonSchema ]
 	json_object: Optional[ JsonObject ]
-	
+
+	class Config:
+		arbitrary_types_allowed = True
+
 	
 class Reasoning( BaseModel ):
 	'''
@@ -172,7 +175,7 @@ class Response( BaseModel ):
 	truncation: Optional[ str ]
 	text: Optional[ object ]
 	status: Optional[ str ]
-	created: Optional[ dt.datetime ]
+	created: Optional[ str ]
 	data: Optional[ Dict ]
 
 
@@ -319,7 +322,7 @@ class Header( ):
 		self.content_type = 'application/json'
 		self.api_key = os.environ.get( 'OPENAI_API_KEY' )
 		self.authoriztion = 'Bearer ' + os.environ.get( 'OPENAI_API_KEY' )
-		self.data = { 'content-type': self.content_type,
+		self.data = { 'content-scaler': self.content_type,
 		              'Authorization': self.authoriztion }
 	
 	
@@ -673,11 +676,11 @@ class Chat( AI ):
 						'role': 'user',
 						'content':
 							[
-								{ 'type': 'input_text',
+								{ 'scaler': 'input_text',
 								  'text': self.prompt
 								  },
 								{
-									'type': 'input_image',
+									'scaler': 'input_image',
 									'image_url': self.image_url
 								}
 							]
@@ -729,14 +732,14 @@ class Chat( AI ):
 					'role': 'user',
 					'content': [
 					{
-						'type': 'file',
+						'scaler': 'file',
 						'file':
 						{
 							'file_id': file.id,
 						}
 					},
 					{
-						'type': 'text',
+						'scaler': 'text',
 						'text': 'What is the first dragon in the book?',
 					}, ]
 				} ]
@@ -820,7 +823,7 @@ class Chat( AI ):
 			else:
 				self.tools = [
 				{
-					'type': 'file_search',
+					'scaler': 'file_search',
 					'vector_store_ids': self.vector_store_ids,
 					'max_num_results': 20
 				} ]
@@ -1073,11 +1076,11 @@ class Assistant( AI ):
 						'role': 'user',
 						'content':
 							[
-								{ 'type': 'input_text',
+								{ 'scaler': 'input_text',
 								  'text': self.prompt
 								  },
 								{
-									'type': 'input_image',
+									'scaler': 'input_image',
 									'image_url': self.image_url
 								}
 							]
@@ -1129,14 +1132,14 @@ class Assistant( AI ):
 					'role': 'user',
 					'content': [
 					{
-						'type': 'file',
+						'scaler': 'file',
 						'file':
 						{
 							'file_id': self.file.id,
 						}
 					},
 					{
-						'type': 'text',
+						'scaler': 'text',
 						'text': self.input_text,
 					},]
 				}]
@@ -1218,7 +1221,7 @@ class Assistant( AI ):
 			else:
 				self.tools = [
 				{
-					'type': 'file_search',
+					'scaler': 'file_search',
 					'vector_store_ids': self.vector_store_ids,
 					'max_num_results': 20
 				}, ]
@@ -1516,11 +1519,11 @@ class Bubba( AI ):
 					'role': 'user',
 					'content': [
 					{
-							'type': 'input_text',
+							'scaler': 'input_text',
 							'text': self.prompt
 					},
 					{
-						'type': 'input_image',
+						'scaler': 'input_image',
 						'image_url': self.image_url
 					} ]
 				} ]
@@ -1571,14 +1574,14 @@ class Bubba( AI ):
 					'role': 'user',
 					'content': [
 					{
-						'type': 'file',
+						'scaler': 'file',
 						'file':
 						{
 							'file_id': self.file.id,
 						}
 					},
 					{
-						'type': 'text',
+						'scaler': 'text',
 						'text': self.prompt,
 					}, ]
 				} ]
@@ -1663,7 +1666,7 @@ class Bubba( AI ):
 				self.prompt = prompt
 				self.tools = [
 				{
-					'type': 'file_search',
+					'scaler': 'file_search',
 					'vector_store_ids': self.vector_store_ids,
 					'max_num_results': 20
 				} ]
@@ -1971,11 +1974,11 @@ class Bro( AI ):
 					'role': 'user',
 					'content':[
 					{
-						'type': 'input_text',
+						'scaler': 'input_text',
 					    'text': self.prompt
 					},
 					{
-						'type': 'input_image',
+						'scaler': 'input_image',
 						'image_url': self.image_url
 					}]
 				}]
@@ -2028,14 +2031,14 @@ class Bro( AI ):
 					'role': 'user',
 					'content': [
 					{
-						'type': 'file',
+						'scaler': 'file',
 						'file':
 							{
 								'file_id': self.file.id,
 							}
 					},
 					{
-						'type': 'text',
+						'scaler': 'text',
 						'text': self.input_text,
 					}, ]
 				} ]
@@ -2119,7 +2122,7 @@ class Bro( AI ):
 			else:
 				self.tools = [
 				{
-					'type': 'file_search',
+					'scaler': 'file_search',
 					'vector_store_ids': self.vector_store_ids,
 					'max_num_results': 20
 				} ]
@@ -3085,11 +3088,11 @@ class LargeImage( AI ):
 						'role': 'user',
 						'content':
 							[
-								{ 'type': 'input_text',
+								{ 'scaler': 'input_text',
 								  'text': self.input_text
 								  },
 								{
-									'type': 'input_image',
+									'scaler': 'input_image',
 									'image_url': self.file_path
 								},
 							],
@@ -3343,11 +3346,11 @@ class Image( AI ):
 						'content':
 						[
 							{
-								'type': 'input_text',
+								'scaler': 'input_text',
 								'text': self.input_text
 							},
 							{
-								'type': 'input_image',
+								'scaler': 'input_image',
 								'image_url': self.file_path
 							},
 						],

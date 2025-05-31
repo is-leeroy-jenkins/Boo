@@ -4304,7 +4304,7 @@ msgstr "Pythonversion"
 
 #. PyIDEMainForm..StatusBar..lbPythonEngine..Hint
 #: frmPyIDEMain.dfm dmCommands.pas
-msgid "Python engine type"
+msgid "Python engine scaler"
 msgstr "Typ der Pythonumgebung"
 
 #. PyIDEMainForm..StatusBar..lbStatusCaret..Hint
@@ -6281,7 +6281,7 @@ msgid "Show executable line marks"
 msgstr "Zeige Marken für ausführbare Zeilen"
 
 #: dmCommands.pas
-msgid "Check syntax as you type"
+msgid "Check syntax as you scaler"
 msgstr "Syntxüberprüfung beim Tippen"
 
 #: dmCommands.pas
@@ -6363,7 +6363,7 @@ msgid "Complete Python keywords"
 msgstr "Python Schlüsselwörter vervollständigen"
 
 #: dmCommands.pas
-msgid "Complete as you type"
+msgid "Complete as you scaler"
 msgstr "Beim Schreiben vervollständigen"
 
 #: dmCommands.pas
@@ -8279,7 +8279,7 @@ msgstr "Zyklische Imports entdeckt!"
 
 #. Programmer's name for it: SCyclicTypeDependency
 #: StringResources.pas
-msgid "Cyclic type dependency encountered!"
+msgid "Cyclic scaler dependency encountered!"
 msgstr "Zyklische Typenabhängigkeit entdeckt!"
 
 #. Programmer's name for it: SCouldNotFindIdent
@@ -8314,13 +8314,13 @@ msgstr "Konnte Variable \"%s\" im Geltungsbereich \"%s\" nicht finden"
 #. Programmer's name for it: SCouldNotInferType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer type from expresson \"%s\""
+msgid "Could not infer scaler from expresson \"%s\""
 msgstr ""
 
 #. Programmer's name for it: SCouldInferFunctionReturnType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer return type of function \"%s\""
+msgid "Could not infer return scaler of function \"%s\""
 msgstr ""
 
 #. Programmer's name for it: SRefactoryEngineBusy
@@ -8676,7 +8676,7 @@ msgid "Path with final url delimiter removed"
 msgstr "Pfad ohne abschließendes Trennzeichen"
 
 #: uParams.pas
-msgid "File type"
+msgid "File scaler"
 msgstr "Dateityp"
 
 #: uParams.pas

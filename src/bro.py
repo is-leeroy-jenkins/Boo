@@ -87,7 +87,7 @@ class Header( ):
 		self.content_type = 'application/json'
 		self.api_key = os.environ.get( 'OPENAI_API_KEY' )
 		self.authoriztion = 'Bearer ' + os.environ.get( 'OPENAI_API_KEY' )
-		self.data = { 'content-type': self.content_type,
+		self.data = { 'content-scaler': self.content_type,
 		              'Authorization': self.authoriztion }
 	
 	
@@ -627,7 +627,7 @@ class GptRequest( AI ):
 		              'stops': f'{self.stops}',
 		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}',
+		              'content-scaler': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
 
 
@@ -676,7 +676,7 @@ class TextRequest( GptRequest ):
 		              'stops': f'{self.stops}',
 		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}',
+		              'content-scaler': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
 	
 	
@@ -779,7 +779,7 @@ class CompletionRequest( GptRequest ):
 		              'stops': f'{self.stops}',
 		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}',
+		              'content-scaler': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
 	
 	
@@ -886,7 +886,7 @@ class ImageRequest( GptRequest ):
 		              'stops': f'{self.stops}',
 		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}',
+		              'content-scaler': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
 	
 	
@@ -996,7 +996,7 @@ class SpeechRequest( GptRequest ):
 		              'stops': f'{self.stops}',
 		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}',
+		              'content-scaler': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
 
 
@@ -1047,7 +1047,7 @@ class TranslationRequest( GptRequest ):
 		              'stops': f'{self.stops}',
 		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}',
+		              'content-scaler': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
 	
 	
@@ -1103,7 +1103,7 @@ class TranscriptionRequest( GptRequest ):
 		              'stops': f'{self.stops}',
 		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}',
+		              'content-scaler': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
 	
 	
@@ -1160,7 +1160,7 @@ class EmbeddingRequest( GptRequest ):
 		              'stops': f'{self.stops}',
 		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}',
+		              'content-scaler': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
 	
 	
@@ -1220,7 +1220,7 @@ class VectorStoreRequest( GptRequest ):
 		              'stops': f'{self.stops}',
 		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}',
+		              'content-scaler': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
 	
 	
@@ -1280,7 +1280,7 @@ class GptFileRequest( GptRequest ):
 		              'stops': f'{self.stops}',
 		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}',
+		              'content-scaler': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
 	
 	
@@ -1339,7 +1339,7 @@ class UploadRequest( GptRequest ):
 		              'stops': f'{self.stops}',
 		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}',
+		              'content-scaler': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
 	
 	
@@ -1399,7 +1399,7 @@ class FineTuningRequest( GptRequest ):
 		              'stops': f'{self.stops}',
 		              'messages': f'{self.messages}',
 		              'authorization': f'{self.header.authoriztion}',
-		              'content-type': f'{self.header.content_type}',
+		              'content-scaler': f'{self.header.content_type}',
 		              'instructions': f'{self.instructions}' }
 	
 	
@@ -1429,7 +1429,7 @@ class GptMessage( ):
 		self.role = role
 		self.type = type
 		self.data = { 'role': f'{self.role}',
-		              'type': f'{self.type}',
+		              'scaler': f'{self.type}',
 		              'content': f'{self.content}' }
 	
 	
@@ -1443,7 +1443,7 @@ class GptMessage( ):
 		if not self.content is None:
 			_pair = f'''
             'role': '{self.role}', \r\n
-            'type': '{self.type}', \r\n
+            'scaler': '{self.type}', \r\n
             'content': '{self.content}'
             '''
 			_retval = '{ ' + _pair + ' }'
@@ -1458,7 +1458,7 @@ class GptMessage( ):
 		'''
 		new = '\r\n'
 		return 'role' + f' = {self.role}' + new + \
-			'type' + f' = {self.type}' + new + \
+			'scaler' + f' = {self.type}' + new + \
 			'content' + f' = {self.content}'
 	
 	
@@ -1467,7 +1467,7 @@ class GptMessage( ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'role', 'content', 'type' ]
+		return [ 'role', 'content', 'scaler' ]
 
 
 class SystemMessage( GptMessage ):
@@ -1484,7 +1484,7 @@ class SystemMessage( GptMessage ):
 		self.role = role
 		self.type = type
 		self.data = { 'role': f'{self.role}',
-		              'type': f'{self.type}',
+		              'scaler': f'{self.type}',
 		              'content': f'{self.content}' }
 	
 	
@@ -1498,7 +1498,7 @@ class SystemMessage( GptMessage ):
 		if not self.content is None:
 			_pair = f'''
             'role': '{self.role}', \r\n
-            'type': '{self.type}', \r\n
+            'scaler': '{self.type}', \r\n
             'content': '{self.content}'
             '''
 			_retval = '{ ' + _pair + ' }'
@@ -1513,7 +1513,7 @@ class SystemMessage( GptMessage ):
 		'''
 		new = '\r\n'
 		return 'role' + f' = {self.role}' + new + \
-			'type' + f' = {self.type}' + new + \
+			'scaler' + f' = {self.type}' + new + \
 			'content' + f' = {self.content}'
 	
 	
@@ -1522,7 +1522,7 @@ class SystemMessage( GptMessage ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'role', 'content', 'type' ]
+		return [ 'role', 'content', 'scaler' ]
 
 
 class UserMessage( GptMessage ):
@@ -1539,7 +1539,7 @@ class UserMessage( GptMessage ):
 		self.role = role
 		self.type = type
 		self.data = { 'role': f'{self.role}',
-		              'type': f'{self.type}',
+		              'scaler': f'{self.type}',
 		              'content': f'{self.content}' }
 	
 	
@@ -1553,7 +1553,7 @@ class UserMessage( GptMessage ):
 		if not self.content is None:
 			_pair = f'''
             'role': '{self.role}', \r\n
-            'type': '{self.type}', \r\n
+            'scaler': '{self.type}', \r\n
             'content': '{self.content}'
             '''
 			_retval = '{ ' + _pair + ' }'
@@ -1568,7 +1568,7 @@ class UserMessage( GptMessage ):
 		'''
 		new = '\r\n'
 		return 'role' + f' = {self.role}' + new + \
-			'type' + f' = {self.type}' + new + \
+			'scaler' + f' = {self.type}' + new + \
 			'content' + f' = {self.content}'
 	
 	
@@ -1579,7 +1579,7 @@ class UserMessage( GptMessage ):
 			Returns: get_list[ str ]
 
 		'''
-		return [ 'role', 'content', 'type' ]
+		return [ 'role', 'content', 'scaler' ]
 
 
 class DeveloperMessage( GptMessage ):
@@ -1596,7 +1596,7 @@ class DeveloperMessage( GptMessage ):
 		self.role = role
 		self.type = type
 		self.data = { 'role': f'{self.role}',
-		              'type': f'{self.type}',
+		              'scaler': f'{self.type}',
 		              'content': f'{self.content}' }
 	
 	
@@ -1610,7 +1610,7 @@ class DeveloperMessage( GptMessage ):
 		if not self.content is None:
 			_pair = f'''
             'role': '{self.role}', \r\n
-            'type': '{self.type}', \r\n
+            'scaler': '{self.type}', \r\n
             'content': '{self.content}'
             '''
 			_retval = '{ ' + _pair + ' }'
@@ -1625,7 +1625,7 @@ class DeveloperMessage( GptMessage ):
 		'''
 		new = '\r\n'
 		return 'role' + f' = {self.role}' + new + \
-			'type' + f' = {self.type}' + new + \
+			'scaler' + f' = {self.type}' + new + \
 			'content' + f' = {self.content}'
 	
 	
@@ -1634,7 +1634,7 @@ class DeveloperMessage( GptMessage ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'role', 'content', 'type' ]
+		return [ 'role', 'content', 'scaler' ]
 
 
 class AssistantMessage( GptMessage ):
@@ -1651,7 +1651,7 @@ class AssistantMessage( GptMessage ):
 		self.role = role
 		self.type = type
 		self.data = { 'role': f'{self.role}',
-		              'type': f'{self.type}',
+		              'scaler': f'{self.type}',
 		              'content': f'{self.content}' }
 	
 	
@@ -1665,7 +1665,7 @@ class AssistantMessage( GptMessage ):
 		if not self.content is None:
 			_pair = f'''
             'role': '{self.role}', \r\n
-            'type': '{self.type}', \r\n
+            'scaler': '{self.type}', \r\n
             'content': '{self.content}'
             '''
 			_retval = '{ ' + _pair + ' }'
@@ -1680,7 +1680,7 @@ class AssistantMessage( GptMessage ):
 		'''
 		new = '\r\n'
 		return 'role' + f' = {self.role}' + new + \
-			'type' + f' = {self.type}' + new + \
+			'scaler' + f' = {self.type}' + new + \
 			'content' + f' = {self.content}'
 	
 	
@@ -1689,7 +1689,7 @@ class AssistantMessage( GptMessage ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'role', 'content', 'type' ]
+		return [ 'role', 'content', 'scaler' ]
 
 
 class ChatLog( ):

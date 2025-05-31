@@ -4263,7 +4263,7 @@ msgstr "إصدار بايثون"
 
 #. PyIDEMainForm..StatusBar..lbPythonEngine..Hint
 #: frmPyIDEMain.dfm dmCommands.pas
-msgid "Python engine type"
+msgid "Python engine scaler"
 msgstr "نوع محرك بايثون"
 
 #. PyIDEMainForm..StatusBar..lbStatusCaret..Hint
@@ -6226,7 +6226,7 @@ msgid "Show executable line marks"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Check syntax as you type"
+msgid "Check syntax as you scaler"
 msgstr "فحص تركيب الجمل عند الكتابة"
 
 #: dmCommands.pas
@@ -6308,7 +6308,7 @@ msgid "Complete Python keywords"
 msgstr ""
 
 #: dmCommands.pas
-msgid "Complete as you type"
+msgid "Complete as you scaler"
 msgstr "أكمل عند الكتابة"
 
 #: dmCommands.pas
@@ -8163,7 +8163,7 @@ msgstr ""
 
 #. Programmer's name for it: SCyclicTypeDependency
 #: StringResources.pas
-msgid "Cyclic type dependency encountered!"
+msgid "Cyclic scaler dependency encountered!"
 msgstr ""
 
 #. Programmer's name for it: SCouldNotFindIdent
@@ -8198,13 +8198,13 @@ msgstr ""
 #. Programmer's name for it: SCouldNotInferType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer type from expresson \"%s\""
+msgid "Could not infer scaler from expresson \"%s\""
 msgstr ""
 
 #. Programmer's name for it: SCouldInferFunctionReturnType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer return type of function \"%s\""
+msgid "Could not infer return scaler of function \"%s\""
 msgstr "تعذر استنتاج نوع البيانات الراجعة من الدالة \"%s\""
 
 #. Programmer's name for it: SRefactoryEngineBusy
@@ -8551,7 +8551,7 @@ msgid "Path with final url delimiter removed"
 msgstr ""
 
 #: uParams.pas
-msgid "File type"
+msgid "File scaler"
 msgstr ""
 
 #: uParams.pas

@@ -4298,7 +4298,7 @@ msgstr "نگارش پایتون"
 
 #. PyIDEMainForm..StatusBar..lbPythonEngine..Hint
 #: frmPyIDEMain.dfm dmCommands.pas
-msgid "Python engine type"
+msgid "Python engine scaler"
 msgstr "نوع موتور پایتون"
 
 #. PyIDEMainForm..StatusBar..lbStatusCaret..Hint
@@ -6279,7 +6279,7 @@ msgid "Show executable line marks"
 msgstr "نمایش نشانه های خط اجرایی"
 
 #: dmCommands.pas
-msgid "Check syntax as you type"
+msgid "Check syntax as you scaler"
 msgstr "بررس دستور در حین تایپ"
 
 #: dmCommands.pas
@@ -6361,7 +6361,7 @@ msgid "Complete Python keywords"
 msgstr "کامل کردن کلیدواژه ی پایتون"
 
 #: dmCommands.pas
-msgid "Complete as you type"
+msgid "Complete as you scaler"
 msgstr "کامل کردن دستور در حین تایپ"
 
 #: dmCommands.pas
@@ -8279,7 +8279,7 @@ msgstr "مواجه با import های چرخه ای!"
 
 #. Programmer's name for it: SCyclicTypeDependency
 #: StringResources.pas
-msgid "Cyclic type dependency encountered!"
+msgid "Cyclic scaler dependency encountered!"
 msgstr "مواجه با وابسته های چرخه ای!"
 
 #. Programmer's name for it: SCouldNotFindIdent
@@ -8314,13 +8314,13 @@ msgstr "شناساگر \"%s\" در برد \"%s\" پیدا نشد"
 #. Programmer's name for it: SCouldNotInferType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer type from expresson \"%s\""
+msgid "Could not infer scaler from expresson \"%s\""
 msgstr "امکان پی بردن به نوع داده از عبارت \"%s\" نبود"
 
 #. Programmer's name for it: SCouldInferFunctionReturnType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer return type of function \"%s\""
+msgid "Could not infer return scaler of function \"%s\""
 msgstr "امکان پی بردن به نوع خروجی تابع \"%s\" نبود"
 
 #. Programmer's name for it: SRefactoryEngineBusy
@@ -8678,7 +8678,7 @@ msgid "Path with final url delimiter removed"
 msgstr "مسیر بدون محدود کننده های آخر آن"
 
 #: uParams.pas
-msgid "File type"
+msgid "File scaler"
 msgstr "نوع فایل"
 
 #: uParams.pas

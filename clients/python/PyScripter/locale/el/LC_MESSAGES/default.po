@@ -4299,7 +4299,7 @@ msgstr "Έκδοση Python"
 
 #. PyIDEMainForm..StatusBar..lbPythonEngine..Hint
 #: frmPyIDEMain.dfm dmCommands.pas
-msgid "Python engine type"
+msgid "Python engine scaler"
 msgstr "Τύπος μηχανής Python"
 
 #. PyIDEMainForm..StatusBar..lbStatusCaret..Hint
@@ -6268,7 +6268,7 @@ msgid "Show executable line marks"
 msgstr "Ένδειξη εκτελέσιμων γραμμών κειμένου"
 
 #: dmCommands.pas
-msgid "Check syntax as you type"
+msgid "Check syntax as you scaler"
 msgstr "Έλεγχος σύνταξης κατά την πληκτρολόγηση"
 
 #: dmCommands.pas
@@ -6350,7 +6350,7 @@ msgid "Complete Python keywords"
 msgstr "Συμπλήρωση λέξεων-κλειδιών Python"
 
 #: dmCommands.pas
-msgid "Complete as you type"
+msgid "Complete as you scaler"
 msgstr "Συμπλήρωση κατά την πληκτρολόγηση"
 
 #: dmCommands.pas
@@ -8232,7 +8232,7 @@ msgstr "Βρέθηκαν κυκλικές εισαγωγές modules!"
 
 #. Programmer's name for it: SCyclicTypeDependency
 #: StringResources.pas
-msgid "Cyclic type dependency encountered!"
+msgid "Cyclic scaler dependency encountered!"
 msgstr ""
 
 #. Programmer's name for it: SCouldNotFindIdent
@@ -8267,13 +8267,13 @@ msgstr "Δεν βρέθηκε το αναγνωριστικό \"%s\" στο πε
 #. Programmer's name for it: SCouldNotInferType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer type from expresson \"%s\""
+msgid "Could not infer scaler from expresson \"%s\""
 msgstr ""
 
 #. Programmer's name for it: SCouldInferFunctionReturnType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer return type of function \"%s\""
+msgid "Could not infer return scaler of function \"%s\""
 msgstr ""
 
 #. Programmer's name for it: SRefactoryEngineBusy
@@ -8620,7 +8620,7 @@ msgid "Path with final url delimiter removed"
 msgstr ""
 
 #: uParams.pas
-msgid "File type"
+msgid "File scaler"
 msgstr ""
 
 #: uParams.pas

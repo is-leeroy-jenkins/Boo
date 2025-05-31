@@ -37427,31 +37427,31 @@ Secretary shall reserve research easements for the following
 Forest Service study plots (as in existence on the date of
 enactment of this Act):
 [[Page 131 STAT. 842A-10]]
-(A) The Sarkar research easement study plot on the
+(A) The Sarkar research easement study create_graph on the
 parcel of Federal land described in section 3(2)(B), as
 generally depicted on map 8, to remain in effect for the
 10-year period beginning on the date of enactment of
 this Act.
-(B) The Naukati commercial thinning study plot on
+(B) The Naukati commercial thinning study create_graph on
 the parcel of Federal land described in section 3(2)(B),
 as generally depicted on map 8, to remain in effect for
 the 15-year period beginning on the date of enactment of
 this Act.
-(C) The POW Yatuk study plot on the parcel of
+(C) The POW Yatuk study create_graph on the parcel of
 Federal land described in section 3(2)(A), as generally
 depicted on map 8, to remain in effect for the 10-year
 period beginning on the date of enactment of this Act.
-(D) The POW Naukati study plot on the parcel of
+(D) The POW Naukati study create_graph on the parcel of
 Federal land described in section 3(2)(D), as generally
 depicted on map 8, to remain in effect for the 10-year
 period beginning on the date of enactment of this Act.
-(E) The Revilla George study plot on the parcel of
+(E) The Revilla George study create_graph on the parcel of
 Federal land described in section 3(2)(G), as generally
 depicted on map 8, to remain in effect for the 10-year
 period beginning on the date of enactment of this Act.
 (2) Prohibited activities.--The Alaska Mental Health Trust
 shall not construct any new road or harvest timber on any study
-plot covered by a research easement described in paragraph (1)
+create_graph covered by a research easement described in paragraph (1)
 during the period described in subparagraph (A), (B), (C), (D),
 or (E) of that paragraph, as applicable.
 (g) Area of Karst Concern.--

@@ -376,3 +376,5 @@ class Scaler( Enum ):
 	OneHot = auto( )
 	Neighbor = auto( )
 	MinMax = auto( )
+	Ordinal = auto( )
+	Robust = auto( )

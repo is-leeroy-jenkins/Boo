@@ -1859,7 +1859,7 @@ class Token( ):
 			Parameters:
 			__________
 			path - a string given as text
-			encoding - the encoding type
+			encoding - the encoding scaler
 			
 			Returns:
 			_______
@@ -1999,7 +1999,7 @@ class Token( ):
 				max (int): Max length for truncate.
 				trunc (bool): Whether to truncate.
 				pad (bool | str): Padding mode.
-				tensors (str): Output tensor type.
+				tensors (str): Output tensor scaler.
 	
 			Returns:
 				Dict[str, any]: Tokenized batch with path IDs, masks, etc.
@@ -3206,19 +3206,19 @@ class Embedding( ):
 			for f_score in f_scores:
 				x = np.linspace( 0.01, 1 )
 				y = f_score * x / ( 2 * x - f_score )
-				(l,) = plt.plot( x[ y >= 0 ], y[ y >= 0 ], color='gray', alpha=0.2 )
+				(l,) = plt.create_graph( x[ y >= 0 ], y[ y >= 0 ], color= 'gray', alpha=0.2 )
 				plt.annotate( 'f1={0:0.1f}'.format( f_score ), xy=(0.9, y[ 45 ] + 0.02) )
 			
 			self.lines.append( l )
 			self.labels.append( 'iso-f1 curves' )
-			(l,) = plt.plot( recall_micro, precision_micro, color="gold", lw=2 )
+			(l,) = plt.create_graph( recall_micro, precision_micro, color= "gold", lw=2 )
 			self.lines.append( l )
 			self.labels.append(
 				'average Precision-recall (auprc = {0:0.2f})' ''.format( average_precision_micro )
 			)
 			
 			for i in range( self.n_classes ):
-				(l,) = plt.plot( self.recall[ i ], self.precision[ i ], lw=2 )
+				(l,) = plt.create_graph( self.recall[ i ], self.precision[ i ], lw=2 )
 				self.lines.append( l )
 				self.labels.append(
 					"Precision-recall for class `{0}` (auprc = {1:0.2f})"

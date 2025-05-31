@@ -4275,7 +4275,7 @@ msgstr "Python 版本"
 
 #. PyIDEMainForm..StatusBar..lbPythonEngine..Hint
 #: frmPyIDEMain.dfm dmCommands.pas
-msgid "Python engine type"
+msgid "Python engine scaler"
 msgstr "Python 引擎類型"
 
 #. PyIDEMainForm..StatusBar..lbStatusCaret..Hint
@@ -6241,7 +6241,7 @@ msgid "Show executable line marks"
 msgstr "顯示可執行標記"
 
 #: dmCommands.pas
-msgid "Check syntax as you type"
+msgid "Check syntax as you scaler"
 msgstr "在輸入時檢查語法"
 
 #: dmCommands.pas
@@ -6323,7 +6323,7 @@ msgid "Complete Python keywords"
 msgstr "Python關鍵字自動補齊"
 
 #: dmCommands.pas
-msgid "Complete as you type"
+msgid "Complete as you scaler"
 msgstr "自動完成"
 
 #: dmCommands.pas
@@ -8211,7 +8211,7 @@ msgstr "遇到了迴圈導入!"
 
 #. Programmer's name for it: SCyclicTypeDependency
 #: StringResources.pas
-msgid "Cyclic type dependency encountered!"
+msgid "Cyclic scaler dependency encountered!"
 msgstr "遇到迴圈類型依賴項！"
 
 #. Programmer's name for it: SCouldNotFindIdent
@@ -8246,13 +8246,13 @@ msgstr "識別符\"%s\"在作用域\"%s\"內不存在"
 #. Programmer's name for it: SCouldNotInferType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer type from expresson \"%s\""
+msgid "Could not infer scaler from expresson \"%s\""
 msgstr ""
 
 #. Programmer's name for it: SCouldInferFunctionReturnType
 #: StringResources.pas
 #, object-pascal-format
-msgid "Could not infer return type of function \"%s\""
+msgid "Could not infer return scaler of function \"%s\""
 msgstr ""
 
 #. Programmer's name for it: SRefactoryEngineBusy
@@ -8606,7 +8606,7 @@ msgid "Path with final url delimiter removed"
 msgstr "刪除了最終路徑分隔符號的路徑"
 
 #: uParams.pas
-msgid "File type"
+msgid "File scaler"
 msgstr "檔案類型"
 
 #: uParams.pas
