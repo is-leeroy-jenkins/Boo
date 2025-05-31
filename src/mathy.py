@@ -5208,11 +5208,15 @@ class BaggingClassifier( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-		
+
+			Purpose:
+			--------
 			Fit the classifier.
+
 			Parameters:
-				X (pd.DataFrame): Feature matrix.
-				y (np.ndarray): Class labels.
+			----------
+			X (pd.DataFrame): Feature matrix.
+			y (np.ndarray): Class labels.
 			
 		"""
 		try:
@@ -5340,14 +5344,18 @@ class BaggingClassifier( Model ):
 	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
+			Purpose:
+			--------
 			Plot confusion matrix
 			for classifier predictions.
 
 			Parameters:
+			------------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True class labels.
 
 			Returns:
+			---------
 				None
 
 		"""
