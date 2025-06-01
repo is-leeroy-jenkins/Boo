@@ -10,7 +10,7 @@ def main( ) -> None:
         Main function. Initialize the window and handle the events.
 
     """
-    window = sg.Window( "Hello World!" )
+    window = sg.Window( 'Hello World!' )
     logger.debug( 'Application started.' )
 
     while True:

@@ -66,28 +66,60 @@ class Pascal( ):
 		self.output = input if input.istitle( ) else self.join( )
 
 
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+			Purpose:
+			--------
+			Provides access to a string representation of the object.
+
+			Parameters:
+			----------
+			self
+
+			Returns:
+			--------
+			str | None
+
+
+		'''
 		if self.output is not None:
 			return self.output
 
 
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> list[ str ] | None:
 		'''
 		
-			Retunes a get_list[ str ] of member names.
-		
+			Purpose:
+			--------
+			Creates a List[ str ] of type members
+
+			Parameters:
+			----------
+			self
+
+			Returns:
+			--------
+			List[ str ] | None
+
 		'''
 		return [ 'path', 'cleaned_lines', 'split', 'join' ]
 
 
 	def split( self ) -> str:
 		'''
-			
+
 			Purpose:
-	
+			--------
+
+
 			Parameters:
-	
+			----------
+
+
 			Returns:
+			--------
+
 			
 		'''
 
@@ -117,12 +149,18 @@ class Pascal( ):
 
 	def join( self ) -> str:
 		'''
-			
+
 			Purpose:
-	
+			--------
+
+
 			Parameters:
-	
+			----------
+
+
 			Returns:
+			--------
+
 			
 		'''
 
@@ -184,9 +222,21 @@ class SqlPath( ):
 		self.access_path = os.getcwd( ) + r'\db\access\Boo.accdb'
 
 
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
-		Retunes a get_list[ str ] of member names.
+
+			Purpose:
+			--------
+			Creates a List[ str ] of type members
+
+			Parameters:
+			----------
+			self
+
+			Returns:
+			--------
+			List[ str ] | None
+
 		'''
 		return [ 'sqlite_driver', 'sqlite_database',
 		         'access_driver', 'access_path' ]
@@ -226,10 +276,20 @@ class SqlFile( ):
 		              'TreasurySymbols' ]
 
 
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 		
-			Retunes a get_list[ str ] of member names.
+			Purpose:
+			--------
+			Creates a List[ str ] of type members
+
+			Parameters:
+			----------
+			self
+
+			Returns:
+			--------
+			List[ str ] | None
 			
 		'''
 		return [ 'source', 'provider', 'command_type', 'get_file_path',
@@ -240,10 +300,16 @@ class SqlFile( ):
 		'''
 
 			Purpose:
-	
+			--------
+
+
 			Parameters:
-	
+			----------
+
+
 			Returns:
+			--------
+
 
 		'''
 
@@ -276,15 +342,21 @@ class SqlFile( ):
 			error.show( )
 
 
-	def get_folder_path( self ) -> str:
+	def get_folder_path( self ) -> str | None:
 		'''
 		
 			Purpose:
-	
+			--------
+
+
 			Parameters:
-	
+			----------
+
+
 			Returns:
-			
+			--------
+
+
 		'''
 
 		try:
@@ -318,15 +390,20 @@ class SqlFile( ):
 
 	def get_command_text( self ) -> str:
 		'''
-			
+
 			Purpose:
-	
+			--------
+
+
 			Parameters:
-	
+			----------
+
+
 			Returns:
+			--------
+
 			
 		'''
-
 		try:
 			_source = self.source.name
 			_paths = self.get_file_path( )
@@ -389,14 +466,42 @@ class DbConfig( ):
 		              'TreasurySymbols' ]
 
 
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+			Purpose:
+			--------
+			Provides access to a string representation of the object.
+
+			Parameters:
+			----------
+			self
+
+			Returns:
+			--------
+			str | None
+
+
+		'''
 		if self.table_name is not None:
 			return self.table_name
 
 
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
-		Retunes a get_list[ str ] of member names.
+
+			Purpose:
+			--------
+			Creates a List[ str ] of type members
+
+			Parameters:
+			----------
+			self
+
+			Returns:
+			--------
+			List[ str ] | None
+
 		'''
 		return [ 'source', 'provider', 'table_name', 'get_driver_info',
 		         'sqlite_path', 'access_driver', 'access_path',
@@ -408,11 +513,16 @@ class DbConfig( ):
 		'''
 	
 			Purpose:
-				Returns a path defining the driverinfo being used
+			---------
+			Returns a path defining the driverinfo being used
 	
-			Parameters:  None
+			Parameters:
+			----------
+			self
 	
-			Returns:  str
+			Returns:
+			--------
+			str
 
 		'''
 		try:
@@ -434,12 +544,18 @@ class DbConfig( ):
 
 	def get_data_path( self ) -> str:
 		'''
-	
+
 			Purpose:
-	
+			--------
+
+
 			Parameters:
-	
+			----------
+
+
 			Returns:
+			--------
+
 
 		'''
 
@@ -462,12 +578,18 @@ class DbConfig( ):
 
 	def get_connection_string( self ) -> str:
 		'''
-	
+
 			Purpose:
-	
+			--------
+
+
 			Parameters:
-	
+			----------
+
+
 			Returns:
+			--------
+
 
 		'''
 
@@ -510,10 +632,20 @@ class Connection( DbConfig ):
 		self.connection_string = super( ).get_connection_string( )
 
 
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 		
-			Retunes a get_list[ str ] of member names.
+			Purpose:
+			--------
+			Creates a List[ str ] of type members
+
+			Parameters:
+			----------
+			self
+
+			Returns:
+			--------
+			List[ str ] | None
 			
 		'''
 		return [ 'source', 'provider', 'table_name', 'getdriver_info',
@@ -524,15 +656,20 @@ class Connection( DbConfig ):
 
 	def connect( self ):
 		'''
+
 			Purpose:
-				Establishes a target_values connections using the connecdtion
-				path.
+			--------
+			Establishes a target_values connections using the connecdtion
+			path.
 	
 			Parameters:
-				self
+			---------
+			self
 	
 			Returns:
-				None
+			--------
+			None
+
 		'''
 
 		try:
@@ -554,14 +691,16 @@ class Connection( DbConfig ):
 class SqlConfig( ):
 	'''
 
-	 Constructor:
+		 Constructor:
+		 ------------
 
-		 SqlConfig( commandtype: SQL=SQL.SELECTALL, columnnames: get_list = None,
-					columnvalues: tuple=None, paramstyle: ParamStyle = None )
+			 SqlConfig( commandtype: SQL=SQL.SELECTALL, columnnames: get_list = None,
+						columnvalues: tuple=None, paramstyle: ParamStyle = None )
 
-	 Purpose:
+		 Purpose:
+		 --------
 
-		 Class provides database interaction behavior
+			 Class provides database interaction behavior
 
 	 '''
 
@@ -575,10 +714,20 @@ class SqlConfig( ):
 			if names is not None and values is not None else None
 
 
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-		Returns a get_list[ str ] of member names.
+			Purpose:
+			--------
+			Creates a List[ str ] of type members
+
+			Parameters:
+			----------
+			self
+
+			Returns:
+			--------
+			List[ str ] | None
 
 		'''
 		return [ 'command_type', 'column_names', 'column_values',
@@ -588,11 +737,19 @@ class SqlConfig( ):
 
 	def pair_dump( self ) -> str:
 		'''
-		Purpose:
 
-		Parameters:
+			Purpose:
+			--------
 
-		Returns:
+
+			Parameters:
+			----------
+
+
+			Returns:
+			--------
+
+
 		'''
 
 		try:
@@ -618,11 +775,19 @@ class SqlConfig( ):
 
 	def where_dump( self ) -> str:
 		'''
-		Purpose:
 
-		Parameters:
+			Purpose:
+			--------
 
-		Returns:
+
+			Parameters:
+			----------
+
+
+			Returns:
+			--------
+
+
 		'''
 
 		try:
@@ -649,11 +814,17 @@ class SqlConfig( ):
 	def set_dump( self ) -> str:
 		'''
 
-		Purpose:
+			Purpose:
+			--------
 
-		Parameters:
 
-		Returns:
+			Parameters:
+			----------
+
+
+			Returns:
+			--------
+
 
 		'''
 
@@ -680,11 +851,19 @@ class SqlConfig( ):
 
 	def column_dump( self ) -> str:
 		'''
-		Purpose:
 
-		Parameters:
+			Purpose:
+			--------
 
-		Returns:
+
+			Parameters:
+			----------
+
+
+			Returns:
+			--------
+
+
 		'''
 
 		try:
@@ -709,11 +888,19 @@ class SqlConfig( ):
 
 	def value_dump( self ) -> str:
 		'''
-		Purpose:
 
-		Parameters:
+			Purpose:
+			--------
 
-		Returns:
+
+			Parameters:
+			----------
+
+
+			Returns:
+			--------
+
+
 		'''
 
 		try:
@@ -740,13 +927,13 @@ class DataGenerator( ):
 	'''
 	
 		Constructor:
-	
-			DataGenerator( source: Source )
+		-----------
+		DataGenerator( source: Source )
 	
 		Purpose:
-	
-			Class containing factory method for providing
-			pandas dataframes.
+		--------
+		Class containing factory method for providing
+		pandas dataframes.
 
 	'''
 
@@ -758,9 +945,21 @@ class DataGenerator( ):
 		self.command_text = f'SELECT * FROM {src.name};'
 
 
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
-			Returns a get_list[ str ] of member names
+
+			Purpose:
+			--------
+			Creates a List[ str ] of type members
+
+			Parameters:
+			----------
+			self
+
+			Returns:
+			--------
+			List[ str ] | None
+
 		'''
 		return [ 'source', 'data_path', 'table_name',
 		         'command_text', 'create_frame', 'create_tuples' ]
@@ -770,10 +969,16 @@ class DataGenerator( ):
 		'''
 
 			Purpose:
-	
+			--------
+
+
 			Parameters:
-	
+			----------
+
+
 			Returns:
+			--------
+
 
 		'''
 
@@ -797,12 +1002,18 @@ class DataGenerator( ):
 
 	def create_tuples( self ) -> list[ tuple ]:
 		'''
-	
+
 			Purpose:
-	
+			--------
+
+
 			Parameters:
-	
+			----------
+
+
 			Returns:
+			--------
+
 
 		'''
 
