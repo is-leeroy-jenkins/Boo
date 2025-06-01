@@ -549,6 +549,10 @@ class StandardScaler( Metric ):
 			X (np.ndarray): Input data.
 			y (Optional[np.ndarray]): Ignored.
 
+			Returns:
+			--------
+				Pipeline
+
 		"""
 		try:
 			if X is None:
@@ -623,6 +627,10 @@ class MinMaxScaler( Metric ):
 			-----------
 				X (np.ndarray): Input data.
 				y (Optional[np.ndarray]): Ignored.
+
+			Returns:
+			--------
+				Pipeline
 
 		"""
 		try:
@@ -700,6 +708,10 @@ class RobustScaler( Metric ):
 				X (np.ndarray): Input data.
 				y (Optional[np.ndarray]): Ignored.
 
+			Returns:
+			--------
+				Pipeline
+
 		"""
 		try:
 			if X is None:
@@ -774,6 +786,10 @@ class Normalizer( Metric ):
 			-----------
 				X (np.ndarray): Input data.
 				y (Optional[np.ndarray]): Ignored.
+
+			Returns:
+			--------
+				Pipeline
 
 		"""
 		try:
@@ -850,6 +866,10 @@ class OneHotEncoder( Metric ):
 			-----------
 				X (np.ndarray): Categorical text data.
 				y (Optional[np.ndarray]): Ignored.
+
+			Returns:
+			--------
+				Pipeline
 
 		"""
 		try:
@@ -929,6 +949,10 @@ class OrdinalEncoder( Metric ):
 			X (np.ndarray): Categorical text data.
 			y (Optional[np.ndarray]): Ignored.
 
+			Returns:
+			--------
+				Pipeline
+
 		"""
 		try:
 			if X is None:
@@ -1005,6 +1029,10 @@ class SimpleImputer( Metric ):
 				X (np.ndarray): Input data with missing target_values.
 				y (Optional[np.ndarray]): Ignored.
 
+			Returns:
+			--------
+				Pipeline
+
 		"""
 		try:
 			if X is None:
@@ -1080,6 +1108,10 @@ class NeighborImputer( Metric ):
 			_____
 			X (np.ndarray): Input data with missing target_values.
 			y (Optional[np.ndarray]): Ignored.
+
+			Returns:
+			--------
+				Pipeline
 
 		"""
 		try:
@@ -1186,8 +1218,8 @@ class PerceptronClassifier( Model ):
 				y (np.ndarray): Binary class labels.
 
 			Returns:
-			---------
-				None
+			--------
+				Pipeline
 
 		"""
 		try:
@@ -1417,6 +1449,10 @@ class MultilayerRegressor( Model ):
 				X (np.ndarray): Input feature matrix.
 				y (Optional[np.ndarray]): Optional target array.
 
+			Returns:
+			--------
+				Pipeline
+
 		"""
 		try:
 			if X is None:
@@ -1537,8 +1573,10 @@ class MultilayerRegressor( Model ):
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 
-			Evaluate the model using
-			multiple regression metrics.
+			Purpose:
+			-----------
+			Evaluate the model using multiple regression metrics.
+
 
 			Parameters:
 			-----------
@@ -1618,7 +1656,9 @@ class MultilayerRegressor( Model ):
 
 class LinearRegressor( Model ):
 	"""
-	
+
+		Purpose:
+		-----------
 		Ordinary Least Squares Regression.
 	
 	"""
@@ -1671,10 +1711,10 @@ class LinearRegressor( Model ):
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
-	
+
 			Returns:
-			-----------
-				None
+			--------
+				Pipeline
 			
 		"""
 		try:
@@ -1694,9 +1734,11 @@ class LinearRegressor( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
-			Predict target target_values
-			using the OLS linerar_model.
+
+
+			Purpose:
+			-----------
+			Predict target target_values using the OLS linerar_model.
 	
 			Parameters:
 			-----------
@@ -1724,9 +1766,11 @@ class LinearRegressor( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
-			Compute the R-squared
-			score of the OLS model.
+
+
+			Purpose:
+			-----------
+			Compute the R-squared score of the OLS model.
 	
 			Parameters:
 			-----------
@@ -1758,9 +1802,11 @@ class LinearRegressor( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-		
-			Evaluate the model using
-			multiple regression metrics.
+
+
+			Purpose:
+			-----------
+			Evaluate the model using multiple regression metrics.
 	
 			Parameters:
 			-----------
@@ -2025,9 +2071,11 @@ class RidgeRegressor( Model ):
 
 	def __init__( self, alpha: float=1.0, solver: str='auto', max: int=1000, rando: int=42 ) -> None:
 		"""
-		
-			Initialize the
-			RidgeRegressor linerar_model.
+
+
+			Purpose:
+			-----------
+			Initialize the RidgeRegressor linerar_model.
 	
 			Attributes:
 			-----------
@@ -2055,18 +2103,20 @@ class RidgeRegressor( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-			
-			Fit the RidgeRegressor
-			regression linerar_model.
+
+
+			Purpose:
+			-----------
+			Fit the RidgeRegressor regression linerar_model.
 	
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
-	
+
 			Returns:
-			-----------
-				None
+			--------
+				Pipeline
 				
 		"""
 		try:
@@ -2088,9 +2138,11 @@ class RidgeRegressor( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
-			Project target target_values
-			using the RidgeRegressor linerar_model.
+
+
+			Purpose:
+			-----------
+			Project target target_values using the RidgeRegressor linerar_model.
 	
 			Parameters:
 			-----------
@@ -2118,9 +2170,11 @@ class RidgeRegressor( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
-			Compute the R-squared
-			score for the Ridge model.
+
+
+			Purpose:
+			-----------
+			Compute the R-squared score for the Ridge model.
 	
 			Parameters:
 			-----------
@@ -2199,9 +2253,11 @@ class RidgeRegressor( Model ):
 
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-		
-			Plot predicted vs
-			actual target_values.
+
+
+			Purpose:
+			-----------
+			Plot predicted vs actual target_values.
 	
 			Parameters:
 			-----------
@@ -2262,9 +2318,11 @@ class LassoRegressor( Model ):
 	def __init__( self, alph: float=1.0, max: int=500, rando: int=42,
 	              mix='random' ) -> None:
 		"""
-		
-			Initialize the
-			LassoRegressor linerar_model.
+
+
+			Purpose:
+			-----------
+			Initialize the LassoRegressor linerar_model.
 	
 			Attributes:
 			-----------
@@ -2301,10 +2359,10 @@ class LassoRegressor( Model ):
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
-	
+
 			Returns:
-			---------
-				None
+			--------
+				Pipeline
 			
 		"""
 		try:
@@ -2326,10 +2384,12 @@ class LassoRegressor( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-		
-			Predict target target_values
-			using the LassoRegressor linerar_model.
-	
+
+			Purpose:
+			-----------
+			Predict target target_values using the LassoRegressor linerar_model.
+
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
@@ -2356,9 +2416,11 @@ class LassoRegressor( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
-			Compute R^2 score
-			for the Lasso model.
+
+
+			Purpose:
+			-----------
+			Compute R^2 score for the Lasso model.
 	
 			Parameters:
 			-----------
@@ -2389,10 +2451,13 @@ class LassoRegressor( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-		
-			Evaluate the Lasso model
-			using multiple regression metrics.
-	
+
+
+			Purpose:
+			-----------
+			Evaluate the Lasso model using multiple regression metrics.
+
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input feature_names.
@@ -2435,9 +2500,11 @@ class LassoRegressor( Model ):
 
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-		
-			Plot actual vs.
-			predicted target_values.
+
+
+			Purpose:
+			-----------
+			Plot actual vs. predicted target_values.
 	
 			Parameters:
 			-----------
@@ -2527,18 +2594,20 @@ class ElasticNetRegressor( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-		
-			Fit the ElasticNetRegressor
-			regression linerar_model.
+
+
+			Purpose:
+			-----------
+			Fit the ElasticNetRegressor regression linerar_model.
 	
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
-	
+
 			Returns:
-			-----------
-				None
+			--------
+				Pipeline
 			
 		"""
 		try:
@@ -2560,9 +2629,11 @@ class ElasticNetRegressor( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-		
-			Predict target target_values
-			using the ElasticNetRegressor linerar_model.
+
+
+			Purpose:
+			-----------
+			Predict target target_values using the ElasticNetRegressor linerar_model.
 	
 			Parameters:
 			-----------
@@ -2590,9 +2661,11 @@ class ElasticNetRegressor( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
-			Compute R^2 score
-			on the test set.
+
+
+			Purpose:
+			-----------
+			Compute R^2 score on the test set.
 	
 			Parameters:
 			-----------
@@ -2621,10 +2694,13 @@ class ElasticNetRegressor( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-		
-			Evaluate model performance
-			using regression metrics.
-	
+
+
+			Purpose:
+			-----------
+			Evaluate model performance using regression metrics.
+
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input feature_names.
@@ -2667,9 +2743,10 @@ class ElasticNetRegressor( Model ):
 
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-		
-			Plot actual vs. predicted
-			regression output.
+
+			Purpose:
+			-----------
+			Plot actual vs. predicted regression output.
 	
 			Parameters:
 			-----------
@@ -2736,8 +2813,7 @@ class LogisticRegressor( Model ):
 
 			Purpose:
 			--------
-			Initialize the Logistic
-			Regression linerar_model.
+			Initialize the Logistic Regression linerar_model.
 
 			Parameters:
 			-----------
@@ -2763,18 +2839,19 @@ class LogisticRegressor( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-			
-			Fit the logistic
-			regression linerar_model.
+
+			Purpose:
+			-----------
+			Fit the logistic regression linerar_model.
 	
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target class labels.
-	
+
 			Returns:
-			-----------
-				None
+			--------
+				Pipeline
 				
 		"""
 		try:
@@ -2796,9 +2873,10 @@ class LogisticRegressor( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-		
-			Predict class labels using
-			the logistic regression linerar_model.
+
+			Purpose:
+			-----------
+			Predict class labels using the logistic regression linerar_model.
 	
 			Parameters:
 			-----------
@@ -2826,9 +2904,10 @@ class LogisticRegressor( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-			
-			Compute classification
-			accuracy.
+
+			Purpose:
+			-----------
+			Compute classification accuracy.
 	
 			Parameters:
 			-----------
@@ -2859,9 +2938,10 @@ class LogisticRegressor( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-			
-			Evaluate the classifier
-			using multiple classification metrics.
+
+			Purpose:
+			-----------
+			Evaluate the classifier using multiple classification metrics.
 	
 			Parameters:
 			-----------
@@ -2912,9 +2992,10 @@ class LogisticRegressor( Model ):
 
 	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-		
-			Plot confusion matrix
-			for classifier predictions.
+
+			Purpose:
+			-----------
+			Plot confusion matrix for classifier predictions.
 	
 			Parameters:
 			-----------
@@ -3016,10 +3097,10 @@ class BayesianRidgeRegressor( Model ):
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
-	
+
 			Returns:
-			-----------
-				None
+			--------
+				Pipeline
 			
 		"""
 		try:
@@ -3108,9 +3189,10 @@ class BayesianRidgeRegressor( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-			
-			Evaluate the Bayesian model
-			with regression metrics.
+
+			Purpose:
+			-----------
+			Evaluate the Bayesian model with regression metrics.
 	
 			Parameters:
 			-----------
@@ -3154,9 +3236,10 @@ class BayesianRidgeRegressor( Model ):
 
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-		
-			Plot predicted vs.
-			actual target_values.
+
+			Purpose:
+			-----------
+			Plot predicted vs. actual target_values.
 	
 			Parameters:
 			-----------
@@ -3213,9 +3296,10 @@ class StochasticGradientClassifier( Model ):
 
 	def __init__( self, loss: str='hinge', max: int=5, reg: str='l2' ) -> None:
 		"""
-		
-			Initialize the
-			SGDClassifier linerar_model.
+
+			Purpose:
+			-----------
+			Initialize the SGDClassifier linerar_model.
 	
 			Attributes:
 			-----------
@@ -3242,18 +3326,19 @@ class StochasticGradientClassifier( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-			
-			Fit the SGD
-			classifier linerar_model.
+
+			Purpose:
+			-----------
+			Fit the SGD classifier linerar_model.
 	
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Class labels.
-	
+
 			Returns:
-			-----------
-				None
+			--------
+				Pipeline
 			
 		"""
 		try:
@@ -3275,9 +3360,10 @@ class StochasticGradientClassifier( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
-				Predict class labels
-				using the SGD classifier.
+
+				Purpose:
+				-----------
+					Predict class labels using the SGD classifier.
 		
 				Parameters:
 				-----------
@@ -3305,9 +3391,10 @@ class StochasticGradientClassifier( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
-			Compute R^2 score
-			for the SGDRegressor.
+
+			Purpose:
+			-----------
+			Compute R^2 score for the SGDRegressor.
 	
 			Parameters:
 			-----------
@@ -3337,9 +3424,10 @@ class StochasticGradientClassifier( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]:
 		"""
-		 
-			Evaluate the classifier
-			using standard metrics.
+
+			Purpose:
+			-----------
+			Evaluate the classifier using standard metrics.
 	
 			Parameters:
 			-----------
@@ -3394,8 +3482,9 @@ class StochasticGradientClassifier( Model ):
 	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
-			Plot confusion matrix
-			for classifier predictions.
+			Purpose:
+			-----------
+			Plot confusion matrix for classifier predictions.
 
 			Parameters:
 			-----------
@@ -3463,10 +3552,10 @@ class StochasticGradientRegressor( Model ):
 
 	def __init__( self, loss: str='hinge', max: int=5, reg: str='l2' ) -> None:
 		"""
-		
-		
-			Initialize the
-			SGDRegressor linerar_model.
+
+			Purpose:
+			-----------
+			Initialize the SGDRegressor linerar_model.
 	
 			Attributes:
 			-----------
@@ -3494,18 +3583,19 @@ class StochasticGradientRegressor( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-			
-			Fit the SGD
-			regressor linerar_model.
+
+			Purpose:
+			-----------
+			Fit the SGD regressor linerar_model.
 	
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target target_values.
-	
+
 			Returns:
-			-----------
-				None
+			--------
+				Pipeline
 			
 		"""
 		try:
@@ -3527,9 +3617,10 @@ class StochasticGradientRegressor( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
-			Predict target_values using
-			the SGD regressor linerar_model.
+
+			Purpose:
+			-----------
+			Predict target_values using the SGD regressor linerar_model.
 	
 			Parameters:
 			-----------
@@ -3558,8 +3649,9 @@ class StochasticGradientRegressor( Model ):
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 
-			Compute R^2 score
-			for the SGDRegressor.
+			Purpose:
+			-----------
+			Compute R^2 score for the SGDRegressor.
 
 			Parameters:
 			-----------
@@ -3590,9 +3682,10 @@ class StochasticGradientRegressor( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-			
-			Evaluate regression model
-			performance.
+
+			Purpose:
+			-----------
+			Evaluate regression model performance.
 	
 			Parameters:
 			-----------
@@ -3637,8 +3730,9 @@ class StochasticGradientRegressor( Model ):
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
-			Plot predicted vs.
-			actual target_values.
+			Purpose:
+			-----------
+			Plot predicted vs. actual target_values.
 
 			Parameters:
 			-----------
@@ -3698,9 +3792,11 @@ class NearestNeighborClassifier( Model ):
 
 	def __init__( self, num: int=5 ) -> None:
 		"""
-			
-			Initialize the KNeighborsClassifier l
-			inerar_model.
+
+
+			Purpose:
+			-----------
+			Initialize the KNeighborsClassifier linerar_model.
 	
 			Attributes:
 			-----------
@@ -3756,9 +3852,11 @@ class NearestNeighborClassifier( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
-			Predict class labels
-			using the KNN classifier.
+
+
+			Purpose:
+			-----------
+			Predict class labels using the KNN classifier.
 	
 			Parameters:
 			-----------
@@ -3788,9 +3886,11 @@ class NearestNeighborClassifier( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-			
-			Compute classification
-			accuracy for k-NN.
+
+
+			Purpose:
+			-----------
+			Compute classification accuracy for k-NN.
 	
 			Parameters:
 			-----------
@@ -3820,10 +3920,13 @@ class NearestNeighborClassifier( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-		
-			Evaluate classification performance
-			using various metrics.
-	
+
+
+			Purpose:
+			-----------
+			Evaluate classification performance using various metrics.
+
+
 			Parameters:
 			-----------
 				X (np.ndarray): Feature matrix of shape (n_samples, n_features).
@@ -3876,8 +3979,10 @@ class NearestNeighborClassifier( Model ):
 	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
-			Plot confusion matrix
-			for classifier predictions.
+
+			Purpose:
+			-----------
+			Plot confusion matrix for classifier predictions.
 
 			Parameters:
 			-----------
@@ -3939,9 +4044,11 @@ class NearestNeighborRegressor( Model ):
 
 	def __init__( self, num: int=5 ) -> None:
 		"""
-		
-			Initialize the
-			KNeighborsRegressor linerar_model.
+
+
+			Purpose:
+			-----------
+			Initialize the KNeighborsRegressor linerar_model.
 	
 			Parameters:
 			-----------
@@ -3964,18 +4071,20 @@ class NearestNeighborRegressor( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-			
-			Fit the KNN
-			regressor linerar_model.
+
+
+			Purpose:
+			-----------
+			Fit the KNN regressor linerar_model.
 	
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target target_values.
-	
+
 			Returns:
-			-----------
-				None
+			--------
+				Pipeline
 			
 		"""
 		try:
@@ -3997,9 +4106,10 @@ class NearestNeighborRegressor( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-		
-			Predict target_values using
-			the KNN regressor.
+
+			Purpose:
+			-----------
+			Predict target_values using the KNN regressor.
 	
 			Parameters:
 			-----------
@@ -4027,9 +4137,10 @@ class NearestNeighborRegressor( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-			
-			Compute R^2 score
-			for k-NN regressor.
+
+			Purpose:
+			-----------
+			Compute R^2 score for k-NN regressor.
 	
 			Parameters:
 			-----------
@@ -4060,10 +4171,12 @@ class NearestNeighborRegressor( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]:
 		"""
-			
-			Evaluate k-NN regression
-			performance with multiple metrics.
-	
+
+			Purpose:
+			-----------
+			Evaluate k-NN regression performance with multiple metrics.
+
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test feature_names.
@@ -4106,9 +4219,10 @@ class NearestNeighborRegressor( Model ):
 
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-		
-			Plot predicted vs
-			actual target_values.
+
+			Purpose:
+			-----------
+				Plot predicted vs actual target_values.
 	
 			Parameters:
 			-----------
@@ -4181,7 +4295,9 @@ class RandomForestClassifier( Model ):
 
 	def __init__( self, est: int=10, crit: str='gini', max: int=3, rando: int=42 ) -> None:
 		"""
-		
+
+			Purpose:
+			-----------
 			Initializes the RandomForestClassifier.
 			
 		"""
@@ -4203,8 +4319,11 @@ class RandomForestClassifier( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-		
+
+			Purpose:
+			-----------
 			Fit the classifier.
+
 
 			Parameters:
 			-----------
@@ -4212,8 +4331,8 @@ class RandomForestClassifier( Model ):
 				y (np.ndarray): Class labels.
 
 			Returns:
-			---------
-			Pipeline
+			--------
+				Pipeline
 
 			
 		"""
@@ -4268,9 +4387,10 @@ class RandomForestClassifier( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
-			Compute R^2 score
-			for the SGDRegressor.
+
+			Purpose:
+			-----------
+			Compute R^2 score for the SGDRegressor.
 	
 			Parameters:
 			-----------
@@ -4301,9 +4421,10 @@ class RandomForestClassifier( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]:
 		"""
-		
-			Evaluate the Lasso model
-			using multiple regression metrics.
+
+			Purpose:
+			-----------
+			Evaluate the Lasso model using multiple regression metrics.
 	
 			Parameters:
 			-----------
@@ -4349,8 +4470,9 @@ class RandomForestClassifier( Model ):
 	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
-			Plot confusion matrix
-			for classifier predictions.
+			Purpose:
+			-----------
+			Plot confusion matrix for classifier predictions.
 
 			Parameters:
 			-----------
@@ -4421,9 +4543,10 @@ class RandomForestRegressor( Model ):
 
 	def __init__( self, est: int=10, crit: str='gini', max: int=3, rando: int=42 ) -> None:
 		"""
-		
-			Initialize the
-			RidgeRegressor linerar_model.
+
+			Purpose:
+			-----------
+			Initialize the RidgeRegressor linerar_model.
 	
 			Parameters:
 			-----------
@@ -4451,18 +4574,19 @@ class RandomForestRegressor( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-			
-			Fit the RidgeRegressor
-			regression linerar_model.
+
+			Purpose:
+			-----------
+			Fit the RidgeRegressor regression linerar_model.
 	
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
-	
+
 			Returns:
-			-----------
-				None
+			--------
+				Pipeline
 				
 		"""
 		try:
@@ -4484,9 +4608,10 @@ class RandomForestRegressor( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
-			Project target target_values
-			using the RidgeRegressor linerar_model.
+
+			Purpose:
+			-----------
+			Project target target_values using the RidgeRegressor linerar_model.
 	
 			Parameters:
 			-----------
@@ -4514,9 +4639,10 @@ class RandomForestRegressor( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
-			Compute the R-squared
-			score for the Ridge model.
+
+			Purpose:
+			-----------
+			Compute the R-squared score for the Ridge model.
 	
 			Parameters:
 			-----------
@@ -4547,9 +4673,10 @@ class RandomForestRegressor( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-			
-			Evaluates the Ridge model
-			using multiple metrics.
+
+			Purpose:
+			-----------
+			Evaluates the Ridge model using multiple metrics.
 	
 			Parameters:
 			-----------
@@ -4593,9 +4720,10 @@ class RandomForestRegressor( Model ):
 
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-		
-			Plot predicted vs
-			actual target_values.
+
+			Purpose:
+			-----------
+			Plot predicted vs actual target_values.
 	
 			Parameters:
 			-----------
@@ -4663,11 +4791,11 @@ class GradientBoostingClassifier( Model ):
 
 			Purpose:
 			________
-			Initialize the GradientBoostingClassifier.
+				Initialize the GradientBoostingClassifier.
 
 			Parameters:
 			___________
-			**kwargs: Parameters for GradientBoostingClassifier.
+				**kwargs: Parameters for GradientBoostingClassifier.
 
 		"""
 		super( ).__init__( )
@@ -4693,12 +4821,16 @@ class GradientBoostingClassifier( Model ):
 
 			Purpose:
 			________
-			Fit the model to the training data.
+				Fit the model to the training data.
 
 			Parameters:
 			__________
 				X (np.ndarray): Feature matrix.
 				y (np.ndarray): Class labels.
+
+			Returns:
+			--------
+				Pipeline
 
 		"""
 		self.pipeline = self.gradient_boost_classifier.fit( X, y )
@@ -4710,7 +4842,7 @@ class GradientBoostingClassifier( Model ):
 
 			Purpose:
 			________
-			Predict class labels.
+				Predict class labels.
 
 			Parameters:
 			__________
@@ -4730,7 +4862,7 @@ class GradientBoostingClassifier( Model ):
 
 			Purpose:
 			_______
-			Compute classification accuracy.
+				Compute classification accuracy.
 
 			Parameters:
 			__________
@@ -4781,12 +4913,12 @@ class GradientBoostingClassifier( Model ):
 
 			Purpose:
 			--------
-			Display the confusion matrix.
+				Display the confusion matrix.
 
 			Parameters:
 			-----------
-			X (np.ndarray): Input features.
-			y (np.ndarray): Ground truth labels.
+				X (np.ndarray): Input features.
+				y (np.ndarray): Ground truth labels.
 
 		"""
 		self.prediction = self.gradient_boost_classifier.predict( X )
@@ -4831,11 +4963,11 @@ class GradientBoostingRegressor( Model ):
 
 			Purpose:
 			_______
-			Initialize the GradientBoostingRegressor.
+				Initialize the GradientBoostingRegressor.
 
 			Parameters:
 			__________
-			**kwargs: Keyword arguments passed to the constructor.
+				**kwargs: Keyword arguments passed to the constructor.
 
 		"""
 		super( ).__init__( )
@@ -4860,16 +4992,16 @@ class GradientBoostingRegressor( Model ):
 
 			Purpose:
 			_______
-			Fit the gradient boosting model.
+				Fit the gradient boosting model.
 
 			Parameters:
 			___________
-			X (np.ndarray): Training features.
-			y (np.ndarray): Training targets.
+				X (np.ndarray): Training features.
+				y (np.ndarray): Training targets.
 
 			Returns:
 			--------
-			Pipeline
+				Pipeline
 
 		"""
 		self.pipeline = self.gradient_boost_regressor.fit( X, y )
@@ -5049,12 +5181,16 @@ class AdaBoostClassifier( Model ):
 
 			Purpose:
 			_______
-			Fit the classifier.
+				Fit the classifier.
 
 			Parameters:
 			_________
-			X (pd.DataFrame): Feature matrix.
-			y (np.ndarray): Class labels.
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Class labels.
+
+			Returns:
+			--------
+				Pipeline
 			
 		"""
 		try:
@@ -5277,9 +5413,10 @@ class AdaBoostRegressor( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-			
-			Fit the RidgeRegressor
-			regression linerar_model.
+
+			Purpose:
+			--------
+				Fit the RidgeRegressor regression linerar_model.
 	
 			Parameters:
 			-----------
@@ -5518,16 +5655,16 @@ class BaggingClassifier( Model ):
 
 			Purpose:
 			--------
-			Fit the classifier.
+			 Fit the classifier.
 
 			Parameters:
 			----------
-			X (pd.DataFrame): Feature matrix.
-			y (np.ndarray): Class labels.
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Class labels.
 
 			Returns:
 			-------
-			Pipeline
+				Pipeline
 
 		"""
 		try:
@@ -5762,18 +5899,19 @@ class BaggingRegressor( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-			
-			Fit the RidgeRegressor
-			regression linerar_model.
+
+			Purpose:
+			--------
+			Fit the RidgeRegressor regression linerar_model.
 	
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
-	
+
 			Returns:
-			-----------
-				None
+			--------
+				Pipeline
 				
 		"""
 		try:
@@ -5987,13 +6125,19 @@ class VotingClassifier( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-		
-			Fit the classifier.
+
+			Purpose:
+			---------
+				Fit the classifier.
 
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Class labels.
+
+			Returns:
+			--------
+				Pipeline
 			
 		"""
 		try:
@@ -6213,18 +6357,19 @@ class VotingRegressor( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-			
-			Fit the RidgeRegressor
-			regression linerar_model.
+
+			Purpose:
+			--------
+			Fit the RidgeRegressor regression linerar_model.
 	
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
-	
+
 			Returns:
-			-----------
-				None
+			--------
+				Pipeline
 				
 		"""
 		try:
@@ -6439,12 +6584,16 @@ class StackingClassifier( Model ):
 
 			Purpose:
 			---------
-			Fit the classifier.
+				Fit the classifier.
 
 			Parameters:
 			----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Class labels.
+
+			Returns:
+			--------
+				Pipeline
 			
 		"""
 		try:
@@ -6663,18 +6812,19 @@ class StackingRegressor( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
-			
-			Fit the RidgeRegressor
-			regression linerar_model.
+
+			Purpose:
+			---------
+			Fit the RidgeRegressor regression linerar_model.
 	
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
-	
+
 			Returns:
-			-----------
-				None
+			--------
+				Pipeline
 				
 		"""
 		try:
