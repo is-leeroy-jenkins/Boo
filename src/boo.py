@@ -231,6 +231,8 @@ class Function( BaseModel ):
 class Message( BaseModel ):
 	'''
 
+		Purpose:
+		--------
 		Class representing the system message
 
 	'''
@@ -243,7 +245,9 @@ class Message( BaseModel ):
 
 class EndPoint( ):
 	'''
-	
+
+		Purpose:
+		---------
 		The class containing endpoints for OpenAI
 		
 	'''
@@ -312,7 +316,9 @@ class EndPoint( ):
 
 class Header( ):
 	'''
-	
+
+		Purpose:
+		-------
 		Class used to encapsulate GPT headers
 		
 	'''
@@ -326,12 +332,21 @@ class Header( ):
 		              'Authorization': self.authoriztion }
 	
 	
-	def __dir__( self ) -> List[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
-		
-			Methods that returns a list of member names
-			Returns: list[ str ]
-			
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
 		'''
 		return [ 'content_type', 'api_key', 'authorization', 'data' ]
 
@@ -412,10 +427,21 @@ class Models( ):
 			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY' ]
 	
 	
-	def __dir__( self ) -> List[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
 		'''
 		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completion',
 		         'speech_generation', 'responses', 'reasoning',
@@ -880,12 +906,21 @@ class Chat( AI ):
 			'size' + f' = {self.size}' + new
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
-		
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-			
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
@@ -1331,11 +1366,21 @@ class Assistant( AI ):
 			'size' + f' = {self.size}' + new
 	
 	
-	def __dir__( self ):
+	def __dir__( self ) -> List[ str ] | None:
 		'''
-		
-			Method that returns a list of members
-		
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
@@ -1785,11 +1830,21 @@ class Bubba( AI ):
 			'size' + f' = {self.size}' + new
 	
 	
-	def __dir__( self ) -> List[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
-		
-			Method that returns a list of members
-		
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
 		'''
 		return  [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
@@ -2452,11 +2507,20 @@ class Embedding( AI ):
 			'size' + f' = {self.size}' + new
 	
 	
-	def __dir__( self ) -> List[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
 
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
@@ -2634,12 +2698,21 @@ class TTS( AI ):
 			'size' + f' = {self.size}' + new
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
-		
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-			
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
@@ -2791,12 +2864,21 @@ class Transcription( AI ):
 			'size' + f' = {self.size}' + new
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
-		
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-			
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
@@ -2958,12 +3040,21 @@ class Translation( AI ):
 			'size' + f' = {self.size}' + new
 	
 	
-	def __dir__( self ) -> List[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
-		
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
-			
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
@@ -3155,11 +3246,20 @@ class LargeImage( AI ):
 		         '1792x1024' ]
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
 
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
@@ -3410,11 +3510,20 @@ class Image( AI ):
 			error.show( )
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-			Methods that returns a get_list of member names
-			Returns: get_list[ str ]
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
 
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',

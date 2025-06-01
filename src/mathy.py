@@ -3481,16 +3481,19 @@ class NearestNeighborClassifier( Model ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-		
-			Fit the KNN
-			classifier linerar_model.
+
+			Purpose:
+			--------
+			Fit the KNN classifier linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Class labels.
 	
 			Returns:
-				None
+			-------
+			None
 			
 		"""
 		try:
@@ -3517,9 +3520,11 @@ class NearestNeighborClassifier( Model ):
 			using the KNN classifier.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted class labels.
 			
 		"""
@@ -3547,10 +3552,12 @@ class NearestNeighborClassifier( Model ):
 			accuracy for k-NN.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth labels.
 	
 			Returns:
+			-----------
 				float: Accuracy score.
 			
 		"""
@@ -3577,10 +3584,12 @@ class NearestNeighborClassifier( Model ):
 			using various metrics.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Feature matrix of shape (n_samples, n_features).
 				y (np.ndarray): True class labels of shape (n_samples,).
 	
 			Returns:
+			-----------
 				dict: Dictionary containing:
 					- Accuracy (float)
 					- Precision (float)
@@ -3630,10 +3639,12 @@ class NearestNeighborClassifier( Model ):
 			for classifier predictions.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True class labels.
 
 			Returns:
+			-----------
 				None
 
 		"""
@@ -3691,7 +3702,8 @@ class NearestNeighborRegressor( Model ):
 			Initialize the
 			KNeighborsRegressor linerar_model.
 	
-			Attributes:
+			Parameters:
+			-----------
 				linerar_model (KNeighborsRegressor): Internal non-parametric regressor.
 					Parameters:
 						n_neighbors (int): Number of neighbors to use. Default is 5.
@@ -3716,10 +3728,12 @@ class NearestNeighborRegressor( Model ):
 			regressor linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target target_values.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -3747,9 +3761,11 @@ class NearestNeighborRegressor( Model ):
 			the KNN regressor.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted target_values.
 			
 		"""
@@ -3775,10 +3791,12 @@ class NearestNeighborRegressor( Model ):
 			for k-NN regressor.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
+			-----------
 				float: R-squared score.
 				
 		"""
@@ -3806,10 +3824,12 @@ class NearestNeighborRegressor( Model ):
 			performance with multiple metrics.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): True target target_values.
 	
 			Returns:
+			-----------
 				dict: Dictionary of evaluation scores.
 			
 		"""
@@ -3850,10 +3870,12 @@ class NearestNeighborRegressor( Model ):
 			actual target_values.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -3942,9 +3964,16 @@ class RandomForestClassifier( Model ):
 		"""
 		
 			Fit the classifier.
+
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Class labels.
+
+			Returns:
+			---------
+			Pipeline
+
 			
 		"""
 		try:
@@ -4003,10 +4032,12 @@ class RandomForestClassifier( Model ):
 			for the SGDRegressor.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				float: R^2 score.
 			
 		"""
@@ -4034,10 +4065,12 @@ class RandomForestClassifier( Model ):
 			using multiple regression metrics.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				dict: Dictionary of MAE, RMSE, R², etc.
 			
 		"""
@@ -4079,10 +4112,12 @@ class RandomForestClassifier( Model ):
 			for classifier predictions.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True class labels.
 
 			Returns:
+			-----------
 				None
 
 		"""
@@ -4149,7 +4184,8 @@ class RandomForestRegressor( Model ):
 			Initialize the
 			RidgeRegressor linerar_model.
 	
-			Attributes:
+			Parameters:
+			-----------
 				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
 					Parameters:
 						alpha (float): Regularization strength. Default is 1.0.
@@ -4179,10 +4215,12 @@ class RandomForestRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
+			-----------
 				None
 				
 		"""
@@ -4210,9 +4248,11 @@ class RandomForestRegressor( Model ):
 			using the RidgeRegressor linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted target target_values.
 			
 		"""
@@ -4238,10 +4278,12 @@ class RandomForestRegressor( Model ):
 			score for the Ridge model.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
+			-----------
 				float: R-squared score.
 				
 		"""
@@ -4269,10 +4311,12 @@ class RandomForestRegressor( Model ):
 			using multiple metrics.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				dict: Evaluation metrics including MAE, RMSE, R², etc.
 			
 		"""
@@ -4313,10 +4357,12 @@ class RandomForestRegressor( Model ):
 			actual target_values.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -4498,8 +4544,8 @@ class GradientBoostingClassifier( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input features.
-				y (np.ndarray): Ground truth labels.
+			X (np.ndarray): Input features.
+			y (np.ndarray): Ground truth labels.
 
 		"""
 		self.prediction = self.gradient_boost_classifier.predict( X )
@@ -4544,11 +4590,11 @@ class GradientBoostingRegressor( Model ):
 
 			Purpose:
 			_______
-				Initialize the GradientBoostingRegressor.
+			Initialize the GradientBoostingRegressor.
 
 			Parameters:
 			__________
-				**kwargs: Keyword arguments passed to the constructor.
+			**kwargs: Keyword arguments passed to the constructor.
 
 		"""
 		super( ).__init__( )
@@ -4577,8 +4623,12 @@ class GradientBoostingRegressor( Model ):
 
 			Parameters:
 			___________
-				X (np.ndarray): Training features.
-				y (np.ndarray): Training targets.
+			X (np.ndarray): Training features.
+			y (np.ndarray): Training targets.
+
+			Returns:
+			--------
+			Pipeline
 
 		"""
 		self.pipeline = self.gradient_boost_regressor.fit( X, y )
@@ -4594,11 +4644,11 @@ class GradientBoostingRegressor( Model ):
 
 			Parameters:
 			_________
-				X (np.ndarray): Feature matrix.
+			X (np.ndarray): Feature matrix.
 
 			Returns:
 			________
-				np.ndarray: Predicted target values.
+			np.ndarray: Predicted target values.
 
 		"""
 		self.prediction = self.gradient_boost_regressor.predict( X )
@@ -4614,12 +4664,12 @@ class GradientBoostingRegressor( Model ):
 
 			Parameters:
 			___________
-				X (np.ndarray): Test features.
-				y (np.ndarray): True target values.
+			X (np.ndarray): Test features.
+			y (np.ndarray): True target values.
 
 			Returns:
 			_______
-				float: R² score.
+			float: R² score.
 
 		"""
 		self.prediction = self.gradient_boost_regressor.predict( X )
@@ -4635,12 +4685,12 @@ class GradientBoostingRegressor( Model ):
 
 			Parameters:
 			__________
-				X (np.ndarray): Input features.
-				y (np.ndarray): Ground truth target values.
+			X (np.ndarray): Input features.
+			y (np.ndarray): Ground truth target values.
 
 			Returns:
 			________
-				Dict[str, float]: Evaluation metrics.
+			Dict[str, float]: Evaluation metrics.
 
 		"""
 		self.prediction = self.gradient_boost_regressor.predict( X )
@@ -4664,8 +4714,8 @@ class GradientBoostingRegressor( Model ):
 
 			Parameters:
 			___________
-				X (np.ndarray): Feature matrix.
-				y (np.ndarray): Ground truth target values.
+			X (np.ndarray): Feature matrix.
+			y (np.ndarray): Ground truth target values.
 
 		"""
 		self.prediction = self.gradient_boost_regressor.predict( X )
@@ -4728,10 +4778,9 @@ class AdaBoostClassifier( Model ):
 		"""
 			
 			Purpose:
-				Scale numeric feature_names using selected scaler.
-	
-			Raises:
-				ValueError: If scaler scaler is not 'standard' or 'minmax'.
+			-----------
+			Scale numeric feature_names using selected scaler.
+
 				
 		"""
 		if self.scaler_type is None:
@@ -4759,12 +4808,12 @@ class AdaBoostClassifier( Model ):
 
 			Purpose:
 			_______
-				Fit the classifier.
+			Fit the classifier.
 
 			Parameters:
 			_________
-				X (pd.DataFrame): Feature matrix.
-				y (np.ndarray): Class labels.
+			X (pd.DataFrame): Feature matrix.
+			y (np.ndarray): Class labels.
 			
 		"""
 		try:
@@ -4787,14 +4836,16 @@ class AdaBoostClassifier( Model ):
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
-				Predict class labels
-				using the SGD classifier.
-		
-				Parameters:
-					X (pd.DataFrame): Feature matrix.
-		
-				Returns:
-					np.ndarray: Predicted class labels.
+			Predict class labels
+			using the SGD classifier.
+
+			Parameters:
+			-----------
+			X (pd.DataFrame): Feature matrix.
+
+			Returns:
+			-----------
+			np.ndarray: Predicted class labels.
 			
 		"""
 		try:
@@ -4819,10 +4870,12 @@ class AdaBoostClassifier( Model ):
 			for the SGDRegressor.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				float: R^2 score.
 			
 		"""
@@ -4851,10 +4904,12 @@ class AdaBoostClassifier( Model ):
 			using multiple regression metrics.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				dict: Dictionary of MAE, RMSE, R², etc.
 			
 		"""
@@ -4896,10 +4951,12 @@ class AdaBoostClassifier( Model ):
 			for classifier predictions.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True class labels.
 
 			Returns:
+			-----------
 				None
 
 		"""
@@ -4956,6 +5013,7 @@ class AdaBoostRegressor( Model ):
 			RidgeRegressor linerar_model.
 	
 			Attributes:
+			-----------
 				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
 					Parameters:
 						alpha (float): Regularization strength. Default is 1.0.
@@ -4983,10 +5041,12 @@ class AdaBoostRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
+			-----------
 				None
 				
 		"""
@@ -5014,9 +5074,11 @@ class AdaBoostRegressor( Model ):
 			using the RidgeRegressor linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted target target_values.
 			
 		"""
@@ -5077,10 +5139,12 @@ class AdaBoostRegressor( Model ):
 			using multiple metrics.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				dict: Evaluation metrics including MAE, RMSE, R², etc.
 			
 		"""
@@ -5121,10 +5185,12 @@ class AdaBoostRegressor( Model ):
 			actual target_values.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -5217,7 +5283,11 @@ class BaggingClassifier( Model ):
 			----------
 			X (pd.DataFrame): Feature matrix.
 			y (np.ndarray): Class labels.
-			
+
+			Returns:
+			-------
+			Pipeline
+
 		"""
 		try:
 			if X is None:
@@ -5239,14 +5309,16 @@ class BaggingClassifier( Model ):
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
-				Predict class labels
-				using the SGD classifier.
-		
-				Parameters:
-					X (pd.DataFrame): Feature matrix.
-		
-				Returns:
-					np.ndarray: Predicted class labels.
+			Predict class labels
+			using the SGD classifier.
+
+			Parameters:
+			-----------
+				X (pd.DataFrame): Feature matrix.
+
+			Returns:
+			-----------
+				np.ndarray: Predicted class labels.
 			
 		"""
 		try:
@@ -5271,10 +5343,12 @@ class BaggingClassifier( Model ):
 			for the SGDRegressor.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				float: R^2 score.
 			
 		"""
@@ -5303,10 +5377,12 @@ class BaggingClassifier( Model ):
 			using multiple regression metrics.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				dict: Dictionary of MAE, RMSE, R², etc.
 			
 		"""
@@ -5419,6 +5495,7 @@ class BaggingRegressor( Model ):
 			RidgeRegressor linerar_model.
 	
 			Attributes:
+			-----------
 				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
 					Parameters:
 						alpha (float): Regularization strength. Default is 1.0.
@@ -5449,10 +5526,12 @@ class BaggingRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
+			-----------
 				None
 				
 		"""
@@ -5480,9 +5559,11 @@ class BaggingRegressor( Model ):
 			using the RidgeRegressor linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted target target_values.
 			
 		"""
@@ -5508,10 +5589,12 @@ class BaggingRegressor( Model ):
 			score for the Ridge model.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
+			-----------
 				float: R-squared score.
 				
 		"""
@@ -5539,10 +5622,12 @@ class BaggingRegressor( Model ):
 			using multiple metrics.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				dict: Evaluation metrics including MAE, RMSE, R², etc.
 			
 		"""
@@ -5583,10 +5668,12 @@ class BaggingRegressor( Model ):
 			actual target_values.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -5661,7 +5748,9 @@ class VotingClassifier( Model ):
 		"""
 		
 			Fit the classifier.
+
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Class labels.
 			
@@ -5686,14 +5775,16 @@ class VotingClassifier( Model ):
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
-				Predict class labels
-				using the SGD classifier.
-		
-				Parameters:
-					X (pd.DataFrame): Feature matrix.
-		
-				Returns:
-					np.ndarray: Predicted class labels.
+			Predict class labels
+			using the SGD classifier.
+
+			Parameters:
+			-----------
+				X (pd.DataFrame): Feature matrix.
+
+			Returns:
+			-----------
+				np.ndarray: Predicted class labels.
 			
 		"""
 		try:
@@ -5718,10 +5809,12 @@ class VotingClassifier( Model ):
 			for the SGDRegressor.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				float: R^2 score.
 			
 		"""
@@ -5749,10 +5842,12 @@ class VotingClassifier( Model ):
 			using multiple regression metrics.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				dict: Dictionary of MAE, RMSE, R², etc.
 			
 		"""
@@ -5794,10 +5889,12 @@ class VotingClassifier( Model ):
 			for classifier predictions.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True class labels.
 
 			Returns:
+			-----------
 				None
 
 		"""
@@ -5853,6 +5950,7 @@ class VotingRegressor( Model ):
 			RidgeRegressor linerar_model.
 	
 			Attributes:
+			-----------
 				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
 					Parameters:
 						alpha (float): Regularization strength. Default is 1.0.
@@ -5879,10 +5977,12 @@ class VotingRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
+			-----------
 				None
 				
 		"""
@@ -5942,10 +6042,12 @@ class VotingRegressor( Model ):
 			score for the Ridge model.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
+			-----------
 				float: R-squared score.
 				
 		"""
@@ -5973,10 +6075,12 @@ class VotingRegressor( Model ):
 			using multiple metrics.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				dict: Evaluation metrics including MAE, RMSE, R², etc.
 			
 		"""
@@ -6017,10 +6121,12 @@ class VotingRegressor( Model ):
 			actual target_values.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -6120,14 +6226,16 @@ class StackingClassifier( Model ):
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
-				Predict class labels
-				using the SGD classifier.
+			Predict class labels
+			using the SGD classifier.
 		
-				Parameters:
-					X (pd.DataFrame): Feature matrix.
+			Parameters:
+			-----------
+			X (pd.DataFrame): Feature matrix.
 		
-				Returns:
-					np.ndarray: Predicted class labels.
+			Returns:
+			-----------
+			np.ndarray: Predicted class labels.
 			
 		"""
 		try:
@@ -6152,10 +6260,12 @@ class StackingClassifier( Model ):
 			for the SGDRegressor.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				float: R^2 score.
 			
 		"""
@@ -6183,10 +6293,12 @@ class StackingClassifier( Model ):
 			using multiple regression metrics.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				dict: Dictionary of MAE, RMSE, R², etc.
 			
 		"""
@@ -6228,10 +6340,12 @@ class StackingClassifier( Model ):
 			for classifier predictions.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True class labels.
 
 			Returns:
+			-----------
 				None
 
 		"""
@@ -6285,6 +6399,7 @@ class StackingRegressor( Model ):
 			RidgeRegressor linerar_model.
 	
 			Attributes:
+			-----------
 				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
 					Parameters:
 						alpha (float): Regularization strength. Default is 1.0.
@@ -6312,10 +6427,12 @@ class StackingRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
+			-----------
 				None
 				
 		"""
@@ -6343,9 +6460,11 @@ class StackingRegressor( Model ):
 			using the RidgeRegressor linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted target target_values.
 			
 		"""
@@ -6371,10 +6490,12 @@ class StackingRegressor( Model ):
 			score for the Ridge model.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
+			-----------
 				float: R-squared score.
 				
 		"""
@@ -6402,10 +6523,12 @@ class StackingRegressor( Model ):
 			using multiple metrics.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				dict: Evaluation metrics including MAE, RMSE, R², etc.
 			
 		"""
@@ -6446,10 +6569,12 @@ class StackingRegressor( Model ):
 			actual target_values.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
