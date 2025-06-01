@@ -246,14 +246,14 @@ class SqlFile( ):
 	'''
 	
 		Constructor:
-	
-			SqlFile( source: Source=None, provider: Provider  = Provider.SQLite,
+		-----------
+		SqlFile( source: Source=None, provider: Provider  = Provider.SQLite,
 					command: SQL=SQL.SELECTALL )
 	
 		Purpose:
-	
-			Class providing access to sqlstatement sub-folders in the application provided
-			optional arguments source, provider, and command.
+		-----------
+		Class providing access to sqlstatement sub-folders in the application provided
+		optional arguments source, provider, and command.
 
 	'''
 
@@ -615,10 +615,12 @@ class Connection( DbConfig ):
 	'''
 	
 		Constructor:
-			Connection( source: Source, provider: Provider=Provider.SQLite )
+		-----------
+		Connection( source: Source, provider: Provider=Provider.SQLite )
 	
 		Purpose:
-			Class providing object used to connect to the databases
+		--------
+		Class providing object used to connect to the databases
 
 	'''
 
