@@ -78,9 +78,10 @@ from typing import Optional, List, Tuple
 
 class Model( BaseModel ):
 	"""
-	
-		Abstract base class
-		that defines the interface for all linerar_model wrappers.
+		
+		Purpose:
+		---------
+		Abstract base class that defines the interface for all linerar_model wrappers.
 	
 	"""
 	pipeline: Optional[ Pipeline ]
@@ -99,14 +100,17 @@ class Model( BaseModel ):
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 			
-			Fit the linerar_model to
-			the training data.
+			Purpose:
+			---------
+			Fit the linerar_model to the training data.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Feature vector w/shape ( n_samples, n_features ).
 				y (np.ndarray): Target vector w/shape ( n_samples, ).
 	
 			Returns:
+			--------
 				None
 			
 		"""
@@ -116,13 +120,16 @@ class Model( BaseModel ):
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 			
-			Generate predictions from
-			 the trained linerar_model.
+			Purpose:
+			---------
+			Generate predictions from  the trained linerar_model.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Feature matrix of shape (n_samples, n_features).
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted target_values or class labels.
 			
 		"""
@@ -131,15 +138,18 @@ class Model( BaseModel ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
-			Compute the core metric
-			(e.g., R²) of the model on test data.
+			
+			Purpose:
+			---------
+			Compute the core metric (e.g., R²) of the model on test data.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): True target target_values.
 	
 			Returns:
+			-----------
 				float: Score value (e.g., R² for regressors).
 			
 		"""
@@ -149,14 +159,17 @@ class Model( BaseModel ):
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 			
-			Evaluate the model using
-			 multiple performance metrics.
+			Purpose:
+			---------
+			Evaluate the model using multiple performance metrics.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
+			-----------
 				dict: Dictionary containing multiple evaluation metrics.
 			
 		"""
@@ -165,10 +178,11 @@ class Model( BaseModel ):
 
 class Metric( BaseModel ):
 	"""
-
-		Base interface for all
-		preprocessors. Provides standard `fit`, `transform`, and
-		`fit_transform` methods.
+			
+		Purpose:
+		---------
+		Base interface for all preprocessors. Provides standard `fit`, `transform`, and
+	    `fit_transform` methods.
 
 	"""
 	pipeline: Optional[ Pipeline ]
@@ -188,11 +202,13 @@ class Metric( BaseModel ):
 
 	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> None:
 		"""
+			
+			Purpose:
+			---------
+			Fits the preprocessor to the text data.
 
-			Fits the preprocessor
-			to the text data.
-
-			Args:
+			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (Optional[np.ndarray]): Optional target array.
 
@@ -203,13 +219,16 @@ class Metric( BaseModel ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
-			Transforms the text
-			data using the fitted preprocessor.
+			Purpose:
+			---------
+			Transforms the text data using the fitted preprocessor.
 
-			Args:
+			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 
 			Returns:
+			-----------
 				np.ndarray: Transformed feature matrix.
 
 		"""
@@ -219,14 +238,17 @@ class Metric( BaseModel ):
 	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> np.ndarray:
 		"""
 
-			Fits the preprocessor and
-			then transforms the text data.
+			Purpose:
+			---------
+			Fits the preprocessor and then transforms the text data.
 
-			Args:
+			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (Optional[np.ndarray]): Optional target array.
 
 			Returns:
+			-----------
 				np.ndarray: Transformed feature matrix.
 
 		"""
@@ -248,8 +270,8 @@ class Dataset( Metric ):
 	"""
 
 		Purpose:
-		Utility class for preparing machine rate
-		datasets from a pandas DataFrame.
+		-----------
+		Utility class for preparing machine rate datasets from a pandas DataFrame.
 
 	"""
 	data: np.ndarray
@@ -275,9 +297,11 @@ class Dataset( Metric ):
 		"""
 
 			Purpose:
+			-----------
 			Initialize and split the dataset.
 
 			Parameters:
+			-----------
 				data (np.ndarray): Matrix text vector.
 				target List[ str ]: Name of the target columns.
 				size (float): Proportion of data to use as test set.
@@ -313,6 +337,7 @@ class Dataset( Metric ):
 		'''
 
 			Purpose:
+			-----------
 			This function retuns a list of strings (members of the class)
 
 		'''
@@ -327,9 +352,11 @@ class Dataset( Metric ):
 		"""
 
 			Purpose:
+			-----------
 				Scale numeric features using selected scaler.
 
 			Raises:
+			-----------
 				ValueError: If scaler scaler is not 'standard' or 'minmax'.
 
 		"""
@@ -413,9 +440,11 @@ class Dataset( Metric ):
 		"""
 
 			Purpose:
+			-----------
 			Split the dataset into training and test sets.
 
 			Returns:
+			-----------
 				Tuple[ pd.DataFrame, np.ndarray, pd.DataFrame, np.ndarray ]
 
 		"""
@@ -442,9 +471,11 @@ class Dataset( Metric ):
 		"""
 
 			Purpose:
+			-----------
 			Split the dataset into training and test sets.
 
 			Returns:
+			-----------
 				Tuple[ np.ndarray, np.ndarray, np.ndarray, np.ndarray ]
 
 		"""
@@ -464,10 +495,12 @@ class Dataset( Metric ):
 		"""
 		
 			Purpose:
-				Return the training feature_names and labels.
+			-----------
+			Return the training feature_names and labels.
 	
 			Returns:
-				Tuple[ np.ndarray, np.ndarray ]: ( X_train, y_train )
+			-----------
+			Tuple[ np.ndarray, np.ndarray ]: ( X_train, y_train )
 				
 		"""
 		return tuple( self.X_train, self.y_train )
@@ -477,10 +510,12 @@ class Dataset( Metric ):
 		"""
 		
 			Purpose:
+			-----------
 			Return the test feature_names and labels.
 	
 			Returns:
-				Tuple[ np.ndarray, np.ndarray ]: X_test, y_test
+			-----------
+			Tuple[ np.ndarray, np.ndarray ]: X_test, y_test
 				
 		"""
 		return tuple( self.X_test, self.y_test )
@@ -489,8 +524,9 @@ class Dataset( Metric ):
 class StandardScaler( Metric ):
 	"""
 
-		Standardizes feature_names by
-		removing the mean and scaling to unit variance.
+		Purpose:
+		--------
+		Standardizes feature_names by removing the mean and scaling to unit variance.
 
 	"""
 
@@ -503,12 +539,15 @@ class StandardScaler( Metric ):
 	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
 		"""
 
-			Fits the standard_scaler
-			to the data.
 
-			Args:
-				X (np.ndarray): Input data.
-				y (Optional[np.ndarray]): Ignored.
+			Purpose:
+			---------
+			Fits the standard_scaler to the data.
+
+			Parameters:
+			-----------
+			X (np.ndarray): Input data.
+			y (Optional[np.ndarray]): Ignored.
 
 		"""
 		try:
@@ -530,13 +569,16 @@ class StandardScaler( Metric ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
-			Transforms the data
-			using the fitted StandardScaler.
+			Purpose:
+			---------
+			Transforms the data using the fitted StandardScaler.
 
-			Args:
+			Parameters:
+			-----------
 				X (np.ndarray): Input data.
 
 			Returns:
+			-----------
 				np.ndarray: Scaled data.
 
 		"""
@@ -558,8 +600,9 @@ class StandardScaler( Metric ):
 class MinMaxScaler( Metric ):
 	"""
 
-		Scales feature_names to
-		a given range (default is [0, 1]).
+		Purpose:
+		---------
+		Scales feature_names to a given range (default is [0, 1]).
 
 	"""
 
@@ -572,10 +615,12 @@ class MinMaxScaler( Metric ):
 	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
 		"""
 
-			Fits the standard_scaler
-			to the data.
+			Purpose:
+			---------
+			Fits the standard_scaler to the data.
 
-			Args:
+			Parameters:
+			-----------
 				X (np.ndarray): Input data.
 				y (Optional[np.ndarray]): Ignored.
 
@@ -599,13 +644,16 @@ class MinMaxScaler( Metric ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
-			Transforms the data
-			using the fitted MinMaxScaler.
+			Purpose:
+			---------
+			Transforms the data using the fitted MinMaxScaler.
 
-			Args:
+			Parameters:
+			-----------
 				X (np.ndarray): Input data.
 
 			Returns:
+			-----------
 				np.ndarray: Scaled data.
 
 		"""
@@ -627,8 +675,9 @@ class MinMaxScaler( Metric ):
 class RobustScaler( Metric ):
 	"""
 
-		Scales feature_names using statistics
-		that are robust to outliers.
+		Purpose:
+		--------
+		Scales feature_names using statistics that are robust to outliers.
 
 	"""
 
@@ -641,12 +690,15 @@ class RobustScaler( Metric ):
 	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
 		"""
 
-				Fits the standard_scaler
-				to the data.
 
-				Args:
-					X (np.ndarray): Input data.
-					y (Optional[np.ndarray]): Ignored.
+			Purpose:
+			---------
+			Fits the standard_scaler to the data.
+
+			Parameters:
+			-----------
+				X (np.ndarray): Input data.
+				y (Optional[np.ndarray]): Ignored.
 
 		"""
 		try:
@@ -668,13 +720,16 @@ class RobustScaler( Metric ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
-			Transforms the data
-			using the fitted RobustScaler.
+			Purpose:
+			---------
+			Transforms the data using the fitted RobustScaler.
 
-			Args:
+			Parameters:
+			-----------
 				X (np.ndarray): Input data.
 
 			Returns:
+			-----------
 				np.ndarray: Scaled data.
 
 		"""
@@ -695,6 +750,8 @@ class RobustScaler( Metric ):
 class Normalizer( Metric ):
 	"""
 
+		Purpose:
+		---------
 		Scales text vectors individually to unit norm.
 
 	"""
@@ -708,10 +765,13 @@ class Normalizer( Metric ):
 	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
 		"""
 
-			Fits the normalizer
-			(no-op for Normalizer).
 
-			Args:
+			Purpose:
+			---------
+			Fits the normalizer (no-op for Normalizer).
+
+			Parameters:
+			-----------
 				X (np.ndarray): Input data.
 				y (Optional[np.ndarray]): Ignored.
 
@@ -735,13 +795,17 @@ class Normalizer( Metric ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
-			Applies normalization
-			to each sample.
 
-			Args:
+			Purpose:
+			---------
+			Applies normalization to each sample.
+
+			Parameters:
+			-----------
 				X (np.ndarray): Input data.
 
 			Returns:
+			-----------
 				np.ndarray: Normalized data.
 
 		"""
@@ -762,8 +826,9 @@ class Normalizer( Metric ):
 class OneHotEncoder( Metric ):
 	"""
 
-		Encodes categorical feature_names
-		 as a one-hot numeric array.
+		Purpose:
+		---------
+		Encodes categorical feature_names as a one-hot numeric array.
 
 	"""
 
@@ -776,10 +841,13 @@ class OneHotEncoder( Metric ):
 	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
 		"""
 
-			Fits the hot_encoder
-			to the categorical data.
 
-			Args:
+			Purpose:
+			---------
+			Fits the hot_encoder to the categorical data.
+
+			Parameters:
+			-----------
 				X (np.ndarray): Categorical text data.
 				y (Optional[np.ndarray]): Ignored.
 
@@ -803,13 +871,18 @@ class OneHotEncoder( Metric ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
+
+			Purpose:
+			---------
 			Transforms the text
 			data into a one-hot encoded format.
 
-			Args:
+			Parameters:
+			-----------
 				X (np.ndarray): Categorical text data.
 
 			Returns:
+			-----------
 				np.ndarray: One-hot encoded matrix.
 
 		"""
@@ -830,6 +903,9 @@ class OneHotEncoder( Metric ):
 class OrdinalEncoder( Metric ):
 	"""
 
+
+			Purpose:
+			---------
 		Encodes categorical
 		feature_names as ordinal integers.
 
@@ -846,13 +922,12 @@ class OrdinalEncoder( Metric ):
 
 			Purpose:
 			________
-			Fits the ordial_encoder
-			to the categorical data.
+			Fits the ordial encoder to the categorical data.
 
-			Args:
+			Parameters:
 			_____
-				X (np.ndarray): Categorical text data.
-				y (Optional[np.ndarray]): Ignored.
+			X (np.ndarray): Categorical text data.
+			y (Optional[np.ndarray]): Ignored.
 
 		"""
 		try:
@@ -873,13 +948,17 @@ class OrdinalEncoder( Metric ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
-			Transforms the text
-			data into ordinal-encoded format.
+			Purpose:
+			---------
+			Transforms the text data into ordinal-encoded format.
 
-			Args:
+
+			Parameters:
+			-----------
 				X (np.ndarray): Categorical text data.
 
 			Returns:
+			-----------
 				np.ndarray: Ordinal-encoded matrix.
 
 		"""
@@ -900,8 +979,9 @@ class OrdinalEncoder( Metric ):
 class SimpleImputer( Metric ):
 	"""
 
-		Fills missing target_values
-		using a specified strategy.
+		Purpose:
+		-----------
+		Fills missing target_values using a specified strategy.
 
 	"""
 
@@ -914,10 +994,14 @@ class SimpleImputer( Metric ):
 	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
 		"""
 
+
+			Purpose:
+			---------
 			Fits the simple_imputer
 			to the data.
 
-			Args:
+			Parameters:
+			-----------
 				X (np.ndarray): Input data with missing target_values.
 				y (Optional[np.ndarray]): Ignored.
 
@@ -940,13 +1024,18 @@ class SimpleImputer( Metric ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
+
+			Purpose:
+			---------
 			Transforms the text
 			data by filling in missing target_values.
 
-			Args:
+			Parameters:
+			-----------
 				X (np.ndarray): Input data with missing target_values.
 
 			Returns:
+			-----------
 				np.ndarray: Imputed data.
 
 		"""
@@ -967,8 +1056,9 @@ class SimpleImputer( Metric ):
 class NeighborImputer( Metric ):
 	"""
 
-		Fills missing target_values
-		using k-nearest neighbors.
+		Purpose:
+		---------
+		Fills missing target_values using k-nearest neighbors.
 
 	"""
 
@@ -986,7 +1076,7 @@ class NeighborImputer( Metric ):
 			Fits the simple_imputer
 			to the data.
 
-			Args:
+			Parameters:
 			_____
 			X (np.ndarray): Input data with missing target_values.
 			y (Optional[np.ndarray]): Ignored.
@@ -1012,11 +1102,13 @@ class NeighborImputer( Metric ):
 			
 			Transforms the text data by imputing missing target_values.
 
-			Args:
+			Parameters:
+			-----------
 				X (np.ndarray): Input data
 				with missing target_values.
 
 			Returns:
+			-----------
 				np.ndarray: Imputed data.
 
 		"""
@@ -1037,6 +1129,9 @@ class NeighborImputer( Metric ):
 class PerceptronClassifier( Model ):
 	"""
 
+
+			Purpose:
+			---------
 		PerceptronClassifier classifier.
 
 	"""
@@ -1054,10 +1149,12 @@ class PerceptronClassifier( Model ):
 	def __init__( self, alpha: float=0.0001, max: int=1000, mix: bool=True ) -> None:
 		"""
 
-			Initialize the
-			PerceptronClassifier linerar_model.
+			Purpose:
+			---------
+			Initialize the PerceptronClassifier linerar_model.
 
 			Attributes:
+			-----------
 				linerar_model (Perceptron): Internal linear binary classifier.
 					Parameters:
 						max_iter (int): Maximum number of iterations.
@@ -1078,14 +1175,18 @@ class PerceptronClassifier( Model ):
 	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
 		"""
 
+			Purpose:
+			---------
 			Fit the
 			PerceptronClassifier linerar_model.
 
 			Parameters:
+			---------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Binary class labels.
 
 			Returns:
+			---------
 				None
 
 		"""
@@ -1109,13 +1210,16 @@ class PerceptronClassifier( Model ):
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
-			Predict binary class
-			labels using the PerceptronClassifier.
+			Purpose:
+			---------
+			Predict binary class labels using the PerceptronClassifier.
 
 			Parameters:
+			---------
 				X (pd.DataFrame): Feature matrix.
 
 			Returns:
+			---------
 				np.ndarray: Predicted binary labels.
 
 		"""
@@ -1137,14 +1241,18 @@ class PerceptronClassifier( Model ):
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
 
-			Compute accuracy of the
-			PerceptronClassifier classifier.
+
+			Purpose:
+			---------
+			Compute accuracy of the PerceptronClassifier classifier.
 
 			Parameters:
+			---------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): True class labels.
 
 			Returns:
+			---------
 				float: Accuracy score.
 
 		"""
@@ -1169,14 +1277,18 @@ class PerceptronClassifier( Model ):
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
 
-			Evaluate classifier performance
-			using standard classification metrics.
+
+			Purpose:
+			-----------
+			Evaluate classifier performance using standard classification metrics.
 
 			Parameters:
+			---------
 				X (np.ndarray): Input feature_names of shape (n_samples, n_features).
 				y (np.ndarray): Ground truth class labels.
 
 			Returns:
+			---------
 				dict: Dictionary of evaluation metrics including:
 					- Accuracy (float)
 					- Precision (float)
@@ -1222,14 +1334,18 @@ class PerceptronClassifier( Model ):
 	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
-			Plot confusion matrix
-			for classifier predictions.
+
+			Purpose:
+			-----------
+			Plot confusion matrix for classifier predictions.
 
 			Parameters:
+			---------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True class labels.
 
 			Returns:
+			---------
 				None
 
 		"""
@@ -1258,6 +1374,8 @@ class PerceptronClassifier( Model ):
 class MultilayerRegressor( Model ):
 	"""
 
+		Purpose:
+		-----------
 		Chains multiple preprocessing
 		steps into a pipeline.
 
@@ -1290,10 +1408,12 @@ class MultilayerRegressor( Model ):
 	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
-			Fits all pipeline
-			steps to the text data.
+			Purpose:
+			-----------
+			Fits all pipeline steps to the text data.
 
-			Args:
+			Parameters:
+			-----------
 				X (np.ndarray): Input feature matrix.
 				y (Optional[np.ndarray]): Optional target array.
 
@@ -1316,13 +1436,17 @@ class MultilayerRegressor( Model ):
 	def transform( self, X: np.ndarray ) -> np.ndarray:
 		"""
 
-			Applies all transformations
-			in the pipeline to the text data.
 
-			Args:
+			Purpose:
+			-----------
+			Applies all transformations in the pipeline to the text data.
+
+			Parameters:
+			-----------
 				X (np.ndarray): Input feature matrix.
 
 			Returns:
+			-----------
 				np.ndarray: Transformed feature matrix.
 
 		"""
@@ -1344,14 +1468,18 @@ class MultilayerRegressor( Model ):
 	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] ) -> np.ndarray:
 		"""
 
-			Fits and transforms all
-			pipeline steps on the text data.
 
-			Args:
+			Purpose:
+			-----------
+			Fits and transforms all pipeline steps on the text data.
+
+			Parameters:
+			-----------
 				X (np.ndarray): Input feature matrix.
 				y (Optional[np.ndarray]): Optional target array.
 
 			Returns:
+			-----------
 				np.ndarray: Transformed feature matrix.
 
 		"""
@@ -1375,13 +1503,16 @@ class MultilayerRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Compute the R^2 score of the model on the given test data.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): True values.
 
 			Returns:
+			-----------
 				float: R-squared score.
 
 		"""
@@ -1410,10 +1541,12 @@ class MultilayerRegressor( Model ):
 			multiple regression metrics.
 
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target_values.
 
 			Returns:
+			-----------
 				dict: Dictionary of MAE, MSE, RMSE, R², etc.
 
 		"""
@@ -1451,9 +1584,11 @@ class MultilayerRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Plot actual vs predicted target_values.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True target target_values.
 
@@ -1502,9 +1637,11 @@ class LinearRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Initialize the Linear Regression linerar_model.
 	
 			Attributes:
+			-----------
 				linerar_model (LinearRegression): Internal OLS linerar_model using least squares.
 					Parameters:
 						fit_intercept (bool): Whether to include an intercept term. Default is
@@ -1527,13 +1664,16 @@ class LinearRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Fit the OLS regression linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -1559,9 +1699,11 @@ class LinearRegressor( Model ):
 			using the OLS linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted target target_values.
 			
 		"""
@@ -1587,10 +1729,12 @@ class LinearRegressor( Model ):
 			score of the OLS model.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): True target target_values.
 	
 			Returns:
+			-----------
 				float: R-squared score.
 			
 		"""
@@ -1619,10 +1763,12 @@ class LinearRegressor( Model ):
 			multiple regression metrics.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
+			-----------
 				dict: Dictionary of MAE, MSE, RMSE, R², etc.
 			
 		"""
@@ -1660,9 +1806,11 @@ class LinearRegressor( Model ):
 		"""
 			
 			Purpose:
+			-----------
 				Plot actual vs predicted target_values.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True target target_values.
 			
@@ -1715,9 +1863,11 @@ class LeastSquaresRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Initialize an instance of OLSModel.
 
 			Returns:
+			-----------
 				None
 		"""
 		super( ).__init__( )
@@ -1735,13 +1885,16 @@ class LeastSquaresRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Fit the OLS model using training data.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Training features of shape (n_samples, n_features).
 				y (np.ndarray): Training targets of shape (n_samples,).
 
 			Returns:
+			-----------
 				None
 
 		"""
@@ -1752,12 +1905,15 @@ class LeastSquaresRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Predict using the fitted OLS model.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature matrix of shape (n_samples, n_features).
 
 			Returns:
+			-----------
 				np.ndarray: Predicted values of shape (n_samples,).
 
 		"""
@@ -1768,13 +1924,16 @@ class LeastSquaresRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Compute the R^2 score of the model on the given test data.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): True values.
 
 			Returns:
+			-----------
 				float: R-squared score.
 
 		"""
@@ -1786,13 +1945,16 @@ class LeastSquaresRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Evaluate the OLS model using multiple regression metrics.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Feature matrix of shape (n_samples, n_features).
 				y (np.ndarray): True target values of shape (n_samples,).
 
 			Returns:
+			-----------
 				dict: Dictionary containing regression evaluation metrics.
 
 		"""
@@ -1812,13 +1974,16 @@ class LeastSquaresRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Plot actual vs predicted values for visual inspection.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature matrix.
 				y (np.ndarray): True target values.
 
 			Returns:
+			-----------
 				None
 
 		"""
@@ -1865,6 +2030,7 @@ class RidgeRegressor( Model ):
 			RidgeRegressor linerar_model.
 	
 			Attributes:
+			-----------
 				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
 					Parameters:
 						alpha (float): Regularization strength. Default is 1.0.
@@ -1894,10 +2060,12 @@ class RidgeRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
+			-----------
 				None
 				
 		"""
@@ -1925,9 +2093,11 @@ class RidgeRegressor( Model ):
 			using the RidgeRegressor linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted target target_values.
 			
 		"""
@@ -1953,10 +2123,12 @@ class RidgeRegressor( Model ):
 			score for the Ridge model.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
+			-----------
 				float: R-squared score.
 				
 		"""
@@ -1981,14 +2153,17 @@ class RidgeRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Evaluates the Ridge model
 				using multiple metrics.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				dict: Evaluation metrics including MAE, RMSE, R², etc.
 			
 		"""
@@ -2029,10 +2204,12 @@ class RidgeRegressor( Model ):
 			actual target_values.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -2090,6 +2267,7 @@ class LassoRegressor( Model ):
 			LassoRegressor linerar_model.
 	
 			Attributes:
+			-----------
 				linerar_model (Lasso): Internal LassoRegressor regression linerar_model.
 					Parameters:
 						alpha (float): Regularization strength. Default is 1.0.
@@ -2153,9 +2331,11 @@ class LassoRegressor( Model ):
 			using the LassoRegressor linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted target target_values.
 			
 		"""
@@ -2181,10 +2361,12 @@ class LassoRegressor( Model ):
 			for the Lasso model.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
+			-----------
 				float: R^2 score.
 				
 		"""
@@ -2212,10 +2394,12 @@ class LassoRegressor( Model ):
 			using multiple regression metrics.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				dict: Dictionary of MAE, RMSE, R², etc.
 			
 		"""
@@ -2256,6 +2440,7 @@ class LassoRegressor( Model ):
 			predicted target_values.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature matrix.
 				y (np.ndarray): Ground truth target_values.
 				
@@ -2311,10 +2496,12 @@ class ElasticNetRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Initialize the
 				ElasticNetRegressor linerar_model.
 	
 			Attributes:
+			-----------
 				linerar_model (ElasticNet): Internal ElasticNetRegressor regression linerar_model.
 					Parameters:
 						hyper (float): Overall regularization strength. Default is 1.0.
@@ -2345,10 +2532,12 @@ class ElasticNetRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -2376,9 +2565,11 @@ class ElasticNetRegressor( Model ):
 			using the ElasticNetRegressor linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted target target_values.
 				
 		"""
@@ -2404,10 +2595,12 @@ class ElasticNetRegressor( Model ):
 			on the test set.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				float: R^2 score.
 				
 		"""
@@ -2433,10 +2626,12 @@ class ElasticNetRegressor( Model ):
 			using regression metrics.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
+			-----------
 				dict: Evaluation metrics.
 			
 		"""
@@ -2477,6 +2672,7 @@ class ElasticNetRegressor( Model ):
 			regression output.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True target target_values.
 				
@@ -2572,10 +2768,12 @@ class LogisticRegressor( Model ):
 			regression linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target class labels.
 	
 			Returns:
+			-----------
 				None
 				
 		"""
@@ -2603,9 +2801,11 @@ class LogisticRegressor( Model ):
 			the logistic regression linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted class labels.
 			
 		"""
@@ -2631,10 +2831,12 @@ class LogisticRegressor( Model ):
 			accuracy.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): True class labels.
 	
 			Returns:
+			-----------
 				float: Accuracy score.
 				
 		"""
@@ -2662,10 +2864,12 @@ class LogisticRegressor( Model ):
 			using multiple classification metrics.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names of shape (n_samples, n_features).
 				y (np.ndarray): True labels of shape (n_samples,).
 	
 			Returns:
+			-----------
 				dict: Dictionary containing:
 					- Accuracy (float)
 					- Precision (float)
@@ -2713,10 +2917,12 @@ class LogisticRegressor( Model ):
 			for classifier predictions.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True class labels.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -2776,6 +2982,7 @@ class BayesianRidgeRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Initializes the BayesianRidgeRegressor.
 					
 		"""
@@ -2801,14 +3008,17 @@ class BayesianRidgeRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Fit the Bayesian RidgeRegressor
 				regression linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -2833,13 +3043,16 @@ class BayesianRidgeRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Predicts target target_values
 				using the Bayesian linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted target_values.
 			
 		"""
@@ -2862,14 +3075,17 @@ class BayesianRidgeRegressor( Model ):
 		"""
 
 			Purpose:
+			-----------
 				Compute the R^2 score
 				of the model on test data.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): True target_values.
 	
 			Returns:
+			-----------
 				float: R^2 score.
 			
 		"""
@@ -2897,10 +3113,12 @@ class BayesianRidgeRegressor( Model ):
 			with regression metrics.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): True target target_values.
 	
 			Returns:
+			-----------
 				dict: Dictionary of evaluation metrics.
 			
 		"""
@@ -2941,6 +3159,7 @@ class BayesianRidgeRegressor( Model ):
 			actual target_values.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True target target_values.
 				
@@ -2999,6 +3218,7 @@ class StochasticGradientClassifier( Model ):
 			SGDClassifier linerar_model.
 	
 			Attributes:
+			-----------
 				linerar_model (SGDClassifier): Internal linear classifier trained via SGD.
 					Parameters:
 						reg (str): Loss function to use. Default is 'log_loss'.
@@ -3027,10 +3247,12 @@ class StochasticGradientClassifier( Model ):
 			classifier linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Class labels.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -3058,9 +3280,11 @@ class StochasticGradientClassifier( Model ):
 				using the SGD classifier.
 		
 				Parameters:
+				-----------
 					X (pd.DataFrame): Feature matrix.
 		
 				Returns:
+				-----------
 					np.ndarray: Predicted class labels.
 			
 		"""
@@ -3086,10 +3310,12 @@ class StochasticGradientClassifier( Model ):
 			for the SGDRegressor.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
+			-----------
 				float: R^2 score.
 			
 		"""
@@ -3116,10 +3342,12 @@ class StochasticGradientClassifier( Model ):
 			using standard metrics.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Feature matrix of shape (n_samples, n_features).
 				y (np.ndarray): True class labels of shape (n_samples,).
 	
 			Returns:
+			-----------
 				dict: Dictionary containing:
 					- Accuracy (float)
 					- Precision (float)
@@ -3170,10 +3398,12 @@ class StochasticGradientClassifier( Model ):
 			for classifier predictions.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True class labels.
 
 			Returns:
+			-----------
 				None
 
 		"""
@@ -3239,6 +3469,7 @@ class StochasticGradientRegressor( Model ):
 			SGDRegressor linerar_model.
 	
 			Attributes:
+			-----------
 				linerar_model (SGDRegressor): Internal linear regressor trained via SGD.
 					Parameters:
 						alpha (float)" Regulation
@@ -3268,10 +3499,12 @@ class StochasticGradientRegressor( Model ):
 			regressor linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target target_values.
 	
 			Returns:
+			-----------
 				None
 			
 		"""
@@ -3299,9 +3532,11 @@ class StochasticGradientRegressor( Model ):
 			the SGD regressor linerar_model.
 	
 			Parameters:
+			-----------
 				X (pd.DataFrame): Feature matrix.
 	
 			Returns:
+			-----------
 				np.ndarray: Predicted target_values.
 			
 		"""
@@ -3327,10 +3562,12 @@ class StochasticGradientRegressor( Model ):
 			for the SGDRegressor.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Test feature_names.
 				y (np.ndarray): Ground truth target target_values.
 
 			Returns:
+			-----------
 				float: R^2 score.
 
 		"""
@@ -3358,10 +3595,12 @@ class StochasticGradientRegressor( Model ):
 			performance.
 	
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True target target_values.
 	
 			Returns:
+			-----------
 				dict: Evaluation metrics dictionary.
 			
 		"""
@@ -3402,6 +3641,7 @@ class StochasticGradientRegressor( Model ):
 			actual target_values.
 
 			Parameters:
+			-----------
 				X (np.ndarray): Input feature_names.
 				y (np.ndarray): True target target_values.
 
@@ -3463,6 +3703,7 @@ class NearestNeighborClassifier( Model ):
 			inerar_model.
 	
 			Attributes:
+			-----------
 				linerar_model (KNeighborsClassifier): Internal non-parametric classifier.
 					Parameters:
 						n_neighbors (int): Number of neighbors to use. Default is 5.
@@ -6565,6 +6806,8 @@ class StackingRegressor( Model ):
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 		
+			Purpose:
+			---------
 			Plot predicted vs
 			actual target_values.
 	
