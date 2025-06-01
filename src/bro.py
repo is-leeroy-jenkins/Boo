@@ -49,7 +49,7 @@ import requests
 import tiktoken
 from pygments.lexers.csound import newline
 from static import Requests, Roles, Languages
-from boogrr import ErrorDialog, Error
+from boogr import ErrorDialog, Error
 from typing import Any, List, Tuple, Optional
 
 

@@ -42,18 +42,22 @@
   ******************************************************************************************
   '''
 import subprocess as sp
-from boogrr import *
+from boogr import *
 from static import Client
 
 class App( ):
     '''
-    Constructor:
-    App( client: enum )
+
+        Constructor:
+        -------------
+        App( client: enum )
 
 
-    Purpose:
-    Class defines object providing factory methods run( ) and run( args ) that run
-    processes based on 'Client' enumeration path args
+        Purpose:
+        ---------
+        Class defines object providing factory methods run( ) and run( args ) that run
+        processes based on 'Client' enumeration path args
+
     '''
 
     def __init__( self, client: Client ):
@@ -81,10 +85,13 @@ class App( ):
         '''
 
             Purpose:
+            ---------
 
             Parameters:
+            ----------
 
             Returns:
+            -------
 
         '''
         try:
@@ -122,11 +129,16 @@ class App( ):
 
     def run_args( self, args: str ):
         '''
-        Purpose:
 
-        Parameters:
+            Purpose:
+            -------
 
-        Returns:
+            Parameters:
+            -----------
+
+            Returns:
+            ---------
+
         '''
         try:
             if args is not None and self.app == Client.SQLite:

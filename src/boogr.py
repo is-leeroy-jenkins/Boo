@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                boogrr.py
+      Filename:                boogr.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        06-01-2023
   ******************************************************************************************
-  <copyright file="boogrr.py" company="Terry D. Eppler">
+  <copyright file="boogr.py" company="Terry D. Eppler">
 
      This is a Federal Booger and Data Analysis Application for EPA Analysts
      Copyright ©  2024  Terry Eppler
@@ -37,25 +37,17 @@
 
   </copyright>
   <summary>
-    boogrr.py
+    boogr.py
   </summary>
   ******************************************************************************************
   '''
-import os
-import FreeSimpleGUI as sg
 import base64
-import webbrowser
-import fitz
-from PIL import Image, ImageTk, ImageSequence
 from enum import Enum
-from sys import exit, exc_info
+import FreeSimpleGUI as sg
+import fitz
+from googlesearch import search
 import random
 import io
-from src.minion import App
-import traceback
-import numpy as np
-from pandas import read_csv as CsvReader
-from pandas import read_excel as ExcelReader
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasAgg
 import matplotlib.figure
@@ -63,23 +55,31 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d.axes3d import get_test_data
 from matplotlib.ticker import NullFormatter
 from mpl_toolkits.axes_grid1.axes_rgb import RGBAxes
+import numpy as np
+import os
+from pandas import read_csv as CsvReader
+from pandas import read_excel as ExcelReader
+from PIL import Image, ImageTk, ImageSequence
 from static import EXT, Client
+from sys import exit, exc_info
+from src.minion import App
+import traceback
 import urllib.request
-import smtplib as smtp
-from email.message import EmailMessage
+import webbrowser
+from typing import Dict, List, Tuple
 
 
 class Error( Exception ):
 	'''
 
         Purpose:
+        ---------
+		Class wrapping error used as the path argument for ErrorDialog class
 
-            Class wrapping error used as the path argument for ErrorDialog class
-
-            Constructor:
-
-            Error( error: Exception, heading: str=None, cause: str=None,
-                    method: str=None, module: str=None )
+        Constructor:
+		----------
+        Error( error: Exception, heading: str=None, cause: str=None,
+                method: str=None, module: str=None )
 
     '''
 	
@@ -96,15 +96,40 @@ class Error( Exception ):
 		self.info = str( exc_info( )[ 0 ] ) + ': \r\n \r\n' + traceback.format_exc( )
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if self.info is not None:
 			return self.info
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'message', 'cause',
@@ -116,12 +141,12 @@ class ButtonIcon( ):
 	'''
 
         Constructor:
-
-            ButtonIcon( png: Enum )
+        -----------
+		ButtonIcon( png: Enum )
 
         Pupose:
-
-            Class representing form images
+		---------
+		Class representing form images
 
     '''
 	
@@ -132,29 +157,55 @@ class ButtonIcon( ):
 		self.file_path = self.button + r'\\' + self.name + '.png'
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if self.file_path is not None:
 			return self.file_path
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
-		return [ 'button', 'name', 'authority_filepath' ]
+		return [ 'button', 'name', 'file_path' ]
 
 
 class TitleIcon( ):
 	'''
 
 	    Construcotr:
-		    TitleIcon( ico )
+	    -----------
+		TitleIcon( ico )
 
 	    Purpose:
-
-		    Class used to define the TitleIcon used on the GUI
+		--------
+		Class used to define the TitleIcon used on the GUI
 
 	'''
 	
@@ -165,15 +216,40 @@ class TitleIcon( ):
 		self.file_path = self.folder + r'\\' + self.name + r'.ico'
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if self.file_path is not None:
 			return self.file_path
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'folder', 'name', 'authority_filepath' ]
@@ -183,12 +259,12 @@ class Dark( ):
 	'''
 
         Constructor:
-
-            Dark( )
+		-----------
+        Dark( )
 
         Pupose:
-
-            Class representing the theme
+		-------
+		Class representing the theme
 
     '''
 	
@@ -218,10 +294,20 @@ class Dark( ):
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'theme_background',
@@ -235,9 +321,13 @@ class Dark( ):
 class FileDialog( Dark ):
 	'''
 
-	    Construcotr: FileDialog( )
+	    Construcotr: 
+	    ------------
+	    FileDialog( )
 
-	    Purpose: Class that creates dialog to get path
+	    Purpose: 
+	    -------
+	    Class that creates dialog to get path
 
 	'''
 	
@@ -279,15 +369,40 @@ class FileDialog( Dark ):
 		self.sqlserver = (('MSSQL', '*.mdf', '*.ldf', '*.sdf'),)
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if self.selected_item is not None:
 			return self.selected_item
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'original', 'theme_background',
@@ -300,14 +415,20 @@ class FileDialog( Dark ):
 		         'pages', 'access', 'sqlite', 'sqlserver' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-		    Purpose: Displays the control/form
+		    Purpose:
+		    --------
+		    Method displays the control/form
 
-		    Parameters: void
+		    Parameters:
+		    ----------
+		    self
 
-		    Returns: void
+		    Returns:
+		    --------
+		    None
 
 		'''
 		try:
@@ -334,20 +455,24 @@ class FileDialog( Dark ):
 			
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'FileDialog'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'FileDialog'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class FolderDialog( Dark ):
 	'''
 
-		Construcotr: FolderDialog( )
+		Purpose:
+		----------
+		Class defining dialog used to select a directory url
 
-		Purpose: Class defining dialog used to select a directory url
+		Construcotr:
+		-----------
+		FolderDialog( )
 
 	'''
 	
@@ -379,15 +504,40 @@ class FolderDialog( Dark ):
 		self.selected_item = None
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if isinstance( self.selected_item, str ):
 			return self.selected_item
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'original', 'theme_background',
@@ -398,13 +548,21 @@ class FolderDialog( Dark ):
 		         'scrollbar_color', 'original', 'selected_item', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
+
 		    Purpose:
+		    --------
+		    Method displays the control/form
 
 		    Parameters:
+		    ----------
+		    self
 
 		    Returns:
+		    --------
+		    None
+
 		'''
 		try:
 			_layout = [ [ sg.Text( ) ],
@@ -433,19 +591,23 @@ class FolderDialog( Dark ):
 			
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.cause = 'FolderDialog'
-			_exc.method = 'show( self )'
-			_error = ErrorDialog( _exc )
+			exception = Error( e )
+			exception.cause = 'FolderDialog'
+			exception.method = 'show( self )'
+			_error = ErrorDialog( exception )
 			_error.show( )
 
 
 class SaveFileDialog( Dark ):
 	'''
 
-	    Constructor: SaveFileDialog( url = '' ):
+	    Constructor:
+	    ---------------
+	    SaveFileDialog( url = '' ):
 
-        Purpose: Class define object that provides a dialog to locate file destinations
+        Purpose:
+        --------
+        Class define object that provides a dialog to locate file destinations
 
     '''
 	
@@ -478,15 +640,40 @@ class SaveFileDialog( Dark ):
 		self.original = path
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if self.file_name is not None:
 			return self.file_name
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'original', 'theme_background',
@@ -497,13 +684,21 @@ class SaveFileDialog( Dark ):
 		         'scrollbar_color', 'original', 'file_name', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
+
 		    Purpose:
+		    --------
+		    Method displays the control/form
 
 		    Parameters:
+		    ----------
+		    self
 
 		    Returns:
+		    --------
+		    None
+
 		'''
 		try:
 			_username = os.environ.get( 'USERNAME' )
@@ -519,20 +714,25 @@ class SaveFileDialog( Dark ):
 				_src = io.open( self.original ).read( )
 				_dest = io.open( _filename, 'w+' ).write( _src )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'SaveFileDialog'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'SaveFileDialog'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class GoogleDialog( Dark ):
 	'''
 
-	    Constructor:   GoogleDialog(  )
+	    Constructor:
+	    -----------
+	    GoogleDialog(  )
 
-	    Purpose:   Class that renames a folder
+	    Purpose:
+	    --------
+	    Class that renames a folder
+
 
 	'''
 	
@@ -557,22 +757,49 @@ class GoogleDialog( Dark ):
 		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
+		self.results = None
+		self.querytext = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
-		self.form_size = (500, 235)
+		self.form_size = ( 500, 235 )
 		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\app\web\google.png'
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			Returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if isinstance( self.results, list ):
 			return self.results[ 0 ]
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'original', 'theme_background',
@@ -583,16 +810,23 @@ class GoogleDialog( Dark ):
 		         'scrollbar_color', 'image', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
+
 		    Purpose:
+		    --------
+		    Method displays the control/form
 
 		    Parameters:
+		    ----------
+		    self
 
 		    Returns:
+		    --------
+		    None
+
 		'''
 		try:
-			self.results = [ ]
 			_layout = [ [ sg.Text( ) ],
 			            [ sg.Image( source=self.image ) ],
 			            [ sg.Text( size=(10, 1) ),
@@ -621,21 +855,26 @@ class GoogleDialog( Dark ):
 			
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'GoogleDialog'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'GoogleDialog'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class EmailDialog( Dark ):
 	'''
 
-	    Construcotr: EmailDialog( sender: str=None, receiver: str=None,
+	    Purpose:
+	    --------
+	    Class providing form used to send email messages.
+
+	    Construcotr:
+	    ------------ 
+	    EmailDialog( sender: str=None, receiver: str=None,
 			    subject: str=None, heading: str=None )
 
-	    Purpose: Class providing form used to send email messages.
 
     '''
 	
@@ -672,15 +911,40 @@ class EmailDialog( Dark ):
 		self.message = message
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> List[ str ] | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if self.message is not None:
 			return self.message
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'size', 'settings_path', 'theme_background',
@@ -694,7 +958,22 @@ class EmailDialog( Dark ):
 		         'username', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			_btn = (20, 1)
 			_input = (35, 1)
@@ -740,20 +1019,22 @@ class EmailDialog( Dark ):
 						background_color='red' )
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'EmailDialog'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'EmailDialog'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class MessageDialog( Dark ):
 	'''
 
-	    Construcotr:  MessageDialog( documents = '' )
+	    Purpose:
+	    ---------
+	    Class that provides form used to display informational messages
 
-	    Purpose:  Class that provides form used to display informational messages
+	    Construcotr:  MessageDialog( documents = '' )
 
     '''
 	
@@ -788,15 +1069,40 @@ class MessageDialog( Dark ):
 		self.form_size = (450, 250)
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if self.text is not None:
 			return self.text
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'original', 'theme_background',
@@ -807,7 +1113,22 @@ class MessageDialog( Dark ):
 		         'scrollbar_color', 'image', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			_txtsz = (100, 1)
 			_btnsz = (10, 1)
@@ -838,12 +1159,12 @@ class MessageDialog( Dark ):
 			
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'MessageDialog'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'MessageDialog'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class ErrorDialog( Dark ):
@@ -897,15 +1218,40 @@ class ErrorDialog( Dark ):
 		self.method = error.method
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if isinstance( self.info, str ):
 			return self.info
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-        Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'size', 'settings_path', 'theme_background',
@@ -919,6 +1265,21 @@ class ErrorDialog( Dark ):
 	
 	
 	def show( self ) -> object:
+		'''
+
+            Purpose:
+            --------
+            
+
+            Parameters:
+            ----------
+            
+
+            Returns:
+            ---------
+            
+
+		'''
 		_msg = self.heading if isinstance( self.heading, str ) else None
 		_info = f'Module:\t{self.module}\r\nClass:\t{self.cause}\r\n' \
 		        f'Method:\t{self.method}\r\n \r\n{self.info}'
@@ -988,15 +1349,40 @@ class InputDialog( Dark ):
 		self.selected_item = None
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if isinstance( self.response, str ):
 			return self.response
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1007,7 +1393,22 @@ class InputDialog( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			_layout = [ [ sg.Text( ) ],
 			            [ sg.Text( self.question, font=('Roboto', 9, 'bold') ) ],
@@ -1039,12 +1440,12 @@ class InputDialog( Dark ):
 			
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'InputDialog'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'InputDialog'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class ScrollingDialog( Dark ):
@@ -1088,15 +1489,40 @@ class ScrollingDialog( Dark ):
 		self.text = text if isinstance( text, str ) and text != '' else None
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if isinstance( self.text, str ):
 			return self.text
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1107,7 +1533,22 @@ class ScrollingDialog( Dark ):
 		         'scrollbar_color', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			_line = (100, 1)
 			_space = (5, 1)
@@ -1142,12 +1583,12 @@ class ScrollingDialog( Dark ):
 			
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'ScrollingDialog'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'ScrollingDialog'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class ContactForm( Dark ):
@@ -1187,10 +1628,20 @@ class ContactForm( Dark ):
 		self.form_size = (500, 300)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1201,7 +1652,22 @@ class ContactForm( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			_layout = [ [ sg.Text( size=(100, 1) ) ],
 			            [ sg.Text( r'Enter Contact Details' ) ],
@@ -1236,12 +1702,12 @@ class ContactForm( Dark ):
 			
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'ContactForm'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'ContactForm'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class GridForm( Dark ):
@@ -1283,10 +1749,20 @@ class GridForm( Dark ):
 		self.form_size = (1250, 650)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'theme_background', 'theme_textcolor',
@@ -1298,7 +1774,22 @@ class GridForm( Dark ):
 		         'field_width', 'rows', 'columns', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			_black = self.theme_background
 			_columns = self.columns
@@ -1331,12 +1822,12 @@ class GridForm( Dark ):
 				
 				_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'GridForm'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'GridForm'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class LoadingPanel( Dark ):
@@ -1377,10 +1868,20 @@ class LoadingPanel( Dark ):
 		self.timeout = 6000
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1391,7 +1892,22 @@ class LoadingPanel( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			_layout = [ [ sg.Text(
 				background_color='#000000',
@@ -1418,12 +1934,12 @@ class LoadingPanel( Dark ):
 					_window[ '-IMAGE-' ].update( data=ImageTk.PhotoImage( frame ) )
 					_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'LoadingPanel'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'LoadingPanel'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class WaitingPanel( Dark ):
@@ -1464,10 +1980,20 @@ class WaitingPanel( Dark ):
 		self.timeout = 6000
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1476,9 +2002,24 @@ class WaitingPanel( Dark ):
 		         'input_forecolor', 'button_color', 'button_backcolor',
 		         'button_forecolor', 'icon_path', 'theme_font',
 		         'scrollbar_color', 'input_text', 'show' ]
-	
-	
-	def show( self ):
+
+
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			_layout = [ [ sg.Text(
 				background_color='#000000',
@@ -1506,12 +2047,12 @@ class WaitingPanel( Dark ):
 					_window[ '-IMAGE-' ].update( data=ImageTk.PhotoImage( frame ) )
 					_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'WaitingPanel'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'WaitingPanel'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class ProcessingPanel( Dark ):
@@ -1552,10 +2093,20 @@ class ProcessingPanel( Dark ):
 		self.timeout = None
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1566,7 +2117,22 @@ class ProcessingPanel( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			_layout = [ [ sg.Text(
 				background_color='#000000',
@@ -1598,12 +2164,12 @@ class ProcessingPanel( Dark ):
 					_window[ '-IMAGE-' ].update( data=ImageTk.PhotoImage( frame ) )
 					_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'ProcessingPanel'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'ProcessingPanel'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class SplashPanel( Dark ):
@@ -1644,10 +2210,20 @@ class SplashPanel( Dark ):
 		self.timeout = 6000
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1658,7 +2234,22 @@ class SplashPanel( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			_img = self.image
 			_imgsize = (500, 400)
@@ -1679,20 +2270,20 @@ class SplashPanel( Dark ):
 					break
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'SplashPanel'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'SplashPanel'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class Notification( Dark ):
 	'''
 
-        Construcotr:  Notification( )
-
-        Purpose:  object providing form processing behavior
+        Purpose:
+        ----------
+        object providing form processing behavior
 
 	'''
 	
@@ -1796,15 +2387,40 @@ class Notification( Dark ):
                           has been successful!'
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if self.message is not None:
 			return self.message
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1815,7 +2431,22 @@ class Notification( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ) -> int:
+	def show( self ) -> int | None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    int | None
+
+		'''
 		try:
 			return sg.popup_notify( self.message,
 				title='Booger Notification',
@@ -1825,20 +2456,24 @@ class Notification( Dark ):
 				alpha=1 )
 		
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'Notification'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'Notification'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class ImageSizeEncoder( Dark ):
 	'''
 
-        Construcotr:  ImageSizeEncoder( )
+        Construcotr:
+        ------------
+        ImageSizeEncoder( )
 
-        Purpose:  Class resizing image and encoding behavior
+        Purpose:
+        ----------
+        Class resizing image and encoding behavior
 
 	'''
 	
@@ -1869,10 +2504,20 @@ class ImageSizeEncoder( Dark ):
 		self.form_size = (800, 600)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -1883,14 +2528,20 @@ class ImageSizeEncoder( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-            Purpose:
+		    Purpose:
+		    --------
+		    Method displays the control/form
 
-            Parameters:
+		    Parameters:
+		    ----------
+		    self
 
-            Returns:
+		    Returns:
+		    --------
+		    None
 
 		'''
 		version = '1.3.1'
@@ -2107,10 +2758,20 @@ class PdfForm( Dark ):
 		self.form_size = (600, 800)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'theme_background',
@@ -2122,14 +2783,20 @@ class PdfForm( Dark ):
 	
 
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-            Purpose:
+		    Purpose:
+		    --------
+		    Method displays the control/form
 
-            Parameters:
+		    Parameters:
+		    ----------
+		    self
 
-            Returns:
+		    Returns:
+		    --------
+		    None
 
 		'''
 		try:
@@ -2273,21 +2940,23 @@ class PdfForm( Dark ):
 						goto.update( str( cur_page + 1 ) )
 					# goto.TKStringVar.pairs(str(cur_page + 1))
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'PdfForm'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'PdfForm'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class CalendarDialog( Dark ):
 	'''
 
         Construcotr:
+        ------------
         CalendarDialog( )
 
         Purpose:
+        ---------
         class creates form providing today selection behavior
 
 	'''
@@ -2313,13 +2982,29 @@ class CalendarDialog( Dark ):
 		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
+		self.selected_item = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
 		self.form_size = (500, 250)
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if isinstance( self.selected_item, tuple ):
 			year = str( self.selected_item[ 2 ] )
 			month = str( self.selected_item[ 0 ] ).zfill( 2 )
@@ -2328,10 +3013,20 @@ class CalendarDialog( Dark ):
 			return date
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -2342,14 +3037,20 @@ class CalendarDialog( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-            Purpose:
+		    Purpose:
+		    --------
+		    Method displays the control/form
 
-            Parameters:
+		    Parameters:
+		    ----------
+		    self
 
-            Returns:
+		    Returns:
+		    --------
+		    None
 
 		'''
 		try:
@@ -2370,12 +3071,12 @@ class CalendarDialog( Dark ):
 			
 			self.selected_item = _cal
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'CalendarDialog'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'CalendarDialog'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class ComboBoxDialog( Dark ):
@@ -2417,15 +3118,40 @@ class ComboBoxDialog( Dark ):
 		self.items = data
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if self.selected_item is not None:
 			return self.selected_item
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -2436,14 +3162,20 @@ class ComboBoxDialog( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-            Purpose:
+		    Purpose:
+		    --------
+		    Method displays the control/form
 
-            Parameters:
+		    Parameters:
+		    ----------
+		    self
 
-            Returns:
+		    Returns:
+		    --------
+		    None
 
 		'''
 		try:
@@ -2479,12 +3211,12 @@ class ComboBoxDialog( Dark ):
 			
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'ComboBoxDialog'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'ComboBoxDialog'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class ListBoxDialog( Dark ):
@@ -2527,15 +3259,40 @@ class ListBoxDialog( Dark ):
 		self.items = data
 	
 	
-	def __str__( self ) -> str:
+	def __str__( self ) -> str | None:
+		'''
+
+            Purpose:
+            --------
+			returns a string reprentation of the object
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			str | None
+
+		'''
 		if self.selected_item is not None:
 			return self.selected_item
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'theme_background',
@@ -2546,14 +3303,20 @@ class ListBoxDialog( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-            Purpose:
+		    Purpose:
+		    --------
+		    Method displays the control/form
 
-            Parameters:
+		    Parameters:
+		    ----------
+		    self
 
-            Returns:
+		    Returns:
+		    --------
+		    None
 
 		'''
 		try:
@@ -2608,12 +3371,12 @@ class ListBoxDialog( Dark ):
 			
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'ListBoxDialog'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'ListBoxDialog'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class ColorDialog( Dark ):
@@ -2660,10 +3423,20 @@ class ColorDialog( Dark ):
 		self.html = None
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -2674,14 +3447,20 @@ class ColorDialog( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-            Purpose:
+		    Purpose:
+		    --------
+		    Method displays the control/form
 
-            Parameters:
+		    Parameters:
+		    ----------
+		    self
 
-            Returns:
+		    Returns:
+		    --------
+		    None
 
 		'''
 		try:
@@ -3471,10 +4250,20 @@ class BudgetForm( Dark ):
 		self.form_size = (1200, 650)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'size', 'settings_path', 'theme_background',
@@ -3521,12 +4310,12 @@ class BudgetForm( Dark ):
 				self.__titlelayout = _title
 				return _title
 			except Exception as e:
-				_exc = Error( e )
-				_exc.module = 'Booger'
-				_exc.cause = 'BudgetForm'
-				_exc.method = 'create_title( self, items )'
-				_err = ErrorDialog( _exc )
-				_err.show( )
+				exception = Error( e )
+				exception.module = 'Booger'
+				exception.cause = 'BudgetForm'
+				exception.method = 'create_title( self, items )'
+				error = ErrorDialog( exception )
+				error.show( )
 	
 	
 	def create_header( self, items: list ) -> list:
@@ -3557,12 +4346,12 @@ class BudgetForm( Dark ):
 				self.__headerlayout = _header
 				return _header
 			except Exception as e:
-				_exc = Error( e )
-				_exc.module = 'Booger'
-				_exc.cause = 'BudgetForm'
-				_exc.method = 'create_header( self, items )'
-				_err = ErrorDialog( _exc )
-				_err.show( )
+				exception = Error( e )
+				exception.module = 'Booger'
+				exception.cause = 'BudgetForm'
+				exception.method = 'create_header( self, items )'
+				error = ErrorDialog( exception )
+				error.show( )
 	
 	
 	def create_first( self, items: list ) -> list:
@@ -3597,12 +4386,12 @@ class BudgetForm( Dark ):
 				self.__firstlayout = _first
 				return _first
 			except Exception as e:
-				_exc = Error( e )
-				_exc.module = 'Booger'
-				_exc.cause = 'BudgetForm'
-				_exc.method = 'create_first( self, items: get_list ) -> get_list'
-				_err = ErrorDialog( _exc )
-				_err.show( )
+				exception = Error( e )
+				exception.module = 'Booger'
+				exception.cause = 'BudgetForm'
+				exception.method = 'create_first( self, items: get_list ) -> get_list'
+				error = ErrorDialog( exception )
+				error.show( )
 	
 	
 	def create_second( self, items: list ) -> list:
@@ -3637,12 +4426,12 @@ class BudgetForm( Dark ):
 				self.__secondlayout = _second
 				return _second
 			except Exception as e:
-				_exc = Error( e )
-				_exc.module = 'Booger'
-				_exc.cause = 'BudgetForm'
-				_exc.method = 'create_second( self, items )'
-				_err = ErrorDialog( _exc )
-				_err.show( )
+				exception = Error( e )
+				exception.module = 'Booger'
+				exception.cause = 'BudgetForm'
+				exception.method = 'create_second( self, items )'
+				error = ErrorDialog( exception )
+				error.show( )
 	
 	
 	def create_third( self, items: list ) -> list:
@@ -3677,12 +4466,12 @@ class BudgetForm( Dark ):
 				self.__thirdlayout = _third
 				return _third
 			except Exception as e:
-				_exc = Error( e )
-				_exc.module = 'Booger'
-				_exc.cause = 'BudgetForm'
-				_exc.method = 'create_third( self, items: get_list )'
-				_err = ErrorDialog( _exc )
-				_err.show( )
+				exception = Error( e )
+				exception.module = 'Booger'
+				exception.cause = 'BudgetForm'
+				exception.method = 'create_third( self, items: get_list )'
+				error = ErrorDialog( exception )
+				error.show( )
 	
 	
 	def create_fourth( self, items: list ) -> list:
@@ -3717,12 +4506,12 @@ class BudgetForm( Dark ):
 				self.__fourthlayout = _fourth
 				return _fourth
 			except Exception as e:
-				_exc = Error( e )
-				_exc.module = 'Booger'
-				_exc.cause = 'BudgetForm'
-				_exc.method = 'create_fourth( self, items: get_list )'
-				_err = ErrorDialog( _exc )
-				_err.show( )
+				exception = Error( e )
+				exception.module = 'Booger'
+				exception.cause = 'BudgetForm'
+				exception.method = 'create_fourth( self, items: get_list )'
+				error = ErrorDialog( exception )
+				error.show( )
 	
 	
 	def set_layout( self ) -> list:
@@ -3776,22 +4565,28 @@ class BudgetForm( Dark ):
 			self.__formlayout = _layout
 			return _layout
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'BudgetForm'
-			_exc.method = 'set_layout( self, items )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'BudgetForm'
+			exception.method = 'set_layout( self, items )'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-            Purpose:
+		    Purpose:
+		    --------
+		    Method displays the control/form
 
-            Parameters:
+		    Parameters:
+		    ----------
+		    self
 
-            Returns:
+		    Returns:
+		    --------
+		    None
 
 		'''
 		try:
@@ -3896,12 +4691,12 @@ class BudgetForm( Dark ):
 					sg.popup_scrolled( 'This Python file is:', __file__ )
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'BudgetForm'
-			_exc.method = 'show( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'BudgetForm'
+			exception.method = 'show( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class ChartPanel( Dark ):
@@ -3954,10 +4749,20 @@ class ChartPanel( Dark ):
 		self.form_size = (750, 650)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -3968,14 +4773,20 @@ class ChartPanel( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-            Purpose:
+		    Purpose:
+		    --------
+		    Method displays the control/form
 
-            Parameters:
+		    Parameters:
+		    ----------
+		    self
 
-            Returns:
+		    Returns:
+		    --------
+		    None
 
 		'''
 		try:
@@ -4024,12 +4835,12 @@ class ChartPanel( Dark ):
 			
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'ChartForm'
-			_exc.method = 'show( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'ChartForm'
+			exception.method = 'show( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class CsvForm( Dark ):
@@ -4082,10 +4893,20 @@ class CsvForm( Dark ):
 		self.form_size = (800, 600)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -4096,14 +4917,20 @@ class CsvForm( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-            Purpose:
+		    Purpose:
+		    --------
+		    Method displays the control/form
 
-            Parameters:
+		    Parameters:
+		    ----------
+		    self
 
-            Returns:
+		    Returns:
+		    --------
+		    None
 
 		'''
 		try:
@@ -4155,12 +4982,12 @@ class CsvForm( Dark ):
 			_event, _values = _window.read( )
 			_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'CsvForm'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'CsvForm'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class ExcelForm( Dark ):
@@ -4213,10 +5040,20 @@ class ExcelForm( Dark ):
 		self.form_size = (1250, 700)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
@@ -4227,14 +5064,20 @@ class ExcelForm( Dark ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-            Purpose:
+		    Purpose:
+		    --------
+		    Method displays the control/form
 
-            Parameters:
+		    Parameters:
+		    ----------
+		    self
 
-            Returns:
+		    Returns:
+		    --------
+		    None
 
 		'''
 		try:
@@ -4308,12 +5151,12 @@ class ExcelForm( Dark ):
 				_msg.show( )
 				_window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'ExcelForm'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'ExcelForm'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class GraphForm( Dark ):
@@ -4354,10 +5197,20 @@ class GraphForm( Dark ):
 		self.form_size = (800, 600)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
+
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
 
 		'''
 		return [ 'form_size', 'theme_background',
@@ -4368,18 +5221,22 @@ class GraphForm( Dark ):
 		         'scrollbar_color', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-            Purpose:
+		    Purpose:
+		    --------
+		    Method displays the control/form
 
-            Parameters:
+		    Parameters:
+		    ----------
+		    self
 
-            Returns:
+		    Returns:
+		    --------
+		    None
 
 		'''
-		
-		
 		def create_axis_grid( ):
 			plt.close( 'all' )
 			
@@ -4601,12 +5458,22 @@ class FileBrowser( ):
 		self.form_size = (400, 200)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
 
-        '''
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
+
+		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
 		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
 		         'text_forecolor', 'text_backcolor', 'input_backcolor',
@@ -4615,10 +5482,22 @@ class FileBrowser( ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
-        
-        '''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		layout = [ [ sg.Combo( sorted( sg.user_settings_get_entry( '-filenames-', [ ] ) ),
 			default_value=sg.user_settings_get_entry( '-last filename-', '' ),
 			size=(50, 1), key='-FILENAME-' ), sg.FileBrowse( ), sg.B( 'Clear History' ) ],
@@ -4677,12 +5556,22 @@ class ChatWindow( ):
 		self.form_size = (800, 600)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] of type members
 
-        '''
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
+
+		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
 		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
 		         'text_forecolor', 'text_backcolor', 'input_backcolor',
@@ -4691,7 +5580,22 @@ class ChatWindow( ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			_layout = [ [ sg.Text( 'Your query will go here', size=(40, 1) ) ],
 			            [ sg.Output( size=(110, 20), font=('Roboto 11') ) ],
@@ -4719,12 +5623,12 @@ class ChatWindow( ):
 			
 			window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'ChatWindow'
-			_exc.method = 'show( self )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'ChatWindow'
+			exception.method = 'show( self )'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class ChatBot( ):
@@ -4756,12 +5660,22 @@ class ChatBot( ):
 		self.form_size = (800, 600)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] comprised of type members
 
-        '''
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
+
+		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
 		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
 		         'text_forecolor', 'text_backcolor', 'input_backcolor',
@@ -4770,7 +5684,22 @@ class ChatBot( ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			layout = [ [ sg.Text( 'Your query will go here', size=(40, 1) ) ],
 			           [ sg.Output( size=(127, 30), font=('Rooboto 11') ) ],
@@ -4826,12 +5755,12 @@ class ChatBot( ):
 				elif 'Escape' in event:
 					window[ '-QUERY-' ].update( '' )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'ChatBot'
-			_exc.method = 'show( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'ChatBot'
+			exception.method = 'show( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class InputWindow( ):
@@ -4894,12 +5823,22 @@ class InputWindow( ):
 		self.form_size = (520, 550)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] comprised of type members
 
-        '''
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
+
+		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
 		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
 		         'text_forecolor', 'text_backcolor', 'input_backcolor',
@@ -4908,7 +5847,22 @@ class InputWindow( ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			col2 = sg.Column( [ [ sg.Frame( 'Accounts:',
 				[ [ sg.Column( [ [ sg.Listbox( [ 'Account ' + str( i ) for i in range( 1, 16 ) ],
@@ -4976,12 +5930,12 @@ class InputWindow( ):
 				
 				window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'InputWindow'
-			_exc.method = 'show( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'InputWindow'
+			exception.method = 'show( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class Executable( ):
@@ -5022,12 +5976,22 @@ class Executable( ):
 		self.form_size = (600, 600)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] comprised of type members
 
-        '''
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
+
+		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
 		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
 		         'text_forecolor', 'text_backcolor', 'input_backcolor',
@@ -5036,7 +6000,22 @@ class Executable( ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			layout = [ [ sg.Text( 'PyInstaller EXE Creator', font='Any 15' ) ],
 			           [ sg.Text( 'Source Python File' ),
@@ -5097,22 +6076,28 @@ class Executable( ):
 							'PyInstaller:\n\n',
 							command_line )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'Executable'
-			_exc.method = 'show( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'Executable'
+			exception.method = 'show( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def run_command( cmd, timeout=None, window=None ):
 		"""
 
+			Purpose:
+			--------
             run shell command
 
+			Parameters:
+			-----------
             @param cmd: command to execute
             @param timeout: timeout for command execution
 
+			Returns:
+			--------
             @return: (return code from command, command cleaned_lines)
 
 		"""
@@ -5132,18 +6117,24 @@ class Executable( ):
 			
 			return (retval, output)
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'Executable'
-			_exc.method = 'show( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'Executable'
+			exception.method = 'show( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class ThemeSelector( ):
 	'''
+	    Purpose:
+	    --------
 
-	    Class providing theme selection
+	    Parameters:
+	    ----------
+
+	    Returns:
+	    ---------
 
 	'''
 	
@@ -5173,12 +6164,22 @@ class ThemeSelector( ):
 		self.form_size = (300, 400)
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] comprised of type members
 
-        '''
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
+
+		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
 		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
 		         'text_forecolor', 'text_backcolor', 'input_backcolor',
@@ -5187,10 +6188,20 @@ class ThemeSelector( ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
-		    shows the selector
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
 
 		'''
 		try:
@@ -5214,18 +6225,24 @@ class ThemeSelector( ):
 			
 			window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'ThemeSelector'
-			_exc.method = 'show( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'ThemeSelector'
+			exception.method = 'show( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class UrlImageViewer( ):
 	'''
+	    Purpose:
+	    --------
 
-	    Class that presents an image given a URL
+	    Parameters:
+	    ----------
+
+	    Returns:
+	    ---------
 
 	'''
 	
@@ -5255,12 +6272,22 @@ class UrlImageViewer( ):
 		self.form_size = ( 800, 600 )
 	
 	
-	def __dir__( self ) -> list[ str ]:
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-            Returns a get_list[ str ] of member names
+		    Purpose:
+		    --------
+		    Creates a List[ str ] comprised of type members
 
-        '''
+		    Parameters:
+		    ----------
+			self
+
+		    Returns:
+		    ---------
+			List[ str ] | None
+
+		'''
 		return [ 'form_size', 'settings_path', 'theme_background',
 		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
 		         'text_forecolor', 'text_backcolor', 'input_backcolor',
@@ -5269,10 +6296,20 @@ class UrlImageViewer( ):
 		         'scrollbar_color', 'input_text', 'show' ]
 	
 	
-	def show( self ):
+	def show( self ) -> None:
 		'''
 
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
 		    Returns:
+		    --------
+		    None
 
 		'''
 		try:
@@ -5288,16 +6325,20 @@ class UrlImageViewer( ):
 			
 			window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'UrlImageViewer'
-			_exc.method = 'show( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'UrlImageViewer'
+			exception.method = 'show( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class AutoComplete( ):
 	"""
+
+
+		Purpose:
+		--------
 	    Autocomplete path
 	
 	    There are 3 keyboard characters to be aware of:
@@ -5339,12 +6380,31 @@ class AutoComplete( ):
 		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
+		self.choices = None
+		self.input_width = None
+		self.num_items_to_show = None
+		self.list_element = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			self.choices = sorted( [ elem.__name__ for elem in sg.Element.__subclasses__( ) ] )
 			
@@ -5367,7 +6427,7 @@ class AutoComplete( ):
 				finalize=True,
 				font=('Roboto', 11) )
 			
-			self.list_element: sg.Listbox = self.window.Element( '-BOX-' )
+			self.list_element = self.window.Element( '-BOX-' )
 			self.prediction_list, self.input_text, self.selected_item = [ ], "", 0
 			
 			# Event Loop
@@ -5423,17 +6483,19 @@ class AutoComplete( ):
 			
 			self.window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'UrlImageViewer'
-			_exc.method = 'show( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'UrlImageViewer'
+			exception.method = 'show( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class CheckBox( ):
 	"""
 
+		Purpose:
+		----------
 	    The Base64 Image encoding feature of PySimpleGUI makes it possible to create_small_embedding beautiful GUIs
 	    very simply
 
@@ -5480,7 +6542,22 @@ class CheckBox( ):
 				b'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')
 	
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			layout = [ [ sg.Text( 'Fancy Checkboxes... Simply' ) ],
 			           [ sg.Image( self.checked, key=('-IMAGE-', 1), metadata=True,
@@ -5509,18 +6586,31 @@ class CheckBox( ):
 			
 			window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'UrlImageViewer'
-			_exc.method = 'show( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'UrlImageViewer'
+			exception.method = 'show( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 
 class MachineLearningWindow( ):
 	'''
-	
+
+	    Purpose:
+	    --------
+
+
+	    Parameters:
+	    ----------
+
+
+
+	    Returns:
+	    ---------
+
+
 	'''
 	def __init__(self):
 		sg.theme( 'DarkGrey15' )
@@ -5547,9 +6637,20 @@ class MachineLearningWindow( ):
 	
 	def __build_window( self ):
 		'''
-		
-			Method that builds the window
-		
+
+		    Purpose:
+		    --------
+
+
+		    Parameters:
+		    ----------
+
+
+
+		    Returns:
+		    ---------
+
+
 		'''
 		try:
 			sg.set_options( text_justification='right' )
@@ -5606,21 +6707,32 @@ class MachineLearningWindow( ):
 			
 			window = sg.Window( 'Machine Learning',
 				layout, font=("Helvetica", 12) )
-			button, values = window.read( )
+			window.read( )
 			window.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'MachineLearningWindow'
-			_exc.method = '__build_window( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'MachineLearningWindow'
+			exception.method = '__build_window( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	def __custom_meter( self ):
 		'''
-		
-			Method that creates custom meter
-		
+
+		    Purpose:
+		    --------
+
+
+		    Parameters:
+		    ----------
+
+
+
+		    Returns:
+		    ---------
+
+
 		'''
 		try:
 			# layout the form
@@ -5643,22 +6755,37 @@ class MachineLearningWindow( ):
 			# done with loop... need to destroy the window as it's still open
 			window.CloseNonBlocking( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'MachineLearningWindow'
-			_exc.method = '__custom_meter( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'MachineLearningWindow'
+			exception.method = '__custom_meter( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 	
-	def show( self ):
+	def show( self ) -> None:
+		'''
+
+		    Purpose:
+		    --------
+		    Method displays the control/form
+
+		    Parameters:
+		    ----------
+		    self
+
+		    Returns:
+		    --------
+		    None
+
+		'''
 		try:
 			self.__custom_meter( )
 			self.__build_window( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Booger'
-			_exc.cause = 'MachineLearningWindow'
-			_exc.method = 'show( self)'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Booger'
+			exception.cause = 'MachineLearningWindow'
+			exception.method = 'show( self)'
+			error = ErrorDialog( exception )
+			error.show( )
 

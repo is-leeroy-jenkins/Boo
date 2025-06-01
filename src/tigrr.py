@@ -45,7 +45,7 @@ import json
 import pandas as pd
 import numpy as np
 from bs4 import BeautifulSoup
-from boogrr import Error, ErrorDialog
+from boogr import Error, ErrorDialog
 from pathlib import Path
 import nltk
 from nltk import pos_tag, FreqDist, ConditionalFreqDist

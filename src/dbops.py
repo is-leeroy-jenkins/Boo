@@ -48,7 +48,7 @@ import string
 import spacy
 import openpyxl
 from openai import OpenAI
-from boogrr import Error, ErrorDialog
+from boogr import Error, ErrorDialog
 from pathlib import Path
 import tiktoken
 import sqlite3
@@ -130,24 +130,26 @@ class SQLite( ):
 				self.cursor.execute( self.sql )
 				self.conn.commit( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'debbr'
-			_exc.cause = 'SQLite'
-			_exc.method = 'create_table( self, sql: str ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'DbOps'
+			exception.cause = 'SQLite'
+			exception.method = 'create_table( self, sql: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 
 	
 	def insert( self, table: str, columns: List[ str ], values: Tuple[ Any, ... ] ) -> None:
 		"""
 			
 			Purpose:
+			--------
 			Inserts a new record into a df.
 	
 			Args:
-				table (str): The name of the df.
-				columns (List[str]): Column names.
-				values (Tuple): Corresponding target_values.
+			--------
+			table (str): The name of the df.
+			columns (List[str]): Column names.
+			values (Tuple): Corresponding target_values.
 			
 		"""
 		try:
@@ -164,25 +166,28 @@ class SQLite( ):
 				self.cursor.execute( sql, values )
 				self.conn.commit( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'debbr'
-			_exc.cause = 'SQLite'
-			_exc.method = ('insert( self, df: str, columns: List[ str ], target_values: Tuple[ Any, '
+			exception = Error( e )
+			exception.module = 'DbOps'
+			exception.cause = 'SQLite'
+			exception.method = ('insert( self, df: str, columns: List[ str ], target_values: Tuple[ Any, '
 			               '... ] ) -> None')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def fetch_all( self, table: str ) -> List[ Tuple ]:
 		"""
 		
 			Purpose:
+			--------
 			Retrieves all row_count from a df.
 	
 			Args:
+			--------
 				table (str): The name of the df.
 			
 			Returns:
+			--------
 				List[Tuple]: List of rows.
 			
 		"""
@@ -190,26 +195,29 @@ class SQLite( ):
 			self.cursor.execute( f"SELECT * FROM {table}" )
 			return self.cursor.fetchall( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'debbr'
-			_exc.cause = 'SQLite'
-			_exc.method = 'fetch_all( self, df: str ) -> List[ Tuple ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'DbOps'
+			exception.cause = 'SQLite'
+			exception.method = 'fetch_all( self, df: str ) -> List[ Tuple ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def fetch_one( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> Tuple:
 		"""
 		
 			Purpose:
+			--------
 			Retrieves a single row matching a WHERE clause.
 	
 			Args:
+			--------
 				table (str): Table name.
 				where (str): WHERE clause (excluding 'WHERE').
 				params (Tuple): Parameters for the clause.
 			
 			Returns:
+			--------
 				Optional[Tuple]: The fetched row or None.
 			
 		"""
@@ -227,22 +235,24 @@ class SQLite( ):
 				self.cursor.execute( self.sql, self.params )
 				return self.cursor.fetchone( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'debbr'
-			_exc.cause = 'SQLite'
-			_exc.method = ('fetch_one( self, df: str, where: str, params: Tuple[ Any, ... ] ) -> '
+			exception = Error( e )
+			exception.module = 'DbOps'
+			exception.cause = 'SQLite'
+			exception.method = ('fetch_one( self, df: str, where: str, params: Tuple[ Any, ... ] ) -> '
 			               'Optional[ Tuple ]')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 
 	
 	def update( self, table: str, pairs: str, where: str, params: Tuple[ Any, ... ] ) -> None:
 		"""
 		
 			Purpose:
+			--------
 			Updates row_count in a df.
 	
 			Args:
+			--------
 				table (str): Table name.
 				pairs (str): SET clause with placeholders.
 				where (str): WHERE clause with placeholders.
@@ -266,22 +276,25 @@ class SQLite( ):
 				self.cursor.execute( sql, params )
 				self.conn.commit( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'debbr'
-			_exc.cause = 'SQLite'
-			_exc.method = ('update( self, df: str, pairs: str, where: str, params: Tuple[ Any, '
+			exception = Error( e )
+			exception.module = 'DbOps'
+			exception.cause = 'SQLite'
+			exception.method = ('update( self, df: str, pairs: str, where: str, params: Tuple[ Any, '
 			               '... ] ) -> None')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
+
 
 
 	def delete( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> None:
 		"""
 		
 			Purpose:
-			Deletes row_count matching the given WHERE clause.
+			--------
+			Deletes row matching the given WHERE clause.
 	
 			Args:
+			--------
 				table (str): Table name.
 				where (str): WHERE clause (excluding 'WHERE').
 				params (Tuple): Parameters for clause.
@@ -302,23 +315,25 @@ class SQLite( ):
 				self.cursor.execute( sql, self.params )
 				self.conn.commit( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'debbr'
-			_exc.cause = 'SQLite'
-			_exc.method = 'delete( self, df: str, where: str, params: Tuple[ Any, ... ] ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'DbOps'
+			exception.cause = 'SQLite'
+			exception.method = 'delete( self, df: str, where: str, params: Tuple[ Any, ... ] ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 	def import_excel( self, path: str ) -> None:
 		"""
 		
 			Purpose:
+			--------
 			Reads all worksheets from an Excel file into pandas DataFrames and
 			stores each as a df in the SQLite database.
 		
 			Args:
-				path (str): Path to the Excel workbook.
+			--------
+			path (str): Path to the Excel workbook.
 			
 		"""
 		try:
@@ -327,31 +342,33 @@ class SQLite( ):
 			else:
 				self.file_path = path
 				self.file_name = os.path.basename( self.file_path )
-				xls = pd.ExcelFile( path )
-				for sheet_name in xls.sheet_names:
-					df = xls.parse( sheet_name )
-					df.to_sql( sheet_name, self.conn, if_exists='replace', index=False )
+				_excel = pd.ExcelFile( path )
+				for _sheet in _excel.sheet_names:
+					_df = _excel.parse( _sheet )
+					_df.to_sql( _sheet, self.conn, if_exists='replace', index=False )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'debbr'
-			_exc.cause = 'SQLite'
-			_exc.method = 'import_excel( self, path: str ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'DbOps'
+			exception.cause = 'SQLite'
+			exception.method = 'import_excel( self, path: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 	def close( self ) -> None:
 		"""
 
+			Purpose:
+			--------
 			Closes the database connection.
 
 		"""
 		try:
 			self.conn.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'debbr'
-			_exc.cause = 'SQLite'
-			_exc.method = 'close( self ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'DbOps'
+			exception.cause = 'SQLite'
+			exception.method = 'close( self ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )

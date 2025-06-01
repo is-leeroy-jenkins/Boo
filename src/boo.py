@@ -42,7 +42,7 @@
   ******************************************************************************************
   '''
 import asyncio
-from boogrr import ErrorDialog, Error, ChatBot
+from boogr import ErrorDialog, Error, ChatBot
 import datetime as dt
 import numpy as np
 import os
