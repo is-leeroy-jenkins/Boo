@@ -199,9 +199,10 @@ class Text:
 	
 	def collapse_whitespace( self, text: str ) -> str:
 		"""
-		
-			Removes extra spaces and
-			blank tokens from the path path.
+
+			Purpose:
+			-----------
+			Removes extra spaces and blank tokens from the path path.
 
 			Parameters:
 			-----------
@@ -209,11 +210,10 @@ class Text:
 
 			Returns:
 			--------
-			
-				A cleaned_lines path path with:
-					- Consecutive whitespace reduced to a single space
-					- Leading/trailing spaces removed
-					- Blank tokens removed
+			A cleaned_lines path path with:
+				- Consecutive whitespace reduced to a single space
+				- Leading/trailing spaces removed
+				- Blank tokens removed
 					
 		"""
 		try:
@@ -237,8 +237,9 @@ class Text:
 	def correct_errors( self, text: str ) -> str:
 		"""
 
-			Corrects misspelled words
-			in the path path path.
+			Purpose:
+			-----------
+			Corrects misspelled words in the path path path.
 
 			This function:
 			  - Converts path to lowercase
@@ -279,8 +280,9 @@ class Text:
 	def remove_punctuation( self, text: str ) -> str:
 		"""
 
-			Removes all punctuation characters
-			 from the path path path.
+			Purpose:
+			-----------
+			Removes all punctuation characters from the path path path.
 
 			Parameters:
 			-----------
@@ -313,8 +315,9 @@ class Text:
 	def remove_special( self, text: str ) -> str:
 		"""
 
-			Removes special characters
-			from the path path path.
+			Purpose:
+			-----------
+			Removes special characters from the path path path.
 
 			This function:
 			  - Retains only alphanumeric characters and whitespace
@@ -357,9 +360,10 @@ class Text:
 	
 	def remove_html( self, text: str ) -> str:
 		"""
-	
-			Removes HTML tags
-			from the path path path.
+
+			Purpose:
+			--------
+			Removes HTML tags from the path path path.
 	
 			This function:
 			  - Parses the path as HTML
@@ -401,8 +405,9 @@ class Text:
 				Remove non-English/misspelled words,
 				but preserve numbers and selected symbols.
 				Preserved symbols: ( ) $
-			
-			Args:
+
+			Parameters:
+			-----------
 				text (str): Input text string.
 		
 			Returns:
@@ -436,7 +441,8 @@ class Text:
 		"""
 	
 			
-	
+			Purpose:
+			-----------
 			This function:
 			  - Removes HTML from pages.
 	
@@ -472,7 +478,8 @@ class Text:
 		"""
 	
 	
-			Removes Markdown
+			Purpose:
+			-----------
 			This function:
 			  - Removes Markdown syntax (e.g., *, #, [], etc.)
 	
@@ -507,13 +514,16 @@ class Text:
 	
 	def remove_stopwords( self, text: str ) -> str:
 		"""
-	
+
+			Purpose:
+			-----------
 			This function:
 			  - Removes English stopwords from the path pages path.
 			  - Tokenizes the path pages
 			  - Removes common stopwords (e.g., "the", "is", "and", etc.)
 			  - Returns the pages with only meaningful words
-	
+
+
 			Parameters:
 			-----------
 			pages : str
@@ -548,7 +558,7 @@ class Text:
 	def clean_space( self, text: str ) -> str:
 		"""
 
-			This function:
+			Purpose:
 			_____________
 	        Removes extra spaces and blank tokens from the path pages.
 
@@ -587,11 +597,13 @@ class Text:
 	
 	def remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]:
 		"""
-			
-			Removes repetitive headers and footers
-			across a list of pages by frequency analysis.
-		
-			Args:
+
+			Purpose:
+			--------
+			Removes repetitive headers and footers across a list of pages by frequency analysis.
+
+			Parameters:
+			-----------
 				pages (list of str): A list where each
 				element is the full path of one page.
 				min (int): Minimum num of times
@@ -654,7 +666,8 @@ class Text:
 	def normalize_text( self, text: str ) -> str:
 		"""
 	
-			This function:
+			Purpose:
+			-----------
 			Normalizes the path pages path.
 			  - Converts pages to lowercase
 			  - Removes accented characters (e.g., é -> e)
@@ -716,6 +729,8 @@ class Text:
 	def lemmatize_tokens( self, tokens: List[ str ] ) -> List[ str ]:
 		"""
 	
+			Purpose:
+			-----------
 			Performs lemmatization on the path List[ str ] into a path
 			of word-tokens.
 	
@@ -757,10 +772,13 @@ class Text:
 	
 	def tokenize_text( self, text: str ) -> List[ str ]:
 		'''
-	
-			Splits the raw path.
-			removes non-words and returns tokens
-			Args:
+
+			Purpose:
+			---------
+			Splits the raw path removes non-words and returns tokens
+
+			Parameters:
+			-----------
 				cleaned_line: (str) - clean documents.
 	
 			Returns:
@@ -834,7 +852,8 @@ class Text:
 	def tokenize_words( self, words: List[ str ] ) -> List[ str ]:
 		"""
 	
-			This function:
+			Purpose:
+			-----------
 			  - Tokenizes the path pages path into individual word tokens.
 			  - Converts pages to lowercase
 			  - Uses NLTK's word_tokenize to split
@@ -871,11 +890,14 @@ class Text:
 	
 	def tokenize_sentences( self, text: str ) -> List[ str ]:
 		"""
-		
+
+			Purpose:
+			--------
 			Tokenize a paragraph or
 			document into a list[ str ] of sentence strings.
 	
-			Args:
+			Parameters:
+			-----------
 				text (str): Input pages.
 	
 			Returns:
@@ -902,7 +924,8 @@ class Text:
 		List[ str ] ]:
 		"""
 	
-			This function:
+			Purpose:
+			-----------
 			Tokenizes cleaned_lines pages and breaks it into chunks for downstream vectors.
 			  - Converts pages to lowercase
 			  - Tokenizes pages using NLTK's word_tokenize
@@ -952,10 +975,9 @@ class Text:
 		List[ str ] ]:
 		"""
 	
-	
-			Breaks a list of
-			tokenized strings into a
-			list of lists.
+			Purpose:
+			-----------
+			Breaks a list of tokenized strings into a list of lists.
 	
 			This function:
 			  - Groups tokens into chunks of min `chunk_size`
@@ -1031,11 +1053,14 @@ class Text:
 	
 	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
 		"""
-	
+
+			Purpose:
+			--------
 			Reads path from a file, splits it into tokens,
 			and groups them into path.
 	
-			Args:
+			Parameters:
+			-----------
 				path (str): Path to the path file.
 				delimiter (str): Page separator path
 				(default is '\f' for form feed).
@@ -1070,12 +1095,15 @@ class Text:
 	
 	def split_paragraphs( self, path: str ) -> List[ str ]:
 		"""
-		
+
+			Purpose:
+			---------
 			Reads  a file and
 			splits it into paragraphs. A paragraph is defined as a block
 			of path separated by one or more empty tokens.
 	
-			Args:
+			Parameters:
+			-----------
 				path (str): Path to the path file.
 	
 			Returns:
@@ -1103,11 +1131,14 @@ class Text:
 	
 	def compute_frequency_distribution( self, lines: List[ str ], process: bool=True ) -> FreqDist:
 		"""
-		
+
+			Purpose:
+			--------
 			Creates a word frequency freq_dist
 			from a list of documents.
 	
-			Args:
+			Parameters:
+			-----------
 				documents (list): List of raw or preprocessed path documents.
 				process (bool): If True, applies normalization,
 				tokenization, stopword removal, and lemmatization.
@@ -1144,11 +1175,14 @@ class Text:
 	def compute_conditional_distribution( self, lines: List[ str ], condition=None,
 	                                      process: bool=True ) -> ConditionalFreqDist:
 		"""
-	
+
+			Purpose:
+			--------
 			Computes a Conditional Frequency Distribution (CFD)
 			 over a collection of documents.
 	
-			Args:
+			Parameters:
+			-----------
 				documents (list):
 				A list of path sections (pages, paragraphs, etc.).
 	
@@ -1195,17 +1229,21 @@ class Text:
 	
 	def create_vocabulary( self, freq_dist: Dict, min: int=1 ) -> List[ str ]:
 		"""
-		
+
+			Purpose:
+			---------
 			Builds a vocabulary list from a frequency
 			distribution by applying a minimum frequency threshold.
 	
-			Args:
+			Parameters:
+			-----------
 				freq_dist (dict):
 				A dictionary mapping words to their frequencies.
 				min (int): Minimum num
 				of occurrences required for a word to be included.
 	
 			Returns:
+			--------
 				list: Sorted list of unique vocabulary words.
 				
 		"""
@@ -1230,13 +1268,16 @@ class Text:
 		"""
 			
 			Purpose:
+			--------
 			Construct a Bag-of-Words (BoW)
 			frequency dictionary from a list of strings.
 	
-			Args:
+			Parameters:
+			-----------
 				tokens (list): List of tokens from a document.
 	
 			Returns:
+			--------
 				dict: Word frequency dictionary.
 				
 		"""
@@ -1257,16 +1298,20 @@ class Text:
 	
 	def create_word2vec( self, tokens: List[ str ], size=100, window=5, min=1 ) -> Word2Vec:
 		"""
+
 			Purpose:
+			--------
 				Train a Word2Vec embedding small_model from tokenized sentences.
 	
-			Args:
+			Parameters:
+			--------
 				sentences (get_list of get_list of str): List of tokenized sentences.
 				vector_size (int): Dimensionality of word vec.
 				window (int): Max distance between current and predicted word.
 				min_count (int): Minimum frequency for inclusion in vocabulary.
 	
 			Returns:
+			-------
 				Word2Vec: Trained Gensim Word2Vec small_model.
 		"""
 		try:
@@ -1294,12 +1339,14 @@ class Text:
 			Compute TF-IDF matrix with
 			optional full preprocessing pipeline.
 	
-			Args:
+			Parameters:
+			--------
 				lines (list): List of raw or preprocessed pages documents.
 				max (int): Max num of terms to include (vocabulary size).
 				prep (bool): If True, normalize, tokenize_text, clean, and lemmatize path.
 	
 			Returns:
+			--------
 				tuple:
 					- tfidf_matrix (scipy.sparse.csr_matrix): TF-IDF feature matrix.
 					- feature_names (list): Vocabulary terms.
@@ -1337,15 +1384,16 @@ class Text:
 		
 			Purpose:
 			________
-			Cleans text files given a source directory (src)
-			 and destination directory (dest)
+			Cleans text files given a source directory (src) and destination directory (dest)
 	
-			Args:
-				src (str): Source directory
-				dest (str): Destination directory
+			Parameters:
+			----------
+			src (str): Source directory
+			dest (str): Destination directory
 	
 			Returns:
-				void
+			--------
+			void
 	
 		"""
 		try:
@@ -1393,11 +1441,13 @@ class Text:
 			Coverts text files to JSONL format given a source directory (Source)
 			 and destination directory (destination)
 	
-			Args:
+			Parameters:
+			--------
 				source (str): Source directory
 				destination (str): Destination directory
 	
 			Returns:
+			--------
 				void
 	
 		"""
@@ -1467,6 +1517,7 @@ class Text:
 			"""
 	
 				Purpose:
+				-----------
 				Initialize the PDF pages extractor with configurable settings.
 	
 				Parameters:
@@ -1505,15 +1556,19 @@ class Text:
 		
 		def extract_lines( self, path: str, max: Optional[ int ]=None ) -> List[ str ]:
 			"""
-	
+
+				Purpose:
+				--------
 				Extract tokens of pages from a PDF,
 				optionally limiting to the first N pages.
 	
 				Parameters:
+				----------
 				- path (str): Path to the PDF file
 				- max (Optional[int]): Max num of pages to process (None for all pages)
 	
 				Returns:
+				--------
 				- List[str]: Cleaned list of non-empty tokens
 	
 			"""
@@ -1547,13 +1602,17 @@ class Text:
 	def _extract_tables( self, page: Page ) -> List[ str ]:
 		"""
 
+			Purpose:
+			--------
 			Attempt to extract structured blocks
 			such as tables using spatial grouping.
 
 			Parameters:
+			----------
 			- page: PyMuPDF page object
 
 			Returns:
+			--------
 			- List[str]: Grouped blocks including potential tables
 
 		"""
@@ -1577,13 +1636,15 @@ class Text:
 	def _filter_lines( self, lines: List[ str ] ) -> List[ str ]:
 		"""
 
-			Filter and clean tokens
-			 from a page of pages.
+			Purpose:
+			-----------
+			Filter and clean tokens from a page of pages.
 
 			Parameters:
 			- tokens (List[str]): Raw tokens of pages
 
 			Returns:
+			--------
 			- List[str]: Filtered, non-trivial tokens
 
 		"""
@@ -1612,13 +1673,15 @@ class Text:
 	def _has_repeating_header( self, line: str ) -> bool:
 		"""
 
-			Heuristic to detect common
-			headers/footers (basic implementation).
+			Purpose:
+			--------
+			Heuristic to detect common headers/footers (basic implementation).
 
 			Parameters:
 			- line (str): A line of pages
 
 			Returns:
+			--------
 			- bool: True if line is likely a header or footer
 
 		"""
@@ -1640,14 +1703,17 @@ class Text:
 	def extract_text( self, path: str, max: Optional[ int ]=None ) -> str:
 		"""
 
-			Extract the entire pages from a
-			PDF into one continuous path.
+			Purpose:
+			---------
+			Extract the entire pages from a PDF into one continuous path.
 
 			Parameters:
+			-----------
 			- path (str): Path to the PDF file
 			- max (Optional[int]): Maximum num of pages to process
 
 			Returns:
+			--------
 			- str: Full concatenated pages
 
 		"""
@@ -1675,14 +1741,16 @@ class Text:
 	def extract_tables( self, path: str, max: Optional[ int ]=None ) -> List[ pd.DataFrame ]:
 		"""
 
-			Extract tables from the PDF
-			and return them as a list of DataFrames.
+			Purpose:
+			-----------
+			Extract tables from the PDF and return them as a list of DataFrames.
 
 			Parameters:
 			- path (str): Path to the PDF file
 			- max (Optional[int]): Maximum num of pages to process
 
 			Returns:
+			--------
 			- List[pd.DataFrame]: List of DataFrames representing detected tables
 
 		"""
@@ -1716,8 +1784,9 @@ class Text:
 	def export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None:
 		"""
 
-			Export a list of DataFrames (tables)
-			to individual CSV files.
+			Purpose:
+			-----------
+			Export a list of DataFrames (tables) to individual CSV files.
 
 			Parameters:
 			- tables (List[pd.DataFrame]): List of tables to export
@@ -1749,6 +1818,7 @@ class Text:
 			pages to a plain pages file.
 
 			Parameters:
+			-----------
 			- tokens (List[str]): List of pages tokens
 			- path (str): Path to output pages file
 
@@ -1780,6 +1850,7 @@ class Text:
 			Excel workbook with one sheet per df.
 
 			Parameters:
+			-----------
 			- tables (List[pd.DataFrame]): List of tables to export
 			- path (str): Path to the output Excel file
 
@@ -1838,7 +1909,8 @@ class Token( ):
 			Purpose:
 	        Initializes the tokenizer wrapper using a pre-trained small_model from Hugging Face.
 	
-	        Args:
+			Parameters:
+			--------
 	            model_name (str): The name of the pre-trained small_model (e.g.,
 	            "bert-base-uncased").
         '''
@@ -1891,6 +1963,7 @@ class Token( ):
 			tokenizer's vocabulary.
 	
 			Returns:
+			--------
 				Dict[str, int]: Mapping of token path to token ID.
 			
 		"""
@@ -1907,11 +1980,14 @@ class Token( ):
 	
 	def load_tokenizer( self, path: str ) -> None:
 		"""
-		
+
+			Purpose:
+			-------
 			Loads a tokenizer from
 			 a specified directory path.
 	
-			Args:
+			Parameters:
+			--------
 				path (str): Path to the tokenizer config and vocab files.
 			
 		"""
@@ -1931,11 +2007,14 @@ class Token( ):
 	
 	def save_tokenizer( self, path: str ) -> None:
 		"""
-			
+
+			Purpose:
+			--------
 			Saves the tokenizer
 			to a directory.
 	
-			Args:
+			Parameters:
+			--------
 				path (str): Target path to save tokenizer config and vocab.
 			
 		"""
@@ -1957,11 +2036,14 @@ class Token( ):
 	            padd: Union[ bool, str ]=False, tensors: str=None ) -> Dict[
 		str, Union[ List[ int ], any ] ]:
 		"""
-		
+
+			Purpose:
+			---------
 			Encodes a single path of path
 			into small_model-ready path IDs and attention masks.
 	
-			Args:
+			Parameters:
+			----------
 				text (str): Input path.
 				max (int): Max length of token sequence.
 				trunc (bool): If True, trunc sequences over max.
@@ -1969,6 +2051,7 @@ class Token( ):
 				tensors (str): One of 'pt', 'tf', or 'np'.
 	
 			Returns:
+			--------
 				Dict[str, any]: Dictionary with input_ids, attention_mask, etc.
 			
 		"""
@@ -1994,7 +2077,8 @@ class Token( ):
 			Encodes a list of
 			path inputs as a batch.
 	
-			Args:
+			Parameters:
+			-----------
 				texts (List[str]): A list of path samples.
 				max (int): Max length for truncate.
 				trunc (bool): Whether to truncate.
@@ -2002,6 +2086,7 @@ class Token( ):
 				tensors (str): Output tensor scaler.
 	
 			Returns:
+			--------
 				Dict[str, any]: Tokenized batch with path IDs, masks, etc.
 			
 		"""
@@ -2024,15 +2109,18 @@ class Token( ):
 	
 	def decode( self, ids: List[ int ], skip: bool=True ) -> str:
 		"""
-			
-			Converts a list of
-			token IDs back to a path.
+
+			Purpose:
+			--------
+			Converts a list of token IDs back to a path.
 	
-			Args:
+			Parameters:
+			-----------
 				ids (List[int]): Encoded token IDs.
 				skip (bool): Exclude special tokens from output.
 	
 			Returns:
+			--------
 				str: Human-readable decoded path.
 				
 		"""
@@ -2052,14 +2140,17 @@ class Token( ):
 	
 	def convert_tokens( self, tokens: List[ str ] ) -> List[ int ]:
 		"""
-			
-			Converts tokens into
-			their corresponding vocabulary IDs.
+
+			Purpose:
+			--------
+			Converts tokens into their corresponding vocabulary IDs.
 	
-			Args:
+			Parameters:
+			-----------
 				tokens (List[str]): List of subword tokens.
 	
 			Returns:
+			--------
 				List[int]: Token IDs.
 			
 		"""
@@ -2079,14 +2170,18 @@ class Token( ):
 	
 	def convert_ids( self, ids: List[ int ] ) -> List[ str ]:
 		"""
-		
+
+			Purpose:
+			--------
 			Converts token IDs
 			back to subword tokens.
 	
-			Args:
+			Parameters:
+			-----------
 				ids (List[int]): List of token IDs.
 	
 			Returns:
+			--------
 				List[str]: List of token strings.
 			
 		"""
@@ -2124,6 +2219,7 @@ class Vector( ):
 			OpenAI API credentials and embedding small_model.
 
 			Parameters:
+			-----------
 			- api_key (Optional[str]): OpenAI API key (uses global config if None)
 			- small_model (str): OpenAI embedding small_model to use
 
@@ -2183,12 +2279,14 @@ class Vector( ):
 			vectors for a list of path tokens.
 
 			Parameters:
+			-----------
 			- tokens (List[str]): List of path pages strings
 			- batch (int): Number of tokens per API request batch
 			- max (int): Number of retries on API failure
 			- time (float): Seconds to wait between retries
 
 			Returns:
+			--------
 			- pd.DataFrame: DataFrame containin
 			g original pages, raw vectors,
 			and normalized vectors
@@ -2243,10 +2341,12 @@ class Vector( ):
 			into batches of specified size.
 
 			Parameters:
+			-----------
 			- tokens (List[str]): Full list of path strings
 			- size (int): Desired batch size
 
 			Returns:
+			--------
 			- List of pages batches
 
 		"""
@@ -2319,9 +2419,11 @@ class Vector( ):
 			of vector using L2 norm.
 
 			Parameters:
+			-----------
 			- vector (np.ndarray): Matrix of vector
 
 			Returns:
+			--------
 			- np.ndarray: Normalized vector
 
 		"""
@@ -2345,13 +2447,16 @@ class Vector( ):
 		"""
 
 			Purpose:
+			-----------
 			Compute cosine similarity between a query vector and a matrix of vector.
 
 			Parameters:
+			-----------
 			- vector (np.ndarray): A single normalized vector
 			- matrix (np.ndarray): A matrix of normalized vector
 
 			Returns:
+			--------
 			- np.ndarray: Cosine similarity scores
 
 		"""
@@ -2380,14 +2485,17 @@ class Vector( ):
 		"""
 
 			Purpose:
+			-----------
 			Compute most similar rows in a DataFrame using cosine similarity.
 
 			Parameters:
+			-----------
 			- query (str): Query path to compare
 			- df (pd.DataFrame): DataFrame with 'normed_embedding'
 			- toptop_k (int): Number of top matches to return
 
 			Returns:
+			--------
 			- pd.DataFrame: Top-k results sorted by similarity
 
 		"""
@@ -2420,14 +2528,17 @@ class Vector( ):
 		"""
 
 			Purpose:
+			-----------
 			Perform most_similar for a list of queries.
 
 			Parameters:
+			-----------
 			- queries (List[str]): List of query strings
 			- df (pd.DataFrame): DataFrame to search
 			- toptop_k (int): Number of top results per query
 
 			Returns:
+			--------
 			- Dict[str, pd.DataFrame]: Dictionary of query to top-k results
 
 		"""
@@ -2455,12 +2566,15 @@ class Vector( ):
 		"""
 
 			Purpose:
+			-----------
 			Compute full pairwise cosine similarity heatmap from normed vectors.
 
 			Parameters:
+			-----------
 			- df (pd.DataFrame): DataFrame with 'normed_embedding' column
 
 			Returns:
+			--------
 			- pd.DataFrame: Pairwise cosine similarity heatmap
 
 		"""
@@ -2486,9 +2600,11 @@ class Vector( ):
 		"""
 
 			Purpose:
+			-----------
 			Export DataFrame of pages and vectors to a JSONL file.
 
 			Parameters:
+			-----------
 			- df (pd.DataFrame): DataFrame with 'pages' and 'embedding'
 			- path (str): Output path for .jsonl file
 
@@ -2520,13 +2636,16 @@ class Vector( ):
 		"""
 
 			Purpose:
+			-----------
 			Import pages and vectors
 			from a JSONL file into a DataFrame.
 
 			Parameters:
+			-----------
 			- path (str): Path to the .jsonl file
 
 			Returns:
+			--------
 			- pd.DataFrame: DataFrame with normalized vectors
 
 		"""
@@ -2562,13 +2681,15 @@ class Vector( ):
 		"""
 
 			Purpose:
-			Creates a new
-			OpenAI vector store given a name.
+			-----------
+			Creates a new OpenAI vector store given a name.
 
 			Parameters:
+			-----------
 			- name (str): Name for the vector store
 
 			Returns:
+			--------
 			- str: ID of the created vector store
 
 		"""
@@ -2595,6 +2716,7 @@ class Vector( ):
 			OpenAI vector vectorstores.
 
 			Returns:
+			--------
 			- List[str]: List of vector store IDs
 
 		"""
@@ -2618,6 +2740,7 @@ class Vector( ):
 			 given OpenAI vector store.
 
 			Parameters:
+			-----------
 			- df (pd.DataFrame): DataFrame with 'pages' column
 			- ids (str): OpenAI vector store ID
 
@@ -2651,14 +2774,17 @@ class Vector( ):
 		"""
 
 			Purpose:
+			-----------
 			Query a vector store using a natural language path.
 
 			Parameters:
+			-----------
 			- ids (str): OpenAI vector store ID
 			- query (str): Search query
 			- top (int): Number of results to return
 
 			Returns:
+			--------
 			- List[dict]: List of matching documents and similarity scores
 
 		"""
@@ -2692,9 +2818,11 @@ class Vector( ):
 		"""
 
 			Purpose:
+			-----------
 			Delete specific documents from a vector store.
 
 			Parameters:
+			-----------
 			- storeid (str): OpenAI vector store ID
 			- ids (List[str]): List of document IDs to delete
 
@@ -2722,12 +2850,15 @@ class Vector( ):
 		"""
 
 			Purpose:
+			-----------
 			Uploads document to vector store given path and id.
 
 			Parameters:
+			-----------
 			- path (str):  local path to the document
 
 			Returns:
+			--------
 			- str:  ID of the  vector store
 
 		"""
@@ -2758,12 +2889,15 @@ class Vector( ):
 		"""
 
 			Purpose:
+			-----------
 			Uploads documents to vector store given path and id.
 
 			Parameters:
+			-----------
 			- path (str):  local path to the document
 
 			Returns:
+			--------
 			- str:  ID of the  vector store
 
 		"""
@@ -2847,12 +2981,15 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			-----------
 			Create embd using the small small_model from OpenAI.
 
 			Parameters:
+			-----------
 			- path (str):  the path to be embedded
 
 			Returns:
+			--------
 			- List[ float ]:  embedded embd
 
 		"""
@@ -2879,12 +3016,15 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			-----------
 			Create embd using the small small_model from OpenAI.
 
 			Parameters:
+			-----------
 			- tokens List[ str ]:  the list of strings (ie., tokens) to be embedded
 
 			Returns:
+			--------
 			- List[ List[ float ] ]:  embedded embd
 
 		"""
@@ -2911,12 +3051,15 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			-----------
 			Create embd using the large small_model from OpenAI.
 
 			Parameters:
+			-----------
 			- path (str):  the path (ie, token) to be embedded
 
 			Returns:
+			--------
 			- List[ List[ float ] ]:  embedded embd
 
 		"""
@@ -2943,12 +3086,15 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			-----------
 			Create embd using the large small_model from OpenAI.
 
 			Parameters:
+			-----------
 			- tokens List[ str ]:  the list of strings (ie., tokens) to be embedded
 
 			Returns:
+			--------
 			- List[ List[ float ] ]:  embedded embd
 
 		"""
@@ -2975,12 +3121,15 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			-----------
 			Create embd using the ada small_model from OpenAI.
 
 			Parameters:
+			-----------
 			- path (str) :  the path (ie., token) to be embedded
 
 			Returns:
+			--------
 			- List[ float ] :  embedded embd
 
 		"""
@@ -3007,12 +3156,15 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			-----------
 			Create embd using the ada small_model from OpenAI.
 
 			Parameters:
+			-----------
 			- tokens List[ str ]:  the list of strings (ie., tokens) to be embedded
 
 			Returns:
+			--------
 			- List[ List[ float ] ]:  embedded embd
 
 		"""
@@ -3040,12 +3192,15 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			-----------
 			Asynchronously creates embd using the small small_model from OpenAI.
 
 			Parameters:
+			-----------
 			- path (str):  the path to be embedded
 
 			Returns:
+			--------
 			- List[ float ]:  embedded embd
 
 		"""
@@ -3073,12 +3228,15 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			-----------
 			Asynchronously creates embd using the large small_model from OpenAI.
 
 			Parameters:
+			-----------
 			- path (str):  the path to be embedded
 
 			Returns:
+			--------
 			- List[ float ]:  embedded embd
 
 		"""
@@ -3104,12 +3262,15 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			-----------
 			Asynchronously creates embd using the ada small_model from OpenAI.
 
 			Parameters:
+			-----------
 			- path (str):  the path to be embedded
 
 			Returns:
+			--------
 			- List[ float ]:  embedded embd
 
 		"""
@@ -3137,13 +3298,16 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			-----------
 			Calculates cosine similarity between two vectors 'a' and 'b'.
 
 			Parameters:
+			-----------
 			- a List[ float ]:  vector 'a',
 			- b List[ float ]:  vector 'b'
 
 			Returns:
+			--------
 			- List[ float ]:  embedded embd
 
 		"""
@@ -3167,13 +3331,16 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			-----------
 			Calculates cosine similarity between two vectors 'a' and 'b'.
 
 			Parameters:
+			-----------
 			- a List[ float ]:  vector 'a',
 			- b List[ float ]:  vector 'b'
 
 			Returns:
+			--------
 			- List[ float ]:  embedded embd
 
 		"""
@@ -3247,13 +3414,16 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			-----------
 			Calculates cosine similarity between two vectors 'a' and 'b'.
 
 			Parameters:
+			-----------
 			- a List[ float ]:  vector 'a',
 			- b List[ float ]:  vector 'b'
 
 			Returns:
+			--------
 			- List[ float ]:  embedded embd
 
 		"""
