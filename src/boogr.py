@@ -3,15 +3,16 @@
       Assembly:                Boo
       Filename:                boogr.py
       Author:                  Terry D. Eppler
-      Created:                 05-31-2023
+      Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
-      Last Modified On:        06-01-2023
+      Last Modified On:        05-01-2025
   ******************************************************************************************
   <copyright file="boogr.py" company="Terry D. Eppler">
 
-     This is a Federal Booger and Data Analysis Application for EPA Analysts
-     Copyright ©  2024  Terry Eppler
+     Boo is a data analysis tool integrating GenAI, Text Processing, and Machine-Learning
+     algorithms for federal analysts.
+     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
      of this software and associated documentation files (the “Software”),

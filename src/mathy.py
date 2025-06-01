@@ -3,15 +3,16 @@
   Assembly:                Boo
   Filename:                mathy.py
   Author:                  Terry D. Eppler
-  Created:                 05-31-2023
+  Created:                 05-31-2022
 
   Last Modified By:        Terry D. Eppler
-  Last Modified On:        06-01-2023
+  Last Modified On:        05-01-2025
 ******************************************************************************************
 <copyright file="mathy.py" company="Terry D. Eppler">
 
- Bobo is a target_values analysis tool for EPA Analysts.
- Copyright ©  2024  Terry Eppler
+     Boo is a data analysis tool integrating various Generative AI, Text-Processing, and
+     Machine-Learning algorithms for federal analysts.
+     Copyright ©  2022  Terry Eppler
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the “Software”),
@@ -37,7 +38,7 @@
 
 </copyright>
 <summary>
-boo.py
+mathy.py
 </summary>
 ******************************************************************************************
 '''
