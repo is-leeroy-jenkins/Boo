@@ -1,18 +1,18 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                tigrr.py
+      Filename:                Tigrr.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
-      Last Modified On:        06-01-2023
+      Last Modified On:        05-01-2025
   ******************************************************************************************
   <copyright file="tigrr.py" company="Terry D. Eppler">
 
-     Boo is a data analysis tool integrating various Generative AI, Text-Processing, and
-     Machine-Learning algorithms for federal analysts.
-     Copyright ©  2022  Terry Eppler
+	     Boo is a data analysis tool that integrates various Generative AI, Text-Processing, and
+	     Machine-Learning algorithms for federal analysts.
+	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
      of this software and associated documentation files (the “Software”),
@@ -38,6 +38,9 @@
 
   </copyright>
   <summary>
+    Tigrr.py
+  </summary>
+  ******************************************************************************************
   '''
 import os
 from collections import defaultdict
@@ -86,6 +89,7 @@ class Text:
 	'''
 	
 		Purpose:
+		---------
 		Class providing path preprocessing functionality
 		
 	    Methods:
@@ -124,7 +128,11 @@ class Text:
 	
 	def __init__( self ):
 		'''
+
+			Purpose:
+			---------
 			Constructor for 'Text' objects
+
 		'''
 		self.lemmatizer = WordNetLemmatizer( )
 		self.stemmer = PorterStemmer( )
@@ -159,12 +167,21 @@ class Text:
 		self.vectorizer = None
 	
 	
-	def __dir__( self ):
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 		
 			Purpose:
-			Returns a list of strings
-			representing class members.
+			---------
+			Provides a list of strings representing class members.
+
+
+			Parameters:
+			-----------
+			- self
+
+			Returns:
+			--------
+			- List[ str ] | None
 			
 		'''
 		return [ 'file_path', 'raw_input', 'raw_pages', 'normalized', 'lemmatized',
@@ -207,7 +224,7 @@ class Text:
 
 			Parameters:
 			-----------
-			path : str
+			- path : str
 
 			Returns:
 			--------
@@ -250,12 +267,12 @@ class Text:
 
 			Parameters:
 			-----------
-			pages : str
+			- pages : str
 				The path pages path with potential spelling mistakes.
 
 			Returns:
 			--------
-			str
+			- str
 				A corrected version of the path path with proper English words.
 
 		"""
@@ -287,12 +304,12 @@ class Text:
 
 			Parameters:
 			-----------
-			pages : str
+			- pages : str
 				The path path path to be cleaned_lines.
 
 			Returns:
 			--------
-			str
+			- str
 				The path path with all punctuation removed.
 
 		"""
@@ -327,13 +344,13 @@ class Text:
 
 			Parameters:
 			-----------
-			pages : str
+			- pages : str
 				The raw path path path potentially
 				containing special characters.
 
 			Returns:
 			--------
-			str
+			- str
 				A cleaned_lines path containing
 				only letters, numbers, and spaces.
 
@@ -372,12 +389,12 @@ class Text:
 	
 			Parameters:
 			-----------
-			pages : str
+			- pages : str
 				The path path containing HTML tags.
 	
 			Returns:
 			--------
-			str
+			- str
 				A cleaned_lines path with all HTML tags removed.
 	
 		"""
@@ -403,16 +420,16 @@ class Text:
 			
 			Purpose:
 			_______
-				Remove non-English/misspelled words,
-				but preserve numbers and selected symbols.
-				Preserved symbols: ( ) $
+			Remove non-English/misspelled words, but preserve numbers and selected symbols.
+			Preserved symbols: ( ) $
 
 			Parameters:
 			-----------
-				text (str): Input text string.
+			- text (str): Input text string.
 		
 			Returns:
-				str: Cleaned text.
+			--------
+			- str: Cleaned text.
 				
 		"""
 		try:
@@ -444,17 +461,16 @@ class Text:
 			
 			Purpose:
 			-----------
-			This function:
-			  - Removes HTML from pages.
+			 Removes HTML from pages.
 	
 			Parameters:
 			-----------
-			pages : str
+			- pages : str
 				The formatted path pages.
 	
 			Returns:
 			--------
-			str
+			- str
 				A cleaned_lines version of the pages with formatting removed.
 	
 		"""
@@ -481,17 +497,16 @@ class Text:
 	
 			Purpose:
 			-----------
-			This function:
-			  - Removes Markdown syntax (e.g., *, #, [], etc.)
+			Removes Markdown syntax (e.g., *, #, [], etc.)
 	
 			Parameters:
 			-----------
-			pages : str
+			- pages : str
 				The formatted path pages.
 	
 			Returns:
 			--------
-			str
+			- str
 				A cleaned_lines version of the pages with formatting removed.
 	
 		"""
@@ -527,12 +542,12 @@ class Text:
 
 			Parameters:
 			-----------
-			pages : str
+			- pages : str
 				The text string.
 	
 			Returns:
 			--------
-			str
+			- str
 				A text string without stopwords.
 	
 		"""
@@ -565,12 +580,12 @@ class Text:
 
 	        Parameters:
 	        -----------
-	        pages : str
+	        - pages : str
 	            The raw path pages path to be cleaned_lines.
 
 	        Returns:
 	        --------
-	        str
+	        - str
 	            A cleaned_lines pages path with:
 	                - Consecutive whitespace reduced to a single space
 	                - Leading/trailing spaces removed
@@ -605,15 +620,16 @@ class Text:
 
 			Parameters:
 			-----------
-				pages (list of str): A list where each
-				element is the full path of one page.
-				min (int): Minimum num of times
-				a line must appear at the top/bottom to
-				be considered a header/footer.
+			- pages (list of str):
+				A list where each element is the full path of one page.
+
+			- min (int):
+				Minimum num of times a line must appear at the top/bottom to be a header/footer.
 		
 			Returns:
-				list of str: List of cleaned_lines page
-				tokens without detected headers/footers.
+			---------
+			- list of str:
+				List of cleaned_lines page tokens without detected headers/footers.
 			
 		"""
 		try:
@@ -677,12 +693,12 @@ class Text:
 	
 			Parameters:
 			-----------
-			pages : str
+			- pages : str
 				The raw path pages path to be normalized.
 	
 			Returns:
 			--------
-			str
+			- str
 				A normalized, cleaned_lines version of the path path.
 	
 		"""
@@ -743,12 +759,12 @@ class Text:
 	
 			Parameters:
 			-----------
-			pages : str
+			- pages : str
 				The path pages path to be lemmatized.
 	
 			Returns:
 			--------
-			str
+			- str
 				A path with all words lemmatized.
 	
 		"""
@@ -780,10 +796,10 @@ class Text:
 
 			Parameters:
 			-----------
-				cleaned_line: (str) - clean documents.
+			- cleaned_line: (str) - clean documents.
 	
 			Returns:
-				list: Cleaned and normalized documents.
+			- list: Cleaned and normalized documents.
 	
 		'''
 		try:
@@ -806,27 +822,26 @@ class Text:
 	
 	def tiktokenize( self, text: str, model: str='cl100k_base' ) -> List[ str ]:
 		"""
-		
-		    Tokenizes text text into subword tokens
-		    using OpenAI's tiktoken tokenizer.
-		    This function leverages the tiktoken library,
-		    which provides byte-pair encoding (BPE)
-		    tokenization used in models such as GPT-3.5 and GPT-4.
-		    Unlike standard word tokenization,
+
+			Purpose:
+			---------
+		    Tokenizes text text into subword tokens using OpenAI's tiktoken tokenizer.
+		    This function leverages the tiktoken library, which provides byte-pair encoding (BPE)
+		    tokenization used in models such as GPT-3.5 and GPT-4. Unlike standard word tokenization,
 		    this function splits text into model-specific subword units.
 		
 		    Parameters
 		    ----------
-		    text : str
+		    - text : str
 		        The text string to be tokenized.
 		
-		    model : str, optional
+		    - model : str, optional
 		        The tokenizer model to use. Examples include 'cl100k_base' (default),
 		        'gpt-3.5-turbo', or 'gpt-4'. Ensure the model is supported by tiktoken.
 		
 		    Returns
 		    -------
-		    List[str]
+		    - List[str]
 		        A list of string tokens representing BPE subword units.
 
         """
@@ -862,13 +877,12 @@ class Text:
 	
 			Parameters:
 			-----------
-			words : List[ str ]
+			- words : List[ str ]
 				A list of strings to be tokenized.
 	
 			Returns:
 			--------
-				A list of token strings (words and punctuation)
-				extracted from the pages.
+			- A list of token strings (words and punctuation) extracted from the pages.
 	
 		"""
 		try:
@@ -899,10 +913,11 @@ class Text:
 	
 			Parameters:
 			-----------
-				text (str): Input pages.
+			- text (str): Input pages.
 	
 			Returns:
-				list: List of sentence strings.
+			--------
+			- list: List of sentence strings.
 				
 		"""
 		try:
@@ -935,21 +950,20 @@ class Text:
 	
 			Parameters:
 			-----------
-			pages : str
+			- pages : str
 				The cleaned_lines path pages to be tokenized and chunked.
 	
-			chunk_size : int, optional (default=50)
+			- chunk_size : int, optional (default=50)
 				Number of tokens per chunk_words.
 	
-			return_string : bool, optional (default=True)
+			- return_string : bool, optional (default=True)
 				If True, returns each chunk_words as a path; otherwise, returns a get_list of
 				tokens.
 	
 			Returns:
 			--------
-			a list
-				A list of token chunks. Each chunk_words is either a get_list of tokens or a
-				path.
+			- a list
+				Each chunk_words is either a get_list of tokens or a path.
 	
 		"""
 		try:
@@ -986,14 +1000,14 @@ class Text:
 	
 			Parameters:
 			-----------
-			words : a list of tokenizd words
+			- words : a list of tokenizd words
 	
-			chunk_size : int, optional (default=50)
+			- chunk_size : int, optional (default=50)
 				Number of tokens per chunk_words.
 	
 			Returns:
 			--------
-			List[ List[ str ] ]
+			- List[ List[ str ] ]
 				A list of a list of token chunks. Each chunk is a list of tokens.
 	
 		"""
@@ -1031,12 +1045,12 @@ class Text:
 
 			Parameters
 			----------
-			text : str
+			- text : str
 				The raw text string to be segmented into sentences.
 
 			Returns
 			-------
-			List[str]
+			- List[str]
 				A list of sentence strings, each corresponding to a single sentence detected
 				in the text text.
 
@@ -1062,13 +1076,12 @@ class Text:
 	
 			Parameters:
 			-----------
-				path (str): Path to the path file.
-				delimiter (str): Page separator path
-				(default is '\f' for form feed).
+			- path (str): Path to the path file.
+			- delimiter (str): Page separator path (default is '\f' for form feed).
 	
 			Returns:
-				list[ str ]  where each element
-				is the path.
+			---------
+			- list[ str ]  where each element is the path.
 	
 		"""
 		try:
@@ -1099,16 +1112,16 @@ class Text:
 
 			Purpose:
 			---------
-			Reads  a file and
-			splits it into paragraphs. A paragraph is defined as a block
+			Reads  a file and splits it into paragraphs. A paragraph is defined as a block
 			of path separated by one or more empty tokens.
 	
 			Parameters:
 			-----------
-				path (str): Path to the path file.
+			- path (str): Path to the path file.
 	
 			Returns:
-				list of str: List of paragraph strings.
+			---------
+			- list of str: List of paragraph strings.
 				
 		"""
 		try:
@@ -1135,17 +1148,15 @@ class Text:
 
 			Purpose:
 			--------
-			Creates a word frequency freq_dist
-			from a list of documents.
+			Creates a word frequency freq_dist from a list of documents.
 	
 			Parameters:
 			-----------
-				documents (list): List of raw or preprocessed path documents.
-				process (bool): If True, applies normalization,
-				tokenization, stopword removal, and lemmatization.
+			- documents (list): List of raw or preprocessed path documents.
+			- process (bool): Applies normalization, tokenization, stopword removal, and lemmatization.
 	
 			Returns:
-				dict: Dictionary of words and their corresponding frequencies.
+			- dict: Dictionary of words and their corresponding frequencies.
 				
 		"""
 		try:
@@ -1184,18 +1195,18 @@ class Text:
 	
 			Parameters:
 			-----------
-				documents (list):
+			- documents (list):
 				A list of path sections (pages, paragraphs, etc.).
 	
-				condition (function):
+			- condition (function):
 				A function to determine the condition/grouping. If None, uses document index.
 	
-				process (bool):
+			- process (bool):
 				If True, applies normalization, tokenization,
 				stopword removal, and lemmatization.
 	
 			Returns:
-				ConditionalFreqDist:
+			- ConditionalFreqDist:
 				An NLTK ConditionalFreqDist object mapping conditions to word frequencies.
 	
 		"""
@@ -1238,14 +1249,15 @@ class Text:
 	
 			Parameters:
 			-----------
-				freq_dist (dict):
+			- freq_dist (dict):
 				A dictionary mapping words to their frequencies.
-				min (int): Minimum num
+
+			- min (int): Minimum num
 				of occurrences required for a word to be included.
 	
 			Returns:
 			--------
-				list: Sorted list of unique vocabulary words.
+			- list: Sorted list of unique vocabulary words.
 				
 		"""
 		try:
@@ -1270,16 +1282,15 @@ class Text:
 			
 			Purpose:
 			--------
-			Construct a Bag-of-Words (BoW)
-			frequency dictionary from a list of strings.
+			Construct a Bag-of-Words (BoW) frequency dictionary from a list of strings.
 	
 			Parameters:
 			-----------
-				tokens (list): List of tokens from a document.
+			- tokens (list): List of tokens from a document.
 	
 			Returns:
 			--------
-				dict: Word frequency dictionary.
+			- dict: Word frequency dictionary.
 				
 		"""
 		try:
@@ -1302,18 +1313,19 @@ class Text:
 
 			Purpose:
 			--------
-				Train a Word2Vec embedding small_model from tokenized sentences.
+			Train a Word2Vec embedding small_model from tokenized sentences.
 	
 			Parameters:
 			--------
-				sentences (get_list of get_list of str): List of tokenized sentences.
-				vector_size (int): Dimensionality of word vec.
-				window (int): Max distance between current and predicted word.
-				min_count (int): Minimum frequency for inclusion in vocabulary.
+			- sentences (get_list of get_list of str): List of tokenized sentences.
+			- vector_size (int): Dimensionality of word vec.
+			- window (int): Max distance between current and predicted word.
+			- min_count (int): Minimum frequency for inclusion in vocabulary.
 	
 			Returns:
 			-------
-				Word2Vec: Trained Gensim Word2Vec small_model.
+			- Word2Vec: Trained Gensim Word2Vec small_model.
+
 		"""
 		try:
 			if tokens is None:
@@ -1342,17 +1354,17 @@ class Text:
 	
 			Parameters:
 			--------
-				lines (list): List of raw or preprocessed pages documents.
-				max (int): Max num of terms to include (vocabulary size).
-				prep (bool): If True, normalize, tokenize_text, clean, and lemmatize path.
+			- lines (list): List of raw or preprocessed pages documents.
+			- max (int): Max num of terms to include (vocabulary size).
+			- prep (bool): If True, normalize, tokenize_text, clean, and lemmatize path.
 	
 			Returns:
 			--------
-				tuple:
-					- tfidf_matrix (scipy.sparse.csr_matrix): TF-IDF feature matrix.
-					- feature_names (list): Vocabulary terms.
-					- vectorizer (TfidfVectorizer): Fitted vectorizer instance.
-	
+			- tuple:
+			- tfidf_matrix (scipy.sparse.csr_matrix): TF-IDF feature matrix.
+			- feature_names (list): Vocabulary terms.
+			- vectorizer (TfidfVectorizer): Fitted vectorizer instance.
+
 		"""
 		try:
 			if lines is None:
@@ -1389,12 +1401,12 @@ class Text:
 	
 			Parameters:
 			----------
-			src (str): Source directory
-			dest (str): Destination directory
+			- src (str): Source directory
+			- dest (str): Destination directory
 	
 			Returns:
 			--------
-			void
+			- None
 	
 		"""
 		try:
@@ -1444,12 +1456,12 @@ class Text:
 	
 			Parameters:
 			--------
-				source (str): Source directory
-				destination (str): Destination directory
+			- source (str): Source directory
+			- destination (str): Destination directory
 	
 			Returns:
 			--------
-				void
+			- None
 	
 		"""
 		try:
@@ -1496,8 +1508,8 @@ class Text:
 	class PDF( ):
 		"""
 	
-			PDF
-			----------------
+			Purpose:
+			--------
 			A utility class for extracting clean pages from PDF files into a list of strings.
 			Handles nuances such as layout artifacts, page separation, optional filtering,
 			and includes df detection capabilities.
@@ -1514,7 +1526,7 @@ class Text:
 		"""
 		
 		
-		def __init__( self, headers: bool=False, min: int=10, tables: bool=True ):
+		def __init__( self, headers: bool=False, min: int=10, tables: bool=True ) -> None:
 			"""
 	
 				Purpose:
@@ -1522,6 +1534,7 @@ class Text:
 				Initialize the PDF pages extractor with configurable settings.
 	
 				Parameters:
+				-----------
 				- headers (bool): If True, attempts to strip recurring headers/footers.
 				- min (int): Minimum num of characters for a line to be included.
 				- tables (bool): If True, extract pages from detected tables using block
@@ -1541,12 +1554,22 @@ class Text:
 			self.extracted_pages = [ ]
 		
 		
-		def __dir__( self ):
+		def __dir__( self ) -> List[ str ] | None:
 			'''
-	
+
 				Purpose:
-				Returns a list of class member names.
-	
+				---------
+				Provides a list of strings representing class members.
+
+
+				Parameters:
+				-----------
+				- self
+
+				Returns:
+				--------
+				- List[ str ] | None
+
 			'''
 			return [ 'strip_headers', 'minimum_length', 'extract_tables',
 			         'path', 'page', 'pages', 'tokens', 'clean_lines', 'extracted_lines',
@@ -2203,12 +2226,11 @@ class Token( ):
 class Vector( ):
 	"""
 
-		Vector
+		Purpose:
 		---------
 		A class for generating OpenAI vectors, performing normalization, computing similarity,
 		and interacting with OpenAI Vector Stores via the OpenAI API. Includes local
-		export/import,
-		vector diagnostics, and bulk querying functionality.
+		export/import, vector diagnostics, and bulk querying functionality.
 
 	"""
 	
@@ -2216,6 +2238,8 @@ class Vector( ):
 	def __init__( self ):
 		"""
 
+			Purpose:
+			---------
 			Initialize the Vector object with
 			OpenAI API credentials and embedding small_model.
 
@@ -2252,11 +2276,21 @@ class Vector( ):
 		self.tables = List[ pd.DataFrame ]
 	
 	
-	def __dir__( self ):
+	def __dir__( self ) -> List[ str ] | None:
 		'''
 
 			Purpose:
-			Returns a list of class members
+			---------
+			Provides a list of strings representing class members.
+
+
+			Parameters:
+			-----------
+			self
+
+			Returns:
+			--------
+			List[ str ] | None
 
 		'''
 		return [ 'small_model', 'large_model', 'ada_model',
@@ -2276,8 +2310,9 @@ class Vector( ):
 	            time: float=2.0 ) -> pd.DataFrame:
 		"""
 
-			Generate and normalize
-			vectors for a list of path tokens.
+			Purpose:
+			---------
+			Generate and normalize vectors for a list of path tokens.
 
 			Parameters:
 			-----------
@@ -2338,8 +2373,10 @@ class Vector( ):
 	def _batch_chunks( self, texts: List[ str ], size: int ) -> List[ List[ str ] ]:
 		"""
 
-			Split a list of tokens
-			into batches of specified size.
+
+			Purpose:
+			---------
+			Split a list of tokens into batches of specified size.
 
 			Parameters:
 			-----------
@@ -2368,10 +2405,20 @@ class Vector( ):
 			_err.show( )
 	
 	
-	def get_purpose_options( self ) -> List[ str ]:
+	def get_purpose_options( self ) -> List[ str ] | None:
 		'''
 
+			Purpose:
+			---------
 			Returns a list of path representing the purpose of the file
+
+			Parameters:
+			-----------
+			self
+
+			Returns:
+			_________
+			List[ str ] | None
 
 		'''
 		return [ 'assistants', 'assistants_output', 'batch',
@@ -2379,10 +2426,20 @@ class Vector( ):
 		         'vision' ]
 	
 	
-	def get_type_options( self ) -> { }:
+	def get_type_options( self ) -> Dict[ str, str ] | None:
 		'''
 
+			Purpose:
+			---------
 			Returns a dictionary of file formats and types
+
+			Parameters:
+			-----------
+			self
+
+			Returns:
+			--------
+			Dict[str, str] | None
 
 		'''
 		return \
@@ -2416,8 +2473,9 @@ class Vector( ):
 	def _normalize( self, vector: np.ndarray ) -> np.ndarray:
 		"""
 
-			Normalize a matrix
-			of vector using L2 norm.
+			Purpose:
+			---------
+			Normalize a matrix of vector using L2 norm.
 
 			Parameters:
 			-----------
@@ -2713,8 +2771,9 @@ class Vector( ):
 	def list_vector_stores( self ) -> List[ str ]:
 		"""
 
-			List all available
-			OpenAI vector vectorstores.
+			Purpose:
+			---------
+			List all available OpenAI vector vectorstores.
 
 			Returns:
 			--------
@@ -2737,8 +2796,9 @@ class Vector( ):
 	def upload_vector_store( self, df: pd.DataFrame, id: str ) -> None:
 		"""
 
-			Upload documents to a
-			 given OpenAI vector store.
+			Purpose:
+			---------
+			Upload documents to a given OpenAI vector store.
 
 			Parameters:
 			-----------
@@ -2953,6 +3013,7 @@ class Embedding( ):
 	'''
 
 		Purpose:
+		--------
 		Class providing Feature Extraction functionality
 
 	'''
@@ -3477,6 +3538,7 @@ class Embedding( ):
 		"""
 
 			Purpose:
+			--------
 			Return the PCA data of a list of vectors.
 
 		"""
@@ -3499,7 +3561,18 @@ class Embedding( ):
 	def create_tsne_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray:
 		'''
 
-			purpose:
+			Purpose:
+			--------
+			Method to create the t-Student distribution
+
+			Parameters:
+			----------
+			- vectors: List[ List[ float ] ]
+			- num: int
+
+			Returns:
+			--------
+			- np.ndarray
 
 		'''
 		try:
@@ -3525,7 +3598,16 @@ class Embedding( ):
 	                  mark_size=5 ) -> None:
 		'''
 
-			purpose:
+			Purpose:
+			--------
+			Method to create a chart
+
+			Parameters:
+			----------
+
+			Returns:
+			--------
+
 
 		'''
 		try:
@@ -3563,7 +3645,16 @@ class Embedding( ):
 	                   mark_size: int=5 ):
 		'''
 
-			purpose:
+			Purpose:
+			--------
+			Method to create a 3D chart
+
+			Parameters:
+			----------
+
+			Returns:
+			--------
+
 
 		'''
 		try:

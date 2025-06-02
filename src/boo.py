@@ -1,7 +1,7 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                boo.py
+      Filename:                Boo.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
@@ -10,9 +10,9 @@
   ******************************************************************************************
   <copyright file="boo.py" company="Terry D. Eppler">
 
-     Boo is a data analysis tool integrating various Generative AI, Text-Processing, and
-     Machine-Learning algorithms for federal analysts.
-     Copyright ©  2022  Terry Eppler
+	     Boo is a data analysis tool integrating various Generative AI, Text-Processing, and
+	     Machine-Learning algorithms for federal analysts.
+	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
      of this software and associated documentation files (the “Software”),
@@ -38,7 +38,7 @@
 
   </copyright>
   <summary>
-    boo.py
+    Boo.py
   </summary>
   ******************************************************************************************
   '''
@@ -416,12 +416,14 @@ class Models( ):
 		self.bubba = \
 		[
 			'ft:gpt-4.1-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-2025-20-05:BZO7tKJy',
-			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-budget-training:BGVjoSXv',
-	        'ft:gpt-4o-2024-08-06:leeroy-jenkins:budget-base-training:BGVk5Ii1',
+			'ft:gpt-4.1-nano-2025-04-14:leeroy-jenkins:bubba-gpt-4-1-nano-2025-29-05:BcfJJTtv',
+			'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:bubba-gpt-4-1-mini-2025-05-05:BcekjucJ',
+			'ft:gpt-4o-mini-2024-07-18:leeroy-jenkins:bubba-gpt-4o-mini-2025-30-05:BcrX4S0l',
 	        'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57' ]
 
 		self.bro = \
 		[
+			'ft:gpt-4.1-nano-2025-04-14:leeroy-jenkins:bro-gpt-4-1-nano-2025-29-05:BchzJVjL',
 			'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:bro-gpt-4-1-mini-2025-29-05:BcgMfu1w',
 			'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-data-analysis-2025-21-05:BZetxEQa',
 			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned:BTc3PMb5',

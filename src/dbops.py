@@ -1,18 +1,18 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                dbops.py
+      Filename:                DbOps.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="tigrr.py" company="Terry D. Eppler">
+  <copyright file="dbops.py" company="Terry D. Eppler">
 
-     Boo is a data analysis tool integrating various Generative AI, Text-Processing, and
-     Machine-Learning algorithms for federal analysts.
-     Copyright ©  2022  Terry Eppler
+	     Boo is a data analysis tool integrating various Generative AI, Text-Processing, and
+	     Machine-Learning algorithms for federal analysts.
+	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
      of this software and associated documentation files (the “Software”),
@@ -38,6 +38,9 @@
 
   </copyright>
   <summary>
+    DbOps.py
+  </summary>
+  ******************************************************************************************
   '''
 import os
 import re

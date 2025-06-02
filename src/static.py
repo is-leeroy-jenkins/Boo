@@ -1,7 +1,7 @@
 '''
   ******************************************************************************************
       Assembly:                Bobo
-      Filename:                static.py
+      Filename:                Static.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
@@ -10,9 +10,9 @@
   ******************************************************************************************
   <copyright file="static.py" company="Terry D. Eppler">
 
-     Boo is a data analysis tool integrating various Generative AI, Text-Processing, and
-     Machine-Learning algorithms for federal analysts.
-     Copyright ©  2022  Terry Eppler
+	     Boo is a data analysis tool integrating various Generative AI, Text-Processing, and
+	     Machine-Learning algorithms for federal analysts.
+	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
      of this software and associated documentation files (the “Software”),
@@ -38,7 +38,7 @@
 
   </copyright>
   <summary>
-    static.py
+    Static.py
   </summary>
   ******************************************************************************************
   '''

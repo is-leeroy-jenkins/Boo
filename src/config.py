@@ -1,7 +1,7 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                config.py
+      Filename:                Config.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
@@ -10,9 +10,9 @@
   ******************************************************************************************
   <copyright file="config.py" company="Terry D. Eppler">
 
-     Boo is a data analysis tool integrating GenAI, Text Processing, and Machine-Learning
-     algorithms for federal analysts.
-     Copyright ©  2022  Terry Eppler
+	     Boo is a data analysis tool integrating GenAI, Text Processing, and Machine-Learning
+	     algorithms for federal analysts.
+	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
      of this software and associated documentation files (the “Software”),
@@ -38,7 +38,7 @@
 
   </copyright>
   <summary>
-    boo.py
+    config.py
   </summary>
   ******************************************************************************************
   '''
@@ -69,6 +69,8 @@ NASA_API_KEY = os.getenv( 'NASA_API_KEY' )
 NEWSAPI_API_KEY = os.getenv( 'NEWSAPI_API_KEY' )
 WEATHERAPI_API_KEY = os.getenv( 'WEATHERAPI_API_KEY' )
 WEAVIEATE_API_KEY = os.getenv( 'WEAVIEATE_API_KEY' )
+QDRANT_API_KEY = os.getenv( 'QDRANT_API_KEY' )
+SINGLESTORE_API_KEY = os.getenv( 'SINGLESTORE_API_KEY' )
 
 def set_environment( ):
 	variable_dict = globals( ).items( )

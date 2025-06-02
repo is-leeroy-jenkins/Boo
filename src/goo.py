@@ -1,18 +1,18 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                goo.py
+      Filename:                Goo.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="goo.py" company="Terry D. Eppler">
+  <copyright file="Goo.py" company="Terry D. Eppler">
 
-     Boo is a data analysis tool integrating various Generative AI, Text-Processing, and
-     Machine-Learning algorithms for federal analysts.
-     Copyright ©  2022  Terry Eppler
+	     Boo is a data analysis tool integrating various Generative AI, Text-Processing, and
+	     Machine-Learning algorithms for federal analysts.
+	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
      of this software and associated documentation files (the “Software”),
@@ -37,6 +37,10 @@
      You can contact me at:  terryeppler@gmail.com or eppler.terry@epa.gov
 
   </copyright>
+  <summary>
+    Goo.py
+  </summary>
+  ******************************************************************************************
   '''
 import os
 from langchain.chat_models import ChatOpenAI
