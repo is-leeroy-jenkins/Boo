@@ -1255,12 +1255,10 @@ class PerceptronClassifier( Model ):
 			else:
 				self.mean_absolute_error = mean_absolute_error( y, self.prediction )
 				self.mean_squared_error = mean_squared_error( y, self.prediction )
-				self.r_mean_squared_error = mean_squared_error( y, self.prediction,
-					squared=False )
+				self.r_mean_squared_error = mean_squared_error( y, self.prediction, squared=False )
 				self.r2_score = r2_score( y, self.prediction )
 				self.explained_variance_score = explained_variance_score( y, self.prediction )
-				self.median_absolute_error = median_absolute_error( y, self.prediction,
-					squared=False )
+				self.median_absolute_error = median_absolute_error( y, self.prediction, squared=False )
 				return \
 				{
 					'MAE': self.mean_absolute_error,

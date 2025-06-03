@@ -57,6 +57,7 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords, wordnet
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 from collections import Counter, defaultdict
+from docx import Document
 import string
 import spacy
 from scipy import spatial
@@ -64,6 +65,7 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.metrics import average_precision_score, precision_recall_curve
 from sklearn.feature_extraction.text import TfidfVectorizer
+from pydantic import BaseModel, Field, validator
 from pymupdf import Page, Document
 import tiktoken
 from gensim.models import Word2Vec
@@ -207,12 +209,12 @@ class Text:
 				self.raw_input = Path( self.file_path ).read_text( encoding='utf-8' )
 				return self.raw_input
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'load_text( self, path: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'load_text( self, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def collapse_whitespace( self, text: str ) -> str:
@@ -244,12 +246,12 @@ class Text:
 				self.lines = [ line for line in self.cleaned_lines if line ]
 				return ' '.join( self.lines )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'collapse_whitespace( self, path: str ) -> str:'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'collapse_whitespace( self, path: str ) -> str:'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def correct_errors( self, text: str ) -> str:
@@ -287,12 +289,12 @@ class Text:
 				_retval = ' '.join( self.words )
 				return _retval
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'correct_errors( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'correct_errors( self, text: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def remove_punctuation( self, text: str ) -> str:
@@ -322,12 +324,12 @@ class Text:
 				self.cleaned_text = self.raw_input.translate( self.translator )
 				return self.cleaned_text
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_punctuation( self, text: str ) -> str:'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'remove_punctuation( self, text: str ) -> str:'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def remove_special( self, text: str ) -> str:
@@ -368,12 +370,12 @@ class Text:
 						cleaned.append( char )
 				return ''.join( cleaned )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_special( self, text: str ) -> str:'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'remove_special( self, text: str ) -> str:'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def remove_html( self, text: str ) -> str:
@@ -407,12 +409,12 @@ class Text:
 				_retval = self.cleaned_html.get_text( separator=' ', strip=True )
 				return _retval
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_html( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'remove_html( self, text: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def remove_errors( self, text: str ) -> str:
@@ -447,12 +449,12 @@ class Text:
 			self.cleaned_lines = [ tok for tok in self.tokens if is_valid_token( tok ) ]
 			return ' '.join( self.cleaned_lines )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_errors( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'remove_errors( self, text: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 	def remove_html( self, text: str ) -> str:
@@ -483,12 +485,12 @@ class Text:
 				           .get_text( separator=' ', strip=True ))
 				return _retval
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_html( self, path: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'remove_html( self, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 
 	
 	def remove_markdown( self, text: str ) -> str:
@@ -520,12 +522,12 @@ class Text:
 				_retval = re.sub( r'!\[.*?\]\(.*?\)', '', self.corrected )
 				return _retval
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tigrr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_markdown( self, path: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tigrr'
+			exception.cause = 'Text'
+			exception.method = 'remove_markdown( self, path: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def remove_stopwords( self, text: str ) -> str:
@@ -563,12 +565,12 @@ class Text:
 				self.cleaned_text = ' '.join( self.cleaned_tokens )
 				return self.cleaned_text
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tigrr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_stopwords( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tigrr'
+			exception.cause = 'Text'
+			exception.method = 'remove_stopwords( self, text: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 		
 		
 	def clean_space( self, text: str ) -> str:
@@ -603,12 +605,12 @@ class Text:
 				self.cleaned_text = ''.join( cleaned_lines )
 				return self.cleaned_text
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tigrr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_errors( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tigrr'
+			exception.cause = 'Text'
+			exception.method = 'remove_errors( self, text: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]:
@@ -672,12 +674,12 @@ class Text:
 				_retval = self.cleaned_pages
 				return _retval
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def normalize_text( self, text: str ) -> str:
@@ -711,12 +713,12 @@ class Text:
 				                   .encode( 'ascii', 'ignore' ).decode( 'utf-8' ))
 				return self.normalized
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'normalize_text( self, text: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'normalize_text( self, text: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def get_wordnet_pos( self, tag: str ) -> Any | None:
@@ -735,12 +737,12 @@ class Text:
 				else:
 					return wordnet.NOUN
 			except Exception as e:
-				_exc = Error( e )
-				_exc.module = 'Tiggr'
-				_exc.cause = 'Text'
-				_exc.method = 'normalize_text( self, path: str ) -> str'
-				_err = ErrorDialog( _exc )
-				_err.show( )
+				exception = Error( e )
+				exception.module = 'Tiggr'
+				exception.cause = 'Text'
+				exception.method = 'normalize_text( self, path: str ) -> str'
+				error = ErrorDialog( exception )
+				error.show( )
 	
 	
 	def lemmatize_tokens( self, tokens: List[ str ] ) -> List[ str ]:
@@ -779,12 +781,12 @@ class Text:
 				                    word, tag in pos_tags ]
 				return self.lemmatized
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'tokenize_words( self, tokens: List[ str  ] ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'tokenize_words( self, tokens: List[ str  ] ) -> List[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def tokenize_text( self, text: str ) -> List[ str ]:
@@ -812,12 +814,12 @@ class Text:
 				              word.strip( ) ]
 				return _retokens
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'tokenize_text( self, path: str ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'tokenize_text( self, path: str ) -> List[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def tiktokenize( self, text: str, model: str='cl100k_base' ) -> List[ str ]:
@@ -857,12 +859,12 @@ class Text:
 				              word.strip( ) ]
 				return _retokens
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'tokenize_text( self, path: str ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'tokenize_text( self, path: str ) -> List[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def tokenize_words( self, words: List[ str ] ) -> List[ str ]:
@@ -895,12 +897,12 @@ class Text:
 					self.tokens.append( _tokens )
 				return self.tokens
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'tokenize_words( self, path: str ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'tokenize_words( self, path: str ) -> List[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def tokenize_sentences( self, text: str ) -> List[ str ]:
@@ -928,12 +930,12 @@ class Text:
 				self.tokens = nltk.sent_tokenize( self.raw_input )
 				return self.tokens
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'tokenize_sentences( self, text: str ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'tokenize_sentences( self, text: str ) -> List[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def chunk_text( self, text: str, size: int=50, return_as_string: bool=True ) -> List[
@@ -970,6 +972,7 @@ class Text:
 			if text is None:
 				raise Exception( 'The argument "text" is required.' )
 			else:
+				
 				self.tokens = nltk.word_tokenize( text )
 				self.chunks = [ self.tokens[ i: i + size ] for i in
 				                range( 0, len( self.tokens ), size ) ]
@@ -978,12 +981,12 @@ class Text:
 				else:
 					return self.chunks
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'chunk_text( self, text: str, max: int=800 ) -> list[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'chunk_text( self, text: str, max: int=800 ) -> list[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def chunk_words( self, words: List[ str ], size: int=50, as_string: bool=True ) -> List[
@@ -1023,14 +1026,14 @@ class Text:
 				else:
 					return self.chunks
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Token'
-			_exc.method = (
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Token'
+			exception.method = (
 				'chunk_words( self, tokens: list[ str ], max: int=800, over: int=50 ) -> list[ '
 				'str ]')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def split_sentences( self, text: str ) -> List[ str ]:
@@ -1058,12 +1061,12 @@ class Text:
 		try:
 			return nltk.sent_tokenize( text )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'split_sentences( self, text: str ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'split_sentences( self, text: str ) -> List[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
@@ -1099,12 +1102,12 @@ class Text:
 					self.cleaned_pages.append( self.cleaned_text )
 				return self.cleaned_pages
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'split_pages( self, path: str, delimit: str="\f" ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'split_pages( self, path: str, delimit: str="\f" ) -> List[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def split_paragraphs( self, path: str ) -> List[ str ]:
@@ -1175,13 +1178,13 @@ class Text:
 				self.frequency_distribution = dict( Counter( self.tokens ) )
 				return self.frequency_distribution
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = ('compute_frequency_distribution( self, documents: list, process: '
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = ('compute_frequency_distribution( self, documents: list, process: '
 			               'bool=True) -> FreqDist')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def compute_conditional_distribution( self, lines: List[ str ], condition=None,
@@ -1230,13 +1233,13 @@ class Text:
 				
 				return self.conditional_distribution
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = ('compute_conditional_distribution( self, tokens: List[ str ], '
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = ('compute_conditional_distribution( self, tokens: List[ str ], '
 			               'condition=None, process: bool=True ) -> ConditionalFreqDist')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_vocabulary( self, freq_dist: Dict, min: int=1 ) -> List[ str ]:
@@ -1269,12 +1272,12 @@ class Text:
 				self.vocabulary = sorted( self.words )
 				return self.vocabulary
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'create_vocabulary( self, freq_dist: dict, min: int=1 ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'create_vocabulary( self, freq_dist: dict, min: int=1 ) -> List[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_wordbag( self, tokens: List[ str ] ) -> dict:
@@ -1300,12 +1303,12 @@ class Text:
 				self.tokens = tokens
 				return dict( Counter( self.tokens ) )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'create_wordbag( self, tokens: List[ str ] ) -> dict'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'create_wordbag( self, tokens: List[ str ] ) -> dict'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_word2vec( self, tokens: List[ str ], size=100, window=5, min=1 ) -> Word2Vec:
@@ -1335,13 +1338,13 @@ class Text:
 				return Word2Vec( sentences=self.tokens, vector_size=size,
 					window=window, min_count=min )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = ('create_word2vec( self, tokens: list, '
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = ('create_word2vec( self, tokens: list, '
 			               'size=100, window=5, min=1 ) -> Word2Vec')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_tfidf( self, lines: List[ str ], max: int=1000, prep: bool=True ) -> Tuple:
@@ -1382,14 +1385,14 @@ class Text:
 				return (_matrix, self.vectorizer.get_feature_names_out( ).tolist( ),
 				        self.vectorizer)
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = ('create_tfidf( self, tokens: list, max: int=1000, prep: bool=True ) '
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = ('create_tfidf( self, tokens: list, max: int=1000, prep: bool=True ) '
 			               '-> '
 			               'Tuple')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def clean_files( self, src: str, dest: str ) -> None:
@@ -1438,12 +1441,12 @@ class Text:
 					for p in processed:
 						clean.write( p )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'clean_files( self, src: str, dest: str )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'clean_files( self, src: str, dest: str )'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def convert_jsonl( self, source: str, desination: str ) -> None:
@@ -1497,131 +1500,327 @@ class Text:
 					_clean.flush( )
 					_clean.close( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tiggr'
-			_exc.cause = 'Text'
-			_exc.method = 'convert_jsonl( self, source: str, desination: str )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Text'
+			exception.method = 'convert_jsonl( self, source: str, desination: str )'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class Word( BaseModel ):
+    """
+
+        Purpose:
+        --------
+        A class to extract, clean, and analyze text from Microsoft Word documents.
+
+        Methods:
+        --------
+        split_sentences( self ) -> None
+        clean_sentences( self ) -> None
+        compute_vocabulary( self ) -> None
+        compute_frequency_distribution( self ) -> None
+        summarize( self ) -> None:
+
+    """
+    filepath: str
+    raw_text: str
+    paragraphs: Optionl[ List[ str ] ]
+    sentences: Optional[ List[ str ] ]
+    cleaned_sentences: Optional[ List[ str ] ]
+    vocabulary: Optional[ List[ str ] ]
+    freq_dist: Optional[ Dict[ str, float ] ]
+
+
+    class Config:
+	    arbitrary_types_allowed = True
+	    extra = 'ignore'
+	    allow_mutation = True
+
+
+    def __init__( self, filepath: str ) -> None:
+        """
+
+            Purpose:
+            --------
+            Initializes the WordTextProcessor with the path to the .docx file.
+
+			Parameters:
+			----------
+            :param filepath: Path to the Microsoft Word document (.docx)
+
+        """
+        self.filepath = filepath
+        self.raw_text = ''
+        self.paragraphs = [ ]
+        self.sentences = [ ]
+        self.cleaned_sentences = [ ]
+        self.vocabulary = [ ]
+        self.freq_dist = { }
+
+
+	def __dir__( self ) -> List[ str ] | None:
+		'''
+
+			Purpose:
+			---------
+			Provides a list of strings representing class members.
+
+
+			Parameters:
+			-----------
+			- self
+
+			Returns:
+			--------
+			- List[ str ] | None
+
+		'''
+		return [ 'extract_text', 'split_sentences', 'clean_sentences',
+		         'compute_vocabulary', 'compute_frequency_distribution',
+		         'summarize', 'filepath', 'raw_text', 'paragraphs', 'sentences'
+		         'cleaned_sentences', 'vocabulary', 'freq_dist' ]
+
+
+    def extract_text( self ) -> None:
+        """
+
+            Purpose:
+            --------
+            Extracts raw text and paragraphs from the .docx file.
+
+        """
+        document = Document( self.filepath )
+        self.paragraphs = [ para.text.strip( ) for para in document.paragraphs if para.text.strip( ) ]
+        self.raw_text = '\n'.join( self.paragraphs )
+
+
+    def split_sentences( self ) -> None:
+        """
+
+            Purpose:
+            --------
+            Splits the raw text into sentences.
+
+        """
+        try:
+	        self.sentences = sent_tokenize( self.raw_text )
+        except Exception as e:
+	        exception = Error( e )
+	        exception.module = 'Tiggr'
+	        exception.cause = 'Word'
+	        exception.method = ''
+	        error = ErrorDialog( exception )
+	        error.show( )
+
+
+    def clean_sentences( self ) -> None:
+        """
+
+            Purpose:
+            -------
+            Cleans each sentence: removes extra whitespace, punctuation, and lowers the text.
+
+        """
+        try:
+	        self.cleaned_sentences = [ ]
+	        for sentence in self.sentences:
+		        sentence = re.sub( r"[\r\n\t]+", " ", sentence )
+		        sentence = re.sub( r"[^a-zA-Z0-9\s']", "", sentence )
+		        sentence = re.sub( r"\s{2,}", " ", sentence ).strip( ).lower( )
+		        self.cleaned_sentences.append( sentence )
+        except Exception as e:
+	        exception = Error( e )
+	        exception.module = 'Tiggr'
+	        exception.cause = 'Word'
+	        exception.method = ''
+	        error = ErrorDialog( exception )
+	        error.show( )
+
+
+    def compute_vocabulary( self ) -> None:
+        """
+
+            Purpose:
+            --------
+            Computes vocabulary terms from cleaned sentences.
+
+        """
+        try:
+	        all_words = [ ]
+	        stop_words = set( stopwords.words( 'english' ) )
+	        for sentence in self.cleaned_sentences:
+		        tokens = word_tokenize( sentence )
+		        tokens = [ token for token in tokens if
+		                   token.isalpha( ) and token not in stop_words ]
+		        all_words.extend( tokens )
+	        self.vocabulary = sorted( set( all_words ) )
+        except Exception as e:
+	        exception = Error( e )
+	        exception.module = 'Tiggr'
+	        exception.cause = 'Word'
+	        exception.method = ''
+	        error = ErrorDialog( exception )
+	        error.show( )
+
+
+    def compute_frequency_distribution( self ) -> None:
+        """
+
+            Purpose:
+            -------
+            Computes frequency distribution of the vocabulary.
+
+        """
+        try:
+	        words = [ ]
+	        for sentence in self.cleaned_sentences:
+		        tokens = word_tokenize( sentence )
+		        tokens = [ token for token in tokens if token.isalpha( ) ]
+		        words.extend( tokens )
+	        self.freq_dist = dict( Counter( words ) )
+        except Exception as e:
+	        exception = Error( e )
+	        exception.module = 'Tiggr'
+	        exception.cause = 'Word'
+	        exception.method = 'correct_errors( self, text: str ) -> str'
+	        error = ErrorDialog( exception )
+	        error.show( )
+
+
+    def summarize( self ) -> None:
+        """
+
+            Purpose:
+            -------
+            Prints a summary of extracted and processed text.
+
+        """
+        print( f'Document: {self.filepath}' )
+        print( f'Paragraphs: {len( self.paragraphs )}' )
+        print( f'Sentences: {len( self.sentences )}' )
+        print( f'Vocabulary Size: {len( self.vocabulary )}' )
+        print( f'Top 10 Frequent Words: { Counter( self.freq_dist ).most_common(10)}' )
+
 	
-	
-	class PDF( ):
+class PDF( ):
+	"""
+
+		Purpose:
+		--------
+		A utility class for extracting clean pages from PDF files into a list of strings.
+		Handles nuances such as layout artifacts, page separation, optional filtering,
+		and includes df detection capabilities.
+
+
+	    Methods:
+	    --------
+	    extract_lines( self, path, max: int=None) -> List[ str ]
+	    extract_text( self, path, max: int=None) -> str
+	    export_csv( self, tables: List[ pd.DataFrame ], filename: str=None ) -> None
+	    export_text( self, lines: List[ str ], path: str=None ) -> None
+	    export_excel( self, tables: List[ pd.DataFrame ], path: str=None ) -> None
+
+	"""
+
+
+	def __init__( self, headers: bool=False, min: int=10, tables: bool=True ) -> None:
 		"""
-	
+
+			Purpose:
+			-----------
+			Initialize the PDF pages extractor with configurable settings.
+
+			Parameters:
+			-----------
+			- headers (bool): If True, attempts to strip recurring headers/footers.
+			- min (int): Minimum num of characters for a line to be included.
+			- tables (bool): If True, extract pages from detected tables using block
+			grouping.
+
+		"""
+		self.strip_headers = headers
+		self.minimum_length = min
+		self.extract_tables = tables
+		self.pages = [ ]
+		self.lines = [ ]
+		self.clean_lines = [ ]
+		self.extracted_lines = [ ]
+		self.extracted_tables = [ ]
+		self.extracted_pages = [ ]
+		self.file_path = None
+		self.page = None
+
+
+	def __dir__( self ) -> List[ str ] | None:
+		'''
+
+			Purpose:
+			---------
+			Provides a list of strings representing class members.
+
+
+			Parameters:
+			-----------
+			- self
+
+			Returns:
+			--------
+			- List[ str ] | None
+
+		'''
+		return [ 'strip_headers', 'minimum_length', 'extract_tables',
+		         'path', 'page', 'pages', 'tokens', 'clean_lines', 'extracted_lines',
+		         'extracted_tables', 'extracted_pages', 'extract_lines',
+		         'extract_text', 'extract_tables', 'export_csv',
+		         'export_text', 'export_excel' ]
+
+
+	def extract_lines( self, path: str, max: Optional[ int ]=None ) -> List[ str ]:
+		"""
+
 			Purpose:
 			--------
-			A utility class for extracting clean pages from PDF files into a list of strings.
-			Handles nuances such as layout artifacts, page separation, optional filtering,
-			and includes df detection capabilities.
-			
-			
-		    Methods:
-		    --------
-		    extract_lines( self, path, max: int=None) -> List[ str ]
-		    extract_text( self, path, max: int=None) -> str
-		    export_csv( self, tables: List[ pd.DataFrame ], filename: str=None ) -> None
-		    export_text( self, lines: List[ str ], path: str=None ) -> None
-		    export_excel( self, tables: List[ pd.DataFrame ], path: str=None ) -> None
-	
+			Extract tokens of pages from a PDF,
+			optionally limiting to the first N pages.
+
+			Parameters:
+			----------
+			- path (str): Path to the PDF file
+			- max (Optional[int]): Max num of pages to process (None for all pages)
+
+			Returns:
+			--------
+			- List[str]: Cleaned list of non-empty tokens
+
 		"""
-		
-		
-		def __init__( self, headers: bool=False, min: int=10, tables: bool=True ) -> None:
-			"""
-	
-				Purpose:
-				-----------
-				Initialize the PDF pages extractor with configurable settings.
-	
-				Parameters:
-				-----------
-				- headers (bool): If True, attempts to strip recurring headers/footers.
-				- min (int): Minimum num of characters for a line to be included.
-				- tables (bool): If True, extract pages from detected tables using block
-				grouping.
-	
-			"""
-			self.strip_headers = headers
-			self.minimum_length = min
-			self.extract_tables = tables
-			self.file_path = None
-			self.page = None
-			self.pages = [ ]
-			self.lines = [ ]
-			self.clean_lines = [ ]
-			self.extracted_lines = [ ]
-			self.extracted_tables = [ ]
-			self.extracted_pages = [ ]
-		
-		
-		def __dir__( self ) -> List[ str ] | None:
-			'''
+		try:
+			if path is None:
+				raise Exception( 'The argument "path" must be specified' )
+			else:
+				self.file_path = path
+				with fitz.open( self.file_path ) as doc:
+					for i, page in enumerate( doc ):
+						if max is not None and i >= max:
+							break
+						if self.extract_tables:
+							self.extracted_lines = self._extract_tables( page )
+						else:
+							_text = page.get_text( 'pages' )
+							self.lines = _text.splitlines( )
+						self.clean_lines = self._filter_lines( self.lines )
+						self.extracted_lines.extend( self.clean_lines )
+				return self.extracted_lines
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'PDF'
+			exception.method = ('extract_lines( self, path: str, max: Optional[ int ]=None ) -> '
+			               'List[ str ]')
+			error = ErrorDialog( exception )
+			error.show( )
 
-				Purpose:
-				---------
-				Provides a list of strings representing class members.
-
-
-				Parameters:
-				-----------
-				- self
-
-				Returns:
-				--------
-				- List[ str ] | None
-
-			'''
-			return [ 'strip_headers', 'minimum_length', 'extract_tables',
-			         'path', 'page', 'pages', 'tokens', 'clean_lines', 'extracted_lines',
-			         'extracted_tables', 'extracted_pages', 'extract_lines',
-			         'extract_text', 'extract_tables', 'export_csv',
-			         'export_text', 'export_excel' ]
-		
-		
-		def extract_lines( self, path: str, max: Optional[ int ]=None ) -> List[ str ]:
-			"""
-
-				Purpose:
-				--------
-				Extract tokens of pages from a PDF,
-				optionally limiting to the first N pages.
-	
-				Parameters:
-				----------
-				- path (str): Path to the PDF file
-				- max (Optional[int]): Max num of pages to process (None for all pages)
-	
-				Returns:
-				--------
-				- List[str]: Cleaned list of non-empty tokens
-	
-			"""
-			try:
-				if path is None:
-					raise Exception( 'The argument "path" must be specified' )
-				else:
-					self.file_path = path
-					with fitz.open( self.file_path ) as doc:
-						for i, page in enumerate( doc ):
-							if max is not None and i >= max:
-								break
-							if self.extract_tables:
-								self.extracted_lines = self._extract_tables( page )
-							else:
-								_text = page.get_text( 'pages' )
-								self.lines = _text.splitlines( )
-							self.clean_lines = self._filter_lines( self.lines )
-							self.extracted_lines.extend( self.clean_lines )
-					return self.extracted_lines
-			except Exception as e:
-				_exc = Error( e )
-				_exc.module = 'tiggr'
-				_exc.cause = 'PDF'
-				_exc.method = ('extract_lines( self, path: str, max: Optional[ int ]=None ) -> '
-				               'List[ str ]')
-				_err = ErrorDialog( _exc )
-				_err.show( )
-	
 	
 	def _extract_tables( self, page: Page ) -> List[ str ]:
 		"""
@@ -1649,12 +1848,12 @@ class Text:
 				self.lines = [ b[ 4 ].strip( ) for b in _sorted if b[ 4 ].strip( ) ]
 				return self.lines
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'PDF'
-			_exc.method = '_extract_tables( self, page ) -> List[ str ]:'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'PDF'
+			exception.method = '_extract_tables( self, page ) -> List[ str ]:'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def _filter_lines( self, lines: List[ str ] ) -> List[ str ]:
@@ -1686,12 +1885,12 @@ class Text:
 					self.clean_lines.append( _line )
 				return self.clean_lines
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'PDF'
-			_exc.method = '_filter_lines( self, tokens: List[ str ] ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'PDF'
+			exception.method = '_filter_lines( self, tokens: List[ str ] ) -> List[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def _has_repeating_header( self, line: str ) -> bool:
@@ -1716,12 +1915,12 @@ class Text:
 				_keywords = [ 'page', 'public law', 'u.s. government', 'united states' ]
 				return any( kw in line.lower( ) for kw in _keywords )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'PDF'
-			_exc.method = '_has_repeating_header( self, line: str ) -> bool'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'PDF'
+			exception.method = '_has_repeating_header( self, line: str ) -> bool'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def extract_text( self, path: str, max: Optional[ int ]=None ) -> str:
@@ -1754,12 +1953,12 @@ class Text:
 					self.lines = self.extract_lines( self.file_path )
 					return '\n'.join( self.lines )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'PDF'
-			_exc.method = 'extract_text( self, path: str, max: Optional[ int ]=None ) -> str:'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'PDF'
+			exception.method = 'extract_text( self, path: str, max: Optional[ int ]=None ) -> str:'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def extract_tables( self, path: str, max: Optional[ int ]=None ) -> List[ pd.DataFrame ]:
@@ -1795,14 +1994,14 @@ class Text:
 							self.tables.append( _df )
 				return self.tables
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'PDF'
-			_exc.method = (
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'PDF'
+			exception.method = (
 				'extract_tables( self, path: str, max: Optional[ int ] = None ) -> List[ '
 				'pd.DataFrame ]')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None:
@@ -1827,12 +2026,12 @@ class Text:
 				for i, df in enumerate( self.tables ):
 					df.to_csv( f'{filename}_{i + 1}.csv', index=False )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'PDF'
-			_exc.method = 'export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'PDF'
+			exception.method = 'export_csv( self, tables: List[ pd.DataFrame ], filename: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def export_text( self, lines: List[ str ], path: str ) -> None:
@@ -1859,12 +2058,12 @@ class Text:
 					for line in self.lines:
 						f.write( line + '\n' )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'PDF'
-			_exc.method = 'export_text( self, tokens: List[ str ], path: str ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'PDF'
+			exception.method = 'export_text( self, tokens: List[ str ], path: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def export_excel( self, tables: List[ pd.DataFrame ], path: str ) -> None:
@@ -1893,12 +2092,12 @@ class Text:
 						df.to_excel( writer, sheet_name=_sheet, index=False )
 					_writer.save( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'PDF'
-			_exc.method = 'export_excel( self, tables: List[ pd.DataFrame ], path: str ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'PDF'
+			exception.method = 'export_excel( self, tables: List[ pd.DataFrame ], path: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class Token( ):
@@ -1949,8 +2148,7 @@ class Token( ):
 		
 			Purpose:
 			_______
-			Method counts the number
-			of tokens in a string of path.
+			Method counts the number of tokens in a string of path.
 			
 			Parameters:
 			__________
@@ -1972,12 +2170,12 @@ class Token( ):
 				num_tokens = len( encoding.encode( text ) )
 				return num_tokens
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'tiktoken_count( self, path: str, encoding: str ) -> int:'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Token'
+			exception.method = 'tiktoken_count( self, path: str, encoding: str ) -> int:'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def get_vocab( self ) -> Dict[ str, int ]:
@@ -1994,12 +2192,12 @@ class Token( ):
 		try:
 			return self.tokenizer.get_vocab( )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'get_vocab( self ) -> Dict[ str, int ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Token'
+			exception.method = 'get_vocab( self ) -> Dict[ str, int ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def load_tokenizer( self, path: str ) -> None:
@@ -2021,12 +2219,12 @@ class Token( ):
 			else:
 				self.tokenizer = AutoTokenizer.from_pretrained( path )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'load_tokenizer( self, path: str ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Token'
+			exception.method = 'load_tokenizer( self, path: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def save_tokenizer( self, path: str ) -> None:
@@ -2048,12 +2246,12 @@ class Token( ):
 			else:
 				self.tokenizer.save_pretrained( path )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'save_tokenizer( self, path: str ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Token'
+			exception.method = 'save_tokenizer( self, path: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def encode( self, text: str, max: int=512, trunc: bool=True,
@@ -2086,12 +2284,12 @@ class Token( ):
 				return self.tokenizer( text, truncation=trunc, padding=padd,
 					max_length=max, return_tensors=tensors )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'encode( self, text: str ) -> Dict[ str, Union[ List[ int ], any ] ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Token'
+			exception.method = 'encode( self, text: str ) -> Dict[ str, Union[ List[ int ], any ] ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def batch_encode( self, texts: List[ str ], max: int=512, trunc: bool=True,
@@ -2121,14 +2319,14 @@ class Token( ):
 				return self.tokenizer( texts, truncation=trunc, adding=pad,
 					max_length=max, return_tensors=tensors )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'Token'
-			_exc.method = '''batch_encode( self, texts: List[ str ], max: int=512,
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Token'
+			exception.method = '''batch_encode( self, texts: List[ str ], max: int=512,
 			trunc: bool=True,
 	                  pad: Union[ bool, str ]='max', tensors: str=None ) -> Dict[ str, any ]'''
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def decode( self, ids: List[ int ], skip: bool=True ) -> str:
@@ -2154,12 +2352,12 @@ class Token( ):
 			else:
 				return self.tokenizer.decode( ids, skip_special_tokens=skip )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'decode( self, ids: List[ int ], skip: bool=True ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Token'
+			exception.method = 'decode( self, ids: List[ int ], skip: bool=True ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def convert_tokens( self, tokens: List[ str ] ) -> List[ int ]:
@@ -2184,12 +2382,12 @@ class Token( ):
 			else:
 				return self.tokenizer.convert_tokens_to_ids( tokens )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'convert_tokens( self, tokens: List[ str ] ) -> List[ int ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Token'
+			exception.method = 'convert_tokens( self, tokens: List[ str ] ) -> List[ int ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def convert_ids( self, ids: List[ int ] ) -> List[ str ]:
@@ -2215,12 +2413,12 @@ class Token( ):
 			else:
 				return self.tokenizer.convert_ids_to_tokens( ids )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'tiggr'
-			_exc.cause = 'Token'
-			_exc.method = 'convert_ids( self, ids: List[ int ] ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tiggr'
+			exception.cause = 'Token'
+			exception.method = 'convert_ids( self, ids: List[ int ] ) -> List[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class Vector( ):
@@ -2360,14 +2558,14 @@ class Vector( ):
 				
 				return pd.DataFrame( self.data )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = (
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = (
 				'create_small_embedding( self, tokens: List[ str ], batch: int=10, max: int=3, '
 				'time: float=2.0 ) -> pd.DataFrame')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def _batch_chunks( self, texts: List[ str ], size: int ) -> List[ List[ str ] ]:
@@ -2396,13 +2594,13 @@ class Vector( ):
 			else:
 				return [ texts[ i:i + size ] for i in range( 0, len( texts ), size ) ]
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = (' _batch_chunks( self, tokens: List[ str ], size: int ) -> [ List[ str '
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = (' _batch_chunks( self, tokens: List[ str ], size: int ) -> [ List[ str '
 			               '] ]')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def get_purpose_options( self ) -> List[ str ] | None:
@@ -2494,12 +2692,12 @@ class Vector( ):
 				_norms = np.linalg.norm( self.array, axis=1, dims=True )
 				return self.array / np.clip( _norms, 1e-10, None )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = '_normalize( self, vector: np.ndarray ) -> np.ndarray'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = '_normalize( self, vector: np.ndarray ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def _cosine_similarity_matrix( self, vector: np.ndarray, matrix: np.ndarray ) -> np.ndarray:
@@ -2530,14 +2728,14 @@ class Vector( ):
 				_matrix = matrix / np.linalg.norm( matrix, axis=1, dims=True )
 				return np.dot( _matrix, _query )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = (
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = (
 				'_cosine_similarity_matrix( self, vector: np.ndarray, matrix: np.ndarray '
 				') -> np.ndarray' )
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def most_similar( self, query: str, df: pd.DataFrame, top: int=5 ) -> pd.DataFrame:
@@ -2573,14 +2771,14 @@ class Vector( ):
 				_copy[ 'similarity' ] = _scores
 				return _copy.sort_values( 'similarity', ascending=False ).head( top )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = ('most_similar( self, query: str, df: pd.DataFrame, top: int = 5 ) '
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = ('most_similar( self, query: str, df: pd.DataFrame, top: int = 5 ) '
 			               '-> '
 			               'pd.DataFrame')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def bulk_similar( self, queries: List[ str ], df: pd.DataFrame, top: int=5 ) -> Dict:
@@ -2612,13 +2810,13 @@ class Vector( ):
 					self.results[ query ] = self.most_similar( query, self.dataframe, top )
 				return self.results
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = ('bulk_similar( self, queries: List[ str ], df: pd.DataFrame, '
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = ('bulk_similar( self, queries: List[ str ], df: pd.DataFrame, '
 			               'top: int = 5 ) -> { }')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def similarity_heatmap( self, df: pd.DataFrame ) -> pd.DataFrame:
@@ -2647,12 +2845,12 @@ class Vector( ):
 				return pd.DataFrame( _similarity, index=self.dataframe[ 'pages' ],
 					columns=self.dataframe[ 'pages' ] )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = 'similarity_heatmap( self, df: pd.DataFrame ) -> pd.DataFrame'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = 'similarity_heatmap( self, df: pd.DataFrame ) -> pd.DataFrame'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def export_jsonl( self, df: pd.DataFrame, path: str ) -> None:
@@ -2683,12 +2881,12 @@ class Vector( ):
 						_record = { 'pages': row[ 'pages' ], 'embedding': row[ 'embedding' ] }
 						f.write( json.dumps( _record ) + '\n' )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = 'export_jsonl( self, df: pd.DataFrame, path: str ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = 'export_jsonl( self, df: pd.DataFrame, path: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def import_jsonl( self, path: str ) -> pd.DataFrame:
@@ -2728,12 +2926,12 @@ class Vector( ):
 				
 				return pd.DataFrame( self.data )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = 'import_jsonl( self, path: str ) -> pd.DataFrame'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = 'import_jsonl( self, path: str ) -> pd.DataFrame'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_vector_store( self, name: str ) -> str:
@@ -2760,12 +2958,12 @@ class Vector( ):
 				self.response = self.client.beta.vectorstores.create_small_embedding( name=name )
 				return self.response[ 'id' ]
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = 'create_vector_store( self, name: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def list_vector_stores( self ) -> List[ str ]:
@@ -2785,12 +2983,12 @@ class Vector( ):
 			self.response = self.client.beta.vectorstores.list( )
 			return [ item[ 'id' ] for item in self.response.get( 'data', [ ] ) ]
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = 'list_vector_stores( self ) -> List[ str ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = 'list_vector_stores( self ) -> List[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def upload_vector_store( self, df: pd.DataFrame, id: str ) -> None:
@@ -2823,12 +3021,12 @@ class Vector( ):
 					store_id=self.id,
 					documents=documents )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = 'upload_vector_store( self, df: pd.DataFrame, ids: str ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = 'upload_vector_store( self, df: pd.DataFrame, ids: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def query_vector_store( self, id: str, query: str, top: int=5 ) -> List[ dict ]:
@@ -2865,14 +3063,14 @@ class Vector( ):
 					for result in self.response.get( 'data', [ ] )
 				]
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = ('query_vector_store( self, id: str, query: str, top: int = 5 ) -> '
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = ('query_vector_store( self, id: str, query: str, top: int = 5 ) -> '
 			               'List[ '
 			               'dict ]')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def delete_vector_store( self, storeid: str, ids: List[ str ] ) -> None:
@@ -2899,12 +3097,12 @@ class Vector( ):
 				self.client.beta.vectorstores.documents.delete( store_id=storeid,
 					document_ids=self.file_ids )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = 'delete_vector_store( self, storeid: str, ids: List[ str ] ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = 'delete_vector_store( self, storeid: str, ids: List[ str ] ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def upload_document( self, path: str, id: str ) -> None:
@@ -2938,12 +3136,12 @@ class Vector( ):
 					file_id=self.response.id )
 				return { 'file': self.file_name, 'status': 'success' }
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = 'upload_document( self, path: str, id: str ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = 'upload_document( self, path: str, id: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def upload_documents( self, path: str, id: str ) -> None:
@@ -3001,12 +3199,12 @@ class Vector( ):
 				
 				return self.stats
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Vector'
-			_exc.method = 'upload_documents( self, path: str, id: str ) -> None'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Vector'
+			exception.method = 'upload_documents( self, path: str, id: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class Embedding( ):
@@ -3066,12 +3264,12 @@ class Embedding( ):
 				
 				return self.response.data[ 0 ].embedding
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_small_embedding( self, path: str ) -> List[ float ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = 'create_small_embedding( self, path: str ) -> List[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_small_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]:
@@ -3100,13 +3298,13 @@ class Embedding( ):
 					model=self.small_model ).data
 				return [ d.embedding for d in self.data ]
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tigrr'
-			_exc.cause = 'Embedding'
-			_exc.method = ('create_small_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
+			exception = Error( e )
+			exception.module = 'Tigrr'
+			exception.cause = 'Embedding'
+			exception.method = ('create_small_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
 			               'float ] ]')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_large_embedding( self, text: str ) -> List[ float ]:
@@ -3136,12 +3334,12 @@ class Embedding( ):
 				
 				return self.response.data[ 0 ].embedding
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_large_embedding( self, path: str ) -> List[ float ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = 'create_large_embedding( self, path: str ) -> List[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_large_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]:
@@ -3170,13 +3368,13 @@ class Embedding( ):
 					model=self.large_model ).data
 				return [ d.embedding for d in self.data ]
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = ('create_large_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = ('create_large_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
 			               'float ] ]')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_ada_embedding( self, text: str ) -> List[ float ]:
@@ -3206,12 +3404,12 @@ class Embedding( ):
 				
 				return self.response.data[ 0 ].embedding
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_ada_embedding( self, path: str ) -> List[ float ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = 'create_ada_embedding( self, path: str ) -> List[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]:
@@ -3240,14 +3438,14 @@ class Embedding( ):
 					model=self.ada_model ).data
 				return [ d.embedding for d in self.data ]
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = ('create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = ('create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
 			               'float'
 			               ' ] ]')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	async def create_small_async( self, text: str ) -> List[ float ]:
@@ -3278,12 +3476,12 @@ class Embedding( ):
 						model=self.small_model ))
 				[ 'data' ][ 0 ][ 'embedding' ]
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'ccreate_small_async( self, path: str ) -> List[ float ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = 'ccreate_small_async( self, path: str ) -> List[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	async def create_large_async( self, text: str ) -> List[ float ]:
@@ -3312,12 +3510,12 @@ class Embedding( ):
 					await self.client.embeddings.create_audio( input=[ self.raw_input ],
 						model=self.large_model ))[ 'data' ][ 0 ][ 'embedding' ]
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_large_async( self, path: str ) -> List[ float ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = 'create_large_async( self, path: str ) -> List[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	async def create_ada_async( self, text: str ) -> List[ float ]:
@@ -3348,12 +3546,12 @@ class Embedding( ):
 						model=self.ada_model ))
 				[ 'data' ][ 0 ][ 'embedding' ]
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_ada_async( self, path: str ) -> List[ float ]'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = 'create_ada_async( self, path: str ) -> List[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def calculate_cosine_similarity( self, a: List[ float ], b: List[ float ] ):
@@ -3381,12 +3579,12 @@ class Embedding( ):
 			else:
 				return np.dot( a, b ) / (np.linalg.norm( a ) * np.linalg.norm( b ))
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'Tigrr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'c calculate_cosine_similarity( self, a, b )'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'Tigrr'
+			exception.cause = 'Embedding'
+			exception.method = 'c calculate_cosine_similarity( self, a, b )'
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def plot_multiclass_precision( self, y_score, y_original, classes, classifier ):
@@ -3462,13 +3660,13 @@ class Embedding( ):
 			plt.title( f'{classifier}: Precision-Recall curve for each class' )
 			plt.legend( self.lines, self.labels )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = ('plot_multiclass_precision( self, y_score, y_original, classes, '
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = ('plot_multiclass_precision( self, y_score, y_original, classes, '
 			               'classifier )')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def calculate_distances( self, query: List[ float ], embd: List[ List[ float ] ],
@@ -3506,13 +3704,13 @@ class Embedding( ):
 				self.distances = [ self.distance_metrics[ metric ] ( query, e ) for e in embd ]
 				return self.distances
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = ('calculate_distances( self, query: List[ float ], embd: '
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = ('calculate_distances( self, query: List[ float ], embd: '
 			               'List[ List[ float ] ],  metric=')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def calculate_nearest_neighbor( self, distances: List[ float ] ) -> np.ndarray:
@@ -3525,13 +3723,13 @@ class Embedding( ):
 			self.distances = distances
 			return np.argsort( self.distances )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = ('calculate_nearest_neighbor( self, distances: List[ float ] ) -> '
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = ('calculate_nearest_neighbor( self, distances: List[ float ] ) -> '
 			               'np.ndarray')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_pca_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray:
@@ -3548,14 +3746,14 @@ class Embedding( ):
 			array_of_embeddings = np.array( self.vectors )
 			return pca.fit_transform( array_of_embeddings )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = ('create_pca_components( self, vectors: List[ List[ float ] ], '
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = ('create_pca_components( self, vectors: List[ List[ float ] ], '
 			               'num=2 ) ->'
 			               ' np.ndarray')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_tsne_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray:
@@ -3581,13 +3779,13 @@ class Embedding( ):
 			array_of_embeddings = np.array( self.vectors )
 			return tsne.fit_transform( array_of_embeddings )
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = ('create_tsne_components( self, vectors: List[ List[ float ] ], num=2 ) '
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = ('create_tsne_components( self, vectors: List[ List[ float ] ], num=2 ) '
 			               '-> np.ndarray')
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def create_chart( self, data: np.ndarray,
@@ -3627,12 +3825,12 @@ class Embedding( ):
 			).update_traces( marker=dict( size=mark_size ) )
 			return chart
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = "('create_chart( self, data: np.ndarray  mark_size=5 ) -> None')"
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = "('create_chart( self, data: np.ndarray  mark_size=5 ) -> None')"
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	
 	def creat_3dchart( self,
@@ -3682,9 +3880,9 @@ class Embedding( ):
 				marker=dict( size=mark_size ) )
 			return chart
 		except Exception as e:
-			_exc = Error( e )
-			_exc.module = 'embbr'
-			_exc.cause = 'Embedding'
-			_exc.method = 'create_vector_store( self, name: str ) -> str'
-			_err = ErrorDialog( _exc )
-			_err.show( )
+			exception = Error( e )
+			exception.module = 'embbr'
+			exception.cause = 'Embedding'
+			exception.method = 'create_vector_store( self, name: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
