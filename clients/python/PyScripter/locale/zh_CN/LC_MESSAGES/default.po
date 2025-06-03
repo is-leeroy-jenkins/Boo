@@ -5442,7 +5442,7 @@ msgstr "正規表現"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TiClear..Hint
 #: frmRegExpTester.dfm
-msgid "Clear all column_count"
+msgid "Clear all columns"
 msgstr "清除所有的项"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TBXSubmenuItem2..CI_DOTALL..Hint
@@ -7427,7 +7427,7 @@ msgstr "不能插入由空白字符构成的字段"
 #, object-pascal-format
 msgid ""
 "Pyscripter needs access to the User Application Data directory: \"%s\". "
-"Certain feature_names such as remote debugging will not function properly "
+"Certain features such as remote debugging will not function properly "
 "otherwise."
 msgstr ""
 

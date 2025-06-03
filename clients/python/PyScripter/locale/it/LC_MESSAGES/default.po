@@ -5490,7 +5490,7 @@ msgstr "Espresioni regolari"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TiClear..Hint
 #: frmRegExpTester.dfm
-msgid "Clear all column_count"
+msgid "Clear all columns"
 msgstr "Svuota tutti i campi"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TBXSubmenuItem2..CI_DOTALL..Hint
@@ -7511,7 +7511,7 @@ msgstr "Impossibile inserire un token composto da soli spazi vuoti."
 #, object-pascal-format
 msgid ""
 "Pyscripter needs access to the User Application Data directory: \"%s\". "
-"Certain feature_names such as remote debugging will not function properly "
+"Certain features such as remote debugging will not function properly "
 "otherwise."
 msgstr ""
 "Pyscripter richiede l'accesso alla cartella dei dati dell'applicazione utente: \"%s\". \n"

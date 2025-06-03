@@ -46,6 +46,7 @@ from argparse import ArgumentError
 
 import numpy as np
 from typing import Optional, List, Dict
+from sklearn.compose import ColumnTransformer
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.linear_model import (
 	LinearRegression, LogisticRegression, Ridge, Lasso, ElasticNet,
@@ -67,7 +68,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import (
 	StandardScaler, MinMaxScaler, RobustScaler, Normalizer,
-	OneHotEncoder, OrdinalEncoder, ColumnTransformer
+	OneHotEncoder, OrdinalEncoder
 )
 
 from sklearn.model_selection import train_test_split
@@ -202,7 +203,7 @@ class Metric( BaseModel ):
 		self.scaled_values = None
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> None:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
 		"""
 			
 			Purpose:
@@ -237,7 +238,7 @@ class Metric( BaseModel ):
 		raise NotImplementedError
 
 
-	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> np.ndarray:
+	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> np.ndarray:
 		"""
 
 			Purpose:
@@ -277,23 +278,23 @@ class Dataset( Metric ):
 
 	"""
 	data: np.ndarray
-	target: List[ str ]
+	target: str
 	test_size: float
 	random_state: int
 	dataframe: Optional[ pd.DataFrame ]
-	row_count: Optional[ int ]
-	column_count: Otional[ int ]
-	feature_names: Optional[ List[ str ] ]
+	rows: Optional[ int ]
+	columns: Otional[ int ]
+	features: Optional[ List[ str ] ]
 	target_values: np.ndarray
-	X_train: Optional[ np.ndarray ]
-	X_test: Optional[ np.ndarray ]
-	y_train: Optional[ np.ndarray ]
-	y_test: Optional[ np.ndarray ]
-	numeric_features: Optional[ List[ str ] ]
-	categorical_features: Optional[ List[ str ] ]
+	training_data: Optional[ np.ndarray ]
+	testing_data: Optional[ np.ndarray ]
+	training_values: Optional[ np.ndarray ]
+	testing_values: Optional[ np.ndarray ]
+	numeric_columns: Optional[ List[ str ] ]
+	text_columns: Optional[ List[ str ] ]
 
 
-	def __init__( self, data: pd.DataFrame, target: List[ str ], size: float=0.2, rando: int=42 ):
+	def __init__( self, data: pd.DataFrame, target: str, size: float=0.2, rando: int=42 ):
 		"""
 
 			Purpose:
@@ -310,19 +311,19 @@ class Dataset( Metric ):
 		"""
 		self.dataframe = data
 		self.data = data[ 1:, : ]
-		self.row_count = len( data )
-		self.column_count = len( data.columns )
+		self.rows = len( data )
+		self.columns = len( data.columns )
 		self.target = target
 		self.test_size = size
 		self.random_state = rando
-		self.feature_names = [ column for column in data.columns ]
+		self.features = [ column for column in data.columns ]
 		self.target_values = [ value for value in data[ 1:, target ] ]
-		self.numeric_features = data.select_dtypes( include=[ 'number' ] ).columns.tolist( )
-		self.categorical_features = data.select_dtypes( include=[ 'object', 'category' ] ).columns.tolist( )
+		self.numeric_columns = data.select_dtypes( include=[ 'number' ] ).columns.tolist( )
+		self.text_columns = data.select_dtypes( include=[ 'object', 'category' ] ).columns.tolist( )
 		self.X_train = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 0 ]
-		self.X_test = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 1 ]
-		self.y_train = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 2 ]
-		self.y_test = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 3 ]
+		self.testing_data = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 1 ]
+		self.training_values = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 2 ]
+		self.testing_values = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 3 ]
 
 
 	def __dir__( self ):
@@ -333,11 +334,11 @@ class Dataset( Metric ):
 			This function retuns a list of strings (members of the class)
 
 		'''
-		return [ 'dataframe', 'row_count', 'column_count', 'target', 'split_data',
-		         'feature_names', 'test_size', 'random_state', 'data', 'scale_data',
-		         'numeric_features', 'categorical_features', 'scaler',
+		return [ 'dataframe', 'rows', 'columns', 'target', 'split_data',
+		         'features', 'test_size', 'random_state', 'data', 'scale_data',
+		         'numeric_columns', 'text_columns', 'scaler',
 		         'create_testing_data', 'calculate_statistics', 'create_training_data',
-		         'target_values', 'X_train', 'X_test', 'y_train', 'y_test' ]
+		         'target_values', 'X_train', 'testing_data', 'training_values', 'testing_values' ]
 
 
 	def scale_data( self, type: Scaler=Scaler.Standard ) -> None:
@@ -392,14 +393,14 @@ class Dataset( Metric ):
 		
 			Purpose:
 			-----------
-			Return the training feature_names and labels.
+			Return the training features and labels.
 	
 			Returns:
 			-----------
-			Tuple[ np.ndarray, np.ndarray ]: ( X_train, y_train )
+			Tuple[ np.ndarray, np.ndarray ]: ( X_train, training_values )
 				
 		"""
-		return tuple( self.X_train, self.y_train )
+		return tuple( self.X_train, self.training_values )
 
 
 	def create_testing_data( self ) -> Tuple[ np.ndarray, np.ndarray ]:
@@ -407,14 +408,14 @@ class Dataset( Metric ):
 		
 			Purpose:
 			-----------
-			Return the test feature_names and labels.
+			Return the test features and labels.
 	
 			Returns:
 			-----------
-			Tuple[ np.ndarray, np.ndarray ]: X_test, y_test
+			Tuple[ np.ndarray, np.ndarray ]: testing_data, testing_values
 				
 		"""
-		return tuple( self.X_test, self.y_test )
+		return tuple( self.testing_data, self.testing_values )
 
 
 class StandardScaler( Metric ):
@@ -422,7 +423,7 @@ class StandardScaler( Metric ):
 
 		Purpose:
 		--------
-		Standardizes feature_names by removing the mean and scaling to unit variance.
+		Standardizes features by removing the mean and scaling to unit variance.
 
 	"""
 
@@ -502,7 +503,7 @@ class MinMaxScaler( Metric ):
 
 		Purpose:
 		---------
-		Scales feature_names to a given range (default is [0, 1]).
+		Scales features to a given range (default is [0, 1]).
 
 	"""
 
@@ -581,7 +582,7 @@ class RobustScaler( Metric ):
 
 		Purpose:
 		--------
-		Scales feature_names using statistics that are robust to outliers.
+		Scales features using statistics that are robust to outliers.
 
 	"""
 
@@ -740,7 +741,7 @@ class OneHotEncoder( Metric ):
 
 		Purpose:
 		---------
-		Encodes categorical feature_names as a one-hot numeric array.
+		Encodes categorical features as a one-hot numeric array.
 
 	"""
 
@@ -823,7 +824,7 @@ class OrdinalEncoder( Metric ):
 			Purpose:
 			---------
 		Encodes categorical
-		feature_names as ordinal integers.
+		features as ordinal integers.
 
 	"""
 
@@ -1176,7 +1177,7 @@ class PerceptronClassifier( Model ):
 
 			Parameters:
 			---------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): True class labels.
 
 			Returns:
@@ -1212,7 +1213,7 @@ class PerceptronClassifier( Model ):
 
 			Parameters:
 			---------
-				X (np.ndarray): Input feature_names of shape (n_samples, n_features).
+				X (np.ndarray): Input features of shape (n_samples, n_features).
 				y (np.ndarray): Ground truth class labels.
 
 			Returns:
@@ -1269,7 +1270,7 @@ class PerceptronClassifier( Model ):
 
 			Parameters:
 			---------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True class labels.
 
 			Returns:
@@ -1523,7 +1524,7 @@ class MultilayerRegressor( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True target target_values.
 
 		"""
@@ -1670,7 +1671,7 @@ class LinearRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): True target target_values.
 	
 			Returns:
@@ -1753,7 +1754,7 @@ class LinearRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True target target_values.
 			
 		"""
@@ -2074,7 +2075,7 @@ class RidgeRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
@@ -2157,7 +2158,7 @@ class RidgeRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -2320,7 +2321,7 @@ class LassoRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
@@ -2356,7 +2357,7 @@ class LassoRegressor( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -2565,7 +2566,7 @@ class ElasticNetRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -2599,7 +2600,7 @@ class ElasticNetRegressor( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
@@ -2646,7 +2647,7 @@ class ElasticNetRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True target target_values.
 				
 		"""
@@ -2807,7 +2808,7 @@ class LogisticRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): True class labels.
 	
 			Returns:
@@ -2841,7 +2842,7 @@ class LogisticRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names of shape (n_samples, n_features).
+				X (np.ndarray): Input features of shape (n_samples, n_features).
 				y (np.ndarray): True labels of shape (n_samples,).
 	
 			Returns:
@@ -2895,7 +2896,7 @@ class LogisticRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True class labels.
 	
 			Returns:
@@ -3058,7 +3059,7 @@ class BayesianRidgeRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): True target_values.
 	
 			Returns:
@@ -3139,7 +3140,7 @@ class BayesianRidgeRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True target target_values.
 				
 		"""
@@ -3294,7 +3295,7 @@ class StochasticGradientClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -3384,7 +3385,7 @@ class StochasticGradientClassifier( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True class labels.
 
 			Returns:
@@ -3551,7 +3552,7 @@ class StochasticGradientRegressor( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
 
 			Returns:
@@ -3585,7 +3586,7 @@ class StochasticGradientRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True target target_values.
 	
 			Returns:
@@ -3632,7 +3633,7 @@ class StochasticGradientRegressor( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True target target_values.
 
 		"""
@@ -3790,7 +3791,7 @@ class NearestNeighborClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth labels.
 	
 			Returns:
@@ -3882,7 +3883,7 @@ class NearestNeighborClassifier( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True class labels.
 
 			Returns:
@@ -4040,7 +4041,7 @@ class NearestNeighborRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
@@ -4075,7 +4076,7 @@ class NearestNeighborRegressor( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): True target target_values.
 	
 			Returns:
@@ -4122,7 +4123,7 @@ class NearestNeighborRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -4290,7 +4291,7 @@ class RandomForestClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -4324,7 +4325,7 @@ class RandomForestClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -4372,7 +4373,7 @@ class RandomForestClassifier( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True class labels.
 
 			Returns:
@@ -4542,7 +4543,7 @@ class RandomForestRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
@@ -4623,7 +4624,7 @@ class RandomForestRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -5048,7 +5049,7 @@ class AdaBoostClassifier( Model ):
 			
 			Purpose:
 			-----------
-			Scale numeric feature_names using selected scaler.
+			Scale numeric features using selected scaler.
 
 				
 		"""
@@ -5144,7 +5145,7 @@ class AdaBoostClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -5178,7 +5179,7 @@ class AdaBoostClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -5225,7 +5226,7 @@ class AdaBoostClassifier( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True class labels.
 
 			Returns:
@@ -5381,7 +5382,7 @@ class AdaBoostRegressor( Model ):
 	
 			Parameters:
 			----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
@@ -5460,7 +5461,7 @@ class AdaBoostRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -5618,7 +5619,7 @@ class BaggingClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -5652,7 +5653,7 @@ class BaggingClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -5701,7 +5702,7 @@ class BaggingClassifier( Model ):
 
 			Parameters:
 			------------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True class labels.
 
 			Returns:
@@ -5865,7 +5866,7 @@ class BaggingRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
@@ -5944,7 +5945,7 @@ class BaggingRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -6091,7 +6092,7 @@ class VotingClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -6124,7 +6125,7 @@ class VotingClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -6171,7 +6172,7 @@ class VotingClassifier( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True class labels.
 
 			Returns:
@@ -6325,7 +6326,7 @@ class VotingRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
@@ -6404,7 +6405,7 @@ class VotingRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -6547,7 +6548,7 @@ class StackingClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -6580,7 +6581,7 @@ class StackingClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
@@ -6627,7 +6628,7 @@ class StackingClassifier( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): True class labels.
 
 			Returns:
@@ -6778,7 +6779,7 @@ class StackingRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test feature_names.
+				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
 	
 			Returns:
@@ -6859,7 +6860,7 @@ class StackingRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input feature_names.
+				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
 	
 			Returns:

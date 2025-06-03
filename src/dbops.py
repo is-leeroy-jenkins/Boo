@@ -68,10 +68,10 @@ class SQLite( ):
 		Methods:
 			- create_table: Creates a df with specified schema.
 			- insert: Inserts a record into a df.
-			- fetch_all: Fetches all row_count from a df.
+			- fetch_all: Fetches all rows from a df.
 			- fetch_one: Fetches a single record matching the query.
-			- update: Updates row_count that match a given condition.
-			- delete: Deletes row_count that match a given condition.
+			- update: Updates rows that match a given condition.
+			- delete: Deletes rows that match a given condition.
 			- close: Closes the database connection.
 		
 	"""
@@ -184,7 +184,7 @@ class SQLite( ):
 		
 			Purpose:
 			--------
-			Retrieves all row_count from a df.
+			Retrieves all rows from a df.
 	
 			Args:
 			--------
@@ -253,7 +253,7 @@ class SQLite( ):
 		
 			Purpose:
 			--------
-			Updates row_count in a df.
+			Updates rows in a df.
 	
 			Args:
 			--------

@@ -1362,7 +1362,7 @@ class Text:
 			--------
 			- tuple:
 			- tfidf_matrix (scipy.sparse.csr_matrix): TF-IDF feature matrix.
-			- feature_names (list): Vocabulary terms.
+			- features (list): Vocabulary terms.
 			- vectorizer (TfidfVectorizer): Fitted vectorizer instance.
 
 		"""

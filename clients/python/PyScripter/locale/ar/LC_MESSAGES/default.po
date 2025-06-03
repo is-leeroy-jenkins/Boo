@@ -5431,7 +5431,7 @@ msgstr "التعابير النمطية"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TiClear..Hint
 #: frmRegExpTester.dfm
-msgid "Clear all column_count"
+msgid "Clear all columns"
 msgstr "مسح جميع الحقول"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..TBXDock..RegExpTesterToolbar..TBXSubmenuItem2..CI_DOTALL..Hint
@@ -7408,7 +7408,7 @@ msgstr ""
 #, object-pascal-format
 msgid ""
 "Pyscripter needs access to the User Application Data directory: \"%s\". "
-"Certain feature_names such as remote debugging will not function properly "
+"Certain features such as remote debugging will not function properly "
 "otherwise."
 msgstr ""
 
