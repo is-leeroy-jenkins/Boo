@@ -189,7 +189,8 @@ class Metric( BaseModel ):
 
 	"""
 	pipeline: Optional[ Pipeline ]
-	scaled_values: Optional[ np.ndarray ]
+	transformed_values: Optional[ np.ndarray ]
+	transformed_data: Optional[ np.ndarray ]
 
 
 	class Config:
@@ -200,7 +201,7 @@ class Metric( BaseModel ):
 
 	def __init__( self ):
 		self.pipeline = None
-		self.scaled_values = None
+		self.transformed_values = None
 
 
 	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
@@ -292,6 +293,8 @@ class Dataset( Metric ):
 	testing_values: Optional[ np.ndarray ]
 	numeric_columns: Optional[ List[ str ] ]
 	text_columns: Optional[ List[ str ] ]
+	column_transformer: Optional[ ColumnTransformer ]
+	transtuple: Optional[ List[ Tuple[ str, object, List[ str ] ] ] ]
 
 
 	def __init__( self, data: pd.DataFrame, target: str, size: float=0.2, rando: int=42 ):
@@ -320,10 +323,11 @@ class Dataset( Metric ):
 		self.target_values = [ value for value in data[ 1:, target ] ]
 		self.numeric_columns = data.select_dtypes( include=[ 'number' ] ).columns.tolist( )
 		self.text_columns = data.select_dtypes( include=[ 'object', 'category' ] ).columns.tolist( )
-		self.X_train = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 0 ]
+		self.training_data = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 0 ]
 		self.testing_data = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 1 ]
 		self.training_values = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 2 ]
 		self.testing_values = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 3 ]
+		self.transtuple = [ ]
 
 
 	def __dir__( self ):
@@ -338,23 +342,35 @@ class Dataset( Metric ):
 		         'features', 'test_size', 'random_state', 'data', 'scale_data',
 		         'numeric_columns', 'text_columns', 'scaler',
 		         'create_testing_data', 'calculate_statistics', 'create_training_data',
-		         'target_values', 'X_train', 'testing_data', 'training_values', 'testing_values' ]
+		         'target_values', 'training_data', 'testing_data', 'training_values', 'testing_values' ]
 
 
-	def scale_data( self, type: Scaler=Scaler.Standard ) -> None:
+	def transform_columns( self, name: str, encoder: object, columns: List[ str ] ) -> None:
 		"""
 
 			Purpose:
 			-----------
 				Scale numeric features using selected scaler.
 
-			Raises:
+			Paramters:
 			-----------
-				ValueError: If scaler scaler is not 'standard' or 'minmax'.
+				name - the name of the encoder
+				encoder - the encoder object to transform the data.
+				columns - the list of column names to apply the transformation to.
 
 		"""
 		try:
-			self.scaler_type = type
+			if name is None:
+				raise Exception( 'Name cannot be None' )
+			elif encoder is None:
+				raise Exception( 'Encoder cannot be None' )
+			elif columns is None:
+				raise Exception( 'Columns cannot be None' )
+			else:
+				_tuple = ( name, encoder, columns )
+				self.transtuple.append( _tuple )
+				self.column_transformer = ColumnTransformer( self.transtuple )
+				self.column_transformer.fit_transform( self.data  )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -397,10 +413,10 @@ class Dataset( Metric ):
 	
 			Returns:
 			-----------
-			Tuple[ np.ndarray, np.ndarray ]: ( X_train, training_values )
+			Tuple[ np.ndarray, np.ndarray ]: ( training_data, training_values )
 				
 		"""
-		return tuple( self.X_train, self.training_values )
+		return tuple( self.training_data, self.training_values )
 
 
 	def create_testing_data( self ) -> Tuple[ np.ndarray, np.ndarray ]:
@@ -426,6 +442,7 @@ class StandardScaler( Metric ):
 		Standardizes features by removing the mean and scaling to unit variance.
 
 	"""
+	standar_scaler = None
 
 
 	def __init__( self ) -> None:
@@ -506,6 +523,7 @@ class MinMaxScaler( Metric ):
 		Scales features to a given range (default is [0, 1]).
 
 	"""
+	minmax_scaler = None
 
 
 	def __init__( self ) -> None:
@@ -513,7 +531,7 @@ class MinMaxScaler( Metric ):
 		self.minmax_scaler = MinMaxScaler( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Purpose:
@@ -585,6 +603,7 @@ class RobustScaler( Metric ):
 		Scales features using statistics that are robust to outliers.
 
 	"""
+	robust_scaler = None
 
 
 	def __init__( self ) -> None:
@@ -592,7 +611,7 @@ class RobustScaler( Metric ):
 		self.robust_scaler = RobustScaler( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 
@@ -664,14 +683,14 @@ class Normalizer( Metric ):
 		Scales text vectors individually to unit norm.
 
 	"""
-
+	normal_scaler = None
 
 	def __init__( self, norm: str = 'l2' ) -> None:
 		super( ).__init__( )
 		self.normal_scaler = Normalizer( norm = norm )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 
@@ -744,14 +763,14 @@ class OneHotEncoder( Metric ):
 		Encodes categorical features as a one-hot numeric array.
 
 	"""
+	hot_encoder = None
 
-
-	def __init__( self, handle_unknown: str = 'ignore' ) -> None:
+	def __init__( self, unknown: str='ignore' ) -> None:
 		super( ).__init__( )
-		self.hot_encoder = OneHotEncoder( sparse = False, handle_unknown = handle_unknown )
+		self.hot_encoder = OneHotEncoder( sparse=False, handle_unknown =unknown )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 
@@ -827,14 +846,14 @@ class OrdinalEncoder( Metric ):
 		features as ordinal integers.
 
 	"""
-
+	ordinal_encoder = None
 
 	def __init__( self ) -> None:
 		super( ).__init__( )
 		self.ordinal_encoder = OrdinalEncoder( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Purpose:
@@ -861,7 +880,7 @@ class OrdinalEncoder( Metric ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'OrdinalEncoder'
-			exception.method = ''
+			exception.method = 'fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -892,12 +911,12 @@ class OrdinalEncoder( Metric ):
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'OrdinalEncoder'
-			exception.method = ''
+			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class SimpleImputer( Metric ):
+class AverageImputer( Metric ):
 	"""
 
 		Purpose:
@@ -905,14 +924,14 @@ class SimpleImputer( Metric ):
 		Fills missing target_values using a specified strategy.
 
 	"""
+	average_imputer = None
 
-
-	def __init__( self, strategy: str = 'mean' ) -> None:
+	def __init__( self, strat: str='mean' ) -> None:
 		super( ).__init__( )
-		self.simple_imputer = SimpleImputer( strategy = strategy )
+		self.average_imputer = SimpleImputer( strategy=strat )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 
@@ -935,12 +954,12 @@ class SimpleImputer( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.pipeline = self.simple_imputer.fit( X )
+				self.pipeline = self.average_imputer.fit( X )
 				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'SimpleImputer'
+			exception.cause = 'AverageImputer'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -968,12 +987,12 @@ class SimpleImputer( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				return self.simple_imputer.transform( X )
+				return self.average_imputer.transform( X )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'SimpleImputer'
-			exception.method = ''
+			exception.cause = 'AverageImputer'
+			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -993,7 +1012,7 @@ class NeighborImputer( Metric ):
 		self.knn_imputer = KNNImputer( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 			Purpose:
