@@ -67,11 +67,12 @@ from sklearn.pipeline import Pipeline
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import (
 	StandardScaler, MinMaxScaler, RobustScaler, Normalizer,
-	OneHotEncoder, OrdinalEncoder
+	OneHotEncoder, OrdinalEncoder, ColumnTransformer
 )
 
 from sklearn.model_selection import train_test_split
 from sklearn.base import ClassifierMixin
+from static import Scaler
 import pandas as pd
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Tuple
@@ -279,7 +280,6 @@ class Dataset( Metric ):
 	target: List[ str ]
 	test_size: float
 	random_state: int
-	scaler: str
 	dataframe: Optional[ pd.DataFrame ]
 	row_count: Optional[ int ]
 	column_count: Otional[ int ]
@@ -293,8 +293,7 @@ class Dataset( Metric ):
 	categorical_features: Optional[ List[ str ] ]
 
 
-	def __init__( self, data: np.ndarray, target: List[ str ], size: float=0.2,
-	              rando: int=42, scaler: str= 'standard' ):
+	def __init__( self, data: pd.DataFrame, target: List[ str ], size: float=0.2, rando: int=42 ):
 		"""
 
 			Purpose:
@@ -303,35 +302,27 @@ class Dataset( Metric ):
 
 			Parameters:
 			-----------
-				data (np.ndarray): Matrix text vector.
+				data (pd.DataFrame): Matrix text vector.
 				target List[ str ]: Name of the target columns.
 				size (float): Proportion of data to use as test set.
 				random_state (int): Seed for reproducibility.
 
 		"""
-		self.data = data
-		self.dataframe = pd.DataFrame( data = self.data, columns = self.data[ 0, : ],
-			index = self.data[ :, 0 ] )
-		self.row_count = len( self.dataframe )
-		self.column_count = len( self.dataframe.columns )
+		self.dataframe = data
+		self.data = data[ 1:, : ]
+		self.row_count = len( data )
+		self.column_count = len( data.columns )
 		self.target = target
-		self.feature_names = [ column for column in self.dataframe.columns ]
-		self.target_values = [ value for value in self.dataframe[ 1:, [ target ] ] ]
 		self.test_size = size
-		self.random_state = state
-		self.scaler = scaler
-		self.numeric_features = self.dataframe.select_dtypes(
-			include = [ 'number' ] ).columns.tolist( )
-		self.categorical_features = self.dataframe.select_dtypes(
-			include = [ 'object', 'category' ] ).columns.tolist( )
-		self.X_train = train_test_split( self.dataframe, self.target,
-			test_size = self.test_size, random_state = self.random_state )[ 0 ]
-		self.X_test = train_test_split( self.dataframe, self.target,
-			test_size = self.test_size, random_state = self.random_state )[ 1 ]
-		self.y_train = train_test_split( self.dataframe, self.target,
-			test_size = self.test_size, random_state = self.random_state )[ 2 ]
-		self.y_test = train_test_split( self.dataframe, self.target,
-			test_size = self.test_size, random_state = self.random_state )[ 3 ]
+		self.random_state = rando
+		self.feature_names = [ column for column in data.columns ]
+		self.target_values = [ value for value in data[ 1:, target ] ]
+		self.numeric_features = data.select_dtypes( include=[ 'number' ] ).columns.tolist( )
+		self.categorical_features = data.select_dtypes( include=[ 'object', 'category' ] ).columns.tolist( )
+		self.X_train = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 0 ]
+		self.X_test = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 1 ]
+		self.y_train = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 2 ]
+		self.y_test = train_test_split( data[ 1:, : ], target, test_size=size, random_state=rando )[ 3 ]
 
 
 	def __dir__( self ):
@@ -349,7 +340,7 @@ class Dataset( Metric ):
 		         'target_values', 'X_train', 'X_test', 'y_train', 'y_test' ]
 
 
-	def scale_data( self, type: str='standard' ) -> None:
+	def scale_data( self, type: Scaler=Scaler.Standard ) -> None:
 		"""
 
 			Purpose:
@@ -362,108 +353,12 @@ class Dataset( Metric ):
 
 		"""
 		try:
-			if type is None:
-				raise Exception( 'The text argument "scaler" is None' )
-			elif self.scaler == 'standard':
-				_standard = StandardScaler( )
-				self.scaled_values = _standard.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=self.scaled_values, columns=self.numeric_features,
-					index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
-					axis=1 )
-			elif self.scaler == 'minmax':
-				_minmax = MinMaxScaler( )
-				self.scaled_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=self.scaled_values, columns = self.numeric_features,
-					index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
-					axis=1 )
-			elif self.scaler == 'simple':
-				_simple = SimpleImputer( )
-				self.scaled_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=self.scaled_values, columns = self.numeric_features,
-					index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
-					axis=1 )
-			elif self.scaler == 'neighbor':
-				_nearest = NeighborImputer( )
-				self.scaled_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=self.scaled_values, columns = self.numeric_features,
-					index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
-					axis=1 )
-			elif self.scaler == 'robust':
-				_robust = RobustScaler( )
-				self.scaled_values = _robust.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=self.scaled_values, columns = self.numeric_features,
-					index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
-					axis=1 )
-			elif self.scaler == 'normal':
-				_normal = Normalizer( )
-				self.scaled_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=self.scaled_values, columns = self.numeric_features,
-					index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
-					axis=1 )
-			elif self.scaler == 'onehot':
-				_onehot = OneHotEncoder( )
-				self.scaled_values = _minmax.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=self.scaled_values, columns = self.numeric_features,
-					index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
-					axis=1 )
-			elif self.scaler == 'ordinal':
-				_ordinal = OrdinalEncoder( )
-				self.scaled_values = _ordinal.fit_transform( self.data[ self.numeric_features ] )
-				_df = pd.DataFrame( data=self.scaled_values, columns = self.numeric_features,
-					index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
-					axis=1 )
-			else:
-				_standard = StandardScaler( )
-				self.scaled_values = _standard.fit_transform( self.X[ self.numeric_features ] )
-				_df = pd.DataFrame( data=self.scaled_values, columns=self.numeric_features,
-					index=self.data.index )
-				self.dataframe = pd.concat( [ _df, self.data[ self.categorical_features ] ],
-					axis=1 )
+			self.scaler_type = type
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'Dataset'
 			exception.method = 'scale_data( )'
-			error = ErrorDialog( exception )
-			error.show( )
-
-
-	def split_data( self, data: np.ndarray, target: np.ndarray, size: float=0.20,
-	                rando: int=42 ) -> Tuple[ np.ndarray, np.ndarray, np.ndarray, np.ndarray ]:
-		"""
-
-			Purpose:
-			-----------
-			Split the dataset into training and test sets.
-
-			Returns:
-			-----------
-				Tuple[ pd.DataFrame, np.ndarray, pd.DataFrame, np.ndarray ]
-
-		"""
-		try:
-			if data is None:
-				raise ArgumentError( 'data is not provided.' )
-			elif target is None:
-				raise ArgumentError( 'target is not provided.' )
-			else:
-				self.X_train, self.X_test, self.y_train, self.y_test = train_test_split( data,
-					target,
-					size, rando )
-				return tuple( self.X_train, self.X_test, self.y_train, self.y_test )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Mathy'
-			exception.cause = 'Dataset'
-			exception.method = 'split_data( self, data: np.ndarray, target: np.ndarray )'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -537,7 +432,7 @@ class StandardScaler( Metric ):
 		self.standard_scaler = StandardScaler( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ] = None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
 		"""
 
 
