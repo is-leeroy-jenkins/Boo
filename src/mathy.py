@@ -3495,7 +3495,7 @@ class BayesianRidgeRegressor( Model ):
 			error.show( )
 
 
-class StochasticGradientClassifier( Model ):
+class StochasticClassifier( Model ):
 	"""
 	
 		Purpose:
@@ -3527,12 +3527,11 @@ class StochasticGradientClassifier( Model ):
 			-----------
 			Initialize the SGDClassifier linerar_model.
 	
-			Attributes:
+			Parameters:
 			-----------
-				linerar_model (SGDClassifier): Internal linear classifier trained via SGD.
-					Parameters:
-						reg (str): Loss function to use. Default is 'log_loss'.
-						max (int): Maximum number of passes over the df. Default is 1000.
+			loss (str): Loss function to use. Defaults to 'hinge'.
+			reg (str): Regularization function to use. Default is 'l2'.
+			max (int): Maximum number of passes over the df. Default is 1000.
 					
 		"""
 		super( ).__init__( )
@@ -3578,7 +3577,7 @@ class StochasticGradientClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StochasticGradientClassifier'
+			exception.cause = 'StochasticClassifier'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3609,7 +3608,7 @@ class StochasticGradientClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StochasticGradientClassifier'
+			exception.cause = 'StochasticClassifier'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3642,7 +3641,7 @@ class StochasticGradientClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StochasticGradientClassifier'
+			exception.cause = 'StochasticClassifier'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3698,7 +3697,7 @@ class StochasticGradientClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StochasticGradientClassifier'
+			exception.cause = 'StochasticClassifier'
 			exception.method = ('analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, '
 			                    'float ]')
 			error = ErrorDialog( exception )
@@ -3743,7 +3742,7 @@ class StochasticGradientClassifier( Model ):
 			error.show( )
 
 
-class StochasticGradientRegressor( Model ):
+class StochasticRegressor( Model ):
 	"""
 	
 		Purpose:
@@ -3775,15 +3774,13 @@ class StochasticGradientRegressor( Model ):
 
 			Purpose:
 			-----------
-			Initialize the SGDRegressor linerar_model.
+			Initialize the SGDRegressor
 	
-			Attributes:
+			Parameters:
 			-----------
-				linerar_model (SGDRegressor): Internal linear regressor trained via SGD.
-					Parameters:
-						alpha (float)" Regulation
-						regularization (str): Regularization term. Default is 'l2'.
-						max_iter (int): Maximum number of passes. Default is 1000.
+			- alpha (float): Regulation
+			- reg (str): Regularization term. Default is 'l2'.
+			- max (int): Maximum number of passes. Default is 1000.
 					
 		"""
 		super( ).__init__( )
@@ -3831,7 +3828,7 @@ class StochasticGradientRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StochasticGradientRegressor'
+			exception.cause = 'StochasticRegressor'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3862,7 +3859,7 @@ class StochasticGradientRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StochasticGradientRegressor'
+			exception.cause = 'StochasticRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3896,7 +3893,7 @@ class StochasticGradientRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StochasticGradientClassifier'
+			exception.cause = 'StochasticClassifier'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3943,7 +3940,7 @@ class StochasticGradientRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StochasticGradientRegressor'
+			exception.cause = 'StochasticRegressor'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3979,7 +3976,7 @@ class StochasticGradientRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StochasticGradientRegressor'
+			exception.cause = 'StochasticRegressor'
 			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5736,7 +5733,7 @@ class BoostRegressor( Model ):
 			error.show( )
 
 
-class BaggClassifier( Model ):
+class BagClassifier( Model ):
 	"""
 
 		Purpose:
@@ -5758,7 +5755,7 @@ class BaggClassifier( Model ):
 	def __init__( self, base: object=None, num: int=10, max: int=1, rando: int=42 ) -> None:
 		"""
 		
-			Initialize the BaggClassifier.
+			Initialize the BagClassifier.
 			
 		"""
 		super( ).__init__( )
@@ -5805,7 +5802,7 @@ class BaggClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggClassifier'
+			exception.cause = 'BagClassifier'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5835,7 +5832,7 @@ class BaggClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggClassifier'
+			exception.cause = 'BagClassifier'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5869,7 +5866,7 @@ class BaggClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggClassifier'
+			exception.cause = 'BagClassifier'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5915,7 +5912,7 @@ class BaggClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggClassifier'
+			exception.cause = 'BagClassifier'
 			exception.method = ('analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, '
 			                    'float ]')
 			error = ErrorDialog( exception )
@@ -5955,13 +5952,13 @@ class BaggClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggClassifier'
+			exception.cause = 'BagClassifier'
 			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class BaggRegressor( Model ):
+class BagRegressor( Model ):
 	"""
 
 		Purpose:
@@ -5971,7 +5968,8 @@ class BaggRegressor( Model ):
 		 individual predictions to form a final prediction. These methods are used as a way
 		 to reduce the variance of a base estimator (e.g., a decision tree), by introducing
 		 randomization into its construction procedure and then making an ensemble out of it.
-		 In many cases, bagging methods constitute a very simple way to improve with respect
+
+		 Bagging methods constitute a very simple way to improve with respect
 		 to a single model, without making it necessary to adapt the underlying base algorithm.
 		 As they provide a way to reduce overfitting, bagging methods work best with strong and
 		 complex models (e.g., fully developed decision trees), in contrast with boosting methods
@@ -5998,7 +5996,7 @@ class BaggRegressor( Model ):
 		self.n_estimators: int=num
 		self.max_features: int=max
 		self.random_state: int=rando
-		self.bagging_regressor = BaggRegressor( base_estimator=base,
+		self.bagging_regressor = BagRegressor( base_estimator=base,
 			n_estimator=num, max_features=max, random_state=rando )
 		self.prediction: np.array=None
 		self.accuracy: float=0.0
@@ -6038,7 +6036,7 @@ class BaggRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggRegressor'
+			exception.cause = 'BagRegressor'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6068,7 +6066,7 @@ class BaggRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggRegressor'
+			exception.cause = 'BagRegressor'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6101,7 +6099,7 @@ class BaggRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggRegressor'
+			exception.cause = 'BagRegressor'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6147,7 +6145,7 @@ class BaggRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggRegressor'
+			exception.cause = 'BagRegressor'
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6186,7 +6184,7 @@ class BaggRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggRegressor'
+			exception.cause = 'BagRegressor'
 			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
