@@ -3623,12 +3623,12 @@ class StochasticClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test features.
-				y (np.ndarray): Ground truth target target_values.
+			X (np.ndarray): Test features.
+			y (np.ndarray): Ground truth target target_values.
 	
 			Returns:
 			-----------
-				float: R^2 accuracy.
+			float: R^2 accuracy.
 			
 		"""
 		try:
@@ -3656,20 +3656,20 @@ class StochasticClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Feature matrix of shape (n_samples, n_features).
-				y (np.ndarray): True class labels of shape (n_samples,).
+			X (np.ndarray): Feature matrix of shape (n_samples, n_features).
+			y (np.ndarray): True class labels of shape (n_samples,).
 	
 			Returns:
 			-----------
-				dict: Dictionary containing:
-					- Accuracy (float)
-					- Precision (float)
-					- Recall (float)
-					- F1 Score (float)
-					- ROC AUC (float)
-					- Matthews Corrcoef (float)
-					- Confusion Matrix (List[List[int]])
-				
+			dict: Dictionary containing:
+				- Accuracy (float)
+				- Precision (float)
+				- Recall (float)
+				- F1 Score (float)
+				- ROC AUC (float)
+				- Matthews Corrcoef (float)
+				- Confusion Matrix (List[List[int]])
+
 		"""
 		try:
 			if X is None:
@@ -3713,8 +3713,8 @@ class StochasticClassifier( Model ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input features.
-				y (np.ndarray): True class labels.
+			X (np.ndarray): Input features.
+			y (np.ndarray): True class labels.
 
 			Returns:
 			-----------
