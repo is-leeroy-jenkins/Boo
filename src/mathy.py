@@ -6104,8 +6104,8 @@ class StackingClassifier( Model ):
 	correlation_coefficient: Optional[ float ]
 
 
-	def __init__( self, estimators: List[ Tuple[ str, ClassifierMixin ] ],
-	              final_estimator: Optional[ ClassifierMixin ]=None ) -> None:
+	def __init__( self, est: List[ Tuple[ str, ClassifierMixin ] ],
+	              final: Optional[ ClassifierMixin ]=None ) -> None:
 		"""
 		
 			Initialize the RandomForestClassifier.
