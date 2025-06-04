@@ -6658,13 +6658,13 @@ class MachineLearningWindow( ):
 			
 			flags = [ [ sg.CB( 'Normalize', size=(12, 1), default=True ),
 			            sg.CB( 'Verbose', size=(20, 1) ) ],
-			          [ sg.CB( 'Cluster', size=(12, 1) ), sg.CB(
+			          [ sg.CB( 'BaseCluster', size=(12, 1) ), sg.CB(
 				          'Flush Output', size=(20, 1), default=True ) ],
 			          [ sg.CB( 'Write Results', size=(12, 1) ), sg.CB(
 				          'Keep Intermediate Data', size=(20, 1) ) ],
 			          [ sg.CB( 'Normalize', size=(12, 1), default=True ),
 			            sg.CB( 'Verbose', size=(20, 1) ) ],
-			          [ sg.CB( 'Cluster', size=(12, 1) ), sg.CB(
+			          [ sg.CB( 'BaseCluster', size=(12, 1) ), sg.CB(
 				          'Flush Output', size=(20, 1), default=True ) ],
 			          [ sg.CB( 'Write Results', size=(12, 1) ),
 			            sg.CB( 'Keep Intermediate Data', size=(20, 1) ) ], ]

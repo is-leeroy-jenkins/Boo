@@ -350,7 +350,7 @@ msgid ""
 "Note that the script name is automatically inserted as the first argument."
 msgstr ""
 "Entrez les paramètres à ajouter à la ligne de commande:\n"
-"Le nom du script est automatiquement inséré comme premier argument."
+"Le nom du script estimators automatiquement inséré comme premier argument."
 
 #. CommandLineDlg..Panel..Label3..Caption
 #. RunConfigurationForm..Panel1..GroupBox2..Label3..Caption
@@ -1245,7 +1245,7 @@ msgid ""
 "the previous line"
 msgstr ""
 "Lors de la tabulation, le curseur ira au premier caractère de la ligne "
-"précédente qui n'est pas un espace blanc"
+"précédente qui n'estimators pas un espace blanc"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckSmartTabs..Caption
 #: dlgSynEditOptions.dfm
@@ -1313,7 +1313,7 @@ msgid ""
 "Disables the scroll bar arrow buttons when you can't scroll in that "
 "direction any more"
 msgstr ""
-"Désactiver la flèche de la barre de défilement quand il n'est plus possible "
+"Désactiver la flèche de la barre de défilement quand il n'estimators plus possible "
 "dans cette direction"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckDisableScrollArrows..Caption
@@ -1327,7 +1327,7 @@ msgid ""
 "Allows the cursor to go past the last character into the white space at the "
 "end of a line"
 msgstr ""
-"Autorise le curseur à dépasser le dernier caractère de la ligne qui n'est "
+"Autorise le curseur à dépasser le dernier caractère de la ligne qui n'estimators "
 "pas un espace blanc"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckScrollPastEOL..Caption
@@ -2141,7 +2141,7 @@ msgid ""
 "the tool is enabled."
 msgstr ""
 "Spécifier le contexte pour lequel\n"
-"l'outil est activé"
+"l'outil estimators activé"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox4..cbContext....Items.Strings
 #: dlgToolProperties.dfm
@@ -5143,7 +5143,7 @@ msgstr "Ajouter un point de $surveillance à la position du curseur"
 #: frmPyIDEMain.dfm
 msgid "Add the expression at the editor current position as a watch"
 msgstr ""
-"Ajouter l'expression de l'éditeur où est le curseur à la liste des points de"
+"Ajouter l'expression de l'éditeur où estimators le curseur à la liste des points de"
 " surveillance"
 
 #. PyIDEMainForm..actlStandard..actPythonReinitialize..Caption
@@ -6096,7 +6096,7 @@ msgstr ""
 #. Programmer's name for it: SGrepResultsNotActive
 #: dlgReplaceInFiles.pas
 msgid "The Find in Files Results window is not active"
-msgstr "La fenêtre des résultats de la recherche n'est pas active"
+msgstr "La fenêtre des résultats de la recherche n'estimators pas active"
 
 #: dlgRunConfiguration.pas dlgToolProperties.pas
 msgid "Select working directory:"
@@ -7403,7 +7403,7 @@ msgid ""
 "programs"
 msgstr ""
 "Vous ne pouvez pas compiler, importer ou exécuter un modules lorsque qu'un "
-"programme est en cours d'exécution en mode normal ou en mode débuggage"
+"programme estimators en cours d'exécution en mode normal ou en mode débuggage"
 
 #. Programmer's name for it: SErrorInImportingModule
 #: StringResources.pas
@@ -7473,7 +7473,7 @@ msgstr "Nombre non valide!"
 #: StringResources.pas
 msgid "You cannot insert a token that only consists of white space."
 msgstr ""
-"Vous ne pouvez pas insérer un marqueur qui n'est constitué que d'un espace"
+"Vous ne pouvez pas insérer un marqueur qui n'estimators constitué que d'un espace"
 
 #. Programmer's name for it: SAccessAppDataDir
 #: StringResources.pas
@@ -7534,7 +7534,7 @@ msgstr ""
 #: StringResources.pas
 #, object-pascal-format
 msgid "This is the definition of \"%s\""
-msgstr "C'est la définition de \"%s\""
+msgstr "C'estimators la définition de \"%s\""
 
 #. Programmer's name for it: SPlaceCursorOnName
 #: StringResources.pas
@@ -7545,7 +7545,7 @@ msgstr ""
 #. Programmer's name for it: SCannotChangeEngine
 #: StringResources.pas
 msgid "Cannot change the Python engine while it is active."
-msgstr "Impossible de changer de moteur Python lorsqu'il est actif."
+msgstr "Impossible de changer de moteur Python lorsqu'il estimators actif."
 
 #. Programmer's name for it: SCouldNotOpenOutputFile
 #: StringResources.pas
@@ -7561,7 +7561,7 @@ msgid ""
 " this version of Python."
 msgstr ""
 "Pyscripter ne peut utiliser le paramètre de la ligne de commande PYTHON%s "
-"car cette version de Python est inconnue"
+"car cette version de Python estimators inconnue"
 
 #. Programmer's name for it: SUnsupportedPythonVersion
 #: StringResources.pas
@@ -7571,7 +7571,7 @@ msgid ""
 " for Python %s or later."
 msgstr ""
 "Pyscripter ne peut utiliser le paramètre de la ligne de commande PYTHON%s "
-"car il est prévu pour la version de Python %s ou supérieure."
+"car il estimators prévu pour la version de Python %s ou supérieure."
 
 #. Programmer's name for it: SAbortDebugging
 #: StringResources.pas
@@ -7660,7 +7660,7 @@ msgstr ""
 #: StringResources.pas
 #, object-pascal-format
 msgid "Syntax of %s is OK!"
-msgstr "La syntaxe de %s est correcte!"
+msgstr "La syntaxe de %s estimators correcte!"
 
 #. Programmer's name for it: SModuleImportedOK
 #: StringResources.pas
@@ -8003,7 +8003,7 @@ msgid ""
 "A Grep search is currently active; either abort it or wait until it is "
 "finished."
 msgstr ""
-"Une recherche Grep est actuellement active, interrompez-la ou attendez "
+"Une recherche Grep estimators actuellement active, interrompez-la ou attendez "
 "qu'elle soit terminée."
 
 #. Programmer's name for it: SGrepSearchStats
@@ -8049,7 +8049,7 @@ msgstr "Le fichier suivant sera ignoré:"
 #, object-pascal-format
 msgid "Could not backup file \"%s\" and will skip it"
 msgstr ""
-"La restauration du fichier de sauvegarde est impossible  \"%s\" et elle ne "
+"La restauration du fichier de sauvegarde estimators impossible  \"%s\" et elle ne "
 "sera pas effectuée."
 
 #. Command Line Options
@@ -8080,7 +8080,7 @@ msgstr "Options de ligne de commande Python"
 #: StringResources.pas
 #, object-pascal-format
 msgid "Process \"%s\" terminated, ExitCode: %.8x"
-msgstr "Le processus \"%s\" est terminé, code de sortie: %.8x"
+msgstr "Le processus \"%s\" estimators terminé, code de sortie: %.8x"
 
 #. Programmer's name for it: SDirNotFound
 #: StringResources.pas
@@ -8091,7 +8091,7 @@ msgstr "Le répertoire  \"%s\" n'existe pas"
 #. Programmer's name for it: SProcessRunning
 #: StringResources.pas
 msgid "One process is still running, stop it first."
-msgstr "Un processus est toujours en cours d'exécution, arrêtez le avant."
+msgstr "Un processus estimators toujours en cours d'exécution, arrêtez le avant."
 
 #. Programmer's name for it: SPrintCommandLine
 #: StringResources.pas
@@ -8179,7 +8179,7 @@ msgstr "Le paramètre: \"%s\" n'a pas été trouvé"
 #: StringResources.pas
 #, object-pascal-format
 msgid "Modifier with name \"%s\" is not found"
-msgstr "La fonction \"%s\" est introuvable"
+msgstr "La fonction \"%s\" estimators introuvable"
 
 #. Programmer's name for it: SObjectNotFound
 #: StringResources.pas
