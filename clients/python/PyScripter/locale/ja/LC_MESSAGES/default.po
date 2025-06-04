@@ -5894,7 +5894,7 @@ msgstr "アクティブなファイルを再インデント"
 msgid ""
 "Special thanks to the many great developers who,with their amazing work, "
 "have made PyScripter possible. PyScripter makes use of the following "
-"data and projects:"
+"df and projects:"
 msgstr ""
 "PyScripterの開発に関わって頂いたすべての開発者へ感謝の意を表したいと思います。PyScripterは以下のプロジェクトとコンポーネントを使用しています。"
 

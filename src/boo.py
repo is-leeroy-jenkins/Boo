@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="boo.py" company="Terry D. Eppler">
 
-	     Boo is a data analysis tool integrating various Generative AI, Text-Processing, and
+	     Boo is a df analysis tool integrating various Generative AI, Text-Processing, and
 	     Machine-Learning algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
@@ -60,9 +60,25 @@ import tiktoken
 from typing import Any, List, Tuple, Optional, Dict
 
 
+class Prompt( BaseModel ):
+	'''
+
+		Purpose:
+		--------
+		Class for the user's location
+
+	'''
+	instruction: Optional[ str ]
+	context: Optional[ str ]
+	output_indicator: Optional[ str ]
+	input_data: Optional[ str ]
+
+
 class UserLocation( BaseModel ):
 	'''
-	
+
+		Purpose:
+		--------
 		Class for the user's location
 		
 	'''
@@ -75,8 +91,10 @@ class UserLocation( BaseModel ):
 
 class Text( BaseModel ):
 	'''
-	
-		 A class used to generate text responses.
+
+		Purpose:
+		--------
+		A class used to generate text responses.
 		 
 	'''
 	type: str='text'
@@ -84,8 +102,10 @@ class Text( BaseModel ):
 
 class File( BaseModel ):
 	'''
-	
-		 A class used to represent File objects.
+
+		Purpose:
+		--------
+		A class used to represent File objects.
 		 
 	'''
 	filename: Optional[ str ]
@@ -99,7 +119,9 @@ class File( BaseModel ):
 	
 class Error( BaseModel ):
 	'''
-	
+
+		Purpose:
+		--------
 		A class for exceptions
 	
 	'''
@@ -109,7 +131,9 @@ class Error( BaseModel ):
 
 class JsonSchema( BaseModel ):
 	'''
-	
+
+		Purpose:
+		--------
 		A class used to generate json schema responses.
 		
 	'''
@@ -121,18 +145,21 @@ class JsonSchema( BaseModel ):
 
 class JsonObject( BaseModel ):
 	'''
-	
+
+		Purpose:
+		--------
 		A class used to generate json schema responses.
 		
 	'''
-	type: str
+	type: Optional[ str ]
 
 
 class Format( BaseModel ):
 	'''
-	
-		A class for objects specifying
-		 the format that the model must output.
+
+		Purpose:
+		--------
+		A class for objects specifying the format that the model must output.
 		 
 	'''
 	text: Optional[ Text ]
@@ -146,6 +173,8 @@ class Format( BaseModel ):
 class Reasoning( BaseModel ):
 	'''
 
+		Purpose:
+		--------
 		Class providing reasoning functionality.
 
 	'''
@@ -155,7 +184,11 @@ class Reasoning( BaseModel ):
 
 class Response( BaseModel ):
 	'''
+
+		Purpose:
+		--------
 		Base class for GPT responses.
+
 	'''
 	id: Optional[ str ]
 	object: Optional[ object ]
@@ -182,9 +215,10 @@ class Response( BaseModel ):
 
 class FileSearch( BaseModel ):
 	'''
-	
-		A tool that searches for
-		relevant content from uploaded file
+
+		Purpose:
+		--------
+		A tool that searches for relevant content from uploaded file
 	
 	'''
 	type: Optional[ str ]
@@ -195,6 +229,8 @@ class FileSearch( BaseModel ):
 class WebSearch( BaseModel ):
 	'''
 
+		Purpose:
+		--------
 		Class for a tool that searches the web
 		for relevant results to use in a response.
 
@@ -206,7 +242,9 @@ class WebSearch( BaseModel ):
 	
 class ComputerUse( BaseModel ):
 	'''
-	
+
+		Purpose:
+		--------
 		A class for a tool that controls a virtual computer
 		
 	'''
@@ -271,9 +309,11 @@ class EndPoint( ):
 		self.vector_stores = f'https://api.openai.com/v1/vector_stores'
 		
 		
-	def get_data( self ) -> Dict[ str, str ]:
+	def get_data( self ) -> Dict[ str, str ] | None:
 		'''
 
+			Purpose:
+			--------
 			Returns: dict[ str ] of members
 
 		'''
@@ -296,6 +336,8 @@ class EndPoint( ):
 	def dump( self ) -> str:
 		'''
 
+			Purpose:
+			--------
 			Returns: path of "member = value", pairs
 
 		'''
@@ -338,7 +380,7 @@ class Header( ):
 
             Purpose:
             --------
-			returns a string reprentation of the object
+			Method returns a list of strings representing members
 
             Parameters:
             ----------
@@ -346,21 +388,19 @@ class Header( ):
 
             Returns:
             ---------
-			str | None
+			List[ str ] | None
 
 		'''
-		return [ 'content_type', 'api_key', 'authorization', 'data' ]
+		return [ 'content_type', 'api_key', 'authorization', 'df' ]
 
 
 
 class Models( ):
 	'''
 	
-		Purpose
+		Purpose:
 		_______
-		
-		Class containing lists
-		of OpenAI models by generation
+		Class containing lists of OpenAI models by generation
 		
 	'''
 	
@@ -423,9 +463,9 @@ class Models( ):
 
 		self.bro = \
 		[
+			'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-df-analysis-2025-21-05:BZetxEQa',
 			'ft:gpt-4.1-nano-2025-04-14:leeroy-jenkins:bro-gpt-4-1-nano-2025-29-05:BchzJVjL',
 			'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:bro-gpt-4-1-mini-2025-29-05:BcgMfu1w',
-			'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-data-analysis-2025-21-05:BZetxEQa',
 			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned:BTc3PMb5',
 			'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY' ]
 	
@@ -435,7 +475,7 @@ class Models( ):
 
             Purpose:
             --------
-			returns a string reprentation of the object
+			Method returns a list of strings representing members
 
             Parameters:
             ----------
@@ -443,20 +483,21 @@ class Models( ):
 
             Returns:
             ---------
-			str | None
+			List[ str ] | None
 
 		'''
-		return [ 'base_url', 'text_generation', 'image_generation', 'chat_completion',
-		         'speech_generation', 'responses', 'reasoning',
-		         'translations', 'assistants', 'transcriptions',
-		         'finetuning', 'vectors', 'uploads', 'files', 'vectorstores',
-		         'bubba', 'bro' ]
+		return [ 'text_generation', 'image_generation', 'chat_completion',
+		         'speech_generation', 'responses', 'reasoning', 'translations', 'assistants',
+		         'transcriptions', 'finetuning', 'vectors', 'uploads', 'files', 'vectorstores',
+		         'bubba', 'bro', 'get_data', ]
 	
 	
-	def get_data( self ) -> dict:
+	def get_data( self ) -> Dict[ str, List[ str ] ] | None:
 		'''
-			
-			Method that returns a get_list of dictionaries
+
+			Purpose:
+			--------
+			Method that returns a dictionary of a list of strings.
 		
 		'''
 		_data = { 'text_generation': self.text_generation,
@@ -469,11 +510,14 @@ class Models( ):
 		          'uploads': self.uploads,
 		          'files': self.files,
 		          'vectorstores': self.vectorstores }
+		return _data
 
 
 class AI( ):
 	'''
-		
+
+		Purpose:
+		--------
 		AI is the base class for all OpenAI functionalityl
 	
 	'''
@@ -590,9 +634,11 @@ class Chat( AI ):
 		}
 	
 	
-	def get_model_options( self ) -> str:
+	def get_model_options( self ) -> List[ str ] | None:
 		'''
-		
+
+			Purpose:
+			--------
 			Methods that returns a list of small_model names
 		
 		'''
@@ -603,7 +649,7 @@ class Chat( AI ):
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 	
 	
-	def generate_text( self, prompt: str ) -> str:
+	def generate_text( self, prompt: str ) -> str | None:
 		"""
 		
 			Purpose
@@ -618,7 +664,7 @@ class Chat( AI ):
 			
 			Returns
 			-------
-			str
+			str | None
 		
 		"""
 		try:
@@ -637,12 +683,12 @@ class Chat( AI ):
 			error.show( )
 	
 	
-	def generate_image( self, prompt: str ) -> str:
+	def generate_image( self, prompt: str ) -> str | None:
 		"""
 		
 			Purpose
 			_______
-			Generates a chat completion given a prompt
+			Generates an image given a prompt
 			
 			
 			Parameters
@@ -652,7 +698,7 @@ class Chat( AI ):
 			
 			Returns
 			-------
-			str
+			str | None
 		
 		"""
 		try:
@@ -668,20 +714,18 @@ class Chat( AI ):
 			exception = Error( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
-			exception.method = 'generate_text( self, prompt: str )'
+			exception.method = 'generate_image( self, prompt: str ) -> str | None'
 			error = ErrorDialog( exception )
 			error.show( )
 		
 		
-	def analyze_image( self, prompt: str, url: str ) -> str:
+	def analyze_image( self, prompt: str, url: str ) -> str | None:
 		"""
 		
 			Purpose
 			_______
-			Method that analyzeses an image given a  prompt,
-			
-			
-			
+			Method that analyzeses an image given a  prompt.
+
 			Parameters
 			----------
 			prompt: str
@@ -689,7 +733,7 @@ class Chat( AI ):
 			
 			Returns
 			-------
-			str
+			str | None
 		
 		"""
 		try:
@@ -701,20 +745,19 @@ class Chat( AI ):
 				self.prompt = prompt
 				self.image_url = url
 				self.input = [
-					{
-						'role': 'user',
-						'content':
-							[
-								{ 'scaler': 'input_text',
-								  'text': self.prompt
-								  },
-								{
-									'scaler': 'input_image',
-									'image_url': self.image_url
-								}
-							]
-					}
-				]
+				{
+					'role': 'user',
+					'content':
+						[
+							{ 'scaler': 'input_text',
+							  'text': self.prompt
+							  },
+							{
+								'scaler': 'input_image',
+								'image_url': self.image_url
+							}
+						]
+				} ]
 				
 				self.response = self.client.responses.create( model=self.model, input=self.input )
 				return self.response.output_text
@@ -727,17 +770,14 @@ class Chat( AI ):
 			error.show( )
 	
 	
-	def summarize_document( self, prompt: str, path: str ) -> str:
+	def summarize_document( self, prompt: str, path: str ) -> str | None:
 		"""
 		
 			Purpose
 			_______
 			Method that summarizes a document given a
 			path prompt, and a path
-	
-			
-			
-			
+
 			Parameters
 			----------
 			prompt: str
@@ -745,7 +785,7 @@ class Chat( AI ):
 			
 			Returns
 			-------
-			str
+			str | None
 		
 		"""
 		try:
@@ -785,15 +825,13 @@ class Chat( AI ):
 			error.show( )
 	
 	
-	def search_web( self, prompt: str ) -> str:
+	def search_web( self, prompt: str ) -> str | None:
 		"""
 		
 			Purpose
 			_______
 			Method that analyzeses an image given a prompt,
-			
-			
-			
+
 			Parameters
 			----------
 			prompt: str
@@ -801,7 +839,7 @@ class Chat( AI ):
 			
 			Returns
 			-------
-			str
+			str | None
 		
 		"""
 		try:
@@ -827,23 +865,21 @@ class Chat( AI ):
 			error.show( )
 
 
-	def search_file( self, prompt: str ) -> str:
+	def search_file( self, prompt: str ) -> str | None:
 		"""
 		
-			Purpose
+			Purpose:
 			_______
 			Method that analyzeses an image given a prompt,
-			
-			
-			
-			Parameters
+
+			Parameters:
 			----------
 			prompt: str
 			url: str
 			
-			Returns
+			Returns:
 			-------
-			str
+			str | None
 		
 		"""
 		try:
@@ -869,17 +905,18 @@ class Chat( AI ):
 			error.show( )
 	
 	
-	def translate( self, text: str ) -> str:
+	def translate( self, text: str ) -> str | None:
 		pass
 	
 	
-	def transcribe( self, text: str ) -> str:
+	def transcribe( self, text: str ) -> str | None:
 		pass
 	
 	
-	def get_data( self ) -> dict:
+	def get_data( self ) -> Dict[ str, float ] | None:
 		'''
-
+			Purpose:
+			--------
 			Returns: dict[ str ] of members
 
 		'''
@@ -893,9 +930,13 @@ class Chat( AI ):
 		         'size': self.size }
 	
 	
-	def dump( self ) -> str:
+	def dump( self ) -> str | None:
 		'''
+
+			Purpose:
+			--------
 			Returns: dict of members
+
 		'''
 		new = '\r\n'
 		return 'num' + f' = {self.number}' + new + \
@@ -914,7 +955,7 @@ class Chat( AI ):
 
             Purpose:
             --------
-			returns a string reprentation of the object
+			Method returns a list of strings representing members
 
             Parameters:
             ----------
@@ -922,7 +963,7 @@ class Chat( AI ):
 
             Returns:
             ---------
-			str | None
+			List[ str ] | None
 
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
@@ -941,10 +982,8 @@ class Assistant( AI ):
 		
 		Purpose
 		___________
-		Class used for interacting with OpenAI's
-		Assistants API
-		
-		
+		Class used for interacting with OpenAI's Assistants API
+
 		Parameters
 		------------
 		num: int=1
@@ -1011,7 +1050,7 @@ class Assistant( AI ):
         }
 	
 	
-	def generate_text( self, prompt: str ) -> str:
+	def generate_text( self, prompt: str ) -> str | None:
 		"""
 		
 			Purpose
@@ -1046,7 +1085,7 @@ class Assistant( AI ):
 			error.show( )
 			
 			
-	def generate_image( self, prompt: str ) -> str:
+	def generate_image( self, prompt: str ) -> str | None:
 		"""
 		
 			Purpose
@@ -1061,7 +1100,7 @@ class Assistant( AI ):
 			
 			Returns
 			-------
-			str
+			str | None
 		
 		"""
 		try:
@@ -1082,15 +1121,13 @@ class Assistant( AI ):
 			error.show( )
 		
 		
-	def analyze_image( self, prompt: str, url: str ) -> str:
+	def analyze_image( self, prompt: str, url: str ) -> str | None:
 		"""
 		
 			Purpose
 			_______
 			Method that analyzeses an image given a prompt,
-			
-			
-			
+
 			Parameters
 			----------
 			prompt: str
@@ -1098,7 +1135,7 @@ class Assistant( AI ):
 			
 			Returns
 			-------
-			str
+			str | None
 		
 		"""
 		try:
@@ -1110,39 +1147,35 @@ class Assistant( AI ):
 				self.prompt = prompt
 				self.image_url = url
 				self.input = [
+				{
+					'role': 'user',
+					'content': [
+					{ 'scaler': 'input_text',
+					  'text': self.prompt
+					},
 					{
-						'role': 'user',
-						'content':
-							[
-								{ 'scaler': 'input_text',
-								  'text': self.prompt
-								  },
-								{
-									'scaler': 'input_image',
-									'image_url': self.image_url
-								}
-							]
-					}
-				]
+						'scaler': 'input_image',
+						'image_url': self.image_url
+					}]
+				}]
 				
 				self.response = self.client.responses.create( model=self.model, input=self.input )
 				return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Chat'
+			exception.cause = 'Assistant'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def summarize_document( self, prompt: str, path: str ) -> str:
+	def summarize_document( self, prompt: str, path: str ) -> str | None:
 		"""
 		
 			Purpose
 			_______
-			Method that summarizes a document given a
-			path prompt, and a path
+			Method that summarizes a document given a path prompt, and a path
 			
 			Parameters
 			----------
@@ -1151,7 +1184,7 @@ class Assistant( AI ):
 			
 			Returns
 			-------
-			str
+			str | None
 		
 		"""
 		try:
@@ -1188,21 +1221,19 @@ class Assistant( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Chat'
+			exception.cause = 'Assistant'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def search_web( self, prompt: str ) -> str:
+	def search_web( self, prompt: str ) -> str | None:
 		"""
 		
 			Purpose
 			_______
 			Method that analyzeses an image given a prompt,
-			
-			
-			
+
 			Parameters
 			----------
 			prompt: str
@@ -1210,7 +1241,7 @@ class Assistant( AI ):
 			
 			Returns
 			-------
-			str
+			str | None
 		
 		"""
 		try:
@@ -1230,13 +1261,13 @@ class Assistant( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Chat'
+			exception.cause = 'Assistant'
 			exception.method = 'search_web( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-	def search_files( self, prompt: str ) -> str:
+	def search_files( self, prompt: str ) -> str | None:
 		"""
 		
 			Purpose
@@ -1270,23 +1301,25 @@ class Assistant( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Chat'
-			exception.method = 'search_files( self, prompt: str ) -> str'
+			exception.cause = 'Assistant'
+			exception.method = 'search_files( self, prompt: str ) -> str | None'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def translate( self, text: str ) -> str:
+	def translate( self, text: str ) -> str | None:
 		pass
 	
 	
-	def transcribe( self, text: str ) -> str:
+	def transcribe( self, text: str ) -> str | None:
 		pass
 	
 
-	def get_list( self ) -> List[ str ]:
+	def get_list( self ) -> List[ str ] | None:
 		'''
-		
+
+			Purpose:
+			--------
 			Method that returns a list of available assistants
 			
 		'''
@@ -1296,24 +1329,28 @@ class Assistant( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Chat'
+			exception.cause = 'Assistant'
 			exception.method = 'get_list( ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-	def get_format_options( ):
+	def get_format_options( ) -> List[ str ] | None:
 		'''
-		
+
+			Purpose:
+			--------
 			Method that returns a list of formatting options
 		
 		'''
 		return [ 'auto', 'text', 'json' ]
 	
 	
-	def get_model_options( ):
+	def get_model_options( ) -> List[ str ] | None:
 		'''
 
+			Purpose:
+			--------
 			Method that returns a list of available models
 
 		'''
@@ -1324,16 +1361,18 @@ class Assistant( AI ):
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31'  ]
 	
 	
-	def get_effort_options( ):
+	def get_effort_options( ) -> List[ str ] | None:
 		'''
 
+			Purpose:
+			--------
 			Method that returns a list of available models
 
 		'''
 		return [ 'auto', 'low', 'high' ]
 	
 	
-	def get_data( self ) -> dict:
+	def get_data( self ) -> Dict[ str, float ] | None:
 		'''
 
 			Returns: dict[ str ] of members
@@ -1349,12 +1388,12 @@ class Assistant( AI ):
 		         'size': self.size }
 	
 	
-	def dump( self ) -> str:
+	def dump( self ) -> str | None:
 		'''
 
 			Returns:
 			_______
-				dict of strings representing members
+			Dict of strings representing members
 
 		'''
 		new = '\r\n'
@@ -1374,7 +1413,7 @@ class Assistant( AI ):
 
             Purpose:
             --------
-			returns a string reprentation of the object
+			Method returns a list of strings representing members
 
             Parameters:
             ----------
@@ -1382,7 +1421,7 @@ class Assistant( AI ):
 
             Returns:
             ---------
-			str | None
+			List[ str ] | None
 
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
@@ -1395,7 +1434,7 @@ class Assistant( AI ):
 		         'get_effort_options', 'input_text', 'metadata',
 		         'get_files', 'get_data',
 		         'dump', 'translate', 'transcribe' ]
-	
+
 	
 class Bubba( AI ):
 	"""
@@ -1427,9 +1466,7 @@ class Bubba( AI ):
 		search_files( self, prompt: str ) -> str
 		dump( self ) -> str
 		get_data( self ) -> { }
-		
-		
-	
+
 	"""
 	
 	
@@ -1464,13 +1501,14 @@ class Bubba( AI ):
 			'Apporopriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
 			'Guidance': 'vs_712r5W5833G6aLxIYIbuvVcK'
 		}
-	
-	def generate_text( self, prompt: str ) -> str:
+
+
+	def generate_text( self, prompt: str ) -> str | None:
 		"""
 		
 			Purpose:
 			_______
-				Generates a chat completion given a prompt
+			Generates a chat completion given a prompt
 			
 			
 			Parameters:
@@ -1480,7 +1518,7 @@ class Bubba( AI ):
 			
 			Returns:
 			-------
-				str
+			str
 		
 		"""
 		try:
@@ -1494,13 +1532,13 @@ class Bubba( AI ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Boo'
-			exception.cause = 'Chat'
+			exception.cause = 'Bubba'
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 			
 			
-	def generate_image( self, prompt: str ) -> str:
+	def generate_image( self, prompt: str ) -> str | None:
 		"""
 		
 			Purpose
@@ -1535,7 +1573,7 @@ class Bubba( AI ):
 			error.show( )
 		
 		
-	def analyze_image( self, prompt: str, url: str ) -> str:
+	def analyze_image( self, prompt: str, url: str ) -> str | None:
 		"""
 		
 			Purpose
@@ -1587,7 +1625,7 @@ class Bubba( AI ):
 			error.show( )
 	
 	
-	def summarize_document( self, prompt: str, path: str ) -> str:
+	def summarize_document( self, prompt: str, path: str ) -> str | None:
 		"""
 		
 			Purpose:
@@ -1646,7 +1684,7 @@ class Bubba( AI ):
 			error.show( )
 	
 	
-	def search_web( self, prompt: str ) -> str:
+	def search_web( self, prompt: str ) -> str | None:
 		"""
 		
 			Purpose:
@@ -1688,7 +1726,7 @@ class Bubba( AI ):
 			error.show( )
 
 
-	def search_files( self, prompt: str ) -> str:
+	def search_files( self, prompt: str ) -> str | None:
 		"""
 		
 			Purpose
@@ -1731,15 +1769,15 @@ class Bubba( AI ):
 			error.show( )
 	
 	
-	def translate( self, text: str ) -> str:
+	def translate( self, text: str ) -> str | None:
 		pass
 	
 	
-	def transcribe( self, text: str ) -> str:
+	def transcribe( self, text: str ) -> str | None:
 		pass
 	
 	
-	def get_files( self ) -> List[ str ]:
+	def get_files( self ) -> List[ str ] | None:
 		'''
 
 			Method that returns a list of files in a vector stores
@@ -1762,7 +1800,7 @@ class Bubba( AI ):
 			error.show( )
 	
 	
-	def get_format_options( ) -> List[ str ]:
+	def get_format_options( ) -> List[ str ] | None:
 		'''
 		
 			Method that returns a list of formatting options
@@ -1771,7 +1809,7 @@ class Bubba( AI ):
 		return [ 'auto', 'text', 'json' ]
 	
 	
-	def get_model_options( ) -> List[ str ]:
+	def get_model_options( ) -> List[ str ] | None:
 		'''
 
 			Method that returns a list of available models
@@ -1792,7 +1830,7 @@ class Bubba( AI ):
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57' ]
 	
 	
-	def get_effort_options( ) -> List[ str ]:
+	def get_effort_options( ) -> List[ str ] | None:
 		'''
 
 			Method that returns a list of available models
@@ -1801,7 +1839,7 @@ class Bubba( AI ):
 		return [ 'auto', 'low', 'high' ]
 	
 	
-	def get_data( self ) -> dict:
+	def get_data( self ) -> Dict[ str, float ] | None:
 		'''
 
 			Returns: dict[ str ] of members
@@ -1817,7 +1855,7 @@ class Bubba( AI ):
 		         'size': self.size }
 	
 	
-	def dump( self ) -> str:
+	def dump( self ) -> str | None:
 		'''
 			Returns: dict of members
 		'''
@@ -1838,7 +1876,7 @@ class Bubba( AI ):
 
             Purpose:
             --------
-			returns a string reprentation of the object
+			Method returns a list of strings representing members
 
             Parameters:
             ----------
@@ -1846,7 +1884,7 @@ class Bubba( AI ):
 
             Returns:
             ---------
-			str | None
+			List[ str ] | None
 
 		'''
 		return  [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
@@ -1903,7 +1941,7 @@ class Bro( AI ):
 		self.system_instructions = AI( ).bro_instructions
 		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
-		self.model = 'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-data-analysis-2025-21-05:BZetxEQa'
+		self.model = 'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-df-analysis-2025-21-05:BZetxEQa'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -2225,7 +2263,7 @@ class Bro( AI ):
                  'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
                  'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31',
-		         'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-data-analysis-2025-21-05:BZetxEQa',
+		         'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-df-analysis-2025-21-05:BZetxEQa',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY',
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx' ]
@@ -2275,9 +2313,19 @@ class Bro( AI ):
 
 	def __dir__(self) -> List[ str ]:
 		'''
-		
-			Method that returns a list of members
-		
+
+            Purpose:
+            --------
+			Method returns a list of strings representing members
+
+            Parameters:
+            ----------
+			self
+
+            Returns:
+            ---------
+			List[ str ] | None
+
 		'''
 		return  [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
@@ -2321,7 +2369,7 @@ class Embedding( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
-		self.client = OpenAI( self.api_key )
+		self.client = OpenAI( )
 		self.client.api_key = Header( ).api_key
 		self.small_model = 'text-embedding-3-small'
 		self.large_model = 'text-embedding-3-large'
@@ -2374,22 +2422,20 @@ class Embedding( AI ):
 			error.show( )
 	
 	
-	def create_large_embedding( self, text: str ) -> List[ float ]:
+	def create_large_embedding( self, text: str ) -> List[ float ] | None:
 		"""
 
-			Purpose
+			Purpose:
 			_______
 			Creates an Large embedding given a text
 
-
-			Parameters
+			Parameters:
 			----------
 			text: str
 
-
-			Returns
+			Returns:
 			-------
-			list[ float ]
+			List[ float ] | None
 
 		"""
 		try:
@@ -2416,15 +2462,13 @@ class Embedding( AI ):
 			_______
 			Creates an ADA embedding given a text
 
-
 			Parameters
 			----------
 			text: str
 
-
 			Returns
 			-------
-			get_list[ float
+			List[ float ]
 
 		"""
 		try:
@@ -2448,14 +2492,17 @@ class Embedding( AI ):
 		'''
 
 			Purpose:
-				Returns the num of tokens in a documents path.
+			-------
+			Returns the num of tokens in a documents path.
 
 			Parameters:
-				text: str - The string that is tokenized
-				coding: str - The encoding to use for tokenizing
+			-----------
+			text: str - The string that is tokenized
+			coding: str - The encoding to use for tokenizing
 
 			Returns:
-				int - The number of tokens
+			--------
+			int - The number of tokens
 
 		'''
 		try:
@@ -2479,7 +2526,12 @@ class Embedding( AI ):
 	def get_data( self ) -> Dict:
 		'''
 
-			Returns: dict[ str ] of members
+			Purpose:
+			-------
+
+			Returns:
+			--------
+			dict[ str ] of members
 
 		'''
 		return { 'num': self.number,
@@ -2492,9 +2544,11 @@ class Embedding( AI ):
 		         'size': self.size }
 	
 	
-	def dump( self ) -> str:
+	def dump( self ) -> str | None:
 		'''
 
+			Purpose:
+			--------
 			Returns: dict of members
 
 		'''
@@ -2515,7 +2569,7 @@ class Embedding( AI ):
 
             Purpose:
             --------
-			returns a string reprentation of the object
+			Method returns a list of strings representing members
 
             Parameters:
             ----------
@@ -2523,7 +2577,7 @@ class Embedding( AI ):
 
             Returns:
             ---------
-			str | None
+			List[ str ] | None
 
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
@@ -2554,7 +2608,7 @@ class TTS( AI ):
 		
 		Attributes
 		-----------
-		self.api_key, self.system_instructions, self.client, self.small_model,  self.reasoning_effort,
+		self.api_key, self.system_instructions, self.client, self.small_model, self.reasoning_effort,
 		self.response, self.num, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
@@ -2566,7 +2620,6 @@ class TTS( AI ):
 		------------
 		get_model_options( self ) -> str
 		create_small_embedding( self, prompt: str, path: str )
-		
 	
 	"""
 	
@@ -2574,7 +2627,11 @@ class TTS( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		'''
+
+			Purpose:
+			--------
 			Constructor to  create_small_embedding TTS objects
+
 		'''
 		super( ).__init__( )
 		self.client = OpenAI( )
@@ -2598,7 +2655,9 @@ class TTS( AI ):
 	
 	def get_model_options( self ) -> str:
 		'''
-		
+
+			Purpose:
+			--------
 			Methods that returns a list of small_model names
 		
 		'''
@@ -2611,7 +2670,9 @@ class TTS( AI ):
 	
 	def get_voice_options( self ):
 		'''
-		
+
+			Purpose:
+			--------
 			Method that returns a list of voice names
 		
 		'''
@@ -2622,7 +2683,9 @@ class TTS( AI ):
 	
 	def get_format_options( self ):
 		'''
-		
+
+			Purpose:
+			--------
 			Method that returns a list of image formats
 		
 		'''
@@ -2672,6 +2735,8 @@ class TTS( AI ):
 	def get_data( self ) -> Dict[ str, str ]:
 		'''
 
+			Purpose:
+			--------
 			Returns: dict[ str ] of members
 
 		'''
@@ -2687,7 +2752,11 @@ class TTS( AI ):
 	
 	def dump( self ) -> str:
 		'''
+
+			Purpose:
+			--------
 			Returns: dict of members
+
 		'''
 		new = '\r\n'
 		return 'num' + f' = {self.number}' + new + \
@@ -2706,7 +2775,7 @@ class TTS( AI ):
 
             Purpose:
             --------
-			returns a string reprentation of the object
+			Method returns a list of strings representing members
 
             Parameters:
             ----------
@@ -2714,7 +2783,7 @@ class TTS( AI ):
 
             Returns:
             ---------
-			str | None
+			List[ str ] | None
 
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
@@ -2747,7 +2816,7 @@ class Transcription( AI ):
 		
 		Attributes
 		-----------
-		self.api_key, self.system_instructions, self.client, self.small_model,  self.reasoning_effort,
+		self.api_key, self.system_instructions, self.client, self.small_model, self.reasoning_effort,
 		self.response, self.num, self.temperature, self.top_percent,
 		self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 		self.store, self.stream, self.modalities, self.stops, self.content,
@@ -2788,6 +2857,8 @@ class Transcription( AI ):
 	def get_model_options( self ) -> str:
 		'''
 
+			Purpose:
+			--------
 			Methods that returns a list of small_model names
 
 		'''
@@ -2838,6 +2909,8 @@ class Transcription( AI ):
 	def get_data( self ) -> dict:
 		'''
 
+			Purpose:
+			--------
 			Returns: dict[ str ] of members
 
 		'''
@@ -2872,7 +2945,7 @@ class Transcription( AI ):
 
             Purpose:
             --------
-			returns a string reprentation of the object
+			Method returns a list of strings representing members
 
             Parameters:
             ----------
@@ -2880,7 +2953,7 @@ class Transcription( AI ):
 
             Returns:
             ---------
-			str | None
+			List[ str ] | None
 
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
@@ -2924,8 +2997,7 @@ class Translation( AI ):
 		Methods
 		------------
 		create_small_embedding( self, prompt: str, path: str )
-		
-	
+
 	"""
 	
 	
@@ -2953,6 +3025,8 @@ class Translation( AI ):
 	def get_model_options( self ) -> str:
 		'''
 
+			Purpose:
+			--------
 			Methods that returns a list of small_model names
 
 		'''
@@ -2963,7 +3037,9 @@ class Translation( AI ):
 	
 	def get_voice_options( self ):
 		'''
-		
+
+			Purpose:
+			--------
 			Method that returns a list of voice names
 		
 		'''
@@ -3012,6 +3088,8 @@ class Translation( AI ):
 	def get_data( self ) -> dict:
 		'''
 
+			Purpose:
+			--------
 			Returns: dict[ str ] of members
 
 		'''
@@ -3048,7 +3126,7 @@ class Translation( AI ):
 
             Purpose:
             --------
-			returns a string reprentation of the object
+			Method returns a list of strings representing members
 
             Parameters:
             ----------
@@ -3056,7 +3134,7 @@ class Translation( AI ):
 
             Returns:
             ---------
-			str | None
+			List[ str ] | None
 
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
@@ -3073,8 +3151,7 @@ class LargeImage( AI ):
 
 		Purpose
 		___________
-		Class used for generating images OpenAI's
-		Images API and dall-e-3
+		Class used for generating images OpenAI's Images API and dall-e-3
 
 
 		Parameters
@@ -3166,6 +3243,8 @@ class LargeImage( AI ):
 	def analyze( self, input: str, path: str ) -> str:
 		'''
 
+			Purpose:
+			--------
 			Method providing image analysis functionality given a prompt and path
 
 		'''
@@ -3211,6 +3290,8 @@ class LargeImage( AI ):
 	def get_model_options( self ) -> List[ str ]:
 		'''
 
+			Purpose:
+			--------
 			Methods that returns a list of small_model names
 
 		'''
@@ -3222,6 +3303,8 @@ class LargeImage( AI ):
 	def get_format_options( self ) -> list[ str ]:
 		'''
 
+			Purpose:
+			--------
 			Method that returns a  list of format options
 
 		'''
@@ -3232,6 +3315,8 @@ class LargeImage( AI ):
 	def get_detail_options( self ) -> list[ str ]:
 		'''
 
+			Purpose:
+			--------
 			Method that returns a  list of reasoning effort options
 
 		'''
@@ -3241,6 +3326,8 @@ class LargeImage( AI ):
 	def get_size_options( self ) -> list[ str ]:
 		'''
 
+			Purpose:
+			--------
 			Method that returns a  list of sizes
 
 		'''
@@ -3254,7 +3341,7 @@ class LargeImage( AI ):
 
             Purpose:
             --------
-			returns a string reprentation of the object
+			Method returns a list of strings representing members
 
             Parameters:
             ----------
@@ -3262,7 +3349,7 @@ class LargeImage( AI ):
 
             Returns:
             ---------
-			str | None
+			List[ str ] | None
 
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
@@ -3278,8 +3365,7 @@ class Image( AI ):
 
 		Purpose
 		___________
-		Class used for generating images OpenAI's
-		Images API and dall-e-2
+		Class used for generating images OpenAI's Images API and dall-e-2
 
 
 		Parameters
@@ -3434,6 +3520,15 @@ class Image( AI ):
 
 			Method providing image analysis functionality given a prompt and path
 
+			Parameters:
+			----------
+			input: str
+			path: str
+
+			Returns:
+			--------
+			str | None
+
 		'''
 		try:
 			if input is None:
@@ -3479,8 +3574,6 @@ class Image( AI ):
 			_______
 			Method that analyzeses an image given a path prompt,
 
-
-
 			Parameters
 			----------
 			prompt: str
@@ -3518,7 +3611,7 @@ class Image( AI ):
 
             Purpose:
             --------
-			returns a string reprentation of the object
+			Method returns a list of strings representing members
 
             Parameters:
             ----------
@@ -3526,7 +3619,7 @@ class Image( AI ):
 
             Returns:
             ---------
-			str | None
+			List[ str ] | None
 
 		'''
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',

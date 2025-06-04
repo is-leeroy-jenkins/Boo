@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="bro.py" company="Terry D. Eppler">
 
-	     Boo is a data analysis tool integrating GenAI, Text Processing, and Machine-Learning
+	     Boo is a df analysis tool integrating GenAI, Text Processing, and Machine-Learning
 	     algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
@@ -376,7 +376,7 @@ class GptResponse( ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'small_model', 'created', 'data' ]
+		return [ 'id', 'object', 'small_model', 'created', 'df' ]
 
 
 class CompletionResponse( GptResponse ):
@@ -402,7 +402,7 @@ class CompletionResponse( GptResponse ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'small_model', 'created', 'data' ]
+		return [ 'id', 'object', 'small_model', 'created', 'df' ]
 
 
 class TextResponse( GptResponse ):
@@ -428,7 +428,7 @@ class TextResponse( GptResponse ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'small_model', 'created', 'data' ]
+		return [ 'id', 'object', 'small_model', 'created', 'df' ]
 
 
 class EmbeddingResponse( GptResponse ):
@@ -454,7 +454,7 @@ class EmbeddingResponse( GptResponse ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'small_model', 'created', 'data' ]
+		return [ 'id', 'object', 'small_model', 'created', 'df' ]
 
 
 class FineTuningResponse( GptResponse ):
@@ -480,7 +480,7 @@ class FineTuningResponse( GptResponse ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'small_model', 'created', 'data' ]
+		return [ 'id', 'object', 'small_model', 'created', 'df' ]
 
 
 class VectorResponse( GptResponse ):
@@ -506,7 +506,7 @@ class VectorResponse( GptResponse ):
 			Methods that returns a get_list of member names
 			Returns: get_list[ str ]
 		'''
-		return [ 'id', 'object', 'small_model', 'created', 'data' ]
+		return [ 'id', 'object', 'small_model', 'created', 'df' ]
 
 
 class FileResponse( GptResponse ):

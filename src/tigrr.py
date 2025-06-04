@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="tigrr.py" company="Terry D. Eppler">
 
-	     Boo is a data analysis tool that integrates various Generative AI, Text-Processing, and
+	     Boo is a df analysis tool that integrates various Generative AI, Text-Processing, and
 	     Machine-Learning algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
@@ -44,11 +44,14 @@
   '''
 import os
 from collections import defaultdict
+from docx import Document as Docx
 import re
 import json
 import pandas as pd
 import numpy as np
 from bs4 import BeautifulSoup
+from openai import OpenAI
+
 from boogr import Error, ErrorDialog
 from pathlib import Path
 import nltk
@@ -68,6 +71,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from pydantic import BaseModel, Field, validator
 from pymupdf import Page, Document
 import tiktoken
+from tiktoken.core import  Encoding
 from gensim.models import Word2Vec
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 import textwrap as tr
@@ -87,7 +91,7 @@ except LookupError:
 	nltk.download( 'words' )
 
 
-class Text:
+class Text( BaseModel ):
 	'''
 	
 		Purpose:
@@ -126,8 +130,24 @@ class Text:
 	    create_tfidf( tokens: List[ str ], max_features=1000, prep=True ) -> tuple
 	    
 	'''
-	
-	
+	lemmatizer: WordNetLemmatizer
+	stemmer: PorterStemmer
+	words: Optional[ List[ str ] ]
+	tokens: Optional[ List[ str ] ]
+	lines: Optional[ List[ str ] ]
+	pages: Optional[ List[ str ] ]
+	paragraphs: Optional[ List[ str ] ]
+	chunck: Optional[ List[ str ] ]
+	cleaned_lines: Optional[ List[ str ] ]
+	cleaned_tokens: Optional[ List[ str ] ]
+	cleaned_pages: Optional[ List[ str ] ]
+	removed: Optional[ List[ str ] ]
+	raw_pages: Optional[ List[ str ] ]
+	stop_words: Optional[ List[ str ] ]
+	frequency_distribution: Optional[ Dict[ str, float ] ]
+	conditional_distribution: Optional[ Dict[ str, float ] ]
+
+
 	def __init__( self ):
 		'''
 
@@ -136,19 +156,20 @@ class Text:
 			Constructor for 'Text' objects
 
 		'''
+		super( ).__init__( )
 		self.lemmatizer = WordNetLemmatizer( )
 		self.stemmer = PorterStemmer( )
-		self.words = List[ str ]
-		self.tokens = List[ str ]
-		self.lines = List[ str ]
-		self.pages = List[ str ]
-		self.ids = List[ int ]
-		self.paragraphs = List[ str ]
-		self.chunks = List[ str ]
+		self.words = [ ]
+		self.tokens = [ ]
+		self.lines = [ ]
+		self.pages = [ ]
+		self.ids = [ ]
+		self.paragraphs = [ ]
+		self.chunks = [ ]
 		self.chunk_size = 0
-		self.cleaned_lines = List[ str ]
-		self.cleaned_tokens = List[ str ]
-		self.cleaned_pages = List[ str ]
+		self.cleaned_lines = [ ]
+		self.cleaned_tokens = [ ]
+		self.cleaned_pages = [ ]
 		self.removed = List[ str ]
 		self.raw_pages = List[ str ]
 		self.stop_words = List[ str ]
@@ -188,7 +209,7 @@ class Text:
 		'''
 		return [ 'file_path', 'raw_input', 'raw_pages', 'normalized', 'lemmatized',
 		         'tokenized', 'corrected', 'cleaned_text', 'words', 'paragraphs',
-		         'tokens', 'tokens', 'pages', 'chunks', 'chunk_size', 'cleaned_pages',
+		         'tokens', 'pages', 'chunks', 'chunk_size', 'cleaned_pages',
 		         'stop_words', 'cleaned_lines', 'removed', 'lowercase', 'encoding', 'vocabulary',
 		         'translator', 'lemmatizer', 'stemmer', 'tokenizer', 'vectorizer',
 		         'load_text', 'split_lines', 'split_pages', 'collapse_whitespace',
@@ -197,7 +218,7 @@ class Text:
 		         'normalize_text', 'lemmatize', 'tokenize_text', 'tokenize_words',
 		         'tokenize_sentences', 'chunk_text', 'chunk_words',
 		         'create_wordbag', 'create_word2vec', 'create_tfidf',
-		         'clean_files', 'convert_jsonl' ]
+		         'clean_files', 'convert_jsonl', 'conditional_distribution' ]
 	
 	
 	def load_text( self, path: str ) -> str:
@@ -721,30 +742,6 @@ class Text:
 			error.show( )
 	
 	
-	def get_wordnet_pos( self, tag: str ) -> Any | None:
-		if tag is None:
-			raise Exception( 'The argument "tag" is required.' )
-		else:
-			try:
-				if tag.startswith( 'J' ):
-					return wordnet.ADJ
-				elif tag.startswith( 'V' ):
-					return wordnet.VERB
-				elif tag.startswith( 'N' ):
-					return wordnet.NOUN
-				elif tag.startswith( 'R' ):
-					return wordnet.ADV
-				else:
-					return wordnet.NOUN
-			except Exception as e:
-				exception = Error( e )
-				exception.module = 'Tiggr'
-				exception.cause = 'Text'
-				exception.method = 'normalize_text( self, path: str ) -> str'
-				error = ErrorDialog( exception )
-				error.show( )
-	
-	
 	def lemmatize_tokens( self, tokens: List[ str ] ) -> List[ str ]:
 		"""
 	
@@ -822,7 +819,7 @@ class Text:
 			error.show( )
 	
 	
-	def tiktokenize( self, text: str, model: str='cl100k_base' ) -> List[ str ]:
+	def tiktokenize( self, text: str, encoding: str='cl100k_base' ) -> List[ str ]:
 		"""
 
 			Purpose:
@@ -851,7 +848,7 @@ class Text:
 			if text is None:
 				raise Exception( 'The argument "text" was None' )
 			else:
-				self.encoding = tiktoken.get_encoding( model )
+				self.encoding = tiktoken.get_encoding( encoding )
 				_token_ids = self.encoding.encode( text )
 				self.tokens = nltk.word_tokenize( text )
 				self.words = [ w for w in self.tokens ]
@@ -862,7 +859,7 @@ class Text:
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'Text'
-			exception.method = 'tokenize_text( self, path: str ) -> List[ str ]'
+			exception.method = 'tiktokenize( self, text: str, encoding: str="cl100k_base" ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1382,15 +1379,13 @@ class Text:
 					self.cleaned_lines.append( cleaned_text )
 				self.vectorizer = TfidfVectorizer( max_features=max, stop_words='english' )
 				_matrix = self.vectorizer.fit_transform( self.cleaned_lines )
-				return (_matrix, self.vectorizer.get_feature_names_out( ).tolist( ),
-				        self.vectorizer)
+				return tuple( _matrix, self.vectorizer.get_feature_names_out( ).tolist( ), self.vectorizer )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'Text'
 			exception.method = ('create_tfidf( self, tokens: list, max: int=1000, prep: bool=True ) '
-			               '-> '
-			               'Tuple')
+			               '-> Tuple' )
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1519,7 +1514,7 @@ class Word( BaseModel ):
         --------
         split_sentences( self ) -> None
         clean_sentences( self ) -> None
-        compute_vocabulary( self ) -> None
+        create_vocabulary( self ) -> None
         compute_frequency_distribution( self ) -> None
         summarize( self ) -> None:
 
@@ -1551,6 +1546,7 @@ class Word( BaseModel ):
             :param filepath: Path to the Microsoft Word document (.docx)
 
         """
+        super( ).__init__( )
         self.filepath = filepath
         self.raw_text = ''
         self.paragraphs = [ ]
@@ -1560,8 +1556,8 @@ class Word( BaseModel ):
         self.freq_dist = { }
 
 
-	def __dir__( self ) -> List[ str ] | None:
-		'''
+    def __dir__( self ) -> List[ str ]:
+        '''
 
 			Purpose:
 			---------
@@ -1577,10 +1573,10 @@ class Word( BaseModel ):
 			- List[ str ] | None
 
 		'''
-		return [ 'extract_text', 'split_sentences', 'clean_sentences',
-		         'compute_vocabulary', 'compute_frequency_distribution',
-		         'summarize', 'filepath', 'raw_text', 'paragraphs', 'sentences'
-		         'cleaned_sentences', 'vocabulary', 'freq_dist' ]
+        return [ 'extract_text', 'split_sentences', 'clean_sentences',
+                 'create_vocabulary', 'compute_frequency_distribution',
+                 'summarize', 'filepath', 'raw_text', 'paragraphs',
+                 'sentences', 'cleaned_sentences', 'vocabulary', 'freq_dist' ]
 
 
     def extract_text( self ) -> None:
@@ -1591,7 +1587,7 @@ class Word( BaseModel ):
             Extracts raw text and paragraphs from the .docx file.
 
         """
-        document = Document( self.filepath )
+        document = Docx( self.filepath )
         self.paragraphs = [ para.text.strip( ) for para in document.paragraphs if para.text.strip( ) ]
         self.raw_text = '\n'.join( self.paragraphs )
 
@@ -1639,7 +1635,7 @@ class Word( BaseModel ):
 	        error.show( )
 
 
-    def compute_vocabulary( self ) -> None:
+    def create_vocabulary( self ) -> None:
         """
 
             Purpose:
@@ -1704,7 +1700,7 @@ class Word( BaseModel ):
         print( f'Top 10 Frequent Words: { Counter( self.freq_dist ).most_common(10)}' )
 
 	
-class PDF( ):
+class PDF( BaseModel ):
 	"""
 
 		Purpose:
@@ -1740,6 +1736,7 @@ class PDF( ):
 			grouping.
 
 		"""
+		super( ).__init__( )
 		self.strip_headers = headers
 		self.minimum_length = min
 		self.extract_tables = tables
@@ -1989,9 +1986,9 @@ class PDF( ):
 						if max is not None and i >= max:
 							break
 						_blocks = page.find_tables( )
-						for _tb in _blocks.tables:
-							_df = pd.DataFrame( _tb.extract( ) )
-							self.tables.append( _df )
+						for _tables in _blocks.tables:
+							_dataframe = pd.DataFrame( _tables.extract( ) )
+							self.tables.append( _dataframe )
 				return self.tables
 		except Exception as e:
 			exception = Error( e )
@@ -2100,7 +2097,7 @@ class PDF( ):
 			error.show( )
 
 
-class Token( ):
+class Token( BaseModel ):
 	'''
 	
 	
@@ -2123,8 +2120,17 @@ class Token( ):
 	    load_tokenizer( self, path: str ) -> None
 	
 	'''
-	
-	
+	encoding: Optional[ Encoding ]
+	model_name: Optional[ str ]
+	raw_input: Optional[ str ]
+	tokenizer: Optional[ object ]
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+
 	def __init__( self ):
 		'''
 		
@@ -2137,13 +2143,37 @@ class Token( ):
 	            model_name (str): The name of the pre-trained small_model (e.g.,
 	            "bert-base-uncased").
         '''
+		super( ).__init__( )
 		self.model_name = 'google-bert/bert-base-uncased'
 		self.tokenizer = AutoTokenizer.from_pretrained( self.model_name, trust_remote_code=True )
 		self.raw_input = None
 		self.encoding = None
-	
-	
-	def tiktoken_count( self, text: str, encoding: Optional[ str ]  ) -> int:
+
+
+	def __dir__( self ) -> List[ str ] | None:
+		'''
+
+			Purpose:
+			---------
+			Provides a list of strings representing class members.
+
+
+			Parameters:
+			-----------
+			- self
+
+			Returns:
+			--------
+			- List[ str ] | None
+
+		'''
+		return [ 'raw_input', 'encoding', 'tokenizer', 'model_name',
+		         'tiktoken_count', 'get_vocab', 'load_tokenizer',
+		         'save_tokenizer', 'encode', 'batch_encode', 'convert_tokens',
+		         'convert_ids', 'decode' ]
+
+
+	def tiktoken_count( self, text: str, encoding: str='cl100k_base' ) -> int:
 		"""
 		
 			Purpose:
@@ -2421,24 +2451,47 @@ class Token( ):
 			error.show( )
 
 
-class Vector( ):
+class VectorStore( BaseModel ):
 	"""
 
 		Purpose:
 		---------
 		A class for generating OpenAI vectors, performing normalization, computing similarity,
-		and interacting with OpenAI Vector Stores via the OpenAI API. Includes local
+		and interacting with OpenAI VectorStore Stores via the OpenAI API. Includes local
 		export/import, vector diagnostics, and bulk querying functionality.
 
 	"""
-	
+	small_model: str
+	large_model: str
+	ada_model: str
+	tables: Optional[ List[ pd.DataFrame ] ]
+	vectors: Optional[ List[ List[ float ] ] ]
+	array: Optional[ List[ float ] ]
+	batches: List[ List[ str ] ]
+	vector_stores: Dict[ str, str ]
+	store_ids: List[ str ]
+	file_ids: List[ str ]
+	tokens: List[ str ]
+	files: List[ str ]
+	raw_text: Optional[ str ]
+	file_path: Optional[ str ]
+	file_name: Optional[ str ]
+	file_ids: Optional[ str ]
+	directory: Optional[ str ]
+	id: Optional[ str ]
+	response: Optional[ object ]
+	dataframe: List[ pd.DataFram ]
+	client: OpenAI
+	cache: Optional[ Dict ]
+	stats: Optional[ Dict ]
+	results: Optional[ Dict ]
 	
 	def __init__( self ):
 		"""
 
 			Purpose:
 			---------
-			Initialize the Vector object with
+			Initialize the VectorStore object with
 			OpenAI API credentials and embedding small_model.
 
 			Parameters:
@@ -2447,31 +2500,32 @@ class Vector( ):
 			- small_model (str): OpenAI embedding small_model to use
 
 		"""
-		self.small_model = 'path-embedding-3-small'
-		self.large_model = 'path-embedding-3-large'
-		self.ada_model = 'path-embedding-ada-002'
+		super( ).__init__( )
+		self.small_model = 'text-embedding-3-small'
+		self.large_model = 'text-embedding-3-large'
+		self.ada_model = 'text-embedding-ada-002'
 		self.client = OpenAI( )
+		self.cache = { }
+		self.results = { }
+		self.stats = { }
+		self.data = { }
+		self.vector_stores = { }
+		self.store_ids = [ ]
+		self.file_ids = [ ]
+		self.files = [ ]
+		self.tokens = [ ]
+		self.array = [ ]
+		self.vectors = [ [ ] ]
+		self.batches = [ [ ] ]
+		self.tables = [ ]
 		self.raw_text = None
 		self.file_path = None
 		self.file_name = None
 		self.file_ids = None
 		self.directory = None
-		self.cache = { }
-		self.results = { }
-		self.stats = { }
-		self.data = { }
 		self.id = None
 		self.response = None
 		self.dataframe = None
-		self.vector_stores = [ str ]
-		self.store_ids = [ ]
-		self.file_ids = [ ]
-		self.files = [ str ]
-		self.tokens = List[ str ]
-		self.array = List[ float ]
-		self.vectors = List[ List[ float ] ]
-		self.batches = List[ List[ str ] ]
-		self.tables = List[ pd.DataFrame ]
 	
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -2495,7 +2549,7 @@ class Vector( ):
 		         'id', 'files', 'tokens', 'array', 'store_ids',
 		         'client', 'cache', 'results', 'directory', 'stats',
 		         'response', 'vectorstores','file_ids',
-		         'data', 'batches', 'tables', 'vectors',
+		         'df', 'batches', 'tables', 'vectors',
 		         'create_small_embedding', 'dataframe',
 		         'most_similar', 'bulk_similar', 'similarity_heatmap',
 		         'export_jsonl', 'import_jsonl', 'create_vector_store',
@@ -2536,7 +2590,7 @@ class Vector( ):
 				for index, batch in enumerate( self.batches ):
 					for attempt in range( max ):
 						try:
-							self.response = self.client.embeddings.create_audio( input=batch,
+							self.response = self.client.embeddings.create( input=batch,
 								model=self.small_model )
 							_vectors = [ record.embedding for record in self.response.data ]
 							self.vectors.extend( _vectors )
@@ -2550,17 +2604,17 @@ class Vector( ):
 				_embeddings = np.array( self.array )
 				_normed = self._normalize( _embeddings )
 				self.data = \
-					{
-						'pages': tokens,
-						'embedding': list( _embeddings ),
-						'normed_embedding': list( _normed )
-					}
+				{
+					'pages': tokens,
+					'embedding': list( _embeddings ),
+					'normed_embedding': list( _normed )
+				}
 				
 				return pd.DataFrame( self.data )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = (
 				'create_small_embedding( self, tokens: List[ str ], batch: int=10, max: int=3, '
 				'time: float=2.0 ) -> pd.DataFrame')
@@ -2595,8 +2649,8 @@ class Vector( ):
 				return [ texts[ i:i + size ] for i in range( 0, len( texts ), size ) ]
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = (' _batch_chunks( self, tokens: List[ str ], size: int ) -> [ List[ str '
 			               '] ]')
 			error = ErrorDialog( exception )
@@ -2693,8 +2747,8 @@ class Vector( ):
 				return self.array / np.clip( _norms, 1e-10, None )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = '_normalize( self, vector: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2729,8 +2783,8 @@ class Vector( ):
 				return np.dot( _matrix, _query )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = (
 				'_cosine_similarity_matrix( self, vector: np.ndarray, matrix: np.ndarray '
 				') -> np.ndarray' )
@@ -2772,8 +2826,8 @@ class Vector( ):
 				return _copy.sort_values( 'similarity', ascending=False ).head( top )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = ('most_similar( self, query: str, df: pd.DataFrame, top: int = 5 ) '
 			               '-> '
 			               'pd.DataFrame')
@@ -2811,8 +2865,8 @@ class Vector( ):
 				return self.results
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = ('bulk_similar( self, queries: List[ str ], df: pd.DataFrame, '
 			               'top: int = 5 ) -> { }')
 			error = ErrorDialog( exception )
@@ -2846,8 +2900,8 @@ class Vector( ):
 					columns=self.dataframe[ 'pages' ] )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = 'similarity_heatmap( self, df: pd.DataFrame ) -> pd.DataFrame'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2882,8 +2936,8 @@ class Vector( ):
 						f.write( json.dumps( _record ) + '\n' )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = 'export_jsonl( self, df: pd.DataFrame, path: str ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2927,8 +2981,8 @@ class Vector( ):
 				return pd.DataFrame( self.data )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = 'import_jsonl( self, path: str ) -> pd.DataFrame'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2959,8 +3013,8 @@ class Vector( ):
 				return self.response[ 'id' ]
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = 'create_vector_store( self, name: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2981,11 +3035,11 @@ class Vector( ):
 		try:
 			self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 			self.response = self.client.beta.vectorstores.list( )
-			return [ item[ 'id' ] for item in self.response.get( 'data', [ ] ) ]
+			return [ item[ 'id' ] for item in self.response.get( 'df', [ ] ) ]
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = 'list_vector_stores( self ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3022,8 +3076,8 @@ class Vector( ):
 					documents=documents )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = 'upload_vector_store( self, df: pd.DataFrame, ids: str ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3059,13 +3113,13 @@ class Vector( ):
 					query=query,
 					top_k=top )
 				return [
-					{ 'pages': result[ 'document' ], 'score': result[ 'score' ] }
-					for result in self.response.get( 'data', [ ] )
+					{ 'pages': result[ 'document' ], 'accuracy': result[ 'accuracy' ] }
+					for result in self.response.get( 'df', [ ] )
 				]
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = ('query_vector_store( self, id: str, query: str, top: int = 5 ) -> '
 			               'List[ '
 			               'dict ]')
@@ -3098,8 +3152,8 @@ class Vector( ):
 					document_ids=self.file_ids )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = 'delete_vector_store( self, storeid: str, ids: List[ str ] ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3137,8 +3191,8 @@ class Vector( ):
 				return { 'file': self.file_name, 'status': 'success' }
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = 'upload_document( self, path: str, id: str ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3200,41 +3254,74 @@ class Vector( ):
 				return self.stats
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
-			exception.cause = 'Vector'
+			exception.module = 'Tigrr'
+			exception.cause = 'VectorStore'
 			exception.method = 'upload_documents( self, path: str, id: str ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class Embedding( ):
+class Embedding( BaseModel ):
 	'''
 
 		Purpose:
 		--------
 		Class providing Feature Extraction functionality
+		
+		Methods:
+		--------
+		create_small_embedding( self, text: str ) -> List[ float ]
+		create_small_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]
+		create_large_embedding( self, text: str ) -> List[ float ]
+		create_large_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]
+		create_ada_embedding( self, text: str ) -> List[ float ]
+		create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]
+		create_small_async( self, text: str ) -> List[ float ]
+		create_large_async( self, text: str ) -> List[ float ]
+		create_ada_async( self, text: str ) -> List[ float ]
+		calculate_cosine_similarity( self, a: List[ float ], b: List[ float ] )
+		plot_multiclass_precision( self, y_score, y_original, classes, classifier )
+		calculate_distances( self, query: List[ float ], embd: List[ List[ float ] ],
+	                         metric='cosine' ) -> List[ List[ float ] ]
+	    calculate_nearest_neighbor( self, distances: List[ float ] ) -> np.ndarray
+	    create_pca_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray
+	    create_tsne_components( self, vectors: List[ List[ float ] ], num=2 ) -> np.ndarray
+	    
 
 	'''
+	client: OpenAI
+	small_model: str
+	large_model: str
+	ada_model: str
+	tokens: Optional[ List[ str ] ]
+	lines: Optional[ List[ str ] ]
+	labels: Optional[ List[ str ] ]
+	distances: Optional[ List[ float ] ]
+	distance_metrics: Optional[ List[ float ] ]
+	data: Optional[ List[ float ] ]
+	precision: Optional[ Dict ]
+	average_precision: Optionl[ Dict ]
 	
 	
 	def __init__( self ):
+		super( ).__init__( )
 		self.client = OpenAI( )
-		self.small_model = 'path-embedding-3-small'
-		self.large_model = 'path-embedding-3-large'
-		self.ada_model = 'path-embedding-3-ada'
-		self.response = None
-		self.raw_input = None
-		self.tokens = [ str ]
-		self.lines = [ str ]
-		self.labels = [ str ]
-		self.distances = [ float ]
-		self.distance_metrics = [ float ]
-		self.n_classes = None
-		self.data = [ float ]
+		self.small_model = 'text-embedding-3-small'
+		self.large_model = 'text-embedding-3-large'
+		self.ada_model = 'text-embedding-ada-002'
+		self.tokens = [ ]
+		self.lines = [ ]
+		self.labels = [ ]
+		self.distances = [ ]
+		self.distance_metrics = [ ]
+		self.data = [ ]
 		self.precision = { }
 		self.aeverage_precision = { }
 		self.recall = None
 		self.dataframe = None
+		self.n_classes = None
+		self.response = None
+		self.raw_input = None
 	
 	
 	def create_small_embedding( self, text: str ) -> List[ float ]:
@@ -3265,7 +3352,7 @@ class Embedding( ):
 				return self.response.data[ 0 ].embedding
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = 'create_small_embedding( self, path: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
@@ -3335,7 +3422,7 @@ class Embedding( ):
 				return self.response.data[ 0 ].embedding
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = 'create_large_embedding( self, path: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
@@ -3369,7 +3456,7 @@ class Embedding( ):
 				return [ d.embedding for d in self.data ]
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = ('create_large_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
 			               'float ] ]')
@@ -3405,7 +3492,7 @@ class Embedding( ):
 				return self.response.data[ 0 ].embedding
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = 'create_ada_embedding( self, path: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
@@ -3439,7 +3526,7 @@ class Embedding( ):
 				return [ d.embedding for d in self.data ]
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = ('create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
 			               'float'
@@ -3474,10 +3561,10 @@ class Embedding( ):
 				return (
 					await self.client.embeddings.create_audio( input=[ self.raw_input ],
 						model=self.small_model ))
-				[ 'data' ][ 0 ][ 'embedding' ]
+				[ 'df' ][ 0 ][ 'embedding' ]
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = 'ccreate_small_async( self, path: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
@@ -3508,10 +3595,10 @@ class Embedding( ):
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )				
 				return (
 					await self.client.embeddings.create_audio( input=[ self.raw_input ],
-						model=self.large_model ))[ 'data' ][ 0 ][ 'embedding' ]
+						model=self.large_model ))[ 'df' ][ 0 ][ 'embedding' ]
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = 'create_large_async( self, path: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
@@ -3544,10 +3631,10 @@ class Embedding( ):
 				return (
 					await self.client.embeddings.create_audio( input=[ self.raw_input ],
 						model=self.ada_model ))
-				[ 'data' ][ 0 ][ 'embedding' ]
+				[ 'df' ][ 0 ][ 'embedding' ]
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = 'create_ada_async( self, path: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
@@ -3621,7 +3708,7 @@ class Embedding( ):
 				y_score.ravel( ) )
 			self.average_precision = average_precision_score( y_true, y_score, average='micro' )
 			print( str( classifier )
-			       + ' - Average precision score over all classes: {0:0.2f}'.format(
+			       + ' - Average precision accuracy over all classes: {0:0.2f}'.format(
 				self.average_precision
 			)
 			       )
@@ -3661,7 +3748,7 @@ class Embedding( ):
 			plt.legend( self.lines, self.labels )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = ('plot_multiclass_precision( self, y_score, y_original, classes, '
 			               'classifier )')
@@ -3705,7 +3792,7 @@ class Embedding( ):
 				return self.distances
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = ('calculate_distances( self, query: List[ float ], embd: '
 			               'List[ List[ float ] ],  metric=')
@@ -3724,7 +3811,7 @@ class Embedding( ):
 			return np.argsort( self.distances )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = ('calculate_nearest_neighbor( self, distances: List[ float ] ) -> '
 			               'np.ndarray')
@@ -3737,7 +3824,7 @@ class Embedding( ):
 
 			Purpose:
 			--------
-			Return the PCA data of a list of vectors.
+			Return the PCA df of a list of vectors.
 
 		"""
 		try:
@@ -3747,7 +3834,7 @@ class Embedding( ):
 			return pca.fit_transform( array_of_embeddings )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = ('create_pca_components( self, vectors: List[ List[ float ] ], '
 			               'num=2 ) ->'
@@ -3780,7 +3867,7 @@ class Embedding( ):
 			return tsne.fit_transform( array_of_embeddings )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
 			exception.method = ('create_tsne_components( self, vectors: List[ List[ float ] ], num=2 ) '
 			               '-> np.ndarray')
@@ -3826,14 +3913,14 @@ class Embedding( ):
 			return chart
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
-			exception.method = "('create_chart( self, data: np.ndarray  mark_size=5 ) -> None')"
+			exception.method = "('create_chart( self, df: np.ndarray  mark_size=5 ) -> None')"
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def creat_3dchart( self,
+	def create_3dchart( self,
 	                   components: np.ndarray,
 	                   labels: Optional[ List[ str ] ]=None,
 	                   strings: Optional[ List[ str ] ]=None,
@@ -3858,15 +3945,15 @@ class Embedding( ):
 		try:
 			empty_list = [ "" for _ in components ]
 			_contents = \
-				{
-					x_title: components[ :, 0 ],
-					y_title: components[ :, 1 ],
-					z_title: components[ :, 2 ],
-					'label': labels if labels else empty_list,
-					'path': [ '<br>'.join( tr.wrap( s, width=30 ) ) for s in strings ]
-					if strings
-					else empty_list,
-				}
+			{
+				x_title: components[ :, 0 ],
+				y_title: components[ :, 1 ],
+				z_title: components[ :, 2 ],
+				'label': labels if labels else empty_list,
+				'path': [ '<br>'.join( tr.wrap( s, width=30 ) ) for s in strings ]
+				if strings
+				else empty_list,
+			}
 			
 			data = pd.DataFrame( _contents )
 			chart = px.scatter_3d(
@@ -3881,8 +3968,8 @@ class Embedding( ):
 			return chart
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'embbr'
+			exception.module = 'Tiggr'
 			exception.cause = 'Embedding'
-			exception.method = 'create_vector_store( self, name: str ) -> str'
+			exception.method = 'create_3dchart'
 			error = ErrorDialog( exception )
 			error.show( )

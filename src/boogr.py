@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="boogr.py" company="Terry D. Eppler">
 
-	     Boo is a data analysis tool integrating GenAI, Text Processing, and Machine-Learning
+	     Boo is a df analysis tool integrating GenAI, Text Processing, and Machine-Learning
 	     algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
@@ -2917,7 +2917,7 @@ class PdfForm( Dark ):
 					while cur_page < 0:  # we show conventional page numbers
 						cur_page += page_count
 					
-					# prevent creating same data again
+					# prevent creating same df again
 					if cur_page != old_page:
 						zoom = old_zoom = 0
 						force_page = True

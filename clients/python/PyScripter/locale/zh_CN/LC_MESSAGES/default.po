@@ -5895,7 +5895,7 @@ msgstr "重新缩进活动文件"
 msgid ""
 "Special thanks to the many great developers who,with their amazing work, "
 "have made PyScripter possible. PyScripter makes use of the following "
-"data and projects:"
+"df and projects:"
 msgstr "特别要感谢许多伟大的开发人员，他们的出色工作，使pyscripter成为可能。pyscripter使用以下组件和项目："
 
 #. Programmer's name for it: SAboutBoxCreditsTranslationArabic

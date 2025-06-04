@@ -6190,7 +6190,7 @@ msgstr ""
 msgid ""
 "Special thanks to the many great developers who,with their amazing work, "
 "have made PyScripter possible. PyScripter makes use of the following "
-"data and projects:"
+"df and projects:"
 msgstr ""
 
 #: dlgAboutPyScripter.pas
