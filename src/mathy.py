@@ -46,6 +46,8 @@ from argparse import ArgumentError
 
 import numpy as np
 from typing import Optional, List, Dict
+
+import sklearn.ensemble
 from sklearn.compose import ColumnTransformer
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.linear_model import (
@@ -65,7 +67,7 @@ from sklearn.metrics import (
 from sklearn.impute import SimpleImputer, KNNImputer
 from sklearn.pipeline import Pipeline
 
-from sklearn.neural_network import MLPRegressor
+from sklearn.neural_network import MLPRegressor, MLPClassifier
 from sklearn.preprocessing import (
 	StandardScaler, MinMaxScaler, RobustScaler, Normalizer,
 	OneHotEncoder, OrdinalEncoder
@@ -100,7 +102,7 @@ class Model( BaseModel ):
 		self.pipeline = None
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 			
 			Purpose:
@@ -450,7 +452,7 @@ class StandardScaler( Metric ):
 		self.standard_scaler = StandardScaler( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
 		"""
 
 
@@ -531,7 +533,7 @@ class MinMaxScaler( Metric ):
 		self.minmax_scaler = MinMaxScaler( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
 		"""
 
 			Purpose:
@@ -611,7 +613,7 @@ class RobustScaler( Metric ):
 		self.robust_scaler = RobustScaler( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
 		"""
 
 
@@ -690,7 +692,7 @@ class Normalizer( Metric ):
 		self.normal_scaler = Normalizer( norm = norm )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
 		"""
 
 
@@ -770,7 +772,7 @@ class OneHotEncoder( Metric ):
 		self.hot_encoder = OneHotEncoder( sparse=False, handle_unknown =unknown )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
 		"""
 
 
@@ -853,7 +855,7 @@ class OrdinalEncoder( Metric ):
 		self.ordinal_encoder = OrdinalEncoder( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
 		"""
 
 			Purpose:
@@ -931,7 +933,7 @@ class AverageImputer( Metric ):
 		self.average_imputer = SimpleImputer( strategy=strat )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
 		"""
 
 
@@ -1012,7 +1014,7 @@ class NeighborImputer( Metric ):
 		self.knn_imputer = KNNImputer( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
 		"""
 
 			Purpose:
@@ -1080,7 +1082,7 @@ class PerceptronClassifier( Model ):
 
 			Purpose:
 			---------
-		PerceptronClassifier classifier.
+			PerceptronClassifier classifier.
 
 	"""
 
@@ -1092,12 +1094,11 @@ class PerceptronClassifier( Model ):
 			---------
 			Initialize the PerceptronClassifier linerar_model.
 
-			Attributes:
-			-----------
-				linerar_model (Perceptron): Internal linear binary classifier.
-					Parameters:
-						max_iter (int): Maximum number of iterations.
-						Default is 1000.
+
+			Parameters:
+			----------
+			max_iter (int): Maximum number of iterations.
+			Default is 1000.
 
 		"""
 		super( ).__init__( )
@@ -1111,22 +1112,21 @@ class PerceptronClassifier( Model ):
 		self.median_absolute_error: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
 			---------
-			Fit the
-			PerceptronClassifier linerar_model.
+			Fit the PerceptronClassifier linerar_model.
 
 			Parameters:
 			---------
-				X (pd.DataFrame): Feature matrix.
-				y (np.ndarray): Binary class labels.
+			X (pd.DataFrame): Feature matrix.
+			y (np.ndarray): Binary class labels.
 
 			Returns:
 			--------
-				Pipeline
+			object | None
 
 		"""
 		try:
@@ -1155,11 +1155,11 @@ class PerceptronClassifier( Model ):
 
 			Parameters:
 			---------
-				X (pd.DataFrame): Feature matrix.
+			X (pd.DataFrame): Feature matrix.
 
 			Returns:
 			---------
-				np.ndarray: Predicted binary labels.
+			np.ndarray: Predicted binary labels.
 
 		"""
 		try:
@@ -1301,27 +1301,45 @@ class PerceptronClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestClassifier'
+			exception.cause = 'RandomClassifier'
 			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
 
-class MultilayerRegressor( Model ):
+class MultilayerClassifier( Model ):
 	"""
 
 		Purpose:
 		-----------
-		Chains multiple preprocessing
-		steps into a pipeline.
+		This model optimizes the squared error using LBFGS or stochastic gradient descent.
+
+		Activation function for the hidden layers:
+			- ‘identity’, no-op activation, useful to implement linear bottleneck, returns f(x) = x
+			- ‘logistic’, the logistic sigmoid function, returns f(x) = 1 / (1 + exp(-x)).
+			- ‘tanh’, the hyperbolic tan function, returns f(x) = tanh(x).
+			- ‘relu’, the rectified linear unit function, returns f(x) = max(0, x)
+
+		The solver for weight optimization:
+			- ‘lbfgs’ is an optimizer in the family of quasi-Newton methods.
+			- ‘sgd’ refers to stochastic gradient descent.
+			- ‘adam’ refers to a stochastic gradient-based optimizer proposed by Kingma and Diederik
 
 	"""
 
 
-	def __init__( self, steps: List[ Tuple[ str, Metric ] ] ) -> None:
+	def __init__( self, hidden: tuple=( 100, ), activation='relu', solver='adam', alpha=0.0001,
+	             learning: str='constant', rando: int=42 ) -> None:
 		super( ).__init__( )
-		self.multilayer_regressor: MLPRegressor=MLPRegressor( )
+		self.hidden_layers = hidden
+		self.activation_function = activation
+		self.learning_rate = learning
+		self.solver = solver
+		self.alpha = alpha
+		self.random_state = rando
+		self.multilayer_classifier: MLPClassifier=MLPClassifier( hidden_layer_sizes=hidden,
+			activation=activ, solver=solver, alpha=alpha, learning_rate=learning, random_state=42 )
 		self.pipeline: Pipeline=Pipeline( steps )
 		self.prediction:  np.array=None
 		self.accuracy: float=0.0
@@ -1333,7 +1351,7 @@ class MultilayerRegressor( Model ):
 		self.median_absolute_error: float=0.0
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> Pipeline:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
 		"""
 
 			Purpose:
@@ -1354,7 +1372,7 @@ class MultilayerRegressor( Model ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.pipeline = self.multilayer_regressor.fit( X, y )
+				self.pipeline = self.multilayer_classifier.fit( X, y )
 				return self.pipeline
 		except Exception as e:
 			exception = Error( e )
@@ -1419,7 +1437,7 @@ class MultilayerRegressor( Model ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.prediction = self.multilayer_regressor.fit_transform( X, y )
+				self.prediction = self.multilayer_classifier.fit_transform( X, y )
 				return self.prediction
 		except Exception as e:
 			exception = Error( e )
@@ -1446,6 +1464,269 @@ class MultilayerRegressor( Model ):
 			Returns:
 			-----------
 				float: R-squared accuracy.
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.multilayer_classifier.predict( X )
+				self.accuracy = r2_score( y, self.prediction )
+				return self.accuracy
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'MultilayerRegressor'
+			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+		"""
+
+			Purpose:
+			-----------
+			Evaluate the model using multiple regression metrics.
+
+
+			Parameters:
+			-----------
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Ground truth target_values.
+
+			Returns:
+			-----------
+				dict: Dictionary of MAE, MSE, RMSE, R², etc.
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average='binary' )
+				self.recall = mean_squared_error( y, self.prediction, average='binary' )
+				self.f1_score = f1_score( y, self.prediction, average='binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
+				return \
+				{
+					'Accuracy': self.accuracy,
+					'Precision': self.precision,
+					'Recall': self.recall,
+					'F1 Score': self.f1_score,
+					'ROC AUC': self.roc_auc_score,
+					'Correlation Coeff': self.correlation_coefficient
+				}
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'MultilayerClassifier'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None:
+		"""
+
+
+			Purpose:
+			-----------
+			Plot confusion matrix for classifier predictions.
+
+			Parameters:
+			---------
+				X (np.ndarray): Input features.
+				y (np.ndarray): True class labels.
+
+			Returns:
+			---------
+				None
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.multilayer_classifier.predict( X )
+				cm = confusion_matrix( y, self.prediction )
+				ConfusionMatrixDisplay( confusion_matrix=cm ).create_graph( )
+				plt.title( 'Random Forest Confusion Matrix' )
+				plt.grid( False )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'MultilayerClassifier'
+			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class MultilayerRegressor( Model ):
+	"""
+
+		Purpose:
+		-----------
+		This model optimizes the squared error using LBFGS or stochastic gradient descent.
+
+		Activation function for the hidden layers:
+			- ‘identity’, no-op activation, useful to implement linear bottleneck, returns f(x) = x
+			- ‘logistic’, the logistic sigmoid function, returns f(x) = 1 / (1 + exp(-x)).
+			- ‘tanh’, the hyperbolic tan function, returns f(x) = tanh(x).
+			- ‘relu’, the rectified linear unit function, returns f(x) = max(0, x)
+
+		The solver for weight optimization:
+			- ‘lbfgs’ is an optimizer in the family of quasi-Newton methods.
+			- ‘sgd’ refers to stochastic gradient descent.
+			- ‘adam’ refers to a stochastic gradient-based optimizer proposed by Kingma and Diederik
+
+	"""
+
+
+	def __init__( self, hidden: tuple=( 100, ), activation='relu', solver='adam', alpha=0.0001,
+	             learning: str='constant', rando: int=42 ) -> None:
+		super( ).__init__( )
+		self.hidden_layers = hidden
+		self.activation_function = activation
+		self.learning_rate = learning
+		self.solver = solver
+		self.alpha = alpha
+		self.random_state = rando
+		self.multilayer_regressor: MLPRegressor=MLPRegressor( hidden_layer_sizes=hidden,
+			activation=activ, solver=solver, alpha=alpha, learning_rate=learning, random_state=42 )
+		self.pipeline: Pipeline=Pipeline( steps )
+		self.prediction:  np.array=None
+		self.accuracy: float=0.0
+		self.mean_absolute_error: float=0.0
+		self.mean_squared_error: float=0.0
+		self.r_mean_squared_error: float=0.0
+		self.r2_score: float=0.0
+		self.explained_variance_score: float=0.0
+		self.median_absolute_error: float=0.0
+
+
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
+		"""
+
+			Purpose:
+			-----------
+			Fits all pipeline steps to the text df.
+
+			Parameters:
+			-----------
+			X (np.ndarray): Input feature matrix.
+			y (Optional[np.ndarray]): Optional target array.
+
+			Returns:
+			--------
+			Pipeline
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.pipeline = self.multilayer_regressor.fit( X, y )
+				return self.pipeline
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'MultilayerRegressor'
+			exception.method = 'fit( self, X: np.ndarray, y: Optional[ np.ndarray ] ) -> Pipeline'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def transform( self, X: np.ndarray ) -> np.ndarray:
+		"""
+
+
+			Purpose:
+			-----------
+			Applies all transformations in the pipeline to the text df.
+
+			Parameters:
+			-----------
+			X (np.ndarray): Input feature matrix.
+
+			Returns:
+			-----------
+			np.ndarray: Transformed feature matrix.
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.pipeline.transform( X )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'MultilayerRegressor'
+			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] ) -> np.ndarray:
+		"""
+
+
+			Purpose:
+			-----------
+			Fits and transforms all pipeline steps on the text df.
+
+			Parameters:
+			-----------
+			X (np.ndarray): Input feature matrix.
+			y (Optional[np.ndarray]): Optional target array.
+
+			Returns:
+			-----------
+			np.ndarray: Transformed feature matrix.
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.multilayer_regressor.fit_transform( X, y )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'MultilayerRegressor'
+			exception.method = ('fit_transform( self, X: np.ndarray, y: '
+			                    'Optional[ np.ndarray ]=None ) -> np.ndarray')
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+		"""
+
+			Purpose:
+			-----------
+			Compute the R^2 accuracy of the model on the given test df.
+
+			Parameters:
+			-----------
+			X (np.ndarray): Test features.
+			y (np.ndarray): True values.
+
+			Returns:
+			-----------
+			float: R-squared accuracy.
 
 		"""
 		try:
@@ -1555,7 +1836,16 @@ class LinearRegressor( Model ):
 
 		Purpose:
 		-----------
-		Ordinary Least Squares Regression.
+		Ordinary Least Squares Regression fits a linear model with coefficients to minimize the
+		residual sum of squares between the observed targets in the dataset, and the targets
+		predicted by the linear approximation. The coefficient estimates for Ordinary Least Squares
+		rely on the independence of the features.
+
+		When features are correlated and the columns of the design matrix have an approximately
+		linear dependence, the design matrix becomes close to singular and as a result,
+		the least-squares estimate becomes highly sensitive to random errors in the observed target,
+		producing a large variance. This situation of multicollinearity can arise, for example,
+		when data are collected without an experimental design.
 	
 	"""
 
@@ -1565,19 +1855,16 @@ class LinearRegressor( Model ):
 
 			Purpose:
 			-----------
-				Initialize the Linear Regression linerar_model.
+			Initialize the Linear Regression linerar_model.
 	
-			Attributes:
+			Parameters:
 			-----------
-				linerar_model (LinearRegression): Internal OLS linerar_model using least squares.
-					Parameters:
-						fit_intercept (bool): Whether to include an intercept term. Default is
-						True.
-						copy_X (bool): Whether to copy the feature matrix. Default is True.
+			fit_intercept (bool): Whether to include an intercept term. Default is True.
+			copy_X (bool): Whether to copy the feature matrix. Default is True.
 					
 		"""
 		super( ).__init__( )
-		self.linerar_regressor: LinearRegression=LinearRegression( )
+		self.linerar_regressor: LinearRegression=LinearRegression( fit_intercept=True, copy_X=True )
 		self.prediction: np.arry=None
 		self.accuracy: float=0.0
 		self.precision: float=0.0
@@ -1588,21 +1875,21 @@ class LinearRegressor( Model ):
 		self.median_absolute_error: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
 			-----------
-				Fit the OLS regression linerar_model.
+			Fit the OLS regression linerar_model.
 	
 			Parameters:
 			-----------
-				X (pd.DataFrame): Feature matrix.
-				y (np.ndarray): Target vector.
+			X (pd.DataFrame): Feature matrix.
+			y (np.ndarray): Target vector.
 
 			Returns:
 			--------
-				Pipeline
+			Pipeline
 			
 		"""
 		try:
@@ -1630,11 +1917,11 @@ class LinearRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (pd.DataFrame): Feature matrix.
+			X (pd.DataFrame): Feature matrix.
 	
 			Returns:
 			-----------
-				np.ndarray: Predicted target target_values.
+			np.ndarray: Predicted target target_values.
 			
 		"""
 		try:
@@ -1662,12 +1949,12 @@ class LinearRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Test features.
-				y (np.ndarray): True target target_values.
+			X (np.ndarray): Test features.
+			y (np.ndarray): True target target_values.
 	
 			Returns:
 			-----------
-				float: R-squared accuracy.
+			float: R-squared accuracy.
 			
 		"""
 		try:
@@ -1688,7 +1975,7 @@ class LinearRegressor( Model ):
 			error.show( )
 
 
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float] | None:
 		"""
 
 
@@ -1698,12 +1985,12 @@ class LinearRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (pd.DataFrame): Feature matrix.
-				y (np.ndarray): Ground truth target_values.
+			X (pd.DataFrame): Feature matrix.
+			y (np.ndarray): Ground truth target_values.
 	
 			Returns:
 			-----------
-				dict: Dictionary of MAE, MSE, RMSE, R², etc.
+			dict: Dictionary of MAE, MSE, RMSE, R², etc.
 			
 		"""
 		try:
@@ -1741,13 +2028,258 @@ class LinearRegressor( Model ):
 			
 			Purpose:
 			-----------
-				Plot actual vs predicted target_values.
+			Plot actual vs predicted target_values.
 	
 			Parameters:
 			-----------
-				X (np.ndarray): Input features.
-				y (np.ndarray): True target target_values.
+			X (np.ndarray): Input features.
+			y (np.ndarray): True target target_values.
 			
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.linerar_regressor.predict( X )
+				plt.scatter( y, self.prediction )
+				plt.xlabel( 'Observed' )
+				plt.ylabel( 'Projected' )
+				plt.title( 'Linear Regression: Observed vs Projected' )
+				plt.create_graph( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
+				plt.grid( True )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'LinearRegressor'
+			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class RidgeClassifier( Model ):
+	"""
+
+		Purpose:
+		--------
+		This classifier first converts binary targets to {-1, 1} and then treats the problem as a
+		regression task, optimizing the same objective as above. The predicted class corresponds
+		to the sign of the regressor’s prediction. For multiclass classification, the problem is
+		treated as multi-output regression, and the predicted class corresponds to the output
+		with the highest value.
+
+		It might seem questionable to use a (penalized) Least Squares loss to fit a classification
+		model instead of the more traditional logistic or hinge losses. However, in practice,
+		all those models can lead to similar cross-validation scores in terms of accuracy
+		or precision/recall, while the penalized least squares loss used by the RidgeClassifier
+		allows for a very different choice of the numerical solvers with
+		distinct computational performance profiles.
+
+	"""
+
+
+	def __init__( self, alpha: float=1.0, solver: str='auto', max: int=1000,
+	              rando: int=42 ) -> None:
+		"""
+
+
+			Purpose:
+			-----------
+			Initialize the Ridge Classifierlinerar_model.
+
+			Parameters:
+			-----------
+			- alpha (float): Regularization strength. Default is 1.0.
+			- solver (str): Solver to use. Default is 'auto'.
+			- max (int): max iterations
+			- rando (int): random seed
+
+		"""
+		super( ).__init__( )
+		self.alpha: float=alpha
+		self.solver: str=solver
+		self.max_iter: int=max
+		self.random_state: int=rando
+		self.ridge_regressor: RidgeClassifier=RidgeClassifier( alpha=self.alpha, solver=self.solver,
+			max_iter=self.max_iter, random_state=self.random_state )
+		self.prediction: np.array = None
+		self.accuracy: float = 0.0
+		self.precision: float = 0.0
+		self.recall: float = 0.0
+		self.f1_score: float = 0.0
+		self.roc_auc_score: float = 0.0
+		self.correlation_coefficient: float = 0.0
+
+
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
+		"""
+
+
+			Purpose:
+			-----------
+			Fit the RidgeRegressor regression linerar_model.
+
+			Parameters:
+			-----------
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Target vector.
+
+			Returns:
+			--------
+				Pipeline
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.pipeline = self.ridge_regressor.fit( X, y )
+				return self.pipeline
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RidgeRegressor'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def project( self, X: np.ndarray ) -> np.ndarray:
+		"""
+
+
+			Purpose:
+			-----------
+			Project target target_values using the RidgeRegressor linerar_model.
+
+			Parameters:
+			-----------
+				X (pd.DataFrame): Feature matrix.
+
+			Returns:
+			-----------
+				np.ndarray: Predicted target target_values.
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			else:
+				self.prediction = self.ridge_regressor.predict( X )
+				return self.prediction
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RidgeRegressor'
+			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+		"""
+
+
+			Purpose:
+			-----------
+			Compute the R-squared accuracy for the Ridge model.
+
+			Parameters:
+			-----------
+				X (np.ndarray): Test features.
+				y (np.ndarray): Ground truth target_values.
+
+			Returns:
+			-----------
+				float: R-squared accuracy.
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.prediction = self.ridge_regressor.predict( X )
+				return r2_score( y, self.prediction )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RidgeRegressor'
+			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+		"""
+
+			Purpose:
+			-----------
+				Evaluates the Ridge model
+				using multiple metrics.
+
+			Parameters:
+			-----------
+				X (pd.DataFrame): Feature matrix.
+				y (np.ndarray): Ground truth target target_values.
+
+			Returns:
+			-----------
+				dict: Evaluation metrics including MAE, RMSE, R², etc.
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The argument "X" is required!' )
+			elif y is None:
+				raise Exception( 'The argument "y" is required!' )
+			else:
+				self.accuracy = accuracy_score( y, self.prediction )
+				self.precision = precision_score( y, self.prediction, average = 'binary' )
+				self.recall = mean_squared_error( y, self.prediction, average = 'binary' )
+				self.f1_score = f1_score( y, self.prediction, average = 'binary' )
+				self.roc_auc_score = roc_auc_score( y, self.prediction )
+				self.correlation_coefficient = matthews_corrcoef( y, self.prediction )
+				return \
+					{
+							'Accuracy': self.accuracy,
+							'Precision': self.precision,
+							'Recall': self.recall,
+							'F1 Score': self.f1_score,
+							'ROC AUC': self.roc_auc_score,
+							'Correlation Coeff': self.correlation_coefficient
+					}
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'RidgeRegressor'
+			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
+		"""
+
+
+			Purpose:
+			-----------
+			Plot predicted vs actual target_values.
+
+			Parameters:
+			-----------
+				X (np.ndarray): Input features.
+				y (np.ndarray): Ground truth target target_values.
+
+			Returns:
+			-----------
+				None
+
 		"""
 		try:
 			if X is None:
@@ -1759,14 +2291,14 @@ class LinearRegressor( Model ):
 				plt.scatter( y, self.prediction )
 				plt.xlabel( 'Observed' )
 				plt.ylabel( 'Projected' )
-				plt.title( 'Least-Squares Regression: Observed vs Projected' )
+				plt.title( 'Ridge Regression: Observed vs Projected' )
 				plt.create_graph( [ y.min( ), y.max( ) ], [ y.min( ), y.max( ) ], 'r--' )
 				plt.grid( True )
 				plt.show( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'LinearRegressor'
+			exception.cause = 'RidgeRegressor'
 			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1781,21 +2313,19 @@ class RidgeRegressor( Model ):
 		regularization is given by the l2-norm. Also known as Ridge Regression
 		or Tikhonov regularization. This estimator has built-in support for
 		multi-variate regression (i.e., when y is a 2d-array of shape (n_samples, n_targets))
+
+		The complexity parameter  controls the amount of shrinkage: the larger the value of alpha,
+		the greater the amount of shrinkage and thus the coefficients become
+		more robust to collinearity.
+
+		The algorithm used to fit the model is coordinate descent. To avoid unnecessary memory
+		duplication the X argument of the fit method should be directly passed as a
+		Fortran-contiguous numpy array. Regularization improves the conditioning of the problem
+		and reduces the variance of the estimates. Larger values specify stronger regularization.
+		Alpha corresponds to 1 / (2C) in other linear models such as LogisticRegression or LinearSVC.
+		If an array is passed, penalties are assumed to be specific to the targets.
 		
 	"""
-	alpha: float
-	solver: str
-	max_iter: int
-	random_state: int
-	ridge_regressor: Ridge 
-	prediction: Optional[ np.ndarray ]
-	accuracy: Optional[ float ]
-	precision: Optional[ float ]
-	recall: Optional[ float ]
-	roc_auc_score: Optional[ float ]
-	f1_score: Optional[ float ]
-	correlation_coefficient: Optional[ float ]
-	median_absolute_error: Optional[ float ]
 
 
 	def __init__( self, alpha: float=1.0, solver: str='auto', max: int=1000, rando: int=42 ) -> None:
@@ -1830,7 +2360,7 @@ class RidgeRegressor( Model ):
 		self.correlation_coefficient: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 
@@ -2028,7 +2558,16 @@ class LassoRegressor( Model ):
 		--------
 		Linear Model trained with L1 for the regularizer. Regularization improves the
 		conditioning of the problem and reduces the variance of the estimates. Larger values
-		specify stronger regularization.
+		specify stronger regularization. Technically the Lasso model is optimizing the same
+		objective function as the Elastic Net with l1_ratio=1.0 (no L2 penalty).
+		The algorithm used to fit the model is coordinate descent.
+
+		To avoid unnecessary memory duplication the X argument of the fit method should be directly
+		passed as a Fortran-contiguous numpy array. Regularization improves the conditioning of the
+		problem and reduces the variance of the estimates. Larger values specify stronger
+		regularization. Alpha corresponds to 1 / (2C) in other linear models such as
+		LogisticRegression or LinearSVC. If an array is passed, penalties are assumed to be
+		specific to the targets. Hence they must correspond in number.
 		
 	"""
 
@@ -2065,7 +2604,7 @@ class LassoRegressor( Model ):
 		self.correlation_coefficient: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -2263,22 +2802,22 @@ class ElasticNetRegressor( Model ):
 	"""
 
 
-	def __init__( self, alpha: float=1.0, ratio: float=0.5,
+	def __init__( self, alpha: float=1.0, ratio: float=0.5, max: int=200,
 	              rando: int=42, select: str='random' ) -> None:
 		"""
 
 			Purpose:
 			-----------
-				Initialize the
-				ElasticNetRegressor linerar_model.
+			Initialize the ElasticNet Regressor linerar_model.
 	
-			Attributes:
-			-----------
-				linerar_model (ElasticNet): Internal ElasticNetRegressor regression linerar_model.
-					Parameters:
-						hyper (float): Overall regularization strength. Default is 1.0.
-						ratio (float): Mixing parameter (0 = RidgeRegressor,
-						1 = LassoRegressor). Default is 0.5.
+
+			Parameters:
+			----------
+			alpha (float): Overall regularization strength. Default is 1.0.
+			ratio (float): Mixing parameter (0 = RidgeRegressor, 1 = LassoRegressor). Default is 0.5.
+			max (int): Maximum number of iterations. Default is 200.
+			rando (int): Number of random iterations. Default is 42.
+			select (str): selection
 					
 		"""
 		super( ).__init__( )
@@ -2286,8 +2825,9 @@ class ElasticNetRegressor( Model ):
 		self.ratio: float=ratio
 		self.random_state: int=rando
 		self.selection: str=select
+		self.max: int=max
 		self.elasticnet_regressor: ElasticNet=ElasticNet( alpha=self.alpha, l1_ratio=self.ratio,
-			random_state=self.random_state, selection=self.selection )
+			random_state=self.random_state, max_iter=self.max, selection=self.selection )
 		self.prediction: np.array=None
 		self.accuracy: float=0.0
 		self.precision: float=0.0
@@ -2297,7 +2837,7 @@ class ElasticNetRegressor( Model ):
 		self.correlation_coefficient: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 
@@ -2529,7 +3069,7 @@ class LogisticRegressor( Model ):
 		self.correlation_coefficient: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -2732,6 +3272,12 @@ class BayesianRidgeRegressor( Model ):
 		classification is equivalent to finding a maximum a posteriori estimation under a
 		Gaussian prior over the coefficients with precision . Instead of setting lambda manually,
 		it is possible to treat it as a random variable to be estimated from the df.
+
+		This implementation is based on the algorithm described in Appendix A of (Tipping, 2001)
+		where updates of the regularization parameters are done as suggested in (MacKay, 1992).
+		Note that according to A New View of Automatic Relevance Determination
+		(Wipf and Nagarajan, 2008) these update rules do not guarantee that the marginal likelihood
+		is increasing between two consecutive iterations of the optimization.
 	
 	"""
 
@@ -2764,7 +3310,7 @@ class BayesianRidgeRegressor( Model ):
 		self.median_absolute_error: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -2954,9 +3500,22 @@ class StochasticGradientClassifier( Model ):
 	
 		Purpose:
 		--------
-		Stochastic Gradient Descent (SGD) is a simple yet very efficient approach to discriminative
-		rate of linear classifiers under convex loss functions such as
-		(linear) Support VectorStore Machines and Logistic Regression.
+		Linear classifiers (SVM, logistic regression, etc.) with SGD training. This estimator
+		implements regularized linear models with stochastic gradient descent (SGD) learning:
+		the gradient of the loss is estimated each sample at a time and the model is updated along
+		the way with a decreasing strength schedule (aka learning rate). SGD allows minibatch
+		(online/out-of-core) learning via the partial_fit method. For best results using the
+		default learning rate schedule, the data should have zero mean and unit variance.
+
+		This implementation works with data represented as dense or sparse arrays of floating point
+		 values for the features. The model it fits can be controlled with the loss parameter;
+		 by default, it fits a linear support vector machine (SVM).
+
+		The regularizer is a penalty added to the loss function that shrinks model parameters
+		towards the zero vector using either the squared euclidean norm L2 or the absolute norm
+		L1 or a combination of both (Elastic Net). If the parameter update crosses the 0.0 value
+		because of the regularizer, the update is truncated to 0.0 to allow for learning sparse
+		 models and achieve online feature selection.
 	
 	"""
 
@@ -2991,7 +3550,7 @@ class StochasticGradientClassifier( Model ):
 		self.median_absolute_error: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -3178,7 +3737,7 @@ class StochasticGradientClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestClassifier'
+			exception.cause = 'RandomClassifier'
 			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3199,7 +3758,15 @@ class StochasticGradientRegressor( Model ):
 		often encountered in text classification and natural language processing.
 		Given that the df is sparse, the classifiers in this module easily scale to problems
 		with more than 10^5 training examples and more than 10^5 features.
-	
+
+		The regularizer is a penalty added to the loss function that shrinks model parameters
+		towards the zero vector using either the squared euclidean norm L2 or the absolute norm L1
+		or a combination of both (Elastic Net). If the parameter update crosses the 0.0 value
+		because of the regularizer, the update is truncated to 0.0 to allow for learning sparse
+		models and achieve online feature selection.
+
+		This implementation works with data represented as dense numpy arrays of floating point
+		values for the features.
 	"""
 
 
@@ -3236,7 +3803,7 @@ class StochasticGradientRegressor( Model ):
 		self.median_absolute_error: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -3418,12 +3985,12 @@ class StochasticGradientRegressor( Model ):
 			error.show( )
 
 
-class NearestNeighborClassifier( Model ):
+class NeighborClassifier( Model ):
 	"""
 	
 		Purpose:
 		--------
-		The principle behind nearest neighbor methods is to find a predefined number of
+		The principle behind the k-nearest neighbor methods is to find a predefined number of
 		training samples closest in distance to the new point, and predict the label from these.
 		The number of samples can be a user-defined constant (k-nearest neighbor rate),
 		or vary based on the local density of points (radius-based neighbor rate).
@@ -3472,8 +4039,8 @@ class NearestNeighborClassifier( Model ):
 	
 			Parameters:
 			-----------
-				X (pd.DataFrame): Feature matrix.
-				y (np.ndarray): Class labels.
+			X (pd.DataFrame): Feature matrix.
+			y (np.ndarray): Class labels.
 	
 			Returns:
 			-------
@@ -3491,7 +4058,7 @@ class NearestNeighborClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'NearestNeighborClassifier'
+			exception.cause = ''
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3525,7 +4092,7 @@ class NearestNeighborClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'NearestNeighborClassifier'
+			exception.cause = ''
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3559,7 +4126,7 @@ class NearestNeighborClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'NearestNeighborClassifier'
+			exception.cause = ''
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3617,7 +4184,7 @@ class NearestNeighborClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'NearestNeighborClassifier'
+			exception.cause = ''
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3656,18 +4223,18 @@ class NearestNeighborClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestClassifier'
+			exception.cause = 'RandomClassifier'
 			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class NearestNeighborRegressor( Model ):
+class NeighborRegressor( Model ):
 	"""
 	
 		Purpose:
 		--------
-		The principle behind nearest neighbor methods is to find a predefined number of
+		The principle behind k-nearest neighbor methods is to find a predefined number of
 		training samples closest in distance to the new point, and predict the label from these.
 		The number of samples can be a user-defined constant (k-nearest neighbor rate),
 		or vary based on the local density of points (radius-based neighbor rate).
@@ -3708,7 +4275,7 @@ class NearestNeighborRegressor( Model ):
 		self.median_absolute_error: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 
@@ -3737,7 +4304,7 @@ class NearestNeighborRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'NearestNeighborRegressor'
+			exception.cause = 'NeighborRegressor'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3768,7 +4335,7 @@ class NearestNeighborRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'NearestNeighborRegressor'
+			exception.cause = 'NeighborRegressor'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3802,7 +4369,7 @@ class NearestNeighborRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'NearestNeighborRegressor'
+			exception.cause = 'NeighborRegressor'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3850,7 +4417,7 @@ class NearestNeighborRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'NearestNeighborRegressor'
+			exception.cause = 'NeighborRegressor'
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3890,13 +4457,13 @@ class NearestNeighborRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestRegressor'
+			exception.cause = 'RandomRegressor'
 			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class RandomForestClassifier( Model ):
+class RandomClassifier( Model ):
 	"""
 	
 		Purpose:
@@ -3917,19 +4484,6 @@ class RandomForestClassifier( Model ):
 		The variance reduction is often significant hence yielding an overall better model.
 	
 	"""
-	n_estimators: int
-	criterion: str
-	max_depth: int
-	random_state: int
-	random_forest_classifier: RandomForestClassifier
-	score: Optional[ float ]
-	prediction: Optional[ np.ndarray ]
-	accuracy: Optional[ float ]
-	precision: Optional[ float ]
-	recall: Optional[ float ]
-	roc_auc_score: Optional[ float ]
-	f1_score: Optional[ float ]
-	correlation_coefficient: Optional[ float ]
 
 
 	def __init__( self, est: int=10, crit: str='gini', max: int=3, rando: int=42 ) -> None:
@@ -3937,7 +4491,7 @@ class RandomForestClassifier( Model ):
 
 			Purpose:
 			-----------
-			Initializes the RandomForestClassifier.
+			Initializes the RandomClassifier.
 			
 		"""
 		super( ).__init__( )
@@ -3945,7 +4499,7 @@ class RandomForestClassifier( Model ):
 		self.criterion: str=crit
 		self.max_depth: int=max
 		self.random_state: int=rando
-		self.random_forest_classifier: RandomForestClassifier= RandomForestClassifier( n_estimators=est,
+		self.random_forest_classifier: RandomForestClassifier=RandomForestClassifier( n_estimators=est,
 			criterion=crit, random_state=rando )
 		self.prediction: np.array=None
 		self.accuracy: float=0.0
@@ -3956,7 +4510,7 @@ class RandomForestClassifier( Model ):
 		self.correlation_coefficient: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -3986,7 +4540,7 @@ class RandomForestClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestClassifier'
+			exception.cause = 'RandomClassifier'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -4018,7 +4572,7 @@ class RandomForestClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestClassifier'
+			exception.cause = 'RandomClassifier'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -4052,7 +4606,7 @@ class RandomForestClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestClassifier'
+			exception.cause = 'RandomClassifier'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -4099,7 +4653,7 @@ class RandomForestClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestClassifier'
+			exception.cause = 'RandomClassifier'
 			exception.method = ('analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, '
 			                    'float ]')
 			error = ErrorDialog( exception )
@@ -4138,13 +4692,13 @@ class RandomForestClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestClassifier'
+			exception.cause = 'RandomClassifier'
 			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class RandomForestRegressor( Model ):
+class RandomRegressor( Model ):
 	"""
 
 		Purpose:
@@ -4176,10 +4730,10 @@ class RandomForestRegressor( Model ):
 	
 			Parameters:
 			-----------
-				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
-					Parameters:
-						alpha (float): Regularization strength. Default is 1.0.
-						solver (str): Solver to use. Default is 'auto'.
+			alpha (float): Regularization strength. Default is 1.0.
+			solver (str): Solver to use. Default is 'gini'.
+			max (int): maximum iterations
+			rando (int): random seed value
 					
 		"""
 		super( ).__init__( )
@@ -4198,7 +4752,7 @@ class RandomForestRegressor( Model ):
 		self.correlation_coefficient: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -4207,8 +4761,8 @@ class RandomForestRegressor( Model ):
 	
 			Parameters:
 			-----------
-				X (pd.DataFrame): Feature matrix.
-				y (np.ndarray): Target vector.
+			X (pd.DataFrame): Feature matrix.
+			y (np.ndarray): Target vector.
 
 			Returns:
 			--------
@@ -4226,7 +4780,7 @@ class RandomForestRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestRegressor'
+			exception.cause = 'RandomRegressor'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -4257,7 +4811,7 @@ class RandomForestRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestRegressor'
+			exception.cause = 'RandomRegressor'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -4291,7 +4845,7 @@ class RandomForestRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestRegressor'
+			exception.cause = 'RandomRegressor'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -4338,7 +4892,7 @@ class RandomForestRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestRegressor'
+			exception.cause = 'RandomRegressor'
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -4378,22 +4932,27 @@ class RandomForestRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'RandomForestRegressor'
+			exception.cause = 'RandomRegressor'
 			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class GradientBoostingClassifier( Model ):
+class GradientClassifier( Model ):
 	"""
 
 		Purpose:
 		--------
-		Gradient Boosting builds an additive model in a forward stage-wise fashion;
+		Gradient Boosting Classifier builds an additive model in a forward stage-wise fashion;
 		it allows for the optimization  of arbitrary differentiable loss functions.
 		In each stage n_classes_ regression trees are  fit on the negative gradient of the binomial
 		or multinomial deviance loss function. Binary classification is a special case where
 		only a single regression tree is induced.
+
+		The features are always randomly permuted at each split. Therefore, the best found split
+		may vary, even with the same training data and max_features=n_features, if the improvement
+		of the criterion is identical for several splits enumerated during the search of the best
+		split. To obtain a deterministic behaviour during fitting, random_state has to be fixed.
 
 	"""
 
@@ -4404,7 +4963,7 @@ class GradientBoostingClassifier( Model ):
 
 			Purpose:
 			________
-				Initialize the GradientBoostingClassifier.
+			Initialize the GradientClassifier.
 
 			Parameters:
 			___________
@@ -4421,7 +4980,7 @@ class GradientBoostingClassifier( Model ):
 		self.n_estimators: int=est
 		self.max_depth: int=max
 		self.random_state: int=rando
-		self.gradient_boost_classifier: GradientBoostingClassifier=GradientBoostingClassifier( loss=lss,
+		self.gradient_boost_classifier: GradientBoostingClassifier=GradientBoostClassifier( loss=lss,
 			learning_rate=rate, n_estimators=est, max_depth=max, random_state=rando )
 		self.prediction: np.array=None
 		self.accuracy: float=0.0
@@ -4433,7 +4992,7 @@ class GradientBoostingClassifier( Model ):
 		self.median_absolute_error: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -4546,7 +5105,7 @@ class GradientBoostingClassifier( Model ):
 		plt.show( )
 
 
-class GradientBoostingRegressor( Model ):
+class GradientRegressor( Model ):
 	"""
 
 		Purpose:
@@ -4566,7 +5125,7 @@ class GradientBoostingRegressor( Model ):
 
 			Purpose:
 			_______
-				Initialize the GradientBoostingRegressor.
+				Initialize the GradientRegressor.
 
 			Parameters:
 			___________
@@ -4582,7 +5141,7 @@ class GradientBoostingRegressor( Model ):
 		self.learning_rate: float=rate
 		self.n_estimators: int=est
 		self.max_depth: int=max
-		self.gradient_boost_regressor = GradientBoostingRegressor( loss=lss,
+		self.gradient_boost_regressor: GradientBoosingRegressor=GradientBoostingRegressor( loss=lss,
 			learning_rate=rate, n_estimators=est, max_depth=max, random_state=rando )
 		self.prediction: np.array=None
 		self.accuracy: float=0.0
@@ -4593,7 +5152,7 @@ class GradientBoostingRegressor( Model ):
 		self.correlation_coefficient: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -4707,16 +5266,15 @@ class GradientBoostingRegressor( Model ):
 		plt.show( )
 
 
-class AdaBoostClassifier( Model ):
+class BoostClassifier( Model ):
 	"""
 
 		Purpose:
 		---------
-		The core principle of AdaBoost is to fit a sequence of weak learners
-		(i.e., models that are only slightly better than random guessing,
-		such as small decision trees) on repeatedly modified versions of the df.
-		The predictions from all of them are then combined through a weighted
-		majority vote (or sum) to produce the final prediction.
+		An Boost classifier is a meta-estimator that begins by fitting a classifier
+		on the original dataset and then fits additional copies of the classifier on the
+		same dataset but where the weights of incorrectly classified instances are
+		adjusted such that subsequent classifiers focus more on difficult cases.
 
 	"""
 
@@ -4724,7 +5282,7 @@ class AdaBoostClassifier( Model ):
 	def __init__( self, estimators: int=100, max: int=3 ) -> None:
 		"""
 		
-			Initialize the RandomForestClassifier.
+			Initialize the RandomClassifier.
 			
 		"""
 		super( ).__init__( )
@@ -4770,7 +5328,7 @@ class AdaBoostClassifier( Model ):
 		self.X_scaled = pd.concat( [ scaled_df, self.X[ self.categorical_features ] ], axis=1 )
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -4798,7 +5356,7 @@ class AdaBoostClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'AdaBoostClassifier'
+			exception.cause = 'BoostClassifier'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -4828,7 +5386,7 @@ class AdaBoostClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'AdaBoostClassifier'
+			exception.cause = 'BoostClassifier'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -4862,7 +5420,7 @@ class AdaBoostClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'AdaBoostClassifier'
+			exception.cause = 'BoostClassifier'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -4908,7 +5466,7 @@ class AdaBoostClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'AdaBoostClassifier'
+			exception.cause = 'BoostClassifier'
 			exception.method = ('analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, '
 			                    'float ]')
 			error = ErrorDialog( exception )
@@ -4946,18 +5504,18 @@ class AdaBoostClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'AdaBoostClassifier'
+			exception.cause = 'BoostClassifier'
 			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class AdaBoostRegressor( Model ):
+class BoostRegressor( Model ):
 	"""
 
 		Purpose:
 		---------
-		The core principle of AdaBoost is to fit a sequence of weak learners
+		The core principle of Boost Regression is to fit a sequence of weak learners
 		(i.e., models that are only slightly better than random guessing,
 		such as small decision trees) on repeatedly modified versions of the df.
 		The predictions from all of them are then combined through a weighted
@@ -4994,7 +5552,7 @@ class AdaBoostRegressor( Model ):
 		self.correlation_coefficient: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -5022,7 +5580,7 @@ class AdaBoostRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'AdaBoostRegressor'
+			exception.cause = 'BoostRegressor'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5052,7 +5610,7 @@ class AdaBoostRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'AdaBoostRegressor'
+			exception.cause = 'BoostRegressor'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5087,7 +5645,7 @@ class AdaBoostRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'AdaBoostRegressor'
+			exception.cause = 'BoostRegressor'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5133,7 +5691,7 @@ class AdaBoostRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'AdaBoostRegressor'
+			exception.cause = 'BoostRegressor'
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5172,13 +5730,13 @@ class AdaBoostRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'AdaBoostRegressor'
+			exception.cause = 'BoostRegressor'
 			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class BaggingClassifier( Model ):
+class BaggClassifier( Model ):
 	"""
 
 		Purpose:
@@ -5195,25 +5753,12 @@ class BaggingClassifier( Model ):
 		 which usually work best with weak models (e.g., shallow decision trees).
 
 	"""
-	base_estimator: object
-	n_estimators: int
-	max_features: int
-	random_state: int
-	bagging_classifier: BaggingClassifier
-	score: Optional[ float ]
-	prediction: Optional[ np.ndarray ]
-	accuracy: Optional[ float ]
-	precision: Optional[ float ]
-	recall: Optional[ float ]
-	roc_auc_score: Optional[ float ]
-	f1_score: Optional[ float ]
-	correlation_coefficient: Optional[ float ]
 
 
 	def __init__( self, base: object=None, num: int=10, max: int=1, rando: int=42 ) -> None:
 		"""
 		
-			Initialize the BaggingClassifier.
+			Initialize the BaggClassifier.
 			
 		"""
 		super( ).__init__( )
@@ -5232,7 +5777,7 @@ class BaggingClassifier( Model ):
 		self.correlation_coefficient: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -5260,7 +5805,7 @@ class BaggingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggingClassifier'
+			exception.cause = 'BaggClassifier'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5290,7 +5835,7 @@ class BaggingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggingClassifier'
+			exception.cause = 'BaggClassifier'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5324,7 +5869,7 @@ class BaggingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggingClassifier'
+			exception.cause = 'BaggClassifier'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5370,7 +5915,7 @@ class BaggingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggingClassifier'
+			exception.cause = 'BaggClassifier'
 			exception.method = ('analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, '
 			                    'float ]')
 			error = ErrorDialog( exception )
@@ -5410,13 +5955,13 @@ class BaggingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggingClassifier'
+			exception.cause = 'BaggClassifier'
 			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class BaggingRegressor( Model ):
+class BaggRegressor( Model ):
 	"""
 
 		Purpose:
@@ -5437,16 +5982,15 @@ class BaggingRegressor( Model ):
 
 	def __init__( self, base: object=None, num: int=10, max: int=1, rando: int=42 ) -> None:
 		"""
-		
-			Initialize the
-			RidgeRegressor linerar_model.
+
+			Purpose:
+			--------
+			Initialize the RidgeRegressor linerar_model.
 	
-			Attributes:
+			Parameters:
 			-----------
-				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
-					Parameters:
-						alpha (float): Regularization strength. Default is 1.0.
-						solver (str): Solver to use. Default is 'auto'.
+			alpha (float): Regularization strength. Default is 1.0.
+			solver (str): Solver to use. Default is 'auto'.
 					
 		"""
 		super( ).__init__( )
@@ -5454,7 +5998,7 @@ class BaggingRegressor( Model ):
 		self.n_estimators: int=num
 		self.max_features: int=max
 		self.random_state: int=rando
-		self.bagging_regressor = BaggingRegressor( base_estimator=base,
+		self.bagging_regressor = BaggRegressor( base_estimator=base,
 			n_estimator=num, max_features=max, random_state=rando )
 		self.prediction: np.array=None
 		self.accuracy: float=0.0
@@ -5466,7 +6010,7 @@ class BaggingRegressor( Model ):
 		self.median_absolute_error: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -5494,7 +6038,7 @@ class BaggingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggingRegressor'
+			exception.cause = 'BaggRegressor'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5524,7 +6068,7 @@ class BaggingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggingRegressor'
+			exception.cause = 'BaggRegressor'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5557,7 +6101,7 @@ class BaggingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggingRegressor'
+			exception.cause = 'BaggRegressor'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5603,7 +6147,7 @@ class BaggingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggingRegressor'
+			exception.cause = 'BaggRegressor'
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5642,18 +6186,18 @@ class BaggingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'BaggingRegressor'
+			exception.cause = 'BaggRegressor'
 			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class VotingClassifier( Model ):
+class VoteClassifier( Model ):
 	"""
 	
 		Purpose:
 		--------
-		The idea behind the VotingClassifier is to combine conceptually different machine rate
+		The idea behind the VoteClassifier is to combine conceptually different machine rate
 		classifiers and use a majority vote or the average predicted probabilities (soft vote)
 		to predict the class labels. Such a classifier can be useful for a set of equally well
 		performing model in order to balance out their individual weaknesses.
@@ -5664,7 +6208,7 @@ class VotingClassifier( Model ):
 	def __init__( self, est: List[ ( str, object ) ], vote='hard' ) -> None:
 		"""
 		
-			Initialize the RandomForestClassifier.
+			Initialize the RandomClassifier.
 			
 		"""
 		super( ).__init__( )
@@ -5681,7 +6225,7 @@ class VotingClassifier( Model ):
 		self.correlation_coefficient: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -5709,7 +6253,7 @@ class VotingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'VotingClassifier'
+			exception.cause = 'VoteClassifier'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5739,7 +6283,7 @@ class VotingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'VotingClassifier'
+			exception.cause = 'VoteClassifier'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5772,7 +6316,7 @@ class VotingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'VotingClassifier'
+			exception.cause = 'VoteClassifier'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5818,7 +6362,7 @@ class VotingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'VotingClassifier'
+			exception.cause = 'VoteClassifier'
 			exception.method = ('analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, '
 			                    'float ]')
 			error = ErrorDialog( exception )
@@ -5856,21 +6400,21 @@ class VotingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'VotingClassifier'
+			exception.cause = 'VoteClassifier'
 			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class VotingRegressor( Model ):
+class VoteRegressor( Model ):
 	"""
 
 		Purpose:
 		--------
-		The idea behind the VotingClassifier is to combine conceptually different machine rate
-		classifiers and use a majority vote or the average predicted probabilities (soft vote)
-		to predict the class labels. Such a classifier can be useful for a set of equally well
-		performing model in order to balance out their individual weaknesses.
+
+		Prediction voting regressor for unfitted estimators. A voting regressor is an ensemble
+		meta-estimator that fits several base regressors, each on the whole dataset.
+		Then it averages the individual predictions to form a final prediction.
 
 	"""
 
@@ -5901,7 +6445,7 @@ class VotingRegressor( Model ):
 		self.correlation_coefficient: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -5929,7 +6473,7 @@ class VotingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'VotingRegressor'
+			exception.cause = 'VoteRegressor'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5961,7 +6505,7 @@ class VotingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'VotingRegressor'
+			exception.cause = 'VoteRegressor'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -5994,7 +6538,7 @@ class VotingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'VotingRegressor'
+			exception.cause = 'VoteRegressor'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6040,7 +6584,7 @@ class VotingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'VotingRegressor'
+			exception.cause = 'VoteRegressor'
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6079,43 +6623,38 @@ class VotingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'VotingRegressor'
+			exception.cause = 'VoteRegressor'
 			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class StackingClassifier( Model ):
+class StackClassifier( Model ):
 	"""
-	
-		Wrapper for scikit-learn VotingClassifier.
+
+		Purpose:
+		-------
+		Stack of estimators with a final classifier. Stacked generalization consists in stacking the
+		output of individual estimator and use a classifier to compute the final prediction.
+		Stacking allows to use the strength of each individual estimator by using their output
+		as input of a final estimator. Note that estimators_ are fitted on the full X while
+		final_estimator_ is trained using cross-validated predictions of the base
+		estimators using cross_val_predict.
 	
 	"""
-	estimators: Optional[ List[ Tuple[ str, ClassifierMixin ] ] ]
-	final_estimator: Optional[ ClassifierMixin ]
-	stacking_classifier: StackingClassifier
-	score: Optional[ float ]
-	prediction: Optional[ np.ndarray ]
-	accuracy: Optional[ float ]
-	precision: Optional[ float ]
-	recall: Optional[ float ]
-	roc_auc_score: Optional[ float ]
-	f1_score: Optional[ float ]
-	correlation_coefficient: Optional[ float ]
 
 
 	def __init__( self, est: List[ Tuple[ str, ClassifierMixin ] ],
 	              final: Optional[ ClassifierMixin ]=None ) -> None:
 		"""
 		
-			Initialize the RandomForestClassifier.
+			Initialize the RandomClassifier.
 			
 		"""
 		super( ).__init__( )
-		self.estimators = estimators
-		self.final_estimator = final_estimator
-		self.stacking_classifier = StackingClassifier( estimators=self.estimators,
-			final_estimator=self.final_estimator )
+		self.estimators:  List[ Tuple[ str, ClassifierMixin ] ]=est
+		self.final_estimator: ClassifierMixin =final
+		self.stacking_classifier: StackingClassifier=StackingClassifier( estimators=est, final_estimator=final )
 		self.prediction: np.array=None
 		self.accuracy: float=0.0
 		self.precision: float=0.0
@@ -6125,7 +6664,7 @@ class StackingClassifier( Model ):
 		self.correlation_coefficient: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -6153,7 +6692,7 @@ class StackingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StackingClassifier'
+			exception.cause = 'StackClassifier'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6183,7 +6722,7 @@ class StackingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StackingClassifier'
+			exception.cause = 'StackClassifier'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6216,7 +6755,7 @@ class StackingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StackingClassifier'
+			exception.cause = 'StackClassifier'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6262,7 +6801,7 @@ class StackingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StackingClassifier'
+			exception.cause = 'StackClassifier'
 			exception.method = ('analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, '
 			                    'float ]')
 			error = ErrorDialog( exception )
@@ -6300,53 +6839,51 @@ class StackingClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StackingClassifier'
+			exception.cause = 'StackClassifier'
 			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class StackingRegressor( Model ):
+class StackRegressor( Model ):
 	"""
-		
-		RidgeRegressor Regression
-		(L2 regularization).
+
+			Purpose:
+			--------
+			Stack of estimators with a final regressor. Stacked generalization consists in stacking
+			the output of individual estimator and use a regressor to compute the final prediction.
+			Stacking allows to use the strength of each individual estimator by using
+			their output as input of a final estimator. Note that estimators_ are fitted on the
+			full X while final_estimator_ is trained using cross-validated predictions of
+			the base estimators using cross_val_predict.
 		
 	"""
-	estimators: Optional[ List[ Tuple[ str, ClassifierMixin ] ] ]
-	final_estimator: Optional[ ClassifierMixin ]
-	stacking_regressor: StackingRegressor
-	estimators = List[ ( str, object ) ]
-	final_estimator = object
-	prediction: Optional[ np.ndarray ]
-	accuracy: Optional[ float ]
-	precision: Optional[ float ]
-	recall: Optional[ float ]
-	roc_auc_score: Optional[ float ]
-	f1_score: Optional[ float ]
-	correlation_coefficient: Optional[ float ]
-	median_absolute_error: Optional[ float ]
 
 
-	def __init__( self, estimators: List[ ( str, object ) ], final: object=None ) -> None:
+	def __init__( self, est: List[ Tuple[ str, ClassifierMixin ] ], final: ClassifierMixin=None ) -> None:
 		"""
-		
-			Initialize the
-			RidgeRegressor linerar_model.
-	
-			Attributes:
-			-----------
-				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
-					Parameters:
-						alpha (float): Regularization strength. Default is 1.0.
-						solver (str): Solver to use. Default is 'auto'.
+
+			Purpose:
+			--------
+			Initialize the RidgeRegressor linerar_model.
+
+			Parameters:
+			----------
+			est - List[ Tuple[ str, ClassifierMixin ] ]:
+			Base estimators which will be stacked together.
+			Each element of the list is defined as a tuple of string (i.e. name) and an estimator
+			instance. An estimator can be set to ‘drop’ using set_params. The type of estimator is
+			generally expected to be a classifier. However, one can pass a regressor for some
+			use case (e.g. ordinal regression).
+
+			final - ClassifierMixin, default=None
+			A classifier which will be used to combine the base estimators.
 					
 		"""
 		super( ).__init__( )
-		self.estimators = estimators
-		self.final_estimator = final
-		self.stacking_regressor = StackingRegressor( estimators=self.estimators,
-			final=self.final_estimator )
+		self.estimators: List[ Tuple[ str, ClassifierMixin ] ]=est
+		self.final_estimator: ClassifierMixin=final
+		self.stacking_regressor: StackingRegressor=StackingRegressor( estimators=est, final=final )
 		self.prediction: np.array=None
 		self.accuracy: float=0.0
 		self.precision: float=0.0
@@ -6354,9 +6891,10 @@ class StackingRegressor( Model ):
 		self.f1_score: float=0.0
 		self.roc_auc_score: float=0.0
 		self.correlation_coefficient: float=0.0
+		self.median_absolute_error: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -6384,7 +6922,7 @@ class StackingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StackingRegressor'
+			exception.cause = 'StackRegressor'
 			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6414,7 +6952,7 @@ class StackingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StackingRegressor'
+			exception.cause = 'StackRegressor'
 			exception.method = 'project( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6447,7 +6985,7 @@ class StackingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StackingRegressor'
+			exception.cause = 'StackRegressor'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6493,7 +7031,7 @@ class StackingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StackingRegressor'
+			exception.cause = 'StackRegressor'
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6534,7 +7072,7 @@ class StackingRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'StackingRegressor'
+			exception.cause = 'StackRegressor'
 			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
