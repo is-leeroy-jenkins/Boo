@@ -456,7 +456,7 @@ class StandardScaler( Metric ):
 
 			Returns:
 			--------
-				Pipeline
+			self
 
 		"""
 		try:
@@ -483,11 +483,11 @@ class StandardScaler( Metric ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input df.
+			X (np.ndarray): Input df.
 
 			Returns:
 			-----------
-				np.ndarray: Scaled df.
+			np.ndarray: Scaled df.
 
 		"""
 		try:
@@ -529,12 +529,12 @@ class MinMaxScaler( Metric ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input df.
-				y (Optional[np.ndarray]): Ignored.
+			X (np.ndarray): Input df.
+			y (Optional[np.ndarray]): Ignored.
 
 			Returns:
 			--------
-				Pipeline
+			self
 
 		"""
 		try:
@@ -561,11 +561,11 @@ class MinMaxScaler( Metric ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input df.
+			X (np.ndarray): Input df.
 
 			Returns:
 			-----------
-				np.ndarray: Scaled df.
+			np.ndarray: Scaled df.
 
 		"""
 		try:
@@ -608,12 +608,12 @@ class RobustScaler( Metric ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input df.
-				y (Optional[np.ndarray]): Ignored.
+			X (np.ndarray): Input df.
+			y (Optional[np.ndarray]): Ignored.
 
 			Returns:
 			--------
-				Pipeline
+			self
 
 		"""
 		try:
@@ -640,11 +640,11 @@ class RobustScaler( Metric ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input df.
+			X (np.ndarray): Input df.
 
 			Returns:
 			-----------
-				np.ndarray: Scaled df.
+			np.ndarray: Scaled df.
 
 		"""
 		try:
@@ -685,12 +685,12 @@ class Normalizer( Metric ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input df.
-				y (Optional[np.ndarray]): Ignored.
+			X (np.ndarray): Input df.
+			y (Optional[np.ndarray]): Ignored.
 
 			Returns:
 			--------
-				Pipeline
+			self
 
 		"""
 		try:
@@ -718,11 +718,11 @@ class Normalizer( Metric ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input df.
+			X (np.ndarray): Input df.
 
 			Returns:
 			-----------
-				np.ndarray: Normalized df.
+			np.ndarray: Normalized df.
 
 		"""
 		try:
@@ -763,12 +763,12 @@ class OneHotEncoder( Metric ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Categorical text df.
-				y (Optional[np.ndarray]): Ignored.
+			X (np.ndarray): Categorical text df.
+			y (Optional[np.ndarray]): Ignored.
 
 			Returns:
 			--------
-				Pipeline
+			self
 
 		"""
 		try:
@@ -797,11 +797,11 @@ class OneHotEncoder( Metric ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Categorical text df.
+			X (np.ndarray): Categorical text df.
 
 			Returns:
 			-----------
-				np.ndarray: One-hot encoded matrix.
+			np.ndarray: One-hot encoded matrix.
 
 		"""
 		try:
@@ -824,8 +824,7 @@ class OrdinalEncoder( Metric ):
 
 			Purpose:
 			---------
-		Encodes categorical
-		features as ordinal integers.
+			Encodes categorical features as ordinal integers.
 
 	"""
 
@@ -848,7 +847,7 @@ class OrdinalEncoder( Metric ):
 
 			Returns:
 			--------
-				Pipeline
+			self
 
 		"""
 		try:
@@ -875,11 +874,11 @@ class OrdinalEncoder( Metric ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Categorical text df.
+			X (np.ndarray): Categorical text df.
 
 			Returns:
 			-----------
-				np.ndarray: Ordinal-encoded matrix.
+			np.ndarray: Ordinal-encoded matrix.
 
 		"""
 		try:
@@ -916,17 +915,16 @@ class MeanImputer( Metric ):
 
 			Purpose:
 			---------
-			Fits the simple_imputer
-			to the df.
+			Fits the simple_imputer to the df.
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input df with missing target_values.
-				y (Optional[np.ndarray]): Ignored.
+			X (np.ndarray): Input df with missing target_values.
+			y (Optional[np.ndarray]): Ignored.
 
 			Returns:
 			--------
-				Pipeline
+			Pipeline
 
 		"""
 		try:
@@ -954,11 +952,11 @@ class MeanImputer( Metric ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input df with missing target_values.
+			X (np.ndarray): Input df with missing target_values.
 
 			Returns:
 			-----------
-				np.ndarray: Imputed df.
+			np.ndarray: Imputed df.
 
 		"""
 		try:
@@ -995,8 +993,7 @@ class NearestImputer( Metric ):
 
 			Purpose:
 			________
-			Fits the simple_imputer
-			to the df.
+			Fits the simple_imputer to the df.
 
 			Parameters:
 			_____
@@ -1005,7 +1002,7 @@ class NearestImputer( Metric ):
 
 			Returns:
 			--------
-				Pipeline
+			self
 
 		"""
 		try:
@@ -1029,12 +1026,11 @@ class NearestImputer( Metric ):
 
 			Parameters:
 			-----------
-				X (np.ndarray): Input df
-				with missing target_values.
+			X (np.ndarray): Input df
 
 			Returns:
 			-----------
-				np.ndarray: Imputed df.
+			np.ndarray: Imputed df.
 
 		"""
 		try:
@@ -1310,7 +1306,7 @@ class DbscanClustering( Cluster ):
 			min: int
 
 		"""
-		self.model: BaseEstimator = DBSCAN( eps=eps, min_samples=min )
+		self.model: BaseEstimator=DBSCAN( eps=eps, min_samples=min )
 
 
 	def fit( self, X: np.ndarray ) -> None:
@@ -1747,7 +1743,19 @@ class MeanShiftClustering( Cluster ):
 
 		Purpose:
 		---------
-		Wrapper class for MeanShift clustering.
+		MeanShift clustering aims to discover blobs in a smooth density of samples.
+		It is a centroid based algorithm, which works by updating candidates for centroids to be
+		the mean of the points within a given region. These candidates are then filtered in a
+		post-processing stage to eliminate near-duplicates to form the final set of centroids.
+
+		The algorithm automatically sets the number of clusters, instead of relying on a parameter
+		bandwidth, which dictates the size of the region to search through. This parameter can be
+		set manually, but can be estimated using the provided estimate_bandwidth function, which
+		is called if the bandwidth is not set.
+
+		The algorithm is not highly scalable, as it requires multiple nearest neighbor searches
+		during the execution of the algorithm. The algorithm is guaranteed to converge,
+		however the algorithm will stop iterating when the change in centroids is small.
 
 	"""
 
@@ -1760,7 +1768,7 @@ class MeanShiftClustering( Cluster ):
 			Initialize MeanShift model.
 
 		"""
-		self.model: BaseEstimator = MeanShift( )
+		self.model: BaseEstimator=MeanShift( )
 
 
 	def fit( self, X: np.ndarray ) -> None:
@@ -1903,7 +1911,7 @@ class AffinityPropagationClustering( Cluster ):
 			Initialize AffinityPropagation model.
 
 		"""
-		self.model: BaseEstimator = AffinityPropagation( )
+		self.model: BaseEstimator=AffinityPropagation( )
 
 
 	def fit( self, X: np.ndarray ) -> None:
@@ -2027,7 +2035,23 @@ class BirchClustering( Cluster ):
 
 		Purpose:
 		---------
-		Wrapper for Birch clustering.
+		The Birch builds a tree called the Clustering Feature Tree (CFT) for the given data.
+		The data is essentially lossy compressed to a set of Clustering Feature nodes (CF Nodes).
+		The CF Nodes have a number of subclusters called Clustering Feature subclusters
+		(CF Subclusters) and these CF Subclusters located in the non-terminal
+		CF Nodes can have CF Nodes as children.
+
+		The BIRCH algorithm has two parameters, the threshold and the branching factor.
+		The branching factor limits the number of subclusters in a node and the threshold limits
+		the distance between the entering sample and the existing subclusters.
+
+		This algorithm can be viewed as an instance or data reduction method, since it reduces the
+		input data to a set of subclusters which are obtained directly from the leaves of the CFT.
+		This reduced data can be further processed by feeding it into a global clusterer.
+		This global clusterer can be set by n_clusters. If n_clusters is set to None,
+		the subclusters from the leaves are directly read off, otherwise a global clustering step
+		labels these subclusters into global clusters (labels) and the samples are
+		mapped to the global label of the nearest subcluster.
 
 	"""
 
@@ -2044,7 +2068,7 @@ class BirchClustering( Cluster ):
 			num: Optional[int]
 
 		"""
-		self.model: BaseEstimator = Birch( n_clusters = n_clusters )
+		self.model: BaseEstimator=Birch( n_clusters = n_clusters )
 
 
 	def fit( self, X: np.ndarray ) -> None:
@@ -2174,6 +2198,7 @@ class OpticsClustering( Cluster ):
 		algorithm builds a reachability graph, which assigns each sample both a reachability_
 		distance, and a spot within the cluster ordering_ attribute; these two attributes are
 		assigned when the model is fitted, and are used to determine cluster membership.
+
 		If OPTICS is run with the default value of inf set for max_eps, then DBSCAN style
 		cluster extraction can be performed repeatedly in linear time for any given eps value
 		using the cluster_optics_dbscan method. Setting max_eps to a lower value will result
@@ -4044,7 +4069,13 @@ class ElasticNetRegression( Model ):
 
 		Purpose:
 		--------
-		A Linear regression with combined L1 and L2 for alpha.
+		ElasticNet is a linear regression model trained with both and -norm regularization of the
+		coefficients. This combination allows for learning a sparse model where few of the weights
+		are non-zero like Lasso, while still maintaining the regularization properties of Ridge.
+		We control the convex combination of and using the l1_ratio parameter.
+
+		Elastic-net is useful when there are multiple features that are correlated with one another.
+		Lasso is likely to pick one of these at random, while elastic-net is likely to pick both.
 
 	"""
 
