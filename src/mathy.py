@@ -1137,7 +1137,20 @@ class KMeansClustering( Cluster ):
 
 		Purpose:
 		---------
-		Wrapper class for KMeans clustering.
+		The KMeans algorithm clusters data by trying to separate samples in n groups of equal
+		variance, minimizing a criterion known as the inertia or within-cluster sum-of-squares
+		(see below). This algorithm requires the number of clusters
+		to be specified. It scales well to large number of samples and has been used across a
+		large range of application areas in many different fields.
+
+		The algorithm has three steps. The first step chooses the initial centroids,
+		with the most basic method being to choose samples from the dataset. After initialization,
+		K-means consists of looping between the two other steps. The first step assigns each sample
+		to its nearest centroid. The second step creates new centroids by taking the mean value of
+		all of the samples assigned to each previous centroid. The difference between the old and
+		the new centroids are computed and the algorithm repeats these last two steps until this
+		value is less than a threshold. In other words, it repeats until the centroids do not move
+		significantly.
 
 	"""
 
@@ -1269,7 +1282,17 @@ class KMeansClustering( Cluster ):
 class DbscanClustering( Cluster ):
 	"""
 
-		Wrapper class for DBSCAN clustering.
+		Purpose:
+		---------
+		The DBSCAN algorithm views clusters as areas of high density separated by areas of low
+		density. Due to this rather generic view, clusters found by DBSCAN can be any shape,
+		as opposed to k-means which assumes that clusters are convex shaped. The central component
+		to the DBSCAN is the concept of core samples, which are samples that are in areas of high
+		density. A cluster is therefore a set of core samples, each close to each other (measured
+		by some distance measure) and a set of non-core samples that are close to a core sample
+		(but are not themselves core samples). There are two parameters to the algorithm,
+		min_samples and eps, which define formally what we mean when we say dense. Higher
+		min_samples or lower eps indicate higher density necessary to form a cluster.
 
 	"""
 
@@ -1412,7 +1435,25 @@ class AgglomerativeClusteringModel( Cluster ):
 
 		Purpose:
 		---------
-		Wrapper class for Agglomerative clustering.
+		The AgglomerativeClustering object performs a hierarchical clustering using a
+		bottom up approach: each observation starts in its own cluster, and clusters are
+		successively merged together. The linkage criteria determines the metric used for the merge
+		strategy:
+
+			Ward minimizes the sum of squared differences within all clusters. It is a
+			variance-minimizing approach and in this sense is similar to the k-means objective
+			function but tackled with an agglomerative hierarchical approach.
+
+			Maximum or complete linkage minimizes the maximum distance between observations of
+			pairs of clusters.
+
+			Average linkage minimizes the average of the distances between all observations of
+			pairs of clusters.
+
+		Single linkage minimizes the distance between the closest observations of pairs of clusters.
+		AgglomerativeClustering can also scale to large number of samples when it is used jointly
+		with a connectivity matrix, but is computationally expensive when no connectivity
+		constraints are added between samples: it considers at each step all the possible merges.
 
 	"""
 
@@ -1554,7 +1595,17 @@ class SpectralClusteringModel( Cluster ):
 
 		Purpose:
 		---------
-		Wrapper class for Spectral Cluster.
+		SpectralClustering does a low-dimension embedding of the affinity matrix between samples,
+		followed by a KMeans in the low dimensional space. It is especially efficient if the
+		affinity matrix is sparse and the pyamg module is installed. SpectralClustering requires
+		the number of clusters to be specified. It works well for a small number of clusters but
+		is not advised when using many clusters.
+
+		For two clusters, it solves a convex relaxation of the normalised cuts problem on the
+		similarity graph: cutting the graph in two so that the weight of the edges cut is small
+		compared to the weights of the edges inside each cluster. This criteria is especially
+		interesting when working on images: graph vertices are pixels, and edges of the similarity
+		graph are a function of the gradient of the image.
 
 	"""
 
@@ -1833,7 +1884,13 @@ class AffinityPropagationClustering( Cluster ):
 
 		Purpose:
 		---------
-		Wrapper for AffinityPropagation clustering.
+		AffinityPropagation creates clusters by sending messages between pairs of samples until
+		convergence. A dataset is then described using a small number of exemplars, which are
+		identified as those most representative of other samples. The messages sent between pairs
+		represent the suitability for one sample to be the exemplar of the other, which is updated
+		in response to the values from other pairs. This updating happens iteratively until
+		convergence, at which point the final exemplars are chosen,
+		and hence the final clustering is given.
 
 	"""
 
@@ -2109,9 +2166,19 @@ class BirchClustering( Cluster ):
 class OpticsClustering( Cluster ):
 	"""
 
-			Purpose:
-			---------
-			Wrapper for OPTICS clustering.
+		Purpose:
+		---------
+		The OPTICS algorithm shares many similarities with the DBSCAN algorithm, and can be
+		considered a generalization of DBSCAN that relaxes the eps requirement from a single
+		value to a value range. The key difference between DBSCAN and OPTICS is that the OPTICS
+		algorithm builds a reachability graph, which assigns each sample both a reachability_
+		distance, and a spot within the cluster ordering_ attribute; these two attributes are
+		assigned when the model is fitted, and are used to determine cluster membership.
+		If OPTICS is run with the default value of inf set for max_eps, then DBSCAN style
+		cluster extraction can be performed repeatedly in linear time for any given eps value
+		using the cluster_optics_dbscan method. Setting max_eps to a lower value will result
+		in shorter run times, and can be thought of as the maximum neighborhood radius from
+		each point to find other potential reachable points.
 
 	"""
 
@@ -2254,7 +2321,16 @@ class PerceptronClassifier( Model ):
 
 			Purpose:
 			---------
-			PerceptronClassifier classifier.
+			The Perceptron is another simple classification algorithm suitable for
+			large scale learning. By default:
+				It does not require a learning rate.
+				It is not regularized (penalized).
+				It updates its model only on mistakes.
+
+			The last characteristic implies that the Perceptron is slightly faster to train than
+			SGD with the hinge loss and that the resulting models are sparser. In fact, the
+			Perceptron is a wrapper around the SGDClassifier class using a perceptron loss and a
+			constant learning rate.
 
 	"""
 
