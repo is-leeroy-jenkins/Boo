@@ -109,86 +109,86 @@ class Model( BaseModel ):
 
 	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
-			
+
 			Purpose:
 			---------
 			Fit the linerar_model to the training df.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Feature vector w/shape ( n_samples, n_features ).
 				y (np.ndarray): Target vector w/shape ( n_samples, ).
-	
+
 			Returns:
 			--------
 				None
-			
+
 		"""
 		raise NotImplementedError
 
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
+
 			Purpose:
 			---------
 			Generate predictions from  the trained linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Feature matrix of shape (n_samples, n_features).
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted target_values or class labels.
-			
+
 		"""
 		raise NotImplementedError
 
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-			
+
 			Purpose:
 			---------
 			Compute the core metric (e.g., R²) of the model on test df.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): True target target_values.
-	
+
 			Returns:
 			-----------
 				float: Score value (e.g., R² for regressors).
-			
+
 		"""
 		raise NotImplementedError
 
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-			
+
 			Purpose:
 			---------
 			Evaluate the model using multiple performance metrics.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target_values.
-	
+
 			Returns:
 			-----------
 				dict: Dictionary containing multiple evaluation metrics.
-			
+
 		"""
 		raise NotImplementedError
 
 
 class Metric( BaseModel ):
 	"""
-			
+
 		Purpose:
 		---------
 		Base interface for all preprocessors. Provides standard `fit`, `transform`, and
@@ -213,7 +213,7 @@ class Metric( BaseModel ):
 
 	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
 		"""
-			
+
 			Purpose:
 			---------
 			Fits the preprocessor to the text df.
@@ -300,7 +300,7 @@ class Dataset( Metric ):
 			df (pd.DataFrame): Matrix text vector.
 			target List[ str ]: Name of the target columns.
 			size (float): Proportion of df to use as test set.
-			random_state (int): Seed for reproducibility.
+			rando (int): Seed for reproducibility.
 
 		"""
 		self.dataframe = df
@@ -330,7 +330,7 @@ class Dataset( Metric ):
 
 		'''
 		return [ 'dataframe', 'rows', 'columns', 'target', 'split_data',
-		         'features', 'test_size', 'random_state', 'df', 'scale_data',
+		         'features', 'test_size', 'rando', 'df', 'scale_data',
 		         'numeric_columns', 'text_columns', 'scaler', 'transtuple'
 		         'create_testing_data', 'calculate_statistics', 'create_training_data',
 		         'target_values', 'training_data', 'testing_data', 'training_values',
@@ -398,30 +398,30 @@ class Dataset( Metric ):
 
 	def create_training_data( self ) -> Tuple[ np.ndarray, np.ndarray ]:
 		"""
-		
+
 			Purpose:
 			-----------
 			Return the training features and labels.
-	
+
 			Returns:
 			-----------
 			Tuple[ np.ndarray, np.ndarray ]: ( training_data, training_values )
-				
+
 		"""
 		return tuple( self.training_data, self.training_values )
 
 
 	def create_testing_data( self ) -> Tuple[ np.ndarray, np.ndarray ]:
 		"""
-		
+
 			Purpose:
 			-----------
 			Return the test features and labels.
-	
+
 			Returns:
 			-----------
 			Tuple[ np.ndarray, np.ndarray ]: testing_data, testing_values
-				
+
 		"""
 		return tuple( self.testing_data, self.testing_values )
 
@@ -463,8 +463,7 @@ class StandardScaler( Metric ):
 			if X is None:
 				raise Exception( 'Argument "X" is None' )
 			else:
-				self.pipeline = self.standard_scaler.fit( X )
-				return self.pipeline
+				self.standard_scaler.fit( X )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -495,8 +494,8 @@ class StandardScaler( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.scaled_values = self.standard_scaler.transform( X )
-				return self.scaled_values
+				self.transformed_data = self.standard_scaler.transform( X )
+				return self.transformed_data
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -521,7 +520,7 @@ class MinMaxScaler( Metric ):
 		self.minmax_scaler = MinMaxScaler( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ):
 		"""
 
 			Purpose:
@@ -542,8 +541,7 @@ class MinMaxScaler( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.pipeline = self.minmax_scaler.fit( X )
-				return self.pipeline
+				self.minmax_scaler.fit( X )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -574,8 +572,8 @@ class MinMaxScaler( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.scaled_values = self.minmax_scaler.transform( X )
-				return self.scaled_values
+				self.transformed_data = self.minmax_scaler.transform( X )
+				return self.transformed_data
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -600,7 +598,7 @@ class RobustScaler( Metric ):
 		self.robust_scaler = RobustScaler( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ):
 		"""
 
 
@@ -622,8 +620,7 @@ class RobustScaler( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.pipeline = self.robust_scaler.fit( X )
-				return self.pipeline
+				self.robust_scaler.fit( X )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -678,7 +675,7 @@ class Normalizer( Metric ):
 		self.normal_scaler = Normalizer( norm = norm )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ):
 		"""
 
 
@@ -700,8 +697,7 @@ class Normalizer( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.pipeline = self.normal_scaler.fit( X )
-				return self.pipeline
+				self.normal_scaler.fit( X )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -757,7 +753,7 @@ class OneHotEncoder( Metric ):
 		self.hot_encoder = OneHotEncoder( sparse=False, handle_unknown =unknown )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ):
 		"""
 
 
@@ -779,8 +775,7 @@ class OneHotEncoder( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.pipeline = self.hot_encoder.fit( X )
-				return self.pipeline
+				self.hot_encoder.fit( X )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -839,7 +834,7 @@ class OrdinalEncoder( Metric ):
 		self.ordinal_encoder = OrdinalEncoder( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ):
 		"""
 
 			Purpose:
@@ -860,8 +855,7 @@ class OrdinalEncoder( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.pipeline = self.ordinal_encoder.fit( X )
-				return self.pipeline
+				self.ordinal_encoder.fit( X )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -916,7 +910,7 @@ class MeanImputer( Metric ):
 		self.mean_imputer = SimpleImputer( strategy=strat )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ):
 		"""
 
 
@@ -939,8 +933,7 @@ class MeanImputer( Metric ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.pipeline = self.mean_imputer.fit( X )
-				return self.pipeline
+				self.mean_imputer.fit( X )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -997,7 +990,7 @@ class NearestImputer( Metric ):
 		self.knn_imputer = KNNImputer( )
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
+	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ):
 		"""
 
 			Purpose:
@@ -1016,8 +1009,7 @@ class NearestImputer( Metric ):
 
 		"""
 		try:
-			self.pipeline = self.knn_imputer.fit( X )
-			return self.pipeline
+			self.knn_imputer.fit( X )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -1032,7 +1024,7 @@ class NearestImputer( Metric ):
 
 			Purpose:
 			_________
-			
+
 			Transforms the text df by imputing missing target_values.
 
 			Parameters:
@@ -1060,13 +1052,12 @@ class NearestImputer( Metric ):
 
 
 
-class Clustering( ):
+class Cluster( ):
 	"""
 
         Purpose:
         ---------
 		Abstract base class for clustering models.
-
 		This class defines the interface for clustering models, including methods
 		for fitting, predicting, evaluating, and visualization.
 
@@ -1080,8 +1071,9 @@ class Clustering( ):
 	        ---------
 			Fit the clustering model to the data.
 
-			:param X: The input data of shape (n_samples, n_features).
-			:type X: np.ndarray
+			Parameters:
+			----------
+			X: The input data of shape (n_samples, n_features).
 
 		"""
 		raise NotImplementedError( )
@@ -1094,10 +1086,13 @@ class Clustering( ):
 	        ---------
 			Predict the cluster labels for the input data.
 
-			:param X: Input features to cluster.
-			:type X: np.ndarray
-			:return: Predicted cluster labels.
-			:rtype: np.ndarray
+			Parameters:
+			----------
+			X: Input features to cluster.
+
+			Returns:
+			---------
+			np.ndarray
 
 		"""
 		raise NotImplementedError( )
@@ -1110,10 +1105,13 @@ class Clustering( ):
 	        ---------
 			Evaluate clustering performance using silhouette score.
 
-			:param X: Input features to cluster.
-			:type X: np.ndarray
-			:return: Silhouette score as a float.
-			:rtype: float
+			Parameters:
+			----------
+			X: Input features to cluster.
+
+			Returns:
+			---------
+			float
 
 		"""
 		raise NotImplementedError( )
@@ -1126,691 +1124,1126 @@ class Clustering( ):
 	        ---------
 			Visualize clusters using a 2D scatter plot.
 
-			:param X: Input data of shape (n_samples, 2).
-			:type X: np.ndarray
+			Parameters:
+			----------
+			X: Input data of shape (n_samples, 2).
 
 		"""
 		raise NotImplementedError( )
 
 
-class KMeansClustering(Clustering ):
-    """
-
-        Purpose:
-        ---------
-        Wrapper class for KMeans clustering.
-
-    """
-
-    def __init__(self, n_clusters: int = 8, random_state: int = 42) -> None:
-        """
-            Purpose:
-            ---------
-	        Initialize the KMeans model.
-
-	        :param n_clusters: Number of clusters to form.
-	        :type n_clusters: int
-	        :param random_state: Random seed for reproducibility.
-	        :type random_state: int
-
-        """
-        self.model: BaseEstimator = KMeans(n_clusters=n_clusters, random_state=random_state)
-
-    def fit(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Fit the KMeans model on the dataset.
-
-	        :param X: The input data.
-	        :type X: np.ndarray
-
-        """
-        self.model.fit(X)
-
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """
-
-	        Purpose:
-	        ---------
-	        Predict the closest cluster each sample in X belongs to.
-
-	        :param X: The input data.
-	        :type X: np.ndarray
-	        :return: Cluster labels.
-	        :rtype: np.ndarray
-
-        """
-        return self.model.predict(X)
-
-    def evaluate(self, X: np.ndarray) -> float:
-        """
-
-	        Purpose:
-	        ---------
-	        Evaluate clustering performance using silhouette score.
-
-	        :param X: The input data.
-	        :type X: np.ndarray
-	        :return: Silhouette score.
-	        :rtype: float
-
-        """
-        labels = self.model.predict(X)
-        return silhouette_score(X, labels)
-
-    def visualize_clusters(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Visualize clustering result using a scatter plot.
-
-	        :param X: Input data of shape (n_samples, 2).
-	        :type X: np.ndarray
-
-        """
-        labels = self.model.predict(X)
-        plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='viridis')
-        plt.title("KMeans Clustering")
-        plt.show()
-
-
-class DBSCANClustering(Clustering ):
-    """
-
-    Wrapper class for DBSCAN clustering.
-
-    """
-
-    def __init__(self, eps: float = 0.5, min_samples: int = 5) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Initialize the DBSCAN model.
-
-	        :param eps: Maximum distance between two samples.
-	        :type eps: float
-	        :param min_samples: Minimum samples in a neighborhood.
-	        :type min_samples: int
-
-        """
-        self.model: BaseEstimator = DBSCAN(eps=eps, min_samples=min_samples)
-
-    def fit(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Fit the DBSCAN model to the data.
-
-	        :param X: Input features.
-	        :type X: np.ndarray
-
-        """
-        self.model.fit(X)
-
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """
-
-	        Purpose:
-	        ---------
-	        Predict clusters using DBSCAN fit.
-
-	        :param X: Input features.
-	        :type X: np.ndarray
-	        :return: Cluster labels.
-	        :rtype: np.ndarray
-
-        """
-        return self.model.fit_predict(X)
-
-    def evaluate(self, X: np.ndarray) -> float:
-        """
-
-	        Purpose:
-	        ---------
-	        Evaluate DBSCAN clusters with silhouette score.
-
-	        :param X: Input features.
-	        :type X: np.ndarray
-	        :return: Silhouette score, or -1 if undefined.
-	        :rtype: float
-
-        """
-        labels = self.model.fit_predict(X)
-        return silhouette_score(X, labels) if len(set(labels)) > 1 else -1.0
-
-    def visualize_clusters(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Visualize DBSCAN clusters.
-
-	        :param X: 2D input features.
-	        :type X: np.ndarray
-
-        """
-        labels = self.model.fit_predict(X)
-        plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='plasma')
-        plt.title("DBSCAN Clustering")
-        plt.show()
-
-class AgglomerativeClusteringModel(Clustering ):
-    """
-
-        Purpose:
-        ---------
-        Wrapper class for Agglomerative clustering.
-
-    """
-
-    def __init__(self, n_clusters: int = 2) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Initialize AgglomerativeClustering.
-
-	        :param n_clusters: Number of clusters.
-	        :type n_clusters: int
-
-        """
-        self.model: BaseEstimator = AgglomerativeClustering(n_clusters=n_clusters)
-
-    def fit(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Fit Agglomerative model to data.
-
-	        :param X: Input features.
-	        :type X: np.ndarray
-
-        """
-        self.model.fit(X)
-
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """
-
-	        Purpose:
-	        ---------
-	        Predict clusters using agglomerative clustering.
-
-	        :param X: Input features.
-	        :type X: np.ndarray
-	        :return: Cluster labels.
-	        :rtype: np.ndarray
-
-        """
-        return self.model.fit_predict(X)
-
-    def evaluate(self, X: np.ndarray) -> float:
-        """
-
-	        Purpose:
-	        ---------
-	        Evaluate agglomerative clustering using silhouette score.
-
-	        :param X: Input features.
-	        :type X: np.ndarray
-	        :return: Silhouette score.
-	        :rtype: float
-
-        """
-        labels = self.model.fit_predict(X)
-        return silhouette_score(X, labels)
-
-    def visualize_clusters(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Visualize agglomerative clustering results.
-
-	        :param X: 2D input data.
-	        :type X: np.ndarray
-
-        """
-        labels = self.model.fit_predict(X)
-        plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='tab10')
-        plt.title("Agglomerative Clustering")
-        plt.show()
-
-
-class SpectralClusteringModel(Clustering ):
-    """
-
-        Purpose:
-        ---------
-        Wrapper class for Spectral Clustering.
-
-    """
-
-    def __init__(self, n_clusters: int = 8) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Initialize the SpectralClustering model.
-
-	        :param n_clusters: Number of clusters to form.
-	        :type n_clusters: int
-
-        """
-        self.model: BaseEstimator = SpectralClustering(n_clusters=n_clusters)
-
-
-    def fit(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Fit the SpectralClustering model.
-
-	        :param X: Input data for fitting.
-	        :type X: np.ndarray
-
-        """
-        self.model.fit(X)
-
-
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """
-
-	        Purpose:
-	        ---------
-	        Predict clusters using SpectralClustering.
-
-	        :param X: Input data.
-	        :type X: np.ndarray
-	        :return: Cluster labels.
-	        :rtype: np.ndarray
-
-        """
-        return self.model.fit_predict(X)
-
-
-    def evaluate(self, X: np.ndarray) -> float:
-        """
-
-	        Purpose:
-	        ---------
-	        Evaluate SpectralClustering results.
-
-	        :param X: Input data.
-	        :type X: np.ndarray
-	        :return: Silhouette score.
-	        :rtype: float
-
-        """
-        labels = self.model.fit_predict(X)
-        return silhouette_score(X, labels)
-
-
-    def visualize_clusters(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Visualize Spectral Clustering results.
-
-	        :param X: 2D input data.
-	        :type X: np.ndarray
-
-        """
-        labels = self.model.fit_predict(X)
-        plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='Accent')
-        plt.title("Spectral Clustering")
-        plt.show()
-
-
-class MeanShiftClustering(Clustering ):
-    """
-
-        Purpose:
-        ---------
-        Wrapper class for MeanShift clustering.
-
-    """
-
-
-    def __init__(self) -> None:
-        """
-
-	        Purpose:
-	        ---------
-            Initialize MeanShift model.
-
-        """
-        self.model: BaseEstimator = MeanShift()
-
-
-    def fit(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Fit MeanShift model to the data.
-
-	        :param X: Input data.
-	        :type X: np.ndarray
-
-        """
-        self.model.fit(X)
-
-
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """
-
-	        Purpose:
-	        ---------
-	        Predict clusters using MeanShift.
-
-	        :param X: Input data.
-	        :type X: np.ndarray
-	        :return: Cluster labels.
-	        :rtype: np.ndarray
-
-        """
-        return self.model.fit_predict(X)
-
-
-    def evaluate(self, X: np.ndarray) -> float:
-        """
-
-	        Purpose:
-	        ---------
-	        Evaluate MeanShift clustering.
-
-	        :param X: Input data.
-	        :type X: np.ndarray
-	        :return: Silhouette score.
-	        :rtype: float
-
-        """
-        labels = self.model.fit_predict(X)
-        return silhouette_score(X, labels)
-
-
-    def visualize_clusters(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Visualize MeanShift clustering.
-
-	        :param X: 2D input data.
-	        :type X: np.ndarray
-
-        """
-        labels = self.model.fit_predict(X)
-        plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='Set1')
-        plt.title("MeanShift Clustering")
-        plt.show()
-
-
-class AffinityPropagationClustering(Clustering ):
-    """
-
-        Purpose:
-        ---------
-        Wrapper for AffinityPropagation clustering.
-
-    """
-
-    def __init__(self) -> None:
-        """
-
-	        Purpose:
-	        ---------
-            Initialize AffinityPropagation model.
-
-        """
-        self.model: BaseEstimator = AffinityPropagation()
-
-
-    def fit(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Fit the model to data.
-
-	        :param X: Input features.
-	        :type X: np.ndarray
-
-        """
-        self.model.fit(X)
-
-
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """
-
-	        Purpose:
-	        ---------
-	        Predict clusters.
-
-	        :param X: Input data.
-	        :type X: np.ndarray
-	        :return: Cluster labels.
-	        :rtype: np.ndarray
-
-        """
-        return self.model.fit(X).labels_
-
-
-    def evaluate(self, X: np.ndarray) -> float:
-        """
-
-	        Purpose:
-	        ---------
-	        Evaluate clustering result.
-
-	        :param X: Input features.
-	        :type X: np.ndarray
-	        :return: Silhouette score.
-	        :rtype: float
-
-        """
-        labels = self.model.fit(X).labels_
-        return silhouette_score(X, labels)
-
-
-    def visualize_clusters(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Visualize clustering with AffinityPropagation.
-
-	        :param X: 2D feature matrix.
-	        :type X: np.ndarray
-
-        """
-        labels = self.model.fit(X).labels_
-        plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='Paired')
-        plt.title("AffinityPropagation Clustering")
-        plt.show()
-
-
-class BirchClustering(Clustering ):
-    """
-
-        Purpose:
-        ---------
-        Wrapper for Birch clustering.
-
-    """
-
-    def __init__(self, n_clusters: Optional[int] = None) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Initialize Birch clustering.
-
-	        :param n_clusters: Number of final clusters.
-	        :type n_clusters: Optional[int]
-
-        """
-        self.model: BaseEstimator = Birch(n_clusters=n_clusters)
-
-
-    def fit(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Fit Birch clustering model.
-
-	        :param X: Input features.
-	        :type X: np.ndarray
-
-        """
-        self.model.fit(X)
-
-
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """
-
-	        Purpose:
-	        ---------
-	        Predict clusters with Birch.
-
-	        :param X: Input features.
-	        :type X: np.ndarray
-	        :return: Cluster labels.
-	        :rtype: np.ndarray
-
-        """
-        return self.model.predict(X)
-
-
-    def evaluate(self, X: np.ndarray) -> float:
-        """
-
-	        Purpose:
-	        ---------
-	        Evaluate Birch clustering.
-
-	        :param X: Input data.
-	        :type X: np.ndarray
-	        :return: Silhouette score.
-	        :rtype: float
-
-        """
-        labels = self.model.predict(X)
-        return silhouette_score(X, labels)
-
-
-    def visualize_clusters(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Visualize Birch clustering.
-
-	        :param X: 2D input data.
-	        :type X: np.ndarray
-
-        """
-        labels = self.model.predict(X)
-        plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='Dark2')
-        plt.title("Birch Clustering")
-        plt.show()
-
-
-class OPTICSClustering(Clustering ):
-    """
-
-	        Purpose:
-	        ---------
-            Wrapper for OPTICS clustering.
-
-    """
-
-    def __init__(self, min_samples: int = 5) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Initialize OPTICS model.
-
-	        :param min_samples: Minimum number of samples in neighborhood.
-	        :type min_samples: int
-
-        """
-        self.model: BaseEstimator = OPTICS(min_samples=min_samples)
-
-
-    def fit(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-	        Fit OPTICS model.
-
-	        :param X: Input data.
-	        :type X: np.ndarray
-
-        """
-        self.model.fit(X)
-
-
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """
-
-	        Purpose:
-	        ---------
-	        Predict clusters with OPTICS.
-
-	        :param X: Input data.
-	        :type X: np.ndarray
-	        :return: Cluster labels.
-	        :rtype: np.ndarray
-
-        """
-        return self.model.fit_predict(X)
-
-
-    def evaluate(self, X: np.ndarray) -> float:
-        """
-
-	        Purpose:
-	        ---------
-	        Evaluate OPTICS clustering.
-
-	        :param X: Input features.
-	        :type X: np.ndarray
-	        :return: Silhouette score.
-	        :rtype: float
-
-        """
-        labels = self.model.fit_predict(X)
-        return silhouette_score(X, labels)
-
-
-    def visualize_clusters(self, X: np.ndarray) -> None:
-        """
-
-	        Purpose:
-	        ---------
-
-	        Visualize OPTICS clustering result.
-
-	        :param X: 2D feature input.
-	        :type X: np.ndarray
-
-        """
-        labels = self.model.fit_predict(X)
-        plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='rainbow')
-        plt.title("OPTICS Clustering")
-        plt.show()
+class KMeansClustering( Cluster ):
+	"""
+
+		Purpose:
+		---------
+		Wrapper class for KMeans clustering.
+
+	"""
+
+
+	def __init__( self, num: int=8, rando: int=42 ) -> None:
+		"""
+			Purpose:
+			---------
+			Initialize the KMeans model.
+
+			Parameters:
+			----------
+			num: Number of clusters to form.
+			rando: Random seed for reproducibility.
+			rando: int
+
+		"""
+		self.model: BaseEstimator=KMeans( n_clusters=num, random_state=rando )
+
+
+	def fit( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Fit the KMeans model on the dataset.
+
+			Parameters:
+			----------
+			X: The input data.
+
+		"""
+		try:
+			self.model.fit( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'KMeansClustering'
+			exception.method = 'fit( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def predict( self, X: np.ndarray ) -> np.ndarray:
+		"""
+
+			Purpose:
+			---------
+			Predict the closest cluster each sample in X belongs to.
+
+			Parameters:
+			----------
+			X: The input data.
+
+			Returns:
+			--------
+			np.ndarray
+
+		"""
+		try:
+			return self.model.predict( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'KMeansClustering'
+			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def evaluate( self, X: np.ndarray ) -> float:
+		"""
+
+			Purpose:
+			---------
+			Evaluate clustering performance using silhouette score.
+
+			Parameters:
+			----------
+			X: The input data.
+			X: np.ndarray
+			:return: Silhouette score.
+			:rtype: float
+
+		"""
+		try:
+			labels = self.model.predict( X )
+			return silhouette_score( X, labels )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'KMeansClustering'
+			exception.method = 'evaluate( self, X: np.ndarray ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def visualize_clusters( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Visualize clustering result using a scatter plot.
+
+			Parameters:
+			----------
+			X: Input data of shape (n_samples, 2).
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input arguement "X" is required.' )
+			else:
+				labels = self.model.predict( X )
+				plt.scatter( X[ :, 0 ], X[ :, 1 ], c = labels, cmap = 'viridis' )
+				plt.title( "KMeans Cluster" )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'KMeansClustering'
+			exception.method = 'visualize_clusters( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class DbscanClustering( Cluster ):
+	"""
+
+		Wrapper class for DBSCAN clustering.
+
+	"""
+
+
+	def __init__( self, eps: float=0.5, min: int=5 ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Initialize the DBSCAN model.
+
+			Parameters:
+			----------
+			eps: float
+			min: int
+
+		"""
+		self.model: BaseEstimator = DBSCAN( eps=eps, min_samples=min )
+
+
+	def fit( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Fit the DBSCAN model to the data.
+
+			Parameters:
+			----------
+			X: Input features.
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				self.model.fit( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'DbscanClustering'
+			exception.method = 'fit( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def predict( self, X: np.ndarray ) -> np.ndarray:
+		"""
+
+			Purpose:
+			---------
+			Predict clusters using DBSCAN fit.
+
+			Parameters:
+			----------
+			X: Input features.
+
+			Returns:
+			---------
+			np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				return self.model.fit_predict( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'DbscanClustering'
+			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def evaluate( self, X: np.ndarray ) -> float:
+		"""
+
+			Purpose:
+			---------
+			Evaluate DBSCAN clusters with silhouette score.
+
+			Parameters:
+			----------
+			X: Input features.
+			X: np.ndarray
+
+			Returns:
+			---------
+			float
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.fit_predict( X )
+				return silhouette_score( X, labels ) if len( set( labels ) ) > 1 else -1.0
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'DbscanClustering'
+			exception.method = 'evaluate( self, X: np.ndarray ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def visualize_clusters( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Visualize DBSCAN clusters.
+
+			Parameters:
+			----------
+			X: 2D input features.
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.fit_predict( X )
+				plt.scatter( X[ :, 0 ], X[ :, 1 ], c = labels, cmap = 'plasma' )
+				plt.title( 'DBSCAN Cluster' )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'DbscanClustering'
+			exception.method = 'visualize_clusters( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class AgglomerativeClusteringModel( Cluster ):
+	"""
+
+		Purpose:
+		---------
+		Wrapper class for Agglomerative clustering.
+
+	"""
+
+
+	def __init__( self, num: int=2 ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Initialize AgglomerativeClustering.
+
+			Parameters:
+			----------
+			num: int
+
+		"""
+		self.model: BaseEstimator=AgglomerativeClustering( n_clusters=num )
+
+
+	def fit( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Fit Agglomerative model to data.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				self.model.fit( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AgglomerativeClusteringModel'
+			exception.method = 'fit( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def predict( self, X: np.ndarray ) -> np.ndarray:
+		"""
+
+			Purpose:
+			---------
+			Predict clusters using agglomerative clustering.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+			Returns:
+			---------
+			np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				return self.model.fit_predict( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AgglomerativeClusteringModel'
+			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def evaluate( self, X: np.ndarray ) -> float:
+		"""
+
+			Purpose:
+			---------
+			Evaluate agglomerative clustering using silhouette score.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+			Returns:
+			-------
+			float
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.fit_predict( X )
+				return silhouette_score( X, labels )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AgglomerativeClusteringModel'
+			exception.method = 'evaluate( self, X: np.ndarray ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def visualize_clusters( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Visualize agglomerative clustering results.
+
+			Parameters:
+			----------
+			X: 2D input data.
+			X: np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.fit_predict( X )
+				plt.scatter( X[ :, 0 ], X[ :, 1 ], c = labels, cmap = 'tab10' )
+				plt.title( 'Agglomerative Cluster' )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AgglomerativeClusteringModel'
+			exception.method = 'visualize_clusters( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class SpectralClusteringModel( Cluster ):
+	"""
+
+		Purpose:
+		---------
+		Wrapper class for Spectral Cluster.
+
+	"""
+
+
+	def __init__( self, num: int=8 ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Initialize the SpectralClustering model.
+
+			Parameters:
+			----------
+			num: int
+
+		"""
+		self.model: BaseEstimator=SpectralClustering( n_clusters=num )
+
+
+	def fit( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Fit the SpectralClustering model.
+
+			Parameters:
+			----------
+			X:  np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				self.model.fit( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'SpectralClusteringModel'
+			exception.method = 'fit( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def predict( self, X: np.ndarray ) -> np.ndarray:
+		"""
+
+			Purpose:
+			---------
+			Predict clusters using SpectralClustering.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+
+			Return:
+			--------
+			np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				return self.model.fit_predict( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'SpectralClusteringModel'
+			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def evaluate( self, X: np.ndarray ) -> float:
+		"""
+
+			Purpose:
+			---------
+			Evaluate SpectralClustering results.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+			Return:
+			--------
+			float
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.fit_predict( X )
+				return silhouette_score( X, labels )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'SpectralClusteringModel'
+			exception.method = 'evaluate( self, X: np.ndarray ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def visualize_clusters( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Visualize Spectral Cluster results.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.fit_predict( X )
+				plt.scatter( X[ :, 0 ], X[ :, 1 ], c = labels, cmap = 'Accent' )
+				plt.title( 'Spectral Cluster' )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'SpectralClusteringModel'
+			exception.method = 'visualize_clusters( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class MeanShiftClustering( Cluster ):
+	"""
+
+		Purpose:
+		---------
+		Wrapper class for MeanShift clustering.
+
+	"""
+
+
+	def __init__( self ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Initialize MeanShift model.
+
+		"""
+		self.model: BaseEstimator = MeanShift( )
+
+
+	def fit( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Fit MeanShift model to the data.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				self.model.fit( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'MeanShiftClustering'
+			exception.method = 'fit( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def predict( self, X: np.ndarray ) -> np.ndarray:
+		"""
+
+			Purpose:
+			---------
+			Predict clusters using MeanShift.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+			Return:
+			--------
+			np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				return self.model.fit_predict( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'MeanShiftClustering'
+			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def evaluate( self, X: np.ndarray ) -> float:
+		"""
+
+			Purpose:
+			---------
+			Evaluate MeanShift clustering.
+
+			Parameters:
+			----------
+			X:  np.ndarray
+
+			Return:
+			--------
+			float
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.fit_predict( X )
+				return silhouette_score( X, labels )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'MeanShiftClustering'
+			exception.method = 'evaluate( self, X: np.ndarray ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def visualize_clusters( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Visualize MeanShift clustering.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.fit_predict( X )
+				plt.scatter( X[ :, 0 ], X[ :, 1 ], c = labels, cmap = 'Set1' )
+				plt.title( 'MeanShift Cluster' )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'MeanShiftClustering'
+			exception.method = 'visualize_clusters( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class AffinityPropagationClustering( Cluster ):
+	"""
+
+		Purpose:
+		---------
+		Wrapper for AffinityPropagation clustering.
+
+	"""
+
+
+	def __init__( self ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Initialize AffinityPropagation model.
+
+		"""
+		self.model: BaseEstimator = AffinityPropagation( )
+
+
+	def fit( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Fit the model to data.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				self.model.fit( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AffinityPropagationClustering'
+			exception.method = 'fit( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def predict( self, X: np.ndarray ) -> np.ndarray:
+		"""
+
+			Purpose:
+			---------
+			Predict clusters.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+			Returns:
+			--------
+			np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				return self.model.fit( X ).labels_
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AffinityPropagationClustering'
+			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def evaluate( self, X: np.ndarray ) -> float:
+		"""
+
+			Purpose:
+			---------
+			Evaluate clustering result.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+			Return:
+			--------
+			float
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.fit( X ).labels_
+				return silhouette_score( X, labels )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AffinityPropagationClustering'
+			exception.method = 'evaluate( self, X: np.ndarray ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def visualize_clusters( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Visualize clustering with AffinityPropagation.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.fit( X ).labels_
+				plt.scatter( X[ :, 0 ], X[ :, 1 ], c = labels, cmap = 'Paired' )
+				plt.title( 'AffinityPropagation Cluster' )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'AffinityPropagationClustering'
+			exception.method = 'visualize_clusters( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class BirchClustering( Cluster ):
+	"""
+
+		Purpose:
+		---------
+		Wrapper for Birch clustering.
+
+	"""
+
+
+	def __init__( self, n_clusters: Optional[ int ] = None ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Initialize Birch clustering.
+
+			Parameters:
+			----------
+			num: Optional[int]
+
+		"""
+		self.model: BaseEstimator = Birch( n_clusters = n_clusters )
+
+
+	def fit( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Fit Birch clustering model.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				self.model.fit( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BirchClustering'
+			exception.method = 'fit( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def predict( self, X: np.ndarray ) -> np.ndarray:
+		"""
+
+			Purpose:
+			---------
+			Predict clusters with Birch.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+			Returns:
+			--------
+			np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				return self.model.predict( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BirchClustering'
+			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def evaluate( self, X: np.ndarray ) -> float:
+		"""
+
+			Purpose:
+			---------
+			Evaluate Birch clustering.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+			Return:
+			--------
+			float
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.predict( X )
+				return silhouette_score( X, labels )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BirchClustering'
+			exception.method = 'evaluate( self, X: np.ndarray ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def visualize_clusters( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Visualize Birch clustering.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.predict( X )
+				plt.scatter( X[ :, 0 ], X[ :, 1 ], c = labels, cmap = 'Dark2' )
+				plt.title( 'Birch Cluster' )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'BirchClustering'
+			exception.method = 'visualize_clusters( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+class OpticsClustering( Cluster ):
+	"""
+
+			Purpose:
+			---------
+			Wrapper for OPTICS clustering.
+
+	"""
+
+
+	def __init__( self, min: int=5 ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Initialize OPTICS model.
+
+			Parameters:
+			----------
+			min: int
+
+		"""
+		self.model: BaseEstimator = OPTICS( min_samples=min )
+
+
+	def fit( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Fit OPTICS model.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				self.model.fit( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'OpticsClustering'
+			exception.method = 'fit( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def predict( self, X: np.ndarray ) -> np.ndarray:
+		"""
+
+			Purpose:
+			---------
+			Predict clusters with OPTICS.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+			Return:
+			--------
+			np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				return self.model.fit_predict( X )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'OpticsClustering'
+			exception.method = 'predict( self, X: np.ndarray ) -> np.ndarray'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def evaluate( self, X: np.ndarray ) -> float:
+		"""
+
+			Purpose:
+			---------
+			Evaluate OPTICS clustering.
+
+			Parameters:
+			----------
+			X: Input features.
+			X: np.ndarray
+
+			Returns:
+			---------
+			float
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.fit_predict( X )
+				return silhouette_score( X, labels )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'OpticsClustering'
+			exception.method = 'evaluate( self, X: np.ndarray ) -> float'
+			error = ErrorDialog( exception )
+			error.show( )
+
+
+	def visualize_clusters( self, X: np.ndarray ) -> None:
+		"""
+
+			Purpose:
+			---------
+			Visualize OPTICS clustering result.
+
+			Parameters:
+			----------
+			X: np.ndarray
+
+		"""
+		try:
+			if X is None:
+				raise Exception( 'The input argument "X" is required.' )
+			else:
+				labels = self.model.fit_predict( X )
+				plt.scatter( X[ :, 0 ], X[ :, 1 ], c=labels, cmap='rainbow' )
+				plt.title( 'OPTICS Cluster' )
+				plt.show( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Mathy'
+			exception.cause = 'OpticsClustering'
+			exception.method = 'visualize_clusters( self, X: np.ndarray ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
 
 
 class PerceptronClassifier( Model ):
@@ -1849,7 +2282,7 @@ class PerceptronClassifier( Model ):
 		self.median_absolute_error: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
 
 			Purpose:
@@ -1863,7 +2296,7 @@ class PerceptronClassifier( Model ):
 
 			Returns:
 			--------
-			object | None
+			object
 
 		"""
 		try:
@@ -1872,13 +2305,12 @@ class PerceptronClassifier( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.perceptron_classifier.fit( X, y )
-				return self.pipeline
+				self.perceptron_classifier.fit( X, y )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
 			exception.cause = 'PerceptronClassifier'
-			exception.method = 'train( self, X: np.ndarray, y: np.ndarray ) -> Pipeline'
+			exception.method = 'train( self, X: np.ndarray, y: np.ndarray )'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -1896,7 +2328,7 @@ class PerceptronClassifier( Model ):
 
 			Returns:
 			---------
-			np.ndarray: Predicted binary labels.
+			np.ndarray
 
 		"""
 		try:
@@ -1929,7 +2361,7 @@ class PerceptronClassifier( Model ):
 
 			Returns:
 			---------
-				float: Accuracy accuracy.
+			float
 
 		"""
 		try:
@@ -2583,7 +3015,7 @@ class LinearRegressor( Model ):
 		the least-squares estimate becomes highly sensitive to random errors in the observed target,
 		producing a large variance. This situation of multicollinearity can arise, for example,
 		when data are collected without an experimental design.
-	
+
 	"""
 
 
@@ -2593,12 +3025,12 @@ class LinearRegressor( Model ):
 			Purpose:
 			-----------
 			Initialize the Linear Regression linerar_model.
-	
+
 			Parameters:
 			-----------
 			fit_intercept (bool): Whether to include an intercept term. Default is True.
 			copy_X (bool): Whether to copy the feature matrix. Default is True.
-					
+
 		"""
 		super( ).__init__( )
 		self.linerar_regressor: LinearRegression=LinearRegression( fit_intercept=True, copy_X=True )
@@ -2618,7 +3050,7 @@ class LinearRegressor( Model ):
 			Purpose:
 			-----------
 			Fit the OLS regression linerar_model.
-	
+
 			Parameters:
 			-----------
 			X (pd.DataFrame): Feature matrix.
@@ -2627,7 +3059,7 @@ class LinearRegressor( Model ):
 			Returns:
 			--------
 			Pipeline
-			
+
 		"""
 		try:
 			if X is None:
@@ -2651,15 +3083,15 @@ class LinearRegressor( Model ):
 			Purpose:
 			-----------
 			Predict target target_values using the OLS linerar_model.
-	
+
 			Parameters:
 			-----------
 			X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 			np.ndarray: Predicted target target_values.
-			
+
 		"""
 		try:
 			if X is None:
@@ -2683,16 +3115,16 @@ class LinearRegressor( Model ):
 			Purpose:
 			-----------
 			Compute the R-squared accuracy of the OLS model.
-	
+
 			Parameters:
 			-----------
 			X (np.ndarray): Test features.
 			y (np.ndarray): True target target_values.
-	
+
 			Returns:
 			-----------
 			float: R-squared accuracy.
-			
+
 		"""
 		try:
 			if X is None:
@@ -2719,16 +3151,16 @@ class LinearRegressor( Model ):
 			Purpose:
 			-----------
 			Evaluate the model using multiple regression metrics.
-	
+
 			Parameters:
 			-----------
 			X (pd.DataFrame): Feature matrix.
 			y (np.ndarray): Ground truth target_values.
-	
+
 			Returns:
 			-----------
 			dict: Dictionary of MAE, MSE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -2762,16 +3194,16 @@ class LinearRegressor( Model ):
 
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-			
+
 			Purpose:
 			-----------
 			Plot actual vs predicted target_values.
-	
+
 			Parameters:
 			-----------
 			X (np.ndarray): Input features.
 			y (np.ndarray): True target target_values.
-			
+
 		"""
 		try:
 			if X is None:
@@ -3043,7 +3475,7 @@ class RidgeClassification( Model ):
 
 class RidgeRegression( Model ):
 	"""
-		
+
 		Purpose:
 		--------
 		Solves a regression model where the loss function is the linear least squares function and
@@ -3061,7 +3493,7 @@ class RidgeRegression( Model ):
 		and reduces the variance of the estimates. Larger values specify stronger alpha.
 		Alpha corresponds to 1 / (2C) in other linear models such as LogisticRegression or LinearSVC.
 		If an array is passed, penalties are assumed to be specific to the targets.
-		
+
 	"""
 
 
@@ -3072,14 +3504,14 @@ class RidgeRegression( Model ):
 			Purpose:
 			-----------
 			Initialize the RidgeRegressor linerar_model.
-	
+
 			Attributes:
 			-----------
 				linerar_model (Ridge): Internal RidgeRegressor regression linerar_model.
 					Parameters:
 						alpha (float): Regularization strength. Default is 1.0.
 						solver (str): Solver to use. Default is 'auto'.
-					
+
 		"""
 		super( ).__init__( )
 		self.alpha: float=alpha
@@ -3104,7 +3536,7 @@ class RidgeRegression( Model ):
 			Purpose:
 			-----------
 			Fit the RidgeRegressor regression linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
@@ -3113,7 +3545,7 @@ class RidgeRegression( Model ):
 			Returns:
 			--------
 				Pipeline
-				
+
 		"""
 		try:
 			if X is None:
@@ -3139,15 +3571,15 @@ class RidgeRegression( Model ):
 			Purpose:
 			-----------
 			Project target target_values using the RidgeRegressor linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted target target_values.
-			
+
 		"""
 		try:
 			if X is None:
@@ -3171,16 +3603,16 @@ class RidgeRegression( Model ):
 			Purpose:
 			-----------
 			Compute the R-squared accuracy for the Ridge model.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
-	
+
 			Returns:
 			-----------
 				float: R-squared accuracy.
-				
+
 		"""
 		try:
 			if X is None:
@@ -3206,16 +3638,16 @@ class RidgeRegression( Model ):
 			-----------
 				Evaluates the Ridge model
 				using multiple metrics.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Evaluation metrics including MAE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -3254,16 +3686,16 @@ class RidgeRegression( Model ):
 			Purpose:
 			-----------
 			Plot predicted vs actual target_values.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				None
-			
+
 		"""
 		try:
 			if X is None:
@@ -3290,7 +3722,7 @@ class RidgeRegression( Model ):
 
 class LassoRegression( Model ):
 	"""
-		
+
 		Purpose:
 		--------
 		Linear Model trained with L1 for the regularizer. Regularization improves the
@@ -3305,7 +3737,7 @@ class LassoRegression( Model ):
 		alpha. Alpha corresponds to 1 / (2C) in other linear models such as
 		LogisticRegression or LinearSVC. If an array is passed, penalties are assumed to be
 		specific to the targets. Hence they must correspond in number.
-		
+
 	"""
 
 
@@ -3317,14 +3749,14 @@ class LassoRegression( Model ):
 			Purpose:
 			-----------
 			Initialize the LassoRegression linerar_model.
-	
+
 			Attributes:
 			-----------
 				linerar_model (Lasso): Internal LassoRegression regression linerar_model.
 					Parameters:
 						alpha (float): Regularization strength. Default is 1.0.
 						max_iter (int): Maximum number of iterations. Default is 1000.
-					
+
 		"""
 		super( ).__init__( )
 		self.alpha: float=alph
@@ -3348,7 +3780,7 @@ class LassoRegression( Model ):
 			--------
 			Fit the LassoRegression
 			regression linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
@@ -3357,7 +3789,7 @@ class LassoRegression( Model ):
 			Returns:
 			--------
 				Pipeline
-			
+
 		"""
 		try:
 			if X is None:
@@ -3387,11 +3819,11 @@ class LassoRegression( Model ):
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted target target_values.
-			
+
 		"""
 		try:
 			if X is None:
@@ -3415,16 +3847,16 @@ class LassoRegression( Model ):
 			Purpose:
 			-----------
 			Compute R^2 accuracy for the Lasso model.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target_values.
-	
+
 			Returns:
 			-----------
 				float: R^2 accuracy.
-				
+
 		"""
 		try:
 			if X is None:
@@ -3456,11 +3888,11 @@ class LassoRegression( Model ):
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Dictionary of MAE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -3499,12 +3931,12 @@ class LassoRegression( Model ):
 			Purpose:
 			-----------
 			Plot actual vs. predicted target_values.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input feature matrix.
 				y (np.ndarray): Ground truth target_values.
-				
+
 		"""
 		try:
 			if X is None:
@@ -3531,11 +3963,11 @@ class LassoRegression( Model ):
 
 class ElasticNetRegression( Model ):
 	"""
-	
+
 		Purpose:
 		--------
 		A Linear regression with combined L1 and L2 for alpha.
-	
+
 	"""
 
 
@@ -3546,7 +3978,7 @@ class ElasticNetRegression( Model ):
 			Purpose:
 			-----------
 			Initialize the ElasticNet Regressor linerar_model.
-	
+
 
 			Parameters:
 			----------
@@ -3555,7 +3987,7 @@ class ElasticNetRegression( Model ):
 			max (int): Maximum number of iterations. Default is 200.
 			rando (int): Number of random iterations. Default is 42.
 			select (str): selection
-					
+
 		"""
 		super( ).__init__( )
 		self.alpha: int=alpha
@@ -3581,7 +4013,7 @@ class ElasticNetRegression( Model ):
 			Purpose:
 			-----------
 			Fit the ElasticNetRegression regression linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
@@ -3590,7 +4022,7 @@ class ElasticNetRegression( Model ):
 			Returns:
 			--------
 				Pipeline
-			
+
 		"""
 		try:
 			if X is None:
@@ -3616,15 +4048,15 @@ class ElasticNetRegression( Model ):
 			Purpose:
 			-----------
 			Predict target target_values using the ElasticNetRegression linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted target target_values.
-				
+
 		"""
 		try:
 			if X is None:
@@ -3648,16 +4080,16 @@ class ElasticNetRegression( Model ):
 			Purpose:
 			-----------
 			Compute R^2 accuracy on the test set.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				float: R^2 accuracy.
-				
+
 		"""
 		try:
 			if X is None:
@@ -3687,11 +4119,11 @@ class ElasticNetRegression( Model ):
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target_values.
-	
+
 			Returns:
 			-----------
 				dict: Evaluation metrics.
-			
+
 		"""
 		try:
 			if X is None:
@@ -3729,12 +4161,12 @@ class ElasticNetRegression( Model ):
 			Purpose:
 			-----------
 			Plot actual vs. predicted regression output.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): True target target_values.
-				
+
 		"""
 		try:
 			if X is None:
@@ -3761,7 +4193,7 @@ class ElasticNetRegression( Model ):
 
 class LogisticRegressor( Model ):
 	"""
-	
+
 		Purpose:
 		--------
 		This class implements regularized logistic regression using the ‘liblinear’ library,
@@ -3773,7 +4205,7 @@ class LogisticRegressor( Model ):
 		alpha. The ‘liblinear’ solver supports both L1 and L2 alpha,
 		with a dual formulation only for the L2 alpha. The Elastic-Net alpha
 		is only supported by the ‘saga’ solver.
-	
+
 	"""
 
 
@@ -3788,7 +4220,7 @@ class LogisticRegressor( Model ):
 			-----------
 				max (int): Maximum number of iterations. Default is 1000.
 				solver (str): Algorithm to use in optimization. Default is 'lbfgs'.
-					
+
 		"""
 		super( ).__init__( )
 		self.alpha: float=c
@@ -3812,7 +4244,7 @@ class LogisticRegressor( Model ):
 			Purpose:
 			-----------
 			Fit the logistic regression linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
@@ -3821,7 +4253,7 @@ class LogisticRegressor( Model ):
 			Returns:
 			--------
 				Pipeline
-				
+
 		"""
 		try:
 			if X is None:
@@ -3846,15 +4278,15 @@ class LogisticRegressor( Model ):
 			Purpose:
 			-----------
 			Predict class labels using the logistic regression linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted class labels.
-			
+
 		"""
 		try:
 			if X is None:
@@ -3877,16 +4309,16 @@ class LogisticRegressor( Model ):
 			Purpose:
 			-----------
 			Compute classification accuracy.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): True class labels.
-	
+
 			Returns:
 			-----------
 				float: Accuracy accuracy.
-				
+
 		"""
 		try:
 			if X is None:
@@ -3911,12 +4343,12 @@ class LogisticRegressor( Model ):
 			Purpose:
 			-----------
 			Evaluate the classifier using multiple classification metrics.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features of shape (n_samples, n_features).
 				y (np.ndarray): True labels of shape (n_samples,).
-	
+
 			Returns:
 			-----------
 				dict: Dictionary containing:
@@ -3927,7 +4359,7 @@ class LogisticRegressor( Model ):
 					- ROC AUC (float)
 					- Matthews Corrcoef (float)
 					- Confusion Matrix (List[List[int]])
-				
+
 		"""
 		try:
 			if X is None:
@@ -3965,16 +4397,16 @@ class LogisticRegressor( Model ):
 			Purpose:
 			-----------
 			Plot confusion matrix for classifier predictions.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): True class labels.
-	
+
 			Returns:
 			-----------
 				None
-			
+
 		"""
 		try:
 			if X is None:
@@ -3999,7 +4431,7 @@ class LogisticRegressor( Model ):
 
 class BayesianRidgeRegression( Model ):
 	"""
-	
+
 		Purpose:
 		--------
 		Bayesian regression techniques can be used to include alpha parameters in the
@@ -4015,7 +4447,7 @@ class BayesianRidgeRegression( Model ):
 		Note that according to A New View of Automatic Relevance Determination
 		(Wipf and Nagarajan, 2008) these update rules do not guarantee that the marginal likelihood
 		is increasing between two consecutive iterations of the optimization.
-	
+
 	"""
 
 
@@ -4026,7 +4458,7 @@ class BayesianRidgeRegression( Model ):
 			Purpose:
 			-----------
 				Initializes the BayesianRidgeRegression.
-					
+
 		"""
 		super( ).__init__( )
 		self.max_iter: int=max
@@ -4054,7 +4486,7 @@ class BayesianRidgeRegression( Model ):
 			-----------
 				Fit the Bayesian RidgeRegressor
 				regression linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
@@ -4063,7 +4495,7 @@ class BayesianRidgeRegression( Model ):
 			Returns:
 			--------
 				Pipeline
-			
+
 		"""
 		try:
 			if X is None:
@@ -4089,15 +4521,15 @@ class BayesianRidgeRegression( Model ):
 			-----------
 				Predicts target target_values
 				using the Bayesian linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted target_values.
-			
+
 		"""
 		try:
 			if X is None:
@@ -4121,16 +4553,16 @@ class BayesianRidgeRegression( Model ):
 			-----------
 				Compute the R^2 accuracy
 				of the model on test df.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): True target_values.
-	
+
 			Returns:
 			-----------
 				float: R^2 accuracy.
-			
+
 		"""
 		try:
 			if X is None:
@@ -4155,16 +4587,16 @@ class BayesianRidgeRegression( Model ):
 			Purpose:
 			-----------
 			Evaluate the Bayesian model with regression metrics.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): True target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Dictionary of evaluation metrics.
-			
+
 		"""
 		try:
 			if X is None:
@@ -4202,12 +4634,12 @@ class BayesianRidgeRegression( Model ):
 			Purpose:
 			-----------
 			Plot predicted vs. actual target_values.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): True target target_values.
-				
+
 		"""
 		try:
 			if X is None:
@@ -4234,7 +4666,7 @@ class BayesianRidgeRegression( Model ):
 
 class StochasticDescentClassification( Model ):
 	"""
-	
+
 		Purpose:
 		--------
 		Linear classifiers (SVM, logistic regression, etc.) with SGD training. This estimator
@@ -4253,7 +4685,7 @@ class StochasticDescentClassification( Model ):
 		L1 or a combination of both (Elastic Net). If the parameter update crosses the 0.0 value
 		because of the regularizer, the update is truncated to 0.0 to allow for learning sparse
 		 models and achieve online feature selection.
-	
+
 	"""
 
 
@@ -4263,13 +4695,13 @@ class StochasticDescentClassification( Model ):
 			Purpose:
 			-----------
 			Initialize the SGDClassifier linerar_model.
-	
+
 			Parameters:
 			-----------
 			loss (str): Loss function to use. Defaults to 'hinge'.
 			reg (str): Regularization function to use. Default is 'l2'.
 			max (int): Maximum number of passes over the df. Default is 1000.
-					
+
 		"""
 		super( ).__init__( )
 		self.loss: str=loss
@@ -4292,7 +4724,7 @@ class StochasticDescentClassification( Model ):
 			Purpose:
 			-----------
 			Fit the SGD classifier linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
@@ -4301,7 +4733,7 @@ class StochasticDescentClassification( Model ):
 			Returns:
 			--------
 				Pipeline
-			
+
 		"""
 		try:
 			if X is None:
@@ -4326,15 +4758,15 @@ class StochasticDescentClassification( Model ):
 				Purpose:
 				-----------
 					Predict class labels using the SGD classifier.
-		
+
 				Parameters:
 				-----------
 					X (pd.DataFrame): Feature matrix.
-		
+
 				Returns:
 				-----------
 					np.ndarray: Predicted class labels.
-			
+
 		"""
 		try:
 			if X is None:
@@ -4357,16 +4789,16 @@ class StochasticDescentClassification( Model ):
 			Purpose:
 			-----------
 			Compute R^2 accuracy for the SGDRegressor.
-	
+
 			Parameters:
 			-----------
 			X (np.ndarray): Test features.
 			y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 			float: R^2 accuracy.
-			
+
 		"""
 		try:
 			if X is None:
@@ -4390,12 +4822,12 @@ class StochasticDescentClassification( Model ):
 			Purpose:
 			-----------
 			Evaluate the classifier using standard metrics.
-	
+
 			Parameters:
 			-----------
 			X (np.ndarray): Feature matrix of shape (n_samples, n_features).
 			y (np.ndarray): True class labels of shape (n_samples,).
-	
+
 			Returns:
 			-----------
 			dict: Dictionary containing:
@@ -4481,7 +4913,7 @@ class StochasticDescentClassification( Model ):
 
 class StochasticDescentRegression( Model ):
 	"""
-	
+
 		Purpose:
 		--------
 		Stochastic Gradient Descent (SGD) is a simple yet very efficient approach to discriminative
@@ -4512,13 +4944,13 @@ class StochasticDescentRegression( Model ):
 			Purpose:
 			-----------
 			Initialize the SGDRegressor
-	
+
 			Parameters:
 			-----------
 			- alpha (float): Regulation
 			- reg (str): Regularization term. Default is 'l2'.
 			- max (int): Maximum number of passes. Default is 1000.
-					
+
 		"""
 		super( ).__init__( )
 		self.loss: str=loss
@@ -4543,7 +4975,7 @@ class StochasticDescentRegression( Model ):
 			Purpose:
 			-----------
 			Fit the SGD regressor linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
@@ -4552,7 +4984,7 @@ class StochasticDescentRegression( Model ):
 			Returns:
 			--------
 				Pipeline
-			
+
 		"""
 		try:
 			if X is None:
@@ -4577,15 +5009,15 @@ class StochasticDescentRegression( Model ):
 			Purpose:
 			-----------
 			Predict target_values using the SGD regressor linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted target_values.
-			
+
 		"""
 		try:
 			if X is None:
@@ -4642,16 +5074,16 @@ class StochasticDescentRegression( Model ):
 			Purpose:
 			-----------
 			Evaluate regression model performance.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): True target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Evaluation metrics dictionary.
-			
+
 		"""
 		try:
 			if X is None:
@@ -4722,7 +5154,7 @@ class StochasticDescentRegression( Model ):
 
 class NearestNeighborClassification( Model ):
 	"""
-	
+
 		Purpose:
 		--------
 		The principle behind the k-nearest neighbor methods is to find a predefined number of
@@ -4733,7 +5165,7 @@ class NearestNeighborClassification( Model ):
 		most common choice. Neighbors-based methods are known as non-generalizing
 		machine rate methods, since they simply “remember” all of its training df
 		(possibly transformed into a fast indexing structure such as a Ball Tree or KD Tree).
-	
+
 	"""
 
 
@@ -4744,13 +5176,13 @@ class NearestNeighborClassification( Model ):
 			Purpose:
 			-----------
 			Initialize the KNeighborsClassifier linerar_model.
-	
+
 			Attributes:
 			-----------
 				linerar_model (KNeighborsClassifier): Internal non-parametric classifier.
 					Parameters:
 						n_neighbors (int): Number of neighbors to use. Default is 5.
-					
+
 		"""
 		super( ).__init__( )
 		self.n_neighbors: int=num
@@ -4771,16 +5203,16 @@ class NearestNeighborClassification( Model ):
 			Purpose:
 			--------
 			Fit the KNN classifier linerar_model.
-	
+
 			Parameters:
 			-----------
 			X (pd.DataFrame): Feature matrix.
 			y (np.ndarray): Class labels.
-	
+
 			Returns:
 			-------
 			None
-			
+
 		"""
 		try:
 			if X is None:
@@ -4806,15 +5238,15 @@ class NearestNeighborClassification( Model ):
 			Purpose:
 			-----------
 			Predict class labels using the KNN classifier.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted class labels.
-			
+
 		"""
 		try:
 			if X is None:
@@ -4840,16 +5272,16 @@ class NearestNeighborClassification( Model ):
 			Purpose:
 			-----------
 			Compute classification accuracy for k-NN.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth labels.
-	
+
 			Returns:
 			-----------
 				float: Accuracy accuracy.
-			
+
 		"""
 		try:
 			if X is None:
@@ -4880,7 +5312,7 @@ class NearestNeighborClassification( Model ):
 			-----------
 				X (np.ndarray): Feature matrix of shape (n_samples, n_features).
 				y (np.ndarray): True class labels of shape (n_samples,).
-	
+
 			Returns:
 			-----------
 				dict: Dictionary containing:
@@ -4891,7 +5323,7 @@ class NearestNeighborClassification( Model ):
 					- ROC AUC (float)
 					- Matthews Corrcoef (float)
 					- Confusion Matrix (List[List[int]])
-				
+
 		"""
 		try:
 			if X is None:
@@ -4966,7 +5398,7 @@ class NearestNeighborClassification( Model ):
 
 class NearestNeighborRegression( Model ):
 	"""
-	
+
 		Purpose:
 		--------
 		The principle behind k-nearest neighbor methods is to find a predefined number of
@@ -4977,7 +5409,7 @@ class NearestNeighborRegression( Model ):
 		most common choice. Neighbors-based methods are known as non-generalizing
 		machine rate methods, since they simply “remember” all of its training df
 		(possibly transformed into a fast indexing structure such as a Ball Tree or KD Tree).
-	
+
 	"""
 
 
@@ -4988,13 +5420,13 @@ class NearestNeighborRegression( Model ):
 			Purpose:
 			-----------
 			Initialize the KNeighborsRegressor linerar_model.
-	
+
 			Parameters:
 			-----------
 				linerar_model (KNeighborsRegressor): Internal non-parametric regressor.
 					Parameters:
 						n_neighbors (int): Number of neighbors to use. Default is 5.
-					
+
 		"""
 		super( ).__init__( )
 		self.n_neighbors = num
@@ -5017,7 +5449,7 @@ class NearestNeighborRegression( Model ):
 			Purpose:
 			-----------
 			Fit the KNN regressor linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
@@ -5026,7 +5458,7 @@ class NearestNeighborRegression( Model ):
 			Returns:
 			--------
 				Pipeline
-			
+
 		"""
 		try:
 			if X is None:
@@ -5051,15 +5483,15 @@ class NearestNeighborRegression( Model ):
 			Purpose:
 			-----------
 			Predict target_values using the KNN regressor.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted target_values.
-			
+
 		"""
 		try:
 			if X is None:
@@ -5082,16 +5514,16 @@ class NearestNeighborRegression( Model ):
 			Purpose:
 			-----------
 			Compute R^2 accuracy for k-NN regressor.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
-	
+
 			Returns:
 			-----------
 				float: R-squared accuracy.
-				
+
 		"""
 		try:
 			if X is None:
@@ -5122,11 +5554,11 @@ class NearestNeighborRegression( Model ):
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): True target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Dictionary of evaluation scores.
-			
+
 		"""
 		try:
 			if X is None:
@@ -5164,16 +5596,16 @@ class NearestNeighborRegression( Model ):
 			Purpose:
 			-----------
 				Plot predicted vs actual target_values.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				None
-			
+
 		"""
 		try:
 			if X is None:
@@ -5687,7 +6119,7 @@ class DecisionTreeRegression( Model ):
 
 class RandomForestClassification( Model ):
 	"""
-	
+
 		Purpose:
 		--------
 		In random forests, each tree in the ensemble is built from a sample drawn with replacement
@@ -5704,7 +6136,7 @@ class RandomForestClassification( Model ):
 		errors can cancel out. Random forests achieve a reduced variance
 		by combining diverse trees, sometimes at the cost of a slight increase in bias.
 		The variance reduction is often significant hence yielding an overall better model.
-	
+
 	"""
 
 
@@ -5714,7 +6146,7 @@ class RandomForestClassification( Model ):
 			Purpose:
 			-----------
 			Initializes the RandomForestClassification.
-			
+
 		"""
 		super( ).__init__( )
 		self.n_estimators: int=est
@@ -5749,7 +6181,7 @@ class RandomForestClassification( Model ):
 			--------
 				Pipeline
 
-			
+
 		"""
 		try:
 			if X is None:
@@ -5775,15 +6207,15 @@ class RandomForestClassification( Model ):
 				-------
 				Predict class labels
 				using the SGD classifier.
-		
+
 				Parameters:
 				----------
 					X (pd.DataFrame): Feature matrix.
-		
+
 				Returns:
 				---------
 					np.ndarray: Predicted class labels.
-			
+
 		"""
 		try:
 			if X is None:
@@ -5806,16 +6238,16 @@ class RandomForestClassification( Model ):
 			Purpose:
 			-----------
 			Compute R^2 accuracy for the SGDRegressor.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				float: R^2 accuracy.
-			
+
 		"""
 		try:
 			if X is None:
@@ -5840,16 +6272,16 @@ class RandomForestClassification( Model ):
 			Purpose:
 			-----------
 			Evaluate the Lasso model using multiple regression metrics.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Dictionary of MAE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -5949,14 +6381,14 @@ class RandomForestRegression( Model ):
 			Purpose:
 			-----------
 			Initialize the RidgeRegressor linerar_model.
-	
+
 			Parameters:
 			-----------
 			alpha (float): Regularization strength. Default is 1.0.
 			solver (str): Solver to use. Default is 'gini'.
 			max (int): maximum iterations
 			rando (int): random seed value
-					
+
 		"""
 		super( ).__init__( )
 		self.n_estimators: int=est
@@ -5980,7 +6412,7 @@ class RandomForestRegression( Model ):
 			Purpose:
 			-----------
 			Fit the RidgeRegressor regression linerar_model.
-	
+
 			Parameters:
 			-----------
 			X (pd.DataFrame): Feature matrix.
@@ -5989,7 +6421,7 @@ class RandomForestRegression( Model ):
 			Returns:
 			--------
 				Pipeline
-				
+
 		"""
 		try:
 			if X is None:
@@ -6014,15 +6446,15 @@ class RandomForestRegression( Model ):
 			Purpose:
 			-----------
 			Project target target_values using the RidgeRegressor linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted target target_values.
-			
+
 		"""
 		try:
 			if X is None:
@@ -6045,16 +6477,16 @@ class RandomForestRegression( Model ):
 			Purpose:
 			-----------
 			Compute the R-squared accuracy for the Ridge model.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
-	
+
 			Returns:
 			-----------
 				float: R-squared accuracy.
-				
+
 		"""
 		try:
 			if X is None:
@@ -6079,16 +6511,16 @@ class RandomForestRegression( Model ):
 			Purpose:
 			-----------
 			Evaluates the Ridge model using multiple metrics.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Evaluation metrics including MAE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -6126,16 +6558,16 @@ class RandomForestRegression( Model ):
 			Purpose:
 			-----------
 			Plot predicted vs actual target_values.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				None
-			
+
 		"""
 		try:
 			if X is None:
@@ -6174,7 +6606,7 @@ class GradientBoostingClassification( Model ):
 		The features are always randomly permuted at each split. Therefore, the best found split
 		may vary, even with the same training data and max_features=n_features, if the improvement
 		of the criterion is identical for several splits enumerated during the search of the best
-		split. To obtain a deterministic behaviour during fitting, random_state has to be fixed.
+		split. To obtain a deterministic behaviour during fitting, rando has to be fixed.
 
 	"""
 
@@ -6503,9 +6935,9 @@ class AdaBoostClassification( Model ):
 
 	def __init__( self, est: int=100, max: int=3 ) -> None:
 		"""
-		
+
 			Initialize the Random Forest Classifier.
-			
+
 		"""
 		super( ).__init__( )
 		self.max_depth: int=max
@@ -6523,12 +6955,12 @@ class AdaBoostClassification( Model ):
 
 	def scale( self ) -> None:
 		"""
-			
+
 			Purpose:
 			-----------
 			Scale numeric features using selected scaler.
 
-				
+
 		"""
 		if self.scaler_type is None:
 			return
@@ -6565,7 +6997,7 @@ class AdaBoostClassification( Model ):
 			Returns:
 			--------
 				Pipeline
-			
+
 		"""
 		try:
 			if X is None:
@@ -6586,7 +7018,7 @@ class AdaBoostClassification( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
+
 			Predict class labels
 			using the SGD classifier.
 
@@ -6597,7 +7029,7 @@ class AdaBoostClassification( Model ):
 			Returns:
 			-----------
 			np.ndarray: Predicted class labels.
-			
+
 		"""
 		try:
 			if X is None:
@@ -6616,19 +7048,19 @@ class AdaBoostClassification( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
+
 			Compute R^2 accuracy
 			for the SGDRegressor.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				float: R^2 accuracy.
-			
+
 		"""
 		try:
 			if X is None:
@@ -6650,19 +7082,19 @@ class AdaBoostClassification( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]:
 		"""
-		
+
 			Evaluate the Lasso model
 			using multiple regression metrics.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Dictionary of MAE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -6742,7 +7174,7 @@ class AdaBoostRegression( Model ):
 		such as small decision trees) on repeatedly modified versions of the df.
 		The predictions from all of them are then combined through a weighted
 		majority vote (or sum) to produce the final prediction.
-		
+
 	"""
 
 
@@ -6758,7 +7190,7 @@ class AdaBoostRegression( Model ):
 			----------
 			estimators (int): The number of estimators used. Default is 100.
 			max (int): The maximum number of iterations. Default is '3'.
-					
+
 		"""
 		super( ).__init__( )
 		self.max_depth: int=max
@@ -6780,16 +7212,16 @@ class AdaBoostRegression( Model ):
 			Purpose:
 			--------
 				Fit the RidgeRegressor regression linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Target vector.
-	
+
 			Returns:
 			-----------
 				None
-				
+
 		"""
 		try:
 			if X is None:
@@ -6810,18 +7242,18 @@ class AdaBoostRegression( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
+
 			Project target target_values
 			using the RidgeRegressor linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted target target_values.
-			
+
 		"""
 		try:
 			if X is None:
@@ -6845,16 +7277,16 @@ class AdaBoostRegression( Model ):
 			--------
 			Compute the R-squared
 			accuracy for the Ridge model.
-	
+
 			Parameters:
 			----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
-	
+
 			Returns:
 			--------
 				float: R-squared accuracy.
-				
+
 		"""
 		try:
 			if X is None:
@@ -6875,19 +7307,19 @@ class AdaBoostRegression( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-			
+
 			Evaluates the Ridge model
 			using multiple metrics.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Evaluation metrics including MAE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -6921,19 +7353,19 @@ class AdaBoostRegression( Model ):
 
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-		
+
 			Plot predicted vs
 			actual target_values.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				None
-			
+
 		"""
 		try:
 			if X is None:
@@ -6979,9 +7411,9 @@ class BaggingClassification( Model ):
 
 	def __init__( self, base: object=None, num: int=10, max: int=1, rando: int=42 ) -> None:
 		"""
-		
+
 			Initialize the BaggingClassification.
-			
+
 		"""
 		super( ).__init__( )
 		self.base_estimator: object=base
@@ -7035,7 +7467,7 @@ class BaggingClassification( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
+
 			Predict class labels
 			using the SGD classifier.
 
@@ -7046,7 +7478,7 @@ class BaggingClassification( Model ):
 			Returns:
 			-----------
 				np.ndarray: Predicted class labels.
-			
+
 		"""
 		try:
 			if X is None:
@@ -7065,19 +7497,19 @@ class BaggingClassification( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
+
 			Compute R^2 accuracy
 			for the SGDRegressor.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				float: R^2 accuracy.
-			
+
 		"""
 		try:
 			if X is None:
@@ -7099,19 +7531,19 @@ class BaggingClassification( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]:
 		"""
-		
+
 			Evaluate the Lasso model
 			using multiple regression metrics.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Dictionary of MAE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -7199,7 +7631,7 @@ class BaggingRegression( Model ):
 		 As they provide a way to reduce overfitting, bagging methods work best with strong and
 		 complex models (e.g., fully developed decision trees), in contrast with boosting methods
 		 which usually work best with weak models (e.g., shallow decision trees).
-		
+
 	"""
 
 
@@ -7209,12 +7641,12 @@ class BaggingRegression( Model ):
 			Purpose:
 			--------
 			Initialize the RidgeRegressor linerar_model.
-	
+
 			Parameters:
 			-----------
 			alpha (float): Regularization strength. Default is 1.0.
 			solver (str): Solver to use. Default is 'auto'.
-					
+
 		"""
 		super( ).__init__( )
 		self.base_estimator: object=base
@@ -7239,7 +7671,7 @@ class BaggingRegression( Model ):
 			Purpose:
 			--------
 			Fit the RidgeRegressor regression linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
@@ -7248,7 +7680,7 @@ class BaggingRegression( Model ):
 			Returns:
 			--------
 				Pipeline
-				
+
 		"""
 		try:
 			if X is None:
@@ -7269,18 +7701,18 @@ class BaggingRegression( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
+
 			Project target target_values
 			using the RidgeRegressor linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted target target_values.
-			
+
 		"""
 		try:
 			if X is None:
@@ -7299,19 +7731,19 @@ class BaggingRegression( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
+
 			Compute the R-squared
 			accuracy for the Ridge model.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
-	
+
 			Returns:
 			-----------
 				float: R-squared accuracy.
-				
+
 		"""
 		try:
 			if X is None:
@@ -7332,19 +7764,19 @@ class BaggingRegression( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-			
+
 			Evaluates the Ridge model
 			using multiple metrics.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Evaluation metrics including MAE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -7378,19 +7810,19 @@ class BaggingRegression( Model ):
 
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-		
+
 			Plot predicted vs
 			actual target_values.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				None
-			
+
 		"""
 		try:
 			if X is None:
@@ -7417,22 +7849,22 @@ class BaggingRegression( Model ):
 
 class VotingClassification( Model ):
 	"""
-	
+
 		Purpose:
 		--------
 		The idea behind the VotingClassification is to combine conceptually different machine rate
 		classifiers and use a majority vote or the average predicted probabilities (soft vote)
 		to predict the class labels. Such a classifier can be useful for a set of equally well
 		performing model in order to balance out their individual weaknesses.
-	
+
 	"""
 
 
 	def __init__( self, estimators: List[ (str, object) ], vote= 'hard' ) -> None:
 		"""
-		
+
 			Initialize the RandomForestClassification.
-			
+
 		"""
 		super( ).__init__( )
 		self.estimators: List[ ( str, object ) ]=estimators
@@ -7463,7 +7895,7 @@ class VotingClassification( Model ):
 			Returns:
 			--------
 				Pipeline
-			
+
 		"""
 		try:
 			if X is None:
@@ -7484,7 +7916,7 @@ class VotingClassification( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
+
 			Predict class labels
 			using the SGD classifier.
 
@@ -7495,7 +7927,7 @@ class VotingClassification( Model ):
 			Returns:
 			-----------
 				np.ndarray: Predicted class labels.
-			
+
 		"""
 		try:
 			if X is None:
@@ -7514,19 +7946,19 @@ class VotingClassification( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
+
 			Compute R^2 accuracy
 			for the SGDRegressor.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				float: R^2 accuracy.
-			
+
 		"""
 		try:
 			if X is None:
@@ -7547,19 +7979,19 @@ class VotingClassification( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]:
 		"""
-		
+
 			Evaluate the Lasso model
 			using multiple regression metrics.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Dictionary of MAE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -7653,7 +8085,7 @@ class VotingRegression( Model ):
 			-----------
 			alpha (float): Regularization strength. Default is 1.0.
 			solver (str): Solver to use. Default is 'auto'.
-					
+
 		"""
 		super( ).__init__( )
 		self.estimators: List[ ( str, object ) ]=est
@@ -7674,7 +8106,7 @@ class VotingRegression( Model ):
 			Purpose:
 			--------
 			Fit the RidgeRegressor regression linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
@@ -7683,7 +8115,7 @@ class VotingRegression( Model ):
 			Returns:
 			--------
 				Pipeline
-				
+
 		"""
 		try:
 			if X is None:
@@ -7709,15 +8141,15 @@ class VotingRegression( Model ):
 			---------
 			Project target target_values
 			using the RidgeRegressor linerar_model.
-	
+
 			Parameters:
 			-----------
 			X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-------
 			np.ndarray: Predicted target target_values.
-			
+
 		"""
 		try:
 			if X is None:
@@ -7736,19 +8168,19 @@ class VotingRegression( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
+
 			Compute the R-squared
 			accuracy for the Ridge model.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
-	
+
 			Returns:
 			-----------
 				float: R-squared accuracy.
-				
+
 		"""
 		try:
 			if X is None:
@@ -7769,19 +8201,19 @@ class VotingRegression( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-			
+
 			Evaluates the Ridge model
 			using multiple metrics.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Evaluation metrics including MAE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -7815,19 +8247,19 @@ class VotingRegression( Model ):
 
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-		
+
 			Plot predicted vs
 			actual target_values.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				None
-			
+
 		"""
 		try:
 			if X is None:
@@ -7863,16 +8295,16 @@ class StackClassification( Model ):
 		as input of a final estimator. Note that estimators_ are fitted on the full X while
 		final_estimator_ is trained using cross-validated predictions of the base
 		estimators using cross_val_predict.
-	
+
 	"""
 
 
 	def __init__( self, est: List[ Tuple[ str, ClassifierMixin ] ],
 	              final: Optional[ ClassifierMixin ]=None ) -> None:
 		"""
-		
+
 			Initialize the RandomForestClassification.
-			
+
 		"""
 		super( ).__init__( )
 		self.estimators:  List[ Tuple[ str, ClassifierMixin ] ]=est
@@ -7902,7 +8334,7 @@ class StackClassification( Model ):
 			Returns:
 			--------
 				Pipeline
-			
+
 		"""
 		try:
 			if X is None:
@@ -7923,18 +8355,18 @@ class StackClassification( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
+
 			Predict class labels
 			using the SGD classifier.
-		
+
 			Parameters:
 			-----------
 			X (pd.DataFrame): Feature matrix.
-		
+
 			Returns:
 			-----------
 			np.ndarray: Predicted class labels.
-			
+
 		"""
 		try:
 			if X is None:
@@ -7953,19 +8385,19 @@ class StackClassification( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
+
 			Compute R^2 accuracy
 			for the SGDRegressor.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				float: R^2 accuracy.
-			
+
 		"""
 		try:
 			if X is None:
@@ -7986,19 +8418,19 @@ class StackClassification( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict[ str, float ]:
 		"""
-		
+
 			Evaluate the Lasso model
 			using multiple regression metrics.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Dictionary of MAE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -8079,7 +8511,7 @@ class StackRegression( Model ):
 			their output as input of a final estimator. Note that estimators_ are fitted on the
 			full X while final_estimator_ is trained using cross-validated predictions of
 			the base estimators using cross_val_predict.
-		
+
 	"""
 
 
@@ -8102,7 +8534,7 @@ class StackRegression( Model ):
 
 			final - ClassifierMixin, default=None
 			A classifier which will be used to combine the base estimators.
-					
+
 		"""
 		super( ).__init__( )
 		self.estimators: List[ Tuple[ str, ClassifierMixin ] ]=estimators
@@ -8125,7 +8557,7 @@ class StackRegression( Model ):
 			Purpose:
 			---------
 			Fit the RidgeRegressor regression linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
@@ -8134,7 +8566,7 @@ class StackRegression( Model ):
 			Returns:
 			--------
 				Pipeline
-				
+
 		"""
 		try:
 			if X is None:
@@ -8155,18 +8587,18 @@ class StackRegression( Model ):
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
 		"""
-			
+
 			Project target target_values
 			using the RidgeRegressor linerar_model.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
-	
+
 			Returns:
 			-----------
 				np.ndarray: Predicted target target_values.
-			
+
 		"""
 		try:
 			if X is None:
@@ -8185,19 +8617,19 @@ class StackRegression( Model ):
 
 	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
 		"""
-		
+
 			Compute the R-squared
 			accuracy for the Ridge model.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Test features.
 				y (np.ndarray): Ground truth target_values.
-	
+
 			Returns:
 			-----------
 				float: R-squared accuracy.
-				
+
 		"""
 		try:
 			if X is None:
@@ -8218,19 +8650,19 @@ class StackRegression( Model ):
 
 	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
 		"""
-			
+
 			Evaluates the Ridge model
 			using multiple metrics.
-	
+
 			Parameters:
 			-----------
 				X (pd.DataFrame): Feature matrix.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				dict: Evaluation metrics including MAE, RMSE, R², etc.
-			
+
 		"""
 		try:
 			if X is None:
@@ -8264,21 +8696,21 @@ class StackRegression( Model ):
 
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:
 		"""
-		
+
 			Purpose:
 			---------
 			Plot predicted vs
 			actual target_values.
-	
+
 			Parameters:
 			-----------
 				X (np.ndarray): Input features.
 				y (np.ndarray): Ground truth target target_values.
-	
+
 			Returns:
 			-----------
 				None
-			
+
 		"""
 		try:
 			if X is None:
