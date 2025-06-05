@@ -1219,8 +1219,10 @@ class KMeansClustering( Cluster ):
 			----------
 			X: The input data.
 			X: np.ndarray
-			:return: Silhouette score.
-			:rtype: float
+
+			Returns:
+			---------
+			float
 
 		"""
 		try:
