@@ -4,7 +4,7 @@ agents
 beautifulsoup4
 crawl4ai
 camelot-py
-docx
+python-docx
 dotenv
 datasets
 FreeSimpleGUI

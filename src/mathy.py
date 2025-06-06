@@ -86,7 +86,7 @@ from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Tuple
 
 
-class Model( BaseModel ):
+class Model(  ):
 	"""
 		
 		Purpose:
@@ -94,7 +94,6 @@ class Model( BaseModel ):
 		Abstract base class that defines the interface for all linerar_model wrappers.
 	
 	"""
-	pipeline: Optional[ Pipeline ]
 
 
 	class Config:
@@ -186,7 +185,7 @@ class Model( BaseModel ):
 		raise NotImplementedError
 
 
-class Metric( BaseModel ):
+class Metric(  ):
 	"""
 
 		Purpose:
@@ -195,20 +194,12 @@ class Metric( BaseModel ):
 	    `fit_transform` methods.
 
 	"""
-	pipeline: Optional[ Pipeline ]
-	transformed_values: Optional[ np.ndarray ]
-	transformed_data: Optional[ np.ndarray ]
-
-
-	class Config:
-		arbitrary_types_allowed = True
-		extra = 'ignore'
-		allow_mutation = True
 
 
 	def __init__( self ):
 		self.pipeline = None
-		self.transformed_values = None
+		self.transformed_data = [ ]
+		self.transformed_values = [ ]
 
 
 	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> None:
@@ -220,8 +211,8 @@ class Metric( BaseModel ):
 
 			Parameters:
 			-----------
-				X (pd.DataFrame): Feature matrix.
-				y (Optional[np.ndarray]): Optional target array.
+			X (pd.DataFrame): Feature matrix.
+			y (Optional[np.ndarray]): Optional target array.
 
 		"""
 		raise NotImplementedError
@@ -236,11 +227,11 @@ class Metric( BaseModel ):
 
 			Parameters:
 			-----------
-				X (pd.DataFrame): Feature matrix.
+			X (pd.DataFrame): Feature matrix.
 
 			Returns:
 			-----------
-				np.ndarray: Transformed feature matrix.
+			np.ndarray: Transformed feature matrix.
 
 		"""
 		raise NotImplementedError
@@ -255,12 +246,12 @@ class Metric( BaseModel ):
 
 			Parameters:
 			-----------
-				X (pd.DataFrame): Feature matrix.
-				y (Optional[np.ndarray]): Optional target array.
+			X (pd.DataFrame): Feature matrix.
+			y (Optional[np.ndarray]): Optional target array.
 
 			Returns:
 			-----------
-				np.ndarray: Transformed feature matrix.
+			np.ndarray: Transformed feature matrix.
 
 		"""
 		try:
@@ -303,6 +294,7 @@ class Dataset( Metric ):
 			rando (int): Seed for reproducibility.
 
 		"""
+		super( ).__init__( )
 		self.dataframe = df
 		self.data = df[ 1:, : ]
 		self.rows = len( df )
@@ -1164,6 +1156,7 @@ class KMeansClustering( Cluster ):
 			rando: int
 
 		"""
+		super( ).__init__( )
 		self.model: BaseEstimator=KMeans( n_clusters=num, random_state=rando )
 
 
@@ -1306,6 +1299,7 @@ class DbscanClustering( Cluster ):
 			min: int
 
 		"""
+		super( ).__init__( )
 		self.model: BaseEstimator=DBSCAN( eps=eps, min_samples=min )
 
 
@@ -1466,6 +1460,7 @@ class AgglomerativeClusteringModel( Cluster ):
 			num: int
 
 		"""
+		super( ).__init__( )
 		self.model: BaseEstimator=AgglomerativeClustering( n_clusters=num )
 
 
@@ -1618,6 +1613,7 @@ class SpectralClusteringModel( Cluster ):
 			num: int
 
 		"""
+		super( ).__init__( )
 		self.model: BaseEstimator=SpectralClustering( n_clusters=num )
 
 
@@ -1768,6 +1764,7 @@ class MeanShiftClustering( Cluster ):
 			Initialize MeanShift model.
 
 		"""
+		super( ).__init__( )
 		self.model: BaseEstimator=MeanShift( )
 
 
@@ -1911,6 +1908,7 @@ class AffinityPropagationClustering( Cluster ):
 			Initialize AffinityPropagation model.
 
 		"""
+		super( ).__init__( )
 		self.model: BaseEstimator=AffinityPropagation( )
 
 
@@ -2068,6 +2066,7 @@ class BirchClustering( Cluster ):
 			num: Optional[int]
 
 		"""
+		super( ).__init__( )
 		self.model: BaseEstimator=Birch( n_clusters = n_clusters )
 
 
@@ -2220,6 +2219,7 @@ class OpticsClustering( Cluster ):
 			min: int
 
 		"""
+		super( ).__init__( )
 		self.model: BaseEstimator = OPTICS( min_samples=min )
 
 

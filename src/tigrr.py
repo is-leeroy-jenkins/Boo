@@ -91,7 +91,7 @@ except LookupError:
 	nltk.download( 'words' )
 
 
-class Text( BaseModel ):
+class Text( ):
 	'''
 	
 		Purpose:
@@ -130,22 +130,6 @@ class Text( BaseModel ):
 	    create_tfidf( tokens: List[ str ], max_features=1000, prep=True ) -> tuple
 	    
 	'''
-	lemmatizer: WordNetLemmatizer
-	stemmer: PorterStemmer
-	words: Optional[ List[ str ] ]
-	tokens: Optional[ List[ str ] ]
-	lines: Optional[ List[ str ] ]
-	pages: Optional[ List[ str ] ]
-	paragraphs: Optional[ List[ str ] ]
-	chunck: Optional[ List[ str ] ]
-	cleaned_lines: Optional[ List[ str ] ]
-	cleaned_tokens: Optional[ List[ str ] ]
-	cleaned_pages: Optional[ List[ str ] ]
-	removed: Optional[ List[ str ] ]
-	raw_pages: Optional[ List[ str ] ]
-	stop_words: Optional[ List[ str ] ]
-	frequency_distribution: Optional[ Dict[ str, float ] ]
-	conditional_distribution: Optional[ Dict[ str, float ] ]
 
 
 	def __init__( self ):
@@ -170,20 +154,20 @@ class Text( BaseModel ):
 		self.cleaned_lines = [ ]
 		self.cleaned_tokens = [ ]
 		self.cleaned_pages = [ ]
-		self.removed = List[ str ]
-		self.raw_pages = List[ str ]
-		self.stop_words = List[ str ]
+		self.removed = [ ]
+		self.raw_pages = [ ]
+		self.stop_words = [ ]
+		self.vocabulary = [ ]
 		self.frequency_distribution = { }
 		self.conditional_distribution = { }
-		self.encoding = None
-		self.vocabulary = None
-		self.file_path = None
-		self.raw_input = None
-		self.normalized = None
-		self.lemmatized = None
-		self.tokenized = None
+		self.encoding = ''
+		self.file_path = ''
+		self.raw_input = ''
+		self.normalized = ''
+		self.lemmatized = ''
+		self.tokenized = ''
+		self.cleaned_text = ''
 		self.corrected = None
-		self.cleaned_text = None
 		self.lowercase = None
 		self.translator = None
 		self.tokenizer = None
@@ -221,7 +205,7 @@ class Text( BaseModel ):
 		         'clean_files', 'convert_jsonl', 'conditional_distribution' ]
 	
 	
-	def load_text( self, path: str ) -> str:
+	def load_text( self, path: str ) -> str | None:
 		try:
 			if path is None:
 				raise Exception( 'The argument "path" is required' )
@@ -238,7 +222,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def collapse_whitespace( self, text: str ) -> str:
+	def collapse_whitespace( self, text: str ) -> str | None:
 		"""
 
 			Purpose:
@@ -265,7 +249,7 @@ class Text( BaseModel ):
 				self.words = re.sub( r'[ \t]+', ' ', self.raw_input )
 				self.cleaned_lines = [ line.strip( ) for line in self.words.splitlines( ) ]
 				self.lines = [ line for line in self.cleaned_lines if line ]
-				return ' '.join( self.lines )
+				return ''.join( self.lines )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
@@ -275,7 +259,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def correct_errors( self, text: str ) -> str:
+	def correct_errors( self, text: str ) -> str | None:
 		"""
 
 			Purpose:
@@ -307,7 +291,7 @@ class Text( BaseModel ):
 				self.lowercase = self.raw_input.lower( )
 				self.tokens = nltk.word_tokenize( self.lowercase )
 				self.words = [ str( Word( w ).correct( ) ) for w in self.tokens ]
-				_retval = ' '.join( self.words )
+				_retval = ''.join( self.words )
 				return _retval
 		except Exception as e:
 			exception = Error( e )
@@ -318,7 +302,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def remove_punctuation( self, text: str ) -> str:
+	def remove_punctuation( self, text: str ) -> str | None:
 		"""
 
 			Purpose:
@@ -353,7 +337,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def remove_special( self, text: str ) -> str:
+	def remove_special( self, text: str ) -> str | None:
 		"""
 
 			Purpose:
@@ -383,7 +367,7 @@ class Text( BaseModel ):
 				raise Exception( 'The argument "text" is required.' )
 			else:
 				cleaned = [ ]
-				keepers = [ '(', ')', '$', '.', ';', ':' ]
+				keepers = [ '(', ')', '$', '. ', ';', ':' ]
 				for char in text:
 					if char in keepers:
 						cleaned.append( char )
@@ -399,7 +383,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def remove_html( self, text: str ) -> str:
+	def remove_html( self, text: str ) -> str | None:
 		"""
 
 			Purpose:
@@ -438,7 +422,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def remove_errors( self, text: str ) -> str:
+	def remove_errors( self, text: str ) -> str | None:
 		"""
 			
 			Purpose:
@@ -462,13 +446,13 @@ class Text( BaseModel ):
 				self.raw_input = text
 				self.lowercase = self.raw_input.lower( )
 				self.vocabulary = set( w.lower( ) for w in words.words( ) )
-				allowed_symbols = { '(', ')', '$' }
+				allowed_symbols = { '(', ')', '$', '. ', }
 				self.tokens = re.findall( r'\b[\w.]+\b|[()$]', self.lowercase )
 				def is_valid_token( token: str ) -> bool:
-					return (token in self.vocabulary or token.replace( '.', '',
+					return (token in self.vocabulary or token.replace( '. ', ' ',
 						1 ).isdigit( ) or token in allowed_symbols)
 			self.cleaned_lines = [ tok for tok in self.tokens if is_valid_token( tok ) ]
-			return ' '.join( self.cleaned_lines )
+			return ''.join( self.cleaned_lines )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
@@ -478,7 +462,7 @@ class Text( BaseModel ):
 			error.show( )
 
 
-	def remove_html( self, text: str ) -> str:
+	def remove_html( self, text: str ) -> str | None:
 		"""
 	
 			
@@ -514,7 +498,7 @@ class Text( BaseModel ):
 			error.show( )
 
 	
-	def remove_markdown( self, text: str ) -> str:
+	def remove_markdown( self, text: str ) -> str | None:
 		"""
 	
 	
@@ -551,7 +535,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def remove_stopwords( self, text: str ) -> str:
+	def remove_stopwords( self, text: str ) -> str | None:
 		"""
 
 			Purpose:
@@ -594,7 +578,7 @@ class Text( BaseModel ):
 			error.show( )
 		
 		
-	def clean_space( self, text: str ) -> str:
+	def clean_space( self, text: str ) -> str | None:
 		"""
 
 			Purpose:
@@ -634,7 +618,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]:
+	def remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ] | None:
 		"""
 
 			Purpose:
@@ -703,7 +687,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def normalize_text( self, text: str ) -> str:
+	def normalize_text( self, text: str ) -> str | None:
 		"""
 	
 			Purpose:
@@ -742,7 +726,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def lemmatize_tokens( self, tokens: List[ str ] ) -> List[ str ]:
+	def lemmatize_tokens( self, tokens: List[ str ] ) -> List[ str ] | None:
 		"""
 	
 			Purpose:
@@ -773,9 +757,9 @@ class Text( BaseModel ):
 				raise Exception( 'The argument "tokens" is required.' )
 			else:
 				self.tokens = tokens
-				pos_tags = nltk.pos_tag( self.tokens )
-				self.lemmatized = [ self.lemmatizer.lemmatize( word, get_wordnet_pos( tag ) ) for
-				                    word, tag in pos_tags ]
+				_tags = nltk.pos_tag( self.tokens )
+				_pos = get_wordnet_pos( tag )
+				self.lemmatized = [ self.lemmatizer.lemmatize( w, _pos ) for w, tag in _tags ]
 				return self.lemmatized
 		except Exception as e:
 			exception = Error( e )
@@ -786,7 +770,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def tokenize_text( self, text: str ) -> List[ str ]:
+	def tokenize_text( self, text: str ) -> List[ str ] | None:
 		'''
 
 			Purpose:
@@ -805,11 +789,10 @@ class Text( BaseModel ):
 			if text is None:
 				raise Exception( 'The argument "text" was None' )
 			else:
-				self.tokens = nltk.word_tokenize( text )
-				self.words = [ w for w in self.tokens ]
-				_retokens = [ re.sub( r'[^\w"-]', '', word ) for word in self.words if
-				              word.strip( ) ]
-				return _retokens
+				_tokens = nltk.word_tokenize( text )
+				self.words = [ t for t in _tokens ]
+				self.tokens = [ re.sub( r'[^\w"-]', '', w ) for w in self.words if  w.strip( ) ]
+				return self.tokens
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
@@ -819,7 +802,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def tiktokenize( self, text: str, encoding: str='cl100k_base' ) -> List[ str ]:
+	def tiktokenize( self, text: str, encoding: str='cl100k_base' ) -> List[ str ] | None:
 		"""
 
 			Purpose:
@@ -850,11 +833,10 @@ class Text( BaseModel ):
 			else:
 				self.encoding = tiktoken.get_encoding( encoding )
 				_token_ids = self.encoding.encode( text )
-				self.tokens = nltk.word_tokenize( text )
-				self.words = [ w for w in self.tokens ]
-				_retokens = [ re.sub( r'[^\w"-]', '', word ) for word in self.words if
-				              word.strip( ) ]
-				return _retokens
+				_tokens = [ t for t in nltk.word_tokenize( text ) ]
+				_words = [ re.sub( r'[^\w"-]', '', w ) for w in _tokens if w.strip( ) ]
+				self.tokens.append( _words )
+				return self.tokens
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
@@ -864,7 +846,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def tokenize_words( self, words: List[ str ] ) -> List[ str ]:
+	def tokenize_words( self, words: List[ str ] ) -> List[ str ] | None:
 		"""
 	
 			Purpose:
@@ -902,7 +884,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def tokenize_sentences( self, text: str ) -> List[ str ]:
+	def tokenize_sentences( self, text: str ) -> List[ str ] | None:
 		"""
 
 			Purpose:
@@ -936,7 +918,7 @@ class Text( BaseModel ):
 	
 	
 	def chunk_text( self, text: str, size: int=50, return_as_string: bool=True ) -> List[
-		List[ str ] ]:
+		List[ str ] ] | None:
 		"""
 	
 			Purpose:
@@ -987,7 +969,7 @@ class Text( BaseModel ):
 	
 	
 	def chunk_words( self, words: List[ str ], size: int=50, as_string: bool=True ) -> List[
-		List[ str ] ]:
+		List[ str ] ] | None:
 		"""
 	
 			Purpose:
@@ -1033,7 +1015,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def split_sentences( self, text: str ) -> List[ str ]:
+	def split_sentences( self, text: str ) -> List[ str ] | None:
 		"""
 
 			Purpose:
@@ -1066,7 +1048,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ]:
+	def split_pages( self, path: str, delimit: str='\f' ) -> List[ str ] | None:
 		"""
 
 			Purpose:
@@ -1107,7 +1089,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def split_paragraphs( self, path: str ) -> List[ str ]:
+	def split_paragraphs( self, path: str ) -> List[ str ] | None:
 		"""
 
 			Purpose:
@@ -1143,7 +1125,7 @@ class Text( BaseModel ):
 				return self.paragraphs
 	
 	
-	def compute_frequency_distribution( self, lines: List[ str ], process: bool=True ) -> FreqDist:
+	def compute_frequency_distribution( self, lines: List[ str ], process: bool=True ) -> FreqDist| None:
 		"""
 
 			Purpose:
@@ -1185,7 +1167,7 @@ class Text( BaseModel ):
 	
 	
 	def compute_conditional_distribution( self, lines: List[ str ], condition=None,
-	                                      process: bool=True ) -> ConditionalFreqDist:
+	                                      process: bool=True ) -> ConditionalFreqDist | None:
 		"""
 
 			Purpose:
@@ -1239,7 +1221,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def create_vocabulary( self, freq_dist: Dict, min: int=1 ) -> List[ str ]:
+	def create_vocabulary( self, freq_dist: Dict, min: int=1 ) -> List[ str ] | None:
 		"""
 
 			Purpose:
@@ -1277,7 +1259,7 @@ class Text( BaseModel ):
 			error.show( )
 	
 	
-	def create_wordbag( self, tokens: List[ str ] ) -> dict:
+	def create_wordbag( self, tokens: List[ str ] ) -> dict | None:
 		"""
 			
 			Purpose:
@@ -1338,7 +1320,7 @@ class Text( BaseModel ):
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'Text'
-			exception.method = ('create_word2vec( self, tokens: list, '
+			exception.method = ('create_word2vec( self, tokens: List[ str ], '
 			               'size=100, window=5, min=1 ) -> Word2Vec')
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1421,14 +1403,13 @@ class Text( BaseModel ):
 					filename = os.path.basename( f )
 					source_path = source + '\\' + filename
 					text = open( source_path, 'r', encoding='utf-8', errors='ignore' ).read( )
-					punc = self.remove_punctuation( text )
+					punc = self.remove_special( text )
 					dirty = self.split_sentences( punc )
 					for d in dirty:
 						if d != " ":
 							lower = d.lower( )
 							normal = self.normalize_text( lower )
-							spec = self.remove_special( normal )
-							slim = self.collapse_space( spec )
+							slim = self.collapse_space( normal )
 							processed.append( slim )
 					
 					dest_path = destination + '\\' + filename
@@ -1503,7 +1484,7 @@ class Text( BaseModel ):
 			error.show( )
 
 
-class Word( BaseModel ):
+class Word( ):
     """
 
         Purpose:
@@ -1519,19 +1500,6 @@ class Word( BaseModel ):
         summarize( self ) -> None:
 
     """
-    filepath: str
-    raw_text: str
-    paragraphs: Optionl[ List[ str ] ]
-    sentences: Optional[ List[ str ] ]
-    cleaned_sentences: Optional[ List[ str ] ]
-    vocabulary: Optional[ List[ str ] ]
-    freq_dist: Optional[ Dict[ str, float ] ]
-
-
-    class Config:
-	    arbitrary_types_allowed = True
-	    extra = 'ignore'
-	    allow_mutation = True
 
 
     def __init__( self, filepath: str ) -> None:
@@ -1556,7 +1524,7 @@ class Word( BaseModel ):
         self.freq_dist = { }
 
 
-    def __dir__( self ) -> List[ str ]:
+    def __dir__( self ) -> List[ str ] | None:
         '''
 
 			Purpose:
@@ -1579,20 +1547,30 @@ class Word( BaseModel ):
                  'sentences', 'cleaned_sentences', 'vocabulary', 'freq_dist' ]
 
 
-    def extract_text( self ) -> None:
-        """
+    def extract_text( self ) -> str | None:
+	    """
 
-            Purpose:
-            --------
-            Extracts raw text and paragraphs from the .docx file.
+			Purpose:
+			--------
+			Extracts raw text and paragraphs from the .docx file.
 
-        """
-        document = Docx( self.filepath )
-        self.paragraphs = [ para.text.strip( ) for para in document.paragraphs if para.text.strip( ) ]
-        self.raw_text = '\n'.join( self.paragraphs )
+		"""
+	    try:
+		    document = Docx( self.filepath )
+		    self.paragraphs = [ para.text.strip( ) for para in document.paragraphs if
+		                        para.text.strip( ) ]
+		    self.raw_text = '\n'.join( self.paragraphs )
+		    return self.raw_text
+	    except Exception as e:
+		    exception = Error( e )
+		    exception.module = 'Tiggr'
+		    exception.cause = 'Word'
+		    exception.method = 'extract_text( self ) -> str'
+		    error = ErrorDialog( exception )
+		    error.show( )
 
 
-    def split_sentences( self ) -> None:
+    def split_sentences( self ) -> List[ str ] | None:
         """
 
             Purpose:
@@ -1602,16 +1580,17 @@ class Word( BaseModel ):
         """
         try:
 	        self.sentences = sent_tokenize( self.raw_text )
+	        return self.sentences
         except Exception as e:
 	        exception = Error( e )
 	        exception.module = 'Tiggr'
 	        exception.cause = 'Word'
-	        exception.method = ''
+	        exception.method = 'split_sentences( self ) -> List[ str ]'
 	        error = ErrorDialog( exception )
 	        error.show( )
 
 
-    def clean_sentences( self ) -> None:
+    def clean_sentences( self ) -> List[ str ] | None:
         """
 
             Purpose:
@@ -1620,22 +1599,22 @@ class Word( BaseModel ):
 
         """
         try:
-	        self.cleaned_sentences = [ ]
 	        for sentence in self.sentences:
-		        sentence = re.sub( r"[\r\n\t]+", " ", sentence )
-		        sentence = re.sub( r"[^a-zA-Z0-9\s']", "", sentence )
-		        sentence = re.sub( r"\s{2,}", " ", sentence ).strip( ).lower( )
+		        sentence = re.sub( r'[\r\n\t]+', ' ', sentence )
+		        sentence = re.sub( r"[^a-zA-Z0-9\s']", '', sentence )
+		        sentence = re.sub( r'\s{2,}', ' ', sentence ).strip( ).lower( )
 		        self.cleaned_sentences.append( sentence )
+		        return self.cleaned_sentences
         except Exception as e:
 	        exception = Error( e )
 	        exception.module = 'Tiggr'
 	        exception.cause = 'Word'
-	        exception.method = ''
+	        exception.method = 'clean_sentences( self ) -> List[ str ]'
 	        error = ErrorDialog( exception )
 	        error.show( )
 
 
-    def create_vocabulary( self ) -> None:
+    def create_vocabulary( self ) -> List[ str ] | None:
         """
 
             Purpose:
@@ -1652,16 +1631,17 @@ class Word( BaseModel ):
 		                   token.isalpha( ) and token not in stop_words ]
 		        all_words.extend( tokens )
 	        self.vocabulary = sorted( set( all_words ) )
+	        return self.vocabulary
         except Exception as e:
 	        exception = Error( e )
 	        exception.module = 'Tiggr'
 	        exception.cause = 'Word'
-	        exception.method = ''
+	        exception.method = 'create_vocabulary( self ) -> List[ str ]'
 	        error = ErrorDialog( exception )
 	        error.show( )
 
 
-    def compute_frequency_distribution( self ) -> None:
+    def compute_frequency_distribution( self ) -> Dict[ str, float ] | None:
         """
 
             Purpose:
@@ -1676,16 +1656,17 @@ class Word( BaseModel ):
 		        tokens = [ token for token in tokens if token.isalpha( ) ]
 		        words.extend( tokens )
 	        self.freq_dist = dict( Counter( words ) )
+	        return self.freq_dist
         except Exception as e:
 	        exception = Error( e )
 	        exception.module = 'Tiggr'
 	        exception.cause = 'Word'
-	        exception.method = 'correct_errors( self, text: str ) -> str'
+	        exception.method = 'compute_frequency_distribution( self ) -> Dict[ str, float ]'
 	        error = ErrorDialog( exception )
 	        error.show( )
 
 
-    def summarize( self ) -> None:
+    def summarize( self ) -> List[ str ] | None:
         """
 
             Purpose:
@@ -1697,10 +1678,10 @@ class Word( BaseModel ):
         print( f'Paragraphs: {len( self.paragraphs )}' )
         print( f'Sentences: {len( self.sentences )}' )
         print( f'Vocabulary Size: {len( self.vocabulary )}' )
-        print( f'Top 10 Frequent Words: { Counter( self.freq_dist ).most_common(10)}' )
+        print( f'Top 10 Frequent Words: { Counter( self.freq_dist ).most_common( 10 ) }' )
 
 	
-class PDF( BaseModel ):
+class PDF( ):
 	"""
 
 		Purpose:
@@ -1746,8 +1727,8 @@ class PDF( BaseModel ):
 		self.extracted_lines = [ ]
 		self.extracted_tables = [ ]
 		self.extracted_pages = [ ]
-		self.file_path = None
-		self.page = None
+		self.file_path = ''
+		self.page = ''
 
 
 	def __dir__( self ) -> List[ str ] | None:
@@ -1770,11 +1751,10 @@ class PDF( BaseModel ):
 		return [ 'strip_headers', 'minimum_length', 'extract_tables',
 		         'path', 'page', 'pages', 'tokens', 'clean_lines', 'extracted_lines',
 		         'extracted_tables', 'extracted_pages', 'extract_lines',
-		         'extract_text', 'extract_tables', 'export_csv',
-		         'export_text', 'export_excel' ]
+		         'extract_text', 'extract_tables', 'export_csv', 'export_text', 'export_excel' ]
 
 
-	def extract_lines( self, path: str, max: Optional[ int ]=None ) -> List[ str ]:
+	def extract_lines( self, path: str, max: Optional[ int ]=None ) -> List[ str ] | None:
 		"""
 
 			Purpose:
@@ -1805,8 +1785,9 @@ class PDF( BaseModel ):
 							self.extracted_lines = self._extract_tables( page )
 						else:
 							_text = page.get_text( 'pages' )
-							self.lines = _text.splitlines( )
-						self.clean_lines = self._filter_lines( self.lines )
+							_lines = _text.splitlines( )
+							self.lines.append( _lines )
+						self.clean_lines.append( self._filter_lines( self.lines ) )
 						self.extracted_lines.extend( self.clean_lines )
 				return self.extracted_lines
 		except Exception as e:
@@ -1819,7 +1800,7 @@ class PDF( BaseModel ):
 			error.show( )
 
 	
-	def _extract_tables( self, page: Page ) -> List[ str ]:
+	def _extract_tables( self, page: Page ) -> List[ str ] | None:
 		"""
 
 			Purpose:
@@ -1853,7 +1834,7 @@ class PDF( BaseModel ):
 			error.show( )
 	
 	
-	def _filter_lines( self, lines: List[ str ] ) -> List[ str ]:
+	def _filter_lines( self, lines: List[ str ] ) -> List[ str ] | None:
 		"""
 
 			Purpose:
@@ -1920,7 +1901,7 @@ class PDF( BaseModel ):
 			error.show( )
 	
 	
-	def extract_text( self, path: str, max: Optional[ int ]=None ) -> str:
+	def extract_text( self, path: str, max: Optional[ int ]=None ) -> str | None:
 		"""
 
 			Purpose:
@@ -1958,7 +1939,7 @@ class PDF( BaseModel ):
 			error.show( )
 	
 	
-	def extract_tables( self, path: str, max: Optional[ int ]=None ) -> List[ pd.DataFrame ]:
+	def extract_tables( self, path: str, max: Optional[ int ]=None ) -> List[ pd.DataFrame ] | None:
 		"""
 
 			Purpose:
@@ -2051,7 +2032,7 @@ class PDF( BaseModel ):
 			else:
 				self.file_path = path
 				self.lines = lines
-				with open( self.file_path, 'w', encoding='utf-8' ) as f:
+				with open( self.file_path, 'w', encoding='utf-8', errors='ignore' ) as f:
 					for line in self.lines:
 						f.write( line + '\n' )
 		except Exception as e:
@@ -2097,19 +2078,18 @@ class PDF( BaseModel ):
 			error.show( )
 
 
-class Token( BaseModel ):
+class Token( ):
 	'''
 	
 	
 		Purpose:
 		________
-		
 		Wrapper for Hugging Face tokenizers using the `transformers` library.
 	    Includes sentence-level segmentation, tokenization, encoding, and decoding.
-	    
+
+
 	    Methods:
 	    _______
-	    
 	    encode( self, path: str ) -> List[str]
 	    batch_encode( self, path: str ) -> List[str]
 	    decode( self, ids: List[ str ], skip: bool=True ) -> List[str]
@@ -2120,15 +2100,6 @@ class Token( BaseModel ):
 	    load_tokenizer( self, path: str ) -> None
 	
 	'''
-	encoding: Optional[ Encoding ]
-	model_name: Optional[ str ]
-	raw_input: Optional[ str ]
-	tokenizer: Optional[ object ]
-
-	class Config:
-		arbitrary_types_allowed = True
-		extra = 'ignore'
-		allow_mutation = True
 
 
 	def __init__( self ):
@@ -2146,8 +2117,8 @@ class Token( BaseModel ):
 		super( ).__init__( )
 		self.model_name = 'google-bert/bert-base-uncased'
 		self.tokenizer = AutoTokenizer.from_pretrained( self.model_name, trust_remote_code=True )
-		self.raw_input = None
-		self.encoding = None
+		self.raw_input = ''
+		self.encoding = ''
 
 
 	def __dir__( self ) -> List[ str ] | None:
@@ -2173,7 +2144,7 @@ class Token( BaseModel ):
 		         'convert_ids', 'decode' ]
 
 
-	def tiktoken_count( self, text: str, encoding: str='cl100k_base' ) -> int:
+	def tiktoken_count( self, text: str, encoding: str='cl100k_base' ) -> int | None:
 		"""
 		
 			Purpose:
@@ -2208,7 +2179,7 @@ class Token( BaseModel ):
 			error.show( )
 	
 	
-	def get_vocab( self ) -> Dict[ str, int ]:
+	def get_vocab( self ) -> Dict[ str, int ] | None:
 		"""
 			
 			Retrieves the
@@ -2286,7 +2257,7 @@ class Token( BaseModel ):
 	
 	def encode( self, text: str, max: int=512, trunc: bool=True,
 	            padd: Union[ bool, str ]=False, tensors: str=None ) -> Dict[
-		str, Union[ List[ int ], any ] ]:
+		str, Union[ List[ int ], any ] ] | None:
 		"""
 
 			Purpose:
@@ -2323,7 +2294,7 @@ class Token( BaseModel ):
 	
 	
 	def batch_encode( self, texts: List[ str ], max: int=512, trunc: bool=True,
-	                  pad: Union[ bool, str ]='max', tensors: str=None ) -> Dict[ str, any ]:
+	                  pad: Union[ bool, str ]='max', tensors: str=None ) -> Dict[ str, any ] | None:
 		"""
 			
 			Encodes a list of
@@ -2359,7 +2330,7 @@ class Token( BaseModel ):
 			error.show( )
 	
 	
-	def decode( self, ids: List[ int ], skip: bool=True ) -> str:
+	def decode( self, ids: List[ int ], skip: bool=True ) -> str | None:
 		"""
 
 			Purpose:
@@ -2390,7 +2361,7 @@ class Token( BaseModel ):
 			error.show( )
 	
 	
-	def convert_tokens( self, tokens: List[ str ] ) -> List[ int ]:
+	def convert_tokens( self, tokens: List[ str ] ) -> List[ int ] | None:
 		"""
 
 			Purpose:
@@ -2420,7 +2391,7 @@ class Token( BaseModel ):
 			error.show( )
 	
 	
-	def convert_ids( self, ids: List[ int ] ) -> List[ str ]:
+	def convert_ids( self, ids: List[ int ] ) -> List[ str ] | None:
 		"""
 
 			Purpose:
@@ -2451,7 +2422,7 @@ class Token( BaseModel ):
 			error.show( )
 
 
-class VectorStore( BaseModel ):
+class VectorStore(  ):
 	"""
 
 		Purpose:
@@ -2461,30 +2432,6 @@ class VectorStore( BaseModel ):
 		export/import, vector diagnostics, and bulk querying functionality.
 
 	"""
-	small_model: str
-	large_model: str
-	ada_model: str
-	tables: Optional[ List[ pd.DataFrame ] ]
-	vectors: Optional[ List[ List[ float ] ] ]
-	array: Optional[ List[ float ] ]
-	batches: List[ List[ str ] ]
-	vector_stores: Dict[ str, str ]
-	store_ids: List[ str ]
-	file_ids: List[ str ]
-	tokens: List[ str ]
-	files: List[ str ]
-	raw_text: Optional[ str ]
-	file_path: Optional[ str ]
-	file_name: Optional[ str ]
-	file_ids: Optional[ str ]
-	directory: Optional[ str ]
-	id: Optional[ str ]
-	response: Optional[ object ]
-	dataframe: List[ pd.DataFram ]
-	client: OpenAI
-	cache: Optional[ Dict ]
-	stats: Optional[ Dict ]
-	results: Optional[ Dict ]
 	
 	def __init__( self ):
 		"""
@@ -2515,17 +2462,17 @@ class VectorStore( BaseModel ):
 		self.files = [ ]
 		self.tokens = [ ]
 		self.array = [ ]
-		self.vectors = [ [ ] ]
-		self.batches = [ [ ] ]
+		self.vectors = [ ]
+		self.batches = [ ]
 		self.tables = [ ]
-		self.raw_text = None
-		self.file_path = None
-		self.file_name = None
-		self.file_ids = None
-		self.directory = None
-		self.id = None
-		self.response = None
-		self.dataframe = None
+		self.file_ids = [ ]
+		self.dataframe = pd.DataFrame( )
+		self.raw_text = ''
+		self.file_path = ''
+		self.file_name = ''
+		self.directory = ''
+		self.id = ''
+		self.response = ''
 	
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -2545,21 +2492,18 @@ class VectorStore( BaseModel ):
 			List[ str ] | None
 
 		'''
-		return [ 'small_model', 'large_model', 'ada_model',
-		         'id', 'files', 'tokens', 'array', 'store_ids',
-		         'client', 'cache', 'results', 'directory', 'stats',
-		         'response', 'vectorstores','file_ids',
-		         'df', 'batches', 'tables', 'vectors',
-		         'create_small_embedding', 'dataframe',
-		         'most_similar', 'bulk_similar', 'similarity_heatmap',
-		         'export_jsonl', 'import_jsonl', 'create_vector_store',
-		         'list_vector_stores', 'upload_vector_store',
-		         'query_vector_store', 'delete_vector_store',
-		         'upload_document', 'upload_documents' ]
+		return [ 'small_model', 'large_model', 'ada_model', 'id', 'files', 'tokens', 'array',
+		         'store_ids', 'client', 'cache', 'results', 'directory', 'stats', 'response',
+		         'vectorstores', 'file_ids', 'df', 'batches', 'tables', 'vectors',
+		         'create_small_embedding', 'dataframe', 'most_similar', 'bulk_similar',
+		         'similarity_heatmap', 'export_jsonl', 'import_jsonl', 'create_vector_store',
+		         'list_vector_stores', 'upload_vector_store', 'query_vector_store',
+		         'delete_vector_store', 'get_filetype_options',
+		         'upload_document', 'upload_documents', 'get_purpose_options']
 	
 	
-	def create( self, tokens: List[ str ], batch: int=10, max: int=3,
-	            time: float=2.0 ) -> pd.DataFrame:
+	def create_dataframe( self, tokens: List[ str ], batch: int=10, max: int=3,
+	            time: float=2.0 ) -> pd.DataFrame | None:
 		"""
 
 			Purpose:
@@ -2616,7 +2560,7 @@ class VectorStore( BaseModel ):
 			exception.module = 'Tigrr'
 			exception.cause = 'VectorStore'
 			exception.method = (
-				'create_small_embedding( self, tokens: List[ str ], batch: int=10, max: int=3, '
+				'create_dataframe( self, tokens: List[ str ], batch: int=10, max: int=3, '
 				'time: float=2.0 ) -> pd.DataFrame')
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2678,7 +2622,7 @@ class VectorStore( BaseModel ):
 		         'vision' ]
 	
 	
-	def get_type_options( self ) -> Dict[ str, str ] | None:
+	def get_filetype_options( self ) -> Dict[ str, str ] | None:
 		'''
 
 			Purpose:
@@ -2695,34 +2639,34 @@ class VectorStore( BaseModel ):
 
 		'''
 		return \
-			{
-				'.c': 'path/x-c',
-				'.cpp': 'path/x-c++',
-				'.cs': 'path/x-csharp',
-				'.css': 'path/css',
-				'.doc': 'application/msword',
-				'.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-				'.go': 'path/x-golang',
-				'.html': 'path/html',
-				'.java': 'path/x-java',
-				'.js': 'path/javascript',
-				'.json': 'application/json',
-				'.md': 'path/markdown',
-				'.pdf': 'application/pdf',
-				'.php': 'path/x-php',
-				'.pptx': 'application/vnd.openxmlformats-officedocument.presentationml'
-				         '.presentation',
-				'.py': 'path/x-python',
-				'.py': 'path/x-script.python',
-				'.rb': 'path/x-ruby',
-				'.sh': 'application/x-sh',
-				'.tex': 'path/x-tex',
-				'.ts': 'application/typescript',
-				'.txt': 'path/plain'
-			}
+		{
+			'.c': 'path/x-c',
+			'.cpp': 'path/x-c++',
+			'.cs': 'path/x-csharp',
+			'.css': 'path/css',
+			'.doc': 'application/msword',
+			'.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+			'.go': 'path/x-golang',
+			'.html': 'path/html',
+			'.java': 'path/x-java',
+			'.js': 'path/javascript',
+			'.json': 'application/json',
+			'.md': 'path/markdown',
+			'.pdf': 'application/pdf',
+			'.php': 'path/x-php',
+			'.pptx': 'application/vnd.openxmlformats-officedocument.presentationml'
+			         '.presentation',
+			'.py': 'path/x-python',
+			'.py': 'path/x-script.python',
+			'.rb': 'path/x-ruby',
+			'.sh': 'application/x-sh',
+			'.tex': 'path/x-tex',
+			'.ts': 'application/typescript',
+			'.txt': 'path/plain'
+		}
 	
 	
-	def _normalize( self, vector: np.ndarray ) -> np.ndarray:
+	def _normalize( self, vector: np.ndarray ) -> np.ndarray | None:
 		"""
 
 			Purpose:
@@ -2754,7 +2698,7 @@ class VectorStore( BaseModel ):
 			error.show( )
 	
 	
-	def _cosine_similarity_matrix( self, vector: np.ndarray, matrix: np.ndarray ) -> np.ndarray:
+	def _cosine_similarity_matrix( self, vector: np.ndarray, matrix: np.ndarray ) -> np.ndarray | None:
 		"""
 
 			Purpose:
@@ -2792,7 +2736,7 @@ class VectorStore( BaseModel ):
 			error.show( )
 	
 	
-	def most_similar( self, query: str, df: pd.DataFrame, top: int=5 ) -> pd.DataFrame:
+	def most_similar( self, query: str, df: pd.DataFrame, top: int=5 ) -> pd.DataFrame | None:
 		"""
 
 			Purpose:
@@ -2835,7 +2779,7 @@ class VectorStore( BaseModel ):
 			error.show( )
 	
 	
-	def bulk_similar( self, queries: List[ str ], df: pd.DataFrame, top: int=5 ) -> Dict:
+	def bulk_similar( self, queries: List[ str ], df: pd.DataFrame, top: int=5 ) -> Dict | None:
 		"""
 
 			Purpose:
@@ -2873,7 +2817,7 @@ class VectorStore( BaseModel ):
 			error.show( )
 	
 	
-	def similarity_heatmap( self, df: pd.DataFrame ) -> pd.DataFrame:
+	def similarity_heatmap( self, df: pd.DataFrame ) -> pd.DataFrame | None:
 		"""
 
 			Purpose:
@@ -2943,7 +2887,7 @@ class VectorStore( BaseModel ):
 			error.show( )
 	
 	
-	def import_jsonl( self, path: str ) -> pd.DataFrame:
+	def import_jsonl( self, path: str ) -> pd.DataFrame | None:
 		"""
 
 			Purpose:
@@ -2988,7 +2932,7 @@ class VectorStore( BaseModel ):
 			error.show( )
 	
 	
-	def create_vector_store( self, name: str ) -> str:
+	def create_vector_store( self, name: str ) -> str | None:
 		"""
 
 			Purpose:
@@ -3083,7 +3027,7 @@ class VectorStore( BaseModel ):
 			error.show( )
 	
 	
-	def query_vector_store( self, id: str, query: str, top: int=5 ) -> List[ dict ]:
+	def query_vector_store( self, id: str, query: str, top: int=5 ) -> List[ dict ] | None:
 		"""
 
 			Purpose:
@@ -3261,7 +3205,7 @@ class VectorStore( BaseModel ):
 			error.show( )
 
 
-class Embedding( BaseModel ):
+class Embedding( ):
 	'''
 
 		Purpose:
@@ -3289,18 +3233,6 @@ class Embedding( BaseModel ):
 	    
 
 	'''
-	client: OpenAI
-	small_model: str
-	large_model: str
-	ada_model: str
-	tokens: Optional[ List[ str ] ]
-	lines: Optional[ List[ str ] ]
-	labels: Optional[ List[ str ] ]
-	distances: Optional[ List[ float ] ]
-	distance_metrics: Optional[ List[ float ] ]
-	data: Optional[ List[ float ] ]
-	precision: Optional[ Dict ]
-	average_precision: Optionl[ Dict ]
 	
 	
 	def __init__( self ):
@@ -3317,11 +3249,11 @@ class Embedding( BaseModel ):
 		self.data = [ ]
 		self.precision = { }
 		self.aeverage_precision = { }
+		self.dataframe = pd.DataFrame( )
+		self.raw_input = ''
+		self.n_classes = 0
 		self.recall = None
-		self.dataframe = None
-		self.n_classes = None
 		self.response = None
-		self.raw_input = None
 	
 	
 	def create_small_embedding( self, text: str ) -> List[ float ]:
