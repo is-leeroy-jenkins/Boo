@@ -51,8 +51,8 @@ import pandas as pd
 import numpy as np
 from bs4 import BeautifulSoup
 from openai import OpenAI
-
 from boogr import Error, ErrorDialog
+from gensim.models import Word2Vec, KeyedVectors
 from pathlib import Path
 import nltk
 from nltk import pos_tag, FreqDist, ConditionalFreqDist
@@ -67,12 +67,11 @@ from scipy import spatial
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.metrics import average_precision_score, precision_recall_curve
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from pydantic import BaseModel, Field, validator
 from pymupdf import Page, Document
 import tiktoken
 from tiktoken.core import  Encoding
-from gensim.models import Word2Vec
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 import textwrap as tr
 from typing import Any, List, Tuple, Optional, Union, Dict
@@ -113,21 +112,21 @@ class Text( ):
 		remove_stopwords( self, path: str ) -> str
 		remove_headers( self, pages, min: int=3 ) -> str
 	    normalize_text( path: str ) -> str
-	    lemmatize_tokens( tokens: List[ str ] ) -> str
+	    lemmatize_tokens( words: List[ str ] ) -> str
 	    tokenize_text( path: str ) -> str
 	    tokenize_words( path: str ) -> List[ str ]
 	    tokenize_sentences( path: str ) -> str
 	    chunk_text( self, path: str, max: int=800 ) -> List[ str ]
 	    chunk_words( self, path: str, max: int=800, over: int=50 ) -> List[ str ]
 	    split_paragraphs( self, path: str ) -> List[ str ]
-	    compute_frequency_distribution( self, lines: List[ str ], proc: bool=True ) -> List[ str ]
-	    compute_conditional_distribution( self, lines: List[ str ], condition: str=None,
+	    compute_frequency_distribution( self, words: List[ str ], proc: bool=True ) -> List[ str ]
+	    compute_conditional_distribution( self, words: List[ str ], condition: str=None,
 	    proc: bool=True ) -> List[ str ]
 	    create_vocabulary( self, frequency, min: int=1 ) -> List[ str ]
-	    create_wordbag( tokens: List[ str ] ) -> dict
+	    create_wordbag( words: List[ str ] ) -> dict
 	    create_word2vec( sentences: List[ str ], vector_size=100, window=5, min_count=1 ) ->
 	    Word2Vec
-	    create_tfidf( tokens: List[ str ], max_features=1000, prep=True ) -> tuple
+	    create_tfidf( words: List[ str ], max_features=1000, prep=True ) -> tuple
 	    
 	'''
 
@@ -193,7 +192,7 @@ class Text( ):
 		'''
 		return [ 'file_path', 'raw_input', 'raw_pages', 'normalized', 'lemmatized',
 		         'tokenized', 'corrected', 'cleaned_text', 'words', 'paragraphs',
-		         'tokens', 'pages', 'chunks', 'chunk_size', 'cleaned_pages',
+		         'words', 'pages', 'chunks', 'chunk_size', 'cleaned_pages',
 		         'stop_words', 'cleaned_lines', 'removed', 'lowercase', 'encoding', 'vocabulary',
 		         'translator', 'lemmatizer', 'stemmer', 'tokenizer', 'vectorizer',
 		         'load_text', 'split_lines', 'split_pages', 'collapse_whitespace',
@@ -227,7 +226,7 @@ class Text( ):
 
 			Purpose:
 			-----------
-			Removes extra spaces and blank tokens from the path path.
+			Removes extra spaces and blank words from the path path.
 
 			Parameters:
 			-----------
@@ -238,7 +237,7 @@ class Text( ):
 			A cleaned_lines path path with:
 				- Consecutive whitespace reduced to a single space
 				- Leading/trailing spaces removed
-				- Blank tokens removed
+				- Blank words removed
 					
 		"""
 		try:
@@ -444,10 +443,10 @@ class Text( ):
 				raise Exception( 'The argument "text" is required.' )
 			else:
 				self.raw_input = text
-				self.lowercase = self.raw_input.lower( )
+				self.lowercase = text.lower( )
 				self.vocabulary = set( w.lower( ) for w in words.words( ) )
 				allowed_symbols = { '(', ')', '$', '. ', }
-				self.tokens = re.findall( r'\b[\w.]+\b|[()$]', self.lowercase )
+				self.tokens = re.findall( r'\b[\w.]+\b|[()$]', text.lower( ) )
 				def is_valid_token( token: str ) -> bool:
 					return (token in self.vocabulary or token.replace( '. ', ' ',
 						1 ).isdigit( ) or token in allowed_symbols)
@@ -583,7 +582,7 @@ class Text( ):
 
 			Purpose:
 			_____________
-	        Removes extra spaces and blank tokens from the path pages.
+	        Removes extra spaces and blank words from the path pages.
 
 	        Parameters:
 	        -----------
@@ -596,7 +595,7 @@ class Text( ):
 	            A cleaned_lines pages path with:
 	                - Consecutive whitespace reduced to a single space
 	                - Leading/trailing spaces removed
-	                - Blank tokens removed
+	                - Blank words removed
 
 	    """
 		try:
@@ -636,7 +635,7 @@ class Text( ):
 			Returns:
 			---------
 			- list of str:
-				List of cleaned_lines page tokens without detected headers/footers.
+				List of cleaned_lines page words without detected headers/footers.
 			
 		"""
 		try:
@@ -647,7 +646,7 @@ class Text( ):
 				_footers = defaultdict( int )
 				self.pages = pages
 				
-				# First pass: collect frequency of top/bottom tokens
+				# First pass: collect frequency of top/bottom words
 				for _page in self.pages:
 					self.lines = _page.strip( ).splitlines( )
 					if not self.lines:
@@ -732,13 +731,13 @@ class Text( ):
 			Purpose:
 			-----------
 			Performs lemmatization on the path List[ str ] into a path
-			of word-tokens.
+			of word-words.
 	
 			This function:
 			  - Converts pages to lowercase
 			  - Tokenizes the lowercased pages into words
 			  - Lemmatizes each token using WordNetLemmatizer
-			  - Reconstructs the lemmatized tokens into a single path
+			  - Reconstructs the lemmatized words into a single path
 	
 			Parameters:
 			-----------
@@ -754,7 +753,7 @@ class Text( ):
 		
 		try:
 			if tokens is None:
-				raise Exception( 'The argument "tokens" is required.' )
+				raise Exception( 'The argument "words" is required.' )
 			else:
 				self.tokens = tokens
 				_tags = nltk.pos_tag( self.tokens )
@@ -765,7 +764,7 @@ class Text( ):
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'Text'
-			exception.method = 'tokenize_words( self, tokens: List[ str  ] ) -> List[ str ]'
+			exception.method = 'tokenize_words( self, words: List[ str  ] ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -775,7 +774,7 @@ class Text( ):
 
 			Purpose:
 			---------
-			Splits the raw path removes non-words and returns tokens
+			Splits the raw path removes non-words and returns words
 
 			Parameters:
 			-----------
@@ -807,7 +806,7 @@ class Text( ):
 
 			Purpose:
 			---------
-		    Tokenizes text text into subword tokens using OpenAI's tiktoken tokenizer.
+		    Tokenizes text text into subword words using OpenAI's tiktoken tokenizer.
 		    This function leverages the tiktoken library, which provides byte-pair encoding (BPE)
 		    tokenization used in models such as GPT-3.5 and GPT-4. Unlike standard word tokenization,
 		    this function splits text into model-specific subword units.
@@ -824,7 +823,7 @@ class Text( ):
 		    Returns
 		    -------
 		    - List[str]
-		        A list of string tokens representing BPE subword units.
+		        A list of string words representing BPE subword units.
 
         """
 		try:
@@ -851,10 +850,10 @@ class Text( ):
 	
 			Purpose:
 			-----------
-			  - Tokenizes the path pages path into individual word tokens.
+			  - Tokenizes the path pages path into individual word words.
 			  - Converts pages to lowercase
 			  - Uses NLTK's word_tokenize to split
-			  the pages into words and punctuation tokens
+			  the pages into words and punctuation words
 	
 			Parameters:
 			-----------
@@ -926,8 +925,8 @@ class Text( ):
 			Tokenizes cleaned_lines pages and breaks it into chunks for downstream vectors.
 			  - Converts pages to lowercase
 			  - Tokenizes pages using NLTK's word_tokenize
-			  - Breaks tokens into chunks of a specified size
-			  - Optionally joins tokens into strings (for transformer models)
+			  - Breaks words into chunks of a specified size
+			  - Optionally joins words into strings (for transformer models)
 	
 			Parameters:
 			-----------
@@ -935,16 +934,16 @@ class Text( ):
 				The cleaned_lines path pages to be tokenized and chunked.
 	
 			- chunk_size : int, optional (default=50)
-				Number of tokens per chunk_words.
+				Number of words per chunk_words.
 	
 			- return_string : bool, optional (default=True)
 				If True, returns each chunk_words as a path; otherwise, returns a get_list of
-				tokens.
+				words.
 	
 			Returns:
 			--------
 			- a list
-				Each chunk_words is either a get_list of tokens or a path.
+				Each chunk_words is either a get_list of words or a path.
 	
 		"""
 		try:
@@ -977,20 +976,20 @@ class Text( ):
 			Breaks a list of tokenized strings into a list of lists.
 	
 			This function:
-			  - Groups tokens into chunks of min `chunk_size`
-			  - Returns a list of lists of tokens
+			  - Groups words into chunks of min `chunk_size`
+			  - Returns a list of lists of words
 	
 			Parameters:
 			-----------
 			- words : a list of tokenizd words
 	
 			- chunk_size : int, optional (default=50)
-				Number of tokens per chunk_words.
+				Number of words per chunk_words.
 	
 			Returns:
 			--------
 			- List[ List[ str ] ]
-				A list of a list of token chunks. Each chunk is a list of tokens.
+				A list of a list of token chunks. Each chunk is a list of words.
 	
 		"""
 		try:
@@ -1009,7 +1008,7 @@ class Text( ):
 			exception.module = 'Tiggr'
 			exception.cause = 'Token'
 			exception.method = (
-				'chunk_words( self, tokens: list[ str ], max: int=800, over: int=50 ) -> list[ '
+				'chunk_words( self, words: list[ str ], max: int=800, over: int=50 ) -> list[ '
 				'str ]')
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1053,7 +1052,7 @@ class Text( ):
 
 			Purpose:
 			--------
-			Reads path from a file, splits it into tokens,
+			Reads path from a file, splits it into words,
 			and groups them into path.
 	
 			Parameters:
@@ -1095,7 +1094,7 @@ class Text( ):
 			Purpose:
 			---------
 			Reads  a file and splits it into paragraphs. A paragraph is defined as a block
-			of path separated by one or more empty tokens.
+			of path separated by one or more empty words.
 	
 			Parameters:
 			-----------
@@ -1143,7 +1142,7 @@ class Text( ):
 		"""
 		try:
 			if lines is None:
-				raise Exception( 'The argument "lines" is required.' )
+				raise Exception( 'The argument "words" is required.' )
 			else:
 				self.lines = lines
 				for _line in self.lines:
@@ -1194,7 +1193,7 @@ class Text( ):
 		"""
 		try:
 			if lines is None:
-				raise Exception( 'The argument "lines" is required.' )
+				raise Exception( 'The argument "words" is required.' )
 			else:
 				self.lines = lines
 				self.conditional_distribution = ConditionalFreqDist( )
@@ -1215,7 +1214,7 @@ class Text( ):
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'Text'
-			exception.method = ('compute_conditional_distribution( self, tokens: List[ str ], '
+			exception.method = ('compute_conditional_distribution( self, words: List[ str ], '
 			               'condition=None, process: bool=True ) -> ConditionalFreqDist')
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1259,7 +1258,7 @@ class Text( ):
 			error.show( )
 	
 	
-	def create_wordbag( self, tokens: List[ str ] ) -> dict | None:
+	def create_wordbag( self, words: List[ str ] ) -> dict | None:
 		"""
 			
 			Purpose:
@@ -1268,7 +1267,7 @@ class Text( ):
 	
 			Parameters:
 			-----------
-			- tokens (list): List of tokens from a document.
+			- words (list): List of words from a document.
 	
 			Returns:
 			--------
@@ -1276,21 +1275,21 @@ class Text( ):
 				
 		"""
 		try:
-			if tokens is None:
-				raise Exception( 'The argument "tokens" is required.' )
+			if words is None:
+				raise Exception( 'The argument "words" is required.' )
 			else:
-				self.tokens = tokens
-				return dict( Counter( self.tokens ) )
+				self.words = words
+				return dict( Counter( self.words ) )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'Text'
-			exception.method = 'create_wordbag( self, tokens: List[ str ] ) -> dict'
+			exception.method = 'create_wordbag( self, words: List[ str ] ) -> dict'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_word2vec( self, tokens: List[ str ], size=100, window=5, min=1 ) -> Word2Vec:
+	def create_word2vec( self, words: List[ str ], size=100, window=5, min=1 ) -> Word2Vec | None:
 		"""
 
 			Purpose:
@@ -1310,23 +1309,23 @@ class Text( ):
 
 		"""
 		try:
-			if tokens is None:
-				raise Exception( 'The argument "tokens" is required.' )
+			if words is None:
+				raise Exception( 'The argument "words" is required.' )
 			else:
-				self.tokens = tokens
-				return Word2Vec( sentences=self.tokens, vector_size=size,
+				self.words = words
+				return Word2Vec( sentences=self.words, vector_size=size,
 					window=window, min_count=min )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'Text'
-			exception.method = ('create_word2vec( self, tokens: List[ str ], '
+			exception.method = ('create_word2vec( self, words: List[ str ], '
 			               'size=100, window=5, min=1 ) -> Word2Vec')
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def create_tfidf( self, lines: List[ str ], max: int=1000, prep: bool=True ) -> Tuple:
+	def create_tfidf( self, words: List[ str ], max: int=1000, prep: bool=True ) -> Tuple | None:
 		"""
 		
 			Purpose:
@@ -1336,7 +1335,7 @@ class Text( ):
 	
 			Parameters:
 			--------
-			- lines (list): List of raw or preprocessed pages documents.
+			- words (list): List of raw or preprocessed pages documents.
 			- max (int): Max num of terms to include (vocabulary size).
 			- prep (bool): If True, normalize, tokenize_text, clean, and lemmatize path.
 	
@@ -1349,10 +1348,10 @@ class Text( ):
 
 		"""
 		try:
-			if lines is None:
-				raise Exception( 'The argument "tokens" is required.' )
+			if words is None:
+				raise Exception( 'The argument "words" is required.' )
 			elif prep:
-				self.lines = lines
+				self.lines = words
 				for _doc in self.lines:
 					self.normalized = self.normalize( _doc )
 					self.tokens = self.tokenize_words( self.normalized )
@@ -1366,7 +1365,7 @@ class Text( ):
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'Text'
-			exception.method = ('create_tfidf( self, tokens: list, max: int=1000, prep: bool=True ) '
+			exception.method = ('create_tfidf( self, words: list, max: int=1000, prep: bool=True ) '
 			               '-> Tuple' )
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1696,7 +1695,7 @@ class PDF( ):
 	    extract_lines( self, path, max: int=None) -> List[ str ]
 	    extract_text( self, path, max: int=None) -> str
 	    export_csv( self, tables: List[ pd.DataFrame ], filename: str=None ) -> None
-	    export_text( self, lines: List[ str ], path: str=None ) -> None
+	    export_text( self, words: List[ str ], path: str=None ) -> None
 	    export_excel( self, tables: List[ pd.DataFrame ], path: str=None ) -> None
 
 	"""
@@ -1749,7 +1748,7 @@ class PDF( ):
 
 		'''
 		return [ 'strip_headers', 'minimum_length', 'extract_tables',
-		         'path', 'page', 'pages', 'tokens', 'clean_lines', 'extracted_lines',
+		         'path', 'page', 'pages', 'words', 'clean_lines', 'extracted_lines',
 		         'extracted_tables', 'extracted_pages', 'extract_lines',
 		         'extract_text', 'extract_tables', 'export_csv', 'export_text', 'export_excel' ]
 
@@ -1759,7 +1758,7 @@ class PDF( ):
 
 			Purpose:
 			--------
-			Extract tokens of pages from a PDF,
+			Extract words of pages from a PDF,
 			optionally limiting to the first N pages.
 
 			Parameters:
@@ -1769,7 +1768,7 @@ class PDF( ):
 
 			Returns:
 			--------
-			- List[str]: Cleaned list of non-empty tokens
+			- List[str]: Cleaned list of non-empty words
 
 		"""
 		try:
@@ -1839,14 +1838,14 @@ class PDF( ):
 
 			Purpose:
 			-----------
-			Filter and clean tokens from a page of pages.
+			Filter and clean words from a page of pages.
 
 			Parameters:
-			- tokens (List[str]): Raw tokens of pages
+			- words (List[str]): Raw words of pages
 
 			Returns:
 			--------
-			- List[str]: Filtered, non-trivial tokens
+			- List[str]: Filtered, non-trivial words
 
 		"""
 		try:
@@ -1866,7 +1865,7 @@ class PDF( ):
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'PDF'
-			exception.method = '_filter_lines( self, tokens: List[ str ] ) -> List[ str ]'
+			exception.method = '_filter_lines( self, words: List[ str ] ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2015,18 +2014,18 @@ class PDF( ):
 	def export_text( self, lines: List[ str ], path: str ) -> None:
 		"""
 
-			Export extracted tokens of
+			Export extracted words of
 			pages to a plain pages file.
 
 			Parameters:
 			-----------
-			- tokens (List[str]): List of pages tokens
+			- words (List[str]): List of pages words
 			- path (str): Path to output pages file
 
 		"""
 		try:
 			if lines is None:
-				raise Exception( 'The argument "tokens" must be provided.' )
+				raise Exception( 'The argument "words" must be provided.' )
 			elif path is None:
 				raise Exception( 'The argument "path" must be provided.' )
 			else:
@@ -2039,7 +2038,7 @@ class PDF( ):
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'PDF'
-			exception.method = 'export_text( self, tokens: List[ str ], path: str ) -> None'
+			exception.method = 'export_text( self, words: List[ str ], path: str ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2093,7 +2092,7 @@ class Token( ):
 	    encode( self, path: str ) -> List[str]
 	    batch_encode( self, path: str ) -> List[str]
 	    decode( self, ids: List[ str ], skip: bool=True ) -> List[str]
-	    convert_tokens( self, tokens: List[str] ) -> List[str]
+	    convert_tokens( self, words: List[str] ) -> List[str]
 	    convert_ids( self, ids: List[str] ) -> List[str]
 	    get_vocab( self ) -> List[str]
 	    save_tokenizer( self, path: str ) -> None
@@ -2149,7 +2148,7 @@ class Token( ):
 		
 			Purpose:
 			_______
-			Method counts the number of tokens in a string of path.
+			Method counts the number of words in a string of path.
 			
 			Parameters:
 			__________
@@ -2158,7 +2157,7 @@ class Token( ):
 			
 			Returns:
 			_______
-			Returns the number of tokens in a path path.
+			Returns the number of words in a path path.
 			
 		"""
 		try:
@@ -2340,7 +2339,7 @@ class Token( ):
 			Parameters:
 			-----------
 				ids (List[int]): Encoded token IDs.
-				skip (bool): Exclude special tokens from output.
+				skip (bool): Exclude special words from output.
 	
 			Returns:
 			--------
@@ -2366,11 +2365,11 @@ class Token( ):
 
 			Purpose:
 			--------
-			Converts tokens into their corresponding vocabulary IDs.
+			Converts words into their corresponding vocabulary IDs.
 	
 			Parameters:
 			-----------
-				tokens (List[str]): List of subword tokens.
+				words (List[str]): List of subword words.
 	
 			Returns:
 			--------
@@ -2379,14 +2378,14 @@ class Token( ):
 		"""
 		try:
 			if tokens is None:
-				raise Exception( 'The argument "tokens" must be provided.' )
+				raise Exception( 'The argument "words" must be provided.' )
 			else:
 				return self.tokenizer.convert_tokens_to_ids( tokens )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'Token'
-			exception.method = 'convert_tokens( self, tokens: List[ str ] ) -> List[ int ]'
+			exception.method = 'convert_tokens( self, words: List[ str ] ) -> List[ int ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2397,7 +2396,7 @@ class Token( ):
 			Purpose:
 			--------
 			Converts token IDs
-			back to subword tokens.
+			back to subword words.
 	
 			Parameters:
 			-----------
@@ -2492,7 +2491,7 @@ class VectorStore(  ):
 			List[ str ] | None
 
 		'''
-		return [ 'small_model', 'large_model', 'ada_model', 'id', 'files', 'tokens', 'array',
+		return [ 'small_model', 'large_model', 'ada_model', 'id', 'files', 'words', 'array',
 		         'store_ids', 'client', 'cache', 'results', 'directory', 'stats', 'response',
 		         'vectorstores', 'file_ids', 'df', 'batches', 'tables', 'vectors',
 		         'create_small_embedding', 'dataframe', 'most_similar', 'bulk_similar',
@@ -2508,12 +2507,12 @@ class VectorStore(  ):
 
 			Purpose:
 			---------
-			Generate and normalize vectors for a list of path tokens.
+			Generate and normalize vectors for a list of path words.
 
 			Parameters:
 			-----------
-			- tokens (List[str]): List of path pages strings
-			- batch (int): Number of tokens per API request batch
+			- words (List[str]): List of path pages strings
+			- batch (int): Number of words per API request batch
 			- max (int): Number of retries on API failure
 			- time (float): Seconds to wait between retries
 
@@ -2526,7 +2525,7 @@ class VectorStore(  ):
 		"""
 		try:
 			if tokens is None:
-				raise Exception( 'The argument "tokens" cannot be None' )
+				raise Exception( 'The argument "words" cannot be None' )
 			else:
 				self.tokens = tokens
 				self.batches = self._batch_chunks( self.tokens, batch )
@@ -2560,7 +2559,7 @@ class VectorStore(  ):
 			exception.module = 'Tigrr'
 			exception.cause = 'VectorStore'
 			exception.method = (
-				'create_dataframe( self, tokens: List[ str ], batch: int=10, max: int=3, '
+				'create_dataframe( self, words: List[ str ], batch: int=10, max: int=3, '
 				'time: float=2.0 ) -> pd.DataFrame')
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2572,11 +2571,11 @@ class VectorStore(  ):
 
 			Purpose:
 			---------
-			Split a list of tokens into batches of specified size.
+			Split a list of words into batches of specified size.
 
 			Parameters:
 			-----------
-			- tokens (List[str]): Full list of path strings
+			- words (List[str]): Full list of path strings
 			- size (int): Desired batch size
 
 			Returns:
@@ -2586,7 +2585,7 @@ class VectorStore(  ):
 		"""
 		try:
 			if texts is None:
-				raise Exception( 'The argument "tokens" cannot be None' )
+				raise Exception( 'The argument "words" cannot be None' )
 			elif size is None:
 				raise Exception( 'The argument "size" cannot be None' )
 			else:
@@ -2595,7 +2594,7 @@ class VectorStore(  ):
 			exception = Error( e )
 			exception.module = 'Tigrr'
 			exception.cause = 'VectorStore'
-			exception.method = (' _batch_chunks( self, tokens: List[ str ], size: int ) -> [ List[ str '
+			exception.method = (' _batch_chunks( self, words: List[ str ], size: int ) -> [ List[ str '
 			               '] ]')
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3215,11 +3214,11 @@ class Embedding( ):
 		Methods:
 		--------
 		create_small_embedding( self, text: str ) -> List[ float ]
-		create_small_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]
+		create_small_embeddings( self, words: List[ str ] ) -> List[ List[ float ] ]
 		create_large_embedding( self, text: str ) -> List[ float ]
-		create_large_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]
+		create_large_embeddings( self, words: List[ str ] ) -> List[ List[ float ] ]
 		create_ada_embedding( self, text: str ) -> List[ float ]
-		create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ float ] ]
+		create_ada_embeddings( self, words: List[ str ] ) -> List[ List[ float ] ]
 		create_small_async( self, text: str ) -> List[ float ]
 		create_large_async( self, text: str ) -> List[ float ]
 		create_ada_async( self, text: str ) -> List[ float ]
@@ -3300,7 +3299,7 @@ class Embedding( ):
 
 			Parameters:
 			-----------
-			- tokens List[ str ]:  the list of strings (ie., tokens) to be embedded
+			- words List[ str ]:  the list of strings (ie., words) to be embedded
 
 			Returns:
 			--------
@@ -3309,7 +3308,7 @@ class Embedding( ):
 		"""
 		try:
 			if tokens is None:
-				raise Exception( 'The argument "tokens" must be provided.' )
+				raise Exception( 'The argument "words" must be provided.' )
 			else:
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				self.tokens = [ t.replace( '\n', ' ' ) for t in tokens ]
@@ -3320,7 +3319,7 @@ class Embedding( ):
 			exception = Error( e )
 			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
-			exception.method = ('create_small_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
+			exception.method = ('create_small_embeddings( self, words: List[ str ] ) -> List[ List[ '
 			               'float ] ]')
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3370,7 +3369,7 @@ class Embedding( ):
 
 			Parameters:
 			-----------
-			- tokens List[ str ]:  the list of strings (ie., tokens) to be embedded
+			- words List[ str ]:  the list of strings (ie., words) to be embedded
 
 			Returns:
 			--------
@@ -3379,7 +3378,7 @@ class Embedding( ):
 		"""
 		try:
 			if tokens is None:
-				raise Exception( 'The argument "tokens" must be provided.' )
+				raise Exception( 'The argument "words" must be provided.' )
 			else:
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				self.tokens = [ t.replace( '\n', ' ' ) for t in tokens ]
@@ -3390,7 +3389,7 @@ class Embedding( ):
 			exception = Error( e )
 			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
-			exception.method = ('create_large_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
+			exception.method = ('create_large_embeddings( self, words: List[ str ] ) -> List[ List[ '
 			               'float ] ]')
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3440,7 +3439,7 @@ class Embedding( ):
 
 			Parameters:
 			-----------
-			- tokens List[ str ]:  the list of strings (ie., tokens) to be embedded
+			- words List[ str ]:  the list of strings (ie., words) to be embedded
 
 			Returns:
 			--------
@@ -3449,7 +3448,7 @@ class Embedding( ):
 		"""
 		try:
 			if tokens is None:
-				raise Exception( 'The argument "tokens" must be provided.' )
+				raise Exception( 'The argument "words" must be provided.' )
 			else:
 				self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
 				self.tokens = [ t.replace( '\n', ' ' ) for t in tokens ]
@@ -3460,7 +3459,7 @@ class Embedding( ):
 			exception = Error( e )
 			exception.module = 'Tigrr'
 			exception.cause = 'Embedding'
-			exception.method = ('create_ada_embeddings( self, tokens: List[ str ] ) -> List[ List[ '
+			exception.method = ('create_ada_embeddings( self, words: List[ str ] ) -> List[ List[ '
 			               'float'
 			               ' ] ]')
 			error = ErrorDialog( exception )

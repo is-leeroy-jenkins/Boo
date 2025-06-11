@@ -468,7 +468,7 @@ class File( Path ):
 		'''
 		
 			Purpose:
-			creates a file 'other' and writes 'tokens' to it
+			creates a file 'other' and writes 'words' to it
 	
 			Parameters: other: str
 	
@@ -479,7 +479,7 @@ class File( Path ):
 			if other is None:
 				raise Exception( 'The argument "other" has not been specified!' )
 			elif lines is None:
-				raise Exception( 'The argument "tokens" has not been specified!' )
+				raise Exception( 'The argument "words" has not been specified!' )
 			else:
 				_file = open( other, 'r+' )
 				if len( lines ) > 0:
@@ -491,7 +491,7 @@ class File( Path ):
 			_exc = Error( e )
 			_exc.module = 'fsys'
 			_exc.cause = 'File'
-			_exc.method = 'generate_text( self, other, tokens = None )'
+			_exc.method = 'generate_text( self, other, words = None )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	
@@ -557,7 +557,7 @@ class File( Path ):
 		'''
 		
 			Purpose:
-			iterates tokens of 'self.path'
+			iterates words of 'self.path'
 	
 			Parameters:
 			void
@@ -644,7 +644,7 @@ class File( Path ):
 		'''
 		
 			Purpose:
-			writes tokens in 'tokens' to file 'self.path'
+			writes words in 'words' to file 'self.path'
 	
 			Parameters: get_list[ str ]
 	
@@ -653,7 +653,7 @@ class File( Path ):
 		'''
 		try:
 			if lines is None or os.path.isfile( self.input ) == False:
-				_msg = "The 'tokens' is None or 'url' is not a file!"
+				_msg = "The 'words' is None or 'url' is not a file!"
 				raise Exception( _msg )
 			else:
 				_path = os.path.relpath( self.input )
@@ -666,7 +666,7 @@ class File( Path ):
 			_exc = Error( e )
 			_exc.module = 'fsys'
 			_exc.cause = 'File'
-			_exc.method = 'writelines( self, tokens: get_list[ str ] ):'
+			_exc.method = 'writelines( self, words: get_list[ str ] ):'
 			_err = ErrorDialog( _exc )
 			_err.show( )
 	

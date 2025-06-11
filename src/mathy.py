@@ -1086,7 +1086,7 @@ class Cluster( ):
 		raise NotImplementedError( )
 
 
-	def evaluate( self, X: np.ndarray ) -> float:
+	def evaluate( self, X: np.ndarray ) -> float | None:
 		"""
 
 	        Purpose:
@@ -1210,7 +1210,7 @@ class KMeansClustering( Cluster ):
 			error.show( )
 
 
-	def evaluate( self, X: np.ndarray ) -> float:
+	def evaluate( self, X: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -1329,7 +1329,7 @@ class DbscanClustering( Cluster ):
 			error.show( )
 
 
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def predict( self, X: np.ndarray ) -> np.ndarray | None:
 		"""
 
 			Purpose:
@@ -1359,7 +1359,7 @@ class DbscanClustering( Cluster ):
 			error.show( )
 
 
-	def evaluate( self, X: np.ndarray ) -> float:
+	def evaluate( self, X: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -1520,7 +1520,7 @@ class AgglomerativeClusteringModel( Cluster ):
 			error.show( )
 
 
-	def evaluate( self, X: np.ndarray ) -> float:
+	def evaluate( self, X: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -1674,7 +1674,7 @@ class SpectralClusteringModel( Cluster ):
 			error.show( )
 
 
-	def evaluate( self, X: np.ndarray ) -> float:
+	def evaluate( self, X: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -1824,7 +1824,7 @@ class MeanShiftClustering( Cluster ):
 			error.show( )
 
 
-	def evaluate( self, X: np.ndarray ) -> float:
+	def evaluate( self, X: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -1968,7 +1968,7 @@ class AffinityPropagationClustering( Cluster ):
 			error.show( )
 
 
-	def evaluate( self, X: np.ndarray ) -> float:
+	def evaluate( self, X: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -2096,7 +2096,7 @@ class BirchClustering( Cluster ):
 			error.show( )
 
 
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def predict( self, X: np.ndarray ) -> np.ndarray | None:
 		"""
 
 			Purpose:
@@ -2126,7 +2126,7 @@ class BirchClustering( Cluster ):
 			error.show( )
 
 
-	def evaluate( self, X: np.ndarray ) -> float:
+	def evaluate( self, X: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -2191,8 +2191,7 @@ class OpticsClustering( Cluster ):
 
 		Purpose:
 		---------
-		The OPTICS algorithm shares many similarities with the DBSCAN algorithm, and can be
-		considered a generalization of DBSCAN that relaxes the eps requirement from a single
+		The OPTICS is a generalization of DBSCAN that relaxes the eps requirement from a single
 		value to a value range. The key difference between DBSCAN and OPTICS is that the OPTICS
 		algorithm builds a reachability graph, which assigns each sample both a reachability_
 		distance, and a spot within the cluster ordering_ attribute; these two attributes are
@@ -2249,7 +2248,7 @@ class OpticsClustering( Cluster ):
 			error.show( )
 
 
-	def predict( self, X: np.ndarray ) -> np.ndarray:
+	def predict( self, X: np.ndarray ) -> np.ndarray | None:
 		"""
 
 			Purpose:
@@ -2279,7 +2278,7 @@ class OpticsClustering( Cluster ):
 			error.show( )
 
 
-	def evaluate( self, X: np.ndarray ) -> float:
+	def evaluate( self, X: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -2385,7 +2384,7 @@ class PerceptronClassifier( Model ):
 		self.median_absolute_error: float=0.0
 
 
-	def train( self, X: np.ndarray, y: np.ndarray ) -> None:
+	def train( self, X: np.ndarray, y: np.ndarray ) -> object | None:
 		"""
 
 			Purpose:
@@ -2409,6 +2408,7 @@ class PerceptronClassifier( Model ):
 				raise Exception( 'The argument "y" is required!' )
 			else:
 				self.perceptron_classifier.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -2449,7 +2449,7 @@ class PerceptronClassifier( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 
@@ -2485,7 +2485,7 @@ class PerceptronClassifier( Model ):
 			error.show( )
 
 
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict | None:
 		"""
 
 
@@ -2580,7 +2580,7 @@ class PerceptronClassifier( Model ):
 
 
 
-class MultilayerClassifier( Model ):
+class MultilayerClassification( Model ):
 	"""
 
 		Purpose:
@@ -2623,7 +2623,7 @@ class MultilayerClassifier( Model ):
 		self.median_absolute_error: float=0.0
 
 
-	def fit( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
+	def train( self, X: np.ndarray, y: Optional[ np.ndarray ]=None ) -> object | None:
 		"""
 
 			Purpose:
@@ -2644,12 +2644,12 @@ class MultilayerClassifier( Model ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.pipeline = self.multilayer_classifier.fit( X, y )
-				return self.pipeline
+				self.multilayer_classifier.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultilayerRegressor'
+			exception.cause = 'MultilayerRegression'
 			exception.method = 'fit( self, X: np.ndarray, y: Optional[ np.ndarray ] ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2681,7 +2681,7 @@ class MultilayerClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultilayerRegressor'
+			exception.cause = 'MultilayerRegression'
 			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2714,14 +2714,14 @@ class MultilayerClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultilayerRegressor'
+			exception.cause = 'MultilayerRegression'
 			exception.method = ('fit_transform( self, X: np.ndarray, y: '
 			                    'Optional[ np.ndarray ]=None ) -> np.ndarray')
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -2750,13 +2750,13 @@ class MultilayerClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultilayerRegressor'
+			exception.cause = 'MultilayerRegression'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict | None:
 		"""
 
 			Purpose:
@@ -2798,7 +2798,7 @@ class MultilayerClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultilayerClassifier'
+			exception.cause = 'MultilayerClassification'
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2837,13 +2837,13 @@ class MultilayerClassifier( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultilayerClassifier'
+			exception.cause = 'MultilayerClassification'
 			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-class MultilayerRegressor( Model ):
+class MultilayerRegression( Model ):
 	"""
 
 		Purpose:
@@ -2912,13 +2912,13 @@ class MultilayerRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultilayerRegressor'
+			exception.cause = 'MultilayerRegression'
 			exception.method = 'fit( self, X: np.ndarray, y: Optional[ np.ndarray ] ) -> Pipeline'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-	def transform( self, X: np.ndarray ) -> np.ndarray:
+	def transform( self, X: np.ndarray ) -> np.ndarray | None:
 		"""
 
 
@@ -2939,18 +2939,18 @@ class MultilayerRegressor( Model ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.prediction = self.pipeline.transform( X )
-				return self.prediction
+				self.pipeline.transform( X )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultilayerRegressor'
+			exception.cause = 'MultilayerRegression'
 			exception.method = 'transform( self, X: np.ndarray ) -> np.ndarray'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] ) -> np.ndarray:
+	def fit_transform( self, X: np.ndarray, y: Optional[ np.ndarray ] ) -> np.ndarray | None:
 		"""
 
 
@@ -2977,14 +2977,14 @@ class MultilayerRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultilayerRegressor'
+			exception.cause = 'MultilayerRegression'
 			exception.method = ('fit_transform( self, X: np.ndarray, y: '
 			                    'Optional[ np.ndarray ]=None ) -> np.ndarray')
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -3013,13 +3013,13 @@ class MultilayerRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultilayerRegressor'
+			exception.cause = 'MultilayerRegression'
 			exception.method = 'accuracy( self, X: np.ndarray, y: np.ndarray ) -> float'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict | None:
 		"""
 
 			Purpose:
@@ -3061,7 +3061,7 @@ class MultilayerRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultilayerRegressor'
+			exception.cause = 'MultilayerRegression'
 			exception.method = 'analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3097,7 +3097,7 @@ class MultilayerRegressor( Model ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
-			exception.cause = 'MultilayerRegressor'
+			exception.cause = 'MultilayerRegression'
 			exception.method = 'create_graph( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -3168,8 +3168,8 @@ class LinearRegressor( Model ):
 			if X is None:
 				raise Exception( 'The argument "X" is required!' )
 			else:
-				self.pipeline = self.linerar_regressor.fit( X, y )
-				return self.pipeline
+				self.linerar_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -3179,7 +3179,7 @@ class LinearRegressor( Model ):
 			error.show( )
 
 
-	def project( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray | None:
 		"""
 
 
@@ -3211,7 +3211,7 @@ class LinearRegressor( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 
@@ -3409,8 +3409,8 @@ class RidgeClassification( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.ridge_regressor.fit( X, y )
-				return self.pipeline
+				self.ridge_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -3452,7 +3452,7 @@ class RidgeClassification( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 
@@ -3487,7 +3487,7 @@ class RidgeClassification( Model ):
 			error.show( )
 
 
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict | None:
 		"""
 
 			Purpose:
@@ -3656,8 +3656,8 @@ class RidgeRegression( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.ridge_regressor.fit( X, y )
-				return self.pipeline
+				self.ridge_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -3667,7 +3667,7 @@ class RidgeRegression( Model ):
 			error.show( )
 
 
-	def project( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray | None:
 		"""
 
 
@@ -3699,7 +3699,7 @@ class RidgeRegression( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 
@@ -3734,7 +3734,7 @@ class RidgeRegression( Model ):
 			error.show( )
 
 
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict | None:
 		"""
 
 			Purpose:
@@ -3900,8 +3900,8 @@ class LassoRegression( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.lasso_regressor.fit( X, y )
-				return self.pipeline
+				self.lasso_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -3943,7 +3943,7 @@ class LassoRegression( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 
@@ -4139,8 +4139,8 @@ class ElasticNetRegression( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.elasticnet_model.fit( X, y )
-				return self.pipeline
+				self.elasticnet_model.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -4182,7 +4182,7 @@ class ElasticNetRegression( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 
@@ -4370,8 +4370,8 @@ class LogisticRegressor( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.prediction = self.logistic_regressor.fit( X, y )
-				return self.prediction
+				self.logistic_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -4412,7 +4412,7 @@ class LogisticRegressor( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -4446,7 +4446,7 @@ class LogisticRegressor( Model ):
 			error.show( )
 
 
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict | None:
 		"""
 
 			Purpose:
@@ -4612,8 +4612,8 @@ class BayesianRidgeRegression( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.bayesian_ridge_regressor.fit( X, y )
-				return self.pipeline
+				self.bayesian_ridge_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -4655,7 +4655,7 @@ class BayesianRidgeRegression( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -4690,7 +4690,7 @@ class BayesianRidgeRegression( Model ):
 			error.show( )
 
 
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict | None:
 		"""
 
 			Purpose:
@@ -4850,8 +4850,8 @@ class StochasticDescentClassification( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.stochastic_classifier.fit( X, y )
-				return self.pipeline
+				self.stochastic_classifier.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -4892,7 +4892,7 @@ class StochasticDescentClassification( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -5101,8 +5101,8 @@ class StochasticDescentRegression( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.stochastic_regressor.fit( X, y )
-				return self.pipeline
+				self.stochastic_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -5143,7 +5143,7 @@ class StochasticDescentRegression( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -5177,7 +5177,7 @@ class StochasticDescentRegression( Model ):
 			error.show( )
 
 
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict | None:
 		"""
 
 			Purpose:
@@ -5329,8 +5329,8 @@ class NearestNeighborClassification( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.neighbor_classifier.fit( X, y )
-				return self.pipeline
+				self.neighbor_classifier.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -5374,7 +5374,7 @@ class NearestNeighborClassification( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 
@@ -5575,8 +5575,8 @@ class NearestNeighborRegression( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.neighbor_regressor.fit( X, y )
-				return self.pipeline
+				self.neighbor_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -5617,7 +5617,7 @@ class NearestNeighborRegression( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -5810,8 +5810,8 @@ class DecisionTreeClassification( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.dt_classifier.fit( X, y )
-				return self.pipeline
+				self.dt_classifier.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -5821,7 +5821,7 @@ class DecisionTreeClassification( Model ):
 			error.show( )
 
 
-	def project( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray | None:
 		"""
 
 
@@ -5855,7 +5855,7 @@ class DecisionTreeClassification( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 
@@ -5889,7 +5889,7 @@ class DecisionTreeClassification( Model ):
 			error.show( )
 
 
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict | None:
 		"""
 
 
@@ -6062,8 +6062,8 @@ class DecisionTreeRegression( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.dt_regresssor.fit( X, y )
-				return self.pipeline
+				self.dt_regresssor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -6104,7 +6104,7 @@ class DecisionTreeRegression( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -6298,8 +6298,8 @@ class RandomForestClassification( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.prediction = self.random_forest_classifier.fit( X, y )
-				return self.prediction
+				self.random_forest_classifier.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -6309,7 +6309,7 @@ class RandomForestClassification( Model ):
 			error.show( )
 
 
-	def project( self, X: np.ndarray ) -> np.ndarray:
+	def project( self, X: np.ndarray ) -> np.ndarray | None:
 		"""
 
 				Purpose:
@@ -6341,7 +6341,7 @@ class RandomForestClassification( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -6538,8 +6538,8 @@ class RandomForestRegression( Model ):
 			elif y is None:
 				raise ArgumentError( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.random_forest_regressor.fit( X, y )
-				return self.pipeline
+				self.random_forest_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -6580,7 +6580,7 @@ class RandomForestRegression( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -6614,7 +6614,7 @@ class RandomForestRegression( Model ):
 			error.show( )
 
 
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict | None:
 		"""
 
 			Purpose:
@@ -6772,8 +6772,8 @@ class GradientBoostingClassification( Model ):
 				Pipeline
 
 		"""
-		self.pipeline = self.gradient_boost_classifier.fit( X, y )
-		return self.pipeline
+		self.gradient_boost_classifier.fit( X, y )
+		return self
 
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
@@ -6796,7 +6796,7 @@ class GradientBoostingClassification( Model ):
 		return self.prediction
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -6932,8 +6932,8 @@ class GradientBoostingRegression( Model ):
 				Pipeline
 
 		"""
-		self.pipeline = self.gradient_boost_regressor.fit( X, y )
-		return self.pipeline
+		self.gradient_boost_regressor.fit( X, y )
+		return self
 
 
 	def project( self, X: np.ndarray ) -> np.ndarray:
@@ -6956,7 +6956,7 @@ class GradientBoostingRegression( Model ):
 		return self.prediction
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -7114,8 +7114,8 @@ class AdaBoostClassification( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.ada_boost_classifier.fit( X, y )
-				return self.pipeline
+				self.ada_boost_classifier.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -7155,7 +7155,7 @@ class AdaBoostClassification( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Compute R^2 accuracy
@@ -7338,8 +7338,8 @@ class AdaBoostRegression( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.ada_boost_regressor.fit( X, y )
-				return self.pipeline
+				self.ada_boost_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -7379,7 +7379,7 @@ class AdaBoostRegression( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Purpose:
@@ -7563,8 +7563,8 @@ class BaggingClassification( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.bagging_classifier.fit( X, y )
-				return self.pipeline
+				self.bagging_classifier.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -7604,7 +7604,7 @@ class BaggingClassification( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Compute R^2 accuracy
@@ -7797,8 +7797,8 @@ class BaggingRegression( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.bagging_regressor.fit( X, y )
-				return self.pipeline
+				self.bagging_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -7838,7 +7838,7 @@ class BaggingRegression( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Compute the R-squared
@@ -8012,8 +8012,8 @@ class VotingClassification( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.voting_classifier.fit( X, y )
-				return self.pipeline
+				self.voting_classifier.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -8053,7 +8053,7 @@ class VotingClassification( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Compute R^2 accuracy
@@ -8192,8 +8192,8 @@ class VotingRegression( Model ):
 
 			Parameters:
 			-----------
-			alpha (float): Regularization strength. Default is 1.0.
-			solver (str): Solver to use. Default is 'auto'.
+			est "estimators" - List[ ( str, object ) ]:
+			vot "voting" - (str): Solver to use. Default is 'hard'.
 
 		"""
 		super( ).__init__( )
@@ -8232,8 +8232,8 @@ class VotingRegression( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.voting_regressor.fit( X, y )
-				return self.pipeline
+				self.voting_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -8451,8 +8451,8 @@ class StackClassification( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.stacking_classifier.fit( X, y )
-				return self.pipeline
+				self.stacking_classifier.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -8492,7 +8492,7 @@ class StackClassification( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Compute R^2 accuracy
@@ -8683,8 +8683,8 @@ class StackRegression( Model ):
 			elif y is None:
 				raise Exception( 'The argument "y" is required!' )
 			else:
-				self.pipeline = self.stacking_regressor.fit( X, y )
-				return self.pipeline
+				self.stacking_regressor.fit( X, y )
+				return self
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Mathy'
@@ -8724,7 +8724,7 @@ class StackRegression( Model ):
 			error.show( )
 
 
-	def score( self, X: np.ndarray, y: np.ndarray ) -> float:
+	def score( self, X: np.ndarray, y: np.ndarray ) -> float | None:
 		"""
 
 			Compute the R-squared
@@ -8757,7 +8757,7 @@ class StackRegression( Model ):
 			error.show( )
 
 
-	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict:
+	def analyze( self, X: np.ndarray, y: np.ndarray ) -> Dict | None:
 		"""
 
 			Evaluates the Ridge model

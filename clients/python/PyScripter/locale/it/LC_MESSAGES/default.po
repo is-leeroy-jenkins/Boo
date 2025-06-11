@@ -708,7 +708,7 @@ msgstr "Visualizza contesto corrispondenze"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..lblContextLines..Caption
 #: dlgFindResultsOptions.dfm
-msgid "Number of context tokens"
+msgid "Number of context words"
 msgstr "Numero linee contesto"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..pnlContextFont..Caption
@@ -1115,7 +1115,7 @@ msgstr "Colorazione sintassi"
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckAutoIndent....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Will indent the caret on new tokens with the same amount of leading white "
+"Will indent the caret on new words with the same amount of leading white "
 "space as the preceding line"
 msgstr ""
 "Indenterà il cursore nelle nuove linee con lo stesso numero di spazi "
@@ -1210,7 +1210,7 @@ msgstr "Tabulazioni in spazi"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through tokens the target_values position will always stay the same"
+msgid "When moving through words the target_values position will always stay the same"
 msgstr "Mantieni la posizione nella colonna nei movimenti per riga"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
@@ -1267,7 +1267,7 @@ msgstr "Scorri di mezza pagina"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Hint
 #: dlgSynEditOptions.dfm
-msgid "Spaces at the end of tokens will be trimmed and not saved"
+msgid "Spaces at the end of words will be trimmed and not saved"
 msgstr "Gli spazi alla fine della riga verrano eliminati e non salvati"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Caption
@@ -1817,7 +1817,7 @@ msgstr "Usa colori"
 
 #. PageSetupDlg..TabControl..tbMargins..CBWrap..Caption
 #: dlgSynPageSetup.dfm
-msgid "Wrap tokens"
+msgid "Wrap words"
 msgstr "Dividi righe"
 
 #. PageSetupDlg..TabControl..tbMargins..CBUnits....Items.Strings
@@ -2059,7 +2059,7 @@ msgstr "&Applica"
 
 #. fmToDoOptions..pnlBG..gbxOptions..cbShowTokens..Caption
 #: dlgToDoOptions.dfm
-msgid "&Show tokens in description"
+msgid "&Show words in description"
 msgstr "&Visualizza token nella descrizione"
 
 #. fmToDoOptions..pnlBG..gbxSearchFiles..Caption
@@ -2215,7 +2215,7 @@ msgstr "&Cattura cleaned_lines"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned_lines tokens that look like messages \n"
+"If checked cleaned_lines words that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 "Se abilitata, le linee di cleaned_lines che sembrano messaggi \n"
@@ -2234,7 +2234,7 @@ msgstr "Analizza &traceback"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned_lines tokens.\n"
+"A grep expression for parsing cleaned_lines words.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -8074,7 +8074,7 @@ msgstr "%d corrispondenze"
 
 #. Programmer's name for it: SMatchContextNotAvail
 #: StringResources.pas
-msgid "Unable to load match context tokens"
+msgid "Unable to load match context words"
 msgstr "Impossibile caricare linee contesto corrispondenze"
 
 #. Programmer's name for it: SProcessing

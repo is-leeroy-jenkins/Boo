@@ -701,7 +701,7 @@ msgstr "مطابقت با بافت متنی قابل دیده شدن"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..lblContextLines..Caption
 #: dlgFindResultsOptions.dfm
-msgid "Number of context tokens"
+msgid "Number of context words"
 msgstr "شمار خط های بافت متن"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..pnlContextFont..Caption
@@ -1108,7 +1108,7 @@ msgstr "رنگ"
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckAutoIndent....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Will indent the caret on new tokens with the same amount of leading white "
+"Will indent the caret on new words with the same amount of leading white "
 "space as the preceding line"
 msgstr ""
 "در سطر های جدید، مکان نما را به اندازه فاصله های ابتدای سطرهای قبل تو می برد"
@@ -1199,7 +1199,7 @@ msgstr "تبدیل  جهش ها (Tab) به فاصله ها"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through tokens the target_values position will always stay the same"
+msgid "When moving through words the target_values position will always stay the same"
 msgstr "هنگام جا به جا شدن در خط ها، موقعیّت target_values همیشه یکسان می ماند"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
@@ -1257,7 +1257,7 @@ msgstr "پیمایش نیم صفحه"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Hint
 #: dlgSynEditOptions.dfm
-msgid "Spaces at the end of tokens will be trimmed and not saved"
+msgid "Spaces at the end of words will be trimmed and not saved"
 msgstr "فاصله های انتهای خطوط هرس شده و ذخیره نمی شوند"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Caption
@@ -1803,7 +1803,7 @@ msgstr "استفاده از رنگ ها"
 
 #. PageSetupDlg..TabControl..tbMargins..CBWrap..Caption
 #: dlgSynPageSetup.dfm
-msgid "Wrap tokens"
+msgid "Wrap words"
 msgstr "جمع کردن خط ها در محدوده ی قابل نمایش"
 
 #. PageSetupDlg..TabControl..tbMargins..CBUnits....Items.Strings
@@ -2045,7 +2045,7 @@ msgstr "اعمال"
 
 #. fmToDoOptions..pnlBG..gbxOptions..cbShowTokens..Caption
 #: dlgToDoOptions.dfm
-msgid "&Show tokens in description"
+msgid "&Show words in description"
 msgstr "نمایش نشانه ها در توضیحات"
 
 #. fmToDoOptions..pnlBG..gbxSearchFiles..Caption
@@ -2201,7 +2201,7 @@ msgstr "ضبط برون داد"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned_lines tokens that look like messages \n"
+"If checked cleaned_lines words that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 "اگر علامت خورده باشد سطرهای بروندادی که شبیه به پیام ها باشند؛  \n"
@@ -2220,7 +2220,7 @@ msgstr "تجزیه و تحلیل ردیابی"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned_lines tokens.\n"
+"A grep expression for parsing cleaned_lines words.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -8048,7 +8048,7 @@ msgstr "%d مورد همتا"
 
 #. Programmer's name for it: SMatchContextNotAvail
 #: StringResources.pas
-msgid "Unable to load match context tokens"
+msgid "Unable to load match context words"
 msgstr "امکان بارگذاری خط های بافت متنی همتا نبود"
 
 #. Programmer's name for it: SProcessing

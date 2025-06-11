@@ -2493,7 +2493,7 @@ class Embedding( AI ):
 
 			Purpose:
 			-------
-			Returns the num of tokens in a documents path.
+			Returns the num of words in a documents path.
 
 			Parameters:
 			-----------
@@ -2502,7 +2502,7 @@ class Embedding( AI ):
 
 			Returns:
 			--------
-			int - The number of tokens
+			int - The number of words
 
 		'''
 		try:

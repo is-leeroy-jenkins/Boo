@@ -701,7 +701,7 @@ msgstr "显示匹配上下文"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..lblContextLines..Caption
 #: dlgFindResultsOptions.dfm
-msgid "Number of context tokens"
+msgid "Number of context words"
 msgstr "上下文的行数"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..pnlContextFont..Caption
@@ -1108,7 +1108,7 @@ msgstr "语法的颜色"
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckAutoIndent....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Will indent the caret on new tokens with the same amount of leading white "
+"Will indent the caret on new words with the same amount of leading white "
 "space as the preceding line"
 msgstr "行首有空白的行改行时下一行的行首插入符号前也缩进同样的空白"
 
@@ -1194,7 +1194,7 @@ msgstr "TAB字符变换到空白字符"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through tokens the target_values position will always stay the same"
+msgid "When moving through words the target_values position will always stay the same"
 msgstr "当移动行时插入符号的列位置保持不变"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX..Caption
@@ -1248,7 +1248,7 @@ msgstr "半页滚动"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Hint
 #: dlgSynEditOptions.dfm
-msgid "Spaces at the end of tokens will be trimmed and not saved"
+msgid "Spaces at the end of words will be trimmed and not saved"
 msgstr "行尾的空白字符将被删除而不保存"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Caption
@@ -1783,7 +1783,7 @@ msgstr "使用颜色"
 
 #. PageSetupDlg..TabControl..tbMargins..CBWrap..Caption
 #: dlgSynPageSetup.dfm
-msgid "Wrap tokens"
+msgid "Wrap words"
 msgstr "折行"
 
 #. PageSetupDlg..TabControl..tbMargins..CBUnits....Items.Strings
@@ -2025,7 +2025,7 @@ msgstr "应用(&A)"
 
 #. fmToDoOptions..pnlBG..gbxOptions..cbShowTokens..Caption
 #: dlgToDoOptions.dfm
-msgid "&Show tokens in description"
+msgid "&Show words in description"
 msgstr "显示说明中字段(&S)"
 
 #. fmToDoOptions..pnlBG..gbxSearchFiles..Caption
@@ -2179,7 +2179,7 @@ msgstr "截获输出(&C)"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned_lines tokens that look like messages \n"
+"If checked cleaned_lines words that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
 "当选中时象信息一样的输出行\n"
@@ -2198,7 +2198,7 @@ msgstr "解析追溯(&T)"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned_lines tokens.\n"
+"A grep expression for parsing cleaned_lines words.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -7977,7 +7977,7 @@ msgstr "%d个匹配"
 
 #. Programmer's name for it: SMatchContextNotAvail
 #: StringResources.pas
-msgid "Unable to load match context tokens"
+msgid "Unable to load match context words"
 msgstr "不能装载匹配的上下文行"
 
 #. Programmer's name for it: SProcessing

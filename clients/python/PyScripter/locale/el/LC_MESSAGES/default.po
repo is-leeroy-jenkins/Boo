@@ -702,7 +702,7 @@ msgstr "Προβολή Συμφραζομένων"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..lblContextLines..Caption
 #: dlgFindResultsOptions.dfm
-msgid "Number of context tokens"
+msgid "Number of context words"
 msgstr "Αριθμός γραμμών συμφραζομένων"
 
 #. FindResultsOptionsDialog..Panel1..gbxMatchContext..pnlContextFont..Caption
@@ -1109,7 +1109,7 @@ msgstr "Χρώματα Τονισμού"
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckAutoIndent....Hint
 #: dlgSynEditOptions.dfm
 msgid ""
-"Will indent the caret on new tokens with the same amount of leading white "
+"Will indent the caret on new words with the same amount of leading white "
 "space as the preceding line"
 msgstr "Οι νέες γραμμές έχουν εσοχή παρόμοια με την προηγούμενη γραμμή"
 
@@ -1200,7 +1200,7 @@ msgstr "Μετατροπή TAB σε διαστήματα"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel1..ckKeepCaretX....Hint
 #: dlgSynEditOptions.dfm
-msgid "When moving through tokens the target_values position will always stay the same"
+msgid "When moving through words the target_values position will always stay the same"
 msgstr ""
 "Οταν μετακινείται ο κέρσορας σε διαφορετικές γραμμέσ η  στήλη του δρομέα "
 "διατηρείται"
@@ -1258,7 +1258,7 @@ msgstr "Κύλιση μισής σελίδας"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Options..gbOptions..GridPanel1..StackPanel2..ckTrimTrailingSpaces..Hint
 #: dlgSynEditOptions.dfm
-msgid "Spaces at the end of tokens will be trimmed and not saved"
+msgid "Spaces at the end of words will be trimmed and not saved"
 msgstr ""
 "Χαρακτήρες διαστήματος στο τέλος των γραμμών θα διαγράφονται και δεν θα "
 "αποθηκεύονται"
@@ -1801,7 +1801,7 @@ msgstr "Έγχρωμη εκτύπωση"
 
 #. PageSetupDlg..TabControl..tbMargins..CBWrap..Caption
 #: dlgSynPageSetup.dfm
-msgid "Wrap tokens"
+msgid "Wrap words"
 msgstr "Αναδίπλωση γραμμών"
 
 #. PageSetupDlg..TabControl..tbMargins..CBUnits....Items.Strings
@@ -2043,7 +2043,7 @@ msgstr "&Εφαρμογή"
 
 #. fmToDoOptions..pnlBG..gbxOptions..cbShowTokens..Caption
 #: dlgToDoOptions.dfm
-msgid "&Show tokens in description"
+msgid "&Show words in description"
 msgstr "&Εμφάνιση κουπονιών στην περιγραφή"
 
 #. fmToDoOptions..pnlBG..gbxSearchFiles..Caption
@@ -2197,10 +2197,10 @@ msgstr "Καταγραφή &Έξόδου"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseTraceback....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"If checked cleaned_lines tokens that look like messages \n"
+"If checked cleaned_lines words that look like messages \n"
 "will be parsed and shown in the messages window."
 msgstr ""
-"If checked cleaned_lines tokens that look like messages \n"
+"If checked cleaned_lines words that look like messages \n"
 "will be parsed and shown in the messages window."
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbParseMessages..Caption
@@ -2216,7 +2216,7 @@ msgstr "Ανάλυση &Traceback"
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..edMessagesFormat....Hint
 #: dlgToolProperties.dfm
 msgid ""
-"A grep expression for parsing cleaned_lines tokens.\n"
+"A grep expression for parsing cleaned_lines words.\n"
 "Use the button on the right to insert \n"
 "predefined grep expressions."
 msgstr ""
@@ -8006,7 +8006,7 @@ msgstr "%d ταιριάσματα"
 
 #. Programmer's name for it: SMatchContextNotAvail
 #: StringResources.pas
-msgid "Unable to load match context tokens"
+msgid "Unable to load match context words"
 msgstr "Αδυναμία φόρτωσης συμφραζομένων ταιριάσματος"
 
 #. Programmer's name for it: SProcessing
