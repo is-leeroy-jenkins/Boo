@@ -973,23 +973,26 @@ class Text( ):
 	
 			Purpose:
 			-----------
-			Breaks a list of tokenized strings into a list of lists.
+			Breaks a list of words/tokens into a List[ List[ str ] ] or a string.
 	
 			This function:
-			  - Groups words into chunks of min `chunk_size`
-			  - Returns a list of lists of words
+		    - Groups words into chunks of min `size`
+		    - Returns a a List[ List[ str ] or string
 	
 			Parameters:
 			-----------
 			- words : a list of tokenizd words
 	
-			- chunk_size : int, optional (default=50)
-				Number of words per chunk_words.
+			- size : int, optional (default=50)
+			Number of words per chunk_words.
+
+			- as_string : bool, optional (default=True)
+			Returns a string if True, else a List[ List[ str ] ] if False.
 	
 			Returns:
 			--------
 			- List[ List[ str ] ]
-				A list of a list of token chunks. Each chunk is a list of words.
+			A list of a list of token chunks. Each chunk is a list of words.
 	
 		"""
 		try:
@@ -1019,25 +1022,28 @@ class Text( ):
 
 			Purpose:
 			________
-			Splits the text text string into a list of
-			individual sentences using NLTK's Punkt sentence tokenizer.
-			This function is useful for preparing text for further linguistic processing,
+			Splits the text string into a list of
+			strings using NLTK's Punkt sentence tokenizer.
+			This function is useful for preparing text for further processing,
 			such as tokenization, parsing, or named entity recognition.
 
 			Parameters
 			----------
 			- text : str
-				The raw text string to be segmented into sentences.
+			The raw text string to be segmented into sentences.
 
 			Returns
 			-------
-			- List[str]
-				A list of sentence strings, each corresponding to a single sentence detected
-				in the text text.
+			- List[ str ]
+			A list of sentence strings, each corresponding to a single sentence detected
+			in the text text.
 
 		"""
 		try:
-			return nltk.sent_tokenize( text )
+			if text is None:
+				raise Exception( 'The argument "text" is required.' )
+			else:
+				return nltk.sent_tokenize( text )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
@@ -1072,11 +1078,11 @@ class Text( ):
 				self.file_path = path
 				with open( self.file_path, 'r', encoding='utf-8', errors='ignore' ) as _file:
 					_content = _file.read( )
-				self.raw_pages = _content.split( delimit )
+					self.raw_pages = _content.split( delimit )
+
 				for _page in self.raw_pages:
 					self.lines = _page.strip( ).splitlines( )
-					self.cleaned_text = '\n'.join( [ line.strip( )
-					                                 for line in self.lines if line.strip( ) ] )
+					self.cleaned_text = '\n'.join( [ l.strip( ) for l in self.lines if l.strip( ) ] )
 					self.cleaned_pages.append( self.cleaned_text )
 				return self.cleaned_pages
 		except Exception as e:
@@ -1094,7 +1100,7 @@ class Text( ):
 			Purpose:
 			---------
 			Reads  a file and splits it into paragraphs. A paragraph is defined as a block
-			of path separated by one or more empty words.
+			of path separated by one or more empty lines (eg, '\n\n').
 	
 			Parameters:
 			-----------
@@ -1110,21 +1116,21 @@ class Text( ):
 				raise Exception( 'The argument "path" is required.' )
 			else:
 				self.file_path = path
-				with open( self.file_path, 'r', encoding='utf-8' ) as _file:
+				with open( self.file_path, 'r', encoding='utf-8', errors='ignore' ) as _file:
 					self.raw_input = _file.read( )
-					self.paragraphs = [ para.strip( ) for para in self.raw_input.split( '\n\n' ) if
-					                    para.strip( ) ]
+					self.paragraphs = [ pg.strip( ) for pg in self.raw_input.split( '\n\n' ) if
+					                    pg.strip( ) ]
 					
 					return self.paragraphs
 		except UnicodeDecodeError:
 			with open( self.file_path, 'r', encoding='latin1' ) as _file:
 				self.raw_input = _file.read( )
-				self.paragraphs = [ para.strip( ) for para in self.raw_input.split( '\n\n' ) if
-				                    para.strip( ) ]
+				self.paragraphs = [ pg.strip( ) for pg in self.raw_input.split( '\n\n' ) if
+				                    pg.strip( ) ]
 				return self.paragraphs
 	
 	
-	def compute_frequency_distribution( self, lines: List[ str ], process: bool=True ) -> FreqDist| None:
+	def compute_frequency_distribution( self, lines: List[ str ], process: bool=True ) -> FreqDist | None:
 		"""
 
 			Purpose:
@@ -1133,7 +1139,7 @@ class Text( ):
 	
 			Parameters:
 			-----------
-			- documents (list): List of raw or preprocessed path documents.
+			- lines (list): List of raw or preprocessed path documents.
 			- process (bool): Applies normalization, tokenization, stopword removal, and lemmatization.
 	
 			Returns:
@@ -1153,6 +1159,7 @@ class Text( ):
 					else:
 						self.words = self.tokenize_words( _line )
 						self.tokens.append( self.words )
+
 				self.frequency_distribution = dict( Counter( self.tokens ) )
 				return self.frequency_distribution
 		except Exception as e:
