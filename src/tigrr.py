@@ -668,20 +668,20 @@ class Text( ):
 					
 					# Remove header
 					if self.lines[ 0 ].strip( ) in _head:
-						self.lines = self_node.lines[ 1: ]
+						self.lines = self_node.lines[ 1 : ]
 					
 					# Remove footer
 					if self.lines and self.lines[ -1 ].strip( ) in _foot:
-						self.lines = self_node.lines[ :-1 ]
+						self.lines = self_node.lines[ : -1 ]
 					
-					self.cleaned_pages.append( "\n".join( self.lines ) )
+					self.cleaned_pages.append( '\n'.join( self.lines ) )
 				_retval = self.cleaned_pages
 				return _retval
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'Text'
-			exception.method = 'remove_headers( self, pages: List[ str ], min: int=3 ) -> List[ str ]'
+			exception.method = 'remove_headers( self, pages: List[ str ], min: int=3 ) -> List[str]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -757,7 +757,7 @@ class Text( ):
 			else:
 				self.tokens = tokens
 				_tags = nltk.pos_tag( self.tokens )
-				_pos = get_wordnet_pos( tag )
+				_pos = get_wordnet_pos( _tags )
 				self.lemmatized = [ self.lemmatizer.lemmatize( w, _pos ) for w, tag in _tags ]
 				return self.lemmatized
 		except Exception as e:
@@ -888,8 +888,7 @@ class Text( ):
 
 			Purpose:
 			--------
-			Tokenize a paragraph or
-			document into a list[ str ] of sentence strings.
+			Tokenize a paragraph or document into a List[ str ] of sentence strings.
 	
 			Parameters:
 			-----------
@@ -933,17 +932,15 @@ class Text( ):
 			- pages : str
 				The cleaned_lines path pages to be tokenized and chunked.
 	
-			- chunk_size : int, optional (default=50)
+			- size : int, optional (default=50)
 				Number of words per chunk_words.
 	
-			- return_string : bool, optional (default=True)
-				If True, returns each chunk_words as a path; otherwise, returns a get_list of
-				words.
+			- return_as_string : bool, optional (default=True)
+				If True, returns each chunk_words as a path; otherwise, returns a get_list of words.
 	
 			Returns:
 			--------
 			- a list
-				Each chunk_words is either a get_list of words or a path.
 	
 		"""
 		try:
@@ -1000,7 +997,7 @@ class Text( ):
 				raise Exception( 'The argument "words" is required.' )
 			else:
 				self.tokens = [ token for sublist in words for token in sublist ]
-				self.chunks = [ self.tokens[ i: i + size ]
+				self.chunks = [ self.tokens[ i : i + size ]
 				                for i in range( 0, len( self.tokens ), size ) ]
 				if as_string:
 					return [ ' '.join( chunk ) for chunk in self.chunks ]
@@ -1123,7 +1120,7 @@ class Text( ):
 					
 					return self.paragraphs
 		except UnicodeDecodeError:
-			with open( self.file_path, 'r', encoding='latin1' ) as _file:
+			with open( self.file_path, 'r', encoding='latin1', errors='ignore' ) as _file:
 				self.raw_input = _file.read( )
 				self.paragraphs = [ pg.strip( ) for pg in self.raw_input.split( '\n\n' ) if
 				                    pg.strip( ) ]
@@ -1260,7 +1257,7 @@ class Text( ):
 			exception = Error( e )
 			exception.module = 'Tiggr'
 			exception.cause = 'Text'
-			exception.method = 'create_vocabulary( self, freq_dist: dict, min: int=1 ) -> List[ str ]'
+			exception.method = 'create_vocabulary( self, freq_dist: dict, min: int=1 ) -> List[str]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -1337,8 +1334,7 @@ class Text( ):
 		
 			Purpose:
 			________
-			Compute TF-IDF matrix with
-			optional full preprocessing pipeline.
+			Compute TF-IDF matrix with optional full preprocessing pipeline.
 	
 			Parameters:
 			--------
