@@ -72,7 +72,7 @@ from pydantic import BaseModel, Field, validator
 from pymupdf import Page, Document
 import tiktoken
 from tiktoken.core import  Encoding
-from transformers import AutoTokenizer, PreTrainedTokenizerBase
+from transformers import AutoTokenizer, PreTrainedTokenizerBase, AutoModelForCausalLM
 import textwrap as tr
 from typing import Any, List, Tuple, Optional, Union, Dict
 import unicodedata
@@ -2097,7 +2097,7 @@ class Token( ):
 	    decode( self, ids: List[ str ], skip: bool=True ) -> List[str]
 	    convert_tokens( self, words: List[str] ) -> List[str]
 	    convert_ids( self, ids: List[str] ) -> List[str]
-	    get_vocab( self ) -> List[str]
+	    create_vocabulary( self ) -> List[str]
 	    save_tokenizer( self, path: str ) -> None
 	    load_tokenizer( self, path: str ) -> None
 	
@@ -2117,8 +2117,9 @@ class Token( ):
 	            "bert-base-uncased").
         '''
 		super( ).__init__( )
-		self.model_name = 'google-bert/bert-base-uncased'
+		self.model_name = 'unsloth/Llama-3.2-1B-Instruct-GGUF'
 		self.tokenizer = AutoTokenizer.from_pretrained( self.model_name, trust_remote_code=True )
+		self.model_name = AutoModelForCausalLM.from_pretrained( self.model_name )
 		self.raw_input = ''
 		self.encoding = ''
 
@@ -2141,7 +2142,7 @@ class Token( ):
 
 		'''
 		return [ 'raw_input', 'encoding', 'tokenizer', 'model_name',
-		         'tiktoken_count', 'get_vocab', 'load_tokenizer',
+		         'tiktoken_count', 'create_vocabulary', 'load_tokenizer',
 		         'save_tokenizer', 'encode', 'batch_encode', 'convert_tokens',
 		         'convert_ids', 'decode' ]
 
@@ -2179,30 +2180,7 @@ class Token( ):
 			exception.method = 'tiktoken_count( self, path: str, encoding: str ) -> int:'
 			error = ErrorDialog( exception )
 			error.show( )
-	
-	
-	def get_vocab( self ) -> Dict[ str, int ] | None:
-		"""
-			
-			Retrieves the
-			tokenizer's vocabulary.
-	
-			Returns:
-			--------
-				Dict[str, int]: Mapping of token path to token ID.
-			
-		"""
-		try:
-			return self.tokenizer.get_vocab( )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'Tiggr'
-			exception.cause = 'Token'
-			exception.method = 'get_vocab( self ) -> Dict[ str, int ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	
+
 	def load_tokenizer( self, path: str ) -> None:
 		"""
 
