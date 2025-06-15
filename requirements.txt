@@ -4,7 +4,9 @@ agents
 beautifulsoup4
 crawl4ai
 camelot-py
-python-docx
+dash
+dash-core-components
+dash-html-components
 dotenv
 datasets
 FreeSimpleGUI
@@ -25,6 +27,7 @@ mwclient
 mwparserfromhell
 openai
 openpyxl
+python-docx
 Pygments
 pyodbc
 pandas
@@ -40,6 +43,7 @@ PyPDF2
 pdfminer
 pdf2image
 PyMuPDF
+plotly-express
 lxml
 loguru
 llama-index
