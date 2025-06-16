@@ -43,8 +43,8 @@
   ******************************************************************************************
   '''
 import subprocess as sp
-from boogr import *
-from static import Client
+from src.boogr import *
+from src.static import Client
 
 class App( ):
     '''

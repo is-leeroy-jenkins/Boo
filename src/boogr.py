@@ -61,7 +61,7 @@ import os
 from pandas import read_csv as CsvReader
 from pandas import read_excel as ExcelReader
 from PIL import Image, ImageTk, ImageSequence
-from static import EXT, Client
+from src.static import EXT, Client
 from sys import exit, exc_info
 from src.minion import App
 import traceback
