@@ -194,7 +194,7 @@ class Response( BaseModel ):
 	object: Optional[ object ]
 	input: Optional[ str ]
 	model: Optional[ str ]
-	include: Optional[ [] ]
+	include: Optional[ List[ str ] ]
 	instructions: Optional[ str ]
 	max_output_tokens: Optional[ int ]
 	previous_response_id: Optional[ int ]
@@ -391,7 +391,7 @@ class Header( ):
 			List[ str ] | None
 
 		'''
-		return [ 'content_type', 'api_key', 'authorization', 'df' ]
+		return [ 'content_type', 'api_key', 'authorization' ]
 
 
 
