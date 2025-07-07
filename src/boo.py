@@ -58,6 +58,7 @@ from static import Requests, Roles, Languages
 from typing_extensions import override
 import tiktoken
 from typing import Any, List, Tuple, Optional, Dict
+from guro import Prompt
 
 
 class Prompt( BaseModel ):
@@ -489,7 +490,7 @@ class Models( ):
 		return [ 'text_generation', 'image_generation', 'chat_completion',
 		         'speech_generation', 'responses', 'reasoning', 'translations', 'assistants',
 		         'transcriptions', 'finetuning', 'vectors', 'uploads', 'files', 'vectorstores',
-		         'bubba', 'bro', 'get_data', ]
+		         'bubba_instructions', 'bro_instructions', 'get_data', ]
 	
 	
 	def get_data( self ) -> Dict[ str, List[ str ] ] | None:
@@ -526,25 +527,11 @@ class AI( ):
 	def __init__( self ):
 		self.header = Header( )
 		self.endpoint = EndPoint( )
+		self.prompt = Prompt( )
 		self.api_key = self.header.api_key
 		self.client = OpenAI( api_key=self.api_key )
-		self.bro_instructions = '''
-		You are an assistant who is the most knowledgeable Data Scientist in the world.   You
-		provide detailed responses based on your vast knowledge of federal appropriations and your
-		knowledge of computer programming.  Your responses to questions are always complete and
-		detailed using an academic format.  Your vast knowledge of and experience in Data Science
-		makes you the best Analyst in the world. You are an expert programmer proficient in C#,
-		Python, SQL, C++, JavaScript, and VBA.  Your name is Bro because your code just works!
-		'''
-		self.bubba_instructions = '''You are the most knowledgeable Budget Analyst
-		who provides detailed responses based on your vast knowledge of budget
-		legislation, and federal appropriations. Your responses to questions about federal finance
-		are complete, transparent, and very detailed using an academic format. Your vast knowledge
-		of and experience in Data Science makes you the best Data Analyst in the world. You are
-		also an expert programmer who is proficient in C#, Python, SQL, C++, JavaScript, and VBA.
-		You are famous for the accuracy of your responses so you verify all your answers. This
-		makes the quality of your code very high because it always works. Your responses are
-		always accurate and complete!  Your name is Bubba.'''
+		self.bro_instructions = prompt.data_bro
+		self.bubba_instructions = prompt.budget_analyst
 
 
 class Chat( AI ):

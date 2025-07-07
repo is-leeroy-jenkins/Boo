@@ -469,6 +469,28 @@ class Prompt( ):
 		</INPUT>
 		'''
 
+		self.budget_analyst = f'''
+		<INSTRUCTIONS>
+		You are the most knowledgeable Budget Analyst in the federal government who provides 
+		detailed responses to budget-related questions delimited by ### in the input below based 
+		on your vast knowledge of budget legislation, and federal appropriations.  Your vast 
+		knowledge of and experience in Data Science makes you the best Budget Analyst in the 
+		world. You are proficient in C#, Python, SQL, C++, JavaScript, and VBA.   You are famous 
+		for the accuracy of your responses so you verify all your answers.  Your name is Bubba.
+		</INSTRUCTIONS>
+		<OUTPUT>
+		Your responses to questions about federal finance are complete, transparent, and very 
+		detailed using an academic format.   You use US federal budget data from OMB, 
+		whitehouse.gov,  or data.gov for any ad hoc data sets in examples you and you do your 
+		analysis in Python and visualizations with matplotlib or seaborn. 
+		</OUTPUT>
+		<INPUT>
+		###
+		{{question}}
+		###
+		</INPUT>
+		'''
+
 		self.chain_of_density = f'''
 		<INSTRUCTIONS>
 		You are a helpful assistant with the ability read any given document and provide dense 
@@ -5447,6 +5469,38 @@ class Prompt( ):
 		'''
 
 	def __dir__( self ):
+		'''
+
+			:return:
+			a list of strings that are members of the class
+
+			:rtype:
+			List[ str ]
+
+		'''
 		return [ 'academic_writer', 'adaptive_analyst', 'artsy_fartsy', 'ascii_artist',
 		         'author_emulator', 'book_summarizer', 'business_analyzer', 'business_planner',
-		         'buisness_researcher', ]
+		         'buisness_researcher', 'chain_of_density', 'checklist_creator', 'code_reviewer',
+		         'cognitive_profiler', 'company_researcher', 'course_creator',
+		         'critical_reasoning_analyst', 'critical_thinker', 'data_bro',
+		         'database_specialist', 'data_cleaner', 'data_farmer', 'data_plumber',
+		         'data_scientist', 'dataset_analyzer', 'data_visualizer', 'decision_maker',
+		         'dependency_analyzer', 'document_interrogator', 'document_summarizer',
+		         'educational_writer', 'email_assistant',  'movie_advisor', 'essay_writer',
+		         'research_evaluation_expert', 'executive_assistant', 'expert_programmer',
+		         'feature_extractor', 'financial_planner', 'form_builder', 'geographic_guesser',
+		         'how_to_guru', 'interview_coach', 'investment_analyst', 'jack_of_all_trades',
+		         'keyword_generator', 'management_consultant', 'market_forecaster',
+		         'marketing_planner', 'market_researcher', 'mathy_magician', 'profile_designer',
+		         'meeting_optimizer', 'meeting_summarizer', 'movie_advisor',
+		         'multi_professor', 'newsletter_writer', 'niche_researcher',
+		         'pdf_parser', 'personal_assistant', 'portrait_generator',
+		         'powerpoint_analyst', 'problem_solver', 'prompt_engineer', 'project_architech',
+		         'project_planner', 'prompt_enhancer', 'prompt_evaluator', 'prompt_generator',
+		         'proof_reader', 'reasoning_analyst', 'requirements_expert',
+		         'requirements_generator', 'research_expert', 'root_cause_analyzer',
+		         'revenue_projector', 'sql_analyst', 'strategic_thinker',
+		         'structured_problem_solver', 'sustainable_planner', 'task_planner',
+		         'teaching_assistant', 'tech_supporter', 'topic_researcher',
+		         'training_content_designer', 'training_program_designer', 'training_wheels',
+		         'web_designer', 'writing_editor', 'youtube_scribe', 'youtube_summarizer' ]
