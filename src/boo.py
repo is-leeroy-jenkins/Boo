@@ -736,12 +736,13 @@ class Chat( AI ):
 					'role': 'user',
 					'content':
 						[
-							{ 'scaler': 'input_text',
-							  'text': self.prompt
-							  },
 							{
-								'scaler': 'input_image',
-								'image_url': self.image_url
+									'scaler': 'input_text',
+							        'text': self.prompt
+							},
+							{
+									'scaler': 'input_image',
+									'image_url': self.image_url
 							}
 						]
 				} ]
