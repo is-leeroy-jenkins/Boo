@@ -268,7 +268,6 @@ class Metric(  ):
 			error.show( )
 
 
-
 class Dataset( Metric ):
 	"""
 
@@ -345,11 +344,11 @@ class Dataset( Metric ):
 		"""
 		try:
 			if name is None:
-				raise Exception( 'Name cannot be None' )
+				raise Exception( 'Arguent "name" cannot be None' )
 			elif encoder is None:
-				raise Exception( 'Encoder cannot be None' )
+				raise Exception( 'Arguent "encoder" cannot be None' )
 			elif columns is None:
-				raise Exception( 'Columns cannot be None' )
+				raise Exception( 'Arguent "columns" cannot be None' )
 			else:
 				_tuple = ( name, encoder, columns )
 				self.transtuple.append( _tuple )
@@ -369,7 +368,7 @@ class Dataset( Metric ):
 
 			Purpose:
 			-----------
-			Split the dataset into training and test sets.
+			Method calculating descriptive statistics.
 
 			Returns:
 			-----------
@@ -892,7 +891,7 @@ class MeanImputer( Metric ):
 
 		Purpose:
 		-----------
-		Fills missing target_values using a specified strategy.
+		Fills missing target_values using the average.
 
 	"""
 
@@ -1039,14 +1038,12 @@ class NearestImputer( Metric ):
 			error.show( )
 
 
-
 class Cluster( ):
 	"""
 
         Purpose:
         ---------
-		Abstract base class for clustering models.
-		This class defines the interface for clustering models, including methods
+		Abstract base class for clustering models, including methods
 		for fitting, predicting, evaluating, and visualization.
 
 	"""
@@ -2345,7 +2342,7 @@ class PerceptronClassifier( Model ):
 
 			Purpose:
 			---------
-			The Perceptron is another simple classification algorithm suitable for
+			The Perceptron is a simple classification algorithm suitable for
 			large scale learning. By default:
 				It does not require a learning rate.
 				It is not regularized (penalized).
@@ -2577,7 +2574,6 @@ class PerceptronClassifier( Model ):
 			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
-
 
 
 class MultilayerClassification( Model ):
@@ -3881,8 +3877,7 @@ class LassoRegression( Model ):
 
 			Purpose:
 			--------
-			Fit the LassoRegression
-			regression linerar_model.
+			Fit the LassoRegression.
 
 			Parameters:
 			-----------
@@ -5260,7 +5255,6 @@ class StochasticDescentRegression( Model ):
 			error.show( )
 
 
-
 class NearestNeighborClassification( Model ):
 	"""
 
@@ -5984,10 +5978,6 @@ class DecisionTreeClassification( Model ):
 			exception.method = 'create_matrix( self, X: np.ndarray, y: np.ndarray ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
-
-
-
-
 
 
 class DecisionTreeRegression( Model ):
