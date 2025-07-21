@@ -49,3 +49,10 @@ Boo application is a tool designed to use Generative AI and combining voice reco
 - **Recording**: Press `R` or click the big red toggle button to start/stop audio recording. It will generate_text a `recording.wav` file in the project directory.
 - **Transcription and Response Generation**: Press `A` or click the 'Analyze' button to transcribe the recorded audio and generate answers.
 - **Viewing Responses**: Responses are displayed in the GUI, offering both a quick and detailed answer.
+
+  
+## 📝 License
+
+Boo is published under the [MIT General Public License v3](https://github.com/is-leeroy-jenkins/Boo/blob/main/LICENSE).
+
+
