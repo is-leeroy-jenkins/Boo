@@ -5607,6 +5607,7 @@ class ChatWindow( ):
 			
 			window = sg.Window( 'Chat Window', _layout,
 				font=('Roboto', ' 11'),
+				keep_on_top = True,
 				default_button_element_size=(8, 2),
 				use_default_focus=False,
 				size=self.form_size )

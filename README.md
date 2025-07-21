@@ -1,54 +1,79 @@
 # Boo
 
-## Overview
+**Boo** is a modular Python framework for building, deploying, and managing AI-powered assistants
+tailored for federal data analysis, budget execution, and data science. It integrates OpenAI's GPT
+models with multimodal support for text, image, audio, and file analysis. Designed with
+extensibility and federal applications in mind, it enables secure, scalable, and intelligent
+automation of analytical tasks.
 
-Boo application is a tool designed to use Generative AI and combining voice recognition and text generation technologies, this application transcribes questions and generates responses in real-time, empowering users to handle interviews with confidence and ease.
+---
 
-## ⚠️ Disclaimer ⚠️
+## 📌 Features
 
-> This application is a proof of concept and should be used **ethically** and **responsibly**. It is not intended to deceive or mislead during interviews. The primary purpose is to demonstrate the capabilities of AI in assisting with real-time question understanding and response generation. Users should use this tool **only** for practice and learning!
+- **Unified AI Framework**: Integrates OpenAI APIs for text, image, audio, file analysis,
+  transcription, and translation.
+- **Multimodal Capabilities**: Supports text generation, image creation, image analysis, and
+  document summarization.
+- **Assistant Classes**:
+   - `Chat`: Generic multimodal interaction with GPT.
+   - `Assistant`: General-purpose assistant framework.
+   - `Bubba`: Budget Execution Assistant.
+   - `Bro`: Data Science & Programming Assistant.
+- **Custom Fine-Tuned Models**: Uses proprietary fine-tuned models for different domains (e.g.,
+  `bro-gpt`, `bubba-gpt`).
+- **Vector Store Integration**: Embedded vector store lookups for domain-specific knowledge
+  retrieval.
+- **Web & File Search**: Built-in support for semantic document and web search.
+- **Error Handling**: Custom exceptions with UI support via `ErrorDialog`.
 
-## Features
+---
 
-- **Real-Time Audio Processing**: Records and transcribes audio seamlessly.
-- **Voice Recognition**: Uses OpenAI's Whisper model for accurate voice recognition.
-- **Intelligent Response Generation**: Leverages OpenAI's GPT models for generating concise and relevant answers.
-- **Cross-Platform Functionality**: Designed to work on various operating systems.
-- **User-Friendly Interface**: Simple, intuitive and hideous GUI for easy interaction.
+## 🧱 Structure
 
-## Requirements
+### Core Classes
 
-- **Python 3.10+**: Ensure Python is installed on your system.
-- **OpenAI API Key**: To use OpenAI's GPT models, you will need an API key.
-- **BlackHole for MacOS**: An essential tool for recording your computer's audio output (e.g. from Zoom calls or browser tabs). Microphone Fallback: If BlackHole isn't installed or properly configured, the application can still function by recording your microphone input.
+- `AI`: Base class that provides shared API setup, keys, and model configurations.
+- `Chat`, `Assistant`, `Bubba`, `Bro`: Extend `AI` to provide domain-specific implementations.
+- `Models`, `Header`, `EndPoint`: Configuration utilities for model selection, headers, and
+  endpoints.
+- `Prompt`, `Message`, `Response`, `File`, `Reasoning`: Pydantic models for structured data
+  exchange.
 
-## Installation
+---
 
-1. **Clone the Repository**:
+## 🧠 Capabilities
 
-   ```sh
-   git clone https://github.com/ivnvxd/hack-interview.git
-   cd hack-interview
-   ```
+| Capability        | Description                                                                 |
+|-------------------|-----------------------------------------------------------------------------|
+| Text Generation   | GPT-powered completions, instructions, and prompts                          |
+| Image Generation  | DALL·E 3-based prompt-to-image generation                                   |
+| Image Analysis    | Multimodal image+text inference using vision models                         |
+| Document Summary  | File upload + prompt-driven summarization via OpenAI file API               |
+| Web Search        | Integrated API call to perform web-based lookups                            |
+| File Search       | Vector store lookup with prompt-based semantic matching                     |
+| Model Registry    | Fine-tuned and base model tracking for GPT-4, GPT-4o, and others            |
+| Assistant List    | Query and list named assistant objects from the OpenAI API                  |
 
-2. **Install Dependencies**:
+---
 
-   ```sh
-   pip install -r requirements.txt
-   ```
+## 🛠️ Requirements
 
-3. **BlackHole**: If using MacOS, install [BlackHole](https://github.com/ExistentialAudio/BlackHole) and set up a [Multi Output Device](https://github.com/ExistentialAudio/BlackHole/wiki/Multi-Output-Device)
+- Python 3.10+
+- OpenAI Python SDK
+- Pydantic
+- Numpy, Pandas
+- Tiktoken
+- Requests
+- Custom dependencies: `boogr`, `static`, `guro`
 
-4. **Environment Setup**:
-   - Add your OpenAI API key to the `.env` file. If you don't have one, you can get it [here](https://platform.openai.com/api-keys).
+---
 
-## Usage
+## 🔐 Environment Variables
 
-- **Starting the Application**: Run `python main.py` to launch the GUI.
-- *(optional)* **Setup**: You can choose the OpenAI model to use for response generation and the position you are being interviewed for. The default settings are set in the `src/config.py` file.
-- **Recording**: Press `R` or click the big red toggle button to start/stop audio recording. It will generate_text a `recording.wav` file in the project directory.
-- **Transcription and Response Generation**: Press `A` or click the 'Analyze' button to transcribe the recorded audio and generate answers.
-- **Viewing Responses**: Responses are displayed in the GUI, offering both a quick and detailed answer.
+Set the following in your environment or `.env` file:
+
+```bash
+OPENAI_API_KEY=<your_api_key>
 
   
 ## 📝 License
