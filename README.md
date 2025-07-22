@@ -73,7 +73,7 @@ ___
 
 ---
 
-## 🧠 Capabilities
+### 🧠 Capabilities
 
 | Capability        | Description                                                                 |
 |-------------------|-----------------------------------------------------------------------------|
@@ -88,7 +88,7 @@ ___
 
 ---
 
-## 🛠️ Requirements
+### 🛠️ Requirements
 
 - Python 3.10+
 - OpenAI Python SDK
@@ -100,27 +100,28 @@ ___
 
 ---
 
-## 🔐 Environment Variables
+### 🔐 Environment Variables
 
 Set the following in your environment or `.env` file:
 
-```bash
+```
+bash
 OPENAI_API_KEY=<your_api_key>
-
-## 🧠 Assistants Included
+```
+### 🧠 Assistants Included
 - Chat: General multimodal chat
 - Assistant: Generic AI assistant
 - Bubba: Budget Execution Analyst
 - Bro: Programming & Data Science Analyst
 
-## 🛠 Features
+### 🛠 Features
 - OpenAI GPT model orchestration
 - Document and image analysis
 - Search via vector databases
 - Assistant modularization
 - Full multimodal AI stack  
 
-## 📝 License
+### 📝 License
 
 Boo is published under the [MIT General Public License v3](https://github.com/is-leeroy-jenkins/Boo/blob/main/LICENSE).
 
