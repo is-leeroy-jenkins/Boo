@@ -1,4 +1,4 @@
-# Boo
+###### Boo
 
 **Boo** is a modular Python framework for building, deploying, and managing AI-powered assistants
 tailored for federal data analysis, budget execution, and data science. It integrates OpenAI's GPT
