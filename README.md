@@ -1,9 +1,9 @@
 ###### Boo
 <img src="https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/img/github/Boo.gif" width="1080" height="250"/>
 
-___
 
-- **Boo** is a modular Python framework for building, deploying, and managing AI-powered assistants
+
+ **Boo** is a modular Python framework for building, deploying, and managing AI-powered assistants
 tailored for federal data analysis, budget execution, and data science. It integrates OpenAI's GPT
 models with multimodal support for text, image, audio, and file analysis. Designed with
 extensibility and federal applications in mind, it enables secure, scalable, and intelligent
