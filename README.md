@@ -9,7 +9,7 @@ models with multimodal support for text, image, audio, and file analysis. Design
 extensibility and federal applications in mind, it enables secure, scalable, and intelligent
 automation of analytical tasks.
 
----
+
 
 ## 📌 Features
 
@@ -31,7 +31,7 @@ automation of analytical tasks.
 
 ---
 
-## 📦 Installation
+### 📦 Installation
 
 ### 1. Clone the Repository
 
@@ -57,10 +57,10 @@ bash
 pip install -r requirements.txt
 ```
 
-___
 
 
-## 🧱 Structure
+
+### 🧱 Structure
 
 ### Core Classes
 
