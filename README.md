@@ -3,7 +3,7 @@
 
 
 
- **Boo** is a modular Python framework for building, deploying, and managing AI-powered assistants
+A modular Python framework for building, deploying, and managing AI-powered assistants
 tailored for federal data analysis, budget execution, and data science. It integrates OpenAI's GPT
 models with multimodal support for text, image, audio, and file analysis. Designed with
 extensibility and federal applications in mind, it enables secure, scalable, and intelligent
@@ -30,6 +30,35 @@ automation of analytical tasks.
 - **Error Handling**: Custom exceptions with UI support via `ErrorDialog`.
 
 ---
+
+## 📦 Installation
+
+### 1. Clone the Repository
+
+
+```
+bash
+git clone https://github.com/your-username/Boo.git
+cd Boo
+```
+
+### 2. Create and Activate a Virtual Environment
+
+```
+bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+### 3. Install Dependencies
+
+```
+bash
+pip install -r requirements.txt
+```
+
+___
+
 
 ## 🧱 Structure
 
@@ -78,7 +107,19 @@ Set the following in your environment or `.env` file:
 ```bash
 OPENAI_API_KEY=<your_api_key>
 
-  
+## 🧠 Assistants Included
+- Chat: General multimodal chat
+- Assistant: Generic AI assistant
+- Bubba: Budget Execution Analyst
+- Bro: Programming & Data Science Analyst
+
+## 🛠 Features
+- OpenAI GPT model orchestration
+- Document and image analysis
+- Search via vector databases
+- Assistant modularization
+- Full multimodal AI stack  
+
 ## 📝 License
 
 Boo is published under the [MIT General Public License v3](https://github.com/is-leeroy-jenkins/Boo/blob/main/LICENSE).
