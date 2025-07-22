@@ -121,6 +121,12 @@ OPENAI_API_KEY=<your_api_key>
 - Assistant modularization
 - Full multimodal AI stack  
 
+## 📁 File Organization
+> boo.py – Main application framework
+> boogr/ – GUI and error dialogs
+> guro/ – Prompt context utilities
+> static/ – Static config files (roles, languages, etc.)
+
 ## 📝 License
 
 Boo is published under the [MIT General Public License v3](https://github.com/is-leeroy-jenkins/Boo/blob/main/LICENSE).
