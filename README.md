@@ -73,7 +73,7 @@ pip install -r requirements.txt
 
 
 
-## 🧠 Capabilities
+#### 🧠 Capabilities
 
 | Capability        | Description                                                                 |
 |-------------------|-----------------------------------------------------------------------------|
@@ -88,7 +88,7 @@ pip install -r requirements.txt
 
 
 
-## 🛠️ Requirements
+#### 🛠️ Requirements
 
 - Python 3.10+
 - OpenAI Python SDK
@@ -100,7 +100,7 @@ pip install -r requirements.txt
 
 
 
-## 🔐 Environment Variables
+#### 🔐 Environment Variables
 
 Set the following in your environment or `.env` file:
 
@@ -108,20 +108,21 @@ Set the following in your environment or `.env` file:
 bash
 OPENAI_API_KEY=<your_api_key>
 ```
-## 🧠 Assistants Included
+
+#### 🧠 Assistants Included
 - Chat: General multimodal chat
 - Assistant: Generic AI assistant
 - Bubba: Budget Execution Analyst
 - Bro: Programming & Data Science Analyst
 
-## 🛠 Features
+#### 🛠 Features
 - OpenAI GPT model orchestration
 - Document and image analysis
 - Search via vector databases
 - Assistant modularization
 - Full multimodal AI stack  
 
-## 📁 File Organization
+#### 📁 File Organization
 - boo.py – Main application framework
 - boogr/ – GUI and error dialogs
 - guro/ – Prompt context utilities
@@ -129,7 +130,7 @@ OPENAI_API_KEY=<your_api_key>
 - mathy/ - Machine Learning models
 
 
-##  🔍  Natural Language DataFrame Querying
+####  🔍  Natural Language DataFrame Querying
 - Allow users to ask questions about a pandas DataFrame using plain English.
 
 ```
@@ -137,7 +138,7 @@ python
 bro.query_dataframe(df, "What are the top 5 agencies by total spending?")
 ```
 
-## 📊  Chart Generation from Prompts
+#### 📊  Chart Generation from Prompts
 - Generate matplotlib or plotly charts from natural language prompts.
 
 ```
@@ -145,7 +146,7 @@ python
 bro.visualize(prompt="Create a bar chart of spending by department", data=df)
 ```
 
-## 🧾 PDF Parsing and Table Extraction
+#### 🧾 PDF Parsing and Table Extraction
 - Automatically detect and extract structured tables from PDF files using pdfplumber or camelot.
 
 ```
@@ -154,7 +155,7 @@ tables = bro.extract_tables("appropriations.pdf")
 
 ```
 
-## 🧠 Embedded Agent Workflows
+#### 🧠 Embedded Agent Workflows
 - Enable multi-step task execution (like agentic behavior).
 
 ```
@@ -164,7 +165,7 @@ bro.run_task( "Summarize the document, then find related guidance policies" )
 
 
 
-## 📝 License
+#### 📝 License
 
 Boo is published under the [MIT General Public License v3](https://github.com/is-leeroy-jenkins/Boo/blob/main/LICENSE).
 
