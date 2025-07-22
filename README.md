@@ -128,6 +128,22 @@ OPENAI_API_KEY=<your_api_key>
 - static/ – Static config files (roles, languages, etc.)
 - mathy/ - Machine Learning models
 
+
+##  🔍  Natural Language DataFrame Querying
+- Allow users to ask questions about a pandas DataFrame using plain English.
+```
+python
+bro.query_dataframe(df, "What are the top 5 agencies by total spending?")
+```
+
+## 📊  Chart Generation from Prompts
+- Generate matplotlib or plotly charts from natural language prompts.
+```
+python
+bro.visualize(prompt="Create a bar chart of spending by department", data=df)
+```
+
+
 ## 📝 License
 
 Boo is published under the [MIT General Public License v3](https://github.com/is-leeroy-jenkins/Boo/blob/main/LICENSE).
