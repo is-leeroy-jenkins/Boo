@@ -122,10 +122,11 @@ OPENAI_API_KEY=<your_api_key>
 - Full multimodal AI stack  
 
 ## 📁 File Organization
-> boo.py – Main application framework
-> boogr/ – GUI and error dialogs
-> guro/ – Prompt context utilities
-> static/ – Static config files (roles, languages, etc.)
+- boo.py – Main application framework
+- boogr/ – GUI and error dialogs
+- guro/ – Prompt context utilities
+- static/ – Static config files (roles, languages, etc.)
+- mathy/ - Machine Learning models
 
 ## 📝 License
 
