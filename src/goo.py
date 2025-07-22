@@ -42,6 +42,8 @@
   </summary>
   ******************************************************************************************
   '''
+from __future__ import annotations
+
 import os
 from langchain.chat_models import ChatOpenAI
 from langchain.sql_database import SQLDatabase
@@ -95,6 +97,7 @@ class Fetch:
 		self.database = None
 		self.loader = None
 		self.tool = None
+		self.extension = None
 		self.agent = initialize_agent( tools=[ self.sql_tool, self.doc_tool ] + self.api_tools,
 			llm=self.llm,
 			memory=self.memory,
@@ -102,7 +105,7 @@ class Fetch:
 			verbose=True )
 	
 	
-	def _init_sql_tool( self ) -> Tool:
+	def _init_sql_tool( self ) -> Tool | None:
 		'''
 
 			Purpose:
@@ -142,12 +145,12 @@ class Fetch:
 		'''
 		try:
 			for _path in self.doc_paths:
-				_ext = os.path.splitext( _path )[ -1 ].lower( )
-				if _ext == '.pdf':
+				self.extension = os.path.splitext( _path )[ -1 ].lower( )
+				if self.extension == '.pdf':
 					self.loader = PyPDFLoader( _path )
-				elif ext == '.csv':
+				elif self.extension == '.csv':
 					self.loader = CSVLoader( _path )
-				elif ext in [ '.raw_html', '.htm' ]:
+				elif self.extension in [ '.raw_html', '.htm' ]:
 					self.loader = UnstructuredHTMLLoader( _path )
 				else:
 					self.loader = TextLoader( _path )
@@ -164,7 +167,7 @@ class Fetch:
 			error.show( )
 	
 	
-	def _init_doc_tool( self ) -> Tool:
+	def _init_doc_tool( self ) -> Tool | None:
 		'''
 
 			Purpose:
@@ -196,7 +199,7 @@ class Fetch:
 			error.show( )
 	
 	
-	def _init_api_tools( self ) -> List[ Tool ]:
+	def _init_api_tools( self ) -> List[ Tool ] | None:
 		'''
 		
 			Placeholder for future external
@@ -215,7 +218,7 @@ class Fetch:
 			error.show( )
 	
 	
-	def query( self, prompt: str ) -> str:
+	def query( self, prompt: str ) -> str | None:
 		'''
 
 			Purpose:
@@ -246,7 +249,7 @@ class Fetch:
 			error.show( )
 	
 	
-	def chat_history( self ) -> List[ str ]:
+	def chat_history( self ) -> List[ str ] | None:
 		'''
 		
 			Returns formatted conversation history.
