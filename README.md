@@ -100,7 +100,7 @@ pip install -r requirements.txt
 
 
 
-#### 🔐 Environment Variables
+## 🔐 Environment Variables
 
 Set the following in your environment or `.env` file:
 
@@ -109,20 +109,20 @@ bash
 OPENAI_API_KEY=<your_api_key>
 ```
 
-#### 🧠 Assistants Included
+## 🧠 Assistants Included
 - Chat: General multimodal chat
 - Assistant: Generic AI assistant
 - Bubba: Budget Execution Analyst
 - Bro: Programming & Data Science Analyst
 
-#### 🛠 Features
+## 🛠 Features
 - OpenAI GPT model orchestration
 - Document and image analysis
 - Search via vector databases
 - Assistant modularization
 - Full multimodal AI stack  
 
-#### 📁 File Organization
+## 📁 File Organization
 - boo.py – Main application framework
 - boogr/ – GUI and error dialogs
 - guro/ – Prompt context utilities
