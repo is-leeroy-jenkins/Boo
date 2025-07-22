@@ -29,11 +29,11 @@ automation of analytical tasks.
 - **Web & File Search**: Built-in support for semantic document and web search.
 - **Error Handling**: Custom exceptions with UI support via `ErrorDialog`.
 
----
 
-### 📦 Installation
 
-### 1. Clone the Repository
+## 📦 Installation
+
+#### 1. Clone the Repository
 
 
 ```
@@ -42,7 +42,7 @@ git clone https://github.com/your-username/Boo.git
 cd Boo
 ```
 
-### 2. Create and Activate a Virtual Environment
+#### 2. Create and Activate a Virtual Environment
 
 ```
 bash
@@ -50,7 +50,7 @@ python -m venv venv
 venv\Scripts\activate
 ```
 
-### 3. Install Dependencies
+#### 3. Install Dependencies
 
 ```
 bash
@@ -60,9 +60,9 @@ pip install -r requirements.txt
 
 
 
-### 🧱 Structure
+## 🧱 Structure
 
-### Core Classes
+#### Core Classes
 
 - `AI`: Base class that provides shared API setup, keys, and model configurations.
 - `Chat`, `Assistant`, `Bubba`, `Bro`: Extend `AI` to provide domain-specific implementations.
@@ -71,9 +71,9 @@ pip install -r requirements.txt
 - `Prompt`, `Message`, `Response`, `File`, `Reasoning`: Pydantic models for structured data
   exchange.
 
----
 
-### 🧠 Capabilities
+
+## 🧠 Capabilities
 
 | Capability        | Description                                                                 |
 |-------------------|-----------------------------------------------------------------------------|
@@ -86,9 +86,9 @@ pip install -r requirements.txt
 | Model Registry    | Fine-tuned and base model tracking for GPT-4, GPT-4o, and others            |
 | Assistant List    | Query and list named assistant objects from the OpenAI API                  |
 
----
 
-### 🛠️ Requirements
+
+## 🛠️ Requirements
 
 - Python 3.10+
 - OpenAI Python SDK
@@ -98,9 +98,9 @@ pip install -r requirements.txt
 - Requests
 - Custom dependencies: `boogr`, `static`, `guro`
 
----
 
-### 🔐 Environment Variables
+
+## 🔐 Environment Variables
 
 Set the following in your environment or `.env` file:
 
@@ -108,20 +108,20 @@ Set the following in your environment or `.env` file:
 bash
 OPENAI_API_KEY=<your_api_key>
 ```
-### 🧠 Assistants Included
+## 🧠 Assistants Included
 - Chat: General multimodal chat
 - Assistant: Generic AI assistant
 - Bubba: Budget Execution Analyst
 - Bro: Programming & Data Science Analyst
 
-### 🛠 Features
+## 🛠 Features
 - OpenAI GPT model orchestration
 - Document and image analysis
 - Search via vector databases
 - Assistant modularization
 - Full multimodal AI stack  
 
-### 📝 License
+## 📝 License
 
 Boo is published under the [MIT General Public License v3](https://github.com/is-leeroy-jenkins/Boo/blob/main/LICENSE).
 
