@@ -131,6 +131,7 @@ OPENAI_API_KEY=<your_api_key>
 
 ##  🔍  Natural Language DataFrame Querying
 - Allow users to ask questions about a pandas DataFrame using plain English.
+
 ```
 python
 bro.query_dataframe(df, "What are the top 5 agencies by total spending?")
@@ -138,10 +139,29 @@ bro.query_dataframe(df, "What are the top 5 agencies by total spending?")
 
 ## 📊  Chart Generation from Prompts
 - Generate matplotlib or plotly charts from natural language prompts.
+
 ```
 python
 bro.visualize(prompt="Create a bar chart of spending by department", data=df)
 ```
+
+## 🧾 PDF Parsing and Table Extraction
+- Automatically detect and extract structured tables from PDF files using pdfplumber or camelot.
+
+```
+python
+tables = bro.extract_tables("appropriations.pdf")
+
+```
+
+## 🧠 Embedded Agent Workflows
+- Enable multi-step task execution (like agentic behavior).
+
+```
+python
+bro.run_task( "Summarize the document, then find related guidance policies" )
+```
+
 
 
 ## 📝 License
