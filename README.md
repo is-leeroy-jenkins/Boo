@@ -9,7 +9,7 @@ models with multimodal support for text, image, audio, and file analysis. Design
 extensibility and federal applications in mind, it enables secure, scalable, and intelligent
 automation of analytical tasks.
 
-# ⚙️ Features
+## ⚙️ Features
 
 - Unified AI Framework: Integrates OpenAI APIs for text, image, audio, file analysis, transcription,
   and translation.
@@ -27,7 +27,7 @@ automation of analytical tasks.
 
 
 
-# 📦 Installation
+## 📦 Installation
 
 #### 1. Clone the Repository
 
@@ -56,7 +56,7 @@ pip install -r requirements.txt
 
 
 
-# ⚙️ Structure
+## ⚙️ Structure
 
 #### Core Classes
 
