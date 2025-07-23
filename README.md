@@ -253,20 +253,6 @@ print("Available Assistants:", assistants)
 
 
 
-
-
-
-
-
-
-
-
-
-
-#
-
-
-
 #### 📝 License
 
 Boo is published under the [MIT General Public License v3](https://github.com/is-leeroy-jenkins/Boo/blob/main/LICENSE).
