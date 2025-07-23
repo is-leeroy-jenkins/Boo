@@ -9,25 +9,21 @@ models with multimodal support for text, image, audio, and file analysis. Design
 extensibility and federal applications in mind, it enables secure, scalable, and intelligent
 automation of analytical tasks.
 
+## ⚙️ Features
 
-
-#  Features
-
-- **Unified AI Framework**: Integrates OpenAI APIs for text, image, audio, file analysis,
-  transcription, and translation.
-- **Multimodal Capabilities**: Supports text generation, image creation, image analysis, and
-  document summarization.
-- **Assistant Classes**:
-   - `Chat`: Generic multimodal interaction with GPT.
-   - `Assistant`: General-purpose assistant framework.
-   - `Bubba`: Budget Execution Assistant.
-   - `Bro`: Data Science & Programming Assistant.
-- **Custom Fine-Tuned Models**: Uses proprietary fine-tuned models for different domains (e.g.,
-  `bro-gpt`, `bubba-gpt`).
-- **Vector Store Integration**: Embedded vector store lookups for domain-specific knowledge
-  retrieval.
-- **Web & File Search**: Built-in support for semantic document and web search.
-- **Error Handling**: Custom exceptions with UI support via `ErrorDialog`.
+- Unified AI Framework: Integrates OpenAI APIs for text, image, audio, file analysis, transcription,
+  and translation.
+- Multimodal Capabilities: Supports text generation, image creation, image analysis, and document
+  summarization.
+- Assistant Classes:
+- Chat: Generic multimodal interaction with GPT.
+- Assistant: General-purpose assistant framework.
+- Bubba: Budget Execution Assistant.
+- Bro: Data Science & Programming Assistant.
+- Custom Fine-Tuned Models: Uses proprietary fine-tuned models for different domains (e.g., bro-gpt,
+  bubba-gpt).
+- Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
+- Web & File Search: Built-in support for semantic document and web search.
 
 
 
@@ -115,21 +111,6 @@ OPENAI_API_KEY=<your_api_key>
 - Bubba: Budget Execution Analyst
 - Bro: Programming & Data Science Analyst
 
-## ⚙️ Features
-
-- Unified AI Framework: Integrates OpenAI APIs for text, image, audio, file analysis, transcription,
-and translation.
-- Multimodal Capabilities: Supports text generation, image creation, image analysis, and document
-summarization.
-- Assistant Classes:
-- Chat: Generic multimodal interaction with GPT.
-- Assistant: General-purpose assistant framework.
-- Bubba: Budget Execution Assistant.
-- Bro: Data Science & Programming Assistant.
-- Custom Fine-Tuned Models: Uses proprietary fine-tuned models for different domains (e.g., bro-gpt,
-bubba-gpt).
-- Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
-- Web & File Search: Built-in support for semantic document and web search.
 
 
 #### 🔤 Text Generation
