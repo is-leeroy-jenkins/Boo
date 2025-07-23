@@ -56,7 +56,7 @@ pip install -r requirements.txt
 
 
 
-# Structure
+## ⚙️ Structure
 
 #### Core Classes
 
@@ -84,7 +84,7 @@ pip install -r requirements.txt
 
 
 
-## 🛠️ Requirements
+#### 🛠️ Requirements
 
 - Python 3.10+
 - OpenAI Python SDK
@@ -96,7 +96,7 @@ pip install -r requirements.txt
 
 
 
-## 🔐 Environment Variables
+#### 🔐 Environment Variables
 
 Set the following in your environment or `.env` file:
 
