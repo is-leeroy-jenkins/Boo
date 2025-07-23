@@ -107,8 +107,10 @@ OPENAI_API_KEY=<your_api_key>
 
 
 ## 🔤 Text Generation
-- Generates intelligent completions or explanations based on a user prompt using fine-tuned GPT
-models.
+
+- Generate high-quality responses using OpenAI's GPT models.
+- Supports parameter tuning (temperature, top_p, frequency penalties).
+- Ideal for summarization, explanations, and knowledge retrieval.
 
 ```
 python
@@ -120,7 +122,10 @@ print( response )
 ```
 
 ## 🎨 Image Generation
-- Creates high-quality images from natural language prompts using DALL·E models.
+
+- Convert natural language prompts into images using DALL·E 3.
+- Specify resolution and rendering quality options.
+- Useful for creating visual illustrations and conceptual diagrams.
 
 ```
 python
@@ -130,8 +135,10 @@ print(f"Image URL: {image_url}")
 ```
 
 ## 🖼️ Image Analysis
-- Analyzes visual content using both an image URL and an associated prompt, returning descriptive
-insights.
+
+- Analyze visual content by combining image and text prompts.
+- Extract meaning, context, or structure from images.
+- Leverages GPT-4o’s vision capabilities for advanced perception.
 
 ```
 python
@@ -142,8 +149,10 @@ print(response)
 ```
 
 ## 📄 Document Summarization
-- Uploads and processes documents to generate concise, context-aware summaries based on the user's
-prompt.
+
+- Upload and process document files directly into the assistant.
+- Use prompts to extract insights or summarize content.
+- Supports PDFs, DOCX, and other file formats via OpenAI's file API.
 
 ```
 python
@@ -157,7 +166,10 @@ print( summary )
 ```
 
 ## 🔍 File Search with Vector Stores
-- Performs semantic search over domain-specific document embeddings to retrieve relevant content.
+
+- Embed and store documents in vector stores for semantic search.
+- Retrieve contextually relevant content using natural language queries.
+- Ideal for knowledge base querying and document Q&A systems.
 
 ```
 python
@@ -179,8 +191,10 @@ print(result)
 ```
 
 ## 🌐 Web Search (Real-Time Querying)
-- Executes a live web search through OpenAI’s web-augmented GPT interface to find up-to-date
-  information.
+
+- Perform web lookups in real time via OpenAI’s web-enabled models.
+- Extract current events, news, and regulatory updates.
+- No scraping required—returns model-interpreted summaries.
 
 ```
 python
@@ -190,10 +204,10 @@ print(insights)
 ```
 
 ## 🧾 Prompt & Message Structuring
-- Defines structured inputs including instructions, context, and desired output format using
-  Pydantic models.
-- `Prompt`: Defines instructions, context, and data for structured prompts.
-- `Message`: Encapsulates conversational roles, text, and structured data exchange.
+
+- Build structured prompt schemas using Pydantic models.
+- Define instructions, context, output goals, and data sources.
+- Promotes reusable, interpretable prompt engineering.
 
 ```
 python
@@ -211,8 +225,9 @@ print(p.model_dump())
 
 ## ⚙️ API Endpoint Access
 
-- `Models`: Maintains lists of supported GPT models across tasks (generation, image, audio).
-- `EndPoint`: Central registry for OpenAI API endpoints used throughout the application.
+- Centralized access to OpenAI API endpoints.
+- Includes endpoints for completions, images, speech, and files.
+- Facilitates debugging and manual request construction.
 
 ```
 python
