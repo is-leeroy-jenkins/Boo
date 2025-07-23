@@ -165,6 +165,22 @@ bro.run_task( "Summarize the document, then find related guidance policies" )
 
 ## 📦  Local Model Compatibility
 - Add optional support for local models (e.g., Llama, Mistral) using transformers or llama-cpp-python.
+```
+python
+bro.use_local_model("mistral-7b")
+```
+
+
+## 🗣  Speech-to-Text + Text-to-Speech Interface
+- Use OpenAI’s Whisper and TTS APIs to convert voice to text and back.
+```
+python
+text = bro.transcribe_audio("hearing.mp3")
+bro.speak("Here is the summary of the document.")
+
+```
+
+
 
 #### 📝 License
 
