@@ -105,13 +105,6 @@ bash
 OPENAI_API_KEY=<your_api_key>
 ```
 
-## 🧠 Assistants Included
-- Chat: General multimodal chat
-- Assistant: Generic AI assistant
-- Bubba: Budget Execution Analyst
-- Bro: Programming & Data Science Analyst
-
-
 
 #### 🔤 Text Generation
 - Generates intelligent completions or explanations based on a user prompt using fine-tuned GPT
@@ -232,6 +225,10 @@ print( api.get_data( ) )
 #### 🤖 Assistant Management
 - Fetches and lists OpenAI assistants created or used within the system, enabling assistant
   lifecycle management.
+- Chat: General multimodal chat
+- Assistant: Generic AI assistant
+- Bubba: Budget Execution Analyst
+- Bro: Programming & Data Science Analyst
 ```
 python
 
