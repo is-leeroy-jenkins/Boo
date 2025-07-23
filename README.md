@@ -115,9 +115,24 @@ OPENAI_API_KEY=<your_api_key>
 - Bubba: Budget Execution Analyst
 - Bro: Programming & Data Science Analyst
 
-# Features
+## ⚙️ Features
 
-## 🔤 Text Generation
+- Unified AI Framework: Integrates OpenAI APIs for text, image, audio, file analysis, transcription,
+and translation.
+- Multimodal Capabilities: Supports text generation, image creation, image analysis, and document
+summarization.
+- Assistant Classes:
+- Chat: Generic multimodal interaction with GPT.
+- Assistant: General-purpose assistant framework.
+- Bubba: Budget Execution Assistant.
+- Bro: Data Science & Programming Assistant.
+- Custom Fine-Tuned Models: Uses proprietary fine-tuned models for different domains (e.g., bro-gpt,
+bubba-gpt).
+- Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
+- Web & File Search: Built-in support for semantic document and web search.
+
+
+#### 🔤 Text Generation
 - Generates intelligent completions or explanations based on a user prompt using fine-tuned GPT
 models.
 
@@ -130,7 +145,7 @@ response = bro.generate_text( "Explain how random forests handle overfitting." )
 print( response )
 ```
 
-## 🖼️ Image Generation
+#### Image Generation
 - Creates high-quality images from natural language prompts using DALL·E models.
 
 ```
@@ -140,7 +155,7 @@ image_url = bro.generate_image("A conceptual illustration of quantum computing i
 print(f"Image URL: {image_url}")
 ```
 
-## 🖼️ Image Analysis
+#### 🖼️ Image Analysis
 - Analyzes visual content using both an image URL and an associated prompt, returning descriptive
 insights.
 
@@ -152,7 +167,7 @@ response = bro.analyze_image("Describe the primary elements in this image", url)
 print(response)
 ```
 
-## 📄 Document Summarization
+#### 📄 Document Summarization
 - Uploads and processes documents to generate concise, context-aware summaries based on the user's
 prompt.
 
@@ -166,7 +181,8 @@ summary = bro.summmarize_document(
 )
 print( summary )
 ```
-## 🔍 File Search with Vector Stores
+
+#### 🔍 File Search with Vector Stores
 - Performs semantic search over domain-specific document embeddings to retrieve relevant content.
 
 ```
@@ -176,7 +192,7 @@ result = bro.search_files("Legislation related to environmental impact funding")
 print(result)
 ```
 
-## 🔎 File & Web Search
+#### 🔎 File & Web Search
 - Performs semantic search over domain-specific document embeddings to retrieve relevant content.
 - **File Search**: Query vector-embedded files using `vector_store_ids`.
 - **Web Search**: Real-time information retrieval using GPT web search integration.
@@ -188,7 +204,7 @@ result = bro.search_files("Legislation related to environmental impact funding")
 print(result)
 ```
 
-## 🌐 Web Search (Real-Time Querying)
+#### 🌐 Web Search (Real-Time Querying)
 - Executes a live web search through OpenAI’s web-augmented GPT interface to find up-to-date
   information.
 
@@ -199,7 +215,7 @@ insights = bro.search_web("Current status of the Federal AI Bill 2025")
 print(insights)
 ```
 
-## 🧾 Prompt & Message Structuring
+#### 🧾 Prompt & Message Structuring
 - Defines structured inputs including instructions, context, and desired output format using
   Pydantic models.
 - `Prompt`: Defines instructions, context, and data for structured prompts.
@@ -219,7 +235,7 @@ print(p.model_dump())
 
 ```
 
-## ⚙️ API Endpoint Access
+#### ⚙️ API Endpoint Access
 
 - `Models`: Maintains lists of supported GPT models across tasks (generation, image, audio).
 - `EndPoint`: Central registry for OpenAI API endpoints used throughout the application.
@@ -232,7 +248,7 @@ api = EndPoint( )
 print( api.get_data( ) ) 
 ```
 
-## 🤖 Assistant Management
+#### 🤖 Assistant Management
 - Fetches and lists OpenAI assistants created or used within the system, enabling assistant
   lifecycle management.
 ```
@@ -244,7 +260,7 @@ assistants = assistant.get_list()
 print("Available Assistants:", assistants)
 ```
 
-## 📁 File Organization
+#### 📁 File Organization
 - boo.py – Main application framework
 - boogr/ – GUI and error dialogs
 - guro/ – Prompt context utilities
