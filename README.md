@@ -11,7 +11,7 @@ automation of analytical tasks.
 
 
 
-## 📌 Features
+#  Features
 
 - **Unified AI Framework**: Integrates OpenAI APIs for text, image, audio, file analysis,
   transcription, and translation.
@@ -60,7 +60,7 @@ pip install -r requirements.txt
 
 
 
-## 🧱 Structure
+# Structure
 
 #### Core Classes
 
@@ -115,12 +115,134 @@ OPENAI_API_KEY=<your_api_key>
 - Bubba: Budget Execution Analyst
 - Bro: Programming & Data Science Analyst
 
-## 🛠 Features
-- OpenAI GPT model orchestration
-- Document and image analysis
-- Search via vector databases
-- Assistant modularization
-- Full multimodal AI stack  
+# Features
+
+## 🔤 Text Generation
+- Generates intelligent completions or explanations based on a user prompt using fine-tuned GPT
+models.
+
+```
+python
+from boo import Bro
+
+bro = Bro( )
+response = bro.generate_text( "Explain how random forests handle overfitting." )
+print( response )
+```
+
+## 🖼️ Image Generation
+- Creates high-quality images from natural language prompts using DALL·E models.
+
+```
+python
+
+image_url = bro.generate_image("A conceptual illustration of quantum computing in federal AI")
+print(f"Image URL: {image_url}")
+```
+
+## 🖼️ Image Analysis
+- Analyzes visual content using both an image URL and an associated prompt, returning descriptive
+insights.
+
+```
+python
+
+url = "https://example.com/sample-image.png"
+response = bro.analyze_image("Describe the primary elements in this image", url)
+print(response)
+```
+
+## 📄 Document Summarization
+- Uploads and processes documents to generate concise, context-aware summaries based on the user's
+prompt.
+
+```
+python
+
+file_path = "data/federal_strategy.pdf"
+summary = bro.summmarize_document(
+  prompt = "Summarize key national cybersecurity strategies.",
+  path = file_path
+)
+print( summary )
+```
+## 🔍 File Search with Vector Stores
+- Performs semantic search over domain-specific document embeddings to retrieve relevant content.
+
+```
+python
+
+result = bro.search_files("Legislation related to environmental impact funding")
+print(result)
+```
+
+## 🔎 File & Web Search
+- Performs semantic search over domain-specific document embeddings to retrieve relevant content.
+- **File Search**: Query vector-embedded files using `vector_store_ids`.
+- **Web Search**: Real-time information retrieval using GPT web search integration.
+
+```
+python
+
+result = bro.search_files("Legislation related to environmental impact funding")
+print(result)
+```
+
+## 🌐 Web Search (Real-Time Querying)
+- Executes a live web search through OpenAI’s web-augmented GPT interface to find up-to-date
+  information.
+
+```
+python
+
+insights = bro.search_web("Current status of the Federal AI Bill 2025")
+print(insights)
+```
+
+## 🧾 Prompt & Message Structuring
+- Defines structured inputs including instructions, context, and desired output format using
+  Pydantic models.
+- `Prompt`: Defines instructions, context, and data for structured prompts.
+- `Message`: Encapsulates conversational roles, text, and structured data exchange.
+
+```
+python
+
+from boo import Prompt
+p = Prompt(
+    instruction="Create a budget summary",
+    context="Federal Defense Budget FY25",
+    output_indicator="summary",
+    input_data="defense_budget_raw.csv"
+)
+print(p.model_dump())
+
+```
+
+## ⚙️ API Endpoint Access
+
+- `Models`: Maintains lists of supported GPT models across tasks (generation, image, audio).
+- `EndPoint`: Central registry for OpenAI API endpoints used throughout the application.
+
+```
+python
+
+from boo import EndPoint
+api = EndPoint( )
+print( api.get_data( ) ) 
+```
+
+## 🤖 Assistant Management
+- Fetches and lists OpenAI assistants created or used within the system, enabling assistant
+  lifecycle management.
+```
+python
+
+from boo import Assistant
+assistant = Assistant()
+assistants = assistant.get_list()
+print("Available Assistants:", assistants)
+```
 
 ## 📁 File Organization
 - boo.py – Main application framework
@@ -130,55 +252,18 @@ OPENAI_API_KEY=<your_api_key>
 - mathy/ - Machine Learning models
 
 
-##  🔍  Natural Language DataFrame Querying
-- Allow users to ask questions about a pandas DataFrame using plain English.
-
-```
-python
-bro.query_dataframe(df, "What are the top 5 agencies by total spending?")
-```
-
-## 📊  Chart Generation from Prompts
-- Generate matplotlib or plotly charts from natural language prompts.
-
-```
-python
-bro.visualize(prompt="Create a bar chart of spending by department", data=df)
-```
-
-## 🧾 PDF Parsing and Table Extraction
-- Automatically detect and extract structured tables from PDF files using pdfplumber or camelot.
-
-```
-python
-tables = bro.extract_tables("appropriations.pdf")
-
-```
-
-## 🧠 Embedded Agent Workflows
-- Enable multi-step task execution (like agentic behavior).
-
-```
-python
-bro.run_task( "Summarize the document, then find related guidance policies" )
-```
-
-## 📦  Local Model Compatibility
-- Add optional support for local models (e.g., Llama, Mistral) using transformers or llama-cpp-python.
-```
-python
-bro.use_local_model("mistral-7b")
-```
 
 
-## 🗣  Speech-to-Text + Text-to-Speech Interface
-- Use OpenAI’s Whisper and TTS APIs to convert voice to text and back.
-```
-python
-text = bro.transcribe_audio("hearing.mp3")
-bro.speak("Here is the summary of the document.")
 
-```
+
+
+
+
+
+
+
+
+#
 
 
 
