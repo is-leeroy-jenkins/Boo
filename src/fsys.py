@@ -42,6 +42,8 @@
   </summary>
   ******************************************************************************************
   '''
+from __future__ import annotations
+
 import os
 import zipfile as zp
 from openpyxl import Workbook

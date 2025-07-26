@@ -42,11 +42,16 @@
   </summary>
   ******************************************************************************************
   '''
+from __future__ import annotations
+
 import sqlite3 as sqlite
 from pandas import DataFrame
 from pandas import read_sql as sqlreader
 import pyodbc as db
 import os
+
+from typing import List
+
 from static import Source, Provider, SQL, ParamStyle
 from boogr import Error, ErrorDialog
 
@@ -968,7 +973,7 @@ class DataGenerator( ):
 		         'command_text', 'create_frame', 'create_tuples' ]
 
 
-	def create_frame( self ) -> DataFrame:
+	def create_frame( self ) -> DataFrame | None:
 		'''
 
 			Purpose:
@@ -1003,7 +1008,7 @@ class DataGenerator( ):
 			error.show( )
 
 
-	def create_tuples( self ) -> list[ tuple ]:
+	def create_tuples( self ) -> List[ tuple ] | None:
 		'''
 
 			Purpose:

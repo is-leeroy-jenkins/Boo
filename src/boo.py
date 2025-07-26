@@ -43,7 +43,7 @@
   ******************************************************************************************
   '''
 import asyncio
-from boogr import ErrorDialog, Error, ChatBot
+from boogr import ErrorDialog, Error, ChatBot, ChatWindow
 import datetime as dt
 import numpy as np
 import os
@@ -74,6 +74,14 @@ class Prompt( BaseModel ):
 	output_indicator: Optional[ str ]
 	input_data: Optional[ str ]
 
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
+
 
 class UserLocation( BaseModel ):
 	'''
@@ -89,6 +97,14 @@ class UserLocation( BaseModel ):
 	region: Optional[ str ]
 	timezone: Optional[ str ]
 
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
+
 
 class Text( BaseModel ):
 	'''
@@ -99,6 +115,14 @@ class Text( BaseModel ):
 		 
 	'''
 	type: str='text'
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
 
 
 class File( BaseModel ):
@@ -116,8 +140,16 @@ class File( BaseModel ):
 	id: Optional[ str ]
 	object: Optional[ str ]
 	purpose: Optional[ str ]
-	
-	
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
+
+
 class Error( BaseModel ):
 	'''
 
@@ -128,6 +160,14 @@ class Error( BaseModel ):
 	'''
 	code: Optional[ str ]
 	message: Optional[ str ]
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
 
 
 class JsonSchema( BaseModel ):
@@ -143,6 +183,14 @@ class JsonSchema( BaseModel ):
 	name: str
 	description: Optional[ str ]
 
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
+
 
 class JsonObject( BaseModel ):
 	'''
@@ -153,6 +201,14 @@ class JsonObject( BaseModel ):
 		
 	'''
 	type: Optional[ str ]
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
 
 
 class Format( BaseModel ):
@@ -181,6 +237,14 @@ class Reasoning( BaseModel ):
 	'''
 	effort: Optional[ str ]
 	summary: Optional[ str ]
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
 
 
 class Response( BaseModel ):
@@ -213,6 +277,14 @@ class Response( BaseModel ):
 	created: Optional[ str ]
 	data: Optional[ Dict ]
 
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
+
 
 class FileSearch( BaseModel ):
 	'''
@@ -225,6 +297,14 @@ class FileSearch( BaseModel ):
 	type: Optional[ str ]
 	vector_store_ids: Optional[ List[ str ] ]
 	max_num_results: Optional[ int ]
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
 
 
 class WebSearch( BaseModel ):
@@ -239,8 +319,16 @@ class WebSearch( BaseModel ):
 	type: Optional[ str ]
 	search_context_size: Optional[ str ]
 	user_location: Optional[ object ]
-	
-	
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
+
+
 class ComputerUse( BaseModel ):
 	'''
 
@@ -249,12 +337,20 @@ class ComputerUse( BaseModel ):
 		A class for a tool that controls a virtual computer
 		
 	'''
-	type: str
-	display_height: int
-	display_width: int
-	environment: str
-	
-	
+	type: Optional[ str ]
+	display_height: Optional[ int ]
+	display_width: Optional[ int ]
+	environment: Optional[ str ]
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
+
+
 class Function( BaseModel ):
 	'''
 
@@ -266,6 +362,14 @@ class Function( BaseModel ):
 	description: Optional[ str ]
 	parameters: Optional[ List[ str ] ]
 	strict: Optional[ bool ]
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
 
 
 class Message( BaseModel ):
@@ -281,6 +385,14 @@ class Message( BaseModel ):
 	type: Optional[ str ]
 	instructions: Optional[ str ]
 	data: Optional[ Dict ]
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
+	def __init__( self ):
+		super( ).__init__( )
 
 
 class EndPoint( ):

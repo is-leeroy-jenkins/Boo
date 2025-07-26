@@ -267,9 +267,14 @@ class Dark( ):
 		Class representing the theme
 
     '''
-	
-	
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+		allow_mutation = True
+
 	def __init__( self ):
+		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
 		sg.theme_element_text_color( '#69B1EF' )

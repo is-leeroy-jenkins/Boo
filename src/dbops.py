@@ -42,6 +42,8 @@
   </summary>
   ******************************************************************************************
   '''
+from __future__ import annotations
+
 import os
 import re
 import json
@@ -166,7 +168,7 @@ class SQLite( ):
 			else:
 				self.placeholders = ', '.join( '?' for _ in values )
 				col_names = ', '.join( columns )
-				sql = f'INSERT INTO {table} ({col_names}) VALUES ({placeholders})'
+				sql = f'INSERT INTO {table} ({col_names}) VALUES ({self.placeholders})'
 				self.cursor.execute( sql, values )
 				self.conn.commit( )
 		except Exception as e:
@@ -179,7 +181,7 @@ class SQLite( ):
 			error.show( )
 	
 	
-	def fetch_all( self, table: str ) -> List[ Tuple ]:
+	def fetch_all( self, table: str ) -> List[ Tuple ] | None:
 		"""
 		
 			Purpose:
@@ -207,7 +209,7 @@ class SQLite( ):
 			error.show( )
 	
 	
-	def fetch_one( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> Tuple:
+	def fetch_one( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> Tuple | None:
 		"""
 		
 			Purpose:
@@ -277,7 +279,7 @@ class SQLite( ):
 				self.where = where
 				self.params = params
 				self.sql = f'UPDATE {self.table_name} SET {pairs} WHERE {self.where}'
-				self.cursor.execute( sql, params )
+				self.cursor.execute( self.sql, params )
 				self.conn.commit( )
 		except Exception as e:
 			exception = Error( e )
@@ -316,7 +318,7 @@ class SQLite( ):
 				self.where = where
 				self.params = params
 				self.sql = f"DELETE FROM {self.table_name} WHERE {self.where}"
-				self.cursor.execute( sql, self.params )
+				self.cursor.execute( self.sql, self.params )
 				self.conn.commit( )
 		except Exception as e:
 			exception = Error( e )
