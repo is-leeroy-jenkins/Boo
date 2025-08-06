@@ -43,7 +43,7 @@
   ******************************************************************************************
   '''
 import asyncio
-from boogr import ErrorDialog, Error, ChatBot, ChatWindow
+from src.boogr import ErrorDialog, Error, ChatBot, ChatWindow
 import datetime as dt
 import numpy as np
 import os
@@ -54,11 +54,11 @@ import pandas as pd
 from pydantic import BaseModel, Field, validator
 from pygments.lexers.csound import newline
 import requests
-from static import Requests, Roles, Languages
+from src.static import Requests, Roles, Languages
 from typing_extensions import override
 import tiktoken
 from typing import Any, List, Tuple, Optional, Dict
-from guro import Prompt
+from src.guro import Prompt
 
 
 class Prompt( BaseModel ):
@@ -77,7 +77,6 @@ class Prompt( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -100,7 +99,6 @@ class UserLocation( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -119,7 +117,6 @@ class Text( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -144,7 +141,6 @@ class File( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -164,7 +160,6 @@ class Error( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -179,14 +174,12 @@ class JsonSchema( BaseModel ):
 		
 	'''
 	type: str
-	schema: str
 	name: str
 	description: Optional[ str ]
 
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -205,7 +198,6 @@ class JsonObject( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -241,7 +233,6 @@ class Reasoning( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -280,7 +271,6 @@ class Response( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -301,7 +291,6 @@ class FileSearch( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -323,7 +312,6 @@ class WebSearch( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -345,7 +333,6 @@ class ComputerUse( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -366,7 +353,6 @@ class Function( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -389,7 +375,6 @@ class Message( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
