@@ -6901,7 +6901,7 @@ class Prompt( ):
 		</INPUT>
 		'''
 
-		self.tech_supporter = f'''
+		self.tech_support_analyst = f'''
 		<INSTRUCTIONS>
 		You are a helpful assistant who is the best tech support provider in the world! You can 
 		help troubleshoot any IT-related issue when given a problem delimited by ### in the input 
@@ -7446,6 +7446,7 @@ class Prompt( ):
 		</ACTIONS>
 		'''
 
+
 	def __dir__( self ):
 		'''
 
@@ -7464,6 +7465,7 @@ class Prompt( ):
 		         'database_specialist', 'data_cleaner', 'data_farmer', 'data_plumber',
 		         'data_scientist', 'dataset_analyzer', 'data_visualizer', 'decision_maker',
 		         'dependency_analyzer', 'document_interrogator', 'document_summarizer',
+		         'excel_analyst', 'dashboard_analyst', 'PbiAnalyst', 'tech_support_analyst',
 		         'educational_writer', 'email_assistant',  'movie_advisor', 'essay_writer',
 		         'research_evaluation_expert', 'executive_assistant', 'expert_programmer',
 		         'feature_extractor', 'financial_planner', 'form_builder', 'geographic_guesser',
