@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="Goo.py" company="Terry D. Eppler">
 
-	     Boo is a df analysis tool integrating various Generative AI, Text-Processing, and
+	     Boo is a df analysis tool integrating various Generative GPT, GptText-Processing, and
 	     Machine-Learning algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
@@ -253,7 +253,7 @@ class Fetch:
 		'''
 		
 			Returns formatted conversation history.
-			:return: List of strings showing previous user and AI messages
+			:return: List of strings showing previous user and GPT messages
 			
 		'''
 		try:

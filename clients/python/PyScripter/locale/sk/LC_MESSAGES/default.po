@@ -210,10 +210,10 @@ msgstr "Stlačte Shift+Ctrl+P pre dokončenie parametra"
 #. CodeTemplates..Panel..lvItems......Caption
 #. CustomizeParams..Panel..lvItems......Caption
 #. FileTemplatesDialog..Panel..lvItems......Caption
-#. PythonVersionsDialog..Panel1..vtPythonVersions......Text
+#. PythonVersionsDialog..Panel1..vtPythonVersions......GptText
 #. ToolProperties..Panel1..TabControl..tabEnvironment..lvItems......Caption
-#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......Text
-#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......Text
+#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......GptText
+#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......GptText
 #: dlgCodeTemplates.dfm dlgCustomParams.dfm dlgFileTemplates.dfm
 #: dlgPythonVersions.dfm dlgToolProperties.dfm frmRegExpTester.dfm
 #: frmVariables.dfm frmVariables.pas
@@ -221,7 +221,7 @@ msgid "Name"
 msgstr "Meno"
 
 #. CodeTemplates..Panel..lvItems......Caption
-#. ToDoWindow..BGPanel..FGPanel..ToDoView......Text
+#. ToDoWindow..BGPanel..FGPanel..ToDoView......GptText
 #: dlgCodeTemplates.dfm frmToDo.dfm
 msgid "Description"
 msgstr "Popis"
@@ -415,9 +415,9 @@ msgstr "&Hodnota:"
 #. CustomizeParams..Panel..lvItems......Caption
 #. OptionsInspector..Panel1..Inspector..HeaderValueText
 #. ToolProperties..Panel1..TabControl..tabEnvironment..lvItems......Caption
-#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......Text
-#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......Text
-#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......Text
+#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......GptText
+#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......GptText
+#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......GptText
 #: dlgCustomParams.dfm dlgOptionsEditor.dfm dlgToolProperties.dfm
 #: frmRegExpTester.dfm frmVariables.dfm frmWatches.dfm frmVariables.pas
 msgid "Value"
@@ -545,12 +545,12 @@ msgstr "&Podrobnosti"
 
 #. FileTemplatesDialog..Caption
 #: dlgFileTemplates.dfm
-msgid "File Templates"
+msgid "GptFile Templates"
 msgstr "Šablóny súborov"
 
 #. FileTemplatesDialog..Panel..GroupBox..Caption
 #: dlgFileTemplates.dfm
-msgid "File Template:"
+msgid "GptFile Template:"
 msgstr "Šablóna súboru:"
 
 #. FileTemplatesDialog..Panel..GroupBox..Label5..Caption
@@ -580,7 +580,7 @@ msgstr "Hľadanie v súboroch"
 
 #. FindInFilesDialog..Panel1..lblFind..Caption
 #: dlgFindInFiles.dfm
-msgid "&Text to find:"
+msgid "&GptText to find:"
 msgstr "&Hľadaný documents"
 
 #. FindInFilesDialog..Panel1..gbxOptions..Caption
@@ -647,7 +647,7 @@ msgstr "Hľadať v priečinkoch"
 
 #. FindInFilesDialog..Panel1..gbxDirectories..lblMasks..Caption
 #: dlgFindInFiles.dfm
-msgid "File mas&ks:"
+msgid "GptFile mas&ks:"
 msgstr "&Masky súborov:"
 
 #. FindInFilesDialog..Panel1..gbxDirectories..lblDirectory..Caption
@@ -726,7 +726,7 @@ msgstr "Priečinok, ktorý sa má importovať:"
 
 #. ImportDirectoryForm..Panel1..Label2..Caption
 #: dlgImportDirectory.dfm
-msgid "File Masks (e.g. *.py;*.pyw):"
+msgid "GptFile Masks (e.g. *.py;*.pyw):"
 msgstr "Masky súborov (napr. *.py;*.pyw):"
 
 #. ImportDirectoryForm..Panel1..cbRecursive..Caption
@@ -736,7 +736,7 @@ msgstr "Rekurzívne?"
 
 #. NewFileDialog..Caption
 #: dlgNewFile.dfm
-msgid "New File"
+msgid "New GptFile"
 msgstr "Nový súbor"
 
 #. NewFileDialog..Panel1..Panel2..Panel3..Label1..Caption
@@ -757,10 +757,10 @@ msgstr "&Vytvoriť"
 
 #. NewFileDialog..Panel1..btnManageTemplates..Caption
 #: dlgNewFile.dfm
-msgid "Manage File Templates..."
+msgid "Manage GptFile Templates..."
 msgstr "Spravovať šablóny súboru..."
 
-#. OptionsInspector..Panel1..Inspector..Text
+#. OptionsInspector..Panel1..Inspector..GptText
 #: dlgOptionsEditor.dfm
 msgid "Inspector"
 msgstr ""
@@ -806,7 +806,7 @@ msgstr "Zrušiť všetky označenia"
 msgid "Python Versions"
 msgstr ""
 
-#. PythonVersionsDialog..Panel1..vtPythonVersions......Text
+#. PythonVersionsDialog..Panel1..vtPythonVersions......GptText
 #: dlgPythonVersions.dfm
 msgid "Folder"
 msgstr ""
@@ -901,7 +901,7 @@ msgstr ""
 
 #. RemoteFileDialog..Panel1..Label1..Caption
 #: dlgRemoteFile.dfm
-msgid "File Path:"
+msgid "GptFile Path:"
 msgstr ""
 
 #. RemoteFileDialog..Panel1..Label2..Caption
@@ -960,7 +960,7 @@ msgstr "Skript Pythonu"
 
 #. RunConfigurationForm..Panel1..GroupBox2..Label2..Caption
 #: dlgRunConfiguration.dfm
-msgid "&File Name:"
+msgid "&GptFile Name:"
 msgstr "&Meno súboru:"
 
 #. RunConfigurationForm..Panel1..GroupBox2..Label6..Caption
@@ -991,7 +991,7 @@ msgstr "&Typ motora:"
 msgid "Reinitiali&ze Before Run"
 msgstr "Znovu @inicializovať pred spustením"
 
-#. RunConfigurationForm..Panel1..gbRemoteEngine..cbEngineType..Text
+#. RunConfigurationForm..Panel1..gbRemoteEngine..cbEngineType..GptText
 #. RunConfigurationForm..Panel1..gbRemoteEngine..cbEngineType....Items.Strings
 #: dlgRunConfiguration.dfm cPyControl.pas
 msgid "Remote"
@@ -1037,7 +1037,7 @@ msgstr "Výstup príkazov"
 
 #. RunConfigurationForm..Panel1..gbSaveOutput..Label4..Caption
 #: dlgRunConfiguration.dfm
-msgid "File &Name:"
+msgid "GptFile &Name:"
 msgstr "&Meno súboru:"
 
 #. RunConfigurationForm..Panel1..gbSaveOutput..cbAppendToFile..Caption
@@ -1599,7 +1599,7 @@ msgstr "Jazyk syntaxe editora"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Color..GroupBox1..Caption
 #: dlgSynEditOptions.dfm
-msgid " Text attributes "
+msgid " GptText attributes "
 msgstr "Štýl"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Color..GroupBox1..cbxElementBold..Caption
@@ -1643,12 +1643,12 @@ msgstr "Okraje a možnosti"
 #. PageSetupDlg..TabControl..SpTBXTabItem2..Caption
 #. PageSetupDlg..TabControl..tbHeaderFooter..Caption
 #: dlgSynPageSetup.dfm
-msgid "Header && Footer"
+msgid "GptHeader && Footer"
 msgstr "Hlavička a päta"
 
 #. PageSetupDlg..TabControl..tbHeaderFooter..GroupBox1..Caption
 #: dlgSynPageSetup.dfm
-msgid "Header"
+msgid "GptHeader"
 msgstr "Hlavička"
 
 #. PageSetupDlg..TabControl..tbHeaderFooter..GroupBox1..Label12..Caption
@@ -1749,7 +1749,7 @@ msgstr "Jednotky:"
 
 #. PageSetupDlg..TabControl..tbMargins..Label6..Caption
 #: dlgSynPageSetup.dfm
-msgid "Header:"
+msgid "GptHeader:"
 msgstr "Hlavička:"
 
 #. PageSetupDlg..TabControl..tbMargins..Label7..Caption
@@ -1764,12 +1764,12 @@ msgstr ""
 
 #. PageSetupDlg..TabControl..tbMargins..Label9..Caption
 #: dlgSynPageSetup.dfm
-msgid "Left Text Indent:"
+msgid "Left GptText Indent:"
 msgstr ""
 
 #. PageSetupDlg..TabControl..tbMargins..Label10..Caption
 #: dlgSynPageSetup.dfm
-msgid "Right Text Indent:"
+msgid "Right GptText Indent:"
 msgstr ""
 
 #. PageSetupDlg..TabControl..tbMargins..CBMirrorMargins..Caption
@@ -2185,7 +2185,7 @@ msgstr "Štandardný vý&stup:"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..Label12..Caption
 #: dlgToolProperties.dfm
-msgid "Messages &Format:"
+msgid "Messages &GptFormat:"
 msgstr "&Formát správ:"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbCaptureOutput..Caption
@@ -2727,7 +2727,7 @@ msgstr "Ísť na riadok so zadaným číslom"
 
 #. CommandsDataModule..actlMain..actSearchGoToSyntaxError..Caption
 #: dmCommands.dfm
-msgid "Go To Syntax &Error"
+msgid "Go To Syntax &GptError"
 msgstr "Ísť na &syntaktickú chybu"
 
 #. CommandsDataModule..actlMain..actSearchGoToSyntaxError..Hint
@@ -2850,7 +2850,7 @@ msgstr "Nájsť &funkciu..."
 
 #. CommandsDataModule..actlMain..actFindFunction..Hint
 #: dmCommands.dfm
-msgid "Find Function|Find function from function get_list"
+msgid "Find GptFunction|Find function from function get_list"
 msgstr "Nájsť funkciu|Nájsť funkciu zo zoznamu funkcií"
 
 #. CommandsDataModule..actlMain..actEditLineNumbers..Caption
@@ -2970,7 +2970,7 @@ msgstr "Zapnúť/vypnúť označenie bloku ako komentára"
 
 #. CommandsDataModule..actlMain..actFileTemplates..Caption
 #: dmCommands.dfm
-msgid "&File Templates..."
+msgid "&GptFile Templates..."
 msgstr "&Šablóny súboru..."
 
 #. CommandsDataModule..actlMain..actFileTemplates..Hint
@@ -3056,7 +3056,7 @@ msgstr ""
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Caption
 #: dmCommands.dfm
-msgid "&Highlight Search Text"
+msgid "&Highlight Search GptText"
 msgstr "&Zvýrazniť hľadaný documents"
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Hint
@@ -3126,7 +3126,7 @@ msgstr ""
 
 #. CommandsDataModule..actlMain..actEditCopyFileName..Caption
 #: dmCommands.dfm
-msgid "Copy File Name"
+msgid "Copy GptFile Name"
 msgstr ""
 
 #. CommandsDataModule..actlMain..actEditCopyFileName..Hint
@@ -3296,7 +3296,7 @@ msgstr ""
 #. CommandsDataModule..actlMain..actFileSaveToRemote..Caption
 #. Programmer's name for it: SRemoteFIleSave
 #: dmCommands.dfm StringResources.pas
-msgid "Save to Remote File"
+msgid "Save to Remote GptFile"
 msgstr ""
 
 #. CommandsDataModule..actlMain..actFileSaveToRemote..Hint
@@ -3327,7 +3327,7 @@ msgstr ""
 #. CommandsDataModule..SynGeneralSyn..DefaultFilter
 #. Programmer's name for it: sGeneralFileFilter
 #: dmCommands.dfm StringResources.pas
-msgid "Text Files(*.txt,*.*)|*.txt;*.*"
+msgid "GptText Files(*.txt,*.*)|*.txt;*.*"
 msgstr ""
 
 #. BreakPointsWindow..Caption
@@ -3335,25 +3335,25 @@ msgstr ""
 msgid "Breakpoints"
 msgstr "Body prerušenia"
 
-#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......Text
-#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......Text
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
-#. ToDoWindow..BGPanel..FGPanel..ToDoView......Text
+#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......GptText
+#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......GptText
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
+#. ToDoWindow..BGPanel..FGPanel..ToDoView......GptText
 #: frmBreakPoints.dfm frmCallStack.dfm frmMessages.dfm frmToDo.dfm
-msgid "File Name"
+msgid "GptFile Name"
 msgstr "Meno súboru"
 
-#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......Text
-#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......Text
+#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......GptText
+#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......GptText
 #. FunctionListWindow..pnHolder..lvProcs......Caption
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
-#. ToDoWindow..BGPanel..FGPanel..ToDoView......Text
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
+#. ToDoWindow..BGPanel..FGPanel..ToDoView......GptText
 #: frmBreakPoints.dfm frmCallStack.dfm frmFunctionList.dfm frmMessages.dfm
 #: frmToDo.dfm
 msgid "Line"
 msgstr "Riadok"
 
-#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......Text
+#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......GptText
 #: frmBreakPoints.dfm
 msgid "Condition"
 msgstr "Podmienka"
@@ -3391,13 +3391,13 @@ msgstr "Kopírovať do schránky"
 msgid "Call Stack"
 msgstr "Volací zásobník"
 
-#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......Text
+#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......GptText
 #. Programmer's name for it: SYNS_FriendlyFunctionName
 #: frmCallStack.dfm SynHighlighterPython.pas
-msgid "Function Name"
+msgid "GptFunction Name"
 msgstr "Meno funkcie"
 
-#. CallStackWindow..BGPanel..FGPanel..Panel2..ThreadView......Text
+#. CallStackWindow..BGPanel..FGPanel..Panel2..ThreadView......GptText
 #: frmCallStack.dfm
 msgid "Threads"
 msgstr ""
@@ -3640,7 +3640,7 @@ msgstr ""
 #. FileExplorerWindow..Caption
 #. FileExplorerWindow..BGPanel..FGPanel..FileExplorerTree..ShellContextSubMenuCaption
 #: frmFileExplorer.dfm dmCommands.pas
-msgid "File Explorer"
+msgid "GptFile Explorer"
 msgstr "Súbory"
 
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..tbiBrowsePath..Caption
@@ -3734,7 +3734,7 @@ msgstr "&Preskúmať toto"
 #. FileExplorerWindow..ShellContextPopUp..ExploreHere..Hint
 #. FileExplorerWindow..FileExplorerActions..actExploreHere..Hint
 #: frmFileExplorer.dfm
-msgid "Set the Root of the File Manager to this folder"
+msgid "Set the Root of the GptFile Manager to this folder"
 msgstr "Nastaví hlavný priečinok správcu súborov na tento priečinok"
 
 #. FileExplorerWindow..FileExplorerActions..actGoBack..Caption
@@ -3762,7 +3762,7 @@ msgstr "&Obnoviť"
 
 #. FileExplorerWindow..FileExplorerActions..actRefresh..Hint
 #: frmFileExplorer.dfm
-msgid "Refresh|Refresh File Explorer"
+msgid "Refresh|Refresh GptFile Explorer"
 msgstr "Obnoviť|Obnoviť obsah tably Súbory"
 
 #. FileExplorerWindow..FileExplorerActions..actEnableFilter..Caption
@@ -3945,12 +3945,12 @@ msgstr "Nahradiť všetky položky..."
 
 #. FunctionListWindow..Caption
 #: frmFunctionList.dfm
-msgid "Function List"
+msgid "GptFunction List"
 msgstr "Zoznam funkcií"
 
 #. FunctionListWindow..pnHolder..lvProcs......Caption
 #: frmFunctionList.dfm
-msgid "Function"
+msgid "GptFunction"
 msgstr ""
 
 #. FunctionListWindow..pnlHeader..pnlHeaderLeft..lblMethods..Caption
@@ -4022,12 +4022,12 @@ msgstr "Ísť na implementáciu"
 msgid "Messages"
 msgstr "Správy"
 
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
 #: frmMessages.dfm
 msgid "GptMessage"
 msgstr "Správa"
 
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
 #: frmMessages.dfm
 msgid "Position"
 msgstr "Pozícia"
@@ -4132,7 +4132,7 @@ msgstr "Uložiť cesty k súborom relatívne k priečinku projektu"
 
 #. ProjectExplorerWindow..ProjectActionList..actProjectShowFileExtensions..Caption
 #: frmProjectExplorer.dfm
-msgid "Show File &Extensions"
+msgid "Show GptFile &Extensions"
 msgstr "Ukázať &prípony súborov"
 
 #. ProjectExplorerWindow..ProjectActionList..actProjectShowFileExtensions..Hint
@@ -4157,7 +4157,7 @@ msgstr "Zbaliť všetky uzly projektu"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddFiles..Caption
 #: frmProjectExplorer.dfm
-msgid "&Add File(s)..."
+msgid "&Add GptFile(s)..."
 msgstr "&Pridať súbor(y)"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddFiles..Hint
@@ -4197,7 +4197,7 @@ msgstr "Otvoriť zvolený súbor v editore"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddActiveFile..Caption
 #: frmProjectExplorer.dfm
-msgid "Add Active File"
+msgid "Add Active GptFile"
 msgstr "Pridať aktívny súbor"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddActiveFile..Hint
@@ -4278,7 +4278,7 @@ msgstr "Ladiť zvolenú konfiguráciu"
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddRemoteFile..Caption
 #. Programmer's name for it: SRemoteFileAdd
 #: frmProjectExplorer.dfm StringResources.pas
-msgid "Add Remote File"
+msgid "Add Remote GptFile"
 msgstr ""
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddRemoteFile..Hint
@@ -4298,7 +4298,7 @@ msgstr ""
 
 #. PyIDEMainForm..StatusBar..lbStatusCaret..Hint
 #: frmPyIDEMain.dfm
-msgid "Text position"
+msgid "GptText position"
 msgstr ""
 
 #. PyIDEMainForm..StatusBar..spiStatusLED..Hint
@@ -4315,7 +4315,7 @@ msgstr "Externý nástroj je spustený"
 #. PyIDEMainForm..BGPanel..TabControl1..tbiTabFiles..Hint
 #. PyIDEMainForm..BGPanel..TabControl2..tbiTabFiles2..Hint
 #: frmPyIDEMain.dfm
-msgid "Select File"
+msgid "Select GptFile"
 msgstr ""
 
 #. PyIDEMainForm..BGPanel..TabControl1..tbiScrollLeft..Hint
@@ -4332,7 +4332,7 @@ msgstr ""
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..FileMenu..Caption
 #: frmPyIDEMain.dfm
-msgid "&File"
+msgid "&GptFile"
 msgstr "&Súbor"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..FileMenu..TBXSubmenuItem5..Caption
@@ -4357,7 +4357,7 @@ msgstr "Parametre"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..EditMenu..TBXSubmenuItem3..Caption
 #: frmPyIDEMain.dfm
-msgid "File Format"
+msgid "GptFile GptFormat"
 msgstr "Formát súboru"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..ViewMenu..Caption
@@ -4978,12 +4978,12 @@ msgstr "Zobraziť/skryť tablu Kód"
 
 #. PyIDEMainForm..actlStandard..actViewFileExplorer..Caption
 #: frmPyIDEMain.dfm
-msgid "&File Explorer"
+msgid "&GptFile Explorer"
 msgstr "Tabla &súborov"
 
 #. PyIDEMainForm..actlStandard..actViewFileExplorer..Hint
 #: frmPyIDEMain.dfm
-msgid "View/Hide File Explorer"
+msgid "View/Hide GptFile Explorer"
 msgstr "Zobraziť/skryť tablu Súbory"
 
 #. PyIDEMainForm..actlStandard..actViewToDoList..Caption
@@ -5174,7 +5174,7 @@ msgstr "Použiť vzdialený motor Pythonu pre aplikácie wxPython"
 
 #. PyIDEMainForm..actlStandard..actNewFile..Caption
 #: frmPyIDEMain.dfm
-msgid "New File..."
+msgid "New GptFile..."
 msgstr "Nový súbor..."
 
 #. PyIDEMainForm..actlStandard..actNewFile..Hint
@@ -5229,12 +5229,12 @@ msgstr "Aktivovať okno správ"
 
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Caption
 #: frmPyIDEMain.dfm
-msgid "File E&xplorer"
+msgid "GptFile E&xplorer"
 msgstr "Tabla &súborov"
 
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Hint
 #: frmPyIDEMain.dfm
-msgid "Activate the File Explorer window"
+msgid "Activate the GptFile Explorer window"
 msgstr "Aktivovať tablu súborov"
 
 #. PyIDEMainForm..actlStandard..actNavCodeExplorer..Hint
@@ -5397,15 +5397,15 @@ msgid "Setup Python engine"
 msgstr ""
 
 #. PyIDEMainForm..actlStandard..actRemoteFileOpen..Caption
-#. SSH File and Remote engine
+#. SSH GptFile and Remote engine
 #. Programmer's name for it: SRemoteFileOpen
 #: frmPyIDEMain.dfm StringResources.pas
-msgid "Open Remote File"
+msgid "Open Remote GptFile"
 msgstr ""
 
 #. PyIDEMainForm..actlStandard..actRemoteFileOpen..Hint
 #: frmPyIDEMain.dfm
-msgid "Open Remote File with SSH"
+msgid "Open Remote GptFile with SSH"
 msgstr ""
 
 #. PythonIIForm..Caption
@@ -5556,7 +5556,7 @@ msgstr "Regulárny výraz"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..pnlMiddle..dpSearchText..SpTBXPanel2..TBXLabel4..Caption
 #: frmRegExpTester.dfm
-msgid "Search Text:"
+msgid "Search GptText:"
 msgstr "Hľadať documents:"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..pnlMiddle..dpMatchText..SpTBXPanel3..lblMatch..Caption
@@ -5621,7 +5621,7 @@ msgstr "Unit-testy"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..Label2..Caption
 #: frmUnitTests.dfm
-msgid "Error GptMessage:"
+msgid "GptError GptMessage:"
 msgstr "Chybová správa:"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..ModuleName..Caption
@@ -5714,14 +5714,14 @@ msgstr "Zmazať všetky testy"
 msgid "Variables"
 msgstr "Premenné"
 
-#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......Text
-#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......Text
+#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......GptText
+#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......GptText
 #: frmVariables.dfm frmWatches.dfm frmVariables.pas
 msgid "Type"
 msgstr "Typ"
 
 #. WatchesWindow..Caption
-#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......Text
+#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......GptText
 #: frmWatches.dfm
 msgid "Watches"
 msgstr "Sledovania"
@@ -5772,8 +5772,8 @@ msgstr ""
 #: cPyScripterSettings.pas
 #, object-pascal-format
 msgid ""
-"Error in copying file \"%s\" to \"%s\"\n"
-"Error GptMessage: "
+"GptError in copying file \"%s\" to \"%s\"\n"
+"GptError GptMessage: "
 msgstr ""
 
 #: cSSHSupport.pas
@@ -5867,7 +5867,7 @@ msgid "Check the indentation of the Python program"
 msgstr ""
 
 #: cTools.pas
-msgid "Command Prompt"
+msgid "Command GptPrompt"
 msgstr ""
 
 #: cTools.pas
@@ -6130,7 +6130,7 @@ msgid "Dock animation move width (pixels)"
 msgstr ""
 
 #: dmCommands.pas
-msgid "File template for new Python scripts"
+msgid "GptFile template for new Python scripts"
 msgstr ""
 
 #: dmCommands.pas
@@ -6210,11 +6210,11 @@ msgid "Initially expanded"
 msgstr ""
 
 #: dmCommands.pas
-msgid "File Filters"
+msgid "GptFile Filters"
 msgstr ""
 
 #: dmCommands.pas
-msgid "File explorer filter"
+msgid "GptFile explorer filter"
 msgstr ""
 
 #: dmCommands.pas
@@ -6356,16 +6356,16 @@ msgid "Shell Integration"
 msgstr ""
 
 #: dmCommands.pas
-msgid "File Explorer context menu"
+msgid "GptFile Explorer context menu"
 msgstr ""
 
 #: dmCommands.pas
-msgid "File Explorer background processing"
+msgid "GptFile Explorer background processing"
 msgstr ""
 
 #. Programmer's name for it: SFileChangeNotification
 #: dmCommands.pas StringResources.pas
-msgid "File Change Notification"
+msgid "GptFile Change Notification"
 msgstr "Upozornenie na zmenu v súbore"
 
 #: dmCommands.pas
@@ -6397,7 +6397,7 @@ msgid "Configure Tools"
 msgstr "Konfigurovať externé nástroje"
 
 #: dmCommands.pas
-msgid "File download failed"
+msgid "GptFile download failed"
 msgstr ""
 
 #: frmCodeExplorer.pas
@@ -6437,7 +6437,7 @@ msgid "Class attribute \"%s\" defined at line %d"
 msgstr ""
 
 #: frmFileExplorer.pas
-msgid "File Explorer Filter"
+msgid "GptFile Explorer Filter"
 msgstr ""
 
 #: frmFileExplorer.pas
@@ -6445,7 +6445,7 @@ msgid "Enter Filter:"
 msgstr ""
 
 #: frmFileExplorer.pas
-msgid "File Explorer favorites"
+msgid "GptFile Explorer favorites"
 msgstr ""
 
 #. Programmer's name for it: SAllString
@@ -6550,7 +6550,7 @@ msgstr ""
 msgid "Enter new expression:"
 msgstr ""
 
-#. File Filters
+#. GptFile Filters
 #. Programmer's name for it: sPythonFileFilter
 #: StringResources.pas
 msgid "Python Files (*.py;*.pyw;*.pyi)|*.py;*.pyw;*.pyi"
@@ -7143,7 +7143,7 @@ msgstr ""
 
 #. Programmer's name for it: SDlgError
 #: StringResources.pas
-msgid "Error"
+msgid "GptError"
 msgstr ""
 
 #. Programmer's name for it: SDlgInformation
@@ -7214,7 +7214,7 @@ msgstr ""
 #. Programmer's name for it: SInternalError
 #: StringResources.pas
 #, object-pascal-format
-msgid "Internal Error in %s"
+msgid "Internal GptError in %s"
 msgstr "Interná chyba v %s"
 
 #. Programmer's name for it: SNotFound
@@ -7328,15 +7328,15 @@ msgstr ""
 #. Programmer's name for it: SDecodingError
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in decoding file \"%s\" from \"%s\" encoding"
+msgid "GptError in decoding file \"%s\" from \"%s\" encoding"
 msgstr "Chyba pri dekódovaní súboru \"%s\" z kódovanie \"%s\""
 
 #. Programmer's name for it: SFileOpenError
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"Error in opening file: \"%s\".\n"
-"Error: %s"
+"GptError in opening file: \"%s\".\n"
+"GptError: %s"
 msgstr ""
 "Chyba pri otváraní súboru: \"%s\".\n"
 "Chyba: %s"
@@ -7345,8 +7345,8 @@ msgstr ""
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"Error in saving file: \"%s\".\n"
-"Error: %s"
+"GptError in saving file: \"%s\".\n"
+"GptError: %s"
 msgstr ""
 "Chyba pri ukladaní súboru: \"%s\".\n"
 "Chyba: %s"
@@ -7354,7 +7354,7 @@ msgstr ""
 #. Programmer's name for it: SErrorGettingNamespace
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in getting the namespace of %s"
+msgid "GptError in getting the namespace of %s"
 msgstr "Chyba pri získavaní priestoru mien mena %s"
 
 #. Programmer's name for it: SCouldNotSetDirectory
@@ -7374,7 +7374,7 @@ msgstr ""
 
 #. Programmer's name for it: SErrorInImportingModule
 #: StringResources.pas
-msgid "Error in importing module"
+msgid "GptError in importing module"
 msgstr "Chyba pri importovaní modulu"
 
 #. Programmer's name for it: SRemoteServerNotConnected
@@ -7400,7 +7400,7 @@ msgstr "Nedá sa zapísať súbor \"%s\" a nedá sa použiť vzdialený motor Py
 
 #. Programmer's name for it: SErrorCreatingRemoteEngine
 #: StringResources.pas
-msgid "Error in creating the remote interpreter: "
+msgid "GptError in creating the remote interpreter: "
 msgstr ""
 
 #. Programmer's name for it: SCouldNotConnectRemoteEngine
@@ -7474,7 +7474,7 @@ msgstr ""
 
 #. Programmer's name for it: SErrorWhileDownload
 #: StringResources.pas
-msgid "Error while downloading: "
+msgid "GptError while downloading: "
 msgstr "Chyba počas sťahovania: "
 
 #. Programmer's name for it: SCurrentVersionUptodate
@@ -7587,7 +7587,7 @@ msgstr "Ladenie sa zrušilo"
 
 #. Programmer's name for it: SSyntaxError
 #: StringResources.pas
-msgid "Syntax Error"
+msgid "Syntax GptError"
 msgstr "Syntaktická chyba"
 
 #. Programmer's name for it: StrCertainty
@@ -7650,7 +7650,7 @@ msgstr "Zmenený"
 
 #. Programmer's name for it: SOpenFile
 #: StringResources.pas
-msgid "Open File"
+msgid "Open GptFile"
 msgstr "Otvoriť súbor"
 
 #. Programmer's name for it: SSelectPythonScript
@@ -7670,7 +7670,7 @@ msgstr "Zvoľte aplikáciu alebo súbor, ktorý sa má vykonať"
 
 #. Programmer's name for it: SAddFilesToProject
 #: StringResources.pas
-msgid "Add File(s) to Project"
+msgid "Add GptFile(s) to Project"
 msgstr "Pridať súbor(y) do projektu"
 
 #. Programmer's name for it: SOpenProject
@@ -7753,7 +7753,7 @@ msgstr "Uložiť \"%s\" ako"
 
 #. Programmer's name for it: SSaveFileAs
 #: StringResources.pas
-msgid "Save File As"
+msgid "Save GptFile As"
 msgstr "Uložiť súbor ako"
 
 #. Programmer's name for it: SIDEOptions
@@ -7809,7 +7809,7 @@ msgstr "Prehliadač"
 #. Programmer's name for it: SErrorInitScript
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in running initialization script %s: \"%s\""
+msgid "GptError in running initialization script %s: \"%s\""
 msgstr ""
 
 #. Programmer's name for it: SOpenDialogFilter
@@ -7854,13 +7854,13 @@ msgstr "Zálohovanie projektu \"%s\" zlyhalo"
 #. Programmer's name for it: SErrorInOpeningProject
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in opening project: \"%s\"."
+msgid "GptError in opening project: \"%s\"."
 msgstr ""
 
 #. Programmer's name for it: SErrorInSavingProject
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in saving project: \"%s\"."
+msgid "GptError in saving project: \"%s\"."
 msgstr "Chyba pri ukladaní projektu: \"%s\""
 
 #. Programmer's name for it: SSaveProjectAs
@@ -8096,7 +8096,7 @@ msgid ""
 "\n"
 "Do you want to save the modifications?"
 msgstr ""
-"Text v súbore \"%s\" sa zmenil.\n"
+"GptText v súbore \"%s\" sa zmenil.\n"
 "\n"
 "Chcete zmeny uložiť?"
 
@@ -8262,7 +8262,7 @@ msgstr ""
 msgid "Python keyword"
 msgstr ""
 
-#. File Templates
+#. GptFile Templates
 #. Programmer's name for it: SFileTemplateCategoryInternet
 #: StringResources.pas
 msgid "Internet"
@@ -8285,7 +8285,7 @@ msgstr "Dokument HTML"
 
 #. Programmer's name for it: STextFileTemplateName
 #: StringResources.pas
-msgid "Text File"
+msgid "GptText GptFile"
 msgstr "Textový súbor"
 
 #. Programmer's name for it: SXMLTemplateName
@@ -8295,12 +8295,12 @@ msgstr "Dokument XML"
 
 #. Programmer's name for it: SJSONTemplateName
 #: StringResources.pas
-msgid "JSON File"
+msgid "JSON GptFile"
 msgstr ""
 
 #. Programmer's name for it: SYAMLTemplateName
 #: StringResources.pas
-msgid "YAML File"
+msgid "YAML GptFile"
 msgstr ""
 
 #. Programmer's name for it: SJSTemplateName
@@ -8331,12 +8331,12 @@ msgstr ""
 
 #. Programmer's name for it: SRemoteFileSelect
 #: StringResources.pas
-msgid "Select Remote File"
+msgid "Select Remote GptFile"
 msgstr ""
 
 #. Programmer's name for it: SErrorEmptyPath
 #: StringResources.pas
-msgid "File Path cannot be empty"
+msgid "GptFile Path cannot be empty"
 msgstr ""
 
 #. Programmer's name for it: SErrorEmptySSH
@@ -8346,26 +8346,26 @@ msgstr ""
 
 #. Programmer's name for it: SScpError4
 #: StringResources.pas
-msgid "SCP Error: Connecting to host failed"
+msgid "SCP GptError: Connecting to host failed"
 msgstr ""
 
 #. Programmer's name for it: SScpError5
 #: StringResources.pas
-msgid "SCP Error: Connection lost for some reason"
+msgid "SCP GptError: Connection lost for some reason"
 msgstr ""
 
 #. Programmer's name for it: SScpErrorTimeout
 #: StringResources.pas
-msgid "SCP Error: Timeout"
+msgid "SCP GptError: Timeout"
 msgstr ""
 
 #. Programmer's name for it: SScpErrorOther
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"SCP Error:\n"
+"SCP GptError:\n"
 "Output: %s+\n"
-"Error Output: %s+"
+"GptError Output: %s+"
 msgstr ""
 
 #. Programmer's name for it: SSHUnknownServer
@@ -8444,7 +8444,7 @@ msgstr ""
 #. Programmer's name for it: SYNS_AttrPrompt
 #. Programmer's name for it: SYNS_FriendlyAttrPrompt
 #: SynHighlighterPython.pas
-msgid "Prompt"
+msgid "GptPrompt"
 msgstr ""
 
 #. Programmer's name for it: SYNS_AttrSystemCmd
@@ -8470,7 +8470,7 @@ msgstr ""
 
 #. Programmer's name for it: SYNS_FriendlyAttrTextValue
 #: SynHighlighterYAML.pas
-msgid "Text Value"
+msgid "GptText Value"
 msgstr ""
 
 #. Programmer's name for it: SYNS_FriendlyAttrTag
@@ -8552,23 +8552,23 @@ msgid "Path without delimeter"
 msgstr ""
 
 #: uParams.pas
-msgid "File name"
+msgid "GptFile name"
 msgstr ""
 
 #: uParams.pas
-msgid "File extension"
+msgid "GptFile extension"
 msgstr ""
 
 #: uParams.pas
-msgid "File extension without \".\""
+msgid "GptFile extension without \".\""
 msgstr ""
 
 #: uParams.pas
-msgid "File name without extension"
+msgid "GptFile name without extension"
 msgstr ""
 
 #: uParams.pas
-msgid "File drive"
+msgid "GptFile drive"
 msgstr ""
 
 #: uParams.pas
@@ -8596,7 +8596,7 @@ msgid "Path with final url delimiter removed"
 msgstr ""
 
 #: uParams.pas
-msgid "File scaler"
+msgid "GptFile scaler"
 msgstr ""
 
 #: uParams.pas
@@ -8688,7 +8688,7 @@ msgid "Open files"
 msgstr ""
 
 #: uParams.pas
-msgid "Text of the active document or a file"
+msgid "GptText of the active document or a file"
 msgstr ""
 
 #: uParams.pas
@@ -8723,7 +8723,7 @@ msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
 #: SpTBXCustomizerForm.dfm:174
-msgid "Icons + Selective Text"
+msgid "Icons + Selective GptText"
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
@@ -8733,12 +8733,12 @@ msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
 #: SpTBXCustomizerForm.dfm:176
-msgid "Icons + Text"
+msgid "Icons + GptText"
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
 #: SpTBXCustomizerForm.dfm:177
-msgid "Text"
+msgid "GptText"
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbTextLabel..Caption

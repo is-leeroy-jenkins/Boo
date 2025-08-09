@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="boo.py" company="Terry D. Eppler">
 
-	     Boo is a df analysis tool integrating various Generative AI, Text-Processing, and
+	     Boo is a df analysis tool integrating various Generative GPT, GptText-Processing, and
 	     Machine-Learning algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
@@ -61,7 +61,7 @@ from typing import Any, List, Tuple, Optional, Dict
 from src.guro import Prompt
 
 
-class Prompt( BaseModel ):
+class GptPrompt( BaseModel ):
 	'''
 
 		Purpose:
@@ -82,7 +82,7 @@ class Prompt( BaseModel ):
 		super( ).__init__( )
 
 
-class UserLocation( BaseModel ):
+class GptLocation( BaseModel ):
 	'''
 
 		Purpose:
@@ -104,7 +104,7 @@ class UserLocation( BaseModel ):
 		super( ).__init__( )
 
 
-class Text( BaseModel ):
+class GptText( BaseModel ):
 	'''
 
 		Purpose:
@@ -113,6 +113,7 @@ class Text( BaseModel ):
 		 
 	'''
 	type: str='text'
+	value: Optional[ str ]
 
 	class Config:
 		arbitrary_types_allowed = True
@@ -122,12 +123,12 @@ class Text( BaseModel ):
 		super( ).__init__( )
 
 
-class File( BaseModel ):
+class GptFile( BaseModel ):
 	'''
 
 		Purpose:
 		--------
-		A class used to represent File objects.
+		A class used to represent GptFile objects.
 		 
 	'''
 	filename: Optional[ str ]
@@ -146,7 +147,7 @@ class File( BaseModel ):
 		super( ).__init__( )
 
 
-class Error( BaseModel ):
+class GptError( BaseModel ):
 	'''
 
 		Purpose:
@@ -203,7 +204,7 @@ class JsonObject( BaseModel ):
 		super( ).__init__( )
 
 
-class Format( BaseModel ):
+class GptFormat( BaseModel ):
 	'''
 
 		Purpose:
@@ -211,7 +212,7 @@ class Format( BaseModel ):
 		A class for objects specifying the format that the model must output.
 		 
 	'''
-	text: Optional[ Text ]
+	text: Optional[ GptText ]
 	json_schema: Optional[ JsonSchema ]
 	json_object: Optional[ JsonObject ]
 
@@ -219,7 +220,7 @@ class Format( BaseModel ):
 		arbitrary_types_allowed = True
 
 	
-class Reasoning( BaseModel ):
+class GptReasoning( BaseModel ):
 	'''
 
 		Purpose:
@@ -238,7 +239,7 @@ class Reasoning( BaseModel ):
 		super( ).__init__( )
 
 
-class Response( BaseModel ):
+class GptResponse( BaseModel ):
 	'''
 
 		Purpose:
@@ -276,7 +277,7 @@ class Response( BaseModel ):
 		super( ).__init__( )
 
 
-class FileSearch( BaseModel ):
+class GptFileSearch( BaseModel ):
 	'''
 
 		Purpose:
@@ -296,7 +297,7 @@ class FileSearch( BaseModel ):
 		super( ).__init__( )
 
 
-class WebSearch( BaseModel ):
+class GptWebSearch( BaseModel ):
 	'''
 
 		Purpose:
@@ -317,7 +318,7 @@ class WebSearch( BaseModel ):
 		super( ).__init__( )
 
 
-class ComputerUse( BaseModel ):
+class GptComputerUse( BaseModel ):
 	'''
 
 		Purpose:
@@ -338,7 +339,7 @@ class ComputerUse( BaseModel ):
 		super( ).__init__( )
 
 
-class Function( BaseModel ):
+class GptFunction( BaseModel ):
 	'''
 
 		Class for a function the model can choose to call
@@ -358,7 +359,7 @@ class Function( BaseModel ):
 		super( ).__init__( )
 
 
-class Message( BaseModel ):
+class GptMessage( BaseModel ):
 	'''
 
 		Purpose:
@@ -380,7 +381,7 @@ class Message( BaseModel ):
 		super( ).__init__( )
 
 
-class EndPoint( ):
+class GptEndPoint( ):
 	'''
 
 		Purpose:
@@ -448,14 +449,14 @@ class EndPoint( ):
 			'translations' + f' = {self.translations}' + new + \
 			'assistants' + f' = {self.assistants}' + new + \
 			'transcriptions' + f' = {self.transcriptions}' + new + \
-			'finetuning' + f' = {self.finetuning}' + new + \
+			'finetuning' + f' = ' + self.finetuning + new + \
 			'vectors' + f' = {self.files}' + new + \
 			'uploads' + f' = {self.uploads}' + new + \
 			'files' + f' = {self.files}' + new + \
 			'vector_stores' + f' = {self.vector_stores}' + new
 
 
-class Header( ):
+class GptHeader( ):
 	'''
 
 		Purpose:
@@ -469,7 +470,7 @@ class Header( ):
 		self.content_type = 'application/json'
 		self.api_key = os.environ.get( 'OPENAI_API_KEY' )
 		self.authoriztion = 'Bearer ' + os.environ.get( 'OPENAI_API_KEY' )
-		self.data = { 'content-scaler': self.content_type,
+		self.data = { 'content-type': self.content_type,
 		              'Authorization': self.authoriztion }
 	
 	
@@ -493,7 +494,7 @@ class Header( ):
 
 
 
-class Models( ):
+class GptModels( ):
 	'''
 	
 		Purpose:
@@ -611,27 +612,27 @@ class Models( ):
 		return _data
 
 
-class AI( ):
+class GPT( ):
 	'''
 
 		Purpose:
 		--------
-		AI is the base class for all OpenAI functionalityl
+		GPT is the base class for all OpenAI functionalityl
 	
 	'''
 	
 	
 	def __init__( self ):
-		self.header = Header( )
-		self.endpoint = EndPoint( )
-		self.prompt = Prompt( )
+		self.header = GptHeader( )
+		self.endpoint = GptEndPoint( )
+		self.prompt = GptPrompt( )
 		self.api_key = self.header.api_key
 		self.client = OpenAI( api_key=self.api_key )
 		self.bro_instructions = prompt.data_bro
 		self.bubba_instructions = prompt.budget_analyst
 
 
-class Chat( AI ):
+class Chat( GPT ):
 	"""
 		
 		Purpose
@@ -683,9 +684,9 @@ class Chat( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
-		self.api_key = Header( ).api_key
+		self.api_key = GptHeader( ).api_key
 		self.client = OpenAI( )
-		self.client.api_key = Header( ).api_key
+		self.client.api_key = GptHeader( ).api_key
 		self.model = 'gpt-4o-mini'
 		self.number = num
 		self.temperature = temp
@@ -759,7 +760,7 @@ class Chat( AI ):
 				self.response = self.client.responses.create( model=self.model, input=self.prompt )
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
@@ -795,7 +796,7 @@ class Chat( AI ):
 
 			return self.response.data[0].url
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_image( self, prompt: str ) -> str | None'
@@ -847,7 +848,7 @@ class Chat( AI ):
 				self.response = self.client.responses.create( model=self.model, input=self.input )
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
@@ -902,7 +903,7 @@ class Chat( AI ):
 					messages=self.messages )
 				return self.completion.choices[ 0 ].message.content
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
@@ -942,7 +943,7 @@ class Chat( AI ):
 				
 				return  self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'search_web( self, prompt: str ) -> str'
@@ -982,7 +983,7 @@ class Chat( AI ):
 					tools=self.tools, input=prompt )
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'search_files( self, prompt: str ) -> str'
@@ -1062,7 +1063,7 @@ class Chat( AI ):
 		         'search_web', 'search_files', 'get_data', 'dump' ]
 	
 	
-class Assistant( AI ):
+class Assistant( GPT ):
 	"""
 		
 		Purpose
@@ -1096,10 +1097,10 @@ class Assistant( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
-		self.api_key = Header( ).api_key
-		self.system_instructions = AI( ).bubba_instructions
+		self.api_key = GptHeader( ).api_key
+		self.system_instructions = GPT( ).bubba_instructions
 		self.client = OpenAI( )
-		self.client.api_key = Header( ).api_key
+		self.client.api_key = GptHeader( ).api_key
 		self.model = 'gpt-4o-mini'
 		self.number = num
 		self.temperature = temp
@@ -1162,7 +1163,7 @@ class Assistant( AI ):
 					input=self.input_text )
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
@@ -1198,7 +1199,7 @@ class Assistant( AI ):
 
 			return self.response.data[0].url
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
@@ -1247,7 +1248,7 @@ class Assistant( AI ):
 				self.response = self.client.responses.create( model=self.model, input=self.input )
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Assistant'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
@@ -1304,7 +1305,7 @@ class Assistant( AI ):
 					messages=self.messages )
 				return self.completion.choices[ 0 ].message.content
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Assistant'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
@@ -1344,7 +1345,7 @@ class Assistant( AI ):
 					web_search_options={ }, messages=self.messages )
 				return  self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Assistant'
 			exception.method = 'search_web( self, prompt: str ) -> str'
@@ -1384,7 +1385,7 @@ class Assistant( AI ):
 					tools=self.tools, input=prompt )
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Assistant'
 			exception.method = 'search_files( self, prompt: str ) -> str | None'
@@ -1412,7 +1413,7 @@ class Assistant( AI ):
 			self.assistants = self.client.beta.assistants.list( order='desc', limit='20' )
 			return self.assistants.data
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Assistant'
 			exception.method = 'get_list( ) -> List[ str ]'
@@ -1521,7 +1522,7 @@ class Assistant( AI ):
 		         'dump', 'translate', 'transcribe' ]
 
 	
-class Bubba( AI ):
+class Bubba( GPT ):
 	"""
 		
 		Purpose
@@ -1558,10 +1559,10 @@ class Bubba( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
-		self.api_key = Header( ).api_key
-		self.system_instructions = AI( ).bubba_instructions
+		self.api_key = GptHeader( ).api_key
+		self.system_instructions = GPT( ).bubba_instructions
 		self.client = OpenAI( )
-		self.client.api_key = Header( ).api_key
+		self.client.api_key = GptHeader( ).api_key
 		self.model = 'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:bubba-gpt-4-1-mini-2025-05-05:BcekjucJ'
 		self.number = num
 		self.temperature = temp
@@ -1615,7 +1616,7 @@ class Bubba( AI ):
 					input=self.input_text )
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Bubba'
 			exception.method = 'generate_text( self, prompt: str )'
@@ -1650,7 +1651,7 @@ class Bubba( AI ):
 					prompt=self.prompt, size='1024x1024', quality='standard', n=1 )
 			return self.response.data[ 0 ].url
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
@@ -1702,7 +1703,7 @@ class Bubba( AI ):
 				self.response = self.client.responses.create( model=self.model, input=self.input )
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
@@ -1761,7 +1762,7 @@ class Bubba( AI ):
 					messages=self.messages )
 				return self.completion.choices[ 0 ].message.content
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
@@ -1803,7 +1804,7 @@ class Bubba( AI ):
 					web_search_options={ }, messages=self.messages )
 				return  self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'search_web( self, prompt: str ) -> str'
@@ -1846,7 +1847,7 @@ class Bubba( AI ):
 					tools=self.tools, input=self.prompt )
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'search_files( self, prompt: str ) -> str'
@@ -1877,7 +1878,7 @@ class Bubba( AI ):
 			_doc_list = [ d for d in _doc_files  ]
 			return  _list.extend( _doc_list )
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Bubba'
 			exception.method = 'get_files'
@@ -1983,7 +1984,7 @@ class Bubba( AI ):
 		          'translate', 'transcribe' ]
 
 
-class Bro( AI ):
+class Bro( GPT ):
 	"""
 		
 		Purpose
@@ -2022,10 +2023,10 @@ class Bro( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
-		self.api_key = Header( ).api_key
-		self.system_instructions = AI( ).bro_instructions
+		self.api_key = GptHeader( ).api_key
+		self.system_instructions = GPT( ).bro_instructions
 		self.client = OpenAI( )
-		self.client.api_key = Header( ).api_key
+		self.client.api_key = GptHeader( ).api_key
 		self.model = 'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-df-analysis-2025-21-05:BZetxEQa'
 		self.number = num
 		self.temperature = temp
@@ -2079,7 +2080,7 @@ class Bro( AI ):
 					input=self.input_text )
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
@@ -2115,7 +2116,7 @@ class Bro( AI ):
 			
 			return self.response.data[ 0 ].url
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
@@ -2167,7 +2168,7 @@ class Bro( AI ):
 				self.response = self.client.responses.create( model=self.model, input=self.input )
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
@@ -2228,7 +2229,7 @@ class Bro( AI ):
 					messages=self.messages )
 				return self.completion.choices[ 0 ].message.content
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
@@ -2270,7 +2271,7 @@ class Bro( AI ):
 				
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'search_web( self, prompt: str ) -> str'
@@ -2312,7 +2313,7 @@ class Bro( AI ):
 					tools=self.tools, input=prompt )
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Chat'
 			exception.method = 'search_files( self, prompt: str ) -> str'
@@ -2423,7 +2424,7 @@ class Bro( AI ):
 		          'get_data', 'dump' ]
 
 
-class Embedding( AI ):
+class Embedding( GPT ):
 	"""
 
 		Purpose
@@ -2455,7 +2456,7 @@ class Embedding( AI ):
 	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.client = OpenAI( )
-		self.client.api_key = Header( ).api_key
+		self.client.api_key = GptHeader( ).api_key
 		self.small_model = 'text-embedding-3-small'
 		self.large_model = 'text-embedding-3-large'
 		self.ada_model = 'text-embedding-ada-002'
@@ -2499,7 +2500,7 @@ class Embedding( AI ):
 				self.embedding = self.response.data[ 0 ].embedding
 				return self.embedding
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Embedding'
 			exception.method = 'create_small_embedding( self, text: str ) -> List[ float ]'
@@ -2532,7 +2533,7 @@ class Embedding( AI ):
 				self.embedding = self.response.data[ 0 ].embedding
 				return self.embedding
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Embedding'
 			exception.method = 'create_large_embedding( self, text: str ) -> List[ float ]'
@@ -2565,7 +2566,7 @@ class Embedding( AI ):
 				self.embedding = self.response.data[ 0 ].embedding
 				return self.embedding
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Embedding'
 			exception.method = 'create_ada_embedding( self, text: str ) -> List[ float ]'
@@ -2600,7 +2601,7 @@ class Embedding( AI ):
 				_tokens = len( _encoding.encode( text ) )
 				return _tokens
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Embedding'
 			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
@@ -2672,7 +2673,7 @@ class Embedding( AI ):
 		         'path', 'create_small_embedding', 'get_model_options' ]
 
 
-class TTS( AI ):
+class TTS( GPT ):
 	"""
 		
 		Purpose
@@ -2720,7 +2721,7 @@ class TTS( AI ):
 		'''
 		super( ).__init__( )
 		self.client = OpenAI( )
-		self.client.api_key = Header( ).api_key
+		self.client.api_key = GptHeader( ).api_key
 		self.model = 'gpt-4o-mini-tts'
 		self.number = num
 		self.temperature = temp
@@ -2809,7 +2810,7 @@ class TTS( AI ):
 				_retval = self.response.stream_to_file( self.audio_path )
 				return _retval
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'TTS'
 			exception.method = 'save_audio( self, prompt: str, path: str ) -> str'
@@ -2880,7 +2881,7 @@ class TTS( AI ):
 		         'generate_text', 'get_model_options' ]
 
 
-class Transcription( AI ):
+class Transcription( GPT ):
 	"""
 		
 		Purpose
@@ -2921,7 +2922,7 @@ class Transcription( AI ):
 	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.client = OpenAI( )
-		self.client.api_key = Header( ).api_key
+		self.client.api_key = GptHeader( ).api_key
 		self.model = 'whisper-1'
 		self.number = num
 		self.temperature = temp
@@ -2983,7 +2984,7 @@ class Transcription( AI ):
 					voice='alloy', input=self.input_text )
 				self.response.stream_to_file( self.audio_path )
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Transcription'
 			exception.method = 'create( self, text: str, path: str ) -> str'
@@ -3050,7 +3051,7 @@ class Transcription( AI ):
 		         'input_text', 'transcript' ]
 
 
-class Translation( AI ):
+class Translation( GPT ):
 	"""
 		
 		Purpose
@@ -3090,7 +3091,7 @@ class Translation( AI ):
 	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.client = OpenAI( )
-		self.client.api_key = Header( ).api_key
+		self.client.api_key = GptHeader( ).api_key
 		self.model = 'whisper-1'
 		self.number = num
 		self.temperature = temp
@@ -3162,7 +3163,7 @@ class Translation( AI ):
 				self.response = self.client.audio.translations.create( model='whisper-1',
 					file=self.audio_file )
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Translation'
 			exception.method = 'create_small_embedding( self, text: str )'
@@ -3231,7 +3232,7 @@ class Translation( AI ):
 		         'small_model', 'create_small_embedding', 'get_model_options' ]
 
 
-class LargeImage( AI ):
+class LargeImage( GPT ):
 	"""
 
 		Purpose
@@ -3264,9 +3265,9 @@ class LargeImage( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=10000, store: bool=False, stream: bool=False ):
 		super( ).__init__( )
-		self.api_key = Header( ).api_key
+		self.api_key = GptHeader( ).api_key
 		self.client = OpenAI( )
-		self.client.api_key = Header( ).api_key
+		self.client.api_key = GptHeader( ).api_key
 		self.quality = 'hd'
 		self.model = 'dall-e-3'
 		self.size = '1024X1024'
@@ -3317,7 +3318,7 @@ class LargeImage( AI ):
 				
 				return self.response.data[ 0 ].url
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
 			exception.method = 'generate( self, path: str ) -> str'
@@ -3364,7 +3365,7 @@ class LargeImage( AI ):
 				
 				return response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
 			exception.method = 'analyze( self, text: str, path: str ) -> str'
@@ -3445,7 +3446,7 @@ class LargeImage( AI ):
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
 
-class Image( AI ):
+class Image( GPT ):
 	"""
 
 		Purpose
@@ -3489,9 +3490,9 @@ class Image( AI ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=10000, store: bool=False, stream: bool=False ):
 		super( ).__init__( )
-		self.api_key = Header( ).api_key
+		self.api_key = GptHeader( ).api_key
 		self.client = OpenAI( )
-		self.client.api_key = Header( ).api_key
+		self.client.api_key = GptHeader( ).api_key
 		self.quality = 'standard'
 		self.detail = 'auto'
 		self.model = 'dall-e-2'
@@ -3589,7 +3590,7 @@ class Image( AI ):
 				
 				return self.response.data[ 0 ].url
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
 			exception.method = 'generate( self, path: str ) -> str'
@@ -3644,7 +3645,7 @@ class Image( AI ):
 				
 				return self.response.output_text
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
 			exception.method = 'analyze( self, path: str, text: str ) -> str'
@@ -3683,7 +3684,7 @@ class Image( AI ):
 				
 				return self.response.data[ 0 ].url
 		except Exception as e:
-			exception = Error( e )
+			exception = GptError( e )
 			exception.module = 'Boo'
 			exception.cause = 'Image'
 			exception.method = 'edit( self, text: str, path: str, size: str=1024X1024 ) -> str'

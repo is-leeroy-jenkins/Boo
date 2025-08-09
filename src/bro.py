@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="bro.py" company="Terry D. Eppler">
 
-	     Boo is a df analysis tool integrating GenAI, Text Processing, and Machine-Learning
+	     Boo is a df analysis tool integrating GenAI, GptText Processing, and Machine-Learning
 	     algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
@@ -135,7 +135,7 @@ class Header( ):
 
 class AI( ):
 	'''
-	AI is the base class for all OpenAI functionalityl
+	GPT is the base class for all OpenAI functionalityl
 	'''
 	
 	
@@ -635,7 +635,7 @@ class GptRequest( AI ):
 class TextRequest( GptRequest ):
 	'''
 
-	Class provides the functionality fo the Text Generation API
+	Class provides the functionality fo the GptText Generation API
 
 	'''
 	
@@ -798,7 +798,7 @@ class CompletionRequest( GptRequest ):
 	def create( self, prompt: str ) -> str:
 		'''
 
-			Function that generates chat completions given a prompt
+			GptFunction that generates chat completions given a prompt
 
 			Args:
 				prompt:
@@ -905,7 +905,7 @@ class ImageRequest( GptRequest ):
 	            quality='standard', size: str = '1024X1024' ) -> str:
 		'''
 
-			Function geerates chat completq
+			GptFunction geerates chat completq
 
 			Args:
 				prompt: str, num: int, size: str

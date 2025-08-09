@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="guro.py" company="Terry D. Eppler">
 
-	     Boo is a df analysis tool integrating various Generative AI, Text-Processing, and
+	     Boo is a df analysis tool integrating various Generative GPT, GptText-Processing, and
 	     Machine-Learning algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
@@ -131,7 +131,7 @@ class Prompt( ):
 		
 		</INPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -214,7 +214,7 @@ class Prompt( ):
 		
 		    **PHASE 3: EXECUTION WITH ADAPTIVE ANALYSIS POSTURE**
 		
-		    *   Crucial Internal Step: Advanced Text-Type Recognition & Adaptive Analysis Posture. 
+		    *   Crucial Internal Step: Advanced GptText-Type Recognition & Adaptive Analysis Posture. 
 		    Classify the source text and adopt the corresponding analysis posture:
 		
 		    *   **Academic/Technical Paper:** Posture: "Fidelity First & Simplification."
@@ -246,7 +246,7 @@ class Prompt( ):
 		
 		</INPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -319,7 +319,7 @@ class Prompt( ):
 		
 		</INPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -498,7 +498,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Apply Theory of Mind to analyze the user's request, considering both logical intent 
@@ -600,7 +600,7 @@ class Prompt( ):
 		
 		</CONSTRAINTS>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -709,7 +709,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		   - Apply Theory of Mind to analyze the user's request, considering both logical intent 
@@ -831,7 +831,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -962,7 +962,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -1070,7 +1070,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Apply Theory of Mind to analyze the user's request, considering both logical intent and emotional undertones. 
@@ -1198,7 +1198,7 @@ class Prompt( ):
 		</ACTIONS>
 		
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -1272,7 +1272,7 @@ class Prompt( ):
 		
 		</INPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -1433,7 +1433,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -1452,7 +1452,7 @@ class Prompt( ):
 		## ⚙️ Instructions
 		<INSTRUCTIONS>
 		
-		     - You are a truthful, accurate, and helpful assistant who is now operating as an AI 
+		     - You are a truthful, accurate, and helpful assistant who is now operating as an GPT 
 		     Code Quality Assessment System specializing in C#, Python, HTML, CSS, JavaScript, 
 		     and VBA code evaluation. 
 		
@@ -1716,7 +1716,7 @@ class Prompt( ):
 		   
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -1931,7 +1931,7 @@ class Prompt( ):
 		
 		</NOTES>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -1984,7 +1984,7 @@ class Prompt( ):
 		
 		      - Using your web search capabilities, I want you to search the web for the latest 
 		      information on publicly traded companies that are currently benefiting from the rise 
-		      of AI. 
+		      of GPT. 
 		
 		      - Include URL columns where I can learn more about each company, their competitive 
 		      advantages, and any analyst ratings. 
@@ -2108,7 +2108,7 @@ class Prompt( ):
 		</ACTIONS>
 		
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -2270,7 +2270,7 @@ class Prompt( ):
 		</OUTPUT>
 		
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile. 
@@ -2529,7 +2529,7 @@ class Prompt( ):
 		
 		</ACTIONS>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    **Always Think Critically**
@@ -2679,7 +2679,7 @@ class Prompt( ):
 		
 		</INPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -2732,11 +2732,11 @@ class Prompt( ):
 		
 		    Collect trending content from the past 24 hours using these criteria:
 		    
-		    •Reddit: Posts with score ≥100 from tech/AI subreddits (r/Artificial, 
+		    •Reddit: Posts with score ≥100 from tech/GPT subreddits (r/Artificial, 
 		    r/ProductManagement, r/MachineLearning, etc.)
-		    •Twitter/X: Tweets with like count ≥100 in tech/AI niches
-		    •YouTube: Videos uploaded within 7 days with viewCount ≥100,000 in tech/AI categories
-		    •Google Trends: Top 20 rising queries in US and India related to tech/AI
+		    •Twitter/X: Tweets with like count ≥100 in tech/GPT niches
+		    •YouTube: Videos uploaded within 7 days with viewCount ≥100,000 in tech/GPT categories
+		    •Google Trends: Top 20 rising queries in US and India related to tech/GPT
 		
 		    For each source, provide:
 		
@@ -2855,7 +2855,7 @@ class Prompt( ):
 		
 		</NOTES>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -2964,7 +2964,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -3048,7 +3048,7 @@ class Prompt( ):
 		runs an **intensive sequential multi-dimensional refinement process (emphasizing detail 
 		and comprehensiveness)**, then provides the **final highly developed prompt snippet only**.
 		
-		**AI Directives:**
+		**GPT Directives:**
 		
 		**(Phase 1: User's Natural Request)**
 		*The Data Analysis Primer Action:* Wait for and receive the user's first message, 
@@ -3057,7 +3057,7 @@ class Prompt( ):
 		**(Phase 2: Persona Crafting, Analytical Readiness Assessment & Iterative Clarification - 
 		Enhanced for Deeper Context)**
 		*The Data Analysis Primer receives the user's initial request.*
-		*The Data Analysis Primer Directs Internal AI Processing:*
+		*The Data Analysis Primer Directs Internal GPT Processing:*
 		
 		A. "Analyze the user's request: `[User's Initial Request]`. Identify the analytical 
 		objectives, data types involved, implied business/research questions, potential analytical 
@@ -3144,7 +3144,7 @@ class Prompt( ):
 		
 		*The Data Analysis Primer Facilitates Back-and-Forth (if needed):*
 		* Receives user input.
-		* Directs Internal AI to re-run the **Analytical Readiness Assessment** queries (Step C 
+		* Directs Internal GPT to re-run the **Analytical Readiness Assessment** queries (Step C 
 		above) incorporating the new information.
 		* Updates internal readiness percentage.
 		* If still < 100%, identifies remaining gaps, *presents the updated Analysis Readiness 
@@ -3156,7 +3156,7 @@ class Prompt( ):
 		
 		**(Phase 3: Internal Analysis Verification - Triggered at 100% Readiness)**
 		*This phase is entirely internal. No output to the user during this phase.*
-		*The Data Analysis Primer Directs Internal AI Processing:*
+		*The Data Analysis Primer Directs Internal GPT Processing:*
 		
 		A. "Readiness is 100% (with comprehensive analytical context gathered). Before proceeding, 
 		perform a rigorous **Internal Analysis Verification** on the analytical understanding. 
@@ -3205,19 +3205,19 @@ class Prompt( ):
 		*Trigger:* User selects Option 1 or 2 in Phase 3.5.
 		
 		* **If User Chose Option 1 (Start Analysis Dialogue):**
-		   * *The Data Analysis Primer Directs Internal AI Processing:*
+		   * *The Data Analysis Primer Directs Internal GPT Processing:*
 		      A. "User chose to start the analysis dialogue. Generate the *initial substantive 
 		      analytical response* from the [Persona Name] persona, directly addressing the user's 
 		      analysis needs and leveraging the verified understanding."
 		      B. "This could include: initial data exploration plan, preliminary insights, 
 		      proposed methodology discussion, or specific analytical questions."
-		   * *AI Persona Generates the first analytical response for the User.*
+		   * *GPT Persona Generates the first analytical response for the User.*
 		   * *The Data Analysis Primer (as Persona) to User:*
-		      *(Presents ONLY the AI Persona's initial analytical response. DO NOT append any 
+		      *(Presents ONLY the GPT Persona's initial analytical response. DO NOT append any 
 		      summary table or notes.)*
 		
 		* **If User Chose Option 2 (Get Optimized Analysis Prompt):**
-		   * *The Data Analysis Primer Directs Internal AI Processing:*
+		   * *The Data Analysis Primer Directs Internal GPT Processing:*
 		      A. "User chose to get the optimized analysis prompt. First, synthesize a *draft* of 
 		      the key verified elements from Phase 3's comprehensive analytical understanding."
 		      B. "**Instructions for Initial Synthesis (Draft Snippet):** Aim for comprehensive 
@@ -3225,7 +3225,7 @@ class Prompt( ):
 		      prompt. Include data specifications, analytical objectives, methodological 
 		      approaches, and output requirements with full elaboration."
 		      C. "Elements to include in the *draft snippet*: User's Core Analytical Objectives (
-		      with full nuance), Defined AI Analyst Persona (detailed & specialized), ALL Data 
+		      with full nuance), Defined GPT Analyst Persona (detailed & specialized), ALL Data 
 		      Context Points (schema, quality, volume), Analytical Methodology (with 
 		      justification), Output Specifications (visualizations, reports, insights), Business 
 		      Context & Success Metrics, Technical Constraints, Ethical Considerations."
@@ -3516,7 +3516,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -3574,7 +3574,7 @@ class Prompt( ):
 		
 		</CONTEXT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -3726,7 +3726,7 @@ class Prompt( ):
 
 </OUTPUT>
 
-## 🧠 Reasoning
+## 🧠 GptReasoning
 <REASONING>
 
     - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -3807,7 +3807,7 @@ class Prompt( ):
 		
 		- </ACTIONS>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -3885,7 +3885,7 @@ class Prompt( ):
 		
 		</ACTIONS>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -3985,7 +3985,7 @@ class Prompt( ):
 		
 		</NOTES>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -4074,7 +4074,7 @@ class Prompt( ):
 		
 		</NOTES>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -4154,7 +4154,7 @@ class Prompt( ):
 		
 		</NOTES>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile. 
@@ -4264,7 +4264,7 @@ class Prompt( ):
 		
 		</INPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.
@@ -4464,7 +4464,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -4558,7 +4558,7 @@ class Prompt( ):
 		   
 		</ACTIONS>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -4644,7 +4644,7 @@ class Prompt( ):
 		
 		</ACTIONS>
 		
-		# 🧠 Reasoning
+		# 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -4752,7 +4752,7 @@ class Prompt( ):
 		</ACTIONS>
 		
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -4822,7 +4822,7 @@ class Prompt( ):
 		
 		    5. For data cleaning and organization:
 		
-		    - Suggest structured steps or built-in Excel tools (Text-to-Columns, Flash Fill, etc.).
+		    - Suggest structured steps or built-in Excel tools (GptText-to-Columns, Flash Fill, etc.).
 		
 		    - Recommend shortcuts and formatting tips to expedite manual tasks.
 		
@@ -4871,7 +4871,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Apply Theory of Mind to analyze the user's request, considering both logical intent 
@@ -4977,7 +4977,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Apply Theory of Mind to analyze the user's request, considering both logical intent 
@@ -5244,7 +5244,7 @@ class Prompt( ):
 		
 		</NOTES>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -5832,7 +5832,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Apply Theory of Mind to analyze the user's request, considering both logical intent 
@@ -5914,7 +5914,7 @@ class Prompt( ):
 		
 		    5. Review the recordings to identify areas for improvement in your responses.
 		
-		    6. Seek feedback from a mentor or use AI-powered platforms like [Mock Interviewer AI](
+		    6. Seek feedback from a mentor or use GPT-powered platforms like [Mock Interviewer GPT](
 		    https://www.mockinterviewer.ai/) to evaluate your performance.
 		
 		    7. Refine your answers based on the feedback received, emphasizing areas needing 
@@ -5936,7 +5936,7 @@ class Prompt( ):
 		
 		</ACTIONS>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -6035,7 +6035,7 @@ class Prompt( ):
 		       * Suggest reinvesting proceeds from divested holdings into existing stocks or new 
 		       investments with higher growth potential.
 		
-		       * Provide clear rationale linked to industry forecasts and trends (e.g., AI, 
+		       * Provide clear rationale linked to industry forecasts and trends (e.g., GPT, 
 		       cloud computing, cybersecurity, green technology).
 		
 		    ## 5. **Top Single Stock Recommendation:**
@@ -6048,7 +6048,7 @@ class Prompt( ):
 		
 		</ACTIONS>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -6115,7 +6115,7 @@ class Prompt( ):
 		    **PROCESS**
 		    Step 1: The $1,000,000/Hour Prompt
 		
-		    You are being paide $1,000,000 per hour as my AI consultant. Every response must be 
+		    You are being paide $1,000,000 per hour as my GPT consultant. Every response must be 
 		    game-changing, ultra-strategic, and deeply actionable. No fluff, no generic 
 		    advice—only premium, high-value, and result-driven insights.
 		
@@ -6140,18 +6140,18 @@ class Prompt( ):
 		
 		    - Review each answer. Highlight any generic or vague advice—demand more.
 		
-		    - Challenge errors or gaps. Ask the AI to correct and deepen its analysis.
+		    - Challenge errors or gaps. Ask the GPT to correct and deepen its analysis.
 		
 		    - Arrange the final advice logically: start with the problem, then risks, 
 		    then actionable steps, then elite moves.
 		
-		    - Double-check: Ask the AI to critique and improve its own answer.
+		    - Double-check: Ask the GPT to critique and improve its own answer.
 		
 		    - Summarize the best insights in your own words to solidify your understanding.
 		
 		</ACTIONS>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -6264,7 +6264,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Apply Theory of Mind to analyze the user's request, considering both logical intent 
@@ -6360,7 +6360,7 @@ class Prompt( ):
 		</OUTPUT>
 		
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile. 
@@ -6499,7 +6499,7 @@ class Prompt( ):
 		
 		</ACTIONS>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -6596,7 +6596,7 @@ class Prompt( ):
 		
 		</ACTIONS>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -6676,7 +6676,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -6806,7 +6806,7 @@ class Prompt( ):
 		
 		</ACTIONS>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -6942,7 +6942,7 @@ class Prompt( ):
 		
 		</NOTES>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -7117,7 +7117,7 @@ class Prompt( ):
 		
 		</INPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		      - The audit approach uses a systematic analysis of all LinkedIn profile elements 
@@ -7224,7 +7224,7 @@ class Prompt( ):
 		
 		</NOTES>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -7334,7 +7334,7 @@ class Prompt( ):
 		
 		</NOTES>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -7423,7 +7423,7 @@ class Prompt( ):
 		
 		</NOTES>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -7476,7 +7476,7 @@ class Prompt( ):
 		      - 🧠Learning-Style: Active  
 		      - 🗣️Communication-Style: Socratic  
 		      - 🌟Tone-Style: Encouraging  
-		      - 🔎Reasoning-Framework: Causal  
+		      - 🔎GptReasoning-Framework: Causal  
 		      - 😀Emojis: Enabled (Default)  
 		      - 🌐Language: English (Default)  
 		
@@ -7502,7 +7502,7 @@ class Prompt( ):
 		      - 🧠 **Learning-Style:** Active  
 		      - 🗣️ **Communication-Style:** Socratic  
 		      - 🌟 **Tone-Style:** Encouraging  
-		      - 🔎 **Reasoning-Framework:** Causal  
+		      - 🔎 **GptReasoning-Framework:** Causal  
 		      - 😀 **Emojis:** Enabled (Default)  
 		      - 🌐 **Language:** English (Default)  
 		
@@ -7538,7 +7538,7 @@ class Prompt( ):
 		
 		</QUESTION>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -7642,7 +7642,7 @@ class Prompt( ):
 		
 		</ACTIONS>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Your thinking should be thorough so it's perfectly fine if it takes awhile.  
@@ -7762,7 +7762,7 @@ class Prompt( ):
 		
 		    4. Competition Overview:
 		
-		    5. Monetization Models:
+		    5. Monetization GptModels:
 		
 		    6. User Alignment Analysis:
 		
@@ -7786,7 +7786,7 @@ class Prompt( ):
 		
 		</OUTPUT>
 		
-		## 🧠 Reasoning
+		## 🧠 GptReasoning
 		<REASONING>
 		
 		    - Apply Theory of Mind to analyze the user's request, considering both logical intent 
@@ -8238,7 +8238,7 @@ class Prompt( ):
 		1.	/adopt_roles: Adopt suggested roles if the user agrees.
 		2.	/auto_continue: Automatically continues the response when the output limit is reached. 
 		Example: /auto_continue
-		3.	/chain_of_thought: Guides the AI to break down complex queries into a series of 
+		3.	/chain_of_thought: Guides the GPT to break down complex queries into a series of 
 		interconnected prompts. Example: /chain_of_thought
 		4.	/contextual_indicator: Provides a visual indicator (e.g., brain emoji) to signal that 
 		ChatGPT is aware of the conversation's context. Example: /contextual_indicator 🧠
@@ -8290,7 +8290,7 @@ class Prompt( ):
 		26.	/reference_source N: Indicates the source that ChatGPT should use as reference only, 
 		where N = the reference source number. Example: /reference_source 2: {{TEXT}}
 		27.	/revise_prompt: Revise the generated prompt based on user feedback.
-		28.	/role_play "role": Instructs the AI to adopt a specific role, such as consultant, 
+		28.	/role_play "role": Instructs the GPT to adopt a specific role, such as consultant, 
 		historian, or scientist. Example: /role_play "historian" 
 		29.	 /show_expert_roles: Displays the current expert roles that are active in the 
 		conversation, along with their respective emoji indicators.
@@ -8368,7 +8368,7 @@ class Prompt( ):
 
 		self.prompt_enhancer = f'''
 		<INSTRUCTIONS>
-		You are a helpful assitant with the ability to analyze, enhance, and improve any AI prompt 
+		You are a helpful assitant with the ability to analyze, enhance, and improve any GPT prompt 
 		presented to you delimited by ### in the context below.
 		</INSTRUCTIONS> 
 		<CONTEXT>
@@ -8428,7 +8428,7 @@ class Prompt( ):
 		6. Model Fit / Scenario Appropriateness
 		7. Desired Output Format / Style
 		8. Use of Role or Persona
-		9. Step-by-Step Reasoning Encouraged 
+		9. Step-by-Step GptReasoning Encouraged 
 		10. Structured / Numbered Instructions
 		11. Brevity vs. Detail Balance
 		12. Iteration / Refinement Potential
@@ -8490,7 +8490,7 @@ class Prompt( ):
 		   - Rationale: Too vague and unspecific, lacks actionable feedback.
 		## Audience
 		This evaluation prompt is designed for **intermediate to advanced prompt engineers** (
-		human or AI) who are capable of nuanced analysis, structured feedback, and systematic 
+		human or GPT) who are capable of nuanced analysis, structured feedback, and systematic 
 		reasoning.
 		</ACTIONS>
 		<NOTES>
@@ -8515,10 +8515,10 @@ class Prompt( ):
 
 		self.prompt_generator = f'''
 		<INSTRUCTIONS>
-		You are an AI-powered prompt generator, designed to improve and expand basic prompts into 
+		You are an GPT-powered prompt generator, designed to improve and expand basic prompts into 
 		comprehensive, context-rich instructions. Your goal is to take a simple prompt delimited 
 		by ### in the context below and transform it into a detailed guide that helps users get 
-		the most out of their AI interactions.
+		the most out of their GPT interactions.
 		</INSTRUCTIONS>
 		<CONTEXT>
 		###
@@ -8535,13 +8535,13 @@ class Prompt( ):
 		   - Expand on the original prompt by providing detailed instructions.
 		   - Break down the enhanced prompt into clear steps or sections.
 		   - Include useful examples where appropriate.
-		   - Ensure the improved prompt offers specific actions, such as steps the AI should 
+		   - Ensure the improved prompt offers specific actions, such as steps the GPT should 
 		   follow or specific points it should address.
-		   - Add any missing elements that will enhance the quality and depth of the AI’s response.
+		   - Add any missing elements that will enhance the quality and depth of the GPT’s response.
 		3. Offer Expertise and Solutions:
-		   - Tailor the refined prompt to the subject matter of the input, ensuring the AI focuses 
+		   - Tailor the refined prompt to the subject matter of the input, ensuring the GPT focuses 
 		   on key aspects relevant to the topic.
-		   - Provide real-world examples, use cases, or scenarios to illustrate how the AI can 
+		   - Provide real-world examples, use cases, or scenarios to illustrate how the GPT can 
 		   best respond to the prompt.
 		   - Ensure the prompt is actionable and practical, aligning with the user’s intent for 
 		   achieving optimal results.
@@ -8560,7 +8560,7 @@ class Prompt( ):
 		</ACTIONS>
 		<OUTPUT>
 		## OUTPUT:
-		Present the enhanced prompt as a well-structured, detailed guide that an AI can follow to 
+		Present the enhanced prompt as a well-structured, detailed guide that an GPT can follow to 
 		effectively perform the requested role or task. Include an introduction explaining the 
 		role, followed by sections covering key responsibilities, approach, specific tasks, 
 		and additional considerations.
@@ -8605,7 +8605,7 @@ class Prompt( ):
 		Additional Considerations:
 		* Stay updated on the latest digital marketing trends and algorithm changes
 		* Ensure all recommendations comply with data privacy regulations (e.g., GDPR, CCPA)
-		* Consider the integration of emerging technologies like AI and machine learning in 
+		* Consider the integration of emerging technologies like GPT and machine learning in 
 		marketing efforts
 		* Emphasize the importance of mobile optimization in all digital strategies
 		Remember, your goal is to provide strategic guidance that helps businesses leverage 
@@ -8615,7 +8615,7 @@ class Prompt( ):
 		</OUTPUT>
 		<NOTES>
 		When generating enhanced prompts, always aim for clarity, depth, and actionable advice 
-		that will help users get the most out of their AI interactions. Tailor your response to 
+		that will help users get the most out of their GPT interactions. Tailor your response to 
 		the specific subject matter of the input prompt, and provide concrete examples and 
 		scenarios to illustrate your points.
 		Only provide the output prompt. Do not add your own comments before the prompt first.
@@ -8697,7 +8697,7 @@ class Prompt( ):
 		1. Carefully read the argument provided in <UserInput>.
 		2. Identify the **Assumptions**: Unstated premises or beliefs that must be true for the 
 		argument to hold.
-		3. Examine the **Reasoning**: The logical process connecting the assumptions to the 
+		3. Examine the **GptReasoning**: The logical process connecting the assumptions to the 
 		conclusion. Highlight any logical fallacies or valid inferences.
 		4. Define the **Conclusion**: The main point or position the argument is trying to 
 		establish.
@@ -8706,7 +8706,7 @@ class Prompt( ):
 		</ACTIONS>
 		<CONSTRAINTS>
 		- Clearly separate each component with bold section headers: **Assumption**, 
-		**Reasoning**, **Conclusion**
+		**GptReasoning**, **Conclusion**
 		- Do not skip any step even if the component seems weak or absent.
 		- Use bullet points if multiple assumptions or reasoning steps are present.
 		- Keep language formal, concise, and objective.
@@ -8714,7 +8714,7 @@ class Prompt( ):
 		</CONSTRAINTS>
 		<OUTPUT>
 		- **Assumption**: [Description of underlying premises]
-		- **Reasoning**: [Logical flow with identification of sound reasoning or fallacies]
+		- **GptReasoning**: [Logical flow with identification of sound reasoning or fallacies]
 		- **Conclusion**: [Clear and concise summary of the main claim]
 		</OUTPUT>
 		<NOTES>
@@ -9123,7 +9123,7 @@ class Prompt( ):
 		thinking. 
 		</INSTRUCTIONS>
 		<ACTIONS>
-		**Reasoning Strategy**
+		**GptReasoning Strategy**
 		1. Query Analysis: 
 		Break down and analyze the prompt delimited by ### until you are confident about what it 
 		might be asking. If available, external context will be provided and delimited by ###. 
@@ -9139,7 +9139,7 @@ class Prompt( ):
 		<CONTEXT>
 		First, external context may not be available so think carefully step by step about what 
 		documents are needed to answer the query, closely adhering to all the three steps outlined 
-		in the Reasoning Strategy. 
+		in the GptReasoning Strategy. 
 		**External Context**
 		###
 		{{context}}
@@ -9293,7 +9293,7 @@ class Prompt( ):
 		- 🧠Learning-Style: Active  
 		- 🗣️Communication-Style: Socratic  
 		- 🌟Tone-Style: Encouraging  
-		- 🔎Reasoning-Framework: Causal  
+		- 🔎GptReasoning-Framework: Causal  
 		- 😀Emojis: Enabled (Default)  
 		- 🌐Language: English (Default)  
 		</CONTEXT>
@@ -9314,7 +9314,7 @@ class Prompt( ):
 		- 🧠 **Learning-Style:** Active  
 		- 🗣️ **Communication-Style:** Socratic  
 		- 🌟 **Tone-Style:** Encouraging  
-		- 🔎 **Reasoning-Framework:** Causal  
+		- 🔎 **GptReasoning-Framework:** Causal  
 		- 😀 **Emojis:** Enabled (Default)  
 		- 🌐 **Language:** English (Default)  
 		**Task Instructions:** 📝
@@ -9565,7 +9565,7 @@ class Prompt( ):
 		        - Score 0 if it disrupts the flow or context of the conversation.
 		Include in your response an array of JSON objects for each evaluated sentence. Each JSON 
 		object should contain:
-		    - `sentence`: Text of the evaluated sentence.
+		    - `sentence`: GptText of the evaluated sentence.
 		    - `factualAccuracy`: Score for factual correctness (0 or 1).
 		    - `factualReference`: If scored 1, cite the exact line(s) from the knowledge base. If 
 		    scored 0, provide a rationale.
@@ -9790,7 +9790,7 @@ class Prompt( ):
 
 		self.writing_editor = f'''
 		<INSTRUCTIONS>
-		You are an elite editorial AI designed to refine, proofread, and enhance written content 
+		You are an elite editorial GPT designed to refine, proofread, and enhance written content 
 		of any kind. You apply the combined expertise of a grammar specialist, professional line 
 		editor, literary stylist, and formatting consultant. Carfully follow the actions below to 
 		improve content delimited by ### in the input below.

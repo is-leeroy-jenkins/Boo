@@ -1,16 +1,16 @@
 '''
 ******************************************************************************************
   Assembly:                Mathy
-  Filename:                Models.py
+  Filename:                GptModels.py
   Author:                  Terry D. Eppler
   Created:                 05-31-2022
 
   Last Modified By:        Terry D. Eppler
   Last Modified On:        05-01-2025
 ******************************************************************************************
-<copyright file="Models.py" company="Terry D. Eppler">
+<copyright file="GptModels.py" company="Terry D. Eppler">
 
-     Mathy Models
+     Mathy GptModels
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the “Software”),
@@ -36,7 +36,7 @@
 
 </copyright>
 <summary>
-	Models.py
+	GptModels.py
 </summary>
 ******************************************************************************************
 '''
@@ -284,7 +284,7 @@ class PerceptronClassifier( Model ):
 							'RMSE': self.r_mean_squared_error,
 							'R2': self.r2_score,
 							'Explained Variance': self.explained_variance_score,
-							'Median Absolute Error': self.median_absolute_error,
+							'Median Absolute GptError': self.median_absolute_error,
 					}
 		except Exception as e:
 			exception = Error( e )
@@ -1028,7 +1028,7 @@ class StochasticDescentClassification( Model ):
 							'RMSE': self.r_mean_squared_error,
 							'R2': self.r2_score,
 							'Explained Variance': self.explained_variance_score,
-							'Median Absolute Error': self.median_absolute_error,
+							'Median Absolute GptError': self.median_absolute_error,
 					}
 		except Exception as e:
 			exception = Error( e )
@@ -1266,7 +1266,7 @@ class NearestNeighborClassification( Model ):
 							'RMSE': self.r_mean_squared_error,
 							'R2': self.r2_score,
 							'Explained Variance': self.explained_variance_score,
-							'Median Absolute Error': self.median_absolute_error,
+							'Median Absolute GptError': self.median_absolute_error,
 					}
 		except Exception as e:
 			exception = Error( e )
@@ -1507,7 +1507,7 @@ class DecisionTreeClassification( Model ):
 							'RMSE': self.r_mean_squared_error,
 							'R2': self.r2_score,
 							'Explained Variance': self.explained_variance_score,
-							'Median Absolute Error': self.median_absolute_error,
+							'Median Absolute GptError': self.median_absolute_error,
 					}
 		except Exception as e:
 			exception = Error( e )
@@ -5527,7 +5527,7 @@ class GradientBoostingRegression( Model ):
 					'RMSE': mean_squared_error( y, self.prediction, squared = False ),
 					'R2': r2_score( y, self.prediction ),
 					'Explained Variance': explained_variance_score( y, self.prediction ),
-					'Median Absolute Error': median_absolute_error( y, self.prediction )
+					'Median Absolute GptError': median_absolute_error( y, self.prediction )
 			}
 
 	def create_graph( self, X: np.ndarray, y: np.ndarray ) -> None:

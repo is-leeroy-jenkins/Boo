@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="fsys.py" company="Terry D. Eppler">
 
-	     Boo is a df analysis tool integrating various Generative AI, Text-Processing, and
+	     Boo is a df analysis tool integrating various Generative GPT, GptText-Processing, and
 	     Machine-Learning algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
@@ -369,7 +369,7 @@ class File( Path ):
 	
 		Constructor:
 	
-			File( url: str )
+			GptFile( url: str )
 	
 		Purpose:
 	
@@ -436,7 +436,7 @@ class File( Path ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'fsys'
-			_exc.cause = 'File'
+			_exc.cause = 'GptFile'
 			_exc.method = 'rename( self, other: str ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -460,7 +460,7 @@ class File( Path ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'fsys'
-			_exc.cause = 'File'
+			_exc.cause = 'GptFile'
 			_exc.method = 'move( self, destination ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -492,7 +492,7 @@ class File( Path ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'fsys'
-			_exc.cause = 'File'
+			_exc.cause = 'GptFile'
 			_exc.method = 'generate_text( self, other, words = None )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -519,7 +519,7 @@ class File( Path ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'fsys'
-			_exc.cause = 'File'
+			_exc.cause = 'GptFile'
 			_exc.method = 'delete( self, other )'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -549,7 +549,7 @@ class File( Path ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'fsys'
-			_exc.cause = 'File'
+			_exc.cause = 'GptFile'
 			_exc.method = 'get_lines( self ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -579,7 +579,7 @@ class File( Path ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'fsys'
-			_exc.cause = 'File'
+			_exc.cause = 'GptFile'
 			_exc.method = 'iterlines( self ) -> iter'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -607,7 +607,7 @@ class File( Path ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'fsys'
-			_exc.cause = 'File'
+			_exc.cause = 'GptFile'
 			_exc.method = 'readlines( self ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -636,7 +636,7 @@ class File( Path ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'fsys'
-			_exc.cause = 'File'
+			_exc.cause = 'GptFile'
 			_exc.method = 'readall( self ) -> str'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -667,7 +667,7 @@ class File( Path ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'fsys'
-			_exc.cause = 'File'
+			_exc.cause = 'GptFile'
 			_exc.method = 'writelines( self, words: get_list[ str ] ):'
 			_err = ErrorDialog( _exc )
 			_err.show( )
@@ -703,7 +703,7 @@ class File( Path ):
 		except Exception as e:
 			_exc = Error( e )
 			_exc.module = 'fsys'
-			_exc.cause = 'File'
+			_exc.cause = 'GptFile'
 			_exc.method = 'writeall( self, other: str ) -> get_list[ str ]'
 			_err = ErrorDialog( _exc )
 			_err.show( )

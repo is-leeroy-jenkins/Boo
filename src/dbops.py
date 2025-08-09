@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="dbops.py" company="Terry D. Eppler">
 
-	     Boo is a df analysis tool integrating various Generative AI, Text-Processing, and
+	     Boo is a df analysis tool integrating various Generative GPT, GptText-Processing, and
 	     Machine-Learning algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 

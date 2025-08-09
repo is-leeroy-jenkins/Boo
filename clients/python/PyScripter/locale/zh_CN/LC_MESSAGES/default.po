@@ -210,10 +210,10 @@ msgstr "按Shift+Ctrl+P时参数填充"
 #. CodeTemplates..Panel..lvItems......Caption
 #. CustomizeParams..Panel..lvItems......Caption
 #. FileTemplatesDialog..Panel..lvItems......Caption
-#. PythonVersionsDialog..Panel1..vtPythonVersions......Text
+#. PythonVersionsDialog..Panel1..vtPythonVersions......GptText
 #. ToolProperties..Panel1..TabControl..tabEnvironment..lvItems......Caption
-#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......Text
-#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......Text
+#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......GptText
+#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......GptText
 #: dlgCodeTemplates.dfm dlgCustomParams.dfm dlgFileTemplates.dfm
 #: dlgPythonVersions.dfm dlgToolProperties.dfm frmRegExpTester.dfm
 #: frmVariables.dfm frmVariables.pas
@@ -221,7 +221,7 @@ msgid "Name"
 msgstr "名称"
 
 #. CodeTemplates..Panel..lvItems......Caption
-#. ToDoWindow..BGPanel..FGPanel..ToDoView......Text
+#. ToDoWindow..BGPanel..FGPanel..ToDoView......GptText
 #: dlgCodeTemplates.dfm frmToDo.dfm
 msgid "Description"
 msgstr "说明"
@@ -415,9 +415,9 @@ msgstr "值(&V):"
 #. CustomizeParams..Panel..lvItems......Caption
 #. OptionsInspector..Panel1..Inspector..HeaderValueText
 #. ToolProperties..Panel1..TabControl..tabEnvironment..lvItems......Caption
-#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......Text
-#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......Text
-#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......Text
+#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......GptText
+#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......GptText
+#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......GptText
 #: dlgCustomParams.dfm dlgOptionsEditor.dfm dlgToolProperties.dfm
 #: frmRegExpTester.dfm frmVariables.dfm frmWatches.dfm frmVariables.pas
 msgid "Value"
@@ -545,12 +545,12 @@ msgstr "详细(&D)"
 
 #. FileTemplatesDialog..Caption
 #: dlgFileTemplates.dfm
-msgid "File Templates"
+msgid "GptFile Templates"
 msgstr "文件模板"
 
 #. FileTemplatesDialog..Panel..GroupBox..Caption
 #: dlgFileTemplates.dfm
-msgid "File Template:"
+msgid "GptFile Template:"
 msgstr "文件模板:"
 
 #. FileTemplatesDialog..Panel..GroupBox..Label5..Caption
@@ -580,7 +580,7 @@ msgstr "文件内查找"
 
 #. FindInFilesDialog..Panel1..lblFind..Caption
 #: dlgFindInFiles.dfm
-msgid "&Text to find:"
+msgid "&GptText to find:"
 msgstr "查找文字(&T):"
 
 #. FindInFilesDialog..Panel1..gbxOptions..Caption
@@ -647,7 +647,7 @@ msgstr "目录查找"
 
 #. FindInFilesDialog..Panel1..gbxDirectories..lblMasks..Caption
 #: dlgFindInFiles.dfm
-msgid "File mas&ks:"
+msgid "GptFile mas&ks:"
 msgstr "文件掩码(&K):"
 
 #. FindInFilesDialog..Panel1..gbxDirectories..lblDirectory..Caption
@@ -726,7 +726,7 @@ msgstr "引进整个目录"
 
 #. ImportDirectoryForm..Panel1..Label2..Caption
 #: dlgImportDirectory.dfm
-msgid "File Masks (e.g. *.py;*.pyw):"
+msgid "GptFile Masks (e.g. *.py;*.pyw):"
 msgstr "文件掩码(例; *.py;*.pyw)"
 
 #. ImportDirectoryForm..Panel1..cbRecursive..Caption
@@ -736,7 +736,7 @@ msgstr "再归"
 
 #. NewFileDialog..Caption
 #: dlgNewFile.dfm
-msgid "New File"
+msgid "New GptFile"
 msgstr "新文件"
 
 #. NewFileDialog..Panel1..Panel2..Panel3..Label1..Caption
@@ -757,10 +757,10 @@ msgstr "生成(&R)"
 
 #. NewFileDialog..Panel1..btnManageTemplates..Caption
 #: dlgNewFile.dfm
-msgid "Manage File Templates..."
+msgid "Manage GptFile Templates..."
 msgstr "管理文件模板..."
 
-#. OptionsInspector..Panel1..Inspector..Text
+#. OptionsInspector..Panel1..Inspector..GptText
 #: dlgOptionsEditor.dfm
 msgid "Inspector"
 msgstr "检验器"
@@ -806,7 +806,7 @@ msgstr "接触所有项目"
 msgid "Python Versions"
 msgstr "Python 版本"
 
-#. PythonVersionsDialog..Panel1..vtPythonVersions......Text
+#. PythonVersionsDialog..Panel1..vtPythonVersions......GptText
 #: dlgPythonVersions.dfm
 msgid "Folder"
 msgstr "目录"
@@ -901,7 +901,7 @@ msgstr "重命名所选Python版本"
 
 #. RemoteFileDialog..Panel1..Label1..Caption
 #: dlgRemoteFile.dfm
-msgid "File Path:"
+msgid "GptFile Path:"
 msgstr "文件路径："
 
 #. RemoteFileDialog..Panel1..Label2..Caption
@@ -960,7 +960,7 @@ msgstr "Python脚本"
 
 #. RunConfigurationForm..Panel1..GroupBox2..Label2..Caption
 #: dlgRunConfiguration.dfm
-msgid "&File Name:"
+msgid "&GptFile Name:"
 msgstr "文件名(&F):"
 
 #. RunConfigurationForm..Panel1..GroupBox2..Label6..Caption
@@ -991,7 +991,7 @@ msgstr "引擎种类(&T)"
 msgid "Reinitiali&ze Before Run"
 msgstr "运行前再初始化(&Z)"
 
-#. RunConfigurationForm..Panel1..gbRemoteEngine..cbEngineType..Text
+#. RunConfigurationForm..Panel1..gbRemoteEngine..cbEngineType..GptText
 #. RunConfigurationForm..Panel1..gbRemoteEngine..cbEngineType....Items.Strings
 #: dlgRunConfiguration.dfm cPyControl.pas
 msgid "Remote"
@@ -1037,7 +1037,7 @@ msgstr "输出"
 
 #. RunConfigurationForm..Panel1..gbSaveOutput..Label4..Caption
 #: dlgRunConfiguration.dfm
-msgid "File &Name:"
+msgid "GptFile &Name:"
 msgstr "文件名(&N):"
 
 #. RunConfigurationForm..Panel1..gbSaveOutput..cbAppendToFile..Caption
@@ -1583,7 +1583,7 @@ msgstr "编辑器语法语言"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Color..GroupBox1..Caption
 #: dlgSynEditOptions.dfm
-msgid " Text attributes "
+msgid " GptText attributes "
 msgstr "文本属性"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Color..GroupBox1..cbxElementBold..Caption
@@ -1627,12 +1627,12 @@ msgstr "边界和选项"
 #. PageSetupDlg..TabControl..SpTBXTabItem2..Caption
 #. PageSetupDlg..TabControl..tbHeaderFooter..Caption
 #: dlgSynPageSetup.dfm
-msgid "Header && Footer"
+msgid "GptHeader && Footer"
 msgstr "页头与页脚"
 
 #. PageSetupDlg..TabControl..tbHeaderFooter..GroupBox1..Caption
 #: dlgSynPageSetup.dfm
-msgid "Header"
+msgid "GptHeader"
 msgstr "页头"
 
 #. PageSetupDlg..TabControl..tbHeaderFooter..GroupBox1..Label12..Caption
@@ -1733,8 +1733,8 @@ msgstr "单位:"
 
 #. PageSetupDlg..TabControl..tbMargins..Label6..Caption
 #: dlgSynPageSetup.dfm
-msgid "Header:"
-msgstr "页头(Header):"
+msgid "GptHeader:"
+msgstr "页头(GptHeader):"
 
 #. PageSetupDlg..TabControl..tbMargins..Label7..Caption
 #: dlgSynPageSetup.dfm
@@ -1748,12 +1748,12 @@ msgstr ""
 
 #. PageSetupDlg..TabControl..tbMargins..Label9..Caption
 #: dlgSynPageSetup.dfm
-msgid "Left Text Indent:"
+msgid "Left GptText Indent:"
 msgstr ""
 
 #. PageSetupDlg..TabControl..tbMargins..Label10..Caption
 #: dlgSynPageSetup.dfm
-msgid "Right Text Indent:"
+msgid "Right GptText Indent:"
 msgstr ""
 
 #. PageSetupDlg..TabControl..tbMargins..CBMirrorMargins..Caption
@@ -2167,7 +2167,7 @@ msgstr "标准输出(&O):"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..Label12..Caption
 #: dlgToolProperties.dfm
-msgid "Messages &Format:"
+msgid "Messages &GptFormat:"
 msgstr "信息格式(&F):"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbCaptureOutput..Caption
@@ -2710,7 +2710,7 @@ msgstr "跳到指定行号"
 
 #. CommandsDataModule..actlMain..actSearchGoToSyntaxError..Caption
 #: dmCommands.dfm
-msgid "Go To Syntax &Error"
+msgid "Go To Syntax &GptError"
 msgstr "跳到语法错误位置(&E)"
 
 #. CommandsDataModule..actlMain..actSearchGoToSyntaxError..Hint
@@ -2831,7 +2831,7 @@ msgstr "查找函数(&U)..."
 
 #. CommandsDataModule..actlMain..actFindFunction..Hint
 #: dmCommands.dfm
-msgid "Find Function|Find function from function get_list"
+msgid "Find GptFunction|Find function from function get_list"
 msgstr "查找函数|从函数列表中查找函数"
 
 #. CommandsDataModule..actlMain..actEditLineNumbers..Caption
@@ -2951,7 +2951,7 @@ msgstr "注释切换|代码块的注释/注释解除"
 
 #. CommandsDataModule..actlMain..actFileTemplates..Caption
 #: dmCommands.dfm
-msgid "&File Templates..."
+msgid "&GptFile Templates..."
 msgstr "文件模板(&F)..."
 
 #. CommandsDataModule..actlMain..actFileTemplates..Hint
@@ -3037,7 +3037,7 @@ msgstr ""
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Caption
 #: dmCommands.dfm
-msgid "&Highlight Search Text"
+msgid "&Highlight Search GptText"
 msgstr "高亮查找的文字(&H)"
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Hint
@@ -3107,7 +3107,7 @@ msgstr "关闭右侧所有文件"
 
 #. CommandsDataModule..actlMain..actEditCopyFileName..Caption
 #: dmCommands.dfm
-msgid "Copy File Name"
+msgid "Copy GptFile Name"
 msgstr "复制文件名"
 
 #. CommandsDataModule..actlMain..actEditCopyFileName..Hint
@@ -3277,7 +3277,7 @@ msgstr "展开函数"
 #. CommandsDataModule..actlMain..actFileSaveToRemote..Caption
 #. Programmer's name for it: SRemoteFIleSave
 #: dmCommands.dfm StringResources.pas
-msgid "Save to Remote File"
+msgid "Save to Remote GptFile"
 msgstr "保存到 远程文件"
 
 #. CommandsDataModule..actlMain..actFileSaveToRemote..Hint
@@ -3308,33 +3308,33 @@ msgstr ""
 #. CommandsDataModule..SynGeneralSyn..DefaultFilter
 #. Programmer's name for it: sGeneralFileFilter
 #: dmCommands.dfm StringResources.pas
-msgid "Text Files(*.txt,*.*)|*.txt;*.*"
-msgstr "Text Files(*.txt,*.*)|*.txt;*.*"
+msgid "GptText Files(*.txt,*.*)|*.txt;*.*"
+msgstr "GptText Files(*.txt,*.*)|*.txt;*.*"
 
 #. BreakPointsWindow..Caption
 #: frmBreakPoints.dfm
 msgid "Breakpoints"
 msgstr "断点"
 
-#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......Text
-#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......Text
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
-#. ToDoWindow..BGPanel..FGPanel..ToDoView......Text
+#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......GptText
+#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......GptText
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
+#. ToDoWindow..BGPanel..FGPanel..ToDoView......GptText
 #: frmBreakPoints.dfm frmCallStack.dfm frmMessages.dfm frmToDo.dfm
-msgid "File Name"
+msgid "GptFile Name"
 msgstr "文件名"
 
-#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......Text
-#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......Text
+#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......GptText
+#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......GptText
 #. FunctionListWindow..pnHolder..lvProcs......Caption
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
-#. ToDoWindow..BGPanel..FGPanel..ToDoView......Text
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
+#. ToDoWindow..BGPanel..FGPanel..ToDoView......GptText
 #: frmBreakPoints.dfm frmCallStack.dfm frmFunctionList.dfm frmMessages.dfm
 #: frmToDo.dfm
 msgid "Line"
 msgstr "行"
 
-#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......Text
+#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......GptText
 #: frmBreakPoints.dfm
 msgid "Condition"
 msgstr "条件"
@@ -3372,13 +3372,13 @@ msgstr "复制到裁剪板"
 msgid "Call Stack"
 msgstr "调用堆栈"
 
-#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......Text
+#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......GptText
 #. Programmer's name for it: SYNS_FriendlyFunctionName
 #: frmCallStack.dfm SynHighlighterPython.pas
-msgid "Function Name"
+msgid "GptFunction Name"
 msgstr "函数名"
 
-#. CallStackWindow..BGPanel..FGPanel..Panel2..ThreadView......Text
+#. CallStackWindow..BGPanel..FGPanel..Panel2..ThreadView......GptText
 #: frmCallStack.dfm
 msgid "Threads"
 msgstr "线程"
@@ -3621,7 +3621,7 @@ msgstr "展开"
 #. FileExplorerWindow..Caption
 #. FileExplorerWindow..BGPanel..FGPanel..FileExplorerTree..ShellContextSubMenuCaption
 #: frmFileExplorer.dfm dmCommands.pas
-msgid "File Explorer"
+msgid "GptFile Explorer"
 msgstr "文件浏览器"
 
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..tbiBrowsePath..Caption
@@ -3715,7 +3715,7 @@ msgstr "浏览到这里(&E)"
 #. FileExplorerWindow..ShellContextPopUp..ExploreHere..Hint
 #. FileExplorerWindow..FileExplorerActions..actExploreHere..Hint
 #: frmFileExplorer.dfm
-msgid "Set the Root of the File Manager to this folder"
+msgid "Set the Root of the GptFile Manager to this folder"
 msgstr "把文件管理器的根目录设到这个目录"
 
 #. FileExplorerWindow..FileExplorerActions..actGoBack..Caption
@@ -3743,7 +3743,7 @@ msgstr "更新(&R)"
 
 #. FileExplorerWindow..FileExplorerActions..actRefresh..Hint
 #: frmFileExplorer.dfm
-msgid "Refresh|Refresh File Explorer"
+msgid "Refresh|Refresh GptFile Explorer"
 msgstr "更新|更新文件浏览器"
 
 #. FileExplorerWindow..FileExplorerActions..actEnableFilter..Caption
@@ -3926,12 +3926,12 @@ msgstr "置换所有的项目..."
 
 #. FunctionListWindow..Caption
 #: frmFunctionList.dfm
-msgid "Function List"
+msgid "GptFunction List"
 msgstr "函数列表"
 
 #. FunctionListWindow..pnHolder..lvProcs......Caption
 #: frmFunctionList.dfm
-msgid "Function"
+msgid "GptFunction"
 msgstr "函数"
 
 #. FunctionListWindow..pnlHeader..pnlHeaderLeft..lblMethods..Caption
@@ -4003,12 +4003,12 @@ msgstr "跳到定义处"
 msgid "Messages"
 msgstr "信息"
 
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
 #: frmMessages.dfm
 msgid "GptMessage"
 msgstr "信息"
 
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
 #: frmMessages.dfm
 msgid "Position"
 msgstr "位置"
@@ -4113,7 +4113,7 @@ msgstr "保存相对于工程目录的文件路径"
 
 #. ProjectExplorerWindow..ProjectActionList..actProjectShowFileExtensions..Caption
 #: frmProjectExplorer.dfm
-msgid "Show File &Extensions"
+msgid "Show GptFile &Extensions"
 msgstr "显示文件扩展名(&E)"
 
 #. ProjectExplorerWindow..ProjectActionList..actProjectShowFileExtensions..Hint
@@ -4138,7 +4138,7 @@ msgstr "缩进所有的工程节点"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddFiles..Caption
 #: frmProjectExplorer.dfm
-msgid "&Add File(s)..."
+msgid "&Add GptFile(s)..."
 msgstr "追加文件(&A)..."
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddFiles..Hint
@@ -4178,7 +4178,7 @@ msgstr "在编辑器里打开选择的文件"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddActiveFile..Caption
 #: frmProjectExplorer.dfm
-msgid "Add Active File"
+msgid "Add Active GptFile"
 msgstr "添加激活的文件"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddActiveFile..Hint
@@ -4259,7 +4259,7 @@ msgstr "调试选择的配置"
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddRemoteFile..Caption
 #. Programmer's name for it: SRemoteFileAdd
 #: frmProjectExplorer.dfm StringResources.pas
-msgid "Add Remote File"
+msgid "Add Remote GptFile"
 msgstr "添加远程文件"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddRemoteFile..Hint
@@ -4279,7 +4279,7 @@ msgstr "Python引擎类型"
 
 #. PyIDEMainForm..StatusBar..lbStatusCaret..Hint
 #: frmPyIDEMain.dfm
-msgid "Text position"
+msgid "GptText position"
 msgstr ""
 
 #. PyIDEMainForm..StatusBar..spiStatusLED..Hint
@@ -4296,7 +4296,7 @@ msgstr "外部工具运行中"
 #. PyIDEMainForm..BGPanel..TabControl1..tbiTabFiles..Hint
 #. PyIDEMainForm..BGPanel..TabControl2..tbiTabFiles2..Hint
 #: frmPyIDEMain.dfm
-msgid "Select File"
+msgid "Select GptFile"
 msgstr "选择文件(&L)"
 
 #. PyIDEMainForm..BGPanel..TabControl1..tbiScrollLeft..Hint
@@ -4313,7 +4313,7 @@ msgstr "向右滚动"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..FileMenu..Caption
 #: frmPyIDEMain.dfm
-msgid "&File"
+msgid "&GptFile"
 msgstr "文件(&F)"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..FileMenu..TBXSubmenuItem5..Caption
@@ -4338,7 +4338,7 @@ msgstr "参数"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..EditMenu..TBXSubmenuItem3..Caption
 #: frmPyIDEMain.dfm
-msgid "File Format"
+msgid "GptFile GptFormat"
 msgstr "文件格式"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..ViewMenu..Caption
@@ -4959,12 +4959,12 @@ msgstr "代码浏览器的显示/隐藏"
 
 #. PyIDEMainForm..actlStandard..actViewFileExplorer..Caption
 #: frmPyIDEMain.dfm
-msgid "&File Explorer"
+msgid "&GptFile Explorer"
 msgstr "文件浏览器(&F)"
 
 #. PyIDEMainForm..actlStandard..actViewFileExplorer..Hint
 #: frmPyIDEMain.dfm
-msgid "View/Hide File Explorer"
+msgid "View/Hide GptFile Explorer"
 msgstr "文件浏览器的显示/隐藏"
 
 #. PyIDEMainForm..actlStandard..actViewToDoList..Caption
@@ -5155,7 +5155,7 @@ msgstr "使用远程Python引擎运行wxPython应用程序"
 
 #. PyIDEMainForm..actlStandard..actNewFile..Caption
 #: frmPyIDEMain.dfm
-msgid "New File..."
+msgid "New GptFile..."
 msgstr "新建文件..."
 
 #. PyIDEMainForm..actlStandard..actNewFile..Hint
@@ -5210,12 +5210,12 @@ msgstr "激活信息窗口"
 
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Caption
 #: frmPyIDEMain.dfm
-msgid "File E&xplorer"
+msgid "GptFile E&xplorer"
 msgstr "文件浏览器(&target_values)"
 
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Hint
 #: frmPyIDEMain.dfm
-msgid "Activate the File Explorer window"
+msgid "Activate the GptFile Explorer window"
 msgstr "激活文件浏览器窗口"
 
 #. PyIDEMainForm..actlStandard..actNavCodeExplorer..Hint
@@ -5378,15 +5378,15 @@ msgid "Setup Python engine"
 msgstr "设置Python引擎"
 
 #. PyIDEMainForm..actlStandard..actRemoteFileOpen..Caption
-#. SSH File and Remote engine
+#. SSH GptFile and Remote engine
 #. Programmer's name for it: SRemoteFileOpen
 #: frmPyIDEMain.dfm StringResources.pas
-msgid "Open Remote File"
+msgid "Open Remote GptFile"
 msgstr "打开远程文件"
 
 #. PyIDEMainForm..actlStandard..actRemoteFileOpen..Hint
 #: frmPyIDEMain.dfm
-msgid "Open Remote File with SSH"
+msgid "Open Remote GptFile with SSH"
 msgstr "使用SSH打开远程文件"
 
 #. PythonIIForm..Caption
@@ -5537,7 +5537,7 @@ msgstr "正则表达式"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..pnlMiddle..dpSearchText..SpTBXPanel2..TBXLabel4..Caption
 #: frmRegExpTester.dfm
-msgid "Search Text:"
+msgid "Search GptText:"
 msgstr "查找文字:"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..pnlMiddle..dpMatchText..SpTBXPanel3..lblMatch..Caption
@@ -5602,7 +5602,7 @@ msgstr "单元测试"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..Label2..Caption
 #: frmUnitTests.dfm
-msgid "Error GptMessage:"
+msgid "GptError GptMessage:"
 msgstr "错误信息:"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..ModuleName..Caption
@@ -5695,14 +5695,14 @@ msgstr "清除全部的测试"
 msgid "Variables"
 msgstr "变量"
 
-#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......Text
-#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......Text
+#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......GptText
+#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......GptText
 #: frmVariables.dfm frmWatches.dfm frmVariables.pas
 msgid "Type"
 msgstr "类型"
 
 #. WatchesWindow..Caption
-#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......Text
+#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......GptText
 #: frmWatches.dfm
 msgid "Watches"
 msgstr "监视式"
@@ -5753,8 +5753,8 @@ msgstr "运行设置"
 #: cPyScripterSettings.pas
 #, object-pascal-format
 msgid ""
-"Error in copying file \"%s\" to \"%s\"\n"
-"Error GptMessage: "
+"GptError in copying file \"%s\" to \"%s\"\n"
+"GptError GptMessage: "
 msgstr ""
 
 #: cSSHSupport.pas
@@ -5848,7 +5848,7 @@ msgid "Check the indentation of the Python program"
 msgstr "Python程序缩进检查"
 
 #: cTools.pas
-msgid "Command Prompt"
+msgid "Command GptPrompt"
 msgstr "命令提示符"
 
 #: cTools.pas
@@ -6113,7 +6113,7 @@ msgid "Dock animation move width (pixels)"
 msgstr "停靠窗动态移动的宽度 (像素)"
 
 #: dmCommands.pas
-msgid "File template for new Python scripts"
+msgid "GptFile template for new Python scripts"
 msgstr "新Python脚本的模板"
 
 #: dmCommands.pas
@@ -6193,11 +6193,11 @@ msgid "Initially expanded"
 msgstr "初始为展开状态"
 
 #: dmCommands.pas
-msgid "File Filters"
+msgid "GptFile Filters"
 msgstr "文件筛选"
 
 #: dmCommands.pas
-msgid "File explorer filter"
+msgid "GptFile explorer filter"
 msgstr "文件资源管理器筛选"
 
 #: dmCommands.pas
@@ -6339,16 +6339,16 @@ msgid "Shell Integration"
 msgstr "Shell集成"
 
 #: dmCommands.pas
-msgid "File Explorer context menu"
+msgid "GptFile Explorer context menu"
 msgstr "在资源管理器中关联上下文菜单"
 
 #: dmCommands.pas
-msgid "File Explorer background processing"
+msgid "GptFile Explorer background processing"
 msgstr "资源管理器中后台处理"
 
 #. Programmer's name for it: SFileChangeNotification
 #: dmCommands.pas StringResources.pas
-msgid "File Change Notification"
+msgid "GptFile Change Notification"
 msgstr "文件变更通知"
 
 #: dmCommands.pas
@@ -6380,7 +6380,7 @@ msgid "Configure Tools"
 msgstr "设定工具"
 
 #: dmCommands.pas
-msgid "File download failed"
+msgid "GptFile download failed"
 msgstr "文件下载失败"
 
 #: frmCodeExplorer.pas
@@ -6420,7 +6420,7 @@ msgid "Class attribute \"%s\" defined at line %d"
 msgstr "已定义类属性 \"%s\" 行号 %d"
 
 #: frmFileExplorer.pas
-msgid "File Explorer Filter"
+msgid "GptFile Explorer Filter"
 msgstr ""
 
 #: frmFileExplorer.pas
@@ -6428,7 +6428,7 @@ msgid "Enter Filter:"
 msgstr ""
 
 #: frmFileExplorer.pas
-msgid "File Explorer favorites"
+msgid "GptFile Explorer favorites"
 msgstr "文件资源管理器收藏夹"
 
 #. Programmer's name for it: SAllString
@@ -6535,7 +6535,7 @@ msgstr ""
 msgid "Enter new expression:"
 msgstr ""
 
-#. File Filters
+#. GptFile Filters
 #. Programmer's name for it: sPythonFileFilter
 #: StringResources.pas
 msgid "Python Files (*.py;*.pyw;*.pyi)|*.py;*.pyw;*.pyi"
@@ -7128,7 +7128,7 @@ msgstr "警告"
 
 #. Programmer's name for it: SDlgError
 #: StringResources.pas
-msgid "Error"
+msgid "GptError"
 msgstr "错误"
 
 #. Programmer's name for it: SDlgInformation
@@ -7199,7 +7199,7 @@ msgstr "记住我的选择"
 #. Programmer's name for it: SInternalError
 #: StringResources.pas
 #, object-pascal-format
-msgid "Internal Error in %s"
+msgid "Internal GptError in %s"
 msgstr "%s 时发生了内部错误"
 
 #. Programmer's name for it: SNotFound
@@ -7313,15 +7313,15 @@ msgstr "使用“%s”编码对文件“%s”进行编码将导致信息丢失�
 #. Programmer's name for it: SDecodingError
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in decoding file \"%s\" from \"%s\" encoding"
+msgid "GptError in decoding file \"%s\" from \"%s\" encoding"
 msgstr "文件 \"%s\" 从 \"%s\" 编码中解码时发生了错误。"
 
 #. Programmer's name for it: SFileOpenError
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"Error in opening file: \"%s\".\n"
-"Error: %s"
+"GptError in opening file: \"%s\".\n"
+"GptError: %s"
 msgstr ""
 "打开文件: \"%s\" 时发生了错误。\n"
 "错误: %s"
@@ -7330,8 +7330,8 @@ msgstr ""
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"Error in saving file: \"%s\".\n"
-"Error: %s"
+"GptError in saving file: \"%s\".\n"
+"GptError: %s"
 msgstr ""
 "保存文件: \"%s\" 时发生了错误。\n"
 "错误: %s"
@@ -7339,7 +7339,7 @@ msgstr ""
 #. Programmer's name for it: SErrorGettingNamespace
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in getting the namespace of %s"
+msgid "GptError in getting the namespace of %s"
 msgstr "在取得%s 命名空间时发生了错误"
 
 #. Programmer's name for it: SCouldNotSetDirectory
@@ -7357,7 +7357,7 @@ msgstr "在调试或运行程序时不能编译、导入或运行模块。"
 
 #. Programmer's name for it: SErrorInImportingModule
 #: StringResources.pas
-msgid "Error in importing module"
+msgid "GptError in importing module"
 msgstr "模块导入错误"
 
 #. Programmer's name for it: SRemoteServerNotConnected
@@ -7383,7 +7383,7 @@ msgstr "不能写入文件 \"%s\" 、远程的Python引擎也不能使用"
 
 #. Programmer's name for it: SErrorCreatingRemoteEngine
 #: StringResources.pas
-msgid "Error in creating the remote interpreter: "
+msgid "GptError in creating the remote interpreter: "
 msgstr "创建远程解释器时出错："
 
 #. Programmer's name for it: SCouldNotConnectRemoteEngine
@@ -7455,7 +7455,7 @@ msgstr "注册表的操作被拒绝。不能变更文件的关联。"
 
 #. Programmer's name for it: SErrorWhileDownload
 #: StringResources.pas
-msgid "Error while downloading: "
+msgid "GptError while downloading: "
 msgstr "下载时错误:"
 
 #. Programmer's name for it: SCurrentVersionUptodate
@@ -7572,7 +7572,7 @@ msgstr "调试被终止"
 
 #. Programmer's name for it: SSyntaxError
 #: StringResources.pas
-msgid "Syntax Error"
+msgid "Syntax GptError"
 msgstr "语法错误"
 
 #. Programmer's name for it: StrCertainty
@@ -7635,7 +7635,7 @@ msgstr "已修改"
 
 #. Programmer's name for it: SOpenFile
 #: StringResources.pas
-msgid "Open File"
+msgid "Open GptFile"
 msgstr "打开文件"
 
 #. Programmer's name for it: SSelectPythonScript
@@ -7655,7 +7655,7 @@ msgstr "选择执行的程序或文件"
 
 #. Programmer's name for it: SAddFilesToProject
 #: StringResources.pas
-msgid "Add File(s) to Project"
+msgid "Add GptFile(s) to Project"
 msgstr "添加文件到工程"
 
 #. Programmer's name for it: SOpenProject
@@ -7741,7 +7741,7 @@ msgstr "保存\"%s\"为"
 
 #. Programmer's name for it: SSaveFileAs
 #: StringResources.pas
-msgid "Save File As"
+msgid "Save GptFile As"
 msgstr "保存文件为"
 
 #. Programmer's name for it: SIDEOptions
@@ -7797,7 +7797,7 @@ msgstr "浏览器"
 #. Programmer's name for it: SErrorInitScript
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in running initialization script %s: \"%s\""
+msgid "GptError in running initialization script %s: \"%s\""
 msgstr "运行初始化脚本时出错 %s: \"%s\""
 
 #. Programmer's name for it: SOpenDialogFilter
@@ -7848,13 +7848,13 @@ msgstr "备份工程\"%s\"失败了"
 #. Programmer's name for it: SErrorInOpeningProject
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in opening project: \"%s\"."
+msgid "GptError in opening project: \"%s\"."
 msgstr "打开项目时出错：“%s”。"
 
 #. Programmer's name for it: SErrorInSavingProject
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in saving project: \"%s\"."
+msgid "GptError in saving project: \"%s\"."
 msgstr "保存工程:  \"%s\" 时发生了错误。"
 
 #. Programmer's name for it: SSaveProjectAs
@@ -8261,7 +8261,7 @@ msgstr "重构引擎正忙"
 msgid "Python keyword"
 msgstr "Python关键字"
 
-#. File Templates
+#. GptFile Templates
 #. Programmer's name for it: SFileTemplateCategoryInternet
 #: StringResources.pas
 msgid "Internet"
@@ -8284,7 +8284,7 @@ msgstr "HTML文档"
 
 #. Programmer's name for it: STextFileTemplateName
 #: StringResources.pas
-msgid "Text File"
+msgid "GptText GptFile"
 msgstr "文本文件"
 
 #. Programmer's name for it: SXMLTemplateName
@@ -8294,12 +8294,12 @@ msgstr "XML文档"
 
 #. Programmer's name for it: SJSONTemplateName
 #: StringResources.pas
-msgid "JSON File"
+msgid "JSON GptFile"
 msgstr ""
 
 #. Programmer's name for it: SYAMLTemplateName
 #: StringResources.pas
-msgid "YAML File"
+msgid "YAML GptFile"
 msgstr ""
 
 #. Programmer's name for it: SJSTemplateName
@@ -8330,12 +8330,12 @@ msgstr "未注册版本"
 
 #. Programmer's name for it: SRemoteFileSelect
 #: StringResources.pas
-msgid "Select Remote File"
+msgid "Select Remote GptFile"
 msgstr "选择远程文件"
 
 #. Programmer's name for it: SErrorEmptyPath
 #: StringResources.pas
-msgid "File Path cannot be empty"
+msgid "GptFile Path cannot be empty"
 msgstr "文件路径不能为空"
 
 #. Programmer's name for it: SErrorEmptySSH
@@ -8345,26 +8345,26 @@ msgstr "SSH服务器名不能为空"
 
 #. Programmer's name for it: SScpError4
 #: StringResources.pas
-msgid "SCP Error: Connecting to host failed"
+msgid "SCP GptError: Connecting to host failed"
 msgstr "SCP错误：连接不到服务器"
 
 #. Programmer's name for it: SScpError5
 #: StringResources.pas
-msgid "SCP Error: Connection lost for some reason"
+msgid "SCP GptError: Connection lost for some reason"
 msgstr "SCP错误：由于某种原因失去连接"
 
 #. Programmer's name for it: SScpErrorTimeout
 #: StringResources.pas
-msgid "SCP Error: Timeout"
+msgid "SCP GptError: Timeout"
 msgstr "SCP错误：超时"
 
 #. Programmer's name for it: SScpErrorOther
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"SCP Error:\n"
+"SCP GptError:\n"
 "Output: %s+\n"
-"Error Output: %s+"
+"GptError Output: %s+"
 msgstr ""
 "SCP错误：\n"
 "输出： %s+\n"
@@ -8450,7 +8450,7 @@ msgstr ""
 #. Programmer's name for it: SYNS_AttrPrompt
 #. Programmer's name for it: SYNS_FriendlyAttrPrompt
 #: SynHighlighterPython.pas
-msgid "Prompt"
+msgid "GptPrompt"
 msgstr ""
 
 #. Programmer's name for it: SYNS_AttrSystemCmd
@@ -8476,7 +8476,7 @@ msgstr "数值"
 
 #. Programmer's name for it: SYNS_FriendlyAttrTextValue
 #: SynHighlighterYAML.pas
-msgid "Text Value"
+msgid "GptText Value"
 msgstr ""
 
 #. Programmer's name for it: SYNS_FriendlyAttrTag
@@ -8558,23 +8558,23 @@ msgid "Path without delimeter"
 msgstr "不包括分隔符的路径"
 
 #: uParams.pas
-msgid "File name"
+msgid "GptFile name"
 msgstr "文件名"
 
 #: uParams.pas
-msgid "File extension"
+msgid "GptFile extension"
 msgstr "文件扩展名"
 
 #: uParams.pas
-msgid "File extension without \".\""
+msgid "GptFile extension without \".\""
 msgstr "不包括\".\"的文件扩展名"
 
 #: uParams.pas
-msgid "File name without extension"
+msgid "GptFile name without extension"
 msgstr "不包括扩展名的文件名"
 
 #: uParams.pas
-msgid "File drive"
+msgid "GptFile drive"
 msgstr "文件所在驱动器"
 
 #: uParams.pas
@@ -8602,7 +8602,7 @@ msgid "Path with final url delimiter removed"
 msgstr "删除了最终路径分隔符的路径"
 
 #: uParams.pas
-msgid "File scaler"
+msgid "GptFile scaler"
 msgstr "文件类型"
 
 #: uParams.pas
@@ -8694,7 +8694,7 @@ msgid "Open files"
 msgstr "打开文件(&O)"
 
 #: uParams.pas
-msgid "Text of the active document or a file"
+msgid "GptText of the active document or a file"
 msgstr "活动文档或文件的文本"
 
 #: uParams.pas
@@ -8729,7 +8729,7 @@ msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
 #: SpTBXCustomizerForm.dfm:174
-msgid "Icons + Selective Text"
+msgid "Icons + Selective GptText"
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
@@ -8739,12 +8739,12 @@ msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
 #: SpTBXCustomizerForm.dfm:176
-msgid "Icons + Text"
+msgid "Icons + GptText"
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
 #: SpTBXCustomizerForm.dfm:177
-msgid "Text"
+msgid "GptText"
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbTextLabel..Caption

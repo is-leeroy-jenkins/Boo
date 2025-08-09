@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="boogr.py" company="Terry D. Eppler">
 
-	     Boo is a df analysis tool integrating GenAI, Text Processing, and Machine-Learning
+	     Boo is a df analysis tool integrating GenAI, GptText Processing, and Machine-Learning
 	     algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
@@ -79,7 +79,7 @@ class Error( Exception ):
 
         Constructor:
 		----------
-        Error( error: Exception, heading: str=None, cause: str=None,
+        GptError( error: Exception, heading: str=None, cause: str=None,
                 method: str=None, module: str=None )
 
     '''
@@ -362,13 +362,13 @@ class FileDialog( Dark ):
 		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
 		self.form_size = (500, 240)
 		self.selected_item = None
-		self.message = 'Grab File'
+		self.message = 'Grab GptFile'
 		self.extension = extension
 		self.excel = (('Excel', '*.xlsx'),)
 		self.csv = (('CSV', '*.csv'),)
 		self.pdf = (('PDF', '*.pdf'),)
 		self.sql = (('SQL', '*.sql',),)
-		self.text = (('Text', '*.txt'),)
+		self.text = (('GptText', '*.txt'),)
 		self.access = (('Access', '*.accdb'),)
 		self.sqlite = (('SQLite', '*.db'),)
 		self.sqlserver = (('MSSQL', '*.mdf', '*.ldf', '*.sdf'),)
@@ -707,7 +707,7 @@ class SaveFileDialog( Dark ):
 		'''
 		try:
 			_username = os.environ.get( 'USERNAME' )
-			_filename = sg.popup_get_file( 'Select Location / Enter File Name',
+			_filename = sg.popup_get_file( 'Select Location / Enter GptFile Name',
 				title='  Booger',
 				font=self.theme_font,
 				icon=self.icon_path,
@@ -1011,7 +1011,7 @@ class EmailDialog( Dark ):
 			            [ sg.Text( ' ', size=_spc ), sg.Button( 'Send', size=_btn ),
 			              sg.Text( ' ', size=_btn ), sg.Button( 'Cancel', size=_btn ) ] ]
 			
-			_window = sg.Window( '  Send Message', _layout,
+			_window = sg.Window( '  Send GptMessage', _layout,
 				icon=self.icon_path,
 				size=self.form_size )
 			
@@ -1178,7 +1178,7 @@ class ErrorDialog( Dark ):
 	    Construcotr:  ErrorDialog( error )
 
 	    Purpose:  Class that displays excetption target_values that accepts
-            a single, optional argument 'error' of scaler Error
+            a single, optional argument 'error' of scaler GptError
 
     '''
 	
@@ -2630,7 +2630,7 @@ class ImageSizeEncoder( Dark ):
 				              k='-WIDTH-' ), sg.T( 'target_values' ),
 			                sg.In( default_text=sg.user_settings_get_entry( '-_height-', '' ),
 				                s=4, k='-HEIGHT-' ) ] ] ) ],
-		            [ sg.Frame( 'Convert To New Format', _newformat ) ],
+		            [ sg.Frame( 'Convert To New GptFormat', _newformat ) ],
 		            [ sg.CBox( 'Encode to Base64 and leave on Clipboard', k='-BASE64-',
 			            default=sg.user_settings_get_entry( '-base64-', True ) ) ],
 		            [ sg.CBox( 'Do not save file - Only convert and Base64 Encode',
@@ -2700,15 +2700,15 @@ class ImageSizeEncoder( Dark ):
 							text_color='white' )
 				
 				except Exception as e:
-					sg.popup_error_with_traceback( 'Error resizing or converting',
-						'Error encountered during the resize or Base64 encoding', e )
+					sg.popup_error_with_traceback( 'GptError resizing or converting',
+						'GptError encountered during the resize or Base64 encoding', e )
 				if _values[ '-AUTOCLOSE-' ]:
 					break
 			elif _event == 'Version':
 				sg.popup_scrolled( sg.get_versions( ), non_blocking=True )
 			elif _event == 'Edit Me':
 				sg.execute_editor( __file__ )
-			elif _event == 'File Location':
+			elif _event == 'GptFile Location':
 				sg.popup_scrolled( 'This Python file is:', __file__ )
 			elif _event == '-PYSIMPLEGUI-':
 				webbrowser.open_new_tab( r'http://www.PySimpleGUI.com' )
@@ -4146,7 +4146,7 @@ class ColorDialog( Dark ):
 						except IndexError as e:
 							break
 						except Exception as e:
-							sg.popup_error( f'Error while creating _color _window....', e,
+							sg.popup_error( f'GptError while creating _color _window....', e,
 								f'rows = {rows}  i = {i}' )
 							break
 					_layout.append( _row )
@@ -4381,7 +4381,7 @@ class BudgetForm( Dark ):
 				_hdr = 'Roboto 20'
 				_frasz = (450, 150)
 				_hdrsz = (920, 100)
-				_first = [ [ sg.Push( ), sg.Text( 'Block 1 Header', font=_hdr ), sg.Push( ) ],
+				_first = [ [ sg.Push( ), sg.Text( 'Block 1 GptHeader', font=_hdr ), sg.Push( ) ],
 				           [ sg.Push( ), sg.Text( 'Block 1 line 1', font=_hdr ), sg.Push( ) ],
 				           [ sg.Push( ), sg.Text( 'Block 1 line 2', font=_hdr ), sg.Push( ) ],
 				           [ sg.Push( ), sg.Text( 'Block 1 line 3', font=_hdr ), sg.Push( ) ],
@@ -4421,7 +4421,7 @@ class BudgetForm( Dark ):
 				_hdr = 'Roboto 20'
 				_frasz = (450, 150)
 				_hdrsz = (920, 100)
-				_second = [ [ sg.Push( ), sg.Text( 'Block 2 Header', font=_hdr ), sg.Push( ) ],
+				_second = [ [ sg.Push( ), sg.Text( 'Block 2 GptHeader', font=_hdr ), sg.Push( ) ],
 				            [ sg.Push( ), sg.Text( 'Block 2 line 1', font=_hdr ), sg.Push( ) ],
 				            [ sg.Push( ), sg.Text( 'Block 2 line 2', font=_hdr ), sg.Push( ) ],
 				            [ sg.Push( ), sg.Text( 'Block 2 line 3', font=_hdr ), sg.Push( ) ],
@@ -4461,7 +4461,7 @@ class BudgetForm( Dark ):
 				_hdr = 'Roboto 20'
 				_frasz = (450, 150)
 				_hdrsz = (920, 100)
-				_third = [ [ sg.Push( ), sg.Text( 'Block 3 Header', font=_hdr ), sg.Push( ) ],
+				_third = [ [ sg.Push( ), sg.Text( 'Block 3 GptHeader', font=_hdr ), sg.Push( ) ],
 				           [ sg.Push( ), sg.Text( 'Block 3 line 1', font=_hdr ), sg.Push( ) ],
 				           [ sg.Push( ), sg.Text( 'Block 3 line 2', font=_hdr ), sg.Push( ) ],
 				           [ sg.Push( ), sg.Text( 'Block 3 line 3', font=_hdr ), sg.Push( ) ],
@@ -4501,7 +4501,7 @@ class BudgetForm( Dark ):
 				_hdr = 'Roboto 20'
 				_frasz = (450, 150)
 				_hdrsz = (920, 100)
-				_fourth = [ [ sg.Push( ), sg.Text( 'Block 4 Header', font=_hdr ), sg.Push( ) ],
+				_fourth = [ [ sg.Push( ), sg.Text( 'Block 4 GptHeader', font=_hdr ), sg.Push( ) ],
 				            [ sg.Push( ), sg.Text( 'Block 4 line 1', font=_hdr ), sg.Push( ) ],
 				            [ sg.Push( ), sg.Text( 'Block 4 line 2', font=_hdr ), sg.Push( ) ],
 				            [ sg.Push( ), sg.Text( 'Block 4 line 3', font=_hdr ), sg.Push( ) ],
@@ -4611,13 +4611,13 @@ class BudgetForm( Dark ):
 					enable_events=True, grab=False ), sg.Push( background_color=_mblk ),
 				  sg.Text( 'Wednesday 27 Oct 2021', font=_hdr, background_color=_mblk ) ],
 			]
-			self.__headerlayout = [ [ sg.Push( ), sg.Text( 'Top Header', font=_hdr ), sg.Push(
+			self.__headerlayout = [ [ sg.Push( ), sg.Text( 'Top GptHeader', font=_hdr ), sg.Push(
 			) ],
 			                        [ sg.Image( source=self.image, subsample=3,
 				                        enable_events=True ), sg.Push( ) ],
-			                        [ sg.Text( 'Top Header line 2' ), sg.Push( ) ] ]
+			                        [ sg.Text( 'Top GptHeader line 2' ), sg.Push( ) ] ]
 			self.__firstlayout = [
-				[ sg.Push( ), sg.Text( 'Block 1 Header', font=_hdr ), sg.Push( ) ],
+				[ sg.Push( ), sg.Text( 'Block 1 GptHeader', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 1 line 1', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 1 line 2', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 1 line 3', font=_hdr ), sg.Push( ) ],
@@ -4625,7 +4625,7 @@ class BudgetForm( Dark ):
 				[ sg.Push( ), sg.Text( 'Block 1 line 5', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 1 line 6', font=_hdr ), sg.Push( ) ] ]
 			self.__secondlayout = [
-				[ sg.Push( ), sg.Text( 'Block 2 Header', font=_hdr ), sg.Push( ) ],
+				[ sg.Push( ), sg.Text( 'Block 2 GptHeader', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 2 line 1', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 2 line 2', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 2 line 3', font=_hdr ), sg.Push( ) ],
@@ -4633,7 +4633,7 @@ class BudgetForm( Dark ):
 				[ sg.Push( ), sg.Text( 'Block 2 line 5', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 2 line 6', font=_hdr ), sg.Push( ) ] ]
 			self.__thirdlayout = [
-				[ sg.Push( ), sg.Text( 'Block 3 Header', font=_hdr ), sg.Push( ) ],
+				[ sg.Push( ), sg.Text( 'Block 3 GptHeader', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 3 line 1', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 3 line 2', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 3 line 3', font=_hdr ), sg.Push( ) ],
@@ -4641,7 +4641,7 @@ class BudgetForm( Dark ):
 				[ sg.Push( ), sg.Text( 'Block 3 line 5', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 3 line 6', font=_hdr ), sg.Push( ) ] ]
 			self.__fourthlayout = [
-				[ sg.Push( ), sg.Text( 'Block 4 Header', font=_hdr ), sg.Push( ) ],
+				[ sg.Push( ), sg.Text( 'Block 4 GptHeader', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 4 line 1', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 4 line 2', font=_hdr ), sg.Push( ) ],
 				[ sg.Push( ), sg.Text( 'Block 4 line 3', font=_hdr ), sg.Push( ) ],
@@ -4692,7 +4692,7 @@ class BudgetForm( Dark ):
 					sg.execute_editor( __file__ )
 				elif _event == 'Version':
 					sg.popup_scrolled( sg.get_versions( ), keep_on_top=True )
-				elif _event == 'File Location':
+				elif _event == 'GptFile Location':
 					sg.popup_scrolled( 'This Python file is:', __file__ )
 			_window.close( )
 		except Exception as e:
@@ -4968,7 +4968,7 @@ class CsvForm( Dark ):
 					elif _button == 'No':
 						_header = [ 'Column' + str( x ) for x in range( len( _data[ 0 ] ) ) ]
 				except Exception:
-					sg.popup_error( 'Error reading file' )
+					sg.popup_error( 'GptError reading file' )
 					return
 			
 			_left = [ [ sg.Text( size=_sm ), ] ]
@@ -5114,7 +5114,7 @@ class ExcelForm( Dark ):
 					elif _button == 'No':
 						_header = [ 'Column-' + str( x ) for x in range( len( _data[ 0 ] ) ) ]
 				except:
-					sg.popup_error( 'Error reading file' )
+					sg.popup_error( 'GptError reading file' )
 					return
 			_left = [ [ sg.Text( size=_small ), ] ]
 			_right = [ [ sg.Text( size=_small ), ] ]
@@ -5419,7 +5419,7 @@ class GraphForm( Dark ):
 
 class FileBrowser( ):
 	'''
-        File Chooser - with clearable history
+        GptFile Chooser - with clearable history
         This is a design pattern that is very useful for programs that you run often that requires
         a filename be entered.  You've got 4 options to use to get your filename with this pattern:
         1. Copy and paste a filename into the combo element
@@ -5508,7 +5508,7 @@ class FileBrowser( ):
 			size=(50, 1), key='-FILENAME-' ), sg.FileBrowse( ), sg.B( 'Clear History' ) ],
 		           [ sg.Button( 'Ok', bind_return_key=True ), sg.Button( 'Cancel' ) ] ]
 		
-		window = sg.Window( 'Browser File System', layout )
+		window = sg.Window( 'Browser GptFile System', layout )
 		while True:
 			event, values = window.read( )
 			
@@ -5531,7 +5531,7 @@ class FileBrowser( ):
 class ChatWindow( ):
 	'''
 
-	    Function to generate a chat window
+	    GptFunction to generate a chat window
 
 	'''
 	
@@ -6024,10 +6024,10 @@ class Executable( ):
 		'''
 		try:
 			layout = [ [ sg.Text( 'PyInstaller EXE Creator', font='Any 15' ) ],
-			           [ sg.Text( 'Source Python File' ),
+			           [ sg.Text( 'Source Python GptFile' ),
 			             sg.Input( key='-sourcefile-', size=(45, 1) ),
 			             sg.FileBrowse( file_types=(("Python Files", "*.py"),) ) ],
-			           [ sg.Text( 'Icon File' ), sg.Input( key='-iconfile-', size=(45, 1) ),
+			           [ sg.Text( 'Icon GptFile' ), sg.Input( key='-iconfile-', size=(45, 1) ),
 			             sg.FileBrowse( file_types=(("Icon Files", "*.ico"),) ) ],
 			           [ sg.Frame( 'Output', font='Any 15', layout=[
 				           [ sg.Output( size=(65, 15), font='Courier 10' ) ] ] ) ],

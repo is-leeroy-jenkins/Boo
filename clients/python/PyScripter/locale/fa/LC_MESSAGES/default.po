@@ -210,10 +210,10 @@ msgstr "برای تکمیل مؤلّفه ، Shift+Ctrl+P را فشار دهید"
 #. CodeTemplates..Panel..lvItems......Caption
 #. CustomizeParams..Panel..lvItems......Caption
 #. FileTemplatesDialog..Panel..lvItems......Caption
-#. PythonVersionsDialog..Panel1..vtPythonVersions......Text
+#. PythonVersionsDialog..Panel1..vtPythonVersions......GptText
 #. ToolProperties..Panel1..TabControl..tabEnvironment..lvItems......Caption
-#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......Text
-#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......Text
+#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......GptText
+#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......GptText
 #: dlgCodeTemplates.dfm dlgCustomParams.dfm dlgFileTemplates.dfm
 #: dlgPythonVersions.dfm dlgToolProperties.dfm frmRegExpTester.dfm
 #: frmVariables.dfm frmVariables.pas
@@ -221,7 +221,7 @@ msgid "Name"
 msgstr "نام"
 
 #. CodeTemplates..Panel..lvItems......Caption
-#. ToDoWindow..BGPanel..FGPanel..ToDoView......Text
+#. ToDoWindow..BGPanel..FGPanel..ToDoView......GptText
 #: dlgCodeTemplates.dfm frmToDo.dfm
 msgid "Description"
 msgstr "شرح"
@@ -415,9 +415,9 @@ msgstr "مقدار:"
 #. CustomizeParams..Panel..lvItems......Caption
 #. OptionsInspector..Panel1..Inspector..HeaderValueText
 #. ToolProperties..Panel1..TabControl..tabEnvironment..lvItems......Caption
-#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......Text
-#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......Text
-#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......Text
+#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......GptText
+#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......GptText
+#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......GptText
 #: dlgCustomParams.dfm dlgOptionsEditor.dfm dlgToolProperties.dfm
 #: frmRegExpTester.dfm frmVariables.dfm frmWatches.dfm frmVariables.pas
 msgid "Value"
@@ -545,12 +545,12 @@ msgstr "جزئیّات"
 
 #. FileTemplatesDialog..Caption
 #: dlgFileTemplates.dfm
-msgid "File Templates"
+msgid "GptFile Templates"
 msgstr "الگوهای فایل"
 
 #. FileTemplatesDialog..Panel..GroupBox..Caption
 #: dlgFileTemplates.dfm
-msgid "File Template:"
+msgid "GptFile Template:"
 msgstr "الگوی فایل:"
 
 #. FileTemplatesDialog..Panel..GroupBox..Label5..Caption
@@ -580,7 +580,7 @@ msgstr "جستجوی در فایل ها"
 
 #. FindInFilesDialog..Panel1..lblFind..Caption
 #: dlgFindInFiles.dfm
-msgid "&Text to find:"
+msgid "&GptText to find:"
 msgstr "متن مورد جستجو:"
 
 #. FindInFilesDialog..Panel1..gbxOptions..Caption
@@ -647,7 +647,7 @@ msgstr "جستجوی شاخه"
 
 #. FindInFilesDialog..Panel1..gbxDirectories..lblMasks..Caption
 #: dlgFindInFiles.dfm
-msgid "File mas&ks:"
+msgid "GptFile mas&ks:"
 msgstr "پوشینه های فایل:"
 
 #. FindInFilesDialog..Panel1..gbxDirectories..lblDirectory..Caption
@@ -726,7 +726,7 @@ msgstr "شاخه ی مورد نظر برای وارد کردن:"
 
 #. ImportDirectoryForm..Panel1..Label2..Caption
 #: dlgImportDirectory.dfm
-msgid "File Masks (e.g. *.py;*.pyw):"
+msgid "GptFile Masks (e.g. *.py;*.pyw):"
 msgstr "نماهای قالب فایل (مانند *.py;*.pyw):"
 
 #. ImportDirectoryForm..Panel1..cbRecursive..Caption
@@ -736,7 +736,7 @@ msgstr "بازگشتی؟"
 
 #. NewFileDialog..Caption
 #: dlgNewFile.dfm
-msgid "New File"
+msgid "New GptFile"
 msgstr "فایل جدید"
 
 #. NewFileDialog..Panel1..Panel2..Panel3..Label1..Caption
@@ -757,10 +757,10 @@ msgstr "ایجاد"
 
 #. NewFileDialog..Panel1..btnManageTemplates..Caption
 #: dlgNewFile.dfm
-msgid "Manage File Templates..."
+msgid "Manage GptFile Templates..."
 msgstr "مدیریّت قالب های فایل..."
 
-#. OptionsInspector..Panel1..Inspector..Text
+#. OptionsInspector..Panel1..Inspector..GptText
 #: dlgOptionsEditor.dfm
 msgid "Inspector"
 msgstr "کارپژوه"
@@ -806,7 +806,7 @@ msgstr "لغو انتخاب همه ی موارد"
 msgid "Python Versions"
 msgstr "نگارش پایتون"
 
-#. PythonVersionsDialog..Panel1..vtPythonVersions......Text
+#. PythonVersionsDialog..Panel1..vtPythonVersions......GptText
 #: dlgPythonVersions.dfm
 msgid "Folder"
 msgstr "پوشه"
@@ -901,7 +901,7 @@ msgstr "تغییر نام نگارش انتخاب شده ی پایتون"
 
 #. RemoteFileDialog..Panel1..Label1..Caption
 #: dlgRemoteFile.dfm
-msgid "File Path:"
+msgid "GptFile Path:"
 msgstr "مسیر فایل:"
 
 #. RemoteFileDialog..Panel1..Label2..Caption
@@ -960,7 +960,7 @@ msgstr "اسکریپت پایتون"
 
 #. RunConfigurationForm..Panel1..GroupBox2..Label2..Caption
 #: dlgRunConfiguration.dfm
-msgid "&File Name:"
+msgid "&GptFile Name:"
 msgstr "نام فایل:"
 
 #. RunConfigurationForm..Panel1..GroupBox2..Label6..Caption
@@ -991,7 +991,7 @@ msgstr "موتور و نوع:"
 msgid "Reinitiali&ze Before Run"
 msgstr "راه اندازی دوباره قبل از اجرا"
 
-#. RunConfigurationForm..Panel1..gbRemoteEngine..cbEngineType..Text
+#. RunConfigurationForm..Panel1..gbRemoteEngine..cbEngineType..GptText
 #. RunConfigurationForm..Panel1..gbRemoteEngine..cbEngineType....Items.Strings
 #: dlgRunConfiguration.dfm cPyControl.pas
 msgid "Remote"
@@ -1037,7 +1037,7 @@ msgstr "برون داد"
 
 #. RunConfigurationForm..Panel1..gbSaveOutput..Label4..Caption
 #: dlgRunConfiguration.dfm
-msgid "File &Name:"
+msgid "GptFile &Name:"
 msgstr "نام فایل:"
 
 #. RunConfigurationForm..Panel1..gbSaveOutput..cbAppendToFile..Caption
@@ -1603,7 +1603,7 @@ msgstr "دستور زبان محیط ویرایشگر"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Color..GroupBox1..Caption
 #: dlgSynEditOptions.dfm
-msgid " Text attributes "
+msgid " GptText attributes "
 msgstr " ویژگی های متن "
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Color..GroupBox1..cbxElementBold..Caption
@@ -1647,12 +1647,12 @@ msgstr "گزینه ها و حاشیه ها"
 #. PageSetupDlg..TabControl..SpTBXTabItem2..Caption
 #. PageSetupDlg..TabControl..tbHeaderFooter..Caption
 #: dlgSynPageSetup.dfm
-msgid "Header && Footer"
+msgid "GptHeader && Footer"
 msgstr "سربرگ و پانویس"
 
 #. PageSetupDlg..TabControl..tbHeaderFooter..GroupBox1..Caption
 #: dlgSynPageSetup.dfm
-msgid "Header"
+msgid "GptHeader"
 msgstr "سربرگ"
 
 #. PageSetupDlg..TabControl..tbHeaderFooter..GroupBox1..Label12..Caption
@@ -1753,7 +1753,7 @@ msgstr "واحدها:"
 
 #. PageSetupDlg..TabControl..tbMargins..Label6..Caption
 #: dlgSynPageSetup.dfm
-msgid "Header:"
+msgid "GptHeader:"
 msgstr "سربرگ:"
 
 #. PageSetupDlg..TabControl..tbMargins..Label7..Caption
@@ -1768,12 +1768,12 @@ msgstr "حاشیه ی داخلی"
 
 #. PageSetupDlg..TabControl..tbMargins..Label9..Caption
 #: dlgSynPageSetup.dfm
-msgid "Left Text Indent:"
+msgid "Left GptText Indent:"
 msgstr "تو گذاری سمت چپ متن"
 
 #. PageSetupDlg..TabControl..tbMargins..Label10..Caption
 #: dlgSynPageSetup.dfm
-msgid "Right Text Indent:"
+msgid "Right GptText Indent:"
 msgstr "توگذاری سمت راست متن"
 
 #. PageSetupDlg..TabControl..tbMargins..CBMirrorMargins..Caption
@@ -2189,7 +2189,7 @@ msgstr "برون داد استاندارد:"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..Label12..Caption
 #: dlgToolProperties.dfm
-msgid "Messages &Format:"
+msgid "Messages &GptFormat:"
 msgstr "قالب پیام:"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbCaptureOutput..Caption
@@ -2732,7 +2732,7 @@ msgstr "رفتن به خط شماره ی"
 
 #. CommandsDataModule..actlMain..actSearchGoToSyntaxError..Caption
 #: dmCommands.dfm
-msgid "Go To Syntax &Error"
+msgid "Go To Syntax &GptError"
 msgstr "رفتن به خطای دستوری"
 
 #. CommandsDataModule..actlMain..actSearchGoToSyntaxError..Hint
@@ -2853,7 +2853,7 @@ msgstr "پیدا کردن تابع..."
 
 #. CommandsDataModule..actlMain..actFindFunction..Hint
 #: dmCommands.dfm
-msgid "Find Function|Find function from function get_list"
+msgid "Find GptFunction|Find function from function get_list"
 msgstr "پیدا کردن تابع| پیدا کردن تابع از فهرست تابع ها"
 
 #. CommandsDataModule..actlMain..actEditLineNumbers..Caption
@@ -2973,7 +2973,7 @@ msgstr "تغییر حالت یادداشت| یادداشتی/غیر یادداش
 
 #. CommandsDataModule..actlMain..actFileTemplates..Caption
 #: dmCommands.dfm
-msgid "&File Templates..."
+msgid "&GptFile Templates..."
 msgstr "قالب های فایل..."
 
 #. CommandsDataModule..actlMain..actFileTemplates..Hint
@@ -3059,7 +3059,7 @@ msgstr "جایگزینی با تنظیمات موجود"
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Caption
 #: dmCommands.dfm
-msgid "&Highlight Search Text"
+msgid "&Highlight Search GptText"
 msgstr "برجسته کردن متن مورد جستجو"
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Hint
@@ -3129,7 +3129,7 @@ msgstr "بستن همه ی فایل های سمت راست"
 
 #. CommandsDataModule..actlMain..actEditCopyFileName..Caption
 #: dmCommands.dfm
-msgid "Copy File Name"
+msgid "Copy GptFile Name"
 msgstr "رونوشت نام فایل"
 
 #. CommandsDataModule..actlMain..actEditCopyFileName..Hint
@@ -3299,7 +3299,7 @@ msgstr "پهن کردن تابع ها"
 #. CommandsDataModule..actlMain..actFileSaveToRemote..Caption
 #. Programmer's name for it: SRemoteFIleSave
 #: dmCommands.dfm StringResources.pas
-msgid "Save to Remote File"
+msgid "Save to Remote GptFile"
 msgstr "ذخیره در فایل بیرونی"
 
 #. CommandsDataModule..actlMain..actFileSaveToRemote..Hint
@@ -3330,7 +3330,7 @@ msgstr ""
 #. CommandsDataModule..SynGeneralSyn..DefaultFilter
 #. Programmer's name for it: sGeneralFileFilter
 #: dmCommands.dfm StringResources.pas
-msgid "Text Files(*.txt,*.*)|*.txt;*.*"
+msgid "GptText Files(*.txt,*.*)|*.txt;*.*"
 msgstr "فایل های متنی(*.txt,*.*)|*.txt;*.*"
 
 #. BreakPointsWindow..Caption
@@ -3338,25 +3338,25 @@ msgstr "فایل های متنی(*.txt,*.*)|*.txt;*.*"
 msgid "Breakpoints"
 msgstr "نقطۀ گسست"
 
-#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......Text
-#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......Text
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
-#. ToDoWindow..BGPanel..FGPanel..ToDoView......Text
+#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......GptText
+#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......GptText
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
+#. ToDoWindow..BGPanel..FGPanel..ToDoView......GptText
 #: frmBreakPoints.dfm frmCallStack.dfm frmMessages.dfm frmToDo.dfm
-msgid "File Name"
+msgid "GptFile Name"
 msgstr "نام فایل"
 
-#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......Text
-#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......Text
+#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......GptText
+#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......GptText
 #. FunctionListWindow..pnHolder..lvProcs......Caption
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
-#. ToDoWindow..BGPanel..FGPanel..ToDoView......Text
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
+#. ToDoWindow..BGPanel..FGPanel..ToDoView......GptText
 #: frmBreakPoints.dfm frmCallStack.dfm frmFunctionList.dfm frmMessages.dfm
 #: frmToDo.dfm
 msgid "Line"
 msgstr "خط"
 
-#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......Text
+#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......GptText
 #: frmBreakPoints.dfm
 msgid "Condition"
 msgstr "شرط"
@@ -3394,13 +3394,13 @@ msgstr "رونوشت به بریده دان"
 msgid "Call Stack"
 msgstr "پشته ی فراخوان"
 
-#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......Text
+#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......GptText
 #. Programmer's name for it: SYNS_FriendlyFunctionName
 #: frmCallStack.dfm SynHighlighterPython.pas
-msgid "Function Name"
+msgid "GptFunction Name"
 msgstr "نام تابع"
 
-#. CallStackWindow..BGPanel..FGPanel..Panel2..ThreadView......Text
+#. CallStackWindow..BGPanel..FGPanel..Panel2..ThreadView......GptText
 #: frmCallStack.dfm
 msgid "Threads"
 msgstr "رگه ی پردازشی"
@@ -3643,7 +3643,7 @@ msgstr "گستردن"
 #. FileExplorerWindow..Caption
 #. FileExplorerWindow..BGPanel..FGPanel..FileExplorerTree..ShellContextSubMenuCaption
 #: frmFileExplorer.dfm dmCommands.pas
-msgid "File Explorer"
+msgid "GptFile Explorer"
 msgstr "کاوشگر فایل"
 
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..tbiBrowsePath..Caption
@@ -3737,7 +3737,7 @@ msgstr "کاوش این محل"
 #. FileExplorerWindow..ShellContextPopUp..ExploreHere..Hint
 #. FileExplorerWindow..FileExplorerActions..actExploreHere..Hint
 #: frmFileExplorer.dfm
-msgid "Set the Root of the File Manager to this folder"
+msgid "Set the Root of the GptFile Manager to this folder"
 msgstr "تعیین این پوشه به عنوان ریشه ی مدیر فایل"
 
 #. FileExplorerWindow..FileExplorerActions..actGoBack..Caption
@@ -3765,7 +3765,7 @@ msgstr "بازآوری"
 
 #. FileExplorerWindow..FileExplorerActions..actRefresh..Hint
 #: frmFileExplorer.dfm
-msgid "Refresh|Refresh File Explorer"
+msgid "Refresh|Refresh GptFile Explorer"
 msgstr "بازآوری| بازآوری کاوشگر فایل"
 
 #. FileExplorerWindow..FileExplorerActions..actEnableFilter..Caption
@@ -3950,12 +3950,12 @@ msgstr "جایگزینی همه ی موارد..."
 
 #. FunctionListWindow..Caption
 #: frmFunctionList.dfm
-msgid "Function List"
+msgid "GptFunction List"
 msgstr "فهرست تابع"
 
 #. FunctionListWindow..pnHolder..lvProcs......Caption
 #: frmFunctionList.dfm
-msgid "Function"
+msgid "GptFunction"
 msgstr "تابع"
 
 #. FunctionListWindow..pnlHeader..pnlHeaderLeft..lblMethods..Caption
@@ -4027,12 +4027,12 @@ msgstr "رفتن به مورد به کار رفته"
 msgid "Messages"
 msgstr "پیام ها"
 
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
 #: frmMessages.dfm
 msgid "GptMessage"
 msgstr "پیام"
 
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
 #: frmMessages.dfm
 msgid "Position"
 msgstr "موقعیّت"
@@ -4137,7 +4137,7 @@ msgstr "ذخیره نام فایل ها نسبت به شاخه ی همان پر�
 
 #. ProjectExplorerWindow..ProjectActionList..actProjectShowFileExtensions..Caption
 #: frmProjectExplorer.dfm
-msgid "Show File &Extensions"
+msgid "Show GptFile &Extensions"
 msgstr "نمایش پسوند فایل"
 
 #. ProjectExplorerWindow..ProjectActionList..actProjectShowFileExtensions..Hint
@@ -4162,7 +4162,7 @@ msgstr "تا کردن همه ی بست های پروژه"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddFiles..Caption
 #: frmProjectExplorer.dfm
-msgid "&Add File(s)..."
+msgid "&Add GptFile(s)..."
 msgstr "افزودن فایل(ها)..."
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddFiles..Hint
@@ -4202,7 +4202,7 @@ msgstr "گشودن فایل منتخب در ویرایشگر"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddActiveFile..Caption
 #: frmProjectExplorer.dfm
-msgid "Add Active File"
+msgid "Add Active GptFile"
 msgstr "افزودن فایل فعّال"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddActiveFile..Hint
@@ -4283,7 +4283,7 @@ msgstr "اشکال زدایی پیکربندی منتخب"
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddRemoteFile..Caption
 #. Programmer's name for it: SRemoteFileAdd
 #: frmProjectExplorer.dfm StringResources.pas
-msgid "Add Remote File"
+msgid "Add Remote GptFile"
 msgstr "افزودن فایل بیرونی"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddRemoteFile..Hint
@@ -4303,7 +4303,7 @@ msgstr "نوع موتور پایتون"
 
 #. PyIDEMainForm..StatusBar..lbStatusCaret..Hint
 #: frmPyIDEMain.dfm
-msgid "Text position"
+msgid "GptText position"
 msgstr "موقعیّت متن"
 
 #. PyIDEMainForm..StatusBar..spiStatusLED..Hint
@@ -4320,7 +4320,7 @@ msgstr "ابزارهای خارجی در حال اجرا"
 #. PyIDEMainForm..BGPanel..TabControl1..tbiTabFiles..Hint
 #. PyIDEMainForm..BGPanel..TabControl2..tbiTabFiles2..Hint
 #: frmPyIDEMain.dfm
-msgid "Select File"
+msgid "Select GptFile"
 msgstr "انتخاب فایل"
 
 #. PyIDEMainForm..BGPanel..TabControl1..tbiScrollLeft..Hint
@@ -4337,7 +4337,7 @@ msgstr "پیمایش به راست"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..FileMenu..Caption
 #: frmPyIDEMain.dfm
-msgid "&File"
+msgid "&GptFile"
 msgstr "فایل"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..FileMenu..TBXSubmenuItem5..Caption
@@ -4362,7 +4362,7 @@ msgstr "مولّفه ها"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..EditMenu..TBXSubmenuItem3..Caption
 #: frmPyIDEMain.dfm
-msgid "File Format"
+msgid "GptFile GptFormat"
 msgstr "قالب فایل"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..ViewMenu..Caption
@@ -4985,12 +4985,12 @@ msgstr "نمایش/نهفتن کاوشگر کد"
 
 #. PyIDEMainForm..actlStandard..actViewFileExplorer..Caption
 #: frmPyIDEMain.dfm
-msgid "&File Explorer"
+msgid "&GptFile Explorer"
 msgstr "کاوشگر فایل"
 
 #. PyIDEMainForm..actlStandard..actViewFileExplorer..Hint
 #: frmPyIDEMain.dfm
-msgid "View/Hide File Explorer"
+msgid "View/Hide GptFile Explorer"
 msgstr "نمایش/نهفتن کاوشگر فایل"
 
 #. PyIDEMainForm..actlStandard..actViewToDoList..Caption
@@ -5181,7 +5181,7 @@ msgstr "به کار بستن موتور بیرونی پایتون برای بر�
 
 #. PyIDEMainForm..actlStandard..actNewFile..Caption
 #: frmPyIDEMain.dfm
-msgid "New File..."
+msgid "New GptFile..."
 msgstr "فایل جدید..."
 
 #. PyIDEMainForm..actlStandard..actNewFile..Hint
@@ -5236,12 +5236,12 @@ msgstr "فعّال سازی پنجره ی پیام ها"
 
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Caption
 #: frmPyIDEMain.dfm
-msgid "File E&xplorer"
+msgid "GptFile E&xplorer"
 msgstr "کاوشگر فایل"
 
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Hint
 #: frmPyIDEMain.dfm
-msgid "Activate the File Explorer window"
+msgid "Activate the GptFile Explorer window"
 msgstr "فعّال سازی پنجره ی کاوشگر فایل"
 
 #. PyIDEMainForm..actlStandard..actNavCodeExplorer..Hint
@@ -5408,15 +5408,15 @@ msgid "Setup Python engine"
 msgstr "برپایی موتور پایتون"
 
 #. PyIDEMainForm..actlStandard..actRemoteFileOpen..Caption
-#. SSH File and Remote engine
+#. SSH GptFile and Remote engine
 #. Programmer's name for it: SRemoteFileOpen
 #: frmPyIDEMain.dfm StringResources.pas
-msgid "Open Remote File"
+msgid "Open Remote GptFile"
 msgstr "گشودن فایل بیرونی"
 
 #. PyIDEMainForm..actlStandard..actRemoteFileOpen..Hint
 #: frmPyIDEMain.dfm
-msgid "Open Remote File with SSH"
+msgid "Open Remote GptFile with SSH"
 msgstr "گشودن فایل راه دور با پروتکل پوسته ی ایمن"
 
 #. PythonIIForm..Caption
@@ -5571,7 +5571,7 @@ msgstr "عبارات منظّم و با قاعده"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..pnlMiddle..dpSearchText..SpTBXPanel2..TBXLabel4..Caption
 #: frmRegExpTester.dfm
-msgid "Search Text:"
+msgid "Search GptText:"
 msgstr "جستجوی متن:"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..pnlMiddle..dpMatchText..SpTBXPanel3..lblMatch..Caption
@@ -5636,7 +5636,7 @@ msgstr "آزمون واحدها"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..Label2..Caption
 #: frmUnitTests.dfm
-msgid "Error GptMessage:"
+msgid "GptError GptMessage:"
 msgstr "پیام خطا:"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..ModuleName..Caption
@@ -5729,14 +5729,14 @@ msgstr "پاکسازی همه ی آزمون ها"
 msgid "Variables"
 msgstr "متغیّرها"
 
-#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......Text
-#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......Text
+#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......GptText
+#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......GptText
 #: frmVariables.dfm frmWatches.dfm frmVariables.pas
 msgid "Type"
 msgstr "نوع"
 
 #. WatchesWindow..Caption
-#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......Text
+#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......GptText
 #: frmWatches.dfm
 msgid "Watches"
 msgstr "کشیک ها"
@@ -5787,8 +5787,8 @@ msgstr "اجرای پیکربندی ها"
 #: cPyScripterSettings.pas
 #, object-pascal-format
 msgid ""
-"Error in copying file \"%s\" to \"%s\"\n"
-"Error GptMessage: "
+"GptError in copying file \"%s\" to \"%s\"\n"
+"GptError GptMessage: "
 msgstr ""
 "خطا در رونوشت فایل از \"%s\" به \"%s\"\n"
 "پیام خطا: "
@@ -5884,7 +5884,7 @@ msgid "Check the indentation of the Python program"
 msgstr "بررسی تورفتگی برنامه ی پایتون"
 
 #: cTools.pas
-msgid "Command Prompt"
+msgid "Command GptPrompt"
 msgstr "خط فرمان"
 
 #: cTools.pas
@@ -6155,7 +6155,7 @@ msgid "Dock animation move width (pixels)"
 msgstr "عرض حرکت پویانمایی سینی کار (برحسب پیکسل)"
 
 #: dmCommands.pas
-msgid "File template for new Python scripts"
+msgid "GptFile template for new Python scripts"
 msgstr "قالب فایل برای اسکریپت های پایتون"
 
 #: dmCommands.pas
@@ -6235,11 +6235,11 @@ msgid "Initially expanded"
 msgstr "گسترش یافته از ابتدا"
 
 #: dmCommands.pas
-msgid "File Filters"
+msgid "GptFile Filters"
 msgstr "سرند فایل"
 
 #: dmCommands.pas
-msgid "File explorer filter"
+msgid "GptFile explorer filter"
 msgstr "سرند کاوشگر فایل"
 
 #: dmCommands.pas
@@ -6381,16 +6381,16 @@ msgid "Shell Integration"
 msgstr "ادغام در پوسته"
 
 #: dmCommands.pas
-msgid "File Explorer context menu"
+msgid "GptFile Explorer context menu"
 msgstr "منوی محتوای کاوشگر فایل"
 
 #: dmCommands.pas
-msgid "File Explorer background processing"
+msgid "GptFile Explorer background processing"
 msgstr "پردازش پس زمینه ی کاوشگر فایل"
 
 #. Programmer's name for it: SFileChangeNotification
 #: dmCommands.pas StringResources.pas
-msgid "File Change Notification"
+msgid "GptFile Change Notification"
 msgstr "اعلان تغییر فایل"
 
 #: dmCommands.pas
@@ -6422,7 +6422,7 @@ msgid "Configure Tools"
 msgstr "پیکربندی ابزارها"
 
 #: dmCommands.pas
-msgid "File download failed"
+msgid "GptFile download failed"
 msgstr "دریافت فایل شکست خورد"
 
 #: frmCodeExplorer.pas
@@ -6462,7 +6462,7 @@ msgid "Class attribute \"%s\" defined at line %d"
 msgstr "ویژگی کلاس  \"%s\" در خط %d تعریف شده"
 
 #: frmFileExplorer.pas
-msgid "File Explorer Filter"
+msgid "GptFile Explorer Filter"
 msgstr "سرند کاوشگر فایل"
 
 #: frmFileExplorer.pas
@@ -6470,7 +6470,7 @@ msgid "Enter Filter:"
 msgstr "ملاک غربال را وارد کنید:"
 
 #: frmFileExplorer.pas
-msgid "File Explorer favorites"
+msgid "GptFile Explorer favorites"
 msgstr "علاقه مندی های کاوشگر فایل"
 
 #. Programmer's name for it: SAllString
@@ -6577,7 +6577,7 @@ msgstr "ویرایش کشیک"
 msgid "Enter new expression:"
 msgstr "عبارت جدید را وارد کنید:"
 
-#. File Filters
+#. GptFile Filters
 #. Programmer's name for it: sPythonFileFilter
 #: StringResources.pas
 msgid "Python Files (*.py;*.pyw;*.pyi)|*.py;*.pyw;*.pyi"
@@ -7173,7 +7173,7 @@ msgstr "هشدار"
 
 #. Programmer's name for it: SDlgError
 #: StringResources.pas
-msgid "Error"
+msgid "GptError"
 msgstr "خطا"
 
 #. Programmer's name for it: SDlgInformation
@@ -7244,7 +7244,7 @@ msgstr "جواب را به خاطر بسپار و دوباره نشان نده"
 #. Programmer's name for it: SInternalError
 #: StringResources.pas
 #, object-pascal-format
-msgid "Internal Error in %s"
+msgid "Internal GptError in %s"
 msgstr "خطای داخلی در %s"
 
 #. Programmer's name for it: SNotFound
@@ -7365,15 +7365,15 @@ msgstr ""
 #. Programmer's name for it: SDecodingError
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in decoding file \"%s\" from \"%s\" encoding"
+msgid "GptError in decoding file \"%s\" from \"%s\" encoding"
 msgstr "خطا در رمزگشایی فایل \"%s\" از کد بندی \"%s\""
 
 #. Programmer's name for it: SFileOpenError
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"Error in opening file: \"%s\".\n"
-"Error: %s"
+"GptError in opening file: \"%s\".\n"
+"GptError: %s"
 msgstr ""
 "خطا در گشودن فایل: \"%s\".\n"
 "خطا: \"%s\""
@@ -7382,8 +7382,8 @@ msgstr ""
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"Error in saving file: \"%s\".\n"
-"Error: %s"
+"GptError in saving file: \"%s\".\n"
+"GptError: %s"
 msgstr ""
 "خطا در ذخیره ی فایل: \"%s\".\n"
 "خطا: \"%s\""
@@ -7391,7 +7391,7 @@ msgstr ""
 #. Programmer's name for it: SErrorGettingNamespace
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in getting the namespace of %s"
+msgid "GptError in getting the namespace of %s"
 msgstr "خطا در گرفتن فضای نام %s"
 
 #. Programmer's name for it: SCouldNotSetDirectory
@@ -7411,7 +7411,7 @@ msgstr ""
 
 #. Programmer's name for it: SErrorInImportingModule
 #: StringResources.pas
-msgid "Error in importing module"
+msgid "GptError in importing module"
 msgstr "خطا در وارد کردن پیمانه"
 
 #. Programmer's name for it: SRemoteServerNotConnected
@@ -7442,7 +7442,7 @@ msgstr "امکان نوشتن فایل \"%s\" و استفاده از یک موت
 
 #. Programmer's name for it: SErrorCreatingRemoteEngine
 #: StringResources.pas
-msgid "Error in creating the remote interpreter: "
+msgid "GptError in creating the remote interpreter: "
 msgstr "خطا در ایجاد مفسّر بیرونی: "
 
 #. Programmer's name for it: SCouldNotConnectRemoteEngine
@@ -7519,7 +7519,7 @@ msgstr "دسترسی به ریجیستری رد شد. امکان تغییر وا
 
 #. Programmer's name for it: SErrorWhileDownload
 #: StringResources.pas
-msgid "Error while downloading: "
+msgid "GptError while downloading: "
 msgstr "خطا هنگام دریافت: "
 
 #. Programmer's name for it: SCurrentVersionUptodate
@@ -7641,7 +7641,7 @@ msgstr "رفع اشکال ناتمام ماند"
 
 #. Programmer's name for it: SSyntaxError
 #: StringResources.pas
-msgid "Syntax Error"
+msgid "Syntax GptError"
 msgstr "خطای دستوری"
 
 #. Programmer's name for it: StrCertainty
@@ -7704,7 +7704,7 @@ msgstr "تغییر یافته"
 
 #. Programmer's name for it: SOpenFile
 #: StringResources.pas
-msgid "Open File"
+msgid "Open GptFile"
 msgstr "گشودن فایل"
 
 #. Programmer's name for it: SSelectPythonScript
@@ -7724,7 +7724,7 @@ msgstr "انتخاب برنامه یا فایل برای اجرا"
 
 #. Programmer's name for it: SAddFilesToProject
 #: StringResources.pas
-msgid "Add File(s) to Project"
+msgid "Add GptFile(s) to Project"
 msgstr "افزودن فایل(ها) به پروژه"
 
 #. Programmer's name for it: SOpenProject
@@ -7811,7 +7811,7 @@ msgstr "ذخیرۀ \"%s\" به عنوان"
 
 #. Programmer's name for it: SSaveFileAs
 #: StringResources.pas
-msgid "Save File As"
+msgid "Save GptFile As"
 msgstr "ذخیرۀ فایل به عنوان"
 
 #. Programmer's name for it: SIDEOptions
@@ -7867,7 +7867,7 @@ msgstr "مرورگر"
 #. Programmer's name for it: SErrorInitScript
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in running initialization script %s: \"%s\""
+msgid "GptError in running initialization script %s: \"%s\""
 msgstr "خطا در اجرای اسکریپت راه انداز %s:\"%s\""
 
 #. Programmer's name for it: SOpenDialogFilter
@@ -7918,13 +7918,13 @@ msgstr "خطا در پشتیبان گیری از پروژه \"%s\""
 #. Programmer's name for it: SErrorInOpeningProject
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in opening project: \"%s\"."
+msgid "GptError in opening project: \"%s\"."
 msgstr "خطا در گشودن ی پروژه: \"%s\"."
 
 #. Programmer's name for it: SErrorInSavingProject
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in saving project: \"%s\"."
+msgid "GptError in saving project: \"%s\"."
 msgstr "خطا در ذخیره ی پروژه: \"%s\"."
 
 #. Programmer's name for it: SSaveProjectAs
@@ -8333,7 +8333,7 @@ msgstr "موتور بازسازی مشغول است"
 msgid "Python keyword"
 msgstr "کلیدواژه ی پایتون"
 
-#. File Templates
+#. GptFile Templates
 #. Programmer's name for it: SFileTemplateCategoryInternet
 #: StringResources.pas
 msgid "Internet"
@@ -8356,7 +8356,7 @@ msgstr "سند HTML"
 
 #. Programmer's name for it: STextFileTemplateName
 #: StringResources.pas
-msgid "Text File"
+msgid "GptText GptFile"
 msgstr "فایل متنی"
 
 #. Programmer's name for it: SXMLTemplateName
@@ -8366,12 +8366,12 @@ msgstr "سند XML"
 
 #. Programmer's name for it: SJSONTemplateName
 #: StringResources.pas
-msgid "JSON File"
+msgid "JSON GptFile"
 msgstr "فایل JSON"
 
 #. Programmer's name for it: SYAMLTemplateName
 #: StringResources.pas
-msgid "YAML File"
+msgid "YAML GptFile"
 msgstr "فایل YAML"
 
 #. Programmer's name for it: SJSTemplateName
@@ -8402,12 +8402,12 @@ msgstr "نگارش های ثبت نشده"
 
 #. Programmer's name for it: SRemoteFileSelect
 #: StringResources.pas
-msgid "Select Remote File"
+msgid "Select Remote GptFile"
 msgstr "انتخاب فایل بیرونی"
 
 #. Programmer's name for it: SErrorEmptyPath
 #: StringResources.pas
-msgid "File Path cannot be empty"
+msgid "GptFile Path cannot be empty"
 msgstr "مسیر فایل نمی تواند خالی باشد"
 
 #. Programmer's name for it: SErrorEmptySSH
@@ -8417,28 +8417,28 @@ msgstr "نام کارگزار پوسته ی ایمن نمی تواند خالی 
 
 #. Programmer's name for it: SScpError4
 #: StringResources.pas
-msgid "SCP Error: Connecting to host failed"
+msgid "SCP GptError: Connecting to host failed"
 msgstr ""
 "خطای پروتکل کپی امن فایل (SCP): تلاش برای اتّصال به کارگزار با شکست رو به رو"
 " شد"
 
 #. Programmer's name for it: SScpError5
 #: StringResources.pas
-msgid "SCP Error: Connection lost for some reason"
+msgid "SCP GptError: Connection lost for some reason"
 msgstr "خطای پروتکل کپی امن فایل (SCP):  اتّصال به دلایلی از دست رفت"
 
 #. Programmer's name for it: SScpErrorTimeout
 #: StringResources.pas
-msgid "SCP Error: Timeout"
+msgid "SCP GptError: Timeout"
 msgstr "خطای پروتکل کپی امن فایل (SCP): مهلت زمانی به پایان رسید"
 
 #. Programmer's name for it: SScpErrorOther
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"SCP Error:\n"
+"SCP GptError:\n"
 "Output: %s+\n"
-"Error Output: %s+"
+"GptError Output: %s+"
 msgstr ""
 "خطای پروتکل کپی امن فایل (SCP):\n"
 "برون داد: %s+\n"
@@ -8526,7 +8526,7 @@ msgstr "ردیابی"
 #. Programmer's name for it: SYNS_AttrPrompt
 #. Programmer's name for it: SYNS_FriendlyAttrPrompt
 #: SynHighlighterPython.pas
-msgid "Prompt"
+msgid "GptPrompt"
 msgstr "خط فرمان"
 
 #. Programmer's name for it: SYNS_AttrSystemCmd
@@ -8552,7 +8552,7 @@ msgstr "مقدار عددی"
 
 #. Programmer's name for it: SYNS_FriendlyAttrTextValue
 #: SynHighlighterYAML.pas
-msgid "Text Value"
+msgid "GptText Value"
 msgstr "مقدار متنی"
 
 #. Programmer's name for it: SYNS_FriendlyAttrTag
@@ -8634,23 +8634,23 @@ msgid "Path without delimeter"
 msgstr "مسیر بدون محدود کننده های آخر آن"
 
 #: uParams.pas
-msgid "File name"
+msgid "GptFile name"
 msgstr "نام فایل"
 
 #: uParams.pas
-msgid "File extension"
+msgid "GptFile extension"
 msgstr "پسوند فایل"
 
 #: uParams.pas
-msgid "File extension without \".\""
+msgid "GptFile extension without \".\""
 msgstr "پسوند فایل بدون \".\""
 
 #: uParams.pas
-msgid "File name without extension"
+msgid "GptFile name without extension"
 msgstr "نام فایل بدون پسوند فایل"
 
 #: uParams.pas
-msgid "File drive"
+msgid "GptFile drive"
 msgstr "درایو فایل"
 
 #: uParams.pas
@@ -8678,7 +8678,7 @@ msgid "Path with final url delimiter removed"
 msgstr "مسیر بدون محدود کننده های آخر آن"
 
 #: uParams.pas
-msgid "File scaler"
+msgid "GptFile scaler"
 msgstr "نوع فایل"
 
 #: uParams.pas
@@ -8770,7 +8770,7 @@ msgid "Open files"
 msgstr "گشودن فایل ها"
 
 #: uParams.pas
-msgid "Text of the active document or a file"
+msgid "GptText of the active document or a file"
 msgstr "متن سند فعال یا یک پرونده"
 
 #: uParams.pas
@@ -8808,7 +8808,7 @@ msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
 #: SpTBXCustomizerForm.dfm:174
-msgid "Icons + Selective Text"
+msgid "Icons + Selective GptText"
 msgstr "آیکون + متن منتخب"
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
@@ -8818,12 +8818,12 @@ msgstr "آیکون"
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
 #: SpTBXCustomizerForm.dfm:176
-msgid "Icons + Text"
+msgid "Icons + GptText"
 msgstr "آیکون+متن"
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
 #: SpTBXCustomizerForm.dfm:177
-msgid "Text"
+msgid "GptText"
 msgstr "متن"
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbTextLabel..Caption

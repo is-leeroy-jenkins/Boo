@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="tigrr.py" company="Terry D. Eppler">
 
-	     Boo is a df analysis tool that integrates various Generative AI, Text-Processing, and
+	     Boo is a df analysis tool that integrates various Generative GPT, GptText-Processing, and
 	     Machine-Learning algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
@@ -136,7 +136,7 @@ class Text( ):
 
 			Purpose:
 			---------
-			Constructor for 'Text' objects
+			Constructor for 'GptText' objects
 
 		'''
 		super( ).__init__( )
@@ -215,7 +215,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'load_text( self, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -252,7 +252,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'collapse_whitespace( self, path: str ) -> str:'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -295,7 +295,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'correct_errors( self, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -330,7 +330,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'remove_punctuation( self, text: str ) -> str:'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -376,7 +376,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'remove_special( self, text: str ) -> str:'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -415,7 +415,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'remove_html( self, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -455,7 +455,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'remove_errors( self, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -491,7 +491,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'remove_html( self, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -528,7 +528,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tigrr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'remove_markdown( self, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -571,7 +571,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tigrr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'remove_stopwords( self, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -611,7 +611,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tigrr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'remove_errors( self, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -680,7 +680,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'remove_headers( self, pages: List[ str ], min: int=3 ) -> List[str]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -719,7 +719,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'normalize_text( self, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -763,7 +763,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'tokenize_words( self, words: List[ str  ] ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -795,7 +795,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'tokenize_text( self, path: str ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -839,7 +839,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'tiktokenize( self, text: str, encoding: str="cl100k_base" ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -877,7 +877,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'tokenize_words( self, path: str ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -909,7 +909,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'tokenize_sentences( self, text: str ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -958,7 +958,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'chunk_text( self, text: str, max: int=800 ) -> list[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1044,7 +1044,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'split_sentences( self, text: str ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1085,7 +1085,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'split_pages( self, path: str, delimit: str="\f" ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1162,7 +1162,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = ('compute_frequency_distribution( self, documents: list, process: '
 			               'bool=True) -> FreqDist')
 			error = ErrorDialog( exception )
@@ -1217,7 +1217,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = ('compute_conditional_distribution( self, words: List[ str ], '
 			               'condition=None, process: bool=True ) -> ConditionalFreqDist')
 			error = ErrorDialog( exception )
@@ -1256,7 +1256,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'create_vocabulary( self, freq_dist: dict, min: int=1 ) -> List[str]'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1287,7 +1287,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'create_wordbag( self, words: List[ str ] ) -> dict'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1322,7 +1322,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = ('create_word2vec( self, words: List[ str ], '
 			               'size=100, window=5, min=1 ) -> Word2Vec')
 			error = ErrorDialog( exception )
@@ -1367,7 +1367,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = ('create_tfidf( self, words: list, max: int=1000, prep: bool=True ) '
 			               '-> Tuple' )
 			error = ErrorDialog( exception )
@@ -1421,7 +1421,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'clean_files( self, src: str, dest: str )'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1480,7 +1480,7 @@ class Text( ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'Tiggr'
-			exception.cause = 'Text'
+			exception.cause = 'GptText'
 			exception.method = 'convert_jsonl( self, source: str, desination: str )'
 			error = ErrorDialog( exception )
 			error.show( )

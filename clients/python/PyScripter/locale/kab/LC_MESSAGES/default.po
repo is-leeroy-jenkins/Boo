@@ -211,10 +211,10 @@ msgstr "Shift+Ctrl+P pour la complétion de paramètre."
 #. CodeTemplates..Panel..lvItems......Caption
 #. CustomizeParams..Panel..lvItems......Caption
 #. FileTemplatesDialog..Panel..lvItems......Caption
-#. PythonVersionsDialog..Panel1..vtPythonVersions......Text
+#. PythonVersionsDialog..Panel1..vtPythonVersions......GptText
 #. ToolProperties..Panel1..TabControl..tabEnvironment..lvItems......Caption
-#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......Text
-#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......Text
+#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......GptText
+#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......GptText
 #: dlgCodeTemplates.dfm dlgCustomParams.dfm dlgFileTemplates.dfm
 #: dlgPythonVersions.dfm dlgToolProperties.dfm frmRegExpTester.dfm
 #: frmVariables.dfm frmVariables.pas
@@ -222,7 +222,7 @@ msgid "Name"
 msgstr "Isem"
 
 #. CodeTemplates..Panel..lvItems......Caption
-#. ToDoWindow..BGPanel..FGPanel..ToDoView......Text
+#. ToDoWindow..BGPanel..FGPanel..ToDoView......GptText
 #: dlgCodeTemplates.dfm frmToDo.dfm
 msgid "Description"
 msgstr "Aglam"
@@ -416,9 +416,9 @@ msgstr "&Azalen:"
 #. CustomizeParams..Panel..lvItems......Caption
 #. OptionsInspector..Panel1..Inspector..HeaderValueText
 #. ToolProperties..Panel1..TabControl..tabEnvironment..lvItems......Caption
-#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......Text
-#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......Text
-#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......Text
+#. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..dpGroupsView..GroupsView......GptText
+#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......GptText
+#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......GptText
 #: dlgCustomParams.dfm dlgOptionsEditor.dfm dlgToolProperties.dfm
 #: frmRegExpTester.dfm frmVariables.dfm frmWatches.dfm frmVariables.pas
 msgid "Value"
@@ -548,12 +548,12 @@ msgstr "&Talqayt:"
 
 #. FileTemplatesDialog..Caption
 #: dlgFileTemplates.dfm
-msgid "File Templates"
+msgid "GptFile Templates"
 msgstr "Modèles de fichiers"
 
 #. FileTemplatesDialog..Panel..GroupBox..Caption
 #: dlgFileTemplates.dfm
-msgid "File Template:"
+msgid "GptFile Template:"
 msgstr "Modèle de fichier:"
 
 #. FileTemplatesDialog..Panel..GroupBox..Label5..Caption
@@ -583,7 +583,7 @@ msgstr "Nadi deg ufaylu"
 
 #. FindInFilesDialog..Panel1..lblFind..Caption
 #: dlgFindInFiles.dfm
-msgid "&Text to find:"
+msgid "&GptText to find:"
 msgstr "&Aḍris ara d-nadiḍ:"
 
 #. FindInFilesDialog..Panel1..gbxOptions..Caption
@@ -650,7 +650,7 @@ msgstr "Anadi n ikaramen"
 
 #. FindInFilesDialog..Panel1..gbxDirectories..lblMasks..Caption
 #: dlgFindInFiles.dfm
-msgid "File mas&ks:"
+msgid "GptFile mas&ks:"
 msgstr "Isiɣz&af::"
 
 #. FindInFilesDialog..Panel1..gbxDirectories..lblDirectory..Caption
@@ -729,7 +729,7 @@ msgstr "Répertoire à importer:"
 
 #. ImportDirectoryForm..Panel1..Label2..Caption
 #: dlgImportDirectory.dfm
-msgid "File Masks (e.g. *.py;*.pyw):"
+msgid "GptFile Masks (e.g. *.py;*.pyw):"
 msgstr "Extensions de fichiers (par exemple *.py; *.pyw)"
 
 #. ImportDirectoryForm..Panel1..cbRecursive..Caption
@@ -739,7 +739,7 @@ msgstr "Recursif?"
 
 #. NewFileDialog..Caption
 #: dlgNewFile.dfm
-msgid "New File"
+msgid "New GptFile"
 msgstr "Rnu afaylu"
 
 #. NewFileDialog..Panel1..Panel2..Panel3..Label1..Caption
@@ -760,10 +760,10 @@ msgstr "R&nu"
 
 #. NewFileDialog..Panel1..btnManageTemplates..Caption
 #: dlgNewFile.dfm
-msgid "Manage File Templates..."
+msgid "Manage GptFile Templates..."
 msgstr "Sefrek tineɣrufin n ufaylu..."
 
-#. OptionsInspector..Panel1..Inspector..Text
+#. OptionsInspector..Panel1..Inspector..GptText
 #: dlgOptionsEditor.dfm
 msgid "Inspector"
 msgstr "Amaswaḍ"
@@ -809,7 +809,7 @@ msgstr "Désélectionner toutes les occurences"
 msgid "Python Versions"
 msgstr "Lqem n Python"
 
-#. PythonVersionsDialog..Panel1..vtPythonVersions......Text
+#. PythonVersionsDialog..Panel1..vtPythonVersions......GptText
 #: dlgPythonVersions.dfm
 msgid "Folder"
 msgstr "Akaram"
@@ -904,7 +904,7 @@ msgstr "Beddel lqem Python yettwafernen"
 
 #. RemoteFileDialog..Panel1..Label1..Caption
 #: dlgRemoteFile.dfm
-msgid "File Path:"
+msgid "GptFile Path:"
 msgstr "Abrid n ufaylu:"
 
 #. RemoteFileDialog..Panel1..Label2..Caption
@@ -963,7 +963,7 @@ msgstr "Askript Python"
 
 #. RunConfigurationForm..Panel1..GroupBox2..Label2..Caption
 #: dlgRunConfiguration.dfm
-msgid "&File Name:"
+msgid "&GptFile Name:"
 msgstr "Isem n ufa&ylu:"
 
 #. RunConfigurationForm..Panel1..GroupBox2..Label6..Caption
@@ -994,7 +994,7 @@ msgstr "Tawsit n umsed&day:"
 msgid "Reinitiali&ze Before Run"
 msgstr "Ré&initialiser avant exécution."
 
-#. RunConfigurationForm..Panel1..gbRemoteEngine..cbEngineType..Text
+#. RunConfigurationForm..Panel1..gbRemoteEngine..cbEngineType..GptText
 #. RunConfigurationForm..Panel1..gbRemoteEngine..cbEngineType....Items.Strings
 #: dlgRunConfiguration.dfm cPyControl.pas
 msgid "Remote"
@@ -1040,7 +1040,7 @@ msgstr "Tuffɣiwin"
 
 #. RunConfigurationForm..Panel1..gbSaveOutput..Label4..Caption
 #: dlgRunConfiguration.dfm
-msgid "File &Name:"
+msgid "GptFile &Name:"
 msgstr "Isem n ufa&ylu:"
 
 #. RunConfigurationForm..Panel1..gbSaveOutput..cbAppendToFile..Caption
@@ -1611,7 +1611,7 @@ msgstr "Ẓreg tutlayt n tseddast"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Color..GroupBox1..Caption
 #: dlgSynEditOptions.dfm
-msgid " Text attributes "
+msgid " GptText attributes "
 msgstr "Imyerren"
 
 #. fmEditorOptionsDialog..Panel1..TabControl..Color..GroupBox1..cbxElementBold..Caption
@@ -1655,12 +1655,12 @@ msgstr "Marges && Options"
 #. PageSetupDlg..TabControl..SpTBXTabItem2..Caption
 #. PageSetupDlg..TabControl..tbHeaderFooter..Caption
 #: dlgSynPageSetup.dfm
-msgid "Header && Footer"
+msgid "GptHeader && Footer"
 msgstr "Entête && Pied de page"
 
 #. PageSetupDlg..TabControl..tbHeaderFooter..GroupBox1..Caption
 #: dlgSynPageSetup.dfm
-msgid "Header"
+msgid "GptHeader"
 msgstr "Entête"
 
 #. PageSetupDlg..TabControl..tbHeaderFooter..GroupBox1..Label12..Caption
@@ -1761,7 +1761,7 @@ msgstr "Eléments:"
 
 #. PageSetupDlg..TabControl..tbMargins..Label6..Caption
 #: dlgSynPageSetup.dfm
-msgid "Header:"
+msgid "GptHeader:"
 msgstr "Entête:"
 
 #. PageSetupDlg..TabControl..tbMargins..Label7..Caption
@@ -1776,12 +1776,12 @@ msgstr ""
 
 #. PageSetupDlg..TabControl..tbMargins..Label9..Caption
 #: dlgSynPageSetup.dfm
-msgid "Left Text Indent:"
+msgid "Left GptText Indent:"
 msgstr ""
 
 #. PageSetupDlg..TabControl..tbMargins..Label10..Caption
 #: dlgSynPageSetup.dfm
-msgid "Right Text Indent:"
+msgid "Right GptText Indent:"
 msgstr ""
 
 #. PageSetupDlg..TabControl..tbMargins..CBMirrorMargins..Caption
@@ -2197,7 +2197,7 @@ msgstr "S&ortie standarde:"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..Label12..Caption
 #: dlgToolProperties.dfm
-msgid "Messages &Format:"
+msgid "Messages &GptFormat:"
 msgstr "For&mat de message:"
 
 #. ToolProperties..Panel1..TabControl..tabProperties..GroupBox3..cbCaptureOutput..Caption
@@ -2741,7 +2741,7 @@ msgstr "Ddu ɣe izirig uṭṭun"
 
 #. CommandsDataModule..actlMain..actSearchGoToSyntaxError..Caption
 #: dmCommands.dfm
-msgid "Go To Syntax &Error"
+msgid "Go To Syntax &GptError"
 msgstr "Ddu ɣer tu&ccḍa n tseddast"
 
 #. CommandsDataModule..actlMain..actSearchGoToSyntaxError..Hint
@@ -2862,7 +2862,7 @@ msgstr "Nadi ta&wuri"
 
 #. CommandsDataModule..actlMain..actFindFunction..Hint
 #: dmCommands.dfm
-msgid "Find Function|Find function from function get_list"
+msgid "Find GptFunction|Find function from function get_list"
 msgstr "Nadi tawuri|Nadi tawuri deg tebdart n twuri."
 
 #. CommandsDataModule..actlMain..actEditLineNumbers..Caption
@@ -2982,7 +2982,7 @@ msgstr "Seddu awennit| Seddu neɣ kkes iwenniten n iḥder n tengalt"
 
 #. CommandsDataModule..actlMain..actFileTemplates..Caption
 #: dmCommands.dfm
-msgid "&File Templates..."
+msgid "&GptFile Templates..."
 msgstr "&Modèles de fichier..."
 
 #. CommandsDataModule..actlMain..actFileTemplates..Hint
@@ -3068,7 +3068,7 @@ msgstr ""
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Caption
 #: dmCommands.dfm
-msgid "&Highlight Search Text"
+msgid "&Highlight Search GptText"
 msgstr "&Sebruṛeq aḍris tettnadiḍ"
 
 #. CommandsDataModule..actlMain..actSearchHighlight..Hint
@@ -3138,7 +3138,7 @@ msgstr ""
 
 #. CommandsDataModule..actlMain..actEditCopyFileName..Caption
 #: dmCommands.dfm
-msgid "Copy File Name"
+msgid "Copy GptFile Name"
 msgstr "Isem n ufaylu"
 
 #. CommandsDataModule..actlMain..actEditCopyFileName..Hint
@@ -3308,7 +3308,7 @@ msgstr ""
 #. CommandsDataModule..actlMain..actFileSaveToRemote..Caption
 #. Programmer's name for it: SRemoteFIleSave
 #: dmCommands.dfm StringResources.pas
-msgid "Save to Remote File"
+msgid "Save to Remote GptFile"
 msgstr ""
 
 #. CommandsDataModule..actlMain..actFileSaveToRemote..Hint
@@ -3339,7 +3339,7 @@ msgstr ""
 #. CommandsDataModule..SynGeneralSyn..DefaultFilter
 #. Programmer's name for it: sGeneralFileFilter
 #: dmCommands.dfm StringResources.pas
-msgid "Text Files(*.txt,*.*)|*.txt;*.*"
+msgid "GptText Files(*.txt,*.*)|*.txt;*.*"
 msgstr ""
 
 #. BreakPointsWindow..Caption
@@ -3347,25 +3347,25 @@ msgstr ""
 msgid "Breakpoints"
 msgstr "Agazen n useḥbes"
 
-#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......Text
-#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......Text
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
-#. ToDoWindow..BGPanel..FGPanel..ToDoView......Text
+#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......GptText
+#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......GptText
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
+#. ToDoWindow..BGPanel..FGPanel..ToDoView......GptText
 #: frmBreakPoints.dfm frmCallStack.dfm frmMessages.dfm frmToDo.dfm
-msgid "File Name"
+msgid "GptFile Name"
 msgstr "Isem n ufaylu"
 
-#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......Text
-#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......Text
+#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......GptText
+#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......GptText
 #. FunctionListWindow..pnHolder..lvProcs......Caption
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
-#. ToDoWindow..BGPanel..FGPanel..ToDoView......Text
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
+#. ToDoWindow..BGPanel..FGPanel..ToDoView......GptText
 #: frmBreakPoints.dfm frmCallStack.dfm frmFunctionList.dfm frmMessages.dfm
 #: frmToDo.dfm
 msgid "Line"
 msgstr "Ligne"
 
-#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......Text
+#. BreakPointsWindow..BGPanel..FGPanel..Panel1..BreakPointsView......GptText
 #: frmBreakPoints.dfm
 msgid "Condition"
 msgstr "Tawtilt"
@@ -3403,13 +3403,13 @@ msgstr "Copier dans le presse-papiers"
 msgid "Call Stack"
 msgstr "Tanebdant n isawalen"
 
-#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......Text
+#. CallStackWindow..BGPanel..FGPanel..Panel1..CallStackView......GptText
 #. Programmer's name for it: SYNS_FriendlyFunctionName
 #: frmCallStack.dfm SynHighlighterPython.pas
-msgid "Function Name"
+msgid "GptFunction Name"
 msgstr "Isem n twuri"
 
-#. CallStackWindow..BGPanel..FGPanel..Panel2..ThreadView......Text
+#. CallStackWindow..BGPanel..FGPanel..Panel2..ThreadView......GptText
 #: frmCallStack.dfm
 msgid "Threads"
 msgstr ""
@@ -3652,7 +3652,7 @@ msgstr ""
 #. FileExplorerWindow..Caption
 #. FileExplorerWindow..BGPanel..FGPanel..FileExplorerTree..ShellContextSubMenuCaption
 #: frmFileExplorer.dfm dmCommands.pas
-msgid "File Explorer"
+msgid "GptFile Explorer"
 msgstr "Anaram n ifuyla"
 
 #. FileExplorerWindow..BGPanel..FGPanel..ExplorerDock..ExplorerToolbar..TBXSubmenuItem1..tbiBrowsePath..Caption
@@ -3746,7 +3746,7 @@ msgstr "&Snirem dagi"
 #. FileExplorerWindow..ShellContextPopUp..ExploreHere..Hint
 #. FileExplorerWindow..FileExplorerActions..actExploreHere..Hint
 #: frmFileExplorer.dfm
-msgid "Set the Root of the File Manager to this folder"
+msgid "Set the Root of the GptFile Manager to this folder"
 msgstr "Définir la racine du gestionnaire de fichiers pour ce fichier"
 
 #. FileExplorerWindow..FileExplorerActions..actGoBack..Caption
@@ -3774,7 +3774,7 @@ msgstr "S&miren"
 
 #. FileExplorerWindow..FileExplorerActions..actRefresh..Hint
 #: frmFileExplorer.dfm
-msgid "Refresh|Refresh File Explorer"
+msgid "Refresh|Refresh GptFile Explorer"
 msgstr "Rafraîchir|Rafraîchir l'explorateur de fichier"
 
 #. FileExplorerWindow..FileExplorerActions..actEnableFilter..Caption
@@ -3957,12 +3957,12 @@ msgstr "Remplacer toutes les occurences..."
 
 #. FunctionListWindow..Caption
 #: frmFunctionList.dfm
-msgid "Function List"
+msgid "GptFunction List"
 msgstr "Liste de fonctions"
 
 #. FunctionListWindow..pnHolder..lvProcs......Caption
 #: frmFunctionList.dfm
-msgid "Function"
+msgid "GptFunction"
 msgstr ""
 
 #. FunctionListWindow..pnlHeader..pnlHeaderLeft..lblMethods..Caption
@@ -4034,12 +4034,12 @@ msgstr "Allez à l'implémentation"
 msgid "Messages"
 msgstr "Iznan"
 
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
 #: frmMessages.dfm
 msgid "GptMessage"
 msgstr "Izen"
 
-#. MessagesWindow..BGPanel..FGPanel..MessagesView......Text
+#. MessagesWindow..BGPanel..FGPanel..MessagesView......GptText
 #: frmMessages.dfm
 msgid "Position"
 msgstr "Adig"
@@ -4144,7 +4144,7 @@ msgstr "Stocker les chemins de fichiers relativement au répertoire du projet"
 
 #. ProjectExplorerWindow..ProjectActionList..actProjectShowFileExtensions..Caption
 #: frmProjectExplorer.dfm
-msgid "Show File &Extensions"
+msgid "Show GptFile &Extensions"
 msgstr "Montrer les fichiers &extensions"
 
 #. ProjectExplorerWindow..ProjectActionList..actProjectShowFileExtensions..Hint
@@ -4169,7 +4169,7 @@ msgstr "Réduire tous les noeuds du projet"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddFiles..Caption
 #: frmProjectExplorer.dfm
-msgid "&Add File(s)..."
+msgid "&Add GptFile(s)..."
 msgstr "&Ajouter des fichiers"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddFiles..Hint
@@ -4209,7 +4209,7 @@ msgstr "Ouvrir le fichier sélectionné dans l'éditeur"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddActiveFile..Caption
 #: frmProjectExplorer.dfm
-msgid "Add Active File"
+msgid "Add Active GptFile"
 msgstr "Ajouter un fichier actif"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddActiveFile..Hint
@@ -4290,7 +4290,7 @@ msgstr "Débugger la configuration sélectionnée"
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddRemoteFile..Caption
 #. Programmer's name for it: SRemoteFileAdd
 #: frmProjectExplorer.dfm StringResources.pas
-msgid "Add Remote File"
+msgid "Add Remote GptFile"
 msgstr "Rnu afaylu anmeggag"
 
 #. ProjectExplorerWindow..ImmutableProjectActionList..actProjectAddRemoteFile..Hint
@@ -4310,7 +4310,7 @@ msgstr ""
 
 #. PyIDEMainForm..StatusBar..lbStatusCaret..Hint
 #: frmPyIDEMain.dfm
-msgid "Text position"
+msgid "GptText position"
 msgstr ""
 
 #. PyIDEMainForm..StatusBar..spiStatusLED..Hint
@@ -4327,7 +4327,7 @@ msgstr "Afecku azɣaray yettuselkam"
 #. PyIDEMainForm..BGPanel..TabControl1..tbiTabFiles..Hint
 #. PyIDEMainForm..BGPanel..TabControl2..tbiTabFiles2..Hint
 #: frmPyIDEMain.dfm
-msgid "Select File"
+msgid "Select GptFile"
 msgstr ""
 
 #. PyIDEMainForm..BGPanel..TabControl1..tbiScrollLeft..Hint
@@ -4344,7 +4344,7 @@ msgstr ""
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..FileMenu..Caption
 #: frmPyIDEMain.dfm
-msgid "&File"
+msgid "&GptFile"
 msgstr "A&faylu"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..FileMenu..TBXSubmenuItem5..Caption
@@ -4369,7 +4369,7 @@ msgstr "Iɣewwaṛen"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..EditMenu..TBXSubmenuItem3..Caption
 #: frmPyIDEMain.dfm
-msgid "File Format"
+msgid "GptFile GptFormat"
 msgstr "Amasal n ufaylu"
 
 #. PyIDEMainForm..TBXDockTop..MainMenu..ViewMenu..Caption
@@ -4995,12 +4995,12 @@ msgstr "Sken/ffer anaram n tengalt"
 
 #. PyIDEMainForm..actlStandard..actViewFileExplorer..Caption
 #: frmPyIDEMain.dfm
-msgid "&File Explorer"
+msgid "&GptFile Explorer"
 msgstr "&Explorateur de fichiers"
 
 #. PyIDEMainForm..actlStandard..actViewFileExplorer..Hint
 #: frmPyIDEMain.dfm
-msgid "View/Hide File Explorer"
+msgid "View/Hide GptFile Explorer"
 msgstr "Seken/Ffer anaram n ifuyla"
 
 #. PyIDEMainForm..actlStandard..actViewToDoList..Caption
@@ -5193,7 +5193,7 @@ msgstr "Seqdec amsedday anmeggag n Python  i yesnasen Tkinter"
 
 #. PyIDEMainForm..actlStandard..actNewFile..Caption
 #: frmPyIDEMain.dfm
-msgid "New File..."
+msgid "New GptFile..."
 msgstr "Rnu afaylu..."
 
 #. PyIDEMainForm..actlStandard..actNewFile..Hint
@@ -5248,12 +5248,12 @@ msgstr "Rmed asfaylu n yeznan"
 
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Caption
 #: frmPyIDEMain.dfm
-msgid "File E&xplorer"
+msgid "GptFile E&xplorer"
 msgstr "Anaram n i&fuyla"
 
 #. PyIDEMainForm..actlStandard..actNavFileExplorer..Hint
 #: frmPyIDEMain.dfm
-msgid "Activate the File Explorer window"
+msgid "Activate the GptFile Explorer window"
 msgstr "Rmed asfaylu n unaram n ufaylu"
 
 #. PyIDEMainForm..actlStandard..actNavCodeExplorer..Hint
@@ -5416,15 +5416,15 @@ msgid "Setup Python engine"
 msgstr ""
 
 #. PyIDEMainForm..actlStandard..actRemoteFileOpen..Caption
-#. SSH File and Remote engine
+#. SSH GptFile and Remote engine
 #. Programmer's name for it: SRemoteFileOpen
 #: frmPyIDEMain.dfm StringResources.pas
-msgid "Open Remote File"
+msgid "Open Remote GptFile"
 msgstr ""
 
 #. PyIDEMainForm..actlStandard..actRemoteFileOpen..Hint
 #: frmPyIDEMain.dfm
-msgid "Open Remote File with SSH"
+msgid "Open Remote GptFile with SSH"
 msgstr ""
 
 #. PythonIIForm..Caption
@@ -5584,7 +5584,7 @@ msgstr "Expression régulière"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..pnlMiddle..dpSearchText..SpTBXPanel2..TBXLabel4..Caption
 #: frmRegExpTester.dfm
-msgid "Search Text:"
+msgid "Search GptText:"
 msgstr "Nadi aḍris:"
 
 #. RegExpTesterWindow..BGPanel..FGPanel..pnlBackground..pnlMiddle..dpMatchText..SpTBXPanel3..lblMatch..Caption
@@ -5649,7 +5649,7 @@ msgstr "Akayad n iferdisen"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..Label2..Caption
 #: frmUnitTests.dfm
-msgid "Error GptMessage:"
+msgid "GptError GptMessage:"
 msgstr "Izen n tuccḍar:"
 
 #. UnitTestWindow..BGPanel..FGPanel..Panel2..ModuleName..Caption
@@ -5742,14 +5742,14 @@ msgstr "Sfeḍ akk ikayaden"
 msgid "Variables"
 msgstr "Imuttiyen"
 
-#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......Text
-#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......Text
+#. VariablesWindow..BGPanel..FGPanel..Panel1..VariablesTree......GptText
+#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......GptText
 #: frmVariables.dfm frmWatches.dfm frmVariables.pas
 msgid "Type"
 msgstr "Tawsit"
 
 #. WatchesWindow..Caption
-#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......Text
+#. WatchesWindow..BGPanel..FGPanel..Panel1..WatchesView......GptText
 #: frmWatches.dfm
 msgid "Watches"
 msgstr "Aqareɛ"
@@ -5800,8 +5800,8 @@ msgstr ""
 #: cPyScripterSettings.pas
 #, object-pascal-format
 msgid ""
-"Error in copying file \"%s\" to \"%s\"\n"
-"Error GptMessage: "
+"GptError in copying file \"%s\" to \"%s\"\n"
+"GptError GptMessage: "
 msgstr ""
 
 #: cSSHSupport.pas
@@ -5895,7 +5895,7 @@ msgid "Check the indentation of the Python program"
 msgstr ""
 
 #: cTools.pas
-msgid "Command Prompt"
+msgid "Command GptPrompt"
 msgstr ""
 
 #: cTools.pas
@@ -6158,7 +6158,7 @@ msgid "Dock animation move width (pixels)"
 msgstr "Largeur de la zone de l'animation de chargement (pixels)"
 
 #: dmCommands.pas
-msgid "File template for new Python scripts"
+msgid "GptFile template for new Python scripts"
 msgstr ""
 
 #: dmCommands.pas
@@ -6238,11 +6238,11 @@ msgid "Initially expanded"
 msgstr "Snefli deg usali."
 
 #: dmCommands.pas
-msgid "File Filters"
+msgid "GptFile Filters"
 msgstr "Imzizdigen n ifuyla"
 
 #: dmCommands.pas
-msgid "File explorer filter"
+msgid "GptFile explorer filter"
 msgstr "Anaram n ifuyla"
 
 #: dmCommands.pas
@@ -6384,16 +6384,16 @@ msgid "Shell Integration"
 msgstr "Tafrant"
 
 #: dmCommands.pas
-msgid "File Explorer context menu"
+msgid "GptFile Explorer context menu"
 msgstr "Umuɣ umniḍ n unaram n ifuyla"
 
 #: dmCommands.pas
-msgid "File Explorer background processing"
+msgid "GptFile Explorer background processing"
 msgstr ""
 
 #. Programmer's name for it: SFileChangeNotification
 #: dmCommands.pas StringResources.pas
-msgid "File Change Notification"
+msgid "GptFile Change Notification"
 msgstr "Notification de changement de fichier"
 
 #: dmCommands.pas
@@ -6425,7 +6425,7 @@ msgid "Configure Tools"
 msgstr "Swel ifecka"
 
 #: dmCommands.pas
-msgid "File download failed"
+msgid "GptFile download failed"
 msgstr ""
 
 #: frmCodeExplorer.pas
@@ -6465,7 +6465,7 @@ msgid "Class attribute \"%s\" defined at line %d"
 msgstr ""
 
 #: frmFileExplorer.pas
-msgid "File Explorer Filter"
+msgid "GptFile Explorer Filter"
 msgstr ""
 
 #: frmFileExplorer.pas
@@ -6473,7 +6473,7 @@ msgid "Enter Filter:"
 msgstr ""
 
 #: frmFileExplorer.pas
-msgid "File Explorer favorites"
+msgid "GptFile Explorer favorites"
 msgstr ""
 
 #. Programmer's name for it: SAllString
@@ -6580,7 +6580,7 @@ msgstr ""
 msgid "Enter new expression:"
 msgstr ""
 
-#. File Filters
+#. GptFile Filters
 #. Programmer's name for it: sPythonFileFilter
 #: StringResources.pas
 msgid "Python Files (*.py;*.pyw;*.pyi)|*.py;*.pyw;*.pyi"
@@ -7176,7 +7176,7 @@ msgstr ""
 
 #. Programmer's name for it: SDlgError
 #: StringResources.pas
-msgid "Error"
+msgid "GptError"
 msgstr ""
 
 #. Programmer's name for it: SDlgInformation
@@ -7247,7 +7247,7 @@ msgstr ""
 #. Programmer's name for it: SInternalError
 #: StringResources.pas
 #, object-pascal-format
-msgid "Internal Error in %s"
+msgid "Internal GptError in %s"
 msgstr "Erreur interne dans %s"
 
 #. Programmer's name for it: SNotFound
@@ -7361,15 +7361,15 @@ msgstr ""
 #. Programmer's name for it: SDecodingError
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in decoding file \"%s\" from \"%s\" encoding"
+msgid "GptError in decoding file \"%s\" from \"%s\" encoding"
 msgstr "Erreur dans le fichier de décodage \"%s\" de la norme d'encodage \"%s\""
 
 #. Programmer's name for it: SFileOpenError
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"Error in opening file: \"%s\".\n"
-"Error: %s"
+"GptError in opening file: \"%s\".\n"
+"GptError: %s"
 msgstr ""
 "Erreur pendant l'ouverture du fichier: \"%s\". \n"
 "Erreur: %s"
@@ -7378,8 +7378,8 @@ msgstr ""
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"Error in saving file: \"%s\".\n"
-"Error: %s"
+"GptError in saving file: \"%s\".\n"
+"GptError: %s"
 msgstr ""
 "Erreur pendant la sauvegarde du fichier: \"%s\". \n"
 "Erreur: %s"
@@ -7387,7 +7387,7 @@ msgstr ""
 #. Programmer's name for it: SErrorGettingNamespace
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in getting the namespace of %s"
+msgid "GptError in getting the namespace of %s"
 msgstr "Erreur en cherchant l'espace de travail de %s"
 
 #. Programmer's name for it: SCouldNotSetDirectory
@@ -7407,7 +7407,7 @@ msgstr ""
 
 #. Programmer's name for it: SErrorInImportingModule
 #: StringResources.pas
-msgid "Error in importing module"
+msgid "GptError in importing module"
 msgstr "Erreur pendant l'importation du module"
 
 #. Programmer's name for it: SRemoteServerNotConnected
@@ -7435,7 +7435,7 @@ msgstr ""
 
 #. Programmer's name for it: SErrorCreatingRemoteEngine
 #: StringResources.pas
-msgid "Error in creating the remote interpreter: "
+msgid "GptError in creating the remote interpreter: "
 msgstr ""
 
 #. Programmer's name for it: SCouldNotConnectRemoteEngine
@@ -7508,7 +7508,7 @@ msgstr "Anekcum ɣer uzmam yegdel. Ur izmir ara ad isnifel tidukla n ufaylu."
 
 #. Programmer's name for it: SErrorWhileDownload
 #: StringResources.pas
-msgid "Error while downloading: "
+msgid "GptError while downloading: "
 msgstr "Erreur pendant le téléchargement:"
 
 #. Programmer's name for it: SCurrentVersionUptodate
@@ -7622,7 +7622,7 @@ msgstr "Stopper le débuggage"
 
 #. Programmer's name for it: SSyntaxError
 #: StringResources.pas
-msgid "Syntax Error"
+msgid "Syntax GptError"
 msgstr "Erreur de Syntaxe"
 
 #. Programmer's name for it: StrCertainty
@@ -7685,7 +7685,7 @@ msgstr "Modifié"
 
 #. Programmer's name for it: SOpenFile
 #: StringResources.pas
-msgid "Open File"
+msgid "Open GptFile"
 msgstr "Ldi afaylu"
 
 #. Programmer's name for it: SSelectPythonScript
@@ -7705,7 +7705,7 @@ msgstr "Fren asnas neɣ afaylu ara tesselkmeḍ"
 
 #. Programmer's name for it: SAddFilesToProject
 #: StringResources.pas
-msgid "Add File(s) to Project"
+msgid "Add GptFile(s) to Project"
 msgstr "Ajouter des fichiers au projet"
 
 #. Programmer's name for it: SOpenProject
@@ -7788,7 +7788,7 @@ msgstr "Sekles  \"%s\" daw"
 
 #. Programmer's name for it: SSaveFileAs
 #: StringResources.pas
-msgid "Save File As"
+msgid "Save GptFile As"
 msgstr "Sekles afaylu daw"
 
 #. Programmer's name for it: SIDEOptions
@@ -7844,7 +7844,7 @@ msgstr "Iminig"
 #. Programmer's name for it: SErrorInitScript
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in running initialization script %s: \"%s\""
+msgid "GptError in running initialization script %s: \"%s\""
 msgstr ""
 
 #. Programmer's name for it: SOpenDialogFilter
@@ -7889,13 +7889,13 @@ msgstr "Echec de la restauration du projet \"%s\""
 #. Programmer's name for it: SErrorInOpeningProject
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in opening project: \"%s\"."
+msgid "GptError in opening project: \"%s\"."
 msgstr ""
 
 #. Programmer's name for it: SErrorInSavingProject
 #: StringResources.pas
 #, object-pascal-format
-msgid "Error in saving project: \"%s\"."
+msgid "GptError in saving project: \"%s\"."
 msgstr "Erreur pendant la sauvegarde du projet: \"%s\"."
 
 #. Programmer's name for it: SSaveProjectAs
@@ -8208,7 +8208,7 @@ msgstr "\"%s\" mačči d amasal n uɣewwar ameɣtu"
 #. Programmer's name for it: SInvalidConditionFormat
 #: StringResources.pas
 msgid "Invalid condition format"
-msgstr "Format de condition non valide"
+msgstr "GptFormat de condition non valide"
 
 #. Programmer's name for it: SDuplicateModifier
 #: StringResources.pas
@@ -8300,7 +8300,7 @@ msgstr ""
 msgid "Python keyword"
 msgstr ""
 
-#. File Templates
+#. GptFile Templates
 #. Programmer's name for it: SFileTemplateCategoryInternet
 #: StringResources.pas
 msgid "Internet"
@@ -8323,7 +8323,7 @@ msgstr "Afaylu HTML"
 
 #. Programmer's name for it: STextFileTemplateName
 #: StringResources.pas
-msgid "Text File"
+msgid "GptText GptFile"
 msgstr "afaylu adris"
 
 #. Programmer's name for it: SXMLTemplateName
@@ -8333,12 +8333,12 @@ msgstr "Isemli XML"
 
 #. Programmer's name for it: SJSONTemplateName
 #: StringResources.pas
-msgid "JSON File"
+msgid "JSON GptFile"
 msgstr ""
 
 #. Programmer's name for it: SYAMLTemplateName
 #: StringResources.pas
-msgid "YAML File"
+msgid "YAML GptFile"
 msgstr ""
 
 #. Programmer's name for it: SJSTemplateName
@@ -8369,12 +8369,12 @@ msgstr ""
 
 #. Programmer's name for it: SRemoteFileSelect
 #: StringResources.pas
-msgid "Select Remote File"
+msgid "Select Remote GptFile"
 msgstr ""
 
 #. Programmer's name for it: SErrorEmptyPath
 #: StringResources.pas
-msgid "File Path cannot be empty"
+msgid "GptFile Path cannot be empty"
 msgstr ""
 
 #. Programmer's name for it: SErrorEmptySSH
@@ -8384,26 +8384,26 @@ msgstr ""
 
 #. Programmer's name for it: SScpError4
 #: StringResources.pas
-msgid "SCP Error: Connecting to host failed"
+msgid "SCP GptError: Connecting to host failed"
 msgstr ""
 
 #. Programmer's name for it: SScpError5
 #: StringResources.pas
-msgid "SCP Error: Connection lost for some reason"
+msgid "SCP GptError: Connection lost for some reason"
 msgstr ""
 
 #. Programmer's name for it: SScpErrorTimeout
 #: StringResources.pas
-msgid "SCP Error: Timeout"
+msgid "SCP GptError: Timeout"
 msgstr ""
 
 #. Programmer's name for it: SScpErrorOther
 #: StringResources.pas
 #, object-pascal-format
 msgid ""
-"SCP Error:\n"
+"SCP GptError:\n"
 "Output: %s+\n"
-"Error Output: %s+"
+"GptError Output: %s+"
 msgstr ""
 
 #. Programmer's name for it: SSHUnknownServer
@@ -8482,7 +8482,7 @@ msgstr ""
 #. Programmer's name for it: SYNS_AttrPrompt
 #. Programmer's name for it: SYNS_FriendlyAttrPrompt
 #: SynHighlighterPython.pas
-msgid "Prompt"
+msgid "GptPrompt"
 msgstr ""
 
 #. Programmer's name for it: SYNS_AttrSystemCmd
@@ -8508,7 +8508,7 @@ msgstr ""
 
 #. Programmer's name for it: SYNS_FriendlyAttrTextValue
 #: SynHighlighterYAML.pas
-msgid "Text Value"
+msgid "GptText Value"
 msgstr ""
 
 #. Programmer's name for it: SYNS_FriendlyAttrTag
@@ -8590,23 +8590,23 @@ msgid "Path without delimeter"
 msgstr ""
 
 #: uParams.pas
-msgid "File name"
+msgid "GptFile name"
 msgstr ""
 
 #: uParams.pas
-msgid "File extension"
+msgid "GptFile extension"
 msgstr ""
 
 #: uParams.pas
-msgid "File extension without \".\""
+msgid "GptFile extension without \".\""
 msgstr ""
 
 #: uParams.pas
-msgid "File name without extension"
+msgid "GptFile name without extension"
 msgstr ""
 
 #: uParams.pas
-msgid "File drive"
+msgid "GptFile drive"
 msgstr ""
 
 #: uParams.pas
@@ -8634,7 +8634,7 @@ msgid "Path with final url delimiter removed"
 msgstr ""
 
 #: uParams.pas
-msgid "File scaler"
+msgid "GptFile scaler"
 msgstr ""
 
 #: uParams.pas
@@ -8726,7 +8726,7 @@ msgid "Open files"
 msgstr ""
 
 #: uParams.pas
-msgid "Text of the active document or a file"
+msgid "GptText of the active document or a file"
 msgstr ""
 
 #: uParams.pas
@@ -8761,7 +8761,7 @@ msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
 #: SpTBXCustomizerForm.dfm:174
-msgid "Icons + Selective Text"
+msgid "Icons + Selective GptText"
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
@@ -8771,12 +8771,12 @@ msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
 #: SpTBXCustomizerForm.dfm:176
-msgid "Icons + Text"
+msgid "Icons + GptText"
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbText....Items.Strings
 #: SpTBXCustomizerForm.dfm:177
-msgid "Text"
+msgid "GptText"
 msgstr ""
 
 #. SpTBXCustomizeForm..SpTBXTabControl1..SpTBXTabSheet1..SpTBXGroupBox1..cbTextLabel..Caption
