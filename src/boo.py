@@ -554,6 +554,7 @@ class GptModels( ):
 		                       'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
 		self.bubba = \
 		[
+		'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-mini-20250615:C2kapoPp',
 			'ft:gpt-4.1-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-2025-20-05:BZO7tKJy',
 			'ft:gpt-4.1-nano-2025-04-14:leeroy-jenkins:bubba-gpt-4-1-nano-2025-29-05:BcfJJTtv',
 			'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:bubba-gpt-4-1-mini-2025-05-05:BcekjucJ',
@@ -1101,7 +1102,7 @@ class Assistant( GPT ):
 		self.system_instructions = GPT( ).bubba_instructions
 		self.client = OpenAI( )
 		self.client.api_key = GptHeader( ).api_key
-		self.model = 'gpt-4o-mini'
+		self.model = 'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-mini-20250615:C2kapoPp'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -1117,7 +1118,7 @@ class Assistant( GPT ):
 		self.input_text = None
 		self.name = 'Boo'
 		self.description = 'Generic Assistant'
-		self.id = None
+		self.id = 'asst_SlgDBxbXW2mrld9qXErMqbHn'
 		self.metadata = { }
 		self.tools = [ ]
 		self.vector_stores = \
@@ -1130,6 +1131,7 @@ class Assistant( GPT ):
 		self.vector_store_ids = [ 'vs_67a777291d548191b9fa42956a7f6cb9' ]
 		self.assistants = \
 		{
+			'Boo': 'asst_SlgDBxbXW2mrld9qXErMqbHn',
 			'Bro': 'asst_2Yu2yfINGD5en4e0aUXAKxyu',
             'Bubba': 'asst_2IpP4nE85lXLKbY6Zewwqtqe',
 			'FNG': 'asst_FQXRnDVgvnBxslZQit8hIbXY'
@@ -1410,7 +1412,7 @@ class Assistant( GPT ):
 			
 		'''
 		try:
-			self.assistants = self.client.beta.assistants.list( order='desc', limit='20' )
+			self.assistants = self.client.beta.assistants.list( order='desc', limit='100' )
 			return self.assistants.data
 		except Exception as e:
 			exception = GptError( e )
@@ -1563,7 +1565,7 @@ class Bubba( GPT ):
 		self.system_instructions = GPT( ).bubba_instructions
 		self.client = OpenAI( )
 		self.client.api_key = GptHeader( ).api_key
-		self.model = 'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:bubba-gpt-4-1-mini-2025-05-05:BcekjucJ'
+		self.model = 'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-mini-20250615:C2kapoPp'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -1579,7 +1581,7 @@ class Bubba( GPT ):
 		self.input_text = None
 		self.name = 'Bubba'
 		self.description = 'A Budget Execution Assistant'
-		self.id = 'asst_J6SAABzDixkTYi2k39OGgjPv'
+		self.id = 'asst_6C6aTIRw2uWLzdQhDzBehNAH'
 		self.metadata = { }
 		self.tools = [ ]
 		self.vector_stores = \
@@ -1614,7 +1616,8 @@ class Bubba( GPT ):
 				self.input_text = prompt
 				self.response = self.client.responses.create( model=self.model,
 					input=self.input_text )
-				return self.response.output_text
+				generated_text = self.response.output_text
+				return generated_text
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -1649,7 +1652,8 @@ class Bubba( GPT ):
 				self.prompt = prompt
 				self.response = self.client.images.generate( model='dall-e-3',
 					prompt=self.prompt, size='1024x1024', quality='standard', n=1 )
-			return self.response.data[ 0 ].url
+				generated_image = self.response.data[ 0 ].url
+			return generated_image
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -1701,7 +1705,8 @@ class Bubba( GPT ):
 				} ]
 				
 				self.response = self.client.responses.create( model=self.model, input=self.input )
-				return self.response.output_text
+				image_analysis = self.response.output_text
+				return image_analysis
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -1760,7 +1765,8 @@ class Bubba( GPT ):
 				
 				self.completion = self.client.chat.completions.create( model=self.model,
 					messages=self.messages )
-				return self.completion.choices[ 0 ].message.content
+				document_summary = self.completion.choices[ 0 ].message.content
+				return document_summary
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -1802,7 +1808,8 @@ class Bubba( GPT ):
 				
 				self.response = self.client.chat.completions.create( model=self.model,
 					web_search_options={ }, messages=self.messages )
-				return  self.response.output_text
+				web_results = self.response.output_text
+				return web_results
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -1845,7 +1852,8 @@ class Bubba( GPT ):
 				
 				self.response = self.client.responses.create( model=self.model,
 					tools=self.tools, input=self.prompt )
-				return self.response.output_text
+				file_results = self.response.output_text
+				return file_results
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -1873,10 +1881,11 @@ class Bubba( GPT ):
 			_aid = self.vector_stores[ 'Appropriations' ]
 			_files = self.client.vector_stores.files.list( vector_store_id=_aid )
 			_list = [ f for f in _files  ]
-			_doc_id = self.vector_stores[ 'Guidance' ]
-			_doc_files = self.client.vector_stores.files.list( vector_store_id=_doc_id )
-			_doc_list = [ d for d in _doc_files  ]
-			return  _list.extend( _doc_list )
+			_docid = self.vector_stores[ 'Guidance' ]
+			_docfiles = self.client.vector_stores.files.list( vector_store_id=_docid )
+			_doclist = [ d for d in _docfiles  ]
+			files = _list.extend( _doclist )
+			return  files
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -2078,7 +2087,8 @@ class Bro( GPT ):
 				self.input_text = prompt
 				self.response = self.client.responses.create( model=self.model,
 					input=self.input_text )
-				return self.response.output_text
+				generated_text = self.response.output_text
+				return generated_text
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -2113,8 +2123,9 @@ class Bro( GPT ):
 				self.prompt = prompt
 				self.response = self.client.images.generate( model='dall-e-3',
 					prompt=self.prompt, size='1024x1024', quality='standard', n=1 )
+				generated_image = self.response.data[ 0 ].url
 			
-			return self.response.data[ 0 ].url
+			return generated_image
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -2166,7 +2177,8 @@ class Bro( GPT ):
 				}]
 				
 				self.response = self.client.responses.create( model=self.model, input=self.input )
-				return self.response.output_text
+				image_analysis = self.response.output_text
+				return image_analysis
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -2227,7 +2239,8 @@ class Bro( GPT ):
 				
 				self.completion = self.client.chat.completions.create( model=self.model,
 					messages=self.messages )
-				return self.completion.choices[ 0 ].message.content
+				document_summary = self.completion.choices[ 0 ].message.content
+				return document_summary
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -2268,8 +2281,9 @@ class Bro( GPT ):
 				
 				self.response = self.client.chat.completions.create( model=self.model,
 					web_search_options={ }, messages=self.messages )
-				
-				return self.response.output_text
+
+				web_results = self.response.output_text
+				return web_results
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -2311,7 +2325,8 @@ class Bro( GPT ):
 				
 				self.response = self.client.responses.create( model=self.model,
 					tools=self.tools, input=prompt )
-				return self.response.output_text
+				file_search = self.response.output_text
+				return file_search
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'Boo'
@@ -2331,7 +2346,9 @@ class Bro( GPT ):
 	
 	def get_format_options( ) -> List[ str ]:
 		'''
-		
+
+			Purpose:
+			---------
 			Method that returns a list of formatting options
 		
 		'''
@@ -2341,6 +2358,8 @@ class Bro( GPT ):
 	def get_model_options( ) -> List[ str ]:
 		'''
 
+			Purpose:
+			---------
 			Method that returns a list of available models
 
 		'''
@@ -2358,6 +2377,8 @@ class Bro( GPT ):
 	def get_effort_options( ) -> List[ str ]:
 		'''
 
+			Purpose:
+			---------
 			Method that returns a list of available models
 
 		'''
@@ -2367,6 +2388,8 @@ class Bro( GPT ):
 	def get_data( self ) -> dict:
 		'''
 
+			Purpose:
+			---------
 			Returns: dict[ str ] of members
 
 		'''
@@ -2382,7 +2405,11 @@ class Bro( GPT ):
 	
 	def dump( self ) -> str:
 		'''
+
+			Purpose:
+			---------
 			Returns: dict of members
+
 		'''
 		new = '\r\n'
 		return 'num' + f' = {self.number}' + new + \
