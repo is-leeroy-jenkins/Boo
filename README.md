@@ -18,7 +18,7 @@ automation of analytical tasks.
 - Assistant Classes:
 - Chat: Generic multimodal interaction with GPT.
 - Assistant: General-purpose assistant framework.
-- Bubba: Budget Execution Assistant.
+- Boo: Budget Execution Assistant.
 - Bro: Data Science & Programming Assistant.
 - Custom Fine-Tuned Models: Uses proprietary fine-tuned models for different domains (e.g., bro-gpt,
   bubba-gpt).
