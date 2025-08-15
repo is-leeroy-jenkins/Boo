@@ -509,9 +509,8 @@ class GptModels( ):
 		                         'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
 		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
 		                         'gpt-4o-mini-2024-07-18', 'gpt-4.1-mini-2025-04-14',
-		                         'gpt-4.1-nano-2025-04-14',
-		                         'o1-pro-2025-03-19', 'o1-2024-12-17',
-		                         'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
+		                         'gpt-4.1-nano-2025-04-14', 'o1-2024-12-17',
+		                         'o3-mini-2025-01-31' ]
 		self.image_generation = [ 'dall-e-2', 'dall-e-3',
 		                          'gpt-4-0613', 'gpt-4-0314',
 		                          'gpt-4o-mini-2024-07-18' ]
@@ -520,7 +519,7 @@ class GptModels( ):
 		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
 		                         'gpt-4o-mini-2024-07-18', 'gpt-4.1-mini-2025-04-14',
 		                         'gpt-4.1-nano-2025-04-14', 'o1-2024-12-17',
-		                         'o1-mini-2024-09-12', 'o3-mini-2025-01-31',
+		                         'o3-mini-2025-01-31',
 		                         'gpt-4o-search-preview-2025-03-11',
 		                         'gpt-4o-mini-search-preview-2025-03-11' ]
 		self.speech_generation = [ 'tts-1', 'tts-1-hd', 'gpt-4o-mini-tts',
@@ -534,8 +533,8 @@ class GptModels( ):
 		self.responses = [ 'gpt-4o-mini-search-preview-2025-03-11',
 		                   'gpt-4o-search-preview-2025-03-11',
 		                   'computer-use-preview-2025-03-11' ]
-		self.reasoning  = [ 'o1-2024-12-17', 'o1-mini-2024-09-12',
-		                    'o3-mini-2025-01-31', 'o1-pro-2025-03-19' ]
+		self.reasoning  = [ 'o1-2024-12-17', 'o3-2025-04-16',
+		                    'o3-mini-2025-01-31', 'o4-mini-2025-04-16' ]
 		self.finetuning = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18',
 		                    'gpt-4-0613', 'gpt-3.5-turbo-0125',
 		                    'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-0613' ]
@@ -544,14 +543,13 @@ class GptModels( ):
 		self.uploads = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
 		                 'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
-		                 'o1-2024-12-17', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
+		                 'o1-2024-12-17', 'o3-mini-2025-01-31' ]
 		self.files = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
 		               'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
-		               'o1-2024-12-17', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
+		               'o1-2024-12-17', 'o3-mini-2025-01-31' ]
 		self.vectorstores = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                       'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
-		                       'gpt-4o-mini-2024-07-18', 'o1-2024-12-17',
-		                       'o1-mini-2024-09-12', 'o3-mini-2025-01-31' ]
+		                       'gpt-4o-mini-2024-07-18', 'o1-2024-12-17', 'o3-mini-2025-01-31' ]
 		self.bubba = \
 		[
 		'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-mini-20250615:C2kapoPp',
@@ -1565,7 +1563,7 @@ class Bubba( GPT ):
 		self.system_instructions = GPT( ).bubba_instructions
 		self.client = OpenAI( )
 		self.client.api_key = GptHeader( ).api_key
-		self.model = 'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-mini-20250615:C2kapoPp'
+		self.model = 'ft:gpt-4.1-2025-04-14:leeroy-jenkins:budget-execution-2025-08-12:C3tkGezY'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
