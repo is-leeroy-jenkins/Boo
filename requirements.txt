@@ -1,4 +1,3 @@
-
 accelerate
 agents
 beautifulsoup4~=4.13.4
@@ -24,6 +23,7 @@ jupyterlab~=4.5.0a0
 matplotlib~=3.10.3
 mglearn~=0.2.0
 mwclient
+faiss-cpu
 mwparserfromhell~=0.7.2
 openai~=1.97.1
 openpyxl~=3.1.5
@@ -39,6 +39,7 @@ plotly~=6.1.0
 playwright~=1.54.0
 pinecone
 protobuf
+pypdf
 PyPDF2~=3.0.1
 pdfminer
 pdf2image
@@ -67,6 +68,7 @@ soundfile
 sounddevice
 spacy~=3.8.7
 spacepy
+sqlite-vec
 statsmodels~=0.14.4
 sentence-transformers
 streamlit~=1.45.1
