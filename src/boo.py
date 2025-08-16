@@ -834,7 +834,7 @@ class Chat( GPT ):
 					'content':
 						[
 							{
-									'scaler': 'input_text',
+									'text': 'input_text',
 							        'text': self.prompt
 							},
 							{
@@ -886,14 +886,14 @@ class Chat( GPT ):
 					'role': 'user',
 					'content': [
 					{
-						'scaler': 'file',
+						'text': 'file',
 						'file':
 						{
 							'file_id': file.id,
 						}
 					},
 					{
-						'scaler': 'text',
+						'text': 'text',
 						'text': 'What is the first dragon in the book?',
 					}, ]
 				} ]
@@ -973,7 +973,7 @@ class Chat( GPT ):
 			else:
 				self.tools = [
 				{
-					'scaler': 'file_search',
+					'text': 'file_search',
 					'vector_store_ids': self.vector_store_ids,
 					'max_num_results': 20
 				} ]
@@ -1236,11 +1236,11 @@ class Assistant( GPT ):
 				{
 					'role': 'user',
 					'content': [
-					{ 'scaler': 'input_text',
+					{ 'text': 'input_text',
 					  'text': self.prompt
 					},
 					{
-						'scaler': 'input_image',
+						'text': 'input_image',
 						'image_url': self.image_url
 					}]
 				}]
@@ -1289,14 +1289,14 @@ class Assistant( GPT ):
 					'role': 'user',
 					'content': [
 					{
-						'scaler': 'file',
+						'text': 'file',
 						'file':
 						{
 							'file_id': self.file.id,
 						}
 					},
 					{
-						'scaler': 'text',
+						'text': 'text',
 						'text': self.input_text,
 					},]
 				}]
@@ -1376,7 +1376,7 @@ class Assistant( GPT ):
 			else:
 				self.tools = [
 				{
-					'scaler': 'file_search',
+					'text': 'file_search',
 					'vector_store_ids': self.vector_store_ids,
 					'max_num_results': 20
 				}, ]
@@ -1693,11 +1693,11 @@ class Bubba( GPT ):
 					'role': 'user',
 					'content': [
 					{
-							'scaler': 'input_text',
+							'text': 'input_text',
 							'text': self.prompt
 					},
 					{
-						'scaler': 'input_image',
+						'text': 'input_image',
 						'image_url': self.image_url
 					} ]
 				} ]
@@ -1749,14 +1749,14 @@ class Bubba( GPT ):
 					'role': 'user',
 					'content': [
 					{
-						'scaler': 'file',
+						'text': 'file',
 						'file':
 						{
 							'file_id': self.file.id,
 						}
 					},
 					{
-						'scaler': 'text',
+						'text': 'text',
 						'text': self.prompt,
 					}, ]
 				} ]
@@ -1843,7 +1843,7 @@ class Bubba( GPT ):
 				self.prompt = prompt
 				self.tools = [
 				{
-					'scaler': 'file_search',
+					'text': 'file_search',
 					'vector_store_ids': self.vector_store_ids,
 					'max_num_results': 20
 				} ]
@@ -2165,11 +2165,11 @@ class Bro( GPT ):
 					'role': 'user',
 					'content':[
 					{
-						'scaler': 'input_text',
+						'text': 'input_text',
 					    'text': self.prompt
 					},
 					{
-						'scaler': 'input_image',
+						'text': 'input_image',
 						'image_url': self.image_url
 					}]
 				}]
@@ -2223,14 +2223,14 @@ class Bro( GPT ):
 					'role': 'user',
 					'content': [
 					{
-						'scaler': 'file',
+						'text': 'file',
 						'file':
 							{
 								'file_id': self.file.id,
 							}
 					},
 					{
-						'scaler': 'text',
+						'text': 'text',
 						'text': self.input_text,
 					}, ]
 				} ]
@@ -2316,7 +2316,7 @@ class Bro( GPT ):
 			else:
 				self.tools = [
 				{
-					'scaler': 'file_search',
+					'text': 'file_search',
 					'vector_store_ids': self.vector_store_ids,
 					'max_num_results': 20
 				} ]
@@ -3372,11 +3372,11 @@ class LargeImage( GPT ):
 						'role': 'user',
 						'content':
 							[
-								{ 'scaler': 'input_text',
+								{ 'text': 'input_text',
 								  'text': self.input_text
 								  },
 								{
-									'scaler': 'input_image',
+									'text': 'input_image',
 									'image_url': self.file_path
 								},
 							],
@@ -3655,11 +3655,11 @@ class Image( GPT ):
 						'content':
 						[
 							{
-								'scaler': 'input_text',
+								'text': 'input_text',
 								'text': self.input_text
 							},
 							{
-								'scaler': 'input_image',
+								'text': 'input_image',
 								'image_url': self.file_path
 							},
 						],
