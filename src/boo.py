@@ -62,6 +62,15 @@ from typing import Any, List, Tuple, Optional, Dict
 from src.guro import Prompt
 
 
+def guard_nonempty( name: str, val: str ):
+	if not val:
+		raise ValueError( f'Argument "{name}" cannot be empty.' )
+
+def chunk_text( text: str, max_chars: int = 6_000 ) -> list[ str ]:
+	return [ text[ i:i + max_chars ] for i in range( 0, len( text ), max_chars ) ]
+
+
+
 class GptPrompt( BaseModel ):
 	'''
 
@@ -379,6 +388,7 @@ class GptEndPoint( ):
 		self.files = f'https://api.openai.com/v1/files'
 		self.vector_stores = f'https://api.openai.com/v1/vector_stores'
 
+
 	def get_data( self ) -> dict[ str, list[ str ] ] | None:
 		'''
 
@@ -396,14 +406,15 @@ class GptEndPoint( ):
 				'image_generation': self.image_generation,
 				'chat_completion': self.chat_completion,
 				'speech_generation': self.speech_generation,
-				'translations': self.translations,  # <- plural, consistent
+				'translations': self.translations,
 				'finetuning': self.finetuning,
-				'vectors': self.embeddings,  # <- vectors are embeddings
+				'vectors': self.embeddings,
 				'uploads': self.uploads,
 				'files': self.files,
-				'vector_stores': self.vector_stores  # <- underscore, consistent
+				'vector_stores': self.vector_stores
 		}
 		return _data
+
 
 	def dump( self ) -> str:
 		'''
@@ -1814,30 +1825,30 @@ class Bubba( GPT ):
 	
 	def transcribe( self, text: str ) -> str | None:
 		pass
-	
-	
-	def get_files( self ) -> List[ str ] | None:
-		'''
 
-			Method that returns a list of files in a vector stores
 
-		'''
+	def get_files( self ) -> List[ str ]:
+		"""
+
+			Purpose:
+			---------
+			Return a combined list of file items from configured vector stores.
+
+		"""
 		try:
 			_aid = self.vector_stores[ 'Appropriations' ]
-			_files = self.client.vector_stores.files.list( vector_store_id=_aid )
-			_list = [ f for f in _files  ]
+			_files = self.client.vector_stores.files.list( vector_store_id = _aid ).data  # FIX
 			_docid = self.vector_stores[ 'Guidance' ]
-			_docfiles = self.client.vector_stores.files.list( vector_store_id=_docid )
-			_doclist = [ d for d in _docfiles.data  ]
-			files = _list.extend( _doclist )
-			return  files
+			_docfiles = self.client.vector_stores.files.list( vector_store_id = _docid ).data  # FIX
+			files = _files + _docfiles  # FIX: do not use extend()’s return value
+			return files
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'boo'
-			exception.cause = 'Bubba'
+			exception.cause = 'Files'
 			exception.method = 'get_files'
-			error = ErrorDialog( exception )
-			error.show( )
+			ErrorDialog( exception ).show( )
+			return [ ]
 	
 	
 	def get_format_options( self ) -> List[ str ] | None:
@@ -1879,7 +1890,7 @@ class Bubba( GPT ):
 		return [ 'auto', 'low', 'high' ]
 	
 	
-	def get_data( self ) -> Dict[ str, float ] | None:
+	def get_data( self ) -> Dict[ str, Any ] | None:
 		'''
 
 			Returns: dict[ str ] of members
@@ -2072,7 +2083,7 @@ class Bro( GPT ):
 			exception = GptError( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
-			exception.method = 'generate_text( self, prompt: str )'
+			exception.method = 'generate_image( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2128,7 +2139,7 @@ class Bro( GPT ):
 			error.show( )
 	
 	
-	def summmarize_document( self, prompt: str, path: str ) -> str:
+	def summarize_document( self, prompt: str, path: str ) -> str:
 		"""
 
 			Purpose
@@ -2192,8 +2203,7 @@ class Bro( GPT ):
 
 			Purpose
 			_______
-			Method that analyzeses an image given a prompt,
-
+            Use web_search_options to retrieve and synthesize recent web results for `prompt`.
 
 
 			Parameters

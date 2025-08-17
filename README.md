@@ -158,7 +158,7 @@ print(response)
 python
 
 file_path = "data/federal_strategy.pdf"
-summary = bro.summmarize_document(
+summary = bro.summarize_document(
   prompt = "Summarize key national cybersecurity strategies.",
   path = file_path
 )
