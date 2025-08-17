@@ -406,93 +406,84 @@ class GptEndPoint( ):
 		self.uploads = f'https://api.openai.com/v1/uploads'
 		self.files = f'https://api.openai.com/v1/files'
 		self.vector_stores = f'https://api.openai.com/v1/vector_stores'
-		
-		
-	def get_data( self ) -> Dict[ str, str ] | None:
-		'''
 
-			Purpose:
-			--------
-			Returns: dict[ str ] of members
+def get_data( self ) -> dict[ str, list[ str ] ] | None:
+	'''
+		Purpose:
+		--------
+		Returns a dictionary of endpoint lists.
 
-		'''
-		return { 'base_url': self.base_url,
-		         'text_generation': self.text_generation,
-		         'image_generation': self.image_generation,
-		         'chat_completion': self.chat_completion,
-		         'responses': self.responses,
-		         'speech_generation': self.speech_generation,
-		         'translations': self.translations,
-		         'assistants': self.assistants,
-		         'transcriptions': self.transcriptions,
-		         'finetuning': self.finetuning,
-		         'vectors': self.embeddings,
-		         'uploads': self.uploads,
-		         'files': self.files,
-		         'vector_stores': self.vector_stores }
-		
-		
-	def dump( self ) -> str:
-		'''
+		Returns:
+		--------
+		dict[str, list[str]] | None
+	'''
+	_data = {
+			'text_generation': self.text_generation,
+			'image_generation': self.image_generation,
+			'chat_completion': self.chat_completion,
+			'speech_generation': self.speech_generation,
+			'translations': self.translations,  # <- plural, consistent
+			'finetuning': self.finetuning,
+			'vectors': self.embeddings,  # <- vectors are embeddings
+			'uploads': self.uploads,
+			'files': self.files,
+			'vector_stores': self.vector_stores  # <- underscore, consistent
+	}
+	return _data
 
-			Purpose:
-			--------
-			Returns: path of "member = value", pairs
-
-		'''
-		new = r'\r\n'
-		return 'base_url' + f' = {self.base_url}' + new + \
-			'text_generation' + f' = {self.text_generation}' + new + \
-			'image_generation' + f' = {self.image_generation}' + new + \
-			'chat_completion' + f' = {self.chat_completion}' + new + \
-			'speech_generation' + f' = {self.speech_generation}' + new + \
-			'translations' + f' = {self.translations}' + new + \
-			'assistants' + f' = {self.assistants}' + new + \
-			'transcriptions' + f' = {self.transcriptions}' + new + \
-			'finetuning' + f' = ' + self.finetuning + new + \
-			'vectors' + f' = {self.files}' + new + \
-			'uploads' + f' = {self.uploads}' + new + \
-			'files' + f' = {self.files}' + new + \
-			'vector_stores' + f' = {self.vector_stores}' + new
-
-
-class GptHeader( ):
+def dump( self ) -> str:
 	'''
 
 		Purpose:
-		-------
-		Class used to encapsulate GPT headers
-		
+		--------
+		Returns a pretty "member = value" listing.
+
+		Returns:
+		--------
+		str
+
 	'''
-	
-	
+	new = '\r\n'  # <- real newline
+	return (
+			'base_url' + f' = {self.base_url}' + new +
+			'text_generation' + f' = {self.text_generation}' + new +
+			'image_generation' + f' = {self.image_generation}' + new +
+			'chat_completion' + f' = {self.chat_completion}' + new +
+			'speech_generation' + f' = {self.speech_generation}' + new +
+			'translations' + f' = {self.translations}' + new +
+			'assistants' + f' = {self.assistants}' + new +
+			'transcriptions' + f' = {self.transcriptions}' + new +
+			'finetuning' + f' = {self.finetuning}' + new +
+			'vectors' + f' = {self.embeddings}' + new +  # <- was files
+			'uploads' + f' = {self.uploads}' + new +
+			'files' + f' = {self.files}' + new +
+			'vector_stores' + f' = {self.vector_stores}')
+
+class GptHeader:
+	'''
+		Purpose:
+		--------
+		Encapsulates HTTP header data for OpenAI API requests.
+
+		Attributes:
+		-----------
+		content_type : str
+		api_key      : str | None
+		authorization: str
+		data         : dict[str, str]
+	'''
+
 	def __init__( self ):
 		self.content_type = 'application/json'
 		self.api_key = os.environ.get( 'OPENAI_API_KEY' )
-		self.authoriztion = 'Bearer ' + os.environ.get( 'OPENAI_API_KEY' )
-		self.data = { 'content-type': self.content_type,
-		              'Authorization': self.authoriztion }
-	
-	
-	def __dir__( self ) -> List[ str ] | None:
-		'''
+		self.authorization = f'Bearer {self.api_key}' if self.api_key else ''
+		self.data = {
+				'Content-Type': self.content_type,
+				'Authorization': self.authorization,
+		}
 
-            Purpose:
-            --------
-			Method returns a list of strings representing members
-
-            Parameters:
-            ----------
-			self
-
-            Returns:
-            ---------
-			List[ str ] | None
-
-		'''
-		return [ 'content_type', 'api_key', 'authorization' ]
-
-
+	def __dir__( self ) -> list[ str ] | None:
+		return [ 'content_type', 'api_key', 'authorization', 'data' ]
 
 class GptModels( ):
 	'''
@@ -610,26 +601,26 @@ class GptModels( ):
 		          'vectorstores': self.vectorstores }
 		return _data
 
-
-class GPT( ):
+class GPT:
 	'''
 
 		Purpose:
 		--------
-		GPT is the base class for all OpenAI functionalityl
-	
+		Base class for OpenAI functionality.
+
 	'''
-	
-	
+
 	def __init__( self ):
 		self.header = GptHeader( )
 		self.endpoint = GptEndPoint( )
 		self.prompt = GptPrompt( )
 		self.api_key = self.header.api_key
-		self.client = OpenAI( api_key=self.api_key )
-		self.bro_instructions = prompt.data_bro
-		self.bubba_instructions = prompt.budget_analyst
+		self.client = OpenAI( api_key = self.api_key )
 
+		# from src.guro import Prompt
+		cfg = Prompt( )
+		self.bro_instructions = cfg.data_bro
+		self.bubba_instructions = cfg.budget_analyst
 
 class Chat( GPT ):
 	"""
@@ -803,12 +794,12 @@ class Chat( GPT ):
 			error.show( )
 		
 		
-	def analyze_image( self, prompt: str, url: str ) -> str | None:
+	def analyze_image( self, prompt: str, url: str ) -> str:
 		"""
 		
 			Purpose
 			_______
-			Method that analyzeses an image given a  prompt.
+			Analyze an image with a text instruction.
 
 			Parameters
 			----------
@@ -817,7 +808,7 @@ class Chat( GPT ):
 			
 			Returns
 			-------
-			str | None
+			str
 		
 		"""
 		try:
@@ -834,11 +825,11 @@ class Chat( GPT ):
 					'content':
 						[
 							{
-									'text': 'input_text',
+									'type': 'input_text',
 							        'text': self.prompt
 							},
 							{
-									'scaler': 'input_image',
+									'type': 'input_image',
 									'image_url': self.image_url
 							}
 						]
@@ -1013,55 +1004,29 @@ class Chat( GPT ):
 		         'store': self.store,
 		         'stream': self.stream,
 		         'size': self.size }
-	
-	
-	def dump( self ) -> str | None:
-		'''
 
-			Purpose:
-			--------
-			Returns: dict of members
+	def __dir__( self ) -> list[ str ] | None:
+		return [
+				'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
+				'max_completion_tokens', 'system_instructions', 'store', 'stream', 'modalities',
+				'stops', 'content', 'prompt', 'response', 'completion', 'file', 'path',
+				'messages', 'image_url', 'response_format', 'tools', 'vector_store_ids',
+				'name', 'id', 'description', 'get_format_options', 'get_model_options',
+				'reasoning_effort', 'input_text', 'metadata', 'get_files', 'get_data', 'dump',
+				'translate', 'transcribe' ]
 
-		'''
+	def dump( self ) -> str:
 		new = '\r\n'
-		return 'num' + f' = {self.number}' + new + \
-			'temperature' + f' = {self.temperature}' + new + \
-			'top_percent' + f' = {self.top_percent}' + new + \
-			'frequency_penalty' + f' = {self.frequency_penalty}' + new + \
-			'presence_penalty' + f' = {self.presence_penalty}' + new + \
-			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
-			'store' + f' = {self.store}' + new + \
-			'stream' + f' = {self.stream}' + new + \
-			'size' + f' = {self.size}' + new
-	
-	
-	def __dir__( self ) -> List[ str ] | None:
-		'''
+		return (
+				'num' + f' = {self.number}' + new +
+				'temperature' + f' = {self.temperature}' + new +
+				'top_percent' + f' = {self.top_percent}' + new +
+				'frequency_penalty' + f' = {self.frequency_penalty}' + new +
+				'presence_penalty' + f' = {self.presence_penalty}' + new +
+				'max_completion_tokens' + f' = {self.max_completion_tokens}' + new +
+				'store' + f' = {self.store}' + new +
+				'stream' + f' = {self.stream}' )
 
-            Purpose:
-            --------
-			Method returns a list of strings representing members
-
-            Parameters:
-            ----------
-			self
-
-            Returns:
-            ---------
-			List[ str ] | None
-
-		'''
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
-		         'presence_penalty', 'max_completion_tokens',
-		         'store', 'stream', 'modalities', 'stops', 'content',
-		         'prompt', 'response', 'completion', 'file', 'path',
-		         'messages', 'image_url', 'respose_format', 'tools',
-		         'vector_store_ids', 'size', 'api_key', 'client', 'small_model',
-		         'generate_text', 'analyze_image', 'summarize_document', 'generate_image',
-		         'translate', 'transcribe',
-		         'search_web', 'search_files', 'get_data', 'dump' ]
-	
-	
 class Assistant( GPT ):
 	"""
 		
@@ -1236,11 +1201,11 @@ class Assistant( GPT ):
 				{
 					'role': 'user',
 					'content': [
-					{ 'text': 'input_text',
+					{ 'type': 'input_text',
 					  'text': self.prompt
 					},
 					{
-						'text': 'input_image',
+						'type': 'input_image',
 						'image_url': self.image_url
 					}]
 				}]
@@ -1667,9 +1632,7 @@ class Bubba( GPT ):
 			Purpose
 			_______
 			Method that analyzeses an image given a prompt,
-			
-			
-			
+
 			Parameters
 			----------
 			prompt: str
@@ -1693,11 +1656,11 @@ class Bubba( GPT ):
 					'role': 'user',
 					'content': [
 					{
-							'text': 'input_text',
+							'type': 'input_text',
 							'text': self.prompt
 					},
 					{
-						'text': 'input_image',
+						'type': 'input_image',
 						'image_url': self.image_url
 					} ]
 				} ]
@@ -1749,21 +1712,21 @@ class Bubba( GPT ):
 					'role': 'user',
 					'content': [
 					{
-						'text': 'file',
+						'type': 'file',
 						'file':
 						{
 							'file_id': self.file.id,
 						}
 					},
 					{
-						'text': 'text',
+						'type': 'text',
 						'text': self.prompt,
 					}, ]
 				} ]
 				
-				self.completion = self.client.chat.completions.create( model=self.model,
+				self.response = self.client.responses.create( model=self.model,
 					messages=self.messages )
-				document_summary = self.completion.choices[ 0 ].message.content
+				document_summary = self.response.output_text
 				return document_summary
 		except Exception as e:
 			exception = GptError( e )
@@ -1804,14 +1767,14 @@ class Bubba( GPT ):
 		            'content': self.prompt,
 		        } ]
 				
-				self.response = self.client.chat.completions.create( model=self.model,
+				self.response = self.client.responses.create( model=self.model,
 					web_search_options={ }, messages=self.messages )
 				web_results = self.response.output_text
 				return web_results
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
-			exception.cause = 'Chat'
+			exception.module = 'boo'
+			exception.cause = 'Bubbs'
 			exception.method = 'search_web( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1843,7 +1806,7 @@ class Bubba( GPT ):
 				self.prompt = prompt
 				self.tools = [
 				{
-					'text': 'file_search',
+					'type': 'file_search',
 					'vector_store_ids': self.vector_store_ids,
 					'max_num_results': 20
 				} ]
@@ -1854,8 +1817,8 @@ class Bubba( GPT ):
 				return file_results
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
-			exception.cause = 'Chat'
+			exception.module = 'boo'
+			exception.cause = 'Bubba'
 			exception.method = 'search_files( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1893,7 +1856,7 @@ class Bubba( GPT ):
 			error.show( )
 	
 	
-	def get_format_options( ) -> List[ str ] | None:
+	def get_format_options( self ) -> List[ str ] | None:
 		'''
 		
 			Method that returns a list of formatting options
@@ -1902,7 +1865,7 @@ class Bubba( GPT ):
 		return [ 'auto', 'text', 'json' ]
 	
 	
-	def get_model_options( ) -> List[ str ] | None:
+	def get_model_options( self ) -> List[ str ] | None:
 		'''
 
 			Method that returns a list of available models
@@ -1923,7 +1886,7 @@ class Bubba( GPT ):
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57' ]
 	
 	
-	def get_effort_options( ) -> List[ str ] | None:
+	def get_effort_options( self ) -> List[ str ] | None:
 		'''
 
 			Method that returns a list of available models
@@ -2140,8 +2103,6 @@ class Bro( GPT ):
 			_______
 			Method that analyzeses an image given a prompt,
 
-
-
 			Parameters
 			----------
 			prompt: str
@@ -2165,11 +2126,11 @@ class Bro( GPT ):
 					'role': 'user',
 					'content':[
 					{
-						'text': 'input_text',
+						'type': 'input_text',
 					    'text': self.prompt
 					},
 					{
-						'text': 'input_image',
+						'type': 'input_image',
 						'image_url': self.image_url
 					}]
 				}]
@@ -2193,9 +2154,6 @@ class Bro( GPT ):
 			_______
 			Method that summarizes a document given a
 			path prompt, and a path
-
-
-
 
 			Parameters
 			----------
@@ -2223,21 +2181,21 @@ class Bro( GPT ):
 					'role': 'user',
 					'content': [
 					{
-						'text': 'file',
+						'type': 'file',
 						'file':
 							{
 								'file_id': self.file.id,
 							}
 					},
 					{
-						'text': 'text',
+						'type': 'text',
 						'text': self.input_text,
 					}, ]
 				} ]
 				
-				self.completion = self.client.chat.completions.create( model=self.model,
+				self.respose = self.client.responses.create( model=self.model,
 					messages=self.messages )
-				document_summary = self.completion.choices[ 0 ].message.content
+				document_summary = self.reponse.output_text
 				return document_summary
 		except Exception as e:
 			exception = GptError( e )
@@ -2299,7 +2257,6 @@ class Bro( GPT ):
 			Method that analyzeses an image given a prompt,
 
 
-
 			Parameters
 			----------
 			prompt: str
@@ -2316,14 +2273,14 @@ class Bro( GPT ):
 			else:
 				self.tools = [
 				{
-					'text': 'file_search',
+					'type': 'file_search',
 					'vector_store_ids': self.vector_store_ids,
 					'max_num_results': 20
 				} ]
 				
 				self.response = self.client.responses.create( model=self.model,
 					tools=self.tools, input=prompt )
-				file_search = self.response.output_text
+				file_search=self.response.output_text
 				return file_search
 		except Exception as e:
 			exception = GptError( e )
@@ -2342,7 +2299,7 @@ class Bro( GPT ):
 		pass
 	
 	
-	def get_format_options( ) -> List[ str ]:
+	def get_format_options( self ) -> List[ str ]:
 		'''
 
 			Purpose:
@@ -2353,7 +2310,7 @@ class Bro( GPT ):
 		return [ 'auto', 'text', 'json' ]
 	
 	
-	def get_model_options( ) -> List[ str ]:
+	def get_model_options( self ) -> List[ str ]:
 		'''
 
 			Purpose:
@@ -2372,7 +2329,7 @@ class Bro( GPT ):
 		         'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx' ]
 	
 	
-	def get_effort_options( ) -> List[ str ]:
+	def get_effort_options( self ) -> List[ str ]:
 		'''
 
 			Purpose:
@@ -2422,7 +2379,7 @@ class Bro( GPT ):
 	
 	
 
-	def __dir__(self) -> List[ str ]:
+	def __dir__( self ) -> List[ str ]:
 		'''
 
             Purpose:
