@@ -2486,7 +2486,8 @@ class Embedding( GPT ):
 				raise Exception( 'Argument "text" is required.' )
 			else:
 				self.input = text
-				self.response = self.client.embeddings.create( self.input, self.small_model )
+				self.response = self.client.embeddings.create( input=self.input,
+					model=self.small_model )
 				self.embedding = self.response.data[ 0 ].embedding
 				return self.embedding
 		except Exception as e:
@@ -2519,7 +2520,8 @@ class Embedding( GPT ):
 				raise Exception( 'Argument "text" is required.' )
 			else:
 				self.input = text
-				self.response = self.client.embeddings.create( self.input, self.large_model )
+				self.response = self.client.embeddings.create( input=self.input,
+					model=self.large_model )
 				self.embedding = self.response.data[ 0 ].embedding
 				return self.embedding
 		except Exception as e:
@@ -2552,7 +2554,7 @@ class Embedding( GPT ):
 				raise Exception( 'Argument "text" is required.' )
 			else:
 				self.input = text
-				self.response = self.client.embeddings.create( self.input, self.ada_model )
+				self.response = self.client.embeddings.create( input=self.input, model=self.ada_model )
 				self.embedding = self.response.data[ 0 ].embedding
 				return self.embedding
 		except Exception as e:
@@ -2768,7 +2770,7 @@ class TTS( GPT ):
 		return [ 'mp3', 'wav', 'aac', 'flac', 'opus', 'pcm']
 	
 	
-	def save_audio( self, filepath: str ) -> str:
+	def save_audio( self, text: str, filepath: str ) -> str:
 		"""
 		
 			Purpose
@@ -2788,13 +2790,20 @@ class TTS( GPT ):
 		
 		"""
 		try:
-			out_path = Path( filepath )
-			if not out_path.parent.exists( ):
-				out_path.parent.mkdir( parents = True, exist_ok = True )
-			with self.client.audio.speech.with_streaming_response.create(
-					model=self.model, voice=getattr( self, 'voice', 'alloy' ), input=self.input_text
-			) as resp:
-				resp.stream_to_file( str( out_path ) )
+			if text is None:
+				raise Exception( 'Argument "text" is required.' )
+			elif filepath is None:
+				raise Exception( 'Argument "filepath" is required.' )
+			else:
+				self.input_text = text
+				out_path = Path( filepath )
+				if not out_path.parent.exists( ):
+					out_path.parent.mkdir( parents = True, exist_ok = True )
+				with self.client.audio.speech.with_streaming_response.create(
+						model=self.model, voice=getattr( self, 'voice', 'alloy' ),
+						input=self.input_text ) as resp:
+					resp.stream_to_file( str( out_path ) )
+				return str( out_path )
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'boo'
@@ -2818,8 +2827,7 @@ class TTS( GPT ):
 		         'frequency_penalty': self.frequency_penalty,
 		         'presence_penalty': self.presence_penalty,
 		         'store': self.store,
-		         'stream': self.stream,
-		         'size': self.size }
+		         'stream': self.stream  }
 	
 	
 	def dump( self ) -> str:
@@ -2940,45 +2948,6 @@ class Transcription( GPT ):
 		return [ 'whisper-1',
 		         'gpt-4o-mini-transcribe',
 		         'gpt-4o-transcribe' ]
-	
-	
-	def create( self, text: str, path: str ) -> str:
-		"""
-		
-			Purpose
-			_______
-			Generates a transcription given a text text to an audio file
-			
-			
-			Parameters
-			----------
-			text: str
-			path: str
-			
-			
-			Returns
-			-------
-			str
-		
-		"""
-		try:
-			if text is None:
-				raise Exception( 'Argument "text" is required.' )
-			elif path is None:
-				raise Exception( 'Argument "path" is required.' )
-			else:
-				self.audio_file = open( filepath=path, encoding='utf-8', errors='ignore' )
-				self.input_text = text
-				self.response = self.client.audio.speech.create( model=self.model,
-					voice='alloy', input=self.input_text )
-				self.response.stream_to_file( self.audio_path )
-		except Exception as e:
-			exception = GptError( e )
-			exception.module = 'boo'
-			exception.cause = 'Transcription'
-			exception.method = 'create( self, text: str, path: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
 
 	def transcribe( self, path: str ) -> str:
 		"""
@@ -2989,7 +2958,7 @@ class Transcription( GPT ):
 				raise Exception( 'Argument "path" is required.' )
 			with open( path, 'rb' ) as audio_file:
 				resp = self.client.audio.transcriptions.create( model='whisper-1',
-					file= udio_file )
+					file=audio_file )
 			return resp.text
 		except Exception as e:
 			ex = GptError( code = 0, message = str( e ) )
@@ -3050,7 +3019,7 @@ class Transcription( GPT ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'audio_file',
-		         'messages', 'respose_format',
+		         'messages', 'response_format',
 		         'api_key', 'client',
 		         'input_text', 'transcript' ]
 
@@ -3163,9 +3132,9 @@ class Translation( GPT ):
 			elif path is None:
 				raise Exception( 'Argument "path" is required.' )
 			else:
-				self.audio_file = open( filepath=path, mode='rb', encoding='utf-8', errors='ignore' )
-				self.response = self.client.audio.translations.create( model='whisper-1',
-					file=self.audio_file )
+				with open( path, 'rb' ) as audio_file:
+					resp = self.client.audio.translations.create( model='whisper-1', file=audio_file )
+				return resp.text
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'boo'
@@ -3248,7 +3217,7 @@ class Translation( GPT ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'completion', 'audio_path',
-		         'path', 'messages', 'respose_format', 'tools', 'api_key', 'client',
+		         'path', 'messages', 'response_format', 'tools', 'api_key', 'client',
 		         'small_model', 'create_small_embedding', 'get_model_options' ]
 
 
@@ -3363,23 +3332,21 @@ class LargeImage( GPT ):
 				self.input_text = input
 				self.file_path = path
 				self.input = \
-					[ {
-						'role': 'user',
-						'content':
-							[
-								{ 'text': 'input_text',
-								  'text': self.input_text
-								  },
-								{
-									'text': 'input_image',
-									'image_url': self.file_path
-								},
-							],
-					}]
+				[ {
+					'role': 'user',
+					'content':
+					[
+						{ 'type': 'input_text',
+						  'text': self.input_text
+						},
+						{
+							'type': 'input_image',
+							'image_url': self.file_path
+						},
+					],
+				}]
 				
-				self.response = self.client.responses.create(
-					model='gpt-4o-mini',
-					input=self.input )
+				self.response = self.client.responses.create( model='gpt-4o-mini', input=self.input )
 				return self.response.output_text
 		except Exception as e:
 			exception = GptError( e )
