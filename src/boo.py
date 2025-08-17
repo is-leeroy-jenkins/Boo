@@ -2389,8 +2389,7 @@ class Embedding( GPT ):
 
 		Purpose
 		___________
-		Class used for creating vectors using
-		OpenAI' embedding-3-small embedding small_model
+		Class used for creating vectors using OpenAI's embedding models
 
 		Parameters
 		------------
@@ -2706,14 +2705,10 @@ class TTS( GPT ):
 
 			Purpose:
 			--------
-			Methods that returns a list of small_model names
+			Methods that returns a list of tts model names
 		
 		'''
-		return [ 'tts-1', 'tts-1-hd',
-		         'gpt-4o-mini-tts',
-                 'gpt-4o-audio-preview-2024-12-17',
-                 'gpt-4o-audio-preview-2024-10-01',
-                 'gpt-4o-mini-audio-preview-2024-12-17' ]
+		return [ 'gpt-4o-mini-tts', 'tts-1', 'tts-1-hd' ]
 	
 	
 	def get_voice_options( self ):
@@ -2768,7 +2763,7 @@ class TTS( GPT ):
 				self.input_text = text
 				out_path = Path( filepath )
 				if not out_path.parent.exists( ):
-					out_path.parent.mkdir( parents = True, exist_ok = True )
+					out_path.parent.mkdir( parents=True, exist_ok=True )
 				with self.client.audio.speech.with_streaming_response.create(
 						model=self.model, voice=getattr( self, 'voice', 'alloy' ),
 						input=self.input_text ) as resp:
@@ -3516,7 +3511,7 @@ class Image( GPT ):
 
 			Purpose
 			_______
-			Generates an image given a text path
+        Generate an image from a text prompt.
 
 
 			Parameters
