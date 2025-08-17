@@ -57,6 +57,7 @@ import requests
 from src.static import Requests, Roles, Languages
 from typing_extensions import override
 import tiktoken
+from pathlib import Path
 from typing import Any, List, Tuple, Optional, Dict
 from src.guro import Prompt
 
@@ -407,60 +408,64 @@ class GptEndPoint( ):
 		self.files = f'https://api.openai.com/v1/files'
 		self.vector_stores = f'https://api.openai.com/v1/vector_stores'
 
-def get_data( self ) -> dict[ str, list[ str ] ] | None:
-	'''
-		Purpose:
-		--------
-		Returns a dictionary of endpoint lists.
+	def get_data( self ) -> dict[ str, list[ str ] ] | None:
+		'''
 
-		Returns:
-		--------
-		dict[str, list[str]] | None
-	'''
-	_data = {
-			'text_generation': self.text_generation,
-			'image_generation': self.image_generation,
-			'chat_completion': self.chat_completion,
-			'speech_generation': self.speech_generation,
-			'translations': self.translations,  # <- plural, consistent
-			'finetuning': self.finetuning,
-			'vectors': self.embeddings,  # <- vectors are embeddings
-			'uploads': self.uploads,
-			'files': self.files,
-			'vector_stores': self.vector_stores  # <- underscore, consistent
-	}
-	return _data
+			Purpose:
+			--------
+			Returns a dictionary of endpoint lists.
 
-def dump( self ) -> str:
-	'''
+			Returns:
+			--------
+			dict[str, list[str]] | None
 
-		Purpose:
-		--------
-		Returns a pretty "member = value" listing.
+		'''
+		_data = {
+				'text_generation': self.text_generation,
+				'image_generation': self.image_generation,
+				'chat_completion': self.chat_completion,
+				'speech_generation': self.speech_generation,
+				'translations': self.translations,  # <- plural, consistent
+				'finetuning': self.finetuning,
+				'vectors': self.embeddings,  # <- vectors are embeddings
+				'uploads': self.uploads,
+				'files': self.files,
+				'vector_stores': self.vector_stores  # <- underscore, consistent
+		}
+		return _data
 
-		Returns:
-		--------
-		str
+	def dump( self ) -> str:
+		'''
 
-	'''
-	new = '\r\n'  # <- real newline
-	return (
-			'base_url' + f' = {self.base_url}' + new +
-			'text_generation' + f' = {self.text_generation}' + new +
-			'image_generation' + f' = {self.image_generation}' + new +
-			'chat_completion' + f' = {self.chat_completion}' + new +
-			'speech_generation' + f' = {self.speech_generation}' + new +
-			'translations' + f' = {self.translations}' + new +
-			'assistants' + f' = {self.assistants}' + new +
-			'transcriptions' + f' = {self.transcriptions}' + new +
-			'finetuning' + f' = {self.finetuning}' + new +
-			'vectors' + f' = {self.embeddings}' + new +  # <- was files
-			'uploads' + f' = {self.uploads}' + new +
-			'files' + f' = {self.files}' + new +
-			'vector_stores' + f' = {self.vector_stores}')
+			Purpose:
+			--------
+			Returns a pretty "member = value" listing.
+
+			Returns:
+			--------
+			str
+
+		'''
+		new = '\r\n'  # <- real newline
+		return (
+				'base_url' + f' = {self.base_url}' + new +
+				'text_generation' + f' = {self.text_generation}' + new +
+				'image_generation' + f' = {self.image_generation}' + new +
+				'chat_completion' + f' = {self.chat_completion}' + new +
+				'speech_generation' + f' = {self.speech_generation}' + new +
+				'translations' + f' = {self.translations}' + new +
+				'assistants' + f' = {self.assistants}' + new +
+				'transcriptions' + f' = {self.transcriptions}' + new +
+				'finetuning' + f' = {self.finetuning}' + new +
+				'vectors' + f' = {self.embeddings}' + new +  # <- was files
+				'uploads' + f' = {self.uploads}' + new +
+				'files' + f' = {self.files}' + new +
+				'vector_stores' + f' = {self.vector_stores}')
+
 
 class GptHeader:
 	'''
+
 		Purpose:
 		--------
 		Encapsulates HTTP header data for OpenAI API requests.
@@ -471,6 +476,7 @@ class GptHeader:
 		api_key      : str | None
 		authorization: str
 		data         : dict[str, str]
+
 	'''
 
 	def __init__( self ):
@@ -484,6 +490,7 @@ class GptHeader:
 
 	def __dir__( self ) -> list[ str ] | None:
 		return [ 'content_type', 'api_key', 'authorization', 'data' ]
+
 
 class GptModels( ):
 	'''
@@ -593,13 +600,14 @@ class GptModels( ):
 		          'image_generation': self.image_generation,
 		          'chat_completion': self.chat_completion,
 		          'speech_generation': self.speech_generation,
-		          'translations': self.translation,
+		          'translations': self.translations,
 		          'finetuning': self.finetuning,
 		          'vectors': self.embeddings,
 		          'uploads': self.uploads,
 		          'files': self.files,
 		          'vectorstores': self.vectorstores }
 		return _data
+
 
 class GPT:
 	'''
@@ -609,6 +617,7 @@ class GPT:
 		Base class for OpenAI functionality.
 
 	'''
+	web_options: Optional[ Dict ]
 
 	def __init__( self ):
 		self.header = GptHeader( )
@@ -621,6 +630,8 @@ class GPT:
 		cfg = Prompt( )
 		self.bro_instructions = cfg.data_bro
 		self.bubba_instructions = cfg.budget_analyst
+		self.web_options = { }
+
 
 class Chat( GPT ):
 	"""
@@ -702,7 +713,7 @@ class Chat( GPT ):
 		self.tools = [ ]
 		self.vector_stores = \
 		{
-			'Apporopriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
+			'Appropriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
 			'Guidance': 'vs_712r5W5833G6aLxIYIbuvVcK',
 			'Code': 'vs_67e83bdf8abc81918bda0d6b39a19372',
 			'Hawaii': 'vs_67a777291d548191b9fa42956a7f6cb9'
@@ -751,7 +762,7 @@ class Chat( GPT ):
 				return self.response.output_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
@@ -787,7 +798,7 @@ class Chat( GPT ):
 			return self.response.data[0].url
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_image( self, prompt: str ) -> str | None'
 			error = ErrorDialog( exception )
@@ -839,7 +850,7 @@ class Chat( GPT ):
 				return self.response.output_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
 			error = ErrorDialog( exception )
@@ -877,24 +888,24 @@ class Chat( GPT ):
 					'role': 'user',
 					'content': [
 					{
-						'text': 'file',
+						'type': 'file',
 						'file':
 						{
 							'file_id': file.id,
 						}
 					},
 					{
-						'text': 'text',
+						'type': 'text',
 						'text': 'What is the first dragon in the book?',
 					}, ]
 				} ]
 				
-				self.completion = self.client.chat.completions.create( model=self.model,
-					messages=self.messages )
-				return self.completion.choices[ 0 ].message.content
+				self.response = self.client.responses.create( model=self.model,
+					input=self.messages )
+				return self.response.output_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -922,19 +933,19 @@ class Chat( GPT ):
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
+				self.web_options = { 'search_recency_days': 30, 'max_search_results': 8 }
 				self.messages = [
 		        {
 		            'role': 'user',
 		            'content': prompt,
 		        } ]
 				
-				self.response = self.client.chat.completions.create( model=self.model,
-					web_search_options={ }, messages=self.messages )
-				
+				self.response = self.client.responses.create( model=self.model,
+					web_search_options=self.web_options, input=self.messages )
 				return  self.response.output_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'search_web( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
@@ -965,7 +976,7 @@ class Chat( GPT ):
 				self.tools = [
 				{
 					'text': 'file_search',
-					'vector_store_ids': self.vector_store_ids,
+					'vector_store_ids': list( self.vector_stores.values( ) ),
 					'max_num_results': 20
 				} ]
 				
@@ -974,7 +985,7 @@ class Chat( GPT ):
 				return self.response.output_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'search_files( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
@@ -1002,8 +1013,8 @@ class Chat( GPT ):
 		         'frequency_penalty': self.frequency_penalty,
 		         'presence_penalty': self.presence_penalty,
 		         'store': self.store,
-		         'stream': self.stream,
-		         'size': self.size }
+		         'stream': self.stream  }
+
 
 	def __dir__( self ) -> list[ str ] | None:
 		return [
@@ -1026,6 +1037,7 @@ class Chat( GPT ):
 				'max_completion_tokens' + f' = {self.max_completion_tokens}' + new +
 				'store' + f' = {self.store}' + new +
 				'stream' + f' = {self.stream}' )
+
 
 class Assistant( GPT ):
 	"""
@@ -1086,12 +1098,15 @@ class Assistant( GPT ):
 		self.tools = [ ]
 		self.vector_stores = \
 		{
-			'Apporopriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
+			'Appropriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
 			'Guidance': 'vs_712r5W5833G6aLxIYIbuvVcK',
 			'Code': 'vs_67e83bdf8abc81918bda0d6b39a19372',
 			'Hawaii': 'vs_67a777291d548191b9fa42956a7f6cb9'
 		}
-		self.vector_store_ids = [ 'vs_67a777291d548191b9fa42956a7f6cb9' ]
+		self.vector_store_ids = [ 'vs_67a777291d548191b9fa42956a7f6cb9',
+		                          'vs_712r5W5833G6aLxIYIbuvVcK',
+		                          'vs_67e83bdf8abc81918bda0d6b39a19372',
+		                          'vs_67a777291d548191b9fa42956a7f6cb9' ]
 		self.assistants = \
 		{
 			'Boo': 'asst_SlgDBxbXW2mrld9qXErMqbHn',
@@ -1129,8 +1144,8 @@ class Assistant( GPT ):
 				return self.response.output_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
-			exception.cause = 'Chat'
+			exception.module = 'boo'
+			exception.cause = 'Assistant'
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1165,7 +1180,7 @@ class Assistant( GPT ):
 			return self.response.data[0].url
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
@@ -1214,7 +1229,7 @@ class Assistant( GPT ):
 				return self.response.output_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Assistant'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
 			error = ErrorDialog( exception )
@@ -1254,24 +1269,24 @@ class Assistant( GPT ):
 					'role': 'user',
 					'content': [
 					{
-						'text': 'file',
+						'type': 'file',
 						'file':
 						{
 							'file_id': self.file.id,
 						}
 					},
 					{
-						'text': 'text',
+						'type': 'text',
 						'text': self.input_text,
 					},]
 				}]
 				
 				self.completion = self.client.chat.completions.create( model=self.model,
-					messages=self.messages )
+					input=self.messages )
 				return self.completion.choices[ 0 ].message.content
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Assistant'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -1299,6 +1314,7 @@ class Assistant( GPT ):
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
+				self.web_options = { 'search_recency_days': 30, 'max_search_results': 8 }
 				self.input_text = prompt
 				self.messages = [
 		        {
@@ -1306,12 +1322,12 @@ class Assistant( GPT ):
 		            'content': self.input_text,
 		        } ]
 				
-				self.response = self.client.chat.completions.create( model=self.model,
-					web_search_options={ }, messages=self.messages )
+				self.response = self.client.responses.create( model=self.model,
+					web_search_options=self.web_options, input=self.messages )
 				return  self.response.output_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Assistant'
 			exception.method = 'search_web( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
@@ -1341,7 +1357,7 @@ class Assistant( GPT ):
 			else:
 				self.tools = [
 				{
-					'text': 'file_search',
+					'type': 'file_search',
 					'vector_store_ids': self.vector_store_ids,
 					'max_num_results': 20
 				}, ]
@@ -1351,7 +1367,7 @@ class Assistant( GPT ):
 				return self.response.output_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Assistant'
 			exception.method = 'search_files( self, prompt: str ) -> str | None'
 			error = ErrorDialog( exception )
@@ -1379,14 +1395,14 @@ class Assistant( GPT ):
 			return self.assistants.data
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Assistant'
 			exception.method = 'get_list( ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
 
 
-	def get_format_options( ) -> List[ str ] | None:
+	def get_format_options( self ) -> List[ str ] | None:
 		'''
 
 			Purpose:
@@ -1397,7 +1413,7 @@ class Assistant( GPT ):
 		return [ 'auto', 'text', 'json' ]
 	
 	
-	def get_model_options( ) -> List[ str ] | None:
+	def get_model_options( self ) -> List[ str ] | None:
 		'''
 
 			Purpose:
@@ -1412,7 +1428,7 @@ class Assistant( GPT ):
                  'o1-mini-2024-09-12', 'o3-mini-2025-01-31'  ]
 	
 	
-	def get_effort_options( ) -> List[ str ] | None:
+	def get_effort_options( self) -> List[ str ] | None:
 		'''
 
 			Purpose:
@@ -1435,8 +1451,7 @@ class Assistant( GPT ):
 		         'frequency_penalty': self.frequency_penalty,
 		         'presence_penalty': self.presence_penalty,
 		         'store': self.store,
-		         'stream': self.stream,
-		         'size': self.size }
+		         'stream': self.stream }
 	
 	
 	def dump( self ) -> str | None:
@@ -1455,8 +1470,7 @@ class Assistant( GPT ):
 			'presence_penalty' + f' = {self.presence_penalty}' + new + \
 			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
 			'store' + f' = {self.store}' + new + \
-			'stream' + f' = {self.stream}' + new + \
-			'size' + f' = {self.size}' + new
+			'stream' + f' = {self.stream}' + new
 	
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -1479,9 +1493,9 @@ class Assistant( GPT ):
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
-		         'messages', 'image_url', 'respose_format', 'tools',
+		         'messages', 'image_url', 'response_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
-		         'get_format_options', 'get_model_options', 'reasoning_effort'
+		         'get_format_options', 'get_model_options', 'reasoning_effort',
 		         'get_effort_options', 'input_text', 'metadata',
 		         'get_files', 'get_data',
 		         'dump', 'translate', 'transcribe' ]
@@ -1549,9 +1563,10 @@ class Bubba( GPT ):
 		self.tools = [ ]
 		self.vector_stores = \
 		{
-			'Apporopriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
+			'Appropriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
 			'Guidance': 'vs_712r5W5833G6aLxIYIbuvVcK'
 		}
+		self.vector_store_ids = [ 'vs_8fEoYp1zVvk5D8atfWLbEupN', 'vs_712r5W5833G6aLxIYIbuvVcK' ]
 
 
 	def generate_text( self, prompt: str ) -> str | None:
@@ -1583,7 +1598,7 @@ class Bubba( GPT ):
 				return generated_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Bubba'
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
@@ -1619,7 +1634,7 @@ class Bubba( GPT ):
 			return generated_image
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
@@ -1670,7 +1685,7 @@ class Bubba( GPT ):
 				return image_analysis
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
 			error = ErrorDialog( exception )
@@ -1724,13 +1739,12 @@ class Bubba( GPT ):
 					}, ]
 				} ]
 				
-				self.response = self.client.responses.create( model=self.model,
-					messages=self.messages )
+				self.response = self.client.responses.create( model=self.model, input=self.messages )
 				document_summary = self.response.output_text
 				return document_summary
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -1742,24 +1756,23 @@ class Bubba( GPT ):
 		
 			Purpose:
 			_______
-				Method that analyzeses an image given a prompt,
-			
-			
-			
+			Method that analyzeses an image given a prompt,
+
 			Parameters:
 			----------
-				prompt: str
-				url: str
+			prompt: str
+			url: str
 			
 			Returns:
 			-------
-				str
+			str
 		
 		"""
 		try:
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
+				self.web_options = { 'search_recency_days': 30, 'max_search_results': 8 }
 				self.prompt = prompt
 				self.messages = [
 		        {
@@ -1768,13 +1781,13 @@ class Bubba( GPT ):
 		        } ]
 				
 				self.response = self.client.responses.create( model=self.model,
-					web_search_options={ }, messages=self.messages )
+					web_search_options=self.web_options, input=self.messages )
 				web_results = self.response.output_text
 				return web_results
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'boo'
-			exception.cause = 'Bubbs'
+			exception.cause = 'Bubba'
 			exception.method = 'search_web( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -1844,12 +1857,12 @@ class Bubba( GPT ):
 			_list = [ f for f in _files  ]
 			_docid = self.vector_stores[ 'Guidance' ]
 			_docfiles = self.client.vector_stores.files.list( vector_store_id=_docid )
-			_doclist = [ d for d in _docfiles  ]
+			_doclist = [ d for d in _docfiles.data  ]
 			files = _list.extend( _doclist )
 			return  files
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Bubba'
 			exception.method = 'get_files'
 			error = ErrorDialog( exception )
@@ -1907,8 +1920,7 @@ class Bubba( GPT ):
 		         'frequency_penalty': self.frequency_penalty,
 		         'presence_penalty': self.presence_penalty,
 		         'store': self.store,
-		         'stream': self.stream,
-		         'size': self.size }
+		         'stream': self.stream  }
 	
 	
 	def dump( self ) -> str | None:
@@ -1923,8 +1935,7 @@ class Bubba( GPT ):
 			'presence_penalty' + f' = {self.presence_penalty}' + new + \
 			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
 			'store' + f' = {self.store}' + new + \
-			'stream' + f' = {self.stream}' + new + \
-			'size' + f' = {self.size}' + new
+			'stream' + f' = {self.stream}' + new
 	
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -1947,9 +1958,9 @@ class Bubba( GPT ):
 		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
 		         'store', 'stream', 'modalities', 'stops', 'content',
 		         'prompt', 'response', 'completion', 'file', 'path',
-		         'messages', 'image_url', 'respose_format', 'tools',
+		         'messages', 'image_url', 'response_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
-		         'get_format_options', 'get_model_options', 'reasoning_effort'
+		         'get_format_options', 'get_model_options', 'reasoning_effort',
 		         'get_effort_options', 'input_text', 'metadata', 'get_data', 'dump',
 		          'translate', 'transcribe' ]
 
@@ -2052,7 +2063,7 @@ class Bro( GPT ):
 				return generated_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
@@ -2089,7 +2100,7 @@ class Bro( GPT ):
 			return generated_image
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
@@ -2140,7 +2151,7 @@ class Bro( GPT ):
 				return image_analysis
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
 			error = ErrorDialog( exception )
@@ -2183,9 +2194,9 @@ class Bro( GPT ):
 					{
 						'type': 'file',
 						'file':
-							{
-								'file_id': self.file.id,
-							}
+						{
+							'file_id': self.file.id,
+						}
 					},
 					{
 						'type': 'text',
@@ -2193,13 +2204,13 @@ class Bro( GPT ):
 					}, ]
 				} ]
 				
-				self.respose = self.client.responses.create( model=self.model,
-					messages=self.messages )
+				self.response = self.client.responses.create( model=self.model,
+					inputs=self.messages )
 				document_summary = self.reponse.output_text
 				return document_summary
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -2229,21 +2240,21 @@ class Bro( GPT ):
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
+				self.web_options = { 'search_recency_days': 30, 'max_search_results': 8 }
 				self.messages = [
-					{
-						'role': 'user',
-						'content': prompt,
-					} ]
+				{
+					'role': 'user',
+					'content': prompt,
+				} ]
 				
-				self.response = self.client.chat.completions.create( model=self.model,
-					web_search_options={ }, messages=self.messages )
-
+				self.response = self.client.responses.create( model=self.model,
+					web_search_options=self.web_options, input=self.messages )
 				web_results = self.response.output_text
 				return web_results
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
-			exception.cause = 'Chat'
+			exception.module = 'boo'
+			exception.cause = 'Bro'
 			exception.method = 'search_web( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -2284,7 +2295,7 @@ class Bro( GPT ):
 				return file_search
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'search_files( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
@@ -2374,9 +2385,7 @@ class Bro( GPT ):
 			'presence_penalty' + f' = {self.presence_penalty}' + new + \
 			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
 			'store' + f' = {self.store}' + new + \
-			'stream' + f' = {self.stream}' + new + \
-			'size' + f' = {self.size}' + new
-	
+			'stream' + f' = {self.stream}' + new
 	
 
 	def __dir__( self ) -> List[ str ]:
@@ -2401,9 +2410,8 @@ class Bro( GPT ):
 		         'prompt', 'response', 'completion', 'file', 'path',
 		         'messages', 'image_url', 'respose_format', 'tools',
 		         'vector_store_ids', 'name', 'id', 'description', 'generate_text',
-		         'get_format_options', 'get_model_options', 'reasoning_effort'
-		         'get_effort_options', 'input_text', 'metadata',
-		          'get_data', 'dump' ]
+		         'get_format_options', 'get_model_options', 'reasoning_effort',
+		         'get_effort_options', 'input_text', 'metadata', 'get_data', 'dump' ]
 
 
 class Embedding( GPT ):
@@ -2483,7 +2491,7 @@ class Embedding( GPT ):
 				return self.embedding
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Embedding'
 			exception.method = 'create_small_embedding( self, text: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
@@ -2516,7 +2524,7 @@ class Embedding( GPT ):
 				return self.embedding
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Embedding'
 			exception.method = 'create_large_embedding( self, text: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
@@ -2549,7 +2557,7 @@ class Embedding( GPT ):
 				return self.embedding
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Embedding'
 			exception.method = 'create_ada_embedding( self, text: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
@@ -2584,7 +2592,7 @@ class Embedding( GPT ):
 				return _tokens
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Embedding'
 			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
 			error = ErrorDialog( exception )
@@ -2760,7 +2768,7 @@ class TTS( GPT ):
 		return [ 'mp3', 'wav', 'aac', 'flac', 'opus', 'pcm']
 	
 	
-	def save_audio( self, prompt: str, filepath: str ) -> str:
+	def save_audio( self, filepath: str ) -> str:
 		"""
 		
 			Purpose
@@ -2780,20 +2788,16 @@ class TTS( GPT ):
 		
 		"""
 		try:
-			if filepath is None:
-				raise Exception( 'Argument "path" is required.' )
-			elif prompt is None:
-				raise Exception( 'Argument "prompt" is required.' )
-			else:
-				self.audio_path = Path( filepath ).parent
-				self.prompt = prompt
-				self.response = self.client.audio.speech.with_streaming_response( model=self.model,
-					voice=self.voice, input=self.prompt )
-				_retval = self.response.stream_to_file( self.audio_path )
-				return _retval
+			out_path = Path( filepath )
+			if not out_path.parent.exists( ):
+				out_path.parent.mkdir( parents = True, exist_ok = True )
+			with self.client.audio.speech.with_streaming_response.create(
+					model=self.model, voice=getattr( self, 'voice', 'alloy' ), input=self.input_text
+			) as resp:
+				resp.stream_to_file( str( out_path ) )
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'TTS'
 			exception.method = 'save_audio( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -2834,8 +2838,7 @@ class TTS( GPT ):
 			'presence_penalty' + f' = {self.presence_penalty}' + new + \
 			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
 			'store' + f' = {self.store}' + new + \
-			'stream' + f' = {self.stream}' + new + \
-			'size' + f' = {self.size}' + new
+			'stream' + f' = {self.stream}' + new
 	
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -2854,13 +2857,17 @@ class TTS( GPT ):
 			List[ str ] | None
 
 		'''
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
-		         'presence_penalty', 'max_completion_tokens',
-		         'store', 'stream', 'modalities', 'stops',
-		         'prompt', 'response', 'completion', 'audio_path',
-		         'path', 'messages', 'respose_format', 'tools',
-		         'size', 'api_key', 'client', 'small_model', 'voice',
-		         'generate_text', 'get_model_options' ]
+		return [
+				'num', 'temperature', 'top_percent', 'frequency_penalty',
+				'presence_penalty', 'max_completion_tokens', 'system_instructions',
+				'store', 'stream', 'modalities', 'stops', 'content',
+				'prompt', 'response', 'completion', 'file', 'path',
+				'messages', 'image_url', 'response_format',
+				'tools', 'vector_store_ids', 'name', 'id', 'description',
+				'generate_text', 'get_format_options', 'get_model_options',
+				'reasoning_effort', 'get_effort_options',
+				'input_text', 'metadata', 'get_files', 'get_data', 'dump',
+				'translate', 'transcribe' ]
 
 
 class Transcription( GPT ):
@@ -2967,12 +2974,29 @@ class Transcription( GPT ):
 				self.response.stream_to_file( self.audio_path )
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Transcription'
 			exception.method = 'create( self, text: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
-	
+
+	def transcribe( self, path: str ) -> str:
+		"""
+		Transcribe audio with Whisper.
+		"""
+		try:
+			if not path:
+				raise Exception( 'Argument "path" is required.' )
+			with open( path, 'rb' ) as audio_file:
+				resp = self.client.audio.transcriptions.create( model='whisper-1',
+					file= udio_file )
+			return resp.text
+		except Exception as e:
+			ex = GptError( code = 0, message = str( e ) )
+			ex.module = 'boo';
+			ex.cause = 'Transcription';
+			ex.method = 'transcribe(self, path)'
+			ErrorDialog( ex ).show( )
 	
 	def get_data( self ) -> dict:
 		'''
@@ -2988,8 +3012,7 @@ class Transcription( GPT ):
 		         'frequency_penalty': self.frequency_penalty,
 		         'presence_penalty': self.presence_penalty,
 		         'store': self.store,
-		         'stream': self.stream,
-		         'size': self.size }
+		         'stream': self.stream }
 	
 	
 	def dump( self ) -> str:
@@ -3004,8 +3027,7 @@ class Transcription( GPT ):
 			'presence_penalty' + f' = {self.presence_penalty}' + new + \
 			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
 			'store' + f' = {self.store}' + new + \
-			'stream' + f' = {self.stream}' + new + \
-			'size' + f' = {self.size}' + new
+			'stream' + f' = {self.stream}' + new
 	
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -3146,13 +3168,32 @@ class Translation( GPT ):
 					file=self.audio_file )
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Translation'
 			exception.method = 'create_small_embedding( self, text: str )'
 			error = ErrorDialog( exception )
 			error.show( )
-	
-	
+
+
+	def translate( self, path: str ) -> str:
+		"""
+		Translate non-English speech to English with Whisper.
+		"""
+		try:
+			if not path:
+				raise Exception( 'Argument "path" is required.' )
+			with open( path, 'rb' ) as audio_file:
+				resp = self.client.audio.translations.create( model = 'whisper-1',
+					file = audio_file )
+			return resp.text
+		except Exception as e:
+			ex = GptError( code = 0, message = str( e ) )
+			ex.module = 'boo'
+			ex.cause = 'Translation'
+			ex.method = 'translate(self, path)'
+			ErrorDialog( ex ).show( )
+
+
 	def get_data( self ) -> dict:
 		'''
 
@@ -3167,8 +3208,7 @@ class Translation( GPT ):
 		         'frequency_penalty': self.frequency_penalty,
 		         'presence_penalty': self.presence_penalty,
 		         'store': self.store,
-		         'stream': self.stream,
-		         'size': self.size }
+		         'stream': self.stream }
 	
 	
 	def dump( self ) -> str:
@@ -3185,8 +3225,7 @@ class Translation( GPT ):
 			'presence_penalty' + f' = {self.presence_penalty}' + new + \
 			'max_completion_tokens' + f' = {self.max_completion_tokens}' + new + \
 			'store' + f' = {self.store}' + new + \
-			'stream' + f' = {self.stream}' + new + \
-			'size' + f' = {self.size}' + new
+			'stream' + f' = {self.stream}' + new
 	
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -3209,8 +3248,7 @@ class Translation( GPT ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'prompt', 'response', 'completion', 'audio_path',
-		         'path', 'messages', 'respose_format', 'tools',
-		         'size', 'api_key', 'client',
+		         'path', 'messages', 'respose_format', 'tools', 'api_key', 'client',
 		         'small_model', 'create_small_embedding', 'get_model_options' ]
 
 
@@ -3252,7 +3290,7 @@ class LargeImage( GPT ):
 		self.client.api_key = GptHeader( ).api_key
 		self.quality = 'hd'
 		self.model = 'dall-e-3'
-		self.size = '1024X1024'
+		self.size = '1024x1024'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -3301,7 +3339,7 @@ class LargeImage( GPT ):
 				return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Image'
 			exception.method = 'generate( self, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -3337,18 +3375,15 @@ class LargeImage( GPT ):
 									'image_url': self.file_path
 								},
 							],
-					}
-					]
+					}]
 				
 				self.response = self.client.responses.create(
 					model='gpt-4o-mini',
-					input=self.input,
-				)
-				
-				return response.output_text
+					input=self.input )
+				return self.response.output_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Image'
 			exception.method = 'analyze( self, text: str, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -3423,7 +3458,7 @@ class LargeImage( GPT ):
 		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
-		         'input_text', 'image_url', 'path',
+		         'input_text', 'image_url', 'path', 'size',
 		         'api_key', 'client', 'small_model', 'generate',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
@@ -3480,6 +3515,7 @@ class Image( GPT ):
 		self.model = 'dall-e-2'
 		self.large_model = 'dall-e-3'
 		self.small_model = 'dall-e-2'
+		self.size = '1024x1024'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -3573,7 +3609,7 @@ class Image( GPT ):
 				return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Image'
 			exception.method = 'generate( self, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -3612,11 +3648,11 @@ class Image( GPT ):
 						'content':
 						[
 							{
-								'text': 'input_text',
+								'type': 'input_text',
 								'text': self.input_text
 							},
 							{
-								'text': 'input_image',
+								'type': 'input_image',
 								'image_url': self.file_path
 							},
 						],
@@ -3628,14 +3664,14 @@ class Image( GPT ):
 				return self.response.output_text
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Image'
 			exception.method = 'analyze( self, path: str, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
 	
-	def edit( self, input: str, path: str, size: str='1024X1024' ) -> str:
+	def edit( self, input: str, path: str, size: str='1024x1024' ) -> str:
 		"""
 
 			Purpose
@@ -3663,13 +3699,12 @@ class Image( GPT ):
 				self.response = self.client.images.edit( model=self.model,
 					image=open( self.file_path, 'rb' ), prompt=self.input_text, n=self.number,
 					size=self.size )
-				
 				return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = GptError( e )
-			exception.module = 'Boo'
+			exception.module = 'boo'
 			exception.cause = 'Image'
-			exception.method = 'edit( self, text: str, path: str, size: str=1024X1024 ) -> str'
+			exception.method = 'edit( self, text: str, path: str, size: str=1024x1024 ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -3694,7 +3729,7 @@ class Image( GPT ):
 		         'presence_penalty', 'max_completion_tokens',
 		         'store', 'stream', 'modalities', 'stops',
 		         'api_key', 'client', 'small_model', 'path', 'analyze',
-		         'input_text', 'image_url', 'edit',
+		         'input_text', 'image_url', 'edit', 'size',
 		         'generate', 'quality', 'detail', 'small_model', 'get_model_options',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 	
