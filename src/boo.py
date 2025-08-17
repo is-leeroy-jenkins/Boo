@@ -79,8 +79,7 @@ class GptPrompt( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-	def __init__( self ):
-		super( ).__init__( )
+
 
 
 class GptLocation( BaseModel ):
@@ -101,8 +100,6 @@ class GptLocation( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-	def __init__( self ):
-		super( ).__init__( )
 
 
 class GptText( BaseModel ):
@@ -119,9 +116,6 @@ class GptText( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-
-	def __init__( self ):
-		super( ).__init__( )
 
 
 class GptFile( BaseModel ):
@@ -144,9 +138,6 @@ class GptFile( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-	def __init__( self ):
-		super( ).__init__( )
-
 
 class GptError( BaseModel ):
 	'''
@@ -162,9 +153,6 @@ class GptError( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-
-	def __init__( self ):
-		super( ).__init__( )
 
 
 class JsonSchema( BaseModel ):
@@ -183,9 +171,6 @@ class JsonSchema( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-	def __init__( self ):
-		super( ).__init__( )
-
 
 class JsonObject( BaseModel ):
 	'''
@@ -200,9 +185,6 @@ class JsonObject( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-
-	def __init__( self ):
-		super( ).__init__( )
 
 
 class GptFormat( BaseModel ):
@@ -235,9 +217,6 @@ class GptReasoning( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-
-	def __init__( self ):
-		super( ).__init__( )
 
 
 class GptResponse( BaseModel ):
@@ -274,9 +253,6 @@ class GptResponse( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-	def __init__( self ):
-		super( ).__init__( )
-
 
 class GptFileSearch( BaseModel ):
 	'''
@@ -294,8 +270,6 @@ class GptFileSearch( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-	def __init__( self ):
-		super( ).__init__( )
 
 
 class GptWebSearch( BaseModel ):
@@ -315,8 +289,7 @@ class GptWebSearch( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-	def __init__( self ):
-		super( ).__init__( )
+
 
 
 class GptComputerUse( BaseModel ):
@@ -336,8 +309,7 @@ class GptComputerUse( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-	def __init__( self ):
-		super( ).__init__( )
+
 
 
 class GptFunction( BaseModel ):
@@ -356,8 +328,7 @@ class GptFunction( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-	def __init__( self ):
-		super( ).__init__( )
+
 
 
 class GptMessage( BaseModel ):
@@ -378,8 +349,8 @@ class GptMessage( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-	def __init__( self ):
-		super( ).__init__( )
+
+
 
 
 class GptEndPoint( ):
@@ -545,7 +516,7 @@ class GptModels( ):
 		self.files = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
 		               'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
 		               'o1-2024-12-17', 'o3-mini-2025-01-31' ]
-		self.vectorstores = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
+		self.vector_stores = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                       'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
 		                       'gpt-4o-mini-2024-07-18', 'o1-2024-12-17', 'o3-mini-2025-01-31' ]
 		self.bubba = \
@@ -584,7 +555,7 @@ class GptModels( ):
 		'''
 		return [ 'text_generation', 'image_generation', 'chat_completion',
 		         'speech_generation', 'responses', 'reasoning', 'translations', 'assistants',
-		         'transcriptions', 'finetuning', 'vectors', 'uploads', 'files', 'vectorstores',
+		         'transcriptions', 'finetuning', 'vectors', 'uploads', 'files', 'vector_stores',
 		         'bubba_instructions', 'bro_instructions', 'get_data', ]
 	
 	
@@ -605,7 +576,7 @@ class GptModels( ):
 		          'vectors': self.embeddings,
 		          'uploads': self.uploads,
 		          'files': self.files,
-		          'vectorstores': self.vectorstores }
+		          'vector_stores': self.vector_stores }
 		return _data
 
 
@@ -1181,8 +1152,8 @@ class Assistant( GPT ):
 		except Exception as e:
 			exception = GptError( e )
 			exception.module = 'boo'
-			exception.cause = 'Chat'
-			exception.method = 'generate_text( self, prompt: str )'
+			exception.cause = 'Assistant'
+			exception.method = 'generate_image( self, prompt: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 		
@@ -2092,11 +2063,10 @@ class Bro( GPT ):
 			if prompt is None:
 				raise Exception( 'Argument "prompt" cannot be None' )
 			else:
-				self.prompt = prompt
+				self.input_text = prompt
 				self.response = self.client.images.generate( model='dall-e-3',
-					prompt=self.prompt, size='1024x1024', quality='standard', n=1 )
+					prompt=self.input_text, size='1024x1024', quality='standard', n=1 )
 				generated_image = self.response.data[ 0 ].url
-			
 			return generated_image
 		except Exception as e:
 			exception = GptError( e )
@@ -2130,7 +2100,7 @@ class Bro( GPT ):
 			elif url is None:
 				raise Exception( 'Argument "url" cannot be None' )
 			else:
-				self.prompt = prompt
+				self.input_text = prompt
 				self.image_url = url
 				self.input = [
 				{
@@ -2138,7 +2108,7 @@ class Bro( GPT ):
 					'content':[
 					{
 						'type': 'input_text',
-					    'text': self.prompt
+					    'text': self.input_text
 					},
 					{
 						'type': 'input_image',
@@ -2264,14 +2234,14 @@ class Bro( GPT ):
 		"""
 
 			Purpose
-			_______
-			Method that analyzeses an image given a prompt,
+		    -------
+		    Run a file-search tool call against configured vector stores using
+		    the Responses API, and return the textual result.
 
 
 			Parameters
 			----------
 			prompt: str
-			url: str
 
 			Returns
 			-------
@@ -3505,9 +3475,7 @@ class Image( GPT ):
 			Methods that returns a list of small_model names
 
 		'''
-		return [ 'dall-e-2', 'gpt-4-0613',
-		         'gpt-4-0314', 'gpt-4o-mini',
-		         'gpt-4o-mini-2024-07-18' ]
+		return [ "dall-e-3", "gpt-4o-mini", "gpt-4o" ]
 	
 	
 	def get_size_options( self ) -> list[ str ]:
@@ -3529,7 +3497,7 @@ class Image( GPT ):
 			Method that returns a  list of format options
 
 		'''
-		return [ '.png', '.mpeg', '.jpeg', '.webp', '.gif' ]
+		return [ '.png', '.jpeg', '.webp', '.gif' ]
 	
 	
 	def get_detail_options( self ) -> list[ str ]:
@@ -3583,7 +3551,7 @@ class Image( GPT ):
 			error.show( )
 	
 	
-	def analyze( self, input: str, path: str ) -> str:
+	def analyze( self, text: str, path: str ) -> str:
 		'''
 		
 			Purpose:
@@ -3602,12 +3570,12 @@ class Image( GPT ):
 
 		'''
 		try:
-			if input is None:
+			if text is None:
 				raise Exception( 'The argument "text" cannot be None' )
 			elif path is None:
 				raise Exception( 'The argument "path" cannot be None' )
 			else:
-				self.input_text = input
+				self.input_text = text
 				self.file_path = path
 				self.input = [
 				{
