@@ -63,68 +63,75 @@ from boogr import Error, ErrorDialog
 
 class Fetch( ):
 	"""
-		Purpose:
-			Provides a unified interface for querying structured (SQL database) and
-			unstructured (documents) data sources through a conversational agent
-			powered by OpenAI models. The class initializes an agent with memory and
-			multiple tools (SQL, document retrieval, API integrations) to handle
-			both structured queries and natural language Q&A.
+	    Purpose:
+	        Provides a unified conversational system with explicit methods for
+	        querying structured data (SQL), unstructured documents, or free-form
+	        chat with an OpenAI LLM. Each method is deterministic and isolates
+	        a specific capability.
 
-		Parameters:
-			db_uri (str):
-				URI string for the SQLite database connection. Example:
-				'sqlite:///./finance.db'.
-			doc_paths (List[str]):
-				List of file paths to documents (txt, pdf, csv, html/htm) to be
-				ingested into a vector store for retrieval-augmented generation.
-			model (str, optional):
-				OpenAI model identifier (default: 'gpt-4o-mini').
-			temperature (float, optional):
-				Sampling temperature for the LLM, controlling creativity
-				(default: 0.8).
+	    Parameters:
+	        db_uri (str):
+	            URI string for the SQLite database connection
+	            (e.g., 'sqlite:///./finance.db').
+	        doc_paths (list[str]):
+	            List of file paths to documents (txt, pdf, csv, html/htm) to be
+	            ingested into a vector store for retrieval-augmented generation.
+	        model (str, optional):
+	            OpenAI model identifier (default: 'gpt-4o-mini').
+	        temperature (float, optional):
+	            Sampling temperature for the LLM, controlling creativity
+	            (default: 0.8).
 
-		Attributes:
-			llm (ChatOpenAI):
-				The language model instance used for reasoning and responses.
-			memory (ConversationBufferMemory):
-				Memory object that tracks prior conversation context.
-			sql_tool (Tool or List[Tool]):
-				Tool(s) for interacting with the SQL database.
-			doc_tool (Tool or None):
-				Tool for document-based Q&A, or None if no documents provided.
-			api_tools (List[Tool]):
-				Optional additional API tools (currently placeholder).
-			agent (AgentExecutor):
-				LangChain agent initialized with the SQL, document, and API tools.
+	    Attributes:
+	        llm (ChatOpenAI):
+	            The language model instance used for reasoning and responses.
+	        memory (ConversationBufferMemory):
+	            Tracks prior conversation context across turns.
+	        sql_tool (Tool or None):
+	            SQL database query tool initialized for structured data access.
+	        doc_tool (Tool or None):
+	            Document retrieval tool initialized for unstructured data access.
+	        api_tools (list[Tool]):
+	            Additional API tools, if configured.
+	        agent (AgentExecutor):
+	            LangChain agent configured with all available tools, memory, and LLM.
+	        __tools (list[Tool]):
+	            Internal list of active tools, filtered to exclude None.
 
-		Methods:
-			query(prompt: str) -> str:
-				Runs a natural language query against the agent, which may choose to
-				use the SQL tool, document tool, or LLM reasoning directly.
-			chat_history() -> List[str]:
-				Returns prior conversation history as a list of messages.
+	    Methods:
+	        query_sql(question: str) -> str:
+	            Routes the request exclusively to the SQL database tool, returning
+	            answers derived from database queries.
 
-		Usage Example:
-			>>> from foo_2 import Fetch
-			>>> import os
-			>>> os.environ["OPENAI_API_KEY"] = "<your_api_key>"
+	        query_docs(question: str, with_sources: bool = False) -> str:
+	            Routes the request exclusively to the document retriever.
+	            Optionally returns cited sources if supported by the retriever.
 
-			>>> fetch = Fetch(
-			...     db_uri="sqlite:///./finance.db",
-			...     doc_paths=["./docs/Policy.pdf", "./docs/Notes.txt"],
-			...     model="gpt-4o-mini",
-			...     temperature=0.3
-			... )
+	        query_chat(prompt: str) -> str:
+	            Sends a free-form chat prompt directly to the LLM, bypassing SQL
+	            and document retrieval tools.
 
-			# Querying the database
-			>>> print(fetch.query("List top 5 vendors by obligations."))
+	    Usage Example:
+	        >>> from foo import Fetch
+	        >>> import os
+	        >>> os.environ["OPENAI_API_KEY"] = "<your_api_key>"
 
-			# Asking a document-grounded question
-			>>> print(fetch.query("What approvals are required for travel?"))
+	        >>> fetch = Fetch(
+	        ...     db_uri="sqlite:///./finance.db",
+	        ...     doc_paths=["./docs/Policy.pdf", "./docs/Notes.txt"],
+	        ...     model="gpt-4o-mini",
+	        ...     temperature=0.3
+	        ... )
 
-			# Inspect chat history
-			>>> print(fetch.chat_history())
-	"""
+	        # Structured query
+	        >>> print(fetch.query_sql("List top 5 vendors by obligations."))
+
+	        # Document-grounded question
+	        >>> print(fetch.query_docs("What approvals are required for travel?", with_sources=True))
+
+	        # Free-form conversational query
+	        >>> print(fetch.query_chat("Summarize the key challenges in federal budgeting."))
+	    """
 	db_uri: str | None
 	doc_path: str | None
 	model: str | None
@@ -335,39 +342,96 @@ class Fetch( ):
 			error = ErrorDialog( exception )
 			error.show( )
 
-	def query( self, prompt: str ) -> str | None:
+	# ---------- Explicit entrypoints ----------
+	def query_sql( self, question: str ) -> str:
+		"""
+		Purpose:
+			Answer a question using ONLY the SQL tool.
+
+		Parameters:
+			question (str):
+				Natural language question that maps to a SQL database query.
+
+		Returns:
+			str:
+				Answer string derived from database queries.
+		"""
+		try:
+			if not question:
+				raise Exception( 'Argument "question" cannot be empty' )
+			return self.sql_tool.func( question )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Fetch'
+			exception.cause = 'query_sql'
+			exception.method = 'query_sql(self, question)'
+			ErrorDialog( exception ).show( )
+
+	def query_docs( self, question: str, *, with_sources: bool = False ) -> str | None:
 		"""
 
 			Purpose:
-			--------
-			Executes a query through the initialized agent. The agent decides
-			whether to use the SQL tool, document retrieval, or LLM reasoning
-			to generate the answer.
+				Answer a question using ONLY the document retriever.
 
 			Parameters:
-			--------
-			prompt (str):
-			The natural language query string.
+				question (str):
+					Natural language question to search within the ingested documents.
+				with_sources (bool, optional):
+					Whether to return document sources with the answer
+					(default: False).
 
 			Returns:
-			--------
-			str:
-			The agent's response to the query, which may be grounded in
-			database results, documents, or general LLM reasoning.
+				str:
+					Answer string based on document retrieval, optionally
+					including sources.
 
 		"""
 		try:
-			if prompt is None:
-				raise Exception( 'The object prompt does not exist or is None!' )
-			else:
-				return self.agent.run( prompt )
+			if not question:
+				raise Exception( 'Argument "question" cannot be empty' )
+			if self.doc_tool is None:
+				raise Exception( 'No document tool is configured.' )
+
+			if with_sources and hasattr( self, "doc_chain_with_sources" ):
+				out = self.doc_chain_with_sources( { "question": question } )
+				ans = out.get( "answer", "" )
+				src = out.get( "sources", "" )
+				return f"{ans}\n\nSOURCES:\n{src}" if src else ans
+
+			return self.doc_tool.func( question )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'foo'
-			exception.cause = 'Fetch'
-			exception.method = 'query( self, prompt: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
+			exception.module = 'Fetch'
+			exception.cause = 'query_docs'
+			exception.method = 'query_docs(self, question, with_sources)'
+			ErrorDialog( exception ).show( )
+
+	def query_chat( self, prompt: str ) -> str | None:
+		"""
+
+			Purpose:
+				Engage in free-form chat with the LLM, bypassing SQL and
+				document retrieval tools.
+
+			Parameters:
+				prompt (str):
+					Free-form conversational input for the LLM.
+
+			Returns:
+				str:
+					LLM-generated response string.
+
+		"""
+		try:
+			if not prompt:
+				raise Exception( 'Argument "prompt" cannot be empty' )
+			return self.llm.invoke( prompt ).content
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'Fetch'
+			exception.cause = 'query_chat'
+			exception.method = 'query_chat(self, prompt)'
+			ErrorDialog( exception ).show( )
 
 	def chat_history( self ) -> List[ str ] | None:
 		"""
