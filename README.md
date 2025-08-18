@@ -254,7 +254,7 @@ print("Available Assistants:", assistants)
 ```
 
 ## 📁 File Organization
-- boo.py – Main application framework
+- [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/src/boo.py) – Main application framework
 - [boogr](https://github.com/is-leeroy-jenkins/Boo/blob/main/src/boogr.py)/ – GUI and error dialogs
 - [guro](https://github.com/is-leeroy-jenkins/Boo/blob/main/src/guro.py)/ – Prompt context utilities
 - [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/src/boo.py) – ML/AI Layer
