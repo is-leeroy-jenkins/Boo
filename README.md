@@ -260,7 +260,227 @@ print("Available Assistants:", assistants)
 - [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/src/boo.py) – ML/AI Layer
 - [mathy](https://github.com/is-leeroy-jenkins/Boo/tree/main/src/mathy)/ - Machine Learning models
 
+---
+title: Boo
+description: "Boo: lightweight Python wrappers around the OpenAI Responses API (plus Images,
+Embeddings, TTS, Transcription, and Vector Store file search) with consistent payload builders,
+error handling, and sane defaults."
+version: 0.6.0
+---
 
+## 🧭 Table of Contents
+
+- 🧰 Overview
+- ✨ Features
+- ⚡ Quickstart
+- 🔧 Configuration
+- 🧩 Design & Architecture
+- 🧪 Usage Examples
+  - 📝 Text generation
+  - 🌐 Web search (Responses)
+  - 📄 Summarize a document (file-grounded)
+  - 🗂️ File search (vector stores)
+  - 👀 Vision: analyze an image
+  - 🖼️ Images: generate / edit
+  - 🧬 Embeddings
+  - 🔊 Text-to-Speech (TTS)
+  - 🎙️ Transcription / Translation (Whisper)
+- 📄 License
+
+---
+
+## 🧰 Overview
+
+Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
+
+- **GPT (base)** – holds the single `OpenAI` client, env config, and shared helpers.
+- **Chat / Assistant / Bro / Bubba** – opinionated text assistants using the **Responses API**.
+- **Image / LargeImage** – image generation and vision analysis.
+- **Embedding** – small/large/legacy embeddings with consistent return types.
+- **TTS** – text-to-speech helpers (streaming to file).
+- **Transcription / Translation** – Whisper-powered speech-to-text (+ translate).
+- **Vector Store helpers** – list files, search via `file_search` tool, merge results.
+
+Boo aims to be “boring on purpose”: predictable names, stable defaults, and payloads that match the
+current API shapes so you don’t fight subtle request/response drift.
+
+---
+
+## ✨ Features
+
+- **Responses-first**: consistent `input=[{role, content:[{type:...}]}]` builders.
+- **One client**: a single `OpenAI` instance per process for reliability and testability.
+- **Typed containers**: Pydantic models for prompts/messages with pass-through `__init__`.
+- **Vector search**: easy `file_search` tools + helpers to fetch file IDs from vector stores.
+- **Audio**: TTS (stream-to-file), ASR (transcribe), and translate via Whisper.
+- **Vision & Images**: multimodal analysis (4o/4o-mini) and image generation (DALL·E 3).
+- **Guardrails**: tiny helpers that prevent recurring mistakes (e.g., `inputs` vs `input`,
+  content `type` keys, size strings, binary file handling).
+- **Uniform errors**: `GptError` + `ErrorDialog` with `module/cause/method` metadata.
+
+---
+
+## ⚡ Quickstart
+
+1) **Install**
+
+   pip install openai pydantic
+
+2) **Configure**
+
+   # Power your client via environment
+   export OPENAI_API_KEY="sk-..."         # macOS/Linux
+   setx OPENAI_API_KEY "sk-..."           # Windows
+
+3) **Hello Boo**
+
+   from boo import Chat
+
+   chat = Chat()
+   print(chat.generate_text("Say hello in one short sentence."))
+
+---
+
+## 🔧 Configuration
+
+- **Environment**
+  - `OPENAI_API_KEY` (required)
+- **Models**
+  - Text/Responses: e.g., `gpt-4o-mini`, `gpt-4o`, `gpt-4.1-mini`
+  - Images: `dall-e-3`
+  - Embeddings: `text-embedding-3-small`, `text-embedding-3-large`
+  - TTS: `gpt-4o-mini-tts`, `tts-1`, `tts-1-hd`
+  - ASR/Translate: `whisper-1`
+- **Vector stores (optional)**
+  - Configure your store IDs once; Boo converts to lists when calling tools.
+
+---
+
+## 🧩 Design & Architecture
+
+- **Single client**: `OpenAI(api_key=...)` is created in `GPT.__init__()` and reused everywhere.
+- **Schema helpers**: tiny, battle-tested builders ensure payloads are valid for the Responses API:
+  - input text only
+  - text + file
+  - text + image
+- **No duplicate methods**: each capability has one canonical implementation per class.
+- **Type-safe Pydantic**: BaseModel subclasses do **not** override `__init__` except with
+  pass-through `def __init__(self, **data): super().__init__(**data)`.
+- **Consistent naming**: `vector_stores` (with underscore), `response_format`, `output_text`.
+
+---
+
+## 🧪 Usage Examples
+
+> The snippets below show idiomatic Boo usage. They assume `chat = Chat()`, `img = Image()`,
+> etc., and an `OPENAI_API_KEY` is present in your environment.
+
+### 📝 Text generation
+
+    ```
+    from boo import Chat
+
+    chat = Chat()
+    out = chat.generate_text("Give me three bullet points on strict typing in Python.")
+    print(out)
+    ```
+
+### 🌐 Web search (Responses)
+
+    ```
+    from boo import Chat
+
+    chat = Chat()
+    prompt = "Latest trends in Retrieval Augmented Generation. 3 bullets, 1 reference each."
+    out = chat.search_web(prompt)  # internally uses web_search_options
+    print(out)
+    ```
+
+### 📄 Summarize a document (file-grounded)
+
+    ```
+    from boo import Chat
+
+    chat = Chat()
+    out = chat.summarize_document(
+        prompt="Summarize the document with a 5-bullet executive brief.",
+        path="docs/paper.pdf"
+    )
+    print(out)
+    ```
+
+### 🗂️ File search (vector stores)
+
+    ```
+    from boo import Chat
+
+    chat = Chat()
+    # Assumes chat.vector_stores is configured with { "Appropriations": "...", "Guidance": "..." }
+    out = chat.search_files("What are the major themes around FY2024 OCO funding?")
+    print(out)
+    ```
+
+### 👀 Vision: analyze an image
+
+    ```
+    from boo import Image
+
+    img = Image()
+    out = img.analyze(
+        text="Describe the chart and call out any anomalies in one paragraph.",
+        path="https://example.com/plot.png"
+    )
+    print(out)
+    ```
+
+### 🖼️ Images: generate / edit
+
+    ```
+    from boo import Image
+
+    img = Image()
+    url = img.generate("A minimalist logo for 'Boo' in monochrome, vector style")
+    print(url)
+
+    # If your SDK supports edits, ensure the correct API path (images.edit vs images.edits)
+    # url = img.edit("Add subtle grid background", "logo.png", size="1024x1024")
+    ```
+
+### 🧬 Embeddings
+
+    ```
+    from boo import Embedding
+
+    emb = Embedding()
+    vec = emb.create_small_embedding("Vectorize this sentence.")
+    print(len(vec), "dims")
+    ```
+
+### 🔊 Text-to-Speech (TTS)
+
+    ```
+    from boo import TTS
+
+    tts = TTS()
+    outfile = tts.save_audio("Hello from Boo in a calm voice.", "out/hello.mp3")
+    print("Saved:", outfile)
+    ```
+
+### 🎙️ Transcription / Translation (Whisper)
+
+    ```
+    from boo import Transcription, Translation
+
+    asr = Transcription()
+    text = asr.transcribe("audio/meeting.m4a")
+    print(text)
+
+    xlat = Translation()
+    english = xlat.create("Translate this speech to English.", "audio/spanish.m4a")
+    print(english)
+    ```
+
+---
 
 ## 📝 License
 
