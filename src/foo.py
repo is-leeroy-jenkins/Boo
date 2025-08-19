@@ -170,12 +170,12 @@ class Fetch( ):
 		# --- Core LLM & config ---
 		self.model = model
 		self.temperature = temperature
-		self.llm = ChatOpenAI( model = self.model, temperature=self.temperature,
-			streaming = True )
+		self.llm = ChatOpenAI( model=self.model, temperature=self.temperature,
+			streaming=True )
 		self.db_uri = db_uri
 		self.doc_paths = doc_paths
-		self.memory = ConversationBufferMemory( memory_key = 'chat_history',
-			return_messages = True )
+		self.memory = ConversationBufferMemory( memory_key='chat_history',
+			return_messages=True )
 
 		# --- Defaults BEFORE initialization ---
 		self.documents = [ ]
@@ -343,7 +343,7 @@ class Fetch( ):
 			error.show( )
 
 	# ---------- Explicit entrypoints ----------
-	def query_sql( self, question: str ) -> str:
+	def query_sql( self, question: str ) -> str | None:
 		"""
 		Purpose:
 			Answer a question using ONLY the SQL tool.
