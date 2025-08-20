@@ -47,7 +47,7 @@ import os
 # Constants
 APPLICATION_WIDTH = 85
 THEME = "DarkGray12"
-OUTPUT_FILE_NAME = "record.wav"
+OUTPUT_FILE_NAME = "boo.wav"
 SAMPLE_RATE = 48000
 MODELS = [ "gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo" ]
 DEFAULT_MODEL = MODELS[ 0 ]
@@ -57,6 +57,7 @@ DEFAULT_POSITION = "Python Developer"
 GEOAPIFY_API_KEY = os.getenv( 'GEOAPIFY_API_KEY' )
 GEMINI_API_KEY = os.getenv( 'GEMINI_API_KEY' )
 GROQ_API_KEY = os.getenv( 'GROQ_API_KEY' )
+GOOGLE_API_KEY = os.getenv( 'GOOGLE_API_KEY' )
 HUGGINGFACE_API_KEY = os.getenv( 'HUGGINGFACE_API_KEY' )
 IPINFO_API_KEY = os.getenv( 'IPINFO_API_KEY' )
 OPENAI_API_KEY = os.getenv( 'OPENAI_API_KEY' )
