@@ -62,21 +62,6 @@ from typing import Any, List, Tuple, Optional, Dict
 from src.guro import Prompt
 
 
-def guard_nonempty( name: str, val: str ):
-	if not val:
-		raise ValueError( f'Argument "{name}" cannot be empty.' )
-
-def chunk_text( text: str, max_chars: int = 6_000 ) -> list[ str ]:
-	return [ text[ i:i + max_chars ] for i in range( 0, len( text ), max_chars ) ]
-
-
-
-
-
-
-
-
-
 class GptEndPoint( ):
 	'''
 
@@ -306,7 +291,7 @@ class GptModels( ):
 		return _data
 
 
-class GPT:
+class GPT( ):
 	'''
 
 		Purpose:
@@ -315,18 +300,15 @@ class GPT:
 
 	'''
 	web_options: Optional[ Dict ]
+	client: Optional[ OpenAI ]
+	prompt: Optional[ str ]
 
 	def __init__( self ):
 		self.header = GptHeader( )
 		self.endpoint = GptEndPoint( )
-		self.prompt = GptPrompt( )
 		self.api_key = self.header.api_key
-		self.client = OpenAI( api_key = self.api_key )
-
-		# from src.guro import Prompt
-		cfg = Prompt( )
-		self.bro_instructions = cfg.data_bro
-		self.bubba_instructions = cfg.budget_analyst
+		self.bro_instructions = self.prompt.data_bro
+		self.bubba_instructions = self.prompt.budget_analyst
 		self.web_options = { }
 
 
@@ -382,9 +364,8 @@ class Chat( GPT ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
-		self.api_key = GptHeader( ).api_key
 		self.client = OpenAI( )
-		self.client.api_key = GptHeader( ).api_key
+		self.client.api_key = self.api_key
 		self.model = 'gpt-4o-mini'
 		self.number = num
 		self.temperature = temp
@@ -770,11 +751,10 @@ class Assistant( GPT ):
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 	              pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
-		self.api_key = GptHeader( ).api_key
-		self.system_instructions = GPT( ).bubba_instructions
+		self.system_instructions = self.bubba_instructions
 		self.client = OpenAI( )
-		self.client.api_key = GptHeader( ).api_key
-		self.model = 'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-mini-20250615:C2kapoPp'
+		self.client.api_key = self.api_key
+		self.model = 'gpt-4o-mini'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -3387,6 +3367,14 @@ class Image( GPT ):
 		         'input_text', 'image_url', 'edit', 'size',
 		         'generate', 'quality', 'detail', 'small_model', 'get_model_options',
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
-	
-	
+
+
+def throw_if( name: str, val: Optional[ object ] ):
+	if not val:
+		raise ValueError( f'Argument "{name}" cannot be empty.' )
+
+def chunk_text( text: str, max_chars: int = 6_000 ) -> List[ str ]:
+	return [ text[ i:i + max_chars ] for i in range( 0, len( text ), max_chars ) ]
+
+
 
