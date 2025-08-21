@@ -190,6 +190,29 @@ class Reasoning( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
+
+class MathReasoning( BaseModel ):
+	class Step( BaseModel ):
+		explanation: Optional[ str ]
+		output: Optional[ str ]
+
+	steps: Optional[ List[ Step ] ]
+	final_answer: Optional[ str ]
+
+
+class ArticleSummary( BaseModel ):
+	invented_year: Optional[ int ]
+	summary: Optional[ str ]
+	inventors: Optional[ List[ str ] ]
+	description: Optional[ str ]
+
+	class Concept( BaseModel ):
+		title: Optional[ str ]
+		description: Optional[ str ]
+
+	concepts: Optional[ List[ Concept ] ]
+
+
 class Response( BaseModel ):
 	'''
 

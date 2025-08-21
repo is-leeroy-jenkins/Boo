@@ -89,7 +89,7 @@ class GptEndPoint( ):
 		self.vector_stores = f'https://api.openai.com/v1/vector_stores'
 
 
-	def get_data( self ) -> dict[ str, list[ str ] ] | None:
+	def get_data( self ) -> dict[ str, str ] | None:
 		'''
 
 			Purpose:
@@ -270,7 +270,7 @@ class GptModels( ):
 		         'bubba_instructions', 'bro_instructions', 'get_data', ]
 	
 	
-	def get_data( self ) -> Dict[ str, List[ str ] ] | None:
+	def get_data( self ) -> Dict[ str, str ] | None:
 		'''
 
 			Purpose:
@@ -439,7 +439,7 @@ class Chat( GPT ):
 				self.response = self.client.responses.create( model=self.model, input=self.prompt )
 				return self.response.output_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
@@ -475,7 +475,7 @@ class Chat( GPT ):
 
 			return self.response.data[0].url
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_image( self, prompt: str ) -> str | None'
@@ -527,7 +527,7 @@ class Chat( GPT ):
 				self.response = self.client.responses.create( model=self.model, input=self.input )
 				return self.response.output_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
@@ -582,7 +582,7 @@ class Chat( GPT ):
 					input=self.messages )
 				return self.response.output_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
@@ -622,7 +622,7 @@ class Chat( GPT ):
 					web_search_options=self.web_options, input=self.messages )
 				return  self.response.output_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'search_web( self, prompt: str ) -> str'
@@ -662,7 +662,7 @@ class Chat( GPT ):
 					tools=self.tools, input=prompt )
 				return self.response.output_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'search_files( self, prompt: str ) -> str'
@@ -820,7 +820,7 @@ class Assistant( GPT ):
 					input=self.input_text )
 				return self.response.output_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Assistant'
 			exception.method = 'generate_text( self, prompt: str )'
@@ -856,7 +856,7 @@ class Assistant( GPT ):
 
 			return self.response.data[0].url
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Assistant'
 			exception.method = 'generate_image( self, prompt: str )'
@@ -905,7 +905,7 @@ class Assistant( GPT ):
 				self.response = self.client.responses.create( model=self.model, input=self.input )
 				return self.response.output_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Assistant'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
@@ -962,7 +962,7 @@ class Assistant( GPT ):
 					input=self.messages )
 				return self.completion.choices[ 0 ].message.content
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Assistant'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
@@ -1003,7 +1003,7 @@ class Assistant( GPT ):
 					web_search_options=self.web_options, input=self.messages )
 				return  self.response.output_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Assistant'
 			exception.method = 'search_web( self, prompt: str ) -> str'
@@ -1043,7 +1043,7 @@ class Assistant( GPT ):
 					tools=self.tools, input=prompt )
 				return self.response.output_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Assistant'
 			exception.method = 'search_files( self, prompt: str ) -> str | None'
@@ -1071,7 +1071,7 @@ class Assistant( GPT ):
 			self.assistants = self.client.beta.assistants.list( order='desc', limit='100' )
 			return self.assistants.data
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Assistant'
 			exception.method = 'get_list( ) -> List[ str ]'
@@ -1274,7 +1274,7 @@ class Bubba( GPT ):
 				generated_text = self.response.output_text
 				return generated_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Bubba'
 			exception.method = 'generate_text( self, prompt: str )'
@@ -1310,7 +1310,7 @@ class Bubba( GPT ):
 				generated_image = self.response.data[ 0 ].url
 			return generated_image
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
@@ -1361,7 +1361,7 @@ class Bubba( GPT ):
 				image_analysis = self.response.output_text
 				return image_analysis
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
@@ -1420,7 +1420,7 @@ class Bubba( GPT ):
 				document_summary = self.response.output_text
 				return document_summary
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
@@ -1462,7 +1462,7 @@ class Bubba( GPT ):
 				web_results = self.response.output_text
 				return web_results
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Bubba'
 			exception.method = 'search_web( self, prompt: str ) -> str'
@@ -1506,7 +1506,7 @@ class Bubba( GPT ):
 				file_results = self.response.output_text
 				return file_results
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Bubba'
 			exception.method = 'search_files( self, prompt: str ) -> str'
@@ -1538,7 +1538,7 @@ class Bubba( GPT ):
 			files = _files + _docfiles  # FIX: do not use extend()’s return value
 			return files
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Files'
 			exception.method = 'get_files'
@@ -1739,7 +1739,7 @@ class Bro( GPT ):
 				generated_text = self.response.output_text
 				return generated_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
@@ -1775,7 +1775,7 @@ class Bro( GPT ):
 				generated_image = self.response.data[ 0 ].url
 			return generated_image
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'generate_image( self, prompt: str ) -> str'
@@ -1826,7 +1826,7 @@ class Bro( GPT ):
 				image_analysis = self.response.output_text
 				return image_analysis
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
@@ -1885,7 +1885,7 @@ class Bro( GPT ):
 				document_summary = self.reponse.output_text
 				return document_summary
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
@@ -1927,7 +1927,7 @@ class Bro( GPT ):
 				web_results = self.response.output_text
 				return web_results
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Bro'
 			exception.method = 'search_web( self, prompt: str ) -> str'
@@ -1969,7 +1969,7 @@ class Bro( GPT ):
 				file_search=self.response.output_text
 				return file_search
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Chat'
 			exception.method = 'search_files( self, prompt: str ) -> str'
@@ -2165,7 +2165,7 @@ class Embedding( GPT ):
 				self.embedding = self.response.data[ 0 ].embedding
 				return self.embedding
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Embedding'
 			exception.method = 'create_small_embedding( self, text: str ) -> List[ float ]'
@@ -2199,7 +2199,7 @@ class Embedding( GPT ):
 				self.embedding = self.response.data[ 0 ].embedding
 				return self.embedding
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Embedding'
 			exception.method = 'create_large_embedding( self, text: str ) -> List[ float ]'
@@ -2232,7 +2232,7 @@ class Embedding( GPT ):
 				self.embedding = self.response.data[ 0 ].embedding
 				return self.embedding
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Embedding'
 			exception.method = 'create_ada_embedding( self, text: str ) -> List[ float ]'
@@ -2267,7 +2267,7 @@ class Embedding( GPT ):
 				_tokens = len( _encoding.encode( text ) )
 				return _tokens
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Embedding'
 			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
@@ -2475,7 +2475,7 @@ class TTS( GPT ):
 					resp.stream_to_file( str( out_path ) )
 				return str( out_path )
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'TTS'
 			exception.method = 'save_audio( self, prompt: str, path: str ) -> str'
@@ -2806,7 +2806,7 @@ class Translation( GPT ):
 					resp = self.client.audio.translations.create( model='whisper-1', file=audio_file )
 				return resp.text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Translation'
 			exception.method = 'create_small_embedding( self, text: str )'
@@ -2977,7 +2977,7 @@ class LargeImage( GPT ):
 				
 				return self.response.data[ 0 ].url
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Image'
 			exception.method = 'generate( self, path: str ) -> str'
@@ -3019,7 +3019,7 @@ class LargeImage( GPT ):
 				self.response = self.client.responses.create( model='gpt-4o-mini', input=self.input )
 				return self.response.output_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Image'
 			exception.method = 'analyze( self, text: str, path: str ) -> str'
@@ -3243,7 +3243,7 @@ class Image( GPT ):
 				
 				return self.response.data[ 0 ].url
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Image'
 			exception.method = 'generate( self, path: str ) -> str'
@@ -3270,35 +3270,32 @@ class Image( GPT ):
 
 		'''
 		try:
-			if text is None:
-				raise Exception( 'The argument "text" cannot be None' )
-			elif path is None:
-				raise Exception( 'The argument "path" cannot be None' )
-			else:
-				self.input_text = text
-				self.file_path = path
-				self.input = [
-				{
-						'role': 'user',
-						'content':
-						[
-							{
-								'type': 'input_text',
-								'text': self.input_text
-							},
-							{
-								'type': 'input_image',
-								'image_url': self.file_path
-							},
-						],
-				}]
-				
-				self.response = self.client.responses.create( model='gpt-4o-mini',
-					input=self.input )
-				
-				return self.response.output_text
+			throw_if( 'text', text )
+			throw_if( 'path', path )
+			self.input_text = text
+			self.file_path = path
+			self.input = [
+			{
+					'role': 'user',
+					'content':
+					[
+						{
+							'type': 'input_text',
+							'text': self.input_text
+						},
+						{
+							'type': 'input_image',
+							'image_url': self.file_path
+						},
+					],
+			}]
+
+			self.response = self.client.responses.create( model='gpt-4o-mini',
+				input=self.input )
+
+			return self.response.output_text
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Image'
 			exception.method = 'analyze( self, path: str, text: str ) -> str'
@@ -3324,19 +3321,16 @@ class Image( GPT ):
 
 		"""
 		try:
-			if input is None:
-				raise Exception( 'The argument "text" cannot be None' )
-			elif path is None:
-				raise Exception( 'The argument "path" cannot be None' )
-			else:
-				self.input_text = input
-				self.file_path = path
-				self.response = self.client.images.edit( model=self.model,
-					image=open( self.file_path, 'rb' ), prompt=self.input_text, n=self.number,
-					size=self.size )
-				return self.response.data[ 0 ].url
+			throw_if( 'input', input )
+			throw_if( 'path', path )
+			self.input_text = input
+			self.file_path = path
+			self.response = self.client.images.edit( model=self.model,
+				image=open( self.file_path, 'rb' ), prompt=self.input_text, n=self.number,
+				size=self.size )
+			return self.response.data[ 0 ].url
 		except Exception as e:
-			exception = GptError( e )
+			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Image'
 			exception.method = 'edit( self, text: str, path: str, size: str=1024x1024 ) -> str'
@@ -3369,12 +3363,12 @@ class Image( GPT ):
 		         'get_detail_options', 'get_format_options', 'get_size_options' ]
 
 
-def throw_if( name: str, val: Optional[ object ] ):
-	if not val:
-		raise ValueError( f'Argument "{name}" cannot be empty.' )
+def throw_if( name: str, value: object ):
+	if not value:
+		raise ValueError( f'Argument "{name}" cannot be empty!' )
 
-def chunk_text( text: str, max_chars: int = 6_000 ) -> List[ str ]:
-	return [ text[ i:i + max_chars ] for i in range( 0, len( text ), max_chars ) ]
+def chunk_text( text: str, max: int=6000 ) -> List[ str ]:
+	return [ text[ i : i + max ] for i in range( 0, len( text ), max ) ]
 
 
 
