@@ -27,21 +27,21 @@ automation of analytical tasks.
 
 ## 🧭 Table of Contents
 
-- 🧰 Overview
-- ✨ Features
-- ⚡ Quickstart
-- 🔧 Configuration
-- 🧩 Design & Architecture
+- 🧰 [Overview](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-overview)
+- ✨ [Features](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-features)
+- ⚡ [Quickstart](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-quickstart)
+- 🔧 [Configuration](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-configuration)
+- 🧩 [Design & Architecture](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-design--architecture)
 - 🧪 Usage Examples
-  - 📝 Text generation
-  - 🌐 Web search (Responses)
-  - 📄 Summarize a document (file-grounded)
-  - 🗂️ File search (vector stores)
-  - 👀 Vision: analyze an image
-  - 🖼️ Images: generate / edit
-  - 🧬 Embeddings
-  - 🔊 Text-to-Speech (TTS)
-  - 🎙️ Transcription / Translation (Whisper)
+  - 📝 [Text generation](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-text-generation)
+  - 🌐 [Web Search](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-web-search-responses) (Responses)
+  - 📄 [Document Summarization](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-summarize-a-document-file-grounded) (file-grounded)
+  - 🗂️ [File search](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#%EF%B8%8F-file-search-vector-stores) (vector stores)
+  - 👀 [Vision](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-vision-analyze-an-image): analyze an image
+  - 🖼️ Images: [generate](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-image-generation) / [edit](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#%EF%B8%8F-images-generate--edit)
+  - 🧬 [Embeddings](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-embeddings)
+  - 🔊 [Text-to-Speech](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-text-to-speech-tts) (TTS)
+  - 🎙️ [Transcription/Translation](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#%EF%B8%8F-transcription--translation-whisper) (Whisper)
 - 📄 License
 
 ## 📦 Installation
