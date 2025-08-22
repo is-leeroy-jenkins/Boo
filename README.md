@@ -9,7 +9,7 @@ models with multimodal support for text, image, audio, and file analysis. Design
 extensibility and federal applications in mind, it enables secure, scalable, and intelligent
 automation of analytical tasks.
 
-## ⚙️ Features
+### ⚙️ Features
 
 - Unified AI Framework: Integrates OpenAI APIs for text, image, audio, file analysis, transcription,
   and translation.
@@ -25,7 +25,7 @@ automation of analytical tasks.
 - Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
 - Web & File Search: Built-in support for semantic document and web search.
 
-## 🧭 Table of Contents
+### 🧭 Table of Contents
 
 - 🧰 [Overview](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-overview)
 - ✨ [Features](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-features)
@@ -44,7 +44,7 @@ automation of analytical tasks.
   - 🎙️ [Transcription/Translation](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#%EF%B8%8F-transcription--translation-whisper) (Whisper)
 - 📄 License
 
-## 📦 Installation
+### 📦 Installation
 
 #### 1. Clone the Repository
 
@@ -73,9 +73,7 @@ pip install -r requirements.txt
 
 
 
-## ⚙️ Structure
-
-#### Core Classes
+## ⚙️ Core Classes
 
 - `AI`: Base class that provides shared API setup, keys, and model configurations.
 - `Chat`, `Assistant`, `Bubba`, `Bro`: Extend `AI` to provide domain-specific implementations.
@@ -86,7 +84,7 @@ pip install -r requirements.txt
 
 
 
-## 🧠 Capabilities
+### 🧠 Capabilities
 
 | Capability        | Description                                                                 |
 |-------------------|-----------------------------------------------------------------------------|
@@ -101,7 +99,7 @@ pip install -r requirements.txt
 
 
 
-## 🛠️ Requirements
+### 🛠️ Requirements
 
 - Python 3.10+
 - OpenAI Python SDK
@@ -111,7 +109,7 @@ pip install -r requirements.txt
 - Requests
 - Custom dependencies: `boogr`, `static`, `guro`
 
-## 📁 File Organization
+### 📁 File Organization
 
 - [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/boo.py) – Main application framework
 - [models](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py) – Models used for
@@ -122,7 +120,7 @@ pip install -r requirements.txt
 - [mathy](https://github.com/is-leeroy-jenkins/Boo/tree/main/mathy) - Machine Learning models
 - [dbops](https://github.com/is-leeroy-jenkins/Boo/tree/main/dbops.py) - Machine Learning models
 
-## 🔐 Environment Variables
+### 🔐 Environment Variables
 
 Set the following in your environment or `.env` file:
 
@@ -133,7 +131,7 @@ OPENAI_API_KEY=<your_api_key>
 
 
 
-## 🧰 Overview
+### 🧰 Overview
 
 Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
 
@@ -147,7 +145,7 @@ Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
 
 
 
-## ✨ Features
+### ✨ Features
 
 - **Responses-first**: consistent `input=[{role, content:[{type:...}]}]` builders.
 - **One client**: a single `OpenAI` instance per process for reliability and testability.
@@ -161,7 +159,7 @@ Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
 
 
 
-## ⚡ Quickstart
+### ⚡ Quickstart
 
 1) **Install**
 
@@ -188,7 +186,7 @@ print(chat.generate_text("Say hello in one short sentence."))
 
 
 
-## 🔧 Configuration
+### 🔧 Configuration
 
 - **Environment**
   - `OPENAI_API_KEY` (required)
@@ -203,7 +201,7 @@ print(chat.generate_text("Say hello in one short sentence."))
 
 
 
-## 🧩 Design & Architecture
+### 🧩 Design & Architecture
 
 - **Single client**: `OpenAI(api_key=...)` is created in `GPT.__init__()` and reused everywhere.
 - **Schema helpers**: tiny, battle-tested builders ensure payloads are valid for the Responses API:
@@ -217,7 +215,7 @@ print(chat.generate_text("Say hello in one short sentence."))
 
 
 
-## 🔤 Text Generation
+### 🔤 Text Generation
 
 - Generate high-quality responses using OpenAI's GPT models.
 - Supports parameter tuning (temperature, top_p, frequency penalties).
@@ -232,7 +230,7 @@ response = bro.generate_text( "Explain how random forests handle overfitting." )
 print( response )
 ```
 
-## 🎨 Image Generation
+### 🎨 Image Generation
 
 - Convert natural language prompts into images using DALL·E 3.
 - Specify resolution and rendering quality options.
@@ -245,7 +243,7 @@ image_url = bro.generate_image("A conceptual illustration of quantum computing i
 print(f"Image URL: {image_url}")
 ```
 
-## 🖼️ Image Analysis
+### 🖼️ Image Analysis
 
 - Analyze visual content by combining image and text prompts.
 - Extract meaning, context, or structure from images.
@@ -259,7 +257,7 @@ response = bro.analyze_image("Describe the primary elements in this image", url)
 print(response)
 ```
 
-## 📄 Document Summarization
+### 📄 Document Summarization
 
 - Upload and process document files directly into the assistant.
 - Use prompts to extract insights or summarize content.
@@ -276,7 +274,7 @@ summary = bro.summarize_document(
 print( summary )
 ```
 
-## 🔍 File Search with Vector Stores
+### 🔍 File Search with Vector Stores
 
 - Embed and store documents in vector stores for semantic search.
 - Retrieve contextually relevant content using natural language queries.
@@ -289,7 +287,7 @@ result = bro.search_files("Legislation related to environmental impact funding")
 print(result)
 ```
 
-## 🔎 File & Web Search
+### 🔎 File & Web Search
 
 - Performs semantic search over domain-specific document embeddings to retrieve relevant content.
 - **File Search**: Query vector-embedded files using `vector_store_ids`.
@@ -302,7 +300,7 @@ result = bro.search_files("Legislation related to environmental impact funding")
 print(result)
 ```
 
-## 🌐 Web Search (Real-Time Querying)
+### 🌐 Web Search (Real-Time Querying)
 
 - Perform web lookups in real time via OpenAI’s web-enabled models.
 - Extract current events, news, and regulatory updates.
@@ -315,7 +313,7 @@ insights = bro.search_web("Current status of the Federal AI Bill 2025")
 print(insights)
 ```
 
-## 🧾 Prompt & Message Structuring
+### 🧾 Prompt & Message Structuring
 
 - Build structured prompt schemas using Pydantic models.
 - Define instructions, context, output goals, and data sources.
@@ -335,7 +333,7 @@ print(p.model_dump())
 
 ```
 
-## ⚙️ API Endpoint Access
+### ⚙️ API Endpoint Access
 
 - Centralized access to OpenAI API endpoints.
 - Includes endpoints for completions, images, speech, and files.
@@ -349,7 +347,7 @@ api = EndPoint( )
 print( api.get_data( ) ) 
 ```
 
-## 🤖 Assistant Management
+### 🤖 Assistant Management
 
 - Fetches and lists OpenAI assistants created or used within the system, enabling assistant
   lifecycle management.
