@@ -62,7 +62,7 @@ from typing import Any, List, Tuple, Optional, Dict
 from src.guro import Prompt
 
 
-class GptEndPoint( ):
+class EndPoint( ):
 	'''
 
 		Purpose:
@@ -70,17 +70,35 @@ class GptEndPoint( ):
 		The class containing endpoints for OpenAI
 		
 	'''
+	base_url: Optional[ str ]
+	text_generations: Optional[ str ]
+	image_generations: Optional[ str ]
+	chat_completions: Optional[ str ]
+	image_edits: Optional[ str ]
+	assistants: Optional[ str ]
+	responses: Optional[ str ]
+	speech_generation: Optional[ str ]
+	translations: Optional[ str ]
+	transcriptions: Optional[ str ]
+	image_variations: Optional[ str ]
+	finetuning: Optional[ str ]
+	vector_stores: Optional[ str ]
+	embeddings: Optional[ str ]
+	files: Optional[ str ]
+	uploads: Optional[ str ]
 	
 	
 	def __init__( self ):
 		self.base_url = f'https://api.openai.com/'
-		self.text_generation = f'https://api.openai.com/v1/chat/completions'
-		self.image_generation = f'https://api.openai.com/v1/images/generations'
-		self.chat_completion = f'https://api.openai.com/v1/chat/completions'
+		self.text_generations = f'https://api.openai.com/v1/chat/completions'
+		self.image_generations = f'https://api.openai.com/v1/images/generations'
+		self.chat_completions = f'https://api.openai.com/v1/chat/completions'
 		self.responses = f'https://api.openai.com/v1/responses'
+		self.image_variations = f'https://api.openai.com/v1/images/variations'
 		self.speech_generation = f'https://api.openai.com/v1/audio/speech'
 		self.translations = f'https://api.openai.com/v1/audio/translations'
 		self.assistants = f'https://api.openai.com/v1/assistants'
+		self.image_edits = f'https://api.openai.com/v1/images/edits'
 		self.transcriptions = f'https://api.openai.com/v1/audio/transcriptions'
 		self.finetuning = f'https://api.openai.com/v1/fineTuning/jobs'
 		self.embeddings = f'https://api.openai.com/v1/embeddings'
@@ -106,9 +124,11 @@ class GptEndPoint( ):
 				'image_generation': self.image_generation,
 				'chat_completion': self.chat_completion,
 				'speech_generation': self.speech_generation,
+				'image_edit': self.image_edits,
 				'translations': self.translations,
 				'finetuning': self.finetuning,
-				'vectors': self.embeddings,
+				'image_variations': self.image_variations,
+				'embeddings': self.embeddings,
 				'uploads': self.uploads,
 				'files': self.files,
 				'vector_stores': self.vector_stores
@@ -160,6 +180,10 @@ class GptHeader:
 		data         : dict[str, str]
 
 	'''
+	content_type: Optional[ str ]
+	api_key: Optional[ str ]
+	authorization: Optional[ str ]
+	data: Optional[ Dict[ str, str ] ]
 
 	def __init__( self ):
 		self.content_type = 'application/json'
@@ -182,19 +206,31 @@ class GptModels( ):
 		Class containing lists of OpenAI models by generation
 		
 	'''
+	text_generations: Optional[ List[ str ] ]
+	image_generations: Optional[ List[ str ] ]
+	chat_completions: Optional[ List[ str ] ]
+	responses: Optional[ List[ str ] ]
+	speech_generations: Optional[ List[ str ] ]
+	translations: Optional[ List[ str ] ]
+	transcriptions: Optional[ List[ str ] ]
+	finetuning: Optional[ List[ str ] ]
+	vector_stores: Optional[ List[ str ] ]
+	embeddings: Optional[ List[ str ] ]
+	files: Optional[ List[ str ] ]
+	uploads: Optional[ List[ str ] ]
 	
 	def __init__( self ):
-		self.text_generation = [ 'text-davinci-003', 'text-curie-001',
+		self.text_generations = [ 'text-davinci-003', 'text-curie-001',
 		                         'gpt-4-0613', 'gpt-4-0314',
 		                         'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
 		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
 		                         'gpt-4o-mini-2024-07-18', 'gpt-4.1-mini-2025-04-14',
 		                         'gpt-4.1-nano-2025-04-14', 'o1-2024-12-17',
 		                         'o3-mini-2025-01-31' ]
-		self.image_generation = [ 'dall-e-2', 'dall-e-3',
-		                          'gpt-4-0613', 'gpt-4-0314',
-		                          'gpt-4o-mini-2024-07-18' ]
-		self.chat_completion = [ 'gpt-4-0613', 'gpt-4-0314',
+		self.image_generations = [ 'dall-e-2', 'dall-e-3', 'gpt-image-1' ]
+		self.image_edits = [ 'dall-e-2', 'gpt-image-1' ]
+		self.image_variations = [ 'dall-e-2',  ]
+		self.chat_completions = [ 'gpt-4-0613', 'gpt-4-0314',
 		                         'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
 		                         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
 		                         'gpt-4o-mini-2024-07-18', 'gpt-4.1-mini-2025-04-14',
@@ -202,12 +238,12 @@ class GptModels( ):
 		                         'o3-mini-2025-01-31',
 		                         'gpt-4o-search-preview-2025-03-11',
 		                         'gpt-4o-mini-search-preview-2025-03-11' ]
-		self.speech_generation = [ 'tts-1', 'tts-1-hd', 'gpt-4o-mini-tts',
+		self.speech_generations = [ 'tts-1', 'tts-1-hd', 'gpt-4o-mini-tts',
 		                           'gpt-4o-audio-preview-2024-12-17',
 		                           'gpt-4o-audio-preview-2024-10-01',
 		                           'gpt-4o-mini-audio-preview-2024-12-17' ]
-		self.transcription = [ 'whisper-1', 'gpt-4o-mini-transcribe', 'gpt-4o-transcribe' ]
-		self.translation = [ 'whisper-1', 'text-davinci-003',
+		self.transcriptions = [ 'whisper-1', 'gpt-4o-mini-transcribe', 'gpt-4o-transcribe' ]
+		self.translations = [ 'whisper-1', 'text-davinci-003',
 		                     'gpt-4-0613', 'gpt-4-0314',
 		                     'gpt-4-turbo-2024-04-09' ]
 		self.responses = [ 'gpt-4o-mini-search-preview-2025-03-11',
@@ -305,7 +341,7 @@ class GPT( ):
 
 	def __init__( self ):
 		self.header = GptHeader( )
-		self.endpoint = GptEndPoint( )
+		self.endpoint = EndPoint( )
 		self.api_key = self.header.api_key
 		self.bro_instructions = self.prompt.data_bro
 		self.bubba_instructions = self.prompt.budget_analyst
