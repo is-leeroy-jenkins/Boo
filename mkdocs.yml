@@ -47,6 +47,8 @@ nav:
       - Search vector stores: how-to/search-vector-stores.md
       - Analyze an image: how-to/analyze-an-image.md
       - Stream TTS to file: how-to/stream-tts-to-file.md
+      - Web Search: how-to/web-search.md
+      - File Search: how-to/file-search.md
   - API Reference:
       - boo: reference/boo.md
       - boogr: reference/boogr.md
