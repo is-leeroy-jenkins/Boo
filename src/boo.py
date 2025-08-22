@@ -121,6 +121,7 @@ class EndPoint( ):
 		'''
 		_data = {
 				'text_generation': self.text_generation,
+				'responses': self.responses,
 				'image_generation': self.image_generation,
 				'chat_completion': self.chat_completion,
 				'speech_generation': self.speech_generation,
@@ -210,9 +211,12 @@ class GptModels( ):
 	image_generations: Optional[ List[ str ] ]
 	chat_completions: Optional[ List[ str ] ]
 	responses: Optional[ List[ str ] ]
+	image_edits: Optional[ List[ str ] ]
 	speech_generations: Optional[ List[ str ] ]
 	translations: Optional[ List[ str ] ]
 	transcriptions: Optional[ List[ str ] ]
+	image_variations: Optional[ List[ str ] ]
+	reasoning: Optional[ List[ str ] ]
 	finetuning: Optional[ List[ str ] ]
 	vector_stores: Optional[ List[ str ] ]
 	embeddings: Optional[ List[ str ] ]
@@ -317,10 +321,14 @@ class GptModels( ):
 		_data = { 'text_generation': self.text_generation,
 		          'image_generation': self.image_generation,
 		          'chat_completion': self.chat_completion,
+		          'responses': self.responses,
+		          'image_edits': self.image_edits,
 		          'speech_generation': self.speech_generation,
 		          'translations': self.translations,
+		          'image_variations': self.image_variations,
+		          'reasoning': self.reasoning,
 		          'finetuning': self.finetuning,
-		          'vectors': self.embeddings,
+		          'embeddings': self.embeddings,
 		          'uploads': self.uploads,
 		          'files': self.files,
 		          'vector_stores': self.vector_stores }
