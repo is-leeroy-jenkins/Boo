@@ -148,9 +148,6 @@ Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
 - **Transcription / Translation** – Whisper-powered speech-to-text (+ translate).
 - **Vector Store helpers** – list files, search via `file_search` tool, merge results.
 
-Boo aims to be “boring on purpose”: predictable names, stable defaults, and payloads that match the
-current API shapes so you don’t fight subtle request/response drift.
-
 
 
 ## ✨ Features
@@ -171,20 +168,27 @@ current API shapes so you don’t fight subtle request/response drift.
 
 1) **Install**
 
+   ```
    pip install openai pydantic
+   
+   ```
 
 2) **Configure**
 
+  ```
    # Power your client via environment
    export OPENAI_API_KEY="sk-..."         # macOS/Linux
    setx OPENAI_API_KEY "sk-..."           # Windows
+   ```
 
 3) **Hello Boo**
 
+   ```
    from boo import Chat
 
    chat = Chat()
    print(chat.generate_text("Say hello in one short sentence."))
+   ```
 
 
 
