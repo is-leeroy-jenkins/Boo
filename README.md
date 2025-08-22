@@ -365,6 +365,8 @@ assistants = assistant.get_list()
 print("Available Assistants:", assistants)
 ```
 
+## 🧪 Usage Examples
+
 > The snippets below show idiomatic Boo usage. They assume `chat = Chat()`, `img = Image()`,
 > etc., and an `OPENAI_API_KEY` is present in your environment.
 
@@ -473,7 +475,7 @@ print("Available Assistants:", assistants)
     print(english)
     ```
 
----
+
 
 ## 📝 License
 

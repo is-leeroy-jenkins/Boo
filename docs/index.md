@@ -1,7 +1,3 @@
-###### Boo
-<img src="https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/img/github/Boo.gif" width="1400" height="250"/>
-
-
 
 A modular Python framework for building, deploying, and managing AI-powered assistants
 tailored for federal data analysis, budget execution, and data science. It integrates OpenAI's GPT
@@ -365,6 +361,8 @@ assistants = assistant.get_list()
 print("Available Assistants:", assistants)
 ```
 
+## 🧪 Usage Examples
+
 > The snippets below show idiomatic Boo usage. They assume `chat = Chat()`, `img = Image()`,
 > etc., and an `OPENAI_API_KEY` is present in your environment.
 
@@ -472,11 +470,4 @@ print("Available Assistants:", assistants)
     english = xlat.create("Translate this speech to English.", "audio/spanish.m4a")
     print(english)
     ```
-
----
-
-## 📝 License
-
-Boo is published under the [MIT General Public License v3](https://github.com/is-leeroy-jenkins/Boo/blob/main/LICENSE).
-
 
