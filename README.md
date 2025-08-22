@@ -73,7 +73,7 @@ pip install -r requirements.txt
 
 
 
-## ⚙️ Core Classes
+### ⚙️ Core Classes
 
 - `AI`: Base class that provides shared API setup, keys, and model configurations.
 - `Chat`, `Assistant`, `Bubba`, `Bro`: Extend `AI` to provide domain-specific implementations.
