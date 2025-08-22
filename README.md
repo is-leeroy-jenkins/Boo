@@ -168,27 +168,26 @@ Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
 
 1) **Install**
 
-   ```
-   pip install openai pydantic
-   
-   ```
+```
+pip install openai pydantic
+```
 
 2) **Configure**
 
-  ```
-   # Power your client via environment
-   export OPENAI_API_KEY="sk-..."         # macOS/Linux
-   setx OPENAI_API_KEY "sk-..."           # Windows
-   ```
+```
+# Power your client via environment
+export OPENAI_API_KEY="sk-..."         # macOS/Linux
+setx OPENAI_API_KEY "sk-..."           # Windows
+```
 
 3) **Hello Boo**
 
-   ```
-   from boo import Chat
+```
+from boo import Chat
 
-   chat = Chat()
-   print(chat.generate_text("Say hello in one short sentence."))
-   ```
+chat = Chat()
+print(chat.generate_text("Say hello in one short sentence."))
+```
 
 
 
