@@ -67,8 +67,7 @@ from src.minion import App
 import traceback
 import urllib.request
 import webbrowser
-from typing import Dict, List, Tuple
-
+from typing import List
 
 class Error( Exception ):
 	'''
@@ -290,13 +289,13 @@ class Dark( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.form_size = (400, 200)
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 	
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -354,12 +353,12 @@ class FileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (500, 240)
 		self.selected_item = None
 		self.message = 'Grab GptFile'
@@ -499,12 +498,12 @@ class FolderDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (500, 250)
 		self.selected_item = None
 	
@@ -634,7 +633,7 @@ class SaveFileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.file_name = None
@@ -759,14 +758,14 @@ class GoogleDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.results = None
 		self.querytext = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = ( 500, 235 )
 		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\app\web\google.png'
 	
@@ -902,12 +901,12 @@ class EmailDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\app\web\outlook.png'
 		self.form_size = (570, 550)
 		self.sender = sender
@@ -1065,12 +1064,12 @@ class MessageDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (450, 250)
 	
 	
@@ -1208,12 +1207,12 @@ class ErrorDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = ( 500, 300 )
 		self.error = error
 		self.heading = error.heading
@@ -1344,12 +1343,12 @@ class InputDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = ( 500, 250 )
 		self.selected_item = None
 	
@@ -1484,12 +1483,12 @@ class ScrollingDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = ( 700, 600 )
 		self.text = text if isinstance( text, str ) and text != '' else None
 	
@@ -1623,12 +1622,12 @@ class ContactForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\app\web\outlook.png'
 		self.form_size = (500, 300)
 	
@@ -1742,12 +1741,12 @@ class GridForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.width = (17, 1)
 		self.rows = rows
 		self.columns = columns
@@ -1862,12 +1861,12 @@ class LoadingPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\loaders\loading.gif'
 		self.form_size = (800, 600)
 		self.timeout = 6000
@@ -1974,11 +1973,11 @@ class WaitingPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\loaders\loader.gif'
 		self.theme_font = ('Roboto', 11)
 		self.form_size = (800, 600)
@@ -2087,12 +2086,12 @@ class ProcessingPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\loaders\processing.gif'
 		self.form_size = (800, 600)
 		self.timeout = None
@@ -2204,12 +2203,12 @@ class SplashPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\BudgetEx.png'
 		self.form_size = (800, 600)
 		self.timeout = 6000
@@ -2310,12 +2309,12 @@ class Notification( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (800, 600)
 		self.success = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAA3NCSVQICAjb4U' \
 		               b'/gAAAACXBIWXMAAAEKAAABCgEWpLzLAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5r' \
@@ -2500,12 +2499,12 @@ class ImageSizeEncoder( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (800, 600)
 	
 	
@@ -2754,12 +2753,12 @@ class PdfForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (600, 800)
 	
 	
@@ -2984,13 +2983,13 @@ class CalendarDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.selected_item = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (500, 250)
 	
 	
@@ -3113,12 +3112,12 @@ class ComboBoxDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (400, 150)
 		self.items = data
 	
@@ -3253,12 +3252,12 @@ class ListBoxDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (400, 250)
 		self.image = os.getcwd( ) + r'\resources\img\app\dialog\lookup.png'
 		self.items = data
@@ -3415,12 +3414,12 @@ class ColorDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (450, 450)
 		self.rgb = None
 		self.hex = None
@@ -4245,13 +4244,13 @@ class BudgetForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\app\Application.png'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (1200, 650)
 	
 	
@@ -4745,12 +4744,12 @@ class ChartPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (750, 650)
 	
 	
@@ -4889,12 +4888,12 @@ class CsvForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (800, 600)
 	
 	
@@ -5036,12 +5035,12 @@ class ExcelForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (1250, 700)
 	
 	
@@ -5193,12 +5192,12 @@ class GraphForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (800, 600)
 	
 	
@@ -5454,12 +5453,12 @@ class FileBrowser( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (400, 200)
 	
 	
@@ -5552,12 +5551,12 @@ class ChatWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (800, 600)
 	
 	
@@ -5657,12 +5656,12 @@ class ChatBot( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (800, 600)
 	
 	
@@ -5820,12 +5819,12 @@ class InputWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (520, 550)
 	
 	
@@ -5973,12 +5972,12 @@ class Executable( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (600, 600)
 	
 	
@@ -6161,12 +6160,12 @@ class ThemeSelector( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (300, 400)
 	
 	
@@ -6269,12 +6268,12 @@ class UrlImageViewer( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = ( 800, 600 )
 	
 	
@@ -6383,7 +6382,7 @@ class AutoComplete( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.choices = None
@@ -6392,7 +6391,7 @@ class AutoComplete( ):
 		self.list_element = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 	
 	
 	def show( self ) -> None:
@@ -6532,12 +6531,12 @@ class CheckBox( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.checked = \
 			(
 				b'iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAKMGlDQ1BJQ0MgUHJvZmlsZQAAeJydlndUVNcWh8'
@@ -6634,12 +6633,12 @@ class MachineLearningWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\ninja.ico'
+		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\resources\theme' )
+		sg.user_settings_save( 'Boo', r'/resources/theme' )
 	
 	def __build_window( self ):
 		'''

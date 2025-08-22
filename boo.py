@@ -42,23 +42,14 @@
   </summary>
   ******************************************************************************************
   '''
-import asyncio
-from src.boogr import ErrorDialog, Error, ChatBot, ChatWindow
+from src.boogr import ErrorDialog, Error
 import datetime as dt
-import numpy as np
 import os
-from openai import OpenAI, AssistantEventHandler
-from openai import AsyncOpenAI
-from openai.helpers import LocalAudioPlayer
-import pandas as pd
-from pydantic import BaseModel, Field, validator
+from openai import OpenAI
 from pygments.lexers.csound import newline
-import requests
-from src.static import Requests, Roles, Languages
-from typing_extensions import override
 import tiktoken
 from pathlib import Path
-from typing import Any, List, Tuple, Optional, Dict
+from typing import Any, List, Optional, Dict
 from src.guro import Prompt
 
 

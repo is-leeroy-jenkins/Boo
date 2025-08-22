@@ -1,7 +1,7 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                DbOps.py
+      Filename:                dbops.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
@@ -38,7 +38,7 @@
 
   </copyright>
   <summary>
-    DbOps.py
+    dbops.py
   </summary>
   ******************************************************************************************
   '''
@@ -137,7 +137,7 @@ class SQLite( ):
 				self.conn.commit( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'DbOps'
+			exception.module = 'dbops'
 			exception.cause = 'SQLite'
 			exception.method = 'create_table( self, sql: str ) -> None'
 			error = ErrorDialog( exception )
@@ -173,7 +173,7 @@ class SQLite( ):
 				self.conn.commit( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'DbOps'
+			exception.module = 'dbops'
 			exception.cause = 'SQLite'
 			exception.method = ('insert( self, df: str, columns: List[ str ], target_values: Tuple[ Any, '
 			               '... ] ) -> None')
@@ -202,7 +202,7 @@ class SQLite( ):
 			return self.cursor.fetchall( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'DbOps'
+			exception.module = 'dbops'
 			exception.cause = 'SQLite'
 			exception.method = 'fetch_all( self, df: str ) -> List[ Tuple ]'
 			error = ErrorDialog( exception )
@@ -242,7 +242,7 @@ class SQLite( ):
 				return self.cursor.fetchone( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'DbOps'
+			exception.module = 'dbops'
 			exception.cause = 'SQLite'
 			exception.method = ('fetch_one( self, df: str, where: str, params: Tuple[ Any, ... ] ) -> '
 			               'Optional[ Tuple ]')
@@ -283,7 +283,7 @@ class SQLite( ):
 				self.conn.commit( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'DbOps'
+			exception.module = 'dbops'
 			exception.cause = 'SQLite'
 			exception.method = ('update( self, df: str, pairs: str, where: str, params: Tuple[ Any, '
 			               '... ] ) -> None')
@@ -322,7 +322,7 @@ class SQLite( ):
 				self.conn.commit( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'DbOps'
+			exception.module = 'dbops'
 			exception.cause = 'SQLite'
 			exception.method = 'delete( self, df: str, where: str, params: Tuple[ Any, ... ] ) -> None'
 			error = ErrorDialog( exception )
@@ -354,7 +354,7 @@ class SQLite( ):
 					_df.to_sql( _sheet, self.conn, if_exists='replace', index=False )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'DbOps'
+			exception.module = 'dbops'
 			exception.cause = 'SQLite'
 			exception.method = 'import_excel( self, path: str ) -> None'
 			error = ErrorDialog( exception )
@@ -373,7 +373,7 @@ class SQLite( ):
 			self.conn.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'DbOps'
+			exception.module = 'dbops'
 			exception.cause = 'SQLite'
 			exception.method = 'close( self ) -> None'
 			error = ErrorDialog( exception )
