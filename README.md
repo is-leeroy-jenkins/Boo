@@ -25,7 +25,24 @@ automation of analytical tasks.
 - Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
 - Web & File Search: Built-in support for semantic document and web search.
 
+## 🧭 Table of Contents
 
+- 🧰 Overview
+- ✨ Features
+- ⚡ Quickstart
+- 🔧 Configuration
+- 🧩 Design & Architecture
+- 🧪 Usage Examples
+  - 📝 Text generation
+  - 🌐 Web search (Responses)
+  - 📄 Summarize a document (file-grounded)
+  - 🗂️ File search (vector stores)
+  - 👀 Vision: analyze an image
+  - 🖼️ Images: generate / edit
+  - 🧬 Embeddings
+  - 🔊 Text-to-Speech (TTS)
+  - 🎙️ Transcription / Translation (Whisper)
+- 📄 License
 
 ## 📦 Installation
 
@@ -113,26 +130,6 @@ Set the following in your environment or `.env` file:
 bash
 OPENAI_API_KEY=<your_api_key>
 ```
-
-
-## 🧭 Table of Contents
-
-- 🧰 Overview
-- ✨ Features
-- ⚡ Quickstart
-- 🔧 Configuration
-- 🧩 Design & Architecture
-- 🧪 Usage Examples
-  - 📝 Text generation
-  - 🌐 Web search (Responses)
-  - 📄 Summarize a document (file-grounded)
-  - 🗂️ File search (vector stores)
-  - 👀 Vision: analyze an image
-  - 🖼️ Images: generate / edit
-  - 🧬 Embeddings
-  - 🔊 Text-to-Speech (TTS)
-  - 🎙️ Transcription / Translation (Whisper)
-- 📄 License
 
 
 
