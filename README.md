@@ -254,11 +254,13 @@ print("Available Assistants:", assistants)
 ```
 
 ## 📁 File Organization
-- [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/src/boo.py) – Main application framework
-- [boogr](https://github.com/is-leeroy-jenkins/Boo/blob/main/src/boogr.py)/ – GUI and error dialogs
-- [guro](https://github.com/is-leeroy-jenkins/Boo/blob/main/src/guro.py)/ – Prompt context utilities
-- [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/src/boo.py) – ML/AI Layer
-- [mathy](https://github.com/is-leeroy-jenkins/Boo/tree/main/src/mathy)/ - Machine Learning models
+- [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/boo.py) – Main application framework
+- [models](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py) – Models used for structured output
+- [boogr](https://github.com/is-leeroy-jenkins/Boo/blob/main/boogr.py)/ – GUI and error dialogs
+- [guro](https://github.com/is-leeroy-jenkins/Boo/blob/main/guro.py)/ – Prompt context utilities
+- [foo](https://github.com/is-leeroy-jenkins/Boo/blob/main/foo.py) – ML/AI Layer
+- [mathy](https://github.com/is-leeroy-jenkins/Boo/tree/main/mathy)/ - Machine Learning models
+- [dbops](https://github.com/is-leeroy-jenkins/Boo/tree/main/dbops.py)/ - Machine Learning models
 
 ---
 title: Boo
