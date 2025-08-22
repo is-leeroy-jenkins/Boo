@@ -52,4 +52,4 @@ nav:
   - API Reference:
       - boo: reference/boo.md
       - boogr: reference/boogr.md
-      - models: reference/models.md
+      - mathy: reference/mathy.md
