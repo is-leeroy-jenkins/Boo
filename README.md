@@ -115,12 +115,7 @@ OPENAI_API_KEY=<your_api_key>
 - [mathy](https://github.com/is-leeroy-jenkins/Boo/tree/main/mathy)/ - Machine Learning models
 - [dbops](https://github.com/is-leeroy-jenkins/Boo/tree/main/dbops.py)/ - Machine Learning models
 
----
-title: Boo
-description: "Boo: lightweight Python wrappers around the OpenAI Responses API (plus Images,
-Embeddings, TTS, Transcription, and Vector Store file search) with consistent payload builders,
-error handling, and sane defaults."
-version: 0.6.0
+
 ---
 
 ## 🧭 Table of Contents
