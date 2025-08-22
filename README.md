@@ -106,153 +106,6 @@ OPENAI_API_KEY=<your_api_key>
 ```
 
 
-## 🔤 Text Generation
-
-- Generate high-quality responses using OpenAI's GPT models.
-- Supports parameter tuning (temperature, top_p, frequency penalties).
-- Ideal for summarization, explanations, and knowledge retrieval.
-
-```
-python
-from boo import Bro
-
-bro = Bro( )
-response = bro.generate_text( "Explain how random forests handle overfitting." )
-print( response )
-```
-
-## 🎨 Image Generation
-
-- Convert natural language prompts into images using DALL·E 3.
-- Specify resolution and rendering quality options.
-- Useful for creating visual illustrations and conceptual diagrams.
-
-```
-python
-
-image_url = bro.generate_image("A conceptual illustration of quantum computing in federal AI")
-print(f"Image URL: {image_url}")
-```
-
-## 🖼️ Image Analysis
-
-- Analyze visual content by combining image and text prompts.
-- Extract meaning, context, or structure from images.
-- Leverages GPT-4o’s vision capabilities for advanced perception.
-
-```
-python
-
-url = "https://example.com/sample-image.png"
-response = bro.analyze_image("Describe the primary elements in this image", url)
-print(response)
-```
-
-## 📄 Document Summarization
-
-- Upload and process document files directly into the assistant.
-- Use prompts to extract insights or summarize content.
-- Supports PDFs, DOCX, and other file formats via OpenAI's file API.
-
-```
-python
-
-file_path = "data/federal_strategy.pdf"
-summary = bro.summarize_document(
-  prompt = "Summarize key national cybersecurity strategies.",
-  path = file_path
-)
-print( summary )
-```
-
-## 🔍 File Search with Vector Stores
-
-- Embed and store documents in vector stores for semantic search.
-- Retrieve contextually relevant content using natural language queries.
-- Ideal for knowledge base querying and document Q&A systems.
-
-```
-python
-
-result = bro.search_files("Legislation related to environmental impact funding")
-print(result)
-```
-
-## 🔎 File & Web Search
-- Performs semantic search over domain-specific document embeddings to retrieve relevant content.
-- **File Search**: Query vector-embedded files using `vector_store_ids`.
-- **Web Search**: Real-time information retrieval using GPT web search integration.
-
-```
-python
-
-result = bro.search_files("Legislation related to environmental impact funding")
-print(result)
-```
-
-## 🌐 Web Search (Real-Time Querying)
-
-- Perform web lookups in real time via OpenAI’s web-enabled models.
-- Extract current events, news, and regulatory updates.
-- No scraping required—returns model-interpreted summaries.
-
-```
-python
-
-insights = bro.search_web("Current status of the Federal AI Bill 2025")
-print(insights)
-```
-
-## 🧾 Prompt & Message Structuring
-
-- Build structured prompt schemas using Pydantic models.
-- Define instructions, context, output goals, and data sources.
-- Promotes reusable, interpretable prompt engineering.
-
-```
-python
-
-from boo import Prompt
-p = Prompt(
-    instruction="Create a budget summary",
-    context="Federal Defense Budget FY25",
-    output_indicator="summary",
-    input_data="defense_budget_raw.csv"
-)
-print(p.model_dump())
-
-```
-
-## ⚙️ API Endpoint Access
-
-- Centralized access to OpenAI API endpoints.
-- Includes endpoints for completions, images, speech, and files.
-- Facilitates debugging and manual request construction.
-
-```
-python
-
-from boo import EndPoint
-api = EndPoint( )
-print( api.get_data( ) ) 
-```
-
-## 🤖 Assistant Management
-- Fetches and lists OpenAI assistants created or used within the system, enabling assistant
-  lifecycle management.
-- Chat: General multimodal chat
-- Assistant: Generic AI assistant
-- Bubba: Budget Execution Analyst
-- Bro: Programming & Data Science Analyst
-```
-python
-
-from boo import Assistant
-assistant = Assistant()
-assistants = assistant.get_list()
-print("Available Assistants:", assistants)
-```
-
 ## 📁 File Organization
 - [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/boo.py) – Main application framework
 - [models](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py) – Models used for structured output
@@ -373,6 +226,156 @@ current API shapes so you don’t fight subtle request/response drift.
 ---
 
 ## 🧪 Usage Examples
+
+## 🔤 Text Generation
+
+- Generate high-quality responses using OpenAI's GPT models.
+- Supports parameter tuning (temperature, top_p, frequency penalties).
+- Ideal for summarization, explanations, and knowledge retrieval.
+
+```
+python
+from boo import Bro
+
+bro = Bro( )
+response = bro.generate_text( "Explain how random forests handle overfitting." )
+print( response )
+```
+
+## 🎨 Image Generation
+
+- Convert natural language prompts into images using DALL·E 3.
+- Specify resolution and rendering quality options.
+- Useful for creating visual illustrations and conceptual diagrams.
+
+```
+python
+
+image_url = bro.generate_image("A conceptual illustration of quantum computing in federal AI")
+print(f"Image URL: {image_url}")
+```
+
+## 🖼️ Image Analysis
+
+- Analyze visual content by combining image and text prompts.
+- Extract meaning, context, or structure from images.
+- Leverages GPT-4o’s vision capabilities for advanced perception.
+
+```
+python
+
+url = "https://example.com/sample-image.png"
+response = bro.analyze_image("Describe the primary elements in this image", url)
+print(response)
+```
+
+## 📄 Document Summarization
+
+- Upload and process document files directly into the assistant.
+- Use prompts to extract insights or summarize content.
+- Supports PDFs, DOCX, and other file formats via OpenAI's file API.
+
+```
+python
+
+file_path = "data/federal_strategy.pdf"
+summary = bro.summarize_document(
+  prompt = "Summarize key national cybersecurity strategies.",
+  path = file_path
+)
+print( summary )
+```
+
+## 🔍 File Search with Vector Stores
+
+- Embed and store documents in vector stores for semantic search.
+- Retrieve contextually relevant content using natural language queries.
+- Ideal for knowledge base querying and document Q&A systems.
+
+```
+python
+
+result = bro.search_files("Legislation related to environmental impact funding")
+print(result)
+```
+
+## 🔎 File & Web Search
+
+- Performs semantic search over domain-specific document embeddings to retrieve relevant content.
+- **File Search**: Query vector-embedded files using `vector_store_ids`.
+- **Web Search**: Real-time information retrieval using GPT web search integration.
+
+```
+python
+
+result = bro.search_files("Legislation related to environmental impact funding")
+print(result)
+```
+
+## 🌐 Web Search (Real-Time Querying)
+
+- Perform web lookups in real time via OpenAI’s web-enabled models.
+- Extract current events, news, and regulatory updates.
+- No scraping required—returns model-interpreted summaries.
+
+```
+python
+
+insights = bro.search_web("Current status of the Federal AI Bill 2025")
+print(insights)
+```
+
+## 🧾 Prompt & Message Structuring
+
+- Build structured prompt schemas using Pydantic models.
+- Define instructions, context, output goals, and data sources.
+- Promotes reusable, interpretable prompt engineering.
+
+```
+python
+
+from boo import Prompt
+p = Prompt(
+    instruction="Create a budget summary",
+    context="Federal Defense Budget FY25",
+    output_indicator="summary",
+    input_data="defense_budget_raw.csv"
+)
+print(p.model_dump())
+
+```
+
+## ⚙️ API Endpoint Access
+
+- Centralized access to OpenAI API endpoints.
+- Includes endpoints for completions, images, speech, and files.
+- Facilitates debugging and manual request construction.
+
+```
+python
+
+from boo import EndPoint
+api = EndPoint( )
+print( api.get_data( ) ) 
+```
+
+## 🤖 Assistant Management
+
+- Fetches and lists OpenAI assistants created or used within the system, enabling assistant
+  lifecycle management.
+- Chat: General multimodal chat
+- Assistant: Generic AI assistant
+- Bubba: Budget Execution Analyst
+- Bro: Programming & Data Science Analyst
+
+```
+python
+
+from boo import Assistant
+assistant = Assistant()
+assistants = assistant.get_list()
+print("Available Assistants:", assistants)
+```
 
 > The snippets below show idiomatic Boo usage. They assume `chat = Chat()`, `img = Image()`,
 > etc., and an `OPENAI_API_KEY` is present in your environment.
