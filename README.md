@@ -109,14 +109,14 @@ OPENAI_API_KEY=<your_api_key>
 ## 📁 File Organization
 - [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/boo.py) – Main application framework
 - [models](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py) – Models used for structured output
-- [boogr](https://github.com/is-leeroy-jenkins/Boo/blob/main/boogr.py)/ – GUI and error dialogs
-- [guro](https://github.com/is-leeroy-jenkins/Boo/blob/main/guro.py)/ – Prompt context utilities
+- [boogr](https://github.com/is-leeroy-jenkins/Boo/blob/main/boogr.py) – GUI and error dialogs
+- [guro](https://github.com/is-leeroy-jenkins/Boo/blob/main/guro.py) – Prompt context utilities
 - [foo](https://github.com/is-leeroy-jenkins/Boo/blob/main/foo.py) – ML/AI Layer
-- [mathy](https://github.com/is-leeroy-jenkins/Boo/tree/main/mathy)/ - Machine Learning models
-- [dbops](https://github.com/is-leeroy-jenkins/Boo/tree/main/dbops.py)/ - Machine Learning models
+- [mathy](https://github.com/is-leeroy-jenkins/Boo/tree/main/mathy) - Machine Learning models
+- [dbops](https://github.com/is-leeroy-jenkins/Boo/tree/main/dbops.py) - Machine Learning models
 
 
----
+
 
 ## 🧭 Table of Contents
 
@@ -137,7 +137,7 @@ OPENAI_API_KEY=<your_api_key>
   - 🎙️ Transcription / Translation (Whisper)
 - 📄 License
 
----
+
 
 ## 🧰 Overview
 
@@ -154,7 +154,7 @@ Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
 Boo aims to be “boring on purpose”: predictable names, stable defaults, and payloads that match the
 current API shapes so you don’t fight subtle request/response drift.
 
----
+
 
 ## ✨ Features
 
@@ -168,7 +168,7 @@ current API shapes so you don’t fight subtle request/response drift.
   content `type` keys, size strings, binary file handling).
 - **Uniform errors**: `GptError` + `ErrorDialog` with `module/cause/method` metadata.
 
----
+
 
 ## ⚡ Quickstart
 
@@ -189,7 +189,7 @@ current API shapes so you don’t fight subtle request/response drift.
    chat = Chat()
    print(chat.generate_text("Say hello in one short sentence."))
 
----
+
 
 ## 🔧 Configuration
 
@@ -204,7 +204,7 @@ current API shapes so you don’t fight subtle request/response drift.
 - **Vector stores (optional)**
   - Configure your store IDs once; Boo converts to lists when calling tools.
 
----
+
 
 ## 🧩 Design & Architecture
 
@@ -218,9 +218,7 @@ current API shapes so you don’t fight subtle request/response drift.
   pass-through `def __init__(self, **data): super().__init__(**data)`.
 - **Consistent naming**: `vector_stores` (with underscore), `response_format`, `output_text`.
 
----
 
-## 🧪 Usage Examples
 
 ## 🔤 Text Generation
 
