@@ -42,15 +42,14 @@
   </summary>
   ******************************************************************************************
   '''
-from src.boogr import ErrorDialog, Error
+from boogr import ErrorDialog, Error
 import datetime as dt
 import os
 from openai import OpenAI
-from pygments.lexers.csound import newline
 import tiktoken
 from pathlib import Path
 from typing import Any, List, Optional, Dict
-from src.guro import Prompt
+from guro import Prompt
 
 
 class EndPoint( ):
@@ -62,8 +61,8 @@ class EndPoint( ):
 		
 	'''
 	base_url: Optional[ str ]
-	text_generations: Optional[ str ]
-	image_generations: Optional[ str ]
+	text_generation: Optional[ str ]
+	image_generation: Optional[ str ]
 	chat_completions: Optional[ str ]
 	image_edits: Optional[ str ]
 	assistants: Optional[ str ]
@@ -113,10 +112,11 @@ class EndPoint( ):
 		_data = {
 				'text_generation': self.text_generation,
 				'responses': self.responses,
+				'assistants': self.assistants,
 				'image_generation': self.image_generation,
-				'chat_completion': self.chat_completion,
+				'chat_completions': self.chat_completions,
 				'speech_generation': self.speech_generation,
-				'image_edit': self.image_edits,
+				'image_edits': self.image_edits,
 				'translations': self.translations,
 				'finetuning': self.finetuning,
 				'image_variations': self.image_variations,
@@ -143,12 +143,15 @@ class EndPoint( ):
 		new = '\r\n'  # <- real newline
 		return (
 				'base_url' + f' = {self.base_url}' + new +
+				'image_variations' + f' = {self.image_variations}' + new +
 				'text_generation' + f' = {self.text_generation}' + new +
 				'image_generation' + f' = {self.image_generation}' + new +
-				'chat_completion' + f' = {self.chat_completion}' + new +
+				'chat_completions' + f' = {self.chat_completions}' + new +
 				'speech_generation' + f' = {self.speech_generation}' + new +
+				'image_edits' + f' = {self.image_edits}' + new +
 				'translations' + f' = {self.translations}' + new +
 				'assistants' + f' = {self.assistants}' + new +
+				'responses' + f' = {self.responses}' + new +
 				'transcriptions' + f' = {self.transcriptions}' + new +
 				'finetuning' + f' = {self.finetuning}' + new +
 				'vectors' + f' = {self.embeddings}' + new +  # <- was files
@@ -604,7 +607,7 @@ class Chat( GPT ):
 						'type': 'file',
 						'file':
 						{
-							'file_id': file.id,
+							'file_id': self.file.id,
 						}
 					},
 					{
@@ -2666,7 +2669,7 @@ class Transcription( GPT ):
 					file=audio_file )
 			return resp.text
 		except Exception as e:
-			ex = GptError( code = 0, message = str( e ) )
+			ex = Error( code = 0, message = str( e ) )
 			ex.module = 'boo';
 			ex.cause = 'Transcription';
 			ex.method = 'transcribe(self, path)'
@@ -2861,7 +2864,7 @@ class Translation( GPT ):
 					file = audio_file )
 			return resp.text
 		except Exception as e:
-			ex = GptError( code = 0, message = str( e ) )
+			ex = Error( code = 0, message = str( e ) )
 			ex.module = 'boo'
 			ex.cause = 'Translation'
 			ex.method = 'translate(self, path)'
@@ -2954,6 +2957,7 @@ class LargeImage( GPT ):
 		get_size_options( self ) -> list[ str ]
 
 	"""
+	input: Optional[ List ]
 	
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
@@ -2978,7 +2982,7 @@ class LargeImage( GPT ):
 		self.image_url = None
 	
 	
-	def generate( self, input: str ) -> str:
+	def generate( self, input: str ) -> str | None:
 		"""
 
 			Purpose
@@ -2989,8 +2993,7 @@ class LargeImage( GPT ):
 
 			Parameters
 			----------
-			prompt: str
-			url: str
+			input: str
 
 			Returns
 			-------
@@ -3020,7 +3023,7 @@ class LargeImage( GPT ):
 			error.show( )
 	
 	
-	def analyze( self, input: str, path: str ) -> str:
+	def analyze( self, input: str, path: str ) -> str | None:
 		'''
 
 			Purpose:

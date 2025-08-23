@@ -60,6 +60,8 @@ from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain_core.tools import Tool
 from typing import List, Optional
 from boogr import Error, ErrorDialog
+from openai import OpenAI
+import requests
 
 class Fetch( ):
 	"""
@@ -461,3 +463,109 @@ class Fetch( ):
 			exception.method = 'chat_history( self ) -> List[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
+
+
+class GoogleSearch( ):
+	"""
+
+		Purpose:
+			Provides a reusable interface for querying the Google Custom Search API
+			and integrates with OpenAI's Tool API if desired.
+
+		Attributes:
+			api_key (str): Google API key for Custom Search.
+			cse_id (str): Custom Search Engine ID.
+			client (OpenAI | None): OpenAI API client instance.
+
+	"""
+
+	def __init__( self, api_key: str, cse_id: str, openai_api_key: str | None = None ):
+		"""
+
+			Parameters:
+				api_key (str): Google API key.
+				cse_id (str): Custom Search Engine ID.
+				openai_api_key (str | None): Optional OpenAI API key for tool usage.
+
+		"""
+		self.api_key = api_key
+		self.cse_id = cse_id
+		self.client = OpenAI( api_key=self.api_key ) if openai_api_key else None
+
+	def search( self, query: str, num: int = 5 ) -> list[ dict ]:
+		"""
+		
+			Purpose:
+				Perform a search query using Google's Custom Search JSON API.
+	
+			Parameters:
+				query (str): Search string.
+				num (int): Number of results (max 10 per request).
+	
+			Returns:
+				list[dict]: Search results with title, link, and snippet.
+				
+		"""
+		url = 'https://www.googleapis.com/customsearch/v1'
+		params = { 'q': query, 'key': self.api_key, 'cx': self.cse_id, 'num': num }
+		response = requests.get( url, params = params )
+		response.raise_for_status( )
+		results = response.json( )
+
+		return [
+				{ 'title': item[ 'title' ], 'link': item[ 'link' ], 'snippet': item[ 'snippet' ] }
+				for item in results.get( 'items', [ ] )
+		]
+
+	def get_tool_schema( self ) -> dict:
+		"""
+
+			Purpose:
+				Return the OpenAI Tool API schema for this search function.
+
+			Returns:
+				dict: JSON schema for the tool definition.
+
+		"""
+		return \
+		{
+				'name': 'google_search',
+				'description': 'Search Google Custom Search Engine and return top results.',
+				'parameters':
+				{
+						'type': 'object',
+						'properties':
+						{
+								'query':
+								{
+										'type': 'string',
+										'description': 'Search query string'
+								}
+						},
+						'required': [ 'query' ],
+				},
+		}
+
+	def run_with_openai( self, user_message: str, model: str='gpt-4.1' ) -> str | None:
+		"""
+
+			Purpose:
+				Run a chat completion request with OpenAI using the Google Search tool.
+
+			Parameters:
+				user_message (str): The message to send to the model.
+				model (str): OpenAI model to use.
+
+			Returns:
+				dict: OpenAI API response.
+
+		"""
+		if not self.client:
+			raise RuntimeError( 'OpenAI client not initialized. Provide openai_api_key.' )
+
+		return self.client.chat.completions.create(
+			model = model,
+			messages = [ { 'role': 'user', 'content': user_message } ],
+			tools = [ self.get_tool_schema( ) ],
+			tool_choice = { 'type': 'function', 'function': { 'name': 'google_search' } },
+		).choices[0].message.content

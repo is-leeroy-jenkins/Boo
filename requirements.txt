@@ -1,12 +1,12 @@
-accelerate
-agents
+accelerate~=1.9.0
+agents~=1.4.0
 beautifulsoup4~=4.13.4
 crawl4ai
 camelot-py
 dash~=3.1.0
 dash-core-components
 dash-html-components
-dotenv
+dotenv~=0.9.9
 datasets~=4.0.0
 FreeSimpleGUI~=5.2.0.post1
 fitz~=0.0.1.dev2
@@ -32,8 +32,8 @@ Pygments~=2.19.1
 pyodbc~=5.2.0
 pandas~=2.3.1
 pillow~=11.3.0
-python-dotenv
-pinecone
+python-dotenv~=1.1.1
+pinecone~=7.3.0
 pathlib~=1.0.1
 plotly~=6.1.0
 playwright~=1.54.0
@@ -80,7 +80,7 @@ tqdm~=4.67.1
 tenacity
 termcolor
 tf-keras
-torch
+torch~=2.7.1
 tensorflow
 typing~=3.7.4.3
 pydantic~=2.11.7

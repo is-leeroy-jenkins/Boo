@@ -43,8 +43,9 @@
   ******************************************************************************************
   '''
 import subprocess as sp
-from src.boogr import *
-from src.static import Client
+from enums import Client
+from boogr import *
+import os
 
 class App( ):
     '''
@@ -122,7 +123,7 @@ class App( ):
                 sp.Popen( self.word )
         except Exception as e:
             _exc = Error( e )
-            _exc.module = 'Minion'
+            _exc.module = 'minion'
             _exc.cause = 'App'
             _exc.method = 'run( self )'
             _err = ErrorDialog( _exc )
@@ -160,7 +161,7 @@ class App( ):
             elif args is not None and self.app == Client.Pyscripter:
                     sp.Popen( [ self.pyscripter, args ] )
             elif args is not None and self.app == Client.Word:
-                    sp.Popen( [ self.__word, args ] )
+                    sp.Popen( [ self.word, args ] )
             elif args is not None and self.app == Client.TaskManager:
                     sp.Popen( [ self.task_manager, args ] )
             elif args is not None and self.app == Client.ControlPanel:
