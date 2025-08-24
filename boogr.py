@@ -82,11 +82,13 @@ class Error( Exception ):
                 method: str=None, module: str=None )
 
     '''
+	error: Optional[ Exception ]
 	
 	
-	def __init__( self, error: Exception, heading: str = None, cause: str = None,
-	              method: str = None, module: str = None ):
+	def __init__( self, error: Exception, heading: str=None, cause: st =None,
+	              method: str=None, module: str=None ):
 		super( ).__init__( )
+		self.error = error
 		self.heading = heading
 		self.cause = cause
 		self.method = method
@@ -132,7 +134,7 @@ class Error( Exception ):
 			List[ str ] | None
 
 		'''
-		return [ 'message', 'cause',
+		return [ 'message', 'cause', 'error',
 		         'method', 'module', 'scaler',
 		         'stack_trace', 'info' ]
 

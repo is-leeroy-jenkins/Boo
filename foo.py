@@ -50,6 +50,8 @@ from langchain.agents.agent_types import AgentType
 from langchain.chains import RetrievalQA
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.memory import ConversationBufferMemory
+from langchain_core.documents import Document
+from langchain_core.vectorstores import VectorStore
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import (
@@ -141,6 +143,10 @@ class Fetch( ):
 	sql_tool: Optional[ Tool ]
 	doc_tool: Optional[ Tool ]
 	database: Optional[ SQLDatabase ]
+	chunks: Optional[ List[ Document ] ]
+	embeddings: Optional[ OpenAIEmbeddings ]
+	vectordb: Optional[ VectorStore ]
+	retreiver: Optional[ VectorStore ]
 	db_toolkit: Optional[ SQLDatabaseToolkit ]
 	api_tools: Optional[ List[ Tool ] ]
 	extension: Optional[ str ]
@@ -297,17 +303,17 @@ class Fetch( ):
 		"""
 		try:
 			raw_docs = self._load_documents( )
-			chunks = (RecursiveCharacterTextSplitter( chunk_size = 500, chunk_overlap = 50 )
+			self.chunks = (RecursiveCharacterTextSplitter( chunk_size=500, chunk_overlap=50 )
 			          .split_documents( raw_docs ))
-			embeddings = OpenAIEmbeddings( )
-			vectordb = FAISS.from_documents( chunks, embeddings )
-			retriever = vectordb.as_retriever( )
-			qa_chain = RetrievalQA.from_chain_type( llm = self.llm, retriever = retriever,
-				chain_type = 'map_reduce' )
+			self.embeddings = OpenAIEmbeddings( )
+			self.vectordb = FAISS.from_documents( self.chunks, self.embeddings )
+			self.retriever = self.vectordb.as_retriever( )
+			qa_chain = RetrievalQA.from_chain_type( llm=self.llm, retriever= self.retriever,
+				chain_type='map_reduce' )
 			name = 'DocumentQA'
 			func = qa_chain.run
 			description = 'Use this to answer questions from uploaded documents'
-			return Tool( name = name, func = func, description = description )
+			return Tool( name=name, func=func, description=description )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'foo'
@@ -347,16 +353,18 @@ class Fetch( ):
 	# ---------- Explicit entrypoints ----------
 	def query_sql( self, question: str ) -> str | None:
 		"""
-		Purpose:
-			Answer a question using ONLY the SQL tool.
 
-		Parameters:
-			question (str):
-				Natural language question that maps to a SQL database query.
+			Purpose:
+				Answer a question using ONLY the SQL tool.
 
-		Returns:
-			str:
-				Answer string derived from database queries.
+			Parameters:
+				question (str):
+					Natural language question that maps to a SQL database query.
+
+			Returns:
+				str:
+					Answer string derived from database queries.
+
 		"""
 		try:
 			if not question:
@@ -367,7 +375,8 @@ class Fetch( ):
 			exception.module = 'Fetch'
 			exception.cause = 'query_sql'
 			exception.method = 'query_sql(self, question)'
-			ErrorDialog( exception ).show( )
+			error = ErrorDialog( exception )
+			error.show( )
 
 	def query_docs( self, question: str, *, with_sources: bool = False ) -> str | None:
 		"""
@@ -406,7 +415,8 @@ class Fetch( ):
 			exception.module = 'Fetch'
 			exception.cause = 'query_docs'
 			exception.method = 'query_docs(self, question, with_sources)'
-			ErrorDialog( exception ).show( )
+			error = ErrorDialog( exception )
+			error.show( )
 
 	def query_chat( self, prompt: str ) -> str | None:
 		"""
@@ -433,7 +443,8 @@ class Fetch( ):
 			exception.module = 'Fetch'
 			exception.cause = 'query_chat'
 			exception.method = 'query_chat(self, prompt)'
-			ErrorDialog( exception ).show( )
+			error = ErrorDialog( exception )
+			error.show( )
 
 	def chat_history( self ) -> List[ str ] | None:
 		"""
@@ -465,7 +476,7 @@ class Fetch( ):
 			error.show( )
 
 
-class GoogleSearch( ):
+class GoogleSearchTool( ):
 	"""
 
 		Purpose:
@@ -479,7 +490,7 @@ class GoogleSearch( ):
 
 	"""
 
-	def __init__( self, api_key: str, cse_id: str, openai_api_key: str | None = None ):
+	def __init__( self, api_key: str, cse_id: str ):
 		"""
 
 			Parameters:
@@ -490,9 +501,9 @@ class GoogleSearch( ):
 		"""
 		self.api_key = api_key
 		self.cse_id = cse_id
-		self.client = OpenAI( api_key=self.api_key ) if openai_api_key else None
+		self.client = OpenAI( api_key=self.api_key )
 
-	def search( self, query: str, num: int = 5 ) -> list[ dict ]:
+	def search( self, query: str, num: int=5 ) -> list[ dict ]:
 		"""
 		
 			Purpose:

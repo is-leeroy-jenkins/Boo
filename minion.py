@@ -170,7 +170,7 @@ class App( ):
                     sp.Popen( [ self.storage, args ] )
         except Exception as e:
             _exc = Error( e )
-            _exc.module = 'Minion'
+            _exc.module = 'minion'
             _exc.cause = 'App'
             _exc.method = 'run_args( self, args )'
             _err = ErrorDialog( _exc )
