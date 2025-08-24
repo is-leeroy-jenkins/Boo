@@ -67,7 +67,7 @@ from minion import App
 import traceback
 import urllib.request
 import webbrowser
-from typing import List
+from typing import List, Optional, Tuple
 
 class Error( Exception ):
 	'''
@@ -268,11 +268,21 @@ class Dark( ):
 		Class representing the theme
 
     '''
+	theme_background: Optional[ str ]
+	theme_textcolor: Optional[ str ]
+	element_forecolor: Optional[ str ]
+	text_backcolor: Optional[ str ]
+	text_forecolor: Optional[ str ]
+	input_forecolor: Optional[ str ]
+	input_backcolor: Optional[ str ]
+	button_backcolor: Optional[ str ]
+	button_forecolor: Optional[ str ]
+	button_color: Optional[ Tuple[ str, str ] ]
+	icon_path: Optional[ str ]
+	theme_font: Optional[ Tuple[ str, int ] ]
+	scrollbar_color: Optional[ str ]
+	form_size: Optional[ Tuple[ int, int ] ]
 
-	class Config:
-		arbitrary_types_allowed = True
-		extra = 'ignore'
-		allow_mutation = True
 
 	def __init__( self ):
 		super( ).__init__( )
@@ -363,13 +373,13 @@ class FileDialog( Dark ):
 		sg.user_settings_save( 'Boo', r'/resources/theme' )
 		self.form_size = (500, 240)
 		self.selected_item = None
-		self.message = 'Grab GptFile'
+		self.message = 'Grab File'
 		self.extension = extension
 		self.excel = (('Excel', '*.xlsx'),)
 		self.csv = (('CSV', '*.csv'),)
 		self.pdf = (('PDF', '*.pdf'),)
 		self.sql = (('SQL', '*.sql',),)
-		self.text = (('GptText', '*.txt'),)
+		self.text = (('Text', '*.txt'),)
 		self.access = (('Access', '*.accdb'),)
 		self.sqlite = (('SQLite', '*.db'),)
 		self.sqlserver = (('MSSQL', '*.mdf', '*.ldf', '*.sdf'),)
@@ -462,7 +472,7 @@ class FileDialog( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'FileDialog'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -579,7 +589,7 @@ class FolderDialog( Dark ):
 			            [ sg.Text( size=(100, 1) ) ],
 			            [ sg.OK( size=(8, 1) ), sg.Cancel( size=(10, 1) ) ] ]
 			
-			_window = sg.Window( '  Booger', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				font=self.theme_font,
 				size=self.form_size,
 				icon=self.icon_path )
@@ -598,6 +608,7 @@ class FolderDialog( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
+			exception.module = 'boogr'
 			exception.cause = 'FolderDialog'
 			exception.method = 'show( self )'
 			_error = ErrorDialog( exception )
@@ -708,8 +719,8 @@ class SaveFileDialog( Dark ):
 		'''
 		try:
 			_username = os.environ.get( 'USERNAME' )
-			_filename = sg.popup_get_file( 'Select Location / Enter GptFile Name',
-				title='  Booger',
+			_filename = sg.popup_get_file( 'Select Location / Enter File Name',
+				title='  Boo',
 				font=self.theme_font,
 				icon=self.icon_path,
 				save_as=True )
@@ -721,7 +732,7 @@ class SaveFileDialog( Dark ):
 				_dest = io.open( _filename, 'w+' ).write( _src )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'SaveFileDialog'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -842,7 +853,7 @@ class GoogleDialog( Dark ):
 			            [ sg.Text( size=(10, 1) ), sg.Submit( size=(15, 1) ),
 			              sg.Text( size=(5, 1) ), sg.Cancel( size=(15, 1) ) ] ]
 			
-			_window = sg.Window( '  Booger', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				icon=self.icon_path,
 				font=self.theme_font,
 				size=self.form_size )
@@ -862,7 +873,7 @@ class GoogleDialog( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'GoogleDialog'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -885,8 +896,8 @@ class EmailDialog( Dark ):
     '''
 	
 	
-	def __init__( self, sender: str = None, receiver: list[ str ] = None,
-	              subject: str = None, message: list[ str ] = None ):
+	def __init__( self, sender: str=None, receiver: list[ str ]=None,
+	              subject: str=None, message: list[ str ]=None ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -1026,7 +1037,7 @@ class EmailDialog( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'EmailDialog'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -1166,7 +1177,7 @@ class MessageDialog( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'MessageDialog'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -1176,20 +1187,20 @@ class MessageDialog( Dark ):
 class ErrorDialog( Dark ):
 	'''
 
-	    Construcotr:  ErrorDialog( error )
 
-	    Purpose:  Class that displays excetption target_values that accepts
-            a single, optional argument 'error' of scaler GptError
+	    Purpose:
+	    Class that displays excetption target_values that accepts
+        a single, optional argument 'error' of scaler GptError
 
     '''
 	
 	# Fields
-	error: Exception = None
-	heading: str = None
-	module: str = None
-	info: str = None
-	cause: str = None
-	method: str = None
+	error: Optional[ Exception ]= None
+	heading: Optional[ str ]=None
+	module: Optional[ str ]=None
+	info: Optional[ str ]= None
+	cause: Optional[ str ]= None
+	method: Optoinal[ str ]= None
 	
 	
 	def __init__( self, error: Error ):
@@ -1266,8 +1277,8 @@ class ErrorDialog( Dark ):
 		         'input_forecolor', 'button_color', 'button_backcolor',
 		         'button_forecolor', 'icon_path', 'theme_font',
 		         'scrollbar_color', 'progressbar_color',
-		         'info', 'cause', 'method', 'error', 'heading'
-		                                             'module', 'scaler', 'message' 'show' ]
+		         'info', 'cause', 'method', 'error', 'heading',
+		         'module', 'scaler', 'message' 'show' ]
 	
 	
 	def show( self ) -> object:
@@ -1290,8 +1301,8 @@ class ErrorDialog( Dark ):
 		_info = f'Module:\t{self.module}\r\nClass:\t{self.cause}\r\n' \
 		        f'Method:\t{self.method}\r\n \r\n{self.info}'
 		_red = '#F70202'
-		_font = ('Roboto', 10)
-		_padsz = (3, 3)
+		_font = ( 'Roboto', 10 )
+		_padsz = ( 3, 3 )
 		_layout = [ [ sg.Text( ) ],
 		            [ sg.Text( f'{_msg}', size=(100, 1), key='-MSG-', text_color=_red,
 			            font=_font ) ],
@@ -1308,7 +1319,7 @@ class ErrorDialog( Dark ):
 		
 		while True:
 			_event, _values = _window.read( )
-			if _event in (sg.WIN_CLOSED, sg.WIN_X_EVENT, 'Canel', '-OK-'):
+			if _event in ( sg.WIN_CLOSED, sg.WIN_X_EVENT, 'Canel', '-OK-' ):
 				break
 		
 		_window.close( )
@@ -1428,7 +1439,7 @@ class InputDialog( Dark ):
 			              sg.Text( size=(5, 1) ),
 			              sg.Cancel( size=(15, 1), key='-CANCEL-' ) ] ]
 			
-			_window = sg.Window( '  Booger', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				icon=self.icon_path,
 				font=self.theme_font,
 				size=self.form_size )
@@ -1447,7 +1458,7 @@ class InputDialog( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'InputDialog'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -1575,7 +1586,7 @@ class ScrollingDialog( Dark ):
 			              sg.Text( size=(15, 1) ), sg.Button( 'Exit', size=_btnsize ),
 			              sg.Text( size=_space ), ] ]
 			
-			_window = sg.Window( '  Booger', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				icon=self.icon_path,
 				size=self.form_size,
 				font=self.theme_font,
@@ -1590,7 +1601,7 @@ class ScrollingDialog( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'ScrollingDialog'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -1689,7 +1700,7 @@ class ContactForm( Dark ):
 			            [ sg.Text( size=(10, 1) ), sg.Submit( size=(10, 1) ),
 			              sg.Text( size=(20, 1) ), sg.Cancel( size=(10, 1) ) ] ]
 			
-			_window = sg.Window( '  Booger', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				icon=self.icon_path,
 				font=self.theme_font,
 				size=self.form_size )
@@ -1709,7 +1720,7 @@ class ContactForm( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'ContactForm'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -1814,7 +1825,7 @@ class GridForm( Dark ):
 			# noinspection PyTypeChecker
 			_layout = _space + _header + _records + _buttons
 			
-			_window = sg.Window( '  Booger', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				finalize=True,
 				size=self.form_size,
 				icon=self.icon_path,
@@ -1829,7 +1840,7 @@ class GridForm( Dark ):
 				_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'GridForm'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -1941,7 +1952,7 @@ class LoadingPanel( Dark ):
 					_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'LoadingPanel'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -2054,7 +2065,7 @@ class WaitingPanel( Dark ):
 					_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'WaitingPanel'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -2171,7 +2182,7 @@ class ProcessingPanel( Dark ):
 					_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'ProcessingPanel'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -2265,7 +2276,7 @@ class SplashPanel( Dark ):
 			            [ sg.Text( size=_space ), sg.Text( size=_line ) ],
 			            [ sg.Text( size=_space ),
 			              sg.Image( filename=self.image, size=_imgsize ) ] ]
-			_window = sg.Window( '  Booger', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				no_titlebar=True,
 				keep_on_top=True,
 				grab_anywhere=True,
@@ -2277,7 +2288,7 @@ class SplashPanel( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'SplashPanel'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -2463,7 +2474,7 @@ class Notification( Dark ):
 		
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'Notification'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -2947,7 +2958,7 @@ class PdfForm( Dark ):
 					# goto.TKStringVar.pairs(str(cur_page + 1))
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'PdfForm'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -3078,7 +3089,7 @@ class CalendarDialog( Dark ):
 			self.selected_item = _cal
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'CalendarDialog'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -3200,7 +3211,7 @@ class ComboBoxDialog( Dark ):
 			                                                                         1) ),
 			              sg.Cancel( size=_btnsz ) ] ]
 			
-			_window = sg.Window( '  Booger', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				icon=self.icon_path,
 				size=self.form_size )
 			
@@ -3218,7 +3229,7 @@ class ComboBoxDialog( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'ComboBoxDialog'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -3352,7 +3363,7 @@ class ListBoxDialog( Dark ):
 			              sg.Button( 'Select', size=_btnsize, enable_events=True ),
 			              sg.Text( size=(3, 1) ), sg.Button( 'Exit', size=_btnsize ) ] ]
 			
-			_window = sg.Window( '  Booger', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				size=self.form_size,
 				font=self.theme_font )
 			
@@ -3378,7 +3389,7 @@ class ListBoxDialog( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'ListBoxDialog'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -4208,7 +4219,7 @@ class ColorDialog( Dark ):
 				tooltip_time=100 )
 		except Exception as e:
 			_exception = Error( e )
-			_exception.module = 'Booger'
+			_exception.module = 'boogr'
 			_exception.cause = 'ColorDialog'
 			_exception.method = 'show( self )'
 			_error = ErrorDialog( _exception )
@@ -4317,7 +4328,7 @@ class BudgetForm( Dark ):
 				return _title
 			except Exception as e:
 				exception = Error( e )
-				exception.module = 'Booger'
+				exception.module = 'boogr'
 				exception.cause = 'BudgetForm'
 				exception.method = 'create_title( self, items )'
 				error = ErrorDialog( exception )
@@ -4353,7 +4364,7 @@ class BudgetForm( Dark ):
 				return _header
 			except Exception as e:
 				exception = Error( e )
-				exception.module = 'Booger'
+				exception.module = 'boogr'
 				exception.cause = 'BudgetForm'
 				exception.method = 'create_header( self, items )'
 				error = ErrorDialog( exception )
@@ -4393,7 +4404,7 @@ class BudgetForm( Dark ):
 				return _first
 			except Exception as e:
 				exception = Error( e )
-				exception.module = 'Booger'
+				exception.module = 'boogr'
 				exception.cause = 'BudgetForm'
 				exception.method = 'create_first( self, items: get_list ) -> get_list'
 				error = ErrorDialog( exception )
@@ -4433,7 +4444,7 @@ class BudgetForm( Dark ):
 				return _second
 			except Exception as e:
 				exception = Error( e )
-				exception.module = 'Booger'
+				exception.module = 'boogr'
 				exception.cause = 'BudgetForm'
 				exception.method = 'create_second( self, items )'
 				error = ErrorDialog( exception )
@@ -4473,7 +4484,7 @@ class BudgetForm( Dark ):
 				return _third
 			except Exception as e:
 				exception = Error( e )
-				exception.module = 'Booger'
+				exception.module = 'boogr'
 				exception.cause = 'BudgetForm'
 				exception.method = 'create_third( self, items: get_list )'
 				error = ErrorDialog( exception )
@@ -4513,7 +4524,7 @@ class BudgetForm( Dark ):
 				return _fourth
 			except Exception as e:
 				exception = Error( e )
-				exception.module = 'Booger'
+				exception.module = 'boogr'
 				exception.cause = 'BudgetForm'
 				exception.method = 'create_fourth( self, items: get_list )'
 				error = ErrorDialog( exception )
@@ -4572,7 +4583,7 @@ class BudgetForm( Dark ):
 			return _layout
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'BudgetForm'
 			exception.method = 'set_layout( self, items )'
 			error = ErrorDialog( exception )
@@ -4676,7 +4687,7 @@ class BudgetForm( Dark ):
 					  pad=BPAD_LEFT, background_color=_blu, border_width=0,
 					  expand_x=True, expand_y=True ), ],
 				[ sg.Sizegrip( background_color=_mblk ) ] ]
-			_window = sg.Window( '  Booger', self.__formlayout,
+			_window = sg.Window( '  Boo', self.__formlayout,
 				size=self.form_size,
 				margins=(0, 0),
 				background_color=_blk,
@@ -4698,7 +4709,7 @@ class BudgetForm( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'BudgetForm'
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
@@ -4842,7 +4853,7 @@ class ChartPanel( Dark ):
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'ChartForm'
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
@@ -4983,13 +4994,13 @@ class CsvForm( Dark ):
 				alternating_row_color='#EDF3F8', border_width=1, text_color='#000000',
 				expand_x=True, expand_y=True, sbar_relief=sg.RELIEF_FLAT,
 				num_rows=min( 26, len( _data ) ) ), ], ]
-			_window = sg.Window( '  Booger', _datagrid, icon=self.icon_path,
+			_window = sg.Window( '  Boo', _datagrid, icon=self.icon_path,
 				font=self.theme_font, resizable=True )
 			_event, _values = _window.read( )
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'CsvForm'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -5158,7 +5169,7 @@ class ExcelForm( Dark ):
 				_window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'ExcelForm'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -5631,7 +5642,7 @@ class ChatWindow( ):
 			window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'ChatWindow'
 			exception.method = 'show( self )'
 			error = ErrorDialog( exception )
@@ -5763,7 +5774,7 @@ class ChatBot( ):
 					window[ '-QUERY-' ].update( '' )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'ChatBot'
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
@@ -5938,7 +5949,7 @@ class InputWindow( ):
 				window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'InputWindow'
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
@@ -6084,7 +6095,7 @@ class Executable( ):
 							command_line )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'Executable'
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
@@ -6125,7 +6136,7 @@ class Executable( ):
 			return (retval, output)
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'Executable'
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
@@ -6233,7 +6244,7 @@ class ThemeSelector( ):
 			window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'ThemeSelector'
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
@@ -6333,7 +6344,7 @@ class UrlImageViewer( ):
 			window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'UrlImageViewer'
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
@@ -6491,7 +6502,7 @@ class AutoComplete( ):
 			self.window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'UrlImageViewer'
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
@@ -6594,7 +6605,7 @@ class CheckBox( ):
 			window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'UrlImageViewer'
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
@@ -6718,7 +6729,7 @@ class MachineLearningWindow( ):
 			window.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'MachineLearningWindow'
 			exception.method = '__build_window( self)'
 			error = ErrorDialog( exception )
@@ -6763,7 +6774,7 @@ class MachineLearningWindow( ):
 			window.CloseNonBlocking( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'MachineLearningWindow'
 			exception.method = '__custom_meter( self)'
 			error = ErrorDialog( exception )
@@ -6790,7 +6801,7 @@ class MachineLearningWindow( ):
 			self.__build_window( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'Booger'
+			exception.module = 'boogr'
 			exception.cause = 'MachineLearningWindow'
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
