@@ -114,11 +114,11 @@ pip install -r requirements.txt
 - [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/boo.py) – Main application framework
 - [models](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py) – Models used for
   structured output
-- [boogr](https://github.com/is-leeroy-jenkins/Boo/blob/main/boogr.py) – GUI and error dialogs
-- [guro](https://github.com/is-leeroy-jenkins/Boo/blob/main/guro.py) – Prompt context utilities
+- [boogr](https://github.com/is-leeroy-jenkins/Boo/blob/main/boogr.py) – a GUI
+- [guro](https://github.com/is-leeroy-jenkins/Boo/blob/main/guro.py) – a prompt engineering library w/ over 100 templates.
 - [foo](https://github.com/is-leeroy-jenkins/Boo/blob/main/foo.py) – ML/AI Layer
-- [mathy](https://github.com/is-leeroy-jenkins/Boo/tree/main/mathy) - Machine Learning models
-- [dbops](https://github.com/is-leeroy-jenkins/Boo/tree/main/dbops.py) - Machine Learning models
+- [mathy](https://github.com/is-leeroy-jenkins/Boo/tree/main/mathy) - Machine Learning library for regression, classification, time-series analysis and data processing. 
+- [dbops](https://github.com/is-leeroy-jenkins/Boo/tree/main/dbops.py) - Local persistance of embeddings for retreival augmentation base on SLQite. 
 
 ### 🔐 Environment Variables
 
