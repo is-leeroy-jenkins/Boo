@@ -15,17 +15,15 @@ automation of analytical tasks.
   and translation.
 - Multimodal Capabilities: Supports text generation, image creation, image analysis, and document
   summarization.
-- Assistant Classes:
-- Chat: Generic multimodal interaction with GPT.
-- Assistants: General-purpose assistant framework.
+- Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
+- Web & File Search: Built-in support for semantic document and web search.
+
   
 ### 🧠 Large Lanugage Models
 ##### Fine-Tuned Models Large Language Models customized for Retreival Augmentation in different domains:
-- [Leeroy](https://huggingface.co/leeroy-jankins/leeroy) based on Llama 3.2
-- [Bro](https://huggingface.co/leeroy-jankins/bro) based on Gemma-3
-- [Bubba](https://huggingface.co/leeroy-jankins/bubba) based on GPT-5
-- Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
-- Web & File Search: Built-in support for semantic document and web search.
+- [Leeroy](https://huggingface.co/leeroy-jankins/leeroy) a customized LLM for federal budgeting based on Llama 3.2
+- [Bro](https://huggingface.co/leeroy-jankins/bro) a customized LLM for federal accounting  based on Gemma-3
+- [Bubba](https://huggingface.co/leeroy-jankins/bubba) a general-purpose LLM based on ChatGPT-5
 
 ### 🧭 Table of Contents
 
