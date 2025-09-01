@@ -20,7 +20,7 @@ automation of analytical tasks.
 - Assistants: General-purpose assistant framework.
   
 ### 🧠 Large Lanugage Models
-- Fine-Tuned Models Large Language Models customized for Retreival Augmentation in different domains:
+##### Fine-Tuned Models Large Language Models customized for Retreival Augmentation in different domains:
 - [Leeroy](https://huggingface.co/leeroy-jankins/leeroy) based on Llama 3.2
 - [Bro](https://huggingface.co/leeroy-jankins/bro) based on Gemma-3
 - [Bubba](https://huggingface.co/leeroy-jankins/bubba) based on GPT-5
