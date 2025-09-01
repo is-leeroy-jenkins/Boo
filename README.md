@@ -9,7 +9,7 @@ models with multimodal support for text, image, audio, and file analysis. Design
 extensibility and federal applications in mind, it enables secure, scalable, and intelligent
 automation of analytical tasks.
 
-### ⚙️ Features
+### 🛠️ Features
 
 - Unified AI Framework: Integrates OpenAI APIs for text, image, audio, file analysis, transcription,
   and translation.
@@ -17,10 +17,13 @@ automation of analytical tasks.
   summarization.
 - Assistant Classes:
 - Chat: Generic multimodal interaction with GPT.
-- Assistant: General-purpose assistant framework.
-- Boo: Budget Execution Agent.
-- Bro: Data Science Agent.
-- Custom Fine-Tuned Models Large Language Models for different domains: [Leeroy](https://huggingface.co/leeroy-jankins/leeroy), [Bro](https://huggingface.co/leeroy-jankins/bro), and [Bubba](https://huggingface.co/leeroy-jankins/bubba)
+- Assistants: General-purpose assistant framework.
+  
+### 🧠 Large Lanugage Models
+- Fine-Tuned Models Large Language Models customized for Retreival Augmentation in different domains:
+- [Leeroy](https://huggingface.co/leeroy-jankins/leeroy) based on Llama 3.2
+- [Bro](https://huggingface.co/leeroy-jankins/bro) based on Gemma-3
+- [Bubba](https://huggingface.co/leeroy-jankins/bubba) based on GPT-5
 - Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
 - Web & File Search: Built-in support for semantic document and web search.
 
@@ -83,7 +86,7 @@ pip install -r requirements.txt
 
 
 
-### 🧠 Capabilities
+### 💻 Capabilities
 
 | Capability        | Description                                                                 |
 |-------------------|-----------------------------------------------------------------------------|
