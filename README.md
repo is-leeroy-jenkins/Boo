@@ -18,10 +18,9 @@ automation of analytical tasks.
 - Assistant Classes:
 - Chat: Generic multimodal interaction with GPT.
 - Assistant: General-purpose assistant framework.
-- Boo: Budget Execution Assistant.
-- Bro: Data Science & Programming Assistant.
-- Custom Fine-Tuned Models: Uses proprietary fine-tuned models for different domains (e.g., bro-gpt,
-  bubba-gpt).
+- Boo: Budget Execution Agent.
+- Bro: Data Science Agent.
+- Custom Fine-Tuned Models Large Language Models for different domains: [Leeroy](https://huggingface.co/leeroy-jankins/leeroy), [Bro](https://huggingface.co/leeroy-jankins/bro), and [Bubba](https://huggingface.co/leeroy-jankins/bubba)
 - Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
 - Web & File Search: Built-in support for semantic document and web search.
 
