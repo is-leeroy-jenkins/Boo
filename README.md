@@ -9,7 +9,7 @@ Google's Gemma, and Meta's Llama models with multimodal support for text, image,
 and is designed with extensibility and federal applications in mind, it enables secure, scalable, and intelligent
 automation of analytical tasks.
 
-### 🛠️ Features
+## 🛠️ Features
 
 - Unified AI Framework: Integrates OpenAI APIs for text, image, audio, file analysis, transcription,
   and translation.
@@ -19,13 +19,13 @@ automation of analytical tasks.
 - Web & File Search: Built-in support for semantic document and web search.
 
   
-### 🧠 Large Lanugage Models
+## 🧠 Large Lanugage Models
 ##### Fine-Tuned Models Large Language Models customized for Retreival Augmentation in different domains:
 - [Leeroy](https://huggingface.co/leeroy-jankins/leeroy) a customized LLM for federal budgeting based on Llama 3.2
 - [Bro](https://huggingface.co/leeroy-jankins/bro) a customized LLM for federal accounting  based on Gemma-3
 - [Bubba](https://huggingface.co/leeroy-jankins/bubba) a general-purpose LLM based on ChatGPT-5
 
-### 🧭 Table of Contents
+## 🧭 Table of Contents
 
 - 🧰 [Overview](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-overview)
 - ✨ [Features](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-features)
@@ -44,7 +44,7 @@ automation of analytical tasks.
   - 🎙️ [Transcription/Translation](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#%EF%B8%8F-transcription--translation-whisper) (Whisper)
 - 📄 License
 
-### 📦 Installation
+## 📦 Installation
 
 #### 1. Clone the Repository
 
@@ -73,7 +73,7 @@ pip install -r requirements.txt
 
 
 
-### ⚙️ Core Classes
+## ⚙️ Core Classes
 
 - `AI`: Base class that provides shared API setup, keys, and model configurations.
 - `Chat`, `Assistant`, `Bubba`, `Bro`: Extend `AI` to provide domain-specific implementations.
@@ -84,7 +84,7 @@ pip install -r requirements.txt
 
 
 
-### 💻 Capabilities
+## 💻 Capabilities
 
 | Capability        | Description                                                                 |
 |-------------------|-----------------------------------------------------------------------------|
@@ -99,7 +99,7 @@ pip install -r requirements.txt
 
 
 
-### 🛠️ Requirements
+## 🛠️ Requirements
 
 - Python 3.10+
 - OpenAI Python SDK
@@ -109,7 +109,7 @@ pip install -r requirements.txt
 - Requests
 - Custom dependencies: `boogr`, `static`, `guro`
 
-### 📁 File Organization
+## 📁 File Organization
 
 - [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/boo.py) – Main application framework
 - [models](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py) – Models used for
@@ -120,18 +120,20 @@ pip install -r requirements.txt
 - [mathy](https://github.com/is-leeroy-jenkins/Boo/tree/main/mathy) - Machine Learning library for regression, classification, time-series analysis and data processing. 
 - [dbops](https://github.com/is-leeroy-jenkins/Boo/tree/main/dbops.py) - Local persistance of embeddings for retreival augmentation base on SLQite. 
 
-### 🔐 Environment Variables
+## 🔐 Environment Variables
 
 Set the following in your environment or `.env` file:
 
 ```
-bash
-OPENAI_API_KEY=<your_api_key>
+  
+  bash
+  OPENAI_API_KEY=<your_api_key>
+
 ```
 
 
 
-### 🧰 Overview
+## 🧰 Overview
 
 Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
 
@@ -159,12 +161,14 @@ Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
 
 
 
-### ⚡ Quickstart
+## ⚡ Quickstart
 
 1) **Install**
 
 ```
-pip install openai pydantic
+
+  pip install openai pydantic
+
 ```
 
 2) **Configure**
@@ -178,15 +182,17 @@ setx OPENAI_API_KEY "sk-..."           # Windows
 3) **Hello Boo**
 
 ```
-from boo import Chat
 
-chat = Chat()
-print(chat.generate_text("Say hello in one short sentence."))
+  from boo import Chat
+  
+  chat = Chat()
+  print(chat.generate_text("Say hello in one short sentence."))
+
 ```
 
 
 
-### 🔧 Configuration
+## 🔧 Configuration
 
 - **Environment**
   - `OPENAI_API_KEY` (required)
@@ -201,7 +207,7 @@ print(chat.generate_text("Say hello in one short sentence."))
 
 
 
-### 🧩 Design & Architecture
+## 🧩 Design & Architecture
 
 - **Single client**: `OpenAI(api_key=...)` is created in `GPT.__init__()` and reused everywhere.
 - **Schema helpers**: tiny, battle-tested builders ensure payloads are valid for the Responses API:
@@ -215,22 +221,24 @@ print(chat.generate_text("Say hello in one short sentence."))
 
 
 
-### 🔤 Text Generation
+## 🔤 Text Generation
 
 - Generate high-quality responses using OpenAI's GPT models.
 - Supports parameter tuning (temperature, top_p, frequency penalties).
 - Ideal for summarization, explanations, and knowledge retrieval.
 
 ```
-python
-from boo import Bro
+  
+  python
+  from boo import Bro
+  
+  bro = Bro( )
+  response = bro.generate_text( "Explain how random forests handle overfitting." )
+  print( response )
 
-bro = Bro( )
-response = bro.generate_text( "Explain how random forests handle overfitting." )
-print( response )
 ```
 
-### 🎨 Image Generation
+## 🎨 Image Generation
 
 - Convert natural language prompts into images using DALL·E 3.
 - Specify resolution and rendering quality options.
@@ -250,11 +258,13 @@ print(f"Image URL: {image_url}")
 - Leverages GPT-4o’s vision capabilities for advanced perception.
 
 ```
-python
 
-url = "https://example.com/sample-image.png"
-response = bro.analyze_image("Describe the primary elements in this image", url)
-print(response)
+  python
+  
+  url = "https://example.com/sample-image.png"
+  response = bro.analyze_image("Describe the primary elements in this image", url)
+  print(response)
+
 ```
 
 ### 📄 Document Summarization
@@ -264,14 +274,16 @@ print(response)
 - Supports PDFs, DOCX, and other file formats via OpenAI's file API.
 
 ```
-python
 
-file_path = "data/federal_strategy.pdf"
-summary = bro.summarize_document(
-  prompt = "Summarize key national cybersecurity strategies.",
-  path = file_path
-)
-print( summary )
+  python
+  
+  file_path = "data/federal_strategy.pdf"
+  summary = bro.summarize_document(
+    prompt = "Summarize key national cybersecurity strategies.",
+    path = file_path
+  )
+  print( summary )
+
 ```
 
 ### 🔍 File Search with Vector Stores
@@ -281,10 +293,12 @@ print( summary )
 - Ideal for knowledge base querying and document Q&A systems.
 
 ```
-python
 
-result = bro.search_files("Legislation related to environmental impact funding")
-print(result)
+  python
+  
+  result = bro.search_files("Legislation related to environmental impact funding")
+  print(result)
+
 ```
 
 ### 🔎 File & Web Search
@@ -294,10 +308,12 @@ print(result)
 - **Web Search**: Real-time information retrieval using GPT web search integration.
 
 ```
-python
 
-result = bro.search_files("Legislation related to environmental impact funding")
-print(result)
+  python
+  
+  result = bro.search_files("Legislation related to environmental impact funding")
+  print(result)
+
 ```
 
 ### 🌐 Web Search (Real-Time Querying)
@@ -307,10 +323,12 @@ print(result)
 - No scraping required—returns model-interpreted summaries.
 
 ```
-python
 
-insights = bro.search_web("Current status of the Federal AI Bill 2025")
-print(insights)
+  python
+  
+  insights = bro.search_web("Current status of the Federal AI Bill 2025")
+  print(insights)
+
 ```
 
 ### 🧾 Prompt & Message Structuring
@@ -320,16 +338,17 @@ print(insights)
 - Promotes reusable, interpretable prompt engineering.
 
 ```
-python
 
-from boo import Prompt
-p = Prompt(
-    instruction="Create a budget summary",
-    context="Federal Defense Budget FY25",
-    output_indicator="summary",
-    input_data="defense_budget_raw.csv"
-)
-print(p.model_dump())
+  python
+  
+  from boo import Prompt
+  p = Prompt(
+      instruction="Create a budget summary",
+      context="Federal Defense Budget FY25",
+      output_indicator="summary",
+      input_data="defense_budget_raw.csv"
+  )
+  print(p.model_dump())
 
 ```
 
@@ -340,11 +359,13 @@ print(p.model_dump())
 - Facilitates debugging and manual request construction.
 
 ```
-python
 
-from boo import EndPoint
-api = EndPoint( )
-print( api.get_data( ) ) 
+  python
+  
+  from boo import EndPoint
+  api = EndPoint( )
+  print( api.get_data( ) )
+
 ```
 
 ### 🤖 Assistant Management
@@ -357,12 +378,14 @@ print( api.get_data( ) )
 - Bro: Programming & Data Science Analyst
 
 ```
-python
 
-from boo import Assistant
-assistant = Assistant()
-assistants = assistant.get_list()
-print("Available Assistants:", assistants)
+  python
+  
+  from boo import Assistant
+  assistant = Assistant()
+  assistants = assistant.get_list()
+  print("Available Assistants:", assistants)
+
 ```
 
 ## 🧪 Usage Examples
@@ -370,30 +393,35 @@ print("Available Assistants:", assistants)
 > The snippets below show idiomatic Boo usage. They assume `chat = Chat()`, `img = Image()`,
 > etc., and an `OPENAI_API_KEY` is present in your environment.
 
-### 📝 Text generation
+## 📝 Text generation
 
-    ```
+```
+    
     from boo import Chat
 
     chat = Chat()
     out = chat.generate_text("Give me three bullet points on strict typing in Python.")
     print(out)
-    ```
+    
+```
 
-### 🌐 Web search (Responses)
+## 🌐 Web search (Responses)
 
-    ```
+```
+
     from boo import Chat
 
     chat = Chat()
     prompt = "Latest trends in Retrieval Augmented Generation. 3 bullets, 1 reference each."
     out = chat.search_web(prompt)  # internally uses web_search_options
     print(out)
-    ```
 
-### 📄 Summarize a document (file-grounded)
+```
 
-    ```
+## 📄 Summarize a document (file-grounded)
+
+```
+
     from boo import Chat
 
     chat = Chat()
@@ -402,22 +430,26 @@ print("Available Assistants:", assistants)
         path="docs/paper.pdf"
     )
     print(out)
-    ```
+    
+```
 
-### 🗂️ File search (vector stores)
+## 🗂️ File search (vector stores)
 
-    ```
+```
+
     from boo import Chat
 
     chat = Chat()
     # Assumes chat.vector_stores is configured with { "Appropriations": "...", "Guidance": "..." }
     out = chat.search_files("What are the major themes around FY2024 OCO funding?")
     print(out)
-    ```
 
-### 👀 Vision: analyze an image
+```
 
-    ```
+## 👀 Vision: analyze an image
+
+```
+
     from boo import Image
 
     img = Image()
@@ -426,11 +458,13 @@ print("Available Assistants:", assistants)
         path="https://example.com/plot.png"
     )
     print(out)
-    ```
+    
+```
 
-### 🖼️ Images: generate / edit
+## 🖼️ Images: generate / edit
 
-    ```
+```
+
     from boo import Image
 
     img = Image()
@@ -439,31 +473,36 @@ print("Available Assistants:", assistants)
 
     # If your SDK supports edits, ensure the correct API path (images.edit vs images.edits)
     # url = img.edit("Add subtle grid background", "logo.png", size="1024x1024")
-    ```
 
-### 🧬 Embeddings
+```
 
-    ```
+## 🧬 Embeddings
+
+```
     from boo import Embedding
 
     emb = Embedding()
     vec = emb.create_small_embedding("Vectorize this sentence.")
     print(len(vec), "dims")
-    ```
 
-### 🔊 Text-to-Speech (TTS)
+```
 
-    ```
+## 🔊 Text-to-Speech (TTS)
+
+```
+
     from boo import TTS
 
     tts = TTS()
     outfile = tts.save_audio("Hello from Boo in a calm voice.", "out/hello.mp3")
     print("Saved:", outfile)
-    ```
 
-### 🎙️ Transcription / Translation (Whisper)
+```
 
-    ```
+## 🎙️ Transcription / Translation (Whisper)
+
+```
+
     from boo import Transcription, Translation
 
     asr = Transcription()
@@ -473,7 +512,8 @@ print("Available Assistants:", assistants)
     xlat = Translation()
     english = xlat.create("Translate this speech to English.", "audio/spanish.m4a")
     print(english)
-    ```
+
+```
 
 
 
