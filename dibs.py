@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                dbops.py
+      Filename:                dibs.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="dbops.py" company="Terry D. Eppler">
+  <copyright file="dibs.py" company="Terry D. Eppler">
 
 	     Boo is a df analysis tool integrating various Generative GPT, GptText-Processing, and
 	     Machine-Learning algorithms for federal analysts.
@@ -38,7 +38,7 @@
 
   </copyright>
   <summary>
-    dbops.py
+    dibs.py
   </summary>
   ******************************************************************************************
   '''
@@ -60,7 +60,6 @@ import tiktoken
 import sqlite3
 from typing import Any, List, Tuple, Optional
 
-
 class SQLite( ):
 	"""
 	
@@ -78,8 +77,7 @@ class SQLite( ):
 		
 	"""
 	
-	
-	def __init__( self  ):
+	def __init__( self ):
 		"""
 			
 			Pupose:
@@ -102,8 +100,7 @@ class SQLite( ):
 		self.columns = [ str ]
 		self.params = ( )
 		self.column_names = [ str ]
-		self.tables = [  ]
-	
+		self.tables = [ ]
 	
 	def __dir__( self ):
 		'''
@@ -115,9 +112,8 @@ class SQLite( ):
 		return [ 'db_path', 'conn', 'cursor', 'path', 'where',
 		         'pairs', 'sql', 'file_name', 'table_name', 'placeholders',
 		         'columns', 'params', 'column_names', 'tables',
-				 'close', 'import_excel', 'delete', 'update',
+		         'close', 'import_excel', 'delete', 'update',
 		         'insert', 'create_table', 'fetch_one', 'fetch_all' ]
-	
 	
 	def create_table( self, sql: str ) -> None:
 		"""
@@ -142,7 +138,6 @@ class SQLite( ):
 			exception.method = 'create_table( self, sql: str ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
-
 	
 	def insert( self, table: str, columns: List[ str ], values: Tuple[ Any, ... ] ) -> None:
 		"""
@@ -175,11 +170,11 @@ class SQLite( ):
 			exception = Error( e )
 			exception.module = 'dbops'
 			exception.cause = 'SQLite'
-			exception.method = ('insert( self, df: str, columns: List[ str ], target_values: Tuple[ Any, '
-			               '... ] ) -> None')
+			exception.method = (
+				'insert( self, df: str, columns: List[ str ], target_values: Tuple[ Any, '
+				'... ] ) -> None')
 			error = ErrorDialog( exception )
 			error.show( )
-	
 	
 	def fetch_all( self, table: str ) -> List[ Tuple ] | None:
 		"""
@@ -207,7 +202,6 @@ class SQLite( ):
 			exception.method = 'fetch_all( self, df: str ) -> List[ Tuple ]'
 			error = ErrorDialog( exception )
 			error.show( )
-	
 	
 	def fetch_one( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> Tuple | None:
 		"""
@@ -244,11 +238,11 @@ class SQLite( ):
 			exception = Error( e )
 			exception.module = 'dbops'
 			exception.cause = 'SQLite'
-			exception.method = ('fetch_one( self, df: str, where: str, params: Tuple[ Any, ... ] ) -> '
-			               'Optional[ Tuple ]')
+			exception.method = (
+				'fetch_one( self, df: str, where: str, params: Tuple[ Any, ... ] ) -> '
+				'Optional[ Tuple ]')
 			error = ErrorDialog( exception )
 			error.show( )
-
 	
 	def update( self, table: str, pairs: str, where: str, params: Tuple[ Any, ... ] ) -> None:
 		"""
@@ -285,13 +279,12 @@ class SQLite( ):
 			exception = Error( e )
 			exception.module = 'dbops'
 			exception.cause = 'SQLite'
-			exception.method = ('update( self, df: str, pairs: str, where: str, params: Tuple[ Any, '
-			               '... ] ) -> None')
+			exception.method = (
+				'update( self, df: str, pairs: str, where: str, params: Tuple[ Any, '
+				'... ] ) -> None')
 			error = ErrorDialog( exception )
 			error.show( )
-
-
-
+	
 	def delete( self, table: str, where: str, params: Tuple[ Any, ... ] ) -> None:
 		"""
 		
@@ -327,8 +320,7 @@ class SQLite( ):
 			exception.method = 'delete( self, df: str, where: str, params: Tuple[ Any, ... ] ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
-
-
+	
 	def import_excel( self, path: str ) -> None:
 		"""
 		
@@ -359,8 +351,7 @@ class SQLite( ):
 			exception.method = 'import_excel( self, path: str ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
-
-
+	
 	def close( self ) -> None:
 		"""
 
