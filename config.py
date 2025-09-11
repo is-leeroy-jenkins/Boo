@@ -45,13 +45,12 @@
 import os
 
 # Constants
-APPLICATION_WIDTH = 85
+APPLICATION_WIDTH = 750
 THEME = "DarkGray12"
 OUTPUT_FILE_NAME = "boo.wav"
 SAMPLE_RATE = 48000
 MODELS = [ "gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo" ]
 DEFAULT_MODEL = MODELS[ 0 ]
-DEFAULT_POSITION = "Python Developer"
 
 # Keys
 GEOAPIFY_API_KEY = os.getenv( 'GEOAPIFY_API_KEY' )
@@ -74,6 +73,14 @@ QDRANT_API_KEY = os.getenv( 'QDRANT_API_KEY' )
 SINGLESTORE_API_KEY = os.getenv( 'SINGLESTORE_API_KEY' )
 
 def set_environment( ):
+	"""
+		
+		Purpose:
+		--------
+		Gets availible environment vaariables for configuration
+		
+		
+	"""
 	variable_dict = globals( ).items( )
 	for key, value in variable_dict:
 		if 'API' in key or 'ID' in key:

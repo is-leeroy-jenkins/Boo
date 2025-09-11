@@ -22,7 +22,6 @@ target-version = "py310"
 # Start sensible; you can tighten later.
 select = ["E","F","W","I","N","UP","B","A"]  # pycodestyle, pyflakes, isort, pep8-naming, modernize, bugbear, builtins
 ignore = [
-  "E203",  # let black handle spacing around ':'
   "B905",  # zip(strict=...) not needed for 3.11-
 ]
 # Lint only these paths
