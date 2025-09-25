@@ -83,7 +83,6 @@ termcolor
 tf-keras
 torch~=2.7.1
 tensorflow
-typing~=3.7.4.3
 pydantic~=2.11.7
 bs4~=0.0.2
 nest-asyncio~=1.6.0

@@ -1173,8 +1173,8 @@ class Bubba( GPT ):
 
     """
 	
-	def __init__( self, num: int = 1, temp: float = 0.8, top: float = 0.9, freq: float = 0.0,
-			pres: float = 0.0, max: int = 10000, store: bool = True, stream: bool = True ):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+			pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = GptHeader( ).api_key
 		self.system_instructions = GPT( ).bubba_instructions
@@ -1549,14 +1549,15 @@ class Bubba( GPT ):
         Returns: dict[ str ] of members
 
         '''
-		return {
-				'num': self.number,
-				'temperature': self.temperature,
-				'top_percent': self.top_percent,
-				'frequency_penalty': self.frequency_penalty,
-				'presence_penalty': self.presence_penalty,
-				'store': self.store,
-				'stream': self.stream,
+		return \
+		{
+			'num': self.number,
+			'temperature': self.temperature,
+			'top_percent': self.top_percent,
+			'frequency_penalty': self.frequency_penalty,
+			'presence_penalty': self.presence_penalty,
+			'store': self.store,
+			'stream': self.stream,
 		}
 	
 	def dump( self ) -> str | None:
@@ -1564,148 +1565,88 @@ class Bubba( GPT ):
         Returns: dict of members
         '''
 		new = '\r\n'
-		return (
-				'num'
-				+ f' = {self.number}'
-				+ new
-				+ 'temperature'
-				+ f' = {self.temperature}'
-				+ new
-				+ 'top_percent'
-				+ f' = {self.top_percent}'
-				+ new
-				+ 'frequency_penalty'
-				+ f' = {self.frequency_penalty}'
-				+ new
-				+ 'presence_penalty'
-				+ f' = {self.presence_penalty}'
-				+ new
-				+ 'max_completion_tokens'
-				+ f' = {self.max_completion_tokens}'
-				+ new
-				+ 'store'
-				+ f' = {self.store}'
-				+ new
-				+ 'stream'
-				+ f' = {self.stream}'
-				+ new
-		)
+		return ( f'num = {self.number}' + new
+				+ f'temperature = {self.temperature}' + new
+				+ f'top_percent = {self.top_percent}' + new
+				+ f'frequency_penalty = {self.frequency_penalty}' + new
+				+ f'presence_penalty = {self.presence_penalty}' + new
+				+ f'max_completion_tokens = {self.max_completion_tokens}' + new
+				+ f'store = {self.store}' + new
+				+ f'stream = {self.stream}' )
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-        Purpose:
-        --------
-                    Method returns a list of strings representing members
-
-        Parameters:
-        ----------
-                    self
-
-        Returns:
-        ---------
-                    List[ str ] | None
+	        Purpose:
+	        --------
+	        Method returns a list of strings representing members
+	
+	        Parameters:
+	        ----------
+	        self
+	
+	        Returns:
+	        ---------
+	        List[ str ] | None
 
         '''
-		return [
-				'num',
-				'temperature',
-				'top_percent',
-				'frequency_penalty',
-				'presence_penalty',
-				'max_completion_tokens',
-				'system_instructions',
-				'store',
-				'stream',
-				'modalities',
-				'stops',
-				'content',
-				'prompt',
-				'response',
-				'completion',
-				'file',
-				'path',
-				'messages',
-				'image_url',
-				'response_format',
-				'tools',
-				'vector_store_ids',
-				'name',
-				'id',
-				'description',
-				'generate_text',
-				'get_format_options',
-				'get_model_options',
-				'reasoning_effort',
-				'get_effort_options',
-				'input_text',
-				'metadata',
-				'get_data',
-				'dump',
-				'translate',
-				'transcribe',
-		]
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
+				'max_completion_tokens', 'system_instructions', 'store', 'stream', 'modalities',
+				'stops', 'content', 'prompt', 'response', 'completion', 'file', 'path', 'messages',
+				'image_url', 'response_format', 'tools', 'vector_store_ids', 'name', 'id',
+				'description', 'generate_text', 'get_format_options', 'get_model_options',
+				'reasoning_effort', 'get_effort_options', 'input_text', 'metadata', 'get_data',
+				'dump', 'translate', 'transcribe', ]
 
 class Bro( GPT ):
 	"""
-
-    Purpose
-    ___________
-    Class used for interacting with a Data Science & Programming assistant
-
-
-    Parameters
-    ------------
-    num: int=1
-    temp: float=0.8
-    top: float=0.9
-    freq: float=0.0
-    pres: float=0.0
-    max: int=10000
-    store: bool=True
-    stream: bool=True
-
-
-    Methods
-    ------------
-    get_model_options( self ) -> str
-    generate_text( self, prompt: str ) -> str:
-    analyze_image( self, prompt: str, url: str ) -> str:
-    summarize_document( self, prompt: str, path: str ) -> str
-    search_web( self, prompt: str ) -> str
-    search_files( self, prompt: str ) -> str
-    dump( self ) -> str
-    get_data( self ) -> { }
+	
+	    Purpose
+	    ___________
+	    Class used for interacting with a Data Science & Programming assistant
+	
+	
+	    Parameters
+	    ------------
+	    num: int=1
+	    temp: float=0.8
+	    top: float=0.9
+	    freq: float=0.0
+	    pres: float=0.0
+	    iters: int=10000
+	    store: bool=True
+	    stream: bool=True
+	
+	
+	    Methods
+	    ------------
+	    get_model_options( self ) -> str
+	    generate_text( self, prompt: str ) -> str:
+	    analyze_image( self, prompt: str, url: str ) -> str:
+	    summarize_document( self, prompt: str, path: str ) -> str
+	    search_web( self, prompt: str ) -> str
+	    search_files( self, prompt: str ) -> str
+	    dump( self ) -> str
+	    get_data( self ) -> { }
 
 
 
     """
 	
-	def __init__(
-			self,
-			num: int = 1,
-			temp: float = 0.8,
-			top: float = 0.9,
-			freq: float = 0.0,
-			pres: float = 0.0,
-			max: int = 10000,
-			store: bool = True,
-			stream: bool = True,
-	):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9,
+			freq: float=0.0, pres: float=0.0, iters: int=10000, store: bool=True, stream: bool=True, ):
 		super( ).__init__( )
 		self.api_key = GptHeader( ).api_key
 		self.system_instructions = GPT( ).bro_instructions
 		self.client = OpenAI( )
 		self.client.api_key = GptHeader( ).api_key
-		self.model = (
-				'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-df-analysis-2025-21-05:BZetxEQa'
-		)
+		self.model = 'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-df-analysis-2025-21-05:BZetxEQa'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
 		self.frequency_penalty = freq
 		self.presence_penalty = pres
-		self.max_completion_tokens = max
+		self.max_completion_tokens = iters
 		self.store = store
 		self.stream = stream
 		self.modalities = [ 'text', 'audio' ]
@@ -1716,43 +1657,35 @@ class Bro( GPT ):
 		self.name = 'Bro'
 		self.description = 'A Computer Programming and Data Science Assistant'
 		self.id = 'asst_2Yu2yfINGD5en4e0aUXAKxyu'
-		self.vector_store_ids = [
-				'vs_67e83bdf8abc81918bda0d6b39a19372',
-		]
+		self.vector_store_ids = [ 'vs_67e83bdf8abc81918bda0d6b39a19372', ]
 		self.metadata = { }
 		self.tools = [ ]
-		self.vector_stores = {
-				'Code': 'vs_67e83bdf8abc81918bda0d6b39a19372',
-		}
+		self.vector_stores = { 'Code': 'vs_67e83bdf8abc81918bda0d6b39a19372', }
 	
 	def generate_text( self, prompt: str ) -> str:
 		"""
-
-        Purpose
-        _______
-        Generates a chat completion given a prompt
-
-
-        Parameters
-        ----------
-        prompt: str
-
-
-        Returns
-        -------
-        str
+	
+	        Purpose
+	        _______
+	        Generates a chat completion given a prompt
+	
+	
+	        Parameters
+	        ----------
+	        prompt: str
+	
+	
+	        Returns
+	        -------
+	        str
 
         """
 		try:
-			if prompt is None:
-				raise Exception( 'Argument "prompt" cannot be None' )
-			else:
-				self.input_text = prompt
-				self.response = self.client.responses.create(
-					model=self.model, input=self.input_text
-				)
-				generated_text = self.response.output_text
-				return generated_text
+			throw_if( 'prompt', prompt )
+			self.input_text = prompt
+			self.response = self.client.responses.create( model=self.model, input=self.input_text )
+			generated_text = self.response.output_text
+			return generated_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -1763,35 +1696,28 @@ class Bro( GPT ):
 	
 	def generate_image( self, prompt: str ) -> str:
 		"""
-
-        Purpose
-        _______
-        Generates a chat completion given a prompt
-
-
-        Parameters
-        ----------
-        prompt: str
-
-
-        Returns
-        -------
-        str
+	
+	        Purpose
+	        _______
+	        Generates a chat completion given a prompt
+	
+	
+	        Parameters
+	        ----------
+	        prompt: str
+	
+	
+	        Returns
+	        -------
+	        str
 
         """
 		try:
-			if prompt is None:
-				raise Exception( 'Argument "prompt" cannot be None' )
-			else:
-				self.input_text = prompt
-				self.response = self.client.images.generate(
-					model='dall-e-3',
-					prompt=self.input_text,
-					size='1024x1024',
-					quality='standard',
-					n=1,
-				)
-				generated_image = self.response.data[ 0 ].url
+			throw_if( 'prompt', prompt )
+			self.input_text = prompt
+			self.response = self.client.images.generate( model='dall-e-3', prompt=self.input_text,
+				size='1024x1024', quality='standard', n=1, )
+			generated_image = self.response.data[ 0 ].url
 			return generated_image
 		except Exception as e:
 			exception = Error( e )
@@ -1804,41 +1730,32 @@ class Bro( GPT ):
 	def analyze_image( self, prompt: str, url: str ) -> str:
 		"""
 
-        Purpose
-        _______
-        Method that analyzeses an image given a prompt,
-
-        Parameters
-        ----------
-        prompt: str
-        url: str
-
-        Returns
-        -------
-        str
+	        Purpose
+	        _______
+	        Method that analyzeses an image given a prompt,
+	
+	        Parameters
+	        ----------
+	        prompt: str
+	        url: str
+	
+	        Returns
+	        -------
+	        str
 
         """
 		try:
-			if prompt is None:
-				raise Exception( 'Argument "prompt" cannot be None' )
-			elif url is None:
-				raise Exception( 'Argument "url" cannot be None' )
-			else:
-				self.input_text = prompt
-				self.image_url = url
-				self.input = [
-						{
-								'role': 'user',
-								'content': [
-										{ 'type': 'input_text', 'text': self.input_text },
-										{ 'type': 'input_image', 'image_url': self.image_url },
-								],
-						}
-				]
-				
-				self.response = self.client.responses.create( model=self.model, input=self.input )
-				image_analysis = self.response.output_text
-				return image_analysis
+			throw_if( 'prompt', prompt )
+			throw_if( 'url', url )
+			self.input_text = prompt
+			self.image_url = url
+			self.input = [ { 'role': 'user', 'content': [
+									{ 'type': 'input_text', 'text': self.input_text },
+									{ 'type': 'input_image', 'image_url': self.image_url },
+							], } ]
+			self.response = self.client.responses.create( model=self.model, input=self.input )
+			image_analysis = self.response.output_text
+			return image_analysis
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -1850,55 +1767,44 @@ class Bro( GPT ):
 	def summarize_document( self, prompt: str, path: str ) -> str:
 		"""
 
-        Purpose
-        _______
-        Method that summarizes a document given a
-        path prompt, and a path
-
-        Parameters
-        ----------
-        prompt: str
-        path: str
-
-        Returns
-        -------
-        str
+	        Purpose
+	        _______
+	        Method that summarizes a document given a
+	        path prompt, and a path
+	
+	        Parameters
+	        ----------
+	        prompt: str
+	        path: str
+	
+	        Returns
+	        -------
+	        str
 
         """
 		try:
-			if prompt is None:
-				raise Exception( 'Argument "prompt" cannot be None' )
-			elif path is None:
-				raise Exception( 'Argument "path" cannot be None' )
-			else:
-				self.input_text = prompt
-				self.file_path = path
-				self.file = self.client.files.create(
-					file=open( self.file_path, 'rb' ), purpose='user_data'
-				)
-				
-				self.messages = [
-						{
-								'role': 'user',
-								'content': [
-										{
-												'type': 'file',
-												'file': {
-														'file_id': self.file.id,
-												},
-										},
-										{
-												'type': 'text',
-												'text': self.input_text,
-										},
-								],
-						}
-				]
-				
-				self.response = self.client.responses.create( model=self.model,
-					inputs=self.messages )
-				document_summary = self.reponse.output_text
-				return document_summary
+			throw_if( 'prompt', prompt )
+			throw_if( 'path', path )
+			self.input_text = prompt
+			self.file_path = path
+			self.file = self.client.files.create( file=open( self.file_path, 'rb' ),
+				purpose='user_data' )
+			self.messages = [ { 'role': 'user', 'content': [
+									{
+											'type': 'file',
+											'file': {
+													'file_id': self.file.id,
+											},
+									},
+									{
+											'type': 'text',
+											'text': self.input_text,
+									},
+							], } ]
+			self.response = self.client.responses.create( model=self.model,
+				inputs=self.messages )
+			document_summary = self.reponse.output_text
+			return document_summary
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -1910,38 +1816,30 @@ class Bro( GPT ):
 	def search_web( self, prompt: str ) -> str:
 		"""
 
-                    Purpose
-                    _______
-        Use web_search_options to retrieve and synthesize recent web results for `prompt`.
+                Purpose
+                _______
+                Use web_search_options to retrieve and synthesize
+                recent web results for `prompt`.
 
 
-                    Parameters
-                    ----------
-                    prompt: str
-                    url: str
+                Parameters
+                ----------
+                prompt: str
+                url: str
 
-                    Returns
-                    -------
-                    str
+                Returns
+                -------
+                str
 
         """
 		try:
-			if prompt is None:
-				raise Exception( 'Argument "prompt" cannot be None' )
-			else:
-				self.web_options = { 'search_recency_days': 30, 'max_search_results': 8 }
-				self.messages = [
-						{
-								'role': 'user',
-								'content': prompt,
-						}
-				]
-				
-				self.response = self.client.responses.create(
-					model=self.model, web_search_options=self.web_options, input=self.messages
-				)
-				web_results = self.response.output_text
-				return web_results
+			throw_if( 'prompt', prompt )
+			self.web_options = { 'search_recency_days': 30, 'max_search_results': 8 }
+			self.messages = [ {'role': 'user', 'content': prompt,} ]
+			self.response = self.client.responses.create( model=self.model,
+				web_search_options=self.web_options, input=self.messages )
+			web_results = self.response.output_text
+			return web_results
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -1954,9 +1852,9 @@ class Bro( GPT ):
 		"""
 
             Purpose
-        -------
-        Run a file-search tool call against configured vector stores using
-        the Responses API, and return the textual result.
+	        -------
+	        Run a file-search tool call against configured vector stores using
+	        the Responses API, and return the textual result.
 
 
             Parameters
@@ -1969,22 +1867,16 @@ class Bro( GPT ):
 
         """
 		try:
-			if prompt is None:
-				raise Exception( 'Argument "prompt" cannot be None' )
-			else:
-				self.tools = [
-						{
-								'type': 'file_search',
-								'vector_store_ids': self.vector_store_ids,
-								'max_num_results': 20,
-						}
-				]
-				
-				self.response = self.client.responses.create(
-					model=self.model, tools=self.tools, input=prompt
-				)
-				file_search = self.response.output_text
-				return file_search
+			throw_if( 'prompt', prompt )
+			self.tools = [ {
+							'type': 'file_search',
+							'vector_store_ids': self.vector_store_ids,
+							'max_num_results': 20,
+					} ]
+			self.response = self.client.responses.create( model=self.model, tools=self.tools,
+				input=prompt )
+			file_search = self.response.output_text
+			return file_search
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -2001,20 +1893,20 @@ class Bro( GPT ):
 	
 	def get_format_options( self ) -> List[ str ]:
 		'''
-
-        Purpose:
-        ---------
-        Method that returns a list of formatting options
+	
+	        Purpose:
+	        ---------
+	        Method that returns a list of formatting options
 
         '''
 		return [ 'auto', 'text', 'json' ]
 	
 	def get_model_options( self ) -> List[ str ]:
 		'''
-
-        Purpose:
-        ---------
-        Method that returns a list of available models
+	
+	        Purpose:
+	        ---------
+	        Method that returns a list of available models
 
         '''
 		return [
@@ -2036,23 +1928,24 @@ class Bro( GPT ):
 	
 	def get_effort_options( self ) -> List[ str ]:
 		'''
-
-        Purpose:
-        ---------
-        Method that returns a list of available models
+	
+	        Purpose:
+	        ---------
+	        Method that returns a list of available models
 
         '''
 		return [ 'auto', 'low', 'high' ]
 	
 	def get_data( self ) -> dict:
 		'''
-
-        Purpose:
-        ---------
-        Returns: dict[ str ] of members
+	
+	        Purpose:
+	        ---------
+	        Returns: dict[ str ] of members
 
         '''
-		return {
+		return \
+		{
 				'num': self.number,
 				'temperature': self.temperature,
 				'top_percent': self.top_percent,
@@ -2066,129 +1959,75 @@ class Bro( GPT ):
 	def dump( self ) -> str:
 		'''
 
-        Purpose:
-        ---------
-        Returns: dict of members
+	        Purpose:
+	        ---------
+	        Returns: dict of members
 
         '''
 		new = '\r\n'
-		return (
-				'num'
-				+ f' = {self.number}'
-				+ new
-				+ 'temperature'
-				+ f' = {self.temperature}'
-				+ new
-				+ 'top_percent'
-				+ f' = {self.top_percent}'
-				+ new
-				+ 'frequency_penalty'
-				+ f' = {self.frequency_penalty}'
-				+ new
-				+ 'presence_penalty'
-				+ f' = {self.presence_penalty}'
-				+ new
-				+ 'max_completion_tokens'
-				+ f' = {self.max_completion_tokens}'
-				+ new
-				+ 'store'
-				+ f' = {self.store}'
-				+ new
-				+ 'stream'
-				+ f' = {self.stream}'
-				+ new
-		)
+		return ( 'num' + f' = {self.number}' + new
+				+ 'temperature' + f' = {self.temperature}' + new
+				+ 'top_percent' + f' = {self.top_percent}' + new
+				+ 'frequency_penalty' + f' = {self.frequency_penalty}' + new
+				+ 'presence_penalty' + f' = {self.presence_penalty}' + new
+				+ 'max_completion_tokens' + f' = {self.max_completion_tokens}' + new
+				+ 'store' + f' = {self.store}' + new
+				+ 'stream' + f' = {self.stream}' + new )
+	
 	
 	def __dir__( self ) -> List[ str ]:
 		'''
 
-        Purpose:
-        --------
-                    Method returns a list of strings representing members
+	        Purpose:
+	        --------
+	        Method returns a list of strings representing members
+	
+	        Parameters:
+	        ----------
+	        self
 
-        Parameters:
-        ----------
-                    self
-
-        Returns:
-        ---------
-                    List[ str ] | None
+	        Returns:
+	        ---------
+            List[ str ] | None
 
         '''
-		return [
-				'num',
-				'temperature',
-				'top_percent',
-				'frequency_penalty',
-				'presence_penalty',
-				'max_completion_tokens',
-				'system_instructions',
-				'store',
-				'stream',
-				'modalities',
-				'stops',
-				'content',
-				'prompt',
-				'response',
-				'completion',
-				'file',
-				'path',
-				'messages',
-				'image_url',
-				'respose_format',
-				'tools',
-				'vector_store_ids',
-				'name',
-				'id',
-				'description',
-				'generate_text',
-				'get_format_options',
-				'get_model_options',
-				'reasoning_effort',
-				'get_effort_options',
-				'input_text',
-				'metadata',
-				'get_data',
-				'dump',
-		]
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
+		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
+		         'store', 'stream', 'modalities', 'stops', 'content', 'prompt', 'response',
+		         'completion', 'file', 'path', 'messages', 'image_url',  'respose_format',
+		         'tools', 'vector_store_ids', 'name', 'id', 'description', 'generate_text',
+		         'get_format_options', 'get_model_options', 'reasoning_effort',
+		         'get_effort_options', 'input_text', 'metadata', 'get_data', 'dump', ]
+
 
 class Embedding( GPT ):
 	"""
-
-    Purpose
-    ___________
-    Class used for creating vectors using OpenAI's embedding models
-
-    Parameters
-    ------------
-    None
-
-    Attributes
-    -----------
-    self.api_key
-    self.client
-    self.small_model
-    self.embedding
-    self.response
-
-    Methods
-    ------------
-    create_small_embedding( self, text: str ) -> get_list[ float ]
+	
+	    Purpose
+	    ___________
+	    Class used for creating vectors using OpenAI's embedding models
+	
+	    Parameters
+	    ------------
+	    None
+	
+	    Attributes
+	    -----------
+	    self.api_key
+	    self.client
+	    self.small_model
+	    self.embedding
+	    self.response
+	
+	    Methods
+	    ------------
+	    create_small_embedding( self, text: str ) -> get_list[ float ]
 
 
     """
 	
-	def __init__(
-			self,
-			num: int = 1,
-			temp: float = 0.8,
-			top: float = 0.9,
-			freq: float = 0.0,
-			pres: float = 0.0,
-			max: int = 10000,
-			store: bool = True,
-			stream: bool = True,
-	):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+			pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True, ):
 		super( ).__init__( )
 		self.client = OpenAI( )
 		self.client.api_key = GptHeader( ).api_key
@@ -2209,32 +2048,29 @@ class Embedding( GPT ):
 	
 	def create_small_embedding( self, text: str ) -> List[ float ]:
 		"""
-
-        Purpose
-        _______
-        Creates an embedding ginve a text
-
-
-        Parameters
-        ----------
-        text: str
-
-
-        Returns
-        -------
-        get_list[ float
+	
+	        Purpose
+	        _______
+	        Creates an embedding ginve a text
+	
+	
+	        Parameters
+	        ----------
+	        text: str
+	
+	
+	        Returns
+	        -------
+	        get_list[ float
 
         """
 		try:
-			if text is None:
-				raise Exception( 'Argument "text" is required.' )
-			else:
-				self.input = text
-				self.response = self.client.embeddings.create(
-					input=self.input, model=self.small_model
-				)
-				self.embedding = self.response.data[ 0 ].embedding
-				return self.embedding
+			throw_if( 'text', text )
+			self.input = text
+			self.response = self.client.embeddings.create( input=self.input,
+				model=self.small_model )
+			self.embedding = self.response.data[ 0 ].embedding
+			return self.embedding
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -2246,29 +2082,26 @@ class Embedding( GPT ):
 	def create_large_embedding( self, text: str ) -> List[ float ] | None:
 		"""
 
-        Purpose:
-        _______
-        Creates an Large embedding given a text
-
-        Parameters:
-        ----------
-        text: str
-
-        Returns:
-        -------
-        List[ float ] | None
+	        Purpose:
+	        _______
+	        Creates an Large embedding given a text
+	
+	        Parameters:
+	        ----------
+	        text: str
+	
+	        Returns:
+	        -------
+	        List[ float ] | None
 
         """
 		try:
-			if text is None:
-				raise Exception( 'Argument "text" is required.' )
-			else:
-				self.input = text
-				self.response = self.client.embeddings.create(
-					input=self.input, model=self.large_model
-				)
-				self.embedding = self.response.data[ 0 ].embedding
-				return self.embedding
+			throw_if( 'text', text )
+			self.input = text
+			self.response = self.client.embeddings.create( input=self.input,
+				model=self.large_model )
+			self.embedding = self.response.data[ 0 ].embedding
+			return self.embedding
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -2280,29 +2113,25 @@ class Embedding( GPT ):
 	def create_ada_embedding( self, text: str ) -> List[ float ]:
 		"""
 
-        Purpose
-        _______
-        Creates an ADA embedding given a text
-
-        Parameters
-        ----------
-        text: str
-
-        Returns
-        -------
-        List[ float ]
+	        Purpose
+	        _______
+	        Creates an ADA embedding given a text
+	
+	        Parameters
+	        ----------
+	        text: str
+	
+	        Returns
+	        -------
+	        List[ float ]
 
         """
 		try:
-			if text is None:
-				raise Exception( 'Argument "text" is required.' )
-			else:
-				self.input = text
-				self.response = self.client.embeddings.create(
-					input=self.input, model=self.ada_model
-				)
-				self.embedding = self.response.data[ 0 ].embedding
-				return self.embedding
+			throw_if( 'text', text )
+			self.input = text
+			self.response = self.client.embeddings.create( input=self.input, model=self.ada_model )
+			self.embedding = self.response.data[ 0 ].embedding
+			return self.embedding
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -2314,29 +2143,26 @@ class Embedding( GPT ):
 	def count_tokens( self, text: str, coding: str ) -> int:
 		'''
 
-        Purpose:
-        -------
-        Returns the num of words in a documents path.
-
-        Parameters:
-        -----------
-        text: str - The string that is tokenized
-        coding: str - The encoding to use for tokenizing
-
-        Returns:
-        --------
-        int - The number of words
+	        Purpose:
+	        -------
+	        Returns the num of words in a documents path.
+	
+	        Parameters:
+	        -----------
+	        text: str - The string that is tokenized
+	        coding: str - The encoding to use for tokenizing
+	
+	        Returns:
+	        --------
+	        int - The number of words
 
         '''
 		try:
-			if text is None:
-				raise Exception( 'Argument "text" is required.' )
-			elif coding is None:
-				raise Exception( 'Argument "coding" is required.' )
-			else:
-				_encoding = tiktoken.get_encoding( coding )
-				_tokens = len( _encoding.encode( text ) )
-				return _tokens
+			throw_if( 'text', text )
+			throw_if( 'coding', coding )
+			_encoding = tiktoken.get_encoding( coding )
+			_tokens = len( _encoding.encode( text ) )
+			return _tokens
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -2348,154 +2174,108 @@ class Embedding( GPT ):
 	def get_data( self ) -> Dict:
 		'''
 
-        Purpose:
-        -------
-
-        Returns:
-        --------
-        dict[ str ] of members
+	        Purpose:
+	        -------
+	
+	        Returns:
+	        --------
+	        dict[ str ] of members
 
         '''
-		return {
-				'num': self.number,
-				'temperature': self.temperature,
-				'top_percent': self.top_percent,
-				'frequency_penalty': self.frequency_penalty,
-				'presence_penalty': self.presence_penalty,
-				'store': self.store,
-				'stream': self.stream,
-				'size': self.size,
+		return \
+		{
+			'num': self.number,
+			'temperature': self.temperature,
+			'top_percent': self.top_percent,
+			'frequency_penalty': self.frequency_penalty,
+			'presence_penalty': self.presence_penalty,
+			'store': self.store,
+			'stream': self.stream,
+			'size': self.size,
 		}
 	
 	def dump( self ) -> str | None:
 		'''
-
-        Purpose:
-        --------
-        Returns: dict of members
+	
+	        Purpose:
+	        --------
+	        Returns: dict of members
 
         '''
 		new = '\r\n'
-		return (
-				'num'
-				+ f' = {self.number}'
-				+ new
-				+ 'temperature'
-				+ f' = {self.temperature}'
-				+ new
-				+ 'top_percent'
-				+ f' = {self.top_percent}'
-				+ new
-				+ 'frequency_penalty'
-				+ f' = {self.frequency_penalty}'
-				+ new
-				+ 'presence_penalty'
-				+ f' = {self.presence_penalty}'
-				+ new
-				+ 'max_completion_tokens'
-				+ f' = {self.max_completion_tokens}'
-				+ new
-				+ 'store'
-				+ f' = {self.store}'
-				+ new
-				+ 'stream'
-				+ f' = {self.stream}'
-				+ new
-				+ 'size'
-				+ f' = {self.size}'
-				+ new
-		)
+		return ( 'num' + f' = {self.number}' + new
+				+ 'temperature' + f' = {self.temperature}' + new
+				+ 'top_percent' + f' = {self.top_percent}' + new
+				+ 'frequency_penalty' +  f'{self.frequency_penalty}' + new
+				+ 'presence_penalty' + f' = {self.presence_penalty}' + new
+				+ 'max_completion_tokens' + f' = {self.max_completion_tokens}' + new
+				+ 'store' + f' = {self.store}' + new + 'stream' + f' = {self.stream}' + new
+				+ 'size' + f' = {self.size}' + new )
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-        Purpose:
-        --------
-                    Method returns a list of strings representing members
+		        Purpose:
+		        --------
+                Method returns a list of strings representing members
 
-        Parameters:
-        ----------
-                    self
+		        Parameters:
+		        ----------
+                self
 
-        Returns:
-        ---------
-                    List[ str ] | None
+		        Returns:
+		        ---------
+                List[ str ] | None
 
         '''
-		return [
-				'num',
-				'temperature',
-				'top_percent',
-				'frequency_penalty',
-				'presence_penalty',
-				'max_completion_tokens',
-				'store',
-				'stream',
-				'modalities',
-				'stops',
-				'create_ada_embedding',
-				'api_key',
-				'client',
-				'small_model',
-				'count_tokens',
-				'create_large_embedding',
-				'path',
-				'create_small_embedding',
-				'get_model_options',
-		]
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
+		         'max_completion_tokens', 'store', 'stream', 'modalities', 'stops',
+		         'create_ada_embedding', 'api_key', 'client', 'small_model', 'count_tokens',
+		         'create_large_embedding', 'path', 'create_small_embedding', 'get_model_options', ]
 
 class TTS( GPT ):
 	"""
-
-    Purpose
-    ___________
-    Class used for interacting with OpenAI's TTS API (TTS)
-
-
-    Parameters
-    ------------
-    num: int=1
-    temp: float=0.8
-    top: float=0.9
-    freq: float=0.0
-    pres: float=0.0
-    max: int=10000
-    store: bool=True
-    stream: bool=True
-
-    Attributes
-    -----------
-    self.api_key, self.system_instructions, self.client, self.small_model, self.reasoning_effort,
-    self.response, self.num, self.temperature, self.top_percent,
-    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-    self.store, self.stream, self.modalities, self.stops, self.content,
-    self.input_text, self.response, self.completion, self.file, self.path,
-    self.messages, self.image_url, self.response_format,
-    self.tools, self.vector_store_ids, self.descriptions, self.assistants
-
-    Methods
-    ------------
-    get_model_options( self ) -> str
-    create_small_embedding( self, prompt: str, path: str )
+	
+	    Purpose
+	    ___________
+	    Class used for interacting with OpenAI's TTS API (TTS)
+	
+	
+	    Parameters
+	    ------------
+	    num: int=1
+	    temp: float=0.8
+	    top: float=0.9
+	    freq: float=0.0
+	    pres: float=0.0
+	    max: int=10000
+	    store: bool=True
+	    stream: bool=True
+	
+	    Attributes
+	    -----------
+	    self.api_key, self.system_instructions, self.client, self.small_model, self.reasoning_effort,
+	    self.response, self.num, self.temperature, self.top_percent,
+	    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+	    self.store, self.stream, self.modalities, self.stops, self.content,
+	    self.input_text, self.response, self.completion, self.file, self.path,
+	    self.messages, self.image_url, self.response_format,
+	    self.tools, self.vector_store_ids, self.descriptions, self.assistants
+	
+	    Methods
+	    ------------
+	    get_model_options( self ) -> str
+	    create_small_embedding( self, prompt: str, path: str )
 
     """
 	
-	def __init__(
-			self,
-			num: int = 1,
-			temp: float = 0.8,
-			top: float = 0.9,
-			freq: float = 0.0,
-			pres: float = 0.0,
-			max: int = 10000,
-			store: bool = True,
-			stream: bool = True,
-	):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+			pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True, ):
 		'''
 
-        Purpose:
-        --------
-        Constructor to  create_small_embedding TTS objects
+	        Purpose:
+	        --------
+	        Constructor to  create_small_embedding TTS objects
 
         '''
 		super( ).__init__( )
@@ -2519,10 +2299,10 @@ class TTS( GPT ):
 	
 	def get_model_options( self ) -> str:
 		'''
-
-        Purpose:
-        --------
-        Methods that returns a list of tts model names
+	
+	        Purpose:
+	        --------
+	        Methods that returns a list of tts model names
 
         '''
 		return [ 'gpt-4o-mini-tts', 'tts-1', 'tts-1-hd' ]
@@ -2530,69 +2310,54 @@ class TTS( GPT ):
 	def get_voice_options( self ):
 		'''
 
-        Purpose:
-        --------
-        Method that returns a list of voice names
+	        Purpose:
+	        --------
+	        Method that returns a list of voice names
 
         '''
-		return [
-				'alloy',
-				'ash',
-				'ballad',
-				'coral',
-				'echo',
-				'fable',
-				'onyx',
-				'nova',
-				'sage',
-				'shiver',
-		]
+		return [ 'alloy', 'ash', 'ballad', 'coral', 'echo', 'fable', 'onyx', 'nova', 'sage',
+				'shiver', ]
 	
 	def get_format_options( self ):
 		'''
 
-        Purpose:
-        --------
-        Method that returns a list of image formats
+	        Purpose:
+	        --------
+	        Method that returns a list of image formats
 
         '''
 		return [ 'mp3', 'wav', 'aac', 'flac', 'opus', 'pcm' ]
 	
 	def save_audio( self, text: str, filepath: str ) -> str:
 		"""
-
-        Purpose
-        _______
-        Generates audio given a text prompt and path to audio file
-
-
-        Parameters
-        ----------
-        prompt: str
-        path: str
-
-
-        Returns
-        -------
-        str
+	
+	        Purpose
+	        _______
+	        Generates audio given a text prompt and path to audio file
+	
+	
+	        Parameters
+	        ----------
+	        prompt: str
+	        path: str
+	
+	
+	        Returns
+	        -------
+	        str
 
         """
 		try:
-			if text is None:
-				raise Exception( 'Argument "text" is required.' )
-			elif filepath is None:
-				raise Exception( 'Argument "filepath" is required.' )
-			else:
-				self.input_text = text
-				out_path = Path( filepath )
-				if not out_path.parent.exists( ):
-					out_path.parent.mkdir( parents=True, exist_ok=True )
-				with self.client.audio.speech.with_streaming_response.create(
-						model=self.model, voice=getattr( self, 'voice', 'alloy' ),
-						input=self.input_text
-				) as resp:
-					resp.stream_to_file( str( out_path ) )
-				return str( out_path )
+			throw_if( 'text', text )
+			throw_if( 'filepath', filepath )
+			self.input_text = text
+			out_path = Path( filepath )
+			if not out_path.parent.exists( ):
+				out_path.parent.mkdir( parents=True, exist_ok=True )
+			with self.client.audio.speech.with_streaming_response.create( model=self.model,
+					voice=getattr( self, 'voice', 'alloy' ), input=self.input_text ) as resp:
+				resp.stream_to_file( str( out_path ) )
+			return str( out_path )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -2604,12 +2369,13 @@ class TTS( GPT ):
 	def get_data( self ) -> Dict[ str, str ]:
 		'''
 
-        Purpose:
-        --------
-        Returns: dict[ str ] of members
+	        Purpose:
+	        --------
+	        Returns: dict[ str ] of members
 
         '''
-		return {
+		return \
+		{
 				'num': self.number,
 				'temperature': self.temperature,
 				'top_percent': self.top_percent,
@@ -2621,143 +2387,85 @@ class TTS( GPT ):
 	
 	def dump( self ) -> str:
 		'''
-
-        Purpose:
-        --------
-        Returns: dict of members
+	
+	        Purpose:
+	        --------
+	        Returns: dict of members
 
         '''
 		new = '\r\n'
 		return (
-				'num'
-				+ f' = {self.number}'
-				+ new
-				+ 'temperature'
-				+ f' = {self.temperature}'
-				+ new
-				+ 'top_percent'
-				+ f' = {self.top_percent}'
-				+ new
-				+ 'frequency_penalty'
-				+ f' = {self.frequency_penalty}'
-				+ new
-				+ 'presence_penalty'
-				+ f' = {self.presence_penalty}'
-				+ new
-				+ 'max_completion_tokens'
-				+ f' = {self.max_completion_tokens}'
-				+ new
-				+ 'store'
-				+ f' = {self.store}'
-				+ new
-				+ 'stream'
-				+ f' = {self.stream}'
-				+ new
-		)
+				'num' + f' = {self.number}'+ new
+				+ 'temperature' + f' = {self.temperature}' + new
+				+ 'top_percent'+ f' = {self.top_percent}' + new
+				+ 'frequency_penalty' + f' = {self.frequency_penalty}' + new
+				+ 'presence_penalty' + f' = {self.presence_penalty}' + new
+				+ 'max_completion_tokens' + f' = {self.max_completion_tokens}' + new
+				+ 'store' + f' = {self.store}' + new
+				+ 'stream'+ f' = {self.stream}' + new )
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-        Purpose:
-        --------
-                    Method returns a list of strings representing members
-
-        Parameters:
-        ----------
-                    self
-
-        Returns:
-        ---------
-                    List[ str ] | None
+	        Purpose:
+	        --------
+	        Method returns a list of strings representing members
+	
+	        Parameters:
+	        ----------
+	        self
+	
+	        Returns:
+	        ---------
+	        List[ str ] | None
 
         '''
-		return [
-				'num',
-				'temperature',
-				'top_percent',
-				'frequency_penalty',
-				'presence_penalty',
-				'max_completion_tokens',
-				'system_instructions',
-				'store',
-				'stream',
-				'modalities',
-				'stops',
-				'content',
-				'prompt',
-				'response',
-				'completion',
-				'file',
-				'path',
-				'messages',
-				'image_url',
-				'response_format',
-				'tools',
-				'vector_store_ids',
-				'name',
-				'id',
-				'description',
-				'generate_text',
-				'get_format_options',
-				'get_model_options',
-				'reasoning_effort',
-				'get_effort_options',
-				'input_text',
-				'metadata',
-				'get_files',
-				'get_data',
-				'dump',
-				'translate',
-				'transcribe',
-		]
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
+				'max_completion_tokens', 'system_instructions', 'store', 'stream',
+				'modalities', 'stops', 'content', 'prompt', 'response', 'completion',
+				'file', 'path', 'messages', 'image_url', 'response_format', 'tools',
+				'vector_store_ids', 'name', 'id', 'description', 'generate_text',
+				'get_format_options', 'get_model_options', 'reasoning_effort', 'get_effort_options',
+				'input_text', 'metadata', 'get_files', 'get_data', 'dump', 'translate', 'transcribe' ]
 
 class Transcription( GPT ):
 	"""
-
-    Purpose
-    ___________
-    Class used for interacting with OpenAI's TTS API (whisper-1)
-
-
-    Parameters
-    ------------
-    num: int=1
-    temp: float=0.8
-    top: float=0.9
-    freq: float=0.0
-    pres: float=0.0
-    max: int=10000
-    store: bool=True
-    stream: bool=True
-
-    Attributes
-    -----------
-    self.api_key, self.system_instructions, self.client, self.small_model, self.reasoning_effort,
-    self.response, self.num, self.temperature, self.top_percent,
-    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-    self.store, self.stream, self.modalities, self.stops, self.content,
-    self.input_text, self.response, self.completion, self.audio_file, self.transcript
-
-
-    Methods
-    ------------
-    get_model_options( self ) -> str
-    create_small_embedding( self, path: str  ) -> str
+	
+	    Purpose
+	    ___________
+	    Class used for interacting with OpenAI's TTS API (whisper-1)
+	
+	
+	    Parameters
+	    ------------
+	    num: int=1
+	    temp: float=0.8
+	    top: float=0.9
+	    freq: float=0.0
+	    pres: float=0.0
+	    max: int=10000
+	    store: bool=True
+	    stream: bool=True
+	
+	    Attributes
+	    -----------
+	    self.api_key, self.system_instructions, self.client, self.small_model, self.reasoning_effort,
+	    self.response, self.num, self.temperature, self.top_percent,
+	    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+	    self.store, self.stream, self.modalities, self.stops, self.content,
+	    self.input_text, self.response, self.completion, self.audio_file, self.transcript
+	
+	
+	    Methods
+	    ------------
+	    get_model_options( self ) -> str
+	    create_small_embedding( self, path: str  ) -> str
 
 
     """
 	
-	def __init__(
-			self,
-			num: int = 1,
-			temp: float = 0.8,
-			top: float = 0.9,
-			freq: float = 0.0,
-			pres: float = 0.0,
-			max: int = 10000,
-			store: bool = True,
-			stream: bool = True,
-	):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+			pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True, ):
 		super( ).__init__( )
 		self.client = OpenAI( )
 		self.client.api_key = GptHeader( ).api_key
@@ -2780,20 +2488,21 @@ class Transcription( GPT ):
 	def get_model_options( self ) -> str:
 		'''
 
-        Purpose:
-        --------
-        Methods that returns a list of small_model names
+	        Purpose:
+	        --------
+	        Methods that returns a list of small_model names
 
         '''
 		return [ 'whisper-1', 'gpt-4o-mini-transcribe', 'gpt-4o-transcribe' ]
 	
 	def transcribe( self, path: str ) -> str:
 		"""
-        Transcribe audio with Whisper.
+		
+            Transcribe audio with Whisper.
+        
         """
 		try:
-			if not path:
-				raise Exception( 'Argument "path" is required.' )
+			throw_if( 'path', path )
 			with open( path, 'rb' ) as audio_file:
 				resp = self.client.audio.transcriptions.create( model='whisper-1',
 					file=audio_file )
@@ -2807,13 +2516,14 @@ class Transcription( GPT ):
 	
 	def get_data( self ) -> dict:
 		'''
-
-        Purpose:
-        --------
-        Returns: dict[ str ] of members
+	
+	        Purpose:
+	        --------
+	        Returns: dict[ str ] of members
 
         '''
-		return {
+		return \
+		{
 				'num': self.number,
 				'temperature': self.temperature,
 				'top_percent': self.top_percent,
@@ -2825,120 +2535,77 @@ class Transcription( GPT ):
 	
 	def dump( self ) -> str:
 		'''
-        Returns: dict of members
+		
+            Returns: dict of members
+        
         '''
 		new = '\r\n'
-		return (
-				'num'
-				+ f' = {self.number}'
-				+ new
-				+ 'temperature'
-				+ f' = {self.temperature}'
-				+ new
-				+ 'top_percent'
-				+ f' = {self.top_percent}'
-				+ new
-				+ 'frequency_penalty'
-				+ f' = {self.frequency_penalty}'
-				+ new
-				+ 'presence_penalty'
-				+ f' = {self.presence_penalty}'
-				+ new
-				+ 'max_completion_tokens'
-				+ f' = {self.max_completion_tokens}'
-				+ new
-				+ 'store'
-				+ f' = {self.store}'
-				+ new
-				+ 'stream'
-				+ f' = {self.stream}'
-				+ new
-		)
+		return ( 'num' + f' = {self.number}' + new
+		         + 'temperature' + f' = {self.temperature}' +  new
+		         + 'top_percent' + f' = {self.top_percent}' + new
+		         + 'frequency_penalty' + f'{self.frequency_penalty}' + new
+		         + 'presence_penalty' + f' = {self.presence_penalty}' + new
+		         + 'max_completion_tokens' + f' = {self.max_completion_tokens}' + new
+		         + 'store' + f' = {self.store}' + new
+		         + 'stream' + f' = {self.stream}' + new )
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
-
-        Purpose:
-        --------
-                    Method returns a list of strings representing members
-
-        Parameters:
-        ----------
-                    self
-
-        Returns:
-        ---------
-                    List[ str ] | None
+	
+	        Purpose:
+	        --------
+	        Method returns a list of strings representing members
+	
+	        Parameters:
+	        ----------
+	        self
+	
+	        Returns:
+	        ---------
+	        List[ str ] | None
 
         '''
-		return [
-				'num',
-				'temperature',
-				'top_percent',
-				'frequency_penalty',
-				'presence_penalty',
-				'max_completion_tokens',
-				'store',
-				'stream',
-				'modalities',
-				'stops',
-				'prompt',
-				'response',
-				'audio_file',
-				'messages',
-				'response_format',
-				'api_key',
-				'client',
-				'input_text',
-				'transcript',
-		]
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
+				'max_completion_tokens', 'store', 'stream', 'modalities', 'stops', 'prompt',
+				'response', 'audio_file', 'messages', 'response_format', 'api_key', 'client',
+				'input_text', 'transcript', ]
 
 class Translation( GPT ):
 	"""
 
-    Purpose
-    ___________
-    Class used for interacting with OpenAI's TTS API (whisper-1)
-
-
-    Parameters
-    ------------
-    num: int=1
-    temp: float=0.8
-    top: float=0.9
-    freq: float=0.0
-    pres: float=0.0
-    max: int=10000
-    store: bool=True
-    stream: bool=True
-
-    Attributes
-    -----------
-    self.api_key, self.system_instructions, self.client, self.small_model,  self.reasoning_effort,
-    self.response, self.num, self.temperature, self.top_percent,
-    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-    self.store, self.stream, self.modalities, self.stops, self.content,
-    self.input_text, self.response, self.completion, self.file, self.path,
-    self.messages, self.image_url, self.response_format,
-    self.tools, self.vector_store_ids, self.descriptions, self.assistants
-
-    Methods
-    ------------
-    create_small_embedding( self, prompt: str, path: str )
+	    Purpose
+	    ___________
+	    Class used for interacting with OpenAI's TTS API (whisper-1)
+	
+	
+	    Parameters
+	    ------------
+	    num: int=1
+	    temp: float=0.8
+	    top: float=0.9
+	    freq: float=0.0
+	    pres: float=0.0
+	    max: int=10000
+	    store: bool=True
+	    stream: bool=True
+	
+	    Attributes
+	    -----------
+	    self.api_key, self.system_instructions, self.client, self.small_model,  self.reasoning_effort,
+	    self.response, self.num, self.temperature, self.top_percent,
+	    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+	    self.store, self.stream, self.modalities, self.stops, self.content,
+	    self.input_text, self.response, self.completion, self.file, self.path,
+	    self.messages, self.image_url, self.response_format,
+	    self.tools, self.vector_store_ids, self.descriptions, self.assistants
+	
+	    Methods
+	    ------------
+	    create_small_embedding( self, prompt: str, path: str )
 
     """
-	
-	def __init__(
-			self,
-			num: int = 1,
-			temp: float = 0.8,
-			top: float = 0.9,
-			freq: float = 0.0,
-			pres: float = 0.0,
-			max: int = 10000,
-			store: bool = True,
-			stream: bool = True,
-	):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+			pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.client = OpenAI( )
 		self.client.api_key = GptHeader( ).api_key
@@ -2959,70 +2626,51 @@ class Translation( GPT ):
 	
 	def get_model_options( self ) -> str:
 		'''
-
-        Purpose:
-        --------
-        Methods that returns a list of small_model names
+	
+	        Purpose:
+	        --------
+	        Methods that returns a list of small_model names
 
         '''
-		return [
-				'whisper-1',
-				'text-davinci-003',
-				'gpt-4-0613',
-				'gpt-4-0314',
-				'gpt-4-turbo-2024-04-09',
-		]
+		return [ 'whisper-1', 'text-davinci-003', 'gpt-4-0613', 'gpt-4-0314',
+				'gpt-4-turbo-2024-04-09', ]
 	
 	def get_voice_options( self ):
 		'''
-
-        Purpose:
-        --------
-        Method that returns a list of voice names
+	
+	        Purpose:
+	        --------
+	        Method that returns a list of voice names
 
         '''
-		return [
-				'alloy',
-				'ash',
-				'ballad',
-				'coral',
-				'echo',
-				'fable',
-				'onyx',
-				'nova',
-				'sage',
-				'shiver',
-		]
+		return [ 'alloy', 'ash', 'ballad', 'coral', 'echo', 'fable', 'onyx', 'nova', 'sage',
+				'shiver', ]
 	
 	def create( self, text: str, path: str ) -> str:
 		"""
 
-        Purpose
-        _______
-        Generates a transcription given a string to an audio file
-
-
-        Parameters
-        ----------
-        text: str
-        path: str
-
-
-        Returns
-        -------
-        str
+	        Purpose
+	        _______
+	        Generates a transcription given a string to an audio file
+	
+	
+	        Parameters
+	        ----------
+	        text: str
+	        path: str
+	
+	
+	        Returns
+	        -------
+	        str
 
         """
 		try:
-			if text is None:
-				raise Exception( 'Argument "text" is required.' )
-			elif path is None:
-				raise Exception( 'Argument "path" is required.' )
-			else:
-				with open( path, 'rb' ) as audio_file:
-					resp = self.client.audio.translations.create( model='whisper-1',
-						file=audio_file )
-				return resp.text
+			throw_if( 'text', text )
+			throw_if( 'path', path )
+			with open( path, 'rb' ) as audio_file:
+				resp = self.client.audio.translations.create( model='whisper-1', file=audio_file )
+			return resp.text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -3033,11 +2681,12 @@ class Translation( GPT ):
 	
 	def translate( self, path: str ) -> str:
 		"""
-        Translate non-English speech to English with Whisper.
+		
+            Translate non-English speech to English with Whisper.
+        
         """
 		try:
-			if not path:
-				raise Exception( 'Argument "path" is required.' )
+			throw_if( 'path', path )
 			with open( path, 'rb' ) as audio_file:
 				resp = self.client.audio.translations.create( model='whisper-1', file=audio_file )
 			return resp.text
@@ -3051,139 +2700,93 @@ class Translation( GPT ):
 	def get_data( self ) -> dict:
 		'''
 
-        Purpose:
-        --------
-        Returns: dict[ str ] of members
+	        Purpose:
+	        --------
+	        Returns: dict[ str ] of members
 
         '''
-		return {
-				'num': self.number,
-				'temperature': self.temperature,
-				'top_percent': self.top_percent,
-				'frequency_penalty': self.frequency_penalty,
-				'presence_penalty': self.presence_penalty,
-				'store': self.store,
-				'stream': self.stream,
+		return \
+		{
+			'num': self.number,
+			'temperature': self.temperature,
+			'top_percent': self.top_percent,
+			'frequency_penalty': self.frequency_penalty,
+			'presence_penalty': self.presence_penalty,
+			'store': self.store,
+			'stream': self.stream,
 		}
 	
 	def dump( self ) -> str:
 		'''
 
-        Returns: dict of members
+            Returns: dict of members
 
         '''
 		new = '\r\n'
-		return (
-				'num'
-				+ f' = {self.number}'
-				+ new
-				+ 'temperature'
-				+ f' = {self.temperature}'
-				+ new
-				+ 'top_percent'
-				+ f' = {self.top_percent}'
-				+ new
-				+ 'frequency_penalty'
-				+ f' = {self.frequency_penalty}'
-				+ new
-				+ 'presence_penalty'
-				+ f' = {self.presence_penalty}'
-				+ new
-				+ 'max_completion_tokens'
-				+ f' = {self.max_completion_tokens}'
-				+ new
-				+ 'store'
-				+ f' = {self.store}'
-				+ new
-				+ 'stream'
-				+ f' = {self.stream}'
-				+ new
-		)
+		return ( 'num' + f' = {self.number}' + new
+				+ 'temperature' + f' = {self.temperature}' + new
+				+ 'top_percent' + f' = {self.top_percent}' + new
+				+ 'frequency_penalty' + f'{self.frequency_penalty}' + new
+				+ 'presence_penalty' + f' = {self.presence_penalty}' + new
+				+ 'max_completion_tokens' + f' = {self.max_completion_tokens}' + new
+				+ 'store' + f' = {self.store}' + new
+				+ 'stream' + f' = {self.stream}' + new )
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
-        Purpose:
-        --------
-                    Method returns a list of strings representing members
-
-        Parameters:
-        ----------
-                    self
-
-        Returns:
-        ---------
-                    List[ str ] | None
+	        Purpose:
+	        --------
+	        Method returns a list of strings representing members
+	
+	        Parameters:
+	        ----------
+	        self
+	
+	        Returns:
+	        ---------
+	        List[ str ] | None
 
         '''
-		return [
-				'num',
-				'temperature',
-				'top_percent',
-				'frequency_penalty',
-				'presence_penalty',
-				'max_completion_tokens',
-				'store',
-				'stream',
-				'modalities',
-				'stops',
-				'prompt',
-				'response',
-				'completion',
-				'audio_path',
-				'path',
-				'messages',
-				'response_format',
-				'tools',
-				'api_key',
-				'client',
-				'small_model',
-				'create_small_embedding',
-				'get_model_options',
-		]
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
+				'max_completion_tokens', 'store', 'stream', 'modalities', 'stops', 'prompt',
+				'response', 'completion', 'audio_path', 'path', 'messages', 'response_format',
+				'tools', 'api_key', 'client', 'small_model', 'create_small_embedding',
+				'get_model_options', ]
 
 class LargeImage( GPT ):
 	"""
-
-    Purpose
-    ___________
-    Class used for generating images OpenAI's Images API and dall-e-3
-
-
-    Parameters
-    ------------
-    num: int
-    temperature: float
-    top_percent: float
-    frequency_penalty: float
-    presence_penalty: float
-    maximum_completion_tokens: int
-    store: bool
-    stream: bool
-
-    Methods
-    ------------
-    generate( self, path: str ) -> str:
-    analyze( self, path: str, text: str ) -> str
-    get_detail_options( self ) -> list[ str ]
-    get_format_options( self ) -> list[ str ]:
-    get_size_options( self ) -> list[ str ]
+	
+	    Purpose
+	    ___________
+	    Class used for generating images OpenAI's Images API and dall-e-3
+	
+	
+	    Parameters
+	    ------------
+	    num: int
+	    temperature: float
+	    top_percent: float
+	    frequency_penalty: float
+	    presence_penalty: float
+	    maximum_completion_tokens: int
+	    store: bool
+	    stream: bool
+	
+	    Methods
+	    ------------
+	    generate( self, path: str ) -> str:
+	    analyze( self, path: str, text: str ) -> str
+	    get_detail_options( self ) -> list[ str ]
+	    get_format_options( self ) -> list[ str ]:
+	    get_size_options( self ) -> list[ str ]
 
     """
 	
 	input: Optional[ List ]
 	
-	def __init__(
-			self,
-			num: int = 1,
-			temp: float = 0.8,
-			top: float = 0.9,
-			freq: float = 0.0,
-			pres: float = 0.0,
-			max: int = 10000,
-			store: bool = False,
-			stream: bool = False,
-	):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+			pres: float=0.0, max: int=10000, store: bool=False, stream: bool=False, ):
 		super( ).__init__( )
 		self.api_key = GptHeader( ).api_key
 		self.client = OpenAI( )
@@ -3205,36 +2808,29 @@ class LargeImage( GPT ):
 	
 	def generate( self, input: str ) -> str | None:
 		"""
-
-        Purpose
-        _______
-        Method that analyzeses an image given a path prompt,
-
-
-
-        Parameters
-        ----------
-        input: str
-
-        Returns
-        -------
-        str
+	
+	        Purpose
+	        _______
+	        Method that analyzeses an image given a path prompt,
+	
+	
+	
+	        Parameters
+	        ----------
+	        input: str
+	
+	        Returns
+	        -------
+	        str
 
         """
 		try:
-			if input is None:
-				raise Exception( 'The "text" argument is required.' )
-			else:
-				self.input_text = input
-				self.response = self.client.images.generate(
-					model=self.model,
-					prompt=self.input_text,
-					size=self.size,
-					quality=self.quality,
-					n=self.number,
-				)
-				
-				return self.response.data[ 0 ].url
+			throw_if( 'input', input )
+			self.input_text = input
+			self.response = self.client.images.generate( model=self.model,
+				prompt=self.input_text, size=self.size, quality=self.quality, n=self.number, )
+			
+			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -3245,33 +2841,24 @@ class LargeImage( GPT ):
 	
 	def analyze( self, input: str, path: str ) -> str | None:
 		'''
-
-        Purpose:
-        --------
-        Method providing image analysis functionality given a prompt and path
+	
+	        Purpose:
+	        --------
+	        Method providing image analysis functionality given a prompt and path
 
         '''
 		try:
-			if input is None:
-				raise Exception( 'The argument "path" cannot be None' )
-			elif path is None:
-				raise Exception( 'The argument "path" cannot be None' )
-			else:
-				self.input_text = input
-				self.file_path = path
-				self.input = [
-						{
-								'role': 'user',
-								'content': [
-										{ 'type': 'input_text', 'text': self.input_text },
-										{ 'type': 'input_image', 'image_url': self.file_path },
-								],
-						}
-				]
-				
-				self.response = self.client.responses.create( model='gpt-4o-mini',
-					input=self.input )
-				return self.response.output_text
+			throw_if( 'input', input )
+			throw_if( 'path', path )
+			self.input_text = input
+			self.file_path = path
+			self.input = [ { 'role': 'user', 'content': [
+									{ 'type': 'input_text', 'text': self.input_text },
+									{ 'type': 'input_image', 'image_url': self.file_path },
+							], } ]
+			self.response = self.client.responses.create( model='gpt-4o-mini',
+				input=self.input )
+			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -3283,134 +2870,107 @@ class LargeImage( GPT ):
 	def get_model_options( self ) -> List[ str ]:
 		'''
 
-        Purpose:
-        --------
-        Methods that returns a list of small_model names
+	        Purpose:
+	        --------
+	        Methods that returns a list of small_model names
 
         '''
-		return [ 'dall-e-3', 'gpt-4-0613', 'gpt-4-0314', 'gpt-4o-mini', 'gpt-4o-mini-2024-07-18' ]
+		return [ 'dall-e-3', 'gpt-4-0613', 'gpt-4-0314',
+		         'gpt-4o-mini', 'gpt-4o-mini-2024-07-18' ]
 	
-	def get_format_options( self ) -> list[ str ]:
+	def get_format_options( self ) -> List[ str ]:
 		'''
-
-        Purpose:
-        --------
-        Method that returns a  list of format options
+	
+	        Purpose:
+	        --------
+	        Method that returns a  list of format options
 
         '''
 		return [ '.png', '.mpeg', '.jpeg', '.webp', '.gif' ]
 	
-	def get_detail_options( self ) -> list[ str ]:
+	def get_detail_options( self ) -> List[ str ]:
 		'''
 
-        Purpose:
-        --------
-        Method that returns a  list of reasoning effort options
+             Purpose:
+	        --------
+	        Method that returns a  list of reasoning effort options
 
         '''
 		return [ 'auto', 'low', 'high' ]
 	
-	def get_size_options( self ) -> list[ str ]:
+	def get_size_options( self ) -> List[ str ]:
 		'''
 
-        Purpose:
-        --------
-        Method that returns a  list of sizes
+	        Purpose:
+	        --------
+	        Method that returns a  list of sizes
 
         '''
 		return [ '1024x1024', '1024x1792', '1792x1024' ]
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
-
-        Purpose:
-        --------
-                    Method returns a list of strings representing members
-
-        Parameters:
-        ----------
-                    self
-
-        Returns:
-        ---------
-                    List[ str ] | None
+	
+	        Purpose:
+	        --------
+	        Method returns a list of strings representing members
+	
+	        Parameters:
+	        ----------
+	        self
+	
+	        Returns:
+	        ---------
+	        List[ str ] | None
 
         '''
-		return [
-				'num',
-				'temperature',
-				'top_percent',
-				'frequency_penalty',
-				'presence_penalty',
-				'max_completion_tokens',
-				'store',
-				'stream',
-				'modalities',
-				'stops',
-				'input_text',
-				'image_url',
-				'path',
-				'size',
-				'api_key',
-				'client',
-				'small_model',
-				'generate',
-				'get_detail_options',
-				'get_format_options',
-				'get_size_options',
-		]
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
+				'max_completion_tokens', 'store', 'stream', 'modalities', 'stops', 'input_text',
+				'image_url', 'path', 'size', 'api_key', 'client', 'small_model', 'generate',
+				'get_detail_options', 'get_format_options', 'get_size_options', ]
 
 class Image( GPT ):
 	"""
-
-    Purpose
-    ___________
-    Class used for generating images OpenAI's Images API and dall-e-2
-
-
-    Parameters
-    ------------
-    num: int=1
-    temp: float=0.8
-    top: float=0.9
-    freq: float=0.0
-    pres: float=0.0
-    max: int=10000
-    store: bool=True
-    stream: bool=True
-
-    Attributes
-    -----------
-    self.api_key, self.client, self.small_model,  self.embedding,
-    self.response, self.num, self.temperature, self.top_percent,
-    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-    self.store, self.stream, self.modalities, self.stops, self.content,
-    self.prompt, self.response, self.completion, self.file, self.path,
-    self.messages, self.image_url, self.response_format,
-    self.tools, self.vector_store_ids, self.input_text, self.image_url
-
-    Methods
-    ------------
-    get_model_options( self ) -> str
-    generate( self, path: str ) -> str
-    analyze( self, path: str, text: str ) -> str
-    get_detail_options( self ) -> list[ str ]
-    get_format_options( self ) -> list[ str ]
-    get_size_options( self ) -> list[ str ]
+	
+	    Purpose
+	    ___________
+	    Class used for generating images OpenAI's Images API and dall-e-2
+	
+	
+	    Parameters
+	    ------------
+	    num: int=1
+	    temp: float=0.8
+	    top: float=0.9
+	    freq: float=0.0
+	    pres: float=0.0
+	    max: int=10000
+	    store: bool=True
+	    stream: bool=True
+	
+	    Attributes
+	    -----------
+	    self.api_key, self.client, self.small_model,  self.embedding,
+	    self.response, self.num, self.temperature, self.top_percent,
+	    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
+	    self.store, self.stream, self.modalities, self.stops, self.content,
+	    self.prompt, self.response, self.completion, self.file, self.path,
+	    self.messages, self.image_url, self.response_format,
+	    self.tools, self.vector_store_ids, self.input_text, self.image_url
+	
+	    Methods
+	    ------------
+	    get_model_options( self ) -> str
+	    generate( self, path: str ) -> str
+	    analyze( self, path: str, text: str ) -> str
+	    get_detail_options( self ) -> list[ str ]
+	    get_format_options( self ) -> list[ str ]
+	    get_size_options( self ) -> list[ str ]
 
     """
 	
-	def __init__(
-			self,
-			num: int = 1,
-			temp: float = 0.8,
-			top: float = 0.9,
-			freq: float = 0.0,
-			pres: float = 0.0,
-			max: int = 10000,
-			store: bool = False,
-			stream: bool = False,
-	):
+	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
+			pres: float=0.0, max: int=10000, store: bool=False, stream: bool=False, ):
 		super( ).__init__( )
 		self.api_key = GptHeader( ).api_key
 		self.client = OpenAI( )
@@ -3437,39 +2997,39 @@ class Image( GPT ):
 	def get_model_options( self ) -> List[ str ]:
 		'''
 
-        Purpose:
-        ________
-        Methods that returns a list of small_model names
+	        Purpose:
+	        ________
+	        Methods that returns a list of small_model names
 
         '''
 		return [ "dall-e-3", "gpt-4o-mini", "gpt-4o" ]
 	
-	def get_size_options( self ) -> list[ str ]:
+	def get_size_options( self ) -> List[ str ]:
 		'''
-
-        Purpose:
-        ________
-        Method that returns a  list of small_model options
+	
+	        Purpose:
+	        ________
+	        Method that returns a  list of small_model options
 
         '''
 		return [ '256x256', '512x512', '1024x1024' ]
 	
-	def get_format_options( self ) -> list[ str ]:
+	def get_format_options( self ) -> List[ str ]:
 		'''
-
-        Purpose:
-        ________
-        Method that returns a  list of format options
+	
+	        Purpose:
+	        ________
+	        Method that returns a  list of format options
 
         '''
 		return [ '.png', '.jpeg', '.webp', '.gif' ]
 	
-	def get_detail_options( self ) -> list[ str ]:
+	def get_detail_options( self ) -> List[ str ]:
 		'''
 
-        Purpose:
-        ________
-        Method that returns a  list of reasoning effort options
+	        Purpose:
+	        ________
+	        Method that returns a  list of reasoning effort options
 
         '''
 		return [ 'auto', 'low', 'high' ]
@@ -3477,35 +3037,27 @@ class Image( GPT ):
 	def generate( self, text: str ) -> str:
 		"""
 
-                        Purpose
-                        _______
-        Generate an image from a text prompt.
+                Purpose
+                _______
+                Generate an image from a text prompt.
 
 
-                        Parameters
-                        ----------
-                        text: str
+                Parameters
+                ----------
+                text: str
 
 
-                        Returns
-                        -------
-                        Image object
+                Returns
+                -------
+                Image object
 
         """
 		try:
-			if text is None:
-				raise Exception( 'The "text" argument is required.' )
-			else:
-				self.input_text = text
-				self.response = self.client.images.generate(
-					model=self.model,
-					prompt=self.input_text,
-					size=self.size,
-					quality=self.quality,
-					n=self.number,
-				)
-				
-				return self.response.data[ 0 ].url
+			throw_if( 'text', text )
+			self.input_text = text
+			self.response = self.client.images.generate( model=self.model, prompt=self.input_text,
+				size=self.size, quality=self.quality, n=self.number, )
+			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -3516,20 +3068,20 @@ class Image( GPT ):
 	
 	def analyze( self, text: str, path: str ) -> str:
 		'''
-
-        Purpose:
-        ________
-
-        Method providing image analysis functionality given a prompt and path
-
-        Parameters:
-        ----------
-        input: str
-        path: str
-
-        Returns:
-        --------
-        str | None
+	
+	        Purpose:
+	        ________
+	
+	        Method providing image analysis functionality given a prompt and path
+	
+	        Parameters:
+	        ----------
+	        input: str
+	        path: str
+	
+	        Returns:
+	        --------
+	        str | None
 
         '''
 		try:
@@ -3538,17 +3090,15 @@ class Image( GPT ):
 			self.input_text = text
 			self.file_path = path
 			self.input = [
-					{
-							'role': 'user',
-							'content': [
-									{ 'type': 'input_text', 'text': self.input_text },
-									{ 'type': 'input_image', 'image_url': self.file_path },
-							],
-					}
-			]
+			{
+				'role': 'user',
+				'content': [
+					{ 'type': 'input_text', 'text': self.input_text },
+					{ 'type': 'input_image', 'image_url': self.file_path },
+				],
+			}]
 			
 			self.response = self.client.responses.create( model='gpt-4o-mini', input=self.input )
-			
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
@@ -3558,21 +3108,21 @@ class Image( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def edit( self, input: str, path: str, size: str = '1024x1024' ) -> str:
+	def edit( self, input: str, path: str, size: str='1024x1024' ) -> str:
 		"""
 
-        Purpose
-        _______
-        Method that analyzeses an image given a path prompt,
-
-        Parameters
-        ----------
-        prompt: str
-        url: str
-
-        Returns
-        -------
-        str
+	        Purpose
+	        _______
+	        Method that analyzeses an image given a path prompt,
+	
+	        Parameters
+	        ----------
+	        prompt: str
+	        url: str
+	
+	        Returns
+	        -------
+	        str
 
         """
 		try:
@@ -3580,13 +3130,9 @@ class Image( GPT ):
 			throw_if( 'path', path )
 			self.input_text = input
 			self.file_path = path
-			self.response = self.client.images.edit(
-				model=self.model,
-				image=open( self.file_path, 'rb' ),
-				prompt=self.input_text,
-				n=self.number,
-				size=self.size,
-			)
+			self.response = self.client.images.edit( model=self.model,
+				image=open( self.file_path, 'rb' ), prompt=self.input_text, n=self.number,
+				size=self.size, )
 			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
@@ -3598,53 +3144,22 @@ class Image( GPT ):
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
-
-        Purpose:
-        --------
-                    Method returns a list of strings representing members
-
-        Parameters:
-        ----------
-                    self
-
-        Returns:
-        ---------
-                    List[ str ] | None
+	
+	        Purpose:
+	        --------
+	        Method returns a list of strings representing members
+	
+	        Parameters:
+	        ----------
+	        self
+	
+	        Returns:
+	        ---------
+	        List[ str ] | None
 
         '''
-		return [
-				'num',
-				'temperature',
-				'top_percent',
-				'frequency_penalty',
-				'presence_penalty',
-				'max_completion_tokens',
-				'store',
-				'stream',
-				'modalities',
-				'stops',
-				'api_key',
-				'client',
-				'small_model',
-				'path',
-				'analyze',
-				'input_text',
-				'image_url',
-				'edit',
-				'size',
-				'generate',
-				'quality',
-				'detail',
-				'small_model',
-				'get_model_options',
-				'get_detail_options',
-				'get_format_options',
-				'get_size_options',
-		]
-
-def throw_if( name: str, value: object ):
-	if not value:
-		raise ValueError( f'Argument "{name}" cannot be empty!' )
-
-def chunk_text( text: str, max: int = 6000 ) -> List[ str ]:
-	return [ text[ i: i + max ] for i in range( 0, len( text ), max ) ]
+		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
+				'max_completion_tokens', 'store', 'stream', 'modalities', 'stops', 'api_key',
+				'client', 'small_model', 'path', 'analyze', 'input_text', 'image_url', 'edit',
+				'size', 'generate', 'quality', 'detail', 'small_model', 'get_model_options',
+				'get_detail_options', 'get_format_options', 'get_size_options', ]

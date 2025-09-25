@@ -44,8 +44,8 @@
   '''
 import base64
 from enum import Enum
-import FreeSimpleGUI as sg
 import fitz
+import FreeSimpleGUI as sg
 from googlesearch import search
 import random
 import io
