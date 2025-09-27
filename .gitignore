@@ -9,7 +9,7 @@ $RECYCLE.BIN/
 .vscode
 
 # Idea
-.idea
+./idea
 
 # Project
 record.wav

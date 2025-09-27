@@ -12,7 +12,7 @@ FreeSimpleGUI~=5.2.0.post1
 fitz~=0.0.1.dev2
 fastapi
 nltk~=3.9.1
-numpy==1.26.4
+numpy
 groq
 gensim~=4.3.3
 google
