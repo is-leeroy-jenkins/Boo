@@ -42,28 +42,22 @@
   </summary>
   ******************************************************************************************
   '''
+from flask import ( Flask, make_response, render_template, request, redirect,
+                    current_app, abort )
+
+app = Flask( __name__ )
+
+@app.route( '/' )
+def index( ):
+	return '<h1>Hello World!</h1>'
+
+@app.route( '/user/<name>' )
+def user( name ):
+	return '<h1>Hello, {}!</h1>'.format( name )
 
 
-def main( ) -> None:
-    """
-
-        Main function. Initialize the window and handle the events.
-
-    """
-    window = sg.Window( 'Hello World!' )
-    logger.debug( 'Application started.' )
-
-    while True:
-        event: str
-        values: Dict[ str, Any ]
-        event, values = window.read( )
-
-        if event in [ '-CLOSE_BUTTON-', sg.WIN_CLOSED ]:
-
-            logger.debug( 'Closing...' )
-            break
-    window.close( )
 
 
-if __name__ == "__main__":
-    main( )
+
+if __name__ == '__main__':
+ app.run( )
