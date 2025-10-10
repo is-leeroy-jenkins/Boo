@@ -39,11 +39,12 @@
   </copyright>
   <summary>
     main.py
+    
   </summary>
   ******************************************************************************************
   '''
 from flask import ( Flask, make_response, render_template, request, redirect,
-                    current_app, abort )
+                    current_app, abort, )
 
 app = Flask( __name__ )
 
@@ -60,4 +61,4 @@ def user( name ):
 
 
 if __name__ == '__main__':
- app.run( )
+	app.run( )
