@@ -1842,15 +1842,15 @@ class Bro( GPT ):
 				purpose='user_data' )
 			self.messages = [ { 'role': 'user', 'content': [
 									{
-											'type': 'file',
-											'file':
-											{
-												'file_id': self.file.id,
-											},
+										'type': 'file',
+										'file':
+										{
+											'file_id': self.file.id,
+										},
 									},
 									{
-											'type': 'text',
-											'text': self.input_text,
+										'type': 'text',
+										'text': self.input_text,
 									},
 							], } ]
 			self.response = self.client.responses.create( model=self.model, inputs=self.messages )
