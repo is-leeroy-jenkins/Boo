@@ -2219,7 +2219,7 @@ class EmailAnalyst( Agent ):
 			error = ErrorDialog( exception )
 			error.show( )
 
-class EssayWriter( Agent ):
+class ResearchEvaluator( Agent ):
 	'''
 
 
@@ -2263,7 +2263,7 @@ class EssayWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689139230710819095711ad1b3f59e9301017a586373075f'
-		self.version = '3'
+		self.version = '4'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2787,6 +2787,435 @@ class FinancialPlanner( Agent ):
 			exception = Error( e )
 			exception.module = 'agents'
 			exception.cause = 'FinancialPlanner'
+			exception.method = 'ask( self, question: str ) -> str | None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+class FormBuilder( Agent ):
+	'''
+
+
+		Purpose:
+		--------
+
+	'''
+	client: Optional[ OpenAI ]
+	model: Optional[ str ]
+	prompt: Optional[ Prompt ]
+	reasoning: Optional[ Dict[ str, str ] ]
+	text: Optional[ Text ]
+	format: Optional[ str ]
+	max_output_tokens: Optional[ int ]
+	input: Optional[ List ]
+	store: Optional[ bool ]
+	temperature: Optional[ float ]
+	top_p: Optional[ float ]
+	tools: Optional[ List[ Dict[ str, str ] ] ]
+	include: Optional[ List ]
+	question: Optional[ str ]
+	variables: Optional[ List[ str ] ]
+	include: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	vector_store_ids: Optional[ List[ str ] ]
+	file_ids: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	
+	def __init__( self ):
+		'''
+
+			Purpose:
+			-------
+			Contructor for class objects
+
+		'''
+		self.client = OpenAI( )
+		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.model = 'gpt-5-nano-2025-08-07'
+		self.tool_choice = 'auto'
+		self.id = 'pmpt_6891359401008195956bf1855321e27508eea3cf6957065f'
+		self.version = '3'
+		self.format = 'text'
+		self.reasoning = { 'effort': 'medium' }
+		self.include = [ 'code_interpreter_call.outputs',  'web_search_call.action.sources' ]
+		self.tools = [ ]
+		self.file_ids = [ ]
+		self.vector_store_ids = [ ]
+	
+	def ask( self, question: str ) -> str | None:
+		'''
+
+			Purpose:
+			-------
+
+			Parameters:
+			-----------
+
+			Returns:
+			---------
+
+		'''
+		try:
+			throw_if( 'question', question )
+			self.question = question
+			variable = { 'question': self.question }
+			meta = { 'id': self.id, 'version': self.version, 'variables': variable }
+			response = self.client.responses.create( model=self.model, prompt=meta,
+				max_output_tokens=self.max_output_tokens, store=self.store, include=self.include,
+				reasoning=self.reasoning )
+			return _response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'agents'
+			exception.cause = 'FormBuilder'
+			exception.method = 'ask( self, question: str ) -> str | None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+class LegalAnalyst( Agent ):
+	'''
+
+
+		Purpose:
+		--------
+
+	'''
+	client: Optional[ OpenAI ]
+	model: Optional[ str ]
+	prompt: Optional[ Prompt ]
+	reasoning: Optional[ Dict[ str, str ] ]
+	text: Optional[ Text ]
+	format: Optional[ str ]
+	max_output_tokens: Optional[ int ]
+	input: Optional[ List ]
+	store: Optional[ bool ]
+	temperature: Optional[ float ]
+	top_p: Optional[ float ]
+	tools: Optional[ List[ Dict[ str, str ] ] ]
+	include: Optional[ List ]
+	question: Optional[ str ]
+	variables: Optional[ List[ str ] ]
+	include: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	vector_store_ids: Optional[ List[ str ] ]
+	file_ids: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	parties: Optional[ str ]
+	purpose: Optional[ str ]
+	
+	def __init__( self ):
+		'''
+
+			Purpose:
+			-------
+			Contructor for class objects
+
+		'''
+		self.client = OpenAI( )
+		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.model = 'gpt-5-nano-2025-08-07'
+		self.tool_choice = 'auto'
+		self.id = 'pmpt_6891335308b081909903f694ab6fc7fd04de43be735450f4'
+		self.version = '3'
+		self.format = 'text'
+		self.reasoning = { 'effort': 'medium' }
+		self.include = [ 'code_interpreter_call.outputs',  'web_search_call.action.sources' ]
+		self.tools = [ ]
+		self.file_ids = [ ]
+		self.vector_store_ids = [ ]
+	
+	def ask( self, question: str, parties: str, purpose: str ) -> str | None:
+		'''
+
+			Purpose:
+			-------
+
+			Parameters:
+			-----------
+
+			Returns:
+			---------
+
+		'''
+		try:
+			throw_if( 'question', question )
+			throw_if( 'parties', parties )
+			throw_if( 'purpose', purpose )
+			self.question = question
+			self.purpose = purpose
+			self.parties = parties
+			variable = { 'question': self.question, 'parties': self.parties, 'purpose': self.purpose }
+			meta = { 'id': self.id, 'version': self.version, 'variables': variable }
+			response = self.client.responses.create( model=self.model, prompt=meta,
+				max_output_tokens=self.max_output_tokens, store=self.store, include=self.include,
+				reasoning=self.reasoning )
+			return _response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'agents'
+			exception.cause = 'LegalAnalyst'
+			exception.method = 'ask( self, question: str ) -> str | None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+class PromptEngineer( Agent ):
+	'''
+
+
+		Purpose:
+		--------
+
+	'''
+	client: Optional[ OpenAI ]
+	model: Optional[ str ]
+	prompt: Optional[ Prompt ]
+	reasoning: Optional[ Dict[ str, str ] ]
+	text: Optional[ Text ]
+	format: Optional[ str ]
+	max_output_tokens: Optional[ int ]
+	input: Optional[ List ]
+	store: Optional[ bool ]
+	temperature: Optional[ float ]
+	top_p: Optional[ float ]
+	tools: Optional[ List[ Dict[ str, str ] ] ]
+	include: Optional[ List ]
+	question: Optional[ str ]
+	variables: Optional[ List[ str ] ]
+	include: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	vector_store_ids: Optional[ List[ str ] ]
+	file_ids: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	number: Optional[ str ]
+	name: Optional[ str ]
+	text: Optional[ str ]
+	
+	def __init__( self ):
+		'''
+
+			Purpose:
+			-------
+			Contructor for class objects
+
+		'''
+		self.client = OpenAI( )
+		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.model = 'gpt-5-nano-2025-08-07'
+		self.tool_choice = 'auto'
+		self.id = 'pmpt_689126c5c5b081908ad6ee27b78377d400fae2713e5ad3d1'
+		self.version = '3'
+		self.format = 'text'
+		self.reasoning = { 'effort': 'medium' }
+		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.tools = [ ]
+		self.file_ids = [ ]
+		self.vector_store_ids = [ ]
+	
+	def ask( self, question: str, number:str, name: str, text: str ) -> str | None:
+		'''
+
+			Purpose:
+			-------
+
+			Parameters:
+			-----------
+
+			Returns:
+			---------
+
+		'''
+		try:
+			throw_if( 'question', question )
+			self.question = question
+			self.number = number
+			self.name = name
+			self.text = text
+			variables = { 'question': self.question, 'number': self.number,
+			             'name': self.name, 'text': self.text }
+			meta = { 'id': self.id, 'version': self.version, 'variables': variables }
+			response = self.client.responses.create( model=self.model, prompt=meta,
+				max_output_tokens=self.max_output_tokens, store=self.store, include=self.include,
+				reasoning=self.reasoning )
+			return _response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'agents'
+			exception.cause = 'PromptEngineer'
+			exception.method = 'ask( self, question: str ) -> str | None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+class ProjectArchitect( Agent ):
+	'''
+
+
+		Purpose:
+		--------
+
+	'''
+	client: Optional[ OpenAI ]
+	model: Optional[ str ]
+	prompt: Optional[ Prompt ]
+	reasoning: Optional[ Dict[ str, str ] ]
+	text: Optional[ Text ]
+	format: Optional[ str ]
+	max_output_tokens: Optional[ int ]
+	input: Optional[ List ]
+	store: Optional[ bool ]
+	temperature: Optional[ float ]
+	top_p: Optional[ float ]
+	tools: Optional[ List[ Dict[ str, str ] ] ]
+	include: Optional[ List ]
+	question: Optional[ str ]
+	variables: Optional[ List[ str ] ]
+	include: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	vector_store_ids: Optional[ List[ str ] ]
+	file_ids: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	
+	def __init__( self ):
+		'''
+
+			Purpose:
+			-------
+			Contructor for class objects
+
+		'''
+		self.client = OpenAI( )
+		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.model = 'gpt-5-nano-2025-08-07'
+		self.tool_choice = 'auto'
+		self.id = ''
+		self.version = ''
+		self.format = 'text'
+		self.reasoning = { 'effort': 'medium' }
+		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.tools = [ ]
+		self.file_ids = [ ]
+		self.vector_store_ids = [ ]
+	
+	def ask( self, question: str ) -> str | None:
+		'''
+
+			Purpose:
+			-------
+
+			Parameters:
+			-----------
+
+			Returns:
+			---------
+
+		'''
+		try:
+			throw_if( 'question', question )
+			self.question = question
+			search_tool = { 'type': 'file_search', 'vector_store_ids': self.vector_store_ids }
+			files = { 'type': 'auto', 'file_ids': self.file_ids }
+			code_tool = { 'type': 'code_interpreter', 'container': files }
+			self.tools.append( search_tool )
+			self.tools.append( code_tool )
+			variable = { 'question': self.question }
+			meta = { 'id': self.id, 'version': self.version, 'variables': variable }
+			search_tool = { 'type': 'file_search', 'vector_store_ids': self.vector_store_ids }
+			container = { 'type': 'auto', 'file_ids': self.file_ids }
+			code_tool = { 'type': 'code_interpreter', 'container': container }
+			response = self.client.responses.create( model=self.model, prompt=meta, tools=self.tools,
+				max_output_tokens=self.max_output_tokens, store=self.store, include=self.include,
+				tool_choice=self.tool_choice, reasoning=self.reasoning )
+			return _response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'agents'
+			exception.cause = 'ProjectArchitect'
+			exception.method = 'ask( self, question: str ) -> str | None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+class ProjectPlanner( Agent ):
+	'''
+
+
+		Purpose:
+		--------
+
+	'''
+	client: Optional[ OpenAI ]
+	model: Optional[ str ]
+	prompt: Optional[ Prompt ]
+	reasoning: Optional[ Dict[ str, str ] ]
+	text: Optional[ Text ]
+	format: Optional[ str ]
+	max_output_tokens: Optional[ int ]
+	input: Optional[ List ]
+	store: Optional[ bool ]
+	temperature: Optional[ float ]
+	top_p: Optional[ float ]
+	tools: Optional[ List[ Dict[ str, str ] ] ]
+	include: Optional[ List ]
+	question: Optional[ str ]
+	variables: Optional[ List[ str ] ]
+	include: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	vector_store_ids: Optional[ List[ str ] ]
+	file_ids: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	
+	def __init__( self ):
+		'''
+
+			Purpose:
+			-------
+			Contructor for class objects
+
+		'''
+		self.client = OpenAI( )
+		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.model = 'gpt-5-nano-2025-08-07'
+		self.tool_choice = 'auto'
+		self.id = ''
+		self.version = ''
+		self.format = 'text'
+		self.reasoning = { 'effort': 'medium' }
+		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.tools = [ ]
+		self.file_ids = [ ]
+		self.vector_store_ids = [ ]
+	
+	def ask( self, question: str ) -> str | None:
+		'''
+
+			Purpose:
+			-------
+
+			Parameters:
+			-----------
+
+			Returns:
+			---------
+
+		'''
+		try:
+			throw_if( 'question', question )
+			self.question = question
+			search_tool = { 'type': 'file_search', 'vector_store_ids': self.vector_store_ids }
+			files = { 'type': 'auto', 'file_ids': self.file_ids }
+			code_tool = { 'type': 'code_interpreter', 'container': files }
+			self.tools.append( search_tool )
+			self.tools.append( code_tool )
+			variable = { 'question': self.question }
+			meta = { 'id': self.id, 'version': self.version, 'variables': variable }
+			search_tool = { 'type': 'file_search', 'vector_store_ids': self.vector_store_ids }
+			container = { 'type': 'auto', 'file_ids': self.file_ids }
+			code_tool = { 'type': 'code_interpreter', 'container': container }
+			response = self.client.responses.create( model=self.model, prompt=meta, tools=self.tools,
+				max_output_tokens=self.max_output_tokens, store=self.store, include=self.include,
+				tool_choice=self.tool_choice, reasoning=self.reasoning )
+			return _response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'agents'
+			exception.cause = 'ProjectPlanner'
 			exception.method = 'ask( self, question: str ) -> str | None'
 			error = ErrorDialog( exception )
 			error.show( )
