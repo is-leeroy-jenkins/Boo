@@ -42,7 +42,6 @@
 	</summary>
 	******************************************************************************************
 '''
-
 import os
 from pathlib import Path
 from typing import Any, List, Optional, Dict
@@ -53,18 +52,17 @@ from openai import OpenAI
 from boogr import ErrorDialog, Error
 
 def throw_if( name: str, value: object ):
-	if not value:
+	if value is None:
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
 
 class EndPoint:
 	'''
-
-    Purpose:
-    ---------
-    The class containing endpoints for OpenAI
+	
+	    Purpose:
+	    ---------
+	    The class containing endpoints for OpenAI
 
     '''
-	
 	base_url: Optional[ str ]
 	text_generation: Optional[ str ]
 	image_generations: Optional[ str ]
@@ -116,7 +114,7 @@ class EndPoint:
 				'text_generation': self.text_generation,
 				'responses': self.responses,
 				'assistants': self.assistants,
-				'image_generation': self.image_generation,
+				'image_generations': self.image_generations,
 				'chat_completions': self.chat_completions,
 				'speech_generation': self.speech_generation,
 				'image_edits': self.image_edits,
@@ -186,10 +184,7 @@ class GptHeader:
 		self.content_type = 'application/json'
 		self.api_key = os.environ.get( 'OPENAI_API_KEY' )
 		self.authorization = f'Bearer {self.api_key}' if self.api_key else ''
-		self.data = {
-				'Content-Type': self.content_type,
-				'Authorization': self.authorization,
-		}
+		self.data = { 'Content-Type': self.content_type, 'Authorization': self.authorization, }
 	
 	def __dir__( self ) -> list[ str ] | None:
 		return [ 'content_type', 'api_key', 'authorization', 'data' ]
@@ -220,11 +215,10 @@ class GptModels:
 	uploads: Optional[ List[ str ] ]
 	
 	def __init__( self ):
-		self.text_generations = [ 'text-davinci-003', 'text-curie-001', 'gpt-4-0613', 'gpt-4-0314',
-		                          'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
+		self.text_generations = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
+		                          'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
 		                          'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
-		                          'gpt-4.1-mini-2025-04-14', 'gpt-4.1-nano-2025-04-14',
-		                          'o1-2024-12-17', 'o3-mini-2025-01-31', ]
+		                          'gpt-4.1-mini-2025-04-14', 'gpt-4.1-nano-2025-04-14', ]
 		self.image_generations = [ 'dall-e-2', 'dall-e-3', 'gpt-image-1' ]
 		self.image_edits = [ 'dall-e-2', 'gpt-image-1' ]
 		self.image_variations = [ 'dall-e-2', ]
@@ -292,11 +286,23 @@ class GptModels:
 	        List[ str ] | None
 
         '''
-		return [ 'text_generations', 'image_generations', 'chat_completions',
-				'speech_generations', 'responses', 'reasoning', 'translations',
-				'assistants', 'transcriptions', 'finetunings', 'vectors',
-				'uploads', 'files', 'vector_stores', 'bubba_instructions',
-				'bro_instructions', 'get_data', ]
+		return [ 'text_generations',
+		         'image_generations',
+		         'chat_completions',
+		         'speech_generations',
+		         'responses',
+		         'reasoning',
+		         'translations',
+		         'assistants',
+		         'transcriptions',
+		         'finetunings',
+		         'vectors',
+		         'uploads',
+		         'files',
+		         'vector_stores',
+		         'bubba_instructions',
+		         'bro_instructions',
+		         'get_data', ]
 	
 	def get_data( self ) -> Dict[ str, str ] | None:
 		'''
@@ -307,22 +313,22 @@ class GptModels:
 
         '''
 		return \
-		{
-			'text_generations': self.text_generations,
-	        'image_generations': self.image_generations,
-	        'chat_completions': self.chat_completions,
-			'responses': self.responses,
-			'image_edits': self.image_edits,
-			'speech_generations': self.speech_generations,
-			'translations': self.translations,
-			'image_variations': self.image_variations,
-			'reasoning': self.reasoning,
-			'finetunings': self.finetunings,
-			'embeddings': self.embeddings,
-			'uploads': self.uploads,
-			'files': self.files,
-			'vector_stores': self.vector_stores,
-       }
+			{
+					'text_generations': self.text_generations,
+					'image_generations': self.image_generations,
+					'chat_completions': self.chat_completions,
+					'responses': self.responses,
+					'image_edits': self.image_edits,
+					'speech_generations': self.speech_generations,
+					'translations': self.translations,
+					'image_variations': self.image_variations,
+					'reasoning': self.reasoning,
+					'finetunings': self.finetunings,
+					'embeddings': self.embeddings,
+					'uploads': self.uploads,
+					'files': self.files,
+					'vector_stores': self.vector_stores,
+			}
 
 class GPT:
 	'''
@@ -332,7 +338,6 @@ class GPT:
 	    Base class for OpenAI functionality.
 
     '''
-	
 	web_options: Optional[ Dict ]
 	client: Optional[ OpenAI ]
 	prompt: Optional[ str ]
@@ -361,7 +366,7 @@ class Chat( GPT ):
 	    top: float=0.9
 	    freq: float=0.0
 	    pres: float=0.0
-	    maximum: int=10000
+	    limit: int=10000
 	    store: bool=True
 	    stream: bool=True
 	
@@ -392,19 +397,18 @@ class Chat( GPT ):
 
 
     """
-	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-			pres: float=0.0, maximum: int=10000, store: bool=True, stream: bool=True ):
+			pres: float=0.0, limit: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.client = OpenAI( )
 		self.client.api_key = self.api_key
-		self.model = 'gpt-4o-mini'
+		self.model = 'gpt-4o-mini-2024-07-18'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
 		self.frequency_penalty = freq
 		self.presence_penalty = pres
-		self.max_completion_tokens = maximum
+		self.max_completion_tokens = limit
 		self.store = store
 		self.stream = stream
 		self.modalities = [ 'text', 'audio' ]
@@ -437,9 +441,43 @@ class Chat( GPT ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
-		         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
-		         'o1-2024-12-17', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31',]
+		return [ 'gpt-3.5-turbo-0125',
+				 'gpt-4-0613',
+		         'gpt-4-turbo-2024-04-09',
+		         'gpt-4o-2024-08-06',
+		         'gpt-4o-mini-2024-07-18',
+		         'o3-mini-2025-01-31',
+		         'o4-mini-2025-04-16',
+		         'o4-mini-deep-research-2025-06-26',
+		         'gpt-4.1-2025-04-14',
+		         'gpt-4.1-mini-2025-04-14',
+		         'gpt-4.1-nano-2025-04-14',
+		         'gpt-5-chat-latest',
+		         'gpt-5-mini-2025-08-07',
+		         'gpt-5-2025-08-07',
+		         'gpt-5-nano-2025-08-07',
+		         'gpt-5-codex',
+		         'gpt-image-1',
+		         'gpt-image-1-mini',
+		         'gpt-audio-2025-08-28',
+		         'gpt-audio-mini-2025-10-06',
+		         'computer-use-preview-2025-03-11',
+		         'gpt-4o-mini-search-preview-2025-03-11',
+		         'gpt-4o-search-preview-2025-03-11',
+		         'gpt-4o-mini-audio-preview-2024-12-17',
+		         'gpt-4o-mini-transcribe',
+		         'gpt-4o-mini-tts',
+		         'gpt-4o-transcribe',
+		         'chatgpt-4o-latest',
+		         'codex-mini-latest',
+		         'dall-e-2',
+		         'dall-e-3',
+		         'text-embedding-3-large',
+		         'text-embedding-3-small',
+		         'text-embedding-ada-002',
+		         'tts-1',
+		         'tts-1-hd',
+		         'whisper-1', ]
 	
 	def generate_text( self, prompt: str ) -> str | None:
 		"""
@@ -460,12 +498,10 @@ class Chat( GPT ):
 
         """
 		try:
-			if prompt is None:
-				raise Exception( 'Argument "prompt" cannot be None' )
-			else:
-				self.prompt = prompt
-				self.response = self.client.responses.create( model=self.model, input=self.prompt )
-				return self.response.output_text
+			throw_if( 'prompt', prompt )
+			self.prompt = prompt
+			self.response = self.client.responses.create( model=self.model, input=self.prompt )
+			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -493,13 +529,10 @@ class Chat( GPT ):
 
         """
 		try:
-			if prompt is None:
-				raise Exception( 'Argument "prompt" cannot be None' )
-			else:
-				self.prompt = prompt
-				self.response = self.client.images.generate( model='dall-e-3', prompt=self.prompt,
-					size='1024x1024', quality='standard', n=1 )
-			
+			throw_if( 'prompt', prompt )
+			self.prompt = prompt
+			self.response = self.client.images.generate( model='dall-e-3', prompt=self.prompt,
+				size='1024x1024', quality='standard', n=1 )
 			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
@@ -527,24 +560,21 @@ class Chat( GPT ):
 
         """
 		try:
-			if prompt is None:
-				raise Exception( 'Argument "prompt" cannot be None' )
-			elif url is None:
-				raise Exception( 'Argument "url" cannot be None' )
-			else:
-				self.prompt = prompt
-				self.image_url = url
-				self.input = [
-				{
-						'role': 'user',
-						'content': [
-								{ 'type': 'input_text', 'text': self.prompt },
-								{ 'type': 'input_image', 'image_url': self.image_url },
-						],
-				} ]
-				
-				self.response = self.client.responses.create( model=self.model, input=self.input )
-				return self.response.output_text
+			throw_if( 'prompt', prompt )
+			throw_if( 'url', url )
+			self.prompt = prompt
+			self.image_url = url
+			self.input = [
+			{
+					'role': 'user',
+					'content': [
+							{ 'type': 'input_text', 'text': self.prompt },
+							{ 'type': 'input_image', 'image_url': self.image_url },
+					],
+			} ]
+			
+			self.response = self.client.responses.create( model=self.model, input=self.input )
+			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -572,36 +602,33 @@ class Chat( GPT ):
 
         """
 		try:
-			if prompt is None:
-				raise Exception( 'Argument "prompt" cannot be None' )
-			elif path is None:
-				raise Exception( 'Argument "path" cannot be None' )
-			else:
-				self.file_path = path
-				self.file = self.client.files.create( file=open( path, 'rb' ),
-					purpose='user_data' )
-				self.messages = [
-						{
-								'role': 'user',
-								'content': [
-										{
-												'type': 'file',
-												'file':
-												{
-													'file_id': self.file.id,
-												},
-										},
-										{
-												'type': 'text',
-												'text': 'What is the first dragon in the book?',
-										},
-								],
-						}
-				]
-				
-				self.response = self.client.responses.create( model=self.model,
-					input=self.messages )
-				return self.response.output_text
+			throw_if( 'prompt', prompt )
+			throw_if( 'path', path )
+			self.file_path = path
+			self.file = self.client.files.create( file=open( path, 'rb' ),
+				purpose='user_data' )
+			self.messages = [
+					{
+							'role': 'user',
+							'content': [
+									{
+											'type': 'file',
+											'file':
+											{
+												'file_id': self.file.id,
+											},
+									},
+									{
+											'type': 'text',
+											'text': 'What is the first dragon in the book?',
+									},
+							],
+					}
+			]
+			
+			self.response = self.client.responses.create( model=self.model,
+				input=self.messages )
+			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -627,20 +654,18 @@ class Chat( GPT ):
 
         """
 		try:
-			if prompt is None:
-				raise Exception( 'Argument "prompt" cannot be None' )
-			else:
-				self.web_options = { 'search_recency_days': 30, 'max_search_results': 8 }
-				self.messages = [
-						{
-								'role': 'user',
-								'content': prompt,
-						}
-				]
-				
-				self.response = self.client.responses.create( model=self.model,
-					web_search_options=self.web_options, input=self.messages )
-				return self.response.output_text
+			throw_if( 'prompt', prompt )
+			self.web_options = { 'search_recency_days': 30, 'max_search_results': 8 }
+			self.messages = [
+					{
+							'role': 'user',
+							'content': prompt,
+					}
+			]
+			
+			self.response = self.client.responses.create( model=self.model,
+				web_search_options=self.web_options, input=self.messages )
+			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -667,20 +692,17 @@ class Chat( GPT ):
 
         """
 		try:
-			if prompt is None:
-				raise Exception( 'Argument "prompt" cannot be None' )
-			else:
-				self.tools = [
-				{
-					'text': 'file_search',
-					'vector_store_ids': list( self.vector_stores.values( ) ),
-					'max_num_results': 20,
-				} ]
-				
-				self.response = self.client.responses.create(
-					model=self.model, tools=self.tools, input=prompt
-				)
-				return self.response.output_text
+			throw_if( 'prompt', prompt )
+			self.tools = [
+			{
+				'text': 'file_search',
+				'vector_store_ids': list( self.vector_stores.values( ) ),
+				'max_num_results': 20,
+			} ]
+			
+			self.response = self.client.responses.create( model=self.model, tools=self.tools,
+				input=prompt )
+			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
@@ -1792,8 +1814,9 @@ class Bro( GPT ):
 			self.messages = [ { 'role': 'user', 'content': [
 									{
 											'type': 'file',
-											'file': {
-													'file_id': self.file.id,
+											'file':
+											{
+												'file_id': self.file.id,
 											},
 									},
 									{
@@ -1801,8 +1824,7 @@ class Bro( GPT ):
 											'text': self.input_text,
 									},
 							], } ]
-			self.response = self.client.responses.create( model=self.model,
-				inputs=self.messages )
+			self.response = self.client.responses.create( model=self.model, inputs=self.messages )
 			document_summary = self.reponse.output_text
 			return document_summary
 		except Exception as e:
@@ -1991,13 +2013,40 @@ class Bro( GPT ):
             List[ str ] | None
 
         '''
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty',
-		         'presence_penalty', 'max_completion_tokens', 'system_instructions',
-		         'store', 'stream', 'modalities', 'stops', 'content', 'prompt', 'response',
-		         'completion', 'file', 'path', 'messages', 'image_url',  'respose_format',
-		         'tools', 'vector_store_ids', 'name', 'id', 'description', 'generate_text',
-		         'get_format_options', 'get_model_options', 'reasoning_effort',
-		         'get_effort_options', 'input_text', 'metadata', 'get_data', 'dump', ]
+		return [ 'num',
+		         'temperature',
+		         'top_percent',
+		         'frequency_penalty',
+		         'presence_penalty',
+		         'max_completion_tokens',
+		         'system_instructions',
+		         'store',
+		         'stream',
+		         'modalities',
+		         'stops',
+		         'content',
+		         'prompt',
+		         'response',
+		         'completion',
+		         'file',
+		         'path',
+		         'messages',
+		         'image_url',
+		         'respose_format',
+		         'tools',
+		         'vector_store_ids',
+		         'name',
+		         'id',
+		         'description',
+		         'generate_text',
+		         'get_format_options',
+		         'get_model_options',
+		         'reasoning_effort',
+		         'get_effort_options',
+		         'input_text',
+		         'metadata',
+		         'get_data',
+		         'dump', ]
 
 
 class Embedding( GPT ):

@@ -53,10 +53,15 @@ class Prompt( BaseModel ):
 		Class for the user's location
 
 	'''
-	instruction: Optional[ str ]
+	instructions: Optional[ str ]
 	context: Optional[ str ]
 	output_indicator: Optional[ str ]
 	input_data: Optional[ str ]
+	id: Optional[ str ]
+	version: Optional[ str ]
+	format: Optional[ str ]
+	variables: Optional[ List[ str ] ]
+	question: Optional[ str ]
 
 	class Config:
 		arbitrary_types_allowed = True
@@ -88,7 +93,7 @@ class Text( BaseModel ):
 		A class used to generate text responses.
 
 	'''
-	type: str = 'text'
+	type: Optional[ str ]
 	value: Optional[ str ]
 
 	class Config:
@@ -223,7 +228,7 @@ class Response( BaseModel ):
 	'''
 	id: Optional[ str ]
 	object: Optional[ object ]
-	input: Optional[ str ]
+	input: Optional[ List[ Dict[ str, str ] ] ]
 	model: Optional[ str ]
 	include: Optional[ List[ str ] ]
 	instructions: Optional[ str ]
@@ -236,6 +241,7 @@ class Response( BaseModel ):
 	parallel_tool_calls: Optional[ bool ]
 	tool_choice: Optional[ str ]
 	tools: Optional[ List[ str ] ]
+	temperature: Optional[ float ]
 	top_p: Optional[ int ]
 	truncation: Optional[ str ]
 	text: Optional[ Text ]
