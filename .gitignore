@@ -180,3 +180,4 @@ data/access/budget.accdb
 data/sqlite/budget.db
 !/venv/
 !/stores/sqlite/datamodels/Data.db
+/stores/sqlite/datamodels/Data.db
