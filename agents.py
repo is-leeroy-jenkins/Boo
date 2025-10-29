@@ -934,7 +934,7 @@ class InnovationAnalyst( Agent ):
 			error = ErrorDialog( exception )
 			error.show( )
 
-class NewAnalyst( Agent ):
+class StatisticsAnalyst( Agent ):
 	'''
 
 
@@ -979,7 +979,7 @@ class NewAnalyst( Agent ):
 		self.version = ''
 		self.format = 'text'
 		self.reasoning = { }
-		self.include = [ ]
+		self.include =[ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
