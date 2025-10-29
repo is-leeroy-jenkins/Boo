@@ -505,7 +505,7 @@ class ScheduleXAnalyst( Agent ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'agents'
-			exception.cause = 'A'
+			exception.cause = 'ScheduleXAnalyst'
 			exception.method = 'ask( self, question: str ) -> str | None'
 			error = ErrorDialog( exception )
 			error.show( )
