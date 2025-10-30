@@ -177,7 +177,9 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 stores/access/budget.accdb
-stores/sqlite/budget.db
+stores/sqlite/budget.db/
+stores/sqlite/Locations.db
 !/venv/
 !/stores/sqlite/datamodels/Data.db
 /stores/sqlite/datamodels/Data.db
+/stores/sqlite/Locations.db
