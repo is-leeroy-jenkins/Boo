@@ -8219,10 +8219,10 @@ class DecisionMaker( Agent ):
 		'''
 		try:
 			throw_if( 'question', question )
-			throw_if( 'data', data )
+			throw_if( 'stores', data )
 			self.question = question
 			self.data = data
-			variables = { 'question': self.question, 'data': self.data }
+			variables = { 'question': self.question, 'stores': self.data }
 			meta = { 'id': self.id, 'version': self.version, 'variables': variables }
 			response = self.client.responses.create( model=self.model, prompt=meta, store=self.store,
 				max_output_tokens=self.max_output_tokens, include=self.include, reasoning=self.reasoning )
@@ -9875,6 +9875,487 @@ class PowerQueryAnalyst( Agent ):
 			exception = Error( e )
 			exception.module = 'agents'
 			exception.cause = 'PowerQueryAnalyst'
+			exception.method = 'ask( self, question: str ) -> str | None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+class BookSummarizer( Agent ):
+	'''
+
+
+		Purpose:
+		--------
+
+	'''
+	client: Optional[ OpenAI ]
+	model: Optional[ str ]
+	prompt: Optional[ Prompt ]
+	reasoning: Optional[ Dict[ str, str ] ]
+	text: Optional[ Text ]
+	format: Optional[ str ]
+	max_output_tokens: Optional[ int ]
+	input: Optional[ List ]
+	store: Optional[ bool ]
+	temperature: Optional[ float ]
+	top_p: Optional[ float ]
+	tools: Optional[ List[ Dict[ str, str ] ] ]
+	include: Optional[ List ]
+	question: Optional[ str ]
+	variables: Optional[ List[ str ] ]
+	include: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	vector_store_ids: Optional[ List[ str ] ]
+	file_ids: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	
+	def __init__( self ):
+		'''
+
+			Purpose:
+			-------
+			Contructor for class objects
+
+		'''
+		self.client = OpenAI( )
+		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.model = 'gpt-5-nano-2025-08-07'
+		self.tool_choice = 'auto'
+		self.id = 'pmpt_686559d29d2c81969454aaa5bf1518820c54175869340641'
+		self.version = '3'
+		self.format = 'text'
+		self.reasoning = { 'effort': 'medium' }
+		self.tools = [ ]
+		self.include = [ 'code_interpreter_call.outputs',
+		                 'web_search_call.action.sources' ]
+		self.vector_store_ids = [ ]
+		self.file_ids = [ ]
+	
+	def ask( self, question: str ) -> str | None:
+		'''
+
+			Purpose:
+			-------
+
+			Parameters:
+			-----------
+
+			Returns:
+			---------
+
+		'''
+		try:
+			throw_if( 'question', question )
+			self.question = question
+			variable = { 'question': self.question }
+			meta = { 'id': self.id, 'version': self.version, 'variables': variable }
+			response = self.client.responses.create( model=self.model, prompt=meta, store=self.store,
+				max_output_tokens=self.max_output_tokens, include=self.include, reasoning=self.reasoning,
+			tool_choice = self.tool_choice  )
+			return _response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'agents'
+			exception.cause = ''
+			exception.method = 'ask( self, question: str ) -> str | None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+class AuthorEmulator( Agent ):
+	'''
+
+
+		Purpose:
+		--------
+
+	'''
+	client: Optional[ OpenAI ]
+	model: Optional[ str ]
+	prompt: Optional[ Prompt ]
+	reasoning: Optional[ Dict[ str, str ] ]
+	text: Optional[ Text ]
+	format: Optional[ str ]
+	max_output_tokens: Optional[ int ]
+	input: Optional[ List ]
+	store: Optional[ bool ]
+	temperature: Optional[ float ]
+	top_p: Optional[ float ]
+	tools: Optional[ List[ Dict[ str, str ] ] ]
+	include: Optional[ List ]
+	question: Optional[ str ]
+	variables: Optional[ List[ str ] ]
+	include: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	vector_store_ids: Optional[ List[ str ] ]
+	file_ids: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	
+	def __init__( self ):
+		'''
+
+			Purpose:
+			-------
+			Contructor for class objects
+
+		'''
+		self.client = OpenAI( )
+		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.model = 'gpt-5-nano-2025-08-07'
+		self.tool_choice = 'auto'
+		self.id = 'pmpt_6865598842288195b61fd663cfbcf0930025515c2331ed97'
+		self.version = '3'
+		self.format = 'text'
+		self.reasoning = { 'effort': 'medium' }
+		self.tools = [ ]
+		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.vector_store_ids = [ ]
+		self.file_ids = [ ]
+	
+	def ask( self, question: str ) -> str | None:
+		'''
+
+			Purpose:
+			-------
+
+			Parameters:
+			-----------
+
+			Returns:
+			---------
+
+		'''
+		try:
+			throw_if( 'question', question )
+			self.question = question
+			variable = { 'question': self.question }
+			meta = { 'id': self.id, 'version': self.version, 'variables': variable }
+			response = self.client.responses.create( model=self.model, prompt=meta, store=self.store,
+				max_output_tokens=self.max_output_tokens, include=self.include, reasoning=self.reasoning,
+			tool_choice=self.tool_choice )
+			return _response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'agents'
+			exception.cause = 'AuthorEmulator'
+			exception.method = 'ask( self, question: str ) -> str | None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+class AsciiArtist( Agent ):
+	'''
+
+
+		Purpose:
+		--------
+
+	'''
+	client: Optional[ OpenAI ]
+	model: Optional[ str ]
+	prompt: Optional[ Prompt ]
+	reasoning: Optional[ Dict[ str, str ] ]
+	text: Optional[ Text ]
+	format: Optional[ str ]
+	max_output_tokens: Optional[ int ]
+	input: Optional[ List ]
+	store: Optional[ bool ]
+	temperature: Optional[ float ]
+	top_p: Optional[ float ]
+	tools: Optional[ List[ Dict[ str, str ] ] ]
+	include: Optional[ List ]
+	question: Optional[ str ]
+	variables: Optional[ List[ str ] ]
+	include: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	vector_store_ids: Optional[ List[ str ] ]
+	file_ids: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	
+	def __init__( self ):
+		'''
+
+			Purpose:
+			-------
+			Contructor for class objects
+
+		'''
+		self.client = OpenAI( )
+		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.model = 'gpt-5-nano-2025-08-07'
+		self.tool_choice = 'auto'
+		self.id = 'pmpt_6865590d73d48194acd1f75d7c8961ce0fed37fa3ea81306'
+		self.version = '3'
+		self.format = 'text'
+		self.reasoning = { 'effort': 'medium' }
+		self.tools = [ ]
+		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.vector_store_ids = [ ]
+		self.file_ids = [ ]
+	
+	def ask( self, question: str ) -> str | None:
+		'''
+
+			Purpose:
+			-------
+
+			Parameters:
+			-----------
+
+			Returns:
+			---------
+
+		'''
+		try:
+			throw_if( 'question', question )
+			self.question = question
+			variable = { 'question': self.question }
+			meta = { 'id': self.id, 'version': self.version, 'variables': variable }
+			response = self.client.responses.create( model=self.model, prompt=meta, store=self.store,
+				max_output_tokens=self.max_output_tokens, include=self.include, reasoning=self.reasoning,
+				tool_choice=self.tool_choice )
+			return _response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'agents'
+			exception.cause = 'AsciiArtist'
+			exception.method = 'ask( self, question: str ) -> str | None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+class ArtsyFartsy( Agent ):
+	'''
+
+
+		Purpose:
+		--------
+
+	'''
+	client: Optional[ OpenAI ]
+	model: Optional[ str ]
+	prompt: Optional[ Prompt ]
+	reasoning: Optional[ Dict[ str, str ] ]
+	text: Optional[ Text ]
+	format: Optional[ str ]
+	max_output_tokens: Optional[ int ]
+	input: Optional[ List ]
+	store: Optional[ bool ]
+	temperature: Optional[ float ]
+	top_p: Optional[ float ]
+	tools: Optional[ List[ Dict[ str, str ] ] ]
+	include: Optional[ List ]
+	question: Optional[ str ]
+	variables: Optional[ List[ str ] ]
+	include: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	vector_store_ids: Optional[ List[ str ] ]
+	file_ids: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	
+	def __init__( self ):
+		'''
+
+			Purpose:
+			-------
+			Contructor for class objects
+
+		'''
+		self.client = OpenAI( )
+		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.model = 'gpt-5-nano-2025-08-07'
+		self.tool_choice = 'auto'
+		self.id = 'pmpt_686558c7dda08194a684d49d057a62ce0157d5ff5bfda345'
+		self.version = '3'
+		self.format = 'text'
+		self.reasoning = { 'effort': 'medium' }
+		self.tools = [ ]
+		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.vector_store_ids = [ ]
+		self.file_ids = [ ]
+	
+	def ask( self, question: str ) -> str | None:
+		'''
+
+			Purpose:
+			-------
+
+			Parameters:
+			-----------
+
+			Returns:
+			---------
+
+		'''
+		try:
+			throw_if( 'question', question )
+			self.question = question
+			variable = { 'question': self.question }
+			meta = { 'id': self.id, 'version': self.version, 'variables': variable }
+			response = self.client.responses.create( model=self.model, prompt=meta, store=self.store,
+				max_output_tokens=self.max_output_tokens, include=self.include, reasoning=self.reasoning,
+				tool_choice=self.tool_choice )
+			return _response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'agents'
+			exception.cause = 'ArtsyFartsy'
+			exception.method = 'ask( self, question: str ) -> str | None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+class AdaptiveAnalyst( Agent ):
+	'''
+
+
+		Purpose:
+		--------
+
+	'''
+	client: Optional[ OpenAI ]
+	model: Optional[ str ]
+	prompt: Optional[ Prompt ]
+	reasoning: Optional[ Dict[ str, str ] ]
+	text: Optional[ Text ]
+	format: Optional[ str ]
+	max_output_tokens: Optional[ int ]
+	input: Optional[ List ]
+	store: Optional[ bool ]
+	temperature: Optional[ float ]
+	top_p: Optional[ float ]
+	tools: Optional[ List[ Dict[ str, str ] ] ]
+	include: Optional[ List ]
+	question: Optional[ str ]
+	variables: Optional[ List[ str ] ]
+	include: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	vector_store_ids: Optional[ List[ str ] ]
+	file_ids: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	
+	def __init__( self ):
+		'''
+
+			Purpose:
+			-------
+			Contructor for class objects
+
+		'''
+		self.client = OpenAI( )
+		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.model = 'gpt-5-nano-2025-08-07'
+		self.tool_choice = 'auto'
+		self.id = 'pmpt_6865586fc73c8190aebddd1d4f7b57680ba7c4db40cd45c8'
+		self.version = '5'
+		self.format = 'text'
+		self.reasoning = { 'effort': 'medium' }
+		self.tools = [ ]
+		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.vector_store_ids = [ ]
+		self.file_ids = [ ]
+	
+	def ask( self, question: str ) -> str | None:
+		'''
+
+			Purpose:
+			-------
+
+			Parameters:
+			-----------
+
+			Returns:
+			---------
+
+		'''
+		try:
+			throw_if( 'question', question )
+			self.question = question
+			variable = { 'question': self.question }
+			meta = { 'id': self.id, 'version': self.version, 'variables': variable }
+			response = self.client.responses.create( model=self.model, prompt=meta, store=self.store,
+				max_output_tokens=self.max_output_tokens, include=self.include, reasoning=self.reasoning,
+				tool_choice=self.tool_choice )
+			return _response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'agents'
+			exception.cause = 'AdaptiveAnalyst'
+			exception.method = 'ask( self, question: str ) -> str | None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+class AcademicWriter( Agent ):
+	'''
+
+
+		Purpose:
+		--------
+
+	'''
+	client: Optional[ OpenAI ]
+	model: Optional[ str ]
+	prompt: Optional[ Prompt ]
+	reasoning: Optional[ Dict[ str, str ] ]
+	text: Optional[ Text ]
+	format: Optional[ str ]
+	max_output_tokens: Optional[ int ]
+	input: Optional[ List ]
+	store: Optional[ bool ]
+	temperature: Optional[ float ]
+	top_p: Optional[ float ]
+	tools: Optional[ List[ Dict[ str, str ] ] ]
+	include: Optional[ List ]
+	question: Optional[ str ]
+	variables: Optional[ List[ str ] ]
+	include: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	vector_store_ids: Optional[ List[ str ] ]
+	file_ids: Optional[ List[ str ] ]
+	tool_choice: Optional[ str ]
+	
+	def __init__( self ):
+		'''
+
+			Purpose:
+			-------
+			Contructor for class objects
+
+		'''
+		self.client = OpenAI( )
+		self.client.api_key = os.getenv( 'OPENAI_API_KEY' )
+		self.model = 'gpt-5-nano-2025-08-07'
+		self.tool_choice = 'auto'
+		self.id = 'pmpt_68655623b2e0819099bc136d3c8fbf5b04420f5632d48e2d'
+		self.version = '7'
+		self.format = 'text'
+		self.reasoning = { 'effort': 'medium' }
+		self.tools = [ ]
+		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.vector_store_ids = [ ]
+		self.file_ids = [ ]
+	
+	def ask( self, question: str ) -> str | None:
+		'''
+
+			Purpose:
+			-------
+
+			Parameters:
+			-----------
+
+			Returns:
+			---------
+
+		'''
+		try:
+			throw_if( 'question', question )
+			self.question = question
+			variable = { 'question': self.question }
+			meta = { 'id': self.id, 'version': self.version, 'variables': variable }
+			response = self.client.responses.create( model=self.model, prompt=meta, store=self.store,
+				max_output_tokens=self.max_output_tokens, include=self.include, reasoning=self.reasoning,
+				tool_choice=self.tool_choice )
+			return _response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'agents'
+			exception.cause = 'AcademicWriter'
 			exception.method = 'ask( self, question: str ) -> str | None'
 			error = ErrorDialog( exception )
 			error.show( )

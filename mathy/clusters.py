@@ -65,11 +65,11 @@ class Cluster( ):
 
 	        Purpose:
 	        ---------
-			Fit the clustering model to the data.
+			Fit the clustering model to the stores.
 
 			Parameters:
 			----------
-			X: The input data of shape (n_samples, n_features).
+			X: The input stores of shape (n_samples, n_features).
 
 		"""
 		raise NotImplementedError( )
@@ -79,7 +79,7 @@ class Cluster( ):
 
 	        Purpose:
 	        ---------
-			Predict the cluster labels for the input data.
+			Predict the cluster labels for the input stores.
 
 			Parameters:
 			----------
@@ -119,7 +119,7 @@ class Cluster( ):
 
 			Parameters:
 			----------
-			X: Input data of shape (n_samples, 2).
+			X: Input stores of shape (n_samples, 2).
 
 		"""
 		raise NotImplementedError( )
@@ -130,7 +130,7 @@ class KMeansClustering( Cluster ):
 
 		Purpose:
 		---------
-		The KMeans algorithm clusters data by trying to separate samples in n groups of equal
+		The KMeans algorithm clusters stores by trying to separate samples in n groups of equal
 		variance, minimizing a criterion known as the inertia or within-cluster sum-of-squares
 		(see below). This algorithm requires the number of clusters
 		to be specified. It scales well to large number of samples and has been used across a
@@ -173,7 +173,7 @@ class KMeansClustering( Cluster ):
 
 			Parameters:
 			----------
-			X: The input data.
+			X: The input stores.
 
 		"""
 		try:
@@ -196,7 +196,7 @@ class KMeansClustering( Cluster ):
 
 			Parameters:
 			----------
-			X: The input data.
+			X: The input stores.
 
 			Returns:
 			--------
@@ -223,7 +223,7 @@ class KMeansClustering( Cluster ):
 
 			Parameters:
 			----------
-			X: The input data.
+			X: The input stores.
 			X: np.ndarray
 
 			Returns:
@@ -252,7 +252,7 @@ class KMeansClustering( Cluster ):
 
 			Parameters:
 			----------
-			X: Input data of shape (n_samples, 2).
+			X: Input stores of shape (n_samples, 2).
 
 		"""
 		try:
@@ -311,7 +311,7 @@ class DbscanClustering( Cluster ):
 
 			Purpose:
 			---------
-			Fit the DBSCAN model to the data.
+			Fit the DBSCAN model to the stores.
 
 			Parameters:
 			----------
@@ -470,7 +470,7 @@ class AgglomerativeClusteringModel( Cluster ):
 
 			Purpose:
 			---------
-			Fit Agglomerative model to data.
+			Fit Agglomerative model to stores.
 
 			Parameters:
 			----------
@@ -560,7 +560,7 @@ class AgglomerativeClusteringModel( Cluster ):
 
 			Parameters:
 			----------
-			X: 2D input data.
+			X: 2D input stores.
 			X: np.ndarray
 
 		"""
@@ -767,7 +767,7 @@ class MeanShiftClustering( Cluster ):
 
 			Purpose:
 			---------
-			Fit MeanShift model to the data.
+			Fit MeanShift model to the stores.
 
 			Parameters:
 			----------
@@ -909,7 +909,7 @@ class AffinityPropagationClustering( Cluster ):
 
 			Purpose:
 			---------
-			Fit the model to data.
+			Fit the model to stores.
 
 			Parameters:
 			----------
@@ -1025,8 +1025,8 @@ class BirchClustering( Cluster ):
 
 		Purpose:
 		---------
-		The Birch builds a tree called the Clustering Feature Tree (CFT) for the given data.
-		The data is essentially lossy compressed to a set of Clustering Feature nodes (CF Nodes).
+		The Birch builds a tree called the Clustering Feature Tree (CFT) for the given stores.
+		The stores is essentially lossy compressed to a set of Clustering Feature nodes (CF Nodes).
 		The CF Nodes have a number of subclusters called Clustering Feature subclusters
 		(CF Subclusters) and these CF Subclusters located in the non-terminal
 		CF Nodes can have CF Nodes as children.
@@ -1035,9 +1035,9 @@ class BirchClustering( Cluster ):
 		The branching factor limits the number of subclusters in a node and the threshold limits
 		the distance between the entering sample and the existing subclusters.
 
-		This algorithm can be viewed as an instance or data reduction method, since it reduces the
-		input data to a set of subclusters which are obtained directly from the leaves of the CFT.
-		This reduced data can be further processed by feeding it into a global clusterer.
+		This algorithm can be viewed as an instance or stores reduction method, since it reduces the
+		input stores to a set of subclusters which are obtained directly from the leaves of the CFT.
+		This reduced stores can be further processed by feeding it into a global clusterer.
 		This global clusterer can be set by n_clusters. If n_clusters is set to None,
 		the subclusters from the leaves are directly read off, otherwise a global clustering step
 		labels these subclusters into global clusters (labels) and the samples are

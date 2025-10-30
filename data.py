@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                dbs.py
+      Filename:                data.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="dbs.py" company="Terry D. Eppler">
+  <copyright file="data.py" company="Terry D. Eppler">
 
 	     Boo is a df analysis tool integrating various Generative GPT, GptText-Processing, and
 	     Machine-Learning algorithms for federal analysts.
@@ -38,7 +38,7 @@
 
   </copyright>
   <summary>
-    dbs.py
+    data.py
   </summary>
   ******************************************************************************************
   '''
@@ -110,7 +110,7 @@ class SQLite( ):
 				db_name (str): The name of the database file.
 			
 		"""
-		self.db_path = r'data\sqlite\datamodels\Data.db'
+		self.db_path = r'stores\sqlite\datamodels\Data.db'
 		self.conn = sqlite3.connect( self.db_path )
 		self.cursor = self.conn.cursor( )
 		self.file_path = None
@@ -448,7 +448,7 @@ class Chroma:
 	client: chromadb.Client
 	collection: chromadb.Collection
 	
-	def __init__( self, path: st = './chroma', collection: str = 'embeddings' ) -> None:
+	def __init__( self, path: str='./chroma', collection: str='embeddings' ) -> None:
 		'''
 
 			Purpose:
@@ -567,12 +567,15 @@ class Chroma:
 		'''
 
 			Purpose:
+			-------
 			Deletes all documents from the collection.
 
 			Parameters:
+			----------
 			None
 
 			Returns:
+			--------
 			None
 
 		'''
@@ -590,9 +593,11 @@ class Chroma:
 		'''
 
 			Purpose:
+			---------
 			Saves the current state of the collection to disk.
 
 			Returns:
+			------
 			None
 
 		'''
@@ -638,7 +643,7 @@ class GoogleSearchTool( ):
 		self.client = OpenAI( api_key=self.api_key )
 		self.url = 'https://cse.google.com/cse?cx=' + self.cse_id
 	
-	def search( self, query: str, num: int = 5 ) -> List[ Dict ]:
+	def search( self, query: str, num: int=5 ) -> List[ Dict ]:
 		"""
 
 			Purpose:
@@ -653,12 +658,12 @@ class GoogleSearchTool( ):
 
 		"""
 		self.params = \
-			{
-					'q': query,
-					'key': self.api_key,
-					'cx': self.cse_id,
-					'num': num
-			}
+		{
+			'q': query,
+			'key': self.api_key,
+			'cx': self.cse_id,
+			'num': num
+		}
 		
 		response = requests.get( self.url, params=params )
 		response.raise_for_status( )
@@ -695,7 +700,7 @@ class GoogleSearchTool( ):
 						},
 			}
 	
-	def run_with_openai( self, user_message: str, model: str = 'gpt-4.1' ) -> str | None:
+	def run_with_openai( self, user_message: str, model: str='gpt-4.1' ) -> str | None:
 		"""
 
 			Purpose:

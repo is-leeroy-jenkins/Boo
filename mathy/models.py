@@ -843,9 +843,9 @@ class StochasticDescentClassification( Model ):
 		the gradient of the loss is estimated each sample at a time and the model is updated along
 		the way with a decreasing strength schedule (aka learning rate). SGD allows minibatch
 		(online/out-of-core) learning via the partial_fit method. For best results using the
-		default learning rate schedule, the data should have zero mean and unit variance.
+		default learning rate schedule, the stores should have zero mean and unit variance.
 
-		This implementation works with data represented as dense or sparse arrays of floating point
+		This implementation works with stores represented as dense or sparse arrays of floating point
 		 values for the features. The model it fits can be controlled with the loss parameter;
 		 by default, it fits a linear support vector machine (SVM).
 
@@ -1322,9 +1322,9 @@ class DecisionTreeClassification( Model ):
 		--------
 		Decision Trees (DTs) are a non-parametric supervised learning method used for
 		classification. The goal is to create a model that predicts the value of a
-		target variable by learning simple decision rules inferred from the data features.
+		target variable by learning simple decision rules inferred from the stores features.
 
-		A tree can be seen as a piecewise constant approximation. Decision trees learn from data
+		A tree can be seen as a piecewise constant approximation. Decision trees learn from stores
 		to approximate a sine curve with a set of if-then-else decision rules.
 		The deeper the tree, the more complex the decision rules and the fitter the model.
 
@@ -1802,7 +1802,7 @@ class GradientBoostingClassification( Model ):
 		only a single regression tree is induced.
 
 		The features are always randomly permuted at each split. Therefore, the best found split
-		may vary, even with the same training data and max_features=n_features, if the improvement
+		may vary, even with the same training stores and max_features=n_features, if the improvement
 		of the criterion is identical for several splits enumerated during the search of the best
 		split. To obtain a deterministic behaviour during fitting, rando has to be fixed.
 
@@ -3099,7 +3099,7 @@ class LinearRegressor( Model ):
 		linear dependence, the design matrix becomes close to singular and as a result,
 		the least-squares estimate becomes highly sensitive to random errors in the observed target,
 		producing a large variance. This situation of multicollinearity can arise, for example,
-		when data are collected without an experimental design.
+		when stores are collected without an experimental design.
 
 	"""
 
@@ -4495,7 +4495,7 @@ class StochasticDescentRegression( Model ):
 		because of the regularizer, the update is truncated to 0.0 to allow for learning sparse
 		models and achieve online feature selection.
 
-		This implementation works with data represented as dense numpy arrays of floating point
+		This implementation works with stores represented as dense numpy arrays of floating point
 		values for the features.
 	"""
 
@@ -4940,9 +4940,9 @@ class DecisionTreeRegression( Model ):
 		--------
 		Decision Trees (DTs) are a non-parametric supervised learning method used for
 		regression. The goal is to create a model that predicts the value of a
-		target variable by learning simple decision rules inferred from the data features.
+		target variable by learning simple decision rules inferred from the stores features.
 
-		A tree can be seen as a piecewise constant approximation. Decision trees learn from data
+		A tree can be seen as a piecewise constant approximation. Decision trees learn from stores
 		to approximate a sine curve with a set of if-then-else decision rules.
 		The deeper the tree, the more complex the decision rules and the fitter the model.
 

@@ -164,14 +164,14 @@ class GptHeader:
 
 	    Purpose:
 	    --------
-	    Encapsulates HTTP header data for OpenAI API requests.
+	    Encapsulates HTTP header stores for OpenAI API requests.
 	
 	    Attributes:
 	    -----------
 	    content_type : str
 	    api_key      : str | None
 	    authorization: str
-	    data         : dict[str, str]
+	    stores         : dict[str, str]
 
     '''
 	
@@ -187,7 +187,7 @@ class GptHeader:
 		self.data = { 'Content-Type': self.content_type, 'Authorization': self.authorization, }
 	
 	def __dir__( self ) -> list[ str ] | None:
-		return [ 'content_type', 'api_key', 'authorization', 'data' ]
+		return [ 'content_type', 'api_key', 'authorization', 'stores' ]
 
 class GptModels:
 	'''

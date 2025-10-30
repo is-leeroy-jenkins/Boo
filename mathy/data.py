@@ -248,7 +248,7 @@ class Dataset( Metric ):
 		Members:
 		------------
 		dataframe: pd.DataFrame
-		data: np.ndarray
+		stores: np.ndarray
 		rows: int
 		columns: int
 		target: str

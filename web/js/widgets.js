@@ -44,7 +44,7 @@
     const Widgets = function( )
     {
         /**
-         * A helper for getting data safely with a default value.
+         * A helper for getting stores safely with a default value.
          * @public
          * @param {*} v - the original value.
          * @param {*} defaultVal - the default value to return when the original one is undefined.
