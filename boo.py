@@ -2308,10 +2308,25 @@ class Embedding( GPT ):
                 List[ str ] | None
 
         '''
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
-		         'max_completion_tokens', 'store', 'stream', 'modalities', 'stops',
-		         'create_ada_embedding', 'api_key', 'client', 'small_model', 'count_tokens',
-		         'create_large_embedding', 'path', 'create_small_embedding', 'get_model_options', ]
+		return [ 'num',
+		         'temperature',
+		         'top_percent',
+		         'frequency_penalty',
+		         'presence_penalty',
+		         'max_completion_tokens',
+		         'store',
+		         'stream',
+		         'modalities',
+		         'stops',
+		         'create_ada_embedding',
+		         'api_key',
+		         'client',
+		         'small_model',
+		         'count_tokens',
+		         'create_large_embedding',
+		         'path',
+		         'create_small_embedding',
+		         'get_model_options', ]
 
 class TTS( GPT ):
 	"""
@@ -2385,7 +2400,9 @@ class TTS( GPT ):
 	        Methods that returns a list of tts model names
 
         '''
-		return [ 'gpt-4o-mini-tts', 'tts-1', 'tts-1-hd' ]
+		return [ 'gpt-4o-mini-tts',
+		         'tts-1',
+		         'tts-1-hd' ]
 	
 	def get_voice_options( self ):
 		'''
@@ -2395,8 +2412,16 @@ class TTS( GPT ):
 	        Method that returns a list of voice names
 
         '''
-		return [ 'alloy', 'ash', 'ballad', 'coral', 'echo', 'fable', 'onyx', 'nova', 'sage',
-				'shiver', ]
+		return [ 'alloy',
+		         'ash',
+		         'ballad',
+		         'coral',
+		         'echo',
+		         'fable',
+		         'onyx',
+		         'nova',
+		         'sage',
+		         'shiver', ]
 	
 	def get_format_options( self ):
 		'''
@@ -2406,7 +2431,12 @@ class TTS( GPT ):
 	        Method that returns a list of image formats
 
         '''
-		return [ 'mp3', 'wav', 'aac', 'flac', 'opus', 'pcm' ]
+		return [ 'mp3',
+		         'wav',
+		         'aac',
+		         'flac',
+		         'opus',
+		         'pcm' ]
 	
 	def save_audio( self, text: str, filepath: str ) -> str:
 		"""
@@ -2500,13 +2530,43 @@ class TTS( GPT ):
 	        List[ str ] | None
 
         '''
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
-				'max_completion_tokens', 'system_instructions', 'store', 'stream',
-				'modalities', 'stops', 'content', 'prompt', 'response', 'completion',
-				'file', 'path', 'messages', 'image_url', 'response_format', 'tools',
-				'vector_store_ids', 'name', 'id', 'description', 'generate_text',
-				'get_format_options', 'get_model_options', 'reasoning_effort', 'get_effort_options',
-				'input_text', 'metadata', 'get_files', 'get_data', 'dump', 'translate', 'transcribe' ]
+		return [ 'num',
+		         'temperature',
+		         'top_percent',
+		         'frequency_penalty',
+		         'presence_penalty',
+		         'max_completion_tokens',
+		         'system_instructions',
+		         'store',
+		         'stream',
+		         'modalities',
+		         'stops',
+		         'content',
+		         'prompt',
+		         'response',
+		         'completion',
+		         'file',
+		         'path',
+		         'messages',
+		         'image_url',
+		         'response_format',
+		         'tools',
+		         'vector_store_ids',
+		         'name',
+		         'id',
+		         'description',
+		         'generate_text',
+		         'get_format_options',
+		         'get_model_options',
+		         'reasoning_effort',
+		         'get_effort_options',
+		         'input_text',
+		         'metadata',
+		         'get_files',
+		         'get_data',
+		         'dump',
+		         'translate',
+		         'transcribe' ]
 
 class Transcription( GPT ):
 	"""
@@ -2573,7 +2633,9 @@ class Transcription( GPT ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [ 'whisper-1', 'gpt-4o-mini-transcribe', 'gpt-4o-transcribe' ]
+		return [ 'whisper-1',
+		         'gpt-4o-mini-transcribe',
+		         'gpt-4o-transcribe' ]
 	
 	def transcribe( self, path: str ) -> str:
 		"""
@@ -2645,10 +2707,25 @@ class Transcription( GPT ):
 	        List[ str ] | None
 
         '''
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
-				'max_completion_tokens', 'store', 'stream', 'modalities', 'stops', 'prompt',
-				'response', 'audio_file', 'messages', 'response_format', 'api_key', 'client',
-				'input_text', 'transcript', ]
+		return [ 'num',
+		         'temperature',
+		         'top_percent',
+		         'frequency_penalty',
+		         'presence_penalty',
+		         'max_completion_tokens',
+		         'store',
+		         'stream',
+		         'modalities',
+		         'stops',
+		         'prompt',
+		         'response',
+		         'audio_file',
+		         'messages',
+		         'response_format',
+		         'api_key',
+		         'client',
+		         'input_text',
+		         'transcript', ]
 
 class Translation( GPT ):
 	"""
@@ -2712,8 +2789,11 @@ class Translation( GPT ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [ 'whisper-1', 'text-davinci-003', 'gpt-4-0613', 'gpt-4-0314',
-				'gpt-4-turbo-2024-04-09', ]
+		return [ 'whisper-1',
+		         'text-davinci-003',
+		         'gpt-4-0613',
+		         'gpt-4-0314',
+		         'gpt-4-turbo-2024-04-09', ]
 	
 	def get_voice_options( self ):
 		'''
@@ -2723,8 +2803,16 @@ class Translation( GPT ):
 	        Method that returns a list of voice names
 
         '''
-		return [ 'alloy', 'ash', 'ballad', 'coral', 'echo', 'fable', 'onyx', 'nova', 'sage',
-				'shiver', ]
+		return [ 'alloy',
+		         'ash',
+		         'ballad',
+		         'coral',
+		         'echo',
+		         'fable',
+		         'onyx',
+		         'nova',
+		         'sage',
+		         'shiver', ]
 	
 	def create( self, text: str, path: str ) -> str:
 		"""
@@ -2828,11 +2916,29 @@ class Translation( GPT ):
 	        List[ str ] | None
 
         '''
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
-				'max_completion_tokens', 'store', 'stream', 'modalities', 'stops', 'prompt',
-				'response', 'completion', 'audio_path', 'path', 'messages', 'response_format',
-				'tools', 'api_key', 'client', 'small_model', 'create_small_embedding',
-				'get_model_options', ]
+		return [ 'num',
+		         'temperature',
+		         'top_percent',
+		         'frequency_penalty',
+		         'presence_penalty',
+		         'max_completion_tokens',
+		         'store',
+		         'stream',
+		         'modalities',
+		         'stops',
+		         'prompt',
+		         'response',
+		         'completion',
+		         'audio_path',
+		         'path',
+		         'messages',
+		         'response_format',
+		         'tools',
+		         'api_key',
+		         'client',
+		         'small_model',
+		         'create_small_embedding',
+		         'get_model_options', ]
 
 class LargeImage( GPT ):
 	"""
@@ -2955,8 +3061,11 @@ class LargeImage( GPT ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [ 'dall-e-3', 'gpt-4-0613', 'gpt-4-0314',
-		         'gpt-4o-mini', 'gpt-4o-mini-2024-07-18' ]
+		return [ 'dall-e-3',
+		         'gpt-4-0613',
+		         'gpt-4-0314',
+		         'gpt-4o-mini',
+		         'gpt-4o-mini-2024-07-18' ]
 	
 	def get_format_options( self ) -> List[ str ]:
 		'''
@@ -2966,7 +3075,11 @@ class LargeImage( GPT ):
 	        Method that returns a  list of format options
 
         '''
-		return [ '.png', '.mpeg', '.jpeg', '.webp', '.gif' ]
+		return [ '.png',
+		         '.mpeg',
+		         '.jpeg',
+		         '.webp',
+		         '.gif' ]
 	
 	def get_detail_options( self ) -> List[ str ]:
 		'''
@@ -2976,7 +3089,9 @@ class LargeImage( GPT ):
 	        Method that returns a  list of reasoning effort options
 
         '''
-		return [ 'auto', 'low', 'high' ]
+		return [ 'auto',
+		         'low',
+		         'high' ]
 	
 	def get_size_options( self ) -> List[ str ]:
 		'''
@@ -2986,7 +3101,9 @@ class LargeImage( GPT ):
 	        Method that returns a  list of sizes
 
         '''
-		return [ '1024x1024', '1024x1792', '1792x1024' ]
+		return [ '1024x1024',
+		         '1024x1792',
+		         '1792x1024' ]
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -3004,10 +3121,27 @@ class LargeImage( GPT ):
 	        List[ str ] | None
 
         '''
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
-				'max_completion_tokens', 'store', 'stream', 'modalities', 'stops', 'input_text',
-				'image_url', 'path', 'size', 'api_key', 'client', 'small_model', 'generate',
-				'get_detail_options', 'get_format_options', 'get_size_options', ]
+		return [ 'num',
+		         'temperature',
+		         'top_percent',
+		         'frequency_penalty',
+		         'presence_penalty',
+		         'max_completion_tokens',
+		         'store',
+		         'stream',
+		         'modalities',
+		         'stops',
+		         'input_text',
+		         'image_url',
+		         'path',
+		         'size',
+		         'api_key',
+		         'client',
+		         'small_model',
+		         'generate',
+		         'get_detail_options',
+		         'get_format_options',
+		         'get_size_options', ]
 
 class Image( GPT ):
 	"""
@@ -3238,8 +3372,30 @@ class Image( GPT ):
 	        List[ str ] | None
 
         '''
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
-				'max_completion_tokens', 'store', 'stream', 'modalities', 'stops', 'api_key',
-				'client', 'small_model', 'path', 'analyze', 'input_text', 'image_url', 'edit',
-				'size', 'generate', 'quality', 'detail', 'small_model', 'get_model_options',
-				'get_detail_options', 'get_format_options', 'get_size_options', ]
+		return [ 'num',
+		         'temperature',
+		         'top_percent',
+		         'frequency_penalty',
+		         'presence_penalty',
+		         'max_completion_tokens',
+		         'store',
+		         'stream',
+		         'modalities',
+		         'stops',
+		         'api_key',
+		         'client',
+		         'small_model',
+		         'path',
+		         'analyze',
+		         'input_text',
+		         'image_url',
+		         'edit',
+		         'size',
+		         'generate',
+		         'quality',
+		         'detail',
+		         'small_model',
+		         'get_model_options',
+		         'get_detail_options',
+		         'get_format_options',
+		         'get_size_options', ]
