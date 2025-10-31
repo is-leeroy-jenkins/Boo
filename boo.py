@@ -1474,15 +1474,13 @@ class Bubba( GPT ):
 				self.prompt = prompt
 				self.tools = [
 						{
-								'type': 'file_search',
-								'vector_store_ids': self.vector_store_ids,
-								'max_num_results': 20,
-						}
-				]
+							'type': 'file_search',
+							'vector_store_ids': self.vector_store_ids,
+							'max_num_results': 20,
+						} ]
 				
-				self.response = self.client.responses.create(
-					model=self.model, tools=self.tools, input=self.prompt
-				)
+				self.response = self.client.responses.create( model=self.model, tools=self.tools,
+					input=self.prompt )
 				file_results = self.response.output_text
 				return file_results
 		except Exception as e:
@@ -1501,10 +1499,10 @@ class Bubba( GPT ):
 	
 	def get_files( self ) -> List[ str ]:
 		"""
-
-        Purpose:
-        ---------
-        Return a combined list of file items from configured vector stores.
+	
+	        Purpose:
+	        ---------
+	        Return a combined list of file items from configured vector stores.
 
         """
 		try:
@@ -1525,7 +1523,7 @@ class Bubba( GPT ):
 	def get_format_options( self ) -> List[ str ] | None:
 		'''
 
-        Method that returns a list of formatting options
+            Method that returns a list of formatting options
 
         '''
 		return [ 'auto', 'text', 'json' ]
@@ -1560,7 +1558,7 @@ class Bubba( GPT ):
 	def get_effort_options( self ) -> List[ str ] | None:
 		'''
 
-        Method that returns a list of available models
+            Method that returns a list of available models
 
         '''
 		return [ 'auto', 'low', 'high' ]
@@ -1568,7 +1566,7 @@ class Bubba( GPT ):
 	def get_data( self ) -> Dict[ str, Any ] | None:
 		'''
 
-        Returns: dict[ str ] of members
+            Returns: dict[ str ] of members
 
         '''
 		return \
@@ -1584,7 +1582,11 @@ class Bubba( GPT ):
 	
 	def dump( self ) -> str | None:
 		'''
-        Returns: dict of members
+		
+            Returns:
+            ---------
+            dict of members
+            
         '''
 		new = '\r\n'
 		return ( f'num = {self.number}' + new
@@ -1787,8 +1789,8 @@ class Bro( GPT ):
 	
 	        Parameters
 	        ----------
-	        prompt: str
-	        url: str
+	        prompt (str) - user input text
+	        url: str - file path to image
 	
 	        Returns
 	        -------
@@ -1960,22 +1962,20 @@ class Bro( GPT ):
 	        Method that returns a list of available models
 
         '''
-		return [
-				'gpt-4-0613',
-				'gpt-4-0314',
-				'gpt-4-turbo-2024-04-09',
-				'gpt-4o-2024-08-06',
-				'gpt-4o-2024-11-20',
-				'gpt-4o-2024-05-13',
-				'gpt-4o-mini-2024-07-18',
-				'o1-2024-12-17',
-				'o1-mini-2024-09-12',
-				'o3-mini-2025-01-31',
-				'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-df-analysis-2025-21-05:BZetxEQa',
-				'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx',
-				'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY',
-				'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx',
-		]
+		return [ 'gpt-4-0613',
+		         'gpt-4-0314',
+				 'gpt-4-turbo-2024-04-09',
+				 'gpt-4o-2024-08-06',
+				 'gpt-4o-2024-11-20',
+				 'gpt-4o-2024-05-13',
+				 'gpt-4o-mini-2024-07-18',
+				 'o1-2024-12-17',
+				 'o1-mini-2024-09-12',
+				 'o3-mini-2025-01-31',
+				 'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-df-analysis-2025-21-05:BZetxEQa',
+				 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx',
+				 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY',
+				 'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned-05052025:BTryvkMx', ]
 	
 	def get_effort_options( self ) -> List[ str ]:
 		'''
@@ -1985,7 +1985,9 @@ class Bro( GPT ):
 	        Method that returns a list of available models
 
         '''
-		return [ 'auto', 'low', 'high' ]
+		return [ 'auto',
+		         'low',
+		         'high' ]
 	
 	def get_data( self ) -> dict:
 		'''

@@ -138,14 +138,12 @@ class ApportionmentAnalyst( Agent ):
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
 		self.vector_store_ids = [ 'vs_68a34aaff93481918c3b3fef8c4e8fea' ]
-		self.file_ids =  [
-          'file-XfTDeZNv7M1toGMsZcnP24',
-          'file-8wQZAAZpdHAjVrUdE45TiL',
-          'file-N5QJtZHnU6vFdHSszwvAZn',
-          'file-AukoekscMxBsxfgyoXLb5z',
-          'file-7oRCvxc3W4VNaXhTQpsNFq',
-          'file-BKUENFQD67naMN3kx6PrHe'
-        ]
+		self.file_ids = [ 'file-XfTDeZNv7M1toGMsZcnP24',
+		                  'file-8wQZAAZpdHAjVrUdE45TiL',
+		                  'file-N5QJtZHnU6vFdHSszwvAZn',
+		                  'file-AukoekscMxBsxfgyoXLb5z',
+		                  'file-7oRCvxc3W4VNaXhTQpsNFq',
+		                  'file-BKUENFQD67naMN3kx6PrHe' ]
 	
 	def ask( self, question: str ) -> str | None:
 		'''
@@ -226,7 +224,8 @@ class DataAnalyst( Agent ):
 		self.version = '6'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
-		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.include = [ 'reasoning.encrypted_content',
+		                 'web_search_call.action.sources' ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]

@@ -90,11 +90,24 @@ class Path( ):
 		Returns a get_list[ str ] of member names.
 
 		'''
-		return [ 'path', 'name', 'current_directory', 'extension',
-		         'parent_directory', 'path_separator', 'drive',
-		         'drive_separator', 'extension_separator', 'internal_path',
-		         'exists', 'is_folder', 'is_file', 'is_absolute',
-		         'is_relative', 'verify', 'join', 'copy_tree' ]
+		return [ 'path',
+		         'name',
+		         'current_directory',
+		         'extension',
+		         'parent_directory',
+		         'path_separator',
+		         'drive',
+		         'drive_separator',
+		         'extension_separator',
+		         'internal_path',
+		         'exists',
+		         'is_folder',
+		         'is_file',
+		         'is_absolute',
+		         'is_relative',
+		         'verify',
+		         'join',
+		         'copy_tree' ]
 	
 	
 	def exists( self ) -> bool | None:
