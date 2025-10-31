@@ -738,12 +738,40 @@ class Chat( GPT ):
 		}
 	
 	def __dir__( self ) -> List[ str ] | None:
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
-		         'max_completion_tokens', 'system_instructions', 'store', 'stream', 'modalities',
-		         'stops', 'content', 'prompt', 'response', 'completion', 'file', 'path', 'messages',
-		         'image_url', 'response_format', 'tools', 'vector_store_ids', 'name', 'id',
-		         'description', 'get_format_options', 'get_model_options', 'reasoning_effort',
-		         'input_text', 'metadata', 'get_files', 'get_data', 'dump', 'translate',
+		return [ 'num',
+		         'temperature',
+		         'top_percent',
+		         'frequency_penalty',
+		         'presence_penalty',
+		         'max_completion_tokens',
+		         'system_instructions',
+		         'store',
+		         'stream',
+		         'modalities',
+		         'stops',
+		         'content',
+		         'prompt',
+		         'response',
+		         'completion',
+		         'file',
+		         'path',
+		         'messages',
+		         'image_url',
+		         'response_format',
+		         'tools',
+		         'vector_store_ids',
+		         'name',
+		         'id',
+		         'description',
+		         'get_format_options',
+		         'get_model_options',
+		         'reasoning_effort',
+		         'input_text',
+		         'metadata',
+		         'get_files',
+		         'get_data',
+		         'dump',
+		         'translate',
 		         'transcribe', ]
 	
 	def dump( self ) -> str:
@@ -825,10 +853,10 @@ class Assistant( GPT ):
 		                          'vs_67a777291d548191b9fa42956a7f6cb9', ]
 		self.assistants = \
 		{
-				'Boo': 'asst_SlgDBxbXW2mrld9qXErMqbHn',
-				'Bro': 'asst_2Yu2yfINGD5en4e0aUXAKxyu',
-				'Bubba': 'asst_2IpP4nE85lXLKbY6Zewwqtqe',
-				'FNG': 'asst_FQXRnDVgvnBxslZQit8hIbXY',
+			'Boo': 'asst_SlgDBxbXW2mrld9qXErMqbHn',
+			'Bro': 'asst_2Yu2yfINGD5en4e0aUXAKxyu',
+			'Bubba': 'asst_2IpP4nE85lXLKbY6Zewwqtqe',
+			'FNG': 'asst_FQXRnDVgvnBxslZQit8hIbXY',
 		}
 	
 	def generate_text( self, prompt: str ) -> str | None:
@@ -1127,9 +1155,16 @@ class Assistant( GPT ):
 	        Method that returns a list of available models
 
         '''
-		return [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09', 'gpt-4o-2024-08-06',
-		         'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
-		         'o1-2024-12-17', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31', ]
+		return [ 'gpt-4-0613',
+		         'gpt-4-0314',
+		         'gpt-4-turbo-2024-04-09',
+		         'gpt-4o-2024-08-06',
+		         'gpt-4o-2024-11-20',
+		         'gpt-4o-2024-05-13',
+		         'gpt-4o-mini-2024-07-18',
+		         'o1-2024-12-17',
+		         'o1-mini-2024-09-12',
+		         'o3-mini-2025-01-31', ]
 	
 	def get_effort_options( self ) -> List[ str ] | None:
 		'''
@@ -1142,12 +1177,40 @@ class Assistant( GPT ):
 		return [ 'auto', 'low', 'high' ]
 	
 	def __dir__( self ) -> List[ str ] | None:
-		return [ 'num', 'temperature', 'top_percent', 'frequency_penalty', 'presence_penalty',
-		         'max_completion_tokens', 'system_instructions', 'store', 'stream', 'modalities',
-		         'stops', 'content', 'prompt', 'response', 'completion', 'file', 'path', 'messages',
-		         'image_url', 'response_format', 'tools', 'vector_store_ids', 'name', 'id',
-		         'description', 'get_format_options', 'get_model_options', 'reasoning_effort',
-		         'input_text', 'metadata', 'get_files', 'get_data', 'dump', 'translate',
+		return [ 'num',
+		         'temperature',
+		         'top_percent',
+		         'frequency_penalty',
+		         'presence_penalty',
+		         'max_completion_tokens',
+		         'system_instructions',
+		         'store',
+		         'stream',
+		         'modalities',
+		         'stops',
+		         'content',
+		         'prompt',
+		         'response',
+		         'completion',
+		         'file',
+		         'path',
+		         'messages',
+		         'image_url',
+		         'response_format',
+		         'tools',
+		         'vector_store_ids',
+		         'name',
+		         'id',
+		         'description',
+		         'get_format_options',
+		         'get_model_options',
+		         'reasoning_effort',
+		         'input_text',
+		         'metadata',
+		         'get_files',
+		         'get_data',
+		         'dump',
+		         'translate',
 		         'transcribe', ]
 	
 	def dump( self ) -> str:
