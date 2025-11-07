@@ -1597,8 +1597,7 @@ class Bubba( GPT ):
             Method that returns a list of available models
 
         '''
-		return [
-				'gpt-4-0613',
+		return [ 'gpt-4-0613',
 				'gpt-4-0314',
 				'gpt-4-turbo-2024-04-09',
 				'gpt-4o-2024-08-06',
