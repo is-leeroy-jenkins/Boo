@@ -745,12 +745,16 @@ class ProcurementAnalyst( Agent ):
 
 			Purpose:
 			-------
+			Method for sending a request to an agent.
 
 			Parameters:
 			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
 			---------
+			A string containing the response output content
 
 		'''
 		try:
