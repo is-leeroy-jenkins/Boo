@@ -198,49 +198,51 @@ class GptModels:
 
     '''
 	
-	text_generations: Optional[ List[ str ] ]
-	image_generations: Optional[ List[ str ] ]
-	chat_completions: Optional[ List[ str ] ]
+	text_generation: Optional[ List[ str ] ]
+	image_generation: Optional[ List[ str ] ]
+	chat_completion: Optional[ List[ str ] ]
 	responses: Optional[ List[ str ] ]
 	image_edits: Optional[ List[ str ] ]
-	speech_generations: Optional[ List[ str ] ]
-	translations: Optional[ List[ str ] ]
-	transcriptions: Optional[ List[ str ] ]
+	speech_generation: Optional[ List[ str ] ]
+	translation: Optional[ List[ str ] ]
+	transcription: Optional[ List[ str ] ]
 	image_variations: Optional[ List[ str ] ]
 	reasoning: Optional[ List[ str ] ]
-	finetunings: Optional[ List[ str ] ]
+	finetuning: Optional[ List[ str ] ]
 	vector_stores: Optional[ List[ str ] ]
 	embeddings: Optional[ List[ str ] ]
 	files: Optional[ List[ str ] ]
 	uploads: Optional[ List[ str ] ]
 	
 	def __init__( self ):
-		self.text_generations = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
+		self.text_generation = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                          'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20',
 		                          'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
-		                          'gpt-4.1-mini-2025-04-14', 'gpt-4.1-nano-2025-04-14', ]
-		self.image_generations = [ 'dall-e-2', 'dall-e-3', 'gpt-image-1' ]
+		                          'gpt-4.1-mini-2025-04-14', 'gpt-4.1-nano-2025-04-14',
+		                          'gpt-5-nano-2025-08-07', 'gpt-5-mini-2025-08-07',
+		                          'gpt-5-mini-2025-08-07', 'gpt-5-codex', ]
+		self.image_generation = [ 'dall-e-2', 'dall-e-3', 'gpt-image-1' ]
 		self.image_edits = [ 'dall-e-2', 'gpt-image-1' ]
 		self.image_variations = [ 'dall-e-2', ]
-		self.chat_completions = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
+		self.chat_completion = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                          'gpt-4o-2024-08-06', 'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13',
 		                          'gpt-4o-mini-2024-07-18', 'gpt-4.1-mini-2025-04-14',
 		                          'gpt-4.1-nano-2025-04-14', 'o1-2024-12-17', 'o3-mini-2025-01-31',
 		                          'gpt-4o-search-preview-2025-03-11',
 		                          'gpt-4o-mini-search-preview-2025-03-11', ]
-		self.speech_generations = [ 'tts-1', 'tts-1-hd', 'gpt-4o-mini-tts',
+		self.speech_generation = [ 'tts-1', 'tts-1-hd', 'gpt-4o-mini-tts',
 		                            'gpt-4o-audio-preview-2024-12-17',
 		                            'gpt-4o-audio-preview-2024-10-01',
 		                            'gpt-4o-mini-audio-preview-2024-12-17', ]
-		self.transcriptions = [ 'whisper-1', 'gpt-4o-mini-transcribe', 'gpt-4o-transcribe' ]
-		self.translations = [ 'whisper-1', 'text-davinci-003', 'gpt-4-0613',
+		self.transcription = [ 'whisper-1', 'gpt-4o-mini-transcribe', 'gpt-4o-transcribe' ]
+		self.translation = [ 'whisper-1', 'text-davinci-003', 'gpt-4-0613',
 		                      'gpt-4-0314', 'gpt-4-turbo-2024-04-09', ]
 		self.responses = [ 'gpt-4o-mini-search-preview-2025-03-11',
 		                   'gpt-4o-search-preview-2025-03-11',
 		                   'computer-use-preview-2025-03-11', ]
 		self.reasoning = [ 'o1-2024-12-17', 'o3-2025-04-16',
 		                   'o3-mini-2025-01-31', 'o4-mini-2025-04-16', ]
-		self.finetunings = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18', 'gpt-4-0613',
+		self.finetuning = [ 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18', 'gpt-4-0613',
 		                     'gpt-3.5-turbo-0125', 'gpt-3.5-turbo-1106', 'gpt-3.5-turbo-0613', ]
 		self.embeddings = [ 'text-embedding-3-small', 'text-embedding-3-large',
 		                    'text-embedding-ada-002', ]
@@ -286,17 +288,17 @@ class GptModels:
 	        List[ str ] | None
 
         '''
-		return [ 'text_generations',
-		         'image_generations',
-		         'chat_completions',
-		         'speech_generations',
+		return [ 'text_generation',
+		         'image_generation',
+		         'chat_completion',
+		         'speech_generation',
 		         'responses',
 		         'reasoning',
-		         'translations',
+		         'translation',
 		         'assistants',
-		         'transcriptions',
-		         'finetunings',
-		         'vectors',
+		         'transcription',
+		         'finetuning',
+		         'embeddings',
 		         'uploads',
 		         'files',
 		         'vector_stores',
@@ -314,16 +316,16 @@ class GptModels:
         '''
 		return \
 			{
-					'text_generations': self.text_generations,
-					'image_generations': self.image_generations,
-					'chat_completions': self.chat_completions,
+					'text_generation': self.text_generation,
+					'image_generation': self.image_generation,
+					'chat_completion': self.chat_completion,
 					'responses': self.responses,
 					'image_edits': self.image_edits,
-					'speech_generations': self.speech_generations,
-					'translations': self.translations,
+					'speech_generation': self.speech_generation,
+					'translation': self.translation,
 					'image_variations': self.image_variations,
 					'reasoning': self.reasoning,
-					'finetunings': self.finetunings,
+					'finetuning': self.finetuning,
 					'embeddings': self.embeddings,
 					'uploads': self.uploads,
 					'files': self.files,

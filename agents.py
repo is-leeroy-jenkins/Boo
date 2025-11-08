@@ -97,7 +97,6 @@ class Agent(  ):
 		self.temperature = 0.8
 		self.top_p = 0.9
 
-
 class ApportionmentAnalyst( Agent ):
 	'''
 
@@ -182,7 +181,6 @@ class ApportionmentAnalyst( Agent ):
 			exception.method = 'ask( self, question: str ) -> str | None'
 			error = ErrorDialog( exception )
 			error.show( )
-
 
 class DataAnalyst( Agent ):
 	'''
@@ -300,6 +298,7 @@ class PythonAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ 'vs_6900bd53b400819182cca77ee4fbc143' ]
@@ -383,6 +382,7 @@ class AppropriationsAnalyst( Agent ):
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ 'vs_712r5W5833G6aLxIYIbuvVcK' ]
 		self.file_ids = [ 'file-B4bKRt3Sfg1opRcNL1DRdk',
           'file-21MLeKkao1x3J4u19sYofq',
@@ -476,6 +476,8 @@ class ScheduleXAnalyst( Agent ):
 		self.include =[ 'code_interpreter_call.outputs',
 		                'reasoning.encrypted_content',
 		                'web_search_call.action.sources' ]
+
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -557,6 +559,7 @@ class BudgetGandolf( Agent ):
 		self.include =[ 'code_interpreter_call.outputs',
 		                'reasoning.encrypted_content',
 		                'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ 'file-XfTDeZNv7M1toGMsZcnP24',
           'file-8wQZAAZpdHAjVrUdE45TiL',
@@ -647,6 +650,7 @@ class OutlookAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -726,6 +730,8 @@ class ProcurementAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'web_search_call.action.sources' ]
+		self.input = [ ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ 'vs_712r5W5833G6aLxIYIbuvVcK' ]
@@ -808,6 +814,7 @@ class WhatIfAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -892,6 +899,7 @@ class InnovationAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -970,6 +978,7 @@ class StatisticsAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { }
 		self.include =[ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -1049,6 +1058,7 @@ class PbiExpert( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -1130,6 +1140,7 @@ class ExcelNinja( Agent ):
 		self.format = 'text'
 		self.reasoning = {  }
 		self.include =[ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -1211,6 +1222,7 @@ class ResearchAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -1291,6 +1303,7 @@ class BrainStormer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -1362,6 +1375,7 @@ class PbiAnalyst( Agent ):
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -1436,6 +1450,7 @@ class AutomationAnalyst( Agent ):
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -1511,6 +1526,7 @@ class AgendaMaker( Agent ):
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -1590,6 +1606,7 @@ class ExcelAnalyst( Agent ):
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -1664,6 +1681,7 @@ class FinancialAdvisor( Agent ):
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -1736,6 +1754,7 @@ class SpeechWriter( Agent ):
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -1808,6 +1827,7 @@ class DashboardAnalyst( Agent ):
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -1879,6 +1899,7 @@ class WealthAnalyst( Agent ):
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -1950,6 +1971,7 @@ class RandomWriter( Agent ):
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs',  'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -2022,6 +2044,7 @@ class ExploratoryDataAnalyst( Agent ):
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -2182,6 +2205,7 @@ class EmailAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -2266,6 +2290,7 @@ class ResearchEvaluator( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -2350,6 +2375,7 @@ class ExecutiveAssistant( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -2432,6 +2458,7 @@ class EvaluationExpert( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -2516,6 +2543,7 @@ class ExpertProgrammer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -2596,6 +2624,7 @@ class FeatureExtractor( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -2676,6 +2705,7 @@ class FinancialAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -2756,6 +2786,7 @@ class FinancialPlanner( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -2836,6 +2867,7 @@ class FormBuilder( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -2918,6 +2950,7 @@ class LegalAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -3005,6 +3038,7 @@ class PromptEngineer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -3089,6 +3123,7 @@ class ProjectArchitect( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -3169,6 +3204,7 @@ class ProjectPlanner( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -3252,6 +3288,7 @@ class TrainingWheels( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -3335,6 +3372,7 @@ class RedTeamAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -3417,6 +3455,7 @@ class SentimentAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -3498,6 +3537,7 @@ class TrainingPlanner( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -3580,6 +3620,7 @@ class WebSearchOptimizer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -3668,6 +3709,7 @@ class BudgetAnalyst( Agent ):
 		self.include = [ 'code_interpreter_call.outputs',
 		                 'reasoning.encrypted_content',
 		                 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ 'file-EQSpQdb6a4tr2koPSLY9tX',
           'file-R514TVxo99RDas5yaf5KYa',
@@ -3760,6 +3802,7 @@ class YoutubeSummarizer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -3842,6 +3885,7 @@ class YoutubeScribe( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -3925,6 +3969,7 @@ class WritingEditor( Agent ):
 				'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs',
 		                 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -4013,6 +4058,7 @@ class WebDesigner( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -4095,6 +4141,7 @@ class Guardrails( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -4178,6 +4225,7 @@ class TrainingProgramDesigner( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -4257,6 +4305,7 @@ class TrainingContentDesigner( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -4336,6 +4385,7 @@ class TopicResearcher( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -4415,6 +4465,7 @@ class TechSupportAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -4495,6 +4546,7 @@ class TaskPlanner( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -4583,6 +4635,7 @@ class TeachingAssistant( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -4663,6 +4716,7 @@ class SustainabilityPlanner( Agent ):
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs',
 		                 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -4766,6 +4820,7 @@ class StructuredProblemSolver( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -4847,6 +4902,7 @@ class StrategicThinker( Agent ):
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',
 		                 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -4929,6 +4985,7 @@ class SqlAnalyst( Agent ):
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',
 		                 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -5011,6 +5068,7 @@ class SearchOptimizer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -5099,6 +5157,7 @@ class SearchOptimizedWriter( Agent ):
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',
 		                 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -5180,6 +5239,7 @@ class RootCauseAnalyzer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -5260,6 +5320,7 @@ class RevenueProjector( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -5339,6 +5400,7 @@ class ResumeWriter( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -5423,6 +5485,7 @@ class ResumeBuilder( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',  'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -5515,6 +5578,7 @@ class ResultsCreator( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -5600,6 +5664,7 @@ class RequirementsGenerator( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',  'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -5692,6 +5757,7 @@ class ResearchExpert( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -5772,6 +5838,7 @@ class ReasoningAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -5853,6 +5920,7 @@ class ProofReader( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -5933,6 +6001,7 @@ class QuickProblemSolver( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -6013,6 +6082,7 @@ class PowerPointAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',  'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -6093,6 +6163,7 @@ class PortraitGenerator( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -6173,6 +6244,7 @@ class PersonalAssistant( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -6255,6 +6327,7 @@ class PdfParser( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -6343,6 +6416,7 @@ class NicheResearcher( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -6435,6 +6509,7 @@ class NewsLetterWriter( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -6524,6 +6599,7 @@ class MultiProfessor( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -6604,6 +6680,7 @@ class MeetingSummarizer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -6687,6 +6764,7 @@ class MeetingOptimizer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -6776,6 +6854,7 @@ class MathyMagician( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -6861,6 +6940,7 @@ class MarketResearcher( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -6958,6 +7038,7 @@ class MarketPlanner( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -7044,6 +7125,7 @@ class MarketForecaster( Agent ):
 		self.format = 'text'
 		self.reasoning = {'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content','web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -7134,6 +7216,7 @@ class ManagementConsultant( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -7214,6 +7297,7 @@ class KeywordGenerator( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -7294,6 +7378,7 @@ class JackOfAllTrades( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -7378,6 +7463,7 @@ class InterviewCoach( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -7466,6 +7552,7 @@ class InvestmentAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -7546,6 +7633,7 @@ class EducationalWriter( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -7630,6 +7718,7 @@ class HowToBuilder( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -7714,6 +7803,7 @@ class EssayWriter( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -7795,6 +7885,7 @@ class EmailAssistant( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -7875,6 +7966,7 @@ class DocumentSummarizer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -7956,6 +8048,7 @@ class DocumentInterrogator( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -8038,6 +8131,7 @@ class DependencyIndentifier( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -8199,6 +8293,7 @@ class DecisionMaker( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -8281,6 +8376,7 @@ class DataScientist( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -8361,6 +8457,7 @@ class DatasetAnalyzer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -8441,6 +8538,7 @@ class DataPlumber( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -8521,6 +8619,7 @@ class DataFarmer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -8681,6 +8780,7 @@ class DataCleaner( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -8761,6 +8861,7 @@ class DataBro( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -8841,6 +8942,7 @@ class DatabaseSpecialist( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -8921,6 +9023,7 @@ class CriticalThinker( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -9001,6 +9104,7 @@ class CriticalReasoningAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -9086,6 +9190,7 @@ class CourseCreator( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -9180,6 +9285,7 @@ class CompanyResearcher( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',  'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -9260,6 +9366,7 @@ class CognitiveProfiler( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',  'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -9340,6 +9447,7 @@ class CodeReviewer( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -9420,6 +9528,7 @@ class ChecklistCreator( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -9501,6 +9610,7 @@ class ChainOfDensity( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -9587,6 +9697,7 @@ class BusinessResearcher( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -9675,6 +9786,7 @@ class BusinessPlanner( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -9758,6 +9870,7 @@ class BusinessAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -9844,6 +9957,7 @@ class PowerQueryAnalyst( Agent ):
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',  'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.tools = [ ]
 		self.file_ids = [ ]
 		self.vector_store_ids = [ ]
@@ -9926,6 +10040,7 @@ class BookSummarizer( Agent ):
 		self.tools = [ ]
 		self.include = [ 'code_interpreter_call.outputs',
 		                 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -10006,6 +10121,7 @@ class AuthorEmulator( Agent ):
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -10086,6 +10202,7 @@ class AsciiArtist( Agent ):
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -10166,6 +10283,7 @@ class ArtsyFartsy( Agent ):
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -10246,6 +10364,7 @@ class AdaptiveAnalyst( Agent ):
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	
@@ -10326,6 +10445,7 @@ class AcademicWriter( Agent ):
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.input = [ ]
 		self.vector_store_ids = [ ]
 		self.file_ids = [ ]
 	

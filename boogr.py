@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="boogr.py" company="Terry D. Eppler">
 
-	     Boo is a df analysis tool integrating GenAI, GptText Processing, and Machine-Learning
+	     Boo is a dtat analysis tool integrating GenAI, GptText Processing, and Machine-Learning
 	     algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
@@ -1106,20 +1106,20 @@ class MessageDialog( Dark ):
 			_btnsz = (10, 1)
 			_layout = [ [ sg.Text( size=_txtsz ) ],
 			            [ sg.Text( size=_txtsz ) ],
-			            [ sg.Text( size=(5, 1) ),
+			            [ sg.Text( size=( 5, 1 ) ),
 			              sg.Text( self.text,
-				              font=('Roboto', 11),
+				              font=( 'Roboto', 11 ),
 				              enable_events=True,
 				              key='-TEXT-',
 				              text_color='#69B1EF',
-				              size=(80, 1) ) ],
+				              size=( 80, 1 ) ) ],
 			            [ sg.Text( size=_txtsz ) ],
 			            [ sg.Text( size=_txtsz ) ],
 			            [ sg.Text( size=_txtsz ) ],
-			            [ sg.Text( size=(5, 1) ), sg.Ok( size=_btnsz ),
-			              sg.Text( size=(15, 1) ), sg.Cancel( size=_btnsz ) ] ]
+			            [ sg.Text( size=( 5, 1 ) ), sg.Ok( size=_btnsz ),
+			              sg.Text( size=( 15, 1 ) ), sg.Cancel( size=_btnsz ) ] ]
 			
-			_window = sg.Window( r'  Booger', _layout,
+			_window = sg.Window( r'  Boo', _layout,
 				icon=self.icon_path,
 				font=self.theme_font,
 				size=self.form_size )
@@ -1147,14 +1147,13 @@ class ErrorDialog( Dark ):
         a single, optional argument 'error' of scaler GptError
 
     '''
-	
 	# Fields
-	error: Optional[ Exception ] = None
-	heading: Optional[ str ] = None
-	module: Optional[ str ] = None
-	info: Optional[ str ] = None
-	cause: Optional[ str ] = None
-	method: Optional[ str ] = None
+	error: Optional[ Exception ]
+	heading: Optional[ str ]
+	module: Optional[ str ]
+	info: Optional[ str ]
+	cause: Optional[ str ]
+	method: Optional[ str ]
 	
 	def __init__( self, error: Error ):
 		super( ).__init__( )
@@ -1173,7 +1172,7 @@ class ErrorDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'/resources/ico/error.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -1203,7 +1202,7 @@ class ErrorDialog( Dark ):
 			str | None
 
 		'''
-		if isinstance( self.info, str ):
+		if self.info is not None:
 			return self.info
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -1222,36 +1221,57 @@ class ErrorDialog( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'progressbar_color',
-		         'info', 'cause', 'method', 'error', 'heading',
-		         'module', 'scaler', 'message' 'show' ]
+		return [ 'size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'progressbar_color',
+		         'resizeable',
+		         'force_toplevel',
+		         'keep_on_top',
+		         'info',
+		         'cause',
+		         'method',
+		         'error',
+		         'heading',
+		         'module',
+		         'scaler',
+		         'message',
+		         'show' ]
 	
 	def show( self ) -> object:
 		'''
 
             Purpose:
             --------
-            
+            Displays the Error Window
 
             Parameters:
             ----------
-            
+            Void
 
             Returns:
             ---------
-            
+            sg.Window
 
 		'''
 		_msg = self.heading if isinstance( self.heading, str ) else None
 		_info = f'Module:\t{self.module}\r\nClass:\t{self.cause}\r\n' \
 		        f'Method:\t{self.method}\r\n \r\n{self.info}'
 		_red = '#F70202'
-		_font = ('Roboto', 10)
+		_font = ('Roboto', 11)
 		_padsz = (3, 3)
 		_layout = [ [ sg.Text( ) ],
 		            [ sg.Text( f'{_msg}', size=(100, 1), key='-MSG-', text_color=_red,
@@ -1262,10 +1282,10 @@ class ErrorDialog( Dark ):
 		            [ sg.Text( size=(20, 1) ), sg.Cancel( size=(15, 1), key='-CANCEL-' ),
 		              sg.Text( size=(10, 1) ), sg.Ok( size=(15, 1), key='-OK-' ) ] ]
 		
-		_window = sg.Window( r' Booger', _layout,
+		_window = sg.Window( r' Boo', _layout,
 			icon=self.icon_path,
 			font=self.theme_font,
-			size=self.form_size )
+			size=self.form_size, resizable=True, force_toplevel=True, keep_on_top=True )
 		
 		while True:
 			_event, _values = _window.read( )
