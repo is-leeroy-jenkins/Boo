@@ -297,7 +297,7 @@ class Dark( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'/resources/ico/boo.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		self.form_size = ( 550, 300 )
@@ -367,7 +367,7 @@ class FileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/file_browse.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\file_browse.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -527,7 +527,7 @@ class FolderDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/folder_browse.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\folder_browse.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -672,7 +672,7 @@ class SaveFileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/save.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\save.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		self.file_name = None
@@ -808,16 +808,16 @@ class GoogleDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/button/google.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\google.ico'
 		self.theme_font = ( 'Roboto', 12 )
 		self.scrollbar_color = '#755600'
 		self.results = [ ]
 		self.querytext = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'\resources\theme' )
 		self.form_size = ( 500, 300 )
-		self.image = r'C:\Users\terry\source\repos\Boo\resources/ico/button/google.ico'
+		self.image = r'C:\Users\terry\source\repos\Boo\resources\ico\google.ico'
 	
 	def __str__( self ) -> str | None:
 		'''
@@ -1251,12 +1251,12 @@ class ErrorDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/error.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\error.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'\resources\theme' )
 		self.form_size = (500, 300)
 		self.error = error
 		self.heading = error.heading
@@ -5398,13 +5398,13 @@ class FileBrowser( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\boo.ico'
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = (400, 200)
+		sg.user_settings_save( 'Boo', r'\resources\theme' )
+		self.form_size = (300, 300)
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -5450,7 +5450,7 @@ class FileBrowser( ):
 			size=(50, 1), key='-FILENAME-' ), sg.FileBrowse( ), sg.B( 'Clear History' ) ],
 		           [ sg.Button( 'Ok', bind_return_key=True ), sg.Button( 'Cancel' ) ] ]
 		
-		window = sg.Window( 'Browser GptFile System', layout )
+		window = sg.Window( 'Browser GptFile System', layout, icon=self.icon_path )
 		while True:
 			event, values = window.read( )
 			
