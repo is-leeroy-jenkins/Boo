@@ -44,21 +44,24 @@
   '''
 from __future__ import annotations
 
+from boogr import Error, ErrorDialog
+from chromadb import Settings
+import fitz
 import os
 import re
 import json
+import numpy as np
 import pandas as pd
 import re
-import fitz
 import string
 import spacy
 import openpyxl
 from openai import OpenAI
-from boogr import Error, ErrorDialog
 from pathlib import Path
+import requests
+from sqlite3 import Connection, Cursor
 import tiktoken
-import sqlite3
-from typing import Any, List, Tuple, Optional
+from typing import Any, List, Tuple, Optional, Dict
 
 def throw_if( name: str, value: object ):
 	"""
@@ -126,11 +129,28 @@ class SQLite( ):
 		self.tables = [ ]
 	
 	def __dir__( self ):
-		return [ 'db_path', 'conn', 'cursor', 'path', 'where',
-		         'pairs', 'sql', 'file_name', 'table_name', 'placeholders',
-		         'columns', 'params', 'column_names', 'tables',
-		         'close', 'import_excel', 'delete', 'update',
-		         'insert', 'create_table', 'fetch_one', 'fetch_all' ]
+		return [ 'db_path',
+		         'conn',
+		         'cursor',
+		         'path',
+		         'where',
+		         'pairs',
+		         'sql',
+		         'file_name',
+		         'table_name',
+		         'placeholders',
+		         'columns',
+		         'params',
+		         'column_names',
+		         'tables',
+		         'close',
+		         'import_excel',
+		         'delete',
+		         'update',
+		         'insert',
+		         'create_table',
+		         'fetch_one',
+		         'fetch_all' ]
 	
 	def create( self ) -> None:
 		"""
@@ -157,7 +177,7 @@ class SQLite( ):
 			self.conn.commit( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'dbs'
+			exception.module = 'data'
 			exception.cause = 'SQLite'
 			exception.method = ''
 			error = ErrorDialog( exception )
@@ -179,7 +199,7 @@ class SQLite( ):
 			self.conn.commit( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'dbs'
+			exception.module = 'data'
 			exception.cause = 'SQLite'
 			exception.method = 'create_table( self, sql: str ) -> None'
 			error = ErrorDialog( exception )
@@ -192,7 +212,7 @@ class SQLite( ):
 			--------
 			Inserts a new record into a df.
 	
-			Args:
+			Parameter:
 			--------
 			table (str): The name of the df.
 			columns (List[str]): Column names.
@@ -210,7 +230,7 @@ class SQLite( ):
 			self.conn.commit( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'dbs'
+			exception.module = 'data'
 			exception.cause = 'SQLite'
 			exception.method = ('insert( self, df: str, columns: List[ str ], '
 			                    'target_values: Tuple[ Any, ... ] ) -> None')
@@ -221,14 +241,17 @@ class SQLite( ):
 		"""
 	
 			Purpose:
-				Batch inserts multiple chunks and their embeddings into the database.
+			--------
+			Batch inserts multiple chunks and their embeddings into the database.
 	
 			Parameters:
-				source_file (str): Name or path of the source document.
-				chunks (List[str]): List of cleaned text chunks.
-				vectors (np.ndarray): Matrix of embedding vectors.
+			--------
+			source_file (str): Name or path of the source document.
+			chunks (List[str]): List of cleaned text chunks.
+			vectors (np.ndarray): Matrix of embedding vectors.
 	
 			Returns:
+			--------
 				None
 	
 		"""
@@ -243,9 +266,9 @@ class SQLite( ):
 			self.conn.commit( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'sketchy'
-			exception.cause = ''
-			exception.method = ''
+			exception.module = 'data'
+			exception.cause = 'SQLite'
+			exception.method = 'insert_many'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -256,13 +279,13 @@ class SQLite( ):
 			--------
 			Retrieves all rows from a df.
 	
-			Args:
+			Parameters:
 			--------
-				table (str): The name of the df.
+			table (str): The name of the df.
 			
 			Returns:
 			--------
-				List[Tuple]: List of rows.
+			List[Tuple]: List of rows.
 			
 		"""
 		try:
@@ -271,7 +294,7 @@ class SQLite( ):
 			return self.cursor.fetchall( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'dbs'
+			exception.module = 'data'
 			exception.cause = 'SQLite'
 			exception.method = 'fetch_all( self, df: str ) -> List[ Tuple ]'
 			error = ErrorDialog( exception )
@@ -284,15 +307,15 @@ class SQLite( ):
 			--------
 			Retrieves a single row matching a WHERE clause.
 	
-			Args:
+			Parameters:
 			--------
-				table (str): Table name.
-				where (str): WHERE clause (excluding 'WHERE').
-				params (Tuple): Parameters for the clause.
+			table (str): Table name.
+			where (str): WHERE clause (excluding 'WHERE').
+			params (Tuple): Parameters for the clause.
 			
 			Returns:
 			--------
-				Optional[Tuple]: The fetched row or None.
+			Optional[Tuple]: The fetched row or None.
 			
 		"""
 		try:
@@ -306,7 +329,7 @@ class SQLite( ):
 			return self.cursor.fetchone( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'dbs'
+			exception.module = 'data'
 			exception.cause = 'SQLite'
 			exception.method = (
 					'fetch_one( self, df: str, where: str, params: Tuple[ Any, ... ] ) -> '
@@ -321,7 +344,7 @@ class SQLite( ):
 			--------
 			Updates rows in a df.
 	
-			Args:
+			Parameters:
 			--------
 			table (str): Table name.
 			pairs (str): SET clause with placeholders.
@@ -342,7 +365,7 @@ class SQLite( ):
 			self.conn.commit( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'dbs'
+			exception.module = 'data'
 			exception.cause = 'SQLite'
 			exception.method = (
 					'update( self, df: str, pairs: str, where: str, params: Tuple[ Any, '
@@ -357,11 +380,11 @@ class SQLite( ):
 			--------
 			Deletes row matching the given WHERE clause.
 	
-			Args:
+			Parameters:
 			--------
-				table (str): Table name.
-				where (str): WHERE clause (excluding 'WHERE').
-				params (Tuple): Parameters for clause.
+			table (str): Table name.
+			where (str): WHERE clause (excluding 'WHERE').
+			params (Tuple): Parameters for clause.
 				
 		"""
 		try:
@@ -376,7 +399,7 @@ class SQLite( ):
 			self.conn.commit( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'dbs'
+			exception.module = 'data'
 			exception.cause = 'SQLite'
 			exception.method = 'delete( self, df: str, where: str, params: Tuple[ Any] )->None'
 			error = ErrorDialog( exception )
@@ -390,7 +413,7 @@ class SQLite( ):
 			Reads all worksheets from an Excel file into pandas DataFrames and
 			stores each as a df in the SQLite database.
 		
-			Args:
+			Parameters:
 			--------
 			path (str): Path to the Excel workbook.
 			
@@ -405,7 +428,7 @@ class SQLite( ):
 				_df.to_sql( _sheet, self.conn, if_exists='replace', index=False )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'dbs'
+			exception.module = 'data'
 			exception.cause = 'SQLite'
 			exception.method = 'import_excel( self, path: str ) -> None'
 			error = ErrorDialog( exception )
@@ -423,7 +446,7 @@ class SQLite( ):
 			self.conn.close( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'dbs'
+			exception.module = 'data'
 			exception.cause = 'SQLite'
 			exception.method = 'close( self ) -> None'
 			error = ErrorDialog( exception )
@@ -433,14 +456,17 @@ class Chroma:
 	'''
 
 		Purpose:
+		_______
 		Provides persistent storage and retrieval of sentence-level embeddings using ChromaDB.
 		Supports adding documents, semantic querying, deletion by ID, and disk persistence.
 
 		Parameters:
+		__________
 		persist_path (str):  Filesystem path for storing ChromaDB collections.
 		collection_name (str):  Logical name of the vector store collection.
 
 		Attributes:
+		__________
 		client (chromadb.Client): Instantiated Chroma client.
 		collection (chromadb.Collection): Vector collection used for insert and query.
 
@@ -452,18 +478,20 @@ class Chroma:
 		'''
 
 			Purpose:
+			__________
 			Initializes a persistent Chroma vector database collection.
 
 			Parameters:
+			___________
 			persist_path (str): Directory to persist collection to disk.
 			collection_name (str): Identifier for the Chroma collection.
 
 			Returns:
+			_______
 			None
 
 		'''
-		self.client = chromadb.Client(
-			Settings( persist_directory=path, anonymized_telemetry=False ) )
+		self.client = chromadb.Client( Settings( persist_directory=path, anonymized_telemetry=False ) )
 		self.collection = self.client.get_or_create_collection( name=collection )
 	
 	def add( self, ids: List[ str ], texts: List[ str ], embeddings: List[ List[ float ] ],
@@ -471,15 +499,18 @@ class Chroma:
 		'''
 
 			Purpose:
+			________
 			Adds documents, embeddings, and optional metadata to the vector store.
 
 			Parameters:
+			___________
 			ids (List[str]): Unique identifiers for each record.
 			texts (List[str]): Corresponding document strings.
 			embeddings (List[List[float]]): Vector representations of documents.
 			metadatas (Optional[List[dict]]): Optional metadata for filtering or tagging.
 
 			Returns:
+			________
 			None
 
 		'''
@@ -488,8 +519,8 @@ class Chroma:
 				metadatas=metadatas )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'sketchy'
-			exception.cause = ''
+			exception.module = 'data'
+			exception.cause = 'Chroma'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -498,14 +529,17 @@ class Chroma:
 		'''
 
 			Purpose:
+			________
 			Performs similarity-based vector search using provided queries.
 
 			Parameters:
+			___________
 			query_texts (List[str]): List of queries to run.
 			n_results (int): Number of top matches to return.
 			where (Optional[dict]): Optional metadata filter to apply.
 
 			Returns:
+			________
 			List[str]: Most relevant documents based on vector similarity.
 
 		'''
@@ -514,9 +548,9 @@ class Chroma:
 			return result.get( 'documents', [ ] )[ 0 ]
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'sketchy'
-			exception.cause = ''
-			exception.method = ''
+			exception.module = 'data'
+			exception.cause = 'Chroma'
+			exception.method = 'query'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -524,12 +558,15 @@ class Chroma:
 		'''
 
 			Purpose:
+			_________
 			Deletes one or more records from the collection by document ID.
 
 			Parameters:
+			___________
 			ids (List[str]): List of unique document IDs to delete.
 
 			Returns:
+			________
 			None
 
 		'''
@@ -537,7 +574,7 @@ class Chroma:
 			self.collection.delete( ids=ids )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'sketchy'
+			exception.module = 'data'
 			exception.cause = ''
 			exception.method = ''
 			error = ErrorDialog( exception )
@@ -547,9 +584,11 @@ class Chroma:
 		'''
 
 			Purpose:
+			________
 			Returns the total number of records in the collection.
 
 			Returns:
+			________
 			int: Row count of stored vectors.
 
 		'''
@@ -557,9 +596,9 @@ class Chroma:
 			return self.collection.count( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'sketchy'
-			exception.cause = ''
-			exception.method = ''
+			exception.module = 'data'
+			exception.cause = 'Chroma'
+			exception.method = 'count'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -583,9 +622,9 @@ class Chroma:
 			self.collection.delete( where={ } )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'sketchy'
-			exception.cause = ''
-			exception.method = ''
+			exception.module = 'data'
+			exception.cause = 'Chroma'
+			exception.method = 'clear'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -605,9 +644,9 @@ class Chroma:
 			self.client.persist( )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'sketchy'
-			exception.cause = ''
-			exception.method = ''
+			exception.module = 'data'
+			exception.cause = 'Chroma'
+			exception.method = 'persist'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -665,7 +704,7 @@ class GoogleSearchTool( ):
 			'num': num
 		}
 		
-		response = requests.get( self.url, params=params )
+		response = requests.get( self.url, params=self.params )
 		response.raise_for_status( )
 		results = response.json( )
 		return [ { 'title': item[ 'title' ], 'link': item[ 'link' ], 'snippet': item[ 'snippet' ] }
@@ -682,25 +721,25 @@ class GoogleSearchTool( ):
 
 		"""
 		return \
+		{
+			'name': 'google_search',
+			'description': 'Search Google Custom Search Engine and return top results.',
+			'parameters':
 			{
-					'name': 'google_search',
-					'description': 'Search Google Custom Search Engine and return top results.',
-					'parameters':
+				'type': 'object',
+				'properties':
+				{
+						'query':
 						{
-								'type': 'object',
-								'properties':
-									{
-											'query':
-												{
-														'type': 'string',
-														'description': 'Search query string'
-												}
-									},
-								'required': [ 'query' ],
-						},
-			}
+							'type': 'string',
+							'description': 'Search query string'
+						}
+				},
+				'required': [ 'query' ],
+			},
+		}
 	
-	def run_with_openai( self, user_message: str, model: str='gpt-4.1' ) -> str | None:
+	def run_with_openai( self, user_message: str, model: str='gpt-5-nana' ) -> str | None:
 		"""
 
 			Purpose:

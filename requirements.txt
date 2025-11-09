@@ -1,6 +1,7 @@
 beautifulsoup4
 crawl4ai
 camelot-py
+chromadb
 dash
 dash-core-components
 dash-html-components

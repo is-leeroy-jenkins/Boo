@@ -84,8 +84,8 @@ class Error( Exception ):
     '''
 	error: Optional[ Exception ]
 	
-	def __init__( self, error: Exception, heading: str = None, cause: str = None,
-	              method: str = None, module: str = None ):
+	def __init__( self, error: Exception, heading: str=None, cause: str=None,
+	              method: str=None, module: str=None ):
 		super( ).__init__( )
 		self.error = error
 		self.heading = heading
@@ -131,9 +131,14 @@ class Error( Exception ):
 			List[ str ] | None
 
 		'''
-		return [ 'message', 'cause', 'error',
-		         'method', 'module', 'scaler',
-		         'stack_trace', 'info' ]
+		return [ 'message',
+		         'cause',
+		         'error',
+		         'method',
+		         'module',
+		         'scaler',
+		         'stack_trace',
+		         'info' ]
 
 class ButtonIcon( ):
 	'''
@@ -187,7 +192,9 @@ class ButtonIcon( ):
 			List[ str ] | None
 
 		'''
-		return [ 'button', 'name', 'file_path' ]
+		return [ 'button',
+		         'name',
+		         'file_path' ]
 
 class TitleIcon( ):
 	'''
@@ -242,7 +249,9 @@ class TitleIcon( ):
 			List[ str ] | None
 
 		'''
-		return [ 'folder', 'name', 'authority_filepath' ]
+		return [ 'folder',
+		         'name',
+		         'authority_filepath' ]
 
 class Dark( ):
 	'''
@@ -289,9 +298,9 @@ class Dark( ):
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
 		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
-		self.form_size = (400, 200)
+		self.form_size = ( 550, 300 )
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'/resources/theme' )
@@ -312,11 +321,20 @@ class Dark( ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
+		return [ 'form_size',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
 		         'scrollbar_color' ]
 
 class FileDialog( Dark ):
@@ -349,13 +367,13 @@ class FileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'/resources/ico/file_browse.ico'
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = (500, 240)
+		self.form_size = ( 550, 300 )
 		self.selected_item = None
 		self.message = 'Grab File'
 		self.extension = extension
@@ -403,14 +421,36 @@ class FileDialog( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'original', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'original', 'selected_item', 'show',
-		         'message', 'extension', 'excel', 'csv', 'pdf', 'sql',
-		         'pages', 'access', 'sqlite', 'sqlserver' ]
+		return [ 'form_size',
+		         'settings_path',
+		         'original',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'original',
+		         'selected_item',
+		         'show',
+		         'message',
+		         'extension',
+		         'excel',
+		         'csv',
+		         'pdf',
+		         'sql',
+		         'pages',
+		         'access',
+		         'sqlite',
+		         'sqlserver' ]
 	
 	def show( self ) -> None:
 		'''
@@ -430,21 +470,19 @@ class FileDialog( Dark ):
 		'''
 		try:
 			_layout = [ [ sg.Text( ) ],
-			            [ sg.Text( self.message, font=('Roboto', 11) ) ],
+			            [ sg.Text( self.message, font=( 'Roboto', 12 ) ) ],
 			            [ sg.Text( ) ],
-			            [ sg.Input( key='-PATH-' ), sg.FileBrowse( size=(15, 1) ) ],
+			            [ sg.Input( key='-PATH-' ), sg.FileBrowse( size=( 15, 1 ) ) ],
 			            [ sg.Text( ) ],
 			            [ sg.Text( ) ],
-			            [ sg.OK( size=(8, 1), ), sg.Cancel( size=(10, 1) ) ] ]
+			            [ sg.OK( size=( 8, 1 ), ), sg.Cancel( size=( 10, 1 ) ) ] ]
 			
-			_window = sg.Window( ' Booger', _layout,
-				font=self.theme_font,
-				size=self.form_size,
-				icon=self.icon_path )
+			_window = sg.Window( 'Boo', _layout, font=self.theme_font,
+				size=self.form_size, icon=self.icon_path )
 			
 			while True:
 				_event, _values = _window.read( )
-				if _event in (sg.WIN_CLOSED, sg.WIN_X_EVENT, 'Cancel'):
+				if _event in ( sg.WIN_CLOSED, sg.WIN_X_EVENT, 'Cancel' ):
 					break
 				elif _event == 'OK':
 					self.selected_item = _values[ '-PATH-' ]
@@ -489,13 +527,13 @@ class FolderDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'/resources/ico/folder_browse.ico'
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = (500, 250)
+		self.form_size = ( 550, 300 )
 		self.selected_item = None
 	
 	def __str__( self ) -> str | None:
@@ -533,12 +571,26 @@ class FolderDialog( Dark ):
 			str | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'original', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'original', 'selected_item', 'show' ]
+		return [ 'form_size',
+		         'settings_path',
+		         'original',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'original',
+		         'selected_item',
+		         'show' ]
 	
 	def show( self ) -> None:
 		'''
@@ -620,14 +672,14 @@ class SaveFileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'/resources/ico/save.ico'
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		self.file_name = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = (400, 250)
+		self.form_size = ( 550, 300 )
 		self.original = path
 	
 	def __str__( self ) -> str | None:
@@ -665,12 +717,26 @@ class SaveFileDialog( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'original', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'original', 'file_name', 'show' ]
+		return [ 'form_size',
+		         'settings_path',
+		         'original',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'original',
+		         'file_name',
+		         'show' ]
 	
 	def show( self ) -> None:
 		'''
@@ -691,7 +757,7 @@ class SaveFileDialog( Dark ):
 		try:
 			_username = os.environ.get( 'USERNAME' )
 			_filename = sg.popup_get_file( 'Select Location / Enter File Name',
-				title='  Boo',
+				title=' Boo',
 				font=self.theme_font,
 				icon=self.icon_path,
 				save_as=True )
@@ -742,16 +808,16 @@ class GoogleDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'/resources/ico/button/google.ico'
+		self.theme_font = ( 'Roboto', 12 )
 		self.scrollbar_color = '#755600'
 		self.results = [ ]
 		self.querytext = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = (500, 235)
-		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\app\web\google.png'
+		self.form_size = ( 500, 300 )
+		self.image = r'C:\Users\terry\source\repos\Boo\resources/ico/button/google.ico'
 	
 	def __str__( self ) -> str | None:
 		'''
@@ -818,10 +884,10 @@ class GoogleDialog( Dark ):
 			              sg.Input( key='-QUERY-', size=(40, 2) ) ],
 			            [ sg.Text( size=(100, 1) ) ],
 			            [ sg.Text( size=(100, 1) ) ],
-			            [ sg.Text( size=(10, 1) ), sg.Submit( size=(15, 1) ),
-			              sg.Text( size=(5, 1) ), sg.Cancel( size=(15, 1) ) ] ]
+			            [ sg.Text( size=(10, 1) ), sg.Submit( size=( 15, 1 ) ),
+			              sg.Text( size=( 5, 1 ) ), sg.Cancel( size=( 15, 1 ) ) ] ]
 			
-			_window = sg.Window( '  Boo', _layout, icon=self.icon_path,
+			_window = sg.Window( ' Boogle', _layout, icon=self.icon_path,
 				font=self.theme_font, size=self.form_size )
 			
 			while True:
@@ -860,8 +926,8 @@ class EmailDialog( Dark ):
 
     '''
 	
-	def __init__( self, sender: str = None, receiver: list[ str ] = None,
-	              subject: str = None, message: list[ str ] = None ):
+	def __init__( self, sender: str=None, receiver: list[ str ]=None,
+	              subject: str=None, message: list[ str ]=None ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -1036,12 +1102,12 @@ class MessageDialog( Dark ):
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
 		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = (450, 250)
+		self.form_size = (500, 300)
 	
 	def __str__( self ) -> str | None:
 		'''
@@ -1078,12 +1144,25 @@ class MessageDialog( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'original', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'image', 'show' ]
+		return [ 'form_size',
+		         'settings_path',
+		         'original',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'image',
+		         'show' ]
 	
 	def show( self ) -> None:
 		'''
@@ -1173,7 +1252,7 @@ class ErrorDialog( Dark ):
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
 		self.icon_path = r'/resources/ico/error.ico'
-		self.theme_font = ('Roboto', 11)
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
@@ -1274,7 +1353,7 @@ class ErrorDialog( Dark ):
 		_font = ('Roboto', 11)
 		_padsz = (3, 3)
 		_layout = [ [ sg.Text( ) ],
-		            [ sg.Text( f'{_msg}', size=(100, 1), key='-MSG-', text_color=_red,
+		            [ sg.Text( f'{_msg}', size=( 100, 1 ), key='-MSG-', text_color=_red,
 			            font=_font ) ],
 		            [ sg.Text( size=(150, 1) ) ],
 		            [ sg.Multiline( f'{_info}', key='-INFO-', size=(80, 7), pad=_padsz ) ],
@@ -1324,8 +1403,8 @@ class InputDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'/resources/ico/question.ico'
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
@@ -1393,7 +1472,7 @@ class InputDialog( Dark ):
 		'''
 		try:
 			_layout = [ [ sg.Text( ) ],
-			            [ sg.Text( self.question, font=('Roboto', 9, 'bold') ) ],
+			            [ sg.Text( self.question, font=('Roboto', 12, 'bold') ) ],
 			            [ sg.Text( ) ],
 			            [ sg.Text( 'Enter:', size=(10, 2) ),
 			              sg.InputText( key='-INPUT-', size=(40, 2) ) ],
@@ -1594,7 +1673,7 @@ class ContactForm( Dark ):
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
 		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
@@ -1708,8 +1787,8 @@ class GridForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'/resources/ico/excel.ico'
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
@@ -2256,8 +2335,8 @@ class Notification( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'/resources/ico/boo.ico'
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
@@ -2397,7 +2476,7 @@ class Notification( Dark ):
 		'''
 		try:
 			return sg.popup_notify( self.message,
-				title='Booger Notification',
+				title=' Boo',
 				icon=self.ninja,
 				display_duration_in_ms=10000,
 				fade_in_duration=5000,
