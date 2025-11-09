@@ -45,6 +45,7 @@
 from __future__ import annotations
 
 from boogr import Error, ErrorDialog
+import chromadb
 from chromadb import Settings
 import fitz
 import os
@@ -59,6 +60,7 @@ import openpyxl
 from openai import OpenAI
 from pathlib import Path
 import requests
+import sqlite3
 from sqlite3 import Connection, Cursor
 import tiktoken
 from typing import Any, List, Tuple, Optional, Dict
@@ -419,7 +421,7 @@ class SQLite( ):
 			
 		"""
 		try:
-			throw_if( 'params', params )
+			throw_if( 'path', path )
 			self.file_path = path
 			self.file_name = os.path.basename( self.file_path )
 			_excel = pd.ExcelFile( path )
