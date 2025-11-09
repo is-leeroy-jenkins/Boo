@@ -5554,7 +5554,7 @@ class FileBrowser( ):
 		
 		window.close( )
 
-class ChatWindow( ):
+class ChatWindow( Dark ):
 	'''
 
 	    GptFunction to generate a chat window
@@ -5562,6 +5562,7 @@ class ChatWindow( ):
 	'''
 	
 	def __init__( self ):
+		super( ).__init__( self )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
 		sg.theme_element_text_color( '#69B1EF' )
@@ -5577,9 +5578,13 @@ class ChatWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
+		self.resizable = True
+		self.keep_on_top = True
+		self.top_level = True
 		self.icon_path = r'/resources/ico/boo.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
+		
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'/resources/theme' )
@@ -5647,6 +5652,7 @@ class ChatWindow( ):
 			
 			window = sg.Window( 'Boo', _layout,
 				font=('Roboto', ' 12'),
+				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level,
 				icon=self.icon_path,
@@ -5672,11 +5678,12 @@ class ChatWindow( ):
 			error = ErrorDialog( exception )
 			error.show( )
 
-class ChatBot( ):
+class ChatBot( Dark ):
 	
 	# -------  Make a new Window  ------- #
 	# give our form a spiffy pairs of colors
 	def __init__( self ):
+		super( ).__init__( self )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
 		sg.theme_element_text_color( '#69B1EF' )
@@ -5692,6 +5699,9 @@ class ChatBot( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
+		self.resizable = True
+		self.keep_on_top = True
+		self.top_level = True
 		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
@@ -5770,6 +5780,7 @@ class ChatBot( ):
 				default_button_element_size=(8, 2),
 				return_keyboard_events=True,
 				size=self.form_size,
+				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level, )
 			
