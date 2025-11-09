@@ -381,7 +381,7 @@ class FileDialog( Dark ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = ( 550, 300 )
+		self.form_size = ( 300, 300 )
 		self.selected_item = None
 		self.message = 'Grab File'
 		self.extension = extension
@@ -485,9 +485,9 @@ class FileDialog( Dark ):
 			            [ sg.Text( ) ],
 			            [ sg.OK( size=( 8, 1 ), ), sg.Cancel( size=( 10, 1 ) ) ] ]
 			
-			_window = sg.Window( 'Boo', _layout, font=self.theme_font,
+			_window = sg.Window( 'Boo', _layout,
+				font=self.theme_font,
 				size=self.form_size,
-				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level,
 				icon=self.icon_path, )
@@ -631,7 +631,6 @@ class FolderDialog( Dark ):
 			
 			_window = sg.Window( '  Boo', _layout,
 				font=self.theme_font,
-				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level,
 				size=self.form_size,
@@ -694,7 +693,7 @@ class SaveFileDialog( Dark ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = ( 550, 300 )
+		self.form_size = ( 300, 300 )
 		self.original = path
 	
 	def __str__( self ) -> str | None:
@@ -775,7 +774,6 @@ class SaveFileDialog( Dark ):
 				title=' Boo',
 				font=self.theme_font,
 				icon=self.icon_path,
-				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level,
 				save_as=True )
@@ -921,7 +919,6 @@ class GoogleDialog( Dark ):
 			_window = sg.Window( ' Boogle', _layout, icon=self.icon_path,
 				font=self.theme_font,
 				size=self.form_size,
-				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level, )
 			
@@ -956,7 +953,7 @@ class EmailDialog( Dark ):
 	    Construcotr:
 	    ------------ 
 	    EmailDialog( sender: str=None, receiver: str=None,
-			    subject: str=None, heading: str=None )
+	    subject: str=None, heading: str=None )
 
 
     '''
@@ -980,7 +977,7 @@ class EmailDialog( Dark ):
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
 		self.icon_path = r'resources\ico\boo.ico'
-		self.theme_font = ('Roboto', 11)
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
@@ -1101,10 +1098,9 @@ class EmailDialog( Dark ):
 			            [ sg.Text( ' ', size=_spc ), sg.Button( 'Send', size=_btn ),
 			              sg.Text( ' ', size=_btn ), sg.Button( 'Cancel', size=_btn ) ] ]
 			
-			_window = sg.Window( '  Send Message', _layout,
+			_window = sg.Window( ' Send Message', _layout,
 				icon=self.icon_path,
 				size=self.form_size,
-				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level, )
 			
@@ -1253,9 +1249,8 @@ class MessageDialog( Dark ):
 			            [ sg.Text( size=( 5, 1 ) ), sg.Ok( size=_btnsz ),
 			              sg.Text( size=( 15, 1 ) ), sg.Cancel( size=_btnsz ) ] ]
 			
-			_window = sg.Window( r'  Boo', _layout,
+			_window = sg.Window( r' Boo', _layout,
 				icon=self.icon_path,
-				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level,
 				font=self.theme_font,
@@ -1315,7 +1310,7 @@ class ErrorDialog( Dark ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = ( 300, 300 )
+		self.form_size = ( 500, 300 )
 		self.error = error
 		self.heading = error.heading
 		self.module = error.module
@@ -1423,7 +1418,6 @@ class ErrorDialog( Dark ):
 			icon=self.icon_path,
 			font=self.theme_font,
 			size=self.form_size,
-			resizable=self.resizable,
 			keep_on_top=self.keep_on_top,
 			force_toplevel=self.top_level, )
 		
@@ -1556,11 +1550,10 @@ class InputDialog( Dark ):
 			              sg.Text( size=(5, 1) ),
 			              sg.Cancel( size=(15, 1), key='-CANCEL-' ) ] ]
 			
-			_window = sg.Window( '  Boo', _layout,
+			_window = sg.Window( ' Boo', _layout,
 				icon=self.icon_path,
 				font=self.theme_font,
 				size=self.form_size,
-				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level, )
 			
@@ -1570,7 +1563,8 @@ class InputDialog( Dark ):
 					break
 				
 				self.response = _values[ '-INPUT-' ]
-				sg.popup( _event, _values, self.response,
+				sg.popup( _event, _values,
+					self.response,
 					text_color=sg.theme_text_color( ),
 					font=self.theme_font,
 					icon=self.icon )
@@ -5539,7 +5533,6 @@ class FileBrowser( ):
 		           [ sg.Button( 'Ok', bind_return_key=True ), sg.Button( 'Cancel' ) ] ]
 		
 		window = sg.Window( 'Browser GptFile System', layout,
-				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level,
 				icon=self.icon_path, )
@@ -5654,7 +5647,6 @@ class ChatWindow( ):
 			
 			window = sg.Window( 'Boo', _layout,
 				font=('Roboto', ' 12'),
-				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level,
 				icon=self.icon_path,
@@ -5778,7 +5770,6 @@ class ChatBot( ):
 				default_button_element_size=(8, 2),
 				return_keyboard_events=True,
 				size=self.form_size,
-				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level, )
 			
@@ -5991,7 +5982,6 @@ class InputWindow( ):
 			#           [col3]]
 			window = sg.Window( 'Columns and Frames', layout,
 				size=self.form_size,
-				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level, )
 			
