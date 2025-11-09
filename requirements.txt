@@ -6,6 +6,7 @@ dash-core-components
 dash-html-components
 dotenv
 datasets
+flask-bootstrap
 FreeSimpleGUI
 fitz
 fastapi

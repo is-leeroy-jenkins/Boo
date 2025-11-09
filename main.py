@@ -45,15 +45,17 @@
 '''
 from flask import ( Flask, make_response, render_template, request, redirect,
                     current_app, abort, )
+from flask_bootstrap import Bootstrap
 
 app = Flask( __name__ )
+bootstrap = Bootstrap( app )
 
 @app.route( '/' )
 def index( ):
 	return render_template( 'index.html' )
 
-@app.route('/user/<name>')
-def user(name):
+@app.route( '/user/<name>' )
+def user( name ):
     return render_template( 'user.html', name=name )
 
 
