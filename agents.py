@@ -149,12 +149,16 @@ class ApportionmentAnalyst( Agent ):
 
 			Purpose:
 			-------
+			Method for sending a request to an agent.
 
 			Parameters:
 			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
 			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -230,16 +234,20 @@ class DataAnalyst( Agent ):
 	
 	def ask( self, question: str  ) -> str | None:
 		'''
-		
+
 			Purpose:
 			-------
-			
+			Method for sending a request to an agent.
+
 			Parameters:
 			-----------
-			
+			question: str
+			A string containing the user message for the request payload.
+
 			Returns:
 			---------
-			
+			A string containing the response output content
+
 		'''
 		try:
 			throw_if( 'question', question )
@@ -308,12 +316,16 @@ class PythonAnalyst( Agent ):
 
 			Purpose:
 			-------
+			Method for sending a request to an agent.
 
 			Parameters:
 			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
 			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -395,12 +407,16 @@ class AppropriationsAnalyst( Agent ):
 
 			Purpose:
 			-------
+			Method for sending a request to an agent.
 
 			Parameters:
 			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
 			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -487,12 +503,16 @@ class ScheduleXAnalyst( Agent ):
 
 			Purpose:
 			-------
+			Method for sending a request to an agent.
 
 			Parameters:
 			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
 			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -664,12 +684,16 @@ class OutlookAnalyst( Agent ):
 
 			Purpose:
 			-------
+			Method for sending a request to an agent.
 
 			Parameters:
 			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
 			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -832,12 +856,16 @@ class WhatIfAnalyst( Agent ):
 
 			Purpose:
 			-------
+			Method for sending a request to an agent.
 
 			Parameters:
 			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
 			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -916,13 +944,17 @@ class InnovationAnalyst( Agent ):
 		'''
 
 			Purpose:
-			--------
+			-------
+			Method for sending a request to an agent.
 
 			Parameters:
-			----------
+			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
-			--------
+			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -995,13 +1027,17 @@ class StatisticsAnalyst( Agent ):
 		'''
 
 			Purpose:
-			--------
+			-------
+			Method for sending a request to an agent.
 
 			Parameters:
-			----------
+			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
-			--------
+			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -1075,13 +1111,17 @@ class PbiExpert( Agent ):
 		'''
 
 			Purpose:
-			--------
+			-------
+			Method for sending a request to an agent.
 
 			Parameters:
-			----------
+			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
-			--------
+			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -1157,13 +1197,17 @@ class ExcelNinja( Agent ):
 		'''
 
 			Purpose:
-			--------
+			-------
+			Method for sending a request to an agent.
 
 			Parameters:
-			----------
+			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
-			--------
+			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -1239,13 +1283,17 @@ class ResearchAnalyst( Agent ):
 		'''
 
 			Purpose:
-			--------
+			-------
+			Method for sending a request to an agent.
 
 			Parameters:
-			----------
+			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
-			--------
+			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -1320,13 +1368,17 @@ class BrainStormer( Agent ):
 		'''
 
 			Purpose:
-			--------
+			-------
+			Method for sending a request to an agent.
 
 			Parameters:
-			----------
+			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
-			--------
+			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -1771,12 +1823,16 @@ class SpeechWriter( Agent ):
 
 			Purpose:
 			-------
+			Method for sending a request to an agent.
 
 			Parameters:
 			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
 			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -1844,12 +1900,16 @@ class DashboardAnalyst( Agent ):
 
 			Purpose:
 			-------
+			Method for sending a request to an agent.
 
 			Parameters:
 			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
 			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -1916,12 +1976,16 @@ class WealthAnalyst( Agent ):
 
 			Purpose:
 			-------
+			Method for sending a request to an agent.
 
 			Parameters:
 			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
 			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -1988,12 +2052,16 @@ class RandomWriter( Agent ):
 
 			Purpose:
 			-------
+			Method for sending a request to an agent.
 
 			Parameters:
 			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
 			---------
+			A string containing the response output content
 
 		'''
 		try:
@@ -2061,12 +2129,16 @@ class ExploratoryDataAnalyst( Agent ):
 
 			Purpose:
 			-------
+			Method for sending a request to an agent.
 
 			Parameters:
 			-----------
+			question: str
+			A string containing the user message for the request payload.
 
 			Returns:
 			---------
+			A string containing the response output content
 
 		'''
 		try:
