@@ -53,7 +53,7 @@ bootstrap = Bootstrap( app )
 moment = Moment( app )
 
 @app.route('/')
-def index():
+def index( ):
     return render_template( 'index.html', current_time=datetime.now( ) )
 
 @app.route( '/user/<name>' )
