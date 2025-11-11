@@ -43,8 +43,7 @@
   </summary>
   ******************************************************************************************
 '''
-from flask import ( Flask, make_response, render_template, request, redirect,
-                    current_app, abort, )
+from flask import ( Flask, make_response, render_template, request, redirect, current_app, abort, )
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from datetime import datetime
@@ -55,7 +54,7 @@ moment = Moment( app )
 
 @app.route('/')
 def index():
-    return render_template('index.html', current_time=datetime.now( ) )
+    return render_template( 'index.html', current_time=datetime.now( ) )
 
 @app.route( '/user/<name>' )
 def user( name ):
