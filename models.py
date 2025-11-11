@@ -196,7 +196,7 @@ class Reasoning( BaseModel ):
 		extra = 'ignore'
 
 
-class MathReasoning( BaseModel ):
+class Mathematics( BaseModel ):
 	class Step( BaseModel ):
 		explanation: Optional[ str ]
 		output: Optional[ str ]
@@ -205,7 +205,7 @@ class MathReasoning( BaseModel ):
 	final_answer: Optional[ str ]
 
 
-class ArticleSummary( BaseModel ):
+class Document( BaseModel ):
 	invented_year: Optional[ int ]
 	summary: Optional[ str ]
 	inventors: Optional[ List[ str ] ]

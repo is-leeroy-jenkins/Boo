@@ -8,6 +8,8 @@ dash-html-components
 dotenv
 datasets
 flask-bootstrap
+flash-moment
+flash-wtf
 FreeSimpleGUI
 fitz
 fastapi

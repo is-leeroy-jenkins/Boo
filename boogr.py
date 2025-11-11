@@ -155,7 +155,7 @@ class ButtonIcon( ):
 	
 	def __init__( self, png: Enum ):
 		self.name = png.name
-		self.button = r'C:\Users\terry\source\repos\Boo\resources\img\button'
+		self.button = r'resources\img\button'
 		self.file_path = self.button + r'\\' + self.name + '.png'
 	
 	def __str__( self ) -> str | None:
@@ -211,7 +211,7 @@ class TitleIcon( ):
 	
 	def __init__( self, ico ):
 		self.name = ico.name
-		self.folder = r'C:\Users\terry\source\repos\Boo\resources\ico'
+		self.folder = r'resources\ico'
 		self.file_path = self.folder + r'\\' + self.name + r'.ico'
 	
 	def __str__( self ) -> str | None:
@@ -283,7 +283,6 @@ class Dark( ):
 	top_level: Optional[ bool ]
 	
 	def __init__( self ):
-		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
 		sg.theme_element_text_color( '#69B1EF' )
@@ -299,7 +298,7 @@ class Dark( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/boo.ico'
+		self.icon_path = r'\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		self.form_size = ( 500, 300 )
@@ -308,7 +307,7 @@ class Dark( ):
 		self.resizable = True,
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'\resources\theme' )
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -375,16 +374,19 @@ class FileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'resources\ico\file_browse.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\browse.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = ( 300, 300 )
+		self.form_size = ( 600, 250 )
 		self.selected_item = None
 		self.message = 'Grab File'
 		self.extension = extension
+		self.resizable = True
+		self.keep_on_top = True
+		self.top_level = True
 		self.excel = (('Excel', '*.xlsx'),)
 		self.csv = (('CSV', '*.csv'),)
 		self.pdf = (('PDF', '*.pdf'),)
@@ -488,9 +490,10 @@ class FileDialog( Dark ):
 			_window = sg.Window( 'Boo', _layout,
 				font=self.theme_font,
 				size=self.form_size,
+				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level,
-				icon=self.icon_path, )
+				icon=self.icon_path )
 			
 			while True:
 				_event, _values = _window.read( )
@@ -539,13 +542,16 @@ class FolderDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'resources\ico\folder_browse.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\browse.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
+		self.resizable = True
+		self.keep_on_top = True
+		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = ( 300, 300 )
+		self.form_size = ( 600, 250 )
 		self.selected_item = None
 	
 	def __str__( self ) -> str | None:
@@ -631,6 +637,7 @@ class FolderDialog( Dark ):
 			
 			_window = sg.Window( '  Boo', _layout,
 				font=self.theme_font,
+				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level,
 				size=self.form_size,
@@ -686,14 +693,17 @@ class SaveFileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'resources\ico\save.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\save.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		self.file_name = None
+		self.resizable = True
+		self.keep_on_top = True
+		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = ( 300, 300 )
+		sg.user_settings_save( 'Boo', r'resources\theme' )
+		self.form_size = ( 600, 250 )
 		self.original = path
 	
 	def __str__( self ) -> str | None:
@@ -824,16 +834,18 @@ class GoogleDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\google.ico'
 		self.theme_font = ( 'Roboto', 12 )
 		self.scrollbar_color = '#755600'
 		self.results = [ ]
 		self.querytext = None
+		self.resizable = True
+		self.keep_on_top = True
+		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = ( 300, 300 )
-		self.image = r'resources\ico\google.ico'
+		self.form_size = ( 500, 215 )
 	
 	def __str__( self ) -> str | None:
 		'''
@@ -908,17 +920,16 @@ class GoogleDialog( Dark ):
 		'''
 		try:
 			_layout = [ [ sg.Text( ) ],
-			            [ sg.Image( source=self.image ) ],
-			            [ sg.Text( size=(10, 1) ),
-			              sg.Input( key='-QUERY-', size=(40, 2) ) ],
-			            [ sg.Text( size=(100, 1) ) ],
-			            [ sg.Text( size=(100, 1) ) ],
-			            [ sg.Text( size=(10, 1) ), sg.Submit( size=( 15, 1 ) ),
+			            [ sg.Text( size=( 5, 1) ), sg.Input( key='-QUERY-', size=( 40, 5 ) ) ],
+			            [ sg.Text( size=( 100, 1) ) ],
+			            [ sg.Text( size=( 5, 1) ), sg.Submit( size=( 15, 1 ) ),
 			              sg.Text( size=( 5, 1 ) ), sg.Cancel( size=( 15, 1 ) ) ] ]
 			
-			_window = sg.Window( ' Boogle', _layout, icon=self.icon_path,
+			_window = sg.Window( ' Boogle', _layout,
+				icon=self.icon_path,
 				font=self.theme_font,
 				size=self.form_size,
+				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level, )
 			
@@ -1309,7 +1320,7 @@ class ErrorDialog( Dark ):
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'\resources\theme' )
+		sg.user_settings_save( 'Boo', r'resources\theme' )
 		self.form_size = ( 500, 300 )
 		self.error = error
 		self.heading = error.heading
@@ -5468,13 +5479,16 @@ class FileBrowser( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'resources\ico\boo.ico'
+		self.icon_path = r'\resources\ico\browse.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
+		self.resizable = True
+		self.keep_on_top = True
+		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = (300, 300)
+		self.form_size = (320, 400)
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -5532,7 +5546,8 @@ class FileBrowser( ):
 			size=(50, 1), key='-FILENAME-' ), sg.FileBrowse( ), sg.B( 'Clear History' ) ],
 		           [ sg.Button( 'Ok', bind_return_key=True ), sg.Button( 'Cancel' ) ] ]
 		
-		window = sg.Window( 'Browser GptFile System', layout,
+		window = sg.Window( 'Browser File System', layout,
+				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level,
 				icon=self.icon_path, )
@@ -5562,7 +5577,7 @@ class ChatWindow( Dark ):
 	'''
 	
 	def __init__( self ):
-		super( ).__init__( self )
+		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
 		sg.theme_element_text_color( '#69B1EF' )
@@ -5581,13 +5596,13 @@ class ChatWindow( Dark ):
 		self.resizable = True
 		self.keep_on_top = True
 		self.top_level = True
-		self.icon_path = r'/resources/ico/boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'resources/theme' )
 		self.form_size = (800, 600)
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -5642,21 +5657,21 @@ class ChatWindow( Dark ):
 
 		'''
 		try:
-			_layout = [ [ sg.Text( 'Your query will go here', size=(40, 1) ) ],
-			            [ sg.Output( size=(110, 20), font=('Roboto 11') ) ],
-			            [ sg.Multiline( size=(70, 5), enter_submits=True, key='-QUERY-',
+			_layout = [ [ sg.Text( 'Your query will go here', size=( 40, 1 ) ) ],
+			            [ sg.Output( size=( 110, 20 ), font=('Roboto 11') ) ],
+			            [ sg.Multiline( size=( 70, 5 ), enter_submits=True, key='-QUERY-',
 				            do_not_clear=False ),
 			              sg.Button( 'SEND', button_color=(sg.YELLOWS[ 0 ], sg.BLUES[ 0 ]),
 				              bind_return_key=True ),
 			              sg.Button( 'EXIT', button_color=(sg.YELLOWS[ 0 ], sg.GREENS[ 0 ]) ) ] ]
 			
 			window = sg.Window( 'Boo', _layout,
-				font=('Roboto', ' 12'),
+				font=('Roboto', 12 ),
 				resizable=self.resizable,
 				keep_on_top=self.keep_on_top,
 				force_toplevel=self.top_level,
 				icon=self.icon_path,
-				default_button_element_size=(8, 2),
+				default_button_element_size=(15, 2),
 				use_default_focus=False,
 				size=self.form_size )
 			
@@ -5683,7 +5698,7 @@ class ChatBot( Dark ):
 	# -------  Make a new Window  ------- #
 	# give our form a spiffy pairs of colors
 	def __init__( self ):
-		super( ).__init__( self )
+		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
 		sg.theme_element_text_color( '#69B1EF' )
@@ -5702,12 +5717,12 @@ class ChatBot( Dark ):
 		self.resizable = True
 		self.keep_on_top = True
 		self.top_level = True
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'resources/theme' )
 		self.form_size = (800, 600)
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -5763,16 +5778,13 @@ class ChatBot( Dark ):
 		'''
 		try:
 			layout = [ [ sg.Text( 'Your query will go here', size=(40, 1) ) ],
-			           [ sg.Output( size=(127, 30), font=('Rooboto 11') ) ],
+			           [ sg.Output( size=(127, 30), font=('Rooboto') ) ],
 			           [ sg.Text( 'Command History' ),
 			             sg.Text( '', size=(20, 3), key='-HISTORY-' ) ],
 			           [ sg.ML( size=(85, 5), enter_submits=True, key='-QUERY-',
 				           do_not_clear=False ),
-			             sg.Button( 'SEND',
-				             button_color=(sg.YELLOWS[ 0 ], sg.BLUES[ 0 ]),
-				             bind_return_key=True ),
-			             sg.Button( 'EXIT',
-				             button_color=(sg.YELLOWS[ 0 ], sg.GREENS[ 0 ]) ) ] ]
+			             sg.Button( 'SEND',  button_color=(sg.YELLOWS[ 0 ], sg.BLUES[ 0 ]), bind_return_key=True ),
+			             sg.Button( 'EXIT',  button_color=(sg.YELLOWS[ 0 ], sg.GREENS[ 0 ]) ) ] ]
 			
 			window = sg.Window( 'Chat window with history', layout,
 				default_element_size=(30, 2),
@@ -5876,13 +5888,16 @@ class InputWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'/resources/ico/message.ico'
 		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
+		self.resizable = True
+		self.keep_on_top = True
+		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = (520, 550)
+		self.form_size = ( 520, 550 )
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -6013,14 +6028,7 @@ class InputWindow( ):
 
 class Executable( ):
 	'''
-	    Make a "Windows os" executable with PyInstaller
-	    Copyright 2023 PySimpleSoft, Inc. and/or its licensors.
-	    All rights reserved.
-	    Redistribution, modification, or any other use of PySimpleGUI or any
-	    portion thereof is subject to the terms of the PySimpleGUI
-	    License Agreement available at https://eula.pysimplegui.com.
-	    You may not redistribute, modify or otherwise use PySimpleGUI or
-	    its contents except pursuant to the PySimpleGUI License Agreement.
+	    Makes a "Windows os" executable with PyInstaller
 	'''
 	
 	def __init__( self ):
@@ -6042,10 +6050,13 @@ class Executable( ):
 		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
+		self.resizable = True
+		self.keep_on_top = True
+		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = (600, 600)
+		self.form_size = ( 600, 600 )
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -6225,10 +6236,13 @@ class ThemeSelector( ):
 		self.icon_path = r'/resources/ico/ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
+		self.resizable = True
+		self.keep_on_top = True
+		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = (300, 400)
+		self.form_size = ( 300, 400 )
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -6246,12 +6260,24 @@ class ThemeSelector( ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'input_text',
+		         'show' ]
 	
 	def show( self ) -> None:
 		'''
@@ -6326,13 +6352,16 @@ class UrlImageViewer( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'/resources/ico/boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
+		self.resizable = True
+		self.keep_on_top = True
+		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = (800, 600)
+		self.form_size = ( 800, 600 )
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -6350,12 +6379,24 @@ class UrlImageViewer( ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'input_text',
+		         'show' ]
 	
 	def show( self ) -> None:
 		'''
@@ -6413,11 +6454,9 @@ class AutoComplete( ):
 	
 	    The variable "choices" holds the get_list of strings your program will match against.
 	    Even though the listbox of choices doesn't have a scrollbar visible, the get_list is longer
-	    than shown
-	        and using your keyboard more of it will br shown as you scroll down with the arrow keys
+	    than shown and using your keyboard more of it will br shown as you scroll down with the arrow keys
 	    The selection wraps around from the end to the start (and vicea versa). You can change
-	    this behavior to
-	        make it stay at the beignning or the end
+	    this behavior to make it stay at the beignning or the end
 	"""
 	
 	def __init__( self ):
