@@ -49,8 +49,9 @@ APPLICATION_WIDTH = 750
 THEME = "DarkGray12"
 OUTPUT_FILE_NAME = "boo.wav"
 SAMPLE_RATE = 48000
-MODELS = [ "gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo" ]
+MODELS = [ 'gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo' ]
 DEFAULT_MODEL = MODELS[ 0 ]
+SQLALCHEMY_DATABASE_URI = r'C:\Users\terry\source\repos\Boo\stores\sqlite\datamodels\Data.db'
 
 # Keys
 GEOAPIFY_API_KEY = os.getenv( 'GEOAPIFY_API_KEY' )

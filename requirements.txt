@@ -10,6 +10,8 @@ datasets
 flask-bootstrap
 flask-moment
 flask-wtf
+flask-sqlalchemy
+flask-mail
 FreeSimpleGUI
 fitz
 fastapi
