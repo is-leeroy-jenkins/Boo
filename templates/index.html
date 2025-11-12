@@ -1,9 +1,13 @@
-<!DOCTYPE html>
-<html lang='en'>
-<head>
-    <meta charset='UTF-8'>
-    <title>Title</title>
-</head>
+{% extends "base.html" %}
+ {% block title %}Index{% endblock %}
+ {% block head %}
+    {{ super() }}
+ <style>
+ </style>
+ {% endblock %}
+ {% block body %}
+ <h1>Hello, World!</h1>
+ {% endblock %}
 <body>
 <h1>Hello World!</h1>
  <p>The local date and time is {{ moment(current_time).format('LLL') }}.</p>

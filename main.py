@@ -43,23 +43,45 @@
   </summary>
   ******************************************************************************************
 '''
-from flask import ( Flask, make_response, render_template, request, redirect, current_app, abort, )
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
+from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm
+from flask import (Flask, render_template, session, request,
+                   redirect, current_app, abort,url_for, flash)
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
 from datetime import datetime
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
+from controls import NameForm
 
 app = Flask( __name__ )
 bootstrap = Bootstrap( app )
 moment = Moment( app )
 
-@app.route('/')
+@app.route( '/', methods=[ 'GET', 'POST' ] )
 def index( ):
-    return render_template( 'index.html', current_time=datetime.now( ) )
-
+	form = NameForm( )
+	if form.validate_on_submit( ):
+		old_name = session.get( 'name' )
+		
+	if old_name is not None and old_name != form.name.data:
+		flash( 'Looks like you have changed your name!' )
+		session[ 'name' ] = form.name.data
+		return redirect( url_for( 'index' ) )
+	
 @app.route( '/user/<name>' )
 def user( name ):
     return render_template( 'user.html', name=name )
 
+@app.route('/user/<id>')
+def get_user(id):
+	 user = load_user(id)
+	 if not user:
+	    abort(404)
+	 return '<h1>Hello, {}</h1>'.format(user.name)
+ 
 @app.errorhandler( 404 )
 def page_not_found( e ):
     return render_template( '404.html' ), 404
