@@ -46,43 +46,34 @@
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import FlaskForm
-from flask import (Flask, render_template, session, request,
-                   redirect, current_app, abort, url_for, flash)
+from flask import (Flask, render_template, session, request, redirect, current_app, abort, url_for, flash)
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from datetime import datetime
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+import config
 from controls import NameForm
-from config import SECRET_KEY
 
 app = Flask( __name__ )
-app.config['SECRET_KEY'] = SECRET_KEY
+app.config['SECRET_KEY'] = config.SECRET_KEY
 bootstrap = Bootstrap( app )
 moment = Moment( app )
 
-@app.route( '/', methods=[ 'GET', 'POST' ] )
+@app.route( '/', methods=[ 'GET','POST' ] )
 def index( ):
+	name = None
 	form = NameForm( )
 	if form.validate_on_submit( ):
-		old_name = session.get( 'name' )
-		
-	if old_name is not None and old_name != form.name.data:
-		flash( 'Looks like you have changed your name!' )
-		session[ 'name' ] = form.name.data
-		return redirect( url_for( 'index' ) )
+		name = form.name.data
+	form.name.data = ''
+	return render_template( 'index.html', form=form, name=name )
 	
 @app.route( '/user/<name>' )
 def user( name ):
     return render_template( 'user.html', name=name )
 
-@app.route('/user/<id>')
-def get_user(id):
-	 user = load_user(id)
-	 if not user:
-	    abort(404)
-	 return '<h1>Hello, {}</h1>'.format(user.name)
- 
+
 @app.errorhandler( 404 )
 def page_not_found( e ):
     return render_template( '404.html' ), 404
@@ -90,6 +81,7 @@ def page_not_found( e ):
 @app.errorhandler( 500 )
 def internal_server_error( e ):
     return render_template( '500.html' ), 500
+
 
 if __name__ == '__main__':
 	app.run( )
