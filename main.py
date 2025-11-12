@@ -46,17 +46,18 @@
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import FlaskForm
-from flask_wtf import FlaskForm
 from flask import (Flask, render_template, session, request,
-                   redirect, current_app, abort,url_for, flash)
+                   redirect, current_app, abort, url_for, flash)
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from datetime import datetime
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from controls import NameForm
+from config import SECRET_KEY
 
 app = Flask( __name__ )
+app.config['SECRET_KEY'] = SECRET_KEY
 bootstrap = Bootstrap( app )
 moment = Moment( app )
 

@@ -71,6 +71,7 @@ WEATHERAPI_API_KEY = os.getenv( 'WEATHERAPI_API_KEY' )
 WEAVIEATE_API_KEY = os.getenv( 'WEAVIEATE_API_KEY' )
 QDRANT_API_KEY = os.getenv( 'QDRANT_API_KEY' )
 SINGLESTORE_API_KEY = os.getenv( 'SINGLESTORE_API_KEY' )
+SECRET_KEY = os.urandom( 32 )
 
 def set_environment( ):
 	"""
