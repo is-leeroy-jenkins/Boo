@@ -45,40 +45,6 @@
 import os
 from typing import Optional, List, Dict
 
-GEOAPIFY_API_KEY = os.getenv( 'GEOAPIFY_API_KEY' )
-GEMINI_API_KEY = os.getenv( 'GEMINI_API_KEY' )
-GROQ_API_KEY = os.getenv( 'GROQ_API_KEY' )
-GOOGLE_API_KEY = os.getenv( 'GOOGLE_API_KEY' )
-HUGGINGFACE_API_KEY = os.getenv( 'HUGGINGFACE_API_KEY' )
-IPINFO_API_KEY = os.getenv( 'IPINFO_API_KEY' )
-OPENAI_API_KEY = os.getenv( 'OPENAI_API_KEY' )
-PINECONE_API_KEY = os.getenv( 'PINECONE_API_KEY' )
-LANGSMITH_API_KEY = os.getenv( 'LANGSMITH_API_KEY' )
-LLAMAINDEX_API_KEY = os.getenv( 'LLAMAINDEX_API_KEY' )
-LLAMACLOUD_API_KEY = os.getenv( 'LLAMACLOUD_API_KEY' )
-MISTRAL_API_KEY = os.getenv( 'MISTRAL_API_KEY' )
-NASA_API_KEY = os.getenv( 'NASA_API_KEY' )
-NEWSAPI_API_KEY = os.getenv( 'NEWSAPI_API_KEY' )
-WEATHERAPI_API_KEY = os.getenv( 'WEATHERAPI_API_KEY' )
-WEAVIEATE_API_KEY = os.getenv( 'WEAVIEATE_API_KEY' )
-QDRANT_API_KEY = os.getenv( 'QDRANT_API_KEY' )
-SINGLESTORE_API_KEY = os.getenv( 'SINGLESTORE_API_KEY' )
-basedir = r'C:\Users\terry\source\repos\Boo'
-
-def set_environment( ):
-	"""
-		
-		Purpose:
-		--------
-		Gets availible environment vaariables for configuration
-		
-		
-	"""
-	variable_dict = globals( ).items( )
-	for key, value in variable_dict:
-		if 'API' in key or 'ID' in key:
-			os.environ[ key ] = value
-
 class WebConfig:
 	# Keys
 	SECRET_KEY: Optional[ bytes ]
@@ -118,7 +84,7 @@ class WebConfig:
 		self.DEFAULT_MODEL = self.MODELS[ 0 ]
 		self.SQLALCHEMY_DATABASE_URI = r'C:\Users\terry\source\repos\Boo\stores\sqlite\datamodels\Data.db'
 
-class DevelopmentWebConfig( WebConfig ):
+class DevelopmentConfig( WebConfig ):
 	DEBUG: Optional[ bool ]
 	SQLALCHEMY_DATABASE_URI: Optional[ str ]
 	
@@ -127,7 +93,7 @@ class DevelopmentWebConfig( WebConfig ):
 		self.DEBUG = True
 		self.SQLALCHEMY_DATABASE_URI = os.environ.get( 'DEV_DATABASE_URL' )
 
-class TestingWebConfig( WebConfig ):
+class TestingConfig( WebConfig ):
 	TESTING: Optional[ bool ]
 	SQLALCHEMY_DATABASE_URI: Optional[ str ]
 	
@@ -136,7 +102,7 @@ class TestingWebConfig( WebConfig ):
 		self.TESTING = True
 		self.SQLALCHEMY_DATABASE_URI = os.environ.get( 'TEST_DATABASE_URL' )
  
-class ProductionWebConfig( WebConfig ):
+class ProductionConfig( WebConfig ):
 	SQLALCHEMY_DATABASE_URI: Optional[ str ]
 	config: Optional[ Dict[ str, str ] ]
 	
@@ -145,8 +111,8 @@ class ProductionWebConfig( WebConfig ):
 		self.SQLALCHEMY_DATABASE_URI = os.environ.get( 'DATABASE_URL' )
 		self.config = \
 		{
-			 'development': DevelopmentWebConfig,
-			 'testing': TestingWebConfig,
-			 'production': ProductionWebConfig,
-			 'default': DevelopmentWebConfig
+			 'development': DevelopmentConfig,
+			 'testing': TestingConfig,
+			 'production': ProductionConfig,
+			 'default': DevelopmentConfig
 		 }

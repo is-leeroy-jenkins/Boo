@@ -41,10 +41,14 @@
 </summary>
 ******************************************************************************************
 '''
-from flask import (render_template, session, redirect, url_for)
-from controls import NameForm
+from datetime import datetime
+from flask import render_template, session, redirect, url_for
+from . import main
+from .controls import NameForm
+from .. import db
+from ..models import User
 
-@app.route( '/', methods=[ 'GET', 'POST' ] )
+@main.route( '/', methods=[ 'GET', 'POST' ] )
 def index( ):
 	form = NameForm( )
 	if form.validate_on_submit( ):
@@ -52,7 +56,7 @@ def index( ):
 		return redirect( url_for( 'index' ) )
 	return render_template( 'index.html', form=form, name=session.get( 'name' ) )
 
-@app.route( '/user/<name>' )
+@main.route( '/user/<name>' )
 def user( name ):
     return render_template( 'user.html', name=name )
 

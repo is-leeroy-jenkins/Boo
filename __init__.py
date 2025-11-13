@@ -49,13 +49,16 @@ from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from main.webconfig import WebConfig
+from .main import main as main_blueprint
 
+app = Flask( __name__ )
 bootstrap = Bootstrap( )
 mail = Mail( )
 moment = Moment( )
 db = SQLAlchemy( )
 
 def create_app( config_name ):
+	main.register_blueprint(main_blueprint)
 	app = Flask( __name__ )
 	app.config.from_object( WebConfig[ config_name ] )
 	app.config[ 'SECRET_KEY' ] = WebConfig.SECRET_KEY
@@ -66,5 +69,8 @@ def create_app( config_name ):
 	mail.init_app(  )
 	moment.init_app( app )
 	db.init_app( app )
-	
 	return app
+
+
+
+
