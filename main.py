@@ -71,24 +71,7 @@ def index( ):
 		session[ 'name' ] = form.name.data
 		return redirect( url_for( 'index' ) )
 	return render_template( 'index.html', form=form, name=session.get( 'name' ) )
-
-class Role( db.Model ):
-	__tablename__ = 'roles'
-	id = db.Column( db.Integer, primary_key=True )
-	name = db.Column( db.String( 64 ), unique=True )
-	users = db.relationship( 'User', backref='role' )
-
-	def __repr__( self ):
-		return '<Role %r>' % self.name
-
-class User( db.Model ):
-	__tablename__ = 'users'
-	id = db.Column( db.Integer, primary_key=True )
-	username = db.Column( db.String( 64 ), unique=True, index=True )
-	role_id = db.Column( db.Integer, db.ForeignKey( 'roles.id' ) )
-	
-	def __repr__( self ):
-		return '<User %r>' % self.username
+	return '<User %r>' % self.username
 @app.route( '/user/<name>' )
 def user( name ):
     return render_template( 'user.html', name=name )
@@ -101,6 +84,22 @@ def page_not_found( e ):
 def internal_server_error( e ):
     return render_template( '500.html' ), 500
 
+class Role( db.Model ):
+	__tablename__ = 'roles'
+	id = db.Column( db.Integer, primary_key=True )
+	name = db.Column( db.String( 64 ), unique=True )
+	users = db.relationship( 'User', backref='role' )
+	
+	def __repr__( self ):
+		return '<Role %r>' % self.name
+
+class User( db.Model ):
+	__tablename__ = 'users'
+	id = db.Column( db.Integer, primary_key=True )
+	username = db.Column( db.String( 64 ), unique=True, index=True )
+	role_id = db.Column( db.Integer, db.ForeignKey( 'roles.id' ) )
+	
+	def __repr__( self ):
 
 if __name__ == '__main__':
 	app.run( )
