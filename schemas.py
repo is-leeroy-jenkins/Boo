@@ -1,14 +1,14 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                models.py
+      Filename:                schemas.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="models.py" company="Terry D. Eppler">
+  <copyright file="schemas.py" company="Terry D. Eppler">
 
 	     Boo is a df analysis tool integrating various Generative GPT, GptText-Processing, and
 	     Machine-Learning algorithms for federal analysts.
@@ -38,7 +38,7 @@
 
   </copyright>
   <summary>
-    models.py
+    schemas.py
   </summary>
   ******************************************************************************************
   '''

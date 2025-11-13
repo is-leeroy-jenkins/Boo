@@ -46,4 +46,4 @@ main.py
 from .boo import *
 from .boogr import *
 from .enums import *
-from .models import *
+from .schemas import *

@@ -46,7 +46,7 @@ from pathlib import Path
 from typing import Any, List, Optional, Dict
 import tiktoken
 from openai import OpenAI
-from models import Prompt, Reasoning, Text, Format
+from schemas import Prompt, Reasoning, Text, Format
 from boogr import ErrorDialog, Error
 
 
