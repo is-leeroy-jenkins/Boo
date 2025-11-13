@@ -41,23 +41,23 @@
   </summary>
   ******************************************************************************************
 '''
-from controls import NameForm
+from datetime import datetime
 from flask_bootstrap import Bootstrap
-from flask_mail import Mail
 from flask_moment import Moment
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, session, redirect, url_for
+from flask import Flask, render_template, session, redirect, url_for, flash, request
+from controls import NameForm
+import config
 
 app = Flask( __name__ )
-bootstrap = Bootstrap( )
-mail = Mail( )
-moment = Moment( )
-db = SQLAlchemy( )
+app.config['SECRET_KEY'] = config.SECRET_KEY
+bootstrap = Bootstrap( app )
+moment = Moment( app )
 
-@app.route( '/', methods=[ 'GET', 'POST' ] )
-def index( ):
-	form = NameForm( )
-	if form.validate_on_submit( ):
+@app.route('/', methods=['GET', 'POST'])
+def index():
+	name = None
+	form = NameForm()
+	if form.validate_on_submit():
 		session[ 'name' ] = form.name.data
 		return redirect( url_for( 'index' ) )
 	return render_template( 'index.html', form=form, name=session.get( 'name' ) )
@@ -66,12 +66,12 @@ def index( ):
 def user( name ):
     return render_template( 'user.html', name=name )
 
-@app.errorhandler(404)
-def page_not_found(e):
+@app.errorhandler( 404 )
+def page_not_found( e ):
 	return render_template( '404.html' ), 404
 
-@app.errorhandler(500)
-def internal_server_error(e):
+@app.errorhandler( 500 )
+def internal_server_error( e ):
 	return render_template( '500.html' ), 500
 
 if __name__ == '__main__':
