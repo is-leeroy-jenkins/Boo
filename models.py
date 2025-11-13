@@ -42,7 +42,7 @@ name.py
 ******************************************************************************************
 '''
 from flask_sqlalchemy import SQLAlchemy
-from main import db
+from . import db
 
 
 class Role( db.Model ):
