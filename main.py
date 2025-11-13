@@ -78,65 +78,59 @@ def index( ):
 def user( name ):
     return render_template( 'user.html', name=name )
 
-@app.route("/")
-def index():
-    return render_template("base.html")
+@app.route( '/login', methods=[ 'GET','POST' ] )
+def login( ):
+    form = LoginForm( )
+    if form.validate_on_submit( ):
+        flash( f'Logged in as {form.username.data}', 'success' )
+        return redirect( url_for( 'index' ) )
+    return render_template( 'login.html', form=form )
 
-@app.route("/login", methods=["GET","POST"])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        flash(f"Logged in as {form.username.data}", "success")
-        return redirect(url_for("index"))
-    return render_template("login.html", form=form)
-
-@app.route("/register", methods=["GET","POST"])
+@app.route('/register', methods=[ 'GET','POST' ])
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        flash(f"Registered user '{form.username.data}'", "info")
-        return redirect(url_for("index"))
-    return render_template("register.html", form=form)
+        flash(f'Registered user "{form.username.data}"', 'info' )
+        return redirect( url_for( 'index' ) )
+    return render_template( 'register.html', form=form )
 
-@app.route("/upload", methods=["GET","POST"])
-def upload():
-    form = UploadForm()
-    if form.validate_on_submit():
+@app.route( '/upload', methods=[ 'GET','POST' ] )
+def upload( ):
+    form = UploadForm( )
+    if form.validate_on_submit( ):
         f = form.doc.data
-        name = secure_filename(f.filename or "")
-        f.save(os.path.join(app.config["UPLOAD_FOLDER"], name))
-        flash(f"Uploaded '{form.title.data}' as {name}", "success")
-        return redirect(url_for("index"))
-    return render_template("upload.html", form=form)
+        name = secure_filename( f.filename or '')
+        f.save( os.path.join( app.config[ 'UPLOAD_FOLDER' ], name ) )
+        flash( f'Uploaded "{form.title.data}" as {name}', 'success' )
+        return redirect( url_for( 'index' ) )
+    return render_template( 'upload.html', form=form )
 
-@app.route("/profile", methods=["GET","POST"])
-def profile():
-    form = ProfileForm()
-    if request.method == "GET":
+@app.route( '/profile', methods=[ 'GET','POST'] )
+def profile( ):
+    form = ProfileForm( )
+    if request.method == 'GET':
         # prefill example
-        form.full_name.data = "Jane Analyst"
-        form.address.line1.data = "123 Market St"
-        form.address.city.data = "Arlington"
-        form.address.state.data = "VA"
-        form.address.zip.data = "22202"
-    if form.validate_on_submit():
-        flash("Profile saved.", "success")
-        return redirect(url_for("index"))
-    return render_template("profile.html", form=form)
-
-# OPTIONAL: two forms on one page (disambiguate with prefixes)
-@app.route("/multi", methods=["GET","POST"])
-def multi():
-    login_form = LoginForm(prefix="login")
-    fb_form = FeedbackOnSamePage(prefix="fb")  # defined inline below for brevity
-    if request.method == "POST":
-        if "login-submit" in request.form and login_form.validate_on_submit():
-            flash(f"Multi-page login: {login_form.username.data}", "success")
-            return redirect(url_for("multi"))
-        if "fb-submit" in request.form and fb_form.validate_on_submit():
-            flash(f"Multi-page feedback: {fb_form.category.data}", "success")
-            return redirect(url_for("multi"))
-    return render_template("base.html")  #
+        form.full_name.data = 'Brocifus Analyst'
+        form.address.line1.data = '123 Market St'
+        form.address.city.data = 'Arlington'
+        form.address.state.data = 'VA'
+        form.address.zip.data = '22202'
+    if form.validate_on_submit( ):
+        flash( 'Profile saved.', 'success' )
+        return redirect( url_for( 'index' ) )
+    return render_template( 'profile.html', form=form )
+@app.route( '/multi', methods=[ 'GET','POST' ] )
+def multi( ):
+    login_form = LoginForm( prefix='login' )
+    fb_form = FeedbackOnSamePage( prefix='fb' )  # defined inline below for brevity
+    if request.method == 'POST':
+        if 'login-submit' in request.form and login_form.validate_on_submit( ):
+            flash( f'Multi-page login: {login_form.username.data}', 'success' )
+            return redirect(url_for( 'multi' ) )
+        if 'fb-submit' in request.form and fb_form.validate_on_submit( ):
+            flash( f'Multi-page feedback: { fb_form.category.data }', 'success' )
+            return redirect( url_for( 'multi' ) )
+    return render_template( 'base.html' )  #
 
 @app.errorhandler( 404 )
 def page_not_found( e ):
