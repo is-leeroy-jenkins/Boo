@@ -1,17 +1,16 @@
 '''
 	******************************************************************************************
-	  Assembly:                boo
-	  Filename:                __init__.py
+	  Assembly:                Name
+	  Filename:                name.py
 	  Author:                  Terry D. Eppler
 	  Created:                 05-31-2022
 	
 	  Last Modified By:        Terry D. Eppler
 	  Last Modified On:        05-01-2025
 	******************************************************************************************
-	<copyright file="__init__.py" company="Terry D. Eppler">
+	<copyright file="guro.py" company="Terry D. Eppler">
 	
-	     Boo is a df analysis tool integrating GenAI, GptText Processing, and Machine-Learning
-	     algorithms for federal analysts.
+	     name.py
 	     Copyright ©  2022  Terry Eppler
 	
 	 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -38,25 +37,23 @@
 	
 	</copyright>
 	<summary>
-	main.py
-	
+	name.py
 	</summary>
 	******************************************************************************************
 '''
-from flask import Flask
-from flask_bootstrap import Bootstrap
-from flask_mail import Mail
-from flask_moment import Moment
-from flask_sqlalchemy import SQLAlchemy
+from threading import Thread
+from .main import main
+from . import mail
 
-app = Flask( __name__ )
-bootstrap = Bootstrap( )
-mail = Mail( )
-moment = Moment( )
-db = SQLAlchemy( )
-
-
-
-
-
-
+def send_async_email(app, msg):
+	with app.app_context():
+		main.mail.send(msg)
+	
+def send_email( to, subject, template ):
+	msg = mail.Message( main.app.config[ 'FLASKY_MAIL_SUBJECT_PREFIX' ] + subject,
+	sender = main.app.config[ 'FLASKY_MAIL_SENDER' ], recipients=[ to ] )
+	msg.body = mail.render_template(template + '.txt' )
+	msg.html = mail.render_template(template + '.html' )
+	thr = Thread( target=send_async_email, args=[ main.app, msg ])
+	thr.start( )
+	return thr

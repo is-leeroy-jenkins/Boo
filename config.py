@@ -64,6 +64,24 @@ WEAVIEATE_API_KEY = os.getenv( 'WEAVIEATE_API_KEY' )
 QDRANT_API_KEY = os.getenv( 'QDRANT_API_KEY' )
 SINGLESTORE_API_KEY = os.getenv( 'SINGLESTORE_API_KEY' )
 basedir = r'C:\Users\terry\source\repos\Boo'
+SECRET_KEY = os.urandom( 32 )
+MAIL_SERVER = os.environ.get( 'MAIL_SERVER', 'smtp.googlemail.com' )
+MAIL_PORT = int( os.environ.get( 'MAIL_PORT', '587' ) )
+MAIL_USE_TLS = os.environ.get( 'MAIL_USE_TLS', 'true' ).lower( ) in [ 'true', 'on', '1' ]
+MAIL_USERNAME = os.environ.get( 'MAIL_USERNAME' )
+MAIL_PASSWORD = os.environ.get( 'MAIL_PASSWORD' )
+FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
+FLASKY_MAIL_SENDER = 'Flasky Admin <flasky@example.com>'
+FLASKY_ADMIN = os.environ.get( 'FLASKY_ADMIN' )
+FalseAPPLICATION_WIDTH = 750
+SQLALCHEMY_TRACK_MODIFICATIONS = 750
+THEME = "DarkGray12"
+OUTPUT_FILE_NAME = "boo.wav"
+SAMPLE_RATE = 48000
+MODELS = [ 'gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo' ]
+DEFAULT_MODEL = MODELS[ 0 ]
+SQLALCHEMY_DATABASE_URI = r'C:\Users\terry\source\repos\Boo\stores\sqlite\datamodels\Data.db'
+
 
 def set_environment( ):
 	"""

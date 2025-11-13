@@ -8,9 +8,9 @@
   Last Modified By:        Terry D. Eppler
   Last Modified On:        05-01-2025
 ******************************************************************************************
-<copyright file="guro.py" company="Terry D. Eppler">
+<copyright file="views.py" company="Terry D. Eppler">
 
-     name.py
+     views.py
      Copyright ©  2022  Terry Eppler
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,17 +37,23 @@
 
 </copyright>
 <summary>
-name.py
+	views.py
 </summary>
 ******************************************************************************************
 '''
-from flask import render_template
-from . import main
+from flask import render_template, session, redirect, url_for
+from main import main
+from controls import NameForm
 
-@main.app_errorhandler(404)
-def page_not_found(e):
-	return render_template('404.html'), 404
+@main.route( '/', methods=[ 'GET', 'POST' ] )
+def index( ):
+	form = NameForm( )
+	if form.validate_on_submit( ):
+		session[ 'name' ] = form.name.data
+		return redirect( url_for( 'index' ) )
+	return render_template( 'index.html', form=form, name=session.get( 'name' ) )
 
-@main.app_errorhandler(500)
-def internal_server_error(e):
-	return render_template('500.html'), 500
+@main.route( '/user/<name>' )
+def user( name ):
+    return render_template( 'user.html', name=name )
+
