@@ -1,18 +1,17 @@
 '''
   ******************************************************************************************
-      Assembly:                Boo
-      Filename:                main.py
+      Assembly:                Name
+      Filename:                name.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="main.py" company="Terry D. Eppler">
+  <copyright file="guro.py" company="Terry D. Eppler">
 
-         Boo is a df analysis tool integrating GenAI, GptText Processing, and Machine-Learning
-         algorithms for federal analysts.
-         Copyright ©  2022  Terry Eppler
+	     name.py
+	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
      of this software and associated documentation files (the “Software”),
@@ -38,24 +37,7 @@
 
   </copyright>
   <summary>
-    main.py
-    
+    name.py
   </summary>
   ******************************************************************************************
-'''
-from flask import (Flask)
-from flask_bootstrap import Bootstrap
-from flask_moment import Moment
-from flask_sqlalchemy import SQLAlchemy
-import config
-
-app = Flask( __name__ )
-app.config[ 'SECRET_KEY' ] = config.SECRET_KEY
-app.config[ 'SQLALCHEMY_DATABASE_URI' ] = 'sqlite:///' + config.SQLALCHEMY_DATABASE_URI
-app.config[ 'SQLALCHEMY_TRACK_MODIFICATIONS' ] = False
-bootstrap = Bootstrap( app )
-moment = Moment( app )
-db = SQLAlchemy(app)
-
-if __name__ == '__main__':
-	app.run( )
+  '''

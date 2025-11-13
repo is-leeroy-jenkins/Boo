@@ -43,7 +43,6 @@
 '''
 from flask import (render_template, session, redirect, url_for)
 from controls import NameForm
-from .main import app
 
 @app.route( '/', methods=[ 'GET', 'POST' ] )
 def index( ):

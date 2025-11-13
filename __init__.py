@@ -43,32 +43,25 @@
 	</summary>
 	******************************************************************************************
 '''
-from .boo import *
-from .boogr import *
-from .enums import *
-from .schemas import *
-from .controls import *
-from .views import *
-from .models import *
-from flask import Flask, render_template
+from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
-import config
+from main.webconfig import WebConfig
 
-bootstrap = Bootstrap()
-mail = Mail()
-moment = Moment()
-db = SQLAlchemy()
+bootstrap = Bootstrap( )
+mail = Mail( )
+moment = Moment( )
+db = SQLAlchemy( )
 
 def create_app( config_name ):
 	app = Flask( __name__ )
-	app.config.from_object( config[ config_name ] )
-	app.config[ 'SECRET_KEY' ] = config.SECRET_KEY
-	app.config[ 'SQLALCHEMY_DATABASE_URI' ] = 'sqlite:///' + config.SQLALCHEMY_DATABASE_URI
+	app.config.from_object( WebConfig[ config_name ] )
+	app.config[ 'SECRET_KEY' ] = WebConfig.SECRET_KEY
+	app.config[ 'SQLALCHEMY_DATABASE_URI' ] = 'sqlite:///' + WebConfig.SQLALCHEMY_DATABASE_URI
 	app.config[ 'SQLALCHEMY_TRACK_MODIFICATIONS' ] = False
-	config[ config_name ].init_app( app )
+	app.config[ config_name ].init_app( app )
 	bootstrap.init_app( app )
 	mail.init_app(  )
 	moment.init_app( app )

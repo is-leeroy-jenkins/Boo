@@ -41,7 +41,7 @@
     webconfig.py
   </summary>
   ******************************************************************************************
-'''
+  '''
 import os
 from typing import Optional, List, Dict
 
@@ -67,15 +67,86 @@ basedir = r'C:\Users\terry\source\repos\Boo'
 
 def set_environment( ):
 	"""
-
+		
 		Purpose:
 		--------
 		Gets availible environment vaariables for configuration
-
-
+		
+		
 	"""
 	variable_dict = globals( ).items( )
 	for key, value in variable_dict:
 		if 'API' in key or 'ID' in key:
 			os.environ[ key ] = value
 
+class WebConfig:
+	# Keys
+	SECRET_KEY: Optional[ bytes ]
+	MAIL_SERVER: Optional[ str ]
+	MAIL_PORT: Optional[ str ]
+	MAIL_USE_TLS : Optional[ str ]
+	MAIL_USERNAME: Optional[ str ]
+	MAIL_PASSWORD: Optional[ str ]
+	FLASKY_MAIL_SUBJECT_PREFIX: Optional[ str ]
+	FLASKY_MAIL_SENDER: Optional[ str ]
+	FLASKY_ADMIN: Optional[ str ]
+	SQLALCHEMY_TRACK_MODIFICATIONS: Optional[ int ]
+	FalseAPPLICATION_WIDTH: Optional[ int ]
+	THEME: Optional[ str ]
+	OUTPUT_FILE_NAME: Optional[ str ]
+	SAMPLE_RATE: Optional[ int ]
+	MODELS: Optional[ List[ str ] ]
+	DEFAULT_MODEL: Optional[ str ]
+	SQLALCHEMY_DATABASE_URI: Optional[ str ]
+
+	def __int__( self ):
+		self.SECRET_KEY = os.urandom( 32 )
+		self.MAIL_SERVER = os.environ.get( 'MAIL_SERVER', 'smtp.googlemail.com' )
+		self.MAIL_PORT = int( os.environ.get( 'MAIL_PORT', '587' ) )
+		self.MAIL_USE_TLS = os.environ.get( 'MAIL_USE_TLS', 'true' ).lower( ) in [ 'true', 'on', '1' ]
+		self.MAIL_USERNAME = os.environ.get( 'MAIL_USERNAME' )
+		self.MAIL_PASSWORD = os.environ.get( 'MAIL_PASSWORD' )
+		self.FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
+		self.FLASKY_MAIL_SENDER = 'Flasky Admin <flasky@example.com>'
+		self.FLASKY_ADMIN = os.environ.get( 'FLASKY_ADMIN' )
+		self.FalseAPPLICATION_WIDTH = 750
+		self.SQLALCHEMY_TRACK_MODIFICATIONS = 750
+		self.THEME = "DarkGray12"
+		self.OUTPUT_FILE_NAME = "boo.wav"
+		self.SAMPLE_RATE = 48000
+		self.MODELS = [ 'gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo' ]
+		self.DEFAULT_MODEL = self.MODELS[ 0 ]
+		self.SQLALCHEMY_DATABASE_URI = r'C:\Users\terry\source\repos\Boo\stores\sqlite\datamodels\Data.db'
+
+class DevelopmentWebConfig( WebConfig ):
+	DEBUG: Optional[ bool ]
+	SQLALCHEMY_DATABASE_URI: Optional[ str ]
+	
+	def __init__( self ):
+		super( ).__init__( )
+		self.DEBUG = True
+		self.SQLALCHEMY_DATABASE_URI = os.environ.get( 'DEV_DATABASE_URL' )
+
+class TestingWebConfig( WebConfig ):
+	TESTING: Optional[ bool ]
+	SQLALCHEMY_DATABASE_URI: Optional[ str ]
+	
+	def __init__( self ):
+		super( ).__init__( )
+		self.TESTING = True
+		self.SQLALCHEMY_DATABASE_URI = os.environ.get( 'TEST_DATABASE_URL' )
+ 
+class ProductionWebConfig( WebConfig ):
+	SQLALCHEMY_DATABASE_URI: Optional[ str ]
+	config: Optional[ Dict[ str, str ] ]
+	
+	def __init__( self ):
+		super( ).__init__( )
+		self.SQLALCHEMY_DATABASE_URI = os.environ.get( 'DATABASE_URL' )
+		self.config = \
+		{
+			 'development': DevelopmentWebConfig,
+			 'testing': TestingWebConfig,
+			 'production': ProductionWebConfig,
+			 'default': DevelopmentWebConfig
+		 }
