@@ -43,7 +43,7 @@
 	</summary>
 	******************************************************************************************
 '''
-from controls import NameForm
+from forms import NameForm
 from flask import Flask
 from flask import render_template
 from flask_bootstrap import Bootstrap

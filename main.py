@@ -41,30 +41,102 @@
   </summary>
   ******************************************************************************************
 '''
+import os
 from datetime import datetime
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask import Flask, render_template, session, redirect, url_for, flash, request
-from controls import NameForm
+from forms import NameForm, LoginForm, RegisterForm, UploadForm, ProfileForm, FeedbackOnSamePage
 import config
+from flask import Flask, render_template, redirect, url_for, flash, request
+from flask_wtf import FlaskForm, CSRFProtect
+from wtforms import (
+    StringField, PasswordField, BooleanField, SubmitField, TextAreaField,
+    SelectField, FormField
+)
+from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional, Regexp
+from flask_wtf.file import FileField, FileAllowed, FileRequired
+from werkzeug.utils import secure_filename
+from wtforms import Form  # base class for nested sub-forms
+import os
+from pathlib import Path
 
 app = Flask( __name__ )
-app.config['SECRET_KEY'] = config.SECRET_KEY
+app.config[ 'SECRET_KEY' ] = config.SECRET_KEY
 bootstrap = Bootstrap( app )
 moment = Moment( app )
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-	name = None
-	form = NameForm()
-	if form.validate_on_submit():
-		session[ 'name' ] = form.name.data
+CSRFProtect(app)
+@app.route( '/', methods=[ 'GET', 'POST' ] )
+def index( ):
+	fm = NameForm( )
+	if fm.validate_on_submit( ):
+		session[ 'name' ] = fm.name.data
 		return redirect( url_for( 'index' ) )
-	return render_template( 'index.html', form=form, name=session.get( 'name' ) )
+	return render_template( 'index.html', form=fm, name=session.get( 'name' ) )
 
 @app.route( '/user/<name>' )
 def user( name ):
     return render_template( 'user.html', name=name )
+
+@app.route("/")
+def index():
+    return render_template("base.html")
+
+@app.route("/login", methods=["GET","POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        flash(f"Logged in as {form.username.data}", "success")
+        return redirect(url_for("index"))
+    return render_template("login.html", form=form)
+
+@app.route("/register", methods=["GET","POST"])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        flash(f"Registered user '{form.username.data}'", "info")
+        return redirect(url_for("index"))
+    return render_template("register.html", form=form)
+
+@app.route("/upload", methods=["GET","POST"])
+def upload():
+    form = UploadForm()
+    if form.validate_on_submit():
+        f = form.doc.data
+        name = secure_filename(f.filename or "")
+        f.save(os.path.join(app.config["UPLOAD_FOLDER"], name))
+        flash(f"Uploaded '{form.title.data}' as {name}", "success")
+        return redirect(url_for("index"))
+    return render_template("upload.html", form=form)
+
+@app.route("/profile", methods=["GET","POST"])
+def profile():
+    form = ProfileForm()
+    if request.method == "GET":
+        # prefill example
+        form.full_name.data = "Jane Analyst"
+        form.address.line1.data = "123 Market St"
+        form.address.city.data = "Arlington"
+        form.address.state.data = "VA"
+        form.address.zip.data = "22202"
+    if form.validate_on_submit():
+        flash("Profile saved.", "success")
+        return redirect(url_for("index"))
+    return render_template("profile.html", form=form)
+
+# OPTIONAL: two forms on one page (disambiguate with prefixes)
+@app.route("/multi", methods=["GET","POST"])
+def multi():
+    login_form = LoginForm(prefix="login")
+    fb_form = FeedbackOnSamePage(prefix="fb")  # defined inline below for brevity
+    if request.method == "POST":
+        if "login-submit" in request.form and login_form.validate_on_submit():
+            flash(f"Multi-page login: {login_form.username.data}", "success")
+            return redirect(url_for("multi"))
+        if "fb-submit" in request.form and fb_form.validate_on_submit():
+            flash(f"Multi-page feedback: {fb_form.category.data}", "success")
+            return redirect(url_for("multi"))
+    return render_template("base.html")  #
 
 @app.errorhandler( 404 )
 def page_not_found( e ):
