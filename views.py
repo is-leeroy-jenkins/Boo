@@ -42,18 +42,4 @@
 ******************************************************************************************
 '''
 from flask import render_template, session, redirect, url_for
-from main import main
 from controls import NameForm
-
-@main.route( '/', methods=[ 'GET', 'POST' ] )
-def index( ):
-	form = NameForm( )
-	if form.validate_on_submit( ):
-		session[ 'name' ] = form.name.data
-		return redirect( url_for( 'index' ) )
-	return render_template( 'index.html', form=form, name=session.get( 'name' ) )
-
-@main.route( '/user/<name>' )
-def user( name ):
-    return render_template( 'user.html', name=name )
-
