@@ -46,6 +46,8 @@ from datetime import datetime
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask import Flask, render_template, session, redirect, url_for, flash, request
+from flask_sqlalchemy import SQLAlchemy
+
 from forms import NameForm, LoginForm, RegisterForm, UploadForm, ProfileForm, FeedbackOnSamePage
 import config
 from flask import Flask, render_template, redirect, url_for, flash, request
@@ -63,8 +65,10 @@ from pathlib import Path
 
 app = Flask( __name__ )
 app.config[ 'SECRET_KEY' ] = config.SECRET_KEY
+app.config[ 'SQLALCHEMY_DATABASE_URI' ] = config.SQLALCHEMY_DATABASE_URI
 bootstrap = Bootstrap( app )
 moment = Moment( app )
+db = SQLAlchemy( app )
 CSRFProtect(app)
 @app.route( '/', methods=[ 'GET', 'POST' ] )
 def index( ):

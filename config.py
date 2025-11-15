@@ -80,7 +80,7 @@ OUTPUT_FILE_NAME = "boo.wav"
 SAMPLE_RATE = 48000
 MODELS = [ 'gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo' ]
 DEFAULT_MODEL = MODELS[ 0 ]
-SQLALCHEMY_DATABASE_URI = r'C:\Users\terry\source\repos\Boo\stores\sqlite\datamodels\Data.db'
+SQLALCHEMY_DATABASE_URI = r'sqlite:///C:\Users\terry\source\repos\Boo\stores\sqlite\datamodels\Data.db'
 
 
 def set_environment( ):
