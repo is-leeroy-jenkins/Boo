@@ -69,7 +69,7 @@ app.config[ 'SQLALCHEMY_DATABASE_URI' ] = config.SQLALCHEMY_DATABASE_URI
 bootstrap = Bootstrap( app )
 moment = Moment( app )
 db = SQLAlchemy( app )
-CSRFProtect(app)
+CSRFProtect( app )
 @app.route( '/', methods=[ 'GET', 'POST' ] )
 def index( ):
 	fm = NameForm( )
