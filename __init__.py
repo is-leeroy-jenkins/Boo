@@ -43,13 +43,5 @@
 	</summary>
 	******************************************************************************************
 '''
-from forms import NameForm
-from flask import Flask
-from flask import render_template
-from flask_bootstrap import Bootstrap
-from flask_mail import Mail
-from flask_moment import Moment
-from flask_sqlalchemy import SQLAlchemy
-from flask import render_template, session, redirect, url_for
 
 
