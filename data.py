@@ -454,7 +454,7 @@ class SQLite( ):
 			error = ErrorDialog( exception )
 			error.show( )
 
-class Chroma:
+class Chroma( ):
 	'''
 
 		Purpose:
