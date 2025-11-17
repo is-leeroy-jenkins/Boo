@@ -45,11 +45,9 @@
 import os
 from pathlib import Path
 from typing import Any, List, Optional, Dict
-
 import tiktoken
 from openai import OpenAI
-
-from boogr import ErrorDialog, Error
+from .boogr import ErrorDialog, Error
 
 def throw_if( name: str, value: object ):
 	if value is None:

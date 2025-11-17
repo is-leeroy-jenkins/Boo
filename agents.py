@@ -47,7 +47,7 @@ from typing import Any, List, Optional, Dict
 import tiktoken
 from openai import OpenAI
 from schemas import Prompt, Reasoning, Text, Format
-from boogr import ErrorDialog, Error
+from .boogr import ErrorDialog, Error
 
 
 def throw_if( name: str, value: object ):

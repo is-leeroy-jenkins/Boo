@@ -59,10 +59,10 @@ class NameForm( FlaskForm ):
 	name = StringField( 'What is your name?', validators=[ DataRequired( ) ] )
 	submit = SubmitField( 'Submit' )
 	
-class LoginForm(FlaskForm):
+class LoginForm( FlaskForm ):
     username = StringField( 'Username', validators=[ DataRequired( ), Length( min=3, max=64 ) ] )
     password = PasswordField( 'Password', validators=[ DataRequired( ) ] )
-    remember = BooleanField( 'Remember me' )
+    remember = BooleanField( 'Remember' )
     submit = SubmitField( 'Login' )
 
 class RegisterForm( FlaskForm ):
@@ -94,7 +94,7 @@ class ProfileForm( FlaskForm ):
     submit = SubmitField( 'Save Profile' )
 
 # Tiny feedback form for the multi-form example:
-class FeedbackOnSamePage(FlaskForm):
+class FeedbackOnSamePage( FlaskForm ):
     category = SelectField( 'Category', choices=[ ( 'bug','Bug' ),( 'feature','Feature' ),( 'other','Other' ) ] )
     message = TextAreaField( 'Message', validators=[ DataRequired( ), Length( min=10) ] )
     submit = SubmitField( 'Send' )

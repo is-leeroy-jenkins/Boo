@@ -1,17 +1,17 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                Boogr.py
+      Filename:                init.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="boogr.py" company="Terry D. Eppler">
+  <copyright file="init.py" company="Terry D. Eppler">
 
-	     Boo is a dtat analysis tool integrating GenAI, GptText Processing, and Machine-Learning
-	     algorithms for federal analysts.
+	     init.py is part of a data analysis tool integrating GenAI, Text Processing,
+	     and Machine-Learning algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -38,36 +38,50 @@
 
   </copyright>
   <summary>
-    Boogr.py
+    init.py
   </summary>
   ******************************************************************************************
   '''
+from __future__ import annotations
 import base64
+import cv2
 from enum import Enum
 import fitz
 import FreeSimpleGUI as sg
+from FreeSimpleGUI import Text, Frame, Sizegrip
 from googlesearch import search
-import random
 import io
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasAgg
 import matplotlib.figure
 from matplotlib import cm
 from mpl_toolkits.mplot3d.axes3d import get_test_data
 from matplotlib.ticker import NullFormatter
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, FigureCanvasAgg
+from matplotlib.figure import Figure
 from mpl_toolkits.axes_grid1.axes_rgb import RGBAxes
 import numpy as np
+from numpy.random import rand
 import os
 from pandas import read_csv as CsvReader
 from pandas import read_excel as ExcelReader
+from pydantic import BaseModel
 from PIL import Image, ImageTk, ImageSequence
-from enums import EXT, Client
+import pymupdf
+import random
+from random import randint
+from .static import EXT, Client
 from sys import exit, exc_info
-from minion import App
+from .minion import App
 import traceback
 import urllib.request
 import webbrowser
-from typing import List, Optional, Tuple
+from typing import Dict, List, Tuple, Any, Text, Optional
+from mpl_toolkits.mplot3d.axes3d import get_test_data
+from matplotlib.ticker import NullFormatter
+import inspect
+
+matplotlib.use( 'TkAgg' )
+
 
 class Error( Exception ):
 	'''
@@ -79,11 +93,17 @@ class Error( Exception ):
         Constructor:
 		----------
         Error( error: Exception, heading: str=None, cause: str=None,
-        method: str=None, module: str=None )
+                method: str=None, module: str=None )
 
     '''
 	error: Optional[ Exception ]
-	
+	heading: Optional[ str ]
+	cause: Optional[ str ]
+	method: Optional[ str ]
+	type: Optional[ BaseException ]
+	trace: Optional[ str ]
+	info: Optional[ str ]
+
 	def __init__( self, error: Exception, heading: str=None, cause: str=None,
 	              method: str=None, module: str=None ):
 		super( ).__init__( )
@@ -95,7 +115,7 @@ class Error( Exception ):
 		self.type = exc_info( )[ 0 ]
 		self.trace = traceback.format_exc( )
 		self.info = str( exc_info( )[ 0 ] ) + ': \r\n \r\n' + traceback.format_exc( )
-	
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -113,7 +133,7 @@ class Error( Exception ):
 
 		'''
 		if self.info is not None:
-			return self.info
+				return self.info
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -152,12 +172,13 @@ class ButtonIcon( ):
 		Class representing form images
 
     '''
-	
+
 	def __init__( self, png: Enum ):
 		self.name = png.name
-		self.button = r'resources\img\button'
+		self.button = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\button'
 		self.file_path = self.button + r'\\' + self.name + '.png'
-	
+
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -174,8 +195,10 @@ class ButtonIcon( ):
 			str | None
 
 		'''
-		return self.file_path
-	
+		if self.name is not None:
+				return self.name
+
+
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
@@ -192,9 +215,7 @@ class ButtonIcon( ):
 			List[ str ] | None
 
 		'''
-		return [ 'button',
-		         'name',
-		         'file_path' ]
+		return [ 'button', 'name', 'file_path' ]
 
 class TitleIcon( ):
 	'''
@@ -208,12 +229,13 @@ class TitleIcon( ):
 		Class used to define the TitleIcon used on the GUI
 
 	'''
-	
+
 	def __init__( self, ico ):
 		self.name = ico.name
-		self.folder = r'resources\ico'
+		self.folder = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico'
 		self.file_path = self.folder + r'\\' + self.name + r'.ico'
-	
+
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -232,7 +254,7 @@ class TitleIcon( ):
 		'''
 		if self.file_path is not None:
 			return self.file_path
-	
+
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
@@ -249,11 +271,9 @@ class TitleIcon( ):
 			List[ str ] | None
 
 		'''
-		return [ 'folder',
-		         'name',
-		         'authority_filepath' ]
+		return [ 'folder', 'name', 'authority_filepath' ]
 
-class Dark( ):
+class Dark(  ):
 	'''
 
         Constructor:
@@ -281,7 +301,9 @@ class Dark( ):
 	form_size: Optional[ Tuple[ int, int ] ]
 	keep_on_top: Optional[ bool ]
 	top_level: Optional[ bool ]
-	
+	resizeable: Optional[ bool ]
+	context_menu: Optional[ List[ List[ str ] ] ]
+
 	def __init__( self ):
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -298,16 +320,17 @@ class Dark( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'\resources\ico\boo.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
-		self.form_size = ( 500, 300 )
+		self.form_size = (400, 200)
 		self.keep_on_top = True
 		self.top_level = True
 		self.resizable = True,
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_SETTINGS_EXIT
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -339,24 +362,25 @@ class Dark( ):
 		         'button_forecolor',
 		         'icon_path',
 		         'theme_font',
-		         'scrollbar_color',
-		         'resizable',
+		         'scrollbar_color'
 		         'keep_on_top',
-		         'top_level', ]
+		         'top_level',
+		         'resizeable',
+		         'context_menu', ]
 
 class FileDialog( Dark ):
 	'''
 
-	    Construcotr: 
+	    Construcotr:
 	    ------------
 	    FileDialog( )
 
-	    Purpose: 
+	    Purpose:
 	    -------
 	    Class that creates dialog to get path
 
 	'''
-	
+
 	def __init__( self, extension=EXT.XLSX ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -374,19 +398,20 @@ class FileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\browse.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\file_browse.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = ( 600, 250 )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.form_size = (500, 240)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_SETTINGS_EXIT
 		self.selected_item = None
 		self.message = 'Grab File'
 		self.extension = extension
-		self.resizable = True
-		self.keep_on_top = True
-		self.top_level = True
 		self.excel = (('Excel', '*.xlsx'),)
 		self.csv = (('CSV', '*.csv'),)
 		self.pdf = (('PDF', '*.pdf'),)
@@ -395,7 +420,7 @@ class FileDialog( Dark ):
 		self.access = (('Access', '*.accdb'),)
 		self.sqlite = (('SQLite', '*.db'),)
 		self.sqlserver = (('MSSQL', '*.mdf', '*.ldf', '*.sdf'),)
-	
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -412,8 +437,7 @@ class FileDialog( Dark ):
 			str | None
 
 		'''
-		if self.selected_item is not None:
-			return self.selected_item
+		return self.selected_item
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -432,8 +456,6 @@ class FileDialog( Dark ):
 
 		'''
 		return [ 'form_size',
-		         'settings_path',
-		         'original',
 		         'theme_background',
 		         'theme_textcolor',
 		         'element_backcolor',
@@ -447,8 +469,10 @@ class FileDialog( Dark ):
 		         'button_forecolor',
 		         'icon_path',
 		         'theme_font',
-		         'scrollbar_color',
-		         'original',
+		         'scrollbar_color'
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable',
 		         'selected_item',
 		         'show',
 		         'message',
@@ -461,7 +485,7 @@ class FileDialog( Dark ):
 		         'access',
 		         'sqlite',
 		         'sqlserver' ]
-	
+
 	def show( self ) -> None:
 		'''
 
@@ -480,21 +504,19 @@ class FileDialog( Dark ):
 		'''
 		try:
 			_layout = [ [ sg.Text( ) ],
-			            [ sg.Text( self.message, font=( 'Roboto', 12 ) ) ],
+			            [ sg.Text( self.message, font = ( 'Roboto', 11 ) ) ],
 			            [ sg.Text( ) ],
 			            [ sg.Input( key='-PATH-' ), sg.FileBrowse( size=( 15, 1 ) ) ],
 			            [ sg.Text( ) ],
 			            [ sg.Text( ) ],
 			            [ sg.OK( size=( 8, 1 ), ), sg.Cancel( size=( 10, 1 ) ) ] ]
-			
-			_window = sg.Window( 'Boo', _layout,
+
+			_window = sg.Window( ' File Search', _layout,
 				font=self.theme_font,
 				size=self.form_size,
-				resizable=self.resizable,
-				keep_on_top=self.keep_on_top,
-				force_toplevel=self.top_level,
-				icon=self.icon_path )
-			
+				icon=self.icon_path,
+				keep_on_top=self.keep_on_top )
+
 			while True:
 				_event, _values = _window.read( )
 				if _event in ( sg.WIN_CLOSED, sg.WIN_X_EVENT, 'Cancel' ):
@@ -502,7 +524,7 @@ class FileDialog( Dark ):
 				elif _event == 'OK':
 					self.selected_item = _values[ '-PATH-' ]
 					_window.close( )
-			
+
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -524,7 +546,7 @@ class FolderDialog( Dark ):
 		FolderDialog( )
 
 	'''
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -542,18 +564,19 @@ class FolderDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\browse.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\folder_browse.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
-		self.resizable = True
-		self.keep_on_top = True
-		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = ( 600, 250 )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.form_size = (500, 250)
 		self.selected_item = None
-	
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_SETTINGS_EXIT
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -570,9 +593,9 @@ class FolderDialog( Dark ):
 			str | None
 
 		'''
-		if isinstance( self.selected_item, str ):
+		if self.selected_item is not None:
 			return self.selected_item
-	
+
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
@@ -606,10 +629,13 @@ class FolderDialog( Dark ):
 		         'icon_path',
 		         'theme_font',
 		         'scrollbar_color',
-		         'original',
+		         'context_menu',
 		         'selected_item',
-		         'show' ]
-	
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -628,21 +654,22 @@ class FolderDialog( Dark ):
 		'''
 		try:
 			_layout = [ [ sg.Text( ) ],
-			            [ sg.Text( 'Search for Directory' ) ],
+			            [ sg.Text( 'Folder Search' ) ],
 			            [ sg.Text( ) ],
-			            [ sg.Input( key='-PATH-' ), sg.FolderBrowse( size=(15, 1) ) ],
-			            [ sg.Text( size=(100, 1) ) ],
-			            [ sg.Text( size=(100, 1) ) ],
-			            [ sg.OK( size=(8, 1) ), sg.Cancel( size=(10, 1) ) ] ]
-			
-			_window = sg.Window( '  Boo', _layout,
+			            [ sg.Input( key='-PATH-' ), sg.FolderBrowse( size=( 15, 1 ) ) ],
+			            [ sg.Text( size=( 100, 1 ) ) ],
+			            [ sg.Text( size=( 100, 1 ) ) ],
+			            [ sg.OK( size=( 8, 1 ) ), sg.Cancel( size=( 10, 1 ) ) ] ]
+
+			_window = sg.Window( '  Gooey', _layout,
 				font=self.theme_font,
-				resizable=self.resizable,
-				keep_on_top=self.keep_on_top,
-				force_toplevel=self.top_level,
 				size=self.form_size,
-				icon=self.icon_path )
-			
+				icon=self.icon_path,
+				right_click_menu=self.context_menu,
+				keep_on_top=self.keep_on_top,
+				resizable=self.resizable,
+				force_toplevel=self.top_level )
+
 			while True:
 				_event, _values = _window.read( )
 				if _event in (sg.WIN_CLOSED, sg.WIN_X_EVENT, 'Cancel'):
@@ -653,7 +680,7 @@ class FolderDialog( Dark ):
 						title='Results',
 						icon=self.icon_path,
 						font=self.theme_font )
-			
+
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -675,7 +702,8 @@ class SaveFileDialog( Dark ):
         Class define object that provides a dialog to locate file destinations
 
     '''
-	
+	original: Optional[ str ]
+
 	def __init__( self, path='' ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -693,19 +721,19 @@ class SaveFileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\save.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\Save.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.file_name = None
-		self.resizable = True
-		self.keep_on_top = True
-		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'resources\theme' )
-		self.form_size = ( 600, 250 )
-		self.original = path
-	
+		sg.user_settings_save( 'Boo', r'\resources\theme' )
+		self.form_size = (550, 250)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.original = None
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -724,7 +752,7 @@ class SaveFileDialog( Dark ):
 		'''
 		if self.file_name is not None:
 			return self.file_name
-	
+
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
@@ -760,8 +788,11 @@ class SaveFileDialog( Dark ):
 		         'scrollbar_color',
 		         'original',
 		         'file_name',
-		         'show' ]
-	
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -781,16 +812,17 @@ class SaveFileDialog( Dark ):
 		try:
 			_username = os.environ.get( 'USERNAME' )
 			_filename = sg.popup_get_file( 'Select Location / Enter File Name',
-				title=' Boo',
+				title='  Gooey',
 				font=self.theme_font,
-				icon=self.icon_path,
-				keep_on_top=self.keep_on_top,
-				force_toplevel=self.top_level,
-				save_as=True )
-			
+				icon= self.icon_path,
+				save_as=True,
+				keep_on_top=self.keep_on_top )
+
 			self.file_name = _filename
-			
-			if os.path.exists( self.original ):
+
+			if (self.original is not None and
+					self.original != self.file_name and
+					os.path.exists( self.original )):
 				_src = io.open( self.original ).read( )
 				_dest = io.open( _filename, 'w+' ).write( _src )
 		except Exception as e:
@@ -814,9 +846,7 @@ class GoogleDialog( Dark ):
 
 
 	'''
-	query_text: Optional[ str ]
-	results: Optional[ List ]
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -834,19 +864,20 @@ class GoogleDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\google.ico'
-		self.theme_font = ( 'Roboto', 12 )
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boogr.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.results = [ ]
 		self.querytext = None
-		self.resizable = True
-		self.keep_on_top = True
-		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = ( 500, 215 )
-	
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.form_size = (500, 235)
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\web\google.png'
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -863,9 +894,9 @@ class GoogleDialog( Dark ):
 			str | None
 
 		'''
-		if isinstance( self.results, list ):
+		if self.results is not None:
 			return self.results[ 0 ]
-	
+
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
@@ -900,8 +931,11 @@ class GoogleDialog( Dark ):
 		         'theme_font',
 		         'scrollbar_color',
 		         'image',
-		         'show' ]
-	
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -920,31 +954,32 @@ class GoogleDialog( Dark ):
 		'''
 		try:
 			_layout = [ [ sg.Text( ) ],
-			            [ sg.Text( size=( 5, 1) ), sg.Input( key='-QUERY-', size=( 40, 5 ) ) ],
-			            [ sg.Text( size=( 100, 1) ) ],
-			            [ sg.Text( size=( 5, 1) ), sg.Submit( size=( 15, 1 ) ),
-			              sg.Text( size=( 5, 1 ) ), sg.Cancel( size=( 15, 1 ) ) ] ]
-			
-			_window = sg.Window( ' Boogle', _layout,
+			            [ sg.Image( source=self.image ) ],
+			            [ sg.Text( size=(10, 1) ),
+			              sg.Input( key='-QUERY-', size=(40, 2) ) ],
+			            [ sg.Text( size=(100, 1) ) ],
+			            [ sg.Text( size=(100, 1) ) ],
+			            [ sg.Text( size=(10, 1) ), sg.Submit( size=(15, 1) ),
+			              sg.Text( size=(5, 1) ), sg.Cancel( size=(15, 1) ) ] ]
+
+			_window = sg.Window( ' Search', _layout,
 				icon=self.icon_path,
 				font=self.theme_font,
 				size=self.form_size,
-				resizable=self.resizable,
-				keep_on_top=self.keep_on_top,
-				force_toplevel=self.top_level, )
-			
+				resizable=self.resizable )
+
 			while True:
 				_event, _values = _window.read( )
 				if _event in (sg.WIN_X_EVENT, sg.WIN_CLOSED, 'Cancel'):
 					break
 				elif _event == 'Submit':
 					self.querytext = _values[ '-QUERY-' ]
-					_google = search( query=self.querytext  )
+					_query = 'www.google.com\\search?q=' + self.querytext
+					_google = search( term=self.querytext )
 					_app = App( Client.Edge )
-					for result in list( _google ):
-						self.results.append( result )
-						_app.run_args( result )
-			
+					_app.run_args( _query )
+					break
+
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -962,13 +997,13 @@ class EmailDialog( Dark ):
 	    Class providing form used to send email messages.
 
 	    Construcotr:
-	    ------------ 
+	    ------------
 	    EmailDialog( sender: str=None, receiver: str=None,
-	    subject: str=None, heading: str=None )
+			    subject: str=None, heading: str=None )
 
 
     '''
-	
+
 	def __init__( self, sender: str=None, receiver: list[ str ]=None,
 	              subject: str=None, message: list[ str ]=None ):
 		super( ).__init__( )
@@ -987,19 +1022,23 @@ class EmailDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'resources\ico\boo.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.image = r'resources\img\app\web\outlook.png'
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\app\web\outlook.png'
 		self.form_size = (570, 550)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
 		self.sender = sender
 		self.receiver = receiver
 		self.subject = subject
 		self.message = message
-	
+
 	def __str__( self ) -> List[ str ] | None:
 		'''
 
@@ -1018,7 +1057,7 @@ class EmailDialog( Dark ):
 		'''
 		if self.message is not None:
 			return self.message
-	
+
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
@@ -1059,8 +1098,11 @@ class EmailDialog( Dark ):
 		         'others',
 		         'password',
 		         'username',
-		         'show' ]
-	
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -1078,50 +1120,49 @@ class EmailDialog( Dark ):
 
 		'''
 		try:
-			_btn = ( 20, 1 )
-			_input = ( 35, 1 )
-			_spc = ( 5, 1 )
-			_img = ( 50, 22 )
+			_btn = (20, 1)
+			_input = (35, 1)
+			_spc = (5, 1)
+			_img = (50, 22)
 			_clr = '#69B1EF'
-			_layout = [ [ sg.Text( ' ', size=_spc ), ],
-			            [ sg.Text( ' ', size=_spc ), ],
-			            [ sg.Text( ' ', size=_spc ),
-			              sg.Text( 'From:', size=_btn, text_color=_clr ),
-			              sg.Input( key='-EMAIL FROM-', size=_input ) ],
-			            [ sg.Text( ' ', size=_spc ), sg.Text( 'To:', size=_btn,
-				            text_color=_clr ),
-			              sg.Input( key='-EMAIL TO-', size=_input ) ],
-			            [ sg.Text( ' ', size=_spc ),
-			              sg.Text( 'Subject:', size=_btn, text_color=_clr ),
-			              sg.Input( key='-EMAIL SUBJECT-', size=_input ) ],
-			            [ sg.Text( ' ', size=_spc ), sg.Text( ) ],
-			            [ sg.Text( ' ', size=_spc ),
-			              sg.Text( 'Username:', size=_btn, text_color=_clr ),
-			              sg.Input( key='-USER-', size=_input ) ],
-			            [ sg.Text( ' ', size=_spc ),
-			              sg.Text( 'Password:', size=_btn, text_color=_clr ),
-			              sg.Input( password_char='*', key='-PASSWORD-', size=_input ) ],
-			            [ sg.Text( ' ', size=_spc ) ],
-			            [ sg.Text( ' ', size=_spc ),
-			              sg.Multiline( 'Type your message here', size=(65, 10),
-				              key='-EMAIL TEXT-' ) ],
-			            [ sg.Text( ' ', size=(100, 1) ) ],
-			            [ sg.Text( ' ', size=_spc ), sg.Button( 'Send', size=_btn ),
-			              sg.Text( ' ', size=_btn ), sg.Button( 'Cancel', size=_btn ) ] ]
-			
-			_window = sg.Window( ' Send Message', _layout,
+			_layout = [ [ sg.Text( ' ', size = _spc ), ],
+			            [ sg.Text( ' ', size = _spc ), ],
+			            [ sg.Text( ' ', size = _spc ),
+			              sg.Text( 'From:', size = _btn, text_color = _clr ),
+			              sg.Input( key = '-EMAIL FROM-', size = _input ) ],
+			            [ sg.Text( ' ', size = _spc ), sg.Text( 'To:', size = _btn,
+				            text_color = _clr ),
+			              sg.Input( key = '-EMAIL TO-', size = _input ) ],
+			            [ sg.Text( ' ', size = _spc ),
+			              sg.Text( 'Subject:', size = _btn, text_color = _clr ),
+			              sg.Input( key = '-EMAIL SUBJECT-', size = _input ) ],
+			            [ sg.Text( ' ', size = _spc ), sg.Text( ) ],
+			            [ sg.Text( ' ', size = _spc ),
+			              sg.Text( 'Username:', size = _btn, text_color = _clr ),
+			              sg.Input( key = '-USER-', size = _input ) ],
+			            [ sg.Text( ' ', size = _spc ),
+			              sg.Text( 'Password:', size = _btn, text_color = _clr ),
+			              sg.Input( password_char = '*', key = '-PASSWORD-', size = _input ) ],
+			            [ sg.Text( ' ', size = _spc ) ],
+			            [ sg.Text( ' ', size = _spc ),
+			              sg.Multiline( 'Type your message here', size = (65, 10),
+				              key = '-EMAIL TEXT-' ) ],
+			            [ sg.Text( ' ', size = (100, 1) ) ],
+			            [ sg.Text( ' ', size = _spc ), sg.Button( 'Send', size = _btn ),
+			              sg.Text( ' ', size = _btn ), sg.Button( 'Cancel', size = _btn ) ] ]
+
+			_window = sg.Window( '  Email', _layout,
 				icon=self.icon_path,
 				size=self.form_size,
-				keep_on_top=self.keep_on_top,
-				force_toplevel=self.top_level, )
-			
+				keep_on_top=self.keep_on_top )
+
 			while True:  # Event Loop
 				_event, _values = _window.read( )
 				if _event in (sg.WIN_CLOSED, 'Cancel', 'Exit'):
 					break
 				if _event == 'Send':
 					sg.popup_quick_message( 'Sending...this will take a moment...',
-						background_color='red' )
+						background_color = 'red' )
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -1141,10 +1182,8 @@ class MessageDialog( Dark ):
 	    Construcotr:  MessageDialog( documents = '' )
 
     '''
-	
-	# Fields
-	text: str = None
-	
+	text: Optional[ str ]
+
 	def __init__( self, text: str=None ):
 		self.text = text
 		super( ).__init__( )
@@ -1163,14 +1202,17 @@ class MessageDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = (500, 300)
-	
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.form_size = (450, 250)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -1224,8 +1266,11 @@ class MessageDialog( Dark ):
 		         'theme_font',
 		         'scrollbar_color',
 		         'image',
-		         'show' ]
-	
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -1245,33 +1290,32 @@ class MessageDialog( Dark ):
 		try:
 			_txtsz = (100, 1)
 			_btnsz = (10, 1)
-			_layout = [ [ sg.Text( size=_txtsz ) ],
-			            [ sg.Text( size=_txtsz ) ],
-			            [ sg.Text( size=( 5, 1 ) ),
+			_layout = [ [ sg.Text( size = _txtsz ) ],
+			            [ sg.Text( size = _txtsz ) ],
+			            [ sg.Text( size = (5, 1) ),
 			              sg.Text( self.text,
-				              font=( 'Roboto', 12 ),
-				              enable_events=True,
-				              key='-TEXT-',
-				              text_color='#69B1EF',
-				              size=( 80, 1 ) ) ],
-			            [ sg.Text( size=_txtsz ) ],
-			            [ sg.Text( size=_txtsz ) ],
-			            [ sg.Text( size=_txtsz ) ],
-			            [ sg.Text( size=( 5, 1 ) ), sg.Ok( size=_btnsz ),
-			              sg.Text( size=( 15, 1 ) ), sg.Cancel( size=_btnsz ) ] ]
-			
-			_window = sg.Window( r' Boo', _layout,
+				              font = ('Roboto', 11),
+				              enable_events = True,
+				              key = '-TEXT-',
+				              text_color = '#69B1EF',
+				              size = (80, 1) ) ],
+			            [ sg.Text( size = _txtsz ) ],
+			            [ sg.Text( size = _txtsz ) ],
+			            [ sg.Text( size = _txtsz ) ],
+			            [ sg.Text( size = (5, 1) ), sg.Ok( size = _btnsz ),
+			              sg.Text( size = (15, 1) ), sg.Cancel( size = _btnsz ) ] ]
+
+			_window = sg.Window( r' Message', _layout,
 				icon=self.icon_path,
-				keep_on_top=self.keep_on_top,
-				force_toplevel=self.top_level,
 				font=self.theme_font,
-				size=self.form_size )
-			
+				size=self.form_size,
+				keep_on_top=True )
+
 			while True:
 				_event, _values = _window.read( )
 				if _event in (sg.WIN_CLOSED, sg.WIN_X_EVENT, 'Ok', 'Cancel'):
 					break
-			
+
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -1284,20 +1328,21 @@ class MessageDialog( Dark ):
 class ErrorDialog( Dark ):
 	'''
 
+	    Construcotr:  ErrorDialog( error )
 
-	    Purpose:
-	    Class that displays excetption target_values that accepts
-        a single, optional argument 'error' of scaler GptError
+	    Purpose:  Class that displays excetption target_values that accepts
+            a single, optional argument 'error' of scaler Error
 
     '''
+
 	# Fields
-	error: Optional[ Exception ]
-	heading: Optional[ str ]
-	module: Optional[ str ]
-	info: Optional[ str ]
-	cause: Optional[ str ]
-	method: Optional[ str ]
-	
+	error: Exception = None
+	heading: str = None
+	module: str = None
+	info: str = None
+	cause: str = None
+	method: str = None
+
 	def __init__( self, error: Error ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -1315,20 +1360,24 @@ class ErrorDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'resources\ico\error.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\error.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'resources\theme' )
-		self.form_size = ( 500, 300 )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.form_size = (500, 300)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
 		self.error = error
 		self.heading = error.heading
 		self.module = error.module
 		self.info = error.trace
 		self.cause = error.cause
 		self.method = error.method
-	
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -1345,7 +1394,7 @@ class ErrorDialog( Dark ):
 			str | None
 
 		'''
-		if self.info is not None:
+		if isinstance( self.info, str ):
 			return self.info
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -1381,9 +1430,6 @@ class ErrorDialog( Dark ):
 		         'theme_font',
 		         'scrollbar_color',
 		         'progressbar_color',
-		         'resizeable',
-		         'force_toplevel',
-		         'keep_on_top',
 		         'info',
 		         'cause',
 		         'method',
@@ -1392,51 +1438,50 @@ class ErrorDialog( Dark ):
 		         'module',
 		         'scaler',
 		         'message',
-		         'show' ]
-	
+		         'show', ]
+
 	def show( self ) -> object:
 		'''
 
             Purpose:
             --------
-            Displays the Error Window
+
 
             Parameters:
             ----------
-            Void
+
 
             Returns:
             ---------
-            sg.Window
+
 
 		'''
 		_msg = self.heading if isinstance( self.heading, str ) else None
 		_info = f'Module:\t{self.module}\r\nClass:\t{self.cause}\r\n' \
 		        f'Method:\t{self.method}\r\n \r\n{self.info}'
 		_red = '#F70202'
-		_font = ('Roboto', 12)
+		_font = ('Roboto', 10)
 		_padsz = (3, 3)
 		_layout = [ [ sg.Text( ) ],
-		            [ sg.Text( f'{_msg}', size=( 100, 1 ), key='-MSG-', text_color=_red,
-			            font=_font ) ],
-		            [ sg.Text( size=(150, 1) ) ],
-		            [ sg.Multiline( f'{_info}', key='-INFO-', size=(80, 7), pad=_padsz ) ],
+		            [ sg.Text( f'{_msg}', size = (100, 1), key = '-MSG-', text_color = _red,
+			            font = _font ) ],
+		            [ sg.Text( size = (150, 1) ) ],
+		            [ sg.Multiline( f'{_info}', key = '-INFO-', size = (80, 7), pad = _padsz ) ],
 		            [ sg.Text( ) ],
-		            [ sg.Text( size=(20, 1) ), sg.Cancel( size=(15, 1), key='-CANCEL-' ),
-		              sg.Text( size=(10, 1) ), sg.Ok( size=(15, 1), key='-OK-' ) ] ]
-		
-		_window = sg.Window( r' Boo', _layout,
-			icon=self.icon_path,
-			font=self.theme_font,
-			size=self.form_size,
-			keep_on_top=self.keep_on_top,
-			force_toplevel=self.top_level, )
-		
+		            [ sg.Text( size = (20, 1) ), sg.Cancel( size = (15, 1), key = '-CANCEL-' ),
+		              sg.Text( size = (10, 1) ), sg.Ok( size = (15, 1), key = '-OK-' ) ] ]
+
+		_window = sg.Window( r' Message', _layout,
+			icon = self.icon_path,
+			font = self.theme_font,
+			size = self.form_size,
+			keep_on_top=True )
+
 		while True:
 			_event, _values = _window.read( )
 			if _event in (sg.WIN_CLOSED, sg.WIN_X_EVENT, 'Canel', '-OK-'):
 				break
-		
+
 		_window.close( )
 
 class InputDialog( Dark ):
@@ -1450,7 +1495,7 @@ class InputDialog( Dark ):
 	# Fields
 	theme_background: str = None
 	response: str = None
-	
+
 	def __init__( self, question: str = None ):
 		super( ).__init__( )
 		self.question = question
@@ -1469,15 +1514,19 @@ class InputDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/question.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = (500, 300)
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.form_size = (500, 250)
 		self.selected_item = None
-	
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -1494,7 +1543,7 @@ class InputDialog( Dark ):
 			str | None
 
 		'''
-		if isinstance( self.response, str ):
+		if self.response is not None:
 			return self.response
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -1530,8 +1579,11 @@ class InputDialog( Dark ):
 		         'theme_font',
 		         'scrollbar_color',
 		         'input_text',
-		         'show' ]
-	
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -1550,36 +1602,36 @@ class InputDialog( Dark ):
 		'''
 		try:
 			_layout = [ [ sg.Text( ) ],
-			            [ sg.Text( self.question, font=('Roboto', 12, 'bold') ) ],
+			            [ sg.Text( self.question, font=('Roboto', 11 ) ) ],
 			            [ sg.Text( ) ],
 			            [ sg.Text( 'Enter:', size=(10, 2) ),
 			              sg.InputText( key='-INPUT-', size=(40, 2) ) ],
-			            [ sg.Text( size=(100, 1) ) ],
-			            [ sg.Text( size=(100, 1) ) ],
-			            [ sg.Text( size=(10, 1) ),
-			              sg.Submit( size=(15, 1), key='-SUBMIT-' ),
-			              sg.Text( size=(5, 1) ),
-			              sg.Cancel( size=(15, 1), key='-CANCEL-' ) ] ]
-			
-			_window = sg.Window( ' Boo', _layout,
-				icon=self.icon_path,
-				font=self.theme_font,
-				size=self.form_size,
+			            [ sg.Text( size = (100, 1) ) ],
+			            [ sg.Text( size = (100, 1) ) ],
+			            [ sg.Text( size = (10, 1) ),
+			              sg.Submit( size = (15, 1), key = '-SUBMIT-' ),
+			              sg.Text( size = (5, 1) ),
+			              sg.Cancel( size = (15, 1), key = '-CANCEL-' ) ] ]
+
+			_window = sg.Window( '  Input', _layout,
+				icon = self.icon_path,
+				font = self.theme_font,
+				size = self.form_size,
 				keep_on_top=self.keep_on_top,
-				force_toplevel=self.top_level, )
-			
+				resizable=self.resizable,
+				force_toplevel=self.top_level )
+
 			while True:
 				_event, _values = _window.read( )
 				if _event in (sg.WIN_X_EVENT, sg.WIN_CLOSED, '-CANCEL-', 'Exit'):
 					break
-				
+
 				self.response = _values[ '-INPUT-' ]
-				sg.popup( _event, _values,
-					self.response,
-					text_color=sg.theme_text_color( ),
-					font=self.theme_font,
-					icon=self.icon )
-			
+				sg.popup( _event, _values, self.response,
+					text_color = sg.theme_text_color( ),
+					font = self.theme_font,
+					icon = self.icon )
+
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -1601,8 +1653,8 @@ class ScrollingDialog( Dark ):
             Provides form for multiline path/cleaned_lines
 
 	'''
-	
-	def __init__( self, text='' ):
+
+	def __init__( self, text: str=None ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -1619,15 +1671,19 @@ class ScrollingDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (700, 600)
-		self.text = text if isinstance( text, str ) and text != '' else None
-	
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
+		self.text = text
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -1646,7 +1702,7 @@ class ScrollingDialog( Dark ):
 		'''
 		if isinstance( self.text, str ):
 			return self.text
-	
+
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
@@ -1663,13 +1719,27 @@ class ScrollingDialog( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -1693,31 +1763,31 @@ class ScrollingDialog( Dark ):
 			_arrow = self.arrowcolor
 			_back = super( ).button_backcolor
 			_padsz = (3, 3, 3, 3)
-			_layout = [ [ sg.Text( ' ', size=_line ) ],
-			            [ sg.Text( ' ', size=_line ) ],
-			            [ sg.Text( size=_space ),
-			              sg.Multiline( size=(70, 20), key='-TEXT-', pad=_padsz ),
-			              sg.Text( size=_space ) ],
-			            [ sg.Text( ' ', size=_line ) ],
-			            [ sg.Text( ' ', size=_space ), sg.Input( k='-IN-', size=(70, 20) ),
-			              sg.Text( size=_space ) ],
-			            [ sg.Text( ' ', size=_line ) ],
-			            [ sg.Text( size=_space ), sg.Button( 'Submit', size=_btnsize ),
-			              sg.Text( size=(15, 1) ), sg.Button( 'Exit', size=_btnsize ),
-			              sg.Text( size=_space ), ] ]
-			
-			_window = sg.Window( '  Boo', _layout,
-				icon=self.icon_path,
-				size=self.form_size,
-				font=self.theme_font,
-				resizable=True )
-			
+			_layout = [ [ sg.Text( ' ', size = _line ) ],
+			            [ sg.Text( ' ', size = _line ) ],
+			            [ sg.Text( size = _space ),
+			              sg.Multiline( size = (70, 20), key = '-TEXT-', pad = _padsz ),
+			              sg.Text( size = _space ) ],
+			            [ sg.Text( ' ', size = _line ) ],
+			            [ sg.Text( ' ', size = _space ), sg.Input( k = '-IN-', size = (70, 20) ),
+			              sg.Text( size = _space ) ],
+			            [ sg.Text( ' ', size = _line ) ],
+			            [ sg.Text( size = _space ), sg.Button( 'Submit', size = _btnsize ),
+			              sg.Text( size = (15, 1) ), sg.Button( 'Exit', size = _btnsize ),
+			              sg.Text( size = _space ), ] ]
+
+			_window = sg.Window( '  Scroll', _layout,
+				icon = self.icon_path,
+				size = self.form_size,
+				font = self.theme_font,
+				resizable = True )
+
 			while True:
 				event, values = _window.read( )
 				self.text = values[ '-TEXT-' ]
 				if event in (sg.WIN_CLOSED, 'Exit'):
 					break
-			
+
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -1730,11 +1800,16 @@ class ScrollingDialog( Dark ):
 class ContactForm( Dark ):
 	'''
 
-        Construcotr: ContactForm( contact )
+        Construcotr:
+        ------------
+        ContactForm( contact )
 
-        Purpose:  class that produces a contact path form
+        Purpose:
+        --------
+        class that produces a contact path form
 
 	'''
+	input_text: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1753,15 +1828,20 @@ class ContactForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\app\web\outlook.png'
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\app\web\outlook.png'
 		self.form_size = (500, 300)
-	
+		self.input_text = None
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
+
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
@@ -1778,13 +1858,28 @@ class ContactForm( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'input_text',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -1802,37 +1897,39 @@ class ContactForm( Dark ):
 
 		'''
 		try:
-			_layout = [ [ sg.Text( size=(100, 1) ) ],
+			_layout = [ [ sg.Text( size = (100, 1) ) ],
 			            [ sg.Text( r'Enter Contact Details' ) ],
-			            [ sg.Text( size=(100, 1) ) ],
-			            [ sg.Text( 'Name', size=(10, 1) ),
-			              sg.InputText( '1', size=(80, 1), key='-NAME-' ) ],
-			            [ sg.Text( 'Address', size=(10, 1) ),
-			              sg.InputText( '2', size=(80, 1), key='-ADDRESS-' ) ],
-			            [ sg.Text( 'Phone', size=(10, 1) ),
-			              sg.InputText( '3', size=(80, 1), key='-PHONE-' ) ],
-			            [ sg.Text( size=(100, 1) ) ],
-			            [ sg.Text( size=(100, 1) ) ],
-			            [ sg.Text( size=(10, 1) ), sg.Submit( size=(10, 1) ),
-			              sg.Text( size=(20, 1) ), sg.Cancel( size=(10, 1) ) ] ]
-			
-			_window = sg.Window( '  Boo', _layout,
+			            [ sg.Text( size = (100, 1) ) ],
+			            [ sg.Text( 'Name', size = (10, 1) ),
+			              sg.InputText( '1', size = (80, 1), key = '-NAME-' ) ],
+			            [ sg.Text( 'Address', size = (10, 1) ),
+			              sg.InputText( '2', size = (80, 1), key = '-ADDRESS-' ) ],
+			            [ sg.Text( 'Phone', size = (10, 1) ),
+			              sg.InputText( '3', size = (80, 1), key = '-PHONE-' ) ],
+			            [ sg.Text( size = (100, 1) ) ],
+			            [ sg.Text( size = (100, 1) ) ],
+			            [ sg.Text( size = (10, 1) ), sg.Submit( size = (10, 1) ),
+			              sg.Text( size = (20, 1) ), sg.Cancel( size = (10, 1) ) ] ]
+
+			_window = sg.Window( '  Information', _layout,
 				icon=self.icon_path,
 				font=self.theme_font,
-				size=self.form_size )
-			
+				size=self.form_size,
+				keep_on_top=self.keep_on_top,
+				force_toplevel=self.top_level,
+				resizable=self.resizable )
+
 			while True:
 				_event, _values = _window.read( )
 				sg.popup( 'Results', _values, _values[ '-NAME-' ],
 					_values[ '-ADDRESS-' ],
 					_values[ '-PHONE-' ],
 					text_color=self.theme_textcolor,
-					font=self.theme_font,
-					icon=self.icon )
-				
+					font=self.theme_font )
+
 				if _event in (sg.WIN_CLOSED, sg.WIN_X_EVENT, 'Cancel'):
 					break
-			
+
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -1846,12 +1943,12 @@ class GridForm( Dark ):
 	'''
 
         Construcotr: GridForm( )
-        
+
         Purpose:  object providing form that simulates a datagrid
 
 	'''
-	
-	def __init__( self, rows=30, columns=10 ):
+
+	def __init__( self, rows = 30, columns = 10 ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -1868,16 +1965,20 @@ class GridForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/excel.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.width = (17, 1)
 		self.rows = rows
 		self.columns = columns
 		self.form_size = (1250, 650)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -1895,14 +1996,30 @@ class GridForm( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'theme_background', 'theme_textcolor',
-		         'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'progressbar_color',
-		         'field_width', 'rows', 'columns', 'show' ]
-	
+		return [ 'form_size',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'progressbar_color',
+		         'field_width',
+		         'rows',
+		         'columns',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -1923,32 +2040,32 @@ class GridForm( Dark ):
 			_black = self.theme_background
 			_columns = self.columns
 			_headings = [ f'HEADER-{i + 1}' for i in range( _columns ) ]
-			_space = [ [ sg.Text( size=(10, 1) ) ], [ sg.Text( size=(10, 1) ) ],
-			           [ sg.Text( size=(10, 1) ) ] ]
+			_space = [ [ sg.Text( size = (10, 1) ) ], [ sg.Text( size = (10, 1) ) ],
+			           [ sg.Text( size = (10, 1) ) ] ]
 			_header = [
-					[ sg.Text( h, size=(16, 1), justification='left' ) for h in _headings ] ]
-			_records = [ [ [ sg.Input( size=self.width, pad=(0, 0), font=self.theme_font )
+					[ sg.Text( h, size = (16, 1), justification = 'left' ) for h in _headings ] ]
+			_records = [ [ [ sg.Input( size = self.width, pad = (0, 0), font = self.theme_font )
 			                 for c in range( len( _headings ) ) ] for r in range( self.rows )
 			               ], ]
-			_buttons = [ [ sg.Text( size=(35, 1) ), sg.Text( size=(10, 1) ), ],
-			             [ sg.Text( size=(100, 1) ), sg.Text( size=(100, 1) ),
-			               sg.Ok( size=(35, 2) ) ],
-			             [ sg.Sizegrip( background_color=_black ) ] ]
+			_buttons = [ [ sg.Text( size = (35, 1) ), sg.Text( size = (10, 1) ), ],
+			             [ sg.Text( size = (100, 1) ), sg.Text( size = (100, 1) ),
+			               sg.Ok( size = (35, 2) ) ],
+			             [ sg.Sizegrip( background_color = _black ) ] ]
 			# noinspection PyTypeChecker
 			_layout = _space + _header + _records + _buttons
-			
-			_window = sg.Window( '  Boo', _layout,
-				finalize=True,
-				size=self.form_size,
-				icon=self.icon_path,
-				font=self.theme_font,
-				resizable=True )
-			
+
+			_window = sg.Window( '  Gooey', _layout,
+				finalize = True,
+				size = self.form_size,
+				icon = self.icon_path,
+				font = self.theme_font,
+				resizable = True )
+
 			while True:
 				_event, _values = _window.read( )
 				if _event in (sg.WIN_CLOSED, sg.WIN_X_EVENT, '-CANCEL-'):
 					break
-				
+
 				_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -1962,11 +2079,11 @@ class LoadingPanel( Dark ):
 	'''
 
         Construcotr:  LoadingPanel( )
-        
+
         Purpose:  object providing form loading behavior
 
 	'''
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -1984,15 +2101,18 @@ class LoadingPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\loaders\loading.gif'
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\loaders\loading.gif'
 		self.form_size = (800, 600)
 		self.timeout = 6000
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -2010,13 +2130,28 @@ class LoadingPanel( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'input_text',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -2035,28 +2170,28 @@ class LoadingPanel( Dark ):
 		'''
 		try:
 			_layout = [ [ sg.Text(
-				background_color='#000000',
-				text_color='#FFF000',
-				justification='c',
-				key='-T-',
-				font=('Bodoni MT', 40) ) ], [ sg.Image( key='-IMAGE-' ) ] ]
-			
+				background_color = '#000000',
+				text_color = '#FFF000',
+				justification = 'c',
+				key = '-T-',
+				font = ('Bodoni MT', 40) ) ], [ sg.Image( key = '-IMAGE-' ) ] ]
+
 			_window = sg.Window( '  Loading...', _layout,
-				icon=self.icon_path,
-				element_justification='c',
-				margins=(0, 0),
-				size=(800, 600),
-				element_padding=(0, 0), finalize=True )
-			
+				icon = self.icon_path,
+				element_justification = 'c',
+				margins = (0, 0),
+				size = (800, 600),
+				element_padding = (0, 0), finalize = True )
+
 			_window[ '-T-' ].expand( True, True )
 			_interframe_duration = Image.open( self.image ).info[ 'duration' ]
-			
+
 			while True:
 				for frame in ImageSequence.Iterator( Image.open( self.image ) ):
-					_event, _values = _window.read( timeout=_interframe_duration )
+					_event, _values = _window.read( timeout = _interframe_duration )
 					if _event == sg.WIN_CLOSED or _event == sg.WIN_X_EVENT:
 						exit( 0 )
-					_window[ '-IMAGE-' ].update( data=ImageTk.PhotoImage( frame ) )
+					_window[ '-IMAGE-' ].update( data = ImageTk.PhotoImage( frame ) )
 					_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -2070,11 +2205,11 @@ class WaitingPanel( Dark ):
 	'''
 
         Construcotr:  WaitingPanel( )
-        
+
         Purpose:  object providing form loader behavior
 
 	'''
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -2092,15 +2227,18 @@ class WaitingPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\loaders\loader.gif'
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\loaders\loader.gif'
 		self.theme_font = ('Roboto', 11)
 		self.form_size = (800, 600)
 		self.timeout = 6000
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -2118,13 +2256,28 @@ class WaitingPanel( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'input_text',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -2143,29 +2296,29 @@ class WaitingPanel( Dark ):
 		'''
 		try:
 			_layout = [ [ sg.Text(
-				background_color='#000000',
-				text_color='#FFF000',
-				justification='c',
-				key='-T-',
-				font=('Bodoni MT', 40) ) ], [ sg.Image( key='-IMAGE-' ) ] ]
-			
+				background_color = '#000000',
+				text_color = '#FFF000',
+				justification = 'c',
+				key = '-T-',
+				font = ('Bodoni MT', 40) ) ], [ sg.Image( key = '-IMAGE-' ) ] ]
+
 			_window = sg.Window( '  Waiting...', _layout,
-				icon=self.icon_path,
-				element_justification='c',
-				margins=(0, 0),
-				element_padding=(0, 0),
-				size=(800, 600),
-				finalize=True )
-			
+				icon = self.icon_path,
+				element_justification = 'c',
+				margins = (0, 0),
+				element_padding = (0, 0),
+				size = (800, 600),
+				finalize = True )
+
 			_window[ '-T-' ].expand( True, True )
 			_interframe_duration = Image.open( self.image ).info[ 'duration' ]
-			
+
 			while True:
 				for frame in ImageSequence.Iterator( Image.open( self.image ) ):
-					_event, _values = _window.read( timeout=_interframe_duration )
+					_event, _values = _window.read( timeout = _interframe_duration )
 					if _event == sg.WIN_CLOSED:
 						exit( 0 )
-					_window[ '-IMAGE-' ].update( data=ImageTk.PhotoImage( frame ) )
+					_window[ '-IMAGE-' ].update( data = ImageTk.PhotoImage( frame ) )
 					_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -2183,7 +2336,7 @@ class ProcessingPanel( Dark ):
         Purpose:  object providing form processing behavior
 
 	'''
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -2201,15 +2354,18 @@ class ProcessingPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\loaders\processing.gif'
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\loaders\processing.gif'
 		self.form_size = (800, 600)
 		self.timeout = None
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -2227,13 +2383,27 @@ class ProcessingPanel( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -2252,33 +2422,33 @@ class ProcessingPanel( Dark ):
 		'''
 		try:
 			_layout = [ [ sg.Text(
-				background_color='#000000',
-				text_color='#FFF000',
-				justification='c',
-				key='-T-',
-				font=('Bodoni MT', 40) ) ], [ sg.Image( key='-IMAGE-' ) ] ]
-			
+				background_color = '#000000',
+				text_color = '#FFF000',
+				justification = 'c',
+				key = '-T-',
+				font = ('Bodoni MT', 40) ) ], [ sg.Image( key = '-IMAGE-' ) ] ]
+
 			_window = sg.Window( '  Processing...', _layout,
-				element_justification='c',
-				icon=self.icon_path,
-				margins=(0, 0),
-				size=(800, 600),
-				element_padding=(0, 0),
-				finalize=True )
-			
+				element_justification = 'c',
+				icon = self.icon_path,
+				margins = (0, 0),
+				size = (800, 600),
+				element_padding = (0, 0),
+				finalize = True )
+
 			_window[ '-T-' ].expand( True, True )
-			
+
 			_interframe_duration = Image.open( self.image ).info[ 'duration' ]
 			self.timeout = _interframe_duration
-			
+
 			while True:
 				for frame in ImageSequence.Iterator( Image.open( self.image ) ):
-					_event, _values = _window.read( timeout=self.timeout,
-						timeout_key='-TIMEOUT-' )
+					_event, _values = _window.read( timeout = self.timeout,
+						timeout_key = '-TIMEOUT-' )
 					if _event == sg.WIN_CLOSED or _event == sg.WIN_X_EVENT:
 						exit( 0 )
-					
-					_window[ '-IMAGE-' ].update( data=ImageTk.PhotoImage( frame ) )
+
+					_window[ '-IMAGE-' ].update( data = ImageTk.PhotoImage( frame ) )
 					_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -2296,7 +2466,7 @@ class SplashPanel( Dark ):
         Purpose:  Class providing splash dialog behavior
 
 	'''
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -2314,15 +2484,18 @@ class SplashPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\BudgetEx.png'
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\BudgetEx.png'
 		self.form_size = (800, 600)
 		self.timeout = 6000
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -2340,13 +2513,27 @@ class SplashPanel( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -2368,17 +2555,17 @@ class SplashPanel( Dark ):
 			_imgsize = (500, 400)
 			_line = (100, 2)
 			_space = (15, 1)
-			_layout = [ [ sg.Text( size=_space ), sg.Text( size=_line ) ],
-			            [ sg.Text( size=_space ), sg.Text( size=_line ) ],
-			            [ sg.Text( size=_space ),
-			              sg.Image( filename=self.image, size=_imgsize ) ] ]
-			_window = sg.Window( '  Boo', _layout,
-				no_titlebar=True,
-				keep_on_top=True,
-				grab_anywhere=True,
-				size=self.form_size )
+			_layout = [ [ sg.Text( size = _space ), sg.Text( size = _line ) ],
+			            [ sg.Text( size = _space ), sg.Text( size = _line ) ],
+			            [ sg.Text( size = _space ),
+			              sg.Image( filename = self.image, size = _imgsize ) ] ]
+			_window = sg.Window( '  Gooey', _layout,
+				no_titlebar = True,
+				keep_on_top = True,
+				grab_anywhere = True,
+				size = self.form_size )
 			while True:
-				_event, _values = _window.read( timeout=self.timeout, close=True )
+				_event, _values = _window.read( timeout = self.timeout, close = True )
 				if _event in (sg.WIN_CLOSED, 'Exit'):
 					break
 			_window.close( )
@@ -2398,8 +2585,8 @@ class Notification( Dark ):
         object providing form processing behavior
 
 	'''
-	
-	def __init__( self ):
+
+	def __init__( self, message: Optional[ str ] ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -2416,12 +2603,12 @@ class Notification( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/boo.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
 		self.success = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAA3NCSVQICAjb4U' \
 		               b'/gAAAACXBIWXMAAAEKAAABCgEWpLzLAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5r' \
@@ -2494,9 +2681,8 @@ class Notification( Dark ):
 		             b'kDVx/sobu1mfCpdVfllJszthT0J/8eu0CtpCI778VgUnAhEES3LZFYp99QQj5jFbRcC5' \
 		             b'QKrUI9F3+KYn4j4YjAN07D3GzAoqbFRB98Kbf8PsM98bIAVl6HghD2P8Avm6w' \
 		             b'ywIVvIgAAAAASUVORK5CYII='
-		self.message = '\r\nThe action you have performed \
-                          has been successful!'
-	
+		self.message = '\r\n ' + message if message is not None else '\r\nThe action you have performed has been successful!'
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -2515,7 +2701,7 @@ class Notification( Dark ):
 		'''
 		if self.message is not None:
 			return self.message
-	
+
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 
@@ -2532,13 +2718,25 @@ class Notification( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'input_text',
+		         'show' ]
+
 	def show( self ) -> int | None:
 		'''
 
@@ -2557,12 +2755,12 @@ class Notification( Dark ):
 		'''
 		try:
 			return sg.popup_notify( self.message,
-				title=' Boo',
-				icon=self.ninja,
-				display_duration_in_ms=10000,
-				fade_in_duration=5000,
-				alpha=1 )
-		
+				title = 'Notification',
+				icon = self.ninja,
+				display_duration_in_ms = 10000,
+				fade_in_duration = 5000,
+				alpha = 1 )
+
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boogr'
@@ -2583,7 +2781,7 @@ class ImageSizeEncoder( Dark ):
         Class resizing image and encoding behavior
 
 	'''
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -2601,13 +2799,16 @@ class ImageSizeEncoder( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -2625,13 +2826,27 @@ class ImageSizeEncoder( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -2650,8 +2865,8 @@ class ImageSizeEncoder( Dark ):
 		'''
 		version = '1.3.1'
 		__version__ = version.split( )[ 0 ]
-		
-		def resize( input_file, size, output_file=None, encode_format='PNG' ):
+
+		def resize( input_file, size, output_file = None, encode_format = 'PNG' ):
 			_image = Image.open( input_file )
 			_width, _height = _image.size
 			_newwidth, _newheight = size
@@ -2661,16 +2876,16 @@ class ImageSizeEncoder( Dark ):
 					Image.ANTIALIAS )
 			else:
 				_resizedimage = _image
-			
+
 			if output_file is not None:
 				_resizedimage.save( output_file )
-			
+
 			with io.BytesIO( ) as bio:
-				_resizedimage.save( bio, format=encode_format )
+				_resizedimage.save( bio, format = encode_format )
 				_contents = bio.getvalue( )
 				_encoded = base64.b64encode( _contents )
 			return _encoded
-		
+
 		def update_outfilename( ):
 			_infile = _values[ '-IN-' ]
 			if os.path.isfile( _infile ):
@@ -2682,7 +2897,7 @@ class ImageSizeEncoder( Dark ):
 				if not _values[ '-HEIGHT-' ]:
 					_window[ '-HEIGHT-' ].update( _image.size[ 1 ] )
 				_window[ '-ORIG HEIGHT-' ].update( _image.size[ 1 ] )
-				
+
 				_infilename = os.path.basename( _infile )
 				_infilenameonly, _infileext = os.path.splitext( _infilename )
 				if _values[ '-NEW FORMAT-' ]:
@@ -2693,7 +2908,7 @@ class ImageSizeEncoder( Dark ):
 					outfileext = _infileext[ 1: ]  # strip off the .
 				outfile = f'{_infilenameonly}{_width}x{_height}.{outfileext}'
 				_outfullname = os.path.join( os.path.dirname( _infile ), outfile )
-				
+
 				if _values[ '-DO NOT SAVE-' ]:
 					_window[ '-NEW FILENAME-' ].update( '' )
 					_window[ '-BASE64-' ].update( True )
@@ -2706,55 +2921,55 @@ class ImageSizeEncoder( Dark ):
 				_window[ '-ORIG HEIGHT-' ].update( '' )
 				# _window['-HEIGHT-'].update('')
 				_window[ '-NEW FILENAME-' ].update( )
-		
+
 		_formatlist = ('', 'PNG', 'JPEG', 'BMP', 'ICO', 'GIF', 'TIFF')
 		_newformat = [
 				[ sg.Combo( _formatlist,
-					default_value=sg.user_settings_get_entry( '-new format-', '' ),
-					readonly=True, enable_events=True, key='-NEW FORMAT-' ) ] ]
-		
+					default_value = sg.user_settings_get_entry( '-new format-', '' ),
+					readonly = True, enable_events = True, key = '-NEW FORMAT-' ) ] ]
+
 		_layout = [ [ sg.Text( 'Image Resizer' ) ],
 		            [ sg.Frame( 'Input Filename', [
-				            [ sg.Input( key='-IN-', enable_events=True, s=80 ),
+				            [ sg.Input( key = '-IN-', enable_events = True, s = 80 ),
 				              sg.FileBrowse( ), ],
-				            [ sg.T( 'Original size' ), sg.T( k='-ORIG WIDTH-' ),
+				            [ sg.T( 'Original size' ), sg.T( k = '-ORIG WIDTH-' ),
 				              sg.T( 'target_values' ),
-				              sg.T( k='-ORIG HEIGHT-' ) ] ] ) ],
+				              sg.T( k = '-ORIG HEIGHT-' ) ] ] ) ],
 		            [ sg.Frame( 'Output Filename',
-			            [ [ sg.In( k='-NEW FILENAME-', s=80 ), sg.FileBrowse( ), ],
-			              [ sg.In( default_text=sg.user_settings_get_entry( '-_width-', '' ),
-				              s=4,
-				              k='-WIDTH-' ), sg.T( 'target_values' ),
-			                sg.In( default_text=sg.user_settings_get_entry( '-_height-', '' ),
-				                s=4, k='-HEIGHT-' ) ] ] ) ],
-		            [ sg.Frame( 'Convert To New GptFormat', _newformat ) ],
-		            [ sg.CBox( 'Encode to Base64 and leave on Clipboard', k='-BASE64-',
-			            default=sg.user_settings_get_entry( '-base64-', True ) ) ],
+			            [ [ sg.In( k = '-NEW FILENAME-', s = 80 ), sg.FileBrowse( ), ],
+			              [ sg.In( default_text = sg.user_settings_get_entry( '-_width-', '' ),
+				              s = 4,
+				              k = '-WIDTH-' ), sg.T( 'target_values' ),
+			                sg.In( default_text = sg.user_settings_get_entry( '-_height-', '' ),
+				                s = 4, k = '-HEIGHT-' ) ] ] ) ],
+		            [ sg.Frame( 'Convert To New Format', _newformat ) ],
+		            [ sg.CBox( 'Encode to Base64 and leave on Clipboard', k = '-BASE64-',
+			            default = sg.user_settings_get_entry( '-base64-', True ) ) ],
 		            [ sg.CBox( 'Do not save file - Only convert and Base64 Encode',
-			            k='-DO NOT SAVE-', enable_events=True,
-			            default=sg.user_settings_get_entry( '-do not save-', False ) ) ],
+			            k = '-DO NOT SAVE-', enable_events = True,
+			            default = sg.user_settings_get_entry( '-do not save-', False ) ) ],
 		            [ sg.CBox( 'Autoclose Immediately When Done',
-			            default=sg.user_settings_get_entry( '-autoclose-',
+			            default = sg.user_settings_get_entry( '-autoclose-',
 				            True if sg.running_windows( ) else False ),
-			            k='-AUTOCLOSE-' ) ],
-		            [ sg.Button( 'Resize', bind_return_key=True ), sg.Button( 'Exit' ) ],
+			            k = '-AUTOCLOSE-' ) ],
+		            [ sg.Button( 'Resize', bind_return_key = True ), sg.Button( 'Exit' ) ],
 		            [ sg.T(
 			            'Note - on some systems, autoclose cannot be used because the clipboard '
 			            'is '
 			            'cleared by tkinter' ) ],
 		            [ sg.T( 'Your settings are automatically saved between runs' ) ],
 		            [ sg.T( f'Version {version}' ),
-		              sg.T( 'Go to psgresizer GitHub Repo', font='_ 8', enable_events=True,
-			              k='-PSGRESIZER-' ),
-		              sg.T( 'A PySimpleGUI Application - Go to PySimpleGUI home', font='_ 8',
-			              enable_events=True, k='-PYSIMPLEGUI-' ) ],
+		              sg.T( 'Go to psgresizer GitHub Repo', font = '_ 8', enable_events = True,
+			              k = '-PSGRESIZER-' ),
+		              sg.T( 'A PySimpleGUI Application - Go to PySimpleGUI home', font = '_ 8',
+			              enable_events = True, k = '-PYSIMPLEGUI-' ) ],
 		            ]
-		
+
 		_window = sg.Window( 'Resize Image', _layout,
-			icon=self.icon_path,
-			right_click_menu=sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT,
-			enable_close_attempted_event=True,
-			finalize=True )
+			icon = self.icon_path,
+			right_click_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT,
+			enable_close_attempted_event = True,
+			finalize = True )
 		_window[ '-PSGRESIZER-' ].set_cursor( 'hand1' )
 		_window[ '-PYSIMPLEGUI-' ].set_cursor( 'hand1' )
 		while True:
@@ -2764,7 +2979,7 @@ class ImageSizeEncoder( Dark ):
 				break
 			_infile = _values[ '-IN-' ]
 			update_outfilename( )
-			
+
 			if _event == '-DO NOT SAVE-':
 				if _values[ '-DO NOT SAVE-' ]:
 					_window[ '-NEW FILENAME-' ].update( '' )
@@ -2784,34 +2999,34 @@ class ImageSizeEncoder( Dark ):
 						outfullfilename = _values[ '-NEW FILENAME-' ]
 						width, height = int( _values[ '-WIDTH-' ] ), int( _values[ '-HEIGHT-' ] )
 						if _values[ '-DO NOT SAVE-' ]:
-							encoded = resize( input_file=_infile, size=(width, height),
-								encode_format=encode_format )
+							encoded = resize( input_file = _infile, size = (width, height),
+								encode_format = encode_format )
 						else:
-							encoded = resize( input_file=_infile, size=(width, height),
-								output_file=outfullfilename, encode_format=encode_format )
-						
+							encoded = resize( input_file = _infile, size = (width, height),
+								output_file = outfullfilename, encode_format = encode_format )
+
 						if _values[ '-BASE64-' ]:
 							sg.clipboard_set( encoded )
-						
-						sg.popup_quick_message( 'DONE!', font='_ 40', background_color='red',
-							text_color='white' )
-				
+
+						sg.popup_quick_message( 'DONE!', font = '_ 40', background_color = 'red',
+							text_color = 'white' )
+
 				except Exception as e:
-					sg.popup_error_with_traceback( 'GptError resizing or converting',
-						'GptError encountered during the resize or Base64 encoding', e )
+					sg.popup_error_with_traceback( 'Error resizing or converting',
+						'Error encountered during the resize or Base64 encoding', e )
 				if _values[ '-AUTOCLOSE-' ]:
 					break
 			elif _event == 'Version':
-				sg.popup_scrolled( sg.get_versions( ), non_blocking=True )
+				sg.popup_scrolled( sg.get_versions( ), non_blocking = True )
 			elif _event == 'Edit Me':
 				sg.execute_editor( __file__ )
-			elif _event == 'GptFile Location':
+			elif _event == 'File Location':
 				sg.popup_scrolled( 'This Python file is:', __file__ )
 			elif _event == '-PYSIMPLEGUI-':
 				webbrowser.open_new_tab( r'http://www.PySimpleGUI.com' )
 			elif _event == '-PSGRESIZER-':
 				webbrowser.open_new_tab( r'https://github.com/PySimpleGUI/psgresizer' )
-		
+
 		if _event != sg.WIN_CLOSED:
 			sg.user_settings_set_entry( '-autoclose-', _values[ '-AUTOCLOSE-' ] )
 			sg.user_settings_set_entry( '-new format-', _values[ '-NEW FORMAT-' ] )
@@ -2821,17 +3036,18 @@ class ImageSizeEncoder( Dark ):
 			sg.user_settings_set_entry( '-_height-', _values[ '-HEIGHT-' ] )
 		_window.close( )
 
+# noinspection PyShadowingNames
 class PdfForm( Dark ):
 	'''
 
         Construcotr:
-            PdfForm( )
+        PdfForm( )
 
         Purpose:
-            Creates form to view a PDF
+        Creates form to view a PDF
 
 	'''
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -2849,13 +3065,17 @@ class PdfForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = (600, 800)
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.form_size = ( 600, 800 )
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -2873,13 +3093,26 @@ class PdfForm( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -2898,21 +3131,22 @@ class PdfForm( Dark ):
 		'''
 		try:
 			fname = sg.popup_get_file( 'PDF Browser', 'PDF file to open',
-				file_types=(('PDF Files', '*.pdf'),) )
+				file_types = (('PDF Files', '*.pdf'),) )
 			if fname is None:
 				sg.popup_cancel( 'Cancelling' )
 				exit( 0 )
 			else:
 				doc = fitz.open( fname )
 				page_count = len( doc )
-				
+
 				# storage for page display lists
 				dlist_tab = [ None ] * page_count
 				title = 'PyMuPDF display of "%s", pages: %i' % (fname, page_count)
-				
+
+				# noinspection PyUnresolvedReferences,PyUnboundLocalVariable
 				def get_page( pno, zoom=0 ):
 					"""
-					
+
 						Return a PNG image for a document page num.
 						If zoom is other than 0, one of the 4 page quadrants
 						are zoomed-in instead and the corresponding clip returned.
@@ -2940,49 +3174,54 @@ class PdfForm( Dark ):
 					if zoom == 0:  # total page
 						pix = dlist.get_pixmap( alpha=False )
 					else:
+						# noinspection PyUnboundLocalVariable
 						pix = dlist.get_pixmap( alpha=False, matrix=mat, clip=clip )
 					return pix.tobytes( )  # return the PNG image
-				
+
 				cur_page = 0
 				data = get_page( cur_page )  # show page 1 for start
-				image_elem = sg.Image( data=data )
-				goto = sg.InputText( str( cur_page + 1 ), size=(5, 1) )
+				image_elem = sg.Image( data = data )
+				goto = sg.InputText( str( cur_page + 1 ), size = (5, 1) )
 				layout = [
 						[
-								sg.Button( 'Prev' ),
-								sg.Button( 'Next' ),
-								sg.Text( 'Page:' ),
-								goto,
+							sg.Button( 'Prev' ),
+							sg.Button( 'Next' ),
+							sg.Text( 'Page:' ),
+							goto,
 						],
 						[
-								sg.Text( "Zoom:" ),
-								sg.Button( 'Top-L' ),
-								sg.Button( 'Top-R' ),
-								sg.Button( 'Bot-L' ),
-								sg.Button( 'Bot-R' ),
+							sg.Text( "Zoom:" ),
+							sg.Button( 'Top-L' ),
+							sg.Button( 'Top-R' ),
+							sg.Button( 'Bot-L' ),
+							sg.Button( 'Bot-R' ),
 						],
 						[ image_elem ],
 				]
 				my_keys = ('Next', 'Next:34', 'Prev', 'Prior:33', 'Top-L', 'Top-R',
 				           'Bot-L', 'Bot-R', 'MouseWheel:Down', 'MouseWheel:Up')
 				zoom_buttons = ('Top-L', 'Top-R', 'Bot-L', 'Bot-R')
-				
+
 				window = sg.Window( title, layout,
-					return_keyboard_events=True, use_default_focus=False )
-				
+					return_keyboard_events=True,
+					use_default_focus=False,
+					keep_on_top=True,
+					right_click_menu=sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT )
+
 				old_page = 0
 				old_zoom = 0  # used for zoom on/off
 				# the zoom buttons work in on/off mode.
 				while True:
-					event, values = window.read( timeout=100 )
+					event, values = window.read( timeout = 100 )
 					zoom = 0
 					force_page = False
 					if event == sg.WIN_CLOSED:
 						break
-					
+
 					if event in ("Escape:27",):  # this spares me a 'Quit' button!
 						break
 					if event[ 0 ] == chr( 13 ):  # surprise: this is 'Enter'!
+						# noinspection PyBroadException
 						try:
 							cur_page = int( values[ 0 ] ) - 1  # check if valid
 							while cur_page < 0:
@@ -3003,32 +3242,32 @@ class PdfForm( Dark ):
 						zoom = 3
 					elif event == 'Bot-R':
 						zoom = 4
-					
+
 					# sanitize page num
 					if cur_page >= page_count:  # wrap around
 						cur_page = 0
 					while cur_page < 0:  # we show conventional page numbers
 						cur_page += page_count
-					
+
 					# prevent creating same df again
 					if cur_page != old_page:
 						zoom = old_zoom = 0
 						force_page = True
-					
+
 					if event in zoom_buttons:
 						if 0 < zoom == old_zoom:
 							zoom = 0
 							force_page = True
-						
+
 						if zoom != old_zoom:
 							force_page = True
-					
+
 					if force_page:
 						data = get_page( cur_page, zoom )
-						image_elem.update( data=data )
+						image_elem.update( data = data )
 						old_page = cur_page
 					old_zoom = zoom
-					
+
 					# update page num field
 					if event in my_keys or not values[ 0 ]:
 						goto.update( str( cur_page + 1 ) )
@@ -3053,7 +3292,7 @@ class CalendarDialog( Dark ):
         class creates form providing today selection behavior
 
 	'''
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -3071,15 +3310,19 @@ class CalendarDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\copy.ico'
+		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		self.selected_item = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (500, 250)
-	
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -3119,13 +3362,29 @@ class CalendarDialog( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'input_text',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable',
+		         'context_menu', ]
+
 	def show( self ) -> None:
 		'''
 
@@ -3145,19 +3404,20 @@ class CalendarDialog( Dark ):
 		try:
 			_btnsize = (20, 1)
 			_calendar = (250, 250)
-			
+
 			_months = [ 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL',
 			            'AUG', 'SEP', 'OCT', 'NOV', 'DEC' ]
-			
+
 			_days = [ 'SUN', 'MON', 'TUE', 'WEC', 'THU', 'FRI', 'SAT' ]
-			
+
 			_cal = sg.popup_get_date( title='Calendar',
 				no_titlebar=False,
 				icon=self.icon_path,
+				keep_on_top=True,
 				month_names=_months,
 				day_abbreviations=_days,
 				close_when_chosen=True )
-			
+
 			self.selected_item = _cal
 		except Exception as e:
 			exception = Error( e )
@@ -3177,7 +3437,8 @@ class ComboBoxDialog( Dark ):
             Logger object provides form for log printing
 
 	'''
-	
+	selected_item: str
+
 	def __init__( self, data: list = None ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -3195,15 +3456,19 @@ class ComboBoxDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\filter.ico'
+		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (400, 150)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 		self.items = data
-	
+
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -3223,7 +3488,7 @@ class ComboBoxDialog( Dark ):
 		if self.selected_item is not None:
 			return self.selected_item
 	
-	def __dir__( self ) -> List[ str ] | None:
+	def __dir__( self ) -> List[ str ]:
 		'''
 
 		    Purpose:
@@ -3239,13 +3504,28 @@ class ComboBoxDialog( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
+
 	def show( self ) -> None:
 		'''
 
@@ -3268,31 +3548,32 @@ class ComboBoxDialog( Dark ):
 			if self.items is None:
 				self.items = [ f'Item {x} ' for x in range( 30 ) ]
 				_values = self.items
-			
-			_layout = [ [ sg.Text( size=_spc ), sg.Text( size=_spc ) ],
-			            [ sg.Text( size=_spc ), sg.Text( 'Select Item' ) ],
-			            [ sg.Text( size=_spc ),
-			              sg.DropDown( self.items, key='-ITEM-', size=(35, 1) ) ],
-			            [ sg.Text( size=_spc ), sg.Text( size=_spc ) ],
-			            [ sg.Text( size=_spc ), sg.OK( size=_btnsz ), sg.Text( size=(8,
-			                                                                         1) ),
-			              sg.Cancel( size=_btnsz ) ] ]
-			
-			_window = sg.Window( '  Boo', _layout,
+
+			_layout = [ [ sg.Text( size = _spc ), sg.Text( size = _spc ) ],
+			            [ sg.Text( size = _spc ), sg.Text( 'Select Item' ) ],
+			            [ sg.Text( size = _spc ),
+			              sg.DropDown( self.items, key = '-ITEM-', size = (35, 1) ) ],
+			            [ sg.Text( size = _spc ), sg.Text( size = _spc ) ],
+			            [ sg.Text( size = _spc ), sg.OK( size = _btnsz ), sg.Text( size = (8,
+			                                                                               1) ),
+			              sg.Cancel( size = _btnsz ) ] ]
+
+			_window = sg.Window( '  Gooey', _layout,
 				icon=self.icon_path,
+				keep_on_top=True,
 				size=self.form_size )
-			
+
 			while True:
 				_event, _values = _window.read( )
 				if _event in (sg.WIN_CLOSED, 'Exit', 'Cancel'):
 					break
-				
+
 				self.selected_item = _values[ '-ITEM-' ]
 				sg.popup( _event, _values, self.selected_item,
-					text_color=self.theme_textcolor,
-					font=self.theme_font,
-					icon=self.icon )
-			
+					text_color = self.theme_textcolor,
+					font = self.theme_font,
+					icon = self.icon )
+
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -3312,7 +3593,11 @@ class ListBoxDialog( Dark ):
             List search and selection
 
     '''
-	
+	selected_item: str | None
+	items: List[ str ]
+	image: str
+	form_size: tuple[ int, int ]
+
 	def __init__( self, data: list[ str ] = None ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -3330,16 +3615,20 @@ class ListBoxDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\filter.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (400, 250)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 		self.image = os.getcwd( ) + r'\resources\img\app\dialog\lookup.png'
 		self.items = data
-	
+		self.selected_item = None
+
 	def __str__( self ) -> str | None:
 		'''
 
@@ -3375,12 +3664,26 @@ class ListBoxDialog( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
+		return [ 'form_size',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'input_text',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
 	
 	def show( self ) -> None:
 		'''
@@ -3406,29 +3709,30 @@ class ListBoxDialog( Dark ):
 			_inpsz = (25, 1)
 			_lstsz = (25, 5)
 			_names = [ ]
-			
+
 			if isinstance( self.items, list ):
 				_names = [ src for src in self.items ]
 			else:
 				_names = [ f'Item - {i}' for i in range( 40 ) ]
-			
-			_layout = [ [ sg.Text( size=_space ), sg.Text( size=_line ) ],
-			            [ sg.Text( size=_space ), sg.Text( r'Search:' ) ],
-			            [ sg.Text( size=_space ),
-			              sg.Input( size=_inpsz, enable_events=True, key='-INPUT-' ) ],
-			            [ sg.Text( size=_space ), sg.Text( size=_line ) ],
-			            [ sg.Text( size=_space ),
-			              sg.Listbox( _names, size=_lstsz, key='-ITEM-',
-				              font=self.theme_font ) ],
-			            [ sg.Text( size=_space ), sg.Text( size=_line ) ],
-			            [ sg.Text( size=_space ),
-			              sg.Button( 'Select', size=_btnsize, enable_events=True ),
-			              sg.Text( size=(3, 1) ), sg.Button( 'Exit', size=_btnsize ) ] ]
-			
-			_window = sg.Window( '  Boo', _layout,
+
+			_layout = [ [ sg.Text( size = _space ), sg.Text( size = _line ) ],
+			            [ sg.Text( size = _space ), sg.Text( r'Search:' ) ],
+			            [ sg.Text( size = _space ),
+			              sg.Input( size = _inpsz, enable_events = True, key = '-INPUT-' ) ],
+			            [ sg.Text( size = _space ), sg.Text( size = _line ) ],
+			            [ sg.Text( size = _space ),
+			              sg.Listbox( _names, size = _lstsz, key = '-ITEM-',
+				              font = self.theme_font ) ],
+			            [ sg.Text( size = _space ), sg.Text( size = _line ) ],
+			            [ sg.Text( size = _space ),
+			              sg.Button( 'Select', size = _btnsize, enable_events = True ),
+			              sg.Text( size = (3, 1) ), sg.Button( 'Exit', size = _btnsize ) ] ]
+
+			_window = sg.Window( '  Gooey', _layout,
 				size=self.form_size,
+				keep_on_top=self.keep_on_top,
 				font=self.theme_font )
-			
+
 			while True:
 				_event, _values = _window.read( )
 				if _event in (sg.WIN_CLOSED, 'Exit'):
@@ -3437,17 +3741,17 @@ class ListBoxDialog( Dark ):
 				if _event == 'Selected':
 					self.selected_item = str( _values[ '-ITEM-' ][ 0 ] )
 					sg.popup( 'Results', self.selected_item,
-						font=self.theme_font,
-						icon=self.icon )
+						font = self.theme_font,
+						icon = self.icon )
 					_window.close( )
-				
+
 				if _values[ '-INPUT-' ] != '':
 					_search = _values[ '-INPUT-' ]
 					_newvalues = [ x for x in _names if _search in x ]
 					_window[ '-ITEM-' ].update( _newvalues )
 				else:
 					_window[ '-ITEM-' ].update( _names )
-			
+
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -3469,7 +3773,7 @@ class ColorDialog( Dark ):
             class provides a form to select colors returning path target_values
 
 	'''
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -3487,13 +3791,16 @@ class ColorDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\chart.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (450, 450)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 		self.rgb = None
 		self.hex = None
 		self.argb = None
@@ -3515,13 +3822,28 @@ class ColorDialog( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'input_text',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -4194,46 +4516,46 @@ class ColorDialog( Dark ):
 			_colorlist = list( _colormap.keys( ) )
 			COLORS_PER_ROW = 40
 			_fontsize = 9
-			
+
 			def make_window( ):
 				_layout = [ [ sg.Text( ), ],
-				            [ sg.Text( f'{len( _colorlist )} Colors', font=self.theme_font ), ],
-				            [ sg.Text( size=(5, 1) ), ] ]
-				
+				            [ sg.Text( f'{len( _colorlist )} Colors', font = self.theme_font ), ],
+				            [ sg.Text( size = (5, 1) ), ] ]
+
 				for rows in range( len( _colorlist ) // COLORS_PER_ROW + 1 ):
 					_row = [ ]
-					
+
 					for i in range( COLORS_PER_ROW ):
 						try:
 							color = _colorlist[ rows * COLORS_PER_ROW + i ]
 							_row.append(
-								sg.Text( ' ', s=1, background_color=color, text_color=color,
-									font=self.theme_font,
-									right_click_menu=[ '_', _colormap[ color ] ],
-									tooltip=color, enable_events=True,
-									key=(color, _colormap[ color ]) ) )
+								sg.Text( ' ', s = 1, background_color = color, text_color = color,
+									font = self.theme_font,
+									right_click_menu = [ '_', _colormap[ color ] ],
+									tooltip = color, enable_events = True,
+									key = (color, _colormap[ color ]) ) )
 						except IndexError as e:
 							break
 						except Exception as e:
-							sg.popup_error( f'GptError while creating _color _window....', e,
+							sg.popup_error( f'Error while creating _color _window....', e,
 								f'rows = {rows}  i = {i}' )
 							break
 					_layout.append( _row )
-				_layout.append( [ sg.Text( ' ', size=(10, 1) ), ] )
-				_layout.append( [ sg.Text( ' ', size=(10, 1) ), ] )
-				_layout.append( [ sg.Text( ' ', size=(50, 1) ), sg.Cancel( size=(20, 1) ), ] )
-				
-				return sg.Window( ' Booger', _layout,
-					font=self.theme_font,
-					size=self.form_size,
-					element_padding=(1, 1),
-					border_depth=0,
-					icon=self.icon_path,
-					right_click_menu=sg.MENU_RIGHT_CLICK_EDITME_EXIT,
-					use_ttk_buttons=True )
-			
+				_layout.append( [ sg.Text( ' ', size = (10, 1) ), ] )
+				_layout.append( [ sg.Text( ' ', size = (10, 1) ), ] )
+				_layout.append( [ sg.Text( ' ', size = (50, 1) ), sg.Cancel( size = (20, 1) ), ] )
+
+				return sg.Window( ' Gooey', _layout,
+					font = self.theme_font,
+					size = self.form_size,
+					element_padding = (1, 1),
+					border_depth = 0,
+					icon = self.icon_path,
+					right_click_menu = sg.MENU_RIGHT_CLICK_EDITME_EXIT,
+					use_ttk_buttons = True )
+
 			_window = make_window( )
-			
+
 			while True:
 				_event, _values = _window.read( )
 				if _event in (sg.WIN_CLOSED, 'Cancel', 'Exit'):
@@ -4245,29 +4567,29 @@ class ColorDialog( Dark ):
 					_color, _colorhex = _event[ 0 ], _event[ 1 ]
 				else:
 					_color, _colorhex = _hextocolor[ _event ], _event
-				
+
 				_layout2 = [ [ sg.Text( _colorhex + ' on clipboard' ) ],
-				             [ sg.DummyButton( _color, button_color=self.button_color,
-					             tooltip=_colorhex ),
-				               sg.DummyButton( _color, button_color=self.button_color,
-					               tooltip=_colorhex ) ] ]
-				
+				             [ sg.DummyButton( _color, button_color = self.button_color,
+					             tooltip = _colorhex ),
+				               sg.DummyButton( _color, button_color = self.button_color,
+					               tooltip = _colorhex ) ] ]
+
 				_window2 = sg.Window( 'Buttons with white and black documents', _layout2,
-					keep_on_top=True,
-					finalize=True,
-					size=self.form_size,
-					icon=self.icon )
-				
+					keep_on_top = True,
+					finalize = True,
+					size = self.form_size,
+					icon = self.icon )
+
 				sg.clipboard_set( _colorhex )
-			
+
 			_window.close( )
-			
+
 			sg.popup_quick_message( 'Building _window... one moment please...',
 				background_color=self.theme_background,
 				icon=self.icon_path,
 				text_color=self.theme_textcolor,
 				font=self.theme_font )
-			
+
 			sg.set_options( button_element_size=(12, 1),
 				element_padding=(0, 0),
 				auto_size_buttons=False,
@@ -4293,7 +4615,15 @@ class BudgetForm( Dark ):
             Class defining basic dashboard for the application
 
     '''
-	
+	titlelayout: list[ list[ Text | Any ] ]
+	headerlayout: list[ list[ Text ] ]
+	firstlayout: list[ list[ Text ] ]
+	secondlayout: list[ list[ Text ] ]
+	thirdlayout: list[ list[ Text ] ]
+	fourthlayout: list[ list[ Text ] ]
+	formlayout: list[ list[ Text ] ]
+
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -4311,14 +4641,18 @@ class BudgetForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.image = r'C:\Users\terry\source\repos\Boo\resources\img\app\Application.png'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\boogr.png'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (1200, 650)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -4336,19 +4670,45 @@ class BudgetForm( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'progressbar_color',
-		         'title_items', 'header_items', 'first_items',
-		         'second_items', 'third_items', 'form_size',
-		         'image', 'show', 'create_title', 'create_header',
-		         'create_first', 'create_second', 'create_third',
-		         'create_fourth', 'set_layout', 'show' ]
-	
-	def create_title( self, items: list ) -> list:
+		return [ 'size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'progressbar_color',
+		         'title_items',
+		         'header_items',
+		         'first_items',
+		         'second_items',
+		         'third_items',
+		         'form_size',
+		         'image',
+		         'show',
+		         'create_title',
+		         'create_header',
+		         'create_first',
+		         'create_second',
+		         'create_third',
+		         'create_fourth',
+		         'set_layout',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable',
+		         'context_menu', ]
+
+	def create_title( self, items: list ) -> list[ list[ Text | Any ] ] | None:
 		'''
 
             Purpose:
@@ -4371,22 +4731,22 @@ class BudgetForm( Dark ):
 				_form = (450, 150)
 				_hdrsz = (920, 100)
 				_title = [
-						[ sg.Text( f'{items[ 0 ]}', font=_font, background_color=_mblk,
-							enable_events=True, grab=False ),
-						  sg.Push( background_color=_mblk ),
-						  sg.Text( f'{items[ 1 ]}', font=_font, background_color=_mblk ) ],
+						[ sg.Text( f'{items[ 0 ]}', font = _font, background_color = _mblk,
+							enable_events = True, grab = False ),
+						  sg.Push( background_color = _mblk ),
+						  sg.Text( f'{items[ 1 ]}', font = _font, background_color = _mblk ) ],
 				]
-				self.__titlelayout = _title
+				self.titlelayout = _title
 				return _title
 			except Exception as e:
 				exception = Error( e )
 				exception.module = 'boogr'
-				exception.cause = 'BudgetForm'
+				exception.cause = 'GooeyForm'
 				exception.method = 'create_title( self, items )'
 				error = ErrorDialog( exception )
 				error.show( )
-	
-	def create_header( self, items: list ) -> list:
+
+	def create_header( self, items: list ) -> list[ list[ str | Any ] ] | None:
 		'''
 
             Purpose:
@@ -4408,7 +4768,7 @@ class BudgetForm( Dark ):
 				_hdr = 'Roboto 20'
 				_frasz = (450, 150)
 				_hdrsz = (920, 100)
-				_header = [ [ sg.Push( ), sg.Text( f'{items[ 0 ]}', font=_hdr ), sg.Push( ) ],
+				_header = [ [ sg.Push( ), sg.Text( f'{items[ 0 ]}', font = _hdr ), sg.Push( ) ],
 				            [ sg.Text( f'{items[ 1 ]}' ) ],
 				            [ sg.Text( f'{items[ 2 ]}' ) ] ]
 				self.headerlayout = _header
@@ -4416,12 +4776,12 @@ class BudgetForm( Dark ):
 			except Exception as e:
 				exception = Error( e )
 				exception.module = 'boogr'
-				exception.cause = 'BudgetForm'
+				exception.cause = 'GooeyForm'
 				exception.method = 'create_header( self, items )'
 				error = ErrorDialog( exception )
 				error.show( )
-	
-	def create_first( self, items: list ) -> list:
+
+	def create_first( self, items: list ) -> list[ list[ Text ] ] | None:
 		'''
 
             Purpose:
@@ -4443,14 +4803,14 @@ class BudgetForm( Dark ):
 				_hdr = 'Roboto 20'
 				_frasz = (450, 150)
 				_hdrsz = (920, 100)
-				_first = [ [ sg.Push( ), sg.Text( 'Block 1 GptHeader', font=_hdr ), sg.Push( ) ],
-				           [ sg.Push( ), sg.Text( 'Block 1 line 1', font=_hdr ), sg.Push( ) ],
-				           [ sg.Push( ), sg.Text( 'Block 1 line 2', font=_hdr ), sg.Push( ) ],
-				           [ sg.Push( ), sg.Text( 'Block 1 line 3', font=_hdr ), sg.Push( ) ],
-				           [ sg.Push( ), sg.Text( 'Block 1 line 4', font=_hdr ), sg.Push( ) ],
-				           [ sg.Push( ), sg.Text( 'Block 1 line 5', font=_hdr ), sg.Push( ) ],
-				           [ sg.Push( ), sg.Text( 'Block 1 line 6', font=_hdr ), sg.Push( ) ] ]
-				self.__firstlayout = _first
+				_first = [ [ sg.Push( ), sg.Text( 'Block 1 Header', font = _hdr ), sg.Push( ) ],
+				           [ sg.Push( ), sg.Text( 'Block 1 line 1', font = _hdr ), sg.Push( ) ],
+				           [ sg.Push( ), sg.Text( 'Block 1 line 2', font = _hdr ), sg.Push( ) ],
+				           [ sg.Push( ), sg.Text( 'Block 1 line 3', font = _hdr ), sg.Push( ) ],
+				           [ sg.Push( ), sg.Text( 'Block 1 line 4', font = _hdr ), sg.Push( ) ],
+				           [ sg.Push( ), sg.Text( 'Block 1 line 5', font = _hdr ), sg.Push( ) ],
+				           [ sg.Push( ), sg.Text( 'Block 1 line 6', font = _hdr ), sg.Push( ) ] ]
+				self.firstlayout = _first
 				return _first
 			except Exception as e:
 				exception = Error( e )
@@ -4459,8 +4819,8 @@ class BudgetForm( Dark ):
 				exception.method = 'create_first( self, items: get_list ) -> get_list'
 				error = ErrorDialog( exception )
 				error.show( )
-	
-	def create_second( self, items: list ) -> list:
+
+	def create_second( self, items: list ) -> list[ list[ Text | Any ] ] | None:
 		'''
 
             Purpose:
@@ -4482,14 +4842,14 @@ class BudgetForm( Dark ):
 				_hdr = 'Roboto 20'
 				_frasz = (450, 150)
 				_hdrsz = (920, 100)
-				_second = [ [ sg.Push( ), sg.Text( 'Block 2 GptHeader', font=_hdr ), sg.Push( ) ],
-				            [ sg.Push( ), sg.Text( 'Block 2 line 1', font=_hdr ), sg.Push( ) ],
-				            [ sg.Push( ), sg.Text( 'Block 2 line 2', font=_hdr ), sg.Push( ) ],
-				            [ sg.Push( ), sg.Text( 'Block 2 line 3', font=_hdr ), sg.Push( ) ],
-				            [ sg.Push( ), sg.Text( 'Block 2 line 4', font=_hdr ), sg.Push( ) ],
-				            [ sg.Push( ), sg.Text( 'Block 2 line 5', font=_hdr ), sg.Push( ) ],
-				            [ sg.Push( ), sg.Text( 'Block 2 line 6', font=_hdr ), sg.Push( ) ] ]
-				self.__secondlayout = _second
+				_second = [ [ sg.Push( ), sg.Text( 'Block 2 Header', font = _hdr ), sg.Push( ) ],
+				            [ sg.Push( ), sg.Text( 'Block 2 line 1', font = _hdr ), sg.Push( ) ],
+				            [ sg.Push( ), sg.Text( 'Block 2 line 2', font = _hdr ), sg.Push( ) ],
+				            [ sg.Push( ), sg.Text( 'Block 2 line 3', font = _hdr ), sg.Push( ) ],
+				            [ sg.Push( ), sg.Text( 'Block 2 line 4', font = _hdr ), sg.Push( ) ],
+				            [ sg.Push( ), sg.Text( 'Block 2 line 5', font = _hdr ), sg.Push( ) ],
+				            [ sg.Push( ), sg.Text( 'Block 2 line 6', font = _hdr ), sg.Push( ) ] ]
+				self.secondlayout = _second
 				return _second
 			except Exception as e:
 				exception = Error( e )
@@ -4498,8 +4858,8 @@ class BudgetForm( Dark ):
 				exception.method = 'create_second( self, items )'
 				error = ErrorDialog( exception )
 				error.show( )
-	
-	def create_third( self, items: list ) -> list:
+
+	def create_third( self, items: list ) -> list[ list[ Text | Any ] ] | None:
 		'''
 
             Purpose:
@@ -4521,14 +4881,14 @@ class BudgetForm( Dark ):
 				_hdr = 'Roboto 20'
 				_frasz = (450, 150)
 				_hdrsz = (920, 100)
-				_third = [ [ sg.Push( ), sg.Text( 'Block 3 GptHeader', font=_hdr ), sg.Push( ) ],
-				           [ sg.Push( ), sg.Text( 'Block 3 line 1', font=_hdr ), sg.Push( ) ],
-				           [ sg.Push( ), sg.Text( 'Block 3 line 2', font=_hdr ), sg.Push( ) ],
-				           [ sg.Push( ), sg.Text( 'Block 3 line 3', font=_hdr ), sg.Push( ) ],
-				           [ sg.Push( ), sg.Text( 'Block 3 line 4', font=_hdr ), sg.Push( ) ],
-				           [ sg.Push( ), sg.Text( 'Block 3 line 5', font=_hdr ), sg.Push( ) ],
-				           [ sg.Push( ), sg.Text( 'Block 3 line 6', font=_hdr ), sg.Push( ) ] ]
-				self.__thirdlayout = _third
+				_third = [ [ sg.Push( ), sg.Text( 'Block 3 Header', font = _hdr ), sg.Push( ) ],
+				           [ sg.Push( ), sg.Text( 'Block 3 line 1', font = _hdr ), sg.Push( ) ],
+				           [ sg.Push( ), sg.Text( 'Block 3 line 2', font = _hdr ), sg.Push( ) ],
+				           [ sg.Push( ), sg.Text( 'Block 3 line 3', font = _hdr ), sg.Push( ) ],
+				           [ sg.Push( ), sg.Text( 'Block 3 line 4', font = _hdr ), sg.Push( ) ],
+				           [ sg.Push( ), sg.Text( 'Block 3 line 5', font = _hdr ), sg.Push( ) ],
+				           [ sg.Push( ), sg.Text( 'Block 3 line 6', font = _hdr ), sg.Push( ) ] ]
+				self.thirdlayout = _third
 				return _third
 			except Exception as e:
 				exception = Error( e )
@@ -4537,8 +4897,8 @@ class BudgetForm( Dark ):
 				exception.method = 'create_third( self, items: get_list )'
 				error = ErrorDialog( exception )
 				error.show( )
-	
-	def create_fourth( self, items: list ) -> list:
+
+	def create_fourth( self, items: list ) -> list[ list[ Text | Any ] ] | None:
 		'''
 
             Purpose:
@@ -4560,14 +4920,14 @@ class BudgetForm( Dark ):
 				_hdr = 'Roboto 20'
 				_frasz = (450, 150)
 				_hdrsz = (920, 100)
-				_fourth = [ [ sg.Push( ), sg.Text( 'Block 4 GptHeader', font=_hdr ), sg.Push( ) ],
-				            [ sg.Push( ), sg.Text( 'Block 4 line 1', font=_hdr ), sg.Push( ) ],
-				            [ sg.Push( ), sg.Text( 'Block 4 line 2', font=_hdr ), sg.Push( ) ],
-				            [ sg.Push( ), sg.Text( 'Block 4 line 3', font=_hdr ), sg.Push( ) ],
-				            [ sg.Push( ), sg.Text( 'Block 4 line 4', font=_hdr ), sg.Push( ) ],
-				            [ sg.Push( ), sg.Text( 'Block 4 line 5', font=_hdr ), sg.Push( ) ],
-				            [ sg.Push( ), sg.Text( 'Block 4 line 6', font=_hdr ), sg.Push( ) ] ]
-				self.__fourthlayout = _fourth
+				_fourth = [ [ sg.Push( ), sg.Text( 'Block 4 Header', font = _hdr ), sg.Push( ) ],
+				            [ sg.Push( ), sg.Text( 'Block 4 line 1', font = _hdr ), sg.Push( ) ],
+				            [ sg.Push( ), sg.Text( 'Block 4 line 2', font = _hdr ), sg.Push( ) ],
+				            [ sg.Push( ), sg.Text( 'Block 4 line 3', font = _hdr ), sg.Push( ) ],
+				            [ sg.Push( ), sg.Text( 'Block 4 line 4', font = _hdr ), sg.Push( ) ],
+				            [ sg.Push( ), sg.Text( 'Block 4 line 5', font = _hdr ), sg.Push( ) ],
+				            [ sg.Push( ), sg.Text( 'Block 4 line 6', font = _hdr ), sg.Push( ) ] ]
+				self.fourthlayout = _fourth
 				return _fourth
 			except Exception as e:
 				exception = Error( e )
@@ -4576,8 +4936,8 @@ class BudgetForm( Dark ):
 				exception.method = 'create_fourth( self, items: get_list )'
 				error = ErrorDialog( exception )
 				error.show( )
-	
-	def set_layout( self ) -> list:
+
+	def set_layout( self ) -> list[ list[ Frame ] | list[ Sizegrip ] ] | None:
 		'''
 
             Purpose:
@@ -4600,32 +4960,32 @@ class BudgetForm( Dark ):
 			_frasz = (450, 150)
 			_hdrsz = (920, 100)
 			_layout = [
-					[ sg.Frame( '', self.__titlelayout, pad=(0, 0), background_color=_mblk,
-						expand_x=True,
-						border_width=0, grab=True ) ],
-					[ sg.Frame( '', self.headerlayout, size=_hdrsz, pad=BPAD_TOP,
-						expand_x=True,
-						relief=sg.RELIEF_FLAT, border_width=0 ) ],
+					[ sg.Frame( '', self.titlelayout, pad = (0, 0), background_color = _mblk,
+						expand_x = True,
+						border_width = 0, grab = True ) ],
+					[ sg.Frame( '', self.headerlayout, size = _hdrsz, pad = BPAD_TOP,
+						expand_x = True,
+						relief = sg.RELIEF_FLAT, border_width = 0 ) ],
 					[ sg.Frame( '',
-						[ [ sg.Frame( '', self.__firstlayout, size=_frasz, pad=
+						[ [ sg.Frame( '', self.firstlayout, size = _frasz, pad =
 						BPAD_LEFT_INSIDE,
-							border_width=0, expand_x=True, expand_y=True, ) ],
-						  [ sg.Frame( '', self.__thirdlayout, size=_frasz, pad=
+							border_width = 0, expand_x = True, expand_y = True, ) ],
+						  [ sg.Frame( '', self.thirdlayout, size = _frasz, pad =
 						  BPAD_LEFT_INSIDE,
-							  border_width=0, expand_x=True, expand_y=True ) ] ],
-						pad=BPAD_LEFT, background_color=_blk, border_width=0,
-						expand_x=True, expand_y=True ),
+							  border_width = 0, expand_x = True, expand_y = True ) ] ],
+						pad = BPAD_LEFT, background_color = _blk, border_width = 0,
+						expand_x = True, expand_y = True ),
 					  sg.Frame( '',
-						  [ [ sg.Frame( '', self.__secondlayout, size=_frasz,
-							  pad=BPAD_LEFT_INSIDE,
-							  border_width=0, expand_x=True, expand_y=True ) ],
-						    [ sg.Frame( '', self.__fourthlayout, size=_frasz,
-							    pad=BPAD_LEFT_INSIDE,
-							    border_width=0, expand_x=True, expand_y=True ) ] ],
-						  pad=BPAD_LEFT, background_color=_blk, border_width=0,
-						  expand_x=True, expand_y=True ), ],
-					[ sg.Sizegrip( background_color=_mblk ) ] ]
-			self.__formlayout = _layout
+						  [ [ sg.Frame( '', self.secondlayout, size = _frasz,
+							  pad = BPAD_LEFT_INSIDE,
+							  border_width = 0, expand_x = True, expand_y = True ) ],
+						    [ sg.Frame( '', self.fourthlayout, size = _frasz,
+							    pad = BPAD_LEFT_INSIDE,
+							    border_width = 0, expand_x = True, expand_y = True ) ] ],
+						  pad = BPAD_LEFT, background_color = _blk, border_width = 0,
+						  expand_x = True, expand_y = True ), ],
+					[ sg.Sizegrip( background_color = _mblk ) ] ]
+			self.formlayout = _layout
 			return _layout
 		except Exception as e:
 			exception = Error( e )
@@ -4634,7 +4994,7 @@ class BudgetForm( Dark ):
 			exception.method = 'set_layout( self, items )'
 			error = ErrorDialog( exception )
 			error.show( )
-	
+
 	def show( self ) -> None:
 		'''
 
@@ -4663,81 +5023,82 @@ class BudgetForm( Dark ):
 			_li = 'Roboto 11'
 			_frasz = (450, 150)
 			_hdrsz = (920, 100)
-			self.__titlelayout = [
-					[ sg.Text( 'Booger', font=_hdr, background_color=_mblk,
-						enable_events=True, grab=False ), sg.Push( background_color=_mblk ),
-					  sg.Text( 'Wednesday 27 Oct 2021', font=_hdr, background_color=_mblk ) ],
+			self.titlelayout = [
+					[ sg.Text( 'Booger', font = _hdr, background_color = _mblk,
+						enable_events = True, grab = False ), sg.Push( background_color = _mblk ),
+					  sg.Text( 'Wednesday 27 Oct 2021', font = _hdr, background_color = _mblk ) ],
 			]
-			self.headerlayout = [ [ sg.Push( ), sg.Text( 'Top GptHeader', font=_hdr ), sg.Push(
+			self.headerlayout = [ [ sg.Push( ), sg.Text( 'Top Header', font = _hdr ), sg.Push(
 			) ],
-			                      [ sg.Image( source=self.image, subsample=3,
-				                      enable_events=True ), sg.Push( ) ],
-			                      [ sg.Text( 'Top GptHeader line 2' ), sg.Push( ) ] ]
-			self.__firstlayout = [
-					[ sg.Push( ), sg.Text( 'Block 1 GptHeader', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 1 line 1', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 1 line 2', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 1 line 3', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 1 line 4', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 1 line 5', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 1 line 6', font=_hdr ), sg.Push( ) ] ]
-			self.__secondlayout = [
-					[ sg.Push( ), sg.Text( 'Block 2 GptHeader', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 2 line 1', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 2 line 2', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 2 line 3', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 2 line 4', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 2 line 5', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 2 line 6', font=_hdr ), sg.Push( ) ] ]
-			self.__thirdlayout = [
-					[ sg.Push( ), sg.Text( 'Block 3 GptHeader', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 3 line 1', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 3 line 2', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 3 line 3', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 3 line 4', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 3 line 5', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 3 line 6', font=_hdr ), sg.Push( ) ] ]
-			self.__fourthlayout = [
-					[ sg.Push( ), sg.Text( 'Block 4 GptHeader', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 4 line 1', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 4 line 2', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 4 line 3', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 4 line 4', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 4 line 5', font=_hdr ), sg.Push( ) ],
-					[ sg.Push( ), sg.Text( 'Block 4 line 6', font=_hdr ), sg.Push( ) ] ]
-			self.__formlayout = [
-					[ sg.Frame( '', self.__titlelayout, pad=(0, 0), background_color=_mblk,
-						expand_x=True, border_width=0, grab=True ) ],
+			                        [ sg.Image( source = self.image, subsample = 3,
+				                        enable_events = True ), sg.Push( ) ],
+			                        [ sg.Text( 'Top Header line 2' ), sg.Push( ) ] ]
+			self.firstlayout = [
+					[ sg.Push( ), sg.Text( 'Block 1 Header', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 1 line 1', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 1 line 2', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 1 line 3', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 1 line 4', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 1 line 5', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 1 line 6', font = _hdr ), sg.Push( ) ] ]
+			self.secondlayout = [
+					[ sg.Push( ), sg.Text( 'Block 2 Header', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 2 line 1', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 2 line 2', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 2 line 3', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 2 line 4', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 2 line 5', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 2 line 6', font = _hdr ), sg.Push( ) ] ]
+			self.thirdlayout = [
+					[ sg.Push( ), sg.Text( 'Block 3 Header', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 3 line 1', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 3 line 2', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 3 line 3', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 3 line 4', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 3 line 5', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 3 line 6', font = _hdr ), sg.Push( ) ] ]
+			self.fourthlayout = [
+					[ sg.Push( ), sg.Text( 'Block 4 Header', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 4 line 1', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 4 line 2', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 4 line 3', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 4 line 4', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 4 line 5', font = _hdr ), sg.Push( ) ],
+					[ sg.Push( ), sg.Text( 'Block 4 line 6', font = _hdr ), sg.Push( ) ] ]
+			self.formlayout = [
+					[ sg.Frame( '', self.titlelayout, pad = (0, 0), background_color = _mblk,
+						expand_x = True, border_width = 0, grab = True ) ],
 					[ sg.Frame( '',
-						[ [ sg.Frame( '', self.headerlayout, size=_frasz, pad=BPAD_TOP,
-							expand_x=True,
-							relief=sg.RELIEF_FLAT, border_width=0 ) ] ], pad=BPAD_LEFT,
-						background_color=_blu, border_width=0, expand_x=True ), ],
+						[ [ sg.Frame( '', self.headerlayout, size = _frasz, pad = BPAD_TOP,
+							expand_x = True,
+							relief = sg.RELIEF_FLAT, border_width = 0 ) ] ], pad = BPAD_LEFT,
+						background_color = _blu, border_width = 0, expand_x = True ), ],
 					[ sg.Frame( '',
-						[ [ sg.Frame( '', self.__firstlayout, size=_frasz, pad=
+						[ [ sg.Frame( '', self.firstlayout, size = _frasz, pad =
 						BPAD_LEFT_INSIDE,
-							border_width=0, expand_x=True, expand_y=True, ) ],
-						  [ sg.Frame( '', self.__thirdlayout, size=_frasz, pad=
+							border_width = 0, expand_x = True, expand_y = True, ) ],
+						  [ sg.Frame( '', self.thirdlayout, size = _frasz, pad =
 						  BPAD_LEFT_INSIDE,
-							  border_width=0, expand_x=True, expand_y=True ) ] ],
-						pad=BPAD_LEFT, background_color=_blu, border_width=0,
-						expand_x=True, expand_y=True ),
+							  border_width = 0, expand_x = True, expand_y = True ) ] ],
+						pad = BPAD_LEFT, background_color = _blu, border_width = 0,
+						expand_x = True, expand_y = True ),
 					  sg.Frame( '',
-						  [ [ sg.Frame( '', self.__secondlayout, size=_frasz,
-							  pad=BPAD_LEFT_INSIDE,
-							  border_width=0, expand_x=True, expand_y=True ) ],
-						    [ sg.Frame( '', self.__fourthlayout, size=_frasz,
-							    pad=BPAD_LEFT_INSIDE,
-							    border_width=0, expand_x=True, expand_y=True ) ] ],
-						  pad=BPAD_LEFT, background_color=_blu, border_width=0,
-						  expand_x=True, expand_y=True ), ],
-					[ sg.Sizegrip( background_color=_mblk ) ] ]
-			_window = sg.Window( '  Boo', self.__formlayout,
+						  [ [ sg.Frame( '', self.secondlayout, size = _frasz,
+							  pad = BPAD_LEFT_INSIDE,
+							  border_width = 0, expand_x = True, expand_y = True ) ],
+						    [ sg.Frame( '', self.fourthlayout, size = _frasz,
+							    pad = BPAD_LEFT_INSIDE,
+							    border_width = 0, expand_x = True, expand_y = True ) ] ],
+						  pad = BPAD_LEFT, background_color = _blu, border_width = 0,
+						  expand_x = True, expand_y = True ), ],
+					[ sg.Sizegrip( background_color = _mblk ) ] ]
+			_window = sg.Window( 'Boo', self.formlayout,
 				size=self.form_size,
 				margins=(0, 0),
 				background_color=_blk,
 				grab_anywhere=True,
 				no_titlebar=True,
+				keep_on_top=True,
 				resizable=True,
 				right_click_menu=sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT )
 			while True:
@@ -4748,8 +5109,8 @@ class BudgetForm( Dark ):
 				elif _event == 'Edit Me':
 					sg.execute_editor( __file__ )
 				elif _event == 'Version':
-					sg.popup_scrolled( sg.get_versions( ), keep_on_top=True )
-				elif _event == 'GptFile Location':
+					sg.popup_scrolled( sg.get_versions( ), keep_on_top = True )
+				elif _event == 'File Location':
 					sg.popup_scrolled( 'This Python file is:', __file__ )
 			_window.close( )
 		except Exception as e:
@@ -4770,17 +5131,7 @@ class ChartPanel( Dark ):
         Provides form with a bar chart
 
     '''
-	
-	@property
-	def header( self ) -> str:
-		if self.header is not None:
-			return self.header
-	
-	@header.setter
-	def header( self, value: str ):
-		if value is not None:
-			self.header = value
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -4798,13 +5149,16 @@ class ChartPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\chart.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (750, 650)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -4822,13 +5176,27 @@ class ChartPanel( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -4855,40 +5223,41 @@ class ChartPanel( Dark ):
 			_offset = 3
 			_graphsz = _datasz = (500, 500)
 			_black = sg.theme_background_color( )
-			
-			_layout = [ [ sg.Text( size=_sm ), sg.Text( size=_xl ) ],
-			            [ sg.Text( size=_sm ),
-			              sg.Graph( _graphsz, (0, 0), _datasz, k='-GRAPH-' ) ],
-			            [ sg.Text( size=_sm ), sg.Text( size=_xl ) ],
-			            [ sg.Text( size=_lg ), sg.Button( 'Next', size=_md ),
-			              sg.Text( size=_lg ), sg.Exit( size=_md ) ],
-			            [ sg.Sizegrip( background_color=_black ) ] ]
-			
-			_window = sg.Window( 'Booger', _layout,
+
+			_layout = [ [ sg.Text( size = _sm ), sg.Text( size = _xl ) ],
+			            [ sg.Text( size = _sm ),
+			              sg.Graph( _graphsz, (0, 0), _datasz, k = '-GRAPH-' ) ],
+			            [ sg.Text( size = _sm ), sg.Text( size = _xl ) ],
+			            [ sg.Text( size = _lg ), sg.Button( 'Next', size = _md ),
+			              sg.Text( size = _lg ), sg.Exit( size = _md ) ],
+			            [ sg.Sizegrip( background_color = _black ) ] ]
+
+			_window = sg.Window( 'Boo', _layout,
 				finalize=True,
-				resizable=True,
+				resizable=self.resizable,
 				icon=self.icon_path,
+				keep_on_top=self.keep_on_top,
 				font=self.theme_font,
 				size=self.form_size )
-			
+
 			_graph = _window[ '-GRAPH-' ]
-			
+
 			while True:
 				_graph.erase( )
 				for i in range( 7 ):
 					_item = random.randint( 0, _graphsz[ 1 ] )
-					_graph.draw_rectangle( top_left=(i * _space + _offset, _item),
-						bottom_right=(i * _space + _offset + _width, 0),
-						fill_color=sg.theme_button_color_background( ),
-						line_color=sg.theme_button_color_text( ) )
-					
-					_graph.draw_text( text=_item, color='#FFFFFF',
-						location=(i * _space + _offset + 25, _item + 10) )
-				
+					_graph.draw_rectangle( top_left = (i * _space + _offset, _item),
+						bottom_right = (i * _space + _offset + _width, 0),
+						fill_color = sg.theme_button_color_background( ),
+						line_color = sg.theme_button_color_text( ) )
+
+					_graph.draw_text( text = _item, color = '#FFFFFF',
+						location = (i * _space + _offset + 25, _item + 10) )
+
 				_event, _values = _window.read( )
 				if _event in (sg.WIN_CLOSED, 'Exit'):
 					break
-			
+
 			_window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -4908,18 +5277,7 @@ class CsvForm( Dark ):
         Provides form that reads CSV file with pandas
 
 	'''
-	header: Optional[ str ]
-	
-	@property
-	def header( self ) -> str:
-		if self.header is not None:
-			return self.header
-	
-	@header.setter
-	def header( self, value: str ):
-		if value is not None:
-			self.header = value
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -4937,13 +5295,16 @@ class CsvForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -4961,13 +5322,28 @@ class CsvForm( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
+
 	def show( self ) -> None:
 		'''
 
@@ -4991,19 +5367,18 @@ class CsvForm( Dark ):
 			_dialog = FileDialog( )
 			_dialog.show( )
 			_path = _dialog.selected_path
-			
+
 			if _path == '':
 				_msg = MessageDialog( 'No file url was provided!' )
 				_msg.show( )
 				return
-			
+
 			_data = [ ]
 			_header = [ ]
-			
 			_button = sg.popup_yes_no( 'Does file have column column_names?',
 				icon=self.icon_path,
 				font=self.theme_font )
-			
+
 			if _path is not None:
 				try:
 					_frame = CsvReader( _path, sep=',', engine='python', header=None )
@@ -5014,22 +5389,22 @@ class CsvForm( Dark ):
 					elif _button == 'No':
 						_header = [ 'Column' + str( x ) for x in range( len( _data[ 0 ] ) ) ]
 				except Exception:
-					sg.popup_error( 'GptError reading file' )
+					sg.popup_error( 'Error reading file' )
 					return
-			
-			_left = [ [ sg.Text( size=_sm ), ] ]
-			_right = [ [ sg.Text( size=_sm ), ] ]
-			_datagrid = [ [ sg.Table( values=_data, headings=_header, justification='center',
-				row_height=18, display_row_numbers=True, vertical_scroll_only=False,
-				header_background_color='#1B262E', header_relief=sg.RELIEF_FLAT,
-				header_border_width=1, selected_row_colors=('#FFFFFF', '#4682B4'),
-				header_text_color='#FFFFFF', header_font=('Roboto', 8, 'bold'),
-				font=('Roboto', 8), background_color='#EDF3F8',
-				alternating_row_color='#EDF3F8', border_width=1, text_color='#000000',
-				expand_x=True, expand_y=True, sbar_relief=sg.RELIEF_FLAT,
-				num_rows=min( 26, len( _data ) ) ), ], ]
-			_window = sg.Window( '  Boo', _datagrid, icon=self.icon_path,
-				font=self.theme_font, resizable=True )
+
+			_left = [ [ sg.Text( size = _sm ), ] ]
+			_right = [ [ sg.Text( size = _sm ), ] ]
+			_datagrid = [ [ sg.Table( values = _data, headings = _header, justification = 'center',
+				row_height = 18, display_row_numbers = True, vertical_scroll_only = False,
+				header_background_color = '#1B262E', header_relief = sg.RELIEF_FLAT,
+				header_border_width = 1, selected_row_colors = ('#FFFFFF', '#4682B4'),
+				header_text_color = '#FFFFFF', header_font = ('Roboto', 8, 'bold'),
+				font = ('Roboto', 8), background_color = '#EDF3F8',
+				alternating_row_color = '#EDF3F8', border_width = 1, text_color = '#000000',
+				expand_x = True, expand_y = True, sbar_relief = sg.RELIEF_FLAT,
+				num_rows = min( 26, len( _data ) ) ), ], ]
+			_window = sg.Window( 'Boo', _datagrid, icon = self.icon_path,
+				font = self.theme_font, resizable = True )
 			_event, _values = _window.read( )
 			_window.close( )
 		except Exception as e:
@@ -5050,17 +5425,7 @@ class ExcelForm( Dark ):
         Provides form that reads CSV file with pandas
 
 	'''
-	
-	@property
-	def header( self ) -> str:
-		if self.header is not None:
-			return self.header
-	
-	@header.setter
-	def header( self, value: str ):
-		if value is not None:
-			self.header = value
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -5078,13 +5443,16 @@ class ExcelForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (1250, 700)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -5102,13 +5470,27 @@ class ExcelForm( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
+		return [ 'form_size',
+		         'settings_path',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_backcolor',
+		         'element_forecolor',
+		         'text_forecolor',
+		         'text_backcolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -5132,56 +5514,57 @@ class ExcelForm( Dark ):
 			_dialog = FileDialog( )
 			_dialog.show( )
 			_filename = _dialog.selected_item
-			
+
 			if _filename == '':
 				_msg = MessageDialog( 'No file was provided!' )
 				_msg.show( )
 				return
-			
+
 			_data = [ ]
 			_header = [ ]
-			
+
 			_button = sg.popup_yes_no( 'First Row Has Headers?',
-				title='Headers?',
-				icon=self.icon_path,
-				font=('Roboto', 10) )
+				title = 'Headers?',
+				icon = self.icon_path,
+				font = ('Roboto', 10) )
 			if _filename is not None:
 				try:
-					_dataframe = ExcelReader( _filename, index_col=0 )
+					_dataframe = ExcelReader( _filename, index_col = 0 )
 					_data = _dataframe.values.tolist( )
 					if _button == 'Yes':
 						_header = [ f'{i} ' for i in _dataframe.columns ]
 					elif _button == 'No':
 						_header = [ 'Column-' + str( x ) for x in range( len( _data[ 0 ] ) ) ]
 				except:
-					sg.popup_error( 'GptError reading file' )
+					sg.popup_error( 'Error reading file' )
 					return
-			_left = [ [ sg.Text( size=_small ), ] ]
-			_right = [ [ sg.Text( size=_small ), ] ]
-			_datagrid = [ [ sg.Table( values=_data, headings=_header, justification='center',
-				row_height=18, display_row_numbers=True, vertical_scroll_only=False,
-				header_background_color='#1B262E', header_relief=sg.RELIEF_FLAT,
-				header_border_width=1, selected_row_colors=('#FFFFFF', '#4682B4'),
-				header_text_color='#FFFFFF', header_font=('Roboto', 10, 'bold'),
-				font=('Roboto', 8), background_color='#EDF3F8',
-				alternating_row_color='#EDF3F8', border_width=1, text_color='#000000',
-				expand_x=False, expand_y=True, sbar_relief=sg.RELIEF_FLAT,
-				num_rows=min( 26, len( _data ) ) ), ], ]
-			_layout = [ [ sg.Text( size=(3, 3) ) ],
-			            [ sg.Column( _left, expand_x=True ),
-			              sg.Column( _datagrid, expand_x=True, expand_y=True ),
-			              sg.Column( _right, expand_x=True ) ],
-			            [ sg.Text( size=_small ) ],
-			            [ sg.Text( size=(10, 1) ), sg.Button( 'Open', size=_med,
-				            key='-OPEN-' ),
-			              sg.Text( size=_spc ), sg.Button( 'Export', size=_med,
-				            key='-EXPORT-' ),
-			              sg.Text( size=_spc ), sg.Button( 'Save', size=_med, key='-SAVE-' ),
-			              sg.Text( size=_spc ), sg.Button( 'Close', size=_med, key='-CLOSE-'
+			_left = [ [ sg.Text( size = _small ), ] ]
+			_right = [ [ sg.Text( size = _small ), ] ]
+			_datagrid = [ [ sg.Table( values = _data, headings = _header, justification = 'center',
+				row_height = 18, display_row_numbers = True, vertical_scroll_only = False,
+				header_background_color = '#1B262E', header_relief = sg.RELIEF_FLAT,
+				header_border_width = 1, selected_row_colors = ('#FFFFFF', '#4682B4'),
+				header_text_color = '#FFFFFF', header_font = ('Roboto', 10, 'bold'),
+				font = ('Roboto', 8), background_color = '#EDF3F8',
+				alternating_row_color = '#EDF3F8', border_width = 1, text_color = '#000000',
+				expand_x = False, expand_y = True, sbar_relief = sg.RELIEF_FLAT,
+				num_rows = min( 26, len( _data ) ) ), ], ]
+			_layout = [ [ sg.Text( size = (3, 3) ) ],
+			            [ sg.Column( _left, expand_x = True ),
+			              sg.Column( _datagrid, expand_x = True, expand_y = True ),
+			              sg.Column( _right, expand_x = True ) ],
+			            [ sg.Text( size = _small ) ],
+			            [ sg.Text( size = (10, 1) ), sg.Button( 'Open', size = _med,
+				            key = '-OPEN-' ),
+			              sg.Text( size = _spc ), sg.Button( 'Export', size = _med,
+				            key = '-EXPORT-' ),
+			              sg.Text( size = _spc ), sg.Button( 'Save', size = _med, key = '-SAVE-' ),
+			              sg.Text( size = _spc ), sg.Button( 'Close', size = _med, key = '-CLOSE-'
 			            ) ],
 			            [ sg.Sizegrip( ) ], ]
-			_window = sg.Window( ' Booger', _layout,
+			_window = sg.Window( ' Gooey', _layout,
 				size=self.form_size,
+				keep_on_top=True,
 				grab_anywhere=True,
 				icon=self.icon_path,
 				font=self.theme_font,
@@ -5213,7 +5596,7 @@ class GraphForm( Dark ):
         Provides form that reads CSV file with pandas
 
 	'''
-	
+
 	def __init__( self ):
 		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
@@ -5231,13 +5614,16 @@ class GraphForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -5255,13 +5641,26 @@ class GraphForm( Dark ):
 			List[ str ] | None
 
 		'''
-		return [ 'form_size', 'theme_background',
-		         'theme_textcolor', 'element_forecolor', 'element_backcolor',
-		         'text_backcolor', 'text_forecolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'show' ]
-	
+		return [ 'form_size',
+		         'theme_background',
+		         'theme_textcolor',
+		         'element_forecolor',
+		         'element_backcolor',
+		         'text_backcolor',
+		         'text_forecolor',
+		         'input_backcolor',
+		         'input_forecolor',
+		         'button_color',
+		         'button_backcolor',
+		         'button_forecolor',
+		         'icon_path',
+		         'theme_font',
+		         'scrollbar_color',
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -5278,10 +5677,10 @@ class GraphForm( Dark ):
 		    None
 
 		'''
-		
+
 		def create_axis_grid( ):
 			plt.close( 'all' )
-			
+
 			def get_demo_image( ):
 				_delta = 0.5
 				_extent = (-3, 4, -4, 3)
@@ -5291,9 +5690,9 @@ class GraphForm( Dark ):
 				_Z1 = np.exp( -_X ** 2 - _Y ** 2 )
 				_Z2 = np.exp( -(_X - 1) ** 2 - (_Y - 1) ** 2 )
 				_Z = (_Z1 - _Z2) * 2
-				
+
 				return _Z, _extent
-			
+
 			def get_rgb( ):
 				_Z, _extent = get_demo_image( )
 				_Z[ _Z < 0 ] = 0.
@@ -5302,74 +5701,74 @@ class GraphForm( Dark ):
 				_green = _Z[ 2:, 2: ]
 				_blue = _Z[ :13, 2: ]
 				return _red, _green, _blue
-			
+
 			_figure = plt.figure( 1 )
 			_axis = RGBAxes( _figure, [ 0.1, 0.1, 0.8, 0.8 ] )
 			_r, _g, _b = get_rgb( )
-			_kwargs = dict( origin="lower", interpolation="nearest" )
+			_kwargs = dict( origin = "lower", interpolation = "nearest" )
 			_axis.imshow_rgb( _r, _g, _b, **_kwargs )
 			_axis.RGB.set_xlim( 0., 9.5 )
 			_axis.RGB.set_ylim( 0.9, 10.6 )
 			plt.draw( )
 			return plt.gcf( )
-		
+
 		def create_figure( ):
-			_figure = matplotlib.figure.Figure( figsize=(5, 4), dpi=100 )
+			_figure = matplotlib.figure.Figure( figsize = (5, 4), dpi = 100 )
 			_data = np.arange( 0, 3, .01 )
 			_figure.add_subplot( 111 ).plot( _data, 2 * np.sin( 2 * np.pi * _data ) )
 			return _figure
-		
+
 		def create_subplot_3d( ):
 			_figure = plt.figure( )
-			_axis = _figure.add_subplot( 1, 2, 1, projection='3d' )
+			_axis = _figure.add_subplot( 1, 2, 1, projection = '3d' )
 			_x = np.arange( -5, 5, 0.25 )
 			_y = np.arange( -5, 5, 0.25 )
 			_x, _y = np.meshgrid( _x, _y )
 			_r = np.sqrt( _x ** 2 + _y ** 2 )
 			_z = np.sin( _r )
-			surf = _axis.plot_surface( _x, _y, _z, rstride=1, cstride=1, cmap=cm,
-				linewidth=0, antialiased=False )
-			
+			surf = _axis.plot_surface( _x, _y, _z, rstride = 1, cstride = 1, cmap = cm,
+				linewidth = 0, antialiased = False )
+
 			_axis.set_zlim3d( -1.01, 1.01 )
-			_figure.colorbar( surf, shrink=0.5, aspect=5 )
-			_axis = _figure.add_subplot( 1, 2, 2, projection='3d' )
+			_figure.colorbar( surf, shrink = 0.5, aspect = 5 )
+			_axis = _figure.add_subplot( 1, 2, 2, projection = '3d' )
 			_x, _y, _z = get_test_data( )
-			_axis.plot_wireframe( _x, _y, _z, rstride=10, cstride=10 )
+			_axis.plot_wireframe( _x, _y, _z, rstride = 10, cstride = 10 )
 			return _figure
-		
+
 		def create_pyplot_scales( ):
 			plt.close( 'all' )
 			np.random.seed( 19680801 )
-			
-			_y = np.random.normal( loc=0.5, scale=0.4, size=1000 )
+
+			_y = np.random.normal( loc = 0.5, scale = 0.4, size = 1000 )
 			_y = _y[ (_y > 0) & (_y < 1) ]
 			_y.sort( )
 			_x = np.arange( len( _y ) )
-			
+
 			# create_graph with various axes scales
 			plt.figure( 1 )
-			
+
 			# linear
 			plt.subplot( 221 )
 			plt.plot( _x, _y )
 			plt.yscale( 'linear' )
 			plt.title( 'linear' )
 			plt.grid( True )
-			
+
 			# log
 			plt.subplot( 222 )
 			plt.plot( _x, _y )
 			plt.yscale( 'log' )
 			plt.title( 'log' )
 			plt.grid( True )
-			
+
 			# symmetric log
 			plt.subplot( 223 )
 			plt.plot( _x, _y - _y.mean( ) )
-			plt.yscale( 'symlog', linthreshy=0.01 )
+			plt.yscale( 'symlog', linthreshy = 0.01 )
 			plt.title( 'symlog' )
 			plt.grid( True )
-			
+
 			# logit
 			plt.subplot( 224 )
 			plt.plot( _x, _y )
@@ -5377,52 +5776,53 @@ class GraphForm( Dark ):
 			plt.title( 'logit' )
 			plt.grid( True )
 			plt.gca( ).yaxis.set_minor_formatter( NullFormatter( ) )
-			plt.subplots_adjust( top=0.92, bottom=0.08, left=0.10, right=0.95,
-				hspace=0.25,
-				wspace=0.35 )
-			
+			plt.subplots_adjust( top = 0.92, bottom = 0.08, left = 0.10, right = 0.95,
+				hspace = 0.25,
+				wspace = 0.35 )
+
 			return plt.gcf( )
-		
+
 		def draw_figure( element, figure ):
 			plt.close( 'all' )
 			_canvas = FigureCanvasAgg( figure )
 			_buffer = io.BytesIO( )
-			_canvas.print_figure( _buffer, format='png' )
+			_canvas.print_figure( _buffer, format = 'png' )
 			if _buffer is None:
 				return None
 			_buffer.seek( 0 )
-			element.update( data=_buffer.read( ) )
+			element.update( data = _buffer.read( ) )
 			return _canvas
-		
+
 		_figures = {
 				'Axis Grid': create_axis_grid,
 				'Subplot 3D': create_subplot_3d,
 				'Scales': create_pyplot_scales,
 				'Basic Figure': create_figure }
-		
+
 		def create_window( ):
 			_leftcolumn = [ [ sg.T( 'Charts' ) ],
 			                [ sg.Listbox( list( _figures ),
-				                default_values=[ list( _figures )[ 0 ] ], size=(15, 5),
-				                key='-LB-' ) ],
+				                default_values = [ list( _figures )[ 0 ] ], size = (15, 5),
+				                key = '-LB-' ) ],
 			                [ sg.T( 'Styles' ) ],
-			                [ sg.Combo( plt.style.available, size=(15, 10), key='-STYLE-' ) ],
+			                [ sg.Combo( plt.style.available, size = (15, 10), key = '-STYLE-' ) ],
 			                [ sg.T( 'Themes' ) ],
 			                [ sg.Combo( sg.theme_list( ),
-				                default_value=sg.theme( ),
-				                size=(15, 10),
-				                key='-THEME-' ) ] ]
-			
-			_layout = [ [ sg.T( 'Budget Chart', font=('Roboto', 10) ) ],
-			            [ sg.Col( _leftcolumn ), sg.Image( key='-IMAGE-' ) ],
+				                default_value = sg.theme( ),
+				                size = (15, 10),
+				                key = '-THEME-' ) ] ]
+
+			_layout = [ [ sg.T( 'Budget Chart', font = ('Roboto', 10) ) ],
+			            [ sg.Col( _leftcolumn ), sg.Image( key = '-IMAGE-' ) ],
 			            [ sg.B( 'Draw' ), sg.B( 'Exit' ) ] ]
-			
-			_window = sg.Window( 'Booger', _layout, finalize=True )
-			
-			return _window
-		
+
+			_win = sg.Window( 'Boo', _layout,
+				keep_on_top=True, finalize=True )
+
+			return _win
+
 		_window = create_window( )
-		
+
 		while True:
 			_event, _values = _window.read( )
 			print( _event, _values )
@@ -5433,19 +5833,19 @@ class GraphForm( Dark ):
 					_window.close( )
 					sg.theme( _values[ '-THEME-' ] )
 					_window = create_window( )
-				
+
 				if _values[ '-LB-' ]:
 					_func = _figures[ _values[ '-LB-' ][ 0 ] ]
 					if _values[ '-STYLE-' ]:
 						plt.style.use( _values[ '-STYLE-' ] )
-					
+
 					draw_figure( _window[ '-IMAGE-' ], _func( ) )
-		
+
 		_window.close( )
 
 class FileBrowser( ):
 	'''
-        GptFile Chooser - with clearable history
+        File Chooser - with clearable history
         This is a design pattern that is very useful for programs that you run often that requires
         a filename be entered.  You've got 4 options to use to get your filename with this pattern:
         1. Copy and paste a filename into the combo element
@@ -5462,7 +5862,7 @@ class FileBrowser( ):
         You may not redistribute, modify or otherwise use PySimpleGUI or its contents except
          pursuant to the PySimpleGUI License Agreement.
     '''
-	
+
 	def __init__( self ):
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -5479,16 +5879,16 @@ class FileBrowser( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'\resources\ico\browse.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
-		self.resizable = True
-		self.keep_on_top = True
-		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = (320, 400)
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.form_size = (400, 200)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -5523,8 +5923,12 @@ class FileBrowser( ):
 		         'theme_font',
 		         'scrollbar_color',
 		         'input_text',
-		         'show' ]
-	
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
+
 	def show( self ) -> None:
 		'''
 
@@ -5542,18 +5946,15 @@ class FileBrowser( ):
 
 		'''
 		layout = [ [ sg.Combo( sorted( sg.user_settings_get_entry( '-filenames-', [ ] ) ),
-			default_value=sg.user_settings_get_entry( '-last filename-', '' ),
-			size=(50, 1), key='-FILENAME-' ), sg.FileBrowse( ), sg.B( 'Clear History' ) ],
-		           [ sg.Button( 'Ok', bind_return_key=True ), sg.Button( 'Cancel' ) ] ]
-		
+			default_value = sg.user_settings_get_entry( '-last filename-', '' ),
+			size = (50, 1), key = '-FILENAME-' ), sg.FileBrowse( ), sg.B( 'Clear History' ) ],
+		           [ sg.Button( 'Ok', bind_return_key = True ), sg.Button( 'Cancel' ) ] ]
+
 		window = sg.Window( 'Browser File System', layout,
-				resizable=self.resizable,
-				keep_on_top=self.keep_on_top,
-				force_toplevel=self.top_level,
-				icon=self.icon_path, )
+			keep_on_top=True )
 		while True:
 			event, values = window.read( )
-			
+
 			if event in (sg.WIN_CLOSED, 'Cancel'):
 				break
 			if event == 'Ok':
@@ -5565,19 +5966,18 @@ class FileBrowser( ):
 			elif event == 'Clear History':
 				sg.user_settings_set_entry( '-filenames-', [ ] )
 				sg.user_settings_set_entry( '-last filename-', '' )
-				window[ '-FILENAME-' ].update( values=[ ], value='' )
-		
+				window[ '-FILENAME-' ].update( values = [ ], value = '' )
+
 		window.close( )
 
-class ChatWindow( Dark ):
+class ChatWindow( ):
 	'''
 
-	    GptFunction to generate a chat window
+	    Function to generate a chat window
 
 	'''
-	
+
 	def __init__( self ):
-		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
 		sg.theme_element_text_color( '#69B1EF' )
@@ -5593,17 +5993,17 @@ class ChatWindow( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.resizable = True
-		self.keep_on_top = True
-		self.top_level = True
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\boo.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
-		
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -5638,8 +6038,11 @@ class ChatWindow( Dark ):
 		         'theme_font',
 		         'scrollbar_color',
 		         'input_text',
-		         'show' ]
-	
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
 	def show( self ) -> None:
 		'''
 
@@ -5657,24 +6060,22 @@ class ChatWindow( Dark ):
 
 		'''
 		try:
-			_layout = [ [ sg.Text( 'Your query will go here', size=( 40, 1 ) ) ],
-			            [ sg.Output( size=( 110, 20 ), font=('Roboto 11') ) ],
-			            [ sg.Multiline( size=( 70, 5 ), enter_submits=True, key='-QUERY-',
-				            do_not_clear=False ),
-			              sg.Button( 'SEND', button_color=(sg.YELLOWS[ 0 ], sg.BLUES[ 0 ]),
-				              bind_return_key=True ),
-			              sg.Button( 'EXIT', button_color=(sg.YELLOWS[ 0 ], sg.GREENS[ 0 ]) ) ] ]
-			
-			window = sg.Window( 'Boo', _layout,
-				font=('Roboto', 12 ),
-				resizable=self.resizable,
-				keep_on_top=self.keep_on_top,
-				force_toplevel=self.top_level,
-				icon=self.icon_path,
-				default_button_element_size=(15, 2),
+			_layout = [ [ sg.Text( 'Your query will go here', size = (40, 1) ) ],
+			            [ sg.Output( size = (110, 20), font = ('Roboto 11') ) ],
+			            [ sg.Multiline( size = (70, 5), enter_submits = True, key = '-QUERY-',
+				            do_not_clear = False ),
+			              sg.Button( 'SEND', button_color = (sg.YELLOWS[ 0 ], sg.BLUES[ 0 ]),
+				              bind_return_key = True ),
+			              sg.Button( 'EXIT', button_color = (sg.YELLOWS[ 0 ], sg.GREENS[ 0 ]) ) ] ]
+
+			window = sg.Window( 'Chat Window', _layout,
+				font = ('Roboto', ' 11'),
+				default_button_element_size=(8, 2),
 				use_default_focus=False,
-				size=self.form_size )
-			
+				size=self.form_size,
+				keep_on_top=True )
+
+			# The Event Loop
 			while True:
 				event, values = window.read( )
 				# quit if exit button or target_values
@@ -5682,8 +6083,8 @@ class ChatWindow( Dark ):
 					break
 				if event == 'SEND':
 					query = values[ '-QUERY-' ].rstrip( )
-					print( 'The query you entered was {}'.format( query ), flush=True )
-			
+					print( 'The query you entered was {}'.format( query ), flush = True )
+
 			window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -5693,12 +6094,11 @@ class ChatWindow( Dark ):
 			error = ErrorDialog( exception )
 			error.show( )
 
-class ChatBot( Dark ):
-	
+class ChatBot( ):
+
 	# -------  Make a new Window  ------- #
 	# give our form a spiffy pairs of colors
 	def __init__( self ):
-		super( ).__init__( )
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
 		sg.theme_element_text_color( '#69B1EF' )
@@ -5714,16 +6114,17 @@ class ChatBot( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.resizable = True
-		self.keep_on_top = True
-		self.top_level = True
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\resources\ico\boo.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -5758,8 +6159,12 @@ class ChatBot( Dark ):
 		         'theme_font',
 		         'scrollbar_color',
 		         'input_text',
-		         'show' ]
-	
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable' ]
+
+
 	def show( self ) -> None:
 		'''
 
@@ -5777,32 +6182,34 @@ class ChatBot( Dark ):
 
 		'''
 		try:
-			layout = [ [ sg.Text( 'Your query will go here', size=(40, 1) ) ],
-			           [ sg.Output( size=(127, 30), font=('Rooboto') ) ],
+			layout = [ [ sg.Text( 'Your query will go here', size = (40, 1) ) ],
+			           [ sg.Output( size = (127, 30), font = ('Rooboto 11') ) ],
 			           [ sg.Text( 'Command History' ),
-			             sg.Text( '', size=(20, 3), key='-HISTORY-' ) ],
-			           [ sg.ML( size=(85, 5), enter_submits=True, key='-QUERY-',
-				           do_not_clear=False ),
-			             sg.Button( 'SEND',  button_color=(sg.YELLOWS[ 0 ], sg.BLUES[ 0 ]), bind_return_key=True ),
-			             sg.Button( 'EXIT',  button_color=(sg.YELLOWS[ 0 ], sg.GREENS[ 0 ]) ) ] ]
-			
-			window = sg.Window( 'Chat window with history', layout,
+			             sg.Text( '', size = (20, 3), key = '-HISTORY-' ) ],
+			           [ sg.ML( size = (85, 5), enter_submits = True, key = '-QUERY-',
+				           do_not_clear = False ),
+			             sg.Button( 'SEND',
+				             button_color = (sg.YELLOWS[ 0 ], sg.BLUES[ 0 ]),
+				             bind_return_key = True ),
+			             sg.Button( 'EXIT',
+				             button_color = (sg.YELLOWS[ 0 ], sg.GREENS[ 0 ]) ) ] ]
+
+			window = sg.Window( 'Boogr Bot', layout,
 				default_element_size=(30, 2),
-				font=('Roboto', 12 ),
+				font=('Roboto', ' 11'),
 				default_button_element_size=(8, 2),
 				return_keyboard_events=True,
+				right_click_menu=self.context_menu,
 				size=self.form_size,
-				resizable=self.resizable,
-				keep_on_top=self.keep_on_top,
-				force_toplevel=self.top_level, )
-			
+				keep_on_top=self.keep_on_top )
+
 			# ---===--- Loop taking in user path and using it  --- #
 			command_history = [ ]
 			history_offset = 0
-			
+
 			while True:
 				event, value = window.read( )
-				
+
 				if event == 'SEND':
 					query = value[ '-QUERY-' ].rstrip( )
 					# EXECUTE YOUR COMMAND HERE
@@ -5812,22 +6219,22 @@ class ChatBot( Dark ):
 					# manually clear path because keyboard events blocks clear
 					window[ '-QUERY-' ].update( '' )
 					window[ '-HISTORY-' ].update( '\n'.join( command_history[ -3: ] ) )
-				
+
 				elif event in (sg.WIN_CLOSED, 'EXIT'):  # quit if exit event or target_values
 					break
-				
+
 				elif 'Up' in event and len( command_history ):
 					command = command_history[ history_offset ]
 					# decrement is not zero
 					history_offset -= 1 * (history_offset > 0)
 					window[ '-QUERY-' ].update( command )
-				
+
 				elif 'Down' in event and len( command_history ):
 					# increment up to end of get_list
 					history_offset += 1 * (history_offset < len( command_history ) - 1)
 					command = command_history[ history_offset ]
 					window[ '-QUERY-' ].update( command )
-				
+
 				elif 'Escape' in event:
 					window[ '-QUERY-' ].update( '' )
 		except Exception as e:
@@ -5871,7 +6278,7 @@ class InputWindow( ):
 	    You may not redistribute, modify or otherwise use PySimpleGUI or its contents except
 	    pursuant to the PySimpleGUI License Agreement.
 	"""
-	
+
 	def __init__( self ):
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -5888,16 +6295,17 @@ class InputWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/message.ico'
-		self.theme_font = ('Roboto', 12)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
-		self.resizable = True
-		self.keep_on_top = True
-		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = ( 520, 550 )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.form_size = (520, 550)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -5932,8 +6340,12 @@ class InputWindow( ):
 		         'theme_font',
 		         'scrollbar_color',
 		         'input_text',
-		         'show' ]
-	
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable',
+		         'context_menu', ]
+
 	def show( self ) -> None:
 		'''
 
@@ -5953,54 +6365,52 @@ class InputWindow( ):
 		try:
 			col2 = sg.Column( [ [ sg.Frame( 'Accounts:',
 				[ [ sg.Column( [ [ sg.Listbox( [ 'Account ' + str( i ) for i in range( 1, 16 ) ],
-					key='-ACCT-LIST-', size=(15, 20) ), ] ], size=(150, 400) ) ] ] ) ] ],
-				pad=(0, 0) )
-			
+					key = '-ACCT-LIST-', size = (15, 20) ), ] ], size = (150, 400) ) ] ] ) ] ],
+				pad = (0, 0) )
+
 			col1 = sg.Column( [
 					# Categories sg.Frame
-					[ sg.Frame( 'Categories:', [ [ sg.Radio( 'Websites', 'radio1', default=True,
-						key='-WEBSITES-', size=(10, 1) ),
+					[ sg.Frame( 'Categories:', [ [ sg.Radio( 'Websites', 'radio1', default = True,
+						key = '-WEBSITES-', size = (10, 1) ),
 					                               sg.Radio( 'Software', 'radio1',
-						                               key='-SOFTWARE-',
-						                               size=(10, 1) ) ] ], ) ],
+						                               key = '-SOFTWARE-',
+						                               size = (10, 1) ) ] ], ) ],
 					# Information sg.Frame
 					[ sg.Frame( 'Information:',
 						[ [ sg.Text( ), sg.Column( [ [ sg.Text( 'Account:' ) ],
 						                             [ sg.Input(
-							                             key='-ACCOUNT-IN-',
-							                             size=(19, 1) ) ],
+							                             key = '-ACCOUNT-IN-',
+							                             size = (19, 1) ) ],
 						                             [ sg.Text( 'User Id:' ) ],
 						                             [ sg.Input(
-							                             key='-USERID-IN-',
-							                             size=(19, 1) ),
+							                             key = '-USERID-IN-',
+							                             size = (19, 1) ),
 								                             sg.Button( 'Copy',
-									                             key='-USERID-' ) ],
+									                             key = '-USERID-' ) ],
 						                             [ sg.Text( 'Password:' ) ],
-						                             [ sg.Input( key='-PW-IN-',
-							                             size=(19, 1) ),
+						                             [ sg.Input( key = '-PW-IN-',
+							                             size = (19, 1) ),
 						                               sg.Button( 'Copy',
-							                               key='-PASS-' ) ],
+							                               key = '-PASS-' ) ],
 						                             [ sg.Text( 'Location:' ) ],
-						                             [ sg.Input( key='-LOC-IN-',
-							                             size=(19, 1) ),
+						                             [ sg.Input( key = '-LOC-IN-',
+							                             size = (19, 1) ),
 						                               sg.Button( 'Copy',
-							                               key='-LOC-' ) ],
+							                               key = '-LOC-' ) ],
 						                             [ sg.Text( 'Notes:' ) ],
-						                             [ sg.Multiline(
-							                             key='-NOTES-',
-							                             size=(25, 3) ) ],
-						                             ], size=(235, 350),
-							pad=(0, 0) ) ] ] ) ], ], pad=(0, 0) )
-			
+						                             [ sg.Multiline( key = '-NOTES-', size = (25, 3) ) ],
+						                             ], size = (235, 350),
+							pad = (0, 0) ) ] ] ) ], ], pad = (0, 0) )
+
 			col3 = sg.Column( [ [ sg.Frame( 'Actions:',
 				[ [ sg.Column(
 					[ [ sg.Button( 'Save' ), sg.Button( 'Clear' ), sg.Button( 'Delete' ), ] ],
-					size=(450, 45), pad=(0, 0) ) ] ] ) ] ], pad=(0, 0) )
-			
+					size = (450, 45), pad = (0, 0) ) ] ] ) ] ], pad = (0, 0) )
+
 			# The final layout is a simple one
 			layout = [ [ col1, col2 ],
 			           [ col3 ] ]
-			
+
 			# A perhaps better layout would have been to use the vtop layout helpful function.
 			# This would allow the col2 column to have a different height and still be top_p
 			# aligned
@@ -6008,198 +6418,19 @@ class InputWindow( ):
 			#           [col3]]
 			window = sg.Window( 'Columns and Frames', layout,
 				size=self.form_size,
-				keep_on_top=self.keep_on_top,
-				force_toplevel=self.top_level, )
-			
+				keep_on_top=True )
+
 			while True:
 				event, values = window.read( )
 				print( event, values )
 				if event == sg.WIN_CLOSED:
 					break
-				
-				window.close( )
+
+			window.close( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boogr'
 			exception.cause = 'InputWindow'
-			exception.method = 'show( self)'
-			error = ErrorDialog( exception )
-			error.show( )
-
-class Executable( ):
-	'''
-	    Makes a "Windows os" executable with PyInstaller
-	'''
-	
-	def __init__( self ):
-		sg.theme( 'DarkGrey15' )
-		sg.theme_input_text_color( '#FFFFFF' )
-		sg.theme_element_text_color( '#69B1EF' )
-		sg.theme_text_color( '#69B1EF' )
-		self.theme_background = sg.theme_background_color( )
-		self.theme_textcolor = sg.theme_text_color( )
-		self.element_forecolor = sg.theme_element_text_color( )
-		self.element_backcolor = sg.theme_background_color( )
-		self.text_backcolor = sg.theme_text_element_background_color( )
-		self.text_forecolor = sg.theme_element_text_color( )
-		self.input_forecolor = sg.theme_input_text_color( )
-		self.input_backcolor = sg.theme_input_background_color( )
-		self.button_backcolor = sg.theme_button_color_background( )
-		self.button_forecolor = sg.theme_button_color_text( )
-		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
-		self.scrollbar_color = '#755600'
-		self.resizable = True
-		self.keep_on_top = True
-		self.top_level = True
-		sg.set_global_icon( icon=self.icon_path )
-		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = ( 600, 600 )
-	
-	def __dir__( self ) -> List[ str ] | None:
-		'''
-
-		    Purpose:
-		    --------
-		    Creates a List[ str ] comprised of type members
-
-		    Parameters:
-		    ----------
-			self
-
-		    Returns:
-		    ---------
-			List[ str ] | None
-
-		'''
-		return [ 'form_size', 'settings_path', 'theme_background',
-		         'theme_textcolor', 'element_backcolor', 'element_forecolor',
-		         'text_forecolor', 'text_backcolor', 'input_backcolor',
-		         'input_forecolor', 'button_color', 'button_backcolor',
-		         'button_forecolor', 'icon_path', 'theme_font',
-		         'scrollbar_color', 'input_text', 'show' ]
-	
-	def show( self ) -> None:
-		'''
-
-		    Purpose:
-		    --------
-		    Method displays the control/form
-
-		    Parameters:
-		    ----------
-		    self
-
-		    Returns:
-		    --------
-		    None
-
-		'''
-		try:
-			layout = [ [ sg.Text( 'PyInstaller EXE Creator', font='Any 15' ) ],
-			           [ sg.Text( 'Source Python GptFile' ),
-			             sg.Input( key='-sourcefile-', size=(45, 1) ),
-			             sg.FileBrowse( file_types=(("Python Files", "*.py"),) ) ],
-			           [ sg.Text( 'Icon GptFile' ), sg.Input( key='-iconfile-', size=(45, 1) ),
-			             sg.FileBrowse( file_types=(("Icon Files", "*.ico"),) ) ],
-			           [ sg.Frame( 'Output', font='Any 15', layout=[
-					           [ sg.Output( size=(65, 15), font='Courier 10' ) ] ] ) ],
-			           [ sg.Button( 'Make EXE', bind_return_key=True ),
-			             sg.Button( 'Quit', button_color=('white', 'firebrick3') ) ],
-			           [ sg.Text( 'Made with PySimpleGUI (www.PySimpleGUI.org)',
-				           auto_size_text=True,
-				           font='Courier 8' ) ] ]
-			
-			window = sg.Window( 'PySimpleGUI EXE Maker', layout,
-				size=self.form_size,
-				auto_size_text=False,
-				auto_size_buttons=False,
-				default_element_size=(20, 1),
-				text_justification='right' )
-			# ---===--- Loop taking in user path --- #
-			while True:
-				event, values = window.read( )
-				if event in ('Exit', 'Quit', None):
-					break
-				
-				source_file = values[ '-sourcefile-' ]
-				icon_file = values[ '-iconfile-' ]
-				icon_option = '-i "{}"'.format( icon_file ) if icon_file else ''
-				source_path, source_filename = os.path.split( source_file )
-				workpath_option = '--workpath "{}"'.format( source_path )
-				dispath_option = '--distpath "{}"'.format( source_path )
-				specpath_option = '--specpath "{}"'.format( source_path )
-				folder_to_remove = os.path.join( source_path, source_filename[ :-3 ] )
-				file_to_remove = os.path.join( source_path, source_filename[ :-3 ] + '.spec' )
-				command_line = 'pyinstaller -wF --clean "{}" {} {} {} {}'.format( source_file,
-					icon_option, workpath_option, dispath_option, specpath_option )
-				
-				if event == 'Make EXE':
-					try:
-						print( command_line )
-						print( 'Making EXE...the program has NOT locked up...' )
-						window.refresh( )
-						# print('Running command {}'.format(command_line))
-						out, err = runCommand( command_line, window=window )
-						shutil.rmtree( folder_to_remove )
-						os.remove( file_to_remove )
-						print( '**** DONE ****' )
-					except:
-						sg.PopupError( 'Something went wrong',
-							'close this window and copy command line from documents printed out '
-							'in '
-							'main window',
-							'Here is the cleaned_lines from the run', out )
-						print(
-							'Copy and paste this line into the command prompt to manually run '
-							'PyInstaller:\n\n',
-							command_line )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'boogr'
-			exception.cause = 'Executable'
-			exception.method = 'show( self)'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def run_command( cmd, timeout=None, window=None ):
-		"""
-
-			Purpose:
-			--------
-            run shell command
-
-			Parameters:
-			-----------
-            @param cmd: command to execute
-            @param timeout: timeout for command execution
-
-			Returns:
-			--------
-            @return: (return code from command, command cleaned_lines)
-
-		"""
-		try:
-			p = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE,
-				stderr=subprocess.STDOUT )
-			output = ''
-			for line in p.stdout:
-				line = line.decode( errors='replace' if (sys.version_info) < (3, 5)
-				else 'backslashreplace' ).rstrip( )
-				output += line
-				print( line )
-				if window:
-					window.Refresh( )
-			
-			retval = p.wait( timeout )
-			
-			return (retval, output)
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'boogr'
-			exception.cause = 'Executable'
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -6216,7 +6447,8 @@ class ThemeSelector( ):
 	    ---------
 
 	'''
-	
+
+
 	def __init__( self ):
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -6233,16 +6465,17 @@ class ThemeSelector( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
-		self.resizable = True
-		self.keep_on_top = True
-		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = ( 300, 400 )
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -6277,8 +6510,13 @@ class ThemeSelector( ):
 		         'theme_font',
 		         'scrollbar_color',
 		         'input_text',
-		         'show' ]
-	
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable',
+		         'context_menu', ]
+
+
 	def show( self ) -> None:
 		'''
 
@@ -6297,14 +6535,14 @@ class ThemeSelector( ):
 		'''
 		try:
 			layout = [ [ sg.Text( 'UI Theme Browser' ) ],
-			           [ sg.Text( 'Click a look and feel color to see demo window' ) ],
-			           [ sg.Listbox( values=sg.theme_list( ),
+			           [ sg.Text( 'Click a theme to see demo window' ) ],
+			           [ sg.Listbox( values = sg.theme_list( ),
 				           size=(20, 20), key='-LIST-', enable_events=True ) ],
 			           [ sg.Button( 'Exit' ) ] ]
-			
-			window = sg.Window( 'Look and Feel Browser', layout,
-				size=self.form_size )
-			
+
+			window = sg.Window( 'UI Theme Browser', layout,
+				size=self.form_size, resizable=True )
+
 			# Event Loop
 			while True:
 				event, values = window.read( )
@@ -6312,8 +6550,8 @@ class ThemeSelector( ):
 					break
 				sg.theme( values[ '-LIST-' ][ 0 ] )
 				sg.popup_get_text( 'This is {}'.format( values[ '-LIST-' ][ 0 ] ),
-					default_text=values[ '-LIST-' ][ 0 ] )
-			
+					default_text = values[ '-LIST-' ][ 0 ] )
+
 			window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -6335,7 +6573,7 @@ class UrlImageViewer( ):
 	    ---------
 
 	'''
-	
+
 	def __init__( self ):
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -6352,16 +6590,17 @@ class UrlImageViewer( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
-		self.resizable = True
-		self.keep_on_top = True
-		self.top_level = True
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-		self.form_size = ( 800, 600 )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.form_size = (800, 600)
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -6396,7 +6635,11 @@ class UrlImageViewer( ):
 		         'theme_font',
 		         'scrollbar_color',
 		         'input_text',
-		         'show' ]
+		         'show',
+		         'keep_on_top',
+		         'top_level',
+		         'resizeable',
+		         'context_menu', ]
 	
 	def show( self ) -> None:
 		'''
@@ -6419,7 +6662,8 @@ class UrlImageViewer( ):
 			             r'/PNG_transparency_demonstration_1.png')
 			layout = [ [ sg.Image( urllib.request.urlopen( image_URL ).read( ) ) ] ]
 			window = sg.Window( 'Image From URL', layout,
-				size=self.form_size )
+				size=self.form_size,
+				keep_on_top=True )
 			while True:
 				event, values = window.read( )
 				if event == sg.WIN_CLOSED or event == 'Exit':
@@ -6441,24 +6685,28 @@ class AutoComplete( ):
 		Purpose:
 		--------
 	    Autocomplete path
-	
+
 	    There are 3 keyboard characters to be aware of:
 	    * Arrow up - Change selected item in get_list
 	    * Arrow down - Change selected item in get_list
 	    * Escape - Erase the path and start over
 	    * Return/Enter - use the current item selected from the get_list
-	
+
 	    You can easily remove the ignore case option by searching for the "Irnore Case" Check box
 	    key:
 	        '-IGNORE CASE-'
-	
+
 	    The variable "choices" holds the get_list of strings your program will match against.
 	    Even though the listbox of choices doesn't have a scrollbar visible, the get_list is longer
-	    than shown and using your keyboard more of it will br shown as you scroll down with the arrow keys
+	    than shown
+	        and using your keyboard more of it will br shown as you scroll down with the arrow keys
 	    The selection wraps around from the end to the start (and vicea versa). You can change
-	    this behavior to make it stay at the beignning or the end
+	    this behavior to
+	        make it stay at the beignning or the end
 	"""
-	
+	window: sg.Window
+	layout: list
+
 	def __init__( self ):
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -6475,7 +6723,7 @@ class AutoComplete( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.choices = None
@@ -6484,8 +6732,9 @@ class AutoComplete( ):
 		self.list_element = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-	
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+
+
 	def show( self ) -> None:
 		'''
 
@@ -6504,29 +6753,28 @@ class AutoComplete( ):
 		'''
 		try:
 			self.choices = sorted( [ elem.__name__ for elem in sg.Element.__subclasses__( ) ] )
-			
 			self.input_width = 20
 			self.num_items_to_show = 4
-			
 			self.layout = [
-					[ sg.CB( 'Ignore Case', k='-IGNORE CASE-' ) ],
+					[ sg.CB( 'Ignore Case', k = '-IGNORE CASE-' ) ],
 					[ sg.Text( 'Input PySimpleGUI Element Name:' ) ],
-					[ sg.Input( size=(self.input_width, 1), enable_events=True, key='-IN-' ) ],
-					[ sg.pin( sg.Col( [ [ sg.Listbox( values=[ ], size=(self.input_width,
-					                                                    self.num_items_to_show),
-						enable_events=True, key='-BOX-',
-						select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, no_scrollbar=True ) ] ],
-						key='-BOX-CONTAINER-', pad=(0, 0), visible=False ) ) ]
+					[ sg.Input( size = (self.input_width, 1), enable_events = True,
+						key = '-IN-' ) ],
+					[ sg.pin( sg.Col( [ [ sg.Listbox( values = [ ], size = (self.input_width,
+					                                                        self.num_items_to_show),
+						enable_events = True, key = '-BOX-',
+						select_mode = sg.LISTBOX_SELECT_MODE_SINGLE, no_scrollbar = True ) ] ],
+						key = '-BOX-CONTAINER-', pad = (0, 0), visible = False ) ) ]
 			]
-			
+
 			self.window = sg.Window( 'AutoComplete', self.layout,
 				return_keyboard_events=True,
 				finalize=True,
 				font=('Roboto', 11) )
-			
+
 			self.list_element = self.window.Element( '-BOX-' )
 			self.prediction_list, self.input_text, self.selected_item = [ ], "", 0
-			
+
 			# Event Loop
 			while True:
 				event, values = self.window.read( )
@@ -6536,20 +6784,20 @@ class AutoComplete( ):
 				# pressing down arrow will trigger event -IN- then aftewards event Down:40
 				elif event.startswith( 'Escape' ):
 					self.window[ '-IN-' ].update( '' )
-					self.window[ '-BOX-CONTAINER-' ].update( visible=False )
+					self.window[ '-BOX-CONTAINER-' ].update( visible = False )
 				elif event.startswith( 'Down' ) and len( self.prediction_list ):
 					self.selected_item = (self.selected_item + 1) % len( self.prediction_list )
-					self.list_element.update( set_to_index=self.selected_item,
-						scroll_to_index=self.selected_item )
+					self.list_element.update( set_to_index = self.selected_item,
+						scroll_to_index = self.selected_item )
 				elif event.startswith( 'Up' ) and len( self.prediction_list ):
 					self.selected_item = (self.selected_item + (
 							len( self.prediction_list ) - 1)) % len( self.prediction_list )
-					self.list_element.update( set_to_index=self.selected_item,
-						scroll_to_index=self.selected_item )
+					self.list_element.update( set_to_index = self.selected_item,
+						scroll_to_index = self.selected_item )
 				elif event == '\r':
 					if len( values[ '-BOX-' ] ) > 0:
-						self.window[ '-IN-' ].update( value=values[ '-BOX-' ] )
-						self.window[ '-BOX-CONTAINER-' ].update( visible=False )
+						self.window[ '-IN-' ].update( value = values[ '-BOX-' ] )
+						self.window[ '-BOX-CONTAINER-' ].update( visible = False )
 				elif event == '-IN-':
 					text = values[ '-IN-' ] if not values[ '-IGNORE CASE-' ] else values[
 						'-IN-' ].lower( )
@@ -6565,19 +6813,19 @@ class AutoComplete( ):
 						else:
 							self.prediction_list = [ item for item in self.choices if
 							                         item.startswith( text ) ]
-					
-					self.list_element.update( values=self.prediction_list )
+
+					self.list_element.update( values = self.prediction_list )
 					self.selected_item = 0
-					self.list_element.update( set_to_index=self.selected_item )
-					
+					self.list_element.update( set_to_index = self.selected_item )
+
 					if len( self.prediction_list ) > 0:
-						self.window[ '-BOX-CONTAINER-' ].update( visible=True )
+						self.window[ '-BOX-CONTAINER-' ].update( visible = True )
 					else:
-						self.window[ '-BOX-CONTAINER-' ].update( visible=False )
+						self.window[ '-BOX-CONTAINER-' ].update( visible = False )
 				elif event == '-BOX-':
-					self.window[ '-IN-' ].update( value=values[ '-BOX-' ] )
-					self.window[ '-BOX-CONTAINER-' ].update( visible=False )
-			
+					self.window[ '-IN-' ].update( value = values[ '-BOX-' ] )
+					self.window[ '-BOX-CONTAINER-' ].update( visible = False )
+
 			self.window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -6604,7 +6852,7 @@ class CheckBox( ):
 	    value)
 
 	"""
-	
+
 	def __init__( self ):
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -6621,12 +6869,12 @@ class CheckBox( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.checked = \
 			(
 					b'iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAKMGlDQ1BJQ0MgUHJvZmlsZQAAeJydlndUVNcWh8'
@@ -6635,7 +6883,7 @@ class CheckBox( ):
 			(
 					b'iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAKMGlDQ1BJQ0MgUHJvZmlsZQAAeJydlndUVNcWh8'
 					b'+9d3qhzTAUKUPvvQ0gvTep0kRhmBlgKAMOMzSxIaICEUVEBBVBgiIGjIYisSKKhYBgwR6QIKDEYBRRUXkzslZ05eW9l5ffH2d9a5+99z1n733WugCQvP25vHRYCoA0noAf4uVKj4yKpmP7AQzwAAPMAGCyMjMCQj3DgEg+Hm70TJET+CIIgDd3xCsAN428g+h08P9JmpXBF4jSBInYgs3JZIm4UMSp2YIMsX1GxNT4FDHDKDHzRQcUsbyYExfZ8LPPIjuLmZ3GY4tYfOYMdhpbzD0i3pol5IgY8RdxURaXky3iWyLWTBWmcUX8VhybxmFmAoAiie0CDitJxKYiJvHDQtxEvBQAHCnxK47/igWcHIH4Um7pGbl8bmKSgK7L0qOb2doy6N6c7FSOQGAUxGSlMPlsult6WgaTlwvA4p0/S0ZcW7qoyNZmttbWRubGZl8V6r9u/k2Je7tIr4I/9wyi9X2x/ZVfej0AjFlRbXZ8scXvBaBjMwDy97/YNA8CICnqW/vAV/ehieclSSDIsDMxyc7ONuZyWMbigv6h/+nwN/TV94zF6f4oD92dk8AUpgro4rqx0lPThXx6ZgaTxaEb/XmI/3HgX5/DMISTwOFzeKKIcNGUcXmJonbz2FwBN51H5/L+UxP/YdiftDjXIlEaPgFqrDGQGqAC5Nc+gKIQARJzQLQD/dE3f3w4EL+8CNWJxbn/LOjfs8Jl4iWTm/g5zi0kjM4S8rMW98TPEqABAUgCKlAAKkAD6AIjYA5sgD1wBh7AFwSCMBAFVgEWSAJpgA+yQT7YCIpACdgBdoNqUAsaQBNoASdABzgNLoDL4Dq4AW6DB2AEjIPnYAa8AfMQBGEhMkSBFCBVSAsygMwhBuQIeUD+UAgUBcVBiRAPEkL50CaoBCqHqqE6qAn6HjoFXYCuQoPQPWgUmoJ+h97DCEyCqbAyrA2bwAzYBfaDw+CVcCK8Gs6DC+HtcBVcDx+D2+EL8HX4NjwCP4dnEYAQERqihhghDMQNCUSikQSEj6xDipFKpB5pQbqQXuQmMoJMI+9QGBQFRUcZoexR3qjlKBZqNWodqhRVjTqCakf1oG6iRlEzqE9oMloJbYC2Q/ugI9GJ6Gx0EboS3YhuQ19C30aPo99gMBgaRgdjg/HGRGGSMWswpZj9mFbMecwgZgwzi8ViFbAGWAdsIJaJFWCLsHuxx7DnsEPYcexbHBGnijPHeeKicTxcAa4SdxR3FjeEm8DN46XwWng7fCCejc/Fl+Eb8F34Afw4fp4gTdAhOBDCCMmEjYQqQgvhEuEh4RWRSFQn2hKDiVziBmIV8TjxCnGU+I4kQ9InuZFiSELSdtJh0nnSPdIrMpmsTXYmR5MF5O3kJvJF8mPyWwmKhLGEjwRbYr1EjUS7xJDEC0m8pJaki+QqyTzJSsmTkgOS01J4KW0pNymm1DqpGqlTUsNSs9IUaTPpQOk06VLpo9JXpSdlsDLaMh4ybJlCmUMyF2XGKAhFg+JGYVE2URoolyjjVAxVh+pDTaaWUL+j9lNnZGVkLWXDZXNka2TPyI7QEJo2zYeWSiujnaDdob2XU5ZzkePIbZNrkRuSm5NfIu8sz5Evlm+Vvy3/XoGu4KGQorBToUPhkSJKUV8xWDFb8YDiJcXpJdQl9ktYS4qXnFhyXwlW0lcKUVqjdEipT2lWWUXZSzlDea/yReVpFZqKs0qySoXKWZUpVYqqoypXtUL1nOozuizdhZ5Kr6L30GfUlNS81YRqdWr9avPqOurL1QvUW9UfaRA0GBoJGhUa3RozmqqaAZr5ms2a97XwWgytJK09Wr1ac9o62hHaW7Q7tCd15HV8dPJ0mnUe6pJ1nXRX69br3tLD6DH0UvT2693Qh/Wt9JP0a/QHDGADawOuwX6DQUO0oa0hz7DecNiIZORilGXUbDRqTDP2Ny4w7jB+YaJpEm2y06TX5JOplWmqaYPpAzMZM1+zArMus9/N9c1Z5jXmtyzIFp4W6y06LV5aGlhyLA9Y3rWiWAVYbbHqtvpobWPNt26xnrLRtImz2WczzKAyghiljCu2aFtX2/W2p23f2VnbCexO2P1mb2SfYn/UfnKpzlLO0oalYw7qDkyHOocRR7pjnONBxxEnNSemU73TE2cNZ7Zzo/OEi55Lsssxlxeupq581zbXOTc7t7Vu590Rdy/3Yvd+DxmP5R7VHo891T0TPZs9Z7ysvNZ4nfdGe/t57/Qe9lH2Yfk0+cz42viu9e3xI/mF+lX7PfHX9+f7dwXAAb4BuwIeLtNaxlvWEQgCfQJ3BT4K0glaHfRjMCY4KLgm+GmIWUh+SG8oJTQ29GjomzDXsLKwB8t1lwuXd4dLhseEN4XPRbhHlEeMRJpEro28HqUYxY3qjMZGh0c3Rs+u8Fixe8V4jFVMUcydlTorc1ZeXaW4KnXVmVjJWGbsyTh0XETc0bgPzEBmPXM23id+X/wMy421h/Wc7cyuYE9xHDjlnIkEh4TyhMlEh8RdiVNJTkmVSdNcN24192Wyd3Jt8lxKYMrhlIXUiNTWNFxaXNopngwvhdeTrpKekz6YYZBRlDGy2m717tUzfD9+YyaUuTKzU0AV/Uz1CXWFm4WjWY5ZNVlvs8OzT+ZI5/By+nL1c7flTuR55n27BrWGtaY7Xy1/Y/7oWpe1deugdfHrutdrrC9cP77Ba8ORjYSNKRt/KjAtKC94vSliU1ehcuGGwrHNXpubiySK+EXDW+y31G5FbeVu7d9msW3vtk/F7OJrJaYllSUfSlml174x+6bqm4XtCdv7y6zLDuzA7ODtuLPTaeeRcunyvPKxXQG72ivoFcUVr3fH7r5aaVlZu4ewR7hnpMq/qnOv5t4dez9UJ1XfrnGtad2ntG/bvrn97P1DB5wPtNQq15bUvj/IPXi3zquuvV67vvIQ5lDWoacN4Q293zK+bWpUbCxp/HiYd3jkSMiRniabpqajSkfLmuFmYfPUsZhjN75z/66zxailrpXWWnIcHBcef/Z93Pd3Tvid6D7JONnyg9YP+9oobcXtUHtu+0xHUsdIZ1Tn4CnfU91d9l1tPxr/ePi02umaM7Jnys4SzhaeXTiXd272fMb56QuJF8a6Y7sfXIy8eKsnuKf/kt+lK5c9L1/sdek9d8XhyumrdldPXWNc67hufb29z6qv7Sern9r6rfvbB2wGOm/Y3ugaXDp4dshp6MJN95uXb/ncun572e3BO8vv3B2OGR65y747eS/13sv7WffnH2x4iH5Y/EjqUeVjpcf1P+v93DpiPXJm1H2070nokwdjrLHnv2T+8mG88Cn5aeWE6kTTpPnk6SnPqRvPVjwbf57xfH666FfpX/e90H3xw2/Ov/XNRM6Mv+S/XPi99JXCq8OvLV93zwbNPn6T9mZ+rvitwtsj7xjvet9HvJ+Yz/6A/VD1Ue9j1ye/Tw8X0hYW/gUDmPP8uaxzGQAAAPFJREFUeJzt101KA0EQBeD3XjpBCIoSPYC3cPQaCno9IQu9h+YauYA/KFk4k37lYhAUFBR6Iko/at1fU4uqbp5dLg+Z8pxW0z7em5IQgaIhEc6e7M5kxo2ULxK1njNtNc5dpIN9lRU/RLZBpZPofJWIUePcBQAiG+BAbC8gwsHOjdqHO0PquaHQ92eT7FZPFqUh2/v5HX4DfUuFK1zhClf4H8IstDp/DJd6Ff2dVle4wt+Gw/am0Qhbk72ZEBu0IzCe7igF8i0xOQ46wFJz6Uu1r4RFYhvnZnfNNh+tV8+GKBT+s4EAHE7TbcVYi9FLPn0F1D1glFsARrAAAAAASUVORK5CYII=')
-	
+
 	def show( self ) -> None:
 		'''
 
@@ -6655,14 +6903,16 @@ class CheckBox( ):
 		try:
 			layout = [ [ sg.Text( 'Fancy Checkboxes... Simply' ) ],
 			           [ sg.Image( self.checked, key=('-IMAGE-', 1), metadata=True,
-				           enable_events=True ),
+				           enable_events = True ),
 			             sg.Text( True, enable_events=True, k=('-TEXT-', 1) ) ],
 			           [ sg.Image( self.unchecked, key=('-IMAGE-', 2), metadata=False,
 				           enable_events=True ),
 			             sg.Text( False, enable_events=True, k=('-TEXT-', 2) ) ],
 			           [ sg.Button( 'Go' ), sg.Button( 'Exit' ) ] ]
-			
-			window = sg.Window( 'Custom Checkboxes', layout, font="_ 14" )
+
+			window = sg.Window( 'Custom Checkboxes', layout,
+				font = ( 'Roboto', 11 ),
+				keep_on_top=True )
 			while True:
 				event, values = window.read( )
 				print( event, values )
@@ -6677,7 +6927,7 @@ class CheckBox( ):
 						self.checked if window[ cbox_key ].metadata else self.unchecked )
 					# Update the path next to the checkbox
 					window[ text_key ].update( window[ cbox_key ].metadata )
-			
+
 			window.close( )
 		except Exception as e:
 			exception = Error( e )
@@ -6704,7 +6954,7 @@ class MachineLearningWindow( ):
 
 
 	'''
-	
+
 	def __init__( self ):
 		sg.theme( 'DarkGrey15' )
 		sg.theme_input_text_color( '#FFFFFF' )
@@ -6721,13 +6971,17 @@ class MachineLearningWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'/resources/ico/ninja.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo', r'/resources/theme' )
-	
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
+
 	def __build_window( self ):
 		'''
 
@@ -6746,70 +7000,67 @@ class MachineLearningWindow( ):
 
 		'''
 		try:
-			sg.set_options( text_justification='right' )
-			
-			flags = [ [ sg.CB( 'Normalize', size=(12, 1), default=True ),
-			            sg.CB( 'Verbose', size=(20, 1) ) ],
-			          [ sg.CB( 'BaseCluster', size=(12, 1) ), sg.CB(
-				          'Flush Output', size=(20, 1), default=True ) ],
-			          [ sg.CB( 'Write Results', size=(12, 1) ), sg.CB(
-				          'Keep Intermediate Data', size=(20, 1) ) ],
-			          [ sg.CB( 'Normalize', size=(12, 1), default=True ),
-			            sg.CB( 'Verbose', size=(20, 1) ) ],
-			          [ sg.CB( 'BaseCluster', size=(12, 1) ), sg.CB(
-				          'Flush Output', size=(20, 1), default=True ) ],
-			          [ sg.CB( 'Write Results', size=(12, 1) ),
-			            sg.CB( 'Keep Intermediate Data', size=(20, 1) ) ], ]
-			
-			loss_functions = [ [ sg.Rad( 'Cross-Entropy', 'loss', size=(12, 1) ),
-			                     sg.Rad( 'Logistic', 'loss', default=True, size=(12, 1) ) ],
-			                   [ sg.Rad( 'Hinge', 'loss', size=(12, 1) ),
-			                     sg.Rad( 'Huber', 'loss', size=(12, 1) ) ],
-			                   [ sg.Rad( 'Kullerback', 'loss', size=(12, 1) ),
-			                     sg.Rad( 'MAE(L1)', 'loss', size=(12, 1) ) ],
-			                   [ sg.Rad( 'MSE(L2)', 'loss', size=(12, 1) ),
-			                     sg.Rad( 'MB(L0)', 'loss', size=(12, 1) ) ], ]
-			
-			command_line_parms = [ [ sg.Text( 'Passes', size=(8, 1) ),
-			                         sg.Spin( values=[ i for i in range( 1, 1000 ) ],
-				                         initial_value=20, size=(6, 1) ),
-			                         sg.Text( 'Steps', size=(8, 1), pad=((7, 3)) ),
-			                         sg.Spin( values=[ i for i in range( 1, 1000 ) ],
-				                         initial_value=20, size=(6, 1) ) ],
-			                       [ sg.Text( 'ooa', size=(8, 1) ),
-			                         sg.Input( default_text='6', size=(8, 1) ),
-			                         sg.Text( 'nn', size=(8, 1) ),
-			                         sg.Input( default_text='10', size=(10, 1) ) ],
-			                       [ sg.Text( 'q', size=(8, 1) ),
-			                         sg.Input( default_text='ff', size=(8, 1) ),
-			                         sg.Text( 'ngram', size=(8, 1) ),
-			                         sg.Input( default_text='5', size=(10, 1) ) ],
-			                       [ sg.Text( 'l', size=(8, 1) ),
-			                         sg.Input( default_text='0.4', size=(8, 1) ),
-			                         sg.Text( 'Layers', size=(8, 1) ),
-			                         sg.Drop( values=('BatchNorm', 'other') ) ], ]
-			
+			sg.set_options( text_justification = 'right' )
+			flags = [ [ sg.CB( 'Normalize', size = (12, 1), default = True ),
+			            sg.CB( 'Verbose', size = (20, 1) ) ],
+			          [ sg.CB( 'BaseCluster', size = (12, 1) ), sg.CB(
+				          'Flush Output', size = (20, 1), default = True ) ],
+			          [ sg.CB( 'Write Results', size = (12, 1) ), sg.CB(
+				          'Keep Intermediate Data', size = (20, 1) ) ],
+			          [ sg.CB( 'Normalize', size = (12, 1), default = True ),
+			            sg.CB( 'Verbose', size = (20, 1) ) ],
+			          [ sg.CB( 'BaseCluster', size = (12, 1) ), sg.CB(
+				          'Flush Output', size = (20, 1), default = True ) ],
+			          [ sg.CB( 'Write Results', size = (12, 1) ),
+			            sg.CB( 'Keep Intermediate Data', size = (20, 1) ) ], ]
+			loss_functions = [ [ sg.Rad( 'Cross-Entropy', 'loss', size = (12, 1) ),
+			                     sg.Rad( 'Logistic', 'loss', default = True, size = (12, 1) ) ],
+			                   [ sg.Rad( 'Hinge', 'loss', size = (12, 1) ),
+			                     sg.Rad( 'Huber', 'loss', size = (12, 1) ) ],
+			                   [ sg.Rad( 'Kullerback', 'loss', size = (12, 1) ),
+			                     sg.Rad( 'MAE(L1)', 'loss', size = (12, 1) ) ],
+			                   [ sg.Rad( 'MSE(L2)', 'loss', size = (12, 1) ),
+			                     sg.Rad( 'MB(L0)', 'loss', size = (12, 1) ) ], ]
+			command_line_parms = [ [ sg.Text( 'Passes', size = (8, 1) ),
+			                         sg.Spin( values = [ i for i in range( 1, 1000 ) ],
+				                         initial_value = 20, size = (6, 1) ),
+			                         sg.Text( 'Steps', size = (8, 1), pad = ((7, 3)) ),
+			                         sg.Spin( values = [ i for i in range( 1, 1000 ) ],
+				                         initial_value = 20, size = (6, 1) ) ],
+			                       [ sg.Text( 'ooa', size = (8, 1) ),
+			                         sg.Input( default_text = '6', size = (8, 1) ),
+			                         sg.Text( 'nn', size = (8, 1) ),
+			                         sg.Input( default_text = '10', size = (10, 1) ) ],
+			                       [ sg.Text( 'q', size = (8, 1) ),
+			                         sg.Input( default_text = 'ff', size = (8, 1) ),
+			                         sg.Text( 'ngram', size = (8, 1) ),
+			                         sg.Input( default_text = '5', size = (10, 1) ) ],
+			                       [ sg.Text( 'l', size = (8, 1) ),
+			                         sg.Input( default_text = '0.4', size = (8, 1) ),
+			                         sg.Text( 'Layers', size = (8, 1) ),
+			                         sg.Drop( values = ('BatchNorm', 'other') ) ], ]
 			layout = [ [ sg.Frame( 'Command Line Parameteres', command_line_parms,
-				title_color='green', font='Any 12' ) ],
-			           [ sg.Frame( 'Flags', flags, font='Any 12', title_color='blue' ) ],
+				title_color = 'green', font = 'Any 12' ) ],
+			           [ sg.Frame( 'Flags', flags, font = 'Any 12', title_color = 'blue' ) ],
 			           [ sg.Frame( 'Loss Functions', loss_functions,
-				           font='Any 12', title_color='red' ) ],
+				           font = 'Any 12', title_color = 'red' ) ],
 			           [ sg.Submit( ), sg.Cancel( ) ] ]
-			
-			sg.set_options( text_justification='left' )
-			
-			window = sg.Window( 'Machine Learning',
-				layout, font=("Helvetica", 12) )
+			sg.set_options( text_justification = 'left' )
+			window = sg.Window( 'Machine Learning', layout,
+				font=self.theme_font,
+				right_click_menu=self.context_menu,
+				keep_on_top=self.keep_on_top,
+				force_toplevel=self.top_level )
 			window.read( )
 			window.close( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boogr'
 			exception.cause = 'MachineLearningWindow'
-			exception.method = '__build_window( self)'
+			exception.method = 'build_window( self)'
 			error = ErrorDialog( exception )
 			error.show( )
-	
+
 	def __custom_meter( self ):
 		'''
 
@@ -6830,17 +7081,18 @@ class MachineLearningWindow( ):
 		try:
 			# layout the form
 			layout = [ [ sg.Text( 'A custom progress meter' ) ],
-			           [ sg.ProgressBar( 1000, orientation='h',
-				           size=(20, 20), key='progress' ) ],
+			           [ sg.ProgressBar( 1000, orientation = 'h',
+				           size = (20, 20), key = 'progress' ) ],
 			           [ sg.Cancel( ) ] ]
-			
+
 			# create_small_embedding the form`
-			window = sg.Window( 'Custom Progress Meter', layout )
+			window = sg.Window( 'Custom Progress Meter', layout,
+				keep_on_top=True )
 			progress_bar = window[ 'progress' ]
 			# loop that would normally do something useful
 			for i in range( 1000 ):
 				# check to see if the cancel button was clicked and exit loop if clicked
-				event, values = window.read( timeout=0, timeout_key='timeout' )
+				event, values = window.read( timeout = 0, timeout_key = 'timeout' )
 				if event == 'Cancel' or event == None:
 					break
 				# update bar with loop value +1 so that bar eventually reaches the maximum
@@ -6854,7 +7106,7 @@ class MachineLearningWindow( ):
 			exception.method = '__custom_meter( self)'
 			error = ErrorDialog( exception )
 			error.show( )
-	
+
 	def show( self ) -> None:
 		'''
 
@@ -6881,3 +7133,540 @@ class MachineLearningWindow( ):
 			exception.method = 'show( self)'
 			error = ErrorDialog( exception )
 			error.show( )
+
+class AnimatedGraph( ):
+
+	def __init__( self ):
+		sg.theme( 'DarkGrey15' )
+		sg.theme_input_text_color( '#FFFFFF' )
+		sg.theme_element_text_color( '#69B1EF' )
+		sg.theme_text_color( '#69B1EF' )
+		self.theme_background = sg.theme_background_color( )
+		self.theme_textcolor = sg.theme_text_color( )
+		self.element_forecolor = sg.theme_element_text_color( )
+		self.element_backcolor = sg.theme_background_color( )
+		self.text_backcolor = sg.theme_text_element_background_color( )
+		self.text_forecolor = sg.theme_element_text_color( )
+		self.input_forecolor = sg.theme_input_text_color( )
+		self.input_backcolor = sg.theme_input_background_color( )
+		self.button_backcolor = sg.theme_button_color_background( )
+		self.button_forecolor = sg.theme_button_color_text( )
+		self.button_color = sg.theme_button_color( )
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
+		self.scrollbar_color = '#755600'
+		sg.set_global_icon( icon=self.icon_path )
+		sg.set_options( font=self.theme_font )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
+
+	# noinspection PyUnusedLocal
+	def show( self ):
+		try:
+			NUM_DATAPOINTS = 10000
+			# define the form layout
+			layout = [ [ sg.Text( 'Animated Matplotlib', size = (40, 1),
+				justification = 'center', font = 'Helvetica 20' ) ],
+			           [ sg.Canvas( size = (640, 480), key = '-CANVAS-' ) ],
+			           [ sg.Text( 'Progress through the data' ) ],
+			           [ sg.Slider( range = (0, NUM_DATAPOINTS), size = (60, 10),
+				           orientation = 'h', key = '-SLIDER-' ) ],
+			           [ sg.Text( 'Number of data points to display on screen' ) ],
+			           [ sg.Slider( range = (10, 500), default_value = 40, size = (40, 10),
+				           orientation = 'h', key = '-SLIDER-DATAPOINTS-' ) ],
+			           [ sg.Button( 'Exit', size = (10, 1), pad = ((280, 0), 3),
+				           font = 'Helvetica 14' ) ] ]
+
+			# noinspection PyShadowingNames
+			def draw_figure( canvas, figure ):
+				figure_canvas_agg = FigureCanvasTkAgg( figure, canvas )
+				figure_canvas_agg.draw( )
+				figure_canvas_agg.get_tk_widget( ).pack( side = 'top', fill = 'both', expand = 1 )
+				return figure_canvas_agg
+
+			# create the form and show it without the plot
+			window = sg.Window( 'Embedding Matplotlib In Booger', layout,
+				finalize=True,
+				keep_on_top=self.keep_on_top,
+				force_toplevel=self.top_level,
+				right_click_menu=sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT )
+
+			canvas_elem = window[ '-CANVAS-' ]
+			slider_elem = window[ '-SLIDER-' ]
+			canvas = canvas_elem.TKCanvas
+
+			# draw the initial plot in the window
+			fig = Figure( )
+			ax = fig.add_subplot( 111 )
+			ax.set_xlabel( "X axis" )
+			ax.set_ylabel( "Y axis" )
+			ax.grid( )
+			fig_agg = draw_figure( canvas, fig )
+			# make a bunch of random data points
+			dpts = [ randint( 0, 10 ) for x in range( NUM_DATAPOINTS ) ]
+
+			for i in range( len( dpts ) ):
+				event, values = window.read( timeout = 10 )
+				while True:
+					if event in ('Exit', None):
+						window.close( )
+
+					slider_elem.update( i )  # slider shows "progress" through the data points
+					ax.cla( )  # clear the subplot
+					ax.grid( )  # draw the grid
+					data_points = int(
+						values[ '-SLIDER-DATAPOINTS-' ] )  # draw this many data points (on next line)
+					ax.plot( range( data_points ), dpts[ i:i + data_points ], color = 'purple' )
+					fig_agg.draw( )
+
+			window.close( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'boogr'
+			exception.cause = 'AnimatedGraph'
+			exception.method = 'show( self)'
+			error = ErrorDialog( exception )
+			error.show( )
+
+class BarGraph( ):
+
+	def __init__( self ):
+		sg.theme( 'DarkGrey15' )
+		sg.theme_input_text_color( '#FFFFFF' )
+		sg.theme_element_text_color( '#69B1EF' )
+		sg.theme_text_color( '#69B1EF' )
+		self.theme_background = sg.theme_background_color( )
+		self.theme_textcolor = sg.theme_text_color( )
+		self.element_forecolor = sg.theme_element_text_color( )
+		self.element_backcolor = sg.theme_background_color( )
+		self.text_backcolor = sg.theme_text_element_background_color( )
+		self.text_forecolor = sg.theme_element_text_color( )
+		self.input_forecolor = sg.theme_input_text_color( )
+		self.input_backcolor = sg.theme_input_background_color( )
+		self.button_backcolor = sg.theme_button_color_background( )
+		self.button_forecolor = sg.theme_button_color_text( )
+		self.button_color = sg.theme_button_color( )
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
+		self.scrollbar_color = '#755600'
+		sg.set_global_icon( icon=self.icon_path )
+		sg.set_options( font=self.theme_font )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
+
+	def draw_figure( self, canvas, figure ):
+		figure_canvas_agg = FigureCanvasTkAgg( figure, canvas )
+		figure_canvas_agg.draw( )
+		figure_canvas_agg.get_tk_widget( ).pack( side = 'top', fill = 'both', expand = 1 )
+		return figure_canvas_agg
+
+	def show( self ):
+		label = [ 'Adventure', 'Action', 'Drama', 'Comedy', 'Thriller/Suspense', 'Horror',
+		          'Romantic Comedy', 'Musical',
+		          'Documentary', 'Black Comedy', 'Western', 'Concert/Performance',
+		          'Multiple Genres', 'Reality' ]
+		no_movies = [ 941, 854, 4595, 2125, 942,
+		              509, 548, 149, 1952, 161, 64, 61, 35, 5 ]
+
+		index = np.arange( len( label ) )
+		plt.bar( index, no_movies )
+		plt.xlabel( 'Genre', fontsize=5 )
+		plt.ylabel( 'No of Movies', fontsize=5 )
+		plt.xticks( index, label, fontsize=5, rotation=30 )
+		plt.title( 'Market Share for Each Genre 1995-2017' )
+		# ------------------------------- END OF YOUR MATPLOTLIB CODE -------------------------------
+		sg.theme( 'DarkGrey15' )
+		fig = plt.gcf( )
+		figure_x, figure_y, figure_w, figure_h = fig.bbox.bounds
+		layout = [ [ sg.Text( 'Plot test', font='Any 18' ) ],
+		           [ sg.Canvas( size=(figure_w, figure_h), key='-CANVAS-' ) ],
+		           [ sg.OK( pad=((figure_w / 2, 0), 3), size=(4, 2) ) ] ]
+		window = sg.Window( 'Embedding Matplotlib', layout,
+			force_toplevel=self.top_level,
+			finalize=True,
+			keep_on_top=self.keep_on_top,
+			right_click_menu=sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT )
+		self.draw_figure( window[ '-CANVAS-' ].TKCanvas, fig )
+		event, values = window.read( )
+		if event in ( 'Exit', 'Cancel', None ):
+			window.close( )
+
+		window.close( )
+
+class ScatterGraph( ):
+
+	def __init__( self ):
+		sg.theme( 'DarkGrey15' )
+		sg.theme_input_text_color( '#FFFFFF' )
+		sg.theme_element_text_color( '#69B1EF' )
+		sg.theme_text_color( '#69B1EF' )
+		self.theme_background = sg.theme_background_color( )
+		self.theme_textcolor = sg.theme_text_color( )
+		self.element_forecolor = sg.theme_element_text_color( )
+		self.element_backcolor = sg.theme_background_color( )
+		self.text_backcolor = sg.theme_text_element_background_color( )
+		self.text_forecolor = sg.theme_element_text_color( )
+		self.input_forecolor = sg.theme_input_text_color( )
+		self.input_backcolor = sg.theme_input_background_color( )
+		self.button_backcolor = sg.theme_button_color_background( )
+		self.button_forecolor = sg.theme_button_color_text( )
+		self.button_color = sg.theme_button_color( )
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
+		self.scrollbar_color = '#755600'
+		sg.set_global_icon( icon=self.icon_path )
+		sg.set_options( font=self.theme_font )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
+
+	def draw_figure( self, canvas, figure ):
+		figure_canvas_agg = FigureCanvasTkAgg( figure, canvas )
+		figure_canvas_agg.draw( )
+		figure_canvas_agg.get_tk_widget( ).pack( side='top', fill='both', expand=1 )
+		return figure_canvas_agg
+
+	def show( self ):
+		layout = [ [ sg.Text( 'Animated Matplotlib', size=(40, 1), justification='center',
+			font='Helvetica 20' ) ],
+		           [ sg.Canvas( size=(640, 480), key='-CANVAS-' ) ],
+		           [ sg.Button( 'Exit', size=(10, 2), pad=((280, 0), 3), font='Helvetica 14' ) ] ]
+
+		# create the form and show it without the plot
+		window = sg.Window( 'Matplotlib With Gooey', layout,
+			finalize=True,
+			keep_on_top=self.keep_on_top,
+			right_click_menu=self.context_menu )
+
+		canvas_elem = window[ '-CANVAS-' ]
+		canvas = canvas_elem.TKCanvas
+		# draw the intitial scatter plot
+		fig, ax = plt.subplots( )
+		ax.grid( True )
+		fig_agg = self.draw_figure( canvas, fig )
+
+		while True:
+			event, values = window.read( timeout = 10 )
+			if event in ('Exit', None):
+				break
+
+			ax.cla( )
+			ax.grid( True )
+			for color in [ 'red', 'green', 'blue' ]:
+				n = 750
+				x, y = rand( 2, n )
+				scale = 200.0 * rand( n )
+				ax.scatter( x, y, c=color, s=scale, label=color, alpha=0.3, edgecolors='none' )
+			ax.legend( )
+			fig_agg.draw( )
+
+		window.close( )
+
+class StyleGraph( ):
+
+	def __init__( self ):
+		sg.theme( 'DarkGrey15' )
+		sg.theme_input_text_color( '#FFFFFF' )
+		sg.theme_element_text_color( '#69B1EF' )
+		sg.theme_text_color( '#69B1EF' )
+		self.theme_background = sg.theme_background_color( )
+		self.theme_textcolor = sg.theme_text_color( )
+		self.element_forecolor = sg.theme_element_text_color( )
+		self.element_backcolor = sg.theme_background_color( )
+		self.text_backcolor = sg.theme_text_element_background_color( )
+		self.text_forecolor = sg.theme_element_text_color( )
+		self.input_forecolor = sg.theme_input_text_color( )
+		self.input_backcolor = sg.theme_input_background_color( )
+		self.button_backcolor = sg.theme_button_color_background( )
+		self.button_forecolor = sg.theme_button_color_text( )
+		self.button_color = sg.theme_button_color( )
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
+		self.scrollbar_color = '#755600'
+		sg.set_global_icon( icon=self.icon_path )
+		sg.set_options( font=self.theme_font )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.keep_on_top = True
+		self.top_level = True
+		self.resizable = True
+		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT
+
+	def create_axis_grid( self ):
+		plt.close( 'all' )
+
+		def get_demo_image( ):
+			# prepare image
+			delta = 0.5
+			extent = (-3, 4, -4, 3)
+			x = np.arange( -3.0, 4.001, delta )
+			y = np.arange( -4.0, 3.001, delta )
+			X, Y = np.meshgrid( x, y )
+			Z1 = np.exp( -X ** 2 - Y ** 2 )
+			Z2 = np.exp( -(X - 1) ** 2 - (Y - 1) ** 2 )
+			Z = (Z1 - Z2) * 2
+			return Z, extent
+
+		def get_rgb( ):
+			Z, extent = get_demo_image( )
+			Z[ Z < 0 ] = 0.
+			Z = Z / Z.max( )
+			R = Z[ :13, :13 ]
+			G = Z[ 2:, 2: ]
+			B = Z[ :13, 2: ]
+			return R, G, B
+
+		fig = plt.figure( 1 )
+		ax = RGBAxes( fig, [ 0.1, 0.1, 0.8, 0.8 ] )
+		r, g, b = get_rgb( )
+		kwargs = dict( origin = "lower", interpolation = "nearest" )
+		ax.imshow_rgb( r, g, b, **kwargs )
+		ax.RGB.set_xlim( 0., 9.5 )
+		ax.RGB.set_ylim( 0.9, 10.6 )
+		plt.draw( )
+		return plt.gcf( )
+
+	def create_figure( self ):
+		# ------------------------------- START OF YOUR MATPLOTLIB CODE -------------------------------
+		fig = matplotlib.figure.Figure( figsize = (5, 4), dpi = 100 )
+		t = np.arange( 0, 3, .01 )
+		fig.add_subplot( 111 ).plot( t, 2 * np.sin( 2 * np.pi * t ) )
+		return fig
+
+	def create_subplot_3d( self ):
+		fig = plt.figure( )
+		ax = fig.add_subplot( 1, 2, 1, projection = '3d' )
+		X = np.arange( -5, 5, 0.25 )
+		Y = np.arange( -5, 5, 0.25 )
+		X, Y = np.meshgrid( X, Y )
+		R = np.sqrt( X ** 2 + Y ** 2 )
+		Z = np.sin( R )
+		surf = ax.plot_surface( X, Y, Z, rstride = 1, cstride = 1, cmap = cm.jet,
+			linewidth = 0, antialiased = False )
+		ax.set_zlim3d( -1.01, 1.01 )
+		fig.colorbar( surf, shrink = 0.5, aspect = 5 )
+		ax = fig.add_subplot( 1, 2, 2, projection = '3d' )
+		X, Y, Z = get_test_data( 0.05 )
+		ax.plot_wireframe( X, Y, Z, rstride = 10, cstride = 10 )
+		return fig
+
+	def create_pyplot_scales( self ):
+		plt.close( 'all' )
+		# Fixing random state for reproducibility
+		np.random.seed( 19680801 )
+
+		# make up some data in the interval ]0, 1[
+		y = np.random.normal( loc = 0.5, scale = 0.4, size = 1000 )
+		y = y[ (y > 0) & (y < 1) ]
+		y.sort( )
+		x = np.arange( len( y ) )
+
+		# plot with various axes scales
+		plt.figure( 1 )
+
+		# linear
+		plt.subplot( 221 )
+		plt.plot( x, y )
+		plt.yscale( 'linear' )
+		plt.title( 'linear' )
+		plt.grid( True )
+
+		# log
+		plt.subplot( 222 )
+		plt.plot( x, y )
+		plt.yscale( 'log' )
+		plt.title( 'log' )
+		plt.grid( True )
+
+		# symmetric log
+		plt.subplot( 223 )
+		plt.plot( x, y - y.mean( ) )
+		plt.yscale( 'symlog', linthreshy = 0.01 )
+		plt.title( 'symlog' )
+		plt.grid( True )
+
+		# logit
+		plt.subplot( 224 )
+		plt.plot( x, y )
+		plt.yscale( 'logit' )
+		plt.title( 'logit' )
+		plt.grid( True )
+		# Format the minor tick labels of the y-axis into empty strings with
+		# `NullFormatter`, to avoid cumbering the axis with too many labels.
+		plt.gca( ).yaxis.set_minor_formatter( NullFormatter( ) )
+		# Adjust the subplot layout, because the logit one may take more space
+		# than usual, due to y-tick labels like "1 - 10^{-3}"
+		plt.subplots_adjust( top = 0.92, bottom = 0.08, left = 0.10, right = 0.95, hspace = 0.25,
+			wspace = 0.35 )
+		return plt.gcf( )
+	# ----------------------------- The draw figure helpful function -----------------------------
+	def draw_figure( self, element, figure ):
+		"""
+		Draws the previously created "figure" in the supplied Image Element
+
+		:param element: an Image Element
+		:param figure: a Matplotlib figure
+		:return: The figure canvas
+		"""
+
+		plt.close( 'all' )  # erases previously drawn plots
+		canv = FigureCanvasAgg( figure )
+		buf = io.BytesIO( )
+		canv.print_figure( buf, format = 'png' )
+		if buf is None:
+			return None
+		buf.seek( 0 )
+		element.update( data = buf.read( ) )
+		return canv
+
+		self.dictionary_of_figures = { 'Axis Grid': self.create_axis_grid,
+		                          'Subplot 3D': self.create_subplot_3d,
+		                          'Scales': self.create_pyplot_scales,
+		                          'Basic Figure': self.create_figure }
+	# ----------------------------- The GUI Section -----------------------------
+	def create_window( self ):
+		"""
+
+			Defines the window's layout and creates the window object.
+			This function is used so that the window's theme can be changed and the window "re-started".
+
+			:return: The Window object
+			:rtype: sg.Window
+
+		"""
+
+		left_col = [ [ sg.T( 'Figures to Draw' ) ],
+		             [ sg.Listbox( list( self.dictionary_of_figures ),
+			             default_values = [ list( self.dictionary_of_figures )[ 0 ] ], size = (15, 5),
+			             key = '-LB-' ) ],
+		             [ sg.T( 'Matplotlib Styles' ) ],
+		             [ sg.Combo( plt.style.available, size = (15, 10), key = '-STYLE-' ) ],
+		             [ sg.T( 'Booger Themes' ) ],
+		             [ sg.Combo( sg.theme_list( ), default_value = sg.theme( ), size = (15, 10),
+			             key = '-THEME-' ) ] ]
+		layout = [ [ sg.T( 'Matplotlib Example', font = 'Any 20' ) ],
+		           [ sg.Col( left_col ), sg.Image( key = '-IMAGE-' ) ],
+		           [ sg.B( 'Draw' ), sg.B( 'Exit' ) ] ]
+		window = sg.Window( 'Matplotlib Embedded Template', layout, finalize=True,
+			keep_on_top=True,
+			right_click_menu=sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT )
+		return window
+
+	def show( self ):
+		window = self.create_window( )
+		while True:
+			event, values = window.read( )
+			print( event, values )
+			if event == 'Exit' or event == sg.WIN_CLOSED:
+				break
+			if event == 'Draw':
+				if values[ '-THEME-' ] != sg.theme( ):  # if new theme chosen, create a new window
+					window.close( )
+					sg.theme( values[ '-THEME-' ] )
+					window = self.create_window( )
+				if values[ '-LB-' ]:  # make sure something selected to draw
+					func = self.dictionary_of_figures[ values[ '-LB-' ][ 0 ] ]
+					if values[ '-STYLE-' ]:
+						plt.style.use( values[ '-STYLE-' ] )
+					self.draw_figure( window[ '-IMAGE-' ], func( ) )
+
+		window.close( )
+
+class WebCamera( ):
+
+	def __init__( self ):
+		sg.theme( 'DarkGrey15' )
+		sg.theme_input_text_color( '#FFFFFF' )
+		sg.theme_element_text_color( '#69B1EF' )
+		sg.theme_text_color( '#69B1EF' )
+		self.theme_background = sg.theme_background_color( )
+		self.theme_textcolor = sg.theme_text_color( )
+		self.element_forecolor = sg.theme_element_text_color( )
+		self.element_backcolor = sg.theme_background_color( )
+		self.text_backcolor = sg.theme_text_element_background_color( )
+		self.text_forecolor = sg.theme_element_text_color( )
+		self.input_forecolor = sg.theme_input_text_color( )
+		self.input_backcolor = sg.theme_input_background_color( )
+		self.button_backcolor = sg.theme_button_color_background( )
+		self.button_forecolor = sg.theme_button_color_text( )
+		self.button_color = sg.theme_button_color( )
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\ninja.ico'
+		self.theme_font = ('Roboto', 11)
+		self.scrollbar_color = '#755600'
+		sg.set_global_icon( icon=self.icon_path )
+		sg.set_options( font=self.theme_font )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+
+	def show( self ):
+		sg.theme( 'LightGreen' )
+
+		# define the window layout
+		layout = [
+				[ sg.Text( 'OpenCV demo', size = (60, 1), justification = 'center' ) ],
+				[ sg.Image( filename = '', key = '-IMAGE-' ) ],
+				[ sg.Radio( 'None', 'Radio', True, size = (10, 1) ) ],
+				[ sg.Radio( 'threshold', 'Radio', size = (10, 1), key = '-THRESH-' ),
+				  sg.Slider( (0, 255), 128, 1, orientation = 'h', size = (40, 15),
+					  key = '-THRESH SLIDER-' ) ],
+				[ sg.Radio( 'canny', 'Radio', size = (10, 1), key = '-CANNY-' ),
+				  sg.Slider( (0, 255), 128, 1, orientation = 'h', size = (20, 15),
+					  key = '-CANNY SLIDER A-' ),
+				  sg.Slider( (0, 255), 128, 1, orientation = 'h', size = (20, 15),
+					  key = '-CANNY SLIDER B-' ) ],
+				[ sg.Radio( 'blur', 'Radio', size = (10, 1), key = '-BLUR-' ),
+				  sg.Slider( (1, 11), 1, 1, orientation = 'h', size = (40, 15), key = '-BLUR SLIDER-' ) ],
+				[ sg.Radio( 'hue', 'Radio', size = (10, 1), key = '-HUE-' ),
+				  sg.Slider( (0, 225), 0, 1, orientation = 'h', size = (40, 15), key = '-HUE SLIDER-' ) ],
+				[ sg.Radio( 'enhance', 'Radio', size = (10, 1), key = '-ENHANCE-' ),
+				  sg.Slider( (1, 255), 128, 1, orientation = 'h', size = (40, 15),
+					  key = '-ENHANCE SLIDER-' ) ],
+				[ sg.Button( 'Exit', size = (10, 1) ) ]
+		]
+
+		# create the window and show it without the plot
+		window = sg.Window( 'OpenCV Integration', layout,
+			location=(800, 400),
+			keep_on_top=True,
+			right_click_menu=sg.MENU_RIGHT_CLICK_EDITME_VER_LOC_EXIT )
+
+		cap = cv2.VideoCapture( 0 )
+
+		while True:
+			event, values = window.read( timeout = 20 )
+			if event == 'Exit' or event == sg.WIN_CLOSED:
+				break
+
+			ret, frame = cap.read( )
+
+			if values[ '-THRESH-' ]:
+				frame = cv2.cvtColor( frame, cv2.COLOR_BGR2LAB )[ :, :, 0 ]
+				frame = cv2.threshold( frame, values[ '-THRESH SLIDER-' ], 255, cv2.THRESH_BINARY )[ 1 ]
+			elif values[ '-CANNY-' ]:
+				frame = cv2.Canny( frame, values[ '-CANNY SLIDER A-' ], values[ '-CANNY SLIDER B-' ] )
+			elif values[ '-BLUR-' ]:
+				frame = cv2.GaussianBlur( frame, (21, 21), values[ '-BLUR SLIDER-' ] )
+			elif values[ '-HUE-' ]:
+				frame = cv2.cvtColor( frame, cv2.COLOR_BGR2HSV )
+				frame[ :, :, 0 ] += int( values[ '-HUE SLIDER-' ] )
+				frame = cv2.cvtColor( frame, cv2.COLOR_HSV2BGR )
+			elif values[ '-ENHANCE-' ]:
+				enh_val = values[ '-ENHANCE SLIDER-' ] / 40
+				clahe = cv2.createCLAHE( clipLimit = enh_val, tileGridSize = (8, 8) )
+				lab = cv2.cvtColor( frame, cv2.COLOR_BGR2LAB )
+				lab[ :, :, 0 ] = clahe.apply( lab[ :, :, 0 ] )
+				frame = cv2.cvtColor( lab, cv2.COLOR_LAB2BGR )
+
+			imgbytes = cv2.imencode( '.png', frame )[ 1 ].tobytes( )
+			window[ '-IMAGE-' ].update( data = imgbytes )
+
+		window.close( )
+
+
+

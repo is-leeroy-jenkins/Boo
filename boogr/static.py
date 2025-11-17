@@ -1,6 +1,6 @@
 '''
   ******************************************************************************************
-      Assembly:                Bobo
+      Assembly:                Boogr
       Filename:                Static.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
@@ -8,9 +8,9 @@
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="enums.py" company="Terry D. Eppler">
+  <copyright file="static.py" company="Terry D. Eppler">
 
-	     Boo is a df analysis tool integrating various Generative GPT, GptText-Processing, and
+	     Boogr is a df analysis tool integrating various Generative AI, Text-Processing, and
 	     Machine-Learning algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 

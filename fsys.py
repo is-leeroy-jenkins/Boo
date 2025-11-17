@@ -48,7 +48,7 @@ import os
 import zipfile as zp
 from openpyxl import Workbook
 import shutil as sh
-from boogr import Error, ErrorDialog
+from .boogr import Error, ErrorDialog
 from typing import Any, List, Tuple, Optional
 
 

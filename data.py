@@ -43,8 +43,7 @@
   ******************************************************************************************
   '''
 from __future__ import annotations
-
-from boogr import Error, ErrorDialog
+from .boogr import Error, ErrorDialog
 import chromadb
 from chromadb import Settings
 import fitz
