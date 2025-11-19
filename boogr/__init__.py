@@ -320,7 +320,7 @@ class Dark(  ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		self.form_size = (400, 200)
@@ -398,7 +398,7 @@ class FileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -564,7 +564,7 @@ class FolderDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -721,7 +721,7 @@ class SaveFileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.file_name = None
@@ -864,7 +864,7 @@ class GoogleDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.results = [ ]
@@ -1022,7 +1022,7 @@ class EmailDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -1202,7 +1202,7 @@ class MessageDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -1514,7 +1514,7 @@ class InputDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -1671,7 +1671,7 @@ class ScrollingDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -1828,7 +1828,7 @@ class ContactForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -1965,7 +1965,7 @@ class GridForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -2101,7 +2101,7 @@ class LoadingPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -2227,7 +2227,7 @@ class WaitingPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
@@ -2354,7 +2354,7 @@ class ProcessingPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -2484,7 +2484,7 @@ class SplashPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -2603,7 +2603,7 @@ class Notification( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -2799,7 +2799,7 @@ class ImageSizeEncoder( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -3065,7 +3065,7 @@ class PdfForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -4641,7 +4641,7 @@ class BudgetForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\boogr.png'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
@@ -5295,7 +5295,7 @@ class CsvForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -5443,7 +5443,7 @@ class ExcelForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -5614,7 +5614,7 @@ class GraphForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -5879,7 +5879,7 @@ class FileBrowser( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -5993,7 +5993,7 @@ class ChatWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -6114,7 +6114,7 @@ class ChatBot( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -6295,7 +6295,7 @@ class InputWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -6465,7 +6465,7 @@ class ThemeSelector( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -6590,7 +6590,7 @@ class UrlImageViewer( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -6723,7 +6723,7 @@ class AutoComplete( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.choices = None
@@ -6869,7 +6869,7 @@ class CheckBox( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -6971,7 +6971,7 @@ class MachineLearningWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -7152,7 +7152,7 @@ class AnimatedGraph( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -7249,7 +7249,7 @@ class BarGraph( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -7317,7 +7317,7 @@ class ScatterGraph( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -7388,7 +7388,7 @@ class StyleGraph( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
@@ -7597,7 +7597,7 @@ class WebCamera( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\atk.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
