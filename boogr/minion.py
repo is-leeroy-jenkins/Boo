@@ -46,7 +46,6 @@ import subprocess as sp
 from typing import Optional
 
 from .static import Client
-from . import Error, ErrorDialog
 import os
 
 class App( ):
@@ -60,7 +59,7 @@ class App( ):
 		Purpose:
 		---------
 		Class defines object providing factory methods run( ) and run( args ) that run
-		processes based on 'Client' enumeration path args
+		processes based on 'Client' enumeration
 		
 		Attributes
 		--------
