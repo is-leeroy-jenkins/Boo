@@ -180,7 +180,7 @@ class SQLite( ):
 			exception = Error( e )
 			exception.module = 'data'
 			exception.cause = 'SQLite'
-			exception.method = ''
+			exception.method = 'create( self ) -> None'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -188,10 +188,13 @@ class SQLite( ):
 		"""
 			
 			Purpose:
+			--------
 			Creates a df using a provided SQL statement.
 	
-			Args:
-				sql (str): The CREATE TABLE SQL statement.
+			Parameters:
+			-----------
+			sql (str): The CREATE TABLE SQL statement.
+			
 		"""
 		try:
 			throw_if( 'sql', sql )
