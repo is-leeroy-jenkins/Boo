@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
-  <h2 class="army-gold" style="font-family: 'Roboto', sans-serif;">Login</h2>
-<form class="row g-3" method="POST"><div class="card bg-secondary text-white p-4">
+  <h2>Login</h2>
+  <form method='POST'>
     {{ form.hidden_tag() }}
     <p>{{ form.username.label }} {{ form.username(size=32) }}</p>
-<p>{{ form.password.label }} {{ form.password(size=32) }}</p>
-<p>{{ form.remember() }} {{ form.remember.label }}</p>
-<p>{{ form.submit() }}</p>
-</div></form>
+    <p>{{ form.password.label }} {{ form.password(size=32) }}</p>
+    <p>{{ form.remember() }} {{ form.remember.label }}</p>
+    <p>{{ form.submit() }}</p>
+  </form>
 {% endblock %}
 
