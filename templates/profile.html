@@ -1,20 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-  <h2>Profile</h2>
-  <form method='POST'>
+  <h2 class="army-gold" style="font-family: 'Roboto', sans-serif;">Profile</h2>
+<form class="row g-3" method="POST"><div class="card bg-secondary text-white p-4">
     {{ form.hidden_tag() }}
 
     <p>{{ form.full_name.label }} {{ form.full_name(size=40) }}</p>
-    <p>{{ form.bio.label }}<br>{{ form.bio(rows=4, cols=50) }}</p>
-
-    <fieldset>
-      <legend>Address</legend>
-      <p>{{ form.address.line1.label }} {{ form.address.line1(size=40) }}</p>
-      <p>{{ form.address.city.label }} {{ form.address.city(size=24) }}</p>
-      <p>{{ form.address.state.label }} {{ form.address.state(size=4, maxlength=2) }}</p>
-      <p>{{ form.address.zip.label }} {{ form.address.zip(size=10) }}</p>
-    </fieldset>
-
-    <p>{{ form.submit() }}</p>
-  </form>
+<p>{{ form.bio.label }}<br/>{{ form.bio(rows=4, cols=50) }}</p>
+<fieldset>
+<legend>Address</legend>
+<p>{{ form.address.line1.label }} {{ form.address.line1(size=40) }}</p>
+<p>{{ form.address.city.label }} {{ form.address.city(size=24) }}</p>
+<p>{{ form.address.state.label }} {{ form.address.state(size=4, maxlength=2) }}</p>
+<p>{{ form.address.zip.label }} {{ form.address.zip(size=10) }}</p>
+</fieldset>
+<p>{{ form.submit() }}</p>
+</div></form>
 {% endblock %}

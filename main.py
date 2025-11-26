@@ -70,6 +70,7 @@ bootstrap = Bootstrap( app )
 moment = Moment( app )
 db = SQLAlchemy( app )
 CSRFProtect( app )
+
 @app.route( '/', methods=[ 'GET', 'POST' ] )
 def index( ):
 	fm = NameForm( )
@@ -123,6 +124,7 @@ def profile( ):
         flash( 'Profile saved.', 'success' )
         return redirect( url_for( 'index' ) )
     return render_template( 'profile.html', form=form )
+
 @app.route( '/multi', methods=[ 'GET','POST' ] )
 def multi( ):
     login_form = LoginForm( prefix='login' )

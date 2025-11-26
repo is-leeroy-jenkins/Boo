@@ -1,32 +1,45 @@
 {% extends 'bootstrap/base.html' %}
 {% block title %}Boo{% endblock %}
 {% block navbar %}
-<div class='navbar navbar-inverse' role='navigation'>
-    <div class='container'>
-        <div class='navbar-header'>
-            <button type='button' class='navbar-toggle'
-                    data-toggle='collapse' data-target='.navbar-collapse'>
-                <span class='sr-only'>Toggle navigation</span>
-                <span class='icon-bar'></span>
-                <span class='icon-bar'></span>
-                <span class='icon-bar'></span>
-            </button>
-            <a class='navbar-brand' href='/'>Boo</a>
-        </div>
-        <div class='navbar-collapse collapse'>
-            <ul class='nav navbar-nav'>
-                <li><a href='/'>Home</a></li>
-            </ul>
-        </div>
-    </div>
+<nav class="navbar navbar-expand-lg navbar-dark army-black-bg">
+<div class="container-fluid">
+<a class="navbar-brand army-gold" href="/">Boo</a>
+<button aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbarContent" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarContent">
+<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+<li class="nav-item">
+<a aria-current="page" class="nav-link active army-gold" href="/">Home</a>
+</li>
+</ul>
 </div>
+</div>
+</nav>
+<div class="container py-4"><main class="container bg-dark text-light rounded shadow-sm p-4">
+<div class="navbar-header">
+<button class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse" type="button">
+<span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</button>
+<a class="navbar-brand" href="/">Boo</a>
+</div>
+<div class="navbar-collapse collapse">
+<ul class="nav navbar-nav">
+<li><a href="/">Home</a></li>
+</ul>
+</div>
+</main></div>
+
 {% endblock %}
 {% block content %}
-<div class='container'>
-    <div class='page-header'>
-        <h1>Hello, {{ name }}!</h1>
-	     <p>The local date and time is {{ moment(current_time).format( 'LLL' ) }}.</p>
-		 <p>That was {{ moment(current_time).fromNow(refresh=True) }}</p>
-    </div>
+<div class="container">
+<div class="page-header border-bottom pb-2 mb-4">
+<h1 class="army-gold" style="font-family: 'Roboto', sans-serif;">Hello, {{ name }}!</h1>
+<p class="text-white">The local date and time is {{ moment(current_time).format( 'LLL' ) }}.</p>
+<p class="text-muted">That was {{ moment(current_time).fromNow(refresh=True) }}</p>
+</div>
 </div>
 {% endblock %}
