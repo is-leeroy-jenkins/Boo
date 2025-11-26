@@ -53,7 +53,7 @@ def throw_if( name: str, value: object ):
 	if value is None:
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
 
-class EndPoint:
+class GptEndpoints:
 	'''
 	
 	    Purpose:
@@ -62,7 +62,7 @@ class EndPoint:
 
     '''
 	base_url: Optional[ str ]
-	text_generation: Optional[ str ]
+	text_generations: Optional[ str ]
 	image_generations: Optional[ str ]
 	chat_completions: Optional[ str ]
 	image_edits: Optional[ str ]
@@ -99,17 +99,18 @@ class EndPoint:
 	def get_data( self ) -> dict[ str, str ] | None:
 		'''
 
-        Purpose:
-        --------
-        Returns a dictionary of endpoint lists.
-
-        Returns:
-        --------
-        dict[str, list[str]] | None
+	        Purpose:
+	        --------
+	        Returns a dictionary of endpoint lists.
+	
+	        Returns:
+	        --------
+	        dict[str, list[str]] | None
 
         '''
-		_data = {
-				'text_generation': self.text_generation,
+		_data = \
+		{
+				'text_generation': self.text_generations,
 				'responses': self.responses,
 				'assistants': self.assistants,
 				'image_generations': self.image_generations,
@@ -129,13 +130,13 @@ class EndPoint:
 	def dump( self ) -> str:
 		'''
 
-        Purpose:
-        --------
-        Returns a pretty "member = value" listing.
-
-        Returns:
-        --------
-        str
+	        Purpose:
+	        --------
+	        Returns a pretty "member = value" listing.
+	
+	        Returns:
+	        --------
+	        str
 
         '''
 		new = '\r\n'  # <- real newline
@@ -344,7 +345,7 @@ class GPT:
 	
 	def __init__( self ):
 		self.header = GptHeader( )
-		self.endpoint = EndPoint( )
+		self.endpoint = GptEndpoints( )
 		self.api_key = self.header.api_key
 		self.bro_instructions = None
 		self.bubba_instructions = None

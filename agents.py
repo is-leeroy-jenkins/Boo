@@ -10520,7 +10520,7 @@ class AcademicWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68655623b2e0819099bc136d3c8fbf5b04420f5632d48e2d'
-		self.version = '7'
+		self.version = '8'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
