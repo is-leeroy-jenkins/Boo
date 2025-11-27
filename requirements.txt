@@ -19,6 +19,7 @@ fastapi
 groq
 google
 google-genai
+huggingface-hub==0.36.0
 faiss-cpu
 ipython
 ipywidgets
