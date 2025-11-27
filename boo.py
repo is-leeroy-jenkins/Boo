@@ -177,17 +177,31 @@ class GptHeader:
 	content_type: Optional[ str ]
 	api_key: Optional[ str ]
 	authorization: Optional[ str ]
-	data: Optional[ Dict[ str, str ] ]
 	
 	def __init__( self ):
 		self.content_type = 'application/json'
 		self.api_key = os.environ.get( 'OPENAI_API_KEY' )
 		self.authorization = f'Bearer {self.api_key}' if self.api_key else ''
-		self.data = { 'Content-Type': self.content_type, 'Authorization': self.authorization, }
+		
 	
 	def __dir__( self ) -> list[ str ] | None:
-		return [ 'content_type', 'api_key', 'authorization', 'stores' ]
+		return [ 'content_type', 'api_key', 'authorization', 'get_data' ]
 
+	def get_data( self ) -> Dict[ str, str ] | None:
+		'''
+		
+			Returns:
+			--------
+			A dictionary of name-value pairs.
+
+		'''
+		return \
+		{
+				'content-type': self.content_type,
+				'api_key': self.api_key,
+				'authorization': self.authorization,
+		}
+	
 class GptModels:
 	'''
 
@@ -314,22 +328,22 @@ class GptModels:
 
         '''
 		return \
-			{
-					'text_generation': self.text_generation,
-					'image_generation': self.image_generation,
-					'chat_completion': self.chat_completion,
-					'responses': self.responses,
-					'image_edits': self.image_edits,
-					'speech_generation': self.speech_generation,
-					'translation': self.translation,
-					'image_variations': self.image_variations,
-					'reasoning': self.reasoning,
-					'finetuning': self.finetuning,
-					'embeddings': self.embeddings,
-					'uploads': self.uploads,
-					'files': self.files,
-					'vector_stores': self.vector_stores,
-			}
+		{
+				'text_generation': self.text_generation,
+				'image_generation': self.image_generation,
+				'chat_completion': self.chat_completion,
+				'responses': self.responses,
+				'image_edits': self.image_edits,
+				'speech_generation': self.speech_generation,
+				'translation': self.translation,
+				'image_variations': self.image_variations,
+				'reasoning': self.reasoning,
+				'finetuning': self.finetuning,
+				'embeddings': self.embeddings,
+				'uploads': self.uploads,
+				'files': self.files,
+				'vector_stores': self.vector_stores,
+		}
 
 class GPT:
 	'''
@@ -627,8 +641,7 @@ class Chat( GPT ):
 					}
 			]
 			
-			self.response = self.client.responses.create( model=self.model,
-				input=self.messages )
+			self.response = self.client.responses.create( model=self.model, input=self.messages )
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
