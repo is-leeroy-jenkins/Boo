@@ -10547,7 +10547,7 @@ class AcademicWriter( Agent ):
 			self.question = question
 			variable = { 'question': self.question }
 			meta = { 'id': self.id, 'version': self.version, 'variables': variable }
-			response = self.client.responses.create( model=self.model, prompt=meta, store=self.store,
+			_response = self.client.responses.create( model=self.model, prompt=meta, store=self.store,
 				max_output_tokens=self.max_output_tokens, include=self.include, reasoning=self.reasoning,
 				tool_choice=self.tool_choice )
 			return _response.output_text

@@ -42,7 +42,7 @@ automation of analytical tasks.
   - 🧬 [Embeddings](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-embeddings)
   - 🔊 [Text-to-Speech](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-text-to-speech-tts) (TTS)
   - 🎙️ [Transcription/Translation](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#%EF%B8%8F-transcription--translation-whisper) (Whisper)
-- 📄 License
+
 
 ## 📦 Installation
 
@@ -75,9 +75,9 @@ pip install -r requirements.txt
 
 ## ⚙️ Core Classes
 
-- `AI`: Base class that provides shared API setup, keys, and model configurations.
+- `GPT`: Base class that provides shared API setup, keys, and model configurations.
 - `Chat`, `Assistant`, `Bubba`, `Bro`: Extend `AI` to provide domain-specific implementations.
-- `Models`, `Header`, `EndPoint`: Configuration utilities for model selection, headers, and
+- `Schemas`, `Header`, `EndPoint`: Configuration utilities for model selection, headers, and
   endpoints.
 - `Prompt`, `Message`, `Response`, `File`, `Reasoning`: Pydantic models for structured data
   exchange.
@@ -112,13 +112,10 @@ pip install -r requirements.txt
 ## 📁 File Organization
 
 - [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/boo.py) – Main application framework
-- [models](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py) – Models used for
-  structured output
+- [schema](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py) – Models used for structured output
 - [boogr](https://github.com/is-leeroy-jenkins/Boo/blob/main/boogr.py) – a GUI
-- [guro](https://github.com/is-leeroy-jenkins/Boo/blob/main/guro.py) – a prompt engineering library w/ over 100 templates.
-- [foo](https://github.com/is-leeroy-jenkins/Boo/blob/main/foo.py) – ML/AI Layer
-- [mathy](https://github.com/is-leeroy-jenkins/Boo/tree/main/mathy) - Machine Learning library for regression, classification, time-series analysis and data processing. 
-- [dbops](https://github.com/is-leeroy-jenkins/Boo/tree/main/dbops.py) - Local persistance of embeddings for retreival augmentation base on SLQite. 
+- [agents](https://github.com/is-leeroy-jenkins/Boo/blob/main/guro.py) – a prompt library w/ over 100 agents.
+- [data](https://github.com/is-leeroy-jenkins/Boo/tree/main/dbops.py) - Local persistance of embeddings for retreival augmentation base on SLQite. 
 
 ## 🔐 Environment Variables
 
@@ -254,7 +251,9 @@ print(f"Image URL: {image_url}")
 ### 🖼️ Image Analysis
 
 - Analyze visual content by combining image and text prompts.
+
 - Extract meaning, context, or structure from images.
+
 - Leverages GPT-4o’s vision capabilities for advanced perception.
 
 ```
@@ -270,7 +269,9 @@ print(f"Image URL: {image_url}")
 ### 📄 Document Summarization
 
 - Upload and process document files directly into the assistant.
+
 - Use prompts to extract insights or summarize content.
+
 - Supports PDFs, DOCX, and other file formats via OpenAI's file API.
 
 ```
@@ -289,7 +290,9 @@ print(f"Image URL: {image_url}")
 ### 🔍 File Search with Vector Stores
 
 - Embed and store documents in vector stores for semantic search.
+
 - Retrieve contextually relevant content using natural language queries.
+
 - Ideal for knowledge base querying and document Q&A systems.
 
 ```
@@ -304,7 +307,9 @@ print(f"Image URL: {image_url}")
 ### 🔎 File & Web Search
 
 - Performs semantic search over domain-specific document embeddings to retrieve relevant content.
+
 - **File Search**: Query vector-embedded files using `vector_store_ids`.
+
 - **Web Search**: Real-time information retrieval using GPT web search integration.
 
 ```
@@ -319,7 +324,9 @@ print(f"Image URL: {image_url}")
 ### 🌐 Web Search (Real-Time Querying)
 
 - Perform web lookups in real time via OpenAI’s web-enabled models.
+
 - Extract current events, news, and regulatory updates.
+
 - No scraping required—returns model-interpreted summaries.
 
 ```
@@ -334,7 +341,9 @@ print(f"Image URL: {image_url}")
 ### 🧾 Prompt & Message Structuring
 
 - Build structured prompt schemas using Pydantic models.
+
 - Define instructions, context, output goals, and data sources.
+
 - Promotes reusable, interpretable prompt engineering.
 
 ```
@@ -354,8 +363,10 @@ print(f"Image URL: {image_url}")
 
 ### ⚙️ API Endpoint Access
 
-- Centralized access to OpenAI API endpoints.
+- Centralized access to OpenAI API endpoints
+
 - Includes endpoints for completions, images, speech, and files.
+
 - Facilitates debugging and manual request construction.
 
 ```
@@ -372,9 +383,13 @@ print(f"Image URL: {image_url}")
 
 - Fetches and lists OpenAI assistants created or used within the system, enabling assistant
   lifecycle management.
+
 - Chat: General multimodal chat
+
 - Assistant: Generic AI assistant
+
 - Bubba: Budget Execution Analyst
+
 - Bro: Programming & Data Science Analyst
 
 ```
