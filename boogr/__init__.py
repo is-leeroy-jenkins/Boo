@@ -661,7 +661,7 @@ class FolderDialog( Dark ):
 			            [ sg.Text( size=( 100, 1 ) ) ],
 			            [ sg.OK( size=( 8, 1 ) ), sg.Cancel( size=( 10, 1 ) ) ] ]
 
-			_window = sg.Window( '  Gooey', _layout,
+			_window = sg.Window( ' Gooey', _layout,
 				font=self.theme_font,
 				size=self.form_size,
 				icon=self.icon_path,
@@ -812,7 +812,7 @@ class SaveFileDialog( Dark ):
 		try:
 			_username = os.environ.get( 'USERNAME' )
 			_filename = sg.popup_get_file( 'Select Location / Enter File Name',
-				title='  Gooey',
+				title=' Gooey',
 				font=self.theme_font,
 				icon= self.icon_path,
 				save_as=True,
@@ -1395,7 +1395,7 @@ class ErrorDialog( Dark ):
 			str | None
 
 		'''
-		if isinstance( self.info, str ):
+		if self.info is not None:
 			return self.info
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -2055,7 +2055,7 @@ class GridForm( Dark ):
 			# noinspection PyTypeChecker
 			_layout = _space + _header + _records + _buttons
 
-			_window = sg.Window( '  Gooey', _layout,
+			_window = sg.Window( ' Gooey', _layout,
 				finalize = True,
 				size = self.form_size,
 				icon = self.icon_path,
@@ -2560,7 +2560,7 @@ class SplashPanel( Dark ):
 			            [ sg.Text( size = _space ), sg.Text( size = _line ) ],
 			            [ sg.Text( size = _space ),
 			              sg.Image( filename = self.image, size = _imgsize ) ] ]
-			_window = sg.Window( '  Gooey', _layout,
+			_window = sg.Window( ' Gooey', _layout,
 				no_titlebar = True,
 				keep_on_top = True,
 				grab_anywhere = True,
@@ -3559,7 +3559,7 @@ class ComboBoxDialog( Dark ):
 			                                                                               1) ),
 			              sg.Cancel( size = _btnsz ) ] ]
 
-			_window = sg.Window( '  Gooey', _layout,
+			_window = sg.Window( ' Gooey', _layout,
 				icon=self.icon_path,
 				keep_on_top=True,
 				size=self.form_size )
@@ -3729,7 +3729,7 @@ class ListBoxDialog( Dark ):
 			              sg.Button( 'Select', size = _btnsize, enable_events = True ),
 			              sg.Text( size = (3, 1) ), sg.Button( 'Exit', size = _btnsize ) ] ]
 
-			_window = sg.Window( '  Gooey', _layout,
+			_window = sg.Window( ' Gooey', _layout,
 				size=self.form_size,
 				keep_on_top=self.keep_on_top,
 				font=self.theme_font )
@@ -4577,15 +4577,15 @@ class ColorDialog( Dark ):
 
 				_window2 = sg.Window( 'Buttons with white and black documents', _layout2,
 					keep_on_top = True,
-					finalize = True,
-					size = self.form_size,
-					icon = self.icon )
+					finalize=True,
+					size=self.form_size,
+					icon=self.icon )
 
 				sg.clipboard_set( _colorhex )
 
 			_window.close( )
 
-			sg.popup_quick_message( 'Building _window... one moment please...',
+			sg.popup_quick_message( 'Building window... one moment please...',
 				background_color=self.theme_background,
 				icon=self.icon_path,
 				text_color=self.theme_textcolor,
