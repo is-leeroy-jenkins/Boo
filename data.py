@@ -714,7 +714,7 @@ class GoogleSearchTool( ):
 		return [ { 'title': item[ 'title' ], 'link': item[ 'link' ], 'snippet': item[ 'snippet' ] }
 		         for item in results.get( 'items', [ ] ) ]
 	
-	def get_tool_schema( self ) -> dict:
+	def create_schema( self ) -> dict:
 		"""
 
 			Purpose:
@@ -727,7 +727,7 @@ class GoogleSearchTool( ):
 		return \
 		{
 			'name': 'google_search',
-			'description': 'Search Google Custom Search Engine and return top results.',
+			'description': 'Web Search via the Google Custom Search Engine and return top results.',
 			'parameters':
 			{
 				'type': 'object',
@@ -743,7 +743,7 @@ class GoogleSearchTool( ):
 			},
 		}
 	
-	def run_with_openai( self, user_message: str, model: str='gpt-5-nana' ) -> str | None:
+	def run( self, user_message: str, model: str= 'gpt-5-nana' ) -> str | None:
 		"""
 
 			Purpose:
@@ -759,10 +759,10 @@ class GoogleSearchTool( ):
 		"""
 		if self.client is None:
 			raise RuntimeError( 'OpenAI client not initialized. Provide openai_api_key.' )
-		
-		return self.client.chat.completions.create(
-			model=model,
-			messages=[ { 'role': 'user', 'content': user_message } ],
-			tools=[ self.get_tool_schema( ) ],
-			tool_choice={ 'type': 'function', 'function': { 'name': 'google_search' } },
-		).choices[ 0 ].message.content
+		else:
+			choice = { 'type': 'function', 'function': { 'name': 'google_search' } }
+			prompt = [ { 'role': 'user', 'content': user_message } ]
+			tool = [ self.create_schema( ) ]
+			search = self.client.chat.completions.create( model=model, messages=prompt,
+				tools=tool, tool_choice=choice )
+		return search.choices[ 0 ].message.content
