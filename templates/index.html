@@ -1,11 +1,52 @@
- {% extends 'base.html' %}
- {% import 'bootstrap/wtf.html' as wtf %}
- {% block title %}
-    Boo
- {% endblock %}
- {% block page_content %}
- <div class='page-header'>
-    <h1>Hello, {% if name %}{{ name }}{% else %} Stranger {% endif %}!</h1>
- </div>
- {{ wtf.quick_form(form) }}
- {% endblock %}
+{% extends 'base.html' %}
+{% block page_content %}
+<div class="text-center mt-4">
+    <h1 class="army-gold mb-3">Welcome to Boo</h1>
+    <p class="text-white fs-5 mb-4">
+        A clean, Army-styled application interface built for clarity and purpose.
+    </p>
+
+    <a href="{{ url_for('login') }}" class="btn btn-army me-2">Login</a>
+    <a href="{{ url_for('register') }}" class="btn btn-army">Register</a>
+</div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+
+        <h2 class="army-gold mb-4">Chat Interface</h2>
+
+        <!-- Chat Window -->
+        <div id="chat-box" class="chat-box">
+		    {% if chat %}
+		        {% for msg in chat %}
+		
+		            {% if msg.sender == "user" %}
+		            <div class="chat-message-right">
+		                <div class="bubble-right">{{ msg.text }}</div>
+		            </div>
+		            {% else %}
+		            <div class="chat-message-left">
+		                <div class="bubble-left">{{ msg.text }}</div>
+		            </div>
+		            {% endif %}
+		
+		        {% endfor %}
+		    {% else %}
+		        <div class="chat-message-left">
+		            <div class="bubble-left">Welcome to Boo Chat Interface.</div>
+		        </div>
+		    {% endif %}
+		</div>
+
+        <!-- Chat Input Form -->
+        <form method="POST" action="/" class="chat-form">
+            <div class="input-group">
+                <input type="text" name="message" class="form-control chat-input" placeholder="Type your message…" required>
+                <span class="input-group-btn">
+                    <button class="btn btn-army" type="submit">Send</button>
+                </span>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

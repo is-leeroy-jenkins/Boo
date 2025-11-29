@@ -1,21 +1,48 @@
 {% extends 'base.html' %}
-{% block content %}
-  <h2>Profile</h2>
-  <form method='POST'>
-    {{ form.hidden_tag() }}
+{% block page_content %}
+<div class="profile-wrapper">
+    <div class="profile-card">
+        <h2 class="army-gold mb-4">Profile</h2>
 
-    <p>{{ form.full_name.label }} {{ form.full_name(size=40) }}</p>
-    <p>{{ form.bio.label }}<br>{{ form.bio(rows=4, cols=50) }}</p>
+        <form method="POST">
+            {{ form.hidden_tag() }}
 
-    <fieldset>
-      <legend>Address</legend>
-      <p>{{ form.address.line1.label }} {{ form.address.line1(size=40) }}</p>
-      <p>{{ form.address.city.label }} {{ form.address.city(size=24) }}</p>
-      <p>{{ form.address.state.label }} {{ form.address.state(size=4, maxlength=2) }}</p>
-      <p>{{ form.address.zip.label }} {{ form.address.zip(size=10) }}</p>
-    </fieldset>
+            <div class="mb-3">
+                {{ form.full_name.label(class="form-label") }}
+                {{ form.full_name(class="form-control") }}
+            </div>
 
-    <p>{{ form.submit() }}</p>
-  </form>
+            <div class="mb-3">
+                {{ form.bio.label(class="form-label") }}
+                {{ form.bio(class="form-control") }}
+            </div>
+
+            <fieldset class="border p-3 rounded mb-3">
+                <legend class="army-gold small">Address</legend>
+
+                <div class="mb-3">
+                    {{ form.address.line1.label(class="form-label") }}
+                    {{ form.address.line1(class="form-control") }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.address.city.label(class="form-label") }}
+                        {{ form.address.city(class="form-control") }}
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        {{ form.address.state.label(class="form-label") }}
+                        {{ form.address.state(class="form-control") }}
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        {{ form.address.zip.label(class="form-label") }}
+                        {{ form.address.zip(class="form-control") }}
+                    </div>
+                </div>
+            </fieldset>
+
+            <button class="btn btn-army w-100">{{ form.submit.label.text }}</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
-

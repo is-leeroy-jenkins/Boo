@@ -1,10 +1,24 @@
 {% extends 'base.html' %}
-{% block content %}
-  <h2>Upload</h2>
-  <form method='POST' enctype='multipart/form-data'>
-    {{ form.hidden_tag() }}
-    <p>{{ form.title.label }} {{ form.title(size=40) }}</p>
-    <p>{{ form.doc.label }} {{ form.doc() }}</p>
-    <p>{{ form.submit() }}</p>
-  </form>
+{% block page_content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h2 class="army-gold mb-4">Upload Document</h2>
+
+        <form enctype="multipart/form-data" method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+                {{ form.title.label(class="form-label") }}
+                {{ form.title(class="form-control") }}
+            </div>
+
+            <div class="mb-4">
+                {{ form.doc.label(class="form-label") }}
+                {{ form.doc(class="form-control") }}
+            </div>
+
+            <button class="btn btn-army w-100">{{ form.submit.label.text }}</button>
+        </form>
+    </div>
+</div>
 {% endblock %}

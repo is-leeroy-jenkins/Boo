@@ -48,7 +48,7 @@ from flask_moment import Moment
 from flask import Flask, render_template, session, redirect, url_for, flash, request
 from flask_sqlalchemy import SQLAlchemy
 
-from forms import NameForm, LoginForm, RegisterForm, UploadForm, ProfileForm, FeedbackOnSamePage
+from forms import NameForm, LoginForm, RegisterForm, UploadForm, ProfileForm, FeedbackOnSamePage, ContactForm
 import config
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_wtf import FlaskForm, CSRFProtect
@@ -71,13 +71,38 @@ moment = Moment( app )
 db = SQLAlchemy( app )
 CSRFProtect( app )
 
-@app.route( '/', methods=[ 'GET', 'POST' ] )
-def index( ):
-	fm = NameForm( )
-	if fm.validate_on_submit( ):
-		session[ 'name' ] = fm.name.data
-		return redirect( url_for( 'index' ) )
-	return render_template( 'index.html', form=fm, name=session.get( 'name' ) )
+@app.route("/", methods=["GET", "POST"])
+def index():
+    # Initialize chat history in session
+    if "chat_history" not in session:
+        session["chat_history"] = []
+
+    if request.method == "POST":
+        user_msg = request.form.get("message", "").strip()
+
+        if user_msg:
+            # Add user message
+            session["chat_history"].append({
+                "sender": "user",
+                "text": user_msg,
+                "time": datetime.now().strftime("%H:%M")
+            })
+
+            # Dummy system response (Replace with OpenAI or custom logic)
+            reply = f"You said: {user_msg}"
+
+            session["chat_history"].append({
+                "sender": "assistant",
+                "text": reply,
+                "time": datetime.now().strftime("%H:%M")
+            })
+
+        # Save session
+        session.modified = True
+
+        return redirect(url_for("index"))
+
+    return render_template("index.html", chat=session["chat_history"])
 
 @app.route( '/user/<name>' )
 def user( name ):
@@ -137,6 +162,27 @@ def multi( ):
             flash( f'Multi-page feedback: { fb_form.category.data }', 'success' )
             return redirect( url_for( 'multi' ) )
     return render_template( 'base.html' )  #
+
+@app.route("/contact", methods=["GET", "POST"])
+def contact():
+    form = ContactForm()
+
+    if form.validate_on_submit():
+        name = form.name.data
+        email = form.email.data
+        subject = form.subject.data
+        message = form.message.data
+
+        # Here you could:
+        # - Send an email
+        # - Save to database
+        # - Write to file/log
+        # For now we just flash confirmation.
+
+        flash("Your message has been sent successfully.")
+        return redirect(url_for("contact"))
+
+    return render_template("contact.html", form=form)
 
 @app.errorhandler( 404 )
 def page_not_found( e ):

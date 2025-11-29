@@ -1,11 +1,30 @@
 {% extends 'base.html' %}
-{% block content %}
-  <h2>Login</h2>
-  <form method='POST'>
-    {{ form.hidden_tag() }}
-    <p>{{ form.username.label }} {{ form.username(size=32) }}</p>
-    <p>{{ form.password.label }} {{ form.password(size=32) }}</p>
-    <p>{{ form.remember() }} {{ form.remember.label }}</p>
-    <p>{{ form.submit() }}</p>
-  </form>
+{% block page_content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h2 class="army-gold mb-4">Login</h2>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control") }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control") }}
+            </div>
+
+            <div class="form-check mb-3">
+                {{ form.remember(class="form-check-input") }}
+                {{ form.remember.label(class="form-check-label ms-2") }}
+            </div>
+
+            <button class="btn btn-army w-100">{{ form.submit.label.text }}</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
+

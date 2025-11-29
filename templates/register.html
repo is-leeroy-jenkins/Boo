@@ -1,13 +1,40 @@
 {% extends 'base.html' %}
-{% block content %}
-  <h2>Register</h2>
-  <form method='POST'>
-    {{ form.hidden_tag() }}
-    <p>{{ form.email.label }} {{ form.email(size=32) }}</p>
-    <p>{{ form.username.label }} {{ form.username(size=24) }}</p>
-    <p>{{ form.password.label }} {{ form.password(size=24) }}</p>
-    <p>{{ form.confirm.label }} {{ form.confirm(size=24) }}</p>
-    <p>{{ form.role.label }} {{ form.role() }}</p>
-    <p>{{ form.submit() }}</p>
-  </form>
+{% block page_content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h2 class="army-gold mb-4">Register</h2>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control") }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control") }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control") }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.confirm.label(class="form-label") }}
+                {{ form.confirm(class="form-control") }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.role.label(class="form-label") }}
+                {{ form.role(class="form-select") }}
+            </div>
+
+            <button class="btn btn-army w-100">{{ form.submit.label.text }}</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
+
