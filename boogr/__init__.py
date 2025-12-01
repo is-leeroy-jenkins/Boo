@@ -1,6 +1,6 @@
 '''
   ******************************************************************************************
-      Assembly:                Gooey
+      Assembly:                Boo
       Filename:                init.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
@@ -175,7 +175,7 @@ class ButtonIcon( ):
 
 	def __init__( self, png: Enum ):
 		self.name = png.name
-		self.button = r'C:\Users\terry\source\repos\Gooey\boogr\resources\img\button'
+		self.button = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\button'
 		self.file_path = self.button + r'\\' + self.name + '.png'
 
 
@@ -232,7 +232,7 @@ class TitleIcon( ):
 
 	def __init__( self, ico ):
 		self.name = ico.name
-		self.folder = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico'
+		self.folder = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico'
 		self.file_path = self.folder + r'\\' + self.name + r'.ico'
 
 
@@ -320,7 +320,7 @@ class Dark(  ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		self.form_size = (400, 200)
@@ -330,7 +330,7 @@ class Dark(  ):
 		self.context_menu = sg.MENU_RIGHT_CLICK_EDITME_VER_SETTINGS_EXIT
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -398,12 +398,12 @@ class FileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\file_browse.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\file_browse.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (500, 240)
 		self.keep_on_top = True
 		self.top_level = True
@@ -564,12 +564,12 @@ class FolderDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\folder_browse.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\folder_browse.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (500, 250)
 		self.selected_item = None
 		self.keep_on_top = True
@@ -661,7 +661,7 @@ class FolderDialog( Dark ):
 			            [ sg.Text( size=( 100, 1 ) ) ],
 			            [ sg.OK( size=( 8, 1 ) ), sg.Cancel( size=( 10, 1 ) ) ] ]
 
-			_window = sg.Window( '  Gooey', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				font=self.theme_font,
 				size=self.form_size,
 				icon=self.icon_path,
@@ -721,13 +721,13 @@ class SaveFileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\Save.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\Save.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.file_name = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'\resources\theme' )
+		sg.user_settings_save( 'Boo', r'\resources\theme' )
 		self.form_size = (550, 250)
 		self.keep_on_top = True
 		self.top_level = True
@@ -812,7 +812,7 @@ class SaveFileDialog( Dark ):
 		try:
 			_username = os.environ.get( 'USERNAME' )
 			_filename = sg.popup_get_file( 'Select Location / Enter File Name',
-				title='  Gooey',
+				title='  Boo',
 				font=self.theme_font,
 				icon= self.icon_path,
 				save_as=True,
@@ -864,16 +864,16 @@ class GoogleDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.results = [ ]
 		self.querytext = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (500, 235)
-		self.image = r'C:\Users\terry\source\repos\Gooey\boogr\resources\img\web\google.png'
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\web\google.png'
 		self.keep_on_top = True
 		self.top_level = True
 		self.resizable = True
@@ -1022,13 +1022,13 @@ class EmailDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
-		self.image = r'C:\Users\terry\source\repos\Gooey\boogr\resources\img\app\web\outlook.png'
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\app\web\outlook.png'
 		self.form_size = (570, 550)
 		self.keep_on_top = True
 		self.top_level = True
@@ -1202,12 +1202,12 @@ class MessageDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (450, 250)
 		self.keep_on_top = True
 		self.top_level = True
@@ -1360,12 +1360,12 @@ class ErrorDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\error.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\error.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (500, 300)
 		self.keep_on_top = True
 		self.top_level = True
@@ -1514,12 +1514,12 @@ class InputDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (500, 250)
 		self.selected_item = None
 		self.keep_on_top = True
@@ -1669,12 +1669,12 @@ class DataEntryDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ( 'Roboto', 12 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = ( 500, 250 )
 		self.selected_item = None
 		self.question = None
@@ -1702,12 +1702,12 @@ class DataEntryDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (500, 250)
 		self.selected_item = None
 		self.keep_on_top = True
@@ -1790,7 +1790,7 @@ class DataEntryDialog( Dark ):
 		    [sg.ReadButton('Display',size = (8,1), key = '_display_'), sg.Text('To retrieve and Display')],
 		    [sg.Multiline(size = (28,4), key = '_multiline_')]]
 		
-		window = sg.Window( 'Gooey', layout=self.layout,
+		window = sg.Window( 'Boo', layout=self.layout,
 			icon=self.icon_path,
 			font=self.theme_font,
 			keep_on_top=self.keep_on_top,
@@ -1869,12 +1869,12 @@ class ScrollingDialog( Dark ):
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
 		self.arrowcolor = '#755600'
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (700, 600)
 		self.keep_on_top = True
 		self.top_level = True
@@ -2024,12 +2024,12 @@ class SliderComboDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ( 'Roboto', 12 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = ( 500, 250 )
 		self.selected_item = None
 		self.question = None
@@ -2170,12 +2170,12 @@ class SpinnerComboDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ( 'Roboto', 12 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = ( 500, 250 )
 		self.selected_item = None
 		self.question = None
@@ -2257,7 +2257,7 @@ class SpinnerComboDialog( Dark ):
 		    [sg.Text('Result:   ')],[sg.InputText(size = (5,1), key = '_result_'),
 		     sg.ReadButton('Calculate', button_color = ('White', 'Red'))]]
 
-		window = sg.Window( 'Gooey', layout=self.layout,
+		window = sg.Window( 'Boo', layout=self.layout,
 			grab_anywhere=False,
 			keep_on_top=self.keep_on_top,
 			force_toplevel=self.top_level,
@@ -2317,13 +2317,13 @@ class ContactForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
-		self.image = r'C:\Users\terry\source\repos\Gooey\boogr\resources\img\app\web\outlook.png'
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\app\web\outlook.png'
 		self.form_size = (500, 300)
 		self.input_text = None
 		self.keep_on_top = True
@@ -2454,12 +2454,12 @@ class GridForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.width = (17, 1)
 		self.rows = rows
 		self.columns = columns
@@ -2543,7 +2543,7 @@ class GridForm( Dark ):
 			# noinspection PyTypeChecker
 			_layout = _space + _header + _records + _buttons
 
-			_window = sg.Window( '  Gooey', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				finalize = True,
 				size = self.form_size,
 				icon = self.icon_path,
@@ -2590,13 +2590,13 @@ class LoadingPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
-		self.image = r'C:\Users\terry\source\repos\Gooey\boogr\resources\img\loaders\loading.gif'
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\loaders\loading.gif'
 		self.form_size = (800, 600)
 		self.timeout = 6000
 		self.keep_on_top = True
@@ -2721,12 +2721,12 @@ class WaitingPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
-		self.image = r'C:\Users\terry\source\repos\Gooey\boogr\resources\img\loaders\loader.gif'
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\loaders\loader.gif'
 		self.theme_font = ('Roboto', 11)
 		self.form_size = (800, 600)
 		self.timeout = 6000
@@ -2854,13 +2854,13 @@ class ProcessingPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
-		self.image = r'C:\Users\terry\source\repos\Gooey\boogr\resources\img\loaders\processing.gif'
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\loaders\processing.gif'
 		self.form_size = (800, 600)
 		self.timeout = None
 		self.keep_on_top = True
@@ -2984,13 +2984,13 @@ class SplashPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
-		self.image = r'C:\Users\terry\source\repos\Gooey\boogr\resources\img\gooey.png'
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\Boo.png'
 		self.form_size = (800, 600)
 		self.timeout = 6000
 		self.keep_on_top = True
@@ -3059,7 +3059,7 @@ class SplashPanel( Dark ):
 			            [ sg.Text( size = _space ), sg.Text( size = _line ) ],
 			            [ sg.Text( size = _space ),
 			              sg.Image( filename = self.image, size = _imgsize ) ] ]
-			_window = sg.Window( '  Gooey', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				no_titlebar = True,
 				keep_on_top = True,
 				grab_anywhere = True,
@@ -3103,12 +3103,12 @@ class Notification( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
 		self.success = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAA3NCSVQICAjb4U' \
 		               b'/gAAAACXBIWXMAAAEKAAABCgEWpLzLAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5r' \
@@ -3299,12 +3299,12 @@ class ImageSizeEncoder( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
 		self.keep_on_top = True
 		self.top_level = True
@@ -3565,12 +3565,12 @@ class PdfForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = ( 600, 800 )
 		self.keep_on_top = True
 		self.top_level = True
@@ -3810,13 +3810,13 @@ class CalendarDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\copy.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\copy.ico'
 		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		self.selected_item = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (500, 250)
 		self.keep_on_top = True
 		self.top_level = True
@@ -3956,12 +3956,12 @@ class ComboBoxDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\filter.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\filter.ico'
 		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (400, 150)
 		self.keep_on_top = True
 		self.top_level = True
@@ -4058,7 +4058,7 @@ class ComboBoxDialog( Dark ):
 			                                                                               1) ),
 			              sg.Cancel( size = _btnsz ) ] ]
 
-			_window = sg.Window( '  Gooey', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				icon=self.icon_path,
 				keep_on_top=True,
 				size=self.form_size )
@@ -4115,12 +4115,12 @@ class ListBoxDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\filter.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\filter.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (400, 250)
 		self.keep_on_top = True
 		self.top_level = True
@@ -4228,7 +4228,7 @@ class ListBoxDialog( Dark ):
 			              sg.Button( 'Select', size = _btnsize, enable_events = True ),
 			              sg.Text( size = (3, 1) ), sg.Button( 'Exit', size = _btnsize ) ] ]
 
-			_window = sg.Window( '  Gooey', _layout,
+			_window = sg.Window( '  Boo', _layout,
 				size=self.form_size,
 				keep_on_top=self.keep_on_top,
 				font=self.theme_font )
@@ -4291,12 +4291,12 @@ class ColorDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\chart.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\chart.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (450, 450)
 		self.keep_on_top = True
 		self.top_level = True
@@ -5045,7 +5045,7 @@ class ColorDialog( Dark ):
 				_layout.append( [ sg.Text( ' ', size = (10, 1) ), ] )
 				_layout.append( [ sg.Text( ' ', size = (50, 1) ), sg.Cancel( size = (20, 1) ), ] )
 
-				return sg.Window( ' Gooey', _layout,
+				return sg.Window( ' Boo', _layout,
 					font = self.theme_font,
 					size = self.form_size,
 					element_padding = (1, 1),
@@ -5141,13 +5141,13 @@ class BudgetForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
-		self.image = r'C:\Users\terry\source\repos\Gooey\boogr\resources\img\boogr.png'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
+		self.image = r'C:\Users\terry\source\repos\Boo\boogr\resources\img\boogr.png'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (1200, 650)
 		self.keep_on_top = True
 		self.top_level = True
@@ -5241,7 +5241,7 @@ class BudgetForm( Dark ):
 			except Exception as e:
 				exception = Error( e )
 				exception.module = 'boogr'
-				exception.cause = 'GooeyForm'
+				exception.cause = 'BooForm'
 				exception.method = 'create_title( self, items )'
 				error = ErrorDialog( exception )
 				error.show( )
@@ -5276,7 +5276,7 @@ class BudgetForm( Dark ):
 			except Exception as e:
 				exception = Error( e )
 				exception.module = 'boogr'
-				exception.cause = 'GooeyForm'
+				exception.cause = 'BooForm'
 				exception.method = 'create_header( self, items )'
 				error = ErrorDialog( exception )
 				error.show( )
@@ -5592,7 +5592,7 @@ class BudgetForm( Dark ):
 						  pad = BPAD_LEFT, background_color = _blu, border_width = 0,
 						  expand_x = True, expand_y = True ), ],
 					[ sg.Sizegrip( background_color = _mblk ) ] ]
-			_window = sg.Window( 'Gooey', self.formlayout,
+			_window = sg.Window( 'Boo', self.formlayout,
 				size=self.form_size,
 				margins=(0, 0),
 				background_color=_blk,
@@ -5649,12 +5649,12 @@ class ChartPanel( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\chart.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\chart.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (750, 650)
 		self.keep_on_top = True
 		self.top_level = True
@@ -5732,7 +5732,7 @@ class ChartPanel( Dark ):
 			              sg.Text( size = _lg ), sg.Exit( size = _md ) ],
 			            [ sg.Sizegrip( background_color = _black ) ] ]
 
-			_window = sg.Window( 'Gooey', _layout,
+			_window = sg.Window( 'Boo', _layout,
 				finalize=True,
 				resizable=self.resizable,
 				icon=self.icon_path,
@@ -5795,12 +5795,12 @@ class CsvForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
 		self.keep_on_top = True
 		self.top_level = True
@@ -5903,7 +5903,7 @@ class CsvForm( Dark ):
 				alternating_row_color = '#EDF3F8', border_width = 1, text_color = '#000000',
 				expand_x = True, expand_y = True, sbar_relief = sg.RELIEF_FLAT,
 				num_rows = min( 26, len( _data ) ) ), ], ]
-			_window = sg.Window( 'Gooey', _datagrid, icon = self.icon_path,
+			_window = sg.Window( 'Boo', _datagrid, icon = self.icon_path,
 				font = self.theme_font, resizable = True )
 			_event, _values = _window.read( )
 			_window.close( )
@@ -5943,12 +5943,12 @@ class ExcelForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (1250, 700)
 		self.keep_on_top = True
 		self.top_level = True
@@ -6062,7 +6062,7 @@ class ExcelForm( Dark ):
 			              sg.Text( size = _spc ), sg.Button( 'Close', size = _med, key = '-CLOSE-'
 			            ) ],
 			            [ sg.Sizegrip( ) ], ]
-			_window = sg.Window( ' Gooey', _layout,
+			_window = sg.Window( ' Boo', _layout,
 				size=self.form_size,
 				keep_on_top=True,
 				grab_anywhere=True,
@@ -6114,12 +6114,12 @@ class GraphForm( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
 		self.keep_on_top = True
 		self.top_level = True
@@ -6316,7 +6316,7 @@ class GraphForm( Dark ):
 			            [ sg.Col( _leftcolumn ), sg.Image( key = '-IMAGE-' ) ],
 			            [ sg.B( 'Draw' ), sg.B( 'Exit' ) ] ]
 
-			_win = sg.Window( 'Gooey', _layout,
+			_win = sg.Window( 'Boo', _layout,
 				keep_on_top=True, finalize=True )
 
 			return _win
@@ -6379,12 +6379,12 @@ class FileBrowser( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (400, 200)
 		self.keep_on_top = True
 		self.top_level = True
@@ -6493,12 +6493,12 @@ class ChatWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
 		self.keep_on_top = True
 		self.top_level = True
@@ -6614,12 +6614,12 @@ class ChatBot( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
 		self.keep_on_top = True
 		self.top_level = True
@@ -6795,12 +6795,12 @@ class InputWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (520, 550)
 		self.keep_on_top = True
 		self.top_level = True
@@ -6965,12 +6965,12 @@ class ThemeSelector( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ( 'Roboto', 11 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = ( 300, 400 )
 		self.keep_on_top = True
 		self.top_level = True
@@ -7090,12 +7090,12 @@ class UrlImageViewer( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.form_size = (800, 600)
 		self.keep_on_top = True
 		self.top_level = True
@@ -7223,7 +7223,7 @@ class AutoComplete( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.choices = None
@@ -7232,7 +7232,7 @@ class AutoComplete( ):
 		self.list_element = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 
 
 	def show( self ) -> None:
@@ -7369,12 +7369,12 @@ class CheckBox( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.checked = \
 			(
 					b'iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAKMGlDQ1BJQ0MgUHJvZmlsZQAAeJydlndUVNcWh8'
@@ -7471,12 +7471,12 @@ class ParameterWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.keep_on_top = True
 		self.top_level = True
 		self.resizable = True
@@ -7653,12 +7653,12 @@ class AnimatedGraph( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.keep_on_top = True
 		self.top_level = True
 		self.resizable = True
@@ -7750,12 +7750,12 @@ class BarGraph( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.keep_on_top = True
 		self.top_level = True
 		self.resizable = True
@@ -7818,12 +7818,12 @@ class ScatterGraph( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.keep_on_top = True
 		self.top_level = True
 		self.resizable = True
@@ -7842,7 +7842,7 @@ class ScatterGraph( ):
 		           [ sg.Button( 'Exit', size=(10, 2), pad=((280, 0), 3), font='Helvetica 14' ) ] ]
 
 		# create the form and show it without the plot
-		window = sg.Window( 'Matplotlib With Gooey', layout,
+		window = sg.Window( 'Matplotlib With Boo', layout,
 			finalize=True,
 			keep_on_top=self.keep_on_top,
 			right_click_menu=self.context_menu )
@@ -7889,12 +7889,12 @@ class StyleGraph( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 		self.keep_on_top = True
 		self.top_level = True
 		self.resizable = True
@@ -8098,12 +8098,12 @@ class WebcamWindow( ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = r'C:\Users\terry\source\repos\Gooey\boogr\resources\ico\boo.ico'
+		self.icon_path = r'C:\Users\terry\source\repos\Boo\boogr\resources\ico\boo.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Gooey', r'C:\Users\terry\source\repos\Gooey\boogr\resources\theme' )
+		sg.user_settings_save( 'Boo', r'C:\Users\terry\source\repos\Boo\boogr\resources\theme' )
 
 	def show( self ):
 		sg.theme( 'LightGreen' )
