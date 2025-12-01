@@ -46,9 +46,11 @@ import os
 from typing import Optional, List, Dict
 
 GEOAPIFY_API_KEY = os.getenv( 'GEOAPIFY_API_KEY' )
+GEOCODING_API_KEY = os.getenv( 'GEOCODING_API_KEY' )
 GEMINI_API_KEY = os.getenv( 'GEMINI_API_KEY' )
 GROQ_API_KEY = os.getenv( 'GROQ_API_KEY' )
 GOOGLE_API_KEY = os.getenv( 'GOOGLE_API_KEY' )
+GOOGLE_CSE_ID = os.getenv( 'GOOGLE_CSE_ID' )
 HUGGINGFACE_API_KEY = os.getenv( 'HUGGINGFACE_API_KEY' )
 IPINFO_API_KEY = os.getenv( 'IPINFO_API_KEY' )
 OPENAI_API_KEY = os.getenv( 'OPENAI_API_KEY' )

@@ -1,6 +1,6 @@
 '''
   ******************************************************************************************
-      Assembly:                Boogr
+      Assembly:                Bobo
       Filename:                Static.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
@@ -10,7 +10,7 @@
   ******************************************************************************************
   <copyright file="static.py" company="Terry D. Eppler">
 
-	     Boogr is a df analysis tool integrating various Generative AI, Text-Processing, and
+	     Boo is a df analysis tool integrating various Generative AI, Text-Processing, and
 	     Machine-Learning algorithms for federal analysts.
 	     Copyright ©  2022  Terry Eppler
 

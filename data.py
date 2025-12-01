@@ -46,6 +46,7 @@ from __future__ import annotations
 from .boogr import Error, ErrorDialog
 import chromadb
 from chromadb import Settings
+import config as cfg
 import fitz
 import os
 import re
@@ -115,8 +116,8 @@ class SQLite( ):
 			
 		"""
 		self.db_path = r'stores\sqlite\datamodels\Data.db'
-		self.conn = sqlite3.connect( self.db_path )
-		self.cursor = self.conn.cursor( )
+		self.connection = sqlite3.connect( self.db_path )
+		self.cursor = self.connection.cursor( )
 		self.file_path = None
 		self.where = None
 		self.pairs = None
@@ -131,7 +132,7 @@ class SQLite( ):
 	
 	def __dir__( self ):
 		return [ 'db_path',
-		         'conn',
+		         'connection',
 		         'cursor',
 		         'path',
 		         'where',
@@ -165,17 +166,17 @@ class SQLite( ):
 		"""
 		try:
 			self.cursor.execute( """
-                                 CREATE TABLE IF NOT EXISTS embeddings
-                                 (
-                                     id          INTEGER PRIMARY KEY AUTOINCREMENT,
-                                     source_file TEXT    NOT NULL,
-                                     chunk_index INTEGER NOT NULL,
-                                     chunk_text  TEXT    NOT NULL,
-                                     embedding   TEXT    NOT NULL,
-                                     created_at  TEXT DEFAULT CURRENT_TIMESTAMP
-                                 )""" )
+             CREATE TABLE IF NOT EXISTS embeddings
+             (
+                 id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                 source_file TEXT    NOT NULL,
+                 chunk_index INTEGER NOT NULL,
+                 chunk_text  TEXT    NOT NULL,
+                 embedding   TEXT    NOT NULL,
+                 created_at  TEXT DEFAULT CURRENT_TIMESTAMP
+             )""" )
 			
-			self.conn.commit( )
+			self.connection.commit( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'data'
@@ -200,7 +201,7 @@ class SQLite( ):
 			throw_if( 'sql', sql )
 			self.sql = sql
 			self.cursor.execute( self.sql )
-			self.conn.commit( )
+			self.connection.commit( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'data'
@@ -229,9 +230,9 @@ class SQLite( ):
 			throw_if( 'values', values )
 			self.placeholders = ', '.join( '?' for _ in values )
 			col_names = ', '.join( columns )
-			sql = f'INSERT INTO {table} ({col_names}) VALUES ({self.placeholders})'
-			self.cursor.execute( sql, values )
-			self.conn.commit( )
+			self.sql = f'INSERT INTO {table} ({col_names}) VALUES ({self.placeholders})'
+			self.cursor.execute( self.sql, values )
+			self.connection.commit( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'data'
@@ -260,14 +261,14 @@ class SQLite( ):
 	
 		"""
 		try:
-			records = [ (source_file, i, chunks[ i ], json.dumps( vectors[ i ].tolist( ) ))
+			records = [ (source_file, i, chunks[ i ], json.dumps( vectors[ i ].tolist( ) ) )
 			            for i in range( len( chunks ) ) ]
-			self.cursor.executemany(
-				f''' INSERT INTO {self.table_name} ({self.file_name}, chunk_index,
-					chunk_text, embedding)
-	                VALUES (?, ?, ?, ?)
-				''', records )
-			self.conn.commit( )
+			
+			self.sql = f''' INSERT INTO {self.table_name} ({self.file_name}, chunk_index,
+					chunk_text, embedding) VALUES (?, ?, ?, ?) '''
+			
+			self.cursor.executemany( self.sql, records )
+			self.connection.commit( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'data'
@@ -294,7 +295,8 @@ class SQLite( ):
 		"""
 		try:
 			throw_if( 'table', table )
-			self.cursor.execute( f'SELECT * FROM {table}' )
+			self.sql = f'SELECT * FROM {table}'
+			self.cursor.execute( self.sql )
 			return self.cursor.fetchall( )
 		except Exception as e:
 			exception = Error( e )
@@ -366,7 +368,7 @@ class SQLite( ):
 			self.params = params
 			self.sql = f'UPDATE {self.table_name} SET {pairs} WHERE {self.where}'
 			self.cursor.execute( self.sql, params )
-			self.conn.commit( )
+			self.connection.commit( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'data'
@@ -400,7 +402,7 @@ class SQLite( ):
 			self.params = params
 			self.sql = f"DELETE FROM {self.table_name} WHERE {self.where}"
 			self.cursor.execute( self.sql, self.params )
-			self.conn.commit( )
+			self.connection.commit( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'data'
@@ -426,10 +428,10 @@ class SQLite( ):
 			throw_if( 'path', path )
 			self.file_path = path
 			self.file_name = os.path.basename( self.file_path )
-			_excel = pd.ExcelFile( path )
+			_excel = pd.ExcelFile( self.file_path )
 			for _sheet in _excel.sheet_names:
 				_df = _excel.parse( _sheet )
-				_df.to_sql( _sheet, self.conn, if_exists='replace', index=False )
+				_df.to_sql( _sheet, self.connection, if_exists='replace', index=False )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'data'
@@ -447,7 +449,8 @@ class SQLite( ):
 	
 		"""
 		try:
-			self.conn.close( )
+			if self.connection is not None:
+				self.connection.close( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'data'
@@ -519,8 +522,7 @@ class Chroma( ):
 
 		'''
 		try:
-			self.collection.add( documents=texts, embeddings=embeddings, ids=ids,
-				metadatas=metadatas )
+			self.collection.add( documents=texts, embeddings=embeddings, ids=ids, metadatas=metadatas )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'data'
@@ -681,9 +683,10 @@ class GoogleSearchTool( ):
 			openai_api_key (str | None): Optional OpenAI API key for tool usage.
 
 		"""
-		self.api_key = os.getenv( 'GOOGLE_API_KEY' )
-		self.cse_id = os.getenv( 'GOOGLE_CSE_ID' )
-		self.client = OpenAI( api_key=self.api_key )
+		self.api_key = cfg.GOOGLE_API_KEY
+		self.cse_id = cfg.GOOGLE_CSE_ID
+		self.client = OpenAI( )
+		self.client.api_key = cfg.OPENAI_API_KEY
 		self.url = 'https://cse.google.com/cse?cx=' + self.cse_id
 	
 	def search( self, query: str, num: int=5 ) -> List[ Dict ]:
