@@ -502,7 +502,7 @@ class Chroma( ):
 		self.collection = self.client.get_or_create_collection( name=collection )
 	
 	def add( self, ids: List[ str ], texts: List[ str ], embeddings: List[ List[ float ] ],
-	         metadatas: Optional[ List[ dict ] ] = None ) -> None:
+	         metadatas: Optional[ List[ dict ] ]=None ) -> None:
 		'''
 
 			Purpose:
@@ -746,7 +746,7 @@ class GoogleSearchTool( ):
 			},
 		}
 	
-	def run( self, user_message: str, model: str= 'gpt-5-nana' ) -> str | None:
+	def run( self, user_message: str, model: str='gpt-5-nana' ) -> str | None:
 		"""
 
 			Purpose:
