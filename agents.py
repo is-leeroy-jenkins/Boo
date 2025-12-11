@@ -77,6 +77,7 @@ class Agent(  ):
 	include: Optional[ List ]
 	question: Optional[ str ]
 	variables: Optional[ List[ str ] ]
+	version: Optional[ int ]
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
@@ -131,7 +132,7 @@ class ApportionmentAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68a34b1eb99481969acf77a71b51ff25018476307b10d0b5'
-		self.version = '14'
+		self.version = 14
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -215,6 +216,7 @@ class DataAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -223,7 +225,7 @@ class DataAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68913db1bddc8194931a6c743d6fe2cd03a4dc1797022fcc'
-		self.version = '6'
+		self.version = 6
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',
@@ -295,6 +297,7 @@ class PythonAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		self.client = OpenAI( )
@@ -302,7 +305,7 @@ class PythonAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68a0fb2b65408194a68164a99b0e104a06fddb113af66a94'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'web_search_call.action.sources' ]
@@ -375,6 +378,7 @@ class AppropriationsAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -389,7 +393,7 @@ class AppropriationsAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68c5b8dd376c8190a2090cb28cefa2b000113be4688382f5'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
@@ -472,6 +476,7 @@ class ScheduleXAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -486,7 +491,7 @@ class ScheduleXAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68c58f4e6c0c8190907ebd7e5dd85fd8028ee0257b6020e0'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { }
 		self.include =[ 'code_interpreter_call.outputs',
@@ -559,6 +564,7 @@ class BudgetGandolf( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -573,7 +579,7 @@ class BudgetGandolf( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68bac6f657f08194b230e580a82e15e50006cdfe61dc331d'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include =[ 'code_interpreter_call.outputs',
@@ -656,6 +662,7 @@ class OutlookAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -670,7 +677,7 @@ class OutlookAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894fe07f204819685a6e340004618840f802573eeac1f4a'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -740,6 +747,7 @@ class ProcurementAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -754,7 +762,7 @@ class ProcurementAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894de0a7c6c8196a67581f1a40e83ed031e560f0d172c13'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'web_search_call.action.sources' ]
@@ -828,6 +836,7 @@ class WhatIfAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -842,7 +851,7 @@ class WhatIfAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894ddcdff6c819088d5e1cbc8f612c30a8ec3da3496500d'
-		self.version = '2'
+		self.version = 2
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -917,6 +926,7 @@ class InnovationAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -931,7 +941,7 @@ class InnovationAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894dd3e952c8194a667670a5c6af01901c8a63112266fb1'
-		self.version = '2'
+		self.version = 2
 		self.format = 'text'
 		self.reasoning = { }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -1000,6 +1010,7 @@ class StatisticsAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -1014,7 +1025,7 @@ class StatisticsAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894dc961ce881958a585b1d883e60c90133afd64b4ec8a0'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { }
 		self.include =[ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -1084,6 +1095,7 @@ class PbiExpert( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -1098,7 +1110,7 @@ class PbiExpert( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894dc2073ec8197b2821fdec0cec32909b600c3c67452d6'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -1170,6 +1182,7 @@ class ExcelNinja( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	example: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -1184,7 +1197,7 @@ class ExcelNinja( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894dbd8e46081958a101d6829a2290f0456a555875b6de3'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = {  }
 		self.include =[ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -1256,6 +1269,7 @@ class ResearchAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -1270,7 +1284,7 @@ class ResearchAnalyst( Agent ):
 		self.model = 'o4-mini-2025-04-16'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68935e63580c8193af06187bae8f9ede01e5f4fd3773b2a6'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -1341,6 +1355,7 @@ class BrainStormer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -1355,7 +1370,7 @@ class BrainStormer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68933cb36fa0819693121e3b029cf41302980715c4c8625a'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -1422,6 +1437,7 @@ class PbiAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1430,7 +1446,7 @@ class PbiAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689265a62c08819481fda29f423e6625020dd21903e967e0'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1497,6 +1513,7 @@ class AutomationAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1505,7 +1522,7 @@ class AutomationAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689339ed50d881939f5fcc265cda026d0b4df3e15cc51bc1'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1573,6 +1590,7 @@ class AgendaMaker( Agent ):
 	duration: Optional[ str ]
 	date: Optional[ str ]
 	attendees: Optional[ List[ str ] ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1581,7 +1599,7 @@ class AgendaMaker( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689336cd3ae88197810ce513dd1e12b70a89ec7bba3af876'
-		self.version = '2'
+		self.version = 2
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1653,6 +1671,7 @@ class ExcelAnalyst( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	document: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1661,7 +1680,7 @@ class ExcelAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68926c31f2a88190b92866147ef190880abbd30cc10783c4'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1728,6 +1747,7 @@ class FinancialAdvisor( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1736,7 +1756,7 @@ class FinancialAdvisor( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6892586bcc8c8194bedae3a4b31c0e81058a8b8f3319ffec'
-		self.version = '8'
+		self.version = 8
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1801,6 +1821,7 @@ class SpeechWriter( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1809,7 +1830,7 @@ class SpeechWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689254423e908193888fb93a093c71d3053ccef2d2a59be2'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1878,6 +1899,7 @@ class DashboardAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1886,7 +1908,7 @@ class DashboardAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689265a62c08819481fda29f423e6625020dd21903e967e0'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1954,6 +1976,7 @@ class WealthAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1962,7 +1985,7 @@ class WealthAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6892535fa7588197a56a6bca44b9b8970fcf2aa7f5f18b30'
-		self.version = '2'
+		self.version = 2
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -2030,6 +2053,7 @@ class RandomWriter( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -2038,7 +2062,7 @@ class RandomWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6892535fa7588197a56a6bca44b9b8970fcf2aa7f5f18b30'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -2107,6 +2131,7 @@ class ExploratoryDataAnalyst( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	document: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -2115,7 +2140,7 @@ class ExploratoryDataAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6892054450ac81938b386357144a590305d63be465dc6622'
-		self.version = '6'
+		self.version = 6
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -2186,6 +2211,7 @@ class ComplexProblemAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -2200,7 +2226,7 @@ class ComplexProblemAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68914d78489c8190a8721685937b2a530604c9bb3d2ea367'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ ]
@@ -2267,6 +2293,7 @@ class EmailAnalyst( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	document: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -2281,7 +2308,7 @@ class EmailAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689139adf5448190b8307b55ad0384cb01beed075060eede'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2352,6 +2379,7 @@ class ResearchEvaluator( Agent ):
 	tool_choice: Optional[ str ]
 	summary: Optional[ str ]
 	article: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -2366,7 +2394,7 @@ class ResearchEvaluator( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689139230710819095711ad1b3f59e9301017a586373075f'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2437,6 +2465,7 @@ class ExecutiveAssistant( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -2451,7 +2480,7 @@ class ExecutiveAssistant( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6891385c2a3c8195babb7ab819fd0dbb0b89cf339e6c6291'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2605,6 +2634,7 @@ class ExpertProgrammer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -2619,7 +2649,7 @@ class ExpertProgrammer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68913810fb3081909e90afd11b7d54ba01c2eeac10a06125'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2686,6 +2716,7 @@ class FeatureExtractor( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -2767,6 +2798,7 @@ class FinancialAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -2781,7 +2813,7 @@ class FinancialAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6891369156fc81958b24c0ce84c7deda01be94bfa9bf7a2e'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2848,6 +2880,7 @@ class FinancialPlanner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -2862,7 +2895,7 @@ class FinancialPlanner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6891361e4418819483480f77083823d108cc20456900f165'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2929,6 +2962,7 @@ class FormBuilder( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -2943,7 +2977,7 @@ class FormBuilder( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6891359401008195956bf1855321e27508eea3cf6957065f'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3012,6 +3046,7 @@ class LegalAnalyst( Agent ):
 	tool_choice: Optional[ str ]
 	parties: Optional[ str ]
 	purpose: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -3026,7 +3061,7 @@ class LegalAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6891335308b081909903f694ab6fc7fd04de43be735450f4'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3100,6 +3135,7 @@ class PromptEngineer( Agent ):
 	number: Optional[ str ]
 	name: Optional[ str ]
 	answer: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -3114,7 +3150,7 @@ class PromptEngineer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689126c5c5b081908ad6ee27b78377d400fae2713e5ad3d1'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3185,6 +3221,7 @@ class ProjectArchitect( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -3199,7 +3236,7 @@ class ProjectArchitect( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68912680a44881949684ff8775796bc209168e3555d8cd38'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3266,6 +3303,7 @@ class ProjectPlanner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -3280,7 +3318,7 @@ class ProjectPlanner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689125dadf1081979650dd0c4b2ee1b801700c40557fa1b2'
-		self.version = '2'
+		self.version = 2
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3350,6 +3388,7 @@ class TrainingWheels( Agent ):
 	articles: Optional[ str ]
 	transcript: Optional[ str ]
 	message: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -3364,7 +3403,7 @@ class TrainingWheels( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68911b7dee3881908524ee0bae8564e30974790f13ab110f'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3434,6 +3473,7 @@ class RedTeamAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -3448,7 +3488,7 @@ class RedTeamAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6891239b51188195ad7555c872b88359016fcad277ff9cb8'
-		self.version = '2'
+		self.version = 2
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3517,6 +3557,7 @@ class SentimentAnalyst( Agent ):
 	number: Optional[ str ]
 	sources: Optional[ str ]
 	purpose: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -3531,7 +3572,7 @@ class SentimentAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68911ff2807081909da7edb2505324d10e8cd40e99552e6e'
-		self.version = '2'
+		self.version = 2
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3599,6 +3640,7 @@ class TrainingPlanner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -3613,7 +3655,7 @@ class TrainingPlanner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68911be7a5948196b42bbc5a33bcd2c8061c4a703bbd4aaa'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3682,6 +3724,7 @@ class WebSearchOptimizer( Agent ):
 	topic: Optional[ str ]
 	keyword: Optional[ str ]
 	wordcount: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -3696,7 +3739,7 @@ class WebSearchOptimizer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68911aecfae48194aa3e9f9f09b51a1105c57f5c67dc6eb9'
-		self.version = '2'
+		self.version = 2
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3769,6 +3812,7 @@ class BudgetAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -3783,7 +3827,7 @@ class BudgetAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68668be09f2c8193b0c16b0d3a0e6a560c08f132c9c0f5e7'
-		self.version = '19'
+		self.version = 19
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs',
@@ -3864,6 +3908,7 @@ class YoutubeSummarizer( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	transcript: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -3878,7 +3923,7 @@ class YoutubeSummarizer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68668411a80c81948e1eb2a36e1028f208d2942c73667285'
-		self.version = '8'
+		self.version = 8
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3947,6 +3992,7 @@ class YoutubeScribe( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	transcript: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -3961,7 +4007,7 @@ class YoutubeScribe( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_686683daaa5481938be88f4238564e03043a3c94c3739613'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -4029,6 +4075,7 @@ class WritingEditor( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -4120,6 +4167,7 @@ class WebDesigner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -4134,7 +4182,7 @@ class WebDesigner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_686682f561d88190bf88ded7ccf34f4a0d3a290a3fd122c9'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
@@ -4202,6 +4250,7 @@ class Guardrails( Agent ):
 	tool_choice: Optional[ str ]
 	articles: Optional[ str ]
 	transcript: Optional[ str ]
+	version: Optional[ int ]
 	
 	
 	def __init__( self ):
@@ -4217,7 +4266,7 @@ class Guardrails( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_686682b75214819694c85baf4f397a8a09cbbe9c7769a5e6'
-		self.version = '6'
+		self.version = 6
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -4287,6 +4336,7 @@ class TrainingProgramDesigner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -4301,7 +4351,7 @@ class TrainingProgramDesigner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6866820482688195a57fcc2328d93d2f063953206e5f1928'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -4367,6 +4417,7 @@ class TrainingContentDesigner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -4381,7 +4432,7 @@ class TrainingContentDesigner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6866820482688195a57fcc2328d93d2f063953206e5f1928'
-		self.version = '6'
+		self.version = 6
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -4447,6 +4498,7 @@ class TopicResearcher( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -4461,7 +4513,7 @@ class TopicResearcher( Agent ):
 		self.model = 'o4-mini-2025-04-16'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68668176d5188194aefe11dfd4583b9b02b4196e31725700'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -4527,6 +4579,7 @@ class TechSupportAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -4541,7 +4594,7 @@ class TechSupportAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6866812c56b48197876d9f4e4613e1d4051c557c6cb9b2d2'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -4608,6 +4661,7 @@ class TaskPlanner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -4622,7 +4676,7 @@ class TaskPlanner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68668095c8008193942013ac51274c3b01cce05b3c75d7a2'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -4697,6 +4751,7 @@ class TeachingAssistant( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -4711,7 +4766,7 @@ class TeachingAssistant( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_686680e5e1ac8197aaf54867b7033b200bcf5dc3663ac8fb'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -4777,6 +4832,7 @@ class SustainabilityPlanner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -4791,7 +4847,7 @@ class SustainabilityPlanner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68668061eb2081978c9cb0ffcfdcdb340993936662ab0928'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'code_interpreter_call.outputs',
@@ -4882,6 +4938,7 @@ class StructuredProblemSolver( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -4896,7 +4953,7 @@ class StructuredProblemSolver( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68667e1aace08190996d29d77860db1f058ab8059c4e500b'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -4963,6 +5020,7 @@ class StrategicThinker( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	context: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -4977,7 +5035,7 @@ class StrategicThinker( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68667dc870288197b541efafb8555eb8016ceae87d60aa2c'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',
@@ -5046,6 +5104,7 @@ class SqlAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -5060,7 +5119,7 @@ class SqlAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68667d7172a08197ba0534dbc33f043a07cf7cbaa4a40d82'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',
@@ -5130,6 +5189,7 @@ class SearchOptimizer( Agent ):
 	keyword: Optional[ str ]
 	wordcount: Optional[ int ]
 	audience: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -5144,7 +5204,7 @@ class SearchOptimizer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68667d1f893c81978a8bdbf1c74d3693052dac9e9971b065'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -5218,6 +5278,7 @@ class SearchOptimizedWriter( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -5232,7 +5293,7 @@ class SearchOptimizedWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68667bafc350819794290cccac7b68900b62cd807a9f94a0'
-		self.version = '6'
+		self.version = 6
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',
@@ -5301,6 +5362,7 @@ class RootCauseAnalyzer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -5315,7 +5377,7 @@ class RootCauseAnalyzer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68667b61e3988197ae445df0887e73840f0980a3cdd03e58'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -5382,6 +5444,7 @@ class RevenueProjector( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -5396,7 +5459,7 @@ class RevenueProjector( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68667a943d848194ae90520e54e5d56d075ade6f0cdda41d'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -5462,6 +5525,7 @@ class ResumeWriter( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -5476,7 +5540,7 @@ class ResumeWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68667a4978b481949947dd25f72af4ee03da24bb3fa42cfe'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -5547,6 +5611,7 @@ class ResumeBuilder( Agent ):
 	experience: Optional[ int ]
 	title: Optional[ str ]
 	resume: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -5561,7 +5626,7 @@ class ResumeBuilder( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_686679fa18a08194a967e16b7dab69d003562ba364f35707'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',  'web_search_call.action.sources' ]
@@ -5640,6 +5705,7 @@ class ResultsCreator( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -5654,7 +5720,7 @@ class ResultsCreator( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6866790f642881949762b6f280426a500e02b90b2f12b679'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -5726,6 +5792,7 @@ class RequirementsGenerator( Agent ):
 	team: Optional[ str ]
 	challenges: Optional[ str ]
 	timeline: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -5740,7 +5807,7 @@ class RequirementsGenerator( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_686677c322b081949427d4700b4f624101da857c0c08b6e8'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',  'web_search_call.action.sources' ]
@@ -5819,6 +5886,7 @@ class ResearchExpert( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -5833,7 +5901,7 @@ class ResearchExpert( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_686678c70e64819085ff39d93154d389011cd5cddb7d5ee8'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -5900,6 +5968,7 @@ class ReasoningAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -5914,7 +5983,7 @@ class ReasoningAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6866775201508197ae4f82159524c2f80008112f498e8a6d'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -5982,6 +6051,7 @@ class ProofReader( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -5996,7 +6066,7 @@ class ProofReader( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68667707cc5c819386bd8fc446cd3b5201b4de6b06fefbb0'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -6063,6 +6133,7 @@ class QuickProblemSolver( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -6077,7 +6148,7 @@ class QuickProblemSolver( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865c956a5308194974efb2e16195eb00dd298e96e32be36'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -6144,6 +6215,7 @@ class PowerPointAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -6158,7 +6230,7 @@ class PowerPointAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865c90d03b081949a0457d8f3901ac109daff424fc5dd7c'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',  'web_search_call.action.sources' ]
@@ -6225,6 +6297,7 @@ class PortraitGenerator( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -6239,7 +6312,7 @@ class PortraitGenerator( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865c88a40b88196ad8b14799875d6460fd474cbe64a347c'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -6306,6 +6379,7 @@ class PersonalAssistant( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -6320,7 +6394,7 @@ class PersonalAssistant( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865c8343cdc81948de056ff1b6c35c00dc55e6d399d18b6'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -6389,6 +6463,7 @@ class PdfParser( Agent ):
 	tool_choice: Optional[ str ]
 	title: Optional[ str ]
 	document: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -6403,7 +6478,7 @@ class PdfParser( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865c715485c8194a17a9fb6fb3060a6080334be02a74646'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -6477,6 +6552,7 @@ class NicheResearcher( Agent ):
 	topic: Optional[ str ]
 	audience: Optional[ str ]
 	frequency: Optional[ str ]
+	version: Optional[ int ]
 	
 	
 	def __init__( self ):
@@ -6492,7 +6568,7 @@ class NicheResearcher( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865c5fe64108194b740e05393fecfcc05f4fc2eca4618d4'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -6571,6 +6647,7 @@ class NewsLetterWriter( Agent ):
 	topic: Optional[ str ]
 	audience: Optional[ str ]
 	frequency: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -6585,7 +6662,7 @@ class NewsLetterWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865be7996808195b57be1a53f895af50b9013256a736343'
-		self.version = '9'
+		self.version = 9
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -6661,6 +6738,7 @@ class MultiProfessor( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -6675,7 +6753,7 @@ class MultiProfessor( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865be0bc6548194893cacab4f0b495607f7bb2c4087a50a'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -6742,6 +6820,7 @@ class MeetingSummarizer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -6756,7 +6835,7 @@ class MeetingSummarizer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865bd9745c481909aca8e4caa45bc0e03e2fbe2dbd48450'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -6826,6 +6905,7 @@ class MeetingOptimizer( Agent ):
 	meeting: Optional[ str ]
 	participants: Optional[ str ]
 	goals: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -6840,7 +6920,7 @@ class MeetingOptimizer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865bd5677308194ad9ac837991d7a150a514e33f1a21e05'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -6916,6 +6996,7 @@ class MathyMagician( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -6930,7 +7011,7 @@ class MathyMagician( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865bc0ac92881959abe4b990a5b588a07d9b74212eacd6c'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -7002,6 +7083,7 @@ class MarketResearcher( Agent ):
 	depth: Optional[ str ]
 	region: Optional[ str ]
 	timeframe: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -7016,7 +7098,7 @@ class MarketResearcher( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865bb7c469881949a32ebdea794bcf70b884fff46bae3d2'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -7100,7 +7182,7 @@ class MarketPlanner( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	product: Optional[ str ]
-	
+	version: Optional[ int ]
 	def __init__( self ):
 		'''
 
@@ -7114,7 +7196,7 @@ class MarketPlanner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865ba3d30d48193886c3d7400a7bce60a55bd77959a79f2'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -7187,6 +7269,7 @@ class MarketForecaster( Agent ):
 	problem: Optional[ str ]
 	trend: Optional[ str ]
 	region: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -7201,7 +7284,7 @@ class MarketForecaster( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865b9ae72048194ba4bd37883c4ee5a00e3d0b846f4d15d'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = {'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content','web_search_call.action.sources' ]
@@ -7278,6 +7361,7 @@ class ManagementConsultant( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -7292,7 +7376,7 @@ class ManagementConsultant( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865b8929fd88196b1bd772e7037aef206a2512c498edd67'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -7359,6 +7443,7 @@ class KeywordGenerator( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -7373,7 +7458,7 @@ class KeywordGenerator( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865b7671178819691e5ee1b092723ff05d3ac222b9985f7'
-		self.version = '8'
+		self.version = 8
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -7440,6 +7525,7 @@ class JackOfAllTrades( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -7454,7 +7540,7 @@ class JackOfAllTrades( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865ae9765388190b42964801eb3e1500f42db71260dedcd'
-		self.version = '6'
+		self.version = 6
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -7525,6 +7611,7 @@ class InterviewCoach( Agent ):
 	company: Optional[ str ]
 	skills: Optional[ str ]
 	experience: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -7539,7 +7626,7 @@ class InterviewCoach( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865ae25524c81968e171bd843b891bc0246e299bc057886'
-		self.version = '6'
+		self.version = 6
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -7614,6 +7701,7 @@ class InvestmentAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -7628,7 +7716,7 @@ class InvestmentAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865ad450b00819592c7783a8b8dd50604d79a3339872985'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -7695,6 +7783,7 @@ class EducationalWriter( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -7709,7 +7798,7 @@ class EducationalWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a905e68081949da4f6e0abd7a43008822934901b9761'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -7779,6 +7868,7 @@ class HowToBuilder( Agent ):
 	topic: Optional[ str ]
 	skill: Optional[ str ]
 	format: Optional[ str ]
+	version: Optional[ int ]
 	
 	
 	def __init__( self ):
@@ -7794,7 +7884,7 @@ class HowToBuilder( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865ac6e61c48195ad8a82d66c6bd95a0aac37f459d9a377'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -7865,6 +7955,7 @@ class EssayWriter( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	topic: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -7879,7 +7970,7 @@ class EssayWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865aaa288f481908547597ea36c21cf0b3e7db8b571e3d7'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -7947,6 +8038,7 @@ class EmailAssistant( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -7961,7 +8053,7 @@ class EmailAssistant( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865aa043f788197a6900a111c1d87750d51002ac8927974'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -8028,6 +8120,7 @@ class DocumentSummarizer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -8042,7 +8135,7 @@ class DocumentSummarizer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a858f9508195a936864371bc52740c999fbbc53593e1'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -8110,6 +8203,7 @@ class DocumentInterrogator( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	document: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -8124,7 +8218,7 @@ class DocumentInterrogator( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a7d7da708196b3f1643fe34af06e088c920d959706a7'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -8193,6 +8287,7 @@ class DependencyIndentifier( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -8207,7 +8302,7 @@ class DependencyIndentifier( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a7662f6481909f7856938c7e93b0017264a41177c6aa'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -8288,7 +8383,7 @@ class DecisionMaker( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a70af9208197ae3c71f8b67b6e3d0485d8b7da9ba122'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -8355,6 +8450,8 @@ class DecisionMaker( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	data: Optional[ str ]
+	version: Optional[ int ]
+	
 	
 	def __init__( self ):
 		'''
@@ -8369,7 +8466,7 @@ class DecisionMaker( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a683d9248190ab81fcc2323d1b270f09afb1ae2c0f08'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -8438,6 +8535,7 @@ class DataScientist( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -8452,7 +8550,7 @@ class DataScientist( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a62d44c48193858d1b35ddb577720c820bbf2e79ced7'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -8519,6 +8617,7 @@ class DatasetAnalyzer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -8533,7 +8632,7 @@ class DatasetAnalyzer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a5dea2688197ba54961d40cf1b9a00895973bc015ddb'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -8600,6 +8699,7 @@ class DataPlumber( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -8614,7 +8714,7 @@ class DataPlumber( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a4bcafb08197b54e6f160c0f7e98066f753cc10b0128'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -8681,6 +8781,7 @@ class DataFarmer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -8695,7 +8796,7 @@ class DataFarmer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a4bcafb08197b54e6f160c0f7e98066f753cc10b0128'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -8842,6 +8943,7 @@ class DataCleaner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -8856,7 +8958,7 @@ class DataCleaner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a3d7067c8193af52faec4761470101e2fa0480275266'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -8923,6 +9025,7 @@ class DataBro( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -8937,7 +9040,7 @@ class DataBro( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a382ab3881968f43106958e2460005c97cb2abbabbc7'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -9004,6 +9107,7 @@ class DatabaseSpecialist( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -9018,7 +9122,7 @@ class DatabaseSpecialist( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a327e2588194a524170d0a198b4100a43cda801d84e2'
-		self.version = '2'
+		self.version = 2
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -9085,6 +9189,7 @@ class CriticalThinker( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -9099,7 +9204,7 @@ class CriticalThinker( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865a076c4f081978ea9992c408f39f60ecd0aee4bf0e7fa'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -9166,6 +9271,7 @@ class CriticalReasoningAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -9180,7 +9286,7 @@ class CriticalReasoningAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68659e443ae8819095857201a4f035210a9a9128f0605de1'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -9252,6 +9358,7 @@ class CourseCreator( Agent ):
 	duration: Optional[ str ]
 	frequency: Optional[ str ]
 	time: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -9266,7 +9373,7 @@ class CourseCreator( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68659d7a84588193a8d901eae0b4ad250a771174e3b18ccc'
-		self.version = '6'
+		self.version = 6
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -9347,6 +9454,7 @@ class CompanyResearcher( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -9361,7 +9469,7 @@ class CompanyResearcher( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68655ca202688190a0a3a4ae57771574039e126fd5c37ecc'
-		self.version = '6'
+		self.version = 6
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',  'web_search_call.action.sources' ]
@@ -9428,6 +9536,7 @@ class CognitiveProfiler( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -9442,7 +9551,7 @@ class CognitiveProfiler( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68655c5795408195988f70d11ba0e155020c59ca546a6755'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',  'web_search_call.action.sources' ]
@@ -9509,6 +9618,7 @@ class CodeReviewer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -9523,7 +9633,7 @@ class CodeReviewer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68655c0318fc8196adc0d8718775c2e40f4819ec31b29e70'
-		self.version = '6'
+		self.version = 6
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -9590,6 +9700,7 @@ class ChecklistCreator( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -9604,7 +9715,7 @@ class ChecklistCreator( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68655ba61afc81949ab8bac0ec6615320614ec9128dec201'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -9672,6 +9783,7 @@ class ChainOfDensity( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	document: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -9686,7 +9798,7 @@ class ChainOfDensity( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68655b5048888190916aae3e0401b86609d234efe0126fa8'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -9759,6 +9871,7 @@ class BusinessResearcher( Agent ):
 	industry: Optional[ str ]
 	product: Optional[ str ]
 	timeframe: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -9773,7 +9886,7 @@ class BusinessResearcher( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68655ad6ea6881909b7d348866af27910beeb7966664cf8f'
-		self.version = '7'
+		self.version = 7
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -9848,6 +9961,7 @@ class BusinessPlanner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -9862,7 +9976,7 @@ class BusinessPlanner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68655a8e8e9881908f858f54c361bb760e2c93d271d3125a'
-		self.version = '4'
+		self.version = 4
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -9932,6 +10046,7 @@ class BusinessAnalyst( Agent ):
 	ticker: Optional[ str ]
 	company: Optional[ str ]
 	sector: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -9946,7 +10061,7 @@ class BusinessAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68655a41a1748196a7c864aaee0af331041858ced4469344'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -10019,6 +10134,7 @@ class PowerQueryAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -10100,6 +10216,7 @@ class BookSummarizer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -10114,7 +10231,7 @@ class BookSummarizer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_686559d29d2c81969454aaa5bf1518820c54175869340641'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
@@ -10182,6 +10299,7 @@ class AuthorEmulator( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -10196,7 +10314,7 @@ class AuthorEmulator( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865598842288195b61fd663cfbcf0930025515c2331ed97'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
@@ -10263,6 +10381,7 @@ class AsciiArtist( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -10277,7 +10396,7 @@ class AsciiArtist( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865590d73d48194acd1f75d7c8961ce0fed37fa3ea81306'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
@@ -10344,6 +10463,7 @@ class ArtsyFartsy( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -10358,7 +10478,7 @@ class ArtsyFartsy( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_686558c7dda08194a684d49d057a62ce0157d5ff5bfda345'
-		self.version = '3'
+		self.version = 3
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
@@ -10425,6 +10545,7 @@ class AdaptiveAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -10439,7 +10560,7 @@ class AdaptiveAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6865586fc73c8190aebddd1d4f7b57680ba7c4db40cd45c8'
-		self.version = '5'
+		self.version = 5
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
@@ -10506,6 +10627,7 @@ class AcademicWriter( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ int ]
 	
 	def __init__( self ):
 		'''
@@ -10520,7 +10642,7 @@ class AcademicWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68655623b2e0819099bc136d3c8fbf5b04420f5632d48e2d'
-		self.version = '8'
+		self.version = 8
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
