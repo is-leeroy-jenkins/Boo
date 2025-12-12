@@ -77,7 +77,7 @@ class Agent(  ):
 	include: Optional[ List ]
 	question: Optional[ str ]
 	variables: Optional[ List[ str ] ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
@@ -124,6 +124,7 @@ class ApportionmentAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -132,11 +133,11 @@ class ApportionmentAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68a34b1eb99481969acf77a71b51ff25018476307b10d0b5'
-		self.version = 14
+		self.version = '15'
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
-		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.include = [ 'code_interpreter_call.outputs', 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
 		self.vector_store_ids = [ 'vs_68a34aaff93481918c3b3fef8c4e8fea' ]
 		self.file_ids = [ 'file-XfTDeZNv7M1toGMsZcnP24',
 		                  'file-8wQZAAZpdHAjVrUdE45TiL',
@@ -216,7 +217,7 @@ class DataAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -225,7 +226,7 @@ class DataAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68913db1bddc8194931a6c743d6fe2cd03a4dc1797022fcc'
-		self.version = 6
+		self.version = '8'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',
@@ -297,7 +298,7 @@ class PythonAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		self.client = OpenAI( )
@@ -305,7 +306,7 @@ class PythonAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68a0fb2b65408194a68164a99b0e104a06fddb113af66a94'
-		self.version = 4
+		self.version = '5'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'web_search_call.action.sources' ]
@@ -378,7 +379,7 @@ class AppropriationsAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -393,13 +394,13 @@ class AppropriationsAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68c5b8dd376c8190a2090cb28cefa2b000113be4688382f5'
-		self.version = 4
+		self.version = 5
 		self.format = 'text'
-		self.reasoning = { 'effort': 'medium' }
+		self.reasoning = { 'effort': 'medium' },
 		self.tools = [ ]
-		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources' ]
+		self.include = [ 'code_interpreter_call.outputs', 'web_search_call.action.sources', 'reasoning.encrypted_content' ]
 		self.input = [ ]
-		self.vector_store_ids = [ 'vs_712r5W5833G6aLxIYIbuvVcK' ]
+		self.vector_store_ids = ['vs_712r5W5833G6aLxIYIbuvVcK' ]
 		self.file_ids = [ 'file-B4bKRt3Sfg1opRcNL1DRdk',
           'file-21MLeKkao1x3J4u19sYofq',
           'file-SEPUd6zDZ9Kku19pFdguxR',
@@ -476,7 +477,7 @@ class ScheduleXAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -564,7 +565,7 @@ class BudgetGandolf( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -579,7 +580,7 @@ class BudgetGandolf( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68bac6f657f08194b230e580a82e15e50006cdfe61dc331d'
-		self.version = 3
+		self.version = '4'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include =[ 'code_interpreter_call.outputs',
@@ -662,7 +663,7 @@ class OutlookAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -677,7 +678,7 @@ class OutlookAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894fe07f204819685a6e340004618840f802573eeac1f4a'
-		self.version = 4
+		self.version = '5'
 		self.format = 'text'
 		self.reasoning = { }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -747,7 +748,7 @@ class ProcurementAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -762,7 +763,7 @@ class ProcurementAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894de0a7c6c8196a67581f1a40e83ed031e560f0d172c13'
-		self.version = 3
+		self.version = '4'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'web_search_call.action.sources' ]
@@ -836,7 +837,7 @@ class WhatIfAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -851,7 +852,7 @@ class WhatIfAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894ddcdff6c819088d5e1cbc8f612c30a8ec3da3496500d'
-		self.version = 2
+		self.version = '3'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -926,7 +927,7 @@ class InnovationAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -941,7 +942,7 @@ class InnovationAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894dd3e952c8194a667670a5c6af01901c8a63112266fb1'
-		self.version = 2
+		self.version = '4'
 		self.format = 'text'
 		self.reasoning = { }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -1010,7 +1011,7 @@ class StatisticsAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -1025,7 +1026,7 @@ class StatisticsAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894dc961ce881958a585b1d883e60c90133afd64b4ec8a0'
-		self.version = 3
+		self.version = '4'
 		self.format = 'text'
 		self.reasoning = { }
 		self.include =[ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -1095,7 +1096,7 @@ class PbiExpert( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -1110,7 +1111,7 @@ class PbiExpert( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6894dc2073ec8197b2821fdec0cec32909b600c3c67452d6'
-		self.version = 4
+		self.version = '5'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -1182,7 +1183,7 @@ class ExcelNinja( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	example: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -1269,7 +1270,7 @@ class ResearchAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -1355,7 +1356,7 @@ class BrainStormer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -1437,7 +1438,7 @@ class PbiAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1446,7 +1447,7 @@ class PbiAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689265a62c08819481fda29f423e6625020dd21903e967e0'
-		self.version = 4
+		self.version = '5'
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1513,7 +1514,7 @@ class AutomationAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1522,7 +1523,7 @@ class AutomationAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689339ed50d881939f5fcc265cda026d0b4df3e15cc51bc1'
-		self.version = 3
+		self.version = '4'
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1590,7 +1591,7 @@ class AgendaMaker( Agent ):
 	duration: Optional[ str ]
 	date: Optional[ str ]
 	attendees: Optional[ List[ str ] ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1599,7 +1600,7 @@ class AgendaMaker( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689336cd3ae88197810ce513dd1e12b70a89ec7bba3af876'
-		self.version = 2
+		self.version = '3'
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1671,7 +1672,7 @@ class ExcelAnalyst( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	document: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1680,7 +1681,7 @@ class ExcelAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68926c31f2a88190b92866147ef190880abbd30cc10783c4'
-		self.version = 4
+		self.version = '5'
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1747,7 +1748,7 @@ class FinancialAdvisor( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1756,7 +1757,7 @@ class FinancialAdvisor( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6892586bcc8c8194bedae3a4b31c0e81058a8b8f3319ffec'
-		self.version = 8
+		self.version = '9'
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1821,7 +1822,7 @@ class SpeechWriter( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1830,7 +1831,7 @@ class SpeechWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689254423e908193888fb93a093c71d3053ccef2d2a59be2'
-		self.version = 3
+		self.version = '4'
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1899,7 +1900,7 @@ class DashboardAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1908,7 +1909,7 @@ class DashboardAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689265a62c08819481fda29f423e6625020dd21903e967e0'
-		self.version = 3
+		self.version = '4'
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -1976,7 +1977,7 @@ class WealthAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -1985,7 +1986,7 @@ class WealthAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6892535fa7588197a56a6bca44b9b8970fcf2aa7f5f18b30'
-		self.version = 2
+		self.version = '3'
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -2053,7 +2054,7 @@ class RandomWriter( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -2131,7 +2132,7 @@ class ExploratoryDataAnalyst( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	document: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		super( ).__init__( )
@@ -2211,7 +2212,7 @@ class ComplexProblemAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -2293,7 +2294,7 @@ class EmailAnalyst( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	document: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -2379,7 +2380,7 @@ class ResearchEvaluator( Agent ):
 	tool_choice: Optional[ str ]
 	summary: Optional[ str ]
 	article: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -2465,7 +2466,7 @@ class ExecutiveAssistant( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -2634,7 +2635,7 @@ class ExpertProgrammer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -2716,7 +2717,7 @@ class FeatureExtractor( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -2798,7 +2799,7 @@ class FinancialAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -2880,7 +2881,7 @@ class FinancialPlanner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -2962,7 +2963,7 @@ class FormBuilder( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -3046,7 +3047,7 @@ class LegalAnalyst( Agent ):
 	tool_choice: Optional[ str ]
 	parties: Optional[ str ]
 	purpose: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -3135,7 +3136,7 @@ class PromptEngineer( Agent ):
 	number: Optional[ str ]
 	name: Optional[ str ]
 	answer: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -3221,7 +3222,7 @@ class ProjectArchitect( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -3303,7 +3304,7 @@ class ProjectPlanner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -3388,7 +3389,7 @@ class TrainingWheels( Agent ):
 	articles: Optional[ str ]
 	transcript: Optional[ str ]
 	message: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -3473,7 +3474,7 @@ class RedTeamAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -3557,7 +3558,7 @@ class SentimentAnalyst( Agent ):
 	number: Optional[ str ]
 	sources: Optional[ str ]
 	purpose: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -3640,7 +3641,7 @@ class TrainingPlanner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -3724,7 +3725,7 @@ class WebSearchOptimizer( Agent ):
 	topic: Optional[ str ]
 	keyword: Optional[ str ]
 	wordcount: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -3812,7 +3813,7 @@ class BudgetAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -3908,7 +3909,7 @@ class YoutubeSummarizer( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	transcript: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -3992,7 +3993,7 @@ class YoutubeScribe( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	transcript: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -4075,7 +4076,7 @@ class WritingEditor( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -4167,7 +4168,7 @@ class WebDesigner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -4250,7 +4251,7 @@ class Guardrails( Agent ):
 	tool_choice: Optional[ str ]
 	articles: Optional[ str ]
 	transcript: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	
 	def __init__( self ):
@@ -4336,7 +4337,7 @@ class TrainingProgramDesigner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -4417,7 +4418,7 @@ class TrainingContentDesigner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -4498,7 +4499,7 @@ class TopicResearcher( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -4579,7 +4580,7 @@ class TechSupportAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -4661,7 +4662,7 @@ class TaskPlanner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -4751,7 +4752,7 @@ class TeachingAssistant( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -4832,7 +4833,7 @@ class SustainabilityPlanner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -4938,7 +4939,7 @@ class StructuredProblemSolver( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -5020,7 +5021,7 @@ class StrategicThinker( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	context: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -5104,7 +5105,7 @@ class SqlAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -5189,7 +5190,7 @@ class SearchOptimizer( Agent ):
 	keyword: Optional[ str ]
 	wordcount: Optional[ int ]
 	audience: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -5278,7 +5279,7 @@ class SearchOptimizedWriter( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -5362,7 +5363,7 @@ class RootCauseAnalyzer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -5444,7 +5445,7 @@ class RevenueProjector( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -5525,7 +5526,7 @@ class ResumeWriter( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -5611,7 +5612,7 @@ class ResumeBuilder( Agent ):
 	experience: Optional[ int ]
 	title: Optional[ str ]
 	resume: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -5705,7 +5706,7 @@ class ResultsCreator( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -5792,7 +5793,7 @@ class RequirementsGenerator( Agent ):
 	team: Optional[ str ]
 	challenges: Optional[ str ]
 	timeline: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -5886,7 +5887,7 @@ class ResearchExpert( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -5968,7 +5969,7 @@ class ReasoningAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -6051,7 +6052,7 @@ class ProofReader( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -6133,7 +6134,7 @@ class QuickProblemSolver( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -6215,7 +6216,7 @@ class PowerPointAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -6297,7 +6298,7 @@ class PortraitGenerator( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -6379,7 +6380,7 @@ class PersonalAssistant( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -6463,7 +6464,7 @@ class PdfParser( Agent ):
 	tool_choice: Optional[ str ]
 	title: Optional[ str ]
 	document: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -6552,7 +6553,7 @@ class NicheResearcher( Agent ):
 	topic: Optional[ str ]
 	audience: Optional[ str ]
 	frequency: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	
 	def __init__( self ):
@@ -6647,7 +6648,7 @@ class NewsLetterWriter( Agent ):
 	topic: Optional[ str ]
 	audience: Optional[ str ]
 	frequency: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -6738,7 +6739,7 @@ class MultiProfessor( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -6820,7 +6821,7 @@ class MeetingSummarizer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -6905,7 +6906,7 @@ class MeetingOptimizer( Agent ):
 	meeting: Optional[ str ]
 	participants: Optional[ str ]
 	goals: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -6996,7 +6997,7 @@ class MathyMagician( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -7083,7 +7084,7 @@ class MarketResearcher( Agent ):
 	depth: Optional[ str ]
 	region: Optional[ str ]
 	timeframe: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -7182,7 +7183,7 @@ class MarketPlanner( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	product: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	def __init__( self ):
 		'''
 
@@ -7269,7 +7270,7 @@ class MarketForecaster( Agent ):
 	problem: Optional[ str ]
 	trend: Optional[ str ]
 	region: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -7361,7 +7362,7 @@ class ManagementConsultant( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -7443,7 +7444,7 @@ class KeywordGenerator( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -7525,7 +7526,7 @@ class JackOfAllTrades( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -7611,7 +7612,7 @@ class InterviewCoach( Agent ):
 	company: Optional[ str ]
 	skills: Optional[ str ]
 	experience: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -7701,7 +7702,7 @@ class InvestmentAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -7783,7 +7784,7 @@ class EducationalWriter( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -7868,7 +7869,7 @@ class HowToBuilder( Agent ):
 	topic: Optional[ str ]
 	skill: Optional[ str ]
 	format: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	
 	def __init__( self ):
@@ -7955,7 +7956,7 @@ class EssayWriter( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	topic: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -8038,7 +8039,7 @@ class EmailAssistant( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -8120,7 +8121,7 @@ class DocumentSummarizer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -8203,7 +8204,7 @@ class DocumentInterrogator( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	document: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -8287,7 +8288,7 @@ class DependencyIndentifier( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -8450,7 +8451,7 @@ class DecisionMaker( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	data: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	
 	def __init__( self ):
@@ -8535,7 +8536,7 @@ class DataScientist( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -8617,7 +8618,7 @@ class DatasetAnalyzer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -8699,7 +8700,7 @@ class DataPlumber( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -8781,7 +8782,7 @@ class DataFarmer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -8943,7 +8944,7 @@ class DataCleaner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -9025,7 +9026,7 @@ class DataBro( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -9107,7 +9108,7 @@ class DatabaseSpecialist( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -9189,7 +9190,7 @@ class CriticalThinker( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -9271,7 +9272,7 @@ class CriticalReasoningAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -9358,7 +9359,7 @@ class CourseCreator( Agent ):
 	duration: Optional[ str ]
 	frequency: Optional[ str ]
 	time: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -9454,7 +9455,7 @@ class CompanyResearcher( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -9536,7 +9537,7 @@ class CognitiveProfiler( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -9618,7 +9619,7 @@ class CodeReviewer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -9700,7 +9701,7 @@ class ChecklistCreator( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -9783,7 +9784,7 @@ class ChainOfDensity( Agent ):
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	document: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -9871,7 +9872,7 @@ class BusinessResearcher( Agent ):
 	industry: Optional[ str ]
 	product: Optional[ str ]
 	timeframe: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -9961,7 +9962,7 @@ class BusinessPlanner( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -10046,7 +10047,7 @@ class BusinessAnalyst( Agent ):
 	ticker: Optional[ str ]
 	company: Optional[ str ]
 	sector: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -10134,7 +10135,7 @@ class PowerQueryAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -10149,7 +10150,7 @@ class PowerQueryAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_69038d1954a08190bc876d003b771556002a558c5cc0e5ca'
-		self.version = '1'
+		self.version = '2'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content',  'web_search_call.action.sources' ]
@@ -10216,7 +10217,7 @@ class BookSummarizer( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -10299,7 +10300,7 @@ class AuthorEmulator( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -10381,7 +10382,7 @@ class AsciiArtist( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -10463,7 +10464,7 @@ class ArtsyFartsy( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -10545,7 +10546,7 @@ class AdaptiveAnalyst( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -10627,7 +10628,7 @@ class AcademicWriter( Agent ):
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
-	version: Optional[ int ]
+	version: Optional[ str ]
 	
 	def __init__( self ):
 		'''
@@ -10642,7 +10643,7 @@ class AcademicWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68655623b2e0819099bc136d3c8fbf5b04420f5632d48e2d'
-		self.version = 8
+		self.version = '8'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.tools = [ ]
