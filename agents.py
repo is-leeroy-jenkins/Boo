@@ -2063,7 +2063,7 @@ class RandomWriter( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6892535fa7588197a56a6bca44b9b8970fcf2aa7f5f18b30'
-		self.version = 3
+		self.version = '4'
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -2141,7 +2141,7 @@ class ExploratoryDataAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6892054450ac81938b386357144a590305d63be465dc6622'
-		self.version = 6
+		self.version = '7'
 		self.format = 'text'
 		self.tools = [ ]
 		self.reasoning = { 'effort': 'medium' }
@@ -2227,7 +2227,7 @@ class ComplexProblemAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68914d78489c8190a8721685937b2a530604c9bb3d2ea367'
-		self.version = 4
+		self.version = '5'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ ]
@@ -2309,7 +2309,7 @@ class EmailAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689139adf5448190b8307b55ad0384cb01beed075060eede'
-		self.version = 5
+		self.version = '7'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2395,7 +2395,7 @@ class ResearchEvaluator( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689139230710819095711ad1b3f59e9301017a586373075f'
-		self.version = 4
+		self.version = '5'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2481,7 +2481,7 @@ class ExecutiveAssistant( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6891385c2a3c8195babb7ab819fd0dbb0b89cf339e6c6291'
-		self.version = 4
+		self.version = '5'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2650,7 +2650,7 @@ class ExpertProgrammer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68913810fb3081909e90afd11b7d54ba01c2eeac10a06125'
-		self.version = 4
+		self.version = '5'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2732,7 +2732,7 @@ class FeatureExtractor( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6891373a1f6c81908484fb1d75ccf61c0648e00599529f7f'
-		self.version = ''
+		self.version = '5'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2814,7 +2814,7 @@ class FinancialAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6891369156fc81958b24c0ce84c7deda01be94bfa9bf7a2e'
-		self.version = 4
+		self.version = '5'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2896,7 +2896,7 @@ class FinancialPlanner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6891361e4418819483480f77083823d108cc20456900f165'
-		self.version = 4
+		self.version = '5'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -2978,7 +2978,7 @@ class FormBuilder( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6891359401008195956bf1855321e27508eea3cf6957065f'
-		self.version = 3
+		self.version = '4'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3062,7 +3062,7 @@ class LegalAnalyst( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_6891335308b081909903f694ab6fc7fd04de43be735450f4'
-		self.version = 3
+		self.version = '5'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3151,7 +3151,7 @@ class PromptEngineer( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689126c5c5b081908ad6ee27b78377d400fae2713e5ad3d1'
-		self.version = 3
+		self.version = '6'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3237,7 +3237,7 @@ class ProjectArchitect( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_68912680a44881949684ff8775796bc209168e3555d8cd38'
-		self.version = 3
+		self.version = '4'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
@@ -3319,7 +3319,7 @@ class ProjectPlanner( Agent ):
 		self.model = 'gpt-5-nano-2025-08-07'
 		self.tool_choice = 'auto'
 		self.id = 'pmpt_689125dadf1081979650dd0c4b2ee1b801700c40557fa1b2'
-		self.version = 2
+		self.version = '3'
 		self.format = 'text'
 		self.reasoning = { 'effort': 'medium' }
 		self.include = [ 'reasoning.encrypted_content', 'web_search_call.action.sources' ]
