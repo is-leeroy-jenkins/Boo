@@ -43,11 +43,14 @@
 	******************************************************************************************
 '''
 import os
+
+from openai.types import CreateEmbeddingResponse
 from pathlib import Path
 from typing import Any, List, Optional, Dict
 import tiktoken
 from openai import OpenAI
 from boogr import ErrorDialog, Error
+import config as cfg
 
 def throw_if( name: str, value: object ):
 	if value is None:
@@ -356,13 +359,13 @@ class GPT:
 	web_options: Optional[ Dict ]
 	client: Optional[ OpenAI ]
 	prompt: Optional[ str ]
+	instructions: Optional[ str ]
 	
 	def __init__( self ):
 		self.header = GptHeader( )
 		self.endpoint = GptEndpoints( )
-		self.api_key = self.header.api_key
-		self.bro_instructions = None
-		self.bubba_instructions = None
+		self.api_key = cfg.OPENAI_API_KEY
+		self.instructions = None
 		self.web_options = { }
 
 class Chat( GPT ):
@@ -412,12 +415,14 @@ class Chat( GPT ):
 
 
     """
+	include: Optional[ List[ str ] ]
+	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 			pres: float=0.0, limit: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.client = OpenAI( )
 		self.client.api_key = self.api_key
-		self.model = 'gpt-4o-mini-2024-07-18'
+		self.model = 'gpt-5-nano-2025-08-07'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -440,6 +445,7 @@ class Chat( GPT ):
 		self.image_url = None
 		self.response_format = 'auto'
 		self.tools = [ ]
+		self.include = [ ]
 		self.vector_stores = \
 		{
 			'Appropriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
@@ -472,6 +478,7 @@ class Chat( GPT ):
 		         'gpt-5-2025-08-07',
 		         'gpt-5-nano-2025-08-07',
 		         'gpt-5-codex',
+		         'gpt-5.2-2025-12-11',
 		         'gpt-image-1',
 		         'gpt-image-1-mini',
 		         'gpt-audio-2025-08-28',
@@ -619,27 +626,26 @@ class Chat( GPT ):
 		try:
 			throw_if( 'prompt', prompt )
 			throw_if( 'path', path )
+			self.prompt = prompt
 			self.file_path = path
 			self.file = self.client.files.create( file=open( path, 'rb' ),
 				purpose='user_data' )
 			self.messages = [
+			{
+					'role': 'user',
+					'content': [
 					{
-							'role': 'user',
-							'content': [
-									{
-											'type': 'file',
-											'file':
-											{
-												'file_id': self.file.id,
-											},
-									},
-									{
-											'type': 'text',
-											'text': 'What is the first dragon in the book?',
-									},
-							],
-					}
-			]
+						'type': 'file',
+						'file':
+						{
+							'file_id': self.file.id,
+						},
+					},
+					{
+						'type': 'text',
+						'text': 'What is the first dragon in the book?',
+					},],
+			}]
 			
 			self.response = self.client.responses.create( model=self.model, input=self.messages )
 			return self.response.output_text
@@ -671,11 +677,10 @@ class Chat( GPT ):
 			throw_if( 'prompt', prompt )
 			self.web_options = { 'search_recency_days': 30, 'max_search_results': 8 }
 			self.messages = [
-					{
-							'role': 'user',
-							'content': prompt,
-					}
-			]
+			{
+					'role': 'user',
+					'content': prompt,
+			}]
 			
 			self.response = self.client.responses.create( model=self.model,
 				web_search_options=self.web_options, input=self.messages )
@@ -1769,7 +1774,7 @@ class Bro( GPT ):
 		self.system_instructions = GPT( ).bro_instructions
 		self.client = OpenAI( )
 		self.client.api_key = GptHeader( ).api_key
-		self.model = 'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-df-analysis-2025-21-05:BZetxEQa'
+		self.model = 'gpt-5-nano-2025-08-07'
 		self.number = num
 		self.temperature = temp
 		self.top_percent = top
@@ -2181,6 +2186,8 @@ class Embedding( GPT ):
 
 
     """
+	response: Optional[ CreateEmbeddingResponse ]
+	embedding: Optional[ List[ float ]]
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
 			pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True, ):
@@ -2223,8 +2230,7 @@ class Embedding( GPT ):
 		try:
 			throw_if( 'text', text )
 			self.input = text
-			self.response = self.client.embeddings.create( input=self.input,
-				model=self.small_model )
+			self.response = self.client.embeddings.create( input=self.input, model=self.small_model )
 			self.embedding = self.response.data[ 0 ].embedding
 			return self.embedding
 		except Exception as e:
@@ -2254,8 +2260,7 @@ class Embedding( GPT ):
 		try:
 			throw_if( 'text', text )
 			self.input = text
-			self.response = self.client.embeddings.create( input=self.input,
-				model=self.large_model )
+			self.response = self.client.embeddings.create( input=self.input, model=self.large_model )
 			self.embedding = self.response.data[ 0 ].embedding
 			return self.embedding
 		except Exception as e:
@@ -2439,9 +2444,12 @@ class TTS( GPT ):
 	    create_small_embedding( self, prompt: str, path: str )
 
     """
+	speed: Optional[ float ]
+	voice: Optional[ str ]
+	response_format: Optional[ str ]
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-			pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True, ):
+			pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
 		'''
 
 	        Purpose:
@@ -2451,7 +2459,7 @@ class TTS( GPT ):
         '''
 		super( ).__init__( )
 		self.client = OpenAI( )
-		self.client.api_key = GptHeader( ).api_key
+		self.client.api_key = cfg.OPENAI_API_KEY
 		self.model = 'gpt-4o-mini-tts'
 		self.number = num
 		self.temperature = temp
@@ -2465,10 +2473,13 @@ class TTS( GPT ):
 		self.stops = [ '#', ';' ]
 		self.audio_path = None
 		self.response = None
-		self.prompt = None
+		self.response_format = 'mp3'
+		self.instructions = instruct
+		self.speed = 1.0
 		self.voice = 'alloy'
 	
-	def get_model_options( self ) -> str:
+	@property
+	def model_options( self ) -> List[ str ] | None:
 		'''
 	
 	        Purpose:
@@ -2479,8 +2490,9 @@ class TTS( GPT ):
 		return [ 'gpt-4o-mini-tts',
 		         'tts-1',
 		         'tts-1-hd' ]
-	
-	def get_voice_options( self ):
+
+	@property
+	def voice_options( self ) -> List[ str ] | None:
 		'''
 
 	        Purpose:
@@ -2498,8 +2510,9 @@ class TTS( GPT ):
 		         'nova',
 		         'sage',
 		         'shiver', ]
-	
-	def get_format_options( self ):
+
+	@property
+	def format_options( self ) -> List[ str ] | None:
 		'''
 
 	        Purpose:
@@ -2513,13 +2526,26 @@ class TTS( GPT ):
 		         'flac',
 		         'opus',
 		         'pcm' ]
+
+	@property
+	def speed_options( self ) -> List[ float ] | None:
+		'''
+
+	        Purpose:
+	        --------
+	        Method that returns a list of floats
+	        representing different audio speeds
+
+        '''
+		return [ 0.25, 1.0, 4.0 ]
 	
-	def save_audio( self, text: str, filepath: str ) -> str:
+	def create_audio( self, text: str, filepath: str ) -> str:
 		"""
 	
 	        Purpose
 	        _______
-	        Generates audio given a text prompt and path to audio file
+	        Generates audio given a text prompt less than
+	        4096 characters and a path to audio file
 	
 	
 	        Parameters
@@ -2541,18 +2567,18 @@ class TTS( GPT ):
 			if not out_path.parent.exists( ):
 				out_path.parent.mkdir( parents=True, exist_ok=True )
 			with self.client.audio.speech.with_streaming_response.create( model=self.model,
-					voice=getattr( self, 'voice', 'alloy' ), input=self.input_text ) as resp:
+					voice=self.voice, response_format=self.response_format, input=self.input_text ) as resp:
 				resp.stream_to_file( str( out_path ) )
 			return str( out_path )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'TTS'
-			exception.method = 'save_audio( self, prompt: str, path: str ) -> str'
+			exception.method = 'create_audio( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def get_data( self ) -> Dict[ str, str ]:
+	def get_data( self ) -> Dict[ str, Any ]:
 		'''
 
 	        Purpose:
@@ -2567,8 +2593,13 @@ class TTS( GPT ):
 				'top_percent': self.top_percent,
 				'frequency_penalty': self.frequency_penalty,
 				'presence_penalty': self.presence_penalty,
+				'max_completion_tokes': self.max_completion_tokens,
+				'model': self.model,
 				'store': self.store,
 				'stream': self.stream,
+				'voice': self.voice,
+				'speed': self.speed,
+				'response_format': self.response_format
 		}
 	
 	def dump( self ) -> str:
@@ -2636,13 +2667,12 @@ class TTS( GPT ):
 		         'get_model_options',
 		         'reasoning_effort',
 		         'get_effort_options',
+		         'get_speed_options',
 		         'input_text',
 		         'metadata',
 		         'get_files',
 		         'get_data',
-		         'dump',
-		         'translate',
-		         'transcribe' ]
+		         'dump', ]
 
 class Transcription( GPT ):
 	"""
@@ -2681,7 +2711,7 @@ class Transcription( GPT ):
     """
 	
 	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-			pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True, ):
+			pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
 		super( ).__init__( )
 		self.client = OpenAI( )
 		self.client.api_key = GptHeader( ).api_key
@@ -2694,6 +2724,7 @@ class Transcription( GPT ):
 		self.max_completion_tokens = max
 		self.store = store
 		self.stream = stream
+		self.instructions = instruct
 		self.modalities = [ 'text', 'audio' ]
 		self.stops = [ '#', ';' ]
 		self.input_text = None
@@ -2701,7 +2732,8 @@ class Transcription( GPT ):
 		self.transcript = None
 		self.response = None
 	
-	def get_model_options( self ) -> str:
+	@property
+	def model_options( self ) -> str:
 		'''
 
 	        Purpose:
@@ -2721,16 +2753,17 @@ class Transcription( GPT ):
         """
 		try:
 			throw_if( 'path', path )
-			with open( path, 'rb' ) as audio_file:
+			with open( path, 'rb' ) as self.audio_file:
 				resp = self.client.audio.transcriptions.create( model='whisper-1',
-					file=audio_file )
+					file=self.audio_file )
 			return resp.text
 		except Exception as e:
-			ex = Error( code=0, message=str( e ) )
+			ex = Error( e )
 			ex.module = 'boo'
 			ex.cause = 'Transcription'
 			ex.method = 'transcribe(self, path)'
-			ErrorDialog( ex ).show( )
+			error = ErrorDialog( ex )
+			error.show( )
 	
 	def get_data( self ) -> dict:
 		'''
@@ -2837,18 +2870,18 @@ class Translation( GPT ):
 	    create_small_embedding( self, prompt: str, path: str )
 
     """
-	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-			pres: float=0.0, max: int=10000, store: bool=True, stream: bool=True ):
+	def __init__( self, num: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.client = OpenAI( )
 		self.client.api_key = GptHeader( ).api_key
 		self.model = 'whisper-1'
 		self.number = num
-		self.temperature = temp
-		self.top_percent = top
-		self.frequency_penalty = freq
-		self.presence_penalty = pres
-		self.max_completion_tokens = max
+		self.temperature = temperature
+		self.top_percent = top_p
+		self.frequency_penalty = frequency
+		self.presence_penalty = presence
+		self.max_completion_tokens = max_tokens
 		self.store = store
 		self.stream = stream
 		self.modalities = [ 'text', 'audio' ]
@@ -2890,12 +2923,12 @@ class Translation( GPT ):
 		         'sage',
 		         'shiver', ]
 	
-	def create( self, text: str, path: str ) -> str:
+	def create( self, text: str, path: str ) -> str | None:
 		"""
 
 	        Purpose
 	        _______
-	        Generates a transcription given a string to an audio file
+	        Generates a translation given a string to an audio file
 	
 	
 	        Parameters
@@ -2913,13 +2946,14 @@ class Translation( GPT ):
 			throw_if( 'text', text )
 			throw_if( 'path', path )
 			with open( path, 'rb' ) as audio_file:
-				resp = self.client.audio.translations.create( model='whisper-1', file=audio_file )
+				resp = self.client.audio.translations.create( model='whisper-1',
+					file=audio_file, prompt=text )
 			return resp.text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'boo'
 			exception.cause = 'Translation'
-			exception.method = 'create_small_embedding( self, text: str )'
+			exception.method = 'create( self, text: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -2932,16 +2966,17 @@ class Translation( GPT ):
 		try:
 			throw_if( 'path', path )
 			with open( path, 'rb' ) as audio_file:
-				resp = self.client.audio.translations.create( model='whisper-1', file=audio_file )
+				resp = self.client.audio.translations.create( model=self.model, file=audio_file )
 			return resp.text
 		except Exception as e:
-			ex = Error( code=0, message=str( e ) )
+			ex = Error( e )
 			ex.module = 'boo'
 			ex.cause = 'Translation'
 			ex.method = 'translate(self, path)'
-			ErrorDialog( ex ).show( )
+			error = ErrorDialog( ex )
+			error.show( )
 	
-	def get_data( self ) -> dict:
+	def get_data( self ) -> Dict[ str, Any ] | None:
 		'''
 
 	        Purpose:
@@ -2951,7 +2986,7 @@ class Translation( GPT ):
         '''
 		return \
 		{
-			'num': self.number,
+			'number': self.number,
 			'temperature': self.temperature,
 			'top_percent': self.top_percent,
 			'frequency_penalty': self.frequency_penalty,
@@ -2967,7 +3002,7 @@ class Translation( GPT ):
 
         '''
 		new = '\r\n'
-		return ( 'num' + f' = {self.number}' + new
+		return ( 'number' + f' = {self.number}' + new
 				+ 'temperature' + f' = {self.temperature}' + new
 				+ 'top_percent' + f' = {self.top_percent}' + new
 				+ 'frequency_penalty' + f'{self.frequency_penalty}' + new
@@ -3016,6 +3051,7 @@ class Translation( GPT ):
 		         'create_small_embedding',
 		         'get_model_options', ]
 
+
 class LargeImage( GPT ):
 	"""
 	
@@ -3026,47 +3062,104 @@ class LargeImage( GPT ):
 	
 	    Parameters
 	    ------------
-	    num: int
+	    n: int
 	    temperature: float
-	    top_percent: float
-	    frequency_penalty: float
-	    presence_penalty: float
-	    maximum_completion_tokens: int
+	    top_p: float
+	    frequency: float
+	    presence: float
+	    max_tokens: int
 	    store: bool
 	    stream: bool
 	
+		Properties:
+		----------
+	    detail_options( self ) -> list[ str ]
+	    format_options( self ) -> list[ str ]
+	    size_options( self ) -> list[ str ]
+	    
 	    Methods
 	    ------------
 	    generate( self, path: str ) -> str:
 	    analyze( self, path: str, text: str ) -> str
-	    get_detail_options( self ) -> list[ str ]
-	    get_format_options( self ) -> list[ str ]:
-	    get_size_options( self ) -> list[ str ]
 
     """
-	
 	input: Optional[ List ]
 	
-	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-			pres: float=0.0, max: int=10000, store: bool=False, stream: bool=False, ):
+	def __init__( self, n: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=False, stream: bool=False, ):
 		super( ).__init__( )
-		self.api_key = GptHeader( ).api_key
-		self.client = OpenAI( )
-		self.client.api_key = GptHeader( ).api_key
+		self.api_key = cfg.OPENAI_API_KEY
+		self.client = OpenAI( api_key=self.api_key )
 		self.quality = 'hd'
 		self.model = 'dall-e-3'
 		self.size = '1024x1024'
-		self.number = num
-		self.temperature = temp
-		self.top_percent = top
-		self.frequency_penalty = freq
-		self.presence_penalty = pres
-		self.max_completion_tokens = max
+		self.number = n
+		self.temperature = temperature
+		self.top_percent = top_p
+		self.frequency_penalty = frequency
+		self.presence_penalty = presence
+		self.max_completion_tokens = max_tokens
 		self.store = store
 		self.stream = stream
 		self.input_text = None
 		self.file_path = None
 		self.image_url = None
+		
+	@property
+	def model_options( self ) -> List[ str ]:
+		'''
+
+	        Purpose:
+	        --------
+	        Methods that returns a list of small_model names
+
+        '''
+		return [ 'dall-e-3',
+		         'gpt-4-0613',
+		         'gpt-4-0314',
+		         'gpt-4o-mini',
+		         'gpt-4o-mini-2024-07-18' ]
+	
+	@property
+	def format_options( self ) -> List[ str ]:
+		'''
+
+	        Purpose:
+	        --------
+	        Method that returns a  list of format options
+
+        '''
+		return [ '.png',
+		         '.mpeg',
+		         '.jpeg',
+		         '.webp',
+		         '.gif' ]
+	
+	@property
+	def detail_options( self ) -> List[ str ]:
+		'''
+
+             Purpose:
+	        --------
+	        Method that returns a  list of reasoning effort options
+
+        '''
+		return [ 'auto',
+		         'low',
+		         'high' ]
+	
+	@property
+	def size_options( self ) -> List[ str ]:
+		'''
+
+	        Purpose:
+	        --------
+	        Method that returns a  list of sizes
+
+        '''
+		return [ '1024x1024',
+		         '1024x1792',
+		         '1792x1024' ]
 	
 	def generate( self, input: str ) -> str | None:
 		"""
@@ -3129,58 +3222,6 @@ class LargeImage( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def get_model_options( self ) -> List[ str ]:
-		'''
-
-	        Purpose:
-	        --------
-	        Methods that returns a list of small_model names
-
-        '''
-		return [ 'dall-e-3',
-		         'gpt-4-0613',
-		         'gpt-4-0314',
-		         'gpt-4o-mini',
-		         'gpt-4o-mini-2024-07-18' ]
-	
-	def get_format_options( self ) -> List[ str ]:
-		'''
-	
-	        Purpose:
-	        --------
-	        Method that returns a  list of format options
-
-        '''
-		return [ '.png',
-		         '.mpeg',
-		         '.jpeg',
-		         '.webp',
-		         '.gif' ]
-	
-	def get_detail_options( self ) -> List[ str ]:
-		'''
-
-             Purpose:
-	        --------
-	        Method that returns a  list of reasoning effort options
-
-        '''
-		return [ 'auto',
-		         'low',
-		         'high' ]
-	
-	def get_size_options( self ) -> List[ str ]:
-		'''
-
-	        Purpose:
-	        --------
-	        Method that returns a  list of sizes
-
-        '''
-		return [ '1024x1024',
-		         '1024x1792',
-		         '1792x1024' ]
-	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 	
@@ -3229,12 +3270,12 @@ class Image( GPT ):
 	
 	    Parameters
 	    ------------
-	    num: int=1
-	    temp: float=0.8
-	    top: float=0.9
-	    freq: float=0.0
-	    pres: float=0.0
-	    max: int=10000
+	    n: int=1
+	    temperature: float=0.8
+	    top_p: float=0.9
+	    frequency: float=0.0
+	    presence: float=0.0
+	    max_tokens: int=10000
 	    store: bool=True
 	    stream: bool=True
 	
@@ -3248,19 +3289,22 @@ class Image( GPT ):
 	    self.messages, self.image_url, self.response_format,
 	    self.tools, self.vector_store_ids, self.input_text, self.image_url
 	
+		Properties:
+		----------
+	    detail_options( self ) -> list[ str ]
+	    format_options( self ) -> list[ str ]
+	    size_options( self ) -> list[ str ]
+	    
 	    Methods
 	    ------------
 	    get_model_options( self ) -> str
 	    generate( self, path: str ) -> str
 	    analyze( self, path: str, text: str ) -> str
-	    get_detail_options( self ) -> list[ str ]
-	    get_format_options( self ) -> list[ str ]
-	    get_size_options( self ) -> list[ str ]
 
     """
 	
-	def __init__( self, num: int=1, temp: float=0.8, top: float=0.9, freq: float=0.0,
-			pres: float=0.0, max: int=10000, store: bool=False, stream: bool=False, ):
+	def __init__( self, n: int=1, temperture: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=False, stream: bool=False, ):
 		super( ).__init__( )
 		self.api_key = GptHeader( ).api_key
 		self.client = OpenAI( )
@@ -3271,12 +3315,12 @@ class Image( GPT ):
 		self.large_model = 'dall-e-3'
 		self.small_model = 'dall-e-2'
 		self.size = '1024x1024'
-		self.number = num
-		self.temperature = temp
-		self.top_percent = top
-		self.frequency_penalty = freq
-		self.presence_penalty = pres
-		self.max_completion_tokens = max
+		self.number = n
+		self.temperature = temperture
+		self.top_percent = top_p
+		self.frequency_penalty = frequency
+		self.presence_penalty = presence
+		self.max_completion_tokens = max_tokens
 		self.store = store
 		self.stream = stream
 		self.input = [ ]
@@ -3284,7 +3328,8 @@ class Image( GPT ):
 		self.file_path = None
 		self.image_url = None
 	
-	def get_model_options( self ) -> List[ str ]:
+	@property
+	def model_options( self ) -> List[ str ]:
 		'''
 
 	        Purpose:
@@ -3293,8 +3338,9 @@ class Image( GPT ):
 
         '''
 		return [ "dall-e-3", "gpt-4o-mini", "gpt-4o" ]
-	
-	def get_size_options( self ) -> List[ str ]:
+
+	@property
+	def size_options( self ) -> List[ str ]:
 		'''
 	
 	        Purpose:
@@ -3303,8 +3349,9 @@ class Image( GPT ):
 
         '''
 		return [ '256x256', '512x512', '1024x1024' ]
-	
-	def get_format_options( self ) -> List[ str ]:
+
+	@property
+	def format_options( self ) -> List[ str ]:
 		'''
 	
 	        Purpose:
@@ -3313,8 +3360,9 @@ class Image( GPT ):
 
         '''
 		return [ '.png', '.jpeg', '.webp', '.gif' ]
-	
-	def get_detail_options( self ) -> List[ str ]:
+
+	@property
+	def detail_options( self ) -> List[ str ]:
 		'''
 
 	        Purpose:

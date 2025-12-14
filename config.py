@@ -65,7 +65,7 @@ WEATHERAPI_API_KEY = os.getenv( 'WEATHERAPI_API_KEY' )
 WEAVIEATE_API_KEY = os.getenv( 'WEAVIEATE_API_KEY' )
 QDRANT_API_KEY = os.getenv( 'QDRANT_API_KEY' )
 SINGLESTORE_API_KEY = os.getenv( 'SINGLESTORE_API_KEY' )
-BASEDIR = os.getcwd( )
+BASEDIR = r'C:\Boo'
 SECRET_KEY = os.urandom( 32 )
 MAIL_SERVER = os.environ.get( 'MAIL_SERVER', 'smtp.googlemail.com' )
 MAIL_PORT = int( os.environ.get( 'MAIL_PORT', '587' ) )
@@ -80,7 +80,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = 750
 THEME = "DarkGray15"
 OUTPUT_FILE_NAME = "boo.wav"
 SAMPLE_RATE = 48000
-MODELS = [ 'gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo' ]
+MODELS = [ 'gpt-5-nano-2025-08-07', 'gpt-4.1-nano-2025-04-14', 'gpt-4o-mini', ]
 DEFAULT_MODEL = MODELS[ 0 ]
 SQLALCHEMY_DATABASE_URI = f'sqlite:///{BASEDIR}\stores\sqlite\datamodels\Data.db'
 

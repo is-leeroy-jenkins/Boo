@@ -399,13 +399,13 @@ class FileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path =  cfg.BASEDIR + r'\boogr\resources\ico\file_browse.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = os.path.abspath( cfg.BASEDIR + r'\boogr\resources\ico\file_browse.ico' )
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
-		sg.user_settings_save( 'Boo',   cfg.BASEDIR + r'\boogr\resources\theme' )
-		self.form_size = (500, 240)
+		sg.user_settings_save( 'Boo',   r'\boogr\resources\theme' )
+		self.form_size = ( 550, 250 )
 		self.keep_on_top = True
 		self.top_level = True
 		self.resizable = True
@@ -505,7 +505,7 @@ class FileDialog( Dark ):
 		'''
 		try:
 			_layout = [ [ sg.Text( ) ],
-			            [ sg.Text( self.message, font = ( 'Roboto', 11 ) ) ],
+			            [ sg.Text( self.message, font=( 'Roboto', 12 ) ) ],
 			            [ sg.Text( ) ],
 			            [ sg.Input( key='-PATH-' ), sg.FileBrowse( size=( 15, 1 ) ) ],
 			            [ sg.Text( ) ],
@@ -516,6 +516,7 @@ class FileDialog( Dark ):
 				font=self.theme_font,
 				size=self.form_size,
 				icon=self.icon_path,
+				resizable=self.resizable,
 				keep_on_top=self.keep_on_top )
 
 			while True:
@@ -565,13 +566,13 @@ class FolderDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = cfg.BASEDIR + r'\boogr\resources\ico\folder_browse.ico'
-		self.theme_font = ('Roboto', 11)
+		self.icon_path = os.path.abspath( cfg.BASEDIR + r'\boogr\resources\ico\folder_browse.ico' )
+		self.theme_font = ( 'Roboto', 12 )
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', cfg.BASEDIR + r'\boogr\resources\theme' )
-		self.form_size = (500, 250)
+		self.form_size = ( 550, 250 )
 		self.selected_item = None
 		self.keep_on_top = True
 		self.top_level = True
@@ -722,14 +723,14 @@ class SaveFileDialog( Dark ):
 		self.button_backcolor = sg.theme_button_color_background( )
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
-		self.icon_path = cfg.BASEDIR + r'\boogr\resources\ico\Save.ico'
+		self.icon_path = r'\boogr\resources\ico\Save.ico'
 		self.theme_font = ('Roboto', 11)
 		self.scrollbar_color = '#755600'
 		self.file_name = None
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', r'\resources\theme' )
-		self.form_size = (550, 250)
+		self.form_size = (550, 300)
 		self.keep_on_top = True
 		self.top_level = True
 		self.resizable = True
@@ -1676,7 +1677,7 @@ class DataEntryDialog( Dark ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', cfg.BASEDIR + r'\boogr\resources\theme' )
-		self.form_size = ( 500, 250 )
+		self.form_size = ( 550, 300 )
 		self.selected_item = None
 		self.question = None
 		self.keep_on_top = True
@@ -2031,7 +2032,7 @@ class SliderComboDialog( Dark ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', cfg.BASEDIR + r'\boogr\resources\theme' )
-		self.form_size = ( 500, 250 )
+		self.form_size = ( 550, 250 )
 		self.selected_item = None
 		self.question = None
 		self.keep_on_top = True
@@ -2177,7 +2178,7 @@ class SpinnerComboDialog( Dark ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', cfg.BASEDIR + r'\boogr\resources\theme' )
-		self.form_size = ( 500, 250 )
+		self.form_size = ( 550, 250 )
 		self.selected_item = None
 		self.question = None
 		self.keep_on_top = True
@@ -2991,7 +2992,7 @@ class SplashPanel( Dark ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', cfg.BASEDIR + r'\boogr\resources\theme' )
-		self.image = cfg.BASEDIR + r'\boogr\resources\img\Boo.png'
+		self.image = cfg.BASEDIR + r'\boogr\resources\img\atk.png'
 		self.form_size = (800, 600)
 		self.timeout = 6000
 		self.keep_on_top = True
@@ -3062,9 +3063,10 @@ class SplashPanel( Dark ):
 			              sg.Image( filename = self.image, size = _imgsize ) ] ]
 			_window = sg.Window( '  Boo', _layout,
 				no_titlebar = True,
-				keep_on_top = True,
+				keep_on_top=self.keep_on_top,
+				resizable=self.resizable,
 				grab_anywhere = True,
-				size = self.form_size )
+				size=self.form_size )
 			while True:
 				_event, _values = _window.read( timeout = self.timeout, close = True )
 				if _event in (sg.WIN_CLOSED, 'Exit'):
@@ -6386,7 +6388,7 @@ class FileBrowser( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', cfg.BASEDIR + r'\boogr\resources\theme' )
-		self.form_size = (400, 200)
+		self.form_size = (400, 250)
 		self.keep_on_top = True
 		self.top_level = True
 		self.resizable = True
@@ -6561,19 +6563,18 @@ class ChatWindow( ):
 
 		'''
 		try:
-			_layout = [ [ sg.Text( 'Your query will go here', size = (40, 1) ) ],
-			            [ sg.Output( size = (110, 20), font = ('Roboto 11') ) ],
-			            [ sg.Multiline( size = (70, 5), enter_submits = True, key = '-QUERY-',
-				            do_not_clear = False ),
-			              sg.Button( 'SEND', button_color = (sg.YELLOWS[ 0 ], sg.BLUES[ 0 ]),
-				              bind_return_key = True ),
-			              sg.Button( 'EXIT', button_color = (sg.YELLOWS[ 0 ], sg.GREENS[ 0 ]) ) ] ]
+			_layout = [ [ sg.Text( 'Your query will go here', size=(40, 1) ) ],
+			            [ sg.Output( size=(110, 20), font=('Roboto 12') ) ],
+			            [ sg.Multiline( size=(70, 5), enter_submits=True, key='-QUERY-', do_not_clear=False ),
+			              sg.Button( 'SEND', button_color=(sg.YELLOWS[ 0 ], sg.BLUES[ 0 ]), bind_return_key=True ),
+			              sg.Button( 'EXIT', button_color=(sg.YELLOWS[ 0 ], sg.GREENS[ 0 ]) ) ] ]
 
 			window = sg.Window( 'Chat Window', _layout,
-				font = ('Roboto', ' 11'),
-				default_button_element_size=(8, 2),
+				font = ('Roboto', '12'),
+				default_button_element_size=(10, 2),
 				use_default_focus=False,
 				size=self.form_size,
+				resizable=self.resizable,
 				keep_on_top=True )
 
 			# The Event Loop
@@ -6616,7 +6617,7 @@ class ChatBot( ):
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
 		self.icon_path = cfg.BASEDIR + r'\boogr\resources\ico\boo.ico'
-		self.theme_font = ('Roboto', 11)
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
@@ -6695,13 +6696,14 @@ class ChatBot( ):
 			             sg.Button( 'EXIT',
 				             button_color = (sg.YELLOWS[ 0 ], sg.GREENS[ 0 ]) ) ] ]
 
-			window = sg.Window( 'Boogr Bot', layout,
+			window = sg.Window( 'Boo', layout,
 				default_element_size=(30, 2),
 				font=('Roboto', ' 11'),
 				default_button_element_size=(8, 2),
 				return_keyboard_events=True,
 				right_click_menu=self.context_menu,
 				size=self.form_size,
+				resizable=self.resizable,
 				keep_on_top=self.keep_on_top )
 
 			# ---===--- Loop taking in user path and using it  --- #
@@ -6802,7 +6804,7 @@ class InputWindow( ):
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
 		sg.user_settings_save( 'Boo', cfg.BASEDIR + r'\boogr\resources\theme' )
-		self.form_size = (520, 550)
+		self.form_size = (600, 550)
 		self.keep_on_top = True
 		self.top_level = True
 		self.resizable = True
@@ -6919,7 +6921,10 @@ class InputWindow( ):
 			#           [col3]]
 			window = sg.Window( 'Columns and Frames', layout,
 				size=self.form_size,
-				keep_on_top=True )
+				default_button_element_size=(10, 1),
+				force_toplevel=self.top_level,
+				resizable=self.resizable,
+				keep_on_top=self.keep_on_top )
 
 			while True:
 				event, values = window.read( )
@@ -7473,7 +7478,7 @@ class ParameterWindow( ):
 		self.button_forecolor = sg.theme_button_color_text( )
 		self.button_color = sg.theme_button_color( )
 		self.icon_path = cfg.BASEDIR + r'\boogr\resources\ico\boo.ico'
-		self.theme_font = ('Roboto', 11)
+		self.theme_font = ('Roboto', 12)
 		self.scrollbar_color = '#755600'
 		sg.set_global_icon( icon=self.icon_path )
 		sg.set_options( font=self.theme_font )
