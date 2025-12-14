@@ -1579,14 +1579,21 @@ class Image( GPT ):
 	    detail_options( self ) -> list[ str ]
 	    format_options( self ) -> list[ str ]
 	    size_options( self ) -> list[ str ]
+	    model_options( self ) -> str
 	    
 	    Methods
 	    ------------
-	    get_model_options( self ) -> str
 	    generate( self, path: str ) -> str
 	    analyze( self, path: str, text: str ) -> str
 
     """
+	image_url: Optional[ str ]
+	quality: Optional[ str ]
+	detail: Optional[ str ]
+	size: Optional[ str ]
+	tool_choice: Optional[ str ]
+	style: Optional[ str ]
+	response_format: Optional[ str ]
 	
 	def __init__( self, n: int=1, temperture: float=0.8, top_p: float=0.9, frequency: float=0.0,
 			presence: float=0.0, max_tokens: int=10000, store: bool=False, stream: bool=False, ):
@@ -1601,6 +1608,7 @@ class Image( GPT ):
 		self.max_completion_tokens = max_tokens
 		self.store = store
 		self.stream = stream
+		self.tool_choice = 'auto'
 		self.input = [ ]
 		self.input_text = None
 		self.file_path = None
@@ -1609,6 +1617,8 @@ class Image( GPT ):
 		self.detail = None
 		self.model = None
 		self.size = None
+		self.style = None
+		self.response_format = None
 	
 	@property
 	def style_options( self ) -> List[ str ]:
@@ -1686,7 +1696,8 @@ class Image( GPT ):
 		         'low',
 		         'high' ]
 	
-	def generate( self, prompt: str, model: str, quality: str, size: str ) -> str:
+	def generate( self, prompt: str, model: str, quality: str, size: str,
+			style: str='natural', format: str='url' ) -> str:
 		"""
 
                 Purpose
@@ -1713,8 +1724,11 @@ class Image( GPT ):
 			self.model = model
 			self.quality = quality
 			self.size = size
+			self.style = style
+			self.response_format = format
 			self.response = self.client.images.generate( model=self.model, prompt=self.input_text,
-				size=self.size, quality=self.quality, n=self.number, )
+				size=self.size, style=self.style, response_format=self.response_format,
+				quality=self.quality, n=self.number )
 			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
@@ -1724,7 +1738,7 @@ class Image( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def analyze( self, text: str, path: str ) -> str:
+	def analyze( self, text: str, path: str, model: str='gpt-4o-mini', ) -> str:
 		'''
 	
 	        Purpose:
@@ -1746,6 +1760,7 @@ class Image( GPT ):
 			throw_if( 'text', text )
 			throw_if( 'path', path )
 			self.input_text = text
+			self.model = model
 			self.file_path = path
 			self.input = [
 			{
@@ -1756,7 +1771,9 @@ class Image( GPT ):
 				],
 			}]
 			
-			self.response = self.client.responses.create( model='gpt-4o-mini', input=self.input )
+			self.response = self.client.responses.create( model=self.model, input=self.input,
+				max_output_tokens=self.max_completion_tokens, temperature=self.temperature,
+				tool_choice=self.tool_choice, stream=self.stream, store=self.store )
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
@@ -1766,7 +1783,7 @@ class Image( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def edit( self, input: str, path: str, size: str='1024x1024' ) -> str:
+	def edit( self, prompt: str, path: str, size: str= '1024x1024' ) -> str:
 		"""
 
 	        Purpose
@@ -1784,9 +1801,9 @@ class Image( GPT ):
 
         """
 		try:
-			throw_if( 'input', input )
+			throw_if( 'input', prompt )
 			throw_if( 'path', path )
-			self.input_text = input
+			self.input_text = prompt
 			self.file_path = path
 			self.response = self.client.images.edit( model=self.model,
 				image=open( self.file_path, 'rb' ), prompt=self.input_text, n=self.number,
