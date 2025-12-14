@@ -62,6 +62,7 @@ from werkzeug.utils import secure_filename
 from wtforms import Form  # base class for nested sub-forms
 import os
 from pathlib import Path
+import config as cfg
 
 app = Flask( __name__ )
 app.config[ 'SECRET_KEY' ] = config.SECRET_KEY
@@ -71,38 +72,40 @@ moment = Moment( app )
 db = SQLAlchemy( app )
 CSRFProtect( app )
 
-@app.route("/", methods=["GET", "POST"])
-def index():
+@app.route( '/', methods=[ 'GET', 'POST' ] )
+def index( ):
     # Initialize chat history in session
-    if "chat_history" not in session:
-        session["chat_history"] = []
+    if 'chat_history' not in session:
+        session[ 'chat_history' ] = [ ]
 
-    if request.method == "POST":
-        user_msg = request.form.get("message", "").strip()
+    if request.method == 'POST':
+        user_msg = request.form.get( 'message', "" ).strip( )
 
         if user_msg:
             # Add user message
-            session["chat_history"].append({
-                "sender": "user",
-                "text": user_msg,
-                "time": datetime.now().strftime("%H:%M")
+            session[ 'chat_history' ].append(
+	        {
+                'sender': 'user',
+                'text': user_msg,
+                'time': datetime.now().strftime( '%H:%M' )
             })
 
             # Dummy system response (Replace with OpenAI or custom logic)
-            reply = f"You said: {user_msg}"
+            reply = f'You said: {user_msg}'
 
-            session["chat_history"].append({
-                "sender": "assistant",
-                "text": reply,
-                "time": datetime.now().strftime("%H:%M")
+            session[ 'chat_history' ].append(
+	        {
+                'sender': 'assistant',
+                'text': reply,
+                'time': datetime.now( ).strftime( '%H:%M' )
             })
 
         # Save session
         session.modified = True
 
-        return redirect(url_for("index"))
+        return redirect(url_for( 'index' ) )
 
-    return render_template("index.html", chat=session["chat_history"])
+    return render_template( 'index.html', chat=session[ 'chat_history' ] )
 
 @app.route( '/user/<name>' )
 def user( name ):
@@ -163,7 +166,7 @@ def multi( ):
             return redirect( url_for( 'multi' ) )
     return render_template( 'base.html' )  #
 
-@app.route("/contact", methods=["GET", "POST"])
+@app.route("/contact", methods=[ 'GET', 'POST' ] )
 def contact():
     form = ContactForm()
 
@@ -179,10 +182,10 @@ def contact():
         # - Write to file/log
         # For now we just flash confirmation.
 
-        flash("Your message has been sent successfully.")
-        return redirect(url_for("contact"))
+        flash( 'Your message has been sent successfully.' )
+        return redirect(url_for( 'contact' ))
 
-    return render_template("contact.html", form=form)
+    return render_template( 'contact.html', form=form )
 
 @app.errorhandler( 404 )
 def page_not_found( e ):
@@ -192,5 +195,18 @@ def page_not_found( e ):
 def internal_server_error( e ):
 	return render_template( '500.html' ), 500
 
+class Role( db.Model ):
+	__tablename__ = 'Roles'
+	id = db.Column( db.Integer, primary_key=True )
+	name = db.Column( db.String( 64 ), unique=True )
+	users = db.relationship( 'User', backref='Role' )
+
+class User( db.Model ):
+	__tablename__ = 'Users'
+	id = db.Column( db.Integer, primary_key=True )
+	username = db.Column( db.String( 64 ), unique=True, index=True )
+	role_id = db.Column( db.Integer, db.ForeignKey( 'Roles.id' ) )
+
+	
 if __name__ == '__main__':
 	app.run( )
