@@ -45,7 +45,7 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict
 
-class Prompt( BaseModel ):
+class GptPrompt( BaseModel ):
 	'''
 
 		Purpose:
@@ -67,7 +67,7 @@ class Prompt( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class Location( BaseModel ):
+class GptLocation( BaseModel ):
 	'''
 
 		Purpose:
@@ -118,7 +118,7 @@ class SkyCoordinates( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 		
-class Text( BaseModel ):
+class GptText( BaseModel ):
 	'''
 
 		Purpose:
@@ -133,7 +133,7 @@ class Text( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class File( BaseModel ):
+class GptFile( BaseModel ):
 	'''
 
 		Purpose:
@@ -153,7 +153,7 @@ class File( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class Error( BaseModel ):
+class GptError( BaseModel ):
 	'''
 
 		Purpose:
@@ -198,7 +198,7 @@ class JsonObject( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class Format( BaseModel ):
+class GptFormat( BaseModel ):
 	'''
 
 		Purpose:
@@ -213,7 +213,7 @@ class Format( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 
-class Reasoning( BaseModel ):
+class GptReasoning( BaseModel ):
 	'''
 
 		Purpose:
@@ -237,7 +237,7 @@ class Mathematics( BaseModel ):
 	final_answer: Optional[ str ]
 
 
-class Document( BaseModel ):
+class GptDocument( BaseModel ):
 	invented_year: Optional[ int ]
 	summary: Optional[ str ]
 	inventors: Optional[ List[ str ] ]
@@ -249,7 +249,7 @@ class Document( BaseModel ):
 
 	concepts: Optional[ List[ Concept ] ]
 
-class Response( BaseModel ):
+class GptResponse( BaseModel ):
 	'''
 
 		Purpose:
@@ -259,13 +259,13 @@ class Response( BaseModel ):
 	'''
 	id: Optional[ str ]
 	object: Optional[ object ]
-	input: Optional[ List[ Dict[ str, str ] ] ]
+	input: Optional[ List[ Dict[ str, Any ] ] ]
 	model: Optional[ str ]
 	include: Optional[ List[ str ] ]
 	instructions: Optional[ str ]
 	max_output_tokens: Optional[ int ]
 	previous_response_id: Optional[ int ]
-	reasoning: Optional[ Reasoning ]
+	reasoning: Optional[ str ]
 	role: Optional[ str ]
 	store: Optional[ bool ]
 	stream: Optional[ bool ]
@@ -273,18 +273,18 @@ class Response( BaseModel ):
 	tool_choice: Optional[ str ]
 	tools: Optional[ List[ str ] ]
 	temperature: Optional[ float ]
-	top_p: Optional[ int ]
+	top_p: Optional[ float ]
 	truncation: Optional[ str ]
 	text: Optional[ Text ]
 	status: Optional[ str ]
 	created: Optional[ str ]
-	data: Optional[ Dict ]
+	data: Optional[ Dict[ str, Any ] ]
 
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class FileSearch( BaseModel ):
+class GptFileSearch( BaseModel ):
 	'''
 
 		Purpose:
@@ -300,7 +300,7 @@ class FileSearch( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class WebSearch( BaseModel ):
+class GptWebSearch( BaseModel ):
 	'''
 
 		Purpose:
@@ -317,7 +317,7 @@ class WebSearch( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class ComputerUse( BaseModel ):
+class GptComputerUse( BaseModel ):
 	'''
 
 		Purpose:
@@ -335,7 +335,7 @@ class ComputerUse( BaseModel ):
 		extra = 'ignore'
 
 
-class Forecast( BaseModel ):
+class GptForecast( BaseModel ):
 	'''
 
 		Purpose:
@@ -352,7 +352,7 @@ class Forecast( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class Directions( BaseModel ):
+class GptDirections( BaseModel ):
 	'''
 
 		Purpose:
@@ -367,7 +367,7 @@ class Directions( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class Function( BaseModel ):
+class GptFunction( BaseModel ):
 	'''
 
 		Class for a function the model can choose to call
@@ -383,7 +383,7 @@ class Function( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class Message( BaseModel ):
+class GptMessage( BaseModel ):
 	'''
 
 		Purpose:
