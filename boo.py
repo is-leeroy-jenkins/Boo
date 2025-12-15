@@ -554,6 +554,22 @@ class Chat( GPT ):
 		         'tts-1-hd',
 		         'whisper-1', ]
 	
+	@property
+	def include_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of the includeable options
+
+		'''
+		return [ 'code_interpreter_call.outputs',
+		         'computer_call_output.output.image_url',
+		         'file_search_call.results',
+		         'message.input_image.image_url',
+		         'message.output_text.logprobs',
+		         'reasoning.encrypted_content' ]
+	
 	def generate_text( self, prompt: str, model: str='gpt-5-nano-2025-08-07' ) -> str | None:
 		"""
 	
@@ -575,6 +591,7 @@ class Chat( GPT ):
 		try:
 			throw_if( 'prompt', prompt )
 			self.prompt = prompt
+			self.model = model
 			self.response = self.client.responses.create( model=self.model, input=self.prompt,
 				max_output_tokens=self.max_completion_tokens, tool_choice=self.tool_choice,
 				temperature=self.temperature, top_p=self.top_percent )
@@ -671,7 +688,7 @@ class Chat( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def summarize_document( self, prompt: str, path: str ) -> str | None:
+	def summarize_document( self, prompt: str, pdf_path: str ) -> str | None:
 		"""
 	
 	        Purpose
@@ -691,10 +708,11 @@ class Chat( GPT ):
         """
 		try:
 			throw_if( 'prompt', prompt )
-			throw_if( 'path', path )
+			throw_if( 'pdf_path', pdf_path )
 			self.prompt = prompt
-			self.file_path = path
-			self.file = self.client.files.create( file=open( path, 'rb' ), purpose='user_data' )
+			self.file_path = pdf_path
+			self.file = self.client.files.create( file=open( file=self.file_path, mode='rb' ),
+				purpose='user_data' )
 			self.messages = [
 			{
 				'role': 'user',
