@@ -184,8 +184,8 @@ class GptHeader:
 	
 	def __init__( self ):
 		self.content_type = 'application/json'
-		self.api_key = os.environ.get( 'OPENAI_API_KEY' )
-		self.authorization = f'Bearer {self.api_key}' if self.api_key else ''
+		self.api_key = cfg.OPENAI_API_KEY
+		self.authorization = f'Bearer {cfg.OPENAI_API_KEY}'
 		
 	
 	def __dir__( self ) -> list[ str ] | None:
