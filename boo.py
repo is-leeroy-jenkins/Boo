@@ -272,23 +272,7 @@ class GptModels:
 		self.vector_stores = [ 'gpt-4-0613', 'gpt-4-0314', 'gpt-4-turbo-2024-04-09',
 		                       'gpt-4o-2024-11-20', 'gpt-4o-2024-05-13', 'gpt-4o-mini-2024-07-18',
 		                       'o1-2024-12-17', 'o3-mini-2025-01-31', ]
-		self.bubba = [
-				'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-mini-20250615'
-				':C2kapoPp',
-				'ft:gpt-4.1-2025-04-14:leeroy-jenkins:budget-execution-gpt-4-1-2025-20-05:BZO7tKJy',
-				'ft:gpt-4.1-nano-2025-04-14:leeroy-jenkins:bubba-gpt-4-1-nano-2025-29-05:BcfJJTtv',
-				'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:bubba-gpt-4-1-mini-2025-05-05:BcekjucJ',
-				'ft:gpt-4o-mini-2024-07-18:leeroy-jenkins:bubba-gpt-4o-mini-2025-30-05:BcrX4S0l',
-				'ft:gpt-4o-2024-08-06:leeroy-jenkins:bubba-base-training:BGVAJg57',
-		]
-		
-		self.bro = [
-				'ft:gpt-4.1-2025-04-14:leeroy-jenkins:bro-gpt-4-1-df-analysis-2025-21-05:BZetxEQa',
-				'ft:gpt-4.1-nano-2025-04-14:leeroy-jenkins:bro-gpt-4-1-nano-2025-29-05:BchzJVjL',
-				'ft:gpt-4.1-mini-2025-04-14:leeroy-jenkins:bro-gpt-4-1-mini-2025-29-05:BcgMfu1w',
-				'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-fine-tuned:BTc3PMb5',
-				'ft:gpt-4o-2024-08-06:leeroy-jenkins:bro-analytics:BTX4TYqY', ]
-	
+
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 	
