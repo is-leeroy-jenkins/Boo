@@ -75,9 +75,7 @@ class RegisterForm( FlaskForm ):
 
 class UploadForm( FlaskForm ):
     title = StringField( 'Title', validators=[ DataRequired( ), Length( max=80 ) ] )
-    doc = FileField(
-        'Image/PDF',
-        validators=[ FileRequired( ), FileAllowed( [ 'png','jpg','jpeg','gif','pdf' ], 'Images/PDFs only!' ) ], )
+    doc = FileField( 'Image/PDF', validators=[ FileRequired( ), FileAllowed( [ 'png','jpg','jpeg','gif','pdf' ], 'Images/PDFs only!' ) ], )
     submit = SubmitField( 'Upload' )
 
 # Nested sub-form uses plain `Form`
