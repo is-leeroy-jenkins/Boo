@@ -1,41 +1,40 @@
-{% extends 'base.html' %}
-{% block page_content %}
-<div class="text-center mt-4">
+{% extends 'base.html' %}{% block page_content %}
+<div class='text-center mt-4'>
 </div>
-<div class="row">
-    <div class="col-md-8 col-md-offset-2">
+<div class='row'>
+    <div class='col-md-8 col-md-offset-2'>
 	    
-        <h2 class="army-gold mb-4">Login</h2>
+        <h2 class='army-gold mb-4'>Login</h2>
 	    
-	<div class="auth-wrapper">
-    <div class="auth-card">
+	<div class='auth-wrapper'>
+    <div class='auth-card'>
 
-        <form method="POST">
+        <form method='POST'>
             {{ form.hidden_tag() }}
 
-            <div class="mb-3">
+            <div class='mb-3'>
                 {{ form.username.label(class="form-label") }}
                 {{ form.username(class="form-control") }}
             </div>
 
-            <div class="mb-3">
+            <div class='mb-3'>
                 {{ form.password.label(class="form-label") }}
                 {{ form.password(class="form-control") }}
             </div>
 
-            <div class="form-check mb-3">
+            <div class='form-check mb-3'>
                 {{ form.remember(class="form-check-input") }}
                 {{ form.remember.label(class="form-check-label ms-2") }}
             </div>
 
-            <div class="form-actions">
-			    <button type="submit" class="btn btn-army">
-			        <i class="fa fa-sign-in"></i>
+            <div class='form-actions'>
+			    <button type='submit' class='btn btn-army'>
+			        <i class='fa fa-sign-in'></i>
 			        Login
 			    </button>
 			
-			    <button type="reset" class="btn btn-army btn-reset">
-			        <i class="fa fa-undo"></i>
+			    <button type='reset' class='btn btn-army btn-reset'>
+			        <i class='fa fa-undo'></i>
 			        Clear
 			    </button>
 			</div>
@@ -44,5 +43,6 @@
         </form>
     </div>
 </div>
+</div>
+</div>
 {% endblock %}
-
