@@ -228,7 +228,7 @@ class GptReasoning( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class Mathematics( BaseModel ):
+class GptMath( BaseModel ):
 	class Step( BaseModel ):
 		explanation: Optional[ str ]
 		output: Optional[ str ]
