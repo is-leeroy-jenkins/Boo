@@ -167,7 +167,7 @@ def multi( ):
     return render_template( 'base.html' )  #
 
 @app.route("/contact", methods=[ 'GET', 'POST' ] )
-def contact():
+def contact( ):
     form = ContactForm()
 
     if form.validate_on_submit():

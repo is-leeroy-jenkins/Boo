@@ -35,10 +35,18 @@
                     {{ form.message(class="form-control", rows=5) }}
                 </div>
 
-                <!-- Submit -->
-                <button class="btn btn-army btn-block" type="submit">
-                    Send Message
-                </button>
+                <!-- Submit & Reset Buttons-->
+                <div class="form-actions">
+				    <button type="submit" class="btn btn-army">
+				        <i class="fa fa-paper-plane"></i>
+				        Send Message
+				    </button>
+				
+				    <button type="reset" class="btn btn-army btn-reset">
+				        <i class="fa fa-undo"></i>
+				        Clear
+				    </button>
+				</div>
 
             </form>
         </div>

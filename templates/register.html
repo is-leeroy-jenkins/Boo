@@ -31,8 +31,19 @@
                 {{ form.role.label(class="form-label") }}
                 {{ form.role(class="form-select") }}
             </div>
+			<div class="form-actions">
+			    <button type="submit" class="btn btn-army">
+			        <i class="fa fa-user-plus"></i>
+			        Create Account
+			    </button>
+			
+			    <button type="reset" class="btn btn-army btn-reset">
+			        <i class="fa fa-undo"></i>
+			        Clear
+			    </button>
+			</div>
 
-            <button class="btn btn-army w-100">{{ form.submit.label.text }}</button>
+
         </form>
     </div>
 </div>

@@ -22,7 +22,19 @@
                 {{ form.remember.label(class="form-check-label ms-2") }}
             </div>
 
-            <button class="btn btn-army w-100">{{ form.submit.label.text }}</button>
+            <div class="form-actions">
+			    <button type="submit" class="btn btn-army">
+			        <i class="fa fa-sign-in"></i>
+			        Login
+			    </button>
+			
+			    <button type="reset" class="btn btn-army btn-reset">
+			        <i class="fa fa-undo"></i>
+			        Clear
+			    </button>
+			</div>
+
+
         </form>
     </div>
 </div>

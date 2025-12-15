@@ -1,5 +1,260 @@
-/* ------- NAV FIXES FOR BOOTSTRAP 3 + ARMY BRANDING ------- */
-/* Make nav links gold, readable, properly spaced */
+/* ================= GLOBAL DARK THEME ROOT ================= */
+
+html,
+body
+{
+    background-color: #141414;
+    color: #E6E6E6;
+    min-height: 100%;
+}
+
+.auth-wrapper,
+.profile-wrapper
+{
+    min-height: 100vh;
+    background-color: #141414;
+}
+
+/* ---------------- DARK FORM CONTROLS ---------------- */
+
+.form-control,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="search"],
+textarea
+{
+    background-color: #2F2C2F !important;
+    color: #FFFFFF !important;
+    border: 1px solid #565557;
+}
+
+.form-control::placeholder,
+textarea::placeholder
+{
+    color: #B5B5B5;
+}
+
+.form-control:focus,
+textarea:focus
+{
+    background-color: #2F2C2F;
+    color: #FFFFFF;
+    border-color: #007AFC;
+    box-shadow: 0 0 0 0.2rem rgba(0, 122, 252, 0.25);
+}
+
+.form-control:focus,
+textarea:focus,
+select:focus
+{
+    background-color: #2F2C2F !important;
+    color: #FFFFFF !important;
+    border-color: #007AFC;
+    outline: none;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill
+{
+    -webkit-box-shadow: 0 0 0px 1000px #2F2C2F inset !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+
+select,
+.form-select
+{
+    background-color: #2F2C2F;
+    color: #FFFFFF;
+    border: 1px solid #565557;
+}
+
+select option
+{
+    background-color: #2F2C2F;
+    color: #FFFFFF;
+}
+
+.form-check-label
+{
+    color: #E6E6E6;
+}
+
+/* ---------------- BOO BUTTONS ---------------- */
+
+.btn-army
+{
+    background-color: #2F2C2F;
+    color: #E6E6E6;
+    border: 1px solid #565557;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: background-color 0.2s ease,
+                color 0.2s ease,
+                border-color 0.2s ease;
+}
+
+.btn-army:hover,
+.btn-army:focus
+{
+    background-color: #007AFC;
+    color: #FFFFFF;
+    border-color: #007AFC;
+    text-decoration: none;
+}
+
+.btn-army:active,
+.btn-army.active
+{
+    background-color: #005FCC;
+    border-color: #005FCC;
+    color: #FFFFFF;
+    box-shadow: none;
+}
+
+.btn-default
+{
+    background-color: #2F2C2F;
+    color: #E6E6E6;
+    border-color: #565557;
+}
+
+.btn-default:hover,
+.btn-default:focus
+{
+    background-color: #007AFC;
+    color: #FFFFFF;
+    border-color: #007AFC;
+}
+
+.w-100
+{
+    width: 100%;
+}
+
+/* ---------------- NAVIGATION LINK HOVER ---------------- */
+
+.nav-link-army
+{
+    color: #007AFC !important;
+    border-radius: 4px;
+    transition: background-color 0.2s ease,
+                color 0.2s ease;
+}
+
+.nav-link-army:hover,
+.nav-link-army:focus
+{
+    background-color: #007AFC;
+    color: #FFFFFF !important;
+    text-decoration: none;
+}
+
+.navbar-nav > li.active > a.nav-link-army
+{
+    background-color: #005FCC;
+    color: #FFFFFF !important;
+}
+
+/* ---------------- FORM VERTICAL SPACING ---------------- */
+
+.form-group,
+.mb-3,
+.mb-4
+{
+    margin-bottom: 18px;
+}
+
+input[type="file"]
+{
+    margin-bottom: 22px;
+}
+
+form button,
+form .btn
+{
+    margin-top: 12px;
+}
+
+.form-label,
+label
+{
+    margin-bottom: 6px;
+    display: block;
+}
+
+
+/* ---------------- INLINE CHAT INPUT FIX ---------------- */
+
+.input-group .btn,
+.form-inline .btn
+{
+    margin-top: 0 !important;
+}
+.chat-input + .btn,
+.chat-controls .btn
+{
+    margin-top: 0 !important;
+}
+
+/* ---------------- FORM ACTION BUTTONS ---------------- */
+
+.form-actions
+{
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.btn-reset
+{
+    background-color: #1E1E1E;
+    color: #B5B5B5;
+    border: 1px solid #444;
+}
+
+/* ---------------- RESET BUTTON HOVER (UNIFIED) ---------------- */
+
+.btn-reset:hover,
+.btn-reset:focus
+{
+    background-color: #007AFC;
+    color: #FFFFFF;
+    border-color: #007AFC;
+    opacity: 0.9;
+}
+
+
+
+.form-actions
+{
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+
+
+
+/* ---------------- BUTTON ICON SPACING ---------------- */
+
+.btn i
+{
+    margin-right: 6px;
+}
+
+
+
+
+
+/* ---------------- Navigation Area ---------------- */
+
 .nav-link-army
 {
 	color: #007AFC !important;
@@ -8,12 +263,14 @@
 	padding: 14px 18px !important;
 }
 
-.nav-link-army:hover
+.nav-link-army:hover,
+.nav-link-army:focus
 {
-	color: #FFFFFF !important;
-	background-color: #141414 !important;
-	text-decoration: none;
+    background-color: #13418A !important;
+    color: #FFFFFF !important;
+    text-decoration: none;
 }
+
 
 /* Fix brand spacing and appearance */
 .navbar-brand
@@ -110,6 +367,21 @@
 {
 	border-color: #007AFC;
 	box-shadow: 0 0 0 0.2rem rgba(0, 120, 252, 0.25);
+}
+
+/* ---------------- CHAT CONTROLS ---------------- */
+
+.chat-controls
+{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.chat-controls .btn
+{
+    margin-top: 0;
 }
 
 .contact-card

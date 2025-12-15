@@ -5,7 +5,6 @@
     <p class="text-white fs-5 mb-4">
         A clean, Army-styled application interface built for clarity and purpose.
     </p>
-
     <a href="{{ url_for('login') }}" class="btn btn-army me-2">Login</a>
     <a href="{{ url_for('register') }}" class="btn btn-army">Register</a>
 </div>
@@ -39,14 +38,24 @@
 
         <!-- Chat Input Form -->
         <form method="POST" action="/" class="chat-form">
-            <div class="input-group">
-                <input type="text" name="message" class="form-control chat-input" placeholder="Type your message…" required>
-                <span class="input-group-btn">
-                    <button class="btn btn-army" type="submit">Send</button>
-                </span>
-            </div>
+            <div class="chat-controls">
+			    <input type="text"
+			           class="chat-input form-control"
+			           id="chat-message"
+			           placeholder="Type your message...">
+			
+			    <button type="button" class="btn btn-army" id="send-btn">
+			        <i class="fa fa-paper-plane"></i>
+			        Send
+			    </button>
+			
+			    <button type="button" class="btn btn-army btn-reset" id="clear-chat-btn">
+			        <i class="fa fa-trash"></i>
+			        Clear
+			    </button>
+			</div>
         </form>
-
+    
     </div>
 </div>
 {% endblock %}
