@@ -41,7 +41,32 @@
     init.py
   </summary>
   ******************************************************************************************
-  '''
+  '''# ======================================================================================
+# Guard: Ensure PyMuPDF-backed fitz is being used (NOT the abandoned 'fitz' PyPI package)
+# ======================================================================================
+
+try:
+    import fitz
+
+    # The abandoned 'fitz' package imports 'frontend'
+    if "frontend" in (fitz.__file__ or "").lower():
+        raise ImportError(
+            f"Wrong 'fitz' detected at {fitz.__file__}"
+        )
+
+except ImportError as exc:
+    raise RuntimeError(
+        "PyMuPDF is required for PDF functionality.\n\n"
+        "Do NOT install the 'fitz' or 'frontend' packages.\n\n"
+        "Fix this environment with:\n"
+        "  pip uninstall fitz frontend\n"
+        "  pip install --force-reinstall pymupdf\n"
+    ) from exc
+
+
+# ======================================================================================
+# Normal imports start here
+# ======================================================================================
 from __future__ import annotations
 import base64
 import cv2

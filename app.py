@@ -8,316 +8,258 @@
 from __future__ import annotations
 
 import streamlit as st
-from typing import Dict, List, Any
 import tempfile
+from typing import List, Dict, Any
+import fitz
 
-from boo import Boo
-from config import DEFAULT_MODEL, MODELS
-
+from boo import (
+	Chat,
+	Image,
+	Embedding,
+	Transcription,
+	Translation,
+)
 
 # =========================================================================================
 # Streamlit Configuration
 # =========================================================================================
 
-st.set_page_config(
-    page_title="Boo • AI Assistant",
-    page_icon="👻",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+st.set_page_config( page_title='Boo • Multimodal AI Assistant', page_icon='👻', layout='wide' )
 
+# =========================================================================================
+# Instantiate Boo Components (Read-Only Introspection)
+# =========================================================================================
+
+chat = Chat( )
+image = Image( )
+embedding = Embedding( )
+transcriber = Transcription( )
+translator = Translation( )
 
 # =========================================================================================
 # Session State
 # =========================================================================================
 
-if "boo" not in st.session_state:
-    st.session_state.boo = Boo(model=DEFAULT_MODEL)
+if 'messages' not in st.session_state:
+	st.session_state.messages: List[ Dict[ str, Any ] ] = [ ]
 
-if "messages" not in st.session_state:
-    st.session_state.messages: List[Dict[str, Any]] = []
-
-if "files" not in st.session_state:
-    st.session_state.files: List[str] = []
-
+if 'files' not in st.session_state:
+	st.session_state.files: List[ str ] = [ ]
 
 # =========================================================================================
-# Sidebar — Control Panel
+# Utilities
+# =========================================================================================
+
+def save_temp( upload ) -> str:
+	with tempfile.NamedTemporaryFile( delete=False ) as tmp:
+		tmp.write( upload.read( ) )
+		return tmp.name
+
+# =========================================================================================
+# Sidebar — Controls
 # =========================================================================================
 
 with st.sidebar:
-    st.markdown("## 👻 Boo")
-    st.caption("Federal AI Assistant Framework")
-
-    st.markdown("---")
-    st.markdown("### 🧠 Model")
-
-    model = st.selectbox(
-        "Language Model",
-        MODELS,
-        index=MODELS.index(DEFAULT_MODEL),
-    )
-
-    if model != st.session_state.boo.model:
-        st.session_state.boo = Boo(model=model)
-        st.session_state.messages.clear()
-
-    st.markdown("---")
-    st.markdown("### 🧭 Mode")
-
-    mode = st.radio(
-        "Application Mode",
-        [
-            "Chat",
-            "Image Generation",
-            "Image Editing",
-            "Image Analysis",
-            "Audio (Transcription / Translation)",
-        ],
-        label_visibility="collapsed",
-    )
-
-    st.markdown("---")
-    st.markdown("### 📄 Documents")
-
-    uploaded_docs = st.file_uploader(
-        "Upload documents for grounded Q&A",
-        type=["pdf", "txt", "md", "docx"],
-        accept_multiple_files=True,
-    )
-
-    if uploaded_docs:
-        for f in uploaded_docs:
-            with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                tmp.write(f.read())
-                st.session_state.files.append(tmp.name)
-
-    st.markdown("---")
-
-    if st.button("Clear Conversation"):
-        st.session_state.messages.clear()
-
+	st.markdown( '## 👻 Boo' )
+	st.caption( 'Multimodal AI Framework' )
+	
+	st.markdown( '---' )
+	st.markdown( '### 🧠 Chat Model' )
+	
+	model = st.selectbox(
+		'Model',
+		chat.model_options,
+		index=chat.model_options.index( 'gpt-4o-mini' )
+		if 'gpt-4o-mini' in chat.model_options else 0,
+	)
+	
+	st.markdown( '---' )
+	st.markdown( '### 🧩 Response Includes' )
+	
+	include = st.multiselect(
+		'Include',
+		chat.include_options,
+	)
+	
+	st.markdown( '---' )
+	st.markdown( '### 🧭 Mode' )
+	
+	mode = st.radio(
+		'Mode',
+		[
+				'Chat',
+				'Images',
+				'Audio',
+				'Embeddings',
+		],
+		label_visibility='collapsed',
+	)
+	
+	st.markdown( '---' )
+	st.markdown( '### 📄 Documents' )
+	
+	uploads = st.file_uploader( 'Upload files', type=[ 'pdf', 'txt','md', 'docx' ], accept_multiple_files=True, )
+	
+	if uploads:
+		st.session_state.files.clear( )
+		for f in uploads:
+			st.session_state.files.append( save_temp( f ) )
+	
+	st.markdown( '---' )
+	
+	if st.button( 'Clear Conversation' ):
+		st.session_state.messages.clear( )
 
 # =========================================================================================
-# Helpers
-# =========================================================================================
-
-def temp_file(upload) -> str:
-    with tempfile.NamedTemporaryFile(delete=False) as tmp:
-        tmp.write(upload.read())
-        return tmp.name
-
-
-def run_chat(prompt: str) -> Dict[str, Any]:
-    boo = st.session_state.boo
-    kwargs = {}
-
-    if st.session_state.files:
-        kwargs["files"] = st.session_state.files
-
-    result = boo.run(prompt, **kwargs)
-    return result if isinstance(result, dict) else {"answer": result}
-
-
-# =========================================================================================
-# Hero Header
+# Header
 # =========================================================================================
 
 st.markdown(
-    """
-    <div style="padding: 0.75rem 0;">
-        <h1 style="margin-bottom: 0.25rem;">👻 Boo</h1>
-        <p style="font-size:1.05rem; color:#9aa0a6;">
-            Secure AI assistant for federal analytics, multimodal reasoning, and research
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True,
+	"""
+	<h1 style='margin-bottom:0.25rem;'>👻 Boo</h1>
+	<p style='color:#9aa0a6;'>
+		Introspection-driven, multimodal AI assistant
+	</p>
+	""",
+	unsafe_allow_html=True,
 )
 
-st.divider()
-
-
-# =========================================================================================
-# CHAT MODE — DOCUMENT-GROUNDED Q&A
-# =========================================================================================
-
-if mode == "Chat":
-
-    with st.container(border=True):
-        for msg in st.session_state.messages:
-            with st.chat_message(msg["role"]):
-                st.markdown(msg["content"])
-
-    prompt = st.chat_input("Ask Boo a question...")
-
-    if prompt:
-        st.session_state.messages.append({"role": "user", "content": prompt})
-
-        with st.chat_message("assistant"):
-            with st.spinner("Thinking..."):
-                response = run_chat(prompt)
-                answer = response.get("answer", "")
-                st.markdown(answer)
-
-                if response.get("reasoning"):
-                    with st.expander("🧠 Reasoning"):
-                        st.markdown(response["reasoning"])
-
-                if response.get("tools"):
-                    with st.expander("🛠️ Tools Used"):
-                        st.json(response["tools"])
-
-                if response.get("sources"):
-                    with st.expander("📚 Sources"):
-                        for src in response["sources"]:
-                            st.markdown(f"- {src}")
-
-                st.session_state.messages.append(
-                    {"role": "assistant", "content": answer}
-                )
-
+st.divider( )
 
 # =========================================================================================
-# IMAGE GENERATION
+# CHAT MODE
 # =========================================================================================
 
-elif mode == "Image Generation":
-
-    st.subheader("🖼️ Image Generation")
-
-    prompt = st.text_area("Image prompt", height=120)
-    size = st.selectbox("Image size", ["1024x1024", "512x512", "256x256"])
-
-    if st.button("Generate Image"):
-        if not hasattr(st.session_state.boo, "generate_image"):
-            st.error("Image generation not available in this Boo build.")
-        else:
-            with st.spinner("Generating image..."):
-                image = st.session_state.boo.generate_image(prompt, size=size)
-                st.image(image, caption="Generated Image")
-
-
-# =========================================================================================
-# IMAGE EDITING
-# =========================================================================================
-
-elif mode == "Image Editing":
-
-    st.subheader("✏️ Image Editing")
-
-    base_img = st.file_uploader("Base image", type=["png", "jpg", "jpeg"])
-    mask_img = st.file_uploader("Mask image (optional)", type=["png"])
-    prompt = st.text_area("Edit instructions", height=120)
-
-    if st.button("Edit Image"):
-        if not hasattr(st.session_state.boo, "edit_image"):
-            st.error("Image editing not available in this Boo build.")
-        elif not base_img:
-            st.warning("Please upload a base image.")
-        else:
-            base_path = temp_file(base_img)
-            mask_path = temp_file(mask_img) if mask_img else None
-
-            with st.spinner("Editing image..."):
-                image = st.session_state.boo.edit_image(
-                    image_path=base_path,
-                    mask_path=mask_path,
-                    prompt=prompt,
-                )
-                st.image(image, caption="Edited Image")
-
+if mode == 'Chat':
+	store_name = st.selectbox(
+		'Vector Store',
+		list( chat.vector_stores.keys( ) ),
+	)
+	
+	chat.vector_store_ids = [ chat.vector_stores[ store_name ] ]
+	chat.include = include
+	
+	for msg in st.session_state.messages:
+		with st.chat_message( msg[ 'role' ] ):
+			st.markdown( msg[ 'content' ] )
+	
+	prompt = st.chat_input( 'Ask Boo a question…' )
+	
+	if prompt:
+		st.session_state.messages.append(
+			{
+					'role': 'user',
+					'content': prompt }
+		)
+		
+		with st.chat_message( 'assistant' ):
+			with st.spinner( 'Thinking…' ):
+				response = chat.generate_text(
+					prompt=prompt,
+					model=model,
+				)
+				
+				st.markdown( response or "" )
+				st.session_state.messages.append(
+					{
+							'role': 'assistant',
+							'content': response or "" }
+				)
 
 # =========================================================================================
-# IMAGE ANALYSIS
+# IMAGE MODE
 # =========================================================================================
-
-elif mode == "Image Analysis":
-
-    st.subheader("🔍 Image Analysis")
-
-    img = st.file_uploader("Upload image", type=["png", "jpg", "jpeg"])
-    prompt = st.text_area(
-        "Analysis instructions",
-        value="Describe the image in detail.",
-        height=120,
-    )
-
-    if st.button("Analyze Image"):
-        if not hasattr(st.session_state.boo, "analyze_image"):
-            st.error("Image analysis not available in this Boo build.")
-        elif not img:
-            st.warning("Please upload an image.")
-        else:
-            img_path = temp_file(img)
-
-            with st.spinner("Analyzing image..."):
-                result = st.session_state.boo.analyze_image(
-                    image_path=img_path,
-                    prompt=prompt,
-                )
-                st.markdown(result)
-
+elif mode == 'Images':
+	tab_gen, tab_analyze = st.tabs( [ '🖼️ Generate',  '🔍 Analyze' ] )
+	
+	with tab_gen:
+		prompt = st.text_area( 'Prompt', height=120 )
+		
+		col1, col2 = st.columns( 2 )
+		
+		with col1:
+			size = st.selectbox( 'Size', image.size_options )
+			quality = st.selectbox( 'Quality', [ 'standard',  'hd' ] )
+		
+		with col2:
+			fmt = st.selectbox( 'Format', image.format_options )
+			detail = st.selectbox( 'Detail', image.detail_options )
+		
+		if st.button( 'Generate Image' ):
+			with st.spinner( 'Generating…' ):
+				url = image.generate(
+					prompt=prompt,
+					model='dall-e-3',
+					size=size,
+					quality=quality,
+				)
+				st.image( url )
+	
+	with tab_analyze:
+		img = st.file_uploader( 'Upload image', type=[ 'png', 'jpg',  'jpeg' ] )
+		prompt = st.text_area( 'Analysis prompt', value='Describe this image in detail.', )
+		
+		if img and st.button( 'Analyze Image' ):
+			path = save_temp( img )
+			with st.spinner( 'Analyzing…' ):
+				result = image.analyze( text=prompt, path=path,)
+				st.markdown( result )
 
 # =========================================================================================
-# AUDIO — TRANSCRIPTION & TRANSLATION
+# AUDIO MODE
 # =========================================================================================
+elif mode == 'Audio':
+	audio = st.audio_input( 'Record or upload audio' )
+	task = st.radio( 'Task', [ 'Transcription', 'Translation' ], horizontal=True )
+	
+	if audio and st.button( 'Process' ):
+		path = save_temp( audio )
+		
+		with st.spinner( 'Processing…' ):
+			if task == 'Transcription':
+				text = transcriber.transcribe( path )
+				st.markdown( '### 📝 Transcription' )
+				st.markdown( text )
+			
+			else:
+				lang = st.text_input( 'Target language', value='en' )
+				text = translator.translate( path, lang )
+				st.markdown( '### 🌍 Translation' )
+				st.markdown( text )
 
-elif mode == "Audio (Transcription / Translation)":
-
-    st.subheader("🎙️ Audio Transcription & Translation")
-
-    audio_file = st.audio_input("Record or upload audio")
-
-    task = st.radio(
-        "Task",
-        ["Transcription", "Translation"],
-        horizontal=True,
-    )
-
-    target_language = None
-    if task == "Translation":
-        target_language = st.text_input(
-            "Target language (ISO code)",
-            value="en",
-        )
-
-    if audio_file and st.button("Process Audio"):
-        audio_path = temp_file(audio_file)
-        boo = st.session_state.boo
-
-        with st.spinner("Processing audio..."):
-            if task == "Transcription":
-                if not hasattr(boo, "transcribe"):
-                    st.error("Audio transcription not available in this Boo build.")
-                else:
-                    text = boo.transcribe(audio_path)
-                    st.markdown("### 📝 Transcription")
-                    st.markdown(text)
-
-            elif task == "Translation":
-                if not hasattr(boo, "translate"):
-                    st.error("Audio translation not available in this Boo build.")
-                else:
-                    text = boo.translate(
-                        audio_path,
-                        target_language=target_language,
-                    )
-                    st.markdown("### 🌍 Translation")
-                    st.markdown(text)
-
+# =========================================================================================
+# EMBEDDINGS MODE
+# =========================================================================================
+elif mode == 'Embeddings':
+	text = st.text_area( 'Text to embed', height=150 )
+	
+	col1, col2 = st.columns( 2 )
+	
+	with col1:
+		model = st.selectbox( 'Model', embedding.model_options )
+	
+	with col2:
+		encoding = st.selectbox( 'Encoding', embedding.encoding_options )
+	
+	if st.button( 'Create Embedding' ):
+		with st.spinner( 'Embedding…' ):
+			vector = embedding.create(
+				text=text,
+				model=model,
+				format=encoding,
+			)
+			st.success( f'Vector length: {len( vector )}' )
+			st.json( vector[ :10 ] )
 
 # =========================================================================================
 # Footer
 # =========================================================================================
 
 st.markdown(
-    f"""
-    <hr/>
-    <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#9aa0a6;">
-        <span>Boo Framework</span>
-        <span>Model: {st.session_state.boo.model}</span>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+	"""
+	<hr/>
+	<div style='display:flex; justify-content:space-between; color:#9aa0a6; font-size:0.85rem;'>
+		<span>Boo Framework</span>
+		<span>Single-page • Introspection-driven</span>
+	</div>
+	""", unsafe_allow_html=True, )

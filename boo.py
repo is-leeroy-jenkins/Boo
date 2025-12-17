@@ -672,6 +672,41 @@ class Chat( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
+	def edit_image( self, prompt: str, src_url: str, dest_path: str ) -> str | None:
+		'''
+			
+			Purpose:
+			--------
+			
+			
+			Parameters:
+			---------
+			prompt: str - instructions guiding the LLM
+			src_url: str - The path to the source image
+			dest_path: str - name of the edited image
+	
+			Returns:
+			----------
+			
+			
+		'''
+		try:
+			throw_if( 'prompt', prompt )
+			throw_if( 'src_url', src_url )
+			throw_if( 'dest_path', dest_path )
+			self.prompt = prompt
+			_source = src_url
+			_url = dest_path
+			
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'boo'
+			exception.cause = 'Chat'
+			exception.method = 'analyze_image( self, prompt: str, url: str )'
+			error = ErrorDialog( exception )
+			error.show( )
+			
+		
 	def summarize_document( self, prompt: str, pdf_path: str ) -> str | None:
 		"""
 	
