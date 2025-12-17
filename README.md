@@ -360,7 +360,7 @@ print(f"Image URL: {image_url}")
 
   python
   
-  result = bro.search_files("Legislation related to environmental impact funding")
+  result = bro.search_files( 'Legislation related to environmental impact funding' )
   print(result)
 
 ```
@@ -377,7 +377,7 @@ print(f"Image URL: {image_url}")
 
   python
   
-  result = bro.search_files("Legislation related to environmental impact funding")
+  result = bro.search_files( 'Legislation related to environmental impact funding' )
   print(result)
 
 ```
@@ -394,7 +394,7 @@ print(f"Image URL: {image_url}")
 
   python
   
-  insights = bro.search_web("Current status of the Federal AI Bill 2025")
+  insights = bro.search_web( 'Current status of the Federal AI Bill 2025' )
   print(insights)
 
 ```

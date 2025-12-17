@@ -1151,7 +1151,7 @@ class TTS( GPT ):
 		         'nova',
 		         'sage',
 		         'shiver', ]
-
+		
 	@property
 	def format_options( self ) -> List[ str ] | None:
 		'''
@@ -1167,7 +1167,7 @@ class TTS( GPT ):
 		         'flac',
 		         'opus',
 		         'pcm' ]
-
+	
 	@property
 	def speed_options( self ) -> List[ float ] | None:
 		'''
@@ -1343,7 +1343,40 @@ class Transcription( GPT ):
         '''
 		return [ 'whisper-1',
 		         'gpt-4o-mini-transcribe',
-		         'gpt-4o-transcribe' ]
+		         'gpt-4o-transcribe',
+		         'gpt-4o-transcribe-diarize' ]
+		
+	@property
+	def file_options( self ) -> List[ str ] | None:
+		'''
+
+	        Purpose:
+	        --------
+	        Method that returns a list of image formats
+
+        '''
+		return [ 'mp3',
+		         'wav',
+		         'aac',
+		         'flac',
+		         'opus',
+		         'pcm' ]
+	
+	@property
+	def format_options( self ) -> List[ str ] | None:
+		'''
+			
+			Returns:
+			-------
+			List[ str ] output  format options
+			
+		'''
+		return [ 'json',
+		         'text',
+		         'srt',
+		         'verbose_json',
+		         'vtt',
+		         'diarized_json' ]
 	
 	def transcribe( self, path: str, model: str='whisper-1' ) -> str:
 		"""
@@ -1353,8 +1386,9 @@ class Transcription( GPT ):
         """
 		try:
 			throw_if( 'path', path )
+			self.model = model
 			with open( path, 'rb' ) as self.audio_file:
-				resp = self.client.audio.transcriptions.create( model='whisper-1',
+				resp = self.client.audio.transcriptions.create( model=self.model,
 					file=self.audio_file )
 			return resp.text
 		except Exception as e:
@@ -1435,7 +1469,7 @@ class Translation( GPT ):
 	    create_small_embedding( self, prompt: str, path: str )
 
     """
-	language: Optional[ str ]
+	target_language: Optional[ str ]
 	
 	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
 			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
@@ -1455,7 +1489,8 @@ class Translation( GPT ):
 		self.response = None
 		self.voice = None
 	
-	def get_model_options( self ) -> str:
+	@property
+	def model_options( self ) -> str:
 		'''
 	
 	        Purpose:
@@ -1469,9 +1504,28 @@ class Translation( GPT ):
 		         'gpt-4-0314',
 		         'gpt-4-turbo-2024-04-09', ]
 	
-	def get_voice_options( self ):
+	@property
+	def language_options( self ):
 		'''
 	
+	        Purpose:
+	        --------
+	        Method that returns a list of voice names
+
+        '''
+		return [ 'English',
+		         'Spanish',
+		         'Tagalog',
+		         'French',
+		         'Japanese',
+		         'German',
+		         'Italian',
+		         'Chinese' ]
+		
+	@property
+	def voice_options( self ):
+		'''
+
 	        Purpose:
 	        --------
 	        Method that returns a list of voice names
@@ -1522,7 +1576,7 @@ class Translation( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def translate( self, path: str ) -> str:
+	def translate( self, path: str ) -> str | None:
 		"""
 		
             Translate non-English speech to English with Whisper.
@@ -1677,9 +1731,13 @@ class Image( GPT ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [ "dall-e-3",
-		         "gpt-4o-mini",
-		         "gpt-4o" ]
+		return [ 'dall-e-2',
+		         'dall-e-3',
+		         'gpt-4o-mini',
+		         'gpt-4o',
+		         'gpt-image-1',
+		         'gpt-image-1-mini',
+		         'gpt-image-1.5', ]
 		
 	@property
 	def size_options( self ) -> List[ str ]:
@@ -1718,6 +1776,19 @@ class Image( GPT ):
 		         '.jpeg',
 		         '.webp',
 		         '.gif' ]
+		
+	@property
+	def quality_options( self ) -> List[ str ]:
+		'''
+
+	        Purpose:
+	        ________
+	        Method that returns a  list of quality options
+
+        '''
+		return [ 'low',
+		         'medium',
+		         'hi', ]
 	
 	@property
 	def detail_options( self ) -> List[ str ]:
@@ -1819,7 +1890,7 @@ class Image( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def edit( self, prompt: str, path: str, size: str= '1024x1024' ) -> str:
+	def edit( self, prompt: str, path: str, size: str='1024x1024' ) -> str:
 		"""
 
 	        Purpose

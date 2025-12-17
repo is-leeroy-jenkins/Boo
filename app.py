@@ -7,259 +7,375 @@
 
 from __future__ import annotations
 
+import config as cfg
 import streamlit as st
 import tempfile
 from typing import List, Dict, Any
-import fitz
-
 from boo import (
-	Chat,
-	Image,
-	Embedding,
-	Transcription,
-	Translation,
+    Chat,
+    Image,
+    Embedding,
+    Transcription,
+    Translation,
+    TTS,
 )
 
-# =========================================================================================
-# Streamlit Configuration
-# =========================================================================================
+# ======================================================================================
+# Page Configuration
+# ======================================================================================
 
-st.set_page_config( page_title='Boo • Multimodal AI Assistant', page_icon='👻', layout='wide' )
+st.set_page_config(  page_title="Boo • Multimoldal AI Agent", page_icon=cfg.FAVICON_PATH, layout='wide' )
 
-# =========================================================================================
-# Instantiate Boo Components (Read-Only Introspection)
-# =========================================================================================
-
-chat = Chat( )
-image = Image( )
-embedding = Embedding( )
-transcriber = Transcription( )
-translator = Translation( )
-
-# =========================================================================================
+# ======================================================================================
 # Session State
-# =========================================================================================
+# ======================================================================================
 
-if 'messages' not in st.session_state:
-	st.session_state.messages: List[ Dict[ str, Any ] ] = [ ]
+if "messages" not in st.session_state:
+    st.session_state.messages: List[Dict[str, Any]] = []
 
-if 'files' not in st.session_state:
-	st.session_state.files: List[ str ] = [ ]
-
-# =========================================================================================
+# ======================================================================================
 # Utilities
-# =========================================================================================
+# ======================================================================================
 
-def save_temp( upload ) -> str:
-	with tempfile.NamedTemporaryFile( delete=False ) as tmp:
-		tmp.write( upload.read( ) )
-		return tmp.name
+def save_temp(upload) -> str:
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        tmp.write(upload.read())
+        return tmp.name
 
-# =========================================================================================
-# Sidebar — Controls
-# =========================================================================================
+# ======================================================================================
+# Sidebar — Primary Mode Selection
+# ======================================================================================
 
 with st.sidebar:
-	st.markdown( '## 👻 Boo' )
-	st.caption( 'Multimodal AI Framework' )
-	
-	st.markdown( '---' )
-	st.markdown( '### 🧠 Chat Model' )
-	
-	model = st.selectbox(
-		'Model',
-		chat.model_options,
-		index=chat.model_options.index( 'gpt-4o-mini' )
-		if 'gpt-4o-mini' in chat.model_options else 0,
-	)
-	
-	st.markdown( '---' )
-	st.markdown( '### 🧩 Response Includes' )
-	
-	include = st.multiselect(
-		'Include',
-		chat.include_options,
-	)
-	
-	st.markdown( '---' )
-	st.markdown( '### 🧭 Mode' )
-	
-	mode = st.radio(
-		'Mode',
-		[
-				'Chat',
-				'Images',
-				'Audio',
-				'Embeddings',
-		],
-		label_visibility='collapsed',
-	)
-	
-	st.markdown( '---' )
-	st.markdown( '### 📄 Documents' )
-	
-	uploads = st.file_uploader( 'Upload files', type=[ 'pdf', 'txt','md', 'docx' ], accept_multiple_files=True, )
-	
-	if uploads:
-		st.session_state.files.clear( )
-		for f in uploads:
-			st.session_state.files.append( save_temp( f ) )
-	
-	st.markdown( '---' )
-	
-	if st.button( 'Clear Conversation' ):
-		st.session_state.messages.clear( )
+    st.header("Mode")
+    mode = st.radio(
+        "Select capability",
+        ["Chat", "Images", "Audio", "Embeddings"],
+    )
 
-# =========================================================================================
+# ======================================================================================
 # Header
-# =========================================================================================
+# ======================================================================================
 
 st.markdown(
-	"""
-	<h1 style='margin-bottom:0.25rem;'>👻 Boo</h1>
-	<p style='color:#9aa0a6;'>
-		Introspection-driven, multimodal AI assistant
-	</p>
-	""",
-	unsafe_allow_html=True,
+    """
+    <h1 style="margin-bottom:0.25rem;">Boo</h1>
+    <p style="color:#9aa0a6;">Multimodal AI Assistant</p>
+    """,
+    unsafe_allow_html=True,
 )
 
-st.divider( )
+st.divider()
 
-# =========================================================================================
+# ======================================================================================
 # CHAT MODE
-# =========================================================================================
+# ======================================================================================
 
-if mode == 'Chat':
-	store_name = st.selectbox(
-		'Vector Store',
-		list( chat.vector_stores.keys( ) ),
-	)
-	
-	chat.vector_store_ids = [ chat.vector_stores[ store_name ] ]
-	chat.include = include
-	
-	for msg in st.session_state.messages:
-		with st.chat_message( msg[ 'role' ] ):
-			st.markdown( msg[ 'content' ] )
-	
-	prompt = st.chat_input( 'Ask Boo a question…' )
-	
-	if prompt:
-		st.session_state.messages.append(
-			{
-					'role': 'user',
-					'content': prompt }
-		)
-		
-		with st.chat_message( 'assistant' ):
-			with st.spinner( 'Thinking…' ):
-				response = chat.generate_text(
-					prompt=prompt,
-					model=model,
-				)
-				
-				st.markdown( response or "" )
-				st.session_state.messages.append(
-					{
-							'role': 'assistant',
-							'content': response or "" }
-				)
+if mode == "Chat":
 
-# =========================================================================================
+    chat = Chat()
+
+    with st.sidebar:
+        st.header("Chat Settings")
+
+        model = st.selectbox(
+            "Model",
+            chat.model_options,
+        )
+
+        # ---------------- Advanced Generation Controls ----------------
+
+        with st.expander("Advanced generation settings", expanded=False):
+
+            temperature = st.slider(
+                "Temperature",
+                min_value=0.0,
+                max_value=2.0,
+                value=0.7,
+                step=0.05,
+            )
+
+            top_p = st.slider(
+                "Top-P",
+                min_value=0.0,
+                max_value=1.0,
+                value=1.0,
+                step=0.05,
+            )
+
+            frequency_penalty = st.slider(
+                "Frequency penalty",
+                min_value=-2.0,
+                max_value=2.0,
+                value=0.0,
+                step=0.1,
+            )
+
+            presence_penalty = st.slider(
+                "Presence penalty",
+                min_value=-2.0,
+                max_value=2.0,
+                value=0.0,
+                step=0.1,
+            )
+
+            max_tokens = st.slider(
+                "Max tokens",
+                min_value=128,
+                max_value=4096,
+                value=1024,
+                step=128,
+            )
+
+        include = st.multiselect(
+            "Include in response",
+            chat.include_options,
+        )
+
+        chat.include = include
+
+    _, center, _ = st.columns([1, 2, 1])
+
+    with center:
+        for msg in st.session_state.messages:
+            with st.chat_message(msg["role"]):
+                st.markdown(msg["content"])
+
+        prompt = st.chat_input("Ask Boo something…")
+
+        if prompt:
+            st.session_state.messages.append(
+                {"role": "user", "content": prompt}
+            )
+
+            with st.chat_message("assistant"):
+                with st.spinner("Thinking…"):
+                    response = chat.generate_text(
+                        prompt=prompt,
+                        model=model,
+                        temperature=temperature,
+                        top_p=top_p,
+                        frequency_penalty=frequency_penalty,
+                        presence_penalty=presence_penalty,
+                        max_tokens=max_tokens,
+                    )
+                    st.markdown(response or "")
+                    st.session_state.messages.append(
+                        {"role": "assistant", "content": response or ""}
+                    )
+
+# ======================================================================================
 # IMAGE MODE
-# =========================================================================================
-elif mode == 'Images':
-	tab_gen, tab_analyze = st.tabs( [ '🖼️ Generate',  '🔍 Analyze' ] )
-	
-	with tab_gen:
-		prompt = st.text_area( 'Prompt', height=120 )
-		
-		col1, col2 = st.columns( 2 )
-		
-		with col1:
-			size = st.selectbox( 'Size', image.size_options )
-			quality = st.selectbox( 'Quality', [ 'standard',  'hd' ] )
-		
-		with col2:
-			fmt = st.selectbox( 'Format', image.format_options )
-			detail = st.selectbox( 'Detail', image.detail_options )
-		
-		if st.button( 'Generate Image' ):
-			with st.spinner( 'Generating…' ):
-				url = image.generate(
-					prompt=prompt,
-					model='dall-e-3',
-					size=size,
-					quality=quality,
-				)
-				st.image( url )
-	
-	with tab_analyze:
-		img = st.file_uploader( 'Upload image', type=[ 'png', 'jpg',  'jpeg' ] )
-		prompt = st.text_area( 'Analysis prompt', value='Describe this image in detail.', )
-		
-		if img and st.button( 'Analyze Image' ):
-			path = save_temp( img )
-			with st.spinner( 'Analyzing…' ):
-				result = image.analyze( text=prompt, path=path,)
-				st.markdown( result )
+# ======================================================================================
 
-# =========================================================================================
-# AUDIO MODE
-# =========================================================================================
-elif mode == 'Audio':
-	audio = st.audio_input( 'Record or upload audio' )
-	task = st.radio( 'Task', [ 'Transcription', 'Translation' ], horizontal=True )
-	
-	if audio and st.button( 'Process' ):
-		path = save_temp( audio )
-		
-		with st.spinner( 'Processing…' ):
-			if task == 'Transcription':
-				text = transcriber.transcribe( path )
-				st.markdown( '### 📝 Transcription' )
-				st.markdown( text )
-			
-			else:
-				lang = st.text_input( 'Target language', value='en' )
-				text = translator.translate( path, lang )
-				st.markdown( '### 🌍 Translation' )
-				st.markdown( text )
+elif mode == "Images":
 
-# =========================================================================================
+    image = Image()
+
+    with st.sidebar:
+        st.header("Image Settings")
+
+        model = st.selectbox("Model", image.model_options)
+        size = st.selectbox("Size", image.size_options)
+        quality = st.selectbox("Quality", image.quality_options)
+        style = st.selectbox("Style", image.style_options)
+        detail = st.selectbox("Detail", image.detail_options)
+        fmt = st.selectbox("Format", image.format_options)
+
+    _, center, _ = st.columns([1, 2, 1])
+
+    with center:
+        tab_gen, tab_analyze = st.tabs(["Generate", "Analyze"])
+
+        with tab_gen:
+            prompt = st.text_area("Prompt", height=120)
+
+            if st.button("Generate Image"):
+                with st.spinner("Generating…"):
+                    url = image.generate(
+                        prompt=prompt,
+                        model=model,
+                        size=size,
+                        quality=quality,
+                        style=style,
+                        detail=detail,
+                        format=fmt,
+                    )
+                    st.image(url)
+
+        with tab_analyze:
+            img = st.file_uploader(
+                "Upload image",
+                type=["png", "jpg", "jpeg"],
+            )
+
+            prompt = st.text_area(
+                "Analysis prompt",
+                value="Describe this image in detail.",
+            )
+
+            if img and st.button("Analyze Image"):
+                path = save_temp(img)
+                with st.spinner("Analyzing…"):
+                    result = image.analyze(
+                        text=prompt,
+                        path=path,
+                        model=model,
+                        detail=detail,
+                    )
+                    st.markdown(result)
+
+# ======================================================================================
+# AUDIO MODE (SEMANTICALLY CORRECT)
+# ======================================================================================
+
+elif mode == "Audio":
+
+    with st.sidebar:
+        st.header("Audio Task")
+        task = st.radio(
+            "Select audio capability",
+            ["Transcription", "Translation", "Text-to-Speech"],
+        )
+
+    # ---------------- Transcription ----------------
+
+    if task == "Transcription":
+
+        transcriber = Transcription()
+
+        with st.sidebar:
+            st.header("Transcription Settings")
+
+            model = st.selectbox(
+                "Model",
+                transcriber.model_options,
+            )
+
+            fmt = st.selectbox(
+                "Output format",
+                transcriber.format_options,
+            )
+
+        _, center, _ = st.columns([1, 2, 1])
+
+        with center:
+            audio = st.audio_input("Record or upload audio")
+
+            if audio and st.button("Transcribe"):
+                path = save_temp(audio)
+
+                with st.spinner("Transcribing…"):
+                    text = transcriber.transcribe(
+                        path,
+                        model=model,
+                        format=fmt,
+                    )
+                    st.subheader("Transcription")
+                    st.markdown(text)
+
+    # ---------------- Translation (Whisper → English) ----------------
+
+    elif task == "Translation":
+
+        translator = Translation()
+
+        with st.sidebar:
+            st.header("Translation Settings")
+
+            model = st.selectbox(
+                "Model",
+                translator.model_options,
+            )
+
+            st.caption("Speech is translated to English (Whisper).")
+
+        _, center, _ = st.columns([1, 2, 1])
+
+        with center:
+            audio = st.audio_input("Record or upload audio")
+
+            if audio and st.button("Translate"):
+                path = save_temp(audio)
+
+                with st.spinner("Translating…"):
+                    text = translator.translate(
+                        path,
+                        model=model,
+                    )
+                    st.subheader("Translation (to English)")
+                    st.markdown(text)
+
+    # ---------------- Text-to-Speech ----------------
+
+    else:
+
+        tts = TTS()
+
+        with st.sidebar:
+            st.header("Text-to-Speech Settings")
+
+            model = st.selectbox("Model", tts.model_options)
+            voice = st.selectbox("Voice", tts.voice_options)
+            fmt = st.selectbox("Format", tts.format_options)
+            speed = st.selectbox("Speed", tts.speed_options)
+
+        _, center, _ = st.columns([1, 2, 1])
+
+        with center:
+            text = st.text_area("Text to speak", height=120)
+
+            if text and st.button("Generate Speech"):
+                with st.spinner("Synthesizing…"):
+                    audio_path = tts.speak(
+                        text=text,
+                        model=model,
+                        voice=voice,
+                        format=fmt,
+                        speed=speed,
+                    )
+                    st.audio(audio_path)
+
+# ======================================================================================
 # EMBEDDINGS MODE
-# =========================================================================================
-elif mode == 'Embeddings':
-	text = st.text_area( 'Text to embed', height=150 )
-	
-	col1, col2 = st.columns( 2 )
-	
-	with col1:
-		model = st.selectbox( 'Model', embedding.model_options )
-	
-	with col2:
-		encoding = st.selectbox( 'Encoding', embedding.encoding_options )
-	
-	if st.button( 'Create Embedding' ):
-		with st.spinner( 'Embedding…' ):
-			vector = embedding.create(
-				text=text,
-				model=model,
-				format=encoding,
-			)
-			st.success( f'Vector length: {len( vector )}' )
-			st.json( vector[ :10 ] )
+# ======================================================================================
 
-# =========================================================================================
+elif mode == "Embeddings":
+
+    embedding = Embedding()
+
+    with st.sidebar:
+        st.header("Embedding Settings")
+
+        model = st.selectbox("Model", embedding.model_options)
+        encoding = st.selectbox("Encoding", embedding.encoding_options)
+
+    _, center, _ = st.columns([1, 2, 1])
+
+    with center:
+        text = st.text_area("Text to embed", height=150)
+
+        if st.button("Create Embedding"):
+            with st.spinner("Embedding…"):
+                vector = embedding.create(
+                    text=text,
+                    model=model,
+                    format=encoding,
+                )
+                st.success(f"Vector length: {len(vector)}")
+                st.json(vector[:10])
+
+# ======================================================================================
 # Footer
-# =========================================================================================
+# ======================================================================================
 
 st.markdown(
-	"""
-	<hr/>
-	<div style='display:flex; justify-content:space-between; color:#9aa0a6; font-size:0.85rem;'>
-		<span>Boo Framework</span>
-		<span>Single-page • Introspection-driven</span>
-	</div>
-	""", unsafe_allow_html=True, )
+    """
+    <hr/>
+    <div style="display:flex; justify-content:space-between; color:#9aa0a6; font-size:0.85rem;">
+        <span>Boo Framework</span>
+        <span>Mode-driven • Option-complete • Honest UI</span>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
