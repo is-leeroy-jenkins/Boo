@@ -129,6 +129,67 @@ Set the following in your environment or `.env` file:
 ```
 
 
+## 🚀 Streamlit Application
+
+Boo includes a **first-class, single-page Streamlit application** that exposes the framework’s
+core capabilities through a unified graphical interface.
+
+The Streamlit app is designed for:
+
+* Interactive analysis
+* Multimodal experimentation
+* Demonstrations and internal tools
+* Rapid prototyping on top of Boo’s agents and models
+
+The application runs entirely on top of Boo’s core APIs and does **not** modify or duplicate
+framework logic.
+
+---
+
+### Supported Capabilities
+
+The Streamlit application supports the following workflows:
+
+* 💬 **Chat-based Q&A**
+* 📄 **Document-grounded question answering**
+* 🖼️ **Image generation**
+* ✏️ **Image editing**
+* 🔍 **Image analysis (vision)**
+* 🎙️ **Audio transcription**
+* 🌍 **Audio translation**
+* 🧠 **Dynamic model switching**
+* 🧩 **Tool, reasoning, and source inspection (when available)**
+
+All workflows are exposed from a **single application page** with explicit mode selection,
+ensuring clear separation between text, document, image, and audio tasks.
+
+---
+
+### Running the Streamlit Application
+
+From the project root:
+
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+Once running, the application will be available at:
+
+```
+http://localhost:8501
+```
+
+---
+
+### Notes
+
+* Some capabilities (image generation, audio transcription, translation, etc.) depend on
+  model availability and configuration.
+* If a capability is unavailable in a given environment, the UI will **degrade gracefully**
+  and display an informational message rather than failing.
+
+
 
 ## 🧰 Overview
 
