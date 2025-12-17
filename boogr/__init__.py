@@ -41,9 +41,9 @@
     init.py
   </summary>
   ******************************************************************************************
-  '''# ======================================================================================
-# Guard: Ensure PyMuPDF-backed fitz is being used (NOT the abandoned 'fitz' PyPI package)
-# ======================================================================================
+  '''
+from __future__ import annotations
+
 
 try:
     import fitz
@@ -51,7 +51,7 @@ try:
     # The abandoned 'fitz' package imports 'frontend'
     if "frontend" in (fitz.__file__ or "").lower():
         raise ImportError(
-            f"Wrong 'fitz' detected at {fitz.__file__}"
+            f"Wrong 'fitz' package detected at {fitz.__file__}"
         )
 
 except ImportError as exc:
@@ -67,7 +67,7 @@ except ImportError as exc:
 # ======================================================================================
 # Normal imports start here
 # ======================================================================================
-from __future__ import annotations
+
 import base64
 import cv2
 import config as cfg

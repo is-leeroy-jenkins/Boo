@@ -186,7 +186,6 @@ class GptHeader:
 		self.content_type = 'application/json'
 		self.api_key = cfg.OPENAI_API_KEY
 		self.authorization = f'Bearer {cfg.OPENAI_API_KEY}'
-		
 	
 	def __dir__( self ) -> list[ str ] | None:
 		return [ 'content_type', 'api_key', 'authorization', 'get_data' ]

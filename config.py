@@ -44,6 +44,7 @@
 '''
 import os
 from typing import Optional, List, Dict
+from pathlib import Path
 
 GEOAPIFY_API_KEY = os.getenv( 'GEOAPIFY_API_KEY' )
 GEOCODING_API_KEY = os.getenv( 'GEOCODING_API_KEY' )
@@ -65,7 +66,6 @@ WEATHERAPI_API_KEY = os.getenv( 'WEATHERAPI_API_KEY' )
 WEAVIEATE_API_KEY = os.getenv( 'WEAVIEATE_API_KEY' )
 QDRANT_API_KEY = os.getenv( 'QDRANT_API_KEY' )
 SINGLESTORE_API_KEY = os.getenv( 'SINGLESTORE_API_KEY' )
-BASEDIR = r'C:\Boo'
 SECRET_KEY = os.urandom( 32 )
 MAIL_SERVER = os.environ.get( 'MAIL_SERVER', 'smtp.googlemail.com' )
 MAIL_PORT = int( os.environ.get( 'MAIL_PORT', '587' ) )
@@ -83,7 +83,8 @@ SAMPLE_RATE = 48000
 MODELS = [ 'gpt-5-nano-2025-08-07', 'gpt-4.1-nano-2025-04-14', 'gpt-4o-mini', ]
 DEFAULT_MODEL = MODELS[ 0 ]
 SQLALCHEMY_DATABASE_URI = f'sqlite:///' + r'C:\Users\terry\source\repos\Boo\stores\sqlite\datamodels\Data.db'
-
+BASE_DIR = Path(__file__).resolve().parent
+FAVICON_PATH = BASE_DIR / 'resources' / 'ico' / 'favicon.ico'
 
 def set_environment( ):
 	"""
