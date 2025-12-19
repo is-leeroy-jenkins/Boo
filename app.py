@@ -33,6 +33,9 @@ st.set_page_config(  page_title="Boo • Multimoldal AI", page_icon=cfg.FAVICON_
 if "messages" not in st.session_state:
     st.session_state.messages: List[Dict[str, Any]] = []
 
+if "doc_file_id" not in st.session_state:
+    st.session_state.doc_file_id: str | None = None
+
 # ======================================================================================
 # Utilities
 # ======================================================================================
@@ -50,7 +53,7 @@ with st.sidebar:
     st.header("Mode")
     mode = st.radio(
         "Select capability",
-        ["Chat", "Images", "Audio", "Embeddings"],
+        ["Chat", "Images", "Audio", "Documents", "Embeddings"],
     )
 
 # ======================================================================================
@@ -60,7 +63,7 @@ with st.sidebar:
 st.markdown(
     """
     <h1 style="margin-bottom:0.25rem;">Boo</h1>
-    <p style="color:#9aa0a6;">Multimodal Agent</p>
+    <p style="color:#9aa0a6;">Multimodal AI</p>
     """,
     unsafe_allow_html=True,
 )
@@ -78,60 +81,16 @@ if mode == "Chat":
     with st.sidebar:
         st.header("Chat Settings")
 
-        model = st.selectbox(
-            "Model",
-            chat.model_options,
-        )
+        model = st.selectbox("Model", chat.model_options)
 
-        # ---------------- Advanced Generation Controls ----------------
+        with st.expander("Advanced generation settings", expanded=False):
+            temperature = st.slider("Temperature", 0.0, 2.0, 0.7, 0.05)
+            top_p = st.slider("Top-P", 0.0, 1.0, 1.0, 0.05)
+            frequency_penalty = st.slider("Frequency penalty", -2.0, 2.0, 0.0, 0.1)
+            presence_penalty = st.slider("Presence penalty", -2.0, 2.0, 0.0, 0.1)
+            max_tokens = st.slider("Max tokens", 128, 4096, 1024, 128)
 
-        with st.expander("Parameters", expanded=False):
-
-            temperature = st.slider(
-                "Temperature",
-                min_value=0.0,
-                max_value=2.0,
-                value=0.7,
-                step=0.05,
-            )
-
-            top_p = st.slider(
-                "Top-P",
-                min_value=0.0,
-                max_value=1.0,
-                value=1.0,
-                step=0.05,
-            )
-
-            frequency_penalty = st.slider(
-                "Frequency penalty",
-                min_value=-2.0,
-                max_value=2.0,
-                value=0.0,
-                step=0.1,
-            )
-
-            presence_penalty = st.slider(
-                "Presence penalty",
-                min_value=-2.0,
-                max_value=2.0,
-                value=0.0,
-                step=0.1,
-            )
-
-            max_tokens = st.slider(
-                "Max tokens",
-                min_value=128,
-                max_value=4096,
-                value=1024,
-                step=128,
-            )
-
-        include = st.multiselect(
-            "Includes:",
-            chat.include_options,
-        )
-
+        include = st.multiselect("Include in response", chat.include_options)
         chat.include = include
 
     _, center, _ = st.columns([1, 2, 1])
@@ -141,7 +100,7 @@ if mode == "Chat":
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
 
-        prompt = st.chat_input("Ask Boo…")
+        prompt = st.chat_input("Ask Boo something…")
 
         if prompt:
             st.session_state.messages.append(
@@ -165,7 +124,7 @@ if mode == "Chat":
                     )
 
 # ======================================================================================
-# IMAGE MODE
+# IMAGES MODE
 # ======================================================================================
 
 elif mode == "Images":
@@ -226,7 +185,7 @@ elif mode == "Images":
                     st.markdown(result)
 
 # ======================================================================================
-# AUDIO MODE (SEMANTICALLY CORRECT)
+# AUDIO MODE
 # ======================================================================================
 
 elif mode == "Audio":
@@ -238,24 +197,13 @@ elif mode == "Audio":
             ["Transcription", "Translation", "Text-to-Speech"],
         )
 
-    # ---------------- Transcription ----------------
-
     if task == "Transcription":
-
         transcriber = Transcription()
 
         with st.sidebar:
             st.header("Transcription Settings")
-
-            model = st.selectbox(
-                "Model",
-                transcriber.model_options,
-            )
-
-            fmt = st.selectbox(
-                "Output format",
-                transcriber.format_options,
-            )
+            model = st.selectbox("Model", transcriber.model_options)
+            fmt = st.selectbox("Output format", transcriber.format_options)
 
         _, center, _ = st.columns([1, 2, 1])
 
@@ -264,31 +212,18 @@ elif mode == "Audio":
 
             if audio and st.button("Transcribe"):
                 path = save_temp(audio)
-
                 with st.spinner("Transcribing…"):
-                    text = transcriber.transcribe(
-                        path,
-                        model=model,
-                        format=fmt,
-                    )
+                    text = transcriber.transcribe(path, model=model, format=fmt)
                     st.subheader("Transcription")
                     st.markdown(text)
 
-    # ---------------- Translation (Whisper → English) ----------------
-
     elif task == "Translation":
-
         translator = Translation()
 
         with st.sidebar:
             st.header("Translation Settings")
-
-            model = st.selectbox(
-                "Model",
-                translator.model_options,
-            )
-
-            st.caption("Speech is translated to English (Whisper).")
+            model = st.selectbox("Model", translator.model_options)
+            st.caption("Speech → English (Whisper)")
 
         _, center, _ = st.columns([1, 2, 1])
 
@@ -297,24 +232,16 @@ elif mode == "Audio":
 
             if audio and st.button("Translate"):
                 path = save_temp(audio)
-
                 with st.spinner("Translating…"):
-                    text = translator.translate(
-                        path,
-                        model=model,
-                    )
+                    text = translator.translate(path, model=model)
                     st.subheader("Translation (to English)")
                     st.markdown(text)
 
-    # ---------------- Text-to-Speech ----------------
-
-    else:
-
+    else:  # Text-to-Speech
         tts = TTS()
 
         with st.sidebar:
             st.header("Text-to-Speech Settings")
-
             model = st.selectbox("Model", tts.model_options)
             voice = st.selectbox("Voice", tts.voice_options)
             fmt = st.selectbox("Format", tts.format_options)
@@ -337,6 +264,76 @@ elif mode == "Audio":
                     st.audio(audio_path)
 
 # ======================================================================================
+# DOCUMENTS MODE (FILES + Q&A)
+# ======================================================================================
+
+elif mode == "Documents":
+
+    chat = Chat()
+
+    with st.sidebar:
+        st.header("Document Settings")
+        model = st.selectbox("Model", chat.model_options)
+        include = st.multiselect("Include in response", chat.include_options)
+        chat.include = include
+
+    _, center, _ = st.columns([1, 2, 1])
+
+    with center:
+        tab_doc, tab_search = st.tabs(["Ask a Document", "Search Corpus"])
+
+        with tab_doc:
+            uploaded = st.file_uploader(
+                "Upload a document",
+                type=["pdf", "txt", "md", "docx"],
+            )
+
+            if uploaded:
+                path = save_temp(uploaded)
+                with st.spinner("Uploading document…"):
+                    file_id = chat.upload_document(path)
+                    st.session_state.doc_file_id = file_id
+                    st.success(f"Uploaded file_id: {file_id}")
+
+            question = st.text_area(
+                "Ask a question about this document",
+                height=100,
+            )
+
+            if (
+                st.session_state.doc_file_id
+                and question
+                and st.button("Ask Document")
+            ):
+                with st.spinner("Querying document…"):
+                    answer = chat.ask_document(
+                        file_id=st.session_state.doc_file_id,
+                        question=question,
+                        model=model,
+                    )
+                    st.markdown(answer)
+
+        with tab_search:
+            store = st.selectbox(
+                "Corpus",
+                list(chat.vector_stores.keys()),
+            )
+
+            query = st.text_area("Search query", height=100)
+
+            max_results = st.slider("Max results", 1, 10, 5)
+
+            if query and st.button("Search Corpus"):
+                with st.spinner("Searching…"):
+                    results = chat.search_file(
+                        query=query,
+                        vector_store_id=chat.vector_stores[store],
+                        max_results=max_results,
+                        model=model,
+                    )
+                    st.markdown(results)
+
+# ======================================================================================
 # EMBEDDINGS MODE
 # ======================================================================================
 
@@ -346,7 +343,6 @@ elif mode == "Embeddings":
 
     with st.sidebar:
         st.header("Embedding Settings")
-
         model = st.selectbox("Model", embedding.model_options)
         encoding = st.selectbox("Encoding", embedding.encoding_options)
 
@@ -372,9 +368,10 @@ elif mode == "Embeddings":
 st.markdown(
     """
     <hr/>
-    <div style="display:flex; justify-content:space-between; color:#9aa0a6; font-size:0.85rem;">
-        <span></span>
+    <div style="display:flex; justify-content:space-between;
+                color:#9aa0a6; font-size:0.85rem;">
         <span>Generative AI</span>
+        <span>text • speech  • audio  • images</span>
     </div>
     """,
     unsafe_allow_html=True,
