@@ -24,7 +24,7 @@ from boo import (
 # Page Configuration
 # ======================================================================================
 
-st.set_page_config(  page_title="Boo • Multimoldal AI Agent", page_icon=cfg.FAVICON_PATH, layout='wide' )
+st.set_page_config(  page_title="Boo • Multimoldal AI", page_icon=cfg.FAVICON_PATH, layout='wide' )
 
 # ======================================================================================
 # Session State
@@ -60,7 +60,7 @@ with st.sidebar:
 st.markdown(
     """
     <h1 style="margin-bottom:0.25rem;">Boo</h1>
-    <p style="color:#9aa0a6;">Multimodal AI Assistant</p>
+    <p style="color:#9aa0a6;">Multimodal Agent</p>
     """,
     unsafe_allow_html=True,
 )
@@ -85,7 +85,7 @@ if mode == "Chat":
 
         # ---------------- Advanced Generation Controls ----------------
 
-        with st.expander("Advanced generation settings", expanded=False):
+        with st.expander("Parameters", expanded=False):
 
             temperature = st.slider(
                 "Temperature",
@@ -128,7 +128,7 @@ if mode == "Chat":
             )
 
         include = st.multiselect(
-            "Include in response",
+            "Includes:",
             chat.include_options,
         )
 
@@ -141,7 +141,7 @@ if mode == "Chat":
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
 
-        prompt = st.chat_input("Ask Boo something…")
+        prompt = st.chat_input("Ask Boo…")
 
         if prompt:
             st.session_state.messages.append(
@@ -373,8 +373,8 @@ st.markdown(
     """
     <hr/>
     <div style="display:flex; justify-content:space-between; color:#9aa0a6; font-size:0.85rem;">
-        <span>Boo Framework</span>
-        <span>Mode-driven • Option-complete • Honest UI</span>
+        <span></span>
+        <span>Generative AI</span>
     </div>
     """,
     unsafe_allow_html=True,
