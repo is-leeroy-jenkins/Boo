@@ -64,6 +64,7 @@ sounddevice
 sqlite-vec
 sentence-transformers
 streamlit
+streamlit-extras
 typing_extensions
 textblob
 transformers
