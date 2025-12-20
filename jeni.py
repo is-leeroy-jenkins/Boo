@@ -158,18 +158,21 @@ class Chat( Gemini ):
 		'''
 		return [ 'v1', 'v1alpha' ]
 		
-	def generate_text( self, prompt: str ) -> str | None:
+	def generate_text( self, prompt: str, model: str='gemini-2.5-flash' ) -> str | None:
 		pass
 
-	def generate_image( self, prompt: str ) -> str | None:
+	def generate_image( self, prompt: str, model: str='gemini-2.5-flash'  ) -> str | None:
 		pass
 
-	def analyze_image( self, prompt: str ) -> str | None:
+	def analyze_image( self, prompt: str, filepath: str, model: str='gemini-2.5-flash' ) -> str | None:
 		pass
 	
-	def summarize_document( self, prompt: str, filepath: str ) -> str | None:
+	def summarize_document( self, prompt: str, filepath: str, model: str='gemini-2.5-flash' ) -> str | None:
 		pass
-
+	
+	def search_file( self, prompt: str, filepath:str,  model: str='gemini-2.5-flash' ) -> str | None:
+		pass
+		
 class Embedding( ):
 	'''
 		
