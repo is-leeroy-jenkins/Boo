@@ -1,16 +1,16 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                jenni.py
+      Filename:                jeni.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="jenni.py" company="Terry D. Eppler">
+  <copyright file="jeni.py" company="Terry D. Eppler">
 
-	     jenni.py
+	     jeni.py
 	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    jenni.py
+    jeni.py
   </summary>
   ******************************************************************************************
 '''
