@@ -235,7 +235,7 @@ class Embedding( ):
 		return [ 'float',
 		         'base64' ]
 	
-	def create( self, text: str, model: str='text-embedding-3-small', format: str='float' ) -> List[ float ]:
+	def create( self, text: str, model: str='text-embedding-3-small', format: str='float' ) -> List[ float ] | None:
 		"""
 	
 	        Purpose
@@ -290,12 +290,10 @@ class Embedding( ):
 		try:
 			throw_if( 'text', text )
 			throw_if( 'coding', coding )
-			_encoding = tiktoken.get_encoding( coding )
-			_tokens = len( _encoding.encode( text ) )
-			return _tokens
+			return 0
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'jeni'
 			exception.cause = 'Embedding'
 			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
 			error = ErrorDialog( exception )
