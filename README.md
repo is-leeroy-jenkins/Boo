@@ -181,7 +181,8 @@ http://localhost:8501
 ```
 
 ---
-
+[](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/Boo-streamlit.gif)
+___
 ### Notes
 
 * Some capabilities (image generation, audio transcription, translation, etc.) depend on
