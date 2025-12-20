@@ -58,7 +58,7 @@ def throw_if( name: str, value: object ):
 	if value is None:
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
 
-class Gemma( ):
+class Gemini( ):
 	'''
 	
 		Purpose:
@@ -69,8 +69,12 @@ class Gemma( ):
 	project_id: Optional[ str ]
 	api_key: Optional[ str ]
 	cloud_location: Optional[ str ]
+	instructions: Optional[ str ]
+	model: Optional[ str ]
+	api_version: Optional[ str ]
 	temperature: Optional[ float ]
 	top_p: Optional[ float ]
+	top_k: Optional[ int ]
 	frequency_penalty: Optional[ float ]
 	presence_penalty: Optional[ float ]
 	
@@ -78,12 +82,15 @@ class Gemma( ):
 		self.api_key = cfg.GOOGLE_API_KEY
 		self.project_id = cfg.GOOGLE_CLOUD_PROJECT
 		self.cloud_location = cfg.GOOGLE_CLOUD_LOCATION
+		self.model = None
+		self.api_version = None
 		self.temperature = None
 		self.top_p = None
+		self.top_k = None
 		self.frequency_penalty = None
 		self.presence_penalty = None
 
-class Chat( Gemma ):
+class Chat( Gemini ):
 	'''
 
 	    Purpose:
@@ -92,9 +99,6 @@ class Chat( Gemma ):
 
     '''
 	use_vertex: Optional[ bool ]
-	instructions: Optional[ str ]
-	model: Optional[ str ]
-	api_version: Optional[ str ]
 	http_options: Optional[ Dict[ str, Any ] ]
 	config: Optional[ types.GenerateContentConfig ]
 	client: Optional[ genai.Client ]
@@ -112,6 +116,7 @@ class Chat( Gemma ):
 		self.contents = contents
 		self.instructions = instruct
 		self.client = None
+		self.config = None
 		self.response = None
 		self.image = None
 		
@@ -146,4 +151,7 @@ class Chat( Gemma ):
 		pass
 
 	def generate_image( self, prompt: str ) -> str | None:
+		pass
+
+	def analyze_image( self, prompt: str ) -> str | None:
 		pass
