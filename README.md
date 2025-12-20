@@ -146,9 +146,9 @@ The application runs entirely on top of Boo’s core APIs and does **not** modif
 framework logic.
 
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/Boo-streamlit.gif)
----
 
-### Supported Capabilities
+
+## Supported Capabilities
 
 The Streamlit application supports the following workflows:
 

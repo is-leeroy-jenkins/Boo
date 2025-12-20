@@ -155,3 +155,6 @@ class Chat( Gemini ):
 
 	def analyze_image( self, prompt: str ) -> str | None:
 		pass
+	
+	def summarize_document( self, prompt: str, filepath: str ) -> str | None:
+		pass

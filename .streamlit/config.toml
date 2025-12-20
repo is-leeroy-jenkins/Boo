@@ -1,6 +1,8 @@
 [theme]
+base = 'dark'
 primaryColor = "#0078FC"
-backgroundColor = "#0E1117"
-secondaryBackgroundColor = "#1E222A"
+backgroundColor = "#141414"
+secondaryBackgroundColor = "#373737"
 textColor = "#FAFAFA"
-font = "sans serif"
+font = "Roboto"
+showSidebarBorder = true
