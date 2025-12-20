@@ -72,9 +72,11 @@ class Gemini( ):
 	instructions: Optional[ str ]
 	model: Optional[ str ]
 	api_version: Optional[ str ]
+	max_tokens: Optional[ int ]
 	temperature: Optional[ float ]
 	top_p: Optional[ float ]
 	top_k: Optional[ int ]
+	modalities: Optional[ List[ str ] ]
 	frequency_penalty: Optional[ float ]
 	presence_penalty: Optional[ float ]
 	
@@ -89,6 +91,8 @@ class Gemini( ):
 		self.top_k = None
 		self.frequency_penalty = None
 		self.presence_penalty = None
+		self.max_tokens = None
+		self.instructions = None
 
 class Chat( Gemini ):
 	'''
@@ -100,23 +104,30 @@ class Chat( Gemini ):
     '''
 	use_vertex: Optional[ bool ]
 	http_options: Optional[ Dict[ str, Any ] ]
-	config: Optional[ types.GenerateContentConfig ]
+	content_config: Optional[ types.GenerateContentConfig ]
 	client: Optional[ genai.Client ]
 	contents: Optional[ List[ str ] ]
 	response: Optional[ Response ]
 	image: Optional[ Image ]
 	
 	def __init__( self, model: str='gemini-2.5-flash', version: str='v1alpha',
-			use_ai: bool=True, instruct: str=None, contents: List[ str ]=None ):
+			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
+			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
+			instruct: str=None, contents: List[ str ]=None ):
 		super( ).__init__( )
 		self.model = model
 		self.api_version = version
+		self.top_p = top_p
+		self.temperature = temperature,
+		self.frequency_penalty = frequency,
+		self.presence_penalty = presence,
+		self.max_tokens = max_tokens
 		self.use_vertex = use_ai
 		self.http_options = { }
 		self.contents = contents
 		self.instructions = instruct
 		self.client = None
-		self.config = None
+		self.content_config = None
 		self.response = None
 		self.image = None
 		
@@ -158,3 +169,135 @@ class Chat( Gemini ):
 	
 	def summarize_document( self, prompt: str, filepath: str ) -> str | None:
 		pass
+
+class Embedding( ):
+	'''
+		
+		Purpose:
+		--------
+		Class providing embedding functionality
+		
+		
+	'''
+	client: Optional[ genai.Client ]
+	response: Optional[ Response ]
+	embedding: Optional[ List[ float ] ]
+	encoding_format: Optional[ str ]
+	dimensions: Optional[ int ]
+	use_vertex: Optional[ bool ]
+	http_options: Optional[ Dict[ str, Any ] ]
+	content_config: Optional[ types.GenerateContentConfig ]
+	client: Optional[ genai.Client ]
+	contents: Optional[ List[ str ] ]
+	input_text: Optional[ str ]
+	
+	def __init__( self, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000 ):
+		super( ).__init__( )
+		self.api_key = cfg.OPENAI_API_KEY
+		self.client = genai.Client( )
+		self.temperature = temperature
+		self.top_percent = top_p
+		self.frequency_penalty = frequency
+		self.presence_penalty = presence
+		self.max_completion_tokens = max_tokens
+		self.contents = [ ]
+		self.http_options = { }
+		self.encoding_format = None
+		self.input_text = None
+		self.content_config = None
+		self.model = None
+		self.embedding = None
+		self.response = None
+	
+	@property
+	def model_options( self ) -> List[ str ]:
+		'''
+		
+		Returns:
+		--------
+		List[ str ] of embedding models
+
+		'''
+		return [ 'text-embedding-3-small',
+		         'text-embedding-3-large',
+		         'text-embedding-ada-002' ]
+	
+	@property
+	def encoding_options( self ) -> List[ str ]:
+		'''
+			
+			Returns:
+			--------
+			List[ str ] of available format options
+
+		'''
+		return [ 'float',
+		         'base64' ]
+	
+	def create( self, text: str, model: str='text-embedding-3-small', format: str='float' ) -> List[ float ]:
+		"""
+	
+	        Purpose
+	        _______
+	        Creates an embedding ginve a text
+	
+	
+	        Parameters
+	        ----------
+	        text: str
+	
+	
+	        Returns
+	        -------
+	        get_list[ float
+
+        """
+		try:
+			throw_if( 'text', text )
+			self.input_text = text
+			self.model = model
+			self.encoding_format = format
+			self.response = self.client.embeddings.create( input=self.input, model=self.model,
+				encoding_format=self.encoding_format )
+			self.embedding = self.response.data[ 0 ].embedding
+			return self.embedding
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'boo'
+			exception.cause = 'Embedding'
+			exception.method = 'create( self, text: str, model: str ) -> List[ float ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	def count_tokens( self, text: str, coding: str ) -> int:
+		'''
+
+	        Purpose:
+	        -------
+	        Returns the num of words in a documents path.
+	
+	        Parameters:
+	        -----------
+	        text: str - The string that is tokenized
+	        coding: str - The encoding to use for tokenizing
+	
+	        Returns:
+	        --------
+	        int - The number of words
+
+        '''
+		try:
+			throw_if( 'text', text )
+			throw_if( 'coding', coding )
+			_encoding = tiktoken.get_encoding( coding )
+			_tokens = len( _encoding.encode( text ) )
+			return _tokens
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'boo'
+			exception.cause = 'Embedding'
+			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
+			error = ErrorDialog( exception )
+			error.show( )
+	

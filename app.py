@@ -1,7 +1,7 @@
 # ******************************************************************************************
 # Assembly:                Boo
 # Filename:                app.py
-# Author:                  Terry D. Eppler (integration)
+# Author:                  Terry D. Eppler (integration) / ChatGPT (UI adjustments)
 # Created:                 12-16-2025
 # ******************************************************************************************
 
@@ -11,12 +11,13 @@ import config as cfg
 import streamlit as st
 import tempfile
 from typing import List, Dict, Any
+import uuid
 
 from streamlit_extras.stylable_container import stylable_container
 from streamlit_extras.add_vertical_space import add_vertical_space
 from streamlit_extras.colored_header import colored_header
-from streamlit_extras.badges import badge
 
+# Import the Boo framework classes (assumes boo.py provides these)
 from boo import (
     Chat,
     Image,
@@ -37,26 +38,113 @@ st.set_page_config(
 )
 
 # ======================================================================================
-# Session State
+# Session State Initialization
 # ======================================================================================
 
 if "messages" not in st.session_state:
     st.session_state.messages: List[Dict[str, Any]] = []
 
-if "doc_file_id" not in st.session_state:
-    st.session_state.doc_file_id: str | None = None
+if "doc_files" not in st.session_state:
+    st.session_state.doc_files: Dict[str, Dict[str, Any]] = {}
+
+if "token_usage" not in st.session_state:
+    st.session_state.token_usage: List[Dict[str, Any]] = []
+
+if "session_id" not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
+
+# Ensure a mode field exists so the dynamic header can read it
+if "mode" not in st.session_state:
+    st.session_state.mode = "Chat"
 
 # ======================================================================================
 # Utilities
 # ======================================================================================
 
 def save_temp(upload) -> str:
+    """Save an uploaded file-like object to a temporary file and return path."""
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         tmp.write(upload.read())
         return tmp.name
 
+def reset_conversation():
+    """Clear chat messages and token accounting for the session."""
+    st.session_state.messages.clear()
+    st.session_state.token_usage.clear()
+
+def start_new_session():
+    """Reset conversation, documents, and token usage; roll new session_id."""
+    reset_conversation()
+    st.session_state.doc_files.clear()
+    st.session_state.token_usage.clear()
+    st.session_state.session_id = str(uuid.uuid4())
+
+def clear_doc_context():
+    """Clear only uploaded document context for the session."""
+    st.session_state.doc_files.clear()
+
 # ======================================================================================
-# Sidebar — Primary Mode Selection
+# Dynamic header renderer
+# ======================================================================================
+
+def render_dynamic_header() -> None:
+    """
+    Renders a compact dynamic header showing the selected mode and
+    a short summary of primary parameters. This is intentionally
+    lightweight and avoids any network or heavy work.
+    """
+    current_mode = st.session_state.get("mode", "—")
+
+    summary_items: List[str] = []
+
+    # Chat summary
+    if current_mode == "Chat":
+        model_name = st.session_state.get("chat_model", "—")
+        temperature = st.session_state.get("temperature", "—")
+        top_p = st.session_state.get("top_p", "—")
+        includes = st.session_state.get("chat_include", [])
+        summary_items.append(f"Model: {model_name}")
+        summary_items.append(f"T: {temperature} • Top-P: {top_p}")
+        if includes:
+            short = ", ".join(includes[:3]) + (",…" if len(includes) > 3 else "")
+            summary_items.append(f"Include: {short}")
+
+    # Images summary
+    elif current_mode == "Images":
+        model_name = st.session_state.get("image_model", "—")
+        size = st.session_state.get("image_size", "—")
+        summary_items.append(f"Model: {model_name}")
+        summary_items.append(f"Size: {size}")
+
+    # Documents summary
+    elif current_mode == "Documents":
+        doc_count = len(st.session_state.get("doc_files", {}))
+        summary_items.append(f"Documents: {doc_count} uploaded")
+
+    # Embeddings summary
+    elif current_mode == "Embeddings":
+        model_name = st.session_state.get("embedding_model", "—")
+        summary_items.append(f"Model: {model_name}")
+
+    # Audio summary (lightweight)
+    elif current_mode == "Audio":
+        summary_items.append("Audio tools")
+
+    subtitle = "  |  ".join(summary_items) if summary_items else ""
+    st.markdown(
+        f"""
+        <div style="margin-top:0.25rem;">
+            <h2 style="margin:0;">{current_mode}</h2>
+            <div style="color:#6b7280; font-size:0.9rem; margin-top:0.125rem;">
+                {subtitle}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+# ======================================================================================
+# Sidebar — Primary Mode Selection and Session Controls
 # ======================================================================================
 
 with st.sidebar:
@@ -66,51 +154,106 @@ with st.sidebar:
         color_name="violet-70",
     )
 
+    # Mode radio — store in session_state so header can read it
     mode = st.radio(
         "Mode",
         ["Chat", "Images", "Audio", "Documents", "Embeddings"],
+        index=["Chat", "Images", "Audio", "Documents", "Embeddings"].index(
+            st.session_state.get("mode", "Chat")
+        ),
+        key="mode",
     )
 
+    # Evenly distributed session buttons (horizontal)
+    btn_col_left, btn_col_right = st.columns([1, 1])
+    with btn_col_left:
+        if st.button("Clear", key="session_clear_btn", use_container_width=True):
+            if mode == "Documents":
+                clear_doc_context()
+            else:
+                reset_conversation()
+    with btn_col_right:
+        if st.button("New", key="session_new_btn", use_container_width=True):
+            start_new_session()
+            st.rerun()
+
 # ======================================================================================
-# Header
+# Dynamic subheader (no static top header)
 # ======================================================================================
 
-add_vertical_space(1)
-
-st.markdown(
-    """
-    <h1 style="margin-bottom:0.25rem;">Boo</h1>
-    <p style="color:#9aa0a6;">Generative AI</p>
-    """,
-    unsafe_allow_html=True,
-)
-
+# Call the dynamic header so it updates on every rerun/widget change
+render_dynamic_header()
 st.divider()
 
 # ======================================================================================
 # CHAT MODE
 # ======================================================================================
 
-if mode == "Chat":
+if st.session_state["mode"] == "Chat":
 
     chat = Chat()
-    st.badge("Chat", icon="💬")
 
+    # Chat settings live in the sidebar (keys added so dynamic header can read)
     with st.sidebar:
         colored_header("Chat Settings", "", "violet-70")
 
-        model = st.selectbox("Model", chat.model_options)
+        model = st.selectbox(
+            "Model",
+            chat.model_options,
+            key="chat_model",
+        )
 
-        with st.expander("Advanced generation settings", expanded=False):
-            temperature = st.slider("Temperature", 0.0, 2.0, 0.7, 0.05)
-            top_p = st.slider("Top-P", 0.0, 1.0, 1.0, 0.05)
-            frequency_penalty = st.slider("Frequency penalty", -2.0, 2.0, 0.0, 0.1)
-            presence_penalty = st.slider("Presence penalty", -2.0, 2.0, 0.0, 0.1)
-            max_tokens = st.slider("Max tokens", 128, 4096, 1024, 128)
+        with st.expander("Parameters:", expanded=False):
+            temperature = st.slider(
+                "Temperature",
+                0.0,
+                2.0,
+                0.7,
+                0.05,
+                key="temperature",
+            )
+            top_p = st.slider(
+                "Top-P",
+                0.0,
+                1.0,
+                1.0,
+                0.05,
+                key="top_p",
+            )
+            frequency_penalty = st.slider(
+                "Frequency penalty",
+                -2.0,
+                2.0,
+                0.0,
+                0.1,
+                key="frequency_penalty",
+            )
+            presence_penalty = st.slider(
+                "Presence penalty",
+                -2.0,
+                2.0,
+                0.0,
+                0.1,
+                key="presence_penalty",
+            )
+            max_tokens = st.slider(
+                "Max tokens",
+                128,
+                4096,
+                1024,
+                128,
+                key="max_tokens",
+            )
 
-        include = st.multiselect("Include in response", chat.include_options)
+        include = st.multiselect(
+            "Include in response",
+            chat.include_options,
+            key="chat_include",
+        )
+        # keep Behavior consistent with Boo.Chat class expectations
         chat.include = include
 
+    # Chat content area
     with stylable_container(
         key="chat_container",
         css_styles="""
@@ -120,47 +263,96 @@ if mode == "Chat":
             }
         """,
     ):
-        for msg in st.session_state.messages:
+        total_input = 0
+        total_output = 0
+        total_tokens = 0
+
+        # Render historical messages
+        for idx, msg in enumerate(st.session_state.messages):
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
+                usage = msg.get("token_usage")
+                if usage:
+                    st.caption(
+                        f"Tokens: {usage.get('input','–')} in / {usage.get('output','–')} out / {usage.get('total','–')} total"
+                        + (f" | Cost: ${usage.get('cost','–')}" if usage.get('cost') else "")
+                    )
+                    total_input += usage.get("input", 0) or 0
+                    total_output += usage.get("output", 0) or 0
+                    total_tokens += usage.get("total", 0) or 0
 
+        # Chat input
         prompt = st.chat_input("Ask Boo something…")
 
         if prompt:
-            st.session_state.messages.append(
-                {"role": "user", "content": prompt}
-            )
+            st.session_state.messages.append({"role": "user", "content": prompt})
 
             with st.chat_message("assistant"):
                 with st.spinner("Thinking…"):
-                    response = chat.generate_text(
-                        prompt=prompt,
-                        model=model,
-                        temperature=temperature,
-                        top_p=top_p,
-                        frequency_penalty=frequency_penalty,
-                        presence_penalty=presence_penalty,
-                        max_tokens=max_tokens,
-                    )
-                    st.markdown(response or "")
+                    response_text = ""
+                    usage = {}
+                    try:
+                        response_text = chat.generate_text(
+                            prompt=prompt,
+                            model=model,
+                            temperature=temperature,
+                            top_p=top_p,
+                            frequency_penalty=frequency_penalty,
+                            presence_penalty=presence_penalty,
+                            max_tokens=max_tokens,
+                        )
+                        # Attempt to pull usage from chat.response if available
+                        if hasattr(chat, "response") and getattr(chat, "response", None):
+                            resp = getattr(chat, "response")
+                            u = getattr(resp, "usage", {}) or {}
+                            usage = {
+                                "input": u.get("prompt_tokens"),
+                                "output": u.get("completion_tokens"),
+                                "total": u.get("total_tokens"),
+                                "cost": getattr(resp, "cost", None),
+                            }
+                    except Exception as ex:
+                        response_text = f"Error: {ex}"
+
+                    st.markdown(response_text or "")
                     st.session_state.messages.append(
-                        {"role": "assistant", "content": response or ""}
+                        {"role": "assistant", "content": response_text or "", "token_usage": usage or {}}
                     )
+
+                    if usage:
+                        total_input += usage.get("input", 0) or 0
+                        total_output += usage.get("output", 0) or 0
+                        total_tokens += usage.get("total", 0) or 0
+
+        # Show session totals (if any tokens consumed)
+        if total_tokens > 0:
+            # Note: adjust cost math to reflect real pricing when you have it
+            cost = total_tokens * 0.002 / 1000
+            st.info(
+                f"**Session usage** — Input: {total_input} | Output: {total_output} | Total: {total_tokens} | Cost: ${cost:.4f}"
+            )
 
 # ======================================================================================
 # IMAGES MODE
 # ======================================================================================
 
-elif mode == "Images":
+elif st.session_state["mode"] == "Images":
 
     image = Image()
-    st.badge("Images", icon="🖼️")
 
     with st.sidebar:
         colored_header("Image Settings", "", "violet-70")
 
-        model = st.selectbox("Model", image.model_options)
-        size = st.selectbox("Size", image.size_options)
+        model = st.selectbox(
+            "Model",
+            image.model_options,
+            key="image_model",
+        )
+        size = st.selectbox(
+            "Size",
+            image.size_options,
+            key="image_size",
+        )
         quality = st.selectbox("Quality", image.quality_options)
         style = st.selectbox("Style", image.style_options)
         detail = st.selectbox("Detail", image.detail_options)
@@ -219,15 +411,13 @@ elif mode == "Images":
 # AUDIO MODE
 # ======================================================================================
 
-elif mode == "Audio":
-
-    st.badge("Audio", icon="🎙️")
-
+elif st.session_state["mode"] == "Audio":
     with st.sidebar:
         colored_header("Audio Task", "", "violet-70")
         task = st.radio(
             "Select audio capability",
             ["Transcription", "Translation", "Text-to-Speech"],
+            key="audio_task",
         )
 
     with stylable_container(
@@ -246,8 +436,7 @@ elif mode == "Audio":
                 model = st.selectbox("Model", transcriber.model_options)
                 fmt = st.selectbox("Output format", transcriber.format_options)
 
-            audio = st.audio_input("Record or upload audio")
-
+            audio = st.file_uploader("Record or upload audio", type=["wav", "mp3", "m4a", "ogg"])
             if audio and st.button("Transcribe"):
                 path = save_temp(audio)
                 with st.spinner("Transcribing…"):
@@ -262,8 +451,7 @@ elif mode == "Audio":
                 model = st.selectbox("Model", translator.model_options)
                 st.caption("Speech → English (Whisper)")
 
-            audio = st.audio_input("Record or upload audio")
-
+            audio = st.file_uploader("Record or upload audio", type=["wav", "mp3", "m4a", "ogg"])
             if audio and st.button("Translate"):
                 path = save_temp(audio)
                 with st.spinner("Translating…"):
@@ -294,13 +482,12 @@ elif mode == "Audio":
                     st.audio(audio_path)
 
 # ======================================================================================
-# DOCUMENTS MODE
+# DOCUMENTS MODE — Multi-document (client-side)
 # ======================================================================================
 
-elif mode == "Documents":
+elif st.session_state["mode"] == "Documents":
 
     chat = Chat()
-    st.badge("Documents", icon="📄")
 
     with st.sidebar:
         colored_header("Document Settings", "", "violet-70")
@@ -317,41 +504,54 @@ elif mode == "Documents":
             }
         """,
     ):
+        st.subheader("Uploaded Documents (session, client-side only):")
+        uploaded = st.file_uploader(
+            "Upload document(s)",
+            type=["pdf", "txt", "md", "docx"],
+            accept_multiple_files=True,
+        )
+        if uploaded:
+            for file in uploaded:
+                file_id = str(uuid.uuid4())
+                path = save_temp(file)
+                st.session_state.doc_files[file_id] = {"name": file.name, "path": path}
+            st.success(f"Uploaded {len(uploaded)} file(s)")
+
+        # List and allow removal of uploaded docs
+        if st.session_state.doc_files:
+            cols = st.columns([3, 1])
+            with cols[0]:
+                for fid, doc in list(st.session_state.doc_files.items()):
+                    st.markdown(f"- **{doc['name']}** (`{fid}`)")
+            with cols[1]:
+                for fid in list(st.session_state.doc_files):
+                    if st.button(f"❌", key=f"del_{fid}", help="Remove this doc"):
+                        st.session_state.doc_files.pop(fid)
+                        st.rerun()
+
         tab_doc, tab_search = st.tabs(["Ask a Document", "Search Corpus"])
 
         with tab_doc:
-            uploaded = st.file_uploader(
-                "Upload a document",
-                type=["pdf", "txt", "md", "docx"],
-            )
-
-            if uploaded:
-                path = save_temp(uploaded)
-                with st.spinner("Uploading document…"):
-                    file_id = chat.upload_document(path)
-                    st.session_state.doc_file_id = file_id
-                    st.toast("Document uploaded", icon="📄")
+            doc_id = st.selectbox(
+                "Select document to ask",
+                options=list(st.session_state.doc_files.keys()),
+                format_func=lambda fid: st.session_state.doc_files[fid]["name"]
+                if fid in st.session_state.doc_files
+                else fid,
+            ) if st.session_state.doc_files else None
 
             question = st.text_area("Ask a question about this document")
-
-            if st.session_state.doc_file_id and question:
-                answer = chat.ask_document(
-                    file_id=st.session_state.doc_file_id,
-                    question=question,
-                    model=model,
-                )
+            if doc_id and question and st.button("Ask Document"):
+                answer = chat.ask_document(file_id=doc_id, question=question, model=model)
                 st.markdown(answer)
 
         with tab_search:
+            # show available vector stores from Chat wrapper
             store = st.selectbox("Corpus", list(chat.vector_stores.keys()))
             query = st.text_area("Search query")
-
-            if query:
+            if query and st.button("Search Corpus"):
                 results = chat.search_file(
-                    query=query,
-                    vector_store_id=chat.vector_stores[store],
-                    max_results=5,
-                    model=model,
+                    query=query, vector_store_id=chat.vector_stores[store], max_results=5, model=model
                 )
                 st.markdown(results)
 
@@ -359,14 +559,13 @@ elif mode == "Documents":
 # EMBEDDINGS MODE
 # ======================================================================================
 
-elif mode == "Embeddings":
+elif st.session_state["mode"] == "Embeddings":
 
     embedding = Embedding()
-    st.badge("Embeddings", icon="🧠")
 
     with st.sidebar:
         colored_header("Embedding Settings", "", "violet-70")
-        model = st.selectbox("Model", embedding.model_options)
+        model = st.selectbox("Model", embedding.model_options, key="embedding_model")
         encoding = st.selectbox("Encoding", embedding.encoding_options)
 
     with stylable_container(
@@ -382,11 +581,7 @@ elif mode == "Embeddings":
 
         if st.button("Create Embedding"):
             with st.spinner("Embedding…"):
-                vector = embedding.create(
-                    text=text,
-                    model=model,
-                    format=encoding,
-                )
+                vector = embedding.create(text=text, model=model, format=encoding)
                 st.success(f"Vector length: {len(vector)}")
                 st.json(vector[:10])
 
