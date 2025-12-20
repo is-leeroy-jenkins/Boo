@@ -134,6 +134,7 @@ Set the following in your environment or `.env` file:
 Boo includes a **first-class, single-page Streamlit application** that exposes the framework’s
 core capabilities through a unified graphical interface.
 
+
 The Streamlit app is designed for:
 
 * Interactive analysis
@@ -144,6 +145,7 @@ The Streamlit app is designed for:
 The application runs entirely on top of Boo’s core APIs and does **not** modify or duplicate
 framework logic.
 
+![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/Boo-streamlit.gif)
 ---
 
 ### Supported Capabilities
@@ -180,9 +182,8 @@ Once running, the application will be available at:
 http://localhost:8501
 ```
 
----
-![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/Boo-streamlit.gif)
-___
+
+
 ### Notes
 
 * Some capabilities (image generation, audio transcription, translation, etc.) depend on
