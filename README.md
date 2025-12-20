@@ -181,7 +181,7 @@ http://localhost:8501
 ```
 
 ---
-[](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/Boo-streamlit.gif)
+![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/Boo-streamlit.gif)
 ___
 ### Notes
 
