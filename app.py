@@ -3,6 +3,11 @@
 # Filename:                app.py
 # Author:                  Terry D. Eppler (integration)
 # Created:                 12-16-2025
+# Notes:                   Per-mode model keys implemented; header now selects the
+#                          appropriate model per active mode. Added temperature and
+#                          top_p controls for Chat (stored in session_state).
+#                          Fix: Images -> Analyze tab now provides file upload and
+#                          robust analysis pipeline calling available Image methods.
 # ******************************************************************************************
 
 from __future__ import annotations
@@ -12,28 +17,17 @@ import streamlit as st
 import tempfile
 from typing import List, Dict, Any, Optional
 
-# Compatibility import: prefer gpt.py if present, otherwise fallback to boo.py
-try:
-    from gpt import (
+from gpt import (
         Chat,
         Image,
         Embedding,
         Transcription,
         Translation,
-    )
-except Exception:
-    from gpt import (
-        Chat,
-        Image,
-        Embedding,
-        Transcription,
-        Translation,
-    )
+)
 
 # ======================================================================================
 # Page Configuration
 # ======================================================================================
-
 st.set_page_config(
     page_title="Boo • Multimoldal AI Agent",
     page_icon=cfg.FAVICON_PATH,
@@ -41,27 +35,43 @@ st.set_page_config(
 )
 
 # ======================================================================================
-# Session State
+# Session State — initialize per-mode model keys and token counters
 # ======================================================================================
-
 if "messages" not in st.session_state:
     st.session_state.messages: List[Dict[str, Any]] = []
 
-# Token counters: last call and aggregated totals
 if "last_call_usage" not in st.session_state:
     st.session_state.last_call_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
 if "token_usage" not in st.session_state:
     st.session_state.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
-# Client-side uploaded files (temporary paths)
 if "files" not in st.session_state:
     st.session_state.files: List[str] = []
+
+# Per-mode model keys (deterministic header behavior)
+if "chat_model" not in st.session_state:
+    st.session_state["chat_model"] = None
+if "image_model" not in st.session_state:
+    st.session_state["image_model"] = None
+if "audio_model" not in st.session_state:
+    st.session_state["audio_model"] = None
+if "embed_model" not in st.session_state:
+    st.session_state["embed_model"] = None
+
+# Temperature / top_p defaults (Chat controls)
+if "temperature" not in st.session_state:
+    st.session_state["temperature"] = None
+if "top_p" not in st.session_state:
+    st.session_state["top_p"] = None
+
+# Provider default
+if "provider" not in st.session_state:
+    st.session_state["provider"] = "GPT"
 
 # ======================================================================================
 # Utilities
 # ======================================================================================
-
 def save_temp(upload) -> str:
     """Save uploaded file to a named temporary file and return path."""
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
@@ -124,40 +134,99 @@ def _update_token_counters(resp: Any) -> None:
     st.session_state.token_usage["total_tokens"] += usage.get("total_tokens", 0)
 
 
-# ======================================================================================
-# Sidebar — Mode Selector (baseline preserved)
-# Add only the Files API radio option in the mode selector.
-# ======================================================================================
+def _display_value(val: Any) -> str:
+    """
+    Render a friendly display string for header values.
+    None -> em dash; otherwise str(value).
+    """
+    if val is None:
+        return "—"
+    try:
+        return str(val)
+    except Exception:
+        return "—"
 
+
+# ======================================================================================
+# Sidebar — Provider selector above Mode, then Mode selector.
+# ======================================================================================
 with st.sidebar:
+    # Provider selector (visible, non-invasive UI only)
+    st.subheader("Provider")
+    provider = st.selectbox(
+        "Choose provider",
+        ["GPT", "Gemini", "Groq"],
+        index=["GPT", "Gemini", "Groq"].index(st.session_state.get("provider", "GPT")),
+    )
+    st.session_state["provider"] = provider
+
     st.header("Mode")
-    mode = st.radio(
-        "Select capability",
-        [ "Chat", "Images", "Audio", "Embeddings", "Documents", "Files" ],
+
+    # thin blue strip directly under "Mode" (slightly thinner)
+    st.markdown(
+        """
+        <div style="height:3px;border-radius:3px;background:#0078FC;margin:6px 0 10px 0;"></div>
+        """,
+        unsafe_allow_html=True,
     )
 
-    # Horizontal session controls (only two short buttons requested)
+    mode = st.radio(
+        "Select capability",
+        ["Chat", "Images", "Audio", "Embeddings", "Documents", "Files API", "Vector Store"],
+    )
+
+    # Horizontal session controls (short buttons)
     c1, c2 = st.columns([1, 1])
     with c1:
         if st.button("Clear", key="session_clear_btn", use_container_width=True):
             st.session_state.messages.clear()
-            st.success("Cleared!")
+            st.success("Conversation cleared")
     with c2:
         if st.button("New", key="session_new_btn", use_container_width=True):
             st.session_state.messages.clear()
             st.session_state.files.clear()
             st.session_state.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
             st.session_state.last_call_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
-            st.success("Started!")
+            st.success("New session started")
+
+    # Blue divider between session controls and mode-settings (#0078FC)
+    st.markdown(
+        """
+        <div style="height:6px;border-radius:4px;background:#0078FC;margin:12px 0;"></div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # ======================================================================================
-# Header (baseline preserved)
+# Dynamic Header — show provider and mode, and model relevant to the active mode
 # ======================================================================================
+# map mode -> session_state key for model
+_mode_to_model_key = {
+    "Chat": "chat_model",
+    "Images": "image_model",
+    "Audio": "audio_model",
+    "Embeddings": "embed_model",
+    "Documents": "chat_model",
+    "Files API": "chat_model",
+    "Vector Store": "chat_model",
+}
+
+model_key_for_header = _mode_to_model_key.get(mode, "chat_model")
+model_val = st.session_state.get(model_key_for_header, None)
+temperature_val = st.session_state.get("temperature", None)
+top_p_val = st.session_state.get("top_p", None)
+provider_val = st.session_state.get("provider", None)
+
+header_label = provider_val if provider_val else "Boo"
 
 st.markdown(
-    """
-    <h1 style="margin-bottom:0.25rem;">Boo</h1>
-    <p style="color:#9aa0a6;">Multimodal AI Assistant</p>
+    f"""
+    <div style="margin-bottom:0.25rem;">
+      <h1 style="margin:0;">{header_label} — {mode}</h1>
+      <div style="color:#9aa0a6; margin-top:6px; font-size:0.95rem;">
+        Model: {_display_value(model_val)} &nbsp;&nbsp;|&nbsp;&nbsp; Temp: {_display_value(temperature_val)} &nbsp;&nbsp;•&nbsp;&nbsp; Top-P: {_display_value(top_p_val)}
+      </div>
+    </div>
     """,
     unsafe_allow_html=True,
 )
@@ -165,9 +234,7 @@ st.divider()
 
 # ======================================================================================
 # CHAT MODE
-# - preserve baseline behavior, update token counters after generate_text calls
 # ======================================================================================
-
 if mode == "Chat":
 
     chat = Chat()
@@ -175,16 +242,18 @@ if mode == "Chat":
     with st.sidebar:
         st.header("Chat Settings")
 
-        model = st.selectbox(
-            "Model",
-            chat.model_options,
-        )
+        # Chat model -> store into chat_model
+        chat_model = st.selectbox("Model", chat.model_options)
+        st.session_state["chat_model"] = chat_model
 
-        include = st.multiselect(
-            "Include in response",
-            chat.include_options,
-        )
+        # temperature and top_p controls for Chat (store in session_state so header updates)
+        temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7, step=0.01)
+        st.session_state["temperature"] = float(temperature)
 
+        top_p = st.slider("Top-P", min_value=0.0, max_value=1.0, value=1.0, step=0.01)
+        st.session_state["top_p"] = float(top_p)
+
+        include = st.multiselect("Include in response", chat.include_options)
         chat.include = include
 
     left, center, right = st.columns([1, 2, 1])
@@ -202,13 +271,20 @@ if mode == "Chat":
             with st.chat_message("assistant"):
                 with st.spinner("Thinking…"):
                     try:
+                        # pass temperature/top_p defensively; many wrappers accept them, but some may not
                         response = chat.generate_text(
                             prompt=prompt,
-                            model=model,
+                            model=chat_model,
+                            temperature=st.session_state.get("temperature", None),
+                            top_p=st.session_state.get("top_p", None),
                         )
                     except TypeError:
-                        # defensive fallback: older signature
-                        response = chat.generate_text(prompt=prompt)
+                        # fallback if generate_text does not accept temperature/top_p
+                        try:
+                            response = chat.generate_text(prompt=prompt, model=chat_model)
+                        except Exception as exc:
+                            st.error(f"Generation failed: {exc}")
+                            response = None
                     except Exception as exc:
                         st.error(f"Generation failed: {exc}")
                         response = None
@@ -216,7 +292,7 @@ if mode == "Chat":
                     st.markdown(response or "")
                     st.session_state.messages.append({"role": "assistant", "content": response or ""})
 
-                    # Update token counters defensively from chat.response or returned response
+                    # Update token counters defensively
                     try:
                         _update_token_counters(getattr(chat, "response", None) or response)
                     except Exception:
@@ -226,48 +302,162 @@ if mode == "Chat":
     lcu = st.session_state.last_call_usage
     tu = st.session_state.token_usage
     if any(lcu.values()):
-        st.info(f"Last call — prompt: {lcu['prompt_tokens']}, completion: {lcu['completion_tokens']}, total: {lcu['total_tokens']}")
+        st.info(
+            f"Last call — prompt: {lcu['prompt_tokens']}, completion: {lcu['completion_tokens']}, total: {lcu['total_tokens']}"
+        )
     if tu["total_tokens"] > 0:
-        st.write(f"Session totals — prompt: {tu['prompt_tokens']} · completion: {tu['completion_tokens']} · total: {tu['total_tokens']}")
+        st.write(
+            f"Session totals — prompt: {tu['prompt_tokens']} · completion: {tu['completion_tokens']} · total: {tu['total_tokens']}"
+        )
 
 # ======================================================================================
-# IMAGE MODE (baseline preserved)
+# IMAGES MODE
 # ======================================================================================
-
 elif mode == "Images":
     image = Image()
     with st.sidebar:
         st.header("Image Settings")
-        model = st.selectbox("Model", image.model_options)
+        image_model = st.selectbox("Model", image.model_options)
+        st.session_state["image_model"] = image_model
         size = st.selectbox("Size", image.size_options)
         quality = st.selectbox("Quality", image.quality_options)
         fmt = st.selectbox("Format", image.format_options)
 
     tab_gen, tab_analyze = st.tabs(["Generate", "Analyze"])
+
+    # Generate tab unchanged (baseline behavior preserved)
     with tab_gen:
         prompt = st.text_area("Prompt")
         if st.button("Generate Image"):
             with st.spinner("Generating…"):
                 try:
-                    img_url = image.generate(prompt=prompt, model=model, size=size, quality=quality, fmt=fmt)
+                    img_url = image.generate(prompt=prompt, model=image_model, size=size, quality=quality, fmt=fmt)
                     st.image(img_url)
                     _update_token_counters(getattr(image, "response", None))
                 except Exception as exc:
                     st.error(f"Image generation failed: {exc}")
+
+    # Analyze tab now provides uploader + defensive analysis pipeline
     with tab_analyze:
-        st.write("Image analysis — baseline behavior preserved.")
+        st.markdown("Image analysis — upload an image to analyze.")
+        uploaded_img = st.file_uploader(
+            "Upload an image for analysis",
+            type=["png", "jpg", "jpeg", "webp"],
+            accept_multiple_files=False,
+            key="images_analyze_uploader",
+        )
+
+        if uploaded_img:
+            tmp_path = save_temp(uploaded_img)
+            # show preview
+            st.image(uploaded_img, caption="Uploaded image preview", use_column_width=True)
+
+            # Choose available analysis methods (for UI transparency)
+            available_methods = []
+            for candidate in (
+                "analyze",
+                "describe_image",
+                "describe",
+                "classify",
+                "detect_objects",
+                "caption",
+                "image_analysis",
+            ):
+                if hasattr(image, candidate):
+                    available_methods.append(candidate)
+
+            # Present the prioritized default selection if methods exist
+            if available_methods:
+                chosen_method = st.selectbox("Method", available_methods, index=0)
+            else:
+                chosen_method = None
+                st.info("No dedicated image analysis method found on Image object; attempting generic handlers.")
+
+            # Allow optional model override for analysis if supported
+            chosen_model = st.selectbox("Model (analysis)", [image_model, None], index=0)
+            if chosen_model is None:
+                chosen_model_arg = image_model
+            else:
+                chosen_model_arg = chosen_model
+
+            if st.button("Analyze Image"):
+                with st.spinner("Analyzing image…"):
+                    analysis_result = None
+                    try:
+                        # Call the chosen method if a specific method is available
+                        if chosen_method:
+                            func = getattr(image, chosen_method, None)
+                            if func:
+                                # attempt several common signatures:
+                                # func(path), func(image_path, model=...), func(file_obj)
+                                try:
+                                    analysis_result = func(tmp_path)
+                                except TypeError:
+                                    try:
+                                        analysis_result = func(tmp_path, model=chosen_model_arg)
+                                    except TypeError:
+                                        try:
+                                            # try file-like input
+                                            analysis_result = func(uploaded_img)
+                                        except Exception as inner_exc:
+                                            raise inner_exc
+                        else:
+                            # Fallback: try generic 'analyze' then 'describe_image' then return
+                            for fallback in ("analyze", "describe_image", "describe", "caption"):
+                                if hasattr(image, fallback):
+                                    func = getattr(image, fallback)
+                                    try:
+                                        analysis_result = func(tmp_path)
+                                        break
+                                    except Exception:
+                                        try:
+                                            analysis_result = func(tmp_path, model=chosen_model_arg)
+                                            break
+                                        except Exception:
+                                            continue
+
+                        # If nothing returned yet, attempt an attribute 'analyze_image' or 'image_inspect'
+                        if analysis_result is None:
+                            for opt in ("analyze_image", "image_inspect"):
+                                if hasattr(image, opt):
+                                    func = getattr(image, opt)
+                                    try:
+                                        analysis_result = func(tmp_path)
+                                        break
+                                    except Exception:
+                                        continue
+
+                        # If still None, fallback message
+                        if analysis_result is None:
+                            st.warning("No analysis output returned by the available methods.")
+                        else:
+                            # Display structured results if possible
+                            if isinstance(analysis_result, (dict, list)):
+                                st.json(analysis_result)
+                            else:
+                                st.markdown("**Analysis result:**")
+                                st.write(analysis_result)
+
+                            # Update token counters from image.response or returned result if structured
+                            try:
+                                _update_token_counters(getattr(image, "response", None) or analysis_result)
+                            except Exception:
+                                pass
+
+                    except Exception as exc:
+                        st.error(f"Image analysis failed: {exc}")
 
 # ======================================================================================
-# AUDIO MODE (baseline preserved)
+# AUDIO MODE
 # ======================================================================================
-
 elif mode == "Audio":
     transcriber = Transcription()
     translator = Translation()
 
     with st.sidebar:
         st.header("Audio Settings")
-        model = st.selectbox("Model", transcriber.model_options)
+        audio_model = st.selectbox("Model", transcriber.model_options)
+        st.session_state["audio_model"] = audio_model
         language = st.selectbox("Language", transcriber.language_options)
         task = st.selectbox("Task", ["Transcribe", "Translate"])
 
@@ -278,7 +468,7 @@ elif mode == "Audio":
             tmp = save_temp(uploaded)
             if task == "Transcribe":
                 with st.spinner("Transcribing…"):
-                    text = transcriber.transcribe(tmp, model=model)
+                    text = transcriber.transcribe(tmp, model=audio_model)
                     st.text_area("Transcript", value=text, height=300)
             else:
                 with st.spinner("Translating…"):
@@ -286,14 +476,14 @@ elif mode == "Audio":
                     st.text_area("Translation", value=text, height=300)
 
 # ======================================================================================
-# EMBEDDINGS MODE (baseline preserved)
+# EMBEDDINGS MODE
 # ======================================================================================
-
 elif mode == "Embeddings":
     embed = Embedding()
     with st.sidebar:
         st.header("Embedding Settings")
-        model = st.selectbox("Model", embed.model_options)
+        embed_model = st.selectbox("Model", embed.model_options)
+        st.session_state["embed_model"] = embed_model
         method = st.selectbox("Method", getattr(embed, "methods", ["encode"]))
 
     left, center, right = st.columns([1, 2, 1])
@@ -301,17 +491,106 @@ elif mode == "Embeddings":
         text = st.text_area("Text to embed")
         if st.button("Embed"):
             with st.spinner("Embedding…"):
-                v = embed.create(text, model=model)
+                v = embed.create(text, model=embed_model)
                 st.write("Vector length:", len(v))
 
 # ======================================================================================
-# DOCUMENTS MODE — client-side multi-document context (purely session-local)
+# Vector Store MODE
 # ======================================================================================
+elif mode == "Vector Store":
+    st.header("Vector Store")
 
+    try:
+        chat  # type: ignore
+    except NameError:
+        chat = Chat()
+
+    vs_map = getattr(chat, "vector_stores", None)
+    if vs_map and isinstance(vs_map, dict):
+        st.markdown("**Known vector stores (local mapping)**")
+        for name, vid in vs_map.items():
+            st.write(f"- **{name}** — `{vid}`")
+        st.markdown("---")
+
+    with st.expander("Create Vector Store", expanded=False):
+        new_store_name = st.text_input("New store name")
+        if st.button("Create store"):
+            if not new_store_name:
+                st.warning("Enter a store name.")
+            else:
+                try:
+                    if hasattr(chat, "create_store"):
+                        res = chat.create_store(new_store_name)
+                        st.success(f"Create call submitted for '{new_store_name}'.")
+                    else:
+                        st.warning("create_store method not found on chat object.")
+                except Exception as exc:
+                    st.error(f"Create store failed: {exc}")
+
+    st.markdown("**Manage Stores**")
+    options: List[tuple] = []
+    if vs_map and isinstance(vs_map, dict):
+        options = list(vs_map.items())
+
+    if not options:
+        try:
+            client = getattr(chat, "client", None)
+            if client and hasattr(client, "vector_stores") and hasattr(client.vector_stores, "list"):
+                api_list = client.vector_stores.list()
+                temp: List[tuple] = []
+                for item in getattr(api_list, "data", []) or api_list:
+                    nm = getattr(item, "name", None) or (item.get("name") if isinstance(item, dict) else None)
+                    vid = getattr(item, "id", None) or (item.get("id") if isinstance(item, dict) else None)
+                    if nm and vid:
+                        temp.append((nm, vid))
+                if temp:
+                    options = temp
+        except Exception:
+            options = []
+
+    if options:
+        names = [f"{n} — {i}" for n, i in options]
+        sel = st.selectbox("Select a vector store", options=names)
+        sel_id: Optional[str] = None
+        sel_name: Optional[str] = None
+        for n, i in options:
+            label = f"{n} — {i}"
+            if label == sel:
+                sel_id = i
+                sel_name = n
+                break
+
+        c1, c2 = st.columns([1, 1])
+        with c1:
+            if st.button("Retrieve store"):
+                try:
+                    if sel_id and hasattr(chat, "retrieve_store"):
+                        vs = chat.retrieve_store(sel_id)
+                        st.json(vs.__dict__ if hasattr(vs, "__dict__") else vs)
+                    else:
+                        st.warning("retrieve_store not available on chat object or no store selected.")
+                except Exception as exc:
+                    st.error(f"Retrieve failed: {exc}")
+
+        with c2:
+            if st.button("Delete store"):
+                try:
+                    if sel_id and hasattr(chat, "delete_store"):
+                        res = chat.delete_store(sel_id)
+                        st.success(f"Delete returned: {res}")
+                    else:
+                        st.warning("delete_store not available on chat object or no store selected.")
+                except Exception as exc:
+                    st.error(f"Delete failed: {exc}")
+    else:
+        st.info("No vector stores discovered. Create one or confirm `chat.vector_stores` mapping exists.")
+
+# ======================================================================================
+# DOCUMENTS MODE
+# ======================================================================================
 if mode == "Documents":
     st.header("Documents")
 
-    # Uploader (main page) — session-local files stored in st.session_state.files
     uploaded = st.file_uploader(
         "Upload documents (session only)",
         type=["pdf", "txt", "md", "docx"],
@@ -349,7 +628,6 @@ if mode == "Documents":
             else:
                 with st.spinner("Running document Q&A…"):
                     try:
-                        # Instantiate Chat defensively if not present
                         try:
                             chat  # type: ignore
                         except NameError:
@@ -359,7 +637,6 @@ if mode == "Documents":
                             try:
                                 answer = chat.summarize_document(prompt=question, pdf_path=selected_path)
                             except TypeError:
-                                # fallback to positional signature
                                 answer = chat.summarize_document(question, selected_path)
                         elif hasattr(chat, "ask_document"):
                             answer = chat.ask_document(selected_path, question)
@@ -373,45 +650,42 @@ if mode == "Documents":
                         st.session_state.messages.append({"role": "user", "content": f"[Document question] {question}"})
                         st.session_state.messages.append({"role": "assistant", "content": answer or ""})
 
-                        # update token counters defensively
                         try:
                             _update_token_counters(getattr(chat, "response", None) or answer)
                         except Exception:
                             pass
                     except Exception as e:
                         st.error(f"Document Q&A failed: {e}")
-
     else:
-        st.info("No client-side documents uploaded this session. Use the uploader above to add files.")
+        st.info("No client-side documents uploaded this session. Use the uploader in the sidebar to add files.")
 
 # ======================================================================================
-# FILES API MODE — minimal, non-invasive page that uses gpt.py file methods if present
+# FILES API MODE
 # ======================================================================================
-if mode == "Files":
-    st.header("Files")
+if mode == "Files API":
+    st.header("Files API")
 
-    # instantiate Chat (needed for file methods)
     try:
         chat  # type: ignore
     except NameError:
         chat = Chat()
 
-    # Try to resolve a file-listing method from the chat object
     list_method = None
     for name in ("retrieve_files", "retreive_files", "list_files", "get_files"):
         if hasattr(chat, name):
             list_method = getattr(chat, name)
-            list_method_name = name
             break
 
-    uploaded_file = st.file_uploader("Upload file (server-side via Files API)", type=["pdf", "txt", "md", "docx", "png", "jpg", "jpeg"])
+    uploaded_file = st.file_uploader(
+        "Upload file (server-side via Files API)",
+        type=["pdf", "txt", "md", "docx", "png", "jpg", "jpeg"],
+    )
     if uploaded_file:
         tmp_path = save_temp(uploaded_file)
         upload_fn = None
         for name in ("upload_file", "upload", "files_upload"):
             if hasattr(chat, name):
                 upload_fn = getattr(chat, name)
-                upload_name = name
                 break
         if not upload_fn:
             st.warning("No upload function found on chat object (upload_file).")
@@ -430,27 +704,22 @@ if mode == "Files":
             with st.spinner("Listing files..."):
                 try:
                     files_resp = list_method()
-                    # Normalize files_resp to a list of dict-like items
                     files_list = []
                     if files_resp is None:
                         files_list = []
                     elif isinstance(files_resp, dict):
-                        # some clients return {'data': [...]}
                         files_list = files_resp.get("data") or files_resp.get("files") or []
                     elif isinstance(files_resp, list):
                         files_list = files_resp
                     else:
-                        # try attribute access
                         try:
                             files_list = getattr(files_resp, "data", files_resp)
                         except Exception:
                             files_list = [files_resp]
 
-                    # Render the files in a compact table where possible
                     rows = []
                     for f in files_list:
                         try:
-                            # f may be dict-like or object-like
                             fid = f.get("id") if isinstance(f, dict) else getattr(f, "id", None)
                             name = f.get("filename") if isinstance(f, dict) else getattr(f, "filename", None)
                             purpose = f.get("purpose") if isinstance(f, dict) else getattr(f, "purpose", None)
@@ -466,14 +735,6 @@ if mode == "Files":
                 except Exception as exc:
                     st.error(f"List files failed: {exc}")
 
-    # If we have a listing in the session, provide deletion capability
-    # Allow user to choose a file id (re-list first is recommended)
-    if "last_files_list" in st.session_state:
-        ls = st.session_state.last_files_list
-    else:
-        ls = None
-
-    # Attempt to load files for a local selectbox if earlier listed
     if 'files_list' in locals() and files_list:
         file_ids = [r.get("id") if isinstance(r, dict) else getattr(r, "id", None) for r in files_list]
         sel = st.selectbox("Select file id to delete", options=file_ids)
@@ -494,9 +755,8 @@ if mode == "Files":
                         st.error(f"Delete failed: {exc}")
 
 # ======================================================================================
-# Footer (baseline preserved; non-invasive token summary kept in main footer only if present)
+# Footer
 # ======================================================================================
-
 st.divider()
 tu = st.session_state.token_usage
 if tu["total_tokens"] > 0:

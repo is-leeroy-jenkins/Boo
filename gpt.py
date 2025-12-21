@@ -45,7 +45,7 @@
 import os
 
 import openai.types.responses
-from openai.types import CreateEmbeddingResponse
+from openai.types import CreateEmbeddingResponse, VectorStore
 from pathlib import Path
 from typing import Any, List, Optional, Dict
 import tiktoken
