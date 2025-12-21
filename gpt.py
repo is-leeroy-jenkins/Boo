@@ -1000,7 +1000,7 @@ class Chat( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def delete_file( self, id: str ) -> FileDeleted | None:
+	def delete_file( self, id: str ) -> bool | None:
 		'''
 			
 			Returns:
@@ -1012,7 +1012,7 @@ class Chat( GPT ):
 			throw_if( 'id', id )
 			self.file_ids.append( id )
 			_deleted = self.client.files.delete( file_id=id )
-			return _deleted
+			return bool( _deleted )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gpt'

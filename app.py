@@ -12,7 +12,7 @@ import streamlit as st
 import tempfile
 from typing import List, Dict, Any, Optional
 
-from boo import (  # keep same imports as original baseline file
+from gpt import (  # keep same imports as original baseline file
     Chat,
     Image,
     Embedding,
