@@ -145,6 +145,8 @@ The Streamlit app is designed for:
 The application runs entirely on top of Boo’s core APIs and does **not** modify or duplicate
 framework logic.
 
+[![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)](https://boo-py.streamlit.app/)
+
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/Boo-streamlit.gif)
 
 
