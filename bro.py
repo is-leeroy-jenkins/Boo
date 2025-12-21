@@ -134,10 +134,11 @@ class Chat( Gemini ):
 		self.max_tokens = max_tokens
 		self.use_vertex = use_ai
 		self.http_options = types.HttpOptions( api_version=self.api_version )
+		self.client = genai.Client( vertexai=self.use_ai, api_key=self.api_key,
+			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
 		self.contents = contents
 		self.instructions = instruct
 		self.response_modalities = [ 'TEXT', 'IMAGE' ]
-		self.client = None
 		self.content_config = None
 		self.image_config = None
 		self.function_config = None
@@ -363,15 +364,15 @@ class Embedding( Gemini ):
 		self.model = model
 		self.version = version
 		self.use_ai = use_ai
+		self.http_options = types.HttpOptions( api_version=self.api_version )
 		self.client = genai.Client( vertexai=self.use_ai, api_key=self.api_key,
-			project=self.project_id, location=self.cloud_location )
+			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
 		self.temperature = temperature
 		self.top_percent = top_p
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
 		self.max_completion_tokens = max_tokens
 		self.contents = [ ]
-		self.http_options = { }
 		self.encoding_format = None
 		self.input_text = None
 		self.content_config = None
