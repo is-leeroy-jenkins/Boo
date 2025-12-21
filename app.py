@@ -3,11 +3,8 @@
 # Filename:                app.py
 # Author:                  Terry D. Eppler (integration)
 # Created:                 12-16-2025
-# Notes:                   Per-mode model keys implemented; header now selects the
-#                          appropriate model per active mode. Added temperature and
-#                          top_p controls for Chat (stored in session_state).
-#                          Fix: Images -> Analyze tab now provides file upload and
-#                          robust analysis pipeline calling available Image methods.
+# Notes:                   Restored Parameters section for Text mode and wired parameters
+#                          into generation call defensively. Minimal other edits.
 # ******************************************************************************************
 
 from __future__ import annotations
@@ -17,13 +14,23 @@ import streamlit as st
 import tempfile
 from typing import List, Dict, Any, Optional
 
-from gpt import (
+# Compatibility import: prefer gpt.py if present, otherwise fallback to boo.py
+try:
+    from gpt import (
         Chat,
         Image,
         Embedding,
         Transcription,
         Translation,
-)
+    )
+except Exception:
+    from boo import (
+        Chat,
+        Image,
+        Embedding,
+        Transcription,
+        Translation,
+    )
 
 # ======================================================================================
 # Page Configuration
@@ -49,9 +56,9 @@ if "token_usage" not in st.session_state:
 if "files" not in st.session_state:
     st.session_state.files: List[str] = []
 
-# Per-mode model keys (deterministic header behavior)
-if "chat_model" not in st.session_state:
-    st.session_state["chat_model"] = None
+# Per-mode model keys (deterministic header behavior) - chat -> text
+if "text_model" not in st.session_state:
+    st.session_state["text_model"] = None
 if "image_model" not in st.session_state:
     st.session_state["image_model"] = None
 if "audio_model" not in st.session_state:
@@ -59,11 +66,19 @@ if "audio_model" not in st.session_state:
 if "embed_model" not in st.session_state:
     st.session_state["embed_model"] = None
 
-# Temperature / top_p defaults (Chat controls)
+# Temperature / top_p / other generation params defaults (Text controls)
 if "temperature" not in st.session_state:
-    st.session_state["temperature"] = None
+    st.session_state["temperature"] = 0.7
 if "top_p" not in st.session_state:
-    st.session_state["top_p"] = None
+    st.session_state["top_p"] = 1.0
+if "max_tokens" not in st.session_state:
+    st.session_state["max_tokens"] = 512
+if "freq_penalty" not in st.session_state:
+    st.session_state["freq_penalty"] = 0.0
+if "pres_penalty" not in st.session_state:
+    st.session_state["pres_penalty"] = 0.0
+if "stop_sequences" not in st.session_state:
+    st.session_state["stop_sequences"] = []
 
 # Provider default
 if "provider" not in st.session_state:
@@ -153,6 +168,15 @@ def _display_value(val: Any) -> str:
 with st.sidebar:
     # Provider selector (visible, non-invasive UI only)
     st.subheader("Provider")
+
+    # thin blue divider immediately under the "Provider" text (before selectbox)
+    st.markdown(
+        """
+        <div style="height:2px;border-radius:3px;background:#0078FC;margin:6px 0 10px 0;"></div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     provider = st.selectbox(
         "Choose provider",
         ["GPT", "Gemini", "Groq"],
@@ -162,17 +186,17 @@ with st.sidebar:
 
     st.header("Mode")
 
-    # thin blue strip directly under "Mode" (slightly thinner)
+    # thin blue strip directly under "Mode"
     st.markdown(
         """
-        <div style="height:3px;border-radius:3px;background:#0078FC;margin:6px 0 10px 0;"></div>
+        <div style="height:2px;border-radius:3px;background:#0078FC;margin:6px 0 10px 0;"></div>
         """,
         unsafe_allow_html=True,
     )
 
     mode = st.radio(
         "Select capability",
-        ["Chat", "Images", "Audio", "Embeddings", "Documents", "Files API", "Vector Store"],
+        ["Text", "Images", "Audio", "Embeddings", "Documents", "Files API", "Vector Store"],
     )
 
     # Horizontal session controls (short buttons)
@@ -189,10 +213,10 @@ with st.sidebar:
             st.session_state.last_call_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
             st.success("New session started")
 
-    # Blue divider between session controls and mode-settings (#0078FC)
+    # Blue divider between session controls and mode-settings
     st.markdown(
         """
-        <div style="height:6px;border-radius:4px;background:#0078FC;margin:12px 0;"></div>
+        <div style="height:2px;border-radius:4px;background:#0078FC;margin:12px 0;"></div>
         """,
         unsafe_allow_html=True,
     )
@@ -200,18 +224,18 @@ with st.sidebar:
 # ======================================================================================
 # Dynamic Header — show provider and mode, and model relevant to the active mode
 # ======================================================================================
-# map mode -> session_state key for model
+# map mode -> session_state key for model (updated: Text -> text_model)
 _mode_to_model_key = {
-    "Chat": "chat_model",
+    "Text": "text_model",
     "Images": "image_model",
     "Audio": "audio_model",
     "Embeddings": "embed_model",
-    "Documents": "chat_model",
-    "Files API": "chat_model",
-    "Vector Store": "chat_model",
+    "Documents": "text_model",
+    "Files API": "text_model",
+    "Vector Store": "text_model",
 }
 
-model_key_for_header = _mode_to_model_key.get(mode, "chat_model")
+model_key_for_header = _mode_to_model_key.get(mode, "text_model")
 model_val = st.session_state.get(model_key_for_header, None)
 temperature_val = st.session_state.get("temperature", None)
 top_p_val = st.session_state.get("top_p", None)
@@ -233,25 +257,76 @@ st.markdown(
 st.divider()
 
 # ======================================================================================
-# CHAT MODE
+# TEXT MODE (formerly "Chat")
 # ======================================================================================
-if mode == "Chat":
+if mode == "Text":
 
     chat = Chat()
 
     with st.sidebar:
-        st.header("Chat Settings")
+        st.header("Text Settings")  # renamed from "Chat Settings"
 
-        # Chat model -> store into chat_model
-        chat_model = st.selectbox("Model", chat.model_options)
-        st.session_state["chat_model"] = chat_model
+        # Text model -> store into text_model
+        text_model = st.selectbox("Model", chat.model_options)
+        st.session_state["text_model"] = text_model
 
-        # temperature and top_p controls for Chat (store in session_state so header updates)
-        temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7, step=0.01)
-        st.session_state["temperature"] = float(temperature)
+        # Parameters expander (restores the Parameters section)
+        with st.expander("Parameters:", expanded=True):
+            # Temperature and Top-P
+            temperature = st.slider(
+                "Temperature",
+                min_value=0.0,
+                max_value=1.0,
+                value=float(st.session_state.get("temperature", 0.7)),
+                step=0.01,
+            )
+            st.session_state["temperature"] = float(temperature)
 
-        top_p = st.slider("Top-P", min_value=0.0, max_value=1.0, value=1.0, step=0.01)
-        st.session_state["top_p"] = float(top_p)
+            top_p = st.slider(
+                "Top-P",
+                min_value=0.0,
+                max_value=1.0,
+                value=float(st.session_state.get("top_p", 1.0)),
+                step=0.01,
+            )
+            st.session_state["top_p"] = float(top_p)
+
+            # Max tokens
+            max_tokens = st.number_input(
+                "Max tokens",
+                min_value=1,
+                max_value=100000,
+                value=int(st.session_state.get("max_tokens", 512)),
+            )
+            st.session_state["max_tokens"] = int(max_tokens)
+
+            # Frequency and presence penalties
+            freq_penalty = st.slider(
+                "Frequency penalty",
+                min_value=-2.0,
+                max_value=2.0,
+                value=float(st.session_state.get("freq_penalty", 0.0)),
+                step=0.01,
+            )
+            st.session_state["freq_penalty"] = float(freq_penalty)
+
+            pres_penalty = st.slider(
+                "Presence penalty",
+                min_value=-2.0,
+                max_value=2.0,
+                value=float(st.session_state.get("pres_penalty", 0.0)),
+                step=0.01,
+            )
+            st.session_state["pres_penalty"] = float(pres_penalty)
+
+            # Stop sequences (one per line)
+            stop_text = st.text_area(
+                "Stop sequences (one per line)",
+                value="\n".join(st.session_state.get("stop_sequences", [])),
+                height=80,
+            )
+            # normalize to list, stripping empty lines
+            st.session_state["stop_sequences"] = [s for s in (stop_text.splitlines()) if s.strip()]
 
         include = st.multiselect("Include in response", chat.include_options)
         chat.include = include
@@ -270,18 +345,48 @@ if mode == "Chat":
 
             with st.chat_message("assistant"):
                 with st.spinner("Thinking…"):
+                    # Build kwargs for generation from session_state
+                    gen_kwargs: Dict[str, Any] = {}
+                    # always include the model param
+                    gen_kwargs["model"] = text_model
+                    # sampling params
+                    if "temperature" in st.session_state:
+                        gen_kwargs["temperature"] = st.session_state["temperature"]
+                    if "top_p" in st.session_state:
+                        gen_kwargs["top_p"] = st.session_state["top_p"]
+                    # token limit
+                    if "max_tokens" in st.session_state:
+                        gen_kwargs["max_tokens"] = st.session_state["max_tokens"]
+                    # penalties
+                    if "freq_penalty" in st.session_state:
+                        gen_kwargs["frequency_penalty"] = st.session_state["freq_penalty"]
+                    if "pres_penalty" in st.session_state:
+                        gen_kwargs["presence_penalty"] = st.session_state["pres_penalty"]
+                    # stop sequences
+                    if "stop_sequences" in st.session_state and st.session_state["stop_sequences"]:
+                        gen_kwargs["stop"] = st.session_state["stop_sequences"]
+
+                    response = None
                     try:
-                        # pass temperature/top_p defensively; many wrappers accept them, but some may not
-                        response = chat.generate_text(
-                            prompt=prompt,
-                            model=chat_model,
-                            temperature=st.session_state.get("temperature", None),
-                            top_p=st.session_state.get("top_p", None),
-                        )
-                    except TypeError:
-                        # fallback if generate_text does not accept temperature/top_p
+                        # Many Chat wrappers accept named kwargs; call defensively
                         try:
-                            response = chat.generate_text(prompt=prompt, model=chat_model)
+                            response = chat.generate_text(prompt=prompt, **gen_kwargs)
+                        except TypeError:
+                            # maybe the wrapper expects explicit params; try a smaller set then fallbacks
+                            try:
+                                response = chat.generate_text(
+                                    prompt=prompt,
+                                    model=text_model,
+                                    temperature=st.session_state.get("temperature", None),
+                                    top_p=st.session_state.get("top_p", None),
+                                    max_tokens=st.session_state.get("max_tokens", None),
+                                    frequency_penalty=st.session_state.get("freq_penalty", None),
+                                    presence_penalty=st.session_state.get("pres_penalty", None),
+                                    stop=st.session_state.get("stop_sequences", None),
+                                )
+                            except TypeError:
+                                # final fallback: only model + prompt
+                                response = chat.generate_text(prompt=prompt, model=text_model)
                         except Exception as exc:
                             st.error(f"Generation failed: {exc}")
                             response = None
@@ -324,8 +429,6 @@ elif mode == "Images":
         fmt = st.selectbox("Format", image.format_options)
 
     tab_gen, tab_analyze = st.tabs(["Generate", "Analyze"])
-
-    # Generate tab unchanged (baseline behavior preserved)
     with tab_gen:
         prompt = st.text_area("Prompt")
         if st.button("Generate Image"):
@@ -336,8 +439,6 @@ elif mode == "Images":
                     _update_token_counters(getattr(image, "response", None))
                 except Exception as exc:
                     st.error(f"Image generation failed: {exc}")
-
-    # Analyze tab now provides uploader + defensive analysis pipeline
     with tab_analyze:
         st.markdown("Image analysis — upload an image to analyze.")
         uploaded_img = st.file_uploader(
