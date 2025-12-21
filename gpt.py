@@ -456,7 +456,7 @@ class Chat( GPT ):
 			store: bool=True, stream: bool=True ):
 		super( ).__init__( )
 		self.api_key = cfg.OPENAI_API_KEY
-		self.client = OpenAI( api_key=self.api_key )
+		self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 		self.number = number
 		self.temperature = temperature
 		self.top_percent = top_p
@@ -913,7 +913,7 @@ class Embedding( GPT ):
 			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, ):
 		super( ).__init__( )
 		self.api_key = cfg.OPENAI_API_KEY
-		self.client = OpenAI( api_key=self.api_key )
+		self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 		self.number = number
 		self.temperature = temperature
 		self.top_percent = top_p
@@ -1102,7 +1102,7 @@ class TTS( GPT ):
         '''
 		super( ).__init__( )
 		self.api_key = cfg.OPENAI_API_KEY
-		self.client = OpenAI( api_key=self.api_key )
+		self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 		self.model = 'gpt-4o-mini-tts'
 		self.number = number
 		self.temperature = temperature
