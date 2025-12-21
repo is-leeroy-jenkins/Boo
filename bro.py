@@ -58,7 +58,7 @@ def throw_if( name: str, value: object ):
 	if value is None:
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
 
-class GEM( ):
+class Gemini( ):
 	'''
 	
 		Purpose:
@@ -76,8 +76,12 @@ class GEM( ):
 	temperature: Optional[ float ]
 	top_p: Optional[ float ]
 	top_k: Optional[ int ]
-	candidates: Optional[ int ]
+	content_config: Optional[ types.GenerateContentConfig ]
+	image_config: Optional[ types.GenerateImagesConfig ]
+	function_config: Optional[ types.FunctionCallingConfig ]
+	candidate_count: Optional[ int ]
 	modalities: Optional[ List[ str ] ]
+	stops: Optional[ List[ str ] ]
 	frequency_penalty: Optional[ float ]
 	presence_penalty: Optional[ float ]
 	
@@ -86,17 +90,19 @@ class GEM( ):
 		self.project_id = cfg.GOOGLE_CLOUD_PROJECT
 		self.cloud_location = cfg.GOOGLE_CLOUD_LOCATION
 		self.model = None
+		self.content_config = None
+		self.image_config = None
 		self.api_version = None
 		self.temperature = None
 		self.top_p = None
 		self.top_k = None
-		self.candidates = None
+		self.candidate_count = None
 		self.frequency_penalty = None
 		self.presence_penalty = None
 		self.max_tokens = None
 		self.instructions = None
 
-class Chat( GEM ):
+class Chat( Gemini ):
 	'''
 
 	    Purpose:
@@ -105,8 +111,7 @@ class Chat( GEM ):
 
     '''
 	use_vertex: Optional[ bool ]
-	http_options: Optional[ Dict[ str, Any ] ]
-	content_config: Optional[ types.GenerateContentConfig ]
+	http_options: Optional[ types.HttpOptions ]
 	client: Optional[ genai.Client ]
 	contents: Optional[ List[ str ] ]
 	response: Optional[ Response ]
@@ -123,14 +128,16 @@ class Chat( GEM ):
 		self.temperature = temperature
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
-		self.candidates = candidates
+		self.candidate_count = candidates
 		self.max_tokens = max_tokens
 		self.use_vertex = use_ai
-		self.http_options = { }
+		self.http_options = types.HttpOptions( api_version=self.api_version )
 		self.contents = contents
 		self.instructions = instruct
 		self.client = None
 		self.content_config = None
+		self.image_config = None
+		self.function_config = None
 		self.response = None
 		self.image = None
 		
@@ -158,7 +165,34 @@ class Chat( GEM ):
 		         'imagen-4.0-generate-001',
 		         'imagen-4.0-ultra-generate-001',
 		         'imagen-4.0-fast-generate-001', ]
+	
+	@property
+	def aspect_options( self ) -> List[ str ] | None:
+		'''
 
+			Returns:
+			--------
+			List[ str ] - list of available aspect ratios for Imagen 4
+
+		'''
+		return [ '1:1',
+		         '9:16',
+		         '16:9',
+		         '3:4',
+		         '4:3', ]
+	
+	@property
+	def size_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			List[ str ] - list of available aspect ratios for Imagen 4
+
+		'''
+		return [ '1K',
+		         '2K', ]
+	
 	@property
 	def version_options( self ) -> List[ str ] | None:
 		'''
@@ -171,7 +205,21 @@ class Chat( GEM ):
 		return [ 'v1', 'v1alpha', 'v1beta1' ]
 		
 	def generate_text( self, prompt: str, model: str='gemini-2.5-flash' ) -> str | None:
-		pass
+		try:
+			throw_if( 'propmpt', prompt )
+			self.contents = prompt
+			self.model = model
+			self.content_config = types.GenerateContentConfig( temperature=self.temperature,
+				top_p=self.top_p, max_output_tokens=self.max_tokens,
+				candidate_count=self.candidate_count, frequency_penalty=self.frequency_penalty,
+				presence_penalty=self.presence_penalty, )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'bro'
+			exception.cause = 'Chat'
+			exception.method = 'generate_text( self, prompt: str, model: str ) -> str:'
+			error = ErrorDialog( exception )
+			error.show( )
 
 	def generate_image( self, prompt: str, model: str='gemini-2.5-flash-image' ) -> str | None:
 		pass
@@ -197,7 +245,7 @@ class Chat( GEM ):
 	def delete_files( self ) -> str | None:
 		pass
 
-class Embedding( GEM ):
+class Embedding( Gemini ):
 	'''
 		
 		Purpose:

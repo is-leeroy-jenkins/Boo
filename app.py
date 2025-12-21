@@ -195,14 +195,14 @@ with st.sidebar:
     with c1:
         if st.button("Clear", key="session_clear_btn", use_container_width=True):
             st.session_state.messages.clear()
-            st.success("Conversation cleared")
+            st.success("Cleared!")
     with c2:
         if st.button("New", key="session_new_btn", use_container_width=True):
             st.session_state.messages.clear()
             st.session_state.files.clear()
             st.session_state.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
             st.session_state.last_call_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
-            st.success("New session started")
+            st.success("Created!")
 
     # Blue divider between session controls and mode-settings
     st.markdown(
