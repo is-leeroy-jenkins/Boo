@@ -106,8 +106,6 @@ import traceback
 import urllib.request
 import webbrowser
 from typing import Dict, List, Tuple, Any, Text, Optional
-from mpl_toolkits.mplot3d.axes3d import get_test_data
-from matplotlib.ticker import NullFormatter
 import inspect
 
 class Error( Exception ):
