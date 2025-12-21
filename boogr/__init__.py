@@ -88,7 +88,6 @@ import matplotlib.figure
 from matplotlib import cm
 from mpl_toolkits.mplot3d.axes3d import get_test_data
 from matplotlib.ticker import NullFormatter
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, FigureCanvasAgg
 from matplotlib.figure import Figure
 from mpl_toolkits.axes_grid1.axes_rgb import RGBAxes
 import numpy as np
@@ -96,7 +95,7 @@ from numpy.random import rand
 from pandas import read_csv as CsvReader
 from pandas import read_excel as ExcelReader
 from pydantic import BaseModel
-from PIL import Image, ImageTk, ImageSequence
+from PIL import Image, ImageSequence
 import pymupdf
 import random
 from random import randint
