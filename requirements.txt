@@ -13,7 +13,6 @@ flask-moment
 flask-wtf
 flask-sqlalchemy
 flask-mail
-FreeSimpleGUI
 fastapi
 frontend
 groq
