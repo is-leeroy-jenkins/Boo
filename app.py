@@ -14,23 +14,14 @@ import streamlit as st
 import tempfile
 from typing import List, Dict, Any, Optional
 
-# Compatibility import: prefer gpt.py if present, otherwise fallback to boo.py
-try:
-    from gpt import (
-        Chat,
-        Image,
-        Embedding,
-        Transcription,
-        Translation,
-    )
-except Exception:
-    from boo import (
-        Chat,
-        Image,
-        Embedding,
-        Transcription,
-        Translation,
-    )
+
+from gpt import (
+    Chat,
+    Image,
+    Embedding,
+    Transcription,
+    Translation,
+)
 
 # ======================================================================================
 # Page Configuration
