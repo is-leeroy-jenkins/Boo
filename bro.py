@@ -76,6 +76,7 @@ class Gemini( ):
 	temperature: Optional[ float ]
 	top_p: Optional[ float ]
 	top_k: Optional[ int ]
+	candidates: Optional[ int ]
 	modalities: Optional[ List[ str ] ]
 	frequency_penalty: Optional[ float ]
 	presence_penalty: Optional[ float ]
@@ -89,6 +90,7 @@ class Gemini( ):
 		self.temperature = None
 		self.top_p = None
 		self.top_k = None
+		self.candidates = None
 		self.frequency_penalty = None
 		self.presence_penalty = None
 		self.max_tokens = None
@@ -113,14 +115,15 @@ class Chat( Gemini ):
 	def __init__( self, model: str='gemini-2.5-flash', version: str='v1alpha',
 			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			instruct: str=None, contents: List[ str ]=None ):
+			candidates: int=1, instruct: str=None, contents: List[ str ]=None ):
 		super( ).__init__( )
 		self.model = model
 		self.api_version = version
 		self.top_p = top_p
-		self.temperature = temperature,
-		self.frequency_penalty = frequency,
-		self.presence_penalty = presence,
+		self.temperature = temperature
+		self.frequency_penalty = frequency
+		self.presence_penalty = presence
+		self.candidates = candidates
 		self.max_tokens = max_tokens
 		self.use_vertex = use_ai
 		self.http_options = { }
@@ -142,10 +145,11 @@ class Chat( Gemini ):
 		'''
 		return [ 'gemini-3-flash-preview',
 		         'gemini-2.5-flash',
-		         'gemini-2.0-flash-lite',
 		         'gemini-2.5-flash-image',
 		         'gemini-2.5-flash-native-audio-preview-12-2025',
-		         'gemini-2.5-flash-preview-tts' ]
+		         'gemini-2.5-flash-preview-tts',
+		         'gemini-2.0-flash',
+		         'gemini-2.0-flash-lite', ]
 
 	@property
 	def version_options( self ) -> List[ str ] | None:

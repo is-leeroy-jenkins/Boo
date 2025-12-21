@@ -17,8 +17,8 @@ from streamlit_extras.stylable_container import stylable_container
 from streamlit_extras.add_vertical_space import add_vertical_space
 from streamlit_extras.colored_header import colored_header
 
-# Import the Boo framework classes (assumes boo.py provides these)
-from boo import (
+# Import the Boo framework classes (assumes gpt.py provides these)
+from gpt import (
     Chat,
     Image,
     Embedding,

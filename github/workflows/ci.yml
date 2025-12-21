@@ -10,5 +10,5 @@ jobs:
       - run: python -m pip install -U ruff black mypy types-requests mkdocs mkdocs-material mkdocstrings[python]
       - run: ruff check .
       - run: black --check .
-      - run: mypy boo.py models.py
+      - run: mypy gpt.py models.py
       - run: mkdocs build --strict
