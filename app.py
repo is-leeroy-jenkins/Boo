@@ -12,53 +12,58 @@ import streamlit as st
 import tempfile
 from typing import List, Dict, Any, Optional
 
-from gpt import (  # keep same imports as original baseline file
-    Chat,
-    Image,
-    Embedding,
-    Transcription,
-    Translation,
+# Compatibility import: prefer gpt.py if present, otherwise fallback to boo.py
+try:
+    from gpt import (
+        Chat,
+        Image,
+        Embedding,
+        Transcription,
+        Translation,
+    )
+except Exception:
+    from boo import (
+        Chat,
+        Image,
+        Embedding,
+        Transcription,
+        Translation,
+    )
+
+# ======================================================================================
+# Page Configuration
+# ======================================================================================
+
+st.set_page_config(
+    page_title="Boo • Multimoldal AI Agent",
+    page_icon=cfg.FAVICON_PATH,
+    layout="wide",
 )
 
-# ---------------------------------------------------------------------------------------
-# Page Configuration (unchanged)
-# ---------------------------------------------------------------------------------------
-st.set_page_config(page_title="Boo • Multimoldal AI Agent", page_icon=cfg.FAVICON_PATH, layout="wide")
+# ======================================================================================
+# Session State
+# ======================================================================================
 
-# ---------------------------------------------------------------------------------------
-# Boo Components (read-only introspection) — unchanged
-# ---------------------------------------------------------------------------------------
-chat = Chat()
-image = Image()
-embedding = Embedding()
-transcriber = Transcription()
-translator = Translation()
-
-# ---------------------------------------------------------------------------------------
-# Session State initialization (added a few keys we need)
-# ---------------------------------------------------------------------------------------
 if "messages" not in st.session_state:
     st.session_state.messages: List[Dict[str, Any]] = []
 
-if "files" not in st.session_state:
-    # store local temp file paths for client-side multi-document mode
-    st.session_state.files: List[str] = []
-
-if "token_usage" not in st.session_state:
-    # session aggregated token usage
-    st.session_state.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
-
+# Token counters: last call and aggregated totals
 if "last_call_usage" not in st.session_state:
     st.session_state.last_call_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
-if "session_id" not in st.session_state:
-    st.session_state.session_id = None
+if "token_usage" not in st.session_state:
+    st.session_state.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
-# ---------------------------------------------------------------------------------------
+# Client-side uploaded files (temporary paths)
+if "files" not in st.session_state:
+    st.session_state.files: List[str] = []
+
+# ======================================================================================
 # Utilities
-# ---------------------------------------------------------------------------------------
+# ======================================================================================
+
 def save_temp(upload) -> str:
-    """Save uploaded file to a named temporary file and return the path."""
+    """Save uploaded file to a named temporary file and return path."""
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         tmp.write(upload.read())
         return tmp.name
@@ -66,96 +71,89 @@ def save_temp(upload) -> str:
 
 def _extract_usage_from_response(resp: Any) -> Dict[str, int]:
     """
-    Extract token usage numbers from an OpenAI-style response object in a robust way.
-    Returns a dict with keys: prompt_tokens, completion_tokens, total_tokens (ints).
+    Extract token usage from a response object/dict.
+    Returns dict with prompt_tokens, completion_tokens, total_tokens.
+    Defensive: returns zeros if not present.
     """
     usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
-    if resp is None:
+    if not resp:
         return usage
 
-    # support both dict-like and object-like responses
+    raw = None
     try:
-        raw = getattr(resp, "usage", None) or (resp.get("usage") if isinstance(resp, dict) else None)
+        raw = getattr(resp, "usage", None)
     except Exception:
         raw = None
 
-    if not raw:
-        # try nested alternatives
+    if not raw and isinstance(resp, dict):
+        raw = resp.get("usage")
+
+    # Fallback: try typical nested places
+    if not raw and isinstance(resp, dict) and resp.get("choices"):
         try:
-            raw = resp["usage"]
+            raw = resp["choices"][0].get("usage")
         except Exception:
             raw = None
 
-    if raw:
-        # raw may be an object with attributes or a dict
-        try:
-            usage["prompt_tokens"] = int(getattr(raw, "prompt_tokens", raw.get("prompt_tokens", 0)))
-        except Exception:
-            usage["prompt_tokens"] = int(raw.get("prompt_tokens", 0)) if isinstance(raw, dict) else 0
-        try:
-            usage["completion_tokens"] = int(
-                getattr(raw, "completion_tokens", raw.get("completion_tokens", raw.get("output_tokens", 0)))
-            )
-        except Exception:
-            usage["completion_tokens"] = int(raw.get("completion_tokens", raw.get("output_tokens", 0))) if isinstance(raw, dict) else 0
-        try:
-            usage["total_tokens"] = int(
-                getattr(raw, "total_tokens", raw.get("total_tokens", usage["prompt_tokens"] + usage["completion_tokens"]))
-            )
-        except Exception:
-            usage["total_tokens"] = int(
-                raw.get("total_tokens", usage["prompt_tokens"] + usage["completion_tokens"])
-            ) if isinstance(raw, dict) else (usage["prompt_tokens"] + usage["completion_tokens"])
+    if not raw:
+        return usage
+
+    try:
+        if isinstance(raw, dict):
+            usage["prompt_tokens"] = int(raw.get("prompt_tokens", 0))
+            usage["completion_tokens"] = int(raw.get("completion_tokens", raw.get("output_tokens", 0)))
+            usage["total_tokens"] = int(raw.get("total_tokens", usage["prompt_tokens"] + usage["completion_tokens"]))
+        else:
+            usage["prompt_tokens"] = int(getattr(raw, "prompt_tokens", 0))
+            usage["completion_tokens"] = int(getattr(raw, "completion_tokens", getattr(raw, "output_tokens", 0)))
+            usage["total_tokens"] = int(getattr(raw, "total_tokens", usage["prompt_tokens"] + usage["completion_tokens"]))
+    except Exception:
+        usage["total_tokens"] = usage["prompt_tokens"] + usage["completion_tokens"]
 
     return usage
 
 
-def _update_token_counters(resp: Any):
+def _update_token_counters(resp: Any) -> None:
     """
-    Update both the last-call and the session aggregate token counters from response object.
+    Update session_state.last_call_usage and accumulate into session_state.token_usage.
     """
     usage = _extract_usage_from_response(resp)
-    # store last call usage
     st.session_state.last_call_usage = usage
-    # accumulate to session totals
     st.session_state.token_usage["prompt_tokens"] += usage.get("prompt_tokens", 0)
     st.session_state.token_usage["completion_tokens"] += usage.get("completion_tokens", 0)
     st.session_state.token_usage["total_tokens"] += usage.get("total_tokens", 0)
 
 
-# ---------------------------------------------------------------------------------------
-# Sidebar — Mode Selector and Session Controls (restored)
-# ---------------------------------------------------------------------------------------
+# ======================================================================================
+# Sidebar — Mode Selector (baseline preserved)
+# Add only the Files API radio option in the mode selector.
+# ======================================================================================
+
 with st.sidebar:
     st.header("Mode")
-    mode = st.radio("Select capability", ["Chat", "Images", "Audio", "Embeddings", "Documents"])
+    mode = st.radio(
+        "Select capability",
+        ["Chat", "Images", "Audio", "Embeddings", "Documents", "Files API"],
+    )
 
-    # Session buttons (horizontal) restored to the sidebar as requested
-    btn_col_left, btn_col_right = st.columns([1, 1])
-    with btn_col_left:
+    # Horizontal session controls (only two short buttons requested)
+    c1, c2 = st.columns([1, 1])
+    with c1:
         if st.button("Clear", key="session_clear_btn", use_container_width=True):
-            # Clear conversation only
             st.session_state.messages.clear()
             st.success("Conversation cleared")
-    with btn_col_right:
+    with c2:
         if st.button("New", key="session_new_btn", use_container_width=True):
-            # Start a fresh session
             st.session_state.messages.clear()
             st.session_state.files.clear()
             st.session_state.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
             st.session_state.last_call_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
-            st.session_state.session_id = None
             st.success("New session started")
 
-    # Session token summary in the sidebar (compact)
-    tu = st.session_state.token_usage
-    st.markdown(
-        f"**Session tokens**  \nprompt: {tu['prompt_tokens']} · completion: {tu['completion_tokens']} · total: {tu['total_tokens']}"
-    )
+# ======================================================================================
+# Header (baseline preserved)
+# ======================================================================================
 
-# ---------------------------------------------------------------------------------------
-# Header (unchanged look & placement)
-# ---------------------------------------------------------------------------------------
 st.markdown(
     """
     <h1 style="margin-bottom:0.25rem;">Boo</h1>
@@ -163,17 +161,35 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
 st.divider()
 
-# ---------------------------------------------------------------------------------------
+# ======================================================================================
 # CHAT MODE
-# ---------------------------------------------------------------------------------------
+# - preserve baseline behavior, update token counters after generate_text calls
+# ======================================================================================
+
 if mode == "Chat":
+
+    chat = Chat()
+
+    with st.sidebar:
+        st.header("Chat Settings")
+
+        model = st.selectbox(
+            "Model",
+            chat.model_options,
+        )
+
+        include = st.multiselect(
+            "Include in response",
+            chat.include_options,
+        )
+
+        chat.include = include
+
     left, center, right = st.columns([1, 2, 1])
 
     with center:
-        # render conversation
         for msg in st.session_state.messages:
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
@@ -185,32 +201,41 @@ if mode == "Chat":
 
             with st.chat_message("assistant"):
                 with st.spinner("Thinking…"):
-                    # call existing Chat.generate_text(...) — keep signature as your app expects
-                    response = chat.generate_text(
-                        prompt=prompt,
-                        model=chat.model_options[0] if not hasattr(st, "model") else st.session_state.get("model"),
-                    )
-                    # display response
+                    try:
+                        response = chat.generate_text(
+                            prompt=prompt,
+                            model=model,
+                        )
+                    except TypeError:
+                        # defensive fallback: older signature
+                        response = chat.generate_text(prompt=prompt)
+                    except Exception as exc:
+                        st.error(f"Generation failed: {exc}")
+                        response = None
+
                     st.markdown(response or "")
                     st.session_state.messages.append({"role": "assistant", "content": response or ""})
-                    # update token counters if chat.response exists
+
+                    # Update token counters defensively from chat.response or returned response
                     try:
-                        _update_token_counters(getattr(chat, "response", None))
+                        _update_token_counters(getattr(chat, "response", None) or response)
                     except Exception:
-                        # don't fail UI if response doesn't include usage
                         pass
 
-    # show last-call usage
+    # Token transparency in main area
     lcu = st.session_state.last_call_usage
-    if lcu and any(v for v in lcu.values()):
-        st.info(f"Last call tokens — prompt: {lcu['prompt_tokens']}, completion: {lcu['completion_tokens']}, total: {lcu['total_tokens']}")
+    tu = st.session_state.token_usage
+    if any(lcu.values()):
+        st.info(f"Last call — prompt: {lcu['prompt_tokens']}, completion: {lcu['completion_tokens']}, total: {lcu['total_tokens']}")
+    if tu["total_tokens"] > 0:
+        st.write(f"Session totals — prompt: {tu['prompt_tokens']} · completion: {tu['completion_tokens']} · total: {tu['total_tokens']}")
 
-# ---------------------------------------------------------------------------------------
-# IMAGES MODE (unchanged except we don't alter logic)
-# ---------------------------------------------------------------------------------------
+# ======================================================================================
+# IMAGE MODE (baseline preserved)
+# ======================================================================================
+
 elif mode == "Images":
     image = Image()
-
     with st.sidebar:
         st.header("Image Settings")
         model = st.selectbox("Model", image.model_options)
@@ -218,27 +243,24 @@ elif mode == "Images":
         quality = st.selectbox("Quality", image.quality_options)
         fmt = st.selectbox("Format", image.format_options)
 
-    left, center, right = st.columns([1, 2, 1])
+    tab_gen, tab_analyze = st.tabs(["Generate", "Analyze"])
+    with tab_gen:
+        prompt = st.text_area("Prompt")
+        if st.button("Generate Image"):
+            with st.spinner("Generating…"):
+                try:
+                    img_url = image.generate(prompt=prompt, model=model, size=size, quality=quality, fmt=fmt)
+                    st.image(img_url)
+                    _update_token_counters(getattr(image, "response", None))
+                except Exception as exc:
+                    st.error(f"Image generation failed: {exc}")
+    with tab_analyze:
+        st.write("Image analysis — baseline behavior preserved.")
 
-    with center:
-        tab_gen, tab_analyze = st.tabs(["Generate", "Analyze"])
-        with tab_gen:
-            prompt = st.text_area("Image prompt")
-            if st.button("Generate image"):
-                with st.spinner("Generating image…"):
-                    img_data = image.generate(prompt=prompt, model=model, size=size, quality=quality, fmt=fmt)
-                    # update tokens if supported
-                    try:
-                        _update_token_counters(getattr(image, "response", None))
-                    except Exception:
-                        pass
-                    st.write("Image generation completed.")
-        with tab_analyze:
-            st.write("Image analysis is unchanged.")
+# ======================================================================================
+# AUDIO MODE (baseline preserved)
+# ======================================================================================
 
-# ---------------------------------------------------------------------------------------
-# AUDIO MODE (unchanged)
-# ---------------------------------------------------------------------------------------
 elif mode == "Audio":
     transcriber = Transcription()
     translator = Translation()
@@ -247,114 +269,249 @@ elif mode == "Audio":
         st.header("Audio Settings")
         model = st.selectbox("Model", transcriber.model_options)
         language = st.selectbox("Language", transcriber.language_options)
+        task = st.selectbox("Task", ["Transcribe", "Translate"])
 
     left, center, right = st.columns([1, 2, 1])
-
     with center:
-        st.write("Audio features remain as before.")
+        uploaded = st.file_uploader("Upload audio file", type=["wav", "mp3", "m4a", "flac"])
+        if uploaded:
+            tmp = save_temp(uploaded)
+            if task == "Transcribe":
+                with st.spinner("Transcribing…"):
+                    text = transcriber.transcribe(tmp, model=model)
+                    st.text_area("Transcript", value=text, height=300)
+            else:
+                with st.spinner("Translating…"):
+                    text = translator.translate(tmp)
+                    st.text_area("Translation", value=text, height=300)
 
-# ---------------------------------------------------------------------------------------
-# EMBEDDINGS MODE (unchanged)
-# ---------------------------------------------------------------------------------------
+# ======================================================================================
+# EMBEDDINGS MODE (baseline preserved)
+# ======================================================================================
+
 elif mode == "Embeddings":
-    embedding = Embedding()
-
+    embed = Embedding()
     with st.sidebar:
         st.header("Embedding Settings")
-        model = st.selectbox("Model", embedding.model_options)
-        method = st.selectbox("Method", embedding.methods if hasattr(embedding, "methods") else ["encode"])
+        model = st.selectbox("Model", embed.model_options)
+        method = st.selectbox("Method", getattr(embed, "methods", ["encode"]))
 
     left, center, right = st.columns([1, 2, 1])
-
     with center:
-        st.write("Embeddings UI unchanged.")
+        text = st.text_area("Text to embed")
+        if st.button("Embed"):
+            with st.spinner("Embedding…"):
+                v = embed.create(text, model=model)
+                st.write("Vector length:", len(v))
 
-# ---------------------------------------------------------------------------------------
-# DOCUMENTS MODE — multi-document client-side context
-# ---------------------------------------------------------------------------------------
-elif mode == "Documents":
-    # Documents UI lives on the page (not the sidebar) to keep sidebar uncluttered
+# ======================================================================================
+# DOCUMENTS MODE — client-side multi-document context (purely session-local)
+# ======================================================================================
 
+if mode == "Documents" or st.session_state.files:
     st.header("Documents")
 
-    # uploader (client-side). Keep accept_multiple_files semantics but save to tmp files
-    uploads = st.file_uploader("Upload documents (pdf, txt, md, docx)", type=["pdf", "txt", "md", "docx"], accept_multiple_files=True)
+    # Uploader (main page) — session-local files stored in st.session_state.files
+    uploaded = st.file_uploader(
+        "Upload documents (session only)",
+        type=["pdf", "txt", "md", "docx"],
+        accept_multiple_files=True,
+    )
 
-    if uploads:
-        # replace session files set so user clearly knows the upload set
-        st.session_state.files.clear()
-        for f in uploads:
-            path = save_temp(f)
-            st.session_state.files.append(path)
-        st.success(f"Saved {len(uploads)} document(s) for this session.")
+    if uploaded:
+        for up in uploaded:
+            st.session_state.files.append(save_temp(up))
+        st.success(f"Saved {len(uploaded)} file(s) to session")
 
-    # list uploaded client-side files
     if st.session_state.files:
-        st.markdown("**Uploaded documents (client-side)**")
-        # display as selectbox or radio for single selection
-        file_index = st.selectbox("Choose a document", options=list(range(len(st.session_state.files))), format_func=lambda i: st.session_state.files[i])
-        selected_path = st.session_state.files[file_index]
+        st.markdown("**Uploaded documents (session-only)**")
+        idx = st.selectbox(
+            "Choose a document",
+            options=list(range(len(st.session_state.files))),
+            format_func=lambda i: st.session_state.files[i],
+        )
+        selected_path = st.session_state.files[idx]
 
-        # quick actions for selected file
         c1, c2 = st.columns([1, 1])
         with c1:
             if st.button("Remove selected document"):
-                # remove the selected file
-                removed = st.session_state.files.pop(file_index)
+                removed = st.session_state.files.pop(idx)
                 st.success(f"Removed {removed}")
         with c2:
-            if st.button("Download selected path as text (local)"):
-                # show path only — actual download can be wired to open/read content if desired
-                st.info(f"Local file path: {selected_path}")
+            if st.button("Show selected path"):
+                st.info(f"Local temp path: {selected_path}")
 
         st.markdown("---")
-
-        # Ask a question about the selected document
-        question = st.text_area("Question for the selected document", placeholder="Ask something about the document...")
-        ask_col, _ = st.columns([1, 2])
-        with ask_col:
-            if st.button("Ask Document"):
-                if not question:
-                    st.warning("Please enter a question before asking.")
-                else:
-                    with st.spinner("Running document Q&A…"):
+        question = st.text_area("Ask a question about the selected document")
+        if st.button("Ask Document"):
+            if not question:
+                st.warning("Enter a question before asking.")
+            else:
+                with st.spinner("Running document Q&A…"):
+                    try:
+                        # Instantiate Chat defensively if not present
                         try:
-                            # Use the Chat.summarize_document(...) function which expects local path
-                            # This keeps all file handling on the client side (we upload inside that method)
-                            answer = chat.summarize_document(prompt=question, pdf_path=selected_path, model=chat.model_options[0])
-                            st.markdown("**Answer:**")
-                            st.markdown(answer or "No answer returned.")
-                            # update conversation history if desired
-                            st.session_state.messages.append({"role": "user", "content": f"[Document question] {question}"})
-                            st.session_state.messages.append({"role": "assistant", "content": answer or ""})
-                            # update tokens from chat.response if present
+                            chat  # type: ignore
+                        except NameError:
+                            chat = Chat()
+                        answer = None
+                        if hasattr(chat, "summarize_document"):
                             try:
-                                _update_token_counters(getattr(chat, "response", None))
-                            except Exception:
-                                pass
-                        except Exception as e:
-                            st.error(f"Document Q&A failed: {e}")
+                                answer = chat.summarize_document(prompt=question, pdf_path=selected_path)
+                            except TypeError:
+                                # fallback to positional signature
+                                answer = chat.summarize_document(question, selected_path)
+                        elif hasattr(chat, "ask_document"):
+                            answer = chat.ask_document(selected_path, question)
+                        elif hasattr(chat, "document_qa"):
+                            answer = chat.document_qa(selected_path, question)
+                        else:
+                            raise RuntimeError("No document-QA method found on chat object.")
 
-        # show last-call and session usage after the Q&A (if any)
-        lcu = st.session_state.last_call_usage
-        if any(v for v in lcu.values()):
-            st.write(f"Last call tokens — prompt: {lcu['prompt_tokens']} · completion: {lcu['completion_tokens']} · total: {lcu['total_tokens']}")
-        tu = st.session_state.token_usage
-        st.write(f"Session tokens — prompt: {tu['prompt_tokens']} · completion: {tu['completion_tokens']} · total: {tu['total_tokens']}")
+                        st.markdown("**Answer:**")
+                        st.markdown(answer or "No answer returned.")
+                        st.session_state.messages.append({"role": "user", "content": f"[Document question] {question}"})
+                        st.session_state.messages.append({"role": "assistant", "content": answer or ""})
+
+                        # update token counters defensively
+                        try:
+                            _update_token_counters(getattr(chat, "response", None) or answer)
+                        except Exception:
+                            pass
+                    except Exception as e:
+                        st.error(f"Document Q&A failed: {e}")
 
     else:
-        st.info("No client-side documents uploaded yet. Use the uploader above to add files for local Q&A.")
+        st.info("No client-side documents uploaded this session. Use the uploader above to add files.")
 
-# ---------------------------------------------------------------------------------------
-# Footer (small status): leave unchanged except add a small line about tokens for quick glance
-# ---------------------------------------------------------------------------------------
+# ======================================================================================
+# FILES API MODE — minimal, non-invasive page that uses gpt.py file methods if present
+# ======================================================================================
+if mode == "Files API":
+    st.header("Files API")
+
+    # instantiate Chat (needed for file methods)
+    try:
+        chat  # type: ignore
+    except NameError:
+        chat = Chat()
+
+    # Try to resolve a file-listing method from the chat object
+    list_method = None
+    for name in ("retrieve_files", "retreive_files", "list_files", "get_files"):
+        if hasattr(chat, name):
+            list_method = getattr(chat, name)
+            list_method_name = name
+            break
+
+    uploaded_file = st.file_uploader("Upload file (server-side via Files API)", type=["pdf", "txt", "md", "docx", "png", "jpg", "jpeg"])
+    if uploaded_file:
+        tmp_path = save_temp(uploaded_file)
+        upload_fn = None
+        for name in ("upload_file", "upload", "files_upload"):
+            if hasattr(chat, name):
+                upload_fn = getattr(chat, name)
+                upload_name = name
+                break
+        if not upload_fn:
+            st.warning("No upload function found on chat object (upload_file).")
+        else:
+            with st.spinner("Uploading to Files API..."):
+                try:
+                    fid = upload_fn(tmp_path)
+                    st.success(f"Uploaded; file id: {fid}")
+                except Exception as exc:
+                    st.error(f"Upload failed: {exc}")
+
+    if st.button("List files"):
+        if not list_method:
+            st.warning("No file-listing method found on chat object (expected retrieve_files/list_files).")
+        else:
+            with st.spinner("Listing files..."):
+                try:
+                    files_resp = list_method()
+                    # Normalize files_resp to a list of dict-like items
+                    files_list = []
+                    if files_resp is None:
+                        files_list = []
+                    elif isinstance(files_resp, dict):
+                        # some clients return {'data': [...]}
+                        files_list = files_resp.get("data") or files_resp.get("files") or []
+                    elif isinstance(files_resp, list):
+                        files_list = files_resp
+                    else:
+                        # try attribute access
+                        try:
+                            files_list = getattr(files_resp, "data", files_resp)
+                        except Exception:
+                            files_list = [files_resp]
+
+                    # Render the files in a compact table where possible
+                    rows = []
+                    for f in files_list:
+                        try:
+                            # f may be dict-like or object-like
+                            fid = f.get("id") if isinstance(f, dict) else getattr(f, "id", None)
+                            name = f.get("filename") if isinstance(f, dict) else getattr(f, "filename", None)
+                            purpose = f.get("purpose") if isinstance(f, dict) else getattr(f, "purpose", None)
+                        except Exception:
+                            fid = None
+                            name = str(f)
+                            purpose = None
+                        rows.append({"id": fid, "filename": name, "purpose": purpose})
+                    if rows:
+                        st.table(rows)
+                    else:
+                        st.info("No files returned.")
+                except Exception as exc:
+                    st.error(f"List files failed: {exc}")
+
+    # If we have a listing in the session, provide deletion capability
+    # Allow user to choose a file id (re-list first is recommended)
+    if "last_files_list" in st.session_state:
+        ls = st.session_state.last_files_list
+    else:
+        ls = None
+
+    # Attempt to load files for a local selectbox if earlier listed
+    if 'files_list' in locals() and files_list:
+        file_ids = [r.get("id") if isinstance(r, dict) else getattr(r, "id", None) for r in files_list]
+        sel = st.selectbox("Select file id to delete", options=file_ids)
+        if st.button("Delete selected file"):
+            del_fn = None
+            for name in ("delete_file", "delete", "files_delete"):
+                if hasattr(chat, name):
+                    del_fn = getattr(chat, name)
+                    break
+            if not del_fn:
+                st.warning("No delete function found on chat object (expected delete_file).")
+            else:
+                with st.spinner("Deleting file..."):
+                    try:
+                        res = del_fn(sel)
+                        st.success(f"Delete result: {res}")
+                    except Exception as exc:
+                        st.error(f"Delete failed: {exc}")
+
+# ======================================================================================
+# Footer (baseline preserved; non-invasive token summary kept in main footer only if present)
+# ======================================================================================
+
 st.divider()
-st.markdown(
-    f"""
+tu = st.session_state.token_usage
+if tu["total_tokens"] > 0:
+    footer_html = f"""
     <div style="display:flex;justify-content:space-between;color:#9aa0a6;font-size:0.85rem;">
         <span>Boo Framework</span>
-        <span>Session tokens — total: {st.session_state.token_usage['total_tokens']}</span>
+        <span>Session tokens — total: {tu['total_tokens']}</span>
     </div>
-    """,
-    unsafe_allow_html=True,
-)
+    """
+else:
+    footer_html = """
+    <div style="display:flex;justify-content:space-between;color:#9aa0a6;font-size:0.85rem;">
+        <span>Boo Framework</span>
+        <span>text • audio • images</span>
+    </div>
+    """
+
+st.markdown(footer_html, unsafe_allow_html=True)

@@ -1570,6 +1570,24 @@ class Transcription( GPT ):
 		         'vtt',
 		         'diarized_json' ]
 	
+	@property
+	def language_options( self ):
+		'''
+	
+	        Purpose:
+	        --------
+	        Method that returns a list of voice names
+
+        '''
+		return [ 'English',
+		         'Spanish',
+		         'Tagalog',
+		         'French',
+		         'Japanese',
+		         'German',
+		         'Italian',
+		         'Chinese' ]
+	
 	def transcribe( self, path: str, model: str='whisper-1' ) -> str:
 		"""
 		
