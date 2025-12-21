@@ -44,6 +44,15 @@
   '''
 from __future__ import annotations
 
+import os
+if os.environ.get("BOOGR_HEADLESS") == "1":
+    GUI_AVAILABLE = False
+else:
+    try:
+        import FreeSimpleGUI as sg
+        GUI_AVAILABLE = True
+    except Exception:
+        GUI_AVAILABLE = False
 
 try:
     import fitz
@@ -86,7 +95,6 @@ from matplotlib.figure import Figure
 from mpl_toolkits.axes_grid1.axes_rgb import RGBAxes
 import numpy as np
 from numpy.random import rand
-import os
 from pandas import read_csv as CsvReader
 from pandas import read_excel as ExcelReader
 from pydantic import BaseModel
