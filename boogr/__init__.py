@@ -81,7 +81,6 @@ import base64
 import config as cfg
 from enum import Enum
 import fitz
-from FreeSimpleGUI import Text, Frame, Sizegrip
 from googlesearch import search
 import io
 import matplotlib.pyplot as plt
