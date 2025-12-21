@@ -69,7 +69,6 @@ except ImportError as exc:
 # ======================================================================================
 
 import base64
-import cv2
 import config as cfg
 from enum import Enum
 import fitz
