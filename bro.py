@@ -271,7 +271,7 @@ class Embedding( GEM ):
 		return [ 'float',
 		         'base64' ]
 	
-	def create( self, text: str, model: str='text-embedding-005', format: str='float' ) -> List[ float ] | None:
+	def embed( self, text: str, model: str='gemini-embedding-001', format: str='float' ) -> List[ float ] | None:
 		"""
 	
 	        Purpose

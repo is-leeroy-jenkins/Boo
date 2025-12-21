@@ -187,7 +187,7 @@ with st.sidebar:
 
     mode = st.radio(
         "Select capability",
-        ["Text", "Images", "Audio", "Embeddings", "Documents", "Files API", "Vector Store"],
+        ["Text", "Images", "Audio", "Embeddings", "Documents", "Files", "Vector Store"],
     )
 
     # Horizontal session controls (short buttons)
@@ -222,7 +222,7 @@ _mode_to_model_key = {
     "Audio": "audio_model",
     "Embeddings": "embed_model",
     "Documents": "text_model",
-    "Files API": "text_model",
+    "Files": "text_model",
     "Vector Store": "text_model",
 }
 
@@ -251,7 +251,7 @@ st.divider()
 # TEXT MODE (formerly "Chat")
 # ======================================================================================
 if mode == "Text":
-
+    st.header("")
     chat = Chat()
 
     with st.sidebar:
@@ -590,7 +590,6 @@ elif mode == "Embeddings":
 # Vector Store MODE
 # ======================================================================================
 elif mode == "Vector Store":
-    st.header("Vector Store")
 
     try:
         chat  # type: ignore
@@ -681,7 +680,7 @@ elif mode == "Vector Store":
 # DOCUMENTS MODE
 # ======================================================================================
 if mode == "Documents":
-    st.header("Documents")
+   
 
     uploaded = st.file_uploader(
         "Upload documents (session only)",
@@ -754,9 +753,7 @@ if mode == "Documents":
 # ======================================================================================
 # FILES API MODE
 # ======================================================================================
-if mode == "Files API":
-    st.header("Files API")
-
+if mode == "Files":
     try:
         chat  # type: ignore
     except NameError:
