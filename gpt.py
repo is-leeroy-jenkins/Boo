@@ -1021,7 +1021,7 @@ class Chat( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def create_store( self, store_name: str ) -> v:
+	def create_store( self, store_name: str ) -> VectorStore | None:
 		'''
 			
 			Returns:
@@ -1031,7 +1031,8 @@ class Chat( GPT ):
 		'''
 		try:
 			throw_if( 'store_name', store_name )
-			self.client.vector_stores.create( name=store_name )
+			_store = self.client.vector_stores.create( name=store_name )
+			return _store
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gpt'
