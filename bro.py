@@ -1,16 +1,16 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                gemma.py
+      Filename:                bro.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="gemma.py" company="Terry D. Eppler">
+  <copyright file="bro.py" company="Terry D. Eppler">
 
-	     gemma.py
+	     bro.py
 	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    gemma.py
+    bro.py
   </summary>
   ******************************************************************************************
 '''
@@ -58,7 +58,7 @@ def throw_if( name: str, value: object ):
 	if value is None:
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
 
-class Gemini( ):
+class GEM( ):
 	'''
 	
 		Purpose:
@@ -96,7 +96,7 @@ class Gemini( ):
 		self.max_tokens = None
 		self.instructions = None
 
-class Chat( Gemini ):
+class Chat( GEM ):
 	'''
 
 	    Purpose:
@@ -174,10 +174,19 @@ class Chat( Gemini ):
 	def summarize_document( self, prompt: str, filepath: str, model: str='gemini-2.5-flash' ) -> str | None:
 		pass
 	
-	def search_file( self, prompt: str, filepath:str,  model: str='gemini-2.5-flash' ) -> str | None:
+	def search_file( self, prompt: str, file_id:str ) -> str | None:
 		pass
 		
-class Embedding( Gemini ):
+	def upload_file( self, prompt: str, file_id: str ) -> str | None:
+		pass
+
+	def retreive_file( self, prompt: str, file_id: str ) -> str | None:
+		pass
+
+	def list_files( self ) -> str | None:
+		pass
+
+class Embedding( GEM ):
 	'''
 		
 		Purpose:

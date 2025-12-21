@@ -448,8 +448,10 @@ class Chat( GPT ):
 	vector_stores: Optional[ Dict[ str, str ] ]
 	content: Optional[ List[ Dict[ str, Any ] ] ]
 	vector_store_ids: Optional[ List[ str ] ]
+	file_ids: Optional[ List[ str ] ]
 	response: Optional[ openai.types.responses.Response ]
 	file: Optional[ openai.types.file_object.FileObject ]
+	purpose: Optional[ str ]
 	
 	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
@@ -473,6 +475,7 @@ class Chat( GPT ):
 		self.response = None
 		self.file = None
 		self.file_path = None
+		self.file_ids = [ ]
 		self.input = None
 		self.messages = None
 		self.image_url = None
@@ -481,6 +484,7 @@ class Chat( GPT ):
 		self.response = None
 		self.search_recency = None
 		self.max_search_results = None
+		self.purpose = None
 		self.vector_stores = \
 		{
 			'Appropriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
@@ -553,6 +557,21 @@ class Chat( GPT ):
 		         'message.output_text.logprobs',
 		         'reasoning.encrypted_content' ]
 	
+	@property
+	def purpose_options( self ) -> List[ str ] | None:
+		'''
+		
+		Returns:
+		--------
+		A List[ str ] of file purposes
+
+		'''
+		return [ 'assistants',
+		         'batch',
+		         'fine-tune',
+		         'vision',
+		         'user_data', ]
+	
 	def generate_text( self, prompt: str, model: str='gpt-5-nano-2025-08-07' ) -> str | None:
 		"""
 	
@@ -581,7 +600,7 @@ class Chat( GPT ):
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
 			error = ErrorDialog( exception )
@@ -618,7 +637,7 @@ class Chat( GPT ):
 			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Chat'
 			exception.method = ('generate_image( self, prompt: str, number, model: str, '
 			                    'size: str, quality: str ) -> str | None')
@@ -665,7 +684,7 @@ class Chat( GPT ):
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
 			error = ErrorDialog( exception )
@@ -699,7 +718,7 @@ class Chat( GPT ):
 			
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
 			error = ErrorDialog( exception )
@@ -752,7 +771,7 @@ class Chat( GPT ):
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Chat'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -794,14 +813,14 @@ class Chat( GPT ):
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Chat'
 			exception.method = ('search_web( self, prompt: str, model: str, '
 			                    'recency: int=30, max_results: int=8 ) -> str | None')
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def search_file( self, prompt: str, model: str='gpt-4.1-nano-2025-04-14',
+	def search_files( self, prompt: str, model: str='gpt-4.1-nano-2025-04-14',
 			max_results: int=100 ) -> str | None:
 		"""
 
@@ -836,12 +855,123 @@ class Chat( GPT ):
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Chat'
 			exception.method = 'search_files( self, prompt: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
+	def upload_file( self, filepath: str, purpose: str='user_data' ) -> str | none:
+		'''
+			
+			Returns:
+			--------
+			A List[ str ] of file_ids
+
+		'''
+		try:
+			throw_if( 'filepath', filepath )
+			self.filepath = filepath
+			self.purpose = purpose
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
+			self.file = self.client.files.create( file=open( file=filepath, mode='rb' ), 
+				purpose=self.purpose )
+			return self.file.id
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gpt'
+			exception.cause = 'Chat'
+			exception.method = 'upload_file( self, filepath: str, purpose: str=user_data ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	def retreive_file( self, id: str ) -> List[ str ] | None:
+		'''
+			
+			Returns:
+			--------
+			A List[ str ] of file_ids
+
+		'''
+		try:
+			throw_if( 'id', id )
+			self.file_ids.append( id )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
+			_files = self.client.files.retrieve( file_id=id )
+			return _files
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gpt'
+			exception.cause = 'Chat'
+			exception.method = 'retreive_file( self, id: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	def retreive_files( self, purpose: str= 'user_data' ) -> List[ str ] | None:
+		'''
+			
+			Returns:
+			--------
+			A List[ str ] of file_ids
+
+		'''
+		try:
+			self.purpose = purpose
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
+			_files = self.client.files.list( purpose=self.purpose )
+			return _files
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gpt'
+			exception.cause = 'Chat'
+			exception.method = 'retreive_files( self, purpose: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	def retreive_content( self, id: str ) -> str | None:
+		'''
+			
+			Returns:
+			--------
+			A List[ str ] of file_ids
+
+		'''
+		try:
+			throw_if( 'id', id )
+			self.file_ids.append( id )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
+			_files = self.client.files.content( file_id=id )
+			return _files
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gpt'
+			exception.cause = 'Chat'
+			exception.method = 'retreive_file( self, id: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	def delete_file( self, id: str ) -> None:
+		'''
+			
+			Returns:
+			--------
+			A List[ str ] of file_ids
+
+		'''
+		try:
+			throw_if( 'id', id )
+			self.file_ids.append( id )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
+			self.client.files.delete( file_id=id )
+			self.file_ids.remove( id )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gpt'
+			exception.cause = 'Chat'
+			exception.method = 'retreive_file( self, id: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+		
 	def __dir__( self ) -> List[ str ] | None:
 		return [ 'num',
 		         'temperature',
@@ -981,7 +1111,7 @@ class Embedding( GPT ):
 			return self.embedding
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Embedding'
 			exception.method = 'create( self, text: str, model: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
@@ -1012,7 +1142,7 @@ class Embedding( GPT ):
 			return _tokens
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Embedding'
 			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
 			error = ErrorDialog( exception )
@@ -1217,7 +1347,7 @@ class TTS( GPT ):
 			return str( out_path )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'TTS'
 			exception.method = 'create_audio( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -1570,7 +1700,7 @@ class Translation( GPT ):
 			return resp.text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Translation'
 			exception.method = 'create( self, text: str )'
 			error = ErrorDialog( exception )
@@ -1839,7 +1969,7 @@ class Image( GPT ):
 			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Image'
 			exception.method = 'generate( self, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -1884,7 +2014,7 @@ class Image( GPT ):
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Image'
 			exception.method = 'analyze( self, path: str, text: str ) -> str'
 			error = ErrorDialog( exception )
@@ -1918,7 +2048,7 @@ class Image( GPT ):
 			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'gpt'
 			exception.cause = 'Image'
 			exception.method = 'edit( self, text: str, path: str, size: str=1024x1024 ) -> str'
 			error = ErrorDialog( exception )
