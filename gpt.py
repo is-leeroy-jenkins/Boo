@@ -1020,6 +1020,65 @@ class Chat( GPT ):
 			exception.method = 'delete_file( self, id: str ) -> FileDeleted '
 			error = ErrorDialog( exception )
 			error.show( )
+	
+	def create_store( self, store_name: str ) -> v:
+		'''
+			
+			Returns:
+			--------
+			A List[ str ] of file_ids
+
+		'''
+		try:
+			throw_if( 'store_name', store_name )
+			self.client.vector_stores.create( name=store_name )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gpt'
+			exception.cause = 'Chat'
+			exception.method = 'create_store( self, id: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	def retrieve_store( self, id: str ) -> VectorStore | None:
+		'''
+			
+			Returns:
+			--------
+			A List[ str ] of file_ids
+
+		'''
+		try:
+			throw_if( 'id', id )
+			vector_store = self.client.vector_stores.retrieve( vector_store_id=id )
+			return vector_store
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gpt'
+			exception.cause = 'Chat'
+			exception.method = 'retrieve_store( self, purpose: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	def delete_store( self, id: str ) -> bool | None:
+		'''
+			
+			Returns:
+			--------
+			A List[ str ] of file_ids
+
+		'''
+		try:
+			throw_if( 'id', id )
+			_deleted = self.client.vector_stores.delete( vector_store_id=id )
+			return bool( _deleted )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gpt'
+			exception.cause = 'Chat'
+			exception.method = 'retrieve_store( self, purpose: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
 		
 	def __dir__( self ) -> List[ str ] | None:
 		return [ 'num',
