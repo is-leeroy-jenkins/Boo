@@ -115,7 +115,9 @@ class Chat( Gemini ):
 	client: Optional[ genai.Client ]
 	contents: Optional[ List[ str ] ]
 	response: Optional[ Response ]
-	image: Optional[ Image ]
+	image_uri: Optional[ str ]
+	file_path: Optional[ str ]
+	response_modalities: Optional[ str ]
 	
 	def __init__( self, model: str='gemini-2.5-flash', version: str='v1alpha',
 			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
@@ -134,12 +136,14 @@ class Chat( Gemini ):
 		self.http_options = types.HttpOptions( api_version=self.api_version )
 		self.contents = contents
 		self.instructions = instruct
+		self.response_modalities = [ 'TEXT', 'IMAGE' ]
 		self.client = None
 		self.content_config = None
 		self.image_config = None
 		self.function_config = None
 		self.response = None
-		self.image = None
+		self.image_uri = None
+		self.file_path = None
 		
 	@property
 	def model_options( self ) -> List[ str ] | None:
@@ -222,28 +226,111 @@ class Chat( Gemini ):
 			error.show( )
 
 	def generate_image( self, prompt: str, model: str='gemini-2.5-flash-image' ) -> str | None:
-		pass
+		try:
+			throw_if( 'propmpt', prompt )
+			self.contents = prompt
+			self.model = model
+			self.image_config = types.GenerateImagesConfig( http_options=self.http_options,)
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'bro'
+			exception.cause = ''
+			exception.method = ''
+			error = ErrorDialog( exception )
+			error.show( )
 
 	def analyze_image( self, prompt: str, filepath: str, model: str='gemini-2.5-flash-image' ) -> str | None:
-		pass
+		try:
+			throw_if( 'propmpt', prompt )
+			throw_if( 'filepath', filepath )
+			self.contents = prompt
+			self.filepath = filepath
+			self.model = model
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'bro'
+			exception.cause = ''
+			exception.method = ''
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	def summarize_document( self, prompt: str, filepath: str, model: str='gemini-2.5-flash' ) -> str | None:
-		pass
+		try:
+			throw_if( 'propmpt', prompt )
+			throw_if( 'filepath', filepath )
+			self.contents = prompt
+			self.filepath = filepath
+			self.model = model
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'bro'
+			exception.cause = ''
+			exception.method = ''
+			error = ErrorDialog( exception )
+			error.show( )
 	
 	def search_file( self, prompt: str, file_id:str ) -> str | None:
-		pass
+		try:
+			throw_if( 'propmpt', prompt )
+			throw_if( 'file_id', file_id )
+			self.contents = prompt
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'bro'
+			exception.cause = ''
+			exception.method = ''
+			error = ErrorDialog( exception )
+			error.show( )
 		
 	def upload_file( self, prompt: str, file_id: str ) -> str | None:
-		pass
+		try:
+			throw_if( 'propmpt', prompt )
+			throw_if( 'file_id', file_id )
+			self.contents = prompt
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'bro'
+			exception.cause = ''
+			exception.method = ''
+			error = ErrorDialog( exception )
+			error.show( )
 
 	def retreive_file( self, prompt: str, file_id: str ) -> str | None:
-		pass
+		try:
+			throw_if( 'propmpt', prompt )
+			throw_if( 'file_id', file_id )
+			self.contents = prompt
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'bro'
+			exception.cause = ''
+			exception.method = ''
+			error = ErrorDialog( exception )
+			error.show( )
 
-	def list_files( self ) -> str | None:
-		pass
+	def list_files( self, purpose: str ) -> str | None:
+		try:
+			throw_if( 'purpose', purpose )
+			self.contents = purpose
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'bro'
+			exception.cause = ''
+			exception.method = ''
+			error = ErrorDialog( exception )
+			error.show( )
 
-	def delete_files( self ) -> str | None:
-		pass
+	def delete_file( self, file_id: str ) -> str | None:
+		try:
+			throw_if( 'file_id', file_id )
+			self.contents = file_id
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'bro'
+			exception.cause = ''
+			exception.method = ''
+			error = ErrorDialog( exception )
+			error.show( )
 
 class Embedding( Gemini ):
 	'''
