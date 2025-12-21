@@ -133,7 +133,7 @@ with st.sidebar:
     st.header("Mode")
     mode = st.radio(
         "Select capability",
-        ["Chat", "Images", "Audio", "Embeddings", "Documents", "Files API"],
+        [ "Chat", "Images", "Audio", "Embeddings", "Documents", "Files" ],
     )
 
     # Horizontal session controls (only two short buttons requested)
@@ -308,7 +308,7 @@ elif mode == "Embeddings":
 # DOCUMENTS MODE — client-side multi-document context (purely session-local)
 # ======================================================================================
 
-if mode == "Documents" or st.session_state.files:
+if mode == "Documents":
     st.header("Documents")
 
     # Uploader (main page) — session-local files stored in st.session_state.files
@@ -387,8 +387,8 @@ if mode == "Documents" or st.session_state.files:
 # ======================================================================================
 # FILES API MODE — minimal, non-invasive page that uses gpt.py file methods if present
 # ======================================================================================
-if mode == "Files API":
-    st.header("Files API")
+if mode == "Files":
+    st.header("Files")
 
     # instantiate Chat (needed for file methods)
     try:
