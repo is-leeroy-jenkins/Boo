@@ -572,6 +572,19 @@ class Chat( GPT ):
 		         'vision',
 		         'user_data', ]
 	
+	@property
+	def reasoning_options( self ) -> List[ str ] | None:
+		'''
+
+		Returns:
+		--------
+		A List[ str ] of reasoning effort options
+
+		'''
+		return [ 'low',
+		         'medium',
+		         'high', ]
+	
 	def generate_text( self, prompt: str, model: str='gpt-5-nano-2025-08-07' ) -> str | None:
 		"""
 	
@@ -819,8 +832,49 @@ class Chat( GPT ):
 			                    'recency: int=30, max_results: int=8 ) -> str | None')
 			error = ErrorDialog( exception )
 			error.show( )
-	
-	def search_files( self, prompt: str, model: str='gpt-4.1-nano-2025-04-14',
+		
+	def search_file( self, prompt: str, store_id: str, model: str = 'gpt-4.1-nano-2025-04-14' ) -> str | None:
+		"""
+
+	        Purpose:
+	        _______
+	        Method that analyzeses an image given a prompt,
+
+	        Parameters:
+	        ----------
+	        prompt: str
+	        url: str
+
+	        Returns:
+	        -------
+	        str | None
+
+        """
+		try:
+			throw_if( 'prompt', prompt )
+			throw_if( 'id', id )
+			self.prompt = prompt
+			self.model = model
+			self.vector_store_ids = [ store_id ]
+			self.tools = [
+					{
+							'text': 'file_search',
+							'vector_store_ids': self.vector_store_ids,
+							'max_num_results': self.max_search_results,
+					} ]
+			
+			self.response = self.client.responses.create( model=self.model, tools=self.tools,
+				input=self.prompt )
+			return self.response.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gpt'
+			exception.cause = 'Chat'
+			exception.method = 'search_files( self, prompt: str ) -> str'
+			error = ErrorDialog( exception )
+			error.show( )
+			
+	def search_files( self, prompt: str, model: str= 'gpt-4.1-nano-2025-04-14',
 			max_results: int=100 ) -> str | None:
 		"""
 
@@ -861,7 +915,7 @@ class Chat( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def upload_file( self, filepath: str, purpose: str='user_data' ) -> str | none:
+	def upload_file( self, filepath: str, purpose: str='user_data' ) -> str | None:
 		'''
 			
 			Returns:
@@ -873,7 +927,6 @@ class Chat( GPT ):
 			throw_if( 'filepath', filepath )
 			self.filepath = filepath
 			self.purpose = purpose
-			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.file = self.client.files.create( file=open( file=filepath, mode='rb' ), 
 				purpose=self.purpose )
 			return self.file.id
@@ -885,7 +938,7 @@ class Chat( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def retreive_file( self, id: str ) -> List[ str ] | None:
+	def retrieve_file( self, id: str ) -> List[ str ] | None:
 		'''
 			
 			Returns:
@@ -896,18 +949,17 @@ class Chat( GPT ):
 		try:
 			throw_if( 'id', id )
 			self.file_ids.append( id )
-			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			_files = self.client.files.retrieve( file_id=id )
 			return _files
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gpt'
 			exception.cause = 'Chat'
-			exception.method = 'retreive_file( self, id: str ) -> str'
+			exception.method = 'retrieve_file( self, id: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def retreive_files( self, purpose: str= 'user_data' ) -> List[ str ] | None:
+	def retrieve_files( self, purpose: str= 'user_data' ) -> List[ str ] | None:
 		'''
 			
 			Returns:
@@ -917,18 +969,17 @@ class Chat( GPT ):
 		'''
 		try:
 			self.purpose = purpose
-			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			_files = self.client.files.list( purpose=self.purpose )
 			return _files
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gpt'
 			exception.cause = 'Chat'
-			exception.method = 'retreive_files( self, purpose: str ) -> str'
+			exception.method = 'retrieve_files( self, purpose: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def retreive_content( self, id: str ) -> str | None:
+	def retrieve_content( self, id: str ) -> str | None:
 		'''
 			
 			Returns:
@@ -939,18 +990,17 @@ class Chat( GPT ):
 		try:
 			throw_if( 'id', id )
 			self.file_ids.append( id )
-			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			_files = self.client.files.content( file_id=id )
 			return _files
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gpt'
 			exception.cause = 'Chat'
-			exception.method = 'retreive_file( self, id: str ) -> str'
+			exception.method = 'retrieve_file( self, id: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def delete_file( self, id: str ) -> None:
+	def delete_file( self, id: str ) -> FileDeleted | None:
 		'''
 			
 			Returns:
@@ -961,14 +1011,13 @@ class Chat( GPT ):
 		try:
 			throw_if( 'id', id )
 			self.file_ids.append( id )
-			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
-			self.client.files.delete( file_id=id )
-			self.file_ids.remove( id )
+			_deleted = self.client.files.delete( file_id=id )
+			return _deleted
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gpt'
 			exception.cause = 'Chat'
-			exception.method = 'retreive_file( self, id: str ) -> None'
+			exception.method = 'delete_file( self, id: str ) -> FileDeleted '
 			error = ErrorDialog( exception )
 			error.show( )
 		
@@ -1001,13 +1050,26 @@ class Chat( GPT ):
 		         'get_format_options',
 		         'get_model_options',
 		         'reasoning_effort',
+		         'purpose_options',
 		         'input_text',
 		         'metadata',
 		         'get_files',
 		         'get_data',
 		         'dump',
 		         'translate',
-		         'transcribe', ]
+		         'transcribe',
+		         'generate_text',
+		         'generate_image',
+		         'analyze_image',
+		         'edit_image',
+		         'summarize_document',
+		         'search_web',
+		         'search_files',
+		         'retreive_file',
+		         'retreive_files',
+		         'retreive_content',
+		         'delete_file',
+		         'upload_file', ]
 	
 class Embedding( GPT ):
 	"""

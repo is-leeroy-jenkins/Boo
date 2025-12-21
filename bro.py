@@ -186,6 +186,9 @@ class Chat( GEM ):
 	def list_files( self ) -> str | None:
 		pass
 
+	def delete_files( self ) -> str | None:
+		pass
+
 class Embedding( GEM ):
 	'''
 		
