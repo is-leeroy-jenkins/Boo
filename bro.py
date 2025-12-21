@@ -145,11 +145,19 @@ class Chat( GEM ):
 		'''
 		return [ 'gemini-3-flash-preview',
 		         'gemini-2.5-flash',
+		         'gemini-2.5-flash-lite',
 		         'gemini-2.5-flash-image',
 		         'gemini-2.5-flash-native-audio-preview-12-2025',
 		         'gemini-2.5-flash-preview-tts',
-		         'gemini-2.0-flash',
-		         'gemini-2.0-flash-lite', ]
+		         'gemini-2.0-flash-001',
+		         'gemini-2.0-flash-lite',
+		         'gemini-2.5-computer-use-preview-10-2025',
+		         'translate-llm ',
+		         'imagen-3.0-capability-002',
+		         'imagen-4.0-ultra-generate-preview-06-06',
+		         'imagen-4.0-generate-001',
+		         'imagen-4.0-ultra-generate-001',
+		         'imagen-4.0-fast-generate-001', ]
 
 	@property
 	def version_options( self ) -> List[ str ] | None:
@@ -204,7 +212,9 @@ class Embedding( GEM ):
 	encoding_format: Optional[ str ]
 	dimensions: Optional[ int ]
 	use_vertex: Optional[ bool ]
+	task_type: Optional[ str ]
 	http_options: Optional[ Dict[ str, Any ] ]
+	embedding_config: Optional[ types.EmbedContentConfig ]
 	content_config: Optional[ types.GenerateContentConfig ]
 	client: Optional[ genai.Client ]
 	contents: Optional[ List[ str ] ]
@@ -237,13 +247,17 @@ class Embedding( GEM ):
 	@property
 	def model_options( self ) -> List[ str ]:
 		'''
-		
-		Returns:
-		--------
-		List[ str ] of embedding models
+			
+			Returns:
+			--------
+			List[ str ] of embedding models
 
 		'''
-		return [ 'gemini-embedding-001', ]
+		return [ 'gemini-embedding-001',
+		         'text-embedding-005',
+		         'text-multilingual-embedding-002',
+		         'multilingual-e5-small',
+		         'multilingual-e5-large', ]
 	
 	@property
 	def encoding_options( self ) -> List[ str ]:
@@ -257,7 +271,7 @@ class Embedding( GEM ):
 		return [ 'float',
 		         'base64' ]
 	
-	def create( self, text: str, model: str='gemini-embedding-001', format: str='float' ) -> List[ float ] | None:
+	def create( self, text: str, model: str='text-embedding-005', format: str='float' ) -> List[ float ] | None:
 		"""
 	
 	        Purpose
