@@ -852,7 +852,7 @@ class Chat( GPT ):
         """
 		try:
 			throw_if( 'prompt', prompt )
-			throw_if( 'id', id )
+			throw_if( 'store_id', store_id )
 			self.prompt = prompt
 			self.model = model
 			self.vector_store_ids = [ store_id ]
