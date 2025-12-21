@@ -1,16 +1,16 @@
 '''
   ******************************************************************************************
       Assembly:                Name
-      Filename:                groq.py
+      Filename:                xai.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="groq.py" company="Terry D. Eppler">
+  <copyright file="xai.py" company="Terry D. Eppler">
 
-	     groq.py
+	     xai.py
 	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    groq.py
+    xai.py
   </summary>
   ******************************************************************************************
 '''
@@ -64,39 +64,23 @@ class GroqEndpoints:
 
     '''
 	base_url: Optional[ str ]
-	text_generations: Optional[ str ]
-	image_generations: Optional[ str ]
 	chat_completions: Optional[ str ]
-	image_edits: Optional[ str ]
-	assistants: Optional[ str ]
 	responses: Optional[ str ]
 	speech_generations: Optional[ str ]
 	translations: Optional[ str ]
 	transcriptions: Optional[ str ]
-	image_variations: Optional[ str ]
 	finetunings: Optional[ str ]
-	vector_stores: Optional[ str ]
-	embeddings: Optional[ str ]
 	files: Optional[ str ]
-	uploads: Optional[ str ]
 	
 	def __init__( self ):
 		self.base_url = f'https://api.groq.com/'
-		self.text_generations = f'https://api.openai.com/v1/chat/completions'
-		self.image_generations = f'https://api.openai.com/v1/images/generations'
 		self.chat_completions = f'https://api.groq.com/openai/v1/chat/completions'
 		self.responses = f'https://api.groq.com/openai/v1/responses'
-		self.image_variations = f'https://api.openai.com/v1/images/variations'
-		self.speech_generation = f'https://api.openai.com/v1/audio/speech'
+		self.speech_generation = f'https://api.groq.com/openai/v1/audio/speech'
 		self.translations = f'https://api.groq.com/openai/v1/audio/translations'
-		self.assistants = f'https://api.openai.com/v1/assistants'
-		self.image_edits = f'https://api.openai.com/v1/images/edits'
 		self.transcriptions = f'https://api.groq.com/openai/v1/audio/transcriptions'
-		self.finetuning = f'https://api.openai.com/v1/fineTuning/jobs'
-		self.embeddings = f'https://api.openai.com/v1/embeddings'
-		self.uploads = f'https://api.openai.com/v1/uploads'
-		self.files = f'https://api.openai.com/v1/files'
-		self.vector_stores = f'https://api.openai.com/v1/vector_stores'
+		self.finetuning = f'https://api.groq.com/v1/fine_tunings'
+		self.files = f'https://api.groq.com/openai/v1/files'
 
 class GroqHeader:
 	'''
@@ -128,7 +112,7 @@ class GroqHeader:
 		         'authorization',
 		         'get_data' ]
 
-class Groq( ):
+class XAI( ):
 	'''
 
 		Purpose:
@@ -146,6 +130,7 @@ class Groq( ):
 	modalities: Optional[ List[ str ] ]
 	frequency_penalty: Optional[ float ]
 	presence_penalty: Optional[ float ]
+	response_format: Optional[ List[ str ] ]
 	
 	def __init__( self ):
 		self.api_key = cfg.GROQ_API_KEY
@@ -159,7 +144,7 @@ class Groq( ):
 		self.max_tokens = None
 		self.instructions = None
 
-class Chat( Groq ):
+class Chat( XAI ):
 	'''
 
 	    Purpose:
@@ -167,13 +152,12 @@ class Chat( Groq ):
 	    Class containing lists of OpenAI models by generation
 
     '''
-	content_config: Optional[ types.GenerateContentConfig ]
-	client: Optional[ genai.Client ]
+	client: Optional[ Groq ]
 	contents: Optional[ List[ str ] ]
 	response: Optional[ Response ]
-	image: Optional[ Image ]
+	image_url: Optional[ str ]
 	
-	def __init__( self, model: str='gemini-2.5-flash', temperature: float=0.8, top_p: float=0.9,
+	def __init__( self, model: str='llama-3.1-8b-instant', temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
 			instruct: str=None ):
 		super( ).__init__( )
@@ -185,9 +169,8 @@ class Chat( Groq ):
 		self.max_tokens = max_tokens
 		self.instructions = instruct
 		self.client = None
-		self.content_config = None
 		self.response = None
-		self.image = None
+		self.image_url = None
 	
 	@property
 	def model_options( self ) -> List[ str ] | None:
@@ -198,39 +181,32 @@ class Chat( Groq ):
 			List[ str ] - list of available models
 
 		'''
-		return [ 'llama-3.1-8b-instant', 'llama-3.3-70b-versatile', 'meta-llama/llama-guard-4-12b',
-		         'openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'whisper-large-v3', 'whisper-large-v3-turbo',
-		         'groq/compound', 'groq/compound-mini', ]
-	
-	@property
-	def version_options( self ) -> List[ str ] | None:
-		'''
+		return [ 'llama-3.1-8b-instant',
+		         'llama-3.3-70b-versatile',
+		         'meta-llama/llama-guard-4-12b',
+		         'openai/gpt-oss-120b',
+		         'openai/gpt-oss-20b',
+		         'whisper-large-v3',
+		         'whisper-large-v3-turbo',
+		         'groq/compound',
+		         'groq/compound-mini', ]
 
-			Returns:
-			--------
-			List[ str ] - list of available api versions
-
-		'''
-		return [ 'v1',
-		         'v1alpha',
-		         'v1beta1' ]
-	
-	def generate_text( self, prompt: str, model: str = 'gemini-2.5-flash' ) -> str | None:
+	def generate_text( self, prompt: str, model: str='llama-3.1-8b-instant' ) -> str | None:
 		pass
 	
-	def generate_image( self, prompt: str, model: str = 'gemini-2.5-flash-image' ) -> str | None:
+	def generate_image( self, prompt: str, model: str='llama-3.1-8b-instant' ) -> str | None:
 		pass
 	
-	def analyze_image( self, prompt: str, filepath: str, model: str = 'gemini-2.5-flash-image' ) -> str | None:
+	def analyze_image( self, prompt: str, filepath: str, model: str='llama-3.1-8b-instant' ) -> str | None:
 		pass
 	
-	def summarize_document( self, prompt: str, filepath: str, model: str = 'gemini-2.5-flash' ) -> str | None:
+	def summarize_document( self, prompt: str, filepath: str, model: str='llama-3.1-8b-instant' ) -> str | None:
 		pass
 	
-	def search_file( self, prompt: str, filepath: str, model: str = 'gemini-2.5-flash' ) -> str | None:
+	def search_file( self, prompt: str, filepath: str, model: str='llama-3.1-8b-instant' ) -> str | None:
 		pass
 
-class Embedding( Groq ):
+class Embedding( XAI ):
 	'''
 
 		Purpose:
@@ -239,28 +215,19 @@ class Embedding( Groq ):
 
 
 	'''
-	client: Optional[ genai.Client ]
+	client: Optional[ Groq ]
 	response: Optional[ Response ]
 	embedding: Optional[ List[ float ] ]
 	encoding_format: Optional[ str ]
 	dimensions: Optional[ int ]
-	use_vertex: Optional[ bool ]
-	http_options: Optional[ Dict[ str, Any ] ]
-	content_config: Optional[ types.GenerateContentConfig ]
-	client: Optional[ genai.Client ]
-	contents: Optional[ List[ str ] ]
 	input_text: Optional[ str ]
 	
-	def __init__( self, model: str = 'gemini-embedding-001', version: str = 'v1alpha',
-			use_ai: bool = True, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 10000 ):
+	def __init__( self, model: str='llama-3.1-8b-instant', temperature: float=0.8,
+			top_p: float=0.9, frequency: float=0.0, presence: float=0.0, max_tokens: int=10000 ):
 		super( ).__init__( )
 		self.api_key = cfg.GOOGLE_API_KEY
 		self.model = model
-		self.version = version
-		self.use_ai = use_ai
-		self.client = genai.Client( vertexai=self.use_ai, api_key=self.api_key,
-			project=self.project_id, location=self.cloud_location )
+		self.client = Groq( api_key=self.api_key  )
 		self.temperature = temperature
 		self.top_percent = top_p
 		self.frequency_penalty = frequency
@@ -284,7 +251,7 @@ class Embedding( Groq ):
 		List[ str ] of embedding models
 
 		'''
-		return [ 'gemini-embedding-001', ]
+		return [ '', ]
 	
 	@property
 	def encoding_options( self ) -> List[ str ]:
