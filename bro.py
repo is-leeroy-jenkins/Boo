@@ -1,16 +1,16 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                jeni.py
+      Filename:                bro.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="jeni.py" company="Terry D. Eppler">
+  <copyright file="bro.py" company="Terry D. Eppler">
 
-	     jeni.py
+	     bro.py
 	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    jeni.py
+    bro.py
   </summary>
   ******************************************************************************************
 '''
@@ -156,15 +156,15 @@ class Chat( Gemini ):
 			List[ str ] - list of available api versions
 			
 		'''
-		return [ 'v1', 'v1alpha' ]
+		return [ 'v1', 'v1alpha', 'v1beta1' ]
 		
 	def generate_text( self, prompt: str, model: str='gemini-2.5-flash' ) -> str | None:
 		pass
 
-	def generate_image( self, prompt: str, model: str='gemini-2.5-flash'  ) -> str | None:
+	def generate_image( self, prompt: str, model: str='gemini-2.5-flash-image' ) -> str | None:
 		pass
 
-	def analyze_image( self, prompt: str, filepath: str, model: str='gemini-2.5-flash' ) -> str | None:
+	def analyze_image( self, prompt: str, filepath: str, model: str='gemini-2.5-flash-image' ) -> str | None:
 		pass
 	
 	def summarize_document( self, prompt: str, filepath: str, model: str='gemini-2.5-flash' ) -> str | None:
@@ -173,7 +173,7 @@ class Chat( Gemini ):
 	def search_file( self, prompt: str, filepath:str,  model: str='gemini-2.5-flash' ) -> str | None:
 		pass
 		
-class Embedding( ):
+class Embedding( Gemini ):
 	'''
 		
 		Purpose:
@@ -194,11 +194,16 @@ class Embedding( ):
 	contents: Optional[ List[ str ] ]
 	input_text: Optional[ str ]
 	
-	def __init__( self, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+	def __init__( self, model: str='gemini-embedding-001', version: str='v1alpha',
+			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
 			presence: float=0.0, max_tokens: int=10000 ):
 		super( ).__init__( )
-		self.api_key = cfg.OPENAI_API_KEY
-		self.client = genai.Client( )
+		self.api_key = cfg.GOOGLE_API_KEY
+		self.model = model
+		self.version = version
+		self.use_ai = use_ai
+		self.client = genai.Client( vertexai=self.use_ai, api_key=self.api_key,
+			project=self.project_id, location=self.cloud_location )
 		self.temperature = temperature
 		self.top_percent = top_p
 		self.frequency_penalty = frequency
@@ -222,9 +227,7 @@ class Embedding( ):
 		List[ str ] of embedding models
 
 		'''
-		return [ 'text-embedding-3-small',
-		         'text-embedding-3-large',
-		         'text-embedding-ada-002' ]
+		return [ 'gemini-embedding-001', ]
 	
 	@property
 	def encoding_options( self ) -> List[ str ]:
@@ -238,7 +241,7 @@ class Embedding( ):
 		return [ 'float',
 		         'base64' ]
 	
-	def create( self, text: str, model: str='text-embedding-3-small', format: str='float' ) -> List[ float ] | None:
+	def create( self, text: str, model: str='gemini-embedding-001', format: str='float' ) -> List[ float ] | None:
 		"""
 	
 	        Purpose
@@ -267,7 +270,7 @@ class Embedding( ):
 			return self.embedding
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'boo'
+			exception.module = 'bro'
 			exception.cause = 'Embedding'
 			exception.method = 'create( self, text: str, model: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
@@ -296,7 +299,7 @@ class Embedding( ):
 			return 0
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'jeni'
+			exception.module = 'bro'
 			exception.cause = 'Embedding'
 			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
 			error = ErrorDialog( exception )
