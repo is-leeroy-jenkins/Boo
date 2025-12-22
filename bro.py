@@ -499,7 +499,8 @@ class TTS( Gemini ):
 
 	    Attributes
 	    -----------
-	    self.api_key, self.system_instructions, self.client, self.small_model, self.reasoning_effort,
+	    self.api_key, self.system_instructions, self.client, self.small_model,
+	    self.reasoning_effort,
 	    self.response, self.num, self.temperature, self.top_percent,
 	    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
 	    self.store, self.stream, self.modalities, self.stops, self.content,
@@ -518,8 +519,8 @@ class TTS( Gemini ):
 	response: Optional[ requests.Response ]
 	client: Optional[ genai.Client ]
 	
-	def __init__( self, number: int = 1, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 10000, store: bool = True, stream: bool = True, instruct: str = None ):
+	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
 		'''
 
 	        Purpose:
@@ -598,8 +599,8 @@ class TTS( Gemini ):
 		         'PCM', ]
 
 	
-	def create_audio( self, text: str, filepath: str, format: str = 'mp3',
-			speed: float = 1.0, voice: str = 'alloy' ) -> str:
+	def create_audio( self, text: str, filepath: str, format: str='mp3',
+			speed: float=1.0, voice: str='alloy' ) -> str:
 		"""
 
 	        Purpose
@@ -691,8 +692,7 @@ class TTS( Gemini ):
 		         'input_text',
 		         'metadata',
 		         'get_files',
-		         'get_data',
-		         'dump', ]
+		         'get_data', ]
 
 class Transcription( Gemini ):
 	"""
@@ -730,8 +730,8 @@ class Transcription( Gemini ):
 
     """
 	
-	def __init__( self, number: int = 1, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 10000, store: bool = True, stream: bool = True, instruct: str = None ):
+	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
 		super( ).__init__( )
 		self.api_key = cfg.GOOGLE_API_KEY
 		self.client = genai.Client( api_key=cfg.GOOGLE_API_KEY )
