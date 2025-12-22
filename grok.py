@@ -1,16 +1,16 @@
 '''
   ******************************************************************************************
-      Assembly:                Boo
-      Filename:                bro.py
+      Assembly:                Name
+      Filename:                grok.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="bro.py" company="Terry D. Eppler">
+  <copyright file="grok.py" company="Terry D. Eppler">
 
-	     bro.py
+	     grok.py
 	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,22 +37,19 @@
 
   </copyright>
   <summary>
-    bro.py
+    grok.py
   </summary>
   ******************************************************************************************
 '''
+
 import os
 
-import requests
+import groq
 
 from app import temperature
 from boogr import ErrorDialog, Error
 import config as cfg
-import google
-from google import genai
-from google.genai import types
-from pathlib import Path
-from PIL import Image
+from groq import Groq
 from requests import Response
 from typing import Any, List, Optional, Dict
 
@@ -60,51 +57,96 @@ def throw_if( name: str, value: object ):
 	if value is None:
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
 
-class Gemini( ):
+class GroqEndpoints:
 	'''
+
+	    Purpose:
+	    ---------
+	    The class containing endpoints for the Groq API
+
+    '''
+	base_url: Optional[ str ]
+	chat_completions: Optional[ str ]
+	responses: Optional[ str ]
+	speech_generations: Optional[ str ]
+	translations: Optional[ str ]
+	transcriptions: Optional[ str ]
+	finetunings: Optional[ str ]
+	files: Optional[ str ]
 	
+	def __init__( self ):
+		self.base_url = f'https://api.groq.com/'
+		self.chat_completions = f'https://api.groq.com/openai/v1/chat/completions'
+		self.responses = f'https://api.groq.com/openai/v1/responses'
+		self.speech_generation = f'https://api.groq.com/openai/v1/audio/speech'
+		self.translations = f'https://api.groq.com/openai/v1/audio/translations'
+		self.transcriptions = f'https://api.groq.com/openai/v1/audio/transcriptions'
+		self.finetuning = f'https://api.groq.com/v1/fine_tunings'
+		self.files = f'https://api.groq.com/openai/v1/files'
+
+class GroqHeader:
+	'''
+
+	    Purpose:
+	    --------
+	    Encapsulates HTTP header stores for Groq API requests.
+
+	    Attributes:
+	    -----------
+	    content_type : str
+	    api_key      : str | None
+	    authorization: str
+	    stores         : dict[str, str]
+
+    '''
+	content_type: Optional[ str ]
+	api_key: Optional[ str ]
+	authorization: Optional[ str ]
+	
+	def __init__( self ):
+		self.content_type = 'application/json'
+		self.api_key = cfg.GROQ_API_KEY
+		self.authorization = f'Bearer {cfg.GROQ_API_KEY}'
+	
+	def __dir__( self ) -> list[ str ] | None:
+		return [ 'content_type',
+		         'api_key',
+		         'authorization',
+		         'get_data' ]
+
+class Grok( ):
+	'''
+
 		Purpose:
 		-------
 		Base class for Gemma AI Functionality
-		
+
 	'''
-	project_id: Optional[ str ]
 	api_key: Optional[ str ]
-	cloud_location: Optional[ str ]
 	instructions: Optional[ str ]
 	model: Optional[ str ]
-	api_version: Optional[ str ]
 	max_tokens: Optional[ int ]
 	temperature: Optional[ float ]
 	top_p: Optional[ float ]
 	top_k: Optional[ int ]
-	content_config: Optional[ types.GenerateContentConfig ]
-	image_config: Optional[ types.GenerateImagesConfig ]
-	function_config: Optional[ types.FunctionCallingConfig ]
-	candidate_count: Optional[ int ]
 	modalities: Optional[ List[ str ] ]
-	stops: Optional[ List[ str ] ]
 	frequency_penalty: Optional[ float ]
 	presence_penalty: Optional[ float ]
+	response_format: Optional[ List[ str ] ]
 	
 	def __init__( self ):
-		self.api_key = cfg.GOOGLE_API_KEY
-		self.project_id = cfg.GOOGLE_CLOUD_PROJECT
-		self.cloud_location = cfg.GOOGLE_CLOUD_LOCATION
+		self.api_key = cfg.GROQ_API_KEY
 		self.model = None
-		self.content_config = None
-		self.image_config = None
-		self.api_version = None
 		self.temperature = None
 		self.top_p = None
 		self.top_k = None
-		self.candidate_count = None
+		self.candidates = None
 		self.frequency_penalty = None
 		self.presence_penalty = None
 		self.max_tokens = None
 		self.instructions = None
 
-class Chat( Gemini ):
+class Chat( Grok ):
 	'''
 
 	    Purpose:
@@ -112,274 +154,92 @@ class Chat( Gemini ):
 	    Class containing lists of OpenAI models by generation
 
     '''
-	use_vertex: Optional[ bool ]
-	http_options: Optional[ types.HttpOptions ]
-	client: Optional[ genai.Client ]
+	client: Optional[ Groq ]
 	contents: Optional[ List[ str ] ]
 	response: Optional[ Response ]
-	image_uri: Optional[ str ]
-	file_path: Optional[ str ]
-	response_modalities: Optional[ str ]
+	image_url: Optional[ str ]
 	
-	def __init__( self, model: str='gemini-2.5-flash', version: str='v1alpha',
-			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
+	def __init__( self, model: str='llama-3.1-8b-instant', temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			candidates: int=1, instruct: str=None, contents: List[ str ]=None ):
+			instruct: str=None ):
 		super( ).__init__( )
 		self.model = model
-		self.api_version = version
 		self.top_p = top_p
 		self.temperature = temperature
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
-		self.candidate_count = candidates
 		self.max_tokens = max_tokens
-		self.use_vertex = use_ai
-		self.http_options = types.HttpOptions( api_version=self.api_version )
-		self.client = genai.Client( vertexai=self.use_ai, api_key=self.api_key,
-			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
-		self.contents = contents
 		self.instructions = instruct
-		self.response_modalities = [ 'TEXT', 'IMAGE' ]
-		self.content_config = None
-		self.image_config = None
-		self.function_config = None
+		self.client = Groq( api_key=self.api_key  )
+		self.client = None
 		self.response = None
-		self.image_uri = None
-		self.file_path = None
-		
+		self.image_url = None
+	
 	@property
 	def model_options( self ) -> List[ str ] | None:
 		'''
-		
+
 			Returns:
 			_______
 			List[ str ] - list of available models
 
 		'''
-		return [ 'gemini-3-flash-preview',
-		         'gemini-2.5-flash',
-		         'gemini-2.5-flash-lite',
-		         'gemini-2.5-flash-image',
-		         'gemini-2.5-flash-native-audio-preview-12-2025',
-		         'gemini-2.5-flash-tts',
-		         'gemini-2.5-flash-lite-preview-tts',
-		         'gemini-2.0-flash-001',
-		         'gemini-2.0-flash-lite',
-		         'gemini-2.5-computer-use-preview-10-2025',
-		         'translate-llm',
-		         'imagen-3.0-capability-002',
-		         'imagen-4.0-ultra-generate-preview-06-06',
-		         'imagen-4.0-generate-001',
-		         'imagen-4.0-ultra-generate-001',
-		         'imagen-4.0-fast-generate-001', ]
+		return [ 'llama-3.1-8b-instant',
+		         'llama-3.3-70b-versatile',
+		         'meta-llama/llama-guard-4-12b',
+		         'meta-llama/llama-4-scout-17b-16e-instruct',
+		         'meta-llama/llama-4-maverick-17b-128e-instruct',
+		         'openai/gpt-oss-120b',
+		         'openai/gpt-oss-20b',
+		         'whisper-large-v3',
+		         'whisper-large-v3-turbo',
+		         'groq/compound',
+		         'groq/compound-mini', ]
+
+	def generate_text( self, prompt: str, model: str='llama-3.1-8b-instant' ) -> str | None:
+		pass
 	
-	@property
-	def aspect_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			List[ str ] - list of available aspect ratios for Imagen 4
-
-		'''
-		return [ '1:1',
-		         '2:3',
-		         '3:2',
-		         '3:4',
-		         '4:3',
-		         '9:16',
-		         '16:9',
-		         '21:9' ]
+	def generate_image( self, prompt: str, model: str='llama-3.1-8b-instant' ) -> str | None:
+		pass
 	
-	@property
-	def size_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			List[ str ] - list of available aspect ratios for Imagen 4
-
-		'''
-		return [ '1K',
-		         '2K',
-		         '4K' ]
+	def analyze_image( self, prompt: str, filepath: str, model: str='llama-3.1-8b-instant' ) -> str | None:
+		pass
 	
-	@property
-	def version_options( self ) -> List[ str ] | None:
-		'''
-			
-			Returns:
-			--------
-			List[ str ] - list of available api versions
-			
-		'''
-		return [ 'v1', 'v1alpha', 'v1beta1' ]
-		
-	def generate_text( self, prompt: str, model: str='gemini-2.5-flash' ) -> str | None:
-		try:
-			throw_if( 'propmpt', prompt )
-			self.contents = prompt
-			self.model = model
-			self.content_config = types.GenerateContentConfig( temperature=self.temperature,
-				top_p=self.top_p, max_output_tokens=self.max_tokens,
-				candidate_count=self.candidate_count, frequency_penalty=self.frequency_penalty,
-				presence_penalty=self.presence_penalty, )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = 'Chat'
-			exception.method = 'generate_text( self, prompt: str, model: str ) -> str:'
-			error = ErrorDialog( exception )
-			error.show( )
-
-	def generate_image( self, prompt: str, model: str='gemini-2.5-flash-image' ) -> str | None:
-		try:
-			throw_if( 'propmpt', prompt )
-			self.contents = prompt
-			self.model = model
-			self.image_config = types.GenerateImagesConfig( http_options=self.http_options,)
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
-			exception.method = 'generate_image( self, prompt: str, model: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-
-	def analyze_image( self, prompt: str, filepath: str, model: str='gemini-2.5-flash-image' ) -> str | None:
-		try:
-			throw_if( 'propmpt', prompt )
-			throw_if( 'filepath', filepath )
-			self.contents = prompt
-			self.filepath = filepath
-			self.model = model
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
-			exception.method = ''
-			error = ErrorDialog( exception )
-			error.show( )
+	def summarize_document( self, prompt: str, filepath: str, model: str='llama-3.1-8b-instant' ) -> str | None:
+		pass
 	
-	def summarize_document( self, prompt: str, filepath: str, model: str='gemini-2.5-flash' ) -> str | None:
-		try:
-			throw_if( 'propmpt', prompt )
-			throw_if( 'filepath', filepath )
-			self.contents = prompt
-			self.filepath = filepath
-			self.model = model
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
-			exception.method = ''
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def search_file( self, prompt: str, file_id:str ) -> str | None:
-		try:
-			throw_if( 'propmpt', prompt )
-			throw_if( 'file_id', file_id )
-			self.contents = prompt
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
-			exception.method = ''
-			error = ErrorDialog( exception )
-			error.show( )
-		
-	def upload_file( self, prompt: str, file_id: str ) -> str | None:
-		try:
-			throw_if( 'propmpt', prompt )
-			throw_if( 'file_id', file_id )
-			self.contents = prompt
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
-			exception.method = ''
-			error = ErrorDialog( exception )
-			error.show( )
+	def search_file( self, prompt: str, filepath: str, model: str='llama-3.1-8b-instant' ) -> str | None:
+		pass
 
-	def retreive_file( self, prompt: str, file_id: str ) -> str | None:
-		try:
-			throw_if( 'propmpt', prompt )
-			throw_if( 'file_id', file_id )
-			self.contents = prompt
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
-			exception.method = ''
-			error = ErrorDialog( exception )
-			error.show( )
-
-	def list_files( self, purpose: str ) -> str | None:
-		try:
-			throw_if( 'purpose', purpose )
-			self.contents = purpose
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
-			exception.method = ''
-			error = ErrorDialog( exception )
-			error.show( )
-
-	def delete_file( self, file_id: str ) -> str | None:
-		try:
-			throw_if( 'file_id', file_id )
-			self.contents = file_id
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
-			exception.method = ''
-			error = ErrorDialog( exception )
-			error.show( )
-
-class Embedding( Gemini ):
+class Embedding( Grok ):
 	'''
-		
+
 		Purpose:
 		--------
 		Class providing embedding functionality
-		
-		
+
+
 	'''
-	client: Optional[ genai.Client ]
+	client: Optional[ Groq ]
 	response: Optional[ Response ]
 	embedding: Optional[ List[ float ] ]
 	encoding_format: Optional[ str ]
 	dimensions: Optional[ int ]
-	use_vertex: Optional[ bool ]
-	task_type: Optional[ str ]
-	http_options: Optional[ Dict[ str, Any ] ]
-	embedding_config: Optional[ types.EmbedContentConfig ]
-	content_config: Optional[ types.GenerateContentConfig ]
-	client: Optional[ genai.Client ]
-	contents: Optional[ List[ str ] ]
 	input_text: Optional[ str ]
 	
-	def __init__( self, model: str='gemini-embedding-001', version: str='v1alpha',
-			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
-			presence: float=0.0, max_tokens: int=10000 ):
+	def __init__( self, model: str='llama-3.1-8b-instant', temperature: float=0.8,
+			top_p: float=0.9, frequency: float=0.0, presence: float=0.0, max_tokens: int=10000 ):
 		super( ).__init__( )
-		self.api_key = cfg.GOOGLE_API_KEY
+		self.api_key = cfg.GROQ_API_KEY
 		self.model = model
-		self.version = version
-		self.use_ai = use_ai
-		self.http_options = types.HttpOptions( api_version=self.api_version )
-		self.client = genai.Client( vertexai=self.use_ai, api_key=self.api_key,
-			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
+		self.client = Groq( api_key=self.api_key  )
 		self.temperature = temperature
 		self.top_percent = top_p
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
 		self.max_completion_tokens = max_tokens
 		self.contents = [ ]
+		self.http_options = { }
 		self.encoding_format = None
 		self.input_text = None
 		self.content_config = None
@@ -390,22 +250,18 @@ class Embedding( Gemini ):
 	@property
 	def model_options( self ) -> List[ str ]:
 		'''
-			
-			Returns:
-			--------
-			List[ str ] of embedding models
+
+		Returns:
+		--------
+		List[ str ] of embedding models
 
 		'''
-		return [ 'gemini-embedding-001',
-		         'text-embedding-005',
-		         'text-multilingual-embedding-002',
-		         'multilingual-e5-small',
-		         'multilingual-e5-large', ]
+		return [ '', ]
 	
 	@property
 	def encoding_options( self ) -> List[ str ]:
 		'''
-			
+
 			Returns:
 			--------
 			List[ str ] of available format options
@@ -414,19 +270,20 @@ class Embedding( Gemini ):
 		return [ 'float',
 		         'base64' ]
 	
-	def embed( self, text: str, model: str='gemini-embedding-001', format: str='float' ) -> List[ float ] | None:
+	def create( self, text: str, model: str = 'gemini-embedding-001', format: str = 'float' ) -> \
+	List[ float ] | None:
 		"""
-	
+
 	        Purpose
 	        _______
 	        Creates an embedding ginve a text
-	
-	
+
+
 	        Parameters
 	        ----------
 	        text: str
-	
-	
+
+
 	        Returns
 	        -------
 	        get_list[ float
@@ -443,7 +300,7 @@ class Embedding( Gemini ):
 			return self.embedding
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'groq'
 			exception.cause = 'Embedding'
 			exception.method = 'create( self, text: str, model: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
@@ -455,12 +312,12 @@ class Embedding( Gemini ):
 	        Purpose:
 	        -------
 	        Returns the num of words in a documents path.
-	
+
 	        Parameters:
 	        -----------
 	        text: str - The string that is tokenized
 	        coding: str - The encoding to use for tokenizing
-	
+
 	        Returns:
 	        --------
 	        int - The number of words
@@ -472,13 +329,13 @@ class Embedding( Gemini ):
 			return 0
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'groq'
 			exception.cause = 'Embedding'
 			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
 			error = ErrorDialog( exception )
 			error.show( )
 
-class TTS( Gemini ):
+class TTS( Grok ):
 	"""
 
 	    Purpose
@@ -515,8 +372,8 @@ class TTS( Gemini ):
     """
 	speed: Optional[ float ]
 	voice: Optional[ str ]
-	response: Optional[ requests.Response ]
-	client: Optional[ genai.Client ]
+	response: Optional[ Response ]
+	client: Optional[ groq.Groq ]
 	
 	def __init__( self, number: int = 1, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
 			presence: float = 0.0, max_tokens: int = 10000, store: bool = True, stream: bool = True, instruct: str = None ):
@@ -528,8 +385,8 @@ class TTS( Gemini ):
 
         '''
 		super( ).__init__( )
-		self.api_key = cfg.GOOGLE_API_KEY
-		self.client = genai.Client( api_key=cfg.GOOGLE_API_KEY )
+		self.api_key = cfg.GROQ_API_KEY
+		self.client = Groq( api_key=self.api_key  )
 		self.model = 'gpt-4o-mini-tts'
 		self.number = number
 		self.temperature = temperature
@@ -694,7 +551,7 @@ class TTS( Gemini ):
 		         'get_data',
 		         'dump', ]
 
-class Transcription( Gemini ):
+class Transcription( Grok ):
 	"""
 
 	    Purpose
@@ -733,8 +590,8 @@ class Transcription( Gemini ):
 	def __init__( self, number: int = 1, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
 			presence: float = 0.0, max_tokens: int = 10000, store: bool = True, stream: bool = True, instruct: str = None ):
 		super( ).__init__( )
-		self.api_key = cfg.GOOGLE_API_KEY
-		self.client = genai.Client( api_key=cfg.GOOGLE_API_KEY )
+		self.api_key = cfg.GROQ_API_KEY
+		self.client = Groq( api_key=self.api_key  )
 		self.number = number
 		self.temperature = temperature
 		self.top_percent = top_p
@@ -859,7 +716,7 @@ class Transcription( Gemini ):
 		         'input_text',
 		         'transcript', ]
 
-class Translation( Gemini ):
+class Translation( Grok ):
 	"""
 
 	    Purpose
@@ -898,8 +755,8 @@ class Translation( Gemini ):
 	def __init__( self, number: int = 1, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
 			presence: float = 0.0, max_tokens: int = 10000, store: bool = True, stream: bool = True, instruct: str = None ):
 		super( ).__init__( )
-		self.api_key = cfg.OPENAI_API_KEY
-		self.client = OpenAI( api_key=self.api_key )
+		self.api_key = cfg.GROQ_API_KEY
+		self.client = Groq( api_key=self.api_key  )
 		self.model = 'whisper-1'
 		self.number = number
 		self.temperature = temperature
@@ -1059,7 +916,7 @@ class Translation( Gemini ):
 		         'translate',
 		         'model_options', ]
 
-class Image( Gemini ):
+class Image( Grok ):
 	"""
 
 	    Purpose
@@ -1112,8 +969,8 @@ class Image( Gemini ):
 	def __init__( self, n: int = 1, temperture: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
 			presence: float = 0.0, max_tokens: int = 10000, store: bool = False, stream: bool = False, ):
 		super( ).__init__( )
-		self.api_key = cfg.OPENAI_API_KEY
-		self.client = genai.Client( api_key=self.api_key )
+		self.api_key = cfg.GROQ_API_KEY
+		self.client = Groq( api_key=self.api_key  )
 		self.number = n
 		self.temperature = temperture
 		self.top_percent = top_p
