@@ -602,6 +602,7 @@ class TTS( Gemini ):
 		         'Pulcherrima',
 		         'Puck',
 		         'Zephyr' ]
+	
 	@property
 	def output_options( self ) -> List[ str ] | None:
 		'''
@@ -616,10 +617,9 @@ class TTS( Gemini ):
 		         'MP3',
 		         'OGG_OPUS',
 		         'PCM', ]
-
 	
-	def create_audio( self, text: str, filepath: str, format: str='mp3',
-			speed: float=1.0, voice: str='alloy' ) -> str:
+	def create_audio( self, text: str, filepath: str, format: str='MP3',
+			speed: float=1.0, voice: str='Kore' ) -> str:
 		"""
 
 	        Purpose
@@ -789,6 +789,7 @@ class Transcription( Gemini ):
 	@property
 	def model_options( self ) -> str:
 		'''
+
 
 	        Purpose:
 	        --------
