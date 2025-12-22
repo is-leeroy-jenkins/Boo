@@ -79,13 +79,13 @@ class Gemini( ):
 	top_p: Optional[ float ]
 	top_k: Optional[ int ]
 	content_config: Optional[ types.GenerateContentConfig ]
-	image_config: Optional[ types.GenerateImagesConfig ]
 	function_config: Optional[ types.FunctionCallingConfig ]
 	candidate_count: Optional[ int ]
 	modalities: Optional[ List[ str ] ]
 	stops: Optional[ List[ str ] ]
 	frequency_penalty: Optional[ float ]
 	presence_penalty: Optional[ float ]
+	response_format: Optional[ str ]
 	
 	def __init__( self ):
 		self.api_key = cfg.GOOGLE_API_KEY
@@ -103,6 +103,7 @@ class Gemini( ):
 		self.presence_penalty = None
 		self.max_tokens = None
 		self.instructions = None
+		self.response_format = None
 
 class Chat( Gemini ):
 	'''
@@ -483,7 +484,7 @@ class TTS( Gemini ):
 
 	    Purpose
 	    ___________
-	    Class used for interacting with OpenAI's TTS API (TTS)
+	    Class used for interacting with Gemini's TTS API (TTS)
 
 
 	    Parameters
@@ -765,6 +766,7 @@ class Transcription( Gemini ):
 
 
     """
+	audio_config: Optional[ types.AudioTranscriptionConfig ]
 	
 	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
 			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
@@ -972,17 +974,22 @@ class Translation( Gemini ):
 
 	        Purpose:
 	        --------
-	        Method that returns a list of voice names
+	        Method that returns a list of language option
 
         '''
-		return [ 'English',
-		         'Spanish',
-		         'Tagalog',
-		         'French',
-		         'Japanese',
-		         'German',
-		         'Italian',
-		         'Chinese' ]
+		return [ 'en-US',
+		         'es-MX',
+		         'fr-FR',
+		         'ceb-PH',
+		         'ja-JP',
+		         'pt-PT',
+		         'la-VA',
+		         'he-IL',
+		         'el-GR',
+		         'fil-PH',
+		         'ru-RU',
+		         'ar-001',
+		         'cmn-CN' ]
 	
 	@property
 	def voice_options( self ):
@@ -990,20 +997,38 @@ class Translation( Gemini ):
 
 	        Purpose:
 	        --------
-	        Method that returns a list of voice names
+	        Method that returns a list of voice options
 
         '''
-		return [ 'alloy',
-		         'ash',
-		         'ballad',
-		         'coral',
-		         'echo',
-		         'fable',
-		         'onyx',
-		         'nova',
-		         'sage',
-		         'shiver', ]
-	
+		return [ 'Achernar',
+		         'Achird',
+		         'Aoede',
+		         'Enceladus',
+		         'Erinome',
+		         'Iapetus',
+		         'Kore',
+		         'Orus',
+		         'Pulcherrima',
+		         'Puck',
+		         'Zephyr' ]
+		
+	@property
+	def document_options( self ):
+		'''
+
+	        Purpose:
+	        --------
+	        Method that returns a list of document types that can be translated
+
+        '''
+		return [ 'DOC',
+		         'DOCX',
+		         'PDF',
+		         'PPT',
+		         'PPTX',
+		         'XLS',
+		         'XLSX', ]
+		
 	def create( self, text: str, path: str ) -> str | None:
 		"""
 
@@ -1145,7 +1170,7 @@ class Image( Gemini ):
 	size: Optional[ str ]
 	tool_choice: Optional[ str ]
 	style: Optional[ str ]
-	response_format: Optional[ str ]
+	image_config: Optional[ types.GenerateImagesConfig ]
 	
 	def __init__( self, n: int = 1, temperture: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
 			presence: float = 0.0, max_tokens: int = 10000, store: bool = False, stream: bool = False, ):
