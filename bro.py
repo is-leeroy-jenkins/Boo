@@ -531,7 +531,6 @@ class TTS( Gemini ):
 		super( ).__init__( )
 		self.api_key = cfg.GOOGLE_API_KEY
 		self.client = genai.Client( api_key=cfg.GOOGLE_API_KEY )
-		self.model = 'gpt-4o-mini-tts'
 		self.number = number
 		self.temperature = temperature
 		self.top_percent = top_p
@@ -541,6 +540,7 @@ class TTS( Gemini ):
 		self.store = store
 		self.stream = stream
 		self.instructions = instruct
+		self.model = None
 		self.audio_path = None
 		self.response = None
 		self.response_format = None
@@ -556,9 +556,8 @@ class TTS( Gemini ):
 	        Methods that returns a list of tts model names
 
         '''
-		return [ 'gpt-4o-mini-tts',
-		         'tts-1',
-		         'tts-1-hd' ]
+		return [ 'gemini-2.5-flash-tts',
+		         'gemini-2.5-flash-lite-preview-tts', ]
 	
 	@property
 	def language_options( self ) -> List[ str ] | None:
@@ -582,7 +581,27 @@ class TTS( Gemini ):
 		         'ru-RU',
 		         'ar-001',
 		         'cmn-CN' ]
-	
+
+	@property
+	def voice_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			List[ str ] - list of available voices for TTS
+
+		'''
+		return [ 'Achernar',
+		         'Achird',
+		         'Aoede',
+		         'Enceladus',
+		         'Erinome',
+		         'Iapetus',
+		         'Kore',
+		         'Orus',
+		         'Pulcherrima',
+		         'Puck',
+		         'Zephyr' ]
 	@property
 	def output_options( self ) -> List[ str ] | None:
 		'''
@@ -715,11 +734,28 @@ class Transcription( Gemini ):
 
 	    Attributes
 	    -----------
-	    self.api_key, self.system_instructions, self.client, self.small_model, self.reasoning_effort,
-	    self.response, self.num, self.temperature, self.top_percent,
-	    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-	    self.store, self.stream, self.modalities, self.stops, self.content,
-	    self.input_text, self.response, self.completion, self.audio_file, self.transcript
+	    api_key, 
+	    system_instructions, 
+	    client, 
+	    small_model, 
+	    reasoning_effort,
+	    response, 
+	    num, 
+	    temperature, 
+	    top_percent,
+	    frequency_penalty, 
+	    presence_penalty, s
+	    elf.max_completion_tokens,
+	    store, 
+	    stream, 
+	    modalities, 
+	    stops, 
+	    content,
+	    input_text, 
+	    response, 
+	    completion, 
+	    audio_file, 
+	    transcript
 
 
 	    Methods
@@ -802,7 +838,7 @@ class Transcription( Gemini ):
 		         'OGG_OPUS',
 		         'PCM', ]
 	
-	def transcribe( self, path: str, model: str = 'whisper-1' ) -> str:
+	def transcribe( self, path: str, model: str='whisper-1' ) -> str:
 		"""
 
             Transcribe audio with Whisper.
@@ -895,11 +931,11 @@ class Translation( Gemini ):
     """
 	target_language: Optional[ str ]
 	
-	def __init__( self, number: int = 1, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 10000, store: bool = True, stream: bool = True, instruct: str = None ):
+	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
 		super( ).__init__( )
 		self.api_key = cfg.OPENAI_API_KEY
-		self.client = OpenAI( api_key=self.api_key )
+		self.client = genai.Client( api_key=self.api_key )
 		self.model = 'whisper-1'
 		self.number = number
 		self.temperature = temperature
@@ -909,6 +945,7 @@ class Translation( Gemini ):
 		self.max_completion_tokens = max_tokens
 		self.store = store
 		self.stream = stream
+		self.instructions = instruct
 		self.audio_file = None
 		self.response = None
 		self.voice = None
