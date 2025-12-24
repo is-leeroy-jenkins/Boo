@@ -45,42 +45,9 @@
 from __future__ import annotations
 
 import os
-if os.environ.get("BOOGR_HEADLESS") == "1":
-    GUI_AVAILABLE = False
-else:
-    try:
-        import FreeSimpleGUI as sg
-        GUI_AVAILABLE = True
-    except Exception:
-        GUI_AVAILABLE = False
-
-try:
-    import fitz
-
-    # The abandoned 'fitz' package imports 'frontend'
-    if "frontend" in (fitz.__file__ or "").lower():
-        raise ImportError(
-            f"Wrong 'fitz' package detected at {fitz.__file__}"
-        )
-
-except ImportError as exc:
-    raise RuntimeError(
-        "PyMuPDF is required for PDF functionality.\n\n"
-        "Do NOT install the 'fitz' or 'frontend' packages.\n\n"
-        "Fix this environment with:\n"
-        "  pip uninstall fitz frontend\n"
-        "  pip install --force-reinstall pymupdf\n"
-    ) from exc
-
-
-# ======================================================================================
-# Normal imports start here
-# ======================================================================================
-
 import base64
 import config as cfg
 from enum import Enum
-import fitz
 from googlesearch import search
 import io
 import matplotlib.pyplot as plt
@@ -107,7 +74,13 @@ import urllib.request
 import webbrowser
 from typing import Dict, List, Tuple, Any, Text, Optional
 import inspect
-
+import importlib
+import traceback
+try:
+    import FreeSimpleGUI as sg
+except Exception:
+    sg = None
+    
 class Error( Exception ):
 	'''
 
