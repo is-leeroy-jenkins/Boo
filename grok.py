@@ -492,7 +492,7 @@ class TTS( Grok ):
 			return str( out_path )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'grok'
 			exception.cause = 'TTS'
 			exception.method = 'create_audio( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -851,7 +851,7 @@ class Translation( Grok ):
 			return resp.text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'grok'
 			exception.cause = 'Translation'
 			exception.method = 'create( self, text: str )'
 			error = ErrorDialog( exception )
@@ -1120,7 +1120,7 @@ class Image( Grok ):
 			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'grok'
 			exception.cause = 'Image'
 			exception.method = 'generate( self, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -1169,7 +1169,7 @@ class Image( Grok ):
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'grok'
 			exception.cause = 'Image'
 			exception.method = 'analyze( self, path: str, text: str ) -> str'
 			error = ErrorDialog( exception )
@@ -1203,7 +1203,7 @@ class Image( Grok ):
 			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'grok'
 			exception.cause = 'Image'
 			exception.method = 'edit( self, text: str, path: str, size: str=1024x1024 ) -> str'
 			error = ErrorDialog( exception )
