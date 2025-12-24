@@ -1,16 +1,16 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                bro.py
+      Filename:                gemni.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="bro.py" company="Terry D. Eppler">
+  <copyright file="gemni.py" company="Terry D. Eppler">
 
-	     bro.py
+	     gemni.py
 	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    bro.py
+    gemni.py
   </summary>
   ******************************************************************************************
 '''
@@ -185,13 +185,10 @@ class Chat( Gemini ):
 
 		'''
 		return [ '1:1',
-		         '2:3',
-		         '3:2',
 		         '3:4',
 		         '4:3',
 		         '9:16',
-		         '16:9',
-		         '21:9' ]
+		         '16:9', ]
 	
 	@property
 	def size_options( self ) -> List[ str ] | None:
@@ -558,7 +555,8 @@ class TTS( Gemini ):
 
         '''
 		return [ 'gemini-2.5-flash-tts',
-		         'gemini-2.5-flash-lite-preview-tts', ]
+		         'gemini-2.5-flash-lite-preview-tts',
+		         'gemini-2.5-flash-native-audio-preview-12-2025', ]
 	
 	@property
 	def language_options( self ) -> List[ str ] | None:
@@ -798,10 +796,7 @@ class Transcription( Gemini ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [ 'whisper-1',
-		         'gpt-4o-mini-transcribe',
-		         'gpt-4o-transcribe',
-		         'gpt-4o-transcribe-diarize' ]
+		return [ ]
 	
 	@property
 	def language_options( self ) -> List[ str ] | None:
@@ -962,11 +957,7 @@ class Translation( Gemini ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [ 'whisper-1',
-		         'text-davinci-003',
-		         'gpt-4-0613',
-		         'gpt-4-0314',
-		         'gpt-4-turbo-2024-04-09', ]
+		return [  ]
 	
 	@property
 	def language_options( self ):
@@ -1169,7 +1160,7 @@ class Image( Gemini ):
 	detail: Optional[ str ]
 	size: Optional[ str ]
 	tool_choice: Optional[ str ]
-	style: Optional[ str ]
+	aspect_ratio: Optional[ str ]
 	image_config: Optional[ types.GenerateImagesConfig ]
 	
 	def __init__( self, n: int = 1, temperture: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
@@ -1190,41 +1181,42 @@ class Image( Gemini ):
 		self.input_text = None
 		self.file_path = None
 		self.image_url = None
-		self.quality = None
-		self.detail = None
+		self.aspect_ratio = None
 		self.model = None
 		self.size = None
-		self.style = None
 		self.response_format = None
-	
-	@property
-	def style_options( self ) -> List[ str ]:
-		'''
-
-	        Purpose:
-	        ________
-	        Methods that returns a list of style options for dall-e-3
-
-        '''
-		return [ 'vivid',
-		         'natural', ]
-	
 	@property
 	def model_options( self ) -> List[ str ]:
 		'''
 
 	        Purpose:
 	        ________
-	        Methods that returns a list of small_model names
+	        Methods that returns a list of Imagen models
 
         '''
-		return [ 'dall-e-2',
-		         'dall-e-3',
-		         'gpt-4o-mini',
-		         'gpt-4o',
-		         'gpt-image-1',
-		         'gpt-image-1-mini',
-		         'gpt-image-1.5', ]
+		return [ 'gemini-2.5-flash-image',
+		         'imagen-4.0-generate-001',
+		         'imagen-4.0-fast-generate-001',
+		         'imagen-4.0-ultra-generate-001',
+		         'imagen-3.0-capability-001',
+		         'imagen-3.0-capability-002',
+		         'imagen-3.0-fast-generate-001', ]
+	
+	@property
+	def aspect_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			List[ str ] - list of available aspect ratios for Imagen 4
+
+		'''
+		return [ '1:1',
+		         '3:4',
+		         '4:3',
+		         '9:16',
+		         '16:9', ]
+	
 	
 	@property
 	def size_options( self ) -> List[ str ]:
@@ -1234,21 +1226,12 @@ class Image( Gemini ):
 	        --------
 	        Method that returns a  list of sizes
 
-	        - For gpt-image-1, the size must be one of '1024x1024', '1536x1024' (landscape),
-	        '1024x1536' (portrait), or 'auto' (default value).
-
-	        - For dall-e-2, the size must be one of '256x256', '512x512', or '1024x1024'
-
-	        - For dall-e-3, the sie must be one of '1024x1024', '1792x1024', or '1024x1792'
-
         '''
-		return [ 'auto',
-		         '256x256',
-		         '512x512',
-		         '1024x1024',
-		         '1536x1024',
-		         '1024x1792',
-		         '1792x1024' ]
+		return [ '1024x1024,',
+		         '896x1280',
+		         '1280x896',
+		         '768x1408',
+		         '1408x768',]
 	
 	@property
 	def format_options( self ) -> List[ str ]:
@@ -1260,38 +1243,10 @@ class Image( Gemini ):
 
         '''
 		return [ '.png',
-		         '.jpeg',
-		         '.webp',
-		         '.gif' ]
+		         '.jpeg', ]
 	
-	@property
-	def quality_options( self ) -> List[ str ]:
-		'''
-
-	        Purpose:
-	        ________
-	        Method that returns a  list of quality options
-
-        '''
-		return [ 'low',
-		         'medium',
-		         'hi', ]
 	
-	@property
-	def detail_options( self ) -> List[ str ]:
-		'''
-
-	        Purpose:
-	        ________
-	        Method that returns a  list of detail options
-
-        '''
-		return [ 'auto',
-		         'low',
-		         'high' ]
-	
-	def generate( self, prompt: str, model: str, quality: str, size: str,
-			style: str = 'natural', format: str = 'url' ) -> str:
+	def generate( self, prompt: str, model: str, quality: str, size: str ) -> str:
 		"""
 
                 Purpose
@@ -1316,9 +1271,7 @@ class Image( Gemini ):
 			throw_if( 'size', size )
 			self.input_text = prompt
 			self.model = model
-			self.quality = quality
 			self.size = size
-			self.style = style
 			self.response_format = format
 			self.response = self.client.images.generate( model=self.model, prompt=self.input_text,
 				size=self.size, style=self.style, response_format=self.response_format,
@@ -1381,7 +1334,7 @@ class Image( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def edit( self, prompt: str, path: str, size: str = '1024x1024' ) -> str:
+	def edit( self, prompt: str, path: str, model: str='imagen-3.0-generate-001' ) -> str:
 		"""
 
 	        Purpose
@@ -1403,6 +1356,7 @@ class Image( Gemini ):
 			throw_if( 'path', path )
 			self.input_text = prompt
 			self.file_path = path
+			self.model = model
 			self.response = self.client.images.edit( model=self.model,
 				image=open( self.file_path, 'rb' ), prompt=self.input_text, n=self.number,
 				size=self.size, )
