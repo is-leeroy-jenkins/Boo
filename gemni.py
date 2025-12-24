@@ -68,6 +68,7 @@ class Gemini( ):
 		Base class for Gemma AI Functionality
 		
 	'''
+	number: Optinal[ int ]
 	project_id: Optional[ str ]
 	api_key: Optional[ str ]
 	cloud_location: Optional[ str ]
@@ -104,6 +105,7 @@ class Gemini( ):
 		self.max_tokens = None
 		self.instructions = None
 		self.response_format = None
+		self.number = None
 
 class Chat( Gemini ):
 	'''
@@ -122,11 +124,12 @@ class Chat( Gemini ):
 	file_path: Optional[ str ]
 	response_modalities: Optional[ str ]
 	
-	def __init__( self, model: str='gemini-2.5-flash', version: str='v1alpha',
+	def __init__( self, n: int=1, model: str='gemini-2.5-flash', version: str='v1alpha',
 			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
 			candidates: int=1, instruct: str=None, contents: List[ str ]=None ):
 		super( ).__init__( )
+		self.number = n
 		self.model = model
 		self.api_version = version
 		self.top_p = top_p
@@ -161,47 +164,9 @@ class Chat( Gemini ):
 		return [ 'gemini-3-flash-preview',
 		         'gemini-2.5-flash',
 		         'gemini-2.5-flash-lite',
-		         'gemini-2.5-flash-image',
-		         'gemini-2.5-flash-native-audio-preview-12-2025',
-		         'gemini-2.5-flash-tts',
-		         'gemini-2.5-flash-lite-preview-tts',
 		         'gemini-2.0-flash-001',
 		         'gemini-2.0-flash-lite',
-		         'gemini-2.5-computer-use-preview-10-2025',
-		         'translate-llm',
-		         'imagen-3.0-capability-002',
-		         'imagen-4.0-ultra-generate-preview-06-06',
-		         'imagen-4.0-generate-001',
-		         'imagen-4.0-ultra-generate-001',
-		         'imagen-4.0-fast-generate-001', ]
-	
-	@property
-	def aspect_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			List[ str ] - list of available aspect ratios for Imagen 4
-
-		'''
-		return [ '1:1',
-		         '3:4',
-		         '4:3',
-		         '9:16',
-		         '16:9', ]
-	
-	@property
-	def size_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			List[ str ] - list of available aspect ratios for Imagen 4
-
-		'''
-		return [ '1K',
-		         '2K',
-		         '4K' ]
+		         'gemini-2.5-computer-use-preview-10-2025' ]
 	
 	@property
 	def version_options( self ) -> List[ str ] | None:
@@ -225,7 +190,7 @@ class Chat( Gemini ):
 				presence_penalty=self.presence_penalty, )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'gemini'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str, model: str ) -> str:'
 			error = ErrorDialog( exception )
@@ -233,14 +198,14 @@ class Chat( Gemini ):
 
 	def generate_image( self, prompt: str, model: str='gemini-2.5-flash-image' ) -> str | None:
 		try:
-			throw_if( 'propmpt', prompt )
+			throw_if( 'prompt', prompt )
 			self.contents = prompt
 			self.model = model
 			self.image_config = types.GenerateImagesConfig( http_options=self.http_options,)
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
 			exception.method = 'generate_image( self, prompt: str, model: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
@@ -254,8 +219,8 @@ class Chat( Gemini ):
 			self.model = model
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
@@ -269,60 +234,63 @@ class Chat( Gemini ):
 			self.model = model
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def search_file( self, prompt: str, file_id:str ) -> str | None:
+	def search_file( self, prompt: str, filepath: str, model: str='gemini-2.5-flash'  ) -> str | None:
 		try:
 			throw_if( 'propmpt', prompt )
-			throw_if( 'file_id', file_id )
+			throw_if( 'filepath', filepath )
 			self.contents = prompt
+			self.file_path = filepath
+			self.model = model
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
 			exception.method = ''
 			error = ErrorDialog( exception )
 			error.show( )
 		
-	def upload_file( self, prompt: str, file_id: str ) -> str | None:
+	def upload_file( self, prompt: str, filepath: str, model: str='gemini-2.5-flash'  ) -> None:
+		try:
+			throw_if( 'propmpt', prompt )
+			throw_if( 'filepath', filepath )
+			self.contents = prompt
+			self.file_path = filepath
+			self.model = model
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'upload_file( self, prompt: str, filepath: str, model: str ) -> None'
+			error = ErrorDialog( exception )
+			error.show( )
+
+	def retreive_file( self, prompt: str, filepath: str, model: str='gemini-2.5-flash'  ) -> str | None:
 		try:
 			throw_if( 'propmpt', prompt )
 			throw_if( 'file_id', file_id )
 			self.contents = prompt
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
-			exception.method = ''
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'retreive_file( self, prompt: str, filepath: str, model: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 
-	def retreive_file( self, prompt: str, file_id: str ) -> str | None:
+	def list_files( self, model: str='gemini-2.5-flash'   ) -> str | None:
 		try:
-			throw_if( 'propmpt', prompt )
-			throw_if( 'file_id', file_id )
-			self.contents = prompt
+			self.model = model
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
-			exception.method = ''
-			error = ErrorDialog( exception )
-			error.show( )
-
-	def list_files( self, purpose: str ) -> str | None:
-		try:
-			throw_if( 'purpose', purpose )
-			self.contents = purpose
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'bro'
-			exception.cause = ''
-			exception.method = ''
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'list_files( self, model: str  ) -> List[ str ] '
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -332,7 +300,7 @@ class Chat( Gemini ):
 			self.contents = file_id
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'gemini'
 			exception.cause = ''
 			exception.method = ''
 			error = ErrorDialog( exception )
@@ -412,7 +380,7 @@ class Embedding( Gemini ):
 		return [ 'float',
 		         'base64' ]
 	
-	def embed( self, text: str, model: str='gemini-embedding-001', format: str='float' ) -> List[ float ] | None:
+	def generate( self, text: str, model: str='gemini-embedding-001' ) -> List[ float ] | None:
 		"""
 	
 	        Purpose
@@ -434,16 +402,14 @@ class Embedding( Gemini ):
 			throw_if( 'text', text )
 			self.input_text = text
 			self.model = model
-			self.encoding_format = format
-			self.response = self.client.embeddings.create( input=self.input, model=self.model,
-				encoding_format=self.encoding_format )
+			self.response = self.client.embeddings.create( input=self.input, model=self.model )
 			self.embedding = self.response.data[ 0 ].embedding
 			return self.embedding
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'gemini'
 			exception.cause = 'Embedding'
-			exception.method = 'create( self, text: str, model: str ) -> List[ float ]'
+			exception.method = 'generate( self, text: str, model: str ) -> List[ float ]'
 			error = ErrorDialog( exception )
 			error.show( )
 	
@@ -470,7 +436,7 @@ class Embedding( Gemini ):
 			return 0
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'gemini'
 			exception.cause = 'Embedding'
 			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
 			error = ErrorDialog( exception )
@@ -568,18 +534,13 @@ class TTS( Gemini ):
 
 		'''
 		return [ 'en-US',
-		         'es-MX',
 		         'fr-FR',
-		         'ceb-PH',
 		         'ja-JP',
-		         'pt-PT',
-		         'la-VA',
-		         'he-IL',
-		         'el-GR',
-		         'fil-PH',
-		         'ru-RU',
-		         'ar-001',
-		         'cmn-CN' ]
+		         'vi-VN',
+		         'hi-IN',
+		         'de-GR',
+		         'es-US',
+		         'ru-RU', ]
 
 	@property
 	def voice_options( self ) -> List[ str ] | None:
@@ -611,11 +572,12 @@ class TTS( Gemini ):
 			List[ str ] - list of available aspect ratios for Imagen 4
 
 		'''
-		return [ 'ALAW',
-		         'MULAW',
+		return [ 'WAV',
+		         'AIFF',
 		         'MP3',
-		         'OGG_OPUS',
-		         'PCM', ]
+		         'AAC',
+		         'FLAC',
+		         'OGG Vorbis' ]
 	
 	def create_audio( self, text: str, filepath: str, format: str='MP3',
 			speed: float=1.0, voice: str='Kore' ) -> str:
@@ -642,6 +604,7 @@ class TTS( Gemini ):
 			throw_if( 'text', text )
 			throw_if( 'filepath', filepath )
 			self.input_text = text
+			self.audio_path = filepath
 			self.speed = speed
 			self.response_format = format
 			self.voice = voice
@@ -654,7 +617,7 @@ class TTS( Gemini ):
 			return str( out_path )
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'gemini'
 			exception.cause = 'TTS'
 			exception.method = 'create_audio( self, prompt: str, path: str ) -> str'
 			error = ErrorDialog( exception )
@@ -796,7 +759,7 @@ class Transcription( Gemini ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [ ]
+		return [ 'gemini-2.5-flash', 'gemini-2.0-flash' ]
 	
 	@property
 	def language_options( self ) -> List[ str ] | None:
@@ -808,18 +771,14 @@ class Transcription( Gemini ):
 
 		'''
 		return [ 'en-US',
-		         'es-MX',
 		         'fr-FR',
-		         'ceb-PH',
 		         'ja-JP',
-		         'pt-PT',
-		         'la-VA',
-		         'he-IL',
-		         'el-GR',
-		         'fil-PH',
-		         'ru-RU',
-		         'ar-001',
-		         'cmn-CN' ]
+		         'vi-VN',
+		         'hi-IN',
+		         'de-GR',
+		         'es-US',
+		         'ru-RU', ]
+
 	
 	@property
 	def output_options( self ) -> List[ str ] | None:
@@ -830,13 +789,14 @@ class Transcription( Gemini ):
 			List[ str ] - list of available aspect ratios for Imagen 4
 
 		'''
-		return [ 'ALAW',
-		         'MULAW',
+		return [ 'WAV',
+		         'AIFF',
 		         'MP3',
-		         'OGG_OPUS',
-		         'PCM', ]
+		         'AAC',
+		         'FLAC',
+		         'OGG Vorbis' ]
 	
-	def transcribe( self, path: str, model: str='whisper-1' ) -> str:
+	def transcribe( self, path: str, model: str='gemini-2.5-flash' ) -> str:
 		"""
 
             Transcribe audio with Whisper.
@@ -957,7 +917,7 @@ class Translation( Gemini ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [  ]
+		return [ 'gemini-2.5-flash', 'translate-llm',  ]
 	
 	@property
 	def language_options( self ):
@@ -1048,13 +1008,13 @@ class Translation( Gemini ):
 			return resp.text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'gemini'
 			exception.cause = 'Translation'
 			exception.method = 'create( self, text: str )'
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def translate( self, path: str ) -> str | None:
+	def translate( self, path: str, model: str='gemini-2.5-flash' ) -> str | None:
 		"""
 
             Translate non-English speech to English with Whisper.
@@ -1185,6 +1145,7 @@ class Image( Gemini ):
 		self.model = None
 		self.size = None
 		self.response_format = None
+		
 	@property
 	def model_options( self ) -> List[ str ]:
 		'''
@@ -1203,6 +1164,18 @@ class Image( Gemini ):
 		         'imagen-3.0-fast-generate-001', ]
 	
 	@property
+	def format_options( self ) -> List[ str ]:
+		'''
+
+	        Purpose:
+	        ________
+	        Method that returns a  list of format options
+
+        '''
+		return [ '.png',
+		         '.jpeg', ]
+	
+	@property
 	def aspect_options( self ) -> List[ str ] | None:
 		'''
 
@@ -1217,36 +1190,20 @@ class Image( Gemini ):
 		         '9:16',
 		         '16:9', ]
 	
-	
 	@property
-	def size_options( self ) -> List[ str ]:
+	def size_options( self ) -> List[ str ] | None:
 		'''
 
-	        Purpose:
-	        --------
-	        Method that returns a  list of sizes
+			Returns:
+			--------
+			List[ str ] - list of available aspect ratios for Imagen 4
 
-        '''
-		return [ '1024x1024,',
-		         '896x1280',
-		         '1280x896',
-		         '768x1408',
-		         '1408x768',]
-	
-	@property
-	def format_options( self ) -> List[ str ]:
 		'''
-
-	        Purpose:
-	        ________
-	        Method that returns a  list of format options
-
-        '''
-		return [ '.png',
-		         '.jpeg', ]
+		return [ '1K',
+		         '2K',
+		         '4K' ]
 	
-	
-	def generate( self, prompt: str, model: str, quality: str, size: str ) -> str:
+	def generate( self, prompt: str, model: str='imagen-4.0-fast-generate-001',  ) -> str:
 		"""
 
                 Purpose
@@ -1279,13 +1236,13 @@ class Image( Gemini ):
 			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'gemini'
 			exception.cause = 'Image'
 			exception.method = 'generate( self, path: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def analyze( self, text: str, path: str, model: str = 'gpt-4o-mini', ) -> str:
+	def analyze( self, text: str, path: str, model: str='gemini-2.5-flash', ) -> str:
 		'''
 
 	        Purpose:
@@ -1328,13 +1285,13 @@ class Image( Gemini ):
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'gemini'
 			exception.cause = 'Image'
 			exception.method = 'analyze( self, path: str, text: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def edit( self, prompt: str, path: str, model: str='imagen-3.0-generate-001' ) -> str:
+	def edit( self, prompt: str, path: str, model: str='gemini-2.5-flash-image' ) -> str:
 		"""
 
 	        Purpose
@@ -1363,7 +1320,7 @@ class Image( Gemini ):
 			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'bro'
+			exception.module = 'gemini'
 			exception.cause = 'Image'
 			exception.method = 'edit( self, text: str, path: str, size: str=1024x1024 ) -> str'
 			error = ErrorDialog( exception )

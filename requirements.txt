@@ -14,7 +14,6 @@ flask-wtf
 flask-sqlalchemy
 flask-mail
 fastapi
-frontend
 groq
 google
 google-genai
