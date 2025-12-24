@@ -43,6 +43,7 @@
 '''
 
 import os
+from pathlib import Path
 
 import groq
 
@@ -250,10 +251,10 @@ class Embedding( Grok ):
 	@property
 	def model_options( self ) -> List[ str ]:
 		'''
-
-		Returns:
-		--------
-		List[ str ] of embedding models
+	
+			Returns:
+			--------
+			List[ str ] of embedding models
 
 		'''
 		return [ '', ]
@@ -270,8 +271,7 @@ class Embedding( Grok ):
 		return [ 'float',
 		         'base64' ]
 	
-	def create( self, text: str, model: str = 'gemini-embedding-001', format: str = 'float' ) -> \
-	List[ float ] | None:
+	def create( self, text: str, model: str='gemini-embedding-001', format: str='float' ) -> List[ float ] | None:
 		"""
 
 	        Purpose
