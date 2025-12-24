@@ -1022,6 +1022,8 @@ class Translation( Gemini ):
         """
 		try:
 			throw_if( 'path', path )
+			self.audio_file = path
+			self.model = model
 			with open( path, 'rb' ) as audio_file:
 				resp = self.client.audio.translations.create( model=self.model, file=audio_file )
 			return resp.text
@@ -1123,8 +1125,8 @@ class Image( Gemini ):
 	aspect_ratio: Optional[ str ]
 	image_config: Optional[ types.GenerateImagesConfig ]
 	
-	def __init__( self, n: int = 1, temperture: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 10000, store: bool = False, stream: bool = False, ):
+	def __init__( self, n: int=1, temperture: float=0.8, top_p: float=0.9, frequency: floa =0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=False, stream: bool=False, ):
 		super( ).__init__( )
 		self.api_key = cfg.OPENAI_API_KEY
 		self.client = genai.Client( api_key=self.api_key )
@@ -1203,7 +1205,7 @@ class Image( Gemini ):
 		         '2K',
 		         '4K' ]
 	
-	def generate( self, prompt: str, model: str='imagen-4.0-fast-generate-001',  ) -> str:
+	def generate( self, prompt: str, size: str, aspect: str, model: str='imagen-4.0-fast-generate-001',  ) -> str:
 		"""
 
                 Purpose
@@ -1224,25 +1226,21 @@ class Image( Gemini ):
 		try:
 			throw_if( 'text', prompt )
 			throw_if( 'model', model )
-			throw_if( 'quality', quality )
+			throw_if( 'aspect', aspect )
 			throw_if( 'size', size )
 			self.input_text = prompt
 			self.model = model
 			self.size = size
-			self.response_format = format
-			self.response = self.client.images.generate( model=self.model, prompt=self.input_text,
-				size=self.size, style=self.style, response_format=self.response_format,
-				quality=self.quality, n=self.number )
-			return self.response.data[ 0 ].url
+			self.aspect_ratio = aspect
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Image'
-			exception.method = 'generate( self, path: str ) -> str'
+			exception.method = 'generate( self, prompt: str, size: str, aspect: str, model: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def analyze( self, text: str, path: str, model: str='gemini-2.5-flash', ) -> str:
+	def analyze( self, text: str, path: str, size: str, aspect: str, model: str='gemini-2.5-flash', ) -> str:
 		'''
 
 	        Purpose:
@@ -1263,35 +1261,22 @@ class Image( Gemini ):
 		try:
 			throw_if( 'text', text )
 			throw_if( 'path', path )
+			throw_if( 'aspect', aspect )
+			throw_if( 'size', size )
 			self.input_text = text
 			self.model = model
 			self.file_path = path
-			self.input = [
-					{
-							'role': 'user',
-							'content': [
-									{
-											'type': 'input_text',
-											'text': self.input_text },
-									{
-											'type': 'input_image',
-											'image_url': self.file_path },
-							],
-					} ]
-			
-			self.response = self.client.responses.create( model=self.model, input=self.input,
-				max_output_tokens=self.max_completion_tokens, temperature=self.temperature,
-				tool_choice=self.tool_choice, stream=self.stream, store=self.store )
-			return self.response.output_text
+			self.size = size
+			self.aspect_ratio = aspect
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Image'
-			exception.method = 'analyze( self, path: str, text: str ) -> str'
+			exception.method = 'analyze( self, text: str, path: str, size: str, aspect: str, model: str ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def edit( self, prompt: str, path: str, model: str='gemini-2.5-flash-image' ) -> str:
+	def edit( self, prompt: str, path: str, size: str, aspect: str, model: str='gemini-2.5-flash-image' ) -> str:
 		"""
 
 	        Purpose
@@ -1311,18 +1296,18 @@ class Image( Gemini ):
 		try:
 			throw_if( 'input', prompt )
 			throw_if( 'path', path )
+			throw_if( 'aspect', aspect )
+			throw_if( 'size', size )
 			self.input_text = prompt
 			self.file_path = path
 			self.model = model
-			self.response = self.client.images.edit( model=self.model,
-				image=open( self.file_path, 'rb' ), prompt=self.input_text, n=self.number,
-				size=self.size, )
-			return self.response.data[ 0 ].url
+			self.size = size
+			self.aspect_ratio = aspect
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Image'
-			exception.method = 'edit( self, text: str, path: str, size: str=1024x1024 ) -> str'
+			exception.method = 'edit( self, prompt: str, path: str, size: str, aspect: str, model: str= ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 	
