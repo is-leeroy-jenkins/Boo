@@ -445,8 +445,18 @@ class TTS( Grok ):
 			List[ str ] - list of available aspect ratios for Imagen 4
 
 		'''
-		return [ 'WAV', ]
+		return [ 'flac', 'mp3', 'mulaw', 'ogg', 'wav' ]
 
+	@property
+	def sample_options( self ) -> List[ int ] | None:
+		'''
+			
+			Returns:
+			--------
+			List[ int ] - speed rate options
+			
+		'''
+		return [ 8000, 16000, 22050, 24000, 32000, 44100, 48000 ]
 	
 	def create_audio( self, text: str, filepath: str, format: str='wav',
 			speed: float=1.0, model: str='canopylabs/orpheus-v1-english' ) -> str:
