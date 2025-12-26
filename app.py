@@ -181,9 +181,9 @@ with st.sidebar:
 		[ "GPT",
 		  "Gemini",
 		  "Groq" ],
-		index=[ "Groq",
+		index=[ "GPT",
 		        "Gemini",
-		        "GPT" ].index( st.session_state.get( "provider", "GPT" ) ),
+		        "Groq" ].index( st.session_state.get( "provider", "GPT" ) ),
 	)
 	st.session_state[ "provider" ] = provider
 	
@@ -912,7 +912,7 @@ tu = st.session_state.token_usage
 if tu[ "total_tokens" ] > 0:
 	footer_html = f"""
     <div style="display:flex;justify-content:space-between;color:#9aa0a6;font-size:0.85rem;">
-        <span>Boo Framework</span>
+        <span>Boo</span>
         <span>Session tokens — total: {tu[ 'total_tokens' ]}</span>
     </div>
     """
@@ -920,7 +920,7 @@ else:
 	footer_html = """
     <div style="display:flex;justify-content:space-between;color:#9aa0a6;font-size:0.85rem;">
         <span>Boo</span>
-        <span>GPT • Groq • Gemini</span>
+        <span>Groq • Gemini • GPT</span>
     </div>
     """
 
