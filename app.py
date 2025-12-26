@@ -181,9 +181,9 @@ with st.sidebar:
 		[ "GPT",
 		  "Gemini",
 		  "Groq" ],
-		index=[ "GPT",
+		index=[ "Groq",
 		        "Gemini",
-		        "Groq" ].index( st.session_state.get( "provider", "GPT" ) ),
+		        "GPT" ].index( st.session_state.get( "provider", "GPT" ) ),
 	)
 	st.session_state[ "provider" ] = provider
 	
@@ -243,7 +243,7 @@ with st.sidebar:
 # map mode -> session_state key for model (updated: Text -> text_model)
 _mode_to_model_key = {
 		"Text": "text_model",
-		"Images": "image_model",
+		"Image": "image_model",
 		"Audio": "audio_model",
 		"Embeddings": "embed_model",
 		"Documents": "text_model",
@@ -262,7 +262,7 @@ header_label = provider_val if provider_val else "Boo"
 st.markdown(
 	f"""
     <div style="margin-bottom:0.25rem;">
-      <h1 style="margin:0;">{header_label} — {mode}</h1>
+      <h3 style="margin:0;">{header_label} — {mode}</h3>
       <div style="color:#9aa0a6; margin-top:6px; font-size:0.95rem;">
         Model: {_display_value( model_val )} &nbsp;&nbsp;|&nbsp;&nbsp; Temp: {_display_value( temperature_val )} &nbsp;&nbsp;•&nbsp;&nbsp; Top-P: {_display_value( top_p_val )}
       </div>
@@ -309,7 +309,7 @@ if mode == "Text":
 			
 			# Max tokens
 			max_tokens = st.number_input(
-				"Max tokens",
+				"Max Tokens",
 				min_value=1,
 				max_value=100000,
 				value=int( st.session_state.get( "max_tokens", 512 ) ),
@@ -318,7 +318,7 @@ if mode == "Text":
 			
 			# Frequency and presence penalties
 			freq_penalty = st.slider(
-				"Frequency penalty",
+				"Frequency Penalty",
 				min_value=-2.0,
 				max_value=2.0,
 				value=float( st.session_state.get( "freq_penalty", 0.0 ) ),
@@ -327,7 +327,7 @@ if mode == "Text":
 			st.session_state[ "freq_penalty" ] = float( freq_penalty )
 			
 			pres_penalty = st.slider(
-				"Presence penalty",
+				"Presence Penalty",
 				min_value=-2.0,
 				max_value=2.0,
 				value=float( st.session_state.get( "pres_penalty", 0.0 ) ),
@@ -337,7 +337,7 @@ if mode == "Text":
 			
 			# Stop sequences (one per line)
 			stop_text = st.text_area(
-				"Stop sequences (one per line)",
+				"Stop Sequences (one per line)",
 				value="\n".join( st.session_state.get( "stop_sequences", [ ] ) ),
 				height=80,
 			)
@@ -345,12 +345,10 @@ if mode == "Text":
 			st.session_state[ "stop_sequences" ] = [ s for s in (stop_text.splitlines( )) if
 			                                         s.strip( ) ]
 		
-		include = st.multiselect( "Include in response", chat.include_options )
+		include = st.multiselect( "Include:", chat.include_options )
 		chat.include = include
 	
-	left, center, right = st.columns( [ 1,
-	                                    2,
-	                                    1 ] )
+	left, center, right = st.columns( [ 1,  2,  1 ] )
 	
 	with center:
 		for msg in st.session_state.messages:
@@ -410,10 +408,10 @@ if mode == "Text":
 								# final fallback: only model + prompt
 								response = chat.generate_text( prompt=prompt, model=text_model )
 						except Exception as exc:
-							st.error( f"Generation failed: {exc}" )
+							st.error( f"Generation Failed: {exc}" )
 							response = None
 					except Exception as exc:
-						st.error( f"Generation failed: {exc}" )
+						st.error( f"Generation Failed: {exc}" )
 						response = None
 					
 					st.markdown( response or "" )
@@ -442,7 +440,7 @@ if mode == "Text":
 # ======================================================================================
 # IMAGES MODE
 # ======================================================================================
-elif mode == "Images":
+elif mode == "Image":
 	image = Image( )
 	with st.sidebar:
 		st.header( "Image Settings" )
@@ -452,8 +450,7 @@ elif mode == "Images":
 		quality = st.selectbox( "Quality", image.quality_options )
 		fmt = st.selectbox( "Format", image.format_options )
 	
-	tab_gen, tab_analyze = st.tabs( [ "Generate",
-	                                  "Analyze" ] )
+	tab_gen, tab_analyze = st.tabs( [ "Generate", "Analyze" ] )
 	with tab_gen:
 		prompt = st.text_area( "Prompt" )
 		if st.button( "Generate Image" ):
@@ -575,7 +572,7 @@ elif mode == "Images":
 								pass
 					
 					except Exception as exc:
-						st.error( f"Image analysis failed: {exc}" )
+						st.error( f"Analysis Failed: {exc}" )
 
 # ======================================================================================
 # AUDIO MODE
