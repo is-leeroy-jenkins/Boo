@@ -67,77 +67,6 @@ class Prompt( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class Location( BaseModel ):
-	'''
-
-		Purpose:
-		--------
-		Class for the user's location
-
-	'''
-	type: Optional[ str ]
-	city: Optional[ str ]
-	country: Optional[ str ]
-	region: Optional[ str ]
-	timezone: Optional[ str ]
-
-	class Config:
-		arbitrary_types_allowed = True
-		extra = 'ignore'
-
-class GeoCoordinates( BaseModel ):
-	'''
-
-		Purpose:
-		--------
-		Class for the user's location
-
-	'''
-	type: Optional[ str ]
-	latitude: Optional[ float ]
-	longitude: Optional[ float ]
-	timezone: Optional[ str ]
-
-	class Config:
-		arbitrary_types_allowed = True
-		extra = 'ignore'
-
-class ValidationStatus( BaseModel ):
-	is_valid: bool
-	syntax_errors: List[ str ]
-	
-	class Config:
-		arbitrary_types_allowed = True
-		extra = 'ignore'
-
-class SQLQueryGeneration( BaseModel ):
-	query: str
-	query_type: str
-	tables_used: List[ str ]
-	estimated_complexity: str
-	execution_notes: List[ str ]
-	validation_status: ValidationStatus
-	
-	class Config:
-		arbitrary_types_allowed = True
-		extra = 'ignore'
-    
-class SkyCoordinates( BaseModel ):
-	'''
-
-		Purpose:
-		--------
-		Class for the user's location
-
-	'''
-	type: Optional[ str ]
-	declination: Optional[ float ]
-	right_ascension: Optional[ float ]
-
-	class Config:
-		arbitrary_types_allowed = True
-		extra = 'ignore'
-		
 class Text( BaseModel ):
 	'''
 
@@ -417,6 +346,77 @@ class Message( BaseModel ):
 	instructions: Optional[ str ]
 	data: Optional[ Dict ]
 
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+
+class Location( BaseModel ):
+	'''
+
+		Purpose:
+		--------
+		Class for the user's location
+
+	'''
+	type: Optional[ str ]
+	city: Optional[ str ]
+	country: Optional[ str ]
+	region: Optional[ str ]
+	timezone: Optional[ str ]
+	
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+
+class GeoCoordinates( BaseModel ):
+	'''
+
+		Purpose:
+		--------
+		Class for the user's location
+
+	'''
+	type: Optional[ str ]
+	latitude: Optional[ float ]
+	longitude: Optional[ float ]
+	timezone: Optional[ str ]
+	
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+
+class ValidationStatus( BaseModel ):
+	is_valid: bool
+	syntax_errors: List[ str ]
+	
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+
+class SQLQueryGeneration( BaseModel ):
+	query: str
+	query_type: str
+	tables_used: List[ str ]
+	estimated_complexity: str
+	execution_notes: List[ str ]
+	validation_status: ValidationStatus
+	
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+
+class SkyCoordinates( BaseModel ):
+	'''
+
+		Purpose:
+		--------
+		Class for the user's location
+
+	'''
+	type: Optional[ str ]
+	declination: Optional[ float ]
+	right_ascension: Optional[ float ]
+	
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
