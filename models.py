@@ -146,22 +146,7 @@ class JsonObject( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
-
-class ResponseFormat( BaseModel ):
-	'''
-
-		Purpose:
-		--------
-		A class for objects specifying the format that the model must output.
-
-	'''
-	text: Optional[ Text ]
-	json_schema: Optional[ JsonSchema ]
-	json_object: Optional[ JsonObject ]
-
-	class Config:
-		arbitrary_types_allowed = True
-
+		
 class Reasoning( BaseModel ):
 	'''
 
@@ -232,6 +217,21 @@ class Response( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 		extra = 'ignore'
+
+class ResponseFormat( BaseModel ):
+	'''
+
+		Purpose:
+		--------
+		A class for objects specifying the format that the model must output.
+
+	'''
+	text: Optional[ Text ]
+	json_schema: Optional[ JsonSchema ]
+	json_object: Optional[ JsonObject ]
+
+	class Config:
+		arbitrary_types_allowed = True
 
 class FileSearch( BaseModel ):
 	'''

@@ -1022,13 +1022,8 @@ class Image( Grok ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [ 'dall-e-2',
-		         'dall-e-3',
-		         'gpt-4o-mini',
-		         'gpt-4o',
-		         'gpt-image-1',
-		         'gpt-image-1-mini',
-		         'gpt-image-1.5', ]
+		return [ 'meta-llama/llama-4-scout-17b-16e-instruct',
+		         'meta-llama/llama-4-maverick-17b-128e-instruct',]
 	
 	@property
 	def size_options( self ) -> List[ str ]:
