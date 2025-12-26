@@ -43,9 +43,9 @@
   ******************************************************************************************
   '''
 from pydantic import BaseModel
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 
-class GptPrompt( BaseModel ):
+class Prompt( BaseModel ):
 	'''
 
 		Purpose:
@@ -67,7 +67,7 @@ class GptPrompt( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class GptLocation( BaseModel ):
+class Location( BaseModel ):
 	'''
 
 		Purpose:
@@ -102,6 +102,26 @@ class GeoCoordinates( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
+class ValidationStatus( BaseModel ):
+	is_valid: bool
+	syntax_errors: List[ str ]
+	
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+
+class SQLQueryGeneration( BaseModel ):
+	query: str
+	query_type: str
+	tables_used: List[ str ]
+	estimated_complexity: str
+	execution_notes: List[ str ]
+	validation_status: ValidationStatus
+	
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+    
 class SkyCoordinates( BaseModel ):
 	'''
 
@@ -118,7 +138,7 @@ class SkyCoordinates( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 		
-class GptText( BaseModel ):
+class Text( BaseModel ):
 	'''
 
 		Purpose:
@@ -133,7 +153,7 @@ class GptText( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class GptFile( BaseModel ):
+class File( BaseModel ):
 	'''
 
 		Purpose:
@@ -153,7 +173,7 @@ class GptFile( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class GptError( BaseModel ):
+class Error( BaseModel ):
 	'''
 
 		Purpose:
@@ -176,8 +196,8 @@ class JsonSchema( BaseModel ):
 		A class used to generate json schema responses.
 
 	'''
-	type: str
-	name: str
+	type: Optional[ str ]
+	name: Optional[ str ]
 	description: Optional[ str ]
 
 	class Config:
@@ -198,7 +218,7 @@ class JsonObject( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class GptFormat( BaseModel ):
+class ResponseFormat( BaseModel ):
 	'''
 
 		Purpose:
@@ -213,7 +233,7 @@ class GptFormat( BaseModel ):
 	class Config:
 		arbitrary_types_allowed = True
 
-class GptReasoning( BaseModel ):
+class Reasoning( BaseModel ):
 	'''
 
 		Purpose:
@@ -228,7 +248,7 @@ class GptReasoning( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class GptMath( BaseModel ):
+class Math( BaseModel ):
 	class Step( BaseModel ):
 		explanation: Optional[ str ]
 		output: Optional[ str ]
@@ -237,7 +257,7 @@ class GptMath( BaseModel ):
 	final_answer: Optional[ str ]
 
 
-class GptDocument( BaseModel ):
+class Document( BaseModel ):
 	invented_year: Optional[ int ]
 	summary: Optional[ str ]
 	inventors: Optional[ List[ str ] ]
@@ -249,7 +269,7 @@ class GptDocument( BaseModel ):
 
 	concepts: Optional[ List[ Concept ] ]
 
-class GptResponse( BaseModel ):
+class Response( BaseModel ):
 	'''
 
 		Purpose:
@@ -284,7 +304,7 @@ class GptResponse( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class GptFileSearch( BaseModel ):
+class FileSearch( BaseModel ):
 	'''
 
 		Purpose:
@@ -300,7 +320,7 @@ class GptFileSearch( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class GptWebSearch( BaseModel ):
+class WebSearch( BaseModel ):
 	'''
 
 		Purpose:
@@ -317,7 +337,7 @@ class GptWebSearch( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class GptComputerUse( BaseModel ):
+class ComputerUse( BaseModel ):
 	'''
 
 		Purpose:
@@ -335,7 +355,7 @@ class GptComputerUse( BaseModel ):
 		extra = 'ignore'
 
 
-class GptForecast( BaseModel ):
+class WxForecast( BaseModel ):
 	'''
 
 		Purpose:
@@ -352,7 +372,7 @@ class GptForecast( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class GptDirections( BaseModel ):
+class Directions( BaseModel ):
 	'''
 
 		Purpose:
@@ -367,7 +387,7 @@ class GptDirections( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class GptFunction( BaseModel ):
+class Function( BaseModel ):
 	'''
 
 		Class for a function the model can choose to call
@@ -383,7 +403,7 @@ class GptFunction( BaseModel ):
 		arbitrary_types_allowed = True
 		extra = 'ignore'
 
-class GptMessage( BaseModel ):
+class Message( BaseModel ):
 	'''
 
 		Purpose:

@@ -44,9 +44,7 @@
 
 import os
 from pathlib import Path
-
 import groq
-
 from app import temperature
 from boogr import ErrorDialog, Error
 import config as cfg
@@ -375,8 +373,8 @@ class TTS( Grok ):
 	response: Optional[ Response ]
 	client: Optional[ groq.Groq ]
 	
-	def __init__( self, number: int = 1, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 10000, store: bool = True, stream: bool = True, instruct: str = None ):
+	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
 		'''
 
 	        Purpose:
@@ -412,9 +410,8 @@ class TTS( Grok ):
 	        Methods that returns a list of tts model names
 
         '''
-		return [ 'gpt-4o-mini-tts',
-		         'tts-1',
-		         'tts-1-hd' ]
+		return [ 'canopylabs/orpheus-v1-english',
+		         'canopylabs/orpheus-arabic-saudi',]
 	
 	@property
 	def language_options( self ) -> List[ str ] | None:
@@ -448,15 +445,11 @@ class TTS( Grok ):
 			List[ str ] - list of available aspect ratios for Imagen 4
 
 		'''
-		return [ 'ALAW',
-		         'MULAW',
-		         'MP3',
-		         'OGG_OPUS',
-		         'PCM', ]
+		return [ 'WAV', ]
 
 	
-	def create_audio( self, text: str, filepath: str, format: str = 'mp3',
-			speed: float = 1.0, voice: str = 'alloy' ) -> str:
+	def create_audio( self, text: str, filepath: str, format: str='wav',
+			speed: float=1.0, model: str='canopylabs/orpheus-v1-english' ) -> str:
 		"""
 
 	        Purpose
@@ -482,7 +475,7 @@ class TTS( Grok ):
 			self.input_text = text
 			self.speed = speed
 			self.response_format = format
-			self.voice = voice
+			self.model = model
 			out_path = Path( filepath )
 			if not out_path.parent.exists( ):
 				out_path.parent.mkdir( parents=True, exist_ok=True )
@@ -587,8 +580,8 @@ class Transcription( Grok ):
 
     """
 	
-	def __init__( self, number: int = 1, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 10000, store: bool = True, stream: bool = True, instruct: str = None ):
+	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
 		super( ).__init__( )
 		self.api_key = cfg.GROQ_API_KEY
 		self.client = Groq( api_key=self.api_key  )
@@ -616,10 +609,19 @@ class Transcription( Grok ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [ 'whisper-1',
-		         'gpt-4o-mini-transcribe',
-		         'gpt-4o-transcribe',
-		         'gpt-4o-transcribe-diarize' ]
+		return [ 'whisper-large-v3-turbo',
+		         'whisper-large-v3',]
+
+	@property
+	def output_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			List[ str ] - list of available aspect ratios for Imagen 4
+
+		'''
+		return [ 'flac', 'mp3', 'mp4', 'mpeg', 'mpga', 'm4a', 'ogg', 'wav', 'webm' ]
 	
 	@property
 	def language_options( self ) -> List[ str ] | None:
@@ -645,7 +647,7 @@ class Transcription( Grok ):
 		         'cmn-CN' ]
 	
 	@property
-	def output_options( self ) -> List[ str ] | None:
+	def format_options( self ) -> List[ str ] | None:
 		'''
 
 			Returns:
@@ -653,13 +655,9 @@ class Transcription( Grok ):
 			List[ str ] - list of available aspect ratios for Imagen 4
 
 		'''
-		return [ 'ALAW',
-		         'MULAW',
-		         'MP3',
-		         'OGG_OPUS',
-		         'PCM', ]
+		return [ 'json', 'verbose_json', 'text' ]
 	
-	def transcribe( self, path: str, model: str = 'whisper-1' ) -> str:
+	def transcribe( self, path: str, model: str='whisper-large-v3-turbo' ) -> str | None:
 		"""
 
             Transcribe audio with Whisper.
@@ -668,10 +666,6 @@ class Transcription( Grok ):
 		try:
 			throw_if( 'path', path )
 			self.model = model
-			with open( path, 'rb' ) as self.audio_file:
-				resp = self.client.audio.transcriptions.create( model=self.model,
-					file=self.audio_file )
-			return resp.text
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'boo'
@@ -752,9 +746,10 @@ class Translation( Grok ):
     """
 	target_language: Optional[ str ]
 	
-	def __init__( self, number: int = 1, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 10000, store: bool = True, stream: bool = True, instruct: str = None ):
+	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
 		super( ).__init__( )
+		self.instructions = instruct
 		self.api_key = cfg.GROQ_API_KEY
 		self.client = Groq( api_key=self.api_key  )
 		self.model = 'whisper-1'
@@ -771,7 +766,7 @@ class Translation( Grok ):
 		self.voice = None
 	
 	@property
-	def model_options( self ) -> str:
+	def model_options( self ) -> List[ str ] | None:
 		'''
 
 	        Purpose:
@@ -779,14 +774,22 @@ class Translation( Grok ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [ 'whisper-1',
-		         'text-davinci-003',
-		         'gpt-4-0613',
-		         'gpt-4-0314',
-		         'gpt-4-turbo-2024-04-09', ]
+		return [ 'whisper-large-v3',
+		         'whisper-large-v3-turbo', ]
 	
 	@property
-	def language_options( self ):
+	def response_options( self ) -> List[ str ] | None:
+		'''
+		
+			Returns:
+			--------
+			List[ str ] - response format options
+			
+		'''
+		return [ 'json', 'verbose_json', 'text' ]
+	
+	@property
+	def language_options( self ) -> List[ str ] | None:
 		'''
 
 	        Purpose:
@@ -804,7 +807,18 @@ class Translation( Grok ):
 		         'Chinese' ]
 	
 	@property
-	def voice_options( self ):
+	def output_options( self ) -> List[ str ] | None:
+		'''
+		
+		Returns:
+		--------
+		List[ str ] - List of file types used by the Translation API
+		
+		'''
+		return [ 'flac', 'mp3', 'mp4', 'mpeg', 'mpga', 'm4a', 'ogg', 'wav', 'webm' ]
+	
+	@property
+	def voice_options( self ) -> List[ str ] | None:
 		'''
 
 	        Purpose:
@@ -845,10 +859,6 @@ class Translation( Grok ):
 		try:
 			throw_if( 'text', text )
 			throw_if( 'path', path )
-			with open( path, 'rb' ) as audio_file:
-				resp = self.client.audio.translations.create( model='whisper-1',
-					file=audio_file, prompt=text )
-			return resp.text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
@@ -966,8 +976,8 @@ class Image( Grok ):
 	style: Optional[ str ]
 	response_format: Optional[ str ]
 	
-	def __init__( self, n: int = 1, temperture: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 10000, store: bool = False, stream: bool = False, ):
+	def __init__( self, n: int=1, temperture: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=False, stream: bool=False, ):
 		super( ).__init__( )
 		self.api_key = cfg.GROQ_API_KEY
 		self.client = Groq( api_key=self.api_key  )

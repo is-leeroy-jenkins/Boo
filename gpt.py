@@ -833,7 +833,7 @@ class Chat( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 		
-	def search_file( self, prompt: str, store_id: str, model: str = 'gpt-4.1-nano-2025-04-14' ) -> str | None:
+	def search_file( self, prompt: str, store_id: str, model: str='gpt-4.1-nano-2025-04-14' ) -> str | None:
 		"""
 
 	        Purpose:
@@ -874,7 +874,7 @@ class Chat( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 			
-	def search_files( self, prompt: str, model: str= 'gpt-4.1-nano-2025-04-14',
+	def search_files( self, prompt: str, model: str='gpt-4.1-nano-2025-04-14',
 			max_results: int=100 ) -> str | None:
 		"""
 
@@ -959,7 +959,7 @@ class Chat( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def retrieve_files( self, purpose: str= 'user_data' ) -> List[ str ] | None:
+	def retrieve_files( self, purpose: str='user_data' ) -> List[ str ] | None:
 		'''
 			
 			Returns:

@@ -354,7 +354,7 @@ class Embedding( Gemini ):
 		self.response = None
 	
 	@property
-	def model_options( self ) -> List[ str ]:
+	def model_options( self ) -> List[ str ] | None:
 		'''
 			
 			Returns:
@@ -369,7 +369,7 @@ class Embedding( Gemini ):
 		         'multilingual-e5-large', ]
 	
 	@property
-	def encoding_options( self ) -> List[ str ]:
+	def encoding_options( self ) -> List[ str ] | None:
 		'''
 			
 			Returns:
@@ -413,7 +413,7 @@ class Embedding( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def count_tokens( self, text: str, coding: str ) -> int:
+	def count_tokens( self, text: str, coding: str ) -> int | None:
 		'''
 
 	        Purpose:
@@ -750,7 +750,7 @@ class Transcription( Gemini ):
 		self.response = None
 	
 	@property
-	def model_options( self ) -> str:
+	def model_options( self ) -> List[ str ] | None:
 		'''
 
 
@@ -796,7 +796,7 @@ class Transcription( Gemini ):
 		         'FLAC',
 		         'OGG Vorbis' ]
 	
-	def transcribe( self, path: str, model: str='gemini-2.5-flash' ) -> str:
+	def transcribe( self, path: str, model: str='gemini-2.5-flash' ) -> str| None:
 		"""
 
             Transcribe audio with Whisper.
@@ -909,7 +909,7 @@ class Translation( Gemini ):
 		self.voice = None
 	
 	@property
-	def model_options( self ) -> str:
+	def model_options( self ) -> List[ str ] | None:
 		'''
 
 	        Purpose:
@@ -920,7 +920,7 @@ class Translation( Gemini ):
 		return [ 'gemini-2.5-flash', 'translate-llm',  ]
 	
 	@property
-	def language_options( self ):
+	def language_options( self ) -> List[ str ] | None:
 		'''
 
 	        Purpose:
@@ -943,7 +943,7 @@ class Translation( Gemini ):
 		         'cmn-CN' ]
 	
 	@property
-	def voice_options( self ):
+	def voice_options( self ) -> List[ str ] | None:
 		'''
 
 	        Purpose:
@@ -964,7 +964,7 @@ class Translation( Gemini ):
 		         'Zephyr' ]
 		
 	@property
-	def document_options( self ):
+	def document_options( self ) -> List[ str ] | None:
 		'''
 
 	        Purpose:
@@ -1149,7 +1149,7 @@ class Image( Gemini ):
 		self.response_format = None
 		
 	@property
-	def model_options( self ) -> List[ str ]:
+	def model_options( self ) -> List[ str ] | None:
 		'''
 
 	        Purpose:
@@ -1166,7 +1166,7 @@ class Image( Gemini ):
 		         'imagen-3.0-fast-generate-001', ]
 	
 	@property
-	def format_options( self ) -> List[ str ]:
+	def format_options( self ) -> List[ str ] | None:
 		'''
 
 	        Purpose:
@@ -1205,7 +1205,7 @@ class Image( Gemini ):
 		         '2K',
 		         '4K' ]
 	
-	def generate( self, prompt: str, size: str, aspect: str, model: str='imagen-4.0-fast-generate-001',  ) -> str:
+	def generate( self, prompt: str, size: str, aspect: str, model: str='imagen-4.0-fast-generate-001',  ) -> str | None:
 		"""
 
                 Purpose
@@ -1240,7 +1240,7 @@ class Image( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def analyze( self, text: str, path: str, size: str, aspect: str, model: str='gemini-2.5-flash', ) -> str:
+	def analyze( self, text: str, path: str, size: str, aspect: str, model: str='gemini-2.5-flash', ) -> str | None:
 		'''
 
 	        Purpose:
@@ -1276,7 +1276,7 @@ class Image( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def edit( self, prompt: str, path: str, size: str, aspect: str, model: str='gemini-2.5-flash-image' ) -> str:
+	def edit( self, prompt: str, path: str, size: str, aspect: str, model: str='gemini-2.5-flash-image' ) -> str | None:
 		"""
 
 	        Purpose
