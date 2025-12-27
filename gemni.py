@@ -407,14 +407,20 @@ class Chat( Gemini ):
 	
 	def web_search( self, prompt: str, model: str = 'gemini-2.0-flash' ) -> Optional[ str ]:
 		"""
-		Purpose: Generates a response grounded in Google Search results.
-		Parameters:
-		-----------
-		prompt: str - The query for search-augmented generation.
-		model: str - The Gemini model identifier.
-		Returns:
-		--------
-		Optional[ str ] - The grounded text response.
+		
+			Purpose:
+			--------
+			Generates a response grounded in Google Search results.
+			
+			Parameters:
+			-----------
+			prompt: str - The query for search-augmented generation.
+			model: str - The Gemini model identifier.
+			
+			Returns:
+			--------
+			Optional[ str ] - The grounded text response.
+		
 		"""
 		try:
 			throw_if( 'prompt', prompt )
@@ -436,14 +442,19 @@ class Chat( Gemini ):
 	
 	def search_maps( self, prompt: str, model: str = 'gemini-2.0-flash' ) -> Optional[ str ]:
 		"""
-		Purpose: Uses Google Search grounding specifically for location and place-based queries.
-		Parameters:
-		-----------
-		prompt: str - The location or directions query.
-		model: str - The Gemini model identifier.
-		Returns:
-		--------
-		Optional[ str ] - The grounded response containing place data.
+		
+			Purpose:
+			--------
+			Uses Google Search grounding specifically for location and place-based queries.
+			
+			Parameters:
+			-----------
+			prompt: str - The location or directions query.
+			model: str - The Gemini model identifier.
+			Returns:
+			--------
+			Optional[ str ] - The grounded response containing place data.
+			
 		"""
 		try:
 			throw_if( 'prompt', prompt )
@@ -463,18 +474,24 @@ class Chat( Gemini ):
 			error = ErrorDialog( exception );
 			error.show( )
 	
-	def analyze_image( self, prompt: str, filepath: str, model: str = 'gemini-2.0-flash' ) -> \
+	def analyze_image( self, prompt: str, filepath: str, model: str='gemini-2.0-flash' ) -> \
 	Optional[ str ]:
 		"""
-		Purpose: Analyzes the content of a local image file using multimodal Gemini.
-		Parameters:
-		-----------
-		prompt: str - Question or instruction for the analysis.
-		filepath: str - Local filesystem path to the image.
-		model: str - The multimodal Gemini model identifier.
-		Returns:
-		--------
-		Optional[ str ] - The model's analysis text or None on failure.
+			
+			Purpose:
+			--------
+			Analyzes the content of a local image file using multimodal Gemini.
+			
+			Parameters:
+			-----------
+			prompt: str - Question or instruction for the analysis.
+			filepath: str - Local filesystem path to the image.
+			model: str - The multimodal Gemini model identifier.
+			
+			Returns:
+			--------
+			Optional[ str ] - The model's analysis text or None on failure.
+			
 		"""
 		try:
 			throw_if( 'prompt', prompt );
@@ -497,18 +514,23 @@ class Chat( Gemini ):
 			error = ErrorDialog( exception );
 			error.show( )
 	
-	def summarize_document( self, prompt: str, filepath: str, model: str = 'gemini-2.0-flash' ) -> \
+	def summarize_document( self, prompt: str, filepath: str, model: str='gemini-2.0-flash' ) -> \
 	Optional[ str ]:
 		"""
-		Purpose: Uploads and summarizes a PDF or text document.
-		Parameters:
-		-----------
-		prompt: str - Summarization instructions.
-		filepath: str - Path to the document file.
-		model: str - The model identifier for processing.
-		Returns:
-		--------
-		Optional[ str ] - The document summary or None on failure.
+			
+			Purpose:
+			-------
+			Uploads and summarizes a PDF or text document.
+			
+			Parameters:
+			-----------
+			prompt: str - Summarization instructions.
+			filepath: str - Path to the document file.
+			model: str - The model identifier for processing.
+			Returns:
+			--------
+			Optional[ str ] - The document summary or None on failure.
+			
 		"""
 		try:
 			throw_if( 'prompt', prompt );
@@ -613,14 +635,20 @@ class Embedding( Gemini ):
 	
 	def generate( self, text: str, model: str = 'text-embedding-004' ) -> Optional[ List[ float ] ]:
 		"""
-		Purpose: Generates a vector representation of the provided text.
-		Parameters:
-		-----------
-		text: str - Input text string.
-		model: str - Embedding model identifier.
-		Returns:
-		--------
-		Optional[ List[ float ] ] - List of embedding values or None on failure.
+			
+			Purpose:
+			---------
+			Generates a vector representation of the provided text.
+			
+			Parameters:
+			-----------
+			text: str - Input text string.
+			model: str - Embedding model identifier.
+			
+			Returns:
+			--------
+			Optional[ List[ float ] ] - List of embedding values or None on failure.
+		
 		"""
 		try:
 			throw_if( 'text', text )
@@ -711,20 +739,26 @@ class TTS( Gemini ):
 		         'Orus',
 		         'Puck' ]
 	
-	def create_audio( self, text: str, filepath: str, format: str = 'MP3',
-			speed: float = 1.0, voice: str = 'Puck' ) -> Optional[ str ]:
+	def create_audio( self, text: str, filepath: str, format: str='MP3',
+			speed: float=1.0, voice: str='Puck' ) -> Optional[ str ]:
 		"""
-		Purpose: Converts text to speech and writes the data to a local file.
-		Parameters:
-		-----------
-		text: str - Input text string.
-		filepath: str - Target local path.
-		format: str - File format.
-		speed: float - Playback rate.
-		voice: str - Persona name.
-		Returns:
-		--------
-		Optional[ str ] - Local path to the created file or None.
+		
+			Purpose:
+			--------
+			Converts text to speech and writes the data to a local file.
+			
+			Parameters:
+			-----------
+			text: str - Input text string.
+			filepath: str - Target local path.
+			format: str - File format.
+			speed: float - Playback rate.
+			voice: str - Persona name.
+			
+			Returns:
+			--------
+			Optional[ str ] - Local path to the created file or None.
+		
 		"""
 		try:
 			throw_if( 'text', text );
@@ -806,14 +840,19 @@ class Transcription( Gemini ):
 	
 	def transcribe( self, path: str, model: str = 'gemini-2.0-flash' ) -> Optional[ str ]:
 		"""
-		Purpose: Transcribes an audio file into text using multimodal GenAI.
-		Parameters:
-		-----------
-		path: str - Local path to the source audio.
-		model: str - Specific GenAI model ID.
-		Returns:
-		--------
-		Optional[ str ] - Verbatim text transcript.
+			
+			Purpose:
+			---------
+			Transcribes an audio file into text using multimodal GenAI.
+			
+			Parameters:
+			-----------
+			path: str - Local path to the source audio.
+			model: str - Specific GenAI model ID.
+			Returns:
+			--------
+			Optional[ str ] - Verbatim text transcript.
+		
 		"""
 		try:
 			throw_if( 'path', path )
@@ -907,15 +946,21 @@ class Translation( Gemini ):
 	
 	def translate( self, text: str, target: str, source: str = 'Auto' ) -> Optional[ str ]:
 		"""
-		Purpose: Translates text from one language to another.
-		Parameters:
-		-----------
-		text: str - Text to translate.
-		target: str - Target language.
-		source: str - Source language.
-		Returns:
-		--------
-		Optional[ str ] - Translated text.
+			
+			Purpose:
+			-------
+			Translates text from one language to another.
+			
+			Parameters:
+			-----------
+			text: str - Text to translate.
+			target: str - Target language.
+			source: str - Source language.
+			
+			Returns:
+			--------
+			Optional[ str ] - Translated text.
+		
 		"""
 		try:
 			throw_if( 'text', text )
