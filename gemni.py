@@ -51,7 +51,7 @@ from google.genai import types
 from google.genai.types import (Part, GenerateContentConfig, ImageConfig, FunctionCallingConfig,
                                 GenerateImagesConfig, GenerateVideosConfig, ThinkingConfig,
                                 GeneratedImage, EmbedContentConfig, Content, ContentEmbedding,
-                                Candidate, HttpOptions, GenerateImagesResponse,
+                                Candidate, HttpOptions, GenerateImagesResponse, File,
                                 GenerateContentResponse, GenerateVideosResponse, Image)
 import config as cfg
 from boogr import ErrorDialog, Error
@@ -181,10 +181,10 @@ class Chat( Gemini ):
 	file_path: Optional[ str ]
 	response_modalities: Optional[ List[ str ] ]
 	
-	def __init__( self, n: int = 1, model: str = 'gemini-2.0-flash', version: str = 'v1alpha',
-			use_ai: bool = True, temperature: float = 0.8, top_p: float = 0.9,
-			frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 10000,
-			instruct: str = None, contents: List[ str ] = None ):
+	def __init__( self, n: int=1, model: str='gemini-2.0-flash', version: str='v1alpha',
+			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
+			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
+			instruct: str=None, contents: List[ str ]=None ):
 		super( ).__init__( )
 		self.number = n
 		self.model = model
@@ -201,8 +201,7 @@ class Chat( Gemini ):
 		self.http_options = HttpOptions( api_version=self.api_version )
 		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
 			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
-		self.response_modalities = [ 'TEXT',
-		                             'IMAGE' ]
+		self.response_modalities = [ 'TEXT', 'IMAGE' ]
 		self.content_config = None
 		self.image_config = None
 		self.function_config = None
@@ -486,14 +485,20 @@ class FileStore( Gemini ):
 	
 	def upload( self, path: str, name: Optional[ str ] = None ) -> Optional[ File ]:
 		"""
-		Purpose: Uploads a file from a local path to Gemini's remote temporal storage.
-		Parameters:
-		-----------
-		path: str - Local filesystem path to the file.
-		name: str - Optional display name for the file.
-		Returns:
-		--------
-		Optional[ File ] - Metadata object of the uploaded file.
+		
+			Purpose:
+			---------
+			Uploads a file from a local path to Gemini's remote temporal storage.
+			
+			Parameters:
+			-----------
+			path: str - Local filesystem path to the file.
+			name: str - Optional display name for the file.
+			
+			Returns:
+			--------
+			Optional[ File ] - Metadata object of the uploaded file.
+			
 		"""
 		try:
 			throw_if( 'path', path )
@@ -513,13 +518,19 @@ class FileStore( Gemini ):
 	
 	def retrieve( self, file_id: str ) -> Optional[ File ]:
 		"""
-		Purpose: Retrieves the metadata and state of a previously uploaded file.
-		Parameters:
-		-----------
-		file_id: str - The unique identifier of the remote file.
-		Returns:
-		--------
-		Optional[ File ] - File metadata object.
+		
+			Purpose:
+			--------
+			Retrieves the metadata and state of a previously uploaded file.
+			
+			Parameters:
+			-----------
+			file_id: str - The unique identifier of the remote file.
+			
+			Returns:
+			--------
+			Optional[ File ] - File metadata object.
+			
 		"""
 		try:
 			throw_if( 'file_id', file_id )
