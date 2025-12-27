@@ -214,7 +214,11 @@ class Chat( Gemini ):
 	
 	@property
 	def model_options( self ) -> List[ str ] | None:
-		"""Returns list of available chat models."""
+		"""
+		
+			Returns list of available chat models.
+		
+		"""
 		return [ 'gemini-2.0-flash',
 		         'gemini-2.0-flash-lite',
 		         'gemini-1.5-pro',
@@ -222,22 +226,27 @@ class Chat( Gemini ):
 	
 	@property
 	def version_options( self ) -> List[ str ] | None:
-		"""Returns list of available API versions."""
-		return [ 'v1',
-		         'v1alpha',
-		         'v1beta1' ]
-	
-	def generate_text( self, prompt: str, model: str = 'gemini-2.0-flash' ) -> Optional[
-		GenerateContentResponse ]:
 		"""
-		Purpose: Generates a text completion based on the provided prompt and configuration.
-		Parameters:
-		-----------
-		prompt: str - The text input for the model.
-		model: str - The specific Gemini model identifier.
-		Returns:
-		--------
-		Optional[ GenerateContentResponse ] - The response object or None on failure.
+		
+			Returns:
+			--------
+			Returns list of available API versions.
+			
+		"""
+		return [ 'v1', 'v1alpha', 'v1beta1' ]
+	
+	def generate_text( self, prompt: str, model: str='gemini-2.0-flash' ) -> GenerateContentResponse | None:
+		"""
+			
+			Purpose: Generates a text completion based on the provided prompt and configuration.
+			Parameters:
+			-----------
+			prompt: str - The text input for the model.
+			model: str - The specific Gemini model identifier.
+			Returns:
+			--------
+			Optional[ GenerateContentResponse ] - The response object or None on failure.
+			
 		"""
 		try:
 			throw_if( 'prompt', prompt )
@@ -258,18 +267,23 @@ class Chat( Gemini ):
 			error = ErrorDialog( exception );
 			error.show( )
 	
-	def analyze_image( self, prompt: str, filepath: str, model: str = 'gemini-2.0-flash' ) -> \
-	Optional[ str ]:
+	def analyze_image( self, prompt: str, filepath: str, model: str = 'gemini-2.0-flash' ) -> str | None:
 		"""
-		Purpose: Analyzes the content of a local image file using multimodal Gemini.
-		Parameters:
-		-----------
-		prompt: str - Question or instruction for the analysis.
-		filepath: str - Local filesystem path to the image.
-		model: str - The multimodal Gemini model identifier.
-		Returns:
-		--------
-		Optional[ str ] - The model's analysis text or None on failure.
+			
+			Purpose:
+			--------
+			Analyzes the content of a local image file using multimodal Gemini.
+			
+			Parameters:
+			-----------
+			prompt: str - Question or instruction for the analysis.
+			filepath: str - Local filesystem path to the image.
+			model: str - The multimodal Gemini model identifier.
+			
+			Returns:
+			--------
+			Optional[ str ] - The model's analysis text or None on failure.
+		
 		"""
 		try:
 			throw_if( 'prompt', prompt );
@@ -281,8 +295,7 @@ class Chat( Gemini ):
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
 				top_p=self.top_p, max_output_tokens=self.max_tokens )
 			response = self.client.models.generate_content( model=self.model,
-				contents=[ img,
-				           self.prompt ], config=self.content_config )
+				contents=[ img, self.prompt ], config=self.content_config )
 			return response.text
 		except Exception as e:
 			exception = Error( e )
@@ -292,18 +305,23 @@ class Chat( Gemini ):
 			error = ErrorDialog( exception );
 			error.show( )
 	
-	def summarize_document( self, prompt: str, filepath: str, model: str = 'gemini-2.0-flash' ) -> \
-	Optional[ str ]:
+	def summarize_document( self, prompt: str, filepath: str, model: str='gemini-2.0-flash' ) -> str | None:
 		"""
-		Purpose: Uploads and summarizes a PDF or text document.
-		Parameters:
-		-----------
-		prompt: str - Summarization instructions.
-		filepath: str - Path to the document file.
-		model: str - The model identifier for processing.
-		Returns:
-		--------
-		Optional[ str ] - The document summary or None on failure.
+			
+			Purpose:
+			--------
+			Uploads and summarizes a PDF or text document.
+			
+			Parameters:
+			-----------
+			prompt: str - Summarization instructions.
+			filepath: str - Path to the document file.
+			model: str - The model identifier for processing.
+			
+			Returns:
+			--------
+			Optional[ str ] - The document summary or None on failure.
+		
 		"""
 		try:
 			throw_if( 'prompt', prompt );
@@ -408,14 +426,20 @@ class Embedding( Gemini ):
 	
 	def generate( self, text: str, model: str = 'text-embedding-004' ) -> Optional[ List[ float ] ]:
 		"""
-		Purpose: Generates a vector representation of the provided text.
-		Parameters:
-		-----------
-		text: str - Input text string.
-		model: str - Embedding model identifier.
-		Returns:
-		--------
-		Optional[ List[ float ] ] - List of embedding values or None on failure.
+			
+			Purpose:
+			--------
+			Generates a vector representation of the provided text.
+			
+			Parameters:
+			-----------
+			text: str - Input text string.
+			model: str - Embedding model identifier.
+			
+			Returns:
+			--------
+			Optional[ List[ float ] ] - List of embedding values or None on failure.
+			
 		"""
 		try:
 			throw_if( 'text', text )
@@ -469,7 +493,7 @@ class FileStore( Gemini ):
 	response: Optional[ Any ]
 	use_vertex: Optional[ bool ]
 	
-	def __init__( self, use_ai: bool = True, version: str = 'v1alpha' ):
+	def __init__( self, use_ai: bool = True, version: str='v1alpha' ):
 		super( ).__init__( )
 		self.use_vertex = use_ai
 		self.api_version = version
@@ -483,7 +507,7 @@ class FileStore( Gemini ):
 		self.file_list = [ ];
 		self.response = None
 	
-	def upload( self, path: str, name: Optional[ str ] = None ) -> Optional[ File ]:
+	def upload( self, path: str, name: str=None ) -> Optional[ File ]:
 		"""
 		
 			Purpose:
@@ -578,6 +602,7 @@ class FileStore( Gemini ):
 			Parameters:
 			-----------
 			file_id: str - Unique identifier of the file to remove.
+			
 			Returns:
 			--------
 			bool - True if deletion was successful.
@@ -628,9 +653,9 @@ class TTS( Gemini ):
 	input_text: Optional[ str ]
 	use_vertex: Optional[ bool ]
 	
-	def __init__( self, n: int = 1, model: str = 'gemini-2.0-flash', version: str = 'v1alpha',
-			use_ai: bool = True, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 10000, instruct: str = None ):
+	def __init__( self, n: int=1, model: str='gemini-2.0-flash', version: str='v1alpha',
+			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, instruct: str=None ):
 		super( ).__init__( )
 		self.number = n
 		self.model = model
@@ -668,20 +693,26 @@ class TTS( Gemini ):
 		         'Orus',
 		         'Puck' ]
 	
-	def create_audio( self, text: str, filepath: str, format: str = 'MP3',
-			speed: float = 1.0, voice: str = 'Puck' ) -> Optional[ str ]:
+	def create_audio( self, text: str, filepath: str, format: str='MP3',
+			speed: float=1.0, voice: str='Puck' ) -> Optional[ str ]:
 		"""
-		Purpose: Converts text to speech and writes the data to a local file.
-		Parameters:
-		-----------
-		text: str - Input text string.
-		filepath: str - Target local path.
-		format: str - File format.
-		speed: float - Playback rate.
-		voice: str - Persona name.
-		Returns:
-		--------
-		Optional[ str ] - Local path to the created file or None.
+			
+			Purpose:
+			--------
+			Converts text to speech and writes the data to a local file.
+			
+			Parameters:
+			-----------
+			text: str - Input text string.
+			filepath: str - Target local path.
+			format: str - File format.
+			speed: float - Playback rate.
+			voice: str - Persona name.
+			
+			Returns:
+			--------
+			Optional[ str ] - Local path to the created file or None.
+			
 		"""
 		try:
 			throw_if( 'text', text );
@@ -734,9 +765,9 @@ class Transcription( Gemini ):
 	file_path: Optional[ str ]
 	use_vertex: Optional[ bool ]
 	
-	def __init__( self, n: int = 1, model: str = 'gemini-2.0-flash', version: str = 'v1alpha',
-			use_ai: bool = True, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 10000, instruct: str = None ):
+	def __init__( self, n: int=1, model: str='gemini-2.0-flash', version: str='v1alpha',
+			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, instruct: str=None ):
 		super( ).__init__( )
 		self.number = n
 		self.model = model
@@ -761,16 +792,21 @@ class Transcription( Gemini ):
 		return [ 'gemini-2.0-flash',
 		         'gemini-1.5-flash' ]
 	
-	def transcribe( self, path: str, model: str = 'gemini-2.0-flash' ) -> Optional[ str ]:
+	def transcribe( self, path: str, model: str='gemini-2.0-flash' ) -> Optional[ str ]:
 		"""
-		Purpose: Transcribes an audio file into text using multimodal GenAI.
-		Parameters:
-		-----------
-		path: str - Local path to the source audio.
-		model: str - Specific GenAI model to use.
-		Returns:
-		--------
-		Optional[ str ] - Verbatim text transcript or None.
+			
+			Purpose:
+			---------
+			Transcribes an audio file into text using multimodal GenAI.
+			
+			Parameters:
+			-----------
+			path: str - Local path to the source audio.
+			model: str - Specific GenAI model to use.
+			Returns:
+			--------
+			Optional[ str ] - Verbatim text transcript or None.
+			
 		"""
 		try:
 			throw_if( 'path', path )
@@ -864,15 +900,21 @@ class Translation( Gemini ):
 	
 	def translate( self, text: str, target: str, source: str = 'Auto' ) -> Optional[ str ]:
 		"""
-		Purpose: Translates text from one language to another.
-		Parameters:
-		-----------
-		text: str - Text to translate.
-		target: str - Target language name.
-		source: str - Source language name.
-		Returns:
-		--------
-		Optional[ str ] - Translated text or None on failure.
+			
+			Purpose:
+			--------
+			Translates text from one language to another.
+			
+			Parameters:
+			-----------
+			text: str - Text to translate.
+			target: str - Target language name.
+			source: str - Source language name.
+			
+			Returns:
+			--------
+			Optional[ str ] - Translated text or None on failure.
+			
 		"""
 		try:
 			throw_if( 'text', text )
@@ -913,10 +955,10 @@ class Images( Gemini ):
 	aspect_ratio: Optional[ str ]
 	use_vertex: Optional[ bool ]
 	
-	def __init__( self, n: int = 1, model: str = 'imagen-3.0-generate-001', version: str = 'v1alpha',
-			use_ai: bool = True, temperature: float = 0.8, top_p: float = 0.9,
-			frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 10000,
-			instruct: str = None ):
+	def __init__( self, n: int=1, model: str='imagen-3.0-generate-001', version: str='v1alpha',
+			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
+			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
+			instruct: str=None ):
 		super( ).__init__( )
 		self.number = n
 		self.model = model
@@ -948,16 +990,21 @@ class Images( Gemini ):
 		         '9:16',
 		         '16:9' ]
 	
-	def generate( self, prompt: str, aspect: str = '1:1' ) -> Optional[ Image ]:
+	def generate( self, prompt: str, aspect: str='1:1' ) -> Optional[ Image ]:
 		"""
-		Purpose: Generates a new image based on a descriptive text prompt.
-		Parameters:
-		-----------
-		prompt: str - Detailed description of the image to generate.
-		aspect: str - Aspect ratio identifier.
-		Returns:
-		--------
-		Optional[ Image ] - The generated Image object or None.
+			
+			Purpose:
+			--------
+			Generates a new image based on a descriptive text prompt.
+			
+			Parameters:
+			-----------
+			prompt: str - Detailed description of the image to generate.
+			aspect: str - Aspect ratio identifier.
+			Returns:
+			--------
+			Optional[ Image ] - The generated Image object or None.
+		
 		"""
 		try:
 			throw_if( 'prompt', prompt )
