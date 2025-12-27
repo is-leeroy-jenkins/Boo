@@ -940,7 +940,7 @@ class Translation( Gemini ):
 		"""
 		try:
 			throw_if( 'text', text )
-			self.target_language = target;
+			self.target_language = target
 			self.source_language = source
 			self.content_config = GenerateContentConfig( temperature=self.temperature )
 			prompt = f"Translate the following from {self.source_language} to {self.target_language}: {text}"
