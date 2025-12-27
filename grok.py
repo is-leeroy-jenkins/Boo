@@ -56,7 +56,7 @@ def throw_if( name: str, value: object ):
 	if value is None:
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
 
-class GroqEndpoints:
+class Endpoints:
 	'''
 
 	    Purpose:
@@ -83,7 +83,7 @@ class GroqEndpoints:
 		self.finetuning = f'https://api.groq.com/v1/fine_tunings'
 		self.files = f'https://api.groq.com/openai/v1/files'
 
-class GroqHeader:
+class Header( ):
 	'''
 
 	    Purpose:
@@ -123,6 +123,7 @@ class Grok( ):
 	'''
 	api_key: Optional[ str ]
 	instructions: Optional[ str ]
+	prompt: Optional[ str ]
 	model: Optional[ str ]
 	max_tokens: Optional[ int ]
 	temperature: Optional[ float ]
@@ -144,6 +145,7 @@ class Grok( ):
 		self.presence_penalty = None
 		self.max_tokens = None
 		self.instructions = None
+		self.prompt = None
 
 class Chat( Grok ):
 	'''
@@ -209,129 +211,6 @@ class Chat( Grok ):
 	
 	def search_file( self, prompt: str, filepath: str, model: str='llama-3.1-8b-instant' ) -> str | None:
 		pass
-
-class Embedding( Grok ):
-	'''
-
-		Purpose:
-		--------
-		Class providing embedding functionality
-
-
-	'''
-	client: Optional[ Groq ]
-	response: Optional[ Response ]
-	embedding: Optional[ List[ float ] ]
-	encoding_format: Optional[ str ]
-	dimensions: Optional[ int ]
-	input_text: Optional[ str ]
-	
-	def __init__( self, model: str='llama-3.1-8b-instant', temperature: float=0.8,
-			top_p: float=0.9, frequency: float=0.0, presence: float=0.0, max_tokens: int=10000 ):
-		super( ).__init__( )
-		self.api_key = cfg.GROQ_API_KEY
-		self.model = model
-		self.client = Groq( api_key=self.api_key  )
-		self.temperature = temperature
-		self.top_percent = top_p
-		self.frequency_penalty = frequency
-		self.presence_penalty = presence
-		self.max_completion_tokens = max_tokens
-		self.contents = [ ]
-		self.http_options = { }
-		self.encoding_format = None
-		self.input_text = None
-		self.content_config = None
-		self.model = None
-		self.embedding = None
-		self.response = None
-	
-	@property
-	def model_options( self ) -> List[ str ]:
-		'''
-	
-			Returns:
-			--------
-			List[ str ] of embedding models
-
-		'''
-		return [ '', ]
-	
-	@property
-	def encoding_options( self ) -> List[ str ]:
-		'''
-
-			Returns:
-			--------
-			List[ str ] of available format options
-
-		'''
-		return [ 'float',
-		         'base64' ]
-	
-	def create( self, text: str, model: str='gemini-embedding-001', format: str='float' ) -> List[ float ] | None:
-		"""
-
-	        Purpose
-	        _______
-	        Creates an embedding ginve a text
-
-
-	        Parameters
-	        ----------
-	        text: str
-
-
-	        Returns
-	        -------
-	        get_list[ float
-
-        """
-		try:
-			throw_if( 'text', text )
-			self.input_text = text
-			self.model = model
-			self.encoding_format = format
-			self.response = self.client.embeddings.create( input=self.input, model=self.model,
-				encoding_format=self.encoding_format )
-			self.embedding = self.response.data[ 0 ].embedding
-			return self.embedding
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'groq'
-			exception.cause = 'Embedding'
-			exception.method = 'create( self, text: str, model: str ) -> List[ float ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def count_tokens( self, text: str, coding: str ) -> int:
-		'''
-
-	        Purpose:
-	        -------
-	        Returns the num of words in a documents path.
-
-	        Parameters:
-	        -----------
-	        text: str - The string that is tokenized
-	        coding: str - The encoding to use for tokenizing
-
-	        Returns:
-	        --------
-	        int - The number of words
-
-        '''
-		try:
-			throw_if( 'text', text )
-			throw_if( 'coding', coding )
-			return 0
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'groq'
-			exception.cause = 'Embedding'
-			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
-			error = ErrorDialog( exception )
-			error.show( )
 
 class TTS( Grok ):
 	"""
@@ -678,7 +557,7 @@ class Transcription( Grok ):
 			self.model = model
 		except Exception as e:
 			ex = Error( e )
-			ex.module = 'boo'
+			ex.module = 'grok'
 			ex.cause = 'Transcription'
 			ex.method = 'transcribe(self, path)'
 			error = ErrorDialog( ex )
@@ -890,7 +769,7 @@ class Translation( Grok ):
 			return resp.text
 		except Exception as e:
 			ex = Error( e )
-			ex.module = 'boo'
+			ex.module = 'grok'
 			ex.cause = 'Translation'
 			ex.method = 'translate(self, path)'
 			error = ErrorDialog( ex )
@@ -1012,18 +891,6 @@ class Image( Grok ):
 		self.response_format = None
 	
 	@property
-	def style_options( self ) -> List[ str ]:
-		'''
-
-	        Purpose:
-	        ________
-	        Methods that returns a list of style options for dall-e-3
-
-        '''
-		return [ 'vivid',
-		         'natural', ]
-	
-	@property
 	def model_options( self ) -> List[ str ]:
 		'''
 
@@ -1073,31 +940,6 @@ class Image( Grok ):
 		         '.webp',
 		         '.gif' ]
 	
-	@property
-	def quality_options( self ) -> List[ str ]:
-		'''
-
-	        Purpose:
-	        ________
-	        Method that returns a  list of quality options
-
-        '''
-		return [ 'low',
-		         'medium',
-		         'hi', ]
-	
-	@property
-	def detail_options( self ) -> List[ str ]:
-		'''
-
-	        Purpose:
-	        ________
-	        Method that returns a  list of detail options
-
-        '''
-		return [ 'auto',
-		         'low',
-		         'high' ]
 	
 	def generate( self, prompt: str, model: str, quality: str, size: str,
 			style: str = 'natural', format: str = 'url' ) -> str:

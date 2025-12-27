@@ -73,6 +73,7 @@ class Gemini( ):
 	api_key: Optional[ str ]
 	cloud_location: Optional[ str ]
 	instructions: Optional[ str ]
+	prompt: Optional[ str ]
 	model: Optional[ str ]
 	api_version: Optional[ str ]
 	max_tokens: Optional[ int ]
@@ -81,6 +82,8 @@ class Gemini( ):
 	top_k: Optional[ int ]
 	content_config: Optional[ types.GenerateContentConfig ]
 	function_config: Optional[ types.FunctionCallingConfig ]
+	thought_config: Optional[ types.ThinkingConfig ]
+	image_config: Optional[ types.ImageConfig]
 	candidate_count: Optional[ int ]
 	modalities: Optional[ List[ str ] ]
 	stops: Optional[ List[ str ] ]
@@ -95,6 +98,8 @@ class Gemini( ):
 		self.model = None
 		self.content_config = None
 		self.image_config = None
+		self.function_config = None
+		self.thought_config = None
 		self.api_version = None
 		self.temperature = None
 		self.top_p = None
@@ -104,6 +109,7 @@ class Gemini( ):
 		self.presence_penalty = None
 		self.max_tokens = None
 		self.instructions = None
+		self.prompt = None
 		self.response_format = None
 		self.number = None
 
