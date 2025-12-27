@@ -183,7 +183,7 @@ class FileStore( Gemini ):
 	
 	def __init__( self, use_ai: bool=True, version: str='v1alpha' ):
 		super( ).__init__( )
-		self.use_vertex = use_ai;
+		self.use_vertex = use_ai
 		self.api_version = version
 		self.http_options = HttpOptions( api_version=self.api_version )
 		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
@@ -216,10 +216,10 @@ class FileStore( Gemini ):
 			return self.response
 		except Exception as e:
 			exception = Error( e );
-			exception.module = 'gemini';
+			exception.module = 'gemini'
 			exception.cause = 'FileStore'
 			exception.method = 'upload( self, path: str, name: str ) -> Optional[ File ]'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
 	
 	def retrieve( self, file_id: str ) -> Optional[ File ]:
@@ -239,10 +239,10 @@ class FileStore( Gemini ):
 			return self.response
 		except Exception as e:
 			exception = Error( e );
-			exception.module = 'gemini';
+			exception.module = 'gemini'
 			exception.cause = 'FileStore'
 			exception.method = 'retrieve( self, file_id: str ) -> Optional[ File ]'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
 	
 	def list_files( self ) -> Optional[ List[ File ] ]:
@@ -257,10 +257,10 @@ class FileStore( Gemini ):
 			return self.file_list
 		except Exception as e:
 			exception = Error( e );
-			exception.module = 'gemini';
+			exception.module = 'gemini'
 			exception.cause = 'FileStore'
 			exception.method = 'list_files( self ) -> Optional[ List[ File ] ]'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
 	
 	def delete( self, file_id: str ) -> bool:
@@ -280,10 +280,10 @@ class FileStore( Gemini ):
 			return True
 		except Exception as e:
 			exception = Error( e );
-			exception.module = 'gemini';
+			exception.module = 'gemini'
 			exception.cause = 'FileStore'
 			exception.method = 'delete( self, file_id: str ) -> bool'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
 
 class Chat( Gemini ):
@@ -329,18 +329,18 @@ class Chat( Gemini ):
 	def __init__( self, n: int=1, model: str = 'gemini-2.0-flash', version: str='v1alpha',
 			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			instruct: str = None, contents: List[ str ] = None ):
+			instruct: str=None, contents: List[ str ] = None ):
 		super( ).__init__( )
-		self.number = n;
-		self.model = model;
+		self.number = n
+		self.model = model
 		self.api_version = version
 		self.top_p = top_p;
 		self.temperature = temperature
-		self.frequency_penalty = frequency;
+		self.frequency_penalty = frequency
 		self.presence_penalty = presence
 		self.candidate_count = n;
 		self.max_tokens = max_tokens
-		self.use_vertex = use_ai;
+		self.use_vertex = use_ai
 		self.instructions = instruct;
 		self.contents = contents
 		self.http_options = HttpOptions( api_version=self.api_version )
@@ -399,10 +399,10 @@ class Chat( Gemini ):
 			return self.content_response
 		except Exception as e:
 			exception = Error( e );
-			exception.module = 'gemini';
+			exception.module = 'gemini'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt, model ) -> GenerateContentResponse'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
 	
 	def web_search( self, prompt: str, model: str = 'gemini-2.0-flash' ) -> Optional[ str ]:
@@ -434,10 +434,10 @@ class Chat( Gemini ):
 			return response.text
 		except Exception as e:
 			exception = Error( e );
-			exception.module = 'gemini';
+			exception.module = 'gemini'
 			exception.cause = 'Chat'
 			exception.method = 'web_search( self, prompt, model ) -> Optional[ str ]'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
 	
 	def search_maps( self, prompt: str, model: str = 'gemini-2.0-flash' ) -> Optional[ str ]:
@@ -467,11 +467,11 @@ class Chat( Gemini ):
 				contents=self.contents, config=self.content_config )
 			return response.text
 		except Exception as e:
-			exception = Error( e );
-			exception.module = 'gemini';
+			exception = Error( e )
+			exception.module = 'gemini'
 			exception.cause = 'Chat'
 			exception.method = 'search_maps( self, prompt, model ) -> Optional[ str ]'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
 	
 	def analyze_image( self, prompt: str, filepath: str, model: str='gemini-2.0-flash' ) -> \
@@ -494,10 +494,10 @@ class Chat( Gemini ):
 			
 		"""
 		try:
-			throw_if( 'prompt', prompt );
+			throw_if( 'prompt', prompt )
 			throw_if( 'filepath', filepath )
-			self.prompt = prompt;
-			self.file_path = filepath;
+			self.prompt = prompt
+			self.file_path = filepath
 			self.model = model
 			img = PIL.Image.open( self.file_path )
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
@@ -508,10 +508,10 @@ class Chat( Gemini ):
 			return response.text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini';
+			exception.module = 'gemini'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt, filepath, model ) -> str'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
 	
 	def summarize_document( self, prompt: str, filepath: str, model: str='gemini-2.0-flash' ) -> \
@@ -533,30 +533,28 @@ class Chat( Gemini ):
 			
 		"""
 		try:
-			throw_if( 'prompt', prompt );
+			throw_if( 'prompt', prompt )
 			throw_if( 'filepath', filepath )
-			self.prompt = prompt;
-			self.file_path = filepath;
+			self.prompt = prompt
+			self.file_path = filepath
 			self.model = model
 			self.content_config = GenerateContentConfig( temperature=self.temperature )
 			if self.use_vertex:
 				with open( self.file_path, 'rb' ) as f:
 					doc_part = Part.from_bytes( data=f.read( ), mime_type="application/pdf" )
 				response = self.client.models.generate_content( model=self.model,
-					contents=[ doc_part,
-					           self.prompt ], config=self.content_config )
+					contents=[ doc_part, self.prompt ], config=self.content_config )
 			else:
 				uploaded_file = self.client.files.upload( path=self.file_path )
 				response = self.client.models.generate_content( model=self.model,
-					contents=[ uploaded_file,
-					           self.prompt ], config=self.content_config )
+					contents=[ uploaded_file, self.prompt ], config=self.content_config )
 			return response.text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini';
+			exception.module = 'gemini'
 			exception.cause = 'Chat'
 			exception.method = 'summarize_document( self, prompt, filepath, model ) -> str'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
 
 class Embedding( Gemini ):
@@ -605,12 +603,12 @@ class Embedding( Gemini ):
 			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
 			presence: float=0.0, max_tokens: int=10000 ):
 		super( ).__init__( )
-		self.model = model;
-		self.api_version = version;
+		self.model = model
+		self.api_version = version
 		self.use_vertex = use_ai
-		self.temperature = temperature;
+		self.temperature = temperature
 		self.top_p = top_p
-		self.frequency_penalty = frequency;
+		self.frequency_penalty = frequency
 		self.presence_penalty = presence
 		self.max_tokens = max_tokens
 		self.http_options = HttpOptions( api_version=self.api_version )
@@ -661,10 +659,10 @@ class Embedding( Gemini ):
 			return self.embedding
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini';
+			exception.module = 'gemini'
 			exception.cause = 'Embedding'
 			exception.method = 'generate( self, text, model ) -> List[ float ]'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
 
 class TTS( Gemini ):
@@ -701,26 +699,26 @@ class TTS( Gemini ):
 	
 	def __init__( self, n: int=1, model: str = 'gemini-2.0-flash', version: str='v1alpha',
 			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
-			presence: float=0.0, max_tokens: int=10000, instruct: str = None ):
+			presence: float=0.0, max_tokens: int=10000, instruct: str=None ):
 		super( ).__init__( )
-		self.number = n;
-		self.model = model;
+		self.number = n
+		self.model = model
 		self.api_version = version
-		self.use_vertex = use_ai;
-		self.temperature = temperature;
+		self.use_vertex = use_ai
+		self.temperature = temperature
 		self.top_p = top_p
-		self.frequency_penalty = frequency;
+		self.frequency_penalty = frequency
 		self.presence_penalty = presence
-		self.max_tokens = max_tokens;
+		self.max_tokens = max_tokens
 		self.instructions = instruct
 		self.http_options = HttpOptions( api_version=self.api_version )
 		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
 			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
-		self.voice = 'Puck';
-		self.speed = 1.0;
+		self.voice = 'Puck'
+		self.speed = 1.0
 		self.response_format = 'MP3'
-		self.audio_path = None;
-		self.input_text = None;
+		self.audio_path = None
+		self.input_text = None
 		self.content_config = None
 	
 	@property
@@ -761,12 +759,12 @@ class TTS( Gemini ):
 		
 		"""
 		try:
-			throw_if( 'text', text );
+			throw_if( 'text', text )
 			throw_if( 'filepath', filepath )
-			self.input_text = text;
+			self.input_text = text
 			self.audio_path = filepath
-			self.response_format = format;
-			self.speed = speed;
+			self.response_format = format
+			self.speed = speed
 			self.voice = voice
 			prompt = f"Read the following aloud with a {self.voice} persona: {self.input_text}"
 			self.content_config = GenerateContentConfig( response_modalities=[ 'AUDIO' ],
@@ -781,10 +779,10 @@ class TTS( Gemini ):
 			return None
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini';
+			exception.module = 'gemini'
 			exception.cause = 'TTS'
 			exception.method = 'create_audio( self, text, filepath, format, speed, voice ) -> str'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
 
 class Transcription( Gemini ):
@@ -813,23 +811,23 @@ class Transcription( Gemini ):
 	
 	def __init__( self, n: int=1, model: str = 'gemini-2.0-flash', version: str='v1alpha',
 			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
-			presence: float=0.0, max_tokens: int=10000, instruct: str = None ):
+			presence: float=0.0, max_tokens: int=10000, instruct: str=None ):
 		super( ).__init__( )
-		self.number = n;
-		self.model = model;
+		self.number = n
+		self.model = model
 		self.api_version = version
-		self.use_vertex = use_ai;
-		self.temperature = temperature;
+		self.use_vertex = use_ai
+		self.temperature = temperature
 		self.top_p = top_p
-		self.frequency_penalty = frequency;
+		self.frequency_penalty = frequency
 		self.presence_penalty = presence
-		self.max_tokens = max_tokens;
+		self.max_tokens = max_tokens
 		self.instructions = instruct
 		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
 			project=self.project_id, location=self.cloud_location,
 			http_options=HttpOptions( api_version=self.api_version ) )
-		self.transcript = None;
-		self.file_path = None;
+		self.transcript = None
+		self.file_path = None
 		self.content_config = None
 	
 	@property
@@ -856,30 +854,28 @@ class Transcription( Gemini ):
 		"""
 		try:
 			throw_if( 'path', path )
-			self.file_path = path;
+			self.file_path = path
 			self.model = model
 			self.content_config = GenerateContentConfig( temperature=self.temperature )
 			if self.use_vertex:
 				with open( self.file_path, 'rb' ) as f:
 					audio_part = Part.from_bytes( data=f.read( ), mime_type="audio/mpeg" )
 				response = self.client.models.generate_content( model=self.model,
-					contents=[ audio_part,
-					           "Provide a verbatim transcription." ],
+					contents=[ audio_part,"Provide a verbatim transcription." ],
 					config=self.content_config )
 			else:
 				uploaded_file = self.client.files.upload( path=self.file_path )
 				response = self.client.models.generate_content( model=self.model,
-					contents=[ uploaded_file,
-					           "Provide a verbatim transcription." ],
+					contents=[ uploaded_file, "Provide a verbatim transcription." ],
 					config=self.content_config )
 			self.transcript = response.text
 			return self.transcript
 		except Exception as e:
 			ex = Error( e )
-			ex.module = 'gemini';
+			ex.module = 'gemini'
 			ex.cause = 'Transcription'
 			ex.method = 'transcribe( self, path, model ) -> str'
-			error = ErrorDialog( ex );
+			error = ErrorDialog( ex )
 			error.show( )
 
 class Translation( Gemini ):
@@ -909,23 +905,23 @@ class Translation( Gemini ):
 	def __init__( self, n: int=1, model: str = 'gemini-2.0-flash', version: str='v1alpha',
 			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			instruct: str = None ):
+			instruct: str=None ):
 		super( ).__init__( )
-		self.number = n;
-		self.model = model;
+		self.number = n
+		self.model = model
 		self.api_version = version
-		self.use_vertex = use_ai;
-		self.temperature = temperature;
+		self.use_vertex = use_ai
+		self.temperature = temperature
 		self.top_p = top_p
-		self.frequency_penalty = frequency;
+		self.frequency_penalty = frequency
 		self.presence_penalty = presence
-		self.max_tokens = max_tokens;
+		self.max_tokens = max_tokens
 		self.instructions = instruct
 		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
 			project=self.project_id, location=self.cloud_location,
 			http_options=HttpOptions( api_version=self.api_version ) )
-		self.target_language = None;
-		self.source_language = None;
+		self.target_language = None
+		self.source_language = None
 		self.content_config = None
 	
 	@property
@@ -944,7 +940,7 @@ class Translation( Gemini ):
 		         'German',
 		         'Chinese' ]
 	
-	def translate( self, text: str, target: str, source: str = 'Auto' ) -> Optional[ str ]:
+	def translate( self, text: str, target: str, source: str='Auto' ) -> Optional[ str ]:
 		"""
 			
 			Purpose:
@@ -964,7 +960,7 @@ class Translation( Gemini ):
 		"""
 		try:
 			throw_if( 'text', text )
-			self.target_language = target;
+			self.target_language = target
 			self.source_language = source
 			self.content_config = GenerateContentConfig( temperature=self.temperature )
 			prompt = f"Translate the following from {self.source_language} to {self.target_language}: {text}"
@@ -973,10 +969,10 @@ class Translation( Gemini ):
 			return response.text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini';
+			exception.module = 'gemini'
 			exception.cause = 'Translation'
 			exception.method = 'translate( self, text, target, source ) -> str'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
 
 class Images( Gemini ):
@@ -1004,21 +1000,21 @@ class Images( Gemini ):
 	def __init__( self, n: int=1, model: str='imagen-3.0-generate-001', version: str='v1alpha',
 			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			instruct: str = None ):
+			instruct: str=None ):
 		super( ).__init__( )
-		self.number = n;
-		self.model = model;
+		self.number = n
+		self.model = model
 		self.api_version = version
-		self.use_vertex = use_ai;
-		self.temperature = temperature;
+		self.use_vertex = use_ai
+		self.temperature = temperature
 		self.top_p = top_p
-		self.frequency_penalty = frequency;
+		self.frequency_penalty = frequency
 		self.presence_penalty = presence
-		self.max_tokens = max_tokens;
+		self.max_tokens = max_tokens
 		self.instructions = instruct
 		self.client = genai.Client( vertexai=True, project=self.project_id,
 			location=self.cloud_location, http_options=HttpOptions( api_version=self.api_version ) )
-		self.aspect_ratio = '1:1';
+		self.aspect_ratio = '1:1'
 		self.genimg_config = None
 	
 	@property
@@ -1036,7 +1032,7 @@ class Images( Gemini ):
 		         '9:16',
 		         '16:9' ]
 	
-	def generate( self, prompt: str, aspect: str = '1:1' ) -> Optional[ Image ]:
+	def generate( self, prompt: str, aspect: str='1:1' ) -> Optional[ Image ]:
 		"""
 			
 			Purpose:
@@ -1054,7 +1050,7 @@ class Images( Gemini ):
 		"""
 		try:
 			throw_if( 'prompt', prompt )
-			self.prompt = prompt;
+			self.prompt = prompt
 			self.aspect_ratio = aspect
 			self.genimg_config = GenerateImagesConfig( aspect_ratio=self.aspect_ratio,
 				number_of_images=self.number )
@@ -1063,8 +1059,8 @@ class Images( Gemini ):
 			return response.generated_images[ 0 ]
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini';
+			exception.module = 'gemini'
 			exception.cause = 'Images'
 			exception.method = 'generate( self, prompt, aspect ) -> Image'
-			error = ErrorDialog( exception );
+			error = ErrorDialog( exception )
 			error.show( )
