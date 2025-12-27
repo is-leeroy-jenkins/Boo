@@ -6,7 +6,7 @@
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
-      Last Modified On:        05-01-2025
+      Last Modified On:        12-27-2025
   ******************************************************************************************
   <copyright file="gemni.py" company="Terry D. Eppler">
 
@@ -42,19 +42,19 @@
   ******************************************************************************************
 '''
 import os
-
 import requests
-
-from app import temperature
-from boogr import ErrorDialog, Error
-import config as cfg
-import google
+import PIL.Image
+from pathlib import Path
+from typing import Any, List, Optional, Dict, Union
 from google import genai
 from google.genai import types
-from pathlib import Path
-from PIL import Image
-from requests import Response
-from typing import Any, List, Optional, Dict
+from google.genai.types import (Part, GenerateContentConfig, ImageConfig, FunctionCallingConfig,
+                                GenerateImagesConfig, GenerateVideosConfig, ThinkingConfig,
+                                GeneratedImage, EmbedContentConfig, Content, ContentEmbedding,
+                                Candidate, HttpOptions, GenerateImagesResponse,
+                                GenerateContentResponse, GenerateVideosResponse, Image)
+import config as cfg
+from boogr import ErrorDialog, Error
 
 def throw_if( name: str, value: object ):
 	if value is None:
@@ -62,13 +62,39 @@ def throw_if( name: str, value: object ):
 
 class Gemini( ):
 	'''
-	
+
 		Purpose:
 		-------
-		Base class for Gemma AI Functionality
-		
+		Base configuration and attribute store for Google Gemini AI functionality.
+
+		Attributes:
+		-----------
+		number            : int - Default candidate count
+		project_id        : str - Google Cloud Project ID
+		api_key           : str - Google API Key
+		cloud_location    : str - Google Cloud region (e.g. us-central1)
+		instructions      : str - System instructions for the model
+		prompt            : str - Current user input prompt
+		model             : str - Identifier for the Gemini model
+		api_version       : str - Version of the GenAI API
+		max_tokens        : int - Output token limit
+		temperature       : float - Controls randomness in generation
+		top_p             : float - Nucleus sampling probability
+		top_k             : int - Top-k sampling threshold
+		content_config    : GenerateContentConfig - Content generation settings
+		function_config   : FunctionCallingConfig - Tool use configuration
+		thought_config    : ThinkingConfig - Reasoning settings
+		genimg_config     : GenerateImagesConfig - Image generation settings
+		image_config      : ImageConfig - Multimodal image settings
+		candidate_count   : int - Number of responses to generate
+		modalities        : list - Supported input/output types
+		stops             : list - Stop sequences for generation
+		frequency_penalty : float - Penalty for word repetition
+		presence_penalty  : float - Penalty for topic repetition
+		response_format   : str - format of the response
+
 	'''
-	number: Optinal[ int ]
+	number: Optional[ int ]
 	project_id: Optional[ str ]
 	api_key: Optional[ str ]
 	cloud_location: Optional[ str ]
@@ -80,10 +106,11 @@ class Gemini( ):
 	temperature: Optional[ float ]
 	top_p: Optional[ float ]
 	top_k: Optional[ int ]
-	content_config: Optional[ types.GenerateContentConfig ]
-	function_config: Optional[ types.FunctionCallingConfig ]
-	thought_config: Optional[ types.ThinkingConfig ]
-	image_config: Optional[ types.ImageConfig]
+	content_config: Optional[ GenerateContentConfig ]
+	function_config: Optional[ FunctionCallingConfig ]
+	thought_config: Optional[ ThinkingConfig ]
+	genimg_config: Optional[ GenerateImagesConfig ]
+	image_config: Optional[ ImageConfig ]
 	candidate_count: Optional[ int ]
 	modalities: Optional[ List[ str ] ]
 	stops: Optional[ List[ str ] ]
@@ -100,40 +127,64 @@ class Gemini( ):
 		self.image_config = None
 		self.function_config = None
 		self.thought_config = None
+		self.genimg_config = None
 		self.api_version = None
-		self.temperature = None
-		self.top_p = None
-		self.top_k = None
-		self.candidate_count = None
-		self.frequency_penalty = None
-		self.presence_penalty = None
-		self.max_tokens = None
+		self.temperature = 0.7
+		self.top_p = 0.9
+		self.top_k = 40
+		self.candidate_count = 1
+		self.frequency_penalty = 0.0
+		self.presence_penalty = 0.0
+		self.max_tokens = 2048
 		self.instructions = None
 		self.prompt = None
 		self.response_format = None
-		self.number = None
+		self.number = 1
+		self.modalities = None
+		self.stops = None
 
 class Chat( Gemini ):
 	'''
 
 	    Purpose:
 	    _______
-	    Class containing lists of OpenAI models by generation
+	    Class handling text, vision, and document analysis with the Google Gemini SDK.
+
+	    Attributes:
+	    -----------
+	    use_vertex          : bool - Use Vertex AI (True) or API Key (False)
+	    http_options        : HttpOptions - Networking and version settings
+	    client              : Client - The initialized GenAI client
+	    contents            : Union - Input prompt or message parts
+	    content_response    : GenerateContentResponse - Result from text generation
+	    image_response      : GenerateImagesResponse - Result from image generation
+	    image_uri           : str - URI of processed image
+	    audio_uri           : str - URI of processed audio
+	    file_path           : str - Local path for document processing
+	    response_modalities : list - Allowed output formats
+
+	    Methods:
+	    --------
+	    generate_text( prompt, model )      : Generates text based on prompt
+	    analyze_image( prompt, path, mod )  : Processes image content with text
+	    summarize_document( prompt, path )  : Uploads and summarizes documents
 
     '''
 	use_vertex: Optional[ bool ]
-	http_options: Optional[ types.HttpOptions ]
+	http_options: Optional[ HttpOptions ]
 	client: Optional[ genai.Client ]
-	contents: Optional[ List[ str ] ]
-	response: Optional[ Response ]
+	contents: Optional[ Union[ str, List[ str ] ] ]
+	content_response: Optional[ GenerateContentResponse ]
+	image_response: Optional[ GenerateImagesResponse ]
 	image_uri: Optional[ str ]
+	audio_uri: Optional[ str ]
 	file_path: Optional[ str ]
-	response_modalities: Optional[ str ]
+	response_modalities: Optional[ List[ str ] ]
 	
-	def __init__( self, n: int=1, model: str='gemini-2.5-flash', version: str='v1alpha',
-			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
-			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			candidates: int=1, instruct: str=None, contents: List[ str ]=None ):
+	def __init__( self, n: int = 1, model: str = 'gemini-2.0-flash', version: str = 'v1alpha',
+			use_ai: bool = True, temperature: float = 0.8, top_p: float = 0.9,
+			frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 10000,
+			instruct: str = None, contents: List[ str ] = None ):
 		super( ).__init__( )
 		self.number = n
 		self.model = model
@@ -142,310 +193,246 @@ class Chat( Gemini ):
 		self.temperature = temperature
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
-		self.candidate_count = candidates
+		self.candidate_count = n
 		self.max_tokens = max_tokens
 		self.use_vertex = use_ai
-		self.http_options = types.HttpOptions( api_version=self.api_version )
-		self.client = genai.Client( vertexai=self.use_ai, api_key=self.api_key,
-			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
-		self.contents = contents
 		self.instructions = instruct
-		self.response_modalities = [ 'TEXT', 'IMAGE' ]
+		self.contents = contents
+		self.http_options = HttpOptions( api_version=self.api_version )
+		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
+			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
+		self.response_modalities = [ 'TEXT',
+		                             'IMAGE' ]
 		self.content_config = None
 		self.image_config = None
 		self.function_config = None
-		self.response = None
+		self.thought_config = None
+		self.content_response = None
+		self.image_response = None
 		self.image_uri = None
+		self.audio_uri = None
 		self.file_path = None
-		
+	
 	@property
 	def model_options( self ) -> List[ str ] | None:
-		'''
-		
-			Returns:
-			_______
-			List[ str ] - list of available models
-
-		'''
-		return [ 'gemini-3-flash-preview',
-		         'gemini-2.5-flash',
-		         'gemini-2.5-flash-lite',
-		         'gemini-2.0-flash-001',
+		"""Returns list of available chat models."""
+		return [ 'gemini-2.0-flash',
 		         'gemini-2.0-flash-lite',
-		         'gemini-2.5-computer-use-preview-10-2025' ]
+		         'gemini-1.5-pro',
+		         'gemini-1.5-flash' ]
 	
 	@property
 	def version_options( self ) -> List[ str ] | None:
-		'''
-			
-			Returns:
-			--------
-			List[ str ] - list of available api versions
-			
-		'''
-		return [ 'v1', 'v1alpha', 'v1beta1' ]
-		
-	def generate_text( self, prompt: str, model: str='gemini-2.5-flash' ) -> str | None:
-		try:
-			throw_if( 'propmpt', prompt )
-			self.contents = prompt
-			self.model = model
-			self.content_config = types.GenerateContentConfig( temperature=self.temperature,
-				top_p=self.top_p, max_output_tokens=self.max_tokens,
-				candidate_count=self.candidate_count, frequency_penalty=self.frequency_penalty,
-				presence_penalty=self.presence_penalty, )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'generate_text( self, prompt: str, model: str ) -> str:'
-			error = ErrorDialog( exception )
-			error.show( )
-
-	def generate_image( self, prompt: str, model: str='gemini-2.5-flash-image' ) -> str | None:
+		"""Returns list of available API versions."""
+		return [ 'v1',
+		         'v1alpha',
+		         'v1beta1' ]
+	
+	def generate_text( self, prompt: str, model: str = 'gemini-2.0-flash' ) -> Optional[
+		GenerateContentResponse ]:
+		"""
+		Purpose: Generates a text completion based on the provided prompt and configuration.
+		Parameters:
+		-----------
+		prompt: str - The text input for the model.
+		model: str - The specific Gemini model identifier.
+		Returns:
+		--------
+		Optional[ GenerateContentResponse ] - The response object or None on failure.
+		"""
 		try:
 			throw_if( 'prompt', prompt )
 			self.contents = prompt
 			self.model = model
-			self.image_config = types.GenerateImagesConfig( http_options=self.http_options,)
+			self.content_config = GenerateContentConfig( temperature=self.temperature,
+				top_p=self.top_p, max_output_tokens=self.max_tokens,
+				candidate_count=self.candidate_count, system_instruction=self.instructions,
+				frequency_penalty=self.frequency_penalty, presence_penalty=self.presence_penalty )
+			self.content_response = self.client.models.generate_content( model=self.model,
+				contents=self.contents, config=self.content_config )
+			return self.content_response
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini'
+			exception.module = 'gemini';
 			exception.cause = 'Chat'
-			exception.method = 'generate_image( self, prompt: str, model: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-
-	def analyze_image( self, prompt: str, filepath: str, model: str='gemini-2.5-flash-image' ) -> str | None:
-		try:
-			throw_if( 'propmpt', prompt )
-			throw_if( 'filepath', filepath )
-			self.contents = prompt
-			self.filepath = filepath
-			self.model = model
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = ''
-			error = ErrorDialog( exception )
+			exception.method = 'generate_text( self, prompt, model ) -> GenerateContentResponse'
+			error = ErrorDialog( exception );
 			error.show( )
 	
-	def summarize_document( self, prompt: str, filepath: str, model: str='gemini-2.5-flash' ) -> str | None:
+	def analyze_image( self, prompt: str, filepath: str, model: str = 'gemini-2.0-flash' ) -> \
+	Optional[ str ]:
+		"""
+		Purpose: Analyzes the content of a local image file using multimodal Gemini.
+		Parameters:
+		-----------
+		prompt: str - Question or instruction for the analysis.
+		filepath: str - Local filesystem path to the image.
+		model: str - The multimodal Gemini model identifier.
+		Returns:
+		--------
+		Optional[ str ] - The model's analysis text or None on failure.
+		"""
 		try:
-			throw_if( 'propmpt', prompt )
+			throw_if( 'prompt', prompt );
 			throw_if( 'filepath', filepath )
-			self.contents = prompt
-			self.filepath = filepath
+			self.prompt = prompt;
+			self.file_path = filepath;
 			self.model = model
+			img = PIL.Image.open( self.file_path )
+			self.content_config = GenerateContentConfig( temperature=self.temperature,
+				top_p=self.top_p, max_output_tokens=self.max_tokens )
+			response = self.client.models.generate_content( model=self.model,
+				contents=[ img,
+				           self.prompt ], config=self.content_config )
+			return response.text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini'
+			exception.module = 'gemini';
 			exception.cause = 'Chat'
-			exception.method = ''
-			error = ErrorDialog( exception )
+			exception.method = 'analyze_image( self, prompt, filepath, model ) -> str'
+			error = ErrorDialog( exception );
 			error.show( )
 	
-	def search_file( self, prompt: str, filepath: str, model: str='gemini-2.5-flash'  ) -> str | None:
+	def summarize_document( self, prompt: str, filepath: str, model: str = 'gemini-2.0-flash' ) -> \
+	Optional[ str ]:
+		"""
+		Purpose: Uploads and summarizes a PDF or text document.
+		Parameters:
+		-----------
+		prompt: str - Summarization instructions.
+		filepath: str - Path to the document file.
+		model: str - The model identifier for processing.
+		Returns:
+		--------
+		Optional[ str ] - The document summary or None on failure.
+		"""
 		try:
-			throw_if( 'propmpt', prompt )
+			throw_if( 'prompt', prompt );
 			throw_if( 'filepath', filepath )
-			self.contents = prompt
-			self.file_path = filepath
+			self.prompt = prompt;
+			self.file_path = filepath;
 			self.model = model
+			self.content_config = GenerateContentConfig( temperature=self.temperature )
+			if self.use_vertex:
+				with open( self.file_path, 'rb' ) as f:
+					doc_part = Part.from_bytes( data=f.read( ), mime_type="application/pdf" )
+				response = self.client.models.generate_content( model=self.model,
+					contents=[ doc_part,
+					           self.prompt ], config=self.content_config )
+			else:
+				uploaded_file = self.client.files.upload( path=self.file_path )
+				response = self.client.models.generate_content( model=self.model,
+					contents=[ uploaded_file,
+					           self.prompt ], config=self.content_config )
+			return response.text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini'
+			exception.module = 'gemini';
 			exception.cause = 'Chat'
-			exception.method = ''
-			error = ErrorDialog( exception )
-			error.show( )
-		
-	def upload_file( self, prompt: str, filepath: str, model: str='gemini-2.5-flash'  ) -> None:
-		try:
-			throw_if( 'propmpt', prompt )
-			throw_if( 'filepath', filepath )
-			self.contents = prompt
-			self.file_path = filepath
-			self.model = model
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'upload_file( self, prompt: str, filepath: str, model: str ) -> None'
-			error = ErrorDialog( exception )
-			error.show( )
-
-	def retreive_file( self, prompt: str, filepath: str, model: str='gemini-2.5-flash'  ) -> str | None:
-		try:
-			throw_if( 'propmpt', prompt )
-			throw_if( 'file_id', file_id )
-			self.contents = prompt
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'retreive_file( self, prompt: str, filepath: str, model: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-
-	def list_files( self, model: str='gemini-2.5-flash'   ) -> str | None:
-		try:
-			self.model = model
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'list_files( self, model: str  ) -> List[ str ] '
-			error = ErrorDialog( exception )
-			error.show( )
-
-	def delete_file( self, file_id: str ) -> str | None:
-		try:
-			throw_if( 'file_id', file_id )
-			self.contents = file_id
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = ''
-			exception.method = ''
-			error = ErrorDialog( exception )
+			exception.method = 'summarize_document( self, prompt, filepath, model ) -> str'
+			error = ErrorDialog( exception );
 			error.show( )
 
 class Embedding( Gemini ):
 	'''
-		
+
 		Purpose:
 		--------
-		Class providing embedding functionality
-		
-		
+		Class handling text embedding generation with the Google GenAI SDK.
+
+		Attributes:
+		-----------
+		client              : Client - Initialized GenAI client
+		response            : any - raw API response
+		embedding           : list - Generated vector of floats
+		encoding_format     : str - Format of the embedding response
+		dimensions          : int - Size of the embedding vector
+		use_vertex          : bool - Cloud integration flag
+		task_type           : str - Type of task for the embedding (RETRIEVAL, etc)
+		http_options        : HttpOptions - Client networking settings
+		embedding_config    : EmbedContentConfig - Configuration for embeddings
+		contents            : list - Input strings
+		input_text          : str - Current text being processed
+		file_path           : str - Path to source text
+		response_modalities : str - Modality configuration
+
+		Methods:
+		--------
+		generate( text, model ) : Creates an embedding vector for input text
+
 	'''
 	client: Optional[ genai.Client ]
-	response: Optional[ Response ]
+	response: Optional[ Any ]
 	embedding: Optional[ List[ float ] ]
 	encoding_format: Optional[ str ]
 	dimensions: Optional[ int ]
 	use_vertex: Optional[ bool ]
 	task_type: Optional[ str ]
-	http_options: Optional[ Dict[ str, Any ] ]
+	http_options: Optional[ HttpOptions ]
 	embedding_config: Optional[ types.EmbedContentConfig ]
-	content_config: Optional[ types.GenerateContentConfig ]
-	client: Optional[ genai.Client ]
 	contents: Optional[ List[ str ] ]
 	input_text: Optional[ str ]
+	file_path: Optional[ str ]
+	response_modalities: Optional[ str ]
 	
-	def __init__( self, model: str='gemini-embedding-001', version: str='v1alpha',
-			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
-			presence: float=0.0, max_tokens: int=10000 ):
+	def __init__( self, model: str = 'text-embedding-004', version: str = 'v1alpha',
+			use_ai: bool = True, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
+			presence: float = 0.0, max_tokens: int = 10000 ):
 		super( ).__init__( )
-		self.api_key = cfg.GOOGLE_API_KEY
 		self.model = model
-		self.version = version
-		self.use_ai = use_ai
-		self.http_options = types.HttpOptions( api_version=self.api_version )
-		self.client = genai.Client( vertexai=self.use_ai, api_key=self.api_key,
-			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
+		self.api_version = version
+		self.use_vertex = use_ai
 		self.temperature = temperature
-		self.top_percent = top_p
+		self.top_p = top_p
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
-		self.max_completion_tokens = max_tokens
-		self.contents = [ ]
-		self.encoding_format = None
-		self.input_text = None
-		self.content_config = None
-		self.model = None
+		self.max_tokens = max_tokens
+		self.http_options = HttpOptions( api_version=self.api_version )
+		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
+			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
 		self.embedding = None
 		self.response = None
+		self.encoding_format = None
+		self.input_text = None
+		self.file_path = None
+		self.dimensions = None
+		self.task_type = None
+		self.response_modalities = None
+		self.embedding_config = None
+		self.content_config = None
 	
 	@property
 	def model_options( self ) -> List[ str ] | None:
-		'''
-			
-			Returns:
-			--------
-			List[ str ] of embedding models
-
-		'''
-		return [ 'gemini-embedding-001',
-		         'text-embedding-005',
-		         'text-multilingual-embedding-002',
-		         'multilingual-e5-small',
-		         'multilingual-e5-large', ]
+		"""Returns list of embedding models."""
+		return [ 'text-embedding-004',
+		         'text-multilingual-embedding-002' ]
 	
-	@property
-	def encoding_options( self ) -> List[ str ] | None:
-		'''
-			
-			Returns:
-			--------
-			List[ str ] of available format options
-
-		'''
-		return [ 'float',
-		         'base64' ]
-	
-	def generate( self, text: str, model: str='gemini-embedding-001' ) -> List[ float ] | None:
+	def generate( self, text: str, model: str = 'text-embedding-004' ) -> Optional[ List[ float ] ]:
 		"""
-	
-	        Purpose
-	        _______
-	        Creates an embedding ginve a text
-	
-	
-	        Parameters
-	        ----------
-	        text: str
-	
-	
-	        Returns
-	        -------
-	        get_list[ float
-
-        """
+		Purpose: Generates a vector representation of the provided text.
+		Parameters:
+		-----------
+		text: str - Input text string.
+		model: str - Embedding model identifier.
+		Returns:
+		--------
+		Optional[ List[ float ] ] - List of embedding values or None on failure.
+		"""
 		try:
 			throw_if( 'text', text )
 			self.input_text = text
 			self.model = model
-			self.response = self.client.embeddings.create( input=self.input, model=self.model )
-			self.embedding = self.response.data[ 0 ].embedding
+			self.embedding_config = EmbedContentConfig( task_type=self.task_type )
+			self.response = self.client.models.embed_content( model=self.model,
+				contents=self.input_text, config=self.embedding_config )
+			self.embedding = self.response.embeddings[ 0 ].values
 			return self.embedding
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini'
+			exception.module = 'gemini';
 			exception.cause = 'Embedding'
-			exception.method = 'generate( self, text: str, model: str ) -> List[ float ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def count_tokens( self, text: str, coding: str ) -> int | None:
-		'''
-
-	        Purpose:
-	        -------
-	        Returns the num of words in a documents path.
-	
-	        Parameters:
-	        -----------
-	        text: str - The string that is tokenized
-	        coding: str - The encoding to use for tokenizing
-	
-	        Returns:
-	        --------
-	        int - The number of words
-
-        '''
-		try:
-			throw_if( 'text', text )
-			throw_if( 'coding', coding )
-			return 0
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Embedding'
-			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
-			error = ErrorDialog( exception )
+			exception.method = 'generate( self, text, model ) -> List[ float ]'
+			error = ErrorDialog( exception );
 			error.show( )
 
 class TTS( Gemini ):
@@ -453,913 +440,377 @@ class TTS( Gemini ):
 
 	    Purpose
 	    ___________
-	    Class used for interacting with Gemini's TTS API (TTS)
+	    Class for conversion of text to speech using Gemini multimodal output.
 
-
-	    Parameters
-	    ------------
-	    num: int=1
-	    temp: float=0.8
-	    top: float=0.9
-	    freq: float=0.0
-	    pres: float=0.0
-	    max: int=10000
-	    store: bool=True
-	    stream: bool=True
-
-	    Attributes
+	    Attributes:
 	    -----------
-	    self.api_key, self.system_instructions, self.client, self.small_model,
-	    self.reasoning_effort,
-	    self.response, self.num, self.temperature, self.top_percent,
-	    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-	    self.store, self.stream, self.modalities, self.stops, self.content,
-	    self.input_text, self.response, self.completion, self.file, self.path,
-	    self.messages, self.image_url, self.response_format,
-	    self.tools, self.vector_store_ids, self.descriptions, self.assistants
+	    speed           : float - Audio playback speed
+	    voice           : str - Persona or voice identifier
+	    response        : GenerateContentResponse - Raw multimodal response
+	    client          : Client - genai client instance
+	    audio_path      : str - Path to local saved audio file
+	    response_format : str - Audio file extension (MP3, etc)
+	    input_text      : str - Text converted to speech
+	    use_vertex      : bool - Integration flag
 
-	    Methods
-	    ------------
-	    get_model_options( self ) -> str
-	    create_small_embedding( self, prompt: str, path: str )
+	    Methods:
+	    --------
+	    create_audio( text, path, format, speed, voice ) : Saves multimodal audio to file
 
     """
 	speed: Optional[ float ]
 	voice: Optional[ str ]
-	response: Optional[ requests.Response ]
+	response: Optional[ GenerateContentResponse ]
 	client: Optional[ genai.Client ]
+	audio_path: Optional[ str ]
+	response_format: Optional[ str ]
+	input_text: Optional[ str ]
+	use_vertex: Optional[ bool ]
 	
-	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
-			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
-		'''
-
-	        Purpose:
-	        --------
-	        Constructor to  create_small_embedding TTS objects
-
-        '''
+	def __init__( self, n: int = 1, model: str = 'gemini-2.0-flash', version: str = 'v1alpha',
+			use_ai: bool = True, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
+			presence: float = 0.0, max_tokens: int = 10000, instruct: str = None ):
 		super( ).__init__( )
-		self.api_key = cfg.GOOGLE_API_KEY
-		self.client = genai.Client( api_key=cfg.GOOGLE_API_KEY )
-		self.number = number
+		self.number = n
+		self.model = model
+		self.api_version = version
+		self.use_vertex = use_ai
 		self.temperature = temperature
-		self.top_percent = top_p
+		self.top_p = top_p
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
-		self.max_completion_tokens = max_tokens
-		self.store = store
-		self.stream = stream
+		self.max_tokens = max_tokens
 		self.instructions = instruct
-		self.model = None
+		self.http_options = HttpOptions( api_version=self.api_version )
+		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
+			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
+		self.voice = 'Puck'
+		self.speed = 1.0
+		self.response_format = 'MP3'
 		self.audio_path = None
-		self.response = None
-		self.response_format = None
-		self.speed = None
-		self.voice = None
+		self.input_text = None
+		self.content_config = None
 	
 	@property
 	def model_options( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Methods that returns a list of tts model names
-
-        '''
-		return [ 'gemini-2.5-flash-tts',
-		         'gemini-2.5-flash-lite-preview-tts',
-		         'gemini-2.5-flash-native-audio-preview-12-2025', ]
+		"""Returns list of models supporting audio output."""
+		return [ 'gemini-2.0-flash',
+		         'gemini-1.5-flash' ]
 	
-	@property
-	def language_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			List[ str ] - list of available aspect ratios for Imagen 4
-
-		'''
-		return [ 'en-US',
-		         'fr-FR',
-		         'ja-JP',
-		         'vi-VN',
-		         'hi-IN',
-		         'de-GR',
-		         'es-US',
-		         'ru-RU', ]
-
 	@property
 	def voice_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			List[ str ] - list of available voices for TTS
-
-		'''
+		"""Returns list of available voice personas."""
 		return [ 'Achernar',
-		         'Achird',
 		         'Aoede',
-		         'Enceladus',
 		         'Erinome',
-		         'Iapetus',
 		         'Kore',
 		         'Orus',
-		         'Pulcherrima',
-		         'Puck',
-		         'Zephyr' ]
+		         'Puck' ]
 	
-	@property
-	def output_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			List[ str ] - list of available aspect ratios for Imagen 4
-
-		'''
-		return [ 'WAV',
-		         'AIFF',
-		         'MP3',
-		         'AAC',
-		         'FLAC',
-		         'OGG Vorbis' ]
-	
-	def create_audio( self, text: str, filepath: str, format: str='MP3',
-			speed: float=1.0, voice: str='Kore' ) -> str:
+	def create_audio( self, text: str, filepath: str, format: str = 'MP3',
+			speed: float = 1.0, voice: str = 'Puck' ) -> Optional[ str ]:
 		"""
-
-	        Purpose
-	        _______
-	        Generates audio given a text prompt less than
-	        4096 characters and a path to audio file
-
-
-	        Parameters
-	        ----------
-	        prompt: str
-	        path: str
-
-
-	        Returns
-	        -------
-	        str
-
-        """
+		Purpose: Converts text to speech and writes the data to a local file.
+		Parameters:
+		-----------
+		text: str - Input text string.
+		filepath: str - Target local path.
+		format: str - File format.
+		speed: float - Playback rate.
+		voice: str - Persona name.
+		Returns:
+		--------
+		Optional[ str ] - Local path to the created file or None.
+		"""
 		try:
-			throw_if( 'text', text )
+			throw_if( 'text', text );
 			throw_if( 'filepath', filepath )
-			self.input_text = text
+			self.input_text = text;
 			self.audio_path = filepath
-			self.speed = speed
-			self.response_format = format
+			self.response_format = format;
+			self.speed = speed;
 			self.voice = voice
-			out_path = Path( filepath )
-			if not out_path.parent.exists( ):
-				out_path.parent.mkdir( parents=True, exist_ok=True )
-			with self.client.audio.speech.with_streaming_response.create( model=self.model, speed=self.speed,
-					voice=self.voice, response_format=self.response_format, input=self.input_text ) as resp:
-				resp.stream_to_file( str( out_path ) )
-			return str( out_path )
+			prompt = f"Read the following aloud with a {self.voice} persona: {self.input_text}"
+			self.content_config = GenerateContentConfig( response_modalities=[ 'AUDIO' ],
+				temperature=self.temperature )
+			self.response = self.client.models.generate_content( model=self.model,
+				contents=prompt, config=self.content_config )
+			for part in self.response.candidates[ 0 ].content.parts:
+				if part.inline_data:
+					with open( self.audio_path, 'wb' ) as f:
+						f.write( part.inline_data.data )
+					return self.audio_path
+			return None
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini'
+			exception.module = 'gemini';
 			exception.cause = 'TTS'
-			exception.method = 'create_audio( self, prompt: str, path: str ) -> str'
-			error = ErrorDialog( exception )
+			exception.method = 'create_audio( self, text, filepath, format, speed, voice ) -> str'
+			error = ErrorDialog( exception );
 			error.show( )
-	
-	def __dir__( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Method returns a list of strings representing members
-
-	        Parameters:
-	        ----------
-	        self
-
-	        Returns:
-	        ---------
-	        List[ str ] | None
-
-        '''
-		return [ 'num',
-		         'temperature',
-		         'top_percent',
-		         'frequency_penalty',
-		         'presence_penalty',
-		         'max_completion_tokens',
-		         'system_instructions',
-		         'store',
-		         'stream',
-		         'modalities',
-		         'stops',
-		         'content',
-		         'prompt',
-		         'response',
-		         'completion',
-		         'file',
-		         'path',
-		         'messages',
-		         'image_url',
-		         'response_format',
-		         'tools',
-		         'vector_store_ids',
-		         'name',
-		         'id',
-		         'description',
-		         'generate_text',
-		         'get_format_options',
-		         'get_model_options',
-		         'reasoning_effort',
-		         'get_effort_options',
-		         'get_speed_options',
-		         'input_text',
-		         'metadata',
-		         'get_files',
-		         'get_data', ]
 
 class Transcription( Gemini ):
 	"""
 
 	    Purpose
 	    ___________
-	    Class used for interacting with OpenAI's TTS API (whisper-1)
+	    Class handling audio-to-text transcription using Gemini audio processing.
 
-
-	    Parameters
-	    ------------
-	    num: int=1
-	    temp: float=0.8
-	    top: float=0.9
-	    freq: float=0.0
-	    pres: float=0.0
-	    max: int=10000
-	    store: bool=True
-	    stream: bool=True
-
-	    Attributes
+	    Attributes:
 	    -----------
-	    api_key, 
-	    system_instructions, 
-	    client, 
-	    small_model, 
-	    reasoning_effort,
-	    response, 
-	    num, 
-	    temperature, 
-	    top_percent,
-	    frequency_penalty, 
-	    presence_penalty, s
-	    elf.max_completion_tokens,
-	    store, 
-	    stream, 
-	    modalities, 
-	    stops, 
-	    content,
-	    input_text, 
-	    response, 
-	    completion, 
-	    audio_file, 
-	    transcript
+	    client     : Client - Initialized GenAI client
+	    transcript : str - Text result of transcription
+	    file_path  : str - Path to source audio file
+	    use_vertex : bool - Cloud integration flag
 
-
-	    Methods
-	    ------------
-	    get_model_options( self ) -> str
-	    create_small_embedding( self, path: str  ) -> str
-
+	    Methods:
+	    --------
+	    transcribe( path, model ) : Transcribes local audio file to text
 
     """
-	audio_config: Optional[ types.AudioTranscriptionConfig ]
+	client: Optional[ genai.Client ]
+	transcript: Optional[ str ]
+	file_path: Optional[ str ]
+	use_vertex: Optional[ bool ]
 	
-	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
-			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
+	def __init__( self, n: int = 1, model: str = 'gemini-2.0-flash', version: str = 'v1alpha',
+			use_ai: bool = True, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
+			presence: float = 0.0, max_tokens: int = 10000, instruct: str = None ):
 		super( ).__init__( )
-		self.api_key = cfg.GOOGLE_API_KEY
-		self.client = genai.Client( api_key=cfg.GOOGLE_API_KEY )
-		self.number = number
+		self.number = n
+		self.model = model
+		self.api_version = version
+		self.use_vertex = use_ai
 		self.temperature = temperature
-		self.top_percent = top_p
+		self.top_p = top_p
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
-		self.max_completion_tokens = max_tokens
-		self.store = store
-		self.stream = stream
+		self.max_tokens = max_tokens
 		self.instructions = instruct
-		self.model = None
-		self.input_text = None
-		self.audio_file = None
+		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
+			project=self.project_id, location=self.cloud_location,
+			http_options=HttpOptions( api_version=self.api_version ) )
 		self.transcript = None
-		self.response = None
+		self.file_path = None
+		self.content_config = None
 	
 	@property
 	def model_options( self ) -> List[ str ] | None:
-		'''
-
-
-	        Purpose:
-	        --------
-	        Methods that returns a list of small_model names
-
-        '''
-		return [ 'gemini-2.5-flash', 'gemini-2.0-flash' ]
+		"""Returns list of models supporting audio input."""
+		return [ 'gemini-2.0-flash',
+		         'gemini-1.5-flash' ]
 	
-	@property
-	def language_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			List[ str ] - list of available aspect ratios for Imagen 4
-
-		'''
-		return [ 'en-US',
-		         'fr-FR',
-		         'ja-JP',
-		         'vi-VN',
-		         'hi-IN',
-		         'de-GR',
-		         'es-US',
-		         'ru-RU', ]
-
-	
-	@property
-	def output_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			List[ str ] - list of available aspect ratios for Imagen 4
-
-		'''
-		return [ 'WAV',
-		         'AIFF',
-		         'MP3',
-		         'AAC',
-		         'FLAC',
-		         'OGG Vorbis' ]
-	
-	def transcribe( self, path: str, model: str='gemini-2.5-flash' ) -> str| None:
+	def transcribe( self, path: str, model: str = 'gemini-2.0-flash' ) -> Optional[ str ]:
 		"""
-
-            Transcribe audio with Whisper.
-
-        """
+		Purpose: Transcribes an audio file into text using multimodal GenAI.
+		Parameters:
+		-----------
+		path: str - Local path to the source audio.
+		model: str - Specific GenAI model to use.
+		Returns:
+		--------
+		Optional[ str ] - Verbatim text transcript or None.
+		"""
 		try:
 			throw_if( 'path', path )
+			self.file_path = path;
 			self.model = model
-			with open( path, 'rb' ) as self.audio_file:
-				resp = self.client.audio.transcriptions.create( model=self.model,
-					file=self.audio_file )
-			return resp.text
+			self.content_config = GenerateContentConfig( temperature=self.temperature )
+			if self.use_vertex:
+				with open( self.file_path, 'rb' ) as f:
+					audio_part = Part.from_bytes( data=f.read( ), mime_type="audio/mpeg" )
+				response = self.client.models.generate_content( model=self.model,
+					contents=[ audio_part,
+					           "Provide a verbatim transcription of this audio." ],
+					config=self.content_config )
+			else:
+				uploaded_file = self.client.files.upload( path=self.file_path )
+				response = self.client.models.generate_content( model=self.model,
+					contents=[ uploaded_file,
+					           "Provide a verbatim transcription of this audio." ],
+					config=self.content_config )
+			self.transcript = response.text
+			return self.transcript
 		except Exception as e:
 			ex = Error( e )
-			ex.module = 'boo'
+			ex.module = 'gemini';
 			ex.cause = 'Transcription'
-			ex.method = 'transcribe(self, path)'
-			error = ErrorDialog( ex )
+			ex.method = 'transcribe( self, path, model ) -> str'
+			error = ErrorDialog( ex );
 			error.show( )
-	
-	def __dir__( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Method returns a list of strings representing members
-
-	        Parameters:
-	        ----------
-	        self
-
-	        Returns:
-	        ---------
-	        List[ str ] | None
-
-        '''
-		return [ 'num',
-		         'temperature',
-		         'top_percent',
-		         'frequency_penalty',
-		         'presence_penalty',
-		         'max_completion_tokens',
-		         'store',
-		         'stream',
-		         'modalities',
-		         'stops',
-		         'prompt',
-		         'response',
-		         'audio_file',
-		         'messages',
-		         'response_format',
-		         'api_key',
-		         'client',
-		         'input_text',
-		         'transcript', ]
 
 class Translation( Gemini ):
 	"""
 
 	    Purpose
 	    ___________
-	    Class used for interacting with OpenAI's TTS API (whisper-1)
+	    Class for translating text between languages using Gemini LLM.
 
-
-	    Parameters
-	    ------------
-	    num: int=1
-	    temp: float=0.8
-	    top: float=0.9
-	    freq: float=0.0
-	    pres: float=0.0
-	    max: int=10000
-	    store: bool=True
-	    stream: bool=True
-
-	    Attributes
+	    Attributes:
 	    -----------
-	    self.api_key, self.system_instructions, self.client, self.small_model,  self.reasoning_effort,
-	    self.response, self.num, self.temperature, self.top_percent,
-	    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-	    self.store, self.stream, self.modalities, self.stops, self.content,
-	    self.input_text, self.response, self.completion, self.file, self.path,
-	    self.messages, self.image_url, self.response_format,
-	    self.tools, self.vector_store_ids, self.descriptions, self.assistants
+	    client          : Client - genai client instance
+	    target_language : str - The language to translate to
+	    source_language : str - The language to translate from
+	    use_vertex      : bool - Cloud integration flag
 
-	    Methods
-	    ------------
-	    create_small_embedding( self, prompt: str, path: str )
+	    Methods:
+	    --------
+	    translate( text, target, source ) : Translates text from source to target
 
     """
+	client: Optional[ genai.Client ]
 	target_language: Optional[ str ]
+	source_language: Optional[ str ]
+	use_vertex: Optional[ bool ]
 	
-	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
-			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
+	def __init__( self, n: int = 1, model: str = 'gemini-2.0-flash', version: str = 'v1alpha',
+			use_ai: bool = True, temperature: float = 0.8, top_p: float = 0.9,
+			frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 10000,
+			instruct: str = None ):
 		super( ).__init__( )
-		self.api_key = cfg.OPENAI_API_KEY
-		self.client = genai.Client( api_key=self.api_key )
-		self.model = 'whisper-1'
-		self.number = number
+		self.number = n
+		self.model = model
+		self.api_version = version
+		self.use_vertex = use_ai
 		self.temperature = temperature
-		self.top_percent = top_p
+		self.top_p = top_p
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
-		self.max_completion_tokens = max_tokens
-		self.store = store
-		self.stream = stream
+		self.max_tokens = max_tokens
 		self.instructions = instruct
-		self.audio_file = None
-		self.response = None
-		self.voice = None
+		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
+			project=self.project_id, location=self.cloud_location,
+			http_options=HttpOptions( api_version=self.api_version ) )
+		self.target_language = None
+		self.source_language = None
+		self.content_config = None
 	
 	@property
 	def model_options( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Methods that returns a list of small_model names
-
-        '''
-		return [ 'gemini-2.5-flash', 'translate-llm',  ]
+		"""Returns list of translation-capable models."""
+		return [ 'gemini-2.0-flash',
+		         'gemini-1.5-pro' ]
 	
 	@property
 	def language_options( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Method that returns a list of language option
-
-        '''
-		return [ 'en-US',
-		         'es-MX',
-		         'fr-FR',
-		         'ceb-PH',
-		         'ja-JP',
-		         'pt-PT',
-		         'la-VA',
-		         'he-IL',
-		         'el-GR',
-		         'fil-PH',
-		         'ru-RU',
-		         'ar-001',
-		         'cmn-CN' ]
+		"""Returns list of available target languages."""
+		return [ 'English',
+		         'Spanish',
+		         'French',
+		         'Japanese',
+		         'German',
+		         'Chinese' ]
 	
-	@property
-	def voice_options( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Method that returns a list of voice options
-
-        '''
-		return [ 'Achernar',
-		         'Achird',
-		         'Aoede',
-		         'Enceladus',
-		         'Erinome',
-		         'Iapetus',
-		         'Kore',
-		         'Orus',
-		         'Pulcherrima',
-		         'Puck',
-		         'Zephyr' ]
-		
-	@property
-	def document_options( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Method that returns a list of document types that can be translated
-
-        '''
-		return [ 'DOC',
-		         'DOCX',
-		         'PDF',
-		         'PPT',
-		         'PPTX',
-		         'XLS',
-		         'XLSX', ]
-		
-	def create( self, text: str, path: str ) -> str | None:
+	def translate( self, text: str, target: str, source: str = 'Auto' ) -> Optional[ str ]:
 		"""
-
-	        Purpose
-	        _______
-	        Generates a translation given a string to an audio file
-
-
-	        Parameters
-	        ----------
-	        text: str
-	        path: str
-
-
-	        Returns
-	        -------
-	        str
-
-        """
+		Purpose: Translates text from one language to another.
+		Parameters:
+		-----------
+		text: str - Text to translate.
+		target: str - Target language name.
+		source: str - Source language name.
+		Returns:
+		--------
+		Optional[ str ] - Translated text or None on failure.
+		"""
 		try:
 			throw_if( 'text', text )
-			throw_if( 'path', path )
-			with open( path, 'rb' ) as audio_file:
-				resp = self.client.audio.translations.create( model='whisper-1',
-					file=audio_file, prompt=text )
-			return resp.text
+			self.target_language = target;
+			self.source_language = source
+			self.content_config = GenerateContentConfig( temperature=self.temperature )
+			prompt = f"Translate the following from {self.source_language} to {self.target_language}: {text}"
+			response = self.client.models.generate_content( model=self.model,
+				contents=prompt, config=self.content_config )
+			return response.text
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini'
+			exception.module = 'gemini';
 			exception.cause = 'Translation'
-			exception.method = 'create( self, text: str )'
-			error = ErrorDialog( exception )
+			exception.method = 'translate( self, text, target, source ) -> str'
+			error = ErrorDialog( exception );
 			error.show( )
-	
-	def translate( self, path: str, model: str='gemini-2.5-flash' ) -> str | None:
-		"""
 
-            Translate non-English speech to English with Whisper.
-
-        """
-		try:
-			throw_if( 'path', path )
-			self.audio_file = path
-			self.model = model
-			with open( path, 'rb' ) as audio_file:
-				resp = self.client.audio.translations.create( model=self.model, file=audio_file )
-			return resp.text
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'boo'
-			ex.cause = 'Translation'
-			ex.method = 'translate(self, path)'
-			error = ErrorDialog( ex )
-			error.show( )
-	
-	def __dir__( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Method returns a list of strings representing members
-
-	        Parameters:
-	        ----------
-	        self
-
-	        Returns:
-	        ---------
-	        List[ str ] | None
-
-        '''
-		return [ 'num',
-		         'temperature',
-		         'top_percent',
-		         'frequency_penalty',
-		         'presence_penalty',
-		         'max_completion_tokens',
-		         'store',
-		         'stream',
-		         'modalities',
-		         'stops',
-		         'prompt',
-		         'response',
-		         'completion',
-		         'audio_path',
-		         'path',
-		         'messages',
-		         'response_format',
-		         'tools',
-		         'api_key',
-		         'client',
-		         'model',
-		         'translate',
-		         'model_options', ]
-
-class Image( Gemini ):
+class Images( Gemini ):
 	"""
 
 	    Purpose
 	    ___________
-	    Class used for generating images Google's Imagen3/4 API
+	    Class for generating images from text using Google Imagen models via Vertex AI.
 
-
-	    Parameters
-	    ------------
-	    n: int=1
-	    temperature: float=0.8
-	    top_p: float=0.9
-	    frequency: float=0.0
-	    presence: float=0.0
-	    max_tokens: int=10000
-	    store: bool=True
-	    stream: bool=True
-
-	    Attributes
+	    Attributes:
 	    -----------
-	    self.api_key, self.client, self.small_model,  self.embedding,
-	    self.response, self.num, self.temperature, self.top_percent,
-	    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-	    self.store, self.stream, self.modalities, self.stops, self.content,
-	    self.prompt, self.response, self.completion, self.file, self.path,
-	    self.messages, self.image_url, self.response_format,
-	    self.tools, self.vector_store_ids, self.input_text, self.image_url
+	    client       : Client - genai client instance
+	    aspect_ratio : str - Target width:height ratio
+	    use_vertex   : bool - Integration flag
 
-		Properties:
-		----------
-	    detail_options( self ) -> list[ str ]
-	    format_options( self ) -> list[ str ]
-	    size_options( self ) -> list[ str ]
-	    model_options( self ) -> str
-
-	    Methods
-	    ------------
-	    generate( self, path: str ) -> str
-	    analyze( self, path: str, text: str ) -> str
+	    Methods:
+	    --------
+	    generate( prompt, aspect ) : Generates an image based on prompt
 
     """
-	image_url: Optional[ str ]
-	quality: Optional[ str ]
-	detail: Optional[ str ]
-	size: Optional[ str ]
-	tool_choice: Optional[ str ]
+	client: Optional[ genai.Client ]
 	aspect_ratio: Optional[ str ]
-	image_config: Optional[ types.GenerateImagesConfig ]
+	use_vertex: Optional[ bool ]
 	
-	def __init__( self, n: int=1, temperture: float=0.8, top_p: float=0.9, frequency: floa =0.0,
-			presence: float=0.0, max_tokens: int=10000, store: bool=False, stream: bool=False, ):
+	def __init__( self, n: int = 1, model: str = 'imagen-3.0-generate-001', version: str = 'v1alpha',
+			use_ai: bool = True, temperature: float = 0.8, top_p: float = 0.9,
+			frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 10000,
+			instruct: str = None ):
 		super( ).__init__( )
-		self.api_key = cfg.OPENAI_API_KEY
-		self.client = genai.Client( api_key=self.api_key )
 		self.number = n
-		self.temperature = temperture
-		self.top_percent = top_p
+		self.model = model
+		self.api_version = version
+		self.use_vertex = use_ai
+		self.temperature = temperature
+		self.top_p = top_p
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
-		self.max_completion_tokens = max_tokens
-		self.store = store
-		self.stream = stream
-		self.tool_choice = 'auto'
-		self.input = [ ]
-		self.input_text = None
-		self.file_path = None
-		self.image_url = None
-		self.aspect_ratio = None
-		self.model = None
-		self.size = None
-		self.response_format = None
-		
-	@property
-	def model_options( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        ________
-	        Methods that returns a list of Imagen models
-
-        '''
-		return [ 'gemini-2.5-flash-image',
-		         'imagen-4.0-generate-001',
-		         'imagen-4.0-fast-generate-001',
-		         'imagen-4.0-ultra-generate-001',
-		         'imagen-3.0-capability-001',
-		         'imagen-3.0-capability-002',
-		         'imagen-3.0-fast-generate-001', ]
+		self.max_tokens = max_tokens
+		self.instructions = instruct
+		self.client = genai.Client( vertexai=True, project=self.project_id,
+			location=self.cloud_location, http_options=HttpOptions( api_version=self.api_version ) )
+		self.aspect_ratio = '1:1'
+		self.genimg_config = None
 	
 	@property
-	def format_options( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        ________
-	        Method that returns a  list of format options
-
-        '''
-		return [ '.png',
-		         '.jpeg', ]
+	def model_options( self ) -> List[ str ] | None:
+		"""Returns list of image generation models."""
+		return [ 'imagen-3.0-generate-001',
+		         'imagen-3.0-fast-generate-001' ]
 	
 	@property
 	def aspect_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			List[ str ] - list of available aspect ratios for Imagen 4
-
-		'''
+		"""Returns list of allowed aspect ratios."""
 		return [ '1:1',
 		         '3:4',
 		         '4:3',
 		         '9:16',
-		         '16:9', ]
+		         '16:9' ]
 	
-	@property
-	def size_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			List[ str ] - list of available aspect ratios for Imagen 4
-
-		'''
-		return [ '1K',
-		         '2K',
-		         '4K' ]
-	
-	def generate( self, prompt: str, size: str, aspect: str, model: str='imagen-4.0-fast-generate-001',  ) -> str | None:
+	def generate( self, prompt: str, aspect: str = '1:1' ) -> Optional[ Image ]:
 		"""
-
-                Purpose
-                _______
-                Generate an image from a text prompt.
-
-
-                Parameters
-                ----------
-                prompt: str
-
-
-                Returns
-                -------
-                Image object
-
-        """
-		try:
-			throw_if( 'text', prompt )
-			throw_if( 'model', model )
-			throw_if( 'aspect', aspect )
-			throw_if( 'size', size )
-			self.input_text = prompt
-			self.model = model
-			self.size = size
-			self.aspect_ratio = aspect
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Image'
-			exception.method = 'generate( self, prompt: str, size: str, aspect: str, model: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def analyze( self, text: str, path: str, size: str, aspect: str, model: str='gemini-2.5-flash', ) -> str | None:
-		'''
-
-	        Purpose:
-	        ________
-
-	        Method providing image analysis functionality given a prompt and path
-
-	        Parameters:
-	        ----------
-	        input: str
-	        path: str
-
-	        Returns:
-	        --------
-	        str | None
-
-        '''
-		try:
-			throw_if( 'text', text )
-			throw_if( 'path', path )
-			throw_if( 'aspect', aspect )
-			throw_if( 'size', size )
-			self.input_text = text
-			self.model = model
-			self.file_path = path
-			self.size = size
-			self.aspect_ratio = aspect
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Image'
-			exception.method = 'analyze( self, text: str, path: str, size: str, aspect: str, model: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def edit( self, prompt: str, path: str, size: str, aspect: str, model: str='gemini-2.5-flash-image' ) -> str | None:
+		Purpose: Generates a new image based on a descriptive text prompt.
+		Parameters:
+		-----------
+		prompt: str - Detailed description of the image to generate.
+		aspect: str - Aspect ratio identifier.
+		Returns:
+		--------
+		Optional[ Image ] - The generated Image object or None.
 		"""
-
-	        Purpose
-	        _______
-	        Method that analyzeses an image given a path prompt,
-
-	        Parameters
-	        ----------
-	        prompt: str
-	        url: str
-
-	        Returns
-	        -------
-	        str
-
-        """
 		try:
-			throw_if( 'input', prompt )
-			throw_if( 'path', path )
-			throw_if( 'aspect', aspect )
-			throw_if( 'size', size )
-			self.input_text = prompt
-			self.file_path = path
-			self.model = model
-			self.size = size
+			throw_if( 'prompt', prompt )
+			self.prompt = prompt;
 			self.aspect_ratio = aspect
+			self.genimg_config = GenerateImagesConfig( aspect_ratio=self.aspect_ratio,
+				number_of_images=self.number )
+			response = self.client.models.generate_images( model=self.model,
+				prompt=self.prompt, config=self.genimg_config )
+			return response.generated_images[ 0 ]
 		except Exception as e:
 			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Image'
-			exception.method = 'edit( self, prompt: str, path: str, size: str, aspect: str, model: str= ) -> str'
-			error = ErrorDialog( exception )
+			exception.module = 'gemini';
+			exception.cause = 'Images'
+			exception.method = 'generate( self, prompt, aspect ) -> Image'
+			error = ErrorDialog( exception );
 			error.show( )
-	
-	def __dir__( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Method returns a list of strings representing members
-
-	        Parameters:
-	        ----------
-	        self
-
-	        Returns:
-	        ---------
-	        List[ str ] | None
-
-        '''
-		return [  # Attributes
-				'number',
-				'temperature',
-				'top_percent',
-				'frequency_penalty',
-				'presence_penalty',
-				'max_completion_tokens',
-				'store',
-				'stream',
-				'modalities',
-				'stops',
-				'api_key',
-				'client',
-				'path',
-				'input_text',
-				'image_url',
-				'size',
-				'quality',
-				'detail',
-				'model',
-				# Properties
-				'style_options',
-				'model_options',
-				'detail_options',
-				'format_options',
-				'size_options',
-				# Methods
-				'generate',
-				'analyze',
-				'edit', ]

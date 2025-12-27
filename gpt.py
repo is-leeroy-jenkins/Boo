@@ -211,6 +211,13 @@ class GptModels:
 	    Purpose:
 	    _______
 	    Class containing lists of OpenAI models by generation
+	    
+	    Attributes:
+	    __________
+	    
+	    
+	    Methods:
+	    ________
 
     '''
 	

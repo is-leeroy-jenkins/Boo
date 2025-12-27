@@ -905,6 +905,16 @@ class InnovationAnalyst( Agent ):
 
 		Purpose:
 		--------
+		
+		
+		Attributes:
+		__________
+		
+		
+		
+		Methods:
+		----------
+		
 
 	'''
 	client: Optional[ OpenAI ]
@@ -989,6 +999,16 @@ class StatisticsAnalyst( Agent ):
 
 		Purpose:
 		--------
+		
+		
+		Attributes:
+		__________
+		
+		
+		
+		Methods:
+		----------
+		
 
 	'''
 	client: Optional[ OpenAI ]
@@ -1074,6 +1094,16 @@ class PbiExpert( Agent ):
 
 		Purpose:
 		--------
+		
+		
+		Attributes:
+		__________
+		
+		
+		
+		Methods:
+		----------
+		
 
 	'''
 	client: Optional[ OpenAI ]
