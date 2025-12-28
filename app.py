@@ -14,6 +14,10 @@ import streamlit as st
 import tempfile
 from typing import List, Dict, Any, Optional
 
+# ADDITIVE ONLY (for Prompt Engineering)
+import sqlite3
+import os
+
 from gpt import (
 	Chat,
 	Image,
@@ -205,7 +209,8 @@ with st.sidebar:
 		  "Embeddings",
 		  "Documents",
 		  "Files",
-		  "Vector Store" ],
+		  "Vector Store",
+		  "Prompt Engineering" ],
 	)
 	
 	# Horizontal session controls (short buttons)
@@ -240,7 +245,6 @@ with st.sidebar:
 # ======================================================================================
 # Dynamic Header — show provider and mode, and model relevant to the active mode
 # ======================================================================================
-# map mode -> session_state key for model (updated: Text -> text_model)
 _mode_to_model_key = {
 		"Text": "text_model",
 		"Image": "image_model",
@@ -348,7 +352,9 @@ if mode == "Text":
 		include = st.multiselect( "Include:", chat.include_options )
 		chat.include = include
 	
-	left, center, right = st.columns( [ 1,  2,  1 ] )
+	left, center, right = st.columns( [ 1,
+	                                    2,
+	                                    1 ] )
 	
 	with center:
 		for msg in st.session_state.messages:
@@ -388,11 +394,9 @@ if mode == "Text":
 					
 					response = None
 					try:
-						# Many Chat wrappers accept named kwargs; call defensively
 						try:
 							response = chat.generate_text( prompt=prompt, **gen_kwargs )
 						except TypeError:
-							# maybe the wrapper expects explicit params; try a smaller set then fallbacks
 							try:
 								response = chat.generate_text(
 									prompt=prompt,
@@ -405,7 +409,6 @@ if mode == "Text":
 									stop=st.session_state.get( "stop_sequences", None ),
 								)
 							except TypeError:
-								# final fallback: only model + prompt
 								response = chat.generate_text( prompt=prompt, model=text_model )
 						except Exception as exc:
 							st.error( f"Generation Failed: {exc}" )
@@ -419,13 +422,11 @@ if mode == "Text":
 							"role": "assistant",
 							"content": response or "" } )
 					
-					# Update token counters defensively
 					try:
 						_update_token_counters( getattr( chat, "response", None ) or response )
 					except Exception:
 						pass
 	
-	# Token transparency in main area
 	lcu = st.session_state.last_call_usage
 	tu = st.session_state.token_usage
 	if any( lcu.values( ) ):
@@ -450,7 +451,8 @@ elif mode == "Image":
 		quality = st.selectbox( "Quality", image.quality_options )
 		fmt = st.selectbox( "Format", image.format_options )
 	
-	tab_gen, tab_analyze = st.tabs( [ "Generate", "Analyze" ] )
+	tab_gen, tab_analyze = st.tabs( [ "Generate",
+	                                  "Analyze" ] )
 	with tab_gen:
 		prompt = st.text_area( "Prompt" )
 		if st.button( "Generate Image" ):
@@ -475,10 +477,8 @@ elif mode == "Image":
 		
 		if uploaded_img:
 			tmp_path = save_temp( uploaded_img )
-			# show preview
 			st.image( uploaded_img, caption="Uploaded image preview", use_column_width=True )
 			
-			# Choose available analysis methods (for UI transparency)
 			available_methods = [ ]
 			for candidate in (
 						"analyze",
@@ -492,14 +492,12 @@ elif mode == "Image":
 				if hasattr( image, candidate ):
 					available_methods.append( candidate )
 			
-			# Present the prioritized default selection if methods exist
 			if available_methods:
 				chosen_method = st.selectbox( "Method", available_methods, index=0 )
 			else:
 				chosen_method = None
 				st.info( "No dedicated image analysis method found on Image object; attempting generic handlers." )
 			
-			# Allow optional model override for analysis if supported
 			chosen_model = st.selectbox( "Model (analysis)", [ image_model,
 			                                                   None ], index=0 )
 			if chosen_model is None:
@@ -511,12 +509,9 @@ elif mode == "Image":
 				with st.spinner( "Analyzing image…" ):
 					analysis_result = None
 					try:
-						# Call the chosen method if a specific method is available
 						if chosen_method:
 							func = getattr( image, chosen_method, None )
 							if func:
-								# attempt several common signatures:
-								# func(path), func(image_path, model=...), func(file_obj)
 								try:
 									analysis_result = func( tmp_path )
 								except TypeError:
@@ -524,12 +519,10 @@ elif mode == "Image":
 										analysis_result = func( tmp_path, model=chosen_model_arg )
 									except TypeError:
 										try:
-											# try file-like input
 											analysis_result = func( uploaded_img )
 										except Exception as inner_exc:
 											raise inner_exc
 						else:
-							# Fallback: try generic 'analyze' then 'describe_image' then return
 							for fallback in ("analyze", "describe_image", "describe", "caption"):
 								if hasattr( image, fallback ):
 									func = getattr( image, fallback )
@@ -543,7 +536,6 @@ elif mode == "Image":
 										except Exception:
 											continue
 						
-						# If nothing returned yet, attempt an attribute 'analyze_image' or 'image_inspect'
 						if analysis_result is None:
 							for opt in ("analyze_image", "image_inspect"):
 								if hasattr( image, opt ):
@@ -554,18 +546,15 @@ elif mode == "Image":
 									except Exception:
 										continue
 						
-						# If still None, fallback message
 						if analysis_result is None:
 							st.warning( "No analysis output returned by the available methods." )
 						else:
-							# Display structured results if possible
 							if isinstance( analysis_result, (dict, list) ):
 								st.json( analysis_result )
 							else:
 								st.markdown( "**Analysis result:**" )
 								st.write( analysis_result )
 							
-							# Update token counters from image.response or returned result if structured
 							try:
 								_update_token_counters( getattr( image, "response", None ) or analysis_result )
 							except Exception:
@@ -673,9 +662,9 @@ elif mode == "Vector Store":
 				temp: List[ tuple ] = [ ]
 				for item in getattr( api_list, "data", [ ] ) or api_list:
 					nm = getattr( item, "name", None ) or (
-						item.get( "name" ) if isinstance( item, dict ) else None)
+							item.get( "name" ) if isinstance( item, dict ) else None)
 					vid = getattr( item, "id", None ) or (
-						item.get( "id" ) if isinstance( item, dict ) else None)
+							item.get( "id" ) if isinstance( item, dict ) else None)
 					if nm and vid:
 						temp.append( (nm, vid) )
 				if temp:
@@ -720,6 +709,37 @@ elif mode == "Vector Store":
 					st.error( f"Delete failed: {exc}" )
 	else:
 		st.info( "No vector stores discovered. Create one or confirm `chat.vector_stores` mapping exists." )
+
+# ======================================================================================
+# PROMPT ENGINEERING MODE (ADDITIVE ONLY)
+# ======================================================================================
+elif mode == "Prompt Engineering":
+	st.header( "Prompt Engineering" )
+	db_path = os.path.join(
+		"stores",
+		"sqlite",
+		"datamodels",
+		"Data.db",
+	)
+	if not os.path.exists( db_path ):
+		st.error( f"Database not found: {db_path}" )
+	else:
+		try:
+			conn = sqlite3.connect( db_path )
+			cur = conn.cursor( )
+			cur.execute( "SELECT * FROM Prompts" )
+			cols = [ c[ 0 ] for c in cur.description ]
+			rows = cur.fetchall( )
+			conn.close( )
+			if rows:
+				st.dataframe(
+					[ dict( zip( cols, r ) ) for r in rows ],
+					use_container_width=True,
+				)
+			else:
+				st.info( "Prompts table is empty." )
+		except Exception as exc:
+			st.error( f"SQLite error: {exc}" )
 
 # ======================================================================================
 # DOCUMENTS MODE
