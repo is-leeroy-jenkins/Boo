@@ -84,6 +84,14 @@ if "stop_sequences" not in st.session_state:
 if "provider" not in st.session_state:
 	st.session_state[ "provider" ] = "GPT"
 
+if "api_keys" not in st.session_state:
+	st.session_state.api_keys = \
+	{
+		"GPT": None,
+		"Groq": None,
+		"Gemini": None,
+	}
+	
 # ======================================================================================
 # Utilities
 # ======================================================================================
@@ -164,6 +172,43 @@ def _display_value( val: Any ) -> str:
 		return str( val )
 	except Exception:
 		return "—"
+	
+def get_active_api_key( ) -> Optional[ str ]:
+	"""
+	Return the API key for the currently selected provider, if supplied
+	by the user in this session.
+	"""
+	provider = st.session_state.get( "provider" )
+	return st.session_state.api_keys.get( provider )
+
+def resolve_api_key( provider: str ) -> Optional[str]:
+	"""
+	Resolve API key using the following precedence:
+	1) Session override (user-entered)
+	2) config.py default
+	3) Environment variable (optional fallback)
+	"""
+
+	# 1️⃣ Session override
+	session_key = st.session_state.get( "api_keys", { } ).get( provider )
+	if session_key:
+		return session_key
+
+	# 2️⃣ config.py defaults
+	if provider == "GPT":
+		return getattr( cfg, "OPENAI_API_KEY", None )
+	if provider == "Groq":
+		return getattr( cfg, "GROQ_API_KEY", None )
+	if provider == "Gemini":
+		return getattr( cfg, "GEMINI_API_KEY", None )
+
+	# 3️⃣ Optional env fallback
+	env_map = {
+		"GPT": "OPENAI_API_KEY",
+		"Groq": "GROQ_API_KEY",
+		"Gemini": "GEMINI_API_KEY",
+	}
+	return os.environ.get( env_map.get( provider, "" ) )
 
 # ======================================================================================
 # Sidebar — Provider selector above Mode, then Mode selector.
@@ -191,6 +236,42 @@ with st.sidebar:
 	)
 	st.session_state[ "provider" ] = provider
 	
+	# ------------------------------------------------------------------
+	# API Key (session-only, provider-specific)
+	# ------------------------------------------------------------------
+	st.markdown( "### API Key" )
+
+	active_provider = st.session_state.get( "provider" )
+
+	key_label_map = {
+		"GPT": "OpenAI API Key",
+		"Groq": "Groq API Key",
+		"Gemini": "Gemini API Key",
+	}
+
+	api_key_input = st.text_input(
+		key_label_map.get( active_provider, "API Key" ),
+		type="password",
+		value=st.session_state.api_keys.get( active_provider ) or "",
+		help="Stored for this session only. Not written to disk.",
+	)
+
+	if api_key_input:
+		st.session_state.api_keys[ active_provider ] = api_key_input
+	
+	active_provider = st.session_state.get( "provider" )
+	active_key = resolve_api_key( active_provider )
+
+	if active_key:
+		source = (
+			"Session override"
+			if st.session_state.api_keys.get( active_provider )
+			else "config.py"
+		)
+		st.caption( f"Using API key from: {source}" )
+	else:
+		st.warning( "No API key found for this provider." )
+
 	st.header( "Mode" )
 	
 	# thin blue strip directly under "Mode"
@@ -714,7 +795,7 @@ elif mode == "Vector Store":
 # PROMPT ENGINEERING MODE (CRUD + PAGINATION)
 # ======================================================================================
 elif mode == "Prompt Engineering":
-	st.header( "Prompt Engineering" )
+	st.markdown("###### System Instructions")
 
 	db_path = os.path.join(
 		"stores",
