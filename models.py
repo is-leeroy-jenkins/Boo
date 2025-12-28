@@ -812,12 +812,12 @@ class SQLQueryGeneration( BaseModel ):
 			Validation status object describing whether the SQL is syntactically/semantically valid.
 
 	'''
-	query: str
-	query_type: str
-	tables_used: List[ str ]
-	estimated_complexity: str
-	execution_notes: List[ str ]
-	validation_status: ValidationStatus
+	query: Optional[ str ]
+	query_type: Optional[ str ]
+	tables_used: Optional[ List[ str ] ]
+	estimated_complexity: Optional[ str ]
+	execution_notes: Optional[ List[ str ] ]
+	validation_status: Optional[ ValidationStatus ]
 
 	class Config:
 		arbitrary_types_allowed = True
@@ -982,6 +982,36 @@ class Response( BaseModel ):
 
 	text: Optional[ Text ] = None
 	data: Optional[ Dict[ str, Any ] ] = None
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+
+class FunctionCall( BaseModel ):
+	'''
+		
+		Purpose:
+		--------
+		Class to model function calll schema
+		
+	'''
+	name: Optional[ str ]
+	args: Optional[ List[ Dict[ str, Any ] ] ]
+
+	class Config:
+		arbitrary_types_allowed = True
+		extra = 'ignore'
+
+class FunctionReponse( BaseModel ):
+	'''
+		
+		Purpose:
+		--------
+		Class to model function response schema
+		
+	'''
+	name: Optional[ str ]
+	response: Optional[ Response ]
 
 	class Config:
 		arbitrary_types_allowed = True

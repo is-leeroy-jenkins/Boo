@@ -1,16 +1,16 @@
 '''
   ******************************************************************************************
       Assembly:                Boo
-      Filename:                gemni.py
+      Filename:                gemini.py
       Author:                  Terry D. Eppler
       Created:                 05-31-2022
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        12-27-2025
   ******************************************************************************************
-  <copyright file="gemni.py" company="Terry D. Eppler">
+  <copyright file="gemini.py" company="Terry D. Eppler">
 
-	     gemni.py
+	     gemini.py
 	     Copyright ©  2022  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    gemni.py
+    gemini.py
   </summary>
   ******************************************************************************************
 '''
@@ -195,7 +195,7 @@ class FileStore( Gemini ):
 		self.file_list = [ ];
 		self.response = None
 	
-	def upload( self, path: str, name: Optional[ str ] = None ) -> Optional[ File ]:
+	def upload( self, path: str, name: str=None ) -> File | None:
 		"""
 		Purpose: Uploads a file from a local path to Gemini's remote temporal storage.
 		Parameters:
@@ -245,7 +245,7 @@ class FileStore( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def list_files( self ) -> Optional[ List[ File ] ]:
+	def list_files( self ) -> List[ File ] | None:
 		"""
 		Purpose: Returns a list of all files currently stored in the user's remote project.
 		Returns:
@@ -263,7 +263,7 @@ class FileStore( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def delete( self, file_id: str ) -> bool:
+	def delete( self, file_id: str ) -> bool | None:
 		"""
 		Purpose: Deletes a specific file from remote storage to free up project quota.
 		Parameters:
@@ -346,8 +346,7 @@ class Chat( Gemini ):
 		self.http_options = HttpOptions( api_version=self.api_version )
 		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
 			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
-		self.response_modalities = [ 'TEXT',
-		                             'IMAGE' ]
+		self.response_modalities = [ 'TEXT', 'IMAGE' ]
 		self.content_config = None;
 		self.image_config = None;
 		self.function_config = None
@@ -374,8 +373,20 @@ class Chat( Gemini ):
 		         'v1alpha',
 		         'v1beta1' ]
 	
-	def generate_text( self, prompt: str, model: str = 'gemini-2.0-flash' ) -> Optional[
-		GenerateContentResponse ]:
+	@property
+	def mime_options( self ):
+		'''
+			
+			Returns:
+			--------
+			A List[ str ] of mime types
+			
+		'''
+		return [ 'application/json',
+		         'text/plain',
+		         'text/x.enum' ]
+	
+	def generate_text( self, prompt: str, model: str = 'gemini-2.0-flash' ) -> GenerateContentResponse | None:
 		"""
 		Purpose: Generates a text completion based on the provided prompt and configuration.
 		Parameters:
@@ -440,7 +451,7 @@ class Chat( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def search_maps( self, prompt: str, model: str = 'gemini-2.0-flash' ) -> Optional[ str ]:
+	def search_maps( self, prompt: str, model: str='gemini-2.0-flash' ) -> Optional[ str ]:
 		"""
 		
 			Purpose:
@@ -462,7 +473,7 @@ class Chat( Gemini ):
 			self.model = model
 			self.tool_config = [ types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
-				tools=self.tool_config, system_instruction=self.instructions )
+				tools=self.tool_config  )
 			response = self.client.models.generate_content( model=self.model,
 				contents=self.contents, config=self.content_config )
 			return response.text
@@ -474,8 +485,7 @@ class Chat( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def analyze_image( self, prompt: str, filepath: str, model: str='gemini-2.0-flash' ) -> \
-	Optional[ str ]:
+	def analyze_image( self, prompt: str, filepath: str, model: str='gemini-2.0-flash' ) -> str | None:
 		"""
 			
 			Purpose:
@@ -503,8 +513,7 @@ class Chat( Gemini ):
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
 				top_p=self.top_p, max_output_tokens=self.max_tokens )
 			response = self.client.models.generate_content( model=self.model,
-				contents=[ img,
-				           self.prompt ], config=self.content_config )
+				contents=[ img,  self.prompt ], config=self.content_config )
 			return response.text
 		except Exception as e:
 			exception = Error( e )
@@ -514,8 +523,7 @@ class Chat( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def summarize_document( self, prompt: str, filepath: str, model: str='gemini-2.0-flash' ) -> \
-	Optional[ str ]:
+	def summarize_document( self, prompt: str, filepath: str, model: str='gemini-2.0-flash' ) -> str | None:
 		"""
 			
 			Purpose:

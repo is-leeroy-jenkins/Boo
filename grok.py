@@ -128,11 +128,9 @@ class Header:
 		self.api_key = key
 		self.authorization = f'Bearer {key}'
 	
-	def get_header( self ) -> Dict[ str, str ]:
+	def get_header( self ) -> Dict[ str, str ] | None:
 		"""Returns the configured HTTP header dictionary."""
-		return {
-				'Content-Type': self.content_type,
-				'Authorization': self.authorization }
+		return { 'Content-Type': self.content_type, 'Authorization': self.authorization }
 
 class Grok:
 	'''
@@ -180,7 +178,7 @@ class Grok:
 		self.candidate_count = 1;
 		self.frequency_penalty = 0.0;
 		self.presence_penalty = 0.0
-		self.max_tokens = 4096;
+		self.max_tokens = 8192;
 		self.instructions = None;
 		self.prompt = None
 		self.modalities = None;
@@ -221,9 +219,8 @@ class Chat( Grok ):
 	file_path: Optional[ str ]
 	url: Optional[ str ]
 	
-	def __init__( self, model: str = 'llama-3.3-70b-versatile', temperature: float = 0.8, top_p: float = 0.9,
-			frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 4096,
-			instruct: str = None ):
+	def __init__( self, model: str='llama-3.3-70b-versatile', temperature: float=0.8, top_p: float=0.9,
+			frequency: float=0.0, presence: float=0.0, max_tokens: int=8192, instruct: str=None ):
 		super( ).__init__( )
 		self.model = model;
 		self.top_p = top_p;
@@ -249,17 +246,22 @@ class Chat( Grok ):
 		         'mixtral-8x7b-32768',
 		         'gemma2-9b-it' ]
 	
-	def generate_text( self, prompt: str, model: str = 'llama-3.3-70b-versatile' ) -> Optional[
-		str ]:
+	def generate_text( self, prompt: str, model: str = 'llama-3.3-70b-versatile' ) -> str | None:
 		"""
-		Purpose: Generates an ultra-fast text completion using Groq LPU inference.
-		Parameters:
-		-----------
-		prompt: str - The primary user instruction.
-		model: str - The LLM identifier.
-		Returns:
-		--------
-		Optional[ str ] - Content of the model's message.
+			
+			Purpose:
+			--------
+			Generates an ultra-fast text completion using Groq LPU inference.
+			
+			Parameters:
+			-----------
+			prompt: str - The primary user instruction.
+			model: str - The LLM identifier.
+			
+			Returns:
+			--------
+			Optional[ str ] - Content of the model's message.
+		
 		"""
 		try:
 			throw_if( 'prompt', prompt );
@@ -267,12 +269,8 @@ class Chat( Grok ):
 			self.model = model
 			messages = [ ]
 			if self.instructions:
-				messages.append( {
-						"role": "system",
-						"content": self.instructions } )
-			messages.append( {
-					"role": "user",
-					"content": self.prompt } )
+				messages.append( { "role": "system", "content": self.instructions } )
+			messages.append( { "role": "user", "content": self.prompt } )
 			self.response = self.client.chat.completions.create( model=self.model, messages=messages,
 				temperature=self.temperature, max_tokens=self.max_tokens, top_p=self.top_p,
 				frequency_penalty=self.frequency_penalty, presence_penalty=self.presence_penalty )
@@ -285,7 +283,7 @@ class Chat( Grok ):
 			error = ErrorDialog( exception );
 			error.show( )
 	
-	def generate_image( self, prompt: str, model: str = 'dall-e-3' ) -> Optional[ str ]:
+	def generate_image( self, prompt: str, model: str='dall-e-3' ) -> str | None:
 		"""Purpose: Routes image generation to the Image Tool class."""
 		try:
 			throw_if( 'prompt', prompt );
@@ -301,8 +299,8 @@ class Chat( Grok ):
 			error = ErrorDialog( exception );
 			error.show( )
 	
-	def analyze_image( self, prompt: str, filepath: str, model: str = 'llama-3.2-11b-vision-preview' ) -> \
-	Optional[ str ]:
+	def analyze_image( self, prompt: str,
+			filepath: str, model: str='llama-3.2-11b-vision-preview' ) -> str | None:
 		"""Purpose: Vision analysis for local files."""
 		try:
 			throw_if( 'prompt', prompt );
@@ -331,7 +329,7 @@ class Chat( Grok ):
 			error = ErrorDialog( exception );
 			error.show( )
 	
-	def web_search( self, prompt: str, model: str = 'llama-3.3-70b-versatile' ) -> Optional[ str ]:
+	def web_search( self, prompt: str, model: str='llama-3.3-70b-versatile' ) -> str | None:
 		"""Purpose: Search-augmented generation using Tavily."""
 		try:
 			throw_if( 'prompt', prompt );
@@ -353,16 +351,13 @@ class Chat( Grok ):
 			error = ErrorDialog( exception );
 			error.show( )
 	
-	def wolfram_alpha( self, prompt: str, model: str = 'llama-3.3-70b-versatile' ) -> Optional[
-		str ]:
+	def wolfram_alpha( self, prompt: str, model: str='llama-3.3-70b-versatile' ) -> str | None:
 		"""Purpose: Precise computational query through Wolfram API."""
 		try:
 			throw_if( 'prompt', prompt );
 			self.prompt = prompt;
 			self.model = model
-			params = {
-					"appid": cfg.WOLFRAM_APP_ID,
-					"i": self.prompt }
+			params = { "appid": cfg.WOLFRAM_APP_ID, "i": self.prompt }
 			wolf_resp = requests.get( Endpoints( ).wolfram, params=params )
 			math_prompt = f"Explain result '{wolf_resp.text}' for query: {self.prompt}"
 			return self.generate_text( prompt=math_prompt, model=self.model )
@@ -374,8 +369,8 @@ class Chat( Grok ):
 			error = ErrorDialog( exception );
 			error.show( )
 	
-	def summarize_document( self, prompt: str, filepath: str, model: str = 'llama-3.3-70b-versatile' ) -> \
-	Optional[ str ]:
+	def summarize_document( self, prompt: str,
+			filepath: str, model: str='llama-3.3-70b-versatile' ) -> str | None:
 		"""Purpose: Extracts and summarizes text from a local path."""
 		try:
 			throw_if( 'prompt', prompt );
@@ -394,8 +389,7 @@ class Chat( Grok ):
 			error = ErrorDialog( exception );
 			error.show( )
 	
-	def search_file( self, prompt: str, filepath: str, model: str = 'llama-3.3-70b-versatile' ) -> \
-	Optional[ str ]:
+	def search_file( self, prompt: str, filepath: str, model: str='llama-3.3-70b-versatile' ) -> str | None:
 		"""Purpose: Answers a specific query using file content as context."""
 		try:
 			throw_if( 'prompt', prompt );
@@ -415,8 +409,7 @@ class Chat( Grok ):
 			error = ErrorDialog( exception );
 			error.show( )
 	
-	def search_website( self, prompt: str, url: str, model: str = 'llama-3.3-70b-versatile' ) -> \
-	Optional[ str ]:
+	def search_website( self, prompt: str, url: str, model: str='llama-3.3-70b-versatile' ) -> str | None:
 		"""Purpose: Scrapes a URL and answers prompt based on site content."""
 		try:
 			throw_if( 'prompt', prompt );
@@ -454,8 +447,8 @@ class Embedding( Grok ):
 	contents: Optional[ List[ str ] ]
 	http_options: Optional[ Dict[ str, Any ] ]
 	
-	def __init__( self, model: str = 'text-embedding-3-small', temperature: float = 0.8,
-			top_p: float = 0.9, frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 10000 ):
+	def __init__( self, model: str='text-embedding-3-small', temperature: float=0.8,
+			top_p: float=0.9, frequency: float=0.0, presence: float=0.0, max_tokens: int=10000 ):
 		super( ).__init__( )
 		self.client = Groq( api_key=self.api_key )
 		self.model = model;
@@ -474,17 +467,16 @@ class Embedding( Grok ):
 	
 	@property
 	def model_options( self ) -> List[ str ]:
-		return [ 'text-embedding-3-small',
+		return [ 'nomic-embed-text-v1.5',
+		         'text-embedding-3-small',
 		         'text-embedding-3-large',
 		         'text-embedding-ada-002' ]
 	
 	@property
 	def encoding_options( self ) -> List[ str ]:
-		return [ 'float',
-		         'base64' ]
+		return [ 'float', 'base64' ]
 	
-	def create( self, text: str, model: str = 'text-embedding-3-small',
-			format: str = 'float' ) -> Optional[ List[ float ] ]:
+	def create( self, text: str, model: str='text-embedding-3-small', format: str='float' ) -> List[ float ] | None:
 		"""Purpose: Generates text embeddings via Hybrid POST."""
 		try:
 			throw_if( 'text', text )
@@ -492,10 +484,13 @@ class Embedding( Grok ):
 			self.model = model;
 			self.encoding_format = format
 			headers = Header( key=cfg.OPENAI_API_KEY ).get_header( )
-			payload = {
-					"input": self.input_text,
-					"model": self.model,
-					"encoding_format": self.encoding_format }
+			payload = \
+			{
+				'input': self.input_text,
+				'model': self.model,
+				'encoding_format': self.encoding_format
+			}
+			
 			resp = requests.post( Endpoints( ).embeddings, headers=headers, json=payload )
 			if resp.status_code == 200:
 				self.response = resp.json( )
@@ -510,7 +505,7 @@ class Embedding( Grok ):
 			error = ErrorDialog( exception );
 			error.show( )
 	
-	def count_tokens( self, text: str, coding: str = 'cl100k_base' ) -> Optional[ int ]:
+	def count_tokens( self, text: str, coding: str='cl100k_base' ) -> Optional[ int ]:
 		"""Purpose: Simple word-count estimation for token limits."""
 		try:
 			throw_if( 'text', text );
@@ -551,9 +546,9 @@ class TTS( Grok ):
 	descriptions: Optional[ List[ str ] ];
 	assistants: Optional[ List[ Any ] ]
 	
-	def __init__( self, number: int = 1, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 4096, store: bool = True, stream: bool = True,
-			instruct: str = None ):
+	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True,
+			instruct: str=None ):
 		super( ).__init__( )
 		self.client = Groq( api_key=self.api_key );
 		self.model = 'tts-1'
@@ -581,8 +576,7 @@ class TTS( Grok ):
 	
 	@property
 	def model_options( self ) -> List[ str ]:
-		return [ 'tts-1',
-		         'tts-1-hd' ]
+		return [ 'tts-1', 'tts-1-hd' ]
 	
 	@property
 	def voice_options( self ) -> List[ str ]:
@@ -611,8 +605,8 @@ class TTS( Grok ):
 		         44100,
 		         48000 ]
 	
-	def create_audio( self, text: str, filepath: str, format: str = 'mp3',
-			speed: float = 1.0, model: str = 'tts-1' ) -> Optional[ str ]:
+	def create_audio( self, text: str, filepath: str, format: str='mp3',
+			speed: float=1.0, model: str='tts-1' ) -> str | None:
 		"""Purpose: Generates speech audio via Hybrid POST."""
 		try:
 			throw_if( 'text', text );
@@ -623,12 +617,15 @@ class TTS( Grok ):
 			self.response_format = format;
 			self.speed = speed
 			headers = Header( key=cfg.OPENAI_API_KEY ).get_header( )
-			payload = {
-					"model": self.model,
-					"input": self.input_text,
-					"voice": self.voice,
-					"response_format": self.response_format,
-					"speed": self.speed }
+			payload = \
+			{
+				'model': self.model,
+				'input': self.input_text,
+				'voice': self.voice,
+				'response_format': self.response_format,
+				'speed': self.speed 
+			}
+			
 			resp = requests.post( Endpoints( ).speech_generations, headers=headers, json=payload )
 			if resp.status_code == 200:
 				with open( self.audio_path, 'wb' ) as f:
@@ -664,9 +661,9 @@ class Transcription( Grok ):
 	messages: Optional[ List[ Dict[ str, str ] ] ]
 	stops: Optional[ List[ str ] ]
 	
-	def __init__( self, number: int = 1, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 4096, store: bool = True, stream: bool = True,
-			instruct: str = None ):
+	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=False, stream: bool=True,
+			instruct: str=None ):
 		super( ).__init__( )
 		self.client = Groq( api_key=self.api_key )
 		self.number = number;
@@ -686,20 +683,131 @@ class Transcription( Grok ):
 		self.stops = None
 	
 	@property
-	def model_options( self ) -> List[ str ]:
+	def model_options( self ) -> List[ str ] | None:
 		return [ 'whisper-large-v3-turbo',
 		         'whisper-large-v3',
 		         'distil-whisper-large-v3-en' ]
 	
 	@property
-	def format_options( self ) -> List[ str ]:
+	def format_options( self ) -> List[ str ] | None:
 		return [ 'text',
 		         'json',
 		         'verbose_json',
 		         'vtt',
 		         'srt' ]
 	
-	def transcribe( self, path: str, model: str = 'whisper-large-v3-turbo' ) -> Optional[ str ]:
+	@property
+	def language_options( self ):
+		'''
+		
+			Returns:
+			-------
+			A List[ str ] of languages translatable to English
+			
+		'''
+		return [
+				"af",
+				"am",
+				"ar",
+				"as",
+				"az",
+				"ba",
+				"be",
+				"bg",
+				"bn",
+				"bo",
+				"br",
+				"bs",
+				"ca",
+				"cs",
+				"cy",
+				"da",
+				"de",
+				"el",
+				"en",
+				"es",
+				"et",
+				"eu",
+				"fa",
+				"fi",
+				"fo",
+				"fr",
+				"gl",
+				"gu",
+				"ha",
+				"haw",
+				"he",
+				"hi",
+				"hr",
+				"ht",
+				"hu",
+				"hy",
+				"id",
+				"is",
+				"it",
+				"ja",
+				"jw",
+				"ka",
+				"kk",
+				"km",
+				"kn",
+				"ko",
+				"la",
+				"lb",
+				"ln",
+				"lo",
+				"lt",
+				"lv",
+				"mg",
+				"mi",
+				"mk",
+				"ml",
+				"mn",
+				"mr",
+				"ms",
+				"mt",
+				"my",
+				"ne",
+				"nl",
+				"nn",
+				"no",
+				"oc",
+				"pa",
+				"pl",
+				"ps",
+				"pt",
+				"ro",
+				"ru",
+				"sa",
+				"sd",
+				"si",
+				"sk",
+				"sl",
+				"sn",
+				"so",
+				"sq",
+				"sr",
+				"su",
+				"sv",
+				"sw",
+				"ta",
+				"te",
+				"tg",
+				"th",
+				"tk",
+				"tl",
+				"tr",
+				"tt",
+				"uk",
+				"ur",
+				"uz",
+				"vi",
+				"yi",
+				"yo",
+				"zh"
+		]
+	
+	def transcribe( self, path: str, model: str='whisper-large-v3-turbo' ) -> Optional[ str ]:
 		"""Purpose: Local file transcription using Groq LPU."""
 		try:
 			throw_if( 'path', path );
@@ -741,9 +849,9 @@ class Translation( Grok ):
 	stops: Optional[ List[ str ] ]
 	completion: Optional[ str ]
 	
-	def __init__( self, number: int = 1, temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 4096, store: bool = True, stream: bool = True,
-			instruct: str = None ):
+	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000, store: bool=False, stream: bool=True,
+			instruct: str=None ):
 		super( ).__init__( )
 		self.client = Groq( api_key=self.api_key )
 		self.model = 'whisper-large-v3';
@@ -770,7 +878,118 @@ class Translation( Grok ):
 		return [ 'whisper-large-v3',
 		         'whisper-large-v3-turbo' ]
 	
-	def translate( self, path: str, model: str = 'whisper-large-v3' ) -> Optional[ str ]:
+	@property
+	def language_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			-------
+			A List[ str ] of languages translatable to English
+
+		'''
+		return [
+				"af",
+				"am",
+				"ar",
+				"as",
+				"az",
+				"ba",
+				"be",
+				"bg",
+				"bn",
+				"bo",
+				"br",
+				"bs",
+				"ca",
+				"cs",
+				"cy",
+				"da",
+				"de",
+				"el",
+				"en",
+				"es",
+				"et",
+				"eu",
+				"fa",
+				"fi",
+				"fo",
+				"fr",
+				"gl",
+				"gu",
+				"ha",
+				"haw",
+				"he",
+				"hi",
+				"hr",
+				"ht",
+				"hu",
+				"hy",
+				"id",
+				"is",
+				"it",
+				"ja",
+				"jw",
+				"ka",
+				"kk",
+				"km",
+				"kn",
+				"ko",
+				"la",
+				"lb",
+				"ln",
+				"lo",
+				"lt",
+				"lv",
+				"mg",
+				"mi",
+				"mk",
+				"ml",
+				"mn",
+				"mr",
+				"ms",
+				"mt",
+				"my",
+				"ne",
+				"nl",
+				"nn",
+				"no",
+				"oc",
+				"pa",
+				"pl",
+				"ps",
+				"pt",
+				"ro",
+				"ru",
+				"sa",
+				"sd",
+				"si",
+				"sk",
+				"sl",
+				"sn",
+				"so",
+				"sq",
+				"sr",
+				"su",
+				"sv",
+				"sw",
+				"ta",
+				"te",
+				"tg",
+				"th",
+				"tk",
+				"tl",
+				"tr",
+				"tt",
+				"uk",
+				"ur",
+				"uz",
+				"vi",
+				"yi",
+				"yo",
+				"zh"
+		]
+	
+	def translate( self, path: str, model: str='whisper-large-v3' ) -> str | None:
 		"""Purpose: Translates local audio directly to English text."""
 		try:
 			throw_if( 'path', path );
@@ -817,9 +1036,9 @@ class Image( Grok ):
 	messages: Optional[ List[ Dict[ str, str ] ] ]
 	completion: Optional[ str ]
 	
-	def __init__( self, n: int = 1, temperature: float = 0.8, top_p: float = 0.9,
-			frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 4096,
-			store: bool = False, stream: bool = False ):
+	def __init__( self, n: int = 1, temperature: float=0.8, top_p: float=0.9,
+			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
+			store: bool=False, stream: bool = False ):
 		super( ).__init__( )
 		self.client = Groq( api_key=self.api_key )
 		self.number = n;
@@ -907,15 +1126,23 @@ class Image( Grok ):
 			self.file_path = path;
 			self.model = model
 			b64 = encode_image( self.file_path )
-			messages = [ {
-					             "role": "user",
-					             "content": [ {
-							                          "type": "text",
-							                          "text": self.input_text },
-					                          {
-							                          "type": "image_url",
-							                          "image_url": {
-									                          "url": f"data:image/jpeg;base64,{b64}" } } ] } ]
+			messages = [
+			{
+	             "role": "user",
+	             "content": [
+	             {
+                      "type": "text",
+                      "text": self.input_text
+	             },
+                  {
+                      "type": "image_url",
+                      "image_url":
+                      {
+	                          "url": f"data:image/jpeg;base64,{b64}"
+                      }
+                  } ]
+			} ]
+			
 			self.response = self.client.chat.completions.create( model=self.model, messages=messages )
 			return self.response.choices[ 0 ].message.content
 		except Exception as e:
@@ -934,15 +1161,16 @@ class Image( Grok ):
 			self.input_text = prompt;
 			self.file_path = path;
 			self.model = model
-			headers = {
-					"Authorization": f"Bearer {cfg.OPENAI_API_KEY}" }
-			files = {
-					"image": open( self.file_path, "rb" ) }
-			data = {
+			headers = { "Authorization": f"Bearer {cfg.OPENAI_API_KEY}" }
+			files = { "image": open( self.file_path, "rb" ) }
+			data = \
+			{
 					"prompt": self.input_text,
 					"n": self.number,
 					"size": self.size,
-					"model": self.model }
+					"model": self.model
+			}
+			
 			resp = requests.post( Endpoints( ).image_edits, headers=headers, files=files, data=data )
 			if resp.status_code == 200:
 				return resp.json( )[ 'data' ][ 0 ][ 'url' ]
