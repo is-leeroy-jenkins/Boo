@@ -792,10 +792,10 @@ elif mode == "Vector Store":
 		st.info( "No vector stores discovered. Create one or confirm `chat.vector_stores` mapping exists." )
 
 # ======================================================================================
-# PROMPT ENGINEERING MODE (CRUD + PAGINATION)
+# PROMPT ENGINEERING MODE (CRUD + PAGINATION + SEARCH + SORT + ROW SYNC)
 # ======================================================================================
 elif mode == "Prompt Engineering":
-	st.markdown("###### System Instructions")
+	st.header( "Prompt Engineering" )
 
 	db_path = os.path.join(
 		"stores",
@@ -804,11 +804,21 @@ elif mode == "Prompt Engineering":
 		"Data.db",
 	)
 
-	# Pagination state
+	# -----------------------------
+	# Session state
+	# -----------------------------
 	if "pe_page" not in st.session_state:
 		st.session_state.pe_page = 1
 	if "pe_page_size" not in st.session_state:
 		st.session_state.pe_page_size = 10
+	if "pe_selected_id" not in st.session_state:
+		st.session_state.pe_selected_id = None
+	if "pe_search" not in st.session_state:
+		st.session_state.pe_search = ""
+	if "pe_sort_col" not in st.session_state:
+		st.session_state.pe_sort_col = "id"
+	if "pe_sort_dir" not in st.session_state:
+		st.session_state.pe_sort_dir = "ASC"
 
 	if not os.path.exists( db_path ):
 		st.error( f"Database not found: {db_path}" )
@@ -818,150 +828,233 @@ elif mode == "Prompt Engineering":
 			conn.row_factory = sqlite3.Row
 			cur = conn.cursor( )
 
-			# ------------------------------------------------------------------
+			# -----------------------------
+			# Discover columns
+			# -----------------------------
+			cur.execute( "PRAGMA table_info( Prompts )" )
+			all_cols = [ r[ "name" ] for r in cur.fetchall( ) ]
+			editable_cols = [ c for c in all_cols if c.lower( ) != "id" ]
+
+			# -----------------------------
+			# Search / Sort Controls
+			# -----------------------------
+			with st.expander( "Search / Sort", expanded=True ):
+				c1, c2, c3 = st.columns( [ 2, 1, 1 ] )
+
+				with c1:
+					st.session_state.pe_search = st.text_input(
+						"Search (text contains)",
+						value=st.session_state.pe_search,
+					)
+
+				with c2:
+					st.session_state.pe_sort_col = st.selectbox(
+						"Sort Column",
+						options=all_cols,
+						index=all_cols.index( st.session_state.pe_sort_col )
+						if st.session_state.pe_sort_col in all_cols else 0,
+					)
+
+				with c3:
+					st.session_state.pe_sort_dir = st.selectbox(
+						"Direction",
+						[ "ASC", "DESC" ],
+						index=0 if st.session_state.pe_sort_dir == "ASC" else 1,
+					)
+
+			# -----------------------------
 			# Pagination controls
-			# ------------------------------------------------------------------
-			ca, cb, cc, cd, ce = st.columns( [ 1, 1, 1, 1, 2 ] )
-			with ca:
-				if st.button( "⏮ First" ):
+			# -----------------------------
+			pc1, pc2, pc3, pc4, pc5 = st.columns( [ 1, 1, 1, 1, 2 ] )
+			with pc1:
+				if st.button( "⏮" ):
 					st.session_state.pe_page = 1
-			with cb:
-				if st.button( "◀ Prev" ) and st.session_state.pe_page > 1:
+			with pc2:
+				if st.button( "◀" ) and st.session_state.pe_page > 1:
 					st.session_state.pe_page -= 1
-			with cc:
-				if st.button( "Next ▶" ):
+			with pc3:
+				if st.button( "▶" ):
 					st.session_state.pe_page += 1
-			with cd:
-				if st.button( "Last ⏭" ):
-					# will be clamped after total count is known
+			with pc4:
+				if st.button( "⏭" ):
 					st.session_state.pe_page = 10**9
-			with ce:
+			with pc5:
 				st.session_state.pe_page_size = st.selectbox(
-					"Rows per page",
+					"Rows / page",
 					[ 5, 10, 25, 50, 100 ],
 					index=[ 5, 10, 25, 50, 100 ].index( st.session_state.pe_page_size ),
 				)
 
-			# ------------------------------------------------------------------
-			# Count total rows
-			# ------------------------------------------------------------------
-			cur.execute( "SELECT COUNT(*) AS cnt FROM Prompts" )
+			# -----------------------------
+			# WHERE clause (search)
+			# -----------------------------
+			where_sql = ""
+			params: list = [ ]
+
+			if st.session_state.pe_search:
+				likes = [ f"{c} LIKE ?" for c in editable_cols ]
+				where_sql = "WHERE " + " OR ".join( likes )
+				params.extend( [ f"%{st.session_state.pe_search}%" ] * len( editable_cols ) )
+
+			# -----------------------------
+			# Count total
+			# -----------------------------
+			cur.execute(
+				f"SELECT COUNT(*) AS cnt FROM Prompts {where_sql}",
+				params,
+			)
 			total_rows = int( cur.fetchone( )[ "cnt" ] )
+			total_pages = max(
+				1,
+				( total_rows + st.session_state.pe_page_size - 1 )
+				// st.session_state.pe_page_size,
+			)
+			st.session_state.pe_page = max(
+				1,
+				min( st.session_state.pe_page, total_pages ),
+			)
 
-			if total_rows == 0:
-				st.info( "No prompts found." )
-				total_pages = 1
-				st.session_state.pe_page = 1
-				records = [ ]
+			offset = ( st.session_state.pe_page - 1 ) * st.session_state.pe_page_size
+
+			# -----------------------------
+			# READ (paged + sorted)
+			# -----------------------------
+			cur.execute(
+				f"""
+				SELECT *
+				FROM Prompts
+				{where_sql}
+				ORDER BY {st.session_state.pe_sort_col} {st.session_state.pe_sort_dir}
+				LIMIT ? OFFSET ?
+				""",
+				params + [ st.session_state.pe_page_size, offset ],
+			)
+
+			rows = cur.fetchall( )
+			records = [ dict( r ) for r in rows ]
+
+			st.caption(
+				f"Page {st.session_state.pe_page} / {total_pages} • {total_rows} rows"
+			)
+
+			if records:
+				st.dataframe(
+					records,
+					use_container_width=True,
+					selection_mode="single-row",
+					on_select="rerun",
+					key="pe_table",
+				)
+
+				# Sync table selection → Edit/Delete
+				if st.session_state.pe_table and st.session_state.pe_table[ "selection" ][ "rows" ]:
+					idx = st.session_state.pe_table[ "selection" ][ "rows" ][ 0 ]
+					st.session_state.pe_selected_id = records[ idx ].get( "id" )
+
 			else:
-				total_pages = max(
-					1,
-					( total_rows + st.session_state.pe_page_size - 1 )
-					// st.session_state.pe_page_size,
-				)
-				st.session_state.pe_page = max(
-					1,
-					min( st.session_state.pe_page, total_pages ),
-				)
-
-				offset = ( st.session_state.pe_page - 1 ) * st.session_state.pe_page_size
-
-				# ------------------------------------------------------------------
-				# READ (paged)
-				# ------------------------------------------------------------------
-				cur.execute(
-					"SELECT * FROM Prompts LIMIT ? OFFSET ?",
-					( st.session_state.pe_page_size, offset ),
-				)
-				rows = cur.fetchall( )
-				records = [ dict( r ) for r in rows ]
-
-				st.caption(
-					f"Page {st.session_state.pe_page} of {total_pages} • "
-					f"{total_rows} total rows"
-				)
-				st.dataframe( records, use_container_width=True )
+				st.info( "No matching prompts found." )
 
 			st.divider( )
 
-			# Determine editable columns dynamically (exclude id)
-			columns = records[ 0 ].keys( ) if records else [ ]
-			editable_cols = [ c for c in columns if c.lower( ) != "id" ]
-
-			# ------------------------------------------------------------------
+			# -----------------------------
+			# Jump to ID (global)
+			# -----------------------------
+			jump_prompt_id = st.number_input(
+				"Jump to PromptsId",
+				min_value=1,
+				step=1,
+			)
+			
+			if st.button( "Go to PromptsId" ):
+				cur.execute(
+					f"""
+					SELECT PromptsId
+					FROM Prompts
+					{where_sql}
+					ORDER BY {st.session_state.pe_sort_col} {st.session_state.pe_sort_dir}
+					""",
+					params,
+				)
+				
+				all_ids = [ r[ "PromptsId" ] for r in cur.fetchall( ) ]
+				
+				if jump_prompt_id in all_ids:
+					idx = all_ids.index( jump_prompt_id )
+					st.session_state.pe_page = (idx // st.session_state.pe_page_size) + 1
+					st.session_state.pe_selected_id = jump_prompt_id
+					st.experimental_rerun( )
+				else:
+					st.warning( "PromptsId not found in current filter." )
+			
+			# -----------------------------
 			# CREATE
-			# ------------------------------------------------------------------
+			# -----------------------------
 			with st.expander( "Create Prompt", expanded=False ):
-				new_values = { }
+				new_vals = { }
 				for col in editable_cols:
-					new_values[ col ] = st.text_area( f"{col}", key=f"create_{col}" )
+					new_vals[ col ] = st.text_area( col, key=f"create_{col}" )
 
 				if st.button( "Create Prompt" ):
-					if not new_values:
-						st.warning( "No fields to insert." )
-					else:
-						cols_sql = ", ".join( new_values.keys( ) )
-						placeholders = ", ".join( [ "?" ] * len( new_values ) )
-						cur.execute(
-							f"INSERT INTO Prompts ( {cols_sql} ) VALUES ( {placeholders} )",
-							list( new_values.values( ) ),
-						)
-						conn.commit( )
-						st.success( "Prompt created." )
-						st.session_state.pe_page = total_pages  # jump to last page
-						st.experimental_rerun( )
+					cols_sql = ", ".join( new_vals.keys( ) )
+					ph = ", ".join( [ "?" ] * len( new_vals ) )
+					cur.execute(
+						f"INSERT INTO Prompts ( {cols_sql} ) VALUES ( {ph} )",
+						list( new_vals.values( ) ),
+					)
+					conn.commit( )
+					st.success( "Prompt created." )
+					st.experimental_rerun( )
 
-			# ------------------------------------------------------------------
-			# UPDATE / DELETE
-			# ------------------------------------------------------------------
-			if records:
-				st.subheader( "Edit / Delete Prompt" )
-
-				# Use IDs from current page to avoid huge dropdowns
-				id_list = [ r.get( "id" ) for r in records if "id" in r ]
-				selected_id = st.selectbox( "Select Prompt ID (current page)", id_list )
-
-				selected = next(
-					( r for r in records if r.get( "id" ) == selected_id ),
-					None,
+			# -----------------------------
+			# UPDATE / DELETE (synced)
+			# -----------------------------
+			if st.session_state.pe_selected_id:
+				cur.execute(
+					"SELECT * FROM Prompts WHERE id = ?",
+					( st.session_state.pe_selected_id, ),
 				)
+				selected = cur.fetchone( )
 
 				if selected:
-					update_values = { }
+					st.subheader( f"Edit / Delete Prompt ID {selected['id']}" )
+
+					update_vals = { }
 					for col in editable_cols:
-						update_values[ col ] = st.text_area(
+						update_vals[ col ] = st.text_area(
 							col,
-							value=str( selected.get( col, "" ) ),
+							value=str( selected[ col ] ),
 							key=f"edit_{col}",
 						)
 
-					c1, c2 = st.columns( [ 1, 1 ] )
+					u1, u2 = st.columns( [ 1, 1 ] )
 
-					with c1:
+					with u1:
 						if st.button( "Update Prompt" ):
-							set_clause = ", ".join( [ f"{c}=?" for c in update_values ] )
+							set_sql = ", ".join( [ f"{c}=?" for c in update_vals ] )
 							cur.execute(
-								f"UPDATE Prompts SET {set_clause} WHERE id = ?",
-								list( update_values.values( ) ) + [ selected_id ],
+								f"UPDATE Prompts SET {set_sql} WHERE id = ?",
+								list( update_vals.values( ) ) + [ selected[ "id" ] ],
 							)
 							conn.commit( )
-							st.success( "Prompt updated." )
+							st.success( "Updated." )
 							st.experimental_rerun( )
 
-					with c2:
+					with u2:
 						if st.button( "Delete Prompt" ):
 							cur.execute(
 								"DELETE FROM Prompts WHERE id = ?",
-								( selected_id, ),
+								( selected[ "id" ], ),
 							)
 							conn.commit( )
-							st.success( "Prompt deleted." )
+							st.success( "Deleted." )
+							st.session_state.pe_selected_id = None
 							st.experimental_rerun( )
 
 			conn.close( )
 
 		except Exception as exc:
 			st.error( f"SQLite error: {exc}" )
+
 
 # ======================================================================================
 # DOCUMENTS MODE
