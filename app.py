@@ -86,12 +86,12 @@ if "provider" not in st.session_state:
 
 if "api_keys" not in st.session_state:
 	st.session_state.api_keys = \
-	{
-		"GPT": None,
-		"Groq": None,
-		"Gemini": None,
-	}
-	
+		{
+				"GPT": None,
+				"Groq": None,
+				"Gemini": None,
+		}
+
 # ======================================================================================
 # Utilities
 # ======================================================================================
@@ -137,13 +137,15 @@ def _extract_usage_from_response( resp: Any ) -> Dict[ str, int ]:
 		if isinstance( raw, dict ):
 			usage[ "prompt_tokens" ] = int( raw.get( "prompt_tokens", 0 ) )
 			usage[
-				"completion_tokens" ] = int( raw.get( "completion_tokens", raw.get( "output_tokens", 0 ) ) )
+				"completion_tokens" ] = int( raw.get( "completion_tokens", raw.get(
+				"output_tokens", 0 ) ) )
 			usage[ "total_tokens" ] = int( raw.get( "total_tokens",
 				usage[ "prompt_tokens" ] + usage[ "completion_tokens" ] ) )
 		else:
 			usage[ "prompt_tokens" ] = int( getattr( raw, "prompt_tokens", 0 ) )
 			usage[
-				"completion_tokens" ] = int( getattr( raw, "completion_tokens", getattr( raw, "output_tokens", 0 ) ) )
+				"completion_tokens" ] = int( getattr( raw, "completion_tokens", getattr( raw,
+				"output_tokens", 0 ) ) )
 			usage[ "total_tokens" ] = int( getattr( raw, "total_tokens",
 				usage[ "prompt_tokens" ] + usage[ "completion_tokens" ] ) )
 	except Exception:
@@ -172,7 +174,7 @@ def _display_value( val: Any ) -> str:
 		return str( val )
 	except Exception:
 		return "—"
-	
+
 def get_active_api_key( ) -> Optional[ str ]:
 	"""
 	Return the API key for the currently selected provider, if supplied
@@ -181,19 +183,19 @@ def get_active_api_key( ) -> Optional[ str ]:
 	provider = st.session_state.get( "provider" )
 	return st.session_state.api_keys.get( provider )
 
-def resolve_api_key( provider: str ) -> Optional[str]:
+def resolve_api_key( provider: str ) -> Optional[ str ]:
 	"""
 	Resolve API key using the following precedence:
 	1) Session override (user-entered)
 	2) config.py default
 	3) Environment variable (optional fallback)
 	"""
-
+	
 	# 1️⃣ Session override
 	session_key = st.session_state.get( "api_keys", { } ).get( provider )
 	if session_key:
 		return session_key
-
+	
 	# 2️⃣ config.py defaults
 	if provider == "GPT":
 		return getattr( cfg, "OPENAI_API_KEY", None )
@@ -201,12 +203,12 @@ def resolve_api_key( provider: str ) -> Optional[str]:
 		return getattr( cfg, "GROQ_API_KEY", None )
 	if provider == "Gemini":
 		return getattr( cfg, "GEMINI_API_KEY", None )
-
+	
 	# 3️⃣ Optional env fallback
 	env_map = {
-		"GPT": "OPENAI_API_KEY",
-		"Groq": "GROQ_API_KEY",
-		"Gemini": "GEMINI_API_KEY",
+			"GPT": "OPENAI_API_KEY",
+			"Groq": "GROQ_API_KEY",
+			"Gemini": "GEMINI_API_KEY",
 	}
 	return os.environ.get( env_map.get( provider, "" ) )
 
@@ -240,38 +242,38 @@ with st.sidebar:
 	# API Key (session-only, provider-specific)
 	# ------------------------------------------------------------------
 	st.markdown( "### API Key" )
-
+	
 	active_provider = st.session_state.get( "provider" )
-
+	
 	key_label_map = {
-		"GPT": "OpenAI API Key",
-		"Groq": "Groq API Key",
-		"Gemini": "Gemini API Key",
+			"GPT": "OpenAI API Key",
+			"Groq": "Groq API Key",
+			"Gemini": "Gemini API Key",
 	}
-
+	
 	api_key_input = st.text_input(
 		key_label_map.get( active_provider, "API Key" ),
 		type="password",
 		value=st.session_state.api_keys.get( active_provider ) or "",
 		help="Stored for this session only. Not written to disk.",
 	)
-
+	
 	if api_key_input:
 		st.session_state.api_keys[ active_provider ] = api_key_input
 	
 	active_provider = st.session_state.get( "provider" )
 	active_key = resolve_api_key( active_provider )
-
+	
 	if active_key:
 		source = (
-			"Session override"
-			if st.session_state.api_keys.get( active_provider )
-			else "config.py"
+				"Session override"
+				if st.session_state.api_keys.get( active_provider )
+				else "config.py"
 		)
 		st.caption( f"Using API key from: {source}" )
 	else:
 		st.warning( "No API key found for this provider." )
-
+	
 	st.header( "Mode" )
 	
 	# thin blue strip directly under "Mode"
@@ -349,7 +351,8 @@ st.markdown(
     <div style="margin-bottom:0.25rem;">
       <h3 style="margin:0;">{header_label} — {mode}</h3>
       <div style="color:#9aa0a6; margin-top:6px; font-size:0.95rem;">
-        Model: {_display_value( model_val )} &nbsp;&nbsp;|&nbsp;&nbsp; Temp: {_display_value( temperature_val )} &nbsp;&nbsp;•&nbsp;&nbsp; Top-P: {_display_value( top_p_val )}
+        Model: {_display_value( model_val )} &nbsp;&nbsp;|&nbsp;&nbsp; Temp:
+{_display_value( temperature_val )} &nbsp;&nbsp;•&nbsp;&nbsp; Top-P: {_display_value( top_p_val )}
       </div>
     </div>
     """,
@@ -512,11 +515,13 @@ if mode == "Text":
 	tu = st.session_state.token_usage
 	if any( lcu.values( ) ):
 		st.info(
-			f"Last call — prompt: {lcu[ 'prompt_tokens' ]}, completion: {lcu[ 'completion_tokens' ]}, total: {lcu[ 'total_tokens' ]}"
+			f"Last call — prompt: {lcu[ 'prompt_tokens' ]}, completion: "
+			f"{lcu[ 'completion_tokens' ]}, total: {lcu[ 'total_tokens' ]}"
 		)
 	if tu[ "total_tokens" ] > 0:
 		st.write(
-			f"Session totals — prompt: {tu[ 'prompt_tokens' ]} · completion: {tu[ 'completion_tokens' ]} · total: {tu[ 'total_tokens' ]}"
+			f"Session totals — prompt: {tu[ 'prompt_tokens' ]} · completion: "
+			f"{tu[ 'completion_tokens' ]} · total: {tu[ 'total_tokens' ]}"
 		)
 
 # ======================================================================================
@@ -539,7 +544,8 @@ elif mode == "Image":
 		if st.button( "Generate Image" ):
 			with st.spinner( "Generating…" ):
 				try:
-					img_url = image.generate( prompt=prompt, model=image_model, size=size, quality=quality, fmt=fmt )
+					img_url = image.generate( prompt=prompt, model=image_model, size=size,
+						quality=quality, fmt=fmt )
 					st.image( img_url )
 					_update_token_counters( getattr( image, "response", None ) )
 				except Exception as exc:
@@ -577,7 +583,8 @@ elif mode == "Image":
 				chosen_method = st.selectbox( "Method", available_methods, index=0 )
 			else:
 				chosen_method = None
-				st.info( "No dedicated image analysis method found on Image object; attempting generic handlers." )
+				st.info( "No dedicated image analysis method found on Image object; attempting "
+				         "generic handlers." )
 			
 			chosen_model = st.selectbox( "Model (analysis)", [ image_model,
 			                                                   None ], index=0 )
@@ -612,7 +619,8 @@ elif mode == "Image":
 										break
 									except Exception:
 										try:
-											analysis_result = func( tmp_path, model=chosen_model_arg )
+											analysis_result = func( tmp_path,
+												model=chosen_model_arg )
 											break
 										except Exception:
 											continue
@@ -637,7 +645,8 @@ elif mode == "Image":
 								st.write( analysis_result )
 							
 							try:
-								_update_token_counters( getattr( image, "response", None ) or analysis_result )
+								_update_token_counters( getattr( image, "response", None ) or
+								                        analysis_result )
 							except Exception:
 								pass
 					
@@ -738,7 +747,8 @@ elif mode == "Vector Store":
 	if not options:
 		try:
 			client = getattr( chat, "client", None )
-			if client and hasattr( client, "vector_stores" ) and hasattr( client.vector_stores, "list" ):
+			if client and hasattr( client, "vector_stores" ) and hasattr( client.vector_stores,
+					"list" ):
 				api_list = client.vector_stores.list( )
 				temp: List[ tuple ] = [ ]
 				for item in getattr( api_list, "data", [ ] ) or api_list:
@@ -774,7 +784,8 @@ elif mode == "Vector Store":
 						vs = chat.retrieve_store( sel_id )
 						st.json( vs.__dict__ if hasattr( vs, "__dict__" ) else vs )
 					else:
-						st.warning( "retrieve_store not available on chat object or no store selected." )
+						st.warning( "retrieve_store not available on chat object or no store "
+						            "selected." )
 				except Exception as exc:
 					st.error( f"Retrieve failed: {exc}" )
 		
@@ -785,276 +796,257 @@ elif mode == "Vector Store":
 						res = chat.delete_store( sel_id )
 						st.success( f"Delete returned: {res}" )
 					else:
-						st.warning( "delete_store not available on chat object or no store selected." )
+						st.warning( "delete_store not available on chat object or no store "
+						            "selected." )
 				except Exception as exc:
 					st.error( f"Delete failed: {exc}" )
 	else:
-		st.info( "No vector stores discovered. Create one or confirm `chat.vector_stores` mapping exists." )
+		st.info( "No vector stores discovered. Create one or confirm `chat.vector_stores` mapping "
+		         "exists." )
 
 # ======================================================================================
-# PROMPT ENGINEERING MODE (CRUD + PAGINATION + SEARCH + SORT + ROW SYNC)
+# PROMPT ENGINEERING MODE
 # ======================================================================================
 elif mode == "Prompt Engineering":
-	st.header( "Prompt Engineering" )
-
-	db_path = os.path.join(
-		"stores",
-		"sqlite",
-		"datamodels",
-		"Data.db",
-	)
-
-	# -----------------------------
-	# Session state
-	# -----------------------------
-	if "pe_page" not in st.session_state:
+	import sqlite3
+	import math
+	
+	DB_PATH = "stores/sqlite/datamodels/Data.db"
+	TABLE = "Prompts"
+	PAGE_SIZE = 10
+	
+	# ----------------------------
+	# Session state initialization
+	# ----------------------------
+	st.session_state.setdefault( "pe_page", 1 )
+	st.session_state.setdefault( "pe_search", "" )
+	st.session_state.setdefault( "pe_sort_col", "PromptsId" )
+	st.session_state.setdefault( "pe_sort_dir", "ASC" )
+	st.session_state.setdefault( "pe_selected_id", None )
+	
+	# ----------------------------
+	# Helpers
+	# ----------------------------
+	def get_conn( ):
+		return sqlite3.connect( DB_PATH )
+	
+	def reset_controls( ):
 		st.session_state.pe_page = 1
-	if "pe_page_size" not in st.session_state:
-		st.session_state.pe_page_size = 10
-	if "pe_selected_id" not in st.session_state:
-		st.session_state.pe_selected_id = None
-	if "pe_search" not in st.session_state:
 		st.session_state.pe_search = ""
-	if "pe_sort_col" not in st.session_state:
-		st.session_state.pe_sort_col = "id"
-	if "pe_sort_dir" not in st.session_state:
+		st.session_state.pe_sort_col = "PromptsId"
 		st.session_state.pe_sort_dir = "ASC"
-
-	if not os.path.exists( db_path ):
-		st.error( f"Database not found: {db_path}" )
-	else:
-		try:
-			conn = sqlite3.connect( db_path )
-			conn.row_factory = sqlite3.Row
-			cur = conn.cursor( )
-
-			# -----------------------------
-			# Discover columns
-			# -----------------------------
-			cur.execute( "PRAGMA table_info( Prompts )" )
-			all_cols = [ r[ "name" ] for r in cur.fetchall( ) ]
-			editable_cols = [ c for c in all_cols if c.lower( ) != "id" ]
-
-			# -----------------------------
-			# Search / Sort Controls
-			# -----------------------------
-			with st.expander( "Search / Sort", expanded=True ):
-				c1, c2, c3 = st.columns( [ 2, 1, 1 ] )
-
-				with c1:
-					st.session_state.pe_search = st.text_input(
-						"Search (text contains)",
-						value=st.session_state.pe_search,
-					)
-
-				with c2:
-					st.session_state.pe_sort_col = st.selectbox(
-						"Sort Column",
-						options=all_cols,
-						index=all_cols.index( st.session_state.pe_sort_col )
-						if st.session_state.pe_sort_col in all_cols else 0,
-					)
-
-				with c3:
-					st.session_state.pe_sort_dir = st.selectbox(
-						"Direction",
-						[ "ASC", "DESC" ],
-						index=0 if st.session_state.pe_sort_dir == "ASC" else 1,
-					)
-
-			# -----------------------------
-			# Pagination controls
-			# -----------------------------
-			pc1, pc2, pc3, pc4, pc5 = st.columns( [ 1, 1, 1, 1, 2 ] )
-			with pc1:
-				if st.button( "⏮" ):
-					st.session_state.pe_page = 1
-			with pc2:
-				if st.button( "◀" ) and st.session_state.pe_page > 1:
-					st.session_state.pe_page -= 1
-			with pc3:
-				if st.button( "▶" ):
-					st.session_state.pe_page += 1
-			with pc4:
-				if st.button( "⏭" ):
-					st.session_state.pe_page = 10**9
-			with pc5:
-				st.session_state.pe_page_size = st.selectbox(
-					"Rows / page",
-					[ 5, 10, 25, 50, 100 ],
-					index=[ 5, 10, 25, 50, 100 ].index( st.session_state.pe_page_size ),
-				)
-
-			# -----------------------------
-			# WHERE clause (search)
-			# -----------------------------
-			where_sql = ""
-			params: list = [ ]
-
-			if st.session_state.pe_search:
-				likes = [ f"{c} LIKE ?" for c in editable_cols ]
-				where_sql = "WHERE " + " OR ".join( likes )
-				params.extend( [ f"%{st.session_state.pe_search}%" ] * len( editable_cols ) )
-
-			# -----------------------------
-			# Count total
-			# -----------------------------
-			cur.execute(
-				f"SELECT COUNT(*) AS cnt FROM Prompts {where_sql}",
-				params,
-			)
-			total_rows = int( cur.fetchone( )[ "cnt" ] )
-			total_pages = max(
-				1,
-				( total_rows + st.session_state.pe_page_size - 1 )
-				// st.session_state.pe_page_size,
-			)
-			st.session_state.pe_page = max(
-				1,
-				min( st.session_state.pe_page, total_pages ),
-			)
-
-			offset = ( st.session_state.pe_page - 1 ) * st.session_state.pe_page_size
-
-			# -----------------------------
-			# READ (paged + sorted)
-			# -----------------------------
-			cur.execute(
-				f"""
-				SELECT *
-				FROM Prompts
-				{where_sql}
-				ORDER BY {st.session_state.pe_sort_col} {st.session_state.pe_sort_dir}
-				LIMIT ? OFFSET ?
-				""",
-				params + [ st.session_state.pe_page_size, offset ],
-			)
-
-			rows = cur.fetchall( )
-			records = [ dict( r ) for r in rows ]
-
-			st.caption(
-				f"Page {st.session_state.pe_page} / {total_pages} • {total_rows} rows"
-			)
-
-			if records:
-				st.dataframe(
-					records,
-					use_container_width=True,
-					selection_mode="single-row",
-					on_select="rerun",
-					key="pe_table",
-				)
-
-				# Sync table selection → Edit/Delete
-				if st.session_state.pe_table and st.session_state.pe_table[ "selection" ][ "rows" ]:
-					idx = st.session_state.pe_table[ "selection" ][ "rows" ][ 0 ]
-					st.session_state.pe_selected_id = records[ idx ].get( "id" )
-
-			else:
-				st.info( "No matching prompts found." )
-
-			st.divider( )
-
-			# -----------------------------
-			# Jump to ID (global)
-			# -----------------------------
-			jump_prompt_id = st.number_input(
-				"Jump to PromptsId",
+		st.session_state.pe_selected_id = None
+	
+	# ----------------------------
+	# Control bar (ABOVE TABLE)
+	# ----------------------------
+	c1, c2, c3, c4 = st.columns( [ 4,
+	                               2,
+	                               2,
+	                               3 ] )
+	
+	with c1:
+		st.text_input(
+			"Search (Name/Text contains)",
+			key="pe_search",
+		)
+	
+	with c2:
+		st.selectbox(
+			"Sort by",
+			[ "PromptsId",
+			  "Name",
+			  "Version" ],
+			key="pe_sort_col",
+		)
+	
+	with c3:
+		st.selectbox(
+			"Direction",
+			[ "ASC",
+			  "DESC" ],
+			key="pe_sort_dir",
+		)
+	
+	with c4:
+		# Line 1: label
+		st.markdown(
+			"<div style='font-size:0.95rem; font-weight:600; margin-bottom:0.25rem;'>Go to ID</div>",
+			unsafe_allow_html=True,
+		)
+		
+		# Line 2: input + Go + Reset (tight group)
+		a1, a2, a3 = st.columns( [ 2,
+		                           1,
+		                           1 ] )
+		
+		with a1:
+			jump_id = st.number_input(
+				"Go to ID",
 				min_value=1,
 				step=1,
+				key="pe_jump_id",
+				label_visibility="collapsed",
 			)
-			
-			if st.button( "Go to PromptsId" ):
-				cur.execute(
-					f"""
-					SELECT PromptsId
-					FROM Prompts
-					{where_sql}
-					ORDER BY {st.session_state.pe_sort_col} {st.session_state.pe_sort_dir}
-					""",
-					params,
-				)
-				
-				all_ids = [ r[ "PromptsId" ] for r in cur.fetchall( ) ]
-				
-				if jump_prompt_id in all_ids:
-					idx = all_ids.index( jump_prompt_id )
-					st.session_state.pe_page = (idx // st.session_state.pe_page_size) + 1
-					st.session_state.pe_selected_id = jump_prompt_id
-					st.experimental_rerun( )
-				else:
-					st.warning( "PromptsId not found in current filter." )
-			
-			# -----------------------------
-			# CREATE
-			# -----------------------------
-			with st.expander( "Create Prompt", expanded=False ):
-				new_vals = { }
-				for col in editable_cols:
-					new_vals[ col ] = st.text_area( col, key=f"create_{col}" )
-
-				if st.button( "Create Prompt" ):
-					cols_sql = ", ".join( new_vals.keys( ) )
-					ph = ", ".join( [ "?" ] * len( new_vals ) )
-					cur.execute(
-						f"INSERT INTO Prompts ( {cols_sql} ) VALUES ( {ph} )",
-						list( new_vals.values( ) ),
+		
+		with a2:
+			if st.button( "Go", use_container_width=True ):
+				st.session_state.pe_selected_id = int( jump_id )
+				st.rerun( )
+		
+		with a3:
+			if st.button( "Undo", use_container_width=True ):
+				reset_controls( )
+				st.rerun( )
+	
+	# ----------------------------
+	# Load data
+	# ----------------------------
+	where = ""
+	params = [ ]
+	
+	if st.session_state.pe_search:
+		where = "WHERE Name LIKE ? OR Text LIKE ?"
+		s = f"%{st.session_state.pe_search}%"
+		params.extend( [ s,
+		                 s ] )
+	
+	offset = (st.session_state.pe_page - 1) * PAGE_SIZE
+	
+	query = f"""
+		SELECT PromptsId, Name, Text, Version, ID
+		FROM {TABLE}
+		{where}
+		ORDER BY {st.session_state.pe_sort_col} {st.session_state.pe_sort_dir}
+		LIMIT {PAGE_SIZE} OFFSET {offset}
+	"""
+	
+	count_query = f"SELECT COUNT(*) FROM {TABLE} {where}"
+	
+	with get_conn( ) as conn:
+		cur = conn.cursor( )
+		cur.execute( query, params )
+		rows = cur.fetchall( )
+		
+		cur.execute( count_query, params )
+		total_rows = cur.fetchone( )[ 0 ]
+	
+	total_pages = max( 1, math.ceil( total_rows / PAGE_SIZE ) )
+	
+	# ----------------------------
+	# Table display
+	# ----------------------------
+	table_data = [ ]
+	for r in rows:
+		table_data.append(
+			{
+					"Select": r[ 0 ] == st.session_state.pe_selected_id,
+					"PromptsId": r[ 0 ],
+					"Name": r[ 1 ],
+					"Text": r[ 2 ],
+					"Version": r[ 3 ],
+					"ID": r[ 4 ],
+			}
+		)
+	
+	edited = st.data_editor(
+		table_data,
+		use_container_width=True,
+		hide_index=True,
+		column_config={
+				"Select": st.column_config.CheckboxColumn( ) },
+	)
+	
+	for row in edited:
+		if row[ "Select" ]:
+			st.session_state.pe_selected_id = row[ "PromptsId" ]
+	
+	# ----------------------------
+	# Paging
+	# ----------------------------
+	p1, p2, p3 = st.columns( [ 1,
+	                           2,
+	                           1 ] )
+	
+	with p1:
+		if st.button( "◀ Prev" ) and st.session_state.pe_page > 1:
+			st.session_state.pe_page -= 1
+			st.rerun( )
+	
+	with p2:
+		st.markdown( f"Page **{st.session_state.pe_page}** of **{total_pages}**" )
+	
+	with p3:
+		if st.button( "Next ▶" ) and st.session_state.pe_page < total_pages:
+			st.session_state.pe_page += 1
+			st.rerun( )
+	
+	st.divider( )
+	
+	# ----------------------------
+	# Create / Edit form
+	# ----------------------------
+	selected = None
+	if st.session_state.pe_selected_id:
+		with get_conn( ) as conn:
+			cur = conn.cursor( )
+			cur.execute(
+				f"SELECT PromptsId, Name, Text, Version FROM {TABLE} WHERE PromptsId=?",
+				(st.session_state.pe_selected_id,),
+			)
+			selected = cur.fetchone( )
+	
+	with st.expander( "Create / Edit Prompt", expanded=True ):
+		pid = st.text_input( "PromptsId", value=selected[ 0 ] if selected else "", disabled=True )
+		name = st.text_input( "Name", value=selected[ 1 ] if selected else "" )
+		text = st.text_area( "Text", value=selected[ 2 ] if selected else "", height=200 )
+		version = st.number_input( "Version", min_value=1, value=selected[ 3 ] if selected else 1 )
+		
+		b1, b2, b3 = st.columns( [ 1,
+		                           1,
+		                           1 ] )
+		
+		with b1:
+			if st.button( "Save Changes" if selected else "Create Prompt" ):
+				with get_conn( ) as conn:
+					cur = conn.cursor( )
+					if selected:
+						cur.execute(
+							f"""
+							UPDATE {TABLE}
+							SET Name=?, Text=?, Version=?
+							WHERE PromptsId=?
+							""",
+							(name, text, version, selected[ 0 ]),
+						)
+					else:
+						cur.execute(
+							f"""
+							INSERT INTO {TABLE} (Name, Text, Version)
+							VALUES (?, ?, ?)
+							""",
+							(name, text, version),
+						)
+					conn.commit( )
+				st.success( "Saved." )
+				st.rerun( )
+		
+		with b2:
+			if selected and st.button( "Delete" ):
+				with get_conn( ) as conn:
+					conn.execute(
+						f"DELETE FROM {TABLE} WHERE PromptsId=?",
+						(selected[ 0 ],),
 					)
 					conn.commit( )
-					st.success( "Prompt created." )
-					st.experimental_rerun( )
-
-			# -----------------------------
-			# UPDATE / DELETE (synced)
-			# -----------------------------
-			if st.session_state.pe_selected_id:
-				cur.execute(
-					"SELECT * FROM Prompts WHERE id = ?",
-					( st.session_state.pe_selected_id, ),
-				)
-				selected = cur.fetchone( )
-
-				if selected:
-					st.subheader( f"Edit / Delete Prompt ID {selected['id']}" )
-
-					update_vals = { }
-					for col in editable_cols:
-						update_vals[ col ] = st.text_area(
-							col,
-							value=str( selected[ col ] ),
-							key=f"edit_{col}",
-						)
-
-					u1, u2 = st.columns( [ 1, 1 ] )
-
-					with u1:
-						if st.button( "Update Prompt" ):
-							set_sql = ", ".join( [ f"{c}=?" for c in update_vals ] )
-							cur.execute(
-								f"UPDATE Prompts SET {set_sql} WHERE id = ?",
-								list( update_vals.values( ) ) + [ selected[ "id" ] ],
-							)
-							conn.commit( )
-							st.success( "Updated." )
-							st.experimental_rerun( )
-
-					with u2:
-						if st.button( "Delete Prompt" ):
-							cur.execute(
-								"DELETE FROM Prompts WHERE id = ?",
-								( selected[ "id" ], ),
-							)
-							conn.commit( )
-							st.success( "Deleted." )
-							st.session_state.pe_selected_id = None
-							st.experimental_rerun( )
-
-			conn.close( )
-
-		except Exception as exc:
-			st.error( f"SQLite error: {exc}" )
-
+				reset_controls( )
+				st.success( "Deleted." )
+				st.rerun( )
+		
+		with b3:
+			if st.button( "Clear Selection" ):
+				reset_controls( )
+				st.rerun( )
 
 # ======================================================================================
 # DOCUMENTS MODE
@@ -1108,7 +1100,8 @@ if mode == "Documents":
 						answer = None
 						if hasattr( chat, "summarize_document" ):
 							try:
-								answer = chat.summarize_document( prompt=question, pdf_path=selected_path )
+								answer = chat.summarize_document( prompt=question,
+									pdf_path=selected_path )
 							except TypeError:
 								answer = chat.summarize_document( question, selected_path )
 						elif hasattr( chat, "ask_document" ):
@@ -1134,7 +1127,8 @@ if mode == "Documents":
 					except Exception as e:
 						st.error( f"Document Q&A failed: {e}" )
 	else:
-		st.info( "No client-side documents uploaded this session. Use the uploader in the sidebar to add files." )
+		st.info( "No client-side documents uploaded this session. Use the uploader in the sidebar "
+		         "to add files." )
 
 # ======================================================================================
 # FILES API MODE
@@ -1180,7 +1174,8 @@ if mode == "Files":
 	
 	if st.button( "List files" ):
 		if not list_method:
-			st.warning( "No file-listing method found on chat object (expected retrieve_files/list_files)." )
+			st.warning( "No file-listing method found on chat object (expected "
+			            "retrieve_files/list_files)." )
 		else:
 			with st.spinner( "Listing files..." ):
 				try:
@@ -1201,9 +1196,12 @@ if mode == "Files":
 					rows = [ ]
 					for f in files_list:
 						try:
-							fid = f.get( "id" ) if isinstance( f, dict ) else getattr( f, "id", None )
-							name = f.get( "filename" ) if isinstance( f, dict ) else getattr( f, "filename", None )
-							purpose = f.get( "purpose" ) if isinstance( f, dict ) else getattr( f, "purpose", None )
+							fid = f.get( "id" ) if isinstance( f, dict ) else getattr( f, "id",
+								None )
+							name = f.get( "filename" ) if isinstance( f, dict ) else getattr( f,
+								"filename", None )
+							purpose = f.get( "purpose" ) if isinstance( f, dict ) else getattr( f,
+								"purpose", None )
 						except Exception:
 							fid = None
 							name = str( f )
