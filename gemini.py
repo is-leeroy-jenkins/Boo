@@ -607,7 +607,7 @@ class Embedding( Gemini ):
 	file_path: Optional[ str ]
 	response_modalities: Optional[ str ]
 	
-	def __init__( self, model: str = 'text-embedding-004', version: str='v1alpha',
+	def __init__( self, model: str='text-embedding-004', version: str='v1alpha',
 			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
 			presence: float=0.0, max_tokens: int=10000 ):
 		super( ).__init__( )
