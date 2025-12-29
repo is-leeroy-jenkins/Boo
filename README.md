@@ -23,20 +23,29 @@ and federal applications in mind, it enables secure, scalable, and intelligent a
 - Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
 - Web & File Search: Built-in support for semantic document and web search.
 
-  
-## 🧠 Large Lanugage Models
-##### Fine-Tuned Models Large Language Models customized for Retreival Augmentation in different domains:
-- [Leeroy](https://huggingface.co/leeroy-jankins/leeroy) - A customized LLM for federal budgeting based on Llama 3.2  
-[![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/leeroy) 
+## ⚙️ LLMs 
+
+### 🧠 [Leeroy](https://huggingface.co/leeroy-jankins/leeroy) 
+#### A customized LLM for federal budgeting based on Llama 3.2  
+
+- [![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)](https://leeroy-py.streamlit.app/)
+- [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/leeroy) 
+___
+
+### 🧠  [Bro](https://huggingface.co/leeroy-jankins/bro) 
+#### A customized LLM for federal accounting  based on Gemma-3 
+- [![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)](https://bro-py.streamlit.app/)
+- [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/bro)
+
+___
+### 🧠  [Bubba](https://huggingface.co/leeroy-jankins/bubba) 
+####  A general-purpose LLM based on ChatGPT-5   
+
+- [![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)](https://gipity.streamlit.app/)
+- [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/bubba) 
 
 
-- [Bro](https://huggingface.co/leeroy-jankins/bro) - A customized LLM for federal accounting  based on Gemma-3  
-[![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/bro)
-
-
-- [Bubba](https://huggingface.co/leeroy-jankins/bubba) - A general-purpose LLM based on ChatGPT-5   
-[![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/bubba) 
-
+___
 ## 🧭 Table of Contents
 
 - 🧰 [Overview](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-overview)
