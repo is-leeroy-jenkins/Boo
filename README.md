@@ -146,7 +146,7 @@ framework logic.
 
 [![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)](https://boo-py.streamlit.app/)
 
-![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/Boo-streamlit.gif)
+![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Boo-streamlit.gif)
 
 
 ## Supported Capabilities
