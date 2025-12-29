@@ -4,10 +4,9 @@
 
 
 A Python framework for building, deploying, and managing AI-powered assistants
-tailored for federal data analysis, budget execution, and data science. Boo integrates OpenAI's GPT, 
-Google's Gemma, xAI's Groq, and Meta's Llama models with multimodal support for text, image, audio, and file analysis 
-and is designed with extensibility and federal applications in mind, it enables secure, scalable, and intelligent
-automation of analytical tasks.
+tailored for federal data analysis, budget execution, and data science. Boo integrates OpenAI's GPT-5
+with multimodal support for text, image, audio, and file analysis and is designed with extensibility 
+and federal applications in mind, it enables secure, scalable, and intelligent automation of analytical tasks.
 
 ## 🛠️ Features
 
