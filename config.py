@@ -86,7 +86,7 @@ MODELS = [ 'gpt-5-nano-2025-08-07', 'gpt-4.1-nano-2025-04-14', 'gpt-4o-mini', ]
 DEFAULT_MODEL = MODELS[ 0 ]
 SQLALCHEMY_DATABASE_URI = f'sqlite:///' + r'C:\Users\terry\source\repos\Boo\stores\sqlite\datamodels\Data.db'
 BASE_DIR = Path(__file__).resolve().parent
-FAVICON_PATH = BASE_DIR / 'resources' / 'ico' / 'favicon.ico'
+FAVICON_PATH = BASE_DIR / 'resources' / 'images' / 'favicon.ico'
 
 def set_environment( ):
 	"""

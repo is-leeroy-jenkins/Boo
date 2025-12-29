@@ -18,11 +18,11 @@ import math
 import streamlit as st
 from typing import List, Dict, Any, Optional
 
-from gemini import (
+from gpt import (
 	Chat,
 	Images,
 	Embedding,
-	FileStore,
+	VectorStore,
 	Transcription,
 	Translation,
 	TTS,
