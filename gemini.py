@@ -96,9 +96,7 @@ class Gemini( ):
 
 	'''
 	number: Optional[ int ]
-	project_id: Optional[ str ]
 	api_key: Optional[ str ]
-	cloud_location: Optional[ str ]
 	instructions: Optional[ str ]
 	prompt: Optional[ str ]
 	model: Optional[ str ]
@@ -122,8 +120,6 @@ class Gemini( ):
 	
 	def __init__( self ):
 		self.api_key = cfg.GOOGLE_API_KEY
-		self.project_id = cfg.GOOGLE_CLOUD_PROJECT
-		self.cloud_location = cfg.GOOGLE_CLOUD_LOCATION
 		self.model = None;
 		self.content_config = None;
 		self.image_config = None
@@ -181,13 +177,13 @@ class FileStore( Gemini ):
 	response: Optional[ Any ]
 	use_vertex: Optional[ bool ]
 	
-	def __init__( self, use_ai: bool=True, version: str='v1alpha' ):
+	def __init__( self, use_ai: bool=False, version: str='v1alpha' ):
 		super( ).__init__( )
 		self.use_vertex = use_ai
 		self.api_version = version
 		self.http_options = HttpOptions( api_version=self.api_version )
 		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
-			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
+			http_options=self.http_options )
 		self.file_id = None;
 		self.display_name = None;
 		self.mime_type = None
@@ -327,7 +323,7 @@ class Chat( Gemini ):
 	response_modalities: Optional[ List[ str ] ]
 	
 	def __init__( self, n: int=1, model: str = 'gemini-2.0-flash', version: str='v1alpha',
-			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
+			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
 			instruct: str=None, contents: List[ str ] = None ):
 		super( ).__init__( )
@@ -345,7 +341,7 @@ class Chat( Gemini ):
 		self.contents = contents
 		self.http_options = HttpOptions( api_version=self.api_version )
 		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
-			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
+			http_options=self.http_options )
 		self.response_modalities = [ 'TEXT', 'IMAGE' ]
 		self.content_config = None;
 		self.image_config = None;
@@ -608,7 +604,7 @@ class Embedding( Gemini ):
 	response_modalities: Optional[ str ]
 	
 	def __init__( self, model: str='text-embedding-004', version: str='v1alpha',
-			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
 			presence: float=0.0, max_tokens: int=10000 ):
 		super( ).__init__( )
 		self.model = model
@@ -621,7 +617,7 @@ class Embedding( Gemini ):
 		self.max_tokens = max_tokens
 		self.http_options = HttpOptions( api_version=self.api_version )
 		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
-			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
+			http_options=self.http_options )
 		self.embedding = None;
 		self.response = None;
 		self.encoding_format = None
@@ -705,8 +701,8 @@ class TTS( Gemini ):
 	input_text: Optional[ str ]
 	use_vertex: Optional[ bool ]
 	
-	def __init__( self, n: int=1, model: str = 'gemini-2.0-flash', version: str='v1alpha',
-			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+	def __init__( self, n: int=1, model: str='gemini-2.0-flash', version: str='v1alpha',
+			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
 			presence: float=0.0, max_tokens: int=10000, instruct: str=None ):
 		super( ).__init__( )
 		self.number = n
@@ -721,7 +717,7 @@ class TTS( Gemini ):
 		self.instructions = instruct
 		self.http_options = HttpOptions( api_version=self.api_version )
 		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
-			project=self.project_id, location=self.cloud_location, http_options=self.http_options )
+			http_options=self.http_options )
 		self.voice = 'Puck'
 		self.speed = 1.0
 		self.response_format = 'MP3'
@@ -817,8 +813,8 @@ class Transcription( Gemini ):
 	file_path: Optional[ str ]
 	use_vertex: Optional[ bool ]
 	
-	def __init__( self, n: int=1, model: str = 'gemini-2.0-flash', version: str='v1alpha',
-			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+	def __init__( self, n: int=1, model: str='gemini-2.0-flash', version: str='v1alpha',
+			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
 			presence: float=0.0, max_tokens: int=10000, instruct: str=None ):
 		super( ).__init__( )
 		self.number = n
@@ -832,7 +828,6 @@ class Transcription( Gemini ):
 		self.max_tokens = max_tokens
 		self.instructions = instruct
 		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
-			project=self.project_id, location=self.cloud_location,
 			http_options=HttpOptions( api_version=self.api_version ) )
 		self.transcript = None
 		self.file_path = None
@@ -844,7 +839,17 @@ class Transcription( Gemini ):
 		return [ 'gemini-2.0-flash',
 		         'gemini-1.5-flash' ]
 	
-	def transcribe( self, path: str, model: str = 'gemini-2.0-flash' ) -> Optional[ str ]:
+	@property
+	def language_options( self ) -> List[ str ] | None:
+		"""Returns list of available target languages."""
+		return [ 'English',
+		         'Spanish',
+		         'French',
+		         'Japanese',
+		         'German',
+		         'Chinese' ]
+	
+	def transcribe( self, path: str, model: str='gemini-2.0-flash' ) -> Optional[ str ]:
 		"""
 			
 			Purpose:
@@ -911,7 +916,7 @@ class Translation( Gemini ):
 	use_vertex: Optional[ bool ]
 	
 	def __init__( self, n: int=1, model: str = 'gemini-2.0-flash', version: str='v1alpha',
-			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
+			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
 			instruct: str=None ):
 		super( ).__init__( )
@@ -926,7 +931,6 @@ class Translation( Gemini ):
 		self.max_tokens = max_tokens
 		self.instructions = instruct
 		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
-			project=self.project_id, location=self.cloud_location,
 			http_options=HttpOptions( api_version=self.api_version ) )
 		self.target_language = None
 		self.source_language = None
@@ -1006,7 +1010,7 @@ class Images( Gemini ):
 	use_vertex: Optional[ bool ]
 	
 	def __init__( self, n: int=1, model: str='imagen-3.0-generate-001', version: str='v1alpha',
-			use_ai: bool=True, temperature: float=0.8, top_p: float=0.9,
+			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
 			instruct: str=None ):
 		super( ).__init__( )
@@ -1020,8 +1024,8 @@ class Images( Gemini ):
 		self.presence_penalty = presence
 		self.max_tokens = max_tokens
 		self.instructions = instruct
-		self.client = genai.Client( vertexai=True, project=self.project_id,
-			location=self.cloud_location, http_options=HttpOptions( api_version=self.api_version ) )
+		self.client = genai.Client( vertexai=self.use_vertex,
+			http_options=HttpOptions( api_version=self.api_version ) )
 		self.aspect_ratio = '1:1'
 		self.genimg_config = None
 	
