@@ -1,5 +1,5 @@
 ###### Boo
-<img src="https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/img/github/Boo.gif" width="800" height="200"/>
+<img src="https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/boo_project.png" width="800" height="200"/>
 
 
 
