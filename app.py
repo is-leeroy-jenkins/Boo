@@ -3,29 +3,27 @@
 # Filename:                app.py
 # Author:                  Terry D. Eppler (integration)
 # Created:                 12-16-2025
-# Notes:                   Gemini-only implementation (replaces gpt.py integration).
-#                          Prompt Engineering mode retained (SQLite CRUD + paging).
+# Notes:                   Restored Parameters section for Text mode and wired parameters
+#                          into generation call defensively. Minimal other edits.
 # ******************************************************************************************
 
 from __future__ import annotations
 
 import config as cfg
-import os
-import sqlite3
-import tempfile
-import math
-
 import streamlit as st
+import tempfile
 from typing import List, Dict, Any, Optional
+
+# ADDITIVE ONLY (for Prompt Engineering)
+import sqlite3
+import os
 
 from gpt import (
 	Chat,
 	Image,
 	Embedding,
-	VectorStore,
 	Transcription,
 	Translation,
-	TTS,
 )
 
 # ======================================================================================
@@ -58,7 +56,7 @@ if "token_usage" not in st.session_state:
 if "files" not in st.session_state:
 	st.session_state.files: List[ str ] = [ ]
 
-# Per-mode model keys (deterministic header behavior)
+# Per-mode model keys (deterministic header behavior) - chat -> text
 if "text_model" not in st.session_state:
 	st.session_state[ "text_model" ] = None
 if "image_model" not in st.session_state:
@@ -68,10 +66,6 @@ if "audio_model" not in st.session_state:
 if "embed_model" not in st.session_state:
 	st.session_state[ "embed_model" ] = None
 
-# Gemini API version
-if "gemini_version" not in st.session_state:
-	st.session_state[ "gemini_version" ] = getattr( cfg, "GOOGLE_API_VERSION", "v1alpha" )
-
 # Temperature / top_p / other generation params defaults (Text controls)
 if "temperature" not in st.session_state:
 	st.session_state[ "temperature" ] = 0.7
@@ -79,14 +73,24 @@ if "top_p" not in st.session_state:
 	st.session_state[ "top_p" ] = 1.0
 if "max_tokens" not in st.session_state:
 	st.session_state[ "max_tokens" ] = 512
+if "freq_penalty" not in st.session_state:
+	st.session_state[ "freq_penalty" ] = 0.0
+if "pres_penalty" not in st.session_state:
+	st.session_state[ "pres_penalty" ] = 0.0
+if "stop_sequences" not in st.session_state:
+	st.session_state[ "stop_sequences" ] = [ ]
 
-# Optional knobs (Gemini wrappers expose these as attributes)
-if "candidate_count" not in st.session_state:
-	st.session_state[ "candidate_count" ] = 1
+# Provider default
+if "provider" not in st.session_state:
+	st.session_state[ "provider" ] = "GPT"
 
-# Session-only API Key override (Gemini only)
-if "gemini_api_key" not in st.session_state:
-	st.session_state[ "gemini_api_key" ] = ""
+if "api_keys" not in st.session_state:
+	st.session_state.api_keys = \
+		{
+				"GPT": None,
+				"Groq": None,
+				"Gemini": None,
+		}
 
 # ======================================================================================
 # Utilities
@@ -109,49 +113,44 @@ def _extract_usage_from_response( resp: Any ) -> Dict[ str, int ]:
 			"total_tokens": 0 }
 	if not resp:
 		return usage
-
+	
 	raw = None
 	try:
 		raw = getattr( resp, "usage", None )
 	except Exception:
 		raw = None
-
+	
 	if not raw and isinstance( resp, dict ):
 		raw = resp.get( "usage" )
-
-	# Gemini SDK commonly uses "usage_metadata"
-	if not raw and isinstance( resp, dict ):
-		raw = resp.get( "usage_metadata" )
-
-	if not raw:
+	
+	# Fallback: try typical nested places
+	if not raw and isinstance( resp, dict ) and resp.get( "choices" ):
 		try:
-			raw = getattr( resp, "usage_metadata", None )
+			raw = resp[ "choices" ][ 0 ].get( "usage" )
 		except Exception:
 			raw = None
-
+	
 	if not raw:
 		return usage
-
+	
 	try:
 		if isinstance( raw, dict ):
-			usage[ "prompt_tokens" ] = int( raw.get( "prompt_tokens", raw.get( "input_tokens", 0 ) ) )
-			usage[ "completion_tokens" ] = int(
-				raw.get( "completion_tokens", raw.get( "output_tokens", 0 ) )
-			)
-			usage[ "total_tokens" ] = int(
-				raw.get( "total_tokens", usage[ "prompt_tokens" ] + usage[ "completion_tokens" ] )
-			)
+			usage[ "prompt_tokens" ] = int( raw.get( "prompt_tokens", 0 ) )
+			usage[
+				"completion_tokens" ] = int( raw.get( "completion_tokens", raw.get(
+				"output_tokens", 0 ) ) )
+			usage[ "total_tokens" ] = int( raw.get( "total_tokens",
+				usage[ "prompt_tokens" ] + usage[ "completion_tokens" ] ) )
 		else:
-			usage[ "prompt_tokens" ] = int( getattr( raw, "prompt_tokens", getattr( raw, "input_tokens", 0 ) ) )
-			usage[ "completion_tokens" ] = int(
-				getattr( raw, "completion_tokens", getattr( raw, "output_tokens", 0 ) )
-			)
-			usage[ "total_tokens" ] = int(
-				getattr( raw, "total_tokens", usage[ "prompt_tokens" ] + usage[ "completion_tokens" ] )
-			)
+			usage[ "prompt_tokens" ] = int( getattr( raw, "prompt_tokens", 0 ) )
+			usage[
+				"completion_tokens" ] = int( getattr( raw, "completion_tokens", getattr( raw,
+				"output_tokens", 0 ) ) )
+			usage[ "total_tokens" ] = int( getattr( raw, "total_tokens",
+				usage[ "prompt_tokens" ] + usage[ "completion_tokens" ] ) )
 	except Exception:
 		usage[ "total_tokens" ] = usage[ "prompt_tokens" ] + usage[ "completion_tokens" ]
-
+	
 	return usage
 
 def _update_token_counters( resp: Any ) -> None:
@@ -176,50 +175,107 @@ def _display_value( val: Any ) -> str:
 	except Exception:
 		return "—"
 
-def resolve_gemini_api_key( ) -> Optional[ str ]:
+def get_active_api_key( ) -> Optional[ str ]:
 	"""
-	Resolve Gemini API key using the following precedence:
+	Return the API key for the currently selected provider, if supplied
+	by the user in this session.
+	"""
+	provider = st.session_state.get( "provider" )
+	return st.session_state.api_keys.get( provider )
+
+def resolve_api_key( provider: str ) -> Optional[ str ]:
+	"""
+	Resolve API key using the following precedence:
 	1) Session override (user-entered)
 	2) config.py default
 	3) Environment variable (optional fallback)
 	"""
-	session_key = st.session_state.get( "gemini_api_key" )
+	
+	# 1️⃣ Session override
+	session_key = st.session_state.get( "api_keys", { } ).get( provider )
 	if session_key:
 		return session_key
-
-	cfg_key = getattr( cfg, "GOOGLE_API_KEY", None )
-	if cfg_key:
-		return cfg_key
-
-	return os.environ.get( "GOOGLE_API_KEY" )
-
-def _apply_gemini_runtime_config( ) -> None:
-	"""
-	Ensure Gemini client initializes in API-key mode (not Vertex AI).
-
-	This avoids: "Project/location and API key are mutually exclusive in the client initializer."
-	"""
-	key = resolve_gemini_api_key( )
-	if key:
-		os.environ[ "GOOGLE_API_KEY" ] = key
-
-	# Ensure project/location do not get passed when using API key mode.
-	# gemini.py reads these from the shared config module at runtime.
-	try:
-		setattr( cfg, "GOOGLE_CLOUD_PROJECT", None )
-	except Exception:
-		pass
-	try:
-		setattr( cfg, "GOOGLE_CLOUD_LOCATION", None )
-	except Exception:
-		pass
+	
+	# 2️⃣ config.py defaults
+	if provider == "GPT":
+		return getattr( cfg, "OPENAI_API_KEY", None )
+	if provider == "Groq":
+		return getattr( cfg, "GROQ_API_KEY", None )
+	if provider == "Gemini":
+		return getattr( cfg, "GEMINI_API_KEY", None )
+	
+	# 3️⃣ Optional env fallback
+	env_map = {
+			"GPT": "OPENAI_API_KEY",
+			"Groq": "GROQ_API_KEY",
+			"Gemini": "GEMINI_API_KEY",
+	}
+	return os.environ.get( env_map.get( provider, "" ) )
 
 # ======================================================================================
-# Sidebar — Mode selector + Session controls + Gemini key/version controls
+# Sidebar — Provider selector above Mode, then Mode selector.
 # ======================================================================================
 with st.sidebar:
+	# Provider selector (visible, non-invasive UI only)
+	st.subheader( "Provider" )
+	
+	# thin blue divider immediately under the "Provider" text (before selectbox)
+	st.markdown(
+		"""
+		<div style="height:2px;border-radius:3px;background:#0078FC;margin:6px 0 10px 0;"></div>
+		""",
+		unsafe_allow_html=True,
+	)
+	
+	provider = st.selectbox(
+		"Choose provider",
+		[ "GPT",
+		  "Gemini",
+		  "Groq" ],
+		index=[ "GPT",
+		        "Gemini",
+		        "Groq" ].index( st.session_state.get( "provider", "GPT" ) ),
+	)
+	st.session_state[ "provider" ] = provider
+	
+	# ------------------------------------------------------------------
+	# API Key (session-only, provider-specific)
+	# ------------------------------------------------------------------
+	st.markdown( "### API Key" )
+	
+	active_provider = st.session_state.get( "provider" )
+	
+	key_label_map = {
+			"GPT": "OpenAI API Key",
+			"Groq": "Groq API Key",
+			"Gemini": "Gemini API Key",
+	}
+	
+	api_key_input = st.text_input(
+		key_label_map.get( active_provider, "API Key" ),
+		type="password",
+		value=st.session_state.api_keys.get( active_provider ) or "",
+		help="Stored for this session only. Not written to disk.",
+	)
+	
+	if api_key_input:
+		st.session_state.api_keys[ active_provider ] = api_key_input
+	
+	active_provider = st.session_state.get( "provider" )
+	active_key = resolve_api_key( active_provider )
+	
+	if active_key:
+		source = (
+				"Session override"
+				if st.session_state.api_keys.get( active_provider )
+				else "config.py"
+		)
+		st.caption( f"Using API key from: {source}" )
+	else:
+		st.warning( "No API key found for this provider." )
+	
 	st.header( "Mode" )
-
+	
 	# thin blue strip directly under "Mode"
 	st.markdown(
 		"""
@@ -227,20 +283,22 @@ with st.sidebar:
 		""",
 		unsafe_allow_html=True,
 	)
-
+	
 	mode = st.radio(
 		"Select capability",
 		[ "Text",
-		  "Image",
+		  "Images",
 		  "Audio",
 		  "Embeddings",
 		  "Documents",
 		  "Files",
+		  "Vector Store",
 		  "Prompt Engineering" ],
 	)
-
+	
 	# Horizontal session controls (short buttons)
-	c1, c2 = st.columns( [ 1, 1 ] )
+	c1, c2 = st.columns( [ 1,
+	                       1 ] )
 	with c1:
 		if st.button( "Clear", key="session_clear_btn", use_container_width=True ):
 			st.session_state.messages.clear( )
@@ -258,8 +316,8 @@ with st.sidebar:
 					"completion_tokens": 0,
 					"total_tokens": 0 }
 			st.success( "Created!" )
-
-	# second thin blue divider (restored)
+	
+	# Blue divider between session controls and mode-settings
 	st.markdown(
 		"""
 		<div style="height:2px;border-radius:4px;background:#0078FC;margin:12px 0;"></div>
@@ -267,41 +325,8 @@ with st.sidebar:
 		unsafe_allow_html=True,
 	)
 
-	# Gemini API version + key (session override)
-	st.subheader( "Gemini Settings" )
-
-	# Version options from wrapper (fallback to config value)
-	try:
-		_tmp = Chat( use_ai=True, version=st.session_state.get( "gemini_version", "v1alpha" ) )
-		version_options = getattr( _tmp, "version_options", [ st.session_state.get( "gemini_version", "v1alpha" ) ] )
-	except Exception:
-		version_options = [ st.session_state.get( "gemini_version", "v1alpha" ) ]
-
-	st.selectbox(
-		"API Version",
-		options=version_options,
-		key="gemini_version",
-	)
-
-	api_key_input = st.text_input(
-		"Google API Key",
-		type="password",
-		value=st.session_state.get( "gemini_api_key", "" ) or "",
-		help="Stored for this session only. Not written to disk.",
-	)
-	st.session_state[ "gemini_api_key" ] = api_key_input
-
-	if resolve_gemini_api_key( ):
-		source = "Session override" if st.session_state.get( "gemini_api_key" ) else "config.py / env"
-		st.caption( f"Using API key from: {source}" )
-	else:
-		st.warning( "No API key found. Set GOOGLE_API_KEY in config.py or enter one above." )
-
-# Always apply runtime Gemini config before any client instantiation
-_apply_gemini_runtime_config( )
-
 # ======================================================================================
-# Dynamic Header — show mode and model relevant to the active mode
+# Dynamic Header — show provider and mode, and model relevant to the active mode
 # ======================================================================================
 _mode_to_model_key = {
 		"Text": "text_model",
@@ -310,20 +335,24 @@ _mode_to_model_key = {
 		"Embeddings": "embed_model",
 		"Documents": "text_model",
 		"Files": "text_model",
-		"Prompt Engineering": "text_model",
+		"Vector Store": "text_model",
 }
 
 model_key_for_header = _mode_to_model_key.get( mode, "text_model" )
 model_val = st.session_state.get( model_key_for_header, None )
 temperature_val = st.session_state.get( "temperature", None )
 top_p_val = st.session_state.get( "top_p", None )
+provider_val = st.session_state.get( "provider", None )
+
+header_label = provider_val if provider_val else "Boo"
 
 st.markdown(
 	f"""
     <div style="margin-bottom:0.25rem;">
-      <h3 style="margin:0;">Boo — {mode}</h3>
+      <h3 style="margin:0;">{header_label} — {mode}</h3>
       <div style="color:#9aa0a6; margin-top:6px; font-size:0.95rem;">
-        Model: {_display_value( model_val )} &nbsp;&nbsp;|&nbsp;&nbsp; Temp: {_display_value( temperature_val )} &nbsp;&nbsp;•&nbsp;&nbsp; Top-P: {_display_value( top_p_val )}
+        Model: {_display_value( model_val )} &nbsp;&nbsp;|&nbsp;&nbsp; Temp:
+{_display_value( temperature_val )} &nbsp;&nbsp;•&nbsp;&nbsp; Top-P: {_display_value( top_p_val )}
       </div>
     </div>
     """,
@@ -332,29 +361,31 @@ st.markdown(
 st.divider( )
 
 # ======================================================================================
-# TEXT MODE
+# TEXT MODE (formerly "Chat")
 # ======================================================================================
 if mode == "Text":
 	st.header( "" )
-
-	chat = Chat( use_ai=True, version=st.session_state.get( "gemini_version", "v1alpha" ) )
-
+	chat = Chat( )
+	
 	with st.sidebar:
-		st.header( "Text Settings" )
-
+		st.header( "Text Settings" )  # renamed from "Chat Settings"
+		
+		# Text model -> store into text_model
 		text_model = st.selectbox( "Model", chat.model_options )
 		st.session_state[ "text_model" ] = text_model
-
+		
+		# Parameters expander (restores the Parameters section)
 		with st.expander( "Parameters:", expanded=True ):
+			# Temperature and Top-P
 			temperature = st.slider(
 				"Temperature",
 				min_value=0.0,
-				max_value=2.0,
+				max_value=1.0,
 				value=float( st.session_state.get( "temperature", 0.7 ) ),
 				step=0.01,
 			)
 			st.session_state[ "temperature" ] = float( temperature )
-
+			
 			top_p = st.slider(
 				"Top-P",
 				min_value=0.0,
@@ -363,7 +394,8 @@ if mode == "Text":
 				step=0.01,
 			)
 			st.session_state[ "top_p" ] = float( top_p )
-
+			
+			# Max tokens
 			max_tokens = st.number_input(
 				"Max Tokens",
 				min_value=1,
@@ -371,61 +403,114 @@ if mode == "Text":
 				value=int( st.session_state.get( "max_tokens", 512 ) ),
 			)
 			st.session_state[ "max_tokens" ] = int( max_tokens )
-
-			candidate_count = st.number_input(
-				"Candidates",
-				min_value=1,
-				max_value=8,
-				value=int( st.session_state.get( "candidate_count", 1 ) ),
+			
+			# Frequency and presence penalties
+			freq_penalty = st.slider(
+				"Frequency Penalty",
+				min_value=-2.0,
+				max_value=2.0,
+				value=float( st.session_state.get( "freq_penalty", 0.0 ) ),
+				step=0.01,
 			)
-			st.session_state[ "candidate_count" ] = int( candidate_count )
-
-		include = st.multiselect( "Include:", getattr( chat, "include_options", [ ] ) )
-		try:
-			chat.include = include
-		except Exception:
-			pass
-
-	left, center, right = st.columns( [ 1, 2, 1 ] )
-
+			st.session_state[ "freq_penalty" ] = float( freq_penalty )
+			
+			pres_penalty = st.slider(
+				"Presence Penalty",
+				min_value=-2.0,
+				max_value=2.0,
+				value=float( st.session_state.get( "pres_penalty", 0.0 ) ),
+				step=0.01,
+			)
+			st.session_state[ "pres_penalty" ] = float( pres_penalty )
+			
+			# Stop sequences (one per line)
+			stop_text = st.text_area(
+				"Stop Sequences (one per line)",
+				value="\n".join( st.session_state.get( "stop_sequences", [ ] ) ),
+				height=80,
+			)
+			# normalize to list, stripping empty lines
+			st.session_state[ "stop_sequences" ] = [ s for s in (stop_text.splitlines( )) if
+			                                         s.strip( ) ]
+		
+		include = st.multiselect( "Include:", chat.include_options )
+		chat.include = include
+	
+	left, center, right = st.columns( [ 1,
+	                                    2,
+	                                    1 ] )
+	
 	with center:
 		for msg in st.session_state.messages:
 			with st.chat_message( msg[ "role" ] ):
 				st.markdown( msg[ "content" ] )
-
+		
 		prompt = st.chat_input( "Ask Boo something…" )
-
+		
 		if prompt:
 			st.session_state.messages.append( {
 					"role": "user",
 					"content": prompt } )
-
+			
 			with st.chat_message( "assistant" ):
 				with st.spinner( "Thinking…" ):
-					# Map UI controls to Gemini wrapper public properties
-					chat.model = text_model
-					chat.temperature = st.session_state.get( "temperature", 0.7 )
-					chat.top_p = st.session_state.get( "top_p", 1.0 )
-					chat.max_tokens = st.session_state.get( "max_tokens", 512 )
-					chat.number = st.session_state.get( "candidate_count", 1 )
-
+					# Build kwargs for generation from session_state
+					gen_kwargs: Dict[ str, Any ] = { }
+					# always include the model param
+					gen_kwargs[ "model" ] = text_model
+					# sampling params
+					if "temperature" in st.session_state:
+						gen_kwargs[ "temperature" ] = st.session_state[ "temperature" ]
+					if "top_p" in st.session_state:
+						gen_kwargs[ "top_p" ] = st.session_state[ "top_p" ]
+					# token limit
+					if "max_tokens" in st.session_state:
+						gen_kwargs[ "max_tokens" ] = st.session_state[ "max_tokens" ]
+					# penalties
+					if "freq_penalty" in st.session_state:
+						gen_kwargs[ "frequency_penalty" ] = st.session_state[ "freq_penalty" ]
+					if "pres_penalty" in st.session_state:
+						gen_kwargs[ "presence_penalty" ] = st.session_state[ "pres_penalty" ]
+					# stop sequences
+					if "stop_sequences" in st.session_state and st.session_state[
+						"stop_sequences" ]:
+						gen_kwargs[ "stop" ] = st.session_state[ "stop_sequences" ]
+					
 					response = None
 					try:
-						response = chat.generate_text( prompt=prompt )
+						try:
+							response = chat.generate_text( prompt=prompt, **gen_kwargs )
+						except TypeError:
+							try:
+								response = chat.generate_text(
+									prompt=prompt,
+									model=text_model,
+									temperature=st.session_state.get( "temperature", None ),
+									top_p=st.session_state.get( "top_p", None ),
+									max_tokens=st.session_state.get( "max_tokens", None ),
+									frequency_penalty=st.session_state.get( "freq_penalty", None ),
+									presence_penalty=st.session_state.get( "pres_penalty", None ),
+									stop=st.session_state.get( "stop_sequences", None ),
+								)
+							except TypeError:
+								response = chat.generate_text( prompt=prompt, model=text_model )
+						except Exception as exc:
+							st.error( f"Generation Failed: {exc}" )
+							response = None
 					except Exception as exc:
 						st.error( f"Generation Failed: {exc}" )
 						response = None
-
+					
 					st.markdown( response or "" )
 					st.session_state.messages.append( {
 							"role": "assistant",
 							"content": response or "" } )
-
+					
 					try:
-						_update_token_counters( getattr( chat, "usage", None ) or getattr( chat, "response", None ) or response )
+						_update_token_counters( getattr( chat, "response", None ) or response )
 					except Exception:
 						pass
-
+	
 	lcu = st.session_state.last_call_usage
 	tu = st.session_state.token_usage
 	if any( lcu.values( ) ):
@@ -443,276 +528,293 @@ if mode == "Text":
 # IMAGES MODE
 # ======================================================================================
 elif mode == "Image":
-	img = Image( use_ai=True, version=st.session_state.get( "gemini_version", "v1alpha" ) )
-
+	image = Image( )
 	with st.sidebar:
 		st.header( "Image Settings" )
-		image_model = st.selectbox( "Model", img.model_options )
+		image_model = st.selectbox( "Model", image.model_options )
 		st.session_state[ "image_model" ] = image_model
-
-		aspect = st.selectbox( "Aspect", img.aspect_options )
-		n = st.number_input( "Number", min_value=1, max_value=8, value=int( getattr( img, "number", 1 ) ) )
-
-	tab_gen, tab_analyze = st.tabs( [ "Generate", "Analyze" ] )
-
+		size = st.selectbox( "Size", image.size_options )
+		quality = st.selectbox( "Quality", image.quality_options )
+		fmt = st.selectbox( "Format", image.format_options )
+	
+	tab_gen, tab_analyze = st.tabs( [ "Generate",
+	                                  "Analyze" ] )
 	with tab_gen:
 		prompt = st.text_area( "Prompt" )
 		if st.button( "Generate Image" ):
 			with st.spinner( "Generating…" ):
 				try:
-					img.model = image_model
-					img.aspect = aspect
-					img.number = int( n )
-
-					# Image.generate returns a list of PIL images (per wrapper)
-					images = img.generate( prompt=prompt, aspect=aspect )
-					if not images:
-						st.warning( "No images returned." )
-					else:
-						for im in images:
-							st.image( im, use_container_width=True )
-
-					try:
-						_update_token_counters( getattr( img, "usage", None ) or getattr( img, "response", None ) )
-					except Exception:
-						pass
+					img_url = image.generate( prompt=prompt, model=image_model, size=size,
+						quality=quality, fmt=fmt )
+					st.image( img_url )
+					_update_token_counters( getattr( image, "response", None ) )
 				except Exception as exc:
 					st.error( f"Image generation failed: {exc}" )
-
 	with tab_analyze:
 		st.markdown( "Image analysis — upload an image to analyze." )
 		uploaded_img = st.file_uploader(
 			"Upload an image for analysis",
-			type=[ "png", "jpg", "jpeg", "webp" ],
+			type=[ "png",
+			       "jpg",
+			       "jpeg",
+			       "webp" ],
 			accept_multiple_files=False,
 			key="images_analyze_uploader",
 		)
-
+		
 		if uploaded_img:
 			tmp_path = save_temp( uploaded_img )
-			st.image( uploaded_img, caption="Uploaded image preview", use_container_width=True )
-			st.info( "Gemini image analysis is not exposed by this wrapper. (Generate-only)" )
+			st.image( uploaded_img, caption="Uploaded image preview", use_column_width=True )
+			
+			available_methods = [ ]
+			for candidate in (
+						"analyze",
+						"describe_image",
+						"describe",
+						"classify",
+						"detect_objects",
+						"caption",
+						"image_analysis",
+			):
+				if hasattr( image, candidate ):
+					available_methods.append( candidate )
+			
+			if available_methods:
+				chosen_method = st.selectbox( "Method", available_methods, index=0 )
+			else:
+				chosen_method = None
+				st.info( "No dedicated image analysis method found on Image object; attempting "
+				         "generic handlers." )
+			
+			chosen_model = st.selectbox( "Model (analysis)", [ image_model,
+			                                                   None ], index=0 )
+			if chosen_model is None:
+				chosen_model_arg = image_model
+			else:
+				chosen_model_arg = chosen_model
+			
+			if st.button( "Analyze Image" ):
+				with st.spinner( "Analyzing image…" ):
+					analysis_result = None
+					try:
+						if chosen_method:
+							func = getattr( image, chosen_method, None )
+							if func:
+								try:
+									analysis_result = func( tmp_path )
+								except TypeError:
+									try:
+										analysis_result = func( tmp_path, model=chosen_model_arg )
+									except TypeError:
+										try:
+											analysis_result = func( uploaded_img )
+										except Exception as inner_exc:
+											raise inner_exc
+						else:
+							for fallback in ("analyze", "describe_image", "describe", "caption"):
+								if hasattr( image, fallback ):
+									func = getattr( image, fallback )
+									try:
+										analysis_result = func( tmp_path )
+										break
+									except Exception:
+										try:
+											analysis_result = func( tmp_path,
+												model=chosen_model_arg )
+											break
+										except Exception:
+											continue
+						
+						if analysis_result is None:
+							for opt in ("analyze_image", "image_inspect"):
+								if hasattr( image, opt ):
+									func = getattr( image, opt )
+									try:
+										analysis_result = func( tmp_path )
+										break
+									except Exception:
+										continue
+						
+						if analysis_result is None:
+							st.warning( "No analysis output returned by the available methods." )
+						else:
+							if isinstance( analysis_result, (dict, list) ):
+								st.json( analysis_result )
+							else:
+								st.markdown( "**Analysis result:**" )
+								st.write( analysis_result )
+							
+							try:
+								_update_token_counters( getattr( image, "response", None ) or
+								                        analysis_result )
+							except Exception:
+								pass
+					
+					except Exception as exc:
+						st.error( f"Analysis Failed: {exc}" )
 
 # ======================================================================================
 # AUDIO MODE
 # ======================================================================================
 elif mode == "Audio":
-	transcriber = Transcription( use_ai=True, version=st.session_state.get( "gemini_version", "v1alpha" ) )
-	translator = Translation( use_ai=True, version=st.session_state.get( "gemini_version", "v1alpha" ) )
-	tts = TTS( use_ai=True, version=st.session_state.get( "gemini_version", "v1alpha" ) )
-
+	transcriber = Transcription( )
+	translator = Translation( )
+	
 	with st.sidebar:
 		st.header( "Audio Settings" )
-
-		task = st.selectbox( "Task", [ "Transcribe", "Translate", "Text-to-Speech" ] )
-
-		if task in ( "Transcribe", "Translate" ):
-			audio_model = st.selectbox( "Model", transcriber.model_options )
-			st.session_state[ "audio_model" ] = audio_model
-
-			language = st.selectbox( "Language", transcriber.language_options )
-		else:
-			tts_model = st.selectbox( "Model", tts.model_options )
-			voice = st.selectbox( "Voice", tts.voice_options )
-			speed = st.slider( "Speed", min_value=0.25, max_value=4.0, value=float( tts.speed ), step=0.05 )
-
-	left, center, right = st.columns( [ 1, 2, 1 ] )
-
+		audio_model = st.selectbox( "Model", transcriber.model_options )
+		st.session_state[ "audio_model" ] = audio_model
+		language = st.selectbox( "Language", transcriber.language_options )
+		task = st.selectbox( "Task", [ "Transcribe",
+		                               "Translate" ] )
+	
+	left, center, right = st.columns( [ 1,
+	                                    2,
+	                                    1 ] )
 	with center:
-		if task in ( "Transcribe", "Translate" ):
-			uploaded = st.file_uploader( "Upload audio file", type=[ "wav", "mp3", "m4a", "flac" ] )
-			if uploaded:
-				tmp = save_temp( uploaded )
-				if task == "Transcribe":
-					with st.spinner( "Transcribing…" ):
-						try:
-							transcriber.model = st.session_state.get( "audio_model" )
-							transcriber.language = language
-							text = transcriber.transcribe( tmp )
-							st.text_area( "Transcript", value=text, height=300 )
-						except Exception as exc:
-							st.error( f"Transcription failed: {exc}" )
-				else:
-					with st.spinner( "Translating…" ):
-						try:
-							translator.model = st.session_state.get( "audio_model" )
-							translator.language = language
-							text = translator.translate( tmp )
-							st.text_area( "Translation", value=text, height=300 )
-						except Exception as exc:
-							st.error( f"Translation failed: {exc}" )
-		else:
-			text_in = st.text_area( "Text" )
-			if st.button( "Generate Speech" ):
-				with st.spinner( "Generating…" ):
-					try:
-						tts.model = tts_model
-						tts.voice = voice
-						tts.speed = float( speed )
-						audio_bytes = tts.generate( text_in )
-						if audio_bytes:
-							st.audio( audio_bytes, format="audio/wav" )
-						else:
-							st.warning( "No audio returned." )
-					except Exception as exc:
-						st.error( f"TTS failed: {exc}" )
+		uploaded = st.file_uploader( "Upload audio file", type=[ "wav",
+		                                                         "mp3",
+		                                                         "m4a",
+		                                                         "flac" ] )
+		if uploaded:
+			tmp = save_temp( uploaded )
+			if task == "Transcribe":
+				with st.spinner( "Transcribing…" ):
+					text = transcriber.transcribe( tmp, model=audio_model )
+					st.text_area( "Transcript", value=text, height=300 )
+			else:
+				with st.spinner( "Translating…" ):
+					text = translator.translate( tmp )
+					st.text_area( "Translation", value=text, height=300 )
 
 # ======================================================================================
 # EMBEDDINGS MODE
 # ======================================================================================
 elif mode == "Embeddings":
-	embed = Embedding( use_ai=True, version=st.session_state.get( "gemini_version", "v1alpha" ) )
-
+	embed = Embedding( )
 	with st.sidebar:
 		st.header( "Embedding Settings" )
 		embed_model = st.selectbox( "Model", embed.model_options )
 		st.session_state[ "embed_model" ] = embed_model
-
-	left, center, right = st.columns( [ 1, 2, 1 ] )
-
+		method = st.selectbox( "Method", getattr( embed, "methods", [ "encode" ] ) )
+	
+	left, center, right = st.columns( [ 1,
+	                                    2,
+	                                    1 ] )
 	with center:
 		text = st.text_area( "Text to embed" )
 		if st.button( "Embed" ):
 			with st.spinner( "Embedding…" ):
-				try:
-					embed.model = embed_model
-					v = embed.generate( text )
-					st.write( "Vector length:", len( v ) )
-				except Exception as exc:
-					st.error( f"Embedding failed: {exc}" )
+				v = embed.create( text, model=embed_model )
+				st.write( "Vector length:", len( v ) )
 
 # ======================================================================================
-# FILES MODE (Gemini FileStore)
+# Vector Store MODE
 # ======================================================================================
-# ======================================================================================
-# FILE STORE MODE (Gemini)
-# ======================================================================================
-elif mode == "Files":
+elif mode == "Vector Store":
 	try:
 		chat  # type: ignore
 	except NameError:
-		chat = Chat()
-
-	st.subheader("Gemini File Store")
-
-	# --------------------------------------------------
-	# Upload File
-	# --------------------------------------------------
-	uploaded_file = st.file_uploader(
-		"Upload file to Gemini",
-		type=[
-			"pdf", "txt", "md", "docx",
-			"png", "jpg", "jpeg",
-			"csv", "json"
-		],
-	)
-
-	if uploaded_file:
-		tmp_path = save_temp(uploaded_file)
-
-		upload_fn = None
-		for name in ("upload_file", "upload", "files_upload", "create_file"):
-			if hasattr(chat, name):
-				upload_fn = getattr(chat, name)
-				break
-
-		if not upload_fn:
-			st.error("No file upload method found on Gemini client.")
-		else:
-			with st.spinner("Uploading to Gemini File Store…"):
+		chat = Chat( )
+	
+	vs_map = getattr( chat, "vector_stores", None )
+	if vs_map and isinstance( vs_map, dict ):
+		st.markdown( "**Known vector stores (local mapping)**" )
+		for name, vid in vs_map.items( ):
+			st.write( f"- **{name}** — `{vid}`" )
+		st.markdown( "---" )
+	
+	with st.expander( "Create Vector Store", expanded=False ):
+		new_store_name = st.text_input( "New store name" )
+		if st.button( "Create store" ):
+			if not new_store_name:
+				st.warning( "Enter a store name." )
+			else:
 				try:
-					file_id = upload_fn(tmp_path)
-					st.success(f"Uploaded successfully. File ID: {file_id}")
-				except Exception as exc:
-					st.error(f"Upload failed: {exc}")
-
-	st.divider()
-
-	# --------------------------------------------------
-	# List Files
-	# --------------------------------------------------
-	list_fn = None
-	for name in ("list_files", "retrieve_files", "files_list"):
-		if hasattr(chat, name):
-			list_fn = getattr(chat, name)
-			break
-
-	files_list = []
-
-	if list_fn:
-		if st.button("List Files"):
-			with st.spinner("Retrieving files…"):
-				try:
-					resp = list_fn()
-
-					if isinstance(resp, dict):
-						files_list = resp.get("files") or resp.get("data") or []
-					elif isinstance(resp, list):
-						files_list = resp
+					if hasattr( chat, "create_store" ):
+						res = chat.create_store( new_store_name )
+						st.success( f"Create call submitted for '{new_store_name}'." )
 					else:
-						files_list = getattr(resp, "files", []) or getattr(resp, "data", [])
-
+						st.warning( "create_store method not found on chat object." )
 				except Exception as exc:
-					st.error(f"List files failed: {exc}")
+					st.error( f"Create store failed: {exc}" )
+	
+	st.markdown( "**Manage Stores**" )
+	options: List[ tuple ] = [ ]
+	if vs_map and isinstance( vs_map, dict ):
+		options = list( vs_map.items( ) )
+	
+	if not options:
+		try:
+			client = getattr( chat, "client", None )
+			if client and hasattr( client, "vector_stores" ) and hasattr( client.vector_stores,
+					"list" ):
+				api_list = client.vector_stores.list( )
+				temp: List[ tuple ] = [ ]
+				for item in getattr( api_list, "data", [ ] ) or api_list:
+					nm = getattr( item, "name", None ) or (
+							item.get( "name" ) if isinstance( item, dict ) else None)
+					vid = getattr( item, "id", None ) or (
+							item.get( "id" ) if isinstance( item, dict ) else None)
+					if nm and vid:
+						temp.append( (nm, vid) )
+				if temp:
+					options = temp
+		except Exception:
+			options = [ ]
+	
+	if options:
+		names = [ f"{n} — {i}" for n, i in options ]
+		sel = st.selectbox( "Select a vector store", options=names )
+		sel_id: Optional[ str ] = None
+		sel_name: Optional[ str ] = None
+		for n, i in options:
+			label = f"{n} — {i}"
+			if label == sel:
+				sel_id = i
+				sel_name = n
+				break
+		
+		c1, c2 = st.columns( [ 1,
+		                       1 ] )
+		with c1:
+			if st.button( "Retrieve store" ):
+				try:
+					if sel_id and hasattr( chat, "retrieve_store" ):
+						vs = chat.retrieve_store( sel_id )
+						st.json( vs.__dict__ if hasattr( vs, "__dict__" ) else vs )
+					else:
+						st.warning( "retrieve_store not available on chat object or no store "
+						            "selected." )
+				except Exception as exc:
+					st.error( f"Retrieve failed: {exc}" )
+		
+		with c2:
+			if st.button( "Delete store" ):
+				try:
+					if sel_id and hasattr( chat, "delete_store" ):
+						res = chat.delete_store( sel_id )
+						st.success( f"Delete returned: {res}" )
+					else:
+						st.warning( "delete_store not available on chat object or no store "
+						            "selected." )
+				except Exception as exc:
+					st.error( f"Delete failed: {exc}" )
 	else:
-		st.warning("No file listing method found on Gemini client.")
-
-	# --------------------------------------------------
-	# Display Files
-	# --------------------------------------------------
-	if files_list:
-		rows = []
-		for f in files_list:
-			try:
-				rows.append({
-					"id": f.get("id") if isinstance(f, dict) else getattr(f, "id", None),
-					"name": f.get("name") if isinstance(f, dict) else getattr(f, "name", None),
-					"mime_type": f.get("mime_type") if isinstance(f, dict) else getattr(f, "mime_type", None),
-					"size": f.get("size") if isinstance(f, dict) else getattr(f, "size", None),
-				})
-			except Exception:
-				rows.append({"id": str(f)})
-
-		st.dataframe(rows, use_container_width=True)
-
-		st.divider()
-
-		# --------------------------------------------------
-		# Delete File
-		# --------------------------------------------------
-		file_ids = [r["id"] for r in rows if r.get("id")]
-		if file_ids:
-			selected_id = st.selectbox("Select file to delete", file_ids)
-
-			delete_fn = None
-			for name in ("delete_file", "files_delete", "remove_file"):
-				if hasattr(chat, name):
-					delete_fn = getattr(chat, name)
-					break
-
-			if st.button("Delete Selected File"):
-				if not delete_fn:
-					st.error("No delete method found on Gemini client.")
-				else:
-					with st.spinner("Deleting file…"):
-						try:
-							delete_fn(selected_id)
-							st.success("File deleted.")
-							st.rerun()
-						except Exception as exc:
-							st.error(f"Delete failed: {exc}")
-	else:
-		st.info("No files found in Gemini File Store.")
-
+		st.info( "No vector stores discovered. Create one or confirm `chat.vector_stores` mapping "
+		         "exists." )
 
 # ======================================================================================
 # PROMPT ENGINEERING MODE
 # ======================================================================================
 elif mode == "Prompt Engineering":
+	import sqlite3
+	import math
+	
 	DB_PATH = "stores/sqlite/datamodels/Data.db"
 	TABLE = "Prompts"
 	PAGE_SIZE = 10
-
+	
 	# ----------------------------
 	# Session state initialization
 	# ----------------------------
@@ -721,55 +823,63 @@ elif mode == "Prompt Engineering":
 	st.session_state.setdefault( "pe_sort_col", "PromptsId" )
 	st.session_state.setdefault( "pe_sort_dir", "ASC" )
 	st.session_state.setdefault( "pe_selected_id", None )
-	st.session_state.setdefault( "pe_jump_id", 1 )
-
+	
 	# ----------------------------
 	# Helpers
 	# ----------------------------
 	def get_conn( ):
 		return sqlite3.connect( DB_PATH )
-
+	
 	def reset_controls( ):
 		st.session_state.pe_page = 1
 		st.session_state.pe_search = ""
 		st.session_state.pe_sort_col = "PromptsId"
 		st.session_state.pe_sort_dir = "ASC"
 		st.session_state.pe_selected_id = None
-		st.session_state.pe_jump_id = 1
-
+	
 	# ----------------------------
 	# Control bar (ABOVE TABLE)
 	# ----------------------------
-	c1, c2, c3, c4 = st.columns( [ 4, 2, 2, 3 ] )
-
+	c1, c2, c3, c4 = st.columns( [ 4,
+	                               2,
+	                               2,
+	                               3 ] )
+	
 	with c1:
 		st.text_input(
 			"Search (Name/Text contains)",
 			key="pe_search",
 		)
-
+	
 	with c2:
 		st.selectbox(
 			"Sort by",
-			[ "PromptsId", "Name", "Version" ],
+			[ "PromptsId",
+			  "Name",
+			  "Version" ],
 			key="pe_sort_col",
 		)
-
+	
 	with c3:
 		st.selectbox(
 			"Direction",
-			[ "ASC", "DESC" ],
+			[ "ASC",
+			  "DESC" ],
 			key="pe_sort_dir",
 		)
-
+	
 	with c4:
+		# Line 1: label
 		st.markdown(
 			"<div style='font-size:0.95rem; font-weight:600; margin-bottom:0.25rem;'>Go to ID</div>",
 			unsafe_allow_html=True,
 		)
-
-		a1, a2, a3 = st.columns( [ 2, 1, 1 ] )
-
+		
+		# Line 2: input + Go + Reset (tight group)
+		a1, a2, a3 = st.columns( [ 2,
+		                           1,
+		                           1 ] )
+		
 		with a1:
 			jump_id = st.number_input(
 				"Go to ID",
@@ -778,30 +888,31 @@ elif mode == "Prompt Engineering":
 				key="pe_jump_id",
 				label_visibility="collapsed",
 			)
-
+		
 		with a2:
 			if st.button( "Go", use_container_width=True ):
 				st.session_state.pe_selected_id = int( jump_id )
 				st.rerun( )
-
+		
 		with a3:
 			if st.button( "Undo", use_container_width=True ):
 				reset_controls( )
 				st.rerun( )
-
+	
 	# ----------------------------
 	# Load data
 	# ----------------------------
 	where = ""
-	params: List[ Any ] = [ ]
-
+	params = [ ]
+	
 	if st.session_state.pe_search:
 		where = "WHERE Name LIKE ? OR Text LIKE ?"
 		s = f"%{st.session_state.pe_search}%"
-		params.extend( [ s, s ] )
-
+		params.extend( [ s,
+		                 s ] )
+	
 	offset = (st.session_state.pe_page - 1) * PAGE_SIZE
-
+	
 	query = f"""
 		SELECT PromptsId, Name, Text, Version, ID
 		FROM {TABLE}
@@ -809,28 +920,23 @@ elif mode == "Prompt Engineering":
 		ORDER BY {st.session_state.pe_sort_col} {st.session_state.pe_sort_dir}
 		LIMIT {PAGE_SIZE} OFFSET {offset}
 	"""
-
+	
 	count_query = f"SELECT COUNT(*) FROM {TABLE} {where}"
-
-	try:
-		with get_conn( ) as conn:
-			cur = conn.cursor( )
-			cur.execute( query, params )
-			rows = cur.fetchall( )
-
-			cur.execute( count_query, params )
-			total_rows = cur.fetchone( )[ 0 ]
-	except Exception as exc:
-		st.error( f"SQLite error: {exc}" )
-		rows = [ ]
-		total_rows = 0
-
+	
+	with get_conn( ) as conn:
+		cur = conn.cursor( )
+		cur.execute( query, params )
+		rows = cur.fetchall( )
+		
+		cur.execute( count_query, params )
+		total_rows = cur.fetchone( )[ 0 ]
+	
 	total_pages = max( 1, math.ceil( total_rows / PAGE_SIZE ) )
-
+	
 	# ----------------------------
 	# Table display
 	# ----------------------------
-	table_data: List[ Dict[ str, Any ] ] = [ ]
+	table_data = [ ]
 	for r in rows:
 		table_data.append(
 			{
@@ -842,7 +948,7 @@ elif mode == "Prompt Engineering":
 					"ID": r[ 4 ],
 			}
 		)
-
+	
 	edited = st.data_editor(
 		table_data,
 		use_container_width=True,
@@ -850,99 +956,93 @@ elif mode == "Prompt Engineering":
 		column_config={
 				"Select": st.column_config.CheckboxColumn( ) },
 	)
-
+	
 	for row in edited:
-		if row.get( "Select" ):
-			st.session_state.pe_selected_id = row.get( "PromptsId" )
-
+		if row[ "Select" ]:
+			st.session_state.pe_selected_id = row[ "PromptsId" ]
+	
 	# ----------------------------
 	# Paging
 	# ----------------------------
-	p1, p2, p3 = st.columns( [ 1, 2, 1 ] )
-
+	p1, p2, p3 = st.columns( [ 1,
+	                           2,
+	                           1 ] )
+	
 	with p1:
 		if st.button( "◀ Prev" ) and st.session_state.pe_page > 1:
 			st.session_state.pe_page -= 1
 			st.rerun( )
-
+	
 	with p2:
 		st.markdown( f"Page **{st.session_state.pe_page}** of **{total_pages}**" )
-
+	
 	with p3:
 		if st.button( "Next ▶" ) and st.session_state.pe_page < total_pages:
 			st.session_state.pe_page += 1
 			st.rerun( )
-
+	
 	st.divider( )
-
+	
 	# ----------------------------
 	# Create / Edit form
 	# ----------------------------
 	selected = None
 	if st.session_state.pe_selected_id:
-		try:
-			with get_conn( ) as conn:
-				cur = conn.cursor( )
-				cur.execute(
-					f"SELECT PromptsId, Name, Text, Version FROM {TABLE} WHERE PromptsId=?",
-					(st.session_state.pe_selected_id,),
-				)
-				selected = cur.fetchone( )
-		except Exception as exc:
-			st.error( f"SQLite error: {exc}" )
-			selected = None
-
+		with get_conn( ) as conn:
+			cur = conn.cursor( )
+			cur.execute(
+				f"SELECT PromptsId, Name, Text, Version FROM {TABLE} WHERE PromptsId=?",
+				(st.session_state.pe_selected_id,),
+			)
+			selected = cur.fetchone( )
+	
 	with st.expander( "Create / Edit Prompt", expanded=True ):
 		pid = st.text_input( "PromptsId", value=selected[ 0 ] if selected else "", disabled=True )
 		name = st.text_input( "Name", value=selected[ 1 ] if selected else "" )
 		text = st.text_area( "Text", value=selected[ 2 ] if selected else "", height=200 )
-		version = st.number_input( "Version", min_value=1, value=int( selected[ 3 ] ) if selected else 1 )
-
-		b1, b2, b3 = st.columns( [ 1, 1, 1 ] )
-
+		version = st.number_input( "Version", min_value=1, value=selected[ 3 ] if selected else 1 )
+		
+		b1, b2, b3 = st.columns( [ 1,
+		                           1,
+		                           1 ] )
+		
 		with b1:
 			if st.button( "Save Changes" if selected else "Create Prompt" ):
-				try:
-					with get_conn( ) as conn:
-						cur = conn.cursor( )
-						if selected:
-							cur.execute(
-								f"""
-								UPDATE {TABLE}
-								SET Name=?, Text=?, Version=?
-								WHERE PromptsId=?
-								""",
-								(name, text, int( version ), selected[ 0 ]),
-							)
-						else:
-							cur.execute(
-								f"""
-								INSERT INTO {TABLE} (Name, Text, Version)
-								VALUES (?, ?, ?)
-								""",
-								(name, text, int( version )),
-							)
-						conn.commit( )
-					st.success( "Saved." )
-					st.rerun( )
-				except Exception as exc:
-					st.error( f"SQLite error: {exc}" )
-
+				with get_conn( ) as conn:
+					cur = conn.cursor( )
+					if selected:
+						cur.execute(
+							f"""
+							UPDATE {TABLE}
+							SET Name=?, Text=?, Version=?
+							WHERE PromptsId=?
+							""",
+							(name, text, version, selected[ 0 ]),
+						)
+					else:
+						cur.execute(
+							f"""
+							INSERT INTO {TABLE} (Name, Text, Version)
+							VALUES (?, ?, ?)
+							""",
+							(name, text, version),
+						)
+					conn.commit( )
+				st.success( "Saved." )
+				st.rerun( )
+		
 		with b2:
 			if selected and st.button( "Delete" ):
-				try:
-					with get_conn( ) as conn:
-						conn.execute(
-							f"DELETE FROM {TABLE} WHERE PromptsId=?",
-							(selected[ 0 ],),
-						)
-						conn.commit( )
-					reset_controls( )
-					st.success( "Deleted." )
-					st.rerun( )
-				except Exception as exc:
-					st.error( f"SQLite error: {exc}" )
-
+				with get_conn( ) as conn:
+					conn.execute(
+						f"DELETE FROM {TABLE} WHERE PromptsId=?",
+						(selected[ 0 ],),
+					)
+					conn.commit( )
+				reset_controls( )
+				st.success( "Deleted." )
+				st.rerun( )
+		
 		with b3:
 			if st.button( "Clear Selection" ):
 				reset_controls( )
@@ -954,15 +1054,18 @@ elif mode == "Prompt Engineering":
 if mode == "Documents":
 	uploaded = st.file_uploader(
 		"Upload documents (session only)",
-		type=[ "pdf", "txt", "md", "docx" ],
+		type=[ "pdf",
+		       "txt",
+		       "md",
+		       "docx" ],
 		accept_multiple_files=True,
 	)
-
+	
 	if uploaded:
 		for up in uploaded:
 			st.session_state.files.append( save_temp( up ) )
 		st.success( f"Saved {len( uploaded )} file(s) to session" )
-
+	
 	if st.session_state.files:
 		st.markdown( "**Uploaded documents (session-only)**" )
 		idx = st.selectbox(
@@ -971,8 +1074,9 @@ if mode == "Documents":
 			format_func=lambda i: st.session_state.files[ i ],
 		)
 		selected_path = st.session_state.files[ idx ]
-
-		c1, c2 = st.columns( [ 1, 1 ] )
+		
+		c1, c2 = st.columns( [ 1,
+		                       1 ] )
 		with c1:
 			if st.button( "Remove selected document" ):
 				removed = st.session_state.files.pop( idx )
@@ -980,7 +1084,7 @@ if mode == "Documents":
 		with c2:
 			if st.button( "Show selected path" ):
 				st.info( f"Local temp path: {selected_path}" )
-
+		
 		st.markdown( "---" )
 		question = st.text_area( "Ask a question about the selected document" )
 		if st.button( "Ask Document" ):
@@ -989,9 +1093,24 @@ if mode == "Documents":
 			else:
 				with st.spinner( "Running document Q&A…" ):
 					try:
-						chat = Chat( use_ai=True, version=st.session_state.get( "gemini_version", "v1alpha" ) )
-						answer = chat.summarize_document( pdf_path=selected_path, prompt=question )
-
+						try:
+							chat  # type: ignore
+						except NameError:
+							chat = Chat( )
+						answer = None
+						if hasattr( chat, "summarize_document" ):
+							try:
+								answer = chat.summarize_document( prompt=question,
+									pdf_path=selected_path )
+							except TypeError:
+								answer = chat.summarize_document( question, selected_path )
+						elif hasattr( chat, "ask_document" ):
+							answer = chat.ask_document( selected_path, question )
+						elif hasattr( chat, "document_qa" ):
+							answer = chat.document_qa( selected_path, question )
+						else:
+							raise RuntimeError( "No document-QA method found on chat object." )
+						
 						st.markdown( "**Answer:**" )
 						st.markdown( answer or "No answer returned." )
 						st.session_state.messages.append( {
@@ -1000,15 +1119,123 @@ if mode == "Documents":
 						st.session_state.messages.append( {
 								"role": "assistant",
 								"content": answer or "" } )
-
+						
 						try:
-							_update_token_counters( getattr( chat, "usage", None ) or getattr( chat, "response", None ) or answer )
+							_update_token_counters( getattr( chat, "response", None ) or answer )
 						except Exception:
 							pass
 					except Exception as e:
 						st.error( f"Document Q&A failed: {e}" )
 	else:
-		st.info( "No client-side documents uploaded this session. Use the uploader to add files." )
+		st.info( "No client-side documents uploaded this session. Use the uploader in the sidebar "
+		         "to add files." )
+
+# ======================================================================================
+# FILES API MODE
+# ======================================================================================
+if mode == "Files":
+	try:
+		chat  # type: ignore
+	except NameError:
+		chat = Chat( )
+	
+	list_method = None
+	for name in ("retrieve_files", "retreive_files", "list_files", "get_files"):
+		if hasattr( chat, name ):
+			list_method = getattr( chat, name )
+			break
+	
+	uploaded_file = st.file_uploader(
+		"Upload file (server-side via Files API)",
+		type=[ "pdf",
+		       "txt",
+		       "md",
+		       "docx",
+		       "png",
+		       "jpg",
+		       "jpeg" ],
+	)
+	if uploaded_file:
+		tmp_path = save_temp( uploaded_file )
+		upload_fn = None
+		for name in ("upload_file", "upload", "files_upload"):
+			if hasattr( chat, name ):
+				upload_fn = getattr( chat, name )
+				break
+		if not upload_fn:
+			st.warning( "No upload function found on chat object (upload_file)." )
+		else:
+			with st.spinner( "Uploading to Files API..." ):
+				try:
+					fid = upload_fn( tmp_path )
+					st.success( f"Uploaded; file id: {fid}" )
+				except Exception as exc:
+					st.error( f"Upload failed: {exc}" )
+	
+	if st.button( "List files" ):
+		if not list_method:
+			st.warning( "No file-listing method found on chat object (expected "
+			            "retrieve_files/list_files)." )
+		else:
+			with st.spinner( "Listing files..." ):
+				try:
+					files_resp = list_method( )
+					files_list = [ ]
+					if files_resp is None:
+						files_list = [ ]
+					elif isinstance( files_resp, dict ):
+						files_list = files_resp.get( "data" ) or files_resp.get( "files" ) or [ ]
+					elif isinstance( files_resp, list ):
+						files_list = files_resp
+					else:
+						try:
+							files_list = getattr( files_resp, "data", files_resp )
+						except Exception:
+							files_list = [ files_resp ]
+					
+					rows = [ ]
+					for f in files_list:
+						try:
+							fid = f.get( "id" ) if isinstance( f, dict ) else getattr( f, "id",
+								None )
+							name = f.get( "filename" ) if isinstance( f, dict ) else getattr( f,
+								"filename", None )
+							purpose = f.get( "purpose" ) if isinstance( f, dict ) else getattr( f,
+								"purpose", None )
+						except Exception:
+							fid = None
+							name = str( f )
+							purpose = None
+						rows.append( {
+								"id": fid,
+								"filename": name,
+								"purpose": purpose } )
+					if rows:
+						st.table( rows )
+					else:
+						st.info( "No files returned." )
+				except Exception as exc:
+					st.error( f"List files failed: {exc}" )
+	
+	if 'files_list' in locals( ) and files_list:
+		file_ids = [ r.get( "id" ) if isinstance( r, dict ) else getattr( r, "id", None ) for r in
+		             files_list ]
+		sel = st.selectbox( "Select file id to delete", options=file_ids )
+		if st.button( "Delete selected file" ):
+			del_fn = None
+			for name in ("delete_file", "delete", "files_delete"):
+				if hasattr( chat, name ):
+					del_fn = getattr( chat, name )
+					break
+			if not del_fn:
+				st.warning( "No delete function found on chat object (expected delete_file)." )
+			else:
+				with st.spinner( "Deleting file..." ):
+					try:
+						res = del_fn( sel )
+						st.success( f"Delete result: {res}" )
+					except Exception as exc:
+						st.error( f"Delete failed: {exc}" )
 
 # ======================================================================================
 # Footer
@@ -1026,7 +1253,7 @@ else:
 	footer_html = """
     <div style="display:flex;justify-content:space-between;color:#9aa0a6;font-size:0.85rem;">
         <span>Boo</span>
-        <span>Gemini</span>
+        <span>GPT</span>
     </div>
     """
 
