@@ -20,7 +20,7 @@ from typing import List, Dict, Any, Optional
 
 from gpt import (
 	Chat,
-	Images,
+	Image,
 	Embedding,
 	VectorStore,
 	Transcription,
@@ -231,7 +231,7 @@ with st.sidebar:
 	mode = st.radio(
 		"Select capability",
 		[ "Text",
-		  "Images",
+		  "Image",
 		  "Audio",
 		  "Embeddings",
 		  "Documents",
@@ -305,7 +305,7 @@ _apply_gemini_runtime_config( )
 # ======================================================================================
 _mode_to_model_key = {
 		"Text": "text_model",
-		"Images": "image_model",
+		"Image": "image_model",
 		"Audio": "audio_model",
 		"Embeddings": "embed_model",
 		"Documents": "text_model",
@@ -442,8 +442,8 @@ if mode == "Text":
 # ======================================================================================
 # IMAGES MODE
 # ======================================================================================
-elif mode == "Images":
-	img = Images( use_ai=True, version=st.session_state.get( "gemini_version", "v1alpha" ) )
+elif mode == "Image":
+	img = Image( use_ai=True, version=st.session_state.get( "gemini_version", "v1alpha" ) )
 
 	with st.sidebar:
 		st.header( "Image Settings" )
@@ -464,7 +464,7 @@ elif mode == "Images":
 					img.aspect = aspect
 					img.number = int( n )
 
-					# Images.generate returns a list of PIL images (per wrapper)
+					# Image.generate returns a list of PIL images (per wrapper)
 					images = img.generate( prompt=prompt, aspect=aspect )
 					if not images:
 						st.warning( "No images returned." )
