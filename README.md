@@ -55,11 +55,15 @@ deployment and academic research.
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Bro-streamlit.gif)
 ___
 ### 🧠  [Bubba](https://huggingface.co/leeroy-jankins/bubba) 
-
+Bubba is a fine-tuned LLM based on OpenAI’s Chat GPT-5. This release packages the 
+fine-tuned weights (or adapters) for practical, low-latency instruction following, 
+summarization, reasoning, and light code generation. It is intended for local or
+self-hosted environments and RAG (Retrieval-Augmented Generation) stacks that
+require predictable, fast outputs.
 
 - [![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)](https://gipity.streamlit.app/)
 - [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/bubba) 
-
+![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Gipity-streamlit.gif)
 
 
 ## 🧭 Table of Contents
