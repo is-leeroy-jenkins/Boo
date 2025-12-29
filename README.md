@@ -26,9 +26,13 @@ and federal applications in mind, it enables secure, scalable, and intelligent a
   
 ## 🧠 Large Lanugage Models
 ##### Fine-Tuned Models Large Language Models customized for Retreival Augmentation in different domains:
-- [Leeroy] [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/leeroy)a customized LLM for federal budgeting based on Llama 3.2
-- [Bro] [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/bro) a customized LLM for federal accounting  based on Gemma-3
-- [Bubba] [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/bubba) a general-purpose LLM based on ChatGPT-5
+- [Leeroy](https://huggingface.co/leeroy-jankins/leeroy) - A customized LLM for federal budgeting based on Llama 3.2
+- [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/leeroy) 
+
+- [Bro](https://huggingface.co/leeroy-jankins/bro) - A customized LLM for federal accounting  based on Gemma-3
+- [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/bro)
+- [Bubba](https://huggingface.co/leeroy-jankins/bubba) - A general-purpose LLM based on ChatGPT-5
+- [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/bubba) 
 
 ## 🧭 Table of Contents
 
