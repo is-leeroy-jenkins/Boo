@@ -58,22 +58,38 @@ st.set_page_config(
 # Sidebar — Provider Logo (Dynamic)
 # ======================================================================================
 with st.sidebar:
-    _provider_logo_map = {
+    st.markdown(
+        """
+        <style>
+        .provider-logo img {
+            max-height: 50px;
+            width: auto;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    provider = st.session_state.get("provider")
+    logo_path = {
         "GPT": "resource/images/gpt_logo.png",
         "Gemini": "resource/images/gemma_logo.png",
         "Groq": "resource/images/grok_logo.png",
-    }
-
-    provider = st.session_state.get("provider")
-    logo_path = _provider_logo_map.get(provider)
+    }.get(provider)
 
     if logo_path and os.path.exists(logo_path):
-        _, col, _ = st.columns([1, 2, 1])
-        with col:
-            st.image(
-                logo_path,
-                width=50,              # <-- key line
-            )
+        st.markdown(
+            f"""
+            <div class="provider-logo">
+                <img src="file://{logo_path}">
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
 
 # ======================================================================================
 # Session State — initialize per-mode model keys and token counters
