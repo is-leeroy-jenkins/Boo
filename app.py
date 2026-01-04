@@ -54,41 +54,26 @@ st.set_page_config(
 	layout="wide",
 )
 
-# ======================================================================================
-# Sidebar — Provider Logo (Dynamic)
-# ======================================================================================
-with st.sidebar:
-    st.markdown(
-        """
-        <style>
-        .provider-logo img {
-            max-height: 50px;
-            width: auto;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+# ------------------------------------------------------------------
+# Provider Logo (top of sidebar)
+# ------------------------------------------------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    provider = st.session_state.get("provider")
-    logo_path = {
-        "GPT": "resource/images/gpt_logo.png",
-        "Gemini": "resource/images/gemma_logo.png",
-        "Groq": "resource/images/grok_logo.png",
-    }.get(provider)
+provider_logo_map = {
+    "GPT": os.path.join(BASE_DIR, "resource", "images", "gpt_logo.png"),
+    "Gemini": os.path.join(BASE_DIR, "resource", "images", "gemma_logo.png"),
+    "Groq": os.path.join(BASE_DIR, "resource", "images", "grok_logo.png"),
+}
 
-    if logo_path and os.path.exists(logo_path):
-        st.markdown(
-            f"""
-            <div class="provider-logo">
-                <img src="file://{logo_path}">
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+provider = st.session_state.get("provider")
+
+logo_path = provider_logo_map.get(provider)
+
+if logo_path and os.path.exists(logo_path):
+    _, logo_col, _ = st.columns([1, 2, 1])
+    with logo_col:
+        st.image(logo_path, width=50)
+
 
 
 # ======================================================================================
@@ -447,11 +432,32 @@ with st.sidebar:
         "<div style='height:2px;background:#0078FC;margin:6px 0 10px 0;'></div>",
         unsafe_allow_html=True,
     )
-
+    
     mode = st.radio(
-        "Select capability",
-        ["Text", "Images", "Audio", "Embeddings"],
+	    "Select capability",
+	    [ "Text",
+	      "Images",
+	      "Audio",
+	      "Embeddings" ],
     )
+    
+    BASE_DIR = os.path.dirname( os.path.abspath( __file__ ) )
+    
+    provider_logo_map = {
+		    "GPT": os.path.join( BASE_DIR, "resource", "images", "gpt_logo.png" ),
+		    "Gemini": os.path.join( BASE_DIR, "resource", "images", "gemma_logo.png" ),
+		    "Groq": os.path.join( BASE_DIR, "resource", "images", "grok_logo.png" ),
+    }
+    
+    provider = st.session_state.get( "provider" )
+    logo_path = provider_logo_map.get( provider )
+    
+    if logo_path and os.path.exists( logo_path ):
+	    _, col, _ = st.columns( [ 1,
+	                              2,
+	                              1 ] )
+	    with col:
+		    st.image( logo_path, width=50 )
 
 # ======================================================================================
 # Dynamic Header — show provider and mode, and model relevant to the active mode
