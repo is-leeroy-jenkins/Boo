@@ -55,6 +55,27 @@ st.set_page_config(
 )
 
 # ======================================================================================
+# Sidebar — Provider Logo (Dynamic)
+# ======================================================================================
+with st.sidebar:
+    _provider_logo_map = {
+        "GPT": "resource/images/gpt_logo.png",
+        "Gemini": "resource/images/gemma_logo.png",
+        "Groq": "resource/images/grok_logo.png",
+    }
+
+    provider = st.session_state.get("provider")
+    logo_path = _provider_logo_map.get(provider)
+
+    if logo_path and os.path.exists(logo_path):
+        _, col, _ = st.columns([1, 2, 1])
+        with col:
+            st.image(
+                logo_path,
+                width=50,              # <-- key line
+            )
+
+# ======================================================================================
 # Session State — initialize per-mode model keys and token counters
 # ======================================================================================
 if "messages" not in st.session_state:
@@ -1681,76 +1702,110 @@ if mode == "Files":
 						st.error( f"Delete failed: {exc}" )
 
 # ======================================================================================
-# Footer — Dynamic Status Bar with Mode-Gated Additions
+# Footer — Fixed Bottom Status Bar (Desktop-style)
 # ======================================================================================
-st.divider()
 
-left, right = st.columns([1, 1])
-
-# ------------------------------------------------------------------
-# Left side: Provider + Mode (always shown)
-# ------------------------------------------------------------------
-with left:
-    provider_val = st.session_state.get("provider", "—")
-    mode_val = mode or "—"
-    st.caption(f"{provider_val} — {mode_val}")
-
-# ------------------------------------------------------------------
-# Right side: Execution context (mode-gated)
-# ------------------------------------------------------------------
-with right:
-    # Resolve active model by mode
-    _mode_to_model_key = {
-        "Text": "text_model",
-        "Images": "image_model",
-        "Audio": "audio_model",
-        "Embeddings": "embed_model",
+# ---- Add bottom padding so content is not hidden behind footer
+st.markdown(
+    """
+    <style>
+    .block-container {
+        padding-bottom: 3rem;
     }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-    active_model = st.session_state.get(
-        _mode_to_model_key.get(mode, ""),
-        None,
-    )
+# ---- Fixed footer container
+st.markdown(
+    """
+    <style>
+    .boo-status-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: rgba(17, 17, 17, 0.95);
+        border-top: 1px solid #2a2a2a;
+        padding: 6px 16px;
+        font-size: 0.85rem;
+        color: #9aa0a6;
+        z-index: 1000;
+    }
+    .boo-status-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 100%;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-    footer_parts = []
+# ---- Resolve active model by mode
+_mode_to_model_key = {
+    "Text": "text_model",
+    "Images": "image_model",
+    "Audio": "audio_model",
+    "Embeddings": "embed_model",
+}
 
-    # Model is always the primary execution signal
-    if active_model is not None:
-        footer_parts.append(f"Model: {active_model}")
+provider_val = st.session_state.get("provider", "—")
+mode_val = mode or "—"
 
-    # ---------------- Mode-gated additions ----------------
-    if mode == "Text":
-        temperature = st.session_state.get("temperature")
-        top_p = st.session_state.get("top_p")
+active_model = st.session_state.get(
+    _mode_to_model_key.get(mode, ""),
+    None,
+)
 
-        if temperature is not None:
-            footer_parts.append(f"Temp: {temperature}")
-        if top_p is not None:
-            footer_parts.append(f"Top-P: {top_p}")
+# ---- Build right-side (mode-gated)
+right_parts = []
 
-    elif mode == "Images":
-        # Prefer aspect ratio if present, otherwise size
-        size = st.session_state.get("image_size")
-        aspect = st.session_state.get("image_aspect")
+if active_model is not None:
+    right_parts.append(f"Model: {active_model}")
 
-        if aspect is not None:
-            footer_parts.append(f"Aspect: {aspect}")
-        elif size is not None:
-            footer_parts.append(f"Size: {size}")
+if mode == "Text":
+    temperature = st.session_state.get("temperature")
+    top_p = st.session_state.get("top_p")
 
-    elif mode == "Audio":
-        task = st.session_state.get("audio_task")
-        if task is not None:
-            footer_parts.append(f"Task: {task}")
+    if temperature is not None:
+        right_parts.append(f"Temp: {temperature}")
+    if top_p is not None:
+        right_parts.append(f"Top-P: {top_p}")
 
-    elif mode == "Embeddings":
-        method = st.session_state.get("embed_method")
-        if method is not None:
-            footer_parts.append(f"Method: {method}")
+elif mode == "Images":
+    size = st.session_state.get("image_size")
+    aspect = st.session_state.get("image_aspect")
 
-    # Render right side
-    if footer_parts:
-        st.caption(" · ".join(footer_parts))
-    else:
-        st.caption("—")
+    if aspect is not None:
+        right_parts.append(f"Aspect: {aspect}")
+    elif size is not None:
+        right_parts.append(f"Size: {size}")
+
+elif mode == "Audio":
+    task = st.session_state.get("audio_task")
+    if task is not None:
+        right_parts.append(f"Task: {task}")
+
+elif mode == "Embeddings":
+    method = st.session_state.get("embed_method")
+    if method is not None:
+        right_parts.append(f"Method: {method}")
+
+right_text = " · ".join(right_parts) if right_parts else "—"
+
+# ---- Render footer
+st.markdown(
+    f"""
+    <div class="boo-status-bar">
+        <div class="boo-status-inner">
+            <span>{provider_val} — {mode_val}</span>
+            <span>{right_text}</span>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
