@@ -987,7 +987,7 @@ class Translation( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 
-class Images( Gemini ):
+class Image( Gemini ):
 	"""
 
 	    Purpose
