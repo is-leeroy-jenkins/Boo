@@ -437,19 +437,6 @@ provider_val = st.session_state.get( "provider", None )
 
 header_label = provider_val if provider_val else "Boo"
 
-st.markdown(
-	f"""
-    <div style="margin-bottom:0.25rem;">
-      <h3 style="margin:0;">{header_label} — {mode}</h3>
-      <div style="color:#9aa0a6; margin-top:6px; font-size:0.95rem;">
-        Model: {_display_value( model_val )} &nbsp;&nbsp;|&nbsp;&nbsp; Temp:
-        {_display_value( temperature_val )} &nbsp;&nbsp;•&nbsp;&nbsp; Top-P:
-        {_display_value( top_p_val )}
-      </div>
-    </div>
-    """,
-	unsafe_allow_html=True,
-)
 st.divider( )
 
 # ======================================================================================
@@ -1694,25 +1681,76 @@ if mode == "Files":
 						st.error( f"Delete failed: {exc}" )
 
 # ======================================================================================
-# Footer
+# Footer — Dynamic Status Bar with Mode-Gated Additions
 # ======================================================================================
-st.divider( )
-tu = st.session_state.token_usage
-if tu[ "total_tokens" ] > 0:
-	footer_html = f"""
-    <div style="display:flex;justify-content:space-between;
-                color:#9aa0a6;font-size:0.85rem;">
-        <span>Boo</span>
-        <span>Session tokens — total: {tu[ 'total_tokens' ]}</span>
-    </div>
-    """
-else:
-	footer_html = """
-    <div style="display:flex;justify-content:space-between;
-                color:#9aa0a6;font-size:0.85rem;">
-        <span>Boo</span>
-        <span>GPT</span>
-    </div>
-    """
+st.divider()
 
-st.markdown( footer_html, unsafe_allow_html=True )
+left, right = st.columns([1, 1])
+
+# ------------------------------------------------------------------
+# Left side: Provider + Mode (always shown)
+# ------------------------------------------------------------------
+with left:
+    provider_val = st.session_state.get("provider", "—")
+    mode_val = mode or "—"
+    st.caption(f"{provider_val} — {mode_val}")
+
+# ------------------------------------------------------------------
+# Right side: Execution context (mode-gated)
+# ------------------------------------------------------------------
+with right:
+    # Resolve active model by mode
+    _mode_to_model_key = {
+        "Text": "text_model",
+        "Images": "image_model",
+        "Audio": "audio_model",
+        "Embeddings": "embed_model",
+    }
+
+    active_model = st.session_state.get(
+        _mode_to_model_key.get(mode, ""),
+        None,
+    )
+
+    footer_parts = []
+
+    # Model is always the primary execution signal
+    if active_model is not None:
+        footer_parts.append(f"Model: {active_model}")
+
+    # ---------------- Mode-gated additions ----------------
+    if mode == "Text":
+        temperature = st.session_state.get("temperature")
+        top_p = st.session_state.get("top_p")
+
+        if temperature is not None:
+            footer_parts.append(f"Temp: {temperature}")
+        if top_p is not None:
+            footer_parts.append(f"Top-P: {top_p}")
+
+    elif mode == "Images":
+        # Prefer aspect ratio if present, otherwise size
+        size = st.session_state.get("image_size")
+        aspect = st.session_state.get("image_aspect")
+
+        if aspect is not None:
+            footer_parts.append(f"Aspect: {aspect}")
+        elif size is not None:
+            footer_parts.append(f"Size: {size}")
+
+    elif mode == "Audio":
+        task = st.session_state.get("audio_task")
+        if task is not None:
+            footer_parts.append(f"Task: {task}")
+
+    elif mode == "Embeddings":
+        method = st.session_state.get("embed_method")
+        if method is not None:
+            footer_parts.append(f"Method: {method}")
+
+    # Render right side
+    if footer_parts:
+        st.caption(" · ".join(footer_parts))
+    else:
+        st.caption("—")
+
