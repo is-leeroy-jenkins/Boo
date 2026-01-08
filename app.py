@@ -626,9 +626,6 @@ if mode == "Text":
                     except Exception:
                         pass
 
-    # ------------------------------------------------------------------
-    # Token usage display (unchanged)
-    # ------------------------------------------------------------------
     lcu = st.session_state.last_call_usage
     tu = st.session_state.token_usage
 
@@ -647,7 +644,7 @@ if mode == "Text":
         )
 
 # ======================================================================================
-# IMAGES MODE (Provider-correct, function-preserving rewrite)
+# IMAGES MODE
 # ======================================================================================
 elif mode == "Images":
 
@@ -658,7 +655,7 @@ elif mode == "Images":
     image = provider_module.Image()
 
     # ------------------------------------------------------------------
-    # Sidebar — Image Settings (NO functionality removed)
+    # Sidebar — Image Settings
     # ------------------------------------------------------------------
     with st.sidebar:
         st.header("Image Settings")
@@ -691,67 +688,67 @@ elif mode == "Images":
 
         # ---------------- Quality ----------------
         quality = None
-        if hasattr(image, "quality_options"):
+        if hasattr(image, 'quality_options'):
             quality = st.selectbox(
-                "Quality",
+                'Quality',
                 image.quality_options,
             )
 
         # ---------------- Format ----------------
         fmt = None
-        if hasattr(image, "format_options"):
+        if hasattr(image, 'format_options'):
             fmt = st.selectbox(
-                "Format",
+                'Format',
                 image.format_options,
             )
 
     # ------------------------------------------------------------------
-    # Main UI — Tabs (Generate / Analyze) (unchanged)
+    # Main UI — Tabs (Generate / Analyze)
     # ------------------------------------------------------------------
-    tab_gen, tab_analyze = st.tabs(["Generate", "Analyze"])
+    tab_gen, tab_analyze = st.tabs(['Generate', 'Analyze'])
 
     # ============================== GENERATE ===============================
     with tab_gen:
-        prompt = st.text_area("Prompt")
+        prompt = st.text_area('Prompt')
 
-        if st.button("Generate Image"):
-            with st.spinner("Generating…"):
+        if st.button('Generate Image'):
+            with st.spinner('Generating…'):
                 try:
                     kwargs: Dict[str, Any] = {
-                        "prompt": prompt,
-                        "model": image_model,
+                        'prompt': prompt,
+                        'model': image_model,
                     }
 
                     # Provider-safe optional args
                     if size_arg is not None:
-                        kwargs["size"] = size_arg
+                        kwargs['size'] = size_arg
                     if quality is not None:
-                        kwargs["quality"] = quality
+                        kwargs['quality'] = quality
                     if fmt is not None:
-                        kwargs["fmt"] = fmt
+                        kwargs['fmt'] = fmt
 
                     img_url = image.generate(**kwargs)
                     st.image(img_url)
 
                     try:
                         _update_token_counters(
-                            getattr(image, "response", None)
+                            getattr(image, 'response', None)
                         )
                     except Exception:
                         pass
 
                 except Exception as exc:
-                    st.error(f"Image generation failed: {exc}")
+                    st.error(f'Image generation failed: {exc}')
 
     # ============================== ANALYZE ===============================
     with tab_analyze:
-        st.markdown("Image analysis — upload an image to analyze.")
+        st.markdown('Image analysis — upload an image to analyze.')
 
         uploaded_img = st.file_uploader(
-            "Upload an image for analysis",
-            type=["png", "jpg", "jpeg", "webp"],
+            'Upload an image for analysis',
+            type=['png', 'jpg', 'jpeg', 'webp'],
             accept_multiple_files=False,
-            key="images_analyze_uploader",
+            key='images_analyze_uploader',
         )
 
         if uploaded_img:
@@ -759,35 +756,35 @@ elif mode == "Images":
 
             st.image(
                 uploaded_img,
-                caption="Uploaded image preview",
+                caption='Uploaded image preview',
                 use_column_width=True,
             )
 
             # Discover available analysis methods on Image object
             available_methods = []
             for candidate in (
-                "analyze",
-                "describe_image",
-                "describe",
-                "classify",
-                "detect_objects",
-                "caption",
-                "image_analysis",
+                'analyze',
+                'describe_image',
+                'describe',
+                'classify',
+                'detect_objects',
+                'caption',
+                'image_analysis',
             ):
                 if hasattr(image, candidate):
                     available_methods.append(candidate)
 
             if available_methods:
                 chosen_method = st.selectbox(
-                    "Method",
+                    'Method',
                     available_methods,
                     index=0,
                 )
             else:
                 chosen_method = None
                 st.info(
-                    "No dedicated image analysis method found on Image object; "
-                    "attempting generic handlers."
+                    'No dedicated image analysis method found on Image object; '
+                    'attempting generic handlers.'
                 )
 
             chosen_model = st.selectbox(
@@ -1018,24 +1015,14 @@ elif mode == "Audio":
 # EMBEDDINGS MODE (Provider-correct, function-preserving rewrite)
 # ======================================================================================
 elif mode == "Embeddings":
-
-    # ------------------------------------------------------------------
-    # Provider-aware Embedding instantiation
-    # ------------------------------------------------------------------
     provider_module = get_provider_module()
 
     if not hasattr(provider_module, "Embedding"):
         st.info("Embeddings are not supported by the selected provider.")
     else:
         embed = provider_module.Embedding()
-
-        # ------------------------------------------------------------------
-        # Sidebar — Embedding Settings (NO functionality removed)
-        # ------------------------------------------------------------------
         with st.sidebar:
             st.header("Embedding Settings")
-
-            # ---------------- Model (provider-correct) ----------------
             embed_model = st.selectbox(
                 "Model",
                 embed.model_options,
@@ -1046,8 +1033,6 @@ elif mode == "Embeddings":
                 ),
             )
             st.session_state["embed_model"] = embed_model
-
-            # ---------------- Method (optional, provider-defined) ----------------
             method = None
             if hasattr(embed, "methods"):
                 method = st.selectbox(
@@ -1059,7 +1044,6 @@ elif mode == "Embeddings":
         # Main UI — Embedding execution (unchanged behavior)
         # ------------------------------------------------------------------
         left, center, right = st.columns([1, 2, 1])
-
         with center:
             text = st.text_area("Text to embed")
 
@@ -1115,13 +1099,9 @@ elif mode == "Vector Store":
 				try:
 					if hasattr( chat, "create_store" ):
 						res = chat.create_store( new_store_name )
-						st.success(
-							f"Create call submitted for '{new_store_name}'."
-						)
+						st.success( f"Create call submitted for '{new_store_name}'." )
 					else:
-						st.warning(
-							"create_store method not found on chat object."
-						)
+						st.warning( "create_store method not found on chat object." )
 				except Exception as exc:
 					st.error( f"Create store failed: {exc}" )
 	
@@ -1170,8 +1150,7 @@ elif mode == "Vector Store":
 				sel_name = n
 				break
 		
-		c1, c2 = st.columns( [ 1,
-		                       1 ] )
+		c1, c2 = st.columns( [ 1,  1 ] )
 		with c1:
 			if st.button( "Retrieve store" ):
 				try:
@@ -1275,23 +1254,23 @@ elif mode == "Prompt Engineering":
 	                               3 ] )
 	
 	with c1:
-		st.text_input( "Search (Name/Text contains)", key="pe_search" )
+		st.text_input( 'Search (Name/Text contains)', key='pe_search' )
 	
 	with c2:
 		st.selectbox(
-			"Sort by",
-			[ "PromptsId",
-			  "Name",
-			  "Version" ],
-			key="pe_sort_col",
+			'Sort by',
+			[ 'PromptsId',
+			  'Name',
+			  'Version' ],
+			key='pe_sort_col',
 		)
 	
 	with c3:
 		st.selectbox(
-			"Direction",
-			[ "ASC",
-			  "DESC" ],
-			key="pe_sort_dir",
+			'Direction',
+			[ 'ASC',
+			  'DESC' ],
+			key='pe_sort_dir',
 		)
 	
 	with c4:
@@ -1395,25 +1374,25 @@ elif mode == "Prompt Engineering":
 	# ------------------------------------------------------------------
 	# Converter controls (SINGLE TEXT BUFFER — LEEROY STYLE)
 	# ------------------------------------------------------------------
-	with st.expander( "XML ↔ Markdown Converter", expanded=False ):
+	with st.expander( 'XML ↔ Markdown Converter', expanded=False ):
 		b1, b2 = st.columns( 2 )
 		with b1:
-			st.button( "Convert XML → Markdown", on_click=xml_to_md )
+			st.button( 'Convert XML → Markdown', on_click=xml_to_md )
 		with b2:
-			st.button( "Convert Markdown → XML", on_click=md_to_xml )
+			st.button( 'Convert Markdown → XML', on_click=md_to_xml )
 	
 	# ------------------------------------------------------------------
 	# Create / Edit Prompt (AUTHORITATIVE EDITOR)
 	# ------------------------------------------------------------------
-	with st.expander( "Create / Edit Prompt", expanded=True ):
+	with st.expander( 'Create / Edit Prompt', expanded=True ):
 		st.text_input(
-			"PromptsId",
+			'PromptsId',
 			value=st.session_state.pe_selected_id or "",
 			disabled=True,
 		)
-		st.text_input( "Name", key="pe_name" )
-		st.text_area( "Text", key="pe_text", height=260 )
-		st.number_input( "Version", min_value=1, key="pe_version" )
+		st.text_input( 'Name', key='pe_name' )
+		st.text_area( 'Text', key='pe_text', height=260 )
+		st.number_input( 'Version', min_value=1, key='pe_version' )
 		
 		c1, c2, c3 = st.columns( 3 )
 		
