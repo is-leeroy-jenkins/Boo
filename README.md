@@ -91,24 +91,24 @@ require predictable, fast outputs.
 #### 1. Clone the Repository
 
 
-```
-bash
+```bash
+
 git clone https://github.com/your-username/Boo.git
 cd Boo
 ```
 
 #### 2. Create and Activate a Virtual Environment
 
-```
-bash
+```bash
+
 python -m venv venv
 venv\Scripts\activate
 ```
 
 #### 3. Install Dependencies
 
-```
-bash
+```bash
+
 pip install -r requirements.txt
 ```
 
@@ -163,9 +163,8 @@ pip install -r requirements.txt
 
 Set the following in your environment or `.env` file:
 
-```
-  
-  bash
+```bash
+
   OPENAI_API_KEY=<your_api_key>
 
 ```
@@ -212,13 +211,15 @@ ensuring clear separation between text, document, image, and audio tasks.
 From the project root:
 
 ```bash
+
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
 Once running, the application will be available at:
 
-```
+```bash
+
 http://localhost:8501
 ```
 
@@ -265,7 +266,7 @@ Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
 
 1) **Install**
 
-```
+```bash
 
   pip install openai pydantic
 
@@ -273,7 +274,8 @@ Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
 
 2) **Configure**
 
-```
+```bash
+
 # Power your client via environment
 export OPENAI_API_KEY="sk-..."         # macOS/Linux
 setx OPENAI_API_KEY "sk-..."           # Windows
@@ -281,7 +283,7 @@ setx OPENAI_API_KEY "sk-..."           # Windows
 
 3) **Hello Boo**
 
-```
+``` bash
 
   from boo import Chat
   
@@ -327,9 +329,8 @@ setx OPENAI_API_KEY "sk-..."           # Windows
 - Supports parameter tuning (temperature, top_p, frequency penalties).
 - Ideal for summarization, explanations, and knowledge retrieval.
 
-```
-  
-  python
+``` python
+
   from boo import Bro
   
   bro = Bro( )
@@ -344,8 +345,7 @@ setx OPENAI_API_KEY "sk-..."           # Windows
 - Specify resolution and rendering quality options.
 - Useful for creating visual illustrations and conceptual diagrams.
 
-```
-python
+``` python
 
 image_url = bro.generate_image("A conceptual illustration of quantum computing in federal AI")
 print(f"Image URL: {image_url}")
@@ -359,9 +359,7 @@ print(f"Image URL: {image_url}")
 
 - Leverages GPT-4o’s vision capabilities for advanced perception.
 
-```
-
-  python
+``` python
   
   url = "https://example.com/sample-image.png"
   response = bro.analyze_image("Describe the primary elements in this image", url)
@@ -377,9 +375,7 @@ print(f"Image URL: {image_url}")
 
 - Supports PDFs, DOCX, and other file formats via OpenAI's file API.
 
-```
-
-  python
+``` python
   
   file_path = "data/federal_strategy.pdf"
   summary = bro.summarize_document(
@@ -398,9 +394,7 @@ print(f"Image URL: {image_url}")
 
 - Ideal for knowledge base querying and document Q&A systems.
 
-```
-
-  python
+``` python
   
   result = bro.search_files( 'Legislation related to environmental impact funding' )
   print(result)
@@ -415,9 +409,7 @@ print(f"Image URL: {image_url}")
 
 - **Web Search**: Real-time information retrieval using GPT web search integration.
 
-```
-
-  python
+``` python
   
   result = bro.search_files( 'Legislation related to environmental impact funding' )
   print(result)
@@ -432,9 +424,7 @@ print(f"Image URL: {image_url}")
 
 - No scraping required—returns model-interpreted summaries.
 
-```
-
-  python
+``` python
   
   insights = bro.search_web( 'Current status of the Federal AI Bill 2025' )
   print(insights)
@@ -449,9 +439,7 @@ print(f"Image URL: {image_url}")
 
 - Promotes reusable, interpretable prompt engineering.
 
-```
-
-  python
+``` python
   
   from boo import Prompt
   p = Prompt(
@@ -472,9 +460,7 @@ print(f"Image URL: {image_url}")
 
 - Facilitates debugging and manual request construction.
 
-```
-
-  python
+``` python
   
   from boo import EndPoint
   api = EndPoint( )
@@ -495,9 +481,7 @@ print(f"Image URL: {image_url}")
 
 - Bro: Programming & Data Science Analyst
 
-```
-
-  python
+``` python
   
   from boo import Assistant
   assistant = Assistant()
@@ -513,7 +497,7 @@ print(f"Image URL: {image_url}")
 
 ## 📝 Text generation
 
-```
+``` python
     
     from boo import Chat
 
@@ -525,7 +509,7 @@ print(f"Image URL: {image_url}")
 
 ## 🌐 Web search (Responses)
 
-```
+``` python
 
     from boo import Chat
 
@@ -538,7 +522,7 @@ print(f"Image URL: {image_url}")
 
 ## 📄 Summarize a document (file-grounded)
 
-```
+``` python
 
     from boo import Chat
 
@@ -553,7 +537,7 @@ print(f"Image URL: {image_url}")
 
 ## 🗂️ File search (vector stores)
 
-```
+``` python
 
     from boo import Chat
 
@@ -566,7 +550,7 @@ print(f"Image URL: {image_url}")
 
 ## 👀 Vision: analyze an image
 
-```
+``` python
 
     from boo import Image
 
@@ -581,7 +565,7 @@ print(f"Image URL: {image_url}")
 
 ## 🖼️ Images: generate / edit
 
-```
+``` python
 
     from boo import Image
 
@@ -596,7 +580,8 @@ print(f"Image URL: {image_url}")
 
 ## 🧬 Embeddings
 
-```
+``` python
+
     from boo import Embedding
 
     emb = Embedding()
@@ -607,7 +592,7 @@ print(f"Image URL: {image_url}")
 
 ## 🔊 Text-to-Speech (TTS)
 
-```
+``` python
 
     from boo import TTS
 
@@ -619,7 +604,7 @@ print(f"Image URL: {image_url}")
 
 ## 🎙️ Transcription / Translation (Whisper)
 
-```
+``` python
 
     from boo import Transcription, Translation
 
@@ -637,6 +622,6 @@ print(f"Image URL: {image_url}")
 
 ## 📝 License
 
-Boo is published under the [MIT General Public License v3](https://github.com/is-leeroy-jenkins/Boo/blob/main/LICENSE).
+- Boo is published under the [MIT General Public License v3](https://github.com/is-leeroy-jenkins/Boo/blob/main/LICENSE).
 
 
