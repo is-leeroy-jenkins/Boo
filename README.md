@@ -25,7 +25,7 @@ and federal applications in mind, it enables secure, scalable, and intelligent a
 
 ## 🧠 LLMs 
 
-### [Leeroy](https://huggingface.co/leeroy-jankins/leeroy) 
+#### [Leeroy](https://huggingface.co/leeroy-jankins/leeroy) 
 Leeroy is a LLM fine-tuned variant of Meta's Llama 3.2 1B Instruct, 
 quantized to Q4_K_M GGUF format for high-efficiency, low-latency inference. 
 Named after the legendary charge-forward ethos, Leeroy specializes in executing user 
@@ -41,7 +41,7 @@ Leeroy runs natively in llama.cpp, LM Studio, Ollama, and similar GGUF-compatibl
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Leeroy-streamlit.gif)
 ___
 
-###  [Bro](https://huggingface.co/leeroy-jankins/bro) 
+####  [Bro](https://huggingface.co/leeroy-jankins/bro) 
 Bro is a LLM fine-tuned variant of the gemma-3-1b-it transformer model, optimized for 
 enhanced contextual comprehension, instruction following, and domain-specific reasoning. 
 The fine-tuning process used supervised instruction tuning across multiple NLP domains, 
@@ -54,7 +54,8 @@ deployment and academic research.
 - [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/bro)
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Bro-streamlit.gif)
 ___
-###  [Bubba](https://huggingface.co/leeroy-jankins/bubba) 
+
+####  [Bubba](https://huggingface.co/leeroy-jankins/bubba) 
 Bubba is a fine-tuned LLM based on OpenAI’s Chat GPT-5. This release packages the 
 fine-tuned weights (or adapters) for practical, low-latency instruction following, 
 summarization, reasoning, and light code generation. It is intended for local or
