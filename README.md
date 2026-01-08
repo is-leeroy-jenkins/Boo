@@ -117,13 +117,11 @@ pip install -r requirements.txt
 
 ## ⚙️ Core Classes
 
-- `GPT`: Base class that provides shared API setup, keys, and model configurations.
-- `Chat`, `Assistant`, `Bubba`, `Bro`: Extend `AI` to provide domain-specific implementations.
-- `Schemas`, `Header`, `EndPoint`: Configuration utilities for model selection, headers, and
-  endpoints.
-- `Prompt`, `Message`, `Response`, `File`, `Reasoning`: Pydantic models for structured data
-  exchange.
-
+- [Chat](https://github.com/is-leeroy-jenkins/Boo/blob/main/gpt.py#L383) 
+- [Models](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py)
+- [Gemini](https://github.com/is-leeroy-jenkins/Boo/blob/main/gemini.py#L63)
+- [Groq](https://github.com/is-leeroy-jenkins/Boo/blob/main/grok.py)
+- [Agents](https://github.com/is-leeroy-jenkins/Boo/blob/main/agents.py#L57)
 
 
 ## 💻 Capabilities
@@ -154,7 +152,7 @@ pip install -r requirements.txt
 ## 📁 File Organization
 
 - [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/boo.py) – Main application framework
-- [schema](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py) – Models used for structured output
+- [models](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py) – Models used for structured output
 - [boogr](https://github.com/is-leeroy-jenkins/Boo/blob/main/boogr.py) – a GUI
 - [agents](https://github.com/is-leeroy-jenkins/Boo/blob/main/guro.py) – a prompt library w/ over 100 agents.
 - [data](https://github.com/is-leeroy-jenkins/Boo/tree/main/dbops.py) - Local persistance of embeddings for retreival augmentation base on SLQite. 
@@ -201,24 +199,23 @@ The Streamlit application supports the following workflows:
 * 🧠 **Dynamic model switching**
 * 🧩 **Tool, reasoning, and source inspection (when available)**
 
-All workflows are exposed from a **single application page** with explicit mode selection,
-ensuring clear separation between text, document, image, and audio tasks.
+
 
 ---
 
 ### Running the Streamlit Application
 
-From the project root:
+- From the project root:
 
-```bash
+``` bash
 
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Once running, the application will be available at:
+- Once running, the application will be available at:
 
-```bash
+``` bash
 
 http://localhost:8501
 ```
@@ -236,7 +233,7 @@ http://localhost:8501
 
 ## 🧰 Overview
 
-Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
+Skinny hierarchy:
 
 - **GPT (base)** – holds the single `OpenAI` client, env config, and shared helpers.
 - **Chat / Assistant / Bro / Bubba** – opinionated text assistants using the **Responses API**.
@@ -266,7 +263,7 @@ Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
 
 1) **Install**
 
-```bash
+``` bash
 
   pip install openai pydantic
 
@@ -274,7 +271,7 @@ Boo wraps the latest **OpenAI Python SDK** with a thin class hierarchy:
 
 2) **Configure**
 
-```bash
+``` bash
 
 # Power your client via environment
 export OPENAI_API_KEY="sk-..."         # macOS/Linux
