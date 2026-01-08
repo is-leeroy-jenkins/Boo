@@ -1,17 +1,17 @@
 '''
   ******************************************************************************************
-      Assembly:                Name
-      Filename:                name.py
+      Assembly:                Boo
+      Filename:                agents.py
       Author:                  Terry D. Eppler
-      Created:                 05-31-2022
+      Created:                 06-01-2023
 
       Last Modified By:        Terry D. Eppler
       Last Modified On:        05-01-2025
   ******************************************************************************************
-  <copyright file="guro.py" company="Terry D. Eppler">
+  <copyright file="agents.py" company="Terry D. Eppler">
 
-	     name.py
-	     Copyright ©  2022  Terry Eppler
+	     agents.py
+	     Copyright ©  2023  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
      of this software and associated documentation files (the “Software”),
@@ -37,7 +37,7 @@
 
   </copyright>
   <summary>
-    name.py
+    agents.py
   </summary>
   ******************************************************************************************
 '''

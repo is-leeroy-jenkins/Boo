@@ -3,16 +3,8 @@ beautifulsoup4
 crawl4ai
 camelot-py
 chromadb
-dash
-dash-core-components
-dash-html-components
 dotenv
 datasets
-flask-bootstrap
-flask-moment
-flask-wtf
-flask-sqlalchemy
-flask-mail
 fastapi
 groq
 google
@@ -61,8 +53,6 @@ soundfile
 sounddevice
 sqlite-vec
 sentence-transformers
-streamlit
-streamlit-extras
 typing_extensions
 textblob
 transformers

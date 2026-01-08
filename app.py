@@ -4,7 +4,6 @@
 # Author:                  Terry D. Eppler (integration)
 # Created:                 12-16-2025
 # Notes:                   Restored Parameters section for Text mode and wired parameters
-#                          into generation call defensively. Minimal other edits.
 # ******************************************************************************************
 
 from __future__ import annotations
@@ -1768,10 +1767,10 @@ st.markdown(
 
 # ---- Resolve active model by mode
 _mode_to_model_key = {
-    "Text": "text_model",
-    "Images": "image_model",
-    "Audio": "audio_model",
-    "Embeddings": "embed_model",
+    'Text': 'text_model',
+    'Images': 'image_model',
+    'Audio': 'audio_model',
+    'Embeddings': 'embed_model',
 }
 
 provider_val = st.session_state.get("provider", "—")
@@ -1786,35 +1785,35 @@ active_model = st.session_state.get(
 right_parts = []
 
 if active_model is not None:
-    right_parts.append(f"Model: {active_model}")
+    right_parts.append(f'Model: {active_model}')
 
-if mode == "Text":
-    temperature = st.session_state.get("temperature")
-    top_p = st.session_state.get("top_p")
+if mode == 'Text':
+    temperature = st.session_state.get('temperature')
+    top_p = st.session_state.get('top_p')
 
     if temperature is not None:
-        right_parts.append(f"Temp: {temperature}")
+        right_parts.append(f'Temp: {temperature}')
     if top_p is not None:
-        right_parts.append(f"Top-P: {top_p}")
+        right_parts.append(f'Top-P: {top_p}')
 
-elif mode == "Images":
-    size = st.session_state.get("image_size")
-    aspect = st.session_state.get("image_aspect")
+elif mode == 'Images':
+    size = st.session_state.get('image_size')
+    aspect = st.session_state.get('image_aspect')
 
     if aspect is not None:
-        right_parts.append(f"Aspect: {aspect}")
+        right_parts.append(f'Aspect: {aspect}')
     elif size is not None:
-        right_parts.append(f"Size: {size}")
+        right_parts.append(f'Size: {size}')
 
-elif mode == "Audio":
-    task = st.session_state.get("audio_task")
+elif mode == 'Audio':
+    task = st.session_state.get('audio_task')
     if task is not None:
-        right_parts.append(f"Task: {task}")
+        right_parts.append(f'Task: {task}')
 
-elif mode == "Embeddings":
-    method = st.session_state.get("embed_method")
+elif mode == 'Embeddings':
+    method = st.session_state.get('embed_method')
     if method is not None:
-        right_parts.append(f"Method: {method}")
+        right_parts.append(f'Method: {method}')
 
 right_text = " · ".join(right_parts) if right_parts else "—"
 
