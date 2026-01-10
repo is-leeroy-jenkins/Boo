@@ -53,6 +53,8 @@ from openai import OpenAI
 from boogr import ErrorDialog, Error
 import config as cfg
 
+OPENAI_API_KEY = cfg.OPENAI_API_KEY
+
 def throw_if( name: str, value: object ):
 	if value is None:
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
@@ -184,8 +186,8 @@ class GptHeader:
 	
 	def __init__( self ):
 		self.content_type = 'application/json'
-		self.api_key = cfg.OPENAI_API_KEY
-		self.authorization = f'Bearer {cfg.OPENAI_API_KEY}'
+		self.api_key = OPENAI_API_KEY
+		self.authorization = f'Bearer {OPENAI_API_KEY}'
 	
 	def __dir__( self ) -> list[ str ] | None:
 		return [ 'content_type', 'api_key', 'authorization', 'get_data' ]
@@ -462,7 +464,7 @@ class Chat( GPT ):
 	
 	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			store: bool=True, stream: bool=True ):
+			store: bool=True, stream: bool=True, instruct: str=None ):
 		super( ).__init__( )
 		self.api_key = cfg.OPENAI_API_KEY
 		self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
@@ -473,10 +475,10 @@ class Chat( GPT ):
 		self.presence_penalty = presence
 		self.max_completion_tokens = max_tokens
 		self.store = store
+		self.instructions = instruct
 		self.stream = stream
 		self.tool_choice = 'auto'
 		self.model = None
-		self.instructions = None
 		self.content = None
 		self.prompt = None
 		self.response = None
@@ -509,44 +511,79 @@ class Chat( GPT ):
 	        Methods that returns a list of small_model names
 
         '''
-		return [ 'gpt-3.5-turbo-0125',
-				 'gpt-4-0613',
-		         'gpt-4-turbo-2024-04-09',
-		         'gpt-4o-2024-08-06',
-		         'gpt-4o-mini-2024-07-18',
-		         'o3-mini-2025-01-31',
-		         'o4-mini-2025-04-16',
-		         'o4-mini-deep-research-2025-06-26',
+		return [ 'gpt-5',
+		         'gpt-5-mini',
+		         'gpt-5-nano',
+		         'gpt-5-2025-08-07',
+		         'gpt-5-mini-2025-08-07',
+		         'gpt-5-nano-2025-08-07',
+		         'gpt-5-chat-latest',
+		         'gpt-4.1',
+		         'gpt-4.1-mini',
+		         'gpt-4.1-nano',
 		         'gpt-4.1-2025-04-14',
 		         'gpt-4.1-mini-2025-04-14',
 		         'gpt-4.1-nano-2025-04-14',
-		         'gpt-5-chat-latest',
-		         'gpt-5-mini-2025-08-07',
-		         'gpt-5-2025-08-07',
-		         'gpt-5-nano-2025-08-07',
-		         'gpt-5-codex',
-		         'gpt-5.2-2025-12-11',
-		         'gpt-image-1',
-		         'gpt-image-1-mini',
-		         'gpt-audio-2025-08-28',
-		         'gpt-audio-mini-2025-10-06',
-		         'computer-use-preview-2025-03-11',
-		         'gpt-4o-mini-search-preview-2025-03-11',
-		         'gpt-4o-search-preview-2025-03-11',
+		         'o4-mini',
+		         'o4-mini-2025-04-16',
+		         'o3',
+		         'o3-2025-04-16',
+		         'o3-mini',
+		         'o3-mini-2025-01-31',
+		         'o1',
+		         'o1-2024-12-17',
+		         'o1-preview',
+		         'o1-preview-2024-09-12',
+		         'o1-mini',
+		         'o1-mini-2024-09-12',
+		         'gpt-4o',
+		         'gpt-4o-2024-11-20',
+		         'gpt-4o-2024-08-06',
+		         'gpt-4o-2024-05-13',
+		         'gpt-4o-audio-preview',
+		         'gpt-4o-audio-preview-2024-10-01',
+		         'gpt-4o-audio-preview-2024-12-17',
+		         'gpt-4o-audio-preview-2025-06-03',
+		         'gpt-4o-mini-audio-preview',
 		         'gpt-4o-mini-audio-preview-2024-12-17',
-		         'gpt-4o-mini-transcribe',
-		         'gpt-4o-mini-tts',
-		         'gpt-4o-transcribe',
+		         'gpt-4o-search-preview',
+		         'gpt-4o-mini-search-preview',
+		         'gpt-4o-search-preview-2025-03-11',
+		         'gpt-4o-mini-search-preview-2025-03-11',
 		         'chatgpt-4o-latest',
 		         'codex-mini-latest',
-		         'dall-e-2',
-		         'dall-e-3',
-		         'text-embedding-3-large',
-		         'text-embedding-3-small',
-		         'text-embedding-ada-002',
-		         'tts-1',
-		         'tts-1-hd',
-		         'whisper-1', ]
+		         'gpt-4o-mini',
+		         'gpt-4o-mini-2024-07-18',
+		         'gpt-4-turbo',
+		         'gpt-4-turbo-2024-04-09',
+		         'gpt-4-0125-preview',
+		         'gpt-4-turbo-preview',
+		         'gpt-4-1106-preview',
+		         'gpt-4-vision-preview',
+		         'gpt-4',
+		         'gpt-4-0314',
+		         'gpt-4-0613',
+		         'gpt-4-32k',
+		         'gpt-4-32k-0314',
+		         'gpt-4-32k-0613',
+		         'gpt-3.5-turbo',
+		         'gpt-3.5-turbo-16k',
+		         'gpt-3.5-turbo-0301',
+		         'gpt-3.5-turbo-0613',
+		         'gpt-3.5-turbo-1106',
+		         'gpt-3.5-turbo-0125',
+		         'gpt-3.5-turbo-16k-0613',
+		         'o1-pro',
+		         'o1-pro-2025-03-19',
+		         'o3-pro',
+		         'o3-pro-2025-06-10',
+		         'o3-deep-research',
+		         'o3-deep-research-2025-06-26',
+		         'o4-mini-deep-research',
+		         'o4-mini-deep-research-2025-06-26',
+		         'computer-use-preview',
+		         'computer-use-preview-2025-03-11',
+		         'gpt-5-codex' ]
 	
 	@property
 	def include_options( self ) -> List[ str ] | None:
@@ -592,7 +629,10 @@ class Chat( GPT ):
 		         'medium',
 		         'high', ]
 	
-	def generate_text( self, prompt: str, model: str='gpt-5-nano-2025-08-07' ) -> str | None:
+	def generate_text( self, prompt: str, model: str='gpt-5-nano', number: int=1,
+			temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=10000,
+			store: bool=True, stream: bool=True, instruct: str=None  ) -> str | None:
 		"""
 	
 	        Purpose
@@ -614,9 +654,22 @@ class Chat( GPT ):
 			throw_if( 'prompt', prompt )
 			self.prompt = prompt
 			self.model = model
-			self.response = self.client.responses.create( model=self.model, input=self.prompt,
-				max_output_tokens=self.max_completion_tokens, tool_choice=self.tool_choice,
-				temperature=self.temperature, top_p=self.top_percent )
+			self.number = number
+			self.temperature = temperature
+			self.top_percent = top_p
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_completion_tokens = max_tokens
+			self.store = store
+			self.stream = stream
+			self.instructions = instruct
+			if self.model.startswith( 'gpt-5' ):
+				self.response = self.client.responses.create( model=self.model, input=self.prompt,
+					max_output_tokens=self.max_completion_tokens, instructions=self.instructions  )
+			else:
+				self.response = self.client.responses.create( model=self.model, input=self.prompt,
+					max_output_tokens=self.max_completion_tokens, temperature=self.temperature,
+					top_p=self.top_percent )
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
@@ -627,7 +680,7 @@ class Chat( GPT ):
 			error.show( )
 	
 	def generate_image( self, prompt: str, number: int=1, model: str='dall-e-3',
-			size: str='1024x1024', quality: str='standard' ) -> str | None:
+			size: str='1024x1024', quality: str='standard', fmt: str='.png'  ) -> str | None:
 		'''
 	
 	        Purpose
@@ -652,8 +705,10 @@ class Chat( GPT ):
 			self.model = model
 			self.size = size
 			self.quality = quality
+			self.response_format = fmt
 			self.response = self.client.images.generate( model=self.model, prompt=self.prompt,
-				size=self.size, quality=self.quality, n=self.number )
+				size=self.size, quality=self.quality,
+				response_format=self.response_format, n=self.number )
 			return self.response.data[ 0 ].url
 		except Exception as e:
 			exception = Error( e )
@@ -745,7 +800,7 @@ class Chat( GPT ):
 			error.show( )
 			
 		
-	def summarize_document( self, prompt: str, pdf_path: str ) -> str | None:
+	def summarize_document( self, prompt: str, pdf_path: str) -> str | None:
 		"""
 	
 	        Purpose
@@ -798,7 +853,7 @@ class Chat( GPT ):
 			error.show( )
 	
 	def search_web( self, prompt: str, model: str='gpt-4.1-nano-2025-04-14',
-			recency: int=30, max_results: int=100 ) -> str | None:
+			recency: int=30, max_results: int=100, ) -> str | None:
 		"""
 
 	        Purpose
@@ -881,8 +936,7 @@ class Chat( GPT ):
 			error = ErrorDialog( exception )
 			error.show( )
 			
-	def search_files( self, prompt: str, model: str='gpt-4.1-nano-2025-04-14',
-			max_results: int=100 ) -> str | None:
+	def search_files( self, prompt: str, model: str='gpt-4.1-nano-2025-04-14' ) -> str | None:
 		"""
 
 	        Purpose:
@@ -1348,6 +1402,7 @@ class TTS( GPT ):
     """
 	speed: Optional[ float ]
 	voice: Optional[ str ]
+	language: Optional[ str ]
 	response: Optional[ openai.types.responses.Response ]
 	
 	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
@@ -1570,9 +1625,13 @@ class Transcription( GPT ):
 
 
     """
+	speed: Optional[ float ]
+	voice: Optional[ str ]
+	language: Optional[ str ]
 	
 	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
-			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True, instruct: str=None ):
+			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True,
+			language: str='en', instruct: str=None ):
 		super( ).__init__( )
 		self.api_key = cfg.OPENAI_API_KEY
 		self.client = OpenAI( api_key=self.api_key )
@@ -1655,7 +1714,7 @@ class Transcription( GPT ):
 		         'Italian',
 		         'Chinese' ]
 	
-	def transcribe( self, path: str, model: str='whisper-1' ) -> str:
+	def transcribe( self, path: str, model: str='whisper-1', language: str='en' ) -> str:
 		"""
 		
             Transcribe audio with Whisper.
@@ -1664,9 +1723,10 @@ class Transcription( GPT ):
 		try:
 			throw_if( 'path', path )
 			self.model = model
+			self.language = language
 			with open( path, 'rb' ) as self.audio_file:
 				resp = self.client.audio.transcriptions.create( model=self.model,
-					file=self.audio_file )
+					file=self.audio_file, language=self.language )
 			return resp.text
 		except Exception as e:
 			ex = Error( e )

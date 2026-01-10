@@ -13,8 +13,8 @@ import streamlit as st
 import tempfile
 import re
 from typing import List, Dict, Any, Optional
+from boogr import Error
 
-# ADDITIVE ONLY (for Prompt Engineering)
 import sqlite3
 import os
 
@@ -25,24 +25,6 @@ from gpt import (
 	Transcription,
 	Translation,
 )
-
-def get_active_chat( ):
-	provider = st.session_state.get( "provider", "GPT" )
-	
-	if provider == "Gemini":
-		import gemini
-		
-		return gemini
-	
-	if provider == "Groq":
-		import grok
-		
-		return grok
-	
-	# Default: GPT
-	import gpt
-	
-	return gpt
 
 # ======================================================================================
 # Page Configuration
@@ -56,81 +38,86 @@ st.set_page_config(
 # ------------------------------------------------------------------
 # Provider Logo (top of sidebar)
 # ------------------------------------------------------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname( os.path.abspath( __file__ ) )
 
 provider_logo_map = {
-    "GPT": os.path.join(BASE_DIR, "resource", "images", "gpt_logo.png"),
-    "Gemini": os.path.join(BASE_DIR, "resource", "images", "gemma_logo.png"),
-    "Groq": os.path.join(BASE_DIR, "resource", "images", "grok_logo.png"),
+		'GPT': os.path.join( BASE_DIR, 'resource', 'images', 'gpt_logo.png' ),
+		'Gemini': os.path.join( BASE_DIR, 'resource', 'images', 'gemma_logo.png' ),
+		'Groq': os.path.join( BASE_DIR, 'resource', 'images', 'grok_logo.png' ),
 }
 
-provider = st.session_state.get("provider")
+provider = st.session_state.get( "provider" )
 
-logo_path = provider_logo_map.get(provider)
+logo_path = provider_logo_map.get( provider )
 
-if logo_path and os.path.exists(logo_path):
-    _, logo_col, _ = st.columns([1, 2, 1])
-    with logo_col:
-        st.image(logo_path, width=50)
-
-
+if logo_path and os.path.exists( logo_path ):
+	_, logo_col, _ = st.columns( [ 1, 2, 1 ] )
+	with logo_col:
+		st.image( logo_path, width=50 )
 
 # ======================================================================================
 # Session State — initialize per-mode model keys and token counters
 # ======================================================================================
-if "messages" not in st.session_state:
+
+if 'provider' not in st.session_state or st.session_state[ 'provider' ] is None:
+	st.session_state[ 'provider' ] = 'GPT'
+
+if 'mode' not in st.session_state or st.session_state[ 'mode' ] is None:
+	st.session_state[ 'mode' ] = 'Text'
+
+if 'messages' not in st.session_state:
 	st.session_state.messages: List[ Dict[ str, Any ] ] = [ ]
 
-if "last_call_usage" not in st.session_state:
+if 'last_call_usage' not in st.session_state:
 	st.session_state.last_call_usage = {
-			"prompt_tokens": 0,
-			"completion_tokens": 0,
-			"total_tokens": 0,
+			'prompt_tokens': 0,
+			'completion_tokens': 0,
+			'total_tokens': 0,
 	}
 
-if "token_usage" not in st.session_state:
+if 'token_usage' not in st.session_state:
 	st.session_state.token_usage = {
-			"prompt_tokens": 0,
-			"completion_tokens": 0,
-			"total_tokens": 0,
+			'prompt_tokens': 0,
+			'completion_tokens': 0,
+			'total_tokens': 0,
 	}
 
-if "files" not in st.session_state:
+if 'files' not in st.session_state:
 	st.session_state.files: List[ str ] = [ ]
 
 # Per-mode model keys (deterministic header behavior) - chat -> text
-if "text_model" not in st.session_state:
-	st.session_state[ "text_model" ] = None
-if "image_model" not in st.session_state:
-	st.session_state[ "image_model" ] = None
-if "audio_model" not in st.session_state:
-	st.session_state[ "audio_model" ] = None
-if "embed_model" not in st.session_state:
-	st.session_state[ "embed_model" ] = None
+if 'text_model' not in st.session_state:
+	st.session_state[ 'text_model' ] = None
+if 'image_model' not in st.session_state:
+	st.session_state[ 'image_model' ] = None
+if 'audio_model' not in st.session_state:
+	st.session_state[ 'audio_model' ] = None
+if 'embed_model' not in st.session_state:
+	st.session_state[ 'embed_model' ] = None
 
 # Temperature / top_p / other generation params defaults (Text controls)
-if "temperature" not in st.session_state:
-	st.session_state[ "temperature" ] = 0.7
-if "top_p" not in st.session_state:
-	st.session_state[ "top_p" ] = 1.0
-if "max_tokens" not in st.session_state:
-	st.session_state[ "max_tokens" ] = 512
-if "freq_penalty" not in st.session_state:
-	st.session_state[ "freq_penalty" ] = 0.0
-if "pres_penalty" not in st.session_state:
-	st.session_state[ "pres_penalty" ] = 0.0
-if "stop_sequences" not in st.session_state:
-	st.session_state[ "stop_sequences" ] = [ ]
+if 'temperature' not in st.session_state:
+	st.session_state[ 'temperature' ] = 0.7
+if 'top_p' not in st.session_state:
+	st.session_state[ 'top_p' ] = 1.0
+if 'max_tokens' not in st.session_state:
+	st.session_state[ 'max_tokens' ] = 512
+if 'freq_penalty' not in st.session_state:
+	st.session_state[ 'freq_penalty' ] = 0.0
+if 'pres_penalty' not in st.session_state:
+	st.session_state[ 'pres_penalty' ] = 0.0
+if 'stop_sequences' not in st.session_state:
+	st.session_state[ 'stop_sequences' ] = [ ]
 
 # Provider default
-if "provider" not in st.session_state:
-	st.session_state[ "provider" ] = "GPT"
+if 'provider' not in st.session_state:
+	st.session_state[ 'provider' ] = 'GPT'
 
-if "api_keys" not in st.session_state:
+if 'api_keys' not in st.session_state:
 	st.session_state.api_keys = {
-			"GPT": None,
-			"Groq": None,
-			"Gemini": None,
+			'GPT': None,
+			'Groq': None,
+			'Gemini': None,
 	}
 
 # ======================================================================================
@@ -322,37 +309,73 @@ def _display_value( val: Any ) -> str:
 		return str( val )
 	except Exception:
 		return "—"
+
 # ======================================================================================
-# SIDEBAR PROVIDER + MODE RESOLUTION (AUTHORITATIVE)
+# SIDEBAR PROVIDER
 # ======================================================================================
 
 PROVIDER_MODULES = {
-    "GPT": "gpt",
-    "Gemini": "gemini",
-    "Groq": "grok",
+		'GPT': 'gpt',
+		'Gemini': 'gemini',
+		'Groq': 'grok',
 }
 
 MODE_CLASS_MAP = {
-    "Text": ["Chat"],
-    "Images": ["Image"],
-    "Audio": ["TTS", "Translation", "Transcription"],
-    "Embeddings": ["Embedding"],
+		'Text': [ 'Chat' ],
+		'Images': [ 'Image' ],
+		'Audio': [ 'TTS',
+		           'Translation',
+		           'Transcription' ],
+		'Embeddings': [ 'Embedding' ],
 }
 
-def get_provider_module():
-    provider = st.session_state.get("provider", "GPT")
-    module_name = PROVIDER_MODULES.get(provider, "gpt")
-    return __import__(module_name)
+ALL_MODES = [
+		'Text',
+		'Images',
+		'Audio',
+		'Embeddings',
+		'Documents',
+		'Files',
+		'Vector Store',
+		'Prompt Engineering' ]
 
-def instantiate_if_exists(module, class_name):
-    return getattr(module, class_name, None)()
+def get_provider_module( ):
+	provider = st.session_state.get( 'provider', 'GPT' )
+	module_name = PROVIDER_MODULES.get( provider, 'gpt' )
+	return __import__( module_name )
+
+def get_chat_instance( ):
+	"""
+		Returns a Chat() instance for the currently selected provider.
+		Ensures Gemini / Grok functionality is not bypassed.
+	"""
+	provider_module = get_provider_module( )
+	return provider_module.Chat( )
+
+BASE_DIR = os.path.dirname( os.path.abspath( __file__ ) )
+
+provider_logo_map = {
+		"GPT": os.path.join( BASE_DIR, "resources", "images", "gpt_logo.png" ),
+		"Gemini": os.path.join( BASE_DIR, "resources", "images", "gemma_logo.png" ),
+		"Groq": os.path.join( BASE_DIR, "resources", "images", "grok_logo.png" ),
+}
+
+provider = st.session_state.get( "provider", "GPT" )
+logo_path = provider_logo_map.get( provider )
+
+if logo_path and os.path.exists( logo_path ):
+	_, col, _ = st.columns( [ 1,
+	                          2,
+	                          1 ] )
+	with col:
+		st.image( logo_path, width=50 )
 
 # ======================================================================================
 # PROVIDER-AWARE OPTION SOURCING
 # ======================================================================================
 
 def _provider( ):
-	return st.session_state.get( "provider", "GPT" )
+	return st.session_state.get( 'provider', 'GPT' )
 
 def _safe( module, attr, fallback ):
 	try:
@@ -363,716 +386,689 @@ def _safe( module, attr, fallback ):
 
 # ---------------- TEXT ----------------
 def text_model_options( chat ):
-	if _provider( ) == "Gemini":
-		return _safe( "gemini", "model_options", chat.model_options )
-	if _provider( ) == "Groq":
-		return _safe( "grok", "model_options", chat.model_options )
+	if _provider( ) == 'GPT':
+		return _safe( 'gpt', 'model_options', chat.model_options )
+	if _provider( ) == 'Gemini':
+		return _safe( 'gemini', 'model_options', chat.model_options )
+	if _provider( ) == 'Groq':
+		return _safe( 'grok', 'model_options', chat.model_options )
 	return chat.model_options
 
 # ---------------- IMAGES ----------------
 def image_model_options( image ):
-	if _provider( ) == "Gemini":
-		return _safe( "gemini", "image_model_options", image.model_options )
-	if _provider( ) == "Groq":
-		return _safe( "grok", "image_model_options", image.model_options )
+	if _provider( ) == 'GPT':
+		return _safe( 'gpt', 'image_model_options', image.model_options )
+	if _provider( ) == 'Gemini':
+		return _safe( 'gemini', 'image_model_options', image.model_options )
+	if _provider( ) == 'Groq':
+		return _safe( 'grok', 'image_model_options', image.model_options )
 	return image.model_options
 
 def image_size_or_aspect_options( image ):
-	if _provider( ) == "Gemini":
-		return _safe( "gemini", "aspect_options", image.size_options )
-	if _provider( ) == "Groq":
-		return _safe( "grok", "aspect_options", image.size_options )
+	if _provider( ) == 'GPT':
+		return _safe( 'gpt', 'aspect_options', image.size_options )
+	if _provider( ) == 'Gemini':
+		return _safe( 'gemini', 'aspect_options', image.size_options )
+	if _provider( ) == 'Groq':
+		return _safe( 'grok', 'aspect_options', image.size_options )
 	return image.size_options
 
 # ---------------- AUDIO ----------------
 def audio_model_options( transcriber ):
-	if _provider( ) == "Gemini":
-		return _safe( "gemini", "audio_model_options", transcriber.model_options )
-	if _provider( ) == "Groq":
-		return _safe( "grok", "audio_model_options", transcriber.model_options )
+	if _provider( ) == 'GPT':
+		return _safe( 'gpt', 'audio_model_options', transcriber.model_options )
+	if _provider( ) == 'Gemini':
+		return _safe( 'gemini', 'audio_model_options', transcriber.model_options )
+	if _provider( ) == 'Groq':
+		return _safe( 'grok', 'audio_model_options', transcriber.model_options )
 	return transcriber.model_options
 
 def audio_language_options( transcriber ):
-	if _provider( ) == "Gemini":
-		return _safe( "gemini", "language_options", transcriber.language_options )
-	if _provider( ) == "Groq":
-		return _safe( "grok", "language_options", transcriber.language_options )
+	if _provider( ) == 'GPT':
+		return _safe( 'gpt', 'language_options', transcriber.language_options )
+	if _provider( ) == 'Gemini':
+		return _safe( 'gemini', 'language_options', transcriber.language_options )
+	if _provider( ) == 'Groq':
+		return _safe( 'grok', 'language_options', transcriber.language_options )
 	return transcriber.language_options
 
 # ---------------- EMBEDDINGS ----------------
 def embedding_model_options( embed ):
-	if _provider( ) == "Gemini":
-		return _safe( "gemini", "embedding_model_options", embed.model_options )
-	if _provider( ) == "Groq":
-		return _safe( "grok", "embedding_model_options", embed.model_options )
+	if _provider( ) == 'GPT':
+		return _safe( 'gpt', 'embedding_model_options', embed.model_options )
+	if _provider( ) == 'Gemini':
+		return _safe( 'gemini', 'embedding_model_options', embed.model_options )
+	if _provider( ) == 'Groq':
+		return _safe( 'grok', 'embedding_model_options', embed.model_options )
 	return embed.model_options
 
 # ======================================================================================
 # Sidebar — Provider selector above Mode, then Mode selector.
 # ======================================================================================
 with st.sidebar:
-    st.subheader("Provider")
-    st.markdown(
-        "<div style='height:2px;background:#0078FC;margin:6px 0 10px 0;'></div>",
-        unsafe_allow_html=True,
-    )
-
-    provider = st.selectbox(
-        "Choose provider",
-        list(PROVIDER_MODULES.keys()),
-        index=list(PROVIDER_MODULES.keys()).index(
-            st.session_state.get("provider", "GPT")
-        ),
-    )
-    st.session_state["provider"] = provider
-
-    st.subheader("Mode")
-    st.markdown(
-        "<div style='height:2px;background:#0078FC;margin:6px 0 10px 0;'></div>",
-        unsafe_allow_html=True,
-    )
-    
-    mode = st.radio(
-	    "Select capability",
-	    [ "Text",
-	      "Images",
-	      "Audio",
-	      "Embeddings" ],
-    )
-    
-    BASE_DIR = os.path.dirname( os.path.abspath( __file__ ) )
-    
-    provider_logo_map = {
-		    "GPT": os.path.join( BASE_DIR, "resource", "images", "gpt_logo.png" ),
-		    "Gemini": os.path.join( BASE_DIR, "resource", "images", "gemma_logo.png" ),
-		    "Groq": os.path.join( BASE_DIR, "resource", "images", "grok_logo.png" ),
-    }
-    
-    provider = st.session_state.get( "provider" )
-    logo_path = provider_logo_map.get( provider )
-    
-    if logo_path and os.path.exists( logo_path ):
-	    _, col, _ = st.columns( [ 1,
-	                              2,
-	                              1 ] )
-	    with col:
-		    st.image( logo_path, width=50 )
+	st.subheader( "Provider" )
+	st.markdown(
+		"<div style='height:2px;align:left;background:#0078FC;margin:6px 0 10px 0;'></div>",
+		unsafe_allow_html=True,
+	)
+	
+	provider = st.selectbox(
+		"Choose provider",
+		list( PROVIDER_MODULES.keys( ) ),
+		index=list( PROVIDER_MODULES.keys( ) ).index( st.session_state.get( "provider", "GPT" ) ),
+	)
+	
+	st.session_state[ "provider" ] = provider
+	
+	st.subheader( "Mode" )
+	st.markdown(
+		"<div style='height:2px;background:#0078FC;margin:6px 0 10px 0;'></div>",
+		unsafe_allow_html=True,
+	)
+	
+	mode = st.sidebar.radio(
+		"Mode",
+		ALL_MODES,
+		index=0
+	)
+	
+	st.divider( )
 
 # ======================================================================================
-# Dynamic Header — show provider and mode, and model relevant to the active mode
-# ======================================================================================
-_mode_to_model_key = {
-		"Text": "text_model",
-		"Images": "image_model",
-		"Audio": "audio_model",
-		"Embeddings": "embed_model",
-		"Documents": "text_model",
-		"Files": "text_model",
-		"Vector Store": "text_model",
-}
-
-model_key_for_header = _mode_to_model_key.get( mode, "text_model" )
-model_val = st.session_state.get( model_key_for_header, None )
-temperature_val = st.session_state.get( "temperature", None )
-top_p_val = st.session_state.get( "top_p", None )
-provider_val = st.session_state.get( "provider", None )
-
-header_label = provider_val if provider_val else "Boo"
-
-st.divider( )
-
-# ======================================================================================
-# TEXT MODE (Provider-correct, function-preserving rewrite)
+# TEXT MODE
 # ======================================================================================
 if mode == "Text":
-    st.header("")
-
-    # ------------------------------------------------------------------
-    # Provider-aware Chat instantiation
-    # ------------------------------------------------------------------
-    provider_module = get_provider_module()
-    chat = provider_module.Chat()
-
-    # ------------------------------------------------------------------
-    # Sidebar — Text Settings (NO functionality removed)
-    # ------------------------------------------------------------------
-    with st.sidebar:
-        st.header("Text Settings")
-
-        # ---------------- Model (provider-correct) ----------------
-        text_model = st.selectbox(
-            "Model",
-            chat.model_options,
-            index=(
-                chat.model_options.index(st.session_state["text_model"])
-                if st.session_state.get("text_model") in chat.model_options
-                else 0
-            ),
-        )
-        st.session_state["text_model"] = text_model
-
-        # ---------------- Parameters (unchanged) ----------------
-        with st.expander("Parameters:", expanded=True):
-            temperature = st.slider(
-                "Temperature",
-                min_value=0.0,
-                max_value=1.0,
-                value=float(st.session_state.get("temperature", 0.7)),
-                step=0.01,
-            )
-            st.session_state["temperature"] = float(temperature)
-
-            top_p = st.slider(
-                "Top-P",
-                min_value=0.0,
-                max_value=1.0,
-                value=float(st.session_state.get("top_p", 1.0)),
-                step=0.01,
-            )
-            st.session_state["top_p"] = float(top_p)
-
-            max_tokens = st.number_input(
-                "Max Tokens",
-                min_value=1,
-                max_value=100000,
-                value=int(st.session_state.get("max_tokens", 512)),
-            )
-            st.session_state["max_tokens"] = int(max_tokens)
-
-            freq_penalty = st.slider(
-                "Frequency Penalty",
-                min_value=-2.0,
-                max_value=2.0,
-                value=float(st.session_state.get("freq_penalty", 0.0)),
-                step=0.01,
-            )
-            st.session_state["freq_penalty"] = float(freq_penalty)
-
-            pres_penalty = st.slider(
-                "Presence Penalty",
-                min_value=-2.0,
-                max_value=2.0,
-                value=float(st.session_state.get("pres_penalty", 0.0)),
-                step=0.01,
-            )
-            st.session_state["pres_penalty"] = float(pres_penalty)
-
-            stop_text = st.text_area(
-                "Stop Sequences (one per line)",
-                value="\n".join(st.session_state.get("stop_sequences", [])),
-                height=80,
-            )
-            st.session_state["stop_sequences"] = [
-                s for s in stop_text.splitlines() if s.strip()
-            ]
-
-        # ---------------- Include options (unchanged) ----------------
-        if mode == 'GPT':
-	        include = st.multiselect("Include:", chat.include_options)
-	        chat.include = include
-
-    # ------------------------------------------------------------------
-    # Main Chat UI (unchanged)
-    # ------------------------------------------------------------------
-    left, center, right = st.columns([1, 2, 1])
-
-    with center:
-        for msg in st.session_state.messages:
-            with st.chat_message(msg["role"]):
-                st.markdown(msg["content"])
-
-        prompt = st.chat_input("Ask Boo something…")
-
-        if prompt:
-            st.session_state.messages.append(
-                {"role": "user", "content": prompt}
-            )
-
-            with st.chat_message("assistant"):
-                with st.spinner("Thinking…"):
-                    gen_kwargs: Dict[str, Any] = {}
-
-                    gen_kwargs["model"] = st.session_state["text_model"]
-                    gen_kwargs["temperature"] = st.session_state["temperature"]
-                    gen_kwargs["top_p"] = st.session_state["top_p"]
-                    gen_kwargs["max_tokens"] = st.session_state["max_tokens"]
-                    gen_kwargs["frequency_penalty"] = st.session_state["freq_penalty"]
-                    gen_kwargs["presence_penalty"] = st.session_state["pres_penalty"]
-
-                    if st.session_state["stop_sequences"]:
-                        gen_kwargs["stop"] = st.session_state["stop_sequences"]
-
-                    response = None
-                    try:
-                        response = chat.generate_text(
-                            prompt=prompt, **gen_kwargs
-                        )
-                    except Exception as exc:
-                        st.error(f"Generation Failed: {exc}")
-                        response = None
-
-                    st.markdown(response or "")
-                    st.session_state.messages.append(
-                        {
-                            "role": "assistant",
-                            "content": response or "",
-                        }
-                    )
-
-                    try:
-                        _update_token_counters(
-                            getattr(chat, "response", None) or response
-                        )
-                    except Exception:
-                        pass
-
-    lcu = st.session_state.last_call_usage
-    tu = st.session_state.token_usage
-
-    if any(lcu.values()):
-        st.info(
-            f"Last call — prompt: {lcu['prompt_tokens']}, "
-            f"completion: {lcu['completion_tokens']}, "
-            f"total: {lcu['total_tokens']}"
-        )
-
-    if tu["total_tokens"] > 0:
-        st.write(
-            f"Session totals — prompt: {tu['prompt_tokens']} · "
-            f"completion: {tu['completion_tokens']} · "
-            f"total: {tu['total_tokens']}"
-        )
+	st.header( "" )
+	provider_module = get_provider_module( )
+	chat = provider_module.Chat( )
+	
+	# ------------------------------------------------------------------
+	# Sidebar — Text Settings
+	# ------------------------------------------------------------------
+	with st.sidebar:
+		st.header( 'Text Settings' )
+		
+		# ---------------- Model ----------------
+		text_model = st.selectbox(
+			'Model',
+			chat.model_options,
+			index=(
+					chat.model_options.index( st.session_state[ 'text_model' ] )
+					if st.session_state.get( 'text_model' ) in chat.model_options
+					else 0
+			),
+		)
+		st.session_state[ 'text_model' ] = text_model
+		
+		# ---------------- Parameters ----------------
+		with st.expander( 'Parameters:', expanded=True ):
+			temperature = st.slider(
+				'Temperature',
+				min_value=0.0,
+				max_value=1.0,
+				value=float( st.session_state.get( 'temperature', 0.7 ) ),
+				step=0.01,
+			)
+			st.session_state[ 'temperature' ] = float( temperature )
+			
+			top_p = st.slider(
+				'Top-P',
+				min_value=0.0,
+				max_value=1.0,
+				value=float( st.session_state.get( 'top_p', 1.0 ) ),
+				step=0.01,
+			)
+			st.session_state[ 'top_p' ] = float( top_p )
+			
+			max_tokens = st.number_input(
+				'Max Tokens',
+				min_value=1,
+				max_value=100000,
+				value=int( st.session_state.get( 'max_tokens', 512 ) ),
+			)
+			st.session_state[ 'max_tokens' ] = int( max_tokens )
+			
+			freq_penalty = st.slider(
+				'Frequency Penalty',
+				min_value=-2.0,
+				max_value=2.0,
+				value=float( st.session_state.get( 'freq_penalty', 0.0 ) ),
+				step=0.01,
+			)
+			st.session_state[ 'freq_penalty' ] = float( freq_penalty )
+			
+			pres_penalty = st.slider(
+				'Presence Penalty',
+				min_value=-2.0,
+				max_value=2.0,
+				value=float( st.session_state.get( 'pres_penalty', 0.0 ) ),
+				step=0.01,
+			)
+			st.session_state[ 'pres_penalty' ] = float( pres_penalty )
+			
+			stop_text = st.text_area(
+				'Stop Sequences (one per line)',
+				value='\n'.join( st.session_state.get( 'stop_sequences', [ ] ) ),
+				height=80,
+			)
+			st.session_state[ 'stop_sequences' ] = [
+					s for s in stop_text.splitlines( ) if s.strip( )
+			]
+		
+		# ---------------- Include options (unchanged) ----------------
+		if mode == 'GPT':
+			include = st.multiselect( 'Include:', chat.include_options )
+			chat.include = include
+	
+	# ------------------------------------------------------------------
+	# Main Chat UI
+	# ------------------------------------------------------------------
+	left, center, right = st.columns( [ 1, 2, 1 ] )
+	
+	with center:
+		for msg in st.session_state.messages:
+			with st.chat_message( msg[ 'role' ] ):
+				st.markdown( msg[ 'content' ] )
+		
+		prompt = st.chat_input( 'Ask Boo…' )
+		
+		if prompt is not None:
+			st.session_state.messages.append( {
+					'role': 'user',
+					'content': prompt } )
+			
+			with st.chat_message( 'assistant' ):
+				gen_kwargs = { }
+			
+			with st.spinner( 'Thinking…' ):
+				gen_kwargs[ 'model' ] = st.session_state[ 'text_model' ]
+				gen_kwargs[ 'top_p' ] = st.session_state[ 'top_p' ]
+				gen_kwargs[ 'max_tokens' ] = st.session_state[ 'max_tokens' ]
+				gen_kwargs[ 'frequency' ] = st.session_state[ 'freq_penalty' ]
+				gen_kwargs[ 'presence' ] = st.session_state[ 'pres_penalty' ]
+				
+				if st.session_state[ 'stop_sequences' ]:
+					gen_kwargs[ 'stops' ] = st.session_state[ 'stop_sequences' ]
+				
+				response = None
+				try:
+					mdl = str( gen_kwargs[ 'model' ] )
+					if mdl.startswith( 'gpt-5' ):
+						response = chat.generate_text( prompt=prompt, model=gen_kwargs[ 'model' ] )
+					else:
+						response = chat.generate_text()
+				except Exception as exc:
+					err = Error( exc )
+					st.error( f'Generation Failed: {err.info}' )
+					response = None
+				
+				st.markdown( response )
+				st.session_state.messages.append({ 'role': 'assistant', 'content': response})
+				
+				try:
+					_update_token_counters(
+						getattr( chat, 'response', None ) or response
+					)
+				except Exception:
+					pass
+	
+	lcu = st.session_state.last_call_usage
+	tu = st.session_state.token_usage
+	
+	if any( lcu.values( ) ):
+		st.info(
+			f"Last call — prompt: {lcu[ 'prompt_tokens' ]}, "
+			f"completion: {lcu[ 'completion_tokens' ]}, "
+			f"total: {lcu[ 'total_tokens' ]}"
+		)
+	
+	if tu[ "total_tokens" ] > 0:
+		st.write(
+			f"Session totals — prompt: {tu[ 'prompt_tokens' ]} · "
+			f"completion: {tu[ 'completion_tokens' ]} · "
+			f"total: {tu[ 'total_tokens' ]}"
+		)
 
 # ======================================================================================
 # IMAGES MODE
 # ======================================================================================
 elif mode == "Images":
-
-    # ------------------------------------------------------------------
-    # Provider-aware Image instantiation
-    # ------------------------------------------------------------------
-    provider_module = get_provider_module()
-    image = provider_module.Image()
-
-    # ------------------------------------------------------------------
-    # Sidebar — Image Settings
-    # ------------------------------------------------------------------
-    with st.sidebar:
-        st.header("Image Settings")
-
-        # ---------------- Model (provider-correct) ----------------
-        image_model = st.selectbox(
-            "Model",
-            image.model_options,
-            index=(
-                image.model_options.index(st.session_state["image_model"])
-                if st.session_state.get("image_model") in image.model_options
-                else 0
-            ),
-        )
-        st.session_state["image_model"] = image_model
-
-        # ---------------- Size / Aspect Ratio (provider-aware) ----------------
-        if hasattr(image, "aspect_options"):
-            size_or_aspect = st.selectbox(
-                "Aspect Ratio",
-                image.aspect_options,
-            )
-            size_arg = size_or_aspect
-        else:
-            size_or_aspect = st.selectbox(
-                "Size",
-                image.size_options,
-            )
-            size_arg = size_or_aspect
-
-        # ---------------- Quality ----------------
-        quality = None
-        if hasattr(image, 'quality_options'):
-            quality = st.selectbox(
-                'Quality',
-                image.quality_options,
-            )
-
-        # ---------------- Format ----------------
-        fmt = None
-        if hasattr(image, 'format_options'):
-            fmt = st.selectbox(
-                'Format',
-                image.format_options,
-            )
-
-    # ------------------------------------------------------------------
-    # Main UI — Tabs (Generate / Analyze)
-    # ------------------------------------------------------------------
-    tab_gen, tab_analyze = st.tabs(['Generate', 'Analyze'])
-
-    # ============================== GENERATE ===============================
-    with tab_gen:
-        prompt = st.text_area('Prompt')
-
-        if st.button('Generate Image'):
-            with st.spinner('Generating…'):
-                try:
-                    kwargs: Dict[str, Any] = {
-                        'prompt': prompt,
-                        'model': image_model,
-                    }
-
-                    # Provider-safe optional args
-                    if size_arg is not None:
-                        kwargs['size'] = size_arg
-                    if quality is not None:
-                        kwargs['quality'] = quality
-                    if fmt is not None:
-                        kwargs['fmt'] = fmt
-
-                    img_url = image.generate(**kwargs)
-                    st.image(img_url)
-
-                    try:
-                        _update_token_counters(
-                            getattr(image, 'response', None)
-                        )
-                    except Exception:
-                        pass
-
-                except Exception as exc:
-                    st.error(f'Image generation failed: {exc}')
-
-    # ============================== ANALYZE ===============================
-    with tab_analyze:
-        st.markdown('Image analysis — upload an image to analyze.')
-
-        uploaded_img = st.file_uploader(
-            'Upload an image for analysis',
-            type=['png', 'jpg', 'jpeg', 'webp'],
-            accept_multiple_files=False,
-            key='images_analyze_uploader',
-        )
-
-        if uploaded_img:
-            tmp_path = save_temp(uploaded_img)
-
-            st.image(
-                uploaded_img,
-                caption='Uploaded image preview',
-                use_column_width=True,
-            )
-
-            # Discover available analysis methods on Image object
-            available_methods = []
-            for candidate in (
-                'analyze',
-                'describe_image',
-                'describe',
-                'classify',
-                'detect_objects',
-                'caption',
-                'image_analysis',
-            ):
-                if hasattr(image, candidate):
-                    available_methods.append(candidate)
-
-            if available_methods:
-                chosen_method = st.selectbox(
-                    'Method',
-                    available_methods,
-                    index=0,
-                )
-            else:
-                chosen_method = None
-                st.info(
-                    'No dedicated image analysis method found on Image object; '
-                    'attempting generic handlers.'
-                )
-
-            chosen_model = st.selectbox(
-                "Model (analysis)",
-                [image_model, None],
-                index=0,
-            )
-
-            chosen_model_arg = (
-                image_model if chosen_model is None else chosen_model
-            )
-
-            if st.button("Analyze Image"):
-                with st.spinner("Analyzing image…"):
-                    analysis_result = None
-                    try:
-                        if chosen_method:
-                            func = getattr(image, chosen_method, None)
-                            if func:
-                                try:
-                                    analysis_result = func(tmp_path)
-                                except TypeError:
-                                    analysis_result = func(
-                                        tmp_path, model=chosen_model_arg
-                                    )
-                        else:
-                            for fallback in (
-                                "analyze",
-                                "describe_image",
-                                "describe",
-                                "caption",
-                            ):
-                                if hasattr(image, fallback):
-                                    func = getattr(image, fallback)
-                                    try:
-                                        analysis_result = func(tmp_path)
-                                        break
-                                    except Exception:
-                                        continue
-
-                        if analysis_result is None:
-                            st.warning(
-                                "No analysis output returned by the available methods."
-                            )
-                        else:
-                            if isinstance(analysis_result, (dict, list)):
-                                st.json(analysis_result)
-                            else:
-                                st.markdown("**Analysis result:**")
-                                st.write(analysis_result)
-
-                            try:
-                                _update_token_counters(
-                                    getattr(image, "response", None)
-                                    or analysis_result
-                                )
-                            except Exception:
-                                pass
-
-                    except Exception as exc:
-                        st.error(f"Analysis Failed: {exc}")
-
+	# ------------------------------------------------------------------
+	# Provider-aware Image instantiation
+	# ------------------------------------------------------------------
+	provider_module = get_provider_module( )
+	image = provider_module.Image( )
+	
+	# ------------------------------------------------------------------
+	# Sidebar — Image Settings
+	# ------------------------------------------------------------------
+	with st.sidebar:
+		st.header( "Image Settings" )
+		
+		# ---------------- Model (provider-correct) ----------------
+		image_model = st.selectbox(
+			"Model",
+			image.model_options,
+			index=(
+					image.model_options.index( st.session_state[ "image_model" ] )
+					if st.session_state.get( "image_model" ) in image.model_options
+					else 0
+			),
+		)
+		st.session_state[ "image_model" ] = image_model
+		
+		# ---------------- Size / Aspect Ratio (provider-aware) ----------------
+		if hasattr( image, "aspect_options" ):
+			size_or_aspect = st.selectbox(
+				"Aspect Ratio",
+				image.aspect_options,
+			)
+			size_arg = size_or_aspect
+		else:
+			size_or_aspect = st.selectbox(
+				"Size",
+				image.size_options,
+			)
+			size_arg = size_or_aspect
+		
+		# ---------------- Quality ----------------
+		quality = None
+		if hasattr( image, 'quality_options' ):
+			quality = st.selectbox(
+				'Quality',
+				image.quality_options,
+			)
+		
+		# ---------------- Format ----------------
+		fmt = None
+		if hasattr( image, 'format_options' ):
+			fmt = st.selectbox(
+				'Format',
+				image.format_options,
+			)
+	
+	# ------------------------------------------------------------------
+	# Main UI — Tabs (Generate / Analyze)
+	# ------------------------------------------------------------------
+	tab_gen, tab_analyze = st.tabs( [ 'Generate',
+	                                  'Analyze' ] )
+	
+	# ============================== GENERATE ===============================
+	with tab_gen:
+		prompt = st.text_area( 'Prompt' )
+		
+		if st.button( 'Generate Image' ):
+			with st.spinner( 'Generating…' ):
+				try:
+					kwargs: Dict[ str, Any ] = {
+							'prompt': prompt,
+							'model': image_model,
+					}
+					
+					# Provider-safe optional args
+					if size_arg is not None:
+						kwargs[ 'size' ] = size_arg
+					if quality is not None:
+						kwargs[ 'quality' ] = quality
+					if fmt is not None:
+						kwargs[ 'fmt' ] = fmt
+					
+					img_url = image.generate( **kwargs )
+					st.image( img_url )
+					
+					try:
+						_update_token_counters(
+							getattr( image, 'response', None )
+						)
+					except Exception:
+						pass
+				
+				except Exception as exc:
+					st.error( f'Image generation failed: {exc}' )
+	
+	# ============================== ANALYZE ===============================
+	with tab_analyze:
+		st.markdown( 'Image analysis — upload an image to analyze.' )
+		
+		uploaded_img = st.file_uploader(
+			'Upload an image for analysis',
+			type=[ 'png',
+			       'jpg',
+			       'jpeg',
+			       'webp' ],
+			accept_multiple_files=False,
+			key='images_analyze_uploader',
+		)
+		
+		if uploaded_img:
+			tmp_path = save_temp( uploaded_img )
+			
+			st.image(
+				uploaded_img,
+				caption='Uploaded image preview',
+				use_column_width=True,
+			)
+			
+			# Discover available analysis methods on Image object
+			available_methods = [ ]
+			for candidate in (
+						'analyze',
+						'describe_image',
+						'describe',
+						'classify',
+						'detect_objects',
+						'caption',
+						'image_analysis',
+			):
+				if hasattr( image, candidate ):
+					available_methods.append( candidate )
+			
+			if available_methods:
+				chosen_method = st.selectbox(
+					'Method',
+					available_methods,
+					index=0,
+				)
+			else:
+				chosen_method = None
+				st.info(
+					'No dedicated image analysis method found on Image object; '
+					'attempting generic handlers.'
+				)
+			
+			chosen_model = st.selectbox(
+				"Model (analysis)",
+				[ image_model,
+				  None ],
+				index=0,
+			)
+			
+			chosen_model_arg = (
+					image_model if chosen_model is None else chosen_model
+			)
+			
+			if st.button( "Analyze Image" ):
+				with st.spinner( "Analyzing image…" ):
+					analysis_result = None
+					try:
+						if chosen_method:
+							func = getattr( image, chosen_method, None )
+							if func:
+								try:
+									analysis_result = func( tmp_path )
+								except TypeError:
+									analysis_result = func(
+										tmp_path, model=chosen_model_arg
+									)
+						else:
+							for fallback in (
+										"analyze",
+										"describe_image",
+										"describe",
+										"caption",
+							):
+								if hasattr( image, fallback ):
+									func = getattr( image, fallback )
+									try:
+										analysis_result = func( tmp_path )
+										break
+									except Exception:
+										continue
 						
+						if analysis_result is None:
+							st.warning(
+								"No analysis output returned by the available methods."
+							)
+						else:
+							if isinstance( analysis_result, (dict, list) ):
+								st.json( analysis_result )
+							else:
+								st.markdown( "**Analysis result:**" )
+								st.write( analysis_result )
+							
+							try:
+								_update_token_counters(
+									getattr( image, "response", None )
+									or analysis_result
+								)
+							except Exception:
+								pass
+					
+					except Exception as exc:
+						st.error( f"Analysis Failed: {exc}" )
+
+
 # ======================================================================================
 # AUDIO MODE (Provider-correct, function-preserving rewrite)
 # ======================================================================================
 elif mode == "Audio":
-
-    # ------------------------------------------------------------------
-    # Provider-aware Audio instantiation
-    # ------------------------------------------------------------------
-    provider_module = get_provider_module()
-
-    transcriber = None
-    translator = None
-    tts = None
-
-    if hasattr(provider_module, "Transcription"):
-        transcriber = provider_module.Transcription()
-    if hasattr(provider_module, "Translation"):
-        translator = provider_module.Translation()
-    if hasattr(provider_module, "TTS"):
-        tts = provider_module.TTS()
-
-    # ------------------------------------------------------------------
-    # Sidebar — Audio Settings (NO functionality removed)
-    # ------------------------------------------------------------------
-    with st.sidebar:
-        st.header("Audio Settings")
-
-        # ---------------- Task ----------------
-        available_tasks = []
-        if transcriber is not None:
-            available_tasks.append("Transcribe")
-        if translator is not None:
-            available_tasks.append("Translate")
-        if tts is not None:
-            available_tasks.append("Text-to-Speech")
-
-        if not available_tasks:
-            st.info("Audio is not supported by the selected provider.")
-            task = None
-        else:
-            task = st.selectbox("Task", available_tasks)
-
-        # ---------------- Model (provider-correct) ----------------
-        audio_model = None
-        model_options = []
-
-        if task == "Transcribe" and transcriber and hasattr(transcriber, "model_options"):
-            model_options = transcriber.model_options
-        elif task == "Translate" and translator and hasattr(translator, "model_options"):
-            model_options = translator.model_options
-        elif task == "Text-to-Speech" and tts and hasattr(tts, "model_options"):
-            model_options = tts.model_options
-
-        if model_options:
-            audio_model = st.selectbox(
-                "Model",
-                model_options,
-                index=(
-                    model_options.index(st.session_state.get("audio_model"))
-                    if st.session_state.get("audio_model") in model_options
-                    else 0
-                ),
-            )
-            st.session_state["audio_model"] = audio_model
-
-        # ---------------- Language / Voice Options ----------------
-        language = None
-        voice = None
-
-        if task in ("Transcribe", "Translate"):
-            obj = transcriber if task == "Transcribe" else translator
-            if obj and hasattr(obj, "language_options"):
-                language = st.selectbox(
-                    "Language",
-                    obj.language_options,
-                )
-
-        if task == "Text-to-Speech" and tts:
-            if hasattr(tts, "voice_options"):
-                voice = st.selectbox(
-                    "Voice",
-                    tts.voice_options,
-                )
-
-    # ------------------------------------------------------------------
-    # Main UI — Audio Input / Output (unchanged behavior)
-    # ------------------------------------------------------------------
-    left, center, right = st.columns([1, 2, 1])
-
-    with center:
-        if task in ("Transcribe", "Translate"):
-            uploaded = st.file_uploader(
-                "Upload audio file",
-                type=["wav", "mp3", "m4a", "flac"],
-            )
-
-            if uploaded:
-                tmp_path = save_temp(uploaded)
-
-                if task == "Transcribe" and transcriber:
-                    with st.spinner("Transcribing…"):
-                        try:
-                            text = transcriber.transcribe(
-                                tmp_path,
-                                model=audio_model,
-                                language=language,
-                            )
-                            st.text_area("Transcript", value=text, height=300)
-
-                            try:
-                                _update_token_counters(
-                                    getattr(transcriber, "response", None)
-                                )
-                            except Exception:
-                                pass
-
-                        except Exception as exc:
-                            st.error(f"Transcription failed: {exc}")
-
-                elif task == "Translate" and translator:
-                    with st.spinner("Translating…"):
-                        try:
-                            text = translator.translate(
-                                tmp_path,
-                                model=audio_model,
-                                language=language,
-                            )
-                            st.text_area("Translation", value=text, height=300)
-
-                            try:
-                                _update_token_counters(
-                                    getattr(translator, "response", None)
-                                )
-                            except Exception:
-                                pass
-
-                        except Exception as exc:
-                            st.error(f"Translation failed: {exc}")
-
-        elif task == "Text-to-Speech" and tts:
-            text = st.text_area("Text to synthesize")
-
-            if text and st.button("Generate Audio"):
-                with st.spinner("Synthesizing speech…"):
-                    try:
-                        audio_bytes = tts.speak(
-                            text,
-                            model=audio_model,
-                            voice=voice,
-                        )
-                        st.audio(audio_bytes)
-
-                        try:
-                            _update_token_counters(
-                                getattr(tts, "response", None)
-                            )
-                        except Exception:
-                            pass
-
-                    except Exception as exc:
-                        st.error(f"Text-to-speech failed: {exc}")
+	# ------------------------------------------------------------------
+	# Provider-aware Audio instantiation
+	# ------------------------------------------------------------------
+	provider_module = get_provider_module( )
+	
+	transcriber = None
+	translator = None
+	tts = None
+	
+	if hasattr( provider_module, "Transcription" ):
+		transcriber = provider_module.Transcription( )
+	if hasattr( provider_module, "Translation" ):
+		translator = provider_module.Translation( )
+	if hasattr( provider_module, "TTS" ):
+		tts = provider_module.TTS( )
+	
+	# ------------------------------------------------------------------
+	# Sidebar — Audio Settings (NO functionality removed)
+	# ------------------------------------------------------------------
+	with st.sidebar:
+		st.header( "Audio Settings" )
+		
+		# ---------------- Task ----------------
+		available_tasks = [ ]
+		if transcriber is not None:
+			available_tasks.append( "Transcribe" )
+		if translator is not None:
+			available_tasks.append( "Translate" )
+		if tts is not None:
+			available_tasks.append( "Text-to-Speech" )
+		
+		if not available_tasks:
+			st.info( "Audio is not supported by the selected provider." )
+			task = None
+		else:
+			task = st.selectbox( "Task", available_tasks )
+		
+		# ---------------- Model (provider-correct) ----------------
+		audio_model = None
+		model_options = [ ]
+		
+		if task == "Transcribe" and transcriber and hasattr( transcriber, "model_options" ):
+			model_options = transcriber.model_options
+		elif task == "Translate" and translator and hasattr( translator, "model_options" ):
+			model_options = translator.model_options
+		elif task == "Text-to-Speech" and tts and hasattr( tts, "model_options" ):
+			model_options = tts.model_options
+		
+		if model_options:
+			audio_model = st.selectbox(
+				"Model",
+				model_options,
+				index=(
+						model_options.index( st.session_state.get( "audio_model" ) )
+						if st.session_state.get( "audio_model" ) in model_options
+						else 0
+				),
+			)
+			st.session_state[ "audio_model" ] = audio_model
+		
+		# ---------------- Language / Voice Options ----------------
+		language = None
+		voice = None
+		
+		if task in ("Transcribe", "Translate"):
+			obj = transcriber if task == "Transcribe" else translator
+			if obj and hasattr( obj, "language_options" ):
+				language = st.selectbox(
+					"Language",
+					obj.language_options,
+				)
+		
+		if task == "Text-to-Speech" and tts:
+			if hasattr( tts, "voice_options" ):
+				voice = st.selectbox(
+					"Voice",
+					tts.voice_options,
+				)
+	
+	# ------------------------------------------------------------------
+	# Main UI — Audio Input / Output (unchanged behavior)
+	# ------------------------------------------------------------------
+	left, center, right = st.columns( [ 1,
+	                                    2,
+	                                    1 ] )
+	
+	with center:
+		if task in ("Transcribe", "Translate"):
+			uploaded = st.file_uploader(
+				"Upload audio file",
+				type=[ "wav",
+				       "mp3",
+				       "m4a",
+				       "flac" ],
+			)
+			
+			if uploaded:
+				tmp_path = save_temp( uploaded )
+				
+				if task == "Transcribe" and transcriber:
+					with st.spinner( "Transcribing…" ):
+						try:
+							text = transcriber.transcribe(
+								tmp_path,
+								model=audio_model,
+								language=language,
+							)
+							st.text_area( "Transcript", value=text, height=300 )
+							
+							try:
+								_update_token_counters(
+									getattr( transcriber, "response", None )
+								)
+							except Exception:
+								pass
+						
+						except Exception as exc:
+							st.error( f"Transcription failed: {exc}" )
+				
+				elif task == "Translate" and translator:
+					with st.spinner( "Translating…" ):
+						try:
+							text = translator.translate(
+								tmp_path,
+								model=audio_model,
+								language=language,
+							)
+							st.text_area( "Translation", value=text, height=300 )
+							
+							try:
+								_update_token_counters(
+									getattr( translator, "response", None )
+								)
+							except Exception:
+								pass
+						
+						except Exception as exc:
+							st.error( f"Translation failed: {exc}" )
+		
+		elif task == "Text-to-Speech" and tts:
+			text = st.text_area( "Text to synthesize" )
+			
+			if text and st.button( "Generate Audio" ):
+				with st.spinner( "Synthesizing speech…" ):
+					try:
+						audio_bytes = tts.speak(
+							text,
+							model=audio_model,
+							voice=voice,
+						)
+						st.audio( audio_bytes )
+						
+						try:
+							_update_token_counters(
+								getattr( tts, "response", None )
+							)
+						except Exception:
+							pass
+					
+					except Exception as exc:
+						st.error( f"Text-to-speech failed: {exc}" )
 
 
 # ======================================================================================
 # EMBEDDINGS MODE (Provider-correct, function-preserving rewrite)
 # ======================================================================================
 elif mode == "Embeddings":
-    provider_module = get_provider_module()
-
-    if not hasattr(provider_module, "Embedding"):
-        st.info("Embeddings are not supported by the selected provider.")
-    else:
-        embed = provider_module.Embedding()
-        with st.sidebar:
-            st.header("Embedding Settings")
-            embed_model = st.selectbox(
-                "Model",
-                embed.model_options,
-                index=(
-                    embed.model_options.index(st.session_state["embed_model"])
-                    if st.session_state.get("embed_model") in embed.model_options
-                    else 0
-                ),
-            )
-            st.session_state["embed_model"] = embed_model
-            method = None
-            if hasattr(embed, "methods"):
-                method = st.selectbox(
-                    "Method",
-                    embed.methods,
-                )
-
-        # ------------------------------------------------------------------
-        # Main UI — Embedding execution (unchanged behavior)
-        # ------------------------------------------------------------------
-        left, center, right = st.columns([1, 2, 1])
-        with center:
-            text = st.text_area("Text to embed")
-
-            if text and st.button("Embed"):
-                with st.spinner("Embedding…"):
-                    try:
-                        if method:
-                            vector = embed.create(
-                                text,
-                                model=embed_model,
-                                method=method,
-                            )
-                        else:
-                            vector = embed.create(
-                                text,
-                                model=embed_model,
-                            )
-
-                        st.write("Vector length:", len(vector))
-
-                        try:
-                            _update_token_counters(
-                                getattr(embed, "response", None)
-                            )
-                        except Exception:
-                            pass
-
-                    except Exception as exc:
-                        st.error(f"Embedding failed: {exc}")
+	provider_module = get_provider_module( )
+	
+	if not hasattr( provider_module, "Embedding" ):
+		st.info( "Embeddings are not supported by the selected provider." )
+	else:
+		embed = provider_module.Embedding( )
+		with st.sidebar:
+			st.header( "Embedding Settings" )
+			embed_model = st.selectbox(
+				"Model",
+				embed.model_options,
+				index=(
+						embed.model_options.index( st.session_state[ "embed_model" ] )
+						if st.session_state.get( "embed_model" ) in embed.model_options
+						else 0
+				),
+			)
+			st.session_state[ "embed_model" ] = embed_model
+			method = None
+			if hasattr( embed, "methods" ):
+				method = st.selectbox(
+					"Method",
+					embed.methods,
+				)
+		
+		# ------------------------------------------------------------------
+		# Main UI — Embedding execution (unchanged behavior)
+		# ------------------------------------------------------------------
+		left, center, right = st.columns( [ 1,
+		                                    2,
+		                                    1 ] )
+		with center:
+			text = st.text_area( "Text to embed" )
+			
+			if text and st.button( "Embed" ):
+				with st.spinner( "Embedding…" ):
+					try:
+						if method:
+							vector = embed.create(
+								text,
+								model=embed_model,
+								method=method,
+							)
+						else:
+							vector = embed.create(
+								text,
+								model=embed_model,
+							)
+						
+						st.write( "Vector length:", len( vector ) )
+						
+						try:
+							_update_token_counters(
+								getattr( embed, "response", None )
+							)
+						except Exception:
+							pass
+					
+					except Exception as exc:
+						st.error( f"Embedding failed: {exc}" )
 
 # ======================================================================================
 # Vector Store MODE
@@ -1081,7 +1077,7 @@ elif mode == "Vector Store":
 	try:
 		chat  # type: ignore
 	except NameError:
-		chat = Chat( )
+		chat = get_provider_module( ).Chat( )
 	
 	vs_map = getattr( chat, "vector_stores", None )
 	if vs_map and isinstance( vs_map, dict ):
@@ -1150,7 +1146,8 @@ elif mode == "Vector Store":
 				sel_name = n
 				break
 		
-		c1, c2 = st.columns( [ 1,  1 ] )
+		c1, c2 = st.columns( [ 1,
+		                       1 ] )
 		with c1:
 			if st.button( "Retrieve store" ):
 				try:
@@ -1496,7 +1493,7 @@ if mode == "Documents":
 						try:
 							chat  # type: ignore
 						except NameError:
-							chat = Chat( )
+							chat = get_provider_module( ).Chat( )
 						answer = None
 						if hasattr( chat, "summarize_document" ):
 							try:
@@ -1707,98 +1704,98 @@ if mode == "Files":
 
 # ---- Add bottom padding so content is not hidden behind footer
 st.markdown(
-    """
-    <style>
-    .block-container {
-        padding-bottom: 3rem;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
+	"""
+	<style>
+	.block-container {
+		padding-bottom: 3rem;
+	}
+	</style>
+	""",
+	unsafe_allow_html=True,
 )
 
 # ---- Fixed footer container
 st.markdown(
-    """
-    <style>
-    .boo-status-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: rgba(17, 17, 17, 0.95);
-        border-top: 1px solid #2a2a2a;
-        padding: 6px 16px;
-        font-size: 0.85rem;
-        color: #9aa0a6;
-        z-index: 1000;
-    }
-    .boo-status-inner {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 100%;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
+	"""
+	<style>
+	.boo-status-bar {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		background-color: rgba(17, 17, 17, 0.95);
+		border-top: 1px solid #2a2a2a;
+		padding: 6px 16px;
+		font-size: 0.85rem;
+		color: #9aa0a6;
+		z-index: 1000;
+	}
+	.boo-status-inner {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		max-width: 100%;
+	}
+	</style>
+	""",
+	unsafe_allow_html=True,
 )
 
 # ---- Resolve active model by mode
 _mode_to_model_key = {
-    'Text': 'text_model',
-    'Images': 'image_model',
-    'Audio': 'audio_model',
-    'Embeddings': 'embed_model',
+		'Text': 'text_model',
+		'Images': 'image_model',
+		'Audio': 'audio_model',
+		'Embeddings': 'embed_model',
 }
 
-provider_val = st.session_state.get("provider", "—")
+provider_val = st.session_state.get( "provider", "—" )
 mode_val = mode or "—"
 
 active_model = st.session_state.get(
-    _mode_to_model_key.get(mode, ""),
-    None,
+	_mode_to_model_key.get( mode, "" ),
+	None,
 )
 
 # ---- Build right-side (mode-gated)
-right_parts = []
+right_parts = [ ]
 
 if active_model is not None:
-    right_parts.append(f'Model: {active_model}')
+	right_parts.append( f'Model: {active_model}' )
 
 if mode == 'Text':
-    temperature = st.session_state.get('temperature')
-    top_p = st.session_state.get('top_p')
-
-    if temperature is not None:
-        right_parts.append(f'Temp: {temperature}')
-    if top_p is not None:
-        right_parts.append(f'Top-P: {top_p}')
+	temperature = st.session_state.get( 'temperature' )
+	top_p = st.session_state.get( 'top_p' )
+	
+	if temperature is not None:
+		right_parts.append( f'Temp: {temperature}' )
+	if top_p is not None:
+		right_parts.append( f'Top-P: {top_p}' )
 
 elif mode == 'Images':
-    size = st.session_state.get('image_size')
-    aspect = st.session_state.get('image_aspect')
-
-    if aspect is not None:
-        right_parts.append(f'Aspect: {aspect}')
-    elif size is not None:
-        right_parts.append(f'Size: {size}')
+	size = st.session_state.get( 'image_size' )
+	aspect = st.session_state.get( 'image_aspect' )
+	
+	if aspect is not None:
+		right_parts.append( f'Aspect: {aspect}' )
+	elif size is not None:
+		right_parts.append( f'Size: {size}' )
 
 elif mode == 'Audio':
-    task = st.session_state.get('audio_task')
-    if task is not None:
-        right_parts.append(f'Task: {task}')
+	task = st.session_state.get( 'audio_task' )
+	if task is not None:
+		right_parts.append( f'Task: {task}' )
 
 elif mode == 'Embeddings':
-    method = st.session_state.get('embed_method')
-    if method is not None:
-        right_parts.append(f'Method: {method}')
+	method = st.session_state.get( 'embed_method' )
+	if method is not None:
+		right_parts.append( f'Method: {method}' )
 
-right_text = " · ".join(right_parts) if right_parts else "—"
+right_text = " · ".join( right_parts ) if right_parts else "—"
 
 # ---- Render footer
 st.markdown(
-    f"""
+	f"""
     <div class="boo-status-bar">
         <div class="boo-status-inner">
             <span>{provider_val} — {mode_val}</span>
@@ -1806,6 +1803,5 @@ st.markdown(
         </div>
     </div>
     """,
-    unsafe_allow_html=True,
+	unsafe_allow_html=True,
 )
-

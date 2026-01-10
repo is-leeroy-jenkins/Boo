@@ -11,7 +11,7 @@
   <copyright file="grok.py" company="Terry D. Eppler">
 
 	     grok.py
-	     Copyright ©  2022  Terry Eppler
+	     Copyright ©  2024  Terry Eppler
 
      Permission is hereby granted, free of charge, to any person obtaining a copy
      of this software and associated documentation files (the “Software”),
@@ -246,7 +246,9 @@ class Chat( Grok ):
 		         'mixtral-8x7b-32768',
 		         'gemma2-9b-it' ]
 	
-	def generate_text( self, prompt: str, model: str = 'llama-3.3-70b-versatile' ) -> str | None:
+	def generate_text( self, prompt: str, model: str = 'llama-3.3-70b-versatile',
+			temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int=8192, instruct: str=None  ) -> str | None:
 		"""
 			
 			Purpose:
@@ -267,8 +269,14 @@ class Chat( Grok ):
 			throw_if( 'prompt', prompt );
 			self.prompt = prompt;
 			self.model = model
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency;
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens;
+			self.instructions = instruct
 			messages = [ ]
-			if self.instructions:
+			if self.instructions is not None:
 				messages.append( { "role": "system", "content": self.instructions } )
 			messages.append( { "role": "user", "content": self.prompt } )
 			self.response = self.client.chat.completions.create( model=self.model, messages=messages,

@@ -1,4 +1,3 @@
-flask
 beautifulsoup4
 crawl4ai
 camelot-py
@@ -35,14 +34,6 @@ PyPDF2
 pdfminer
 pdf2image
 PyMuPDF
-llama-index
-llama-index-core
-llama-index-postprocessor-flag-embedding-reranker
-llama_index-embeddings-openai
-llama-index-embeddings-google-genai
-llama-index-embeddings-huggingface
-llama-index-embeddings-ollama
-llama-parse
 langchain
 langchain-community
 langchain-openai

@@ -101,7 +101,7 @@ class Gemini( ):
 	prompt: Optional[ str ]
 	model: Optional[ str ]
 	api_version: Optional[ str ]
-	max_tokens: Optional[ int ]
+	max_output_tokens: Optional[ int ]
 	temperature: Optional[ float ]
 	top_p: Optional[ float ]
 	top_k: Optional[ int ]
@@ -134,7 +134,7 @@ class Gemini( ):
 		self.candidate_count = 1
 		self.frequency_penalty = 0.0;
 		self.presence_penalty = 0.0;
-		self.max_tokens = 2048
+		self.max_output_tokens = 2048
 		self.instructions = None;
 		self.prompt = None;
 		self.response_format = None
@@ -325,7 +325,7 @@ class Chat( Gemini ):
 	def __init__( self, n: int=1, model: str = 'gemini-2.0-flash', version: str='v1alpha',
 			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9,
 			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			instruct: str=None, contents: List[ str ] = None ):
+			instruct: str=None, contents: List[ str ]=None ):
 		super( ).__init__( )
 		self.number = n
 		self.model = model
@@ -382,21 +382,29 @@ class Chat( Gemini ):
 		         'text/plain',
 		         'text/x.enum' ]
 	
-	def generate_text( self, prompt: str, model: str = 'gemini-2.0-flash' ) -> GenerateContentResponse | None:
+	def generate_text( self, prompt: str, model: str='gemini-2.0-flash', temperature: float=0.8,
+			top_p: float=0.9, frequency: float=0.0, presence: float=0.0,
+			max_tokens: int=10000, stops: List[str]=None ) -> GenerateContentResponse | None:
 		"""
-		Purpose: Generates a text completion based on the provided prompt and configuration.
-		Parameters:
-		-----------
-		prompt: str - The text input for the model.
-		model: str - The specific Gemini model identifier.
-		Returns:
-		--------
-		Optional[ GenerateContentResponse ] - The response object or None on failure.
+			Purpose: Generates a text completion based on the provided prompt and configuration.
+			Parameters:
+			-----------
+			prompt: str - The text input for the model.
+			model: str - The specific Gemini model identifier.
+			Returns:
+			--------
+			Optional[ GenerateContentResponse ] - The response object or None on failure.
 		"""
 		try:
 			throw_if( 'prompt', prompt )
 			self.contents = prompt;
 			self.model = model
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
 				top_p=self.top_p, max_output_tokens=self.max_tokens,
 				candidate_count=self.candidate_count, system_instruction=self.instructions,
@@ -635,7 +643,7 @@ class Embedding( Gemini ):
 		return [ 'text-embedding-004',
 		         'text-multilingual-embedding-002' ]
 	
-	def generate( self, text: str, model: str = 'text-embedding-004' ) -> Optional[ List[ float ] ]:
+	def generate( self, text: str, model: str='text-embedding-004' ) -> Optional[ List[ float ] ]:
 		"""
 			
 			Purpose:
