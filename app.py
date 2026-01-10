@@ -8,6 +8,8 @@
 
 from __future__ import annotations
 
+import base64
+from pathlib import Path
 import config as cfg
 import streamlit as st
 import tempfile
@@ -35,30 +37,40 @@ st.set_page_config(
 	layout="wide",
 )
 
-# ------------------------------------------------------------------
-# Provider Logo (top of sidebar)
-# ------------------------------------------------------------------
 BASE_DIR = os.path.dirname( os.path.abspath( __file__ ) )
 
-provider_logo_map = {
-		'GPT': os.path.join( BASE_DIR, 'resource', 'images', 'gpt_logo.png' ),
-		'Gemini': os.path.join( BASE_DIR, 'resource', 'images', 'gemma_logo.png' ),
-		'Groq': os.path.join( BASE_DIR, 'resource', 'images', 'grok_logo.png' ),
-}
-
-provider = st.session_state.get( "provider" )
-
-logo_path = provider_logo_map.get( provider )
-
-if logo_path and os.path.exists( logo_path ):
-	_, logo_col, _ = st.columns( [ 1, 2, 1 ] )
-	with logo_col:
-		st.image( logo_path, width=50 )
 
 # ======================================================================================
 # Session State — initialize per-mode model keys and token counters
 # ======================================================================================
 
+if "openai_api_key" not in st.session_state:
+	st.session_state.openai_api_key = ""
+
+if "gemini_api_key" not in st.session_state:
+	st.session_state.gemini_api_key = ""
+
+if "groq_api_key" not in st.session_state:
+	st.session_state.groq_api_key = ""
+
+if st.session_state.openai_api_key == "":
+	default = getattr( cfg, "OPENAI_API_KEY", "" )
+	if default:
+		st.session_state.openai_api_key = default
+		os.environ["OPENAI_API_KEY"] = default
+
+if st.session_state.gemini_api_key == "":
+	default = getattr( cfg, "GEMINI_API_KEY", "" )
+	if default:
+		st.session_state.gemini_api_key = default
+		os.environ["GEMINI_API_KEY"] = default
+
+if st.session_state.groq_api_key == "":
+	default = getattr( cfg, "GROQ_API_KEY", "" )
+	if default:
+		st.session_state.groq_api_key = default
+		os.environ["GROQ_API_KEY"] = default
+		
 if 'provider' not in st.session_state or st.session_state[ 'provider' ] is None:
 	st.session_state[ 'provider' ] = 'GPT'
 
@@ -310,11 +322,16 @@ def _display_value( val: Any ) -> str:
 	except Exception:
 		return "—"
 
+def encode_image_base64(path: str) -> str:
+	data = Path(path).read_bytes()
+	return base64.b64encode(data).decode("utf-8")
+
 # ======================================================================================
 # SIDEBAR PROVIDER
 # ======================================================================================
+BLUE_DIVIDER = "<div style='height:2px;align:left;background:#0078FC;margin:6px 0 10px 0;'></div>"
 
-PROVIDER_MODULES = {
+PROVIDERS = {
 		'GPT': 'gpt',
 		'Gemini': 'gemini',
 		'Groq': 'grok',
@@ -329,7 +346,7 @@ MODE_CLASS_MAP = {
 		'Embeddings': [ 'Embedding' ],
 }
 
-ALL_MODES = [
+MODES = [
 		'Text',
 		'Images',
 		'Audio',
@@ -339,9 +356,15 @@ ALL_MODES = [
 		'Vector Store',
 		'Prompt Engineering' ]
 
+LOGO_MAP = {
+		"GPT": os.path.join( BASE_DIR, "resources", "images", "gpt_logo.png" ),
+		"Gemini": os.path.join( BASE_DIR, "resources", "images", "gemma_logo.png" ),
+		"Groq": os.path.join( BASE_DIR, "resources", "images", "grok_logo.png" ),
+}
+
 def get_provider_module( ):
 	provider = st.session_state.get( 'provider', 'GPT' )
-	module_name = PROVIDER_MODULES.get( provider, 'gpt' )
+	module_name = PROVIDERS.get( provider, 'gpt' )
 	return __import__( module_name )
 
 def get_chat_instance( ):
@@ -352,23 +375,6 @@ def get_chat_instance( ):
 	provider_module = get_provider_module( )
 	return provider_module.Chat( )
 
-BASE_DIR = os.path.dirname( os.path.abspath( __file__ ) )
-
-provider_logo_map = {
-		"GPT": os.path.join( BASE_DIR, "resources", "images", "gpt_logo.png" ),
-		"Gemini": os.path.join( BASE_DIR, "resources", "images", "gemma_logo.png" ),
-		"Groq": os.path.join( BASE_DIR, "resources", "images", "grok_logo.png" ),
-}
-
-provider = st.session_state.get( "provider", "GPT" )
-logo_path = provider_logo_map.get( provider )
-
-if logo_path and os.path.exists( logo_path ):
-	_, col, _ = st.columns( [ 1,
-	                          2,
-	                          1 ] )
-	with col:
-		st.image( logo_path, width=50 )
 
 # ======================================================================================
 # PROVIDER-AWARE OPTION SOURCING
@@ -446,34 +452,91 @@ def embedding_model_options( embed ):
 # Sidebar — Provider selector above Mode, then Mode selector.
 # ======================================================================================
 with st.sidebar:
-	st.subheader( "Provider" )
-	st.markdown(
-		"<div style='height:2px;align:left;background:#0078FC;margin:6px 0 10px 0;'></div>",
-		unsafe_allow_html=True,
-	)
+	logo_slot = st.empty( )
+	provider = st.session_state.get( "provider", "GPT" )
 	
-	provider = st.selectbox(
-		"Choose provider",
-		list( PROVIDER_MODULES.keys( ) ),
-		index=list( PROVIDER_MODULES.keys( ) ).index( st.session_state.get( "provider", "GPT" ) ),
-	)
+	st.subheader( "Provider" )
+	st.markdown( BLUE_DIVIDER, unsafe_allow_html=True )
+	
+	provider = st.selectbox( "Choose provider", list( PROVIDERS.keys( ) ),
+		index=list( PROVIDERS.keys( ) ).index( st.session_state.get( "provider", "GPT" ) ) )
 	
 	st.session_state[ "provider" ] = provider
+	logo_path = LOGO_MAP.get( provider )
 	
+	with logo_slot:
+		if logo_path and os.path.exists( logo_path ):
+			col1, col2, col3 = st.columns( [ 1, 2, 1 ] )
+			with col2:
+				logo_path = LOGO_MAP.get( provider )
+				if logo_path and os.path.exists( logo_path ):
+					encoded_logo = encode_image_base64( logo_path )
+					
+					st.markdown(
+						f"""
+							<div style="
+								display: flex;
+								justify-content: center;
+								align-items: center;
+								min-height: 20px;
+								margin-bottom: 25px;
+							">
+								<img
+									src="data:image/png;base64,{encoded_logo}"
+									style="
+										width: 50px;
+										height: auto;
+										display: block;
+									"
+								/>
+							</div>
+							""",
+						unsafe_allow_html=True,
+					)
+
+	with st.expander( "Keys:", expanded=False ):
+		openai_key = st.text_input(
+			"OpenAI API Key",
+			type="password",
+			value=st.session_state.openai_api_key or "",
+			help="Overrides OPENAI_API_KEY from config.py for this session only."
+		)
+		
+		gemini_key = st.text_input(
+			"Gemini API Key",
+			type="password",
+			value=st.session_state.gemini_api_key or "",
+			help="Overrides GEMINI_API_KEY from config.py for this session only."
+		)
+		
+		groq_key = st.text_input(
+			"Groq API Key",
+			type="password",
+			value=st.session_state.groq_api_key or "",
+			help="Overrides GROQ_API_KEY from config.py for this session only."
+		)
+		
+		if openai_key:
+			st.session_state.openai_api_key = openai_key
+			os.environ[ "OPENAI_API_KEY" ] = openai_key
+		
+		if gemini_key:
+			st.session_state.gemini_api_key = gemini_key
+			os.environ[ "GEMINI_API_KEY" ] = gemini_key
+		
+		if groq_key:
+			st.session_state.groq_api_key = groq_key
+			os.environ[ "GROQ_API_KEY" ] = groq_key
+		
 	st.subheader( "Mode" )
-	st.markdown(
-		"<div style='height:2px;background:#0078FC;margin:6px 0 10px 0;'></div>",
-		unsafe_allow_html=True,
-	)
+	st.markdown( BLUE_DIVIDER, unsafe_allow_html=True )
 	
 	mode = st.sidebar.radio(
 		"Mode",
-		ALL_MODES,
+		MODES,
 		index=0
 	)
 	
-	st.divider( )
-
 # ======================================================================================
 # TEXT MODE
 # ======================================================================================
@@ -487,6 +550,8 @@ if mode == "Text":
 	# ------------------------------------------------------------------
 	with st.sidebar:
 		st.header( 'Text Settings' )
+		
+		st.markdown( BLUE_DIVIDER, unsafe_allow_html=True )
 		
 		# ---------------- Model ----------------
 		text_model = st.selectbox(
@@ -644,6 +709,8 @@ elif mode == "Images":
 	# ------------------------------------------------------------------
 	with st.sidebar:
 		st.header( "Image Settings" )
+		
+		st.markdown( BLUE_DIVIDER, unsafe_allow_html=True )
 		
 		# ---------------- Model (provider-correct) ----------------
 		image_model = st.selectbox(
@@ -864,6 +931,8 @@ elif mode == "Audio":
 	with st.sidebar:
 		st.header( "Audio Settings" )
 		
+		st.markdown( BLUE_DIVIDER, unsafe_allow_html=True )
+		
 		# ---------------- Task ----------------
 		available_tasks = [ ]
 		if transcriber is not None:
@@ -924,68 +993,66 @@ elif mode == "Audio":
 	# ------------------------------------------------------------------
 	# Main UI — Audio Input / Output (unchanged behavior)
 	# ------------------------------------------------------------------
-	left, center, right = st.columns( [ 1,
-	                                    2,
-	                                    1 ] )
+	left, center, right = st.columns( [ 1, 2, 1 ] )
 	
 	with center:
-		if task in ("Transcribe", "Translate"):
+		if task in ('Transcribe', 'Translate'):
 			uploaded = st.file_uploader(
-				"Upload audio file",
-				type=[ "wav",
-				       "mp3",
-				       "m4a",
-				       "flac" ],
+				'Upload audio file',
+				type=[ 'wav',
+				       'mp3',
+				       'm4a',
+				       'flac' ],
 			)
 			
 			if uploaded:
 				tmp_path = save_temp( uploaded )
 				
-				if task == "Transcribe" and transcriber:
-					with st.spinner( "Transcribing…" ):
+				if task == 'Transcribe' and transcriber:
+					with st.spinner( 'Transcribing…' ):
 						try:
 							text = transcriber.transcribe(
 								tmp_path,
 								model=audio_model,
 								language=language,
 							)
-							st.text_area( "Transcript", value=text, height=300 )
+							st.text_area( 'Transcript', value=text, height=300 )
 							
 							try:
 								_update_token_counters(
-									getattr( transcriber, "response", None )
+									getattr( transcriber, 'response', None )
 								)
 							except Exception:
 								pass
 						
 						except Exception as exc:
-							st.error( f"Transcription failed: {exc}" )
+							st.error( f'Transcription failed: {exc}' )
 				
-				elif task == "Translate" and translator:
-					with st.spinner( "Translating…" ):
+				elif task == 'Translate' and translator:
+					with st.spinner( 'Translating…' ):
 						try:
 							text = translator.translate(
 								tmp_path,
 								model=audio_model,
 								language=language,
 							)
-							st.text_area( "Translation", value=text, height=300 )
+							st.text_area( 'Translation', value=text, height=300 )
 							
 							try:
 								_update_token_counters(
-									getattr( translator, "response", None )
+									getattr( translator, 'response', None )
 								)
 							except Exception:
 								pass
 						
 						except Exception as exc:
-							st.error( f"Translation failed: {exc}" )
+							st.error( f'Translation failed: {exc}' )
 		
-		elif task == "Text-to-Speech" and tts:
-			text = st.text_area( "Text to synthesize" )
+		elif task == 'Text-to-Speech' and tts:
+			text = st.text_area( 'Text to synthesize' )
 			
-			if text and st.button( "Generate Audio" ):
-				with st.spinner( "Synthesizing speech…" ):
+			if text and st.button( 'Generate Audio' ):
+				with st.spinner( 'Synthesizing speech…' ):
 					try:
 						audio_bytes = tts.speak(
 							text,
@@ -1008,25 +1075,27 @@ elif mode == "Audio":
 # ======================================================================================
 # EMBEDDINGS MODE (Provider-correct, function-preserving rewrite)
 # ======================================================================================
-elif mode == "Embeddings":
+elif mode == 'Embeddings':
 	provider_module = get_provider_module( )
 	
-	if not hasattr( provider_module, "Embedding" ):
-		st.info( "Embeddings are not supported by the selected provider." )
+	if not hasattr( provider_module, 'Embedding' ):
+		st.info( 'Embeddings are not supported by the selected provider.' )
 	else:
 		embed = provider_module.Embedding( )
 		with st.sidebar:
-			st.header( "Embedding Settings" )
+			st.header( 'Embedding Settings' )
+			
+			st.markdown( BLUE_DIVIDER, unsafe_allow_html=True )
 			embed_model = st.selectbox(
-				"Model",
+				'Model',
 				embed.model_options,
 				index=(
-						embed.model_options.index( st.session_state[ "embed_model" ] )
-						if st.session_state.get( "embed_model" ) in embed.model_options
+						embed.model_options.index( st.session_state[ 'embed_model' ] )
+						if st.session_state.get( 'embed_model' ) in embed.model_options
 						else 0
 				),
 			)
-			st.session_state[ "embed_model" ] = embed_model
+			st.session_state[ 'embed_model' ] = embed_model
 			method = None
 			if hasattr( embed, "methods" ):
 				method = st.selectbox(
@@ -1037,14 +1106,12 @@ elif mode == "Embeddings":
 		# ------------------------------------------------------------------
 		# Main UI — Embedding execution (unchanged behavior)
 		# ------------------------------------------------------------------
-		left, center, right = st.columns( [ 1,
-		                                    2,
-		                                    1 ] )
+		left, center, right = st.columns( [ 1, 2, 1 ] )
 		with center:
-			text = st.text_area( "Text to embed" )
+			text = st.text_area( 'Text to embed' )
 			
-			if text and st.button( "Embed" ):
-				with st.spinner( "Embedding…" ):
+			if text and st.button( 'Embed' ):
+				with st.spinner( 'Embedding…' ):
 					try:
 						if method:
 							vector = embed.create(
@@ -1058,17 +1125,17 @@ elif mode == "Embeddings":
 								model=embed_model,
 							)
 						
-						st.write( "Vector length:", len( vector ) )
+						st.write( 'Vector length:', len( vector ) )
 						
 						try:
 							_update_token_counters(
-								getattr( embed, "response", None )
+								getattr( embed, 'response', None )
 							)
 						except Exception:
 							pass
 					
 					except Exception as exc:
-						st.error( f"Embedding failed: {exc}" )
+						st.error( f'Embedding failed: {exc}' )
 
 # ======================================================================================
 # Vector Store MODE
@@ -1108,22 +1175,22 @@ elif mode == "Vector Store":
 	
 	if not options:
 		try:
-			client = getattr( chat, "client", None )
+			client = getattr( chat, 'client', None )
 			if (
 					client
-					and hasattr( client, "vector_stores" )
-					and hasattr( client.vector_stores, "list" )
+					and hasattr( client, 'vector_stores' )
+					and hasattr( client.vector_stores, 'list' )
 			):
 				api_list = client.vector_stores.list( )
 				temp: List[ tuple ] = [ ]
-				for item in getattr( api_list, "data", [ ] ) or api_list:
-					nm = getattr( item, "name", None ) or (
-							item.get( "name" )
+				for item in getattr( api_list, 'data', [ ] ) or api_list:
+					nm = getattr( item, 'name', None ) or (
+							item.get( 'name' )
 							if isinstance( item, dict )
 							else None
 					)
-					vid = getattr( item, "id", None ) or (
-							item.get( "id" )
+					vid = getattr( item, 'id', None ) or (
+							item.get( 'id' )
 							if isinstance( item, dict )
 							else None
 					)
@@ -1160,22 +1227,22 @@ elif mode == "Vector Store":
 						)
 					else:
 						st.warning(
-							"retrieve_store not available on chat object "
-							"or no store selected."
+							'retrieve_store not available on chat object '
+							'or no store selected.'
 						)
 				except Exception as exc:
-					st.error( f"Retrieve failed: {exc}" )
+					st.error( f'Retrieve failed: {exc}' )
 		
 		with c2:
-			if st.button( "Delete store" ):
+			if st.button( 'Delete store' ):
 				try:
-					if sel_id and hasattr( chat, "delete_store" ):
+					if sel_id and hasattr( chat, 'delete_store' ):
 						res = chat.delete_store( sel_id )
-						st.success( f"Delete returned: {res}" )
+						st.success( f'Delete returned: {res}' )
 					else:
 						st.warning(
-							"delete_store not available on chat object "
-							"or no store selected."
+							'delete_store not available on chat object '
+							'or no store selected.'
 						)
 				except Exception as exc:
 					st.error( f"Delete failed: {exc}" )
@@ -1192,22 +1259,22 @@ elif mode == "Prompt Engineering":
 	import sqlite3
 	import math
 	
-	DB_PATH = "stores/sqlite/datamodels/Data.db"
-	TABLE = "Prompts"
+	DB_PATH = 'stores/sqlite/datamodels/Data.db'
+	TABLE = 'Prompts'
 	PAGE_SIZE = 10
 	
 	# ------------------------------------------------------------------
 	# Session state (single source of truth)
 	# ------------------------------------------------------------------
-	st.session_state.setdefault( "pe_page", 1 )
-	st.session_state.setdefault( "pe_search", "" )
-	st.session_state.setdefault( "pe_sort_col", "PromptsId" )
-	st.session_state.setdefault( "pe_sort_dir", "ASC" )
-	st.session_state.setdefault( "pe_selected_id", None )
+	st.session_state.setdefault( 'pe_page', 1 )
+	st.session_state.setdefault( 'pe_search', "" )
+	st.session_state.setdefault( 'pe_sort_col', 'PromptsId' )
+	st.session_state.setdefault( 'pe_sort_dir', 'ASC' )
+	st.session_state.setdefault( 'pe_selected_id', None )
 	
-	st.session_state.setdefault( "pe_name", "" )
-	st.session_state.setdefault( "pe_text", "" )
-	st.session_state.setdefault( "pe_version", 1 )
+	st.session_state.setdefault( 'pe_name', "" )
+	st.session_state.setdefault( 'pe_text', "" )
+	st.session_state.setdefault( 'pe_version', 1 )
 	
 	# ------------------------------------------------------------------
 	# DB helpers
@@ -1245,10 +1312,7 @@ elif mode == "Prompt Engineering":
 	# ------------------------------------------------------------------
 	# Controls (table filters)
 	# ------------------------------------------------------------------
-	c1, c2, c3, c4 = st.columns( [ 4,
-	                               2,
-	                               2,
-	                               3 ] )
+	c1, c2, c3, c4 = st.columns( [ 4, 2, 2, 3 ] )
 	
 	with c1:
 		st.text_input( 'Search (Name/Text contains)', key='pe_search' )
@@ -1330,11 +1394,11 @@ elif mode == "Prompt Engineering":
 	for r in rows:
 		table_rows.append(
 			{
-					"Selected": r[ 0 ] == st.session_state.pe_selected_id,
-					"PromptsId": r[ 0 ],
-					"Name": r[ 1 ],
-					"Version": r[ 3 ],
-					"ID": r[ 4 ],
+					'Selected': r[ 0 ] == st.session_state.pe_selected_id,
+					'PromptsId': r[ 0 ],
+					'Name': r[ 1 ],
+					'Version': r[ 3 ],
+					'ID': r[ 4 ],
 			}
 		)
 	
@@ -1354,9 +1418,7 @@ elif mode == "Prompt Engineering":
 	# ------------------------------------------------------------------
 	# Paging
 	# ------------------------------------------------------------------
-	p1, p2, p3 = st.columns( [ 1,
-	                           2,
-	                           1 ] )
+	p1, p2, p3 = st.columns( [ 1, 2, 1 ] )
 	with p1:
 		if st.button( "◀ Prev" ) and st.session_state.pe_page > 1:
 			st.session_state.pe_page -= 1
@@ -1423,34 +1485,31 @@ elif mode == "Prompt Engineering":
 							),
 						)
 					conn.commit( )
-				st.success( "Saved." )
+				st.success( 'Saved.' )
 				reset_selection( )
 		
 		with c2:
-			if st.session_state.pe_selected_id and st.button( "Delete" ):
+			if st.session_state.pe_selected_id and st.button( 'Delete' ):
 				with get_conn( ) as conn:
 					conn.execute(
-						f"DELETE FROM {TABLE} WHERE PromptsId=?",
+						f'DELETE FROM {TABLE} WHERE PromptsId=?',
 						(st.session_state.pe_selected_id,),
 					)
 					conn.commit( )
 				reset_selection( )
-				st.success( "Deleted." )
+				st.success( 'Deleted.' )
 		
 		with c3:
-			if st.button( "Clear Selection" ):
+			if st.button( 'Clear Selection' ):
 				reset_selection( )
 
 # ======================================================================================
 # DOCUMENTS MODE
 # ======================================================================================
-if mode == "Documents":
+if mode == 'Documents':
 	uploaded = st.file_uploader(
-		"Upload documents (session only)",
-		type=[ "pdf",
-		       "txt",
-		       "md",
-		       "docx" ],
+		'Upload documents (session only)',
+		type=[ 'pdf', 'txt', 'md', 'docx' ],
 		accept_multiple_files=True,
 	)
 	
@@ -1562,25 +1621,25 @@ if mode == "Files":
 	
 	list_method = None
 	for name in (
-				"retrieve_files",
-				"retreive_files",
-				"list_files",
-				"get_files",
+				'retrieve_files',
+				'retreive_files',
+				'list_files',
+				'get_files',
 	):
 		if hasattr( chat, name ):
 			list_method = getattr( chat, name )
 			break
 	
 	uploaded_file = st.file_uploader(
-		"Upload file (server-side via Files API)",
+		'Upload file (server-side via Files API)',
 		type=[
-				"pdf",
-				"txt",
-				"md",
-				"docx",
-				"png",
-				"jpg",
-				"jpeg",
+				'pdf',
+				'txt',
+				'md',
+				'docx',
+				'png',
+				'jpg',
+				'jpeg',
 		],
 	)
 	if uploaded_file:
