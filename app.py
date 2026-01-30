@@ -1,11 +1,47 @@
-# ******************************************************************************************
-# Assembly:                Boo
-# Filename:                app.py
-# Author:                  Terry D. Eppler (integration)
-# Created:                 12-16-2025
-# Notes:                   Restored Parameters section for Text mode and wired parameters
-# ******************************************************************************************
-
+'''
+	******************************************************************************************
+	    Assembly:                Boo
+	    Filename:                app.py
+	    Author:                  Terry D. Eppler
+	    Created:                 05-31-2024
+	
+	    Last Modified By:        Terry D. Eppler
+	    Last Modified On:        05-01-2025
+	******************************************************************************************
+	<copyright file="app.py" company="Terry D. Eppler">
+	
+	           Boo is a data analysis tool integrating various Generative GPT, Text-Processing, and
+	           Machine-Learning algorithms for federal analysts.
+	           Copyright ©  2022  Terry Eppler
+	
+	   Permission is hereby granted, free of charge, to any person obtaining a copy
+	   of this software and associated documentation files (the “Software”),
+	   to deal in the Software without restriction,
+	   including without limitation the rights to use,
+	   copy, modify, merge, publish, distribute, sublicense,
+	   and/or sell copies of the Software,
+	   and to permit persons to whom the Software is furnished to do so,
+	   subject to the following conditions:
+	
+	   The above copyright notice and this permission notice shall be included in all
+	   copies or substantial portions of the Software.
+	
+	   THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+	   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	   FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+	   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+	   DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+	   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+	   DEALINGS IN THE SOFTWARE.
+	
+	   You can contact me at:  terryeppler@gmail.com or eppler.terry@epa.gov
+	
+	</copyright>
+	<summary>
+	  app.py
+	</summary>
+	******************************************************************************************
+'''
 from __future__ import annotations
 
 import base64
@@ -28,22 +64,63 @@ from gpt import (
 	Translation,
 )
 
+# -----------------------------------------------------------------------------
+# CONSTANTS
+# -----------------------------------------------------------------------------
+BASE_DIR = os.path.dirname( os.path.abspath( __file__ ) )
+
+FAVICON = r'resources/images/favicon.ico'
+
+BLUE_DIVIDER = "<div style='height:2px;align:left;background:#0078FC;margin:6px 0 10px 0;'></div>"
+
+PROVIDERS = {
+		'GPT': 'gpt',
+		'Gemini': 'gemini',
+		'Groq': 'grok',
+}
+
+MODE_CLASS_MAP = {
+		'Text': [ 'Chat' ],
+		'Images': [ 'Image' ],
+		'Audio': [ 'TTS',
+		           'Translation',
+		           'Transcription' ],
+		'Embeddings': [ 'Embedding' ],
+}
+
+MODES = [
+		'Text',
+		'Images',
+		'Audio',
+		'Embeddings',
+		'Documents',
+		'Files',
+		'Vector Store',
+		'Prompt Engineering' ]
+
+LOGO_MAP = {
+		"GPT": os.path.join( BASE_DIR, "resources", "images", "gpt_logo.png" ),
+		"Gemini": os.path.join( BASE_DIR, "resources", "images", "gemma_logo.png" ),
+		"Groq": os.path.join( BASE_DIR, "resources", "images", "grok_logo.png" ),
+}
+
+_TAG_OPEN = re.compile( r"<([A-Za-z0-9_\-:.]+)>" )
+
+_TAG_CLOSE = re.compile( r"</([A-Za-z0-9_\-:.]+)>" )
+
 # ======================================================================================
 # Page Configuration
 # ======================================================================================
 st.set_page_config(
 	page_title="Boo",
-	page_icon=cfg.FAVICON_PATH,
+	page_icon=FAVICON,
 	layout="wide",
 )
-
-BASE_DIR = os.path.dirname( os.path.abspath( __file__ ) )
 
 
 # ======================================================================================
 # Session State — initialize per-mode model keys and token counters
 # ======================================================================================
-
 if "openai_api_key" not in st.session_state:
 	st.session_state.openai_api_key = ""
 
@@ -97,7 +174,7 @@ if 'token_usage' not in st.session_state:
 if 'files' not in st.session_state:
 	st.session_state.files: List[ str ] = [ ]
 
-# Per-mode model keys (deterministic header behavior) - chat -> text
+# Per-mode model keys
 if 'text_model' not in st.session_state:
 	st.session_state[ 'text_model' ] = None
 if 'image_model' not in st.session_state:
@@ -107,7 +184,7 @@ if 'audio_model' not in st.session_state:
 if 'embed_model' not in st.session_state:
 	st.session_state[ 'embed_model' ] = None
 
-# Temperature / top_p / other generation params defaults (Text controls)
+# Temperature / top_p / other generation params defaults
 if 'temperature' not in st.session_state:
 	st.session_state[ 'temperature' ] = 0.7
 if 'top_p' not in st.session_state:
@@ -126,18 +203,7 @@ if 'provider' not in st.session_state:
 	st.session_state[ 'provider' ] = 'GPT'
 
 if 'api_keys' not in st.session_state:
-	st.session_state.api_keys = {
-			'GPT': None,
-			'Groq': None,
-			'Gemini': None,
-	}
-
-# ======================================================================================
-# Utilities
-# ======================================================================================
-
-_TAG_OPEN = re.compile( r"<([A-Za-z0-9_\-:.]+)>" )
-_TAG_CLOSE = re.compile( r"</([A-Za-z0-9_\-:.]+)>" )
+	st.session_state.api_keys = { 'GPT': None, 'Groq': None, 'Gemini': None, }
 
 def xml_converter( text: str ) -> str:
 	"""
@@ -327,41 +393,8 @@ def encode_image_base64(path: str) -> str:
 	return base64.b64encode(data).decode("utf-8")
 
 # ======================================================================================
-# SIDEBAR PROVIDER
+#  PROVIDER
 # ======================================================================================
-BLUE_DIVIDER = "<div style='height:2px;align:left;background:#0078FC;margin:6px 0 10px 0;'></div>"
-
-PROVIDERS = {
-		'GPT': 'gpt',
-		'Gemini': 'gemini',
-		'Groq': 'grok',
-}
-
-MODE_CLASS_MAP = {
-		'Text': [ 'Chat' ],
-		'Images': [ 'Image' ],
-		'Audio': [ 'TTS',
-		           'Translation',
-		           'Transcription' ],
-		'Embeddings': [ 'Embedding' ],
-}
-
-MODES = [
-		'Text',
-		'Images',
-		'Audio',
-		'Embeddings',
-		'Documents',
-		'Files',
-		'Vector Store',
-		'Prompt Engineering' ]
-
-LOGO_MAP = {
-		"GPT": os.path.join( BASE_DIR, "resources", "images", "gpt_logo.png" ),
-		"Gemini": os.path.join( BASE_DIR, "resources", "images", "gemma_logo.png" ),
-		"Groq": os.path.join( BASE_DIR, "resources", "images", "grok_logo.png" ),
-}
-
 def get_provider_module( ):
 	provider = st.session_state.get( 'provider', 'GPT' )
 	module_name = PROVIDERS.get( provider, 'gpt' )
@@ -374,11 +407,6 @@ def get_chat_instance( ):
 	"""
 	provider_module = get_provider_module( )
 	return provider_module.Chat( )
-
-
-# ======================================================================================
-# PROVIDER-AWARE OPTION SOURCING
-# ======================================================================================
 
 def _provider( ):
 	return st.session_state.get( 'provider', 'GPT' )
@@ -449,7 +477,7 @@ def embedding_model_options( embed ):
 	return embed.model_options
 
 # ======================================================================================
-# Sidebar — Provider selector above Mode, then Mode selector.
+# SIDEBAR
 # ======================================================================================
 with st.sidebar:
 	logo_slot = st.empty( )
@@ -554,26 +582,16 @@ if mode == "Text":
 		st.markdown( BLUE_DIVIDER, unsafe_allow_html=True )
 		
 		# ---------------- Model ----------------
-		text_model = st.selectbox(
-			'Model',
-			chat.model_options,
-			index=(
-					chat.model_options.index( st.session_state[ 'text_model' ] )
+		text_model = st.selectbox( 'Model', chat.model_options,
+			index=( chat.model_options.index( st.session_state[ 'text_model' ] )
 					if st.session_state.get( 'text_model' ) in chat.model_options
-					else 0
-			),
-		)
+					else 0 ), )
 		st.session_state[ 'text_model' ] = text_model
 		
 		# ---------------- Parameters ----------------
 		with st.expander( 'Parameters:', expanded=True ):
-			temperature = st.slider(
-				'Temperature',
-				min_value=0.0,
-				max_value=1.0,
-				value=float( st.session_state.get( 'temperature', 0.7 ) ),
-				step=0.01,
-			)
+			temperature = st.slider( 'Temperature', min_value=0.0, max_value=1.0,
+				value=float( st.session_state.get( 'temperature', 0.7 ) ), step=0.01, )
 			st.session_state[ 'temperature' ] = float( temperature )
 			
 			top_p = st.slider(

@@ -2,7 +2,7 @@
 base = 'dark'
 primaryColor = "#0078FC"
 backgroundColor = "#141414"
-secondaryBackgroundColor = "#373737"
+secondaryBackgroundColor = "#323232"
 textColor = "#FAFAFA"
 font = "Roboto"
 showSidebarBorder = true
