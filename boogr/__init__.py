@@ -44,38 +44,13 @@
   '''
 from __future__ import annotations
 
-import os
-import base64
+import traceback
+from sys import exc_info
+from typing import List, Tuple, Optional
+
 import config as cfg
-from enum import Enum
-from googlesearch import search
-import io
-import matplotlib.pyplot as plt
-import matplotlib.figure
-from matplotlib import cm
-from mpl_toolkits.mplot3d.axes3d import get_test_data
-from matplotlib.ticker import NullFormatter
-from matplotlib.figure import Figure
-from mpl_toolkits.axes_grid1.axes_rgb import RGBAxes
-import numpy as np
-from numpy.random import rand
-from pandas import read_csv as CsvReader
-from pandas import read_excel as ExcelReader
-from pydantic import BaseModel
-from PIL import Image, ImageSequence
-import pymupdf
-import random
-from random import randint
 from .static import EXT, Client
-from sys import exit, exc_info
-from .minion import App
-import traceback
-import urllib.request
-import webbrowser
-from typing import Dict, List, Tuple, Any, Text, Optional
-import inspect
-import importlib
-import traceback
+
 try:
     import FreeSimpleGUI as sg
 except Exception:

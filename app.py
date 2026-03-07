@@ -56,6 +56,7 @@ import tempfile
 import re
 from typing import List, Dict, Any, Optional, Tuple
 from boogr import Error
+from sentence_transformers import SentenceTransformer
 
 import fitz  # pymupdf
 
@@ -74,17 +75,6 @@ from gpt import (
 from gemini import (Chat, Images, Files, Embeddings, Transcription, TTS, Translation, VectorStores)
 
 from grok import (Chat, Images, Files, Transcription, TTS, Translation, VectorStores)
-
-# ==============================================================================
-# Page Setup
-# ==============================================================================
-AVATARS = { 'user': cfg.ANALYST, 'assistant': cfg.BUDDY, }
-st.set_page_config( page_title=cfg.APP_TITLE, layout='wide', page_icon=cfg.FAVICON,
-	initial_sidebar_state='collapsed', )
-
-st.caption( cfg.APP_SUBTITLE )
-inject_response_css( )
-init_state( )
 
 # ==============================================================================
 # SESSION STATE INITIALIZATION
@@ -2867,6 +2857,17 @@ def _safe( module, attr, fallback ):
 	except Exception:
 		return fallback
 
+# ==============================================================================
+# Page Setup
+# ==============================================================================
+AVATARS = { 'user': cfg.ANALYST, 'assistant': cfg.BOO, }
+st.set_page_config( page_title=cfg.APP_TITLE, layout='wide', page_icon=cfg.FAVICON,
+	initial_sidebar_state='collapsed', )
+
+st.caption( cfg.APP_SUBTITLE )
+inject_response_css( )
+init_state( )
+
 # ======================================================================================
 # SIDEBAR
 # ======================================================================================
@@ -2919,8 +2920,12 @@ with st.sidebar:
 		
 	st.subheader( "Mode" )
 	st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
-	
-	mode = st.sidebar.radio( "Mode", cfg.MODES, index=0 )
+	if provider == 'Gemini':
+		mode = st.sidebar.radio( 'Select Mode', cfg.GEMINI_MODES, index=0 )
+	elif provider == 'Grok':
+		mode = st.sidebar.radio( 'Select Mode', cfg.GROK_MODES, index=0 )
+	else:
+		mode = st.sidebar.radio( 'Select Mode', cfg.GPT_MODES, index=0 )
 
 # ======================================================================================
 # TEXT MODE
@@ -7096,10 +7101,10 @@ _mode_to_model_key = \
 		'TTS': 'tts_model',
 		'Translation': 'translation_model',
 		'Transcription': 'transcription_model',
-		'Embedding': 'embedding_model',
-		'DocQnA': 'docqna_model',
+		'Embeddings': 'embedding_model',
+		'Document Q&A': 'docqna_model',
 		'Files': 'files_model',
-		'Stores': 'stores_model'
+		'Vector Stores': 'stores_model'
 }
 
 provider_val = st.session_state.get( 'provider', '—' )

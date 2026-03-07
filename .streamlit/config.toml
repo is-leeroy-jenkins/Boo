@@ -7,5 +7,5 @@ dataframeBorderColor = '#00254C'
 primaryColor = '#0078FC'
 borderColor = '#565557'
 dataframeHeaderBackgroundColor = '#023770'
-font = 'Roboto'
-baseFontSize = 13
+font = 'Roboto Regular'
+baseFontSize = 14

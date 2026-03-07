@@ -95,6 +95,7 @@ require predictable, fast outputs.
 
 git clone https://github.com/your-username/Boo.git
 cd Boo
+
 ```
 
 #### 2. Create and Activate a Virtual Environment
@@ -103,6 +104,7 @@ cd Boo
 
 python -m venv venv
 venv\Scripts\activate
+
 ```
 
 #### 3. Install Dependencies
@@ -110,6 +112,7 @@ venv\Scripts\activate
 ```bash
 
 pip install -r requirements.txt
+
 ```
 
 

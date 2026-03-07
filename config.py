@@ -71,16 +71,12 @@ GOOGLE_API_KEY = os.getenv( 'GOOGLE_API_KEY' )
 GOOGLE_CSE_ID = os.getenv( 'GOOGLE_CSE_ID' )
 GOOGLE_CLOUD_LOCATION = os.getenv( 'GOOGLE_CLOUD_LOCATION' )
 GOOGLE_CLOUD_PROJECT = os.getenv( 'GOOGLE_CLOUD_PROJECT' )
-
-SQLALCHEMY_TRACK_MODIFICATIONS = 750
-THEME = "DarkGray15"
 OUTPUT_FILE_NAME = "boo.wav"
 SAMPLE_RATE = 48000
 MODELS = [ 'gpt-5-nano-2025-08-07', 'gpt-4.1-nano-2025-04-14', 'gpt-4o-mini', ]
 DEFAULT_MODEL = MODELS[ 0 ]
-SQLALCHEMY_DATABASE_URI = f'sqlite:///' + r'C:\Users\terry\source\repos\Boo\stores\sqlite\datamodels\Data.db'
 BASE_DIR = Path(__file__).resolve().parent
-FAVICON_PATH = BASE_DIR / 'resources' / 'images' / 'favicon.ico'
+FAVICON = r'resources/images/favicon.ico'
 
 # ----------------- GPT CONFIG -------------------
 GPT_LOGO = r'resources/images/gpt.png'
@@ -103,8 +99,7 @@ GPT_DOMAINS = [ 'congress.gov',
                 'omb.gov',
                 'defense.gov' ]
 
-GPT_MODES = [ 'Chat',
-              'Text',
+GPT_MODES = [ 'Text',
               'Images',
               'Audio',
               'Embeddings',
