@@ -47,6 +47,8 @@ from __future__ import annotations
 import base64
 from pathlib import Path
 import numpy as np
+import pandas as pd
+import plotly.express as px
 import tiktoken
 import config as cfg
 import streamlit as st
@@ -73,14 +75,16 @@ from gemini import (Chat, Images, Files, Embeddings, Transcription, TTS, Transla
 
 from grok import (Chat, Images, Files, Transcription, TTS, Translation, VectorStores)
 
-# ======================================================================================
-# Page Configuration
-# ======================================================================================
-st.set_page_config(
-	page_title="Boo",
-	page_icon=cfg.FAVICON,
-	layout="wide",
-)
+# ==============================================================================
+# Page Setup
+# ==============================================================================
+AVATARS = { 'user': cfg.ANALYST, 'assistant': cfg.BUDDY, }
+st.set_page_config( page_title=cfg.APP_TITLE, layout='wide', page_icon=cfg.FAVICON,
+	initial_sidebar_state='collapsed', )
+
+st.caption( cfg.APP_SUBTITLE )
+inject_response_css( )
+init_state( )
 
 # ==============================================================================
 # SESSION STATE INITIALIZATION
@@ -174,6 +178,7 @@ if 'translation_model' not in st.session_state:
 	st.session_state[ 'translation_model' ] = ''
 
 # --------SYSTEM PARAMETERS----------------------
+
 if 'instructions' not in st.session_state:
 	st.session_state[ 'instructions' ] = ''
 
@@ -192,7 +197,6 @@ if 'audio_system_instructions' not in st.session_state:
 if 'docqna_system_instructions' not in st.session_state:
 	st.session_state[ 'docqna_systems_instructions' ] = ''
 	
-# Temperature / top_p / other generation params defaults
 if 'temperature' not in st.session_state:
 	st.session_state[ 'temperature' ] = 0.0
 	
@@ -211,7 +215,6 @@ if 'pres_penalty' not in st.session_state:
 if 'stop_sequences' not in st.session_state:
 	st.session_state[ 'stop_sequences' ] = [ ]
 
-# Provider default
 if 'provider' not in st.session_state:
 	st.session_state[ 'provider' ] = 'GPT'
 
@@ -219,6 +222,7 @@ if 'api_keys' not in st.session_state:
 	st.session_state.api_keys = { 'GPT': None, 'Groq': None, 'Gemini': None, }
 
 # --------TEXT-GENERATION PARAMETERS--------------------
+
 if 'text_number' not in st.session_state:
 	st.session_state[ 'text_number' ] = 0
 
@@ -298,6 +302,7 @@ if 'text_content' not in st.session_state:
 	st.session_state[ 'text_content' ] = [ ]
 
 # --------IMAGE-GENERATION PARAMETERS--------------------
+
 if 'image_max_tokens' not in st.session_state:
 	st.session_state[ 'image_max_tokens' ] = 0
 
@@ -405,6 +410,7 @@ if 'image_quality' not in st.session_state:
 	st.session_state[ 'image_quality' ] = ''
 
 # --------AUDIO-GENERATION PARAMETERS--------------------
+
 if 'audio_max_tokens' not in st.session_state:
 	st.session_state[ 'audio_max_tokens' ] = 0
 
@@ -457,6 +463,7 @@ if 'audio_context' not in st.session_state:
 	st.session_state.audio_context: List[ Dict[ str, Any ] ] = [ ]
 
 # -------AUDIO-SECIFIC PARAMETERS--------------
+
 if 'audio_task' not in st.session_state:
 	st.session_state[ 'audio_task' ] = ''
 
@@ -488,6 +495,7 @@ if 'audio_output' not in st.session_state:
 	st.session_state[ 'audio_output' ] = ''
 
 # ------- EMBEDDING-SPECIFIC PARAMETERS ----------------------
+
 if 'embeddings_dimensions' not in st.session_state:
 	st.session_state[ 'embeddings_dimensions' ] = 0
 
@@ -575,6 +583,7 @@ if 'files_table' not in st.session_state:
 	st.session_state[ 'files_table' ] = ''
 
 # -------- VECTORSTORES-GENERATION PARAMETERS --------------------
+
 if 'stores_temperature' not in st.session_state:
 	st.session_state[ 'stores_temperature' ] = 0.0
 
@@ -635,11 +644,13 @@ if 'stores_stops' not in st.session_state:
 if 'stores_include' not in st.session_state:
 	st.session_state[ 'stores_include' ] = [ ]
 
-# ------- VECTORSTORES-SPECIFIC PARAMETERS -------------------
+# ------- VECTORSTORES-SPECIFIC PARAMETERS --------
+
 if 'stores_id' not in st.session_state:
 	st.session_state[ 'stores_id' ] = ''
 
-# ------ DOCQNA GENERATION PARAMETERS -----------------
+# ------ DOCQNA GENERATION PARAMETERS ------------
+
 if 'docqna_max_tools' not in st.session_state:
 	st.session_state[ 'docqna_max_tools' ] = 0
 
@@ -662,6 +673,7 @@ if 'docqna_presense_penalty' not in st.session_state:
 	st.session_state[ 'docqna_presense_penalty' ] = 0.0
 
 # --------DOCQNA PARAMETERS--------------------
+
 if 'docqna_number' not in st.session_state:
 	st.session_state[ 'docqna_number' ] = 0
 
@@ -723,6 +735,7 @@ if 'docqna_content' not in st.session_state:
 	st.session_state[ 'docqna_content' ] = [ ]
 
 # ------- DOCQA-SPECIFIC PARAMATERS  ---------------------------
+
 if 'docqna_files' not in st.session_state:
 	st.session_state[ 'docqna_files' ] = [ ]
 
@@ -786,100 +799,6 @@ def extract_response_text( response: object ) -> str:
 						text_chunks.append( text )
 	
 	return "".join( text_chunks ).strip( )
-
-def convert_xml( text: str ) -> str:
-	"""
-		
-			Purpose:
-			_________
-			Convert XML-delimited prompt text into Markdown by treating XML-like
-			tags as section delimiters, not as strict XML.
-	
-			Parameters:
-			-----------
-			text (str) - Prompt text containing XML-like opening and closing tags.
-	
-			Returns:
-			---------
-			Markdown-formatted text using level-2 headings (##).
-	"""
-	markdown_blocks: List[ str ] = [ ]
-	for match in cfg.XML_BLOCK_PATTERN.finditer( text ):
-		raw_tag: str = match.group( "tag" )
-		body: str = match.group( "body" ).strip( )
-		
-		# Humanize tag name for Markdown heading
-		heading: str = raw_tag.replace( "_", " " ).replace( "-", " " ).title( )
-		markdown_blocks.append( f"## {heading}" )
-		if body:
-			markdown_blocks.append( body )
-	return "\n\n".join( markdown_blocks )
-
-def markdown_converter( text: Any ) -> str:
-	"""
-		Purpose:
-		--------
-		Convert between Markdown headings and simple XML-like heading tags.
-	
-		Behavior:
-		---------
-		Auto-detects direction:
-		  - If <h1>...</h1> / <h2>...</h2> ... exist, converts to Markdown (# / ## / ###).
-		  - Otherwise converts Markdown headings (# / ## / ###) to <hN>...</hN> tags.
-	
-		Parameters:
-		-----------
-		text : Any
-			Source text. Non-string values return "".
-	
-		Returns:
-		--------
-		str
-			Converted text.
-	"""
-	if not isinstance( text, str ) or not text.strip( ):
-		return ""
-	
-	# Normalize newlines
-	src = text.replace( "\r\n", "\n" ).replace( "\r", "\n" )
-	
-	htag_pattern = re.compile( r"<h([1-6])>(.*?)</h\1>", flags=re.IGNORECASE | re.DOTALL )
-	md_heading_pattern = re.compile( r"^(#{1,6})[ \t]+(.+?)[ \t]*$", flags=re.MULTILINE )
-	
-	# ------------------------------------------------------------------
-	# Direction detection
-	# ------------------------------------------------------------------
-	contains_htags = bool( htag_pattern.search( src ) )
-	
-	# ------------------------------------------------------------------
-	# XML-like heading tags -> Markdown headings
-	# ------------------------------------------------------------------
-	if contains_htags:
-		def _htag_to_md( match: re.Match ) -> str:
-			level = int( match.group( 1 ) )
-			content = match.group( 2 ).strip( )
-			
-			# Preserve inner newlines safely by collapsing interior whitespace
-			# while keeping content readable.
-			content = re.sub( r"[ \t]+\n", "\n", content )
-			content = re.sub( r"\n[ \t]+", "\n", content )
-			
-			return f"{'#' * level} {content}"
-		
-		out = htag_pattern.sub( _htag_to_md, src )
-		return out.strip( )
-	
-	# ------------------------------------------------------------------
-	# Markdown headings -> XML-like heading tags
-	# ------------------------------------------------------------------
-	def _md_to_htag( match: re.Match ) -> str:
-		hashes = match.group( 1 )
-		content = match.group( 2 ).strip( )
-		level = len( hashes )
-		return f"<h{level}>{content}</h{level}>"
-	
-	out = md_heading_pattern.sub( _md_to_htag, src )
-	return out.strip( )
 
 def encode_image_base64( path: str ) -> str:
 	"""
@@ -1484,7 +1403,9 @@ def count_tokens( text: str ) -> int:
 	num_tokens = len( encoding.encode( text ) )
 	return num_tokens
 
-# -------- CHAT/TEXT UTILITIES --------------------
+# ==============================================================================
+# TEXT UTILITIES
+# ==============================================================================
 
 def normalize_text( text: str ) -> str:
 	"""
@@ -1703,6 +1624,1134 @@ def clear_history( ) -> None:
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
 		conn.execute( "DELETE FROM chat_history" )
 
+# ==============================================================================
+# DOCQNA UTILITIES
+# ==============================================================================
+
+def extract_text_from_bytes( file_bytes: bytes ) -> str:
+	"""
+		Extracts text from PDF or text-based documents.
+	"""
+	try:
+		import fitz  # PyMuPDF
+		
+		doc = fitz.open( stream=file_bytes, filetype="pdf" )
+		text = ""
+		for page in doc:
+			text += page.get_text( )
+		return text.strip( )
+	
+	except Exception:
+		try:
+			return file_bytes.decode( errors="ignore" )
+		except Exception:
+			return ""
+
+def route_document_query( prompt: str ) -> str:
+	"""
+		Purpose:
+		--------
+		Route a document question through the unified chat pipeline and return a model-generated answer.
+
+		Parameters:
+		-----------
+		prompt : str
+			The user question to answer about active documents.
+
+		Returns:
+		--------
+		str
+			The assistant answer text.
+	"""
+	user_input = build_document_user_input( prompt )
+	if not user_input:
+		user_input = (prompt or '').strip( )
+	
+	return run_llm_turn(
+		user_input=user_input,
+		temperature=float( st.session_state.get( 'temperature', 0.0 ) ),
+		top_p=float( st.session_state.get( 'top_percent', 0.95 ) ),
+		repeat_penalty=float( st.session_state.get( 'repeat_penalty', 1.1 ) ),
+		max_tokens=int( st.session_state.get( 'max_tokens', 1024 ) ) or 1024,
+		stream=False,
+		output=None
+	)
+
+def summarize_active_document( ) -> str:
+	"""
+		Uses the routing layer to summarize the currently active document.
+	"""
+	system_instructions = st.session_state.get( "system_instructions", "" )
+	summary_prompt = """
+		Provide a clear, structured summary of this document.
+		Include:
+		- Purpose
+		- Key themes
+		- Major conclusions
+		- Important data points (if any)
+		- Policy implications (if applicable)
+		
+		Be precise and concise.
+		"""
+	if system_instructions:
+		summary_prompt = f"{system_instructions}\n\n{summary_prompt}"
+	
+	return route_document_query( summary_prompt.strip( ) )
+
+def _docqna_compute_fingerprint( active_docs: List[ str ], doc_bytes: Dict[ str, bytes ] ) -> str:
+	'''
+		
+		Purpose:
+		--------
+		Computes a stable fingerprint for the currently selected active documents and their byte contents.
+	
+		Parameters:
+		-----------
+		active_docs:
+			A List[ str ] of active document names.
+		doc_bytes:
+			A Dict[ str, bytes ] mapping document name to file bytes.
+	
+		Returns:
+		--------
+		A str fingerprint suitable for cache invalidation.
+	
+	'''
+	h = hashlib.sha256( )
+	for name in sorted( active_docs ):
+		b = doc_bytes.get( name, b'' )
+		h.update( name.encode( 'utf-8', errors='ignore' ) )
+		h.update( len( b ).to_bytes( 8, 'little', signed=False ) )
+		h.update( hashlib.sha256( b ).digest( ) )
+	return h.hexdigest( )
+
+def _docqna_extract_text_from_pdf_bytes( file_bytes: bytes ) -> str:
+	'''
+	
+		Purpose:
+		--------
+		Extracts text from a PDF byte stream using PyMuPDF.
+	
+		Parameters:
+		-----------
+		file_bytes:
+			The PDF bytes.
+	
+		Returns:
+		--------
+		A str containing extracted text.
+	
+	'''
+	if not file_bytes:
+		return ''
+	
+	try:
+		doc = fitz.open( stream=file_bytes, filetype='pdf' )
+		parts: List[ str ] = [ ]
+		for page in doc:
+			parts.append( page.get_text( 'text' ) or '' )
+		return '\n'.join( parts ).strip( )
+	except Exception:
+		return ''
+
+def _docqna_safe_load_sqlite_vec( conn: sqlite3.Connection ) -> bool:
+	'''
+		
+		Purpose:
+		--------
+		Attempts to load sqlite-vec into the provided SQLite connection.
+	
+		Parameters:
+		-----------
+		conn:
+			The sqlite3.Connection.
+	
+		Returns:
+		--------
+		True if sqlite-vec loaded successfully; otherwise False.
+		
+	'''
+	try:
+		import sqlite_vec
+		
+		sqlite_vec.load( conn )
+		return True
+	except Exception:
+		return False
+
+def _docqna_ensure_vec_schema( dim: int ) -> bool:
+	'''
+	
+		Purpose:
+		--------
+		Creates the sqlite-vec virtual table used for Document Q&A embeddings if possible.
+	
+		Parameters:
+		-----------
+		dim:
+			The embedding dimension (e.g., 384 for all-MiniLM-L6-v2).
+	
+		Returns:
+		--------
+		True if the schema exists and is usable; otherwise False.
+	
+	'''
+	conn = create_connection( )
+	try:
+		ok = _docqna_safe_load_sqlite_vec( conn )
+		if not ok:
+			return False
+		
+		cur = conn.cursor( )
+		cur.execute(
+			f'''
+			CREATE VIRTUAL TABLE IF NOT EXISTS docqna_vec
+			USING vec0(
+				embedding float[{int( dim )}],
+				doc_name TEXT,
+				chunk TEXT
+			);
+			'''
+		)
+		conn.commit( )
+		return True
+	except Exception:
+		return False
+	finally:
+		conn.close( )
+
+def _docqna_rebuild_index_if_needed( embedder: SentenceTransformer ) -> None:
+	'''
+		
+		Purpose:
+		--------
+		Builds or refreshes the Document Q&A vector index when active documents change.
+	
+		Parameters:
+		-----------
+		embedder:
+			The SentenceTransformer used to generate embeddings.
+	
+		Returns:
+		--------
+		None
+		
+	'''
+	active_docs: List[ str ] = st.session_state.get( 'active_docs', [ ] )
+	doc_bytes: Dict[ str, bytes ] = st.session_state.get( 'doc_bytes', { } )
+	
+	fp = _docqna_compute_fingerprint( active_docs, doc_bytes )
+	if fp and fp == st.session_state.get( 'docqna_fingerprint', '' ):
+		return
+	
+	st.session_state[ 'docqna_fingerprint' ] = fp
+	st.session_state[ 'docqna_chunk_count' ] = 0
+	st.session_state[ 'docqna_fallback_rows' ] = [ ]
+	
+	dim_value = getattr( embedder, 'get_sentence_embedding_dimension', lambda: 384 )( )
+	dim = int( dim_value ) if dim_value else 384
+	
+	vec_ready = _docqna_ensure_vec_schema( dim )
+	st.session_state[ 'docqna_vec_ready' ] = bool( vec_ready )
+	
+	conn = create_connection( )
+	try:
+		cur = conn.cursor( )
+		
+		if vec_ready:
+			try:
+				cur.execute( 'DELETE FROM docqna_vec;' )
+				conn.commit( )
+			except Exception:
+				st.session_state[ 'docqna_vec_ready' ] = False
+				vec_ready = False
+		
+		total_chunks = 0
+		fallback_rows: List[ Tuple[ str, str, bytes ] ] = [ ]
+		
+		for name in active_docs:
+			b = doc_bytes.get( name )
+			if not b:
+				continue
+			
+			text = _docqna_extract_text_from_pdf_bytes( b )
+			if not text:
+				continue
+			
+			chunks = chunk_text( text )
+			if not chunks:
+				continue
+			
+			vecs = embedder.encode( chunks, show_progress_bar=False )
+			vecs = np.asarray( vecs, dtype=np.float32 )
+			
+			if vec_ready:
+				for chunk_text_value, v in zip( chunks, vecs ):
+					cur.execute(
+						'INSERT INTO docqna_vec ( embedding, doc_name, chunk ) VALUES ( ?, ?, ? );',
+						(v.tobytes( ), name, chunk_text_value)
+					)
+			else:
+				for chunk_text_value, v in zip( chunks, vecs ):
+					fallback_rows.append( (name, chunk_text_value, v.tobytes( )) )
+			
+			total_chunks += int( len( chunks ) )
+		
+		conn.commit( )
+		st.session_state[ 'docqna_chunk_count' ] = total_chunks
+		
+		if not vec_ready:
+			st.session_state[ 'docqna_fallback_rows' ] = fallback_rows
+	
+	except Exception:
+		st.session_state[ 'docqna_vec_ready' ] = False
+		st.session_state[ 'docqna_fallback_rows' ] = [ ]
+		st.session_state[ 'docqna_chunk_count' ] = 0
+	finally:
+		conn.close( )
+
+def retrieve_top_doc_chunks( query: str, k: int = 6 ) -> List[ Tuple[ str, str, float ] ]:
+	'''
+	
+		Purpose:
+		--------
+		Retrieves top-k document chunks relevant to the query, using sqlite-vec when available, and falling
+		back to in-memory cosine similarity when not.
+	
+		Parameters:
+		-----------
+		query:
+			The user query string.
+		k:
+			The number of chunks to return.
+	
+		Returns:
+		--------
+		A List[ Tuple[ str, str, float ] ] of (doc_name, chunk, score_or_distance).
+	
+	'''
+	if not query or not query.strip( ):
+		return [ ]
+	
+	embedder: SentenceTransformer = load_embedder( )
+	_docqna_rebuild_index_if_needed( embedder )
+	
+	qv = embedder.encode( [ query ], show_progress_bar=False )
+	qv = np.asarray( qv, dtype=np.float32 )[ 0 ]
+	
+	if st.session_state.get( 'docqna_vec_ready', False ):
+		conn = create_connection( )
+		try:
+			_docqna_safe_load_sqlite_vec( conn )
+			cur = conn.cursor( )
+			cur.execute(
+				'''
+                SELECT doc_name, chunk, distance
+                FROM docqna_vec
+                WHERE embedding MATCH ?
+                ORDER BY distance ASC LIMIT ?;
+				''',
+				(qv.tobytes( ), int( k ))
+			)
+			rows = cur.fetchall( )
+			return [ (r[ 0 ], r[ 1 ], float( r[ 2 ] )) for r in rows ]
+		except Exception:
+			st.session_state[ 'docqna_vec_ready' ] = False
+		finally:
+			conn.close( )
+	
+	fallback_rows: List[
+		Tuple[ str, str, bytes ] ] = st.session_state.get( 'docqna_fallback_rows', [ ] )
+	results: List[ Tuple[ str, str, float ] ] = [ ]
+	
+	for doc_name, chunk_text_value, vec_blob in fallback_rows:
+		if not vec_blob:
+			continue
+		
+		v = np.frombuffer( vec_blob, dtype=np.float32 )
+		if v.size == 0:
+			continue
+		
+		score = cosine_sim( qv, v )
+		results.append( (doc_name, chunk_text_value, float( score )) )
+	
+	results.sort( key=lambda r: r[ 2 ], reverse=True )
+	return results[ : int( k ) ]
+
+def build_document_user_input( user_query: str, k: int = 6 ) -> str:
+	'''
+	
+		Purpose:
+		--------
+		Builds a Document Q&A prompt that injects retrieved chunks (RAG) instead of stuffing full documents.
+	
+		Parameters:
+		-----------
+		user_query:
+			The user question.
+		k:
+			The number of retrieved chunks to include.
+	
+		Returns:
+		--------
+		A str prompt suitable for llama.cpp completion.
+	
+	'''
+	system = str( st.session_state.get( 'system_instructions', '' ) or '' ).strip( )
+	hits = retrieve_top_doc_chunks( user_query, k=int( k ) )
+	
+	context_blocks: List[ str ] = [ ]
+	for doc_name, chunk, score in hits:
+		context_blocks.append( f'[Document: {doc_name}]\n{chunk}'.strip( ) )
+	
+	context = '\n\n'.join( context_blocks ).strip( )
+	
+	prompt_parts: List[ str ] = [ ]
+	
+	if system:
+		prompt_parts.append( system )
+	
+	if context:
+		prompt_parts.append(
+			'Use the following document excerpts to answer the question. If the excerpts do not contain '
+			'the answer, say you do not have enough information.\n\n'
+			f'{context}'
+		)
+	
+	prompt_parts.append( f'Question:\n{user_query}\n\nAnswer:' )
+	
+	return '\n\n'.join( prompt_parts ).strip( )
+
+# ==============================================================================
+# DATABASE UTILITIES
+# ==============================================================================
+
+def initialize_database( ) -> None:
+	Path( "stores/sqlite" ).mkdir( parents=True, exist_ok=True )
+	with sqlite3.connect( cfg.DB_PATH ) as conn:
+		conn.execute( """
+                      CREATE TABLE IF NOT EXISTS chat_history
+                      (
+                          id
+                          INTEGER
+                          PRIMARY
+                          KEY
+                          AUTOINCREMENT,
+                          role
+                          TEXT,
+                          content
+                          TEXT
+                      )
+		              """ )
+		conn.execute( """
+                      CREATE TABLE IF NOT EXISTS embeddings
+                      (
+                          id
+                          INTEGER
+                          PRIMARY
+                          KEY
+                          AUTOINCREMENT,
+                          chunk
+                          TEXT,
+                          vector
+                          BLOB
+                      )
+		              """ )
+		conn.execute( """
+                      CREATE TABLE IF NOT EXISTS Prompts
+                      (
+                          PromptsId
+                          INTEGER
+                          NOT
+                          NULL
+                          UNIQUE,
+                          Name
+                          TEXT
+                      (
+                          80
+                      ),
+                          Text TEXT,
+                          Version TEXT
+                      (
+                          80
+                      ),
+                          ID TEXT
+                      (
+                          80
+                      ),
+                          PRIMARY KEY
+                      (
+                          PromptsId
+                          AUTOINCREMENT
+                      )
+                          )
+		              """ )
+
+def create_connection( ) -> sqlite3.Connection:
+	return sqlite3.connect( cfg.DB_PATH )
+
+def list_tables( ) -> List[ str ]:
+	with create_connection( ) as conn:
+		_query = "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
+		rows = conn.execute( _query ).fetchall( )
+		return [ r[ 0 ] for r in rows ]
+
+def create_schema( table: str ) -> List[ Tuple ]:
+	with create_connection( ) as conn:
+		return conn.execute( f'PRAGMA table_info("{table}");' ).fetchall( )
+
+def read_table( table: str, limit: int=None, offset: int=0 ) -> pd.DataFrame:
+	query = f'SELECT rowid, * FROM "{table}"'
+	if limit:
+		query += f" LIMIT {limit} OFFSET {offset}"
+	with create_connection( ) as conn:
+		return pd.read_sql_query( query, conn )
+
+def drop_table( table: str ) -> None:
+	"""
+		Purpose:
+		--------
+		Safely drop a table if it exists.
+	
+		Parameters:
+		-----------
+		table : str
+			Table name.
+	"""
+	if not table:
+		return
+	
+	with create_connection( ) as conn:
+		conn.execute( f'DROP TABLE IF EXISTS "{table}";' )
+		conn.commit( )
+
+def create_index( table: str, column: str ) -> None:
+	"""
+		Purpose:
+		--------
+		Create a safe SQLite index on a specified table column.
+	
+		Handles:
+			- Spaces in column names
+			- Special characters
+			- Reserved words
+			- Duplicate index names
+			- Validation against actual table schema
+	
+		Parameters:
+		-----------
+		table : str
+			Table name.
+		column : str
+			Column name to index.
+	"""
+	if not table or not column:
+		return
+	
+	# ------------------------------------------------------------------
+	# Validate table exists
+	# ------------------------------------------------------------------
+	tables = list_tables( )
+	if table not in tables:
+		raise ValueError( "Invalid table name." )
+	
+	# ------------------------------------------------------------------
+	# Validate column exists
+	# ------------------------------------------------------------------
+	schema = create_schema( table )
+	valid_columns = [ col[ 1 ] for col in schema ]
+	
+	if column not in valid_columns:
+		raise ValueError( "Invalid column name." )
+	
+	# ------------------------------------------------------------------
+	# Sanitize index name (identifier only)
+	# ------------------------------------------------------------------
+	safe_index_name = re.sub( r"[^0-9a-zA-Z_]+", "_", f"idx_{table}_{column}" )
+	
+	# ------------------------------------------------------------------
+	# Create index safely (quote identifiers)
+	# ------------------------------------------------------------------
+	sql = f'CREATE INDEX IF NOT EXISTS "{safe_index_name}" ON "{table}"("{column}");'
+	
+	with create_connection( ) as conn:
+		conn.execute( sql )
+		conn.commit( )
+
+def apply_filters( df: pd.DataFrame ) -> pd.DataFrame:
+	st.subheader( 'Advanced Filters' )
+	conditions = [ ]
+	col1, col2, col3 = st.columns( 3 )
+	column = col1.selectbox( 'Column', df.columns )
+	operator = col2.selectbox( 'Operator', [ '=', '!=', '>', '<', '>=', '<=', 'contains' ] )
+	value = col3.text_input( 'Value' )
+	if value:
+		if operator == '=':
+			df = df[ df[ column ] == value ]
+		elif operator == '!=':
+			df = df[ df[ column ] != value ]
+		elif operator == '>':
+			df = df[ df[ column ].astype( float ) > float( value ) ]
+		elif operator == '<':
+			df = df[ df[ column ].astype( float ) < float( value ) ]
+		elif operator == '>=':
+			df = df[ df[ column ].astype( float ) >= float( value ) ]
+		elif operator == '<=':
+			df = df[ df[ column ].astype( float ) <= float( value ) ]
+		elif operator == 'contains':
+			df = df[ df[ column ].astype( str ).str.contains( value ) ]
+	
+	return df
+
+def create_aggregation( df: pd.DataFrame ):
+	st.subheader( 'Aggregation Engine' )
+	
+	numeric_cols = df.select_dtypes( include=[ 'number' ] ).columns.tolist( )
+	
+	if not numeric_cols:
+		st.info( 'No numeric columns available.' )
+		return
+	
+	col = st.selectbox( 'Column', numeric_cols )
+	agg = st.selectbox( 'Aggregation', [ 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'MEDIAN' ] )
+	
+	if agg == 'COUNT':
+		result = df[ col ].count( )
+	elif agg == 'SUM':
+		result = df[ col ].sum( )
+	elif agg == 'AVG':
+		result = df[ col ].mean( )
+	elif agg == 'MIN':
+		result = df[ col ].min( )
+	elif agg == 'MAX':
+		result = df[ col ].max( )
+	elif agg == 'MEDIAN':
+		result = df[ col ].median( )
+	
+	st.metric( 'Result', result )
+
+def create_visualization( df: pd.DataFrame ):
+	st.subheader( 'Visualization Engine' )
+	
+	numeric_cols = df.select_dtypes( include=[ 'number' ] ).columns.tolist( )
+	categorical_cols = df.select_dtypes( include=[ 'object' ] ).columns.tolist( )
+	
+	chart = st.selectbox( 'Chart Type', [ 'Histogram', 'Bar', 'Line',
+	                                      'Scatter', 'Box', 'Pie', 'Correlation' ] )
+	
+	if chart == 'Histogram' and numeric_cols:
+		col = st.selectbox( 'Column', numeric_cols )
+		fig = px.histogram( df, x=col )
+		st.plotly_chart( fig, use_container_width=True )
+	
+	elif chart == 'Bar':
+		x = st.selectbox( 'X', df.columns )
+		y = st.selectbox( 'Y', numeric_cols )
+		fig = px.bar( df, x=x, y=y )
+		st.plotly_chart( fig, use_container_width=True )
+	
+	elif chart == 'Line':
+		x = st.selectbox( 'X', df.columns )
+		y = st.selectbox( 'Y', numeric_cols )
+		fig = px.line( df, x=x, y=y )
+		st.plotly_chart( fig, use_container_width=True )
+	
+	elif chart == 'Scatter':
+		x = st.selectbox( 'X', numeric_cols )
+		y = st.selectbox( 'Y', numeric_cols )
+		fig = px.scatter( df, x=x, y=y )
+		st.plotly_chart( fig, use_container_width=True )
+	
+	elif chart == 'Box':
+		col = st.selectbox( 'Column', numeric_cols )
+		fig = px.box( df, y=col )
+		st.plotly_chart( fig, use_container_width=True )
+	
+	elif chart == 'Pie':
+		col = st.selectbox( 'Category Column', categorical_cols )
+		fig = px.pie( df, names=col )
+		st.plotly_chart( fig, use_container_width=True )
+	
+	elif chart == 'Correlation' and len( numeric_cols ) > 1:
+		corr = df[ numeric_cols ].corr( )
+		fig = px.imshow( corr, text_auto=True )
+		st.plotly_chart( fig, use_container_width=True )
+
+def dm_create_table_from_df( table_name: str, df: pd.DataFrame ):
+	columns = [ ]
+	for col in df.columns:
+		sql_type = get_sqlite_type( df[ col ].dtype )
+		safe_col = col.replace( ' ', '_' )
+		columns.append( f'{safe_col} {sql_type}' )
+	
+	create_stmt = f'CREATE TABLE IF NOT EXISTS {table_name} ({", ".join( columns )});'
+	
+	with create_connection( ) as conn:
+		conn.execute( create_stmt )
+		conn.commit( )
+
+def insert_data( table_name: str, df: pd.DataFrame ):
+	df = df.copy( )
+	df.columns = [ c.replace( ' ', '_' ) for c in df.columns ]
+	
+	placeholders = ', '.join( [ '?' ] * len( df.columns ) )
+	stmt = f'INSERT INTO {table_name} VALUES ({placeholders});'
+	
+	with create_connection( ) as conn:
+		conn.executemany( stmt, df.values.tolist( ) )
+		conn.commit( )
+
+def get_sqlite_type( dtype ) -> str:
+	"""
+		Purpose:
+		--------
+		Map a pandas dtype to an appropriate SQLite column type.
+	
+		Parameters:
+		-----------
+		dtype : pandas dtype
+			The dtype of a pandas Series.
+	
+		Returns:
+		--------
+		str
+			SQLite column type.
+	"""
+	dtype_str = str( dtype ).lower( )
+	
+	# ------------------------------------------------------------------
+	# Integer Types (including nullable Int64)
+	# ------------------------------------------------------------------
+	if "int" in dtype_str:
+		return "INTEGER"
+	
+	# ------------------------------------------------------------------
+	# Float Types
+	# ------------------------------------------------------------------
+	if "float" in dtype_str:
+		return "REAL"
+	
+	# ------------------------------------------------------------------
+	# Boolean
+	# ------------------------------------------------------------------
+	if "bool" in dtype_str:
+		return "INTEGER"
+	
+	# ------------------------------------------------------------------
+	# Datetime
+	# ------------------------------------------------------------------
+	if "datetime" in dtype_str:
+		return "TEXT"
+	
+	# ------------------------------------------------------------------
+	# Categorical
+	# ------------------------------------------------------------------
+	if "category" in dtype_str:
+		return "TEXT"
+	
+	# ------------------------------------------------------------------
+	# Default fallback
+	# ------------------------------------------------------------------
+	return "TEXT"
+
+def create_custom_table( table_name: str, columns: list ) -> None:
+	"""
+		Purpose:
+		--------
+		Create a custom SQLite table from column definitions.
+	
+		Parameters:
+		-----------
+		table_name : str
+			Name of table.
+	
+		columns : list of dict
+			[
+				{
+					"name": str,
+					"type": str,
+					"not_null": bool,
+					"primary_key": bool,
+					"auto_increment": bool
+				}
+			]
+	"""
+	if not table_name:
+		raise ValueError( "Table name required." )
+	
+	# Validate identifier
+	if not re.match( r"^[A-Za-z_][A-Za-z0-9_]*$", table_name ):
+		raise ValueError( "Invalid table name." )
+	
+	col_defs = [ ]
+	
+	for col in columns:
+		col_name = col[ "name" ]
+		col_type = col[ "type" ].upper( )
+		
+		if not re.match( r"^[A-Za-z_][A-Za-z0-9_]*$", col_name ):
+			raise ValueError( f"Invalid column name: {col_name}" )
+		
+		definition = f'"{col_name}" {col_type}'
+		
+		if col[ "primary_key" ]:
+			definition += " PRIMARY KEY"
+			if col[ "auto_increment" ] and col_type == "INTEGER":
+				definition += " AUTOINCREMENT"
+		
+		if col[ "not_null" ]:
+			definition += " NOT NULL"
+		
+		col_defs.append( definition )
+	
+	sql = f'CREATE TABLE IF NOT EXISTS "{table_name}" ({", ".join( col_defs )});'
+	
+	with create_connection( ) as conn:
+		conn.execute( sql )
+		conn.commit( )
+
+def is_safe_query( query: str ) -> bool:
+	"""
+	
+		Purpose:
+		--------
+		Determine whether a SQL query is read-only and safe to execute.
+	
+		Allows:
+			SELECT
+			WITH (CTE returning SELECT)
+			EXPLAIN SELECT
+			PRAGMA (read-only)
+	
+		Blocks:
+			INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, ATTACH,
+			DETACH, VACUUM, REPLACE, TRIGGER, and multiple statements.
+			
+	"""
+	if not query or not isinstance( query, str ):
+		return False
+	
+	q = query.strip( ).lower( )
+	
+	# ------------------------------------------------------------------
+	# Block multiple statements
+	# ------------------------------------------------------------------
+	if ';' in q[ :-1 ]:
+		return False
+	
+	# ------------------------------------------------------------------
+	# Remove SQL comments
+	# ------------------------------------------------------------------
+	q = re.sub( r"--.*?$", "", q, flags=re.MULTILINE )
+	q = re.sub( r"/\*.*?\*/", "", q, flags=re.DOTALL )
+	q = q.strip( )
+	
+	# ------------------------------------------------------------------
+	# Allowed starting keywords
+	# ------------------------------------------------------------------
+	allowed_starts = ('select', 'with', 'explain', 'pragma')
+	if not q.startswith( allowed_starts ):
+		return False
+	
+	# ------------------------------------------------------------------
+	# Block dangerous keywords anywhere
+	# ------------------------------------------------------------------
+	blocked_keywords = ('insert ', 'update ', 'delete ', 'drop ', 'alter ',
+	                    'create ', 'attach ', 'detach ', 'vacuum ', 'replace ', 'trigger ')
+	
+	for keyword in blocked_keywords:
+		if keyword in q:
+			return False
+	
+	return True
+
+def create_identifier( name: str ) -> str:
+	"""
+	
+		Purpose:
+		--------
+		Sanitize a string into a safe SQLite identifier.
+	
+		- Replaces invalid characters with underscores
+		- Ensures it starts with a letter or underscore
+		- Prevents empty names
+		
+	"""
+	if not name or not isinstance( name, str ):
+		raise ValueError( 'Invalid Identifier.' )
+	
+	safe = re.sub( r'[^0-9a-zA-Z_]', '_', name.strip( ) )
+	if not re.match( r'^[A-Za-z_]', safe ):
+		safe = f'_{safe}'
+	
+	if not safe:
+		raise ValueError( 'Invalid identifier after sanitization.' )
+	
+	return safe
+
+def get_indexes( table: str ):
+	with create_connection( ) as conn:
+		rows = conn.execute( f'PRAGMA index_list("{table}");' ).fetchall( )
+		return rows
+
+def add_column( table: str, column: str, col_type: str ):
+	column = create_identifier( column )
+	col_type = col_type.upper( )
+	
+	with create_connection( ) as conn:
+		conn.execute(
+			f'ALTER TABLE "{table}" ADD COLUMN "{column}" {col_type};' )
+		conn.commit( )
+
+def create_profile_table( table: str ):
+	df = read_table( table )
+	profile_rows = [ ]
+	total_rows = len( df )
+	for col in df.columns:
+		series = df[ col ]
+		null_count = series.isna( ).sum( )
+		distinct_count = series.nunique( dropna=True )
+		row = \
+			{
+					'column': col, 'dtype': str( series.dtype ),
+					'null_%': round( (null_count / total_rows) * 100, 2 ) if total_rows else 0,
+					'distinct_%': round( (
+								                     distinct_count / total_rows) * 100, 2 ) if total_rows else 0,
+			}
+		
+		if pd.api.types.is_numeric_dtype( series ):
+			row[ "min" ] = series.min( )
+			row[ "max" ] = series.max( )
+			row[ "mean" ] = series.mean( )
+		else:
+			row[ "min" ] = None
+			row[ "max" ] = None
+			row[ "mean" ] = None
+		
+		profile_rows.append( row )
+	
+	return pd.DataFrame( profile_rows )
+
+def drop_column( table: str, column: str ):
+	if not table or not column:
+		raise ValueError( "Table and column required." )
+	
+	with create_connection( ) as conn:
+		# ------------------------------------------------------------
+		# Fetch original CREATE TABLE statement
+		# ------------------------------------------------------------
+		row = conn.execute(
+			"""
+            SELECT sql
+            FROM sqlite_master
+            WHERE type ='table' AND name =?
+			""",
+			(table,)
+		).fetchone( )
+		
+		if not row or not row[ 0 ]:
+			raise ValueError( "Table definition not found." )
+		
+		create_sql = row[ 0 ]
+		
+		# ------------------------------------------------------------
+		# Extract column definitions
+		# ------------------------------------------------------------
+		open_paren = create_sql.find( "(" )
+		close_paren = create_sql.rfind( ")" )
+		
+		if open_paren == -1 or close_paren == -1:
+			raise ValueError( "Malformed CREATE TABLE statement." )
+		
+		inner = create_sql[ open_paren + 1: close_paren ]
+		
+		column_defs = [ c.strip( ) for c in inner.split( "," ) ]
+		
+		# Remove target column
+		new_defs = [ ]
+		for col_def in column_defs:
+			col_name = col_def.split( )[ 0 ].strip( '"' )
+			if col_name != column:
+				new_defs.append( col_def )
+		
+		if len( new_defs ) == len( column_defs ):
+			raise ValueError( "Column not found." )
+		
+		# ------------------------------------------------------------
+		# Build new CREATE TABLE statement
+		# ------------------------------------------------------------
+		temp_table = f"{table}_rebuild_temp"
+		
+		new_create_sql = (
+				f'CREATE TABLE "{temp_table}" ('
+				+ ", ".join( new_defs )
+				+ ");"
+		)
+		
+		# ------------------------------------------------------------
+		# Begin transaction
+		# ------------------------------------------------------------
+		conn.execute( "BEGIN" )
+		
+		conn.execute( new_create_sql )
+		
+		remaining_cols = [
+				c.split( )[ 0 ].strip( '"' )
+				for c in new_defs
+		]
+		
+		col_list = ", ".join( [ f'"{c}"' for c in remaining_cols ] )
+		
+		conn.execute(
+			f'INSERT INTO "{temp_table}" ({col_list}) '
+			f'SELECT {col_list} FROM "{table}";'
+		)
+		
+		# Preserve indexes
+		indexes = conn.execute(
+			"""
+            SELECT sql
+            FROM sqlite_master
+            WHERE type ='index' AND tbl_name=? AND sql IS NOT NULL
+			""",
+			(table,)
+		).fetchall( )
+		
+		conn.execute( f'DROP TABLE "{table}";' )
+		conn.execute(
+			f'ALTER TABLE "{temp_table}" RENAME TO "{table}";'
+		)
+		
+		# Recreate indexes
+		for idx in indexes:
+			idx_sql = idx[ 0 ]
+			if column not in idx_sql:
+				conn.execute( idx_sql )
+		
+		conn.commit( )
+
+# ==============================================================================
+# PROMPT ENGINEERING UTILITIES
+# ==============================================================================
+
+def fetch_prompt_names( db_path: str ) -> list[ str ]:
+	"""
+		Purpose:
+		--------
+		Retrieve template names from Prompts table.
+	
+		Parameters:
+		-----------
+		db_path : str
+			SQLite database path.
+	
+		Returns:
+		--------
+		list[str]
+			Sorted prompt names.
+	"""
+	try:
+		conn = sqlite3.connect( db_path )
+		cur = conn.cursor( )
+		cur.execute( "SELECT Caption FROM Prompts ORDER BY PromptsId;" )
+		rows = cur.fetchall( )
+		conn.close( )
+		return [ r[ 0 ] for r in rows if r and r[ 0 ] is not None ]
+	except Exception:
+		return [ ]
+
+def fetch_prompt_text( db_path: str, name: str ) -> str | None:
+	"""
+		Purpose:
+		--------
+		Retrieve template text by name.
+	
+		Parameters:
+		-----------
+		db_path : str
+			SQLite database path.
+		name : str
+			Template name.
+	
+		Returns:
+		--------
+		str | None
+			Prompt text if found.
+	"""
+	try:
+		conn = sqlite3.connect( db_path )
+		cur = conn.cursor( )
+		cur.execute( "SELECT Text FROM Prompts WHERE Caption = ?;", (name,) )
+		row = cur.fetchone( )
+		conn.close( )
+		return str( row[ 0 ] ) if row and row[ 0 ] is not None else None
+	except Exception:
+		return None
+
+def fetch_prompts_df( ) -> pd.DataFrame:
+	with sqlite3.connect( cfg.DB_PATH ) as conn:
+		df = pd.read_sql_query(
+			"SELECT PromptsId, Caption,  Name, Version, ID FROM Prompts ORDER BY PromptsId DESC",
+			conn )
+	df.insert( 0, "Selected", False )
+	return df
+
+def fetch_prompt_by_id( pid: int ) -> Dict[ str, Any ] | None:
+	with sqlite3.connect( cfg.DB_PATH ) as conn:
+		cur = conn.execute(
+			"SELECT PromptsId, Caption, Name, Text, Version, ID FROM Prompts WHERE PromptsId=?",
+			(pid,)
+		)
+		row = cur.fetchone( )
+		return dict( zip( [ c[ 0 ] for c in cur.description ], row ) ) if row else None
+
+def fetch_prompt_by_name( name: str ) -> Dict[ str, Any ] | None:
+	with sqlite3.connect( cfg.DB_PATH ) as conn:
+		cur = conn.execute(
+			"SELECT PromptsId, Caption, Name, Text, Version, ID FROM Prompts WHERE Caption=?",
+			(name,)
+		)
+		row = cur.fetchone( )
+		return dict( zip( [ c[ 0 ] for c in cur.description ], row ) ) if row else None
+
+def insert_prompt( data: Dict[ str, Any ] ) -> None:
+	with sqlite3.connect( cfg.DB_PATH ) as conn:
+		conn.execute( 'INSERT INTO Prompts (Caption, Name, Text, Version, ID) VALUES (?, ?, ?, ?)',
+			(data[ 'Caption' ], data[ 'Name' ], data[ 'Text' ], data[ 'Version' ], data[ 'ID' ]) )
+
+def update_prompt( pid: int, data: Dict[ str, Any ] ) -> None:
+	with sqlite3.connect( cfg.DB_PATH ) as conn:
+		conn.execute(
+			"UPDATE Prompts SET Caption=?, Name=?, Text=?, Version=?, ID=? WHERE PromptsId=?",
+			(data[ "Caption" ], data[ "Name" ], data[ "Text" ], data[ "Version" ], data[ "ID" ],
+			 pid)
+		)
+
+def delete_prompt( pid: int ) -> None:
+	with sqlite3.connect( cfg.DB_PATH ) as conn:
+		conn.execute( "DELETE FROM Prompts WHERE PromptsId=?", (pid,) )
+
+def build_prompt( user_input: str ) -> str:
+	prompt = f"<|system|>\n{st.session_state.system_prompt}\n</s>\n"
+	
+	if st.session_state.use_semantic:
+		with sqlite3.connect( DB_PATH ) as conn:
+			rows = conn.execute( "SELECT chunk, vector FROM embeddings" ).fetchall( )
+		if rows:
+			q = embedder.encode( [ user_input ] )[ 0 ]
+			scored = [ (c, cosine_sim( q, np.frombuffer( v ) )) for c, v in rows ]
+			for c, _ in sorted( scored, key=lambda x: x[ 1 ], reverse=True )[ :top_k ]:
+				prompt += f"<|system|>\n{c}\n</s>\n"
+	
+	for d in st.session_state.basic_docs[ :6 ]:
+		prompt += f"<|system|>\n{d}\n</s>\n"
+	
+	for r, c in st.session_state.messages:
+		prompt += f"<|{r}|>\n{c}\n</s>\n"
+	
+	prompt += f"<|user|>\n{user_input}\n</s>\n<|assistant|>\n"
+	return prompt
+
 # ======================================================================================
 #  PROVIDER UTILITIES
 # ======================================================================================
@@ -1822,7 +2871,6 @@ def _safe( module, attr, fallback ):
 # SIDEBAR
 # ======================================================================================
 with st.sidebar:
-	logo_slot = st.empty( )
 	provider = st.session_state.get( "provider", "GPT" )
 	
 	st.subheader( "Provider" )
@@ -1833,7 +2881,7 @@ with st.sidebar:
 	
 	st.session_state[ "provider" ] = provider
 	logo_path = cfg.LOGO_MAP.get( provider )
-	st.logo( logo_path )
+	st.logo( logo_path, size='large' )
 
 	with st.expander( "Keys:", expanded=False ):
 		openai_key = st.text_input(
@@ -1873,6 +2921,7 @@ with st.sidebar:
 	st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 	
 	mode = st.sidebar.radio( "Mode", cfg.MODES, index=0 )
+
 # ======================================================================================
 # TEXT MODE
 # ======================================================================================
@@ -2570,7 +3619,7 @@ if mode == 'Text':
 						st.rerun( )
 		
 		# ------------------------------------------------------------------
-		# Expander — Text System Instructions
+		# Expander — System Instructions
 		# ------------------------------------------------------------------
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
@@ -2654,6 +3703,7 @@ if mode == 'Text':
 							_update_token_counters( getattr( text, 'response', None ) or response )
 						except Exception:
 							pass
+						
 # ======================================================================================
 # IMAGES MODE
 # ======================================================================================
@@ -3670,11 +4720,11 @@ elif mode == "Images":
 						kwargs: Dict[ str, Any ] = { 'prompt': prompt, 'model': image_model, }
 						
 						# Provider-safe optional args
-						if size_arg is not None:
+						if image_size is not None:
 							kwargs[ 'size' ] = st.session_state[ 'image_size' ]
-						if quality is not None:
+						if image_quality is not None:
 							kwargs[ 'quality' ] = st.session_state[ 'image_quality' ]
-						if fmt is not None:
+						if image_response_format is not None:
 							kwargs[ 'fmt' ] = st.session_state[ 'image_response_format' ]
 						
 						img_url = image.generate( **kwargs )
@@ -4345,6 +5395,775 @@ elif mode == 'Audio':
 					format='wav', width='stretch', loop=audio_loop, autoplay=audio_autoplay )
 
 # ======================================================================================
+# DOCUMENTS MODE
+# ======================================================================================
+elif mode == 'Document Q&A':
+	st.subheader( '📚 Document Q & A', help=cfg.DOCUMENT_Q_AND_A )
+	st.divider( )
+	provider_module = get_provider_module( )
+	provider_name = st.session_state.get( 'provider', 'GPT' )
+	docqna_number = st.session_state.get( 'docqna_number', 0 )
+	docqna_max_calls = st.session_state.get( 'docqna_max_calls', 0 )
+	docqna_max_searches = st.session_state.get( 'docqna_max_searches', 0 )
+	docqna_max_tokens = st.session_state.get( 'docqna_max_tokens', 0 )
+	docqna_top_percent = st.session_state.get( 'docqna_top_percent', 0.0 )
+	docqna_top_k = st.session_state.get( 'docqna_top_k', 0 )
+	docqna_freq = st.session_state.get( 'docqna_frequency_penalty', 0.0 )
+	docqna_presense = st.session_state.get( 'docqna_presense_penalty', 0.0 )
+	docqna_temperature = st.session_state.get( 'docqna_temperature', 0.0 )
+	docqna_stream = st.session_state.get( 'docqna_stream', False )
+	docqna_parallel_tools = st.session_state.get( 'docqna_parallel_tools', False )
+	docqna_store = st.session_state.get( 'docqna_store', False )
+	docqna_background = st.session_state.get( 'docqna_background', False )
+	docqna_model = st.session_state.get( 'docqna_model', '' )
+	docqna_reasoning = st.session_state.get( 'docqna_reasoning', '' )
+	docqna_resolution = st.session_state.get( 'docqna_resolution', '' )
+	docqna_media_resolution = st.session_state.get( 'docqna_media_resolution', '' )
+	docqna_response_format = st.session_state.get( 'docqna_response_format', '' )
+	docqna_tool_choice = st.session_state.get( 'docqna_tool_choice', '' )
+	docqna_content = st.session_state.get( 'docqna_content', '' )
+	docqna_input = st.session_state.get( 'docqna_input', '' )
+	docqna_tools = st.session_state.get( 'docqna_tools', [ ] )
+	docqna_modalities = st.session_state.get( 'docqna_modalities', [ ] )
+	docqna_context = st.session_state.get( 'docqna_context', [ ] )
+	docqna_include = st.session_state.get( 'docqna_include', [ ] )
+	docqna_domains = st.session_state.get( 'docqna_domains', [ ] )
+	docqna_stops = st.session_state.get( 'docqna_stops', [ ] )
+	docqna_files = st.session_state.get( 'docqna_files' )
+	docqna_uploaded = st.session_state.get( 'docqna_uploaded' )
+	docqna_messages = st.session_state.get( 'docqna_messages' )
+	docqna_active_docs = st.session_state.get( 'docqna_active_docs' )
+	docqna_source = st.session_state.get( 'docqna_source' )
+	docqna_multi_mode = st.session_state.get( 'docqna_multi_mode' )
+	docqna = provider_module.Files( )
+	
+	for key in [ 'docqna_domains', 'docqna_stops', 'docqna_includes', 'docqna_input', ]:
+		if key in st.session_state and isinstance( st.session_state[ key ], list ):
+			del st.session_state[ key ]
+	# ------------------------------------------------------------------
+	#  DOCQNA SETTINGS
+	# ------------------------------------------------------------------
+	if st.session_state.get( 'clear_instructions' ):
+		st.session_state[ 'docqna_system_instructions' ] = ''
+		st.session_state[ 'clear_docqa_instructions' ] = False
+		st.session_state[ 'clear_instructions' ] = False
+	
+	# ------------------------------------------------------------------
+	# Main Chat UI
+	# ------------------------------------------------------------------
+	left, center, right = st.columns( [ 0.05, 0.9, 0.05 ] )
+	with center:
+		# ------------------------------------------------------------------
+		# EXPANDER — GROK DOCQNA LLM CONFIGURATION
+		# ------------------------------------------------------------------
+		if provider_name == 'Grok':
+			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
+				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
+					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+						border=True, gap='medium' )
+					
+					# ------------- Model Options ----------
+					with llm_c1:
+						model_options = list( docqna.model_options )
+						set_docqna_model = st.selectbox( label='Select LLM', options=model_options,
+							key='docqna_model', placeholder='Options', index=None,
+							help='REQUIRED. Text Generation model used by the AI', )
+						
+						docqna_model = st.session_state[ 'docqna_model' ]
+					
+					# ------------- Include Options ----------
+					with llm_c2:
+						include_options = list( docqna.include_options )
+						set_docqna_include = st.multiselect( label='Include:', options=include_options,
+							key='docqna_include', help=cfg.INCLUDE, placeholder='Options' )
+						
+						docqna_include = [ d.strip( ) for d in set_docqna_include
+						                   if d.strip( ) ]
+						
+						docqna_include = st.session_state[ 'docqna_include' ]
+					
+					# ------------- Reasoning Options ----------
+					with llm_c3:
+						reasoning_options = list( docqna.reasoning_options )
+						set_docqna_reasoning = st.selectbox( label='Reasoning Effort:',
+							options=reasoning_options, key='docqna_reasoning',
+							help=cfg.REASONING, index=None, placeholder='Options' )
+						
+						docqna_reasoning = st.session_state[ 'docqna_reasoning' ]
+					
+					# ------------- Choice Options ----------
+					with llm_c4:
+						choice_options = list( docqna.choice_options )
+						set_docqna_choice = st.multiselect( label='Tool Choice:', options=choice_options,
+							key='docqna_tool_choice', help=cfg.INCLUDE, placeholder='Options' )
+						
+						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
+					
+					# ------------- Reset Settings ----------
+					if st.button( label='Reset', key='docqna_model_reset', width='stretch' ):
+						for key in [ 'docqna_model', 'docqna_include',
+						             'docqna_reasoning', 'docqna_tool_choice' ]:
+							if key in st.session_state:
+								del st.session_state[ key ]
+						
+						st.rerun( )
+				
+				with st.expander( label='Inference Settings', expanded=False, width='stretch' ):
+					prm_c1, prm_c2, prm_c3, prm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+						border=True, gap='medium' )
+					
+					# ------------- Top P ----------
+					with prm_c1:
+						set_docqna_top_p = st.slider( label='Top-P', min_value=0.0, max_value=1.0,
+							value=float( st.session_state.get( 'docqna_top_percent', 0.0 ) ),
+							step=0.01, help=cfg.TOP_P, key='docqna_top_percent' )
+						
+						docqna_top_percent = st.session_state[ 'docqna_top_percent' ]
+					
+					# ------------- Temperature  ----------
+					with prm_c2:
+						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0, max_value=1.0,
+							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ), step=0.01,
+							help=cfg.TEMPERATURE, key='docqna_temperature' )
+						
+						docqna_temperature = st.session_state[ 'docqna_temperature' ]
+					
+					# ------------- Number ----------
+					with prm_c3:
+						set_docqna_number = st.slider( label='Number', min_value=0, max_value=10,
+							value=int( st.session_state.get( 'docqna_number', 0 ) ), step=1,
+							help='Optional. Upper limit on the responses returned by the model',
+							key='docqna_number' )
+						
+						docqna_number = st.session_state[ 'docqna_number' ]
+					
+					# ------------- Max tokens  ------------------
+					with prm_c4:
+						set_docqna_tokens = st.slider( label='Max Tokens',
+							min_value=0, max_value=100000, step=500,
+							value=int( st.session_state.get( 'docqna_max_tokens', 0 ) ),
+							help=cfg.MAX_OUTPUT_TOKENS, key='docqna_max_tokens' )
+						
+						docqna_tokens = st.session_state[ 'docqna_max_tokens' ]
+					
+					# ------------- Reset Setting ----------
+					if st.button( label='Reset', key='docqna_inference_reset', width='stretch' ):
+						for key in [ 'docqna_top_percent', 'docqna_max_tokens',
+						             'docqna_temperature', 'docqna_number', ]:
+							if key in st.session_state:
+								del st.session_state[ key ]
+						
+						st.rerun( )
+				
+				with st.expander( label='Tool Settings', expanded=False, width='stretch' ):
+					tool_c1, tool_c2, tool_c3, tool_c4 = st.columns(
+						[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='medium' )
+					
+					# ------------- Asynchronous  ------------------
+					with tool_c1:
+						set_docqna_parallel = st.toggle( label='Asynchronous Tool Calls', key='docqna_parallel_tools',
+							help=cfg.PARALLEL_TOOL_CALLS )
+						
+						docqna_parallel_tools = st.session_state[ 'docqna_parallel_tools' ]
+					
+					# ------------- Max Tool Calls ------------------
+					with tool_c2:
+						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0, max_value=4,
+							value=int( st.session_state.get( 'docqna_max_calls', 0 ) ), step=1,
+							help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
+						
+						docqna_max_calls = st.session_state[ 'docqna_max_calls' ]
+					
+					# -------------  Max Web Searches ------------------
+					with tool_c3:
+						set_max_results = st.slider( label='Max Websearch Results', key='docqna_max_searches',
+							value=int( st.session_state.get( 'docqna_max_searches', 0 ) ),
+							min_value=0, max_value=30, step=1,
+							help='Optional. Upper limit on the number web search results' )
+						
+						docqna_max_searches = st.session_state[ 'docqna_max_searches' ]
+					
+					# ------------- Tools ------------------
+					with tool_c4:
+						tool_options = list( docqna.tool_options )
+						set_docqna_tools = st.multiselect( label='Tools:', options=tool_options,
+							key='docqna_tools', help=cfg.TOOLS, placeholder='Options' )
+						
+						docqna_tools = [ d.strip( ) for d in set_docqna_tools
+						                 if d.strip( ) ]
+						
+						docqna_tools = st.session_state[ 'docqna_tools' ]
+					
+					# ------------- Reset Settings -------------
+					if st.button( label='Reset', key='docqna_tools_reset', width='stretch' ):
+						for key in [ 'docqna_parallel_tools', 'docqna_max_searches',
+						             'docqna_tools', 'docqna_max_calls' ]:
+							if key in st.session_state:
+								del st.session_state[ key ]
+						
+						st.rerun( )
+				
+				with st.expander( label='Response Settings', expanded=False, width='stretch' ):
+					resp_c1, resp_c2, resp_c3, resp_c4 = st.columns(
+						[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='medium' )
+					
+					# ------------- Stream  ------------------
+					with resp_c1:
+						set_docqna_stream = st.toggle( label='Stream', key='docqna_stream',
+							help=cfg.STREAM )
+						
+						docqna_stream = st.session_state[ 'docqna_stream' ]
+					
+					# ------------- Store  ------------------
+					with resp_c2:
+						set_docqna_store = st.toggle( label='Store', key='docqna_store',
+							help=cfg.STORE )
+						
+						docqna_store = st.session_state[ 'docqna_store' ]
+					
+					# ------------- Background  ------------------
+					with resp_c3:
+						set_docqna_background = st.toggle( label='Background', key='docqna_background',
+							help=cfg.BACKGROUND_MODE )
+						
+						docqna_background = st.session_state[ 'docqna_background' ]
+					
+					# ------------- Domains  ------------------
+					with resp_c4:
+						set_docqna_domains = st.text_input( label='Allowed Websites', key='docqna_domains',
+							help=cfg.STOP_SEQUENCE, width='stretch', placeholder='Enter Web Domains' )
+						
+						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' )
+						                   if d.strip( ) ]
+					
+					# ------------- Reset Settings  ------------------
+					if st.button( label='Reset', key='docqna_response_reset', width='stretch' ):
+						for key in [ 'docqna_stream', 'docqna_store',
+						             'docqna_background', 'docqna_domains' ]:
+							if key in st.session_state:
+								del st.session_state[ key ]
+						# If using separated UI key for stops
+						if 'docqna_stops_input' in st.session_state:
+							del st.session_state[ 'docqna_stops_input' ]
+						
+						st.rerun( )
+		
+		# ------------------------------------------------------------------
+		# EXPANDER — GEMINI DOCQNA LLM CONFIGURATION
+		# ------------------------------------------------------------------
+		elif provider_name == 'Gemini':
+			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
+				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
+					llm_c1, llm_c2, llm_c3, llm_c4, llm_c5 = st.columns(
+						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
+					
+					# ---------- Model ------------
+					with llm_c1:
+						model_options = list( docqna.model_options )
+						set_docqna_model = st.selectbox( label='Select Model', options=model_options,
+							key='docqna_model', placeholder='Options', index=None,
+							help='REQUIRED. Text Generation model used by the AI', )
+						
+						docqna_model = st.session_state[ 'docqna_model' ]
+					
+					# ---------- Include ------------
+					with llm_c2:
+						include_options = list( docqna.include_options )
+						set_docqna_include = st.multiselect( label='Include', options=include_options,
+							key='docqna_include', help=cfg.INCLUDE, placeholder='Options' )
+						
+						docqna_include = [ d.strip( ) for d in set_docqna_include
+						                   if d.strip( ) ]
+						
+						docqna_include = st.session_state[ 'docqna_include' ]
+					
+					# ---------- Allowed Domains ------------
+					with llm_c3:
+						set_docqna_domains = st.text_input( label='Allowed Domains', key='docqna_domains_input',
+							value=','.join( st.session_state.get( 'docqna_domains', [ ] ) ),
+							help=cfg.ALLOWED_DOMAINS, width='stretch', placeholder='Enter Domains' )
+						
+						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' )
+						                   if d.strip( ) ]
+						
+						st.session_state[ 'docqna_domains' ] = docqna_domains
+					
+					# ---------- Reasoning/Thinking Level ------------
+					with llm_c4:
+						reasoning_options = list( docqna.reasoning_options )
+						set_docqna_reasoning = st.selectbox( label='Thinking Level:',
+							options=reasoning_options, key='docqna_reasoning',
+							help=cfg.REASONING, index=None, placeholder='Options' )
+						
+						docqna_reasoning = st.session_state[ 'docqna_reasoning' ]
+					
+					# ---------- Media Resolution ------------
+					with llm_c5:
+						media_options = list( docqna.media_options )
+						set_media_resolution = st.selectbox( label='Media Resolution',
+							options=media_options, key='docqna_media_resolution',
+							help=cfg.REASONING, index=None, placeholder='Options' )
+						
+						media_resolution = st.session_state[ 'docqna_media_resolution' ]
+					
+					# ---------- Reset Settings ------------
+					if st.button( label='Reset', key='docqna_model_reset', width='stretch' ):
+						for key in [ 'docqna_model', 'docqna_include', 'docqna_domains',
+						             'docqna_reasoning', 'docqna_media_resolution' ]:
+							if key in st.session_state:
+								del st.session_state[ key ]
+						
+						st.rerun( )
+				
+				with st.expander( label='Inference Settings', expanded=False, width='stretch' ):
+					prm_c1, prm_c2, prm_c3, prm_c4, prm_c5 = st.columns(
+						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
+					
+					# ---------- Top-P ------------
+					with prm_c1:
+						set_docqna_top_p = st.slider( label='Top-P', min_value=0.0, max_value=1.0,
+							value=float( st.session_state.get( 'docqna_top_percent', 0.0 ) ),
+							step=0.01, help=cfg.TOP_P, key='docqna_top_percent' )
+						
+						docqna_top_percent = st.session_state[ 'docqna_top_percent' ]
+					
+					# ---------- Frequency ------------
+					with prm_c2:
+						set_docqna_freq = st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
+							value=float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) ),
+							step=0.01, help=cfg.FREQUENCY_PENALTY, key='docqna_frequency_penalty' )
+						
+						docqna_fequency = st.session_state[ 'docqna_frequency_penalty' ]
+					
+					# ---------- Presense ------------
+					with prm_c3:
+						set_docqna_presense = st.slider( label='Presense Penalty', min_value=-2.0, max_value=2.0,
+							value=float( st.session_state.get( 'docqna_presense_penalty', 0.0 ) ),
+							step=0.01, help=cfg.PRESENCE_PENALTY, key='docqna_presense_penalty' )
+						
+						docqna_presense = st.session_state[ 'docqna_presense_penalty' ]
+					
+					# ---------- Temperature ------------
+					with prm_c4:
+						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0, max_value=1.0,
+							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ), step=0.01,
+							help=cfg.TEMPERATURE, key='docqna_temperature' )
+						
+						docqna_temperature = st.session_state[ 'docqna_temperature' ]
+					
+					# ---------- Top-K ------------
+					with prm_c5:
+						set_docqna_topk = st.slider( label='Top K', min_value=0, max_value=20,
+							value=int( st.session_state.get( 'docqna_top_k', 0 ) ), step=1,
+							help=cfg.TOP_K,
+							key='docqna_top_k' )
+						
+						docqna_top_k = st.session_state[ 'docqna_top_k' ]
+					
+					# ---------- Reset Settings ------------
+					if st.button( label='Reset', key='docqna_inference_reset', width='stretch' ):
+						for key in [ 'docqna_top_percent', 'docqna_frequency_penalty',
+						             'docqna_presense_penalty', 'docqna_temperature',
+						             'docqna_top_k', ]:
+							if key in st.session_state:
+								del st.session_state[ key ]
+						
+						st.rerun( )
+				
+				with st.expander( label='Tool Settings', expanded=False, width='stretch' ):
+					tool_c1, tool_c2, tool_c3, tool_c4, tool_c5 = st.columns(
+						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
+					
+					# ---------- Number/Candidates ------------
+					with tool_c1:
+						set_docqna_number = st.slider( label='Candidates', min_value=0, max_value=50,
+							value=int( st.session_state.get( 'docqna_number', 0 ) ), step=1,
+							help='Optional. Upper limit on the responses returned by the model',
+							key='docqna_number' )
+						
+						docqna_number = st.session_state[ 'docqna_number' ]
+					
+					# ---------- Max Calls ------------
+					with tool_c2:
+						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0, max_value=10,
+							value=int( st.session_state.get( 'docqna_max_calls', 0 ) ), step=1,
+							help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
+						
+						docqna_max_calls = st.session_state[ 'docqna_max_calls' ]
+					
+					# ---------- Choice/Calling Mode ------------
+					with tool_c3:
+						choice_options = list( docqna.choice_options )
+						set_docqna_choice = st.selectbox( label='Calling Mode', options=choice_options,
+							key='docqna_tool_choice', help=cfg.CHOICE, index=None, placeholder='Options' )
+						
+						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
+					
+					# ---------- Tools ------------
+					with tool_c4:
+						tool_options = list( docqna.tool_options )
+						set_docqna_tools = st.multiselect( label='Available Tools', options=tool_options,
+							key='docqna_tools', help=cfg.TOOLS, placeholder='Options' )
+						
+						docqna_tools = [ d.strip( ) for d in set_docqna_tools
+						                 if d.strip( ) ]
+						
+						docqna_tools = st.session_state[ 'docqna_tools' ]
+					
+					# ---------- Modalities ------------
+					with tool_c5:
+						modality_options = list( docqna.modality_options )
+						set_docqna_modalities = st.multiselect( label='Response Modalities', options=modality_options,
+							key='docqna_modalities', help='Optional. Modality of the response',
+							placeholder='Options' )
+						
+						docqna_modalities = [ d.strip( ) for d in set_docqna_modalities
+						                      if d.strip( ) ]
+						
+						docqna_modalities = st.session_state[ 'docqna_modalities' ]
+					
+					# ---------- Reset Settings ------------
+					if st.button( label='Reset', key='docqna_tools_reset', width='stretch' ):
+						for key in [ 'docqna_parallel_tools', 'docqna_tool_choice', 'docqna_number',
+						             'docqna_tools', 'docqna_max_calls', 'docqna_modalities' ]:
+							if key in st.session_state:
+								del st.session_state[ key ]
+						
+						st.rerun( )
+				
+				with st.expander( label='Response Settings', expanded=False, width='stretch' ):
+					resp_c1, resp_c2, resp_c3, resp_c4, resp_c5 = st.columns(
+						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
+					
+					# ---------- Stream ------------
+					with resp_c1:
+						set_docqna_stream = st.toggle( label='Stream', key='docqna_stream',
+							help=cfg.STREAM )
+						
+						docqna_stream = st.session_state[ 'docqna_stream' ]
+					
+					# ---------- Store ------------
+					with resp_c2:
+						set_docqna_store = st.toggle( label='Store', key='docqna_store', help=cfg.STORE )
+						
+						docqna_store = st.session_state[ 'docqna_store' ]
+					
+					# ---------- Background ------------
+					with resp_c3:
+						set_docqna_background = st.toggle( label='Background', key='docqna_background',
+							help=cfg.BACKGROUND_MODE )
+						
+						docqna_background = st.session_state[ 'docqna_background' ]
+					
+					# ---------- Stops ------------
+					with resp_c4:
+						set_docqna_stops = st.text_input( label='Stop Sequences', key='docqna_stops',
+							help=cfg.STOP_SEQUENCE, width='stretch', placeholder='Enter Stops' )
+						
+						docqna_stops = [ d.strip( ) for d in set_docqna_stops.split( ',' )
+						                 if d.strip( ) ]
+					
+					# ---------- Max Tokens ------------
+					with resp_c5:
+						set_docqna_tokens = st.slider( label='Max Tokens', min_value=0, max_value=100000,
+							value=int( st.session_state.get( 'docqna_max_tokens', 0 ) ), step=500,
+							help=cfg.MAX_OUTPUT_TOKENS, key='docqna_max_tokens' )
+						
+						docqna_tokens = st.session_state[ 'docqna_max_tokens' ]
+					
+					# ---------- Reset Settings ------------
+					if st.button( label='Reset', key='docqna_response_reset', width='stretch' ):
+						for key in [ 'docqna_stream', 'docqna_store', 'docqna_background',
+						             'docqna_stops',
+						             'docqna_max_tokens' ]:
+							if key in st.session_state:
+								del st.session_state[ key ]
+						# If using separated UI key for stops
+						if 'docqna_stops_input' in st.session_state:
+							del st.session_state[ 'docqna_stops_input' ]
+						
+						st.rerun( )
+		
+		# ------------------------------------------------------------------
+		# EXPANDER — GPT DOCQNA LLM CONFIGURATION
+		# ------------------------------------------------------------------
+		elif provider_name == 'GPT':
+			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
+				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
+					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+						border=True, gap='medium' )
+					
+					# ---------- Model ------------
+					with llm_c1:
+						model_options = list( docqna.model_options )
+						set_docqna_model = st.selectbox( label='Select Model', options=model_options,
+							key='docqna_model', placeholder='Options', index=None,
+							help='REQUIRED. Text Generation model used by the AI', )
+						
+						docqna_model = st.session_state[ 'docqna_model' ]
+					
+					# ---------- Include ------------
+					with llm_c2:
+						include_options = list( docqna.include_options )
+						set_docqna_include = st.multiselect( label='Include:', options=include_options,
+							key='docqna_include', help=cfg.INCLUDE, placeholder='Options' )
+						
+						docqna_include = [ d.strip( ) for d in set_docqna_include
+						                   if d.strip( ) ]
+						
+						docqna_include = st.session_state[ 'docqna_include' ]
+					
+					# ---------- Allowed Domains ------------
+					with llm_c3:
+						set_docqna_domains = st.text_input( label='Allowed Domains', key='docqna_domains_input',
+							value=','.join( st.session_state.get( 'docqna_domains', [ ] ) ),
+							help=cfg.ALLOWED_DOMAINS, width='stretch', placeholder='Enter Domains' )
+						
+						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' )
+						                   if d.strip( ) ]
+						
+						st.session_state[ 'docqna_domains' ] = docqna_domains
+					
+					# ---------- Reasoning ------------
+					with llm_c4:
+						reasoning_options = list( docqna.reasoning_options )
+						set_docqna_reasoning = st.selectbox( label='Reasoning Effort:',
+							options=reasoning_options, key='docqna_reasoning',
+							help=cfg.REASONING, index=None, placeholder='Options' )
+						
+						docqna_reasoning = st.session_state[ 'docqna_reasoning' ]
+					
+					# ---------- Reset Settings ------------
+					if st.button( label='Reset', key='docqna_model_reset', width='stretch' ):
+						for key in [ 'docqna_model', 'docqna_include', 'docqna_domains',
+						             'docqna_reasoning' ]:
+							if key in st.session_state:
+								del st.session_state[ key ]
+						
+						st.rerun( )
+				
+				with st.expander( label='Inference Settings', expanded=False, width='stretch' ):
+					prm_c1, prm_c2, prm_c3, prm_c4, prm_c5 = st.columns(
+						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
+					
+					# ---------- Top-P ------------
+					with prm_c1:
+						set_docqna_top_p = st.slider( label='Top-P', min_value=0.0, max_value=1.0,
+							value=float( st.session_state.get( 'docqna_top_percent', 0.0 ) ),
+							step=0.01, help=cfg.TOP_P, key='docqna_top_percent' )
+						
+						docqna_top_percent = st.session_state[ 'docqna_top_percent' ]
+					
+					# ---------- Frequency ------------
+					with prm_c2:
+						set_docqna_freq = st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
+							value=float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) ),
+							step=0.01, help=cfg.FREQUENCY_PENALTY, key='docqna_frequency_penalty' )
+						
+						docqna_fequency = st.session_state[ 'docqna_frequency_penalty' ]
+					
+					# ---------- Presense ------------
+					with prm_c3:
+						set_docqna_presense = st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0,
+							value=float( st.session_state.get( 'docqna_presense_penalty', 0.0 ) ),
+							step=0.01, help=cfg.PRESENCE_PENALTY, key='docqna_presense_penalty' )
+						
+						docqna_presense = st.session_state[ 'docqna_presense_penalty' ]
+					
+					# ---------- Temperature ------------
+					with prm_c4:
+						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0, max_value=1.0,
+							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ), step=0.01,
+							help=cfg.TEMPERATURE, key='docqna_temperature' )
+						
+						docqna_temperature = st.session_state[ 'docqna_temperature' ]
+					
+					# ---------- Number ------------
+					with prm_c5:
+						set_docqna_number = st.slider( label='Number', min_value=0, max_value=10,
+							value=int( st.session_state.get( 'docqna_number', 0 ) ), step=1,
+							help='Optional. Upper limit on the responses returned by the model',
+							key='docqna_number' )
+						
+						docqna_number = st.session_state[ 'docqna_number' ]
+					
+					# ---------- Reset Settings ------------
+					if st.button( label='Reset', key='docqna_inference_reset', width='stretch' ):
+						for key in [ 'docqna_top_percent', 'docqna_frequency_penalty',
+						             'docqna_presense_penalty', 'docqna_temperature',
+						             'docqna_number', ]:
+							if key in st.session_state:
+								del st.session_state[ key ]
+						
+						st.rerun( )
+				
+				with st.expander( label='Tool Settings', expanded=False, width='stretch' ):
+					tool_c1, tool_c2, tool_c3, tool_c4 = st.columns(
+						[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='medium' )
+					
+					# ---------- Allow Parallel ------------
+					with tool_c1:
+						set_docqna_parallel = st.toggle( label='Asychronous Calls',
+							key='docqna_parallel_tools',
+							help=cfg.PARALLEL_TOOL_CALLS )
+						
+						docqna_parallel_tools = st.session_state[ 'docqna_parallel_tools' ]
+					
+					# ---------- Max Calls ------------
+					with tool_c2:
+						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0, max_value=5,
+							value=int( st.session_state.get( 'docqna_max_calls', 0 ) ), step=1,
+							help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
+						
+						docqna_max_calls = st.session_state[ 'docqna_max_calls' ]
+					
+					# ---------- Choice ------------
+					with tool_c3:
+						choice_options = list( docqna.choice_options )
+						set_docqna_choice = st.selectbox( label='Tool Choice:', options=choice_options,
+							key='docqna_tool_choice', help=cfg.CHOICE, index=None, placeholder='Options' )
+						
+						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
+					
+					# ---------- Tools ------------
+					with tool_c4:
+						tool_options = list( docqna.tool_options )
+						set_docqna_tools = st.multiselect( label='Available Tools', options=tool_options,
+							key='docqna_tools', help=cfg.TOOLS, placeholder='Options' )
+						
+						docqna_tools = [ d.strip( ) for d in set_docqna_tools
+						                 if d.strip( ) ]
+						
+						docqna_tools = st.session_state[ 'docqna_tools' ]
+					
+					# ---------- Reset Settings ------------
+					if st.button( label='Reset', key='docqna_tools_reset', width='stretch' ):
+						for key in [ 'docqna_parallel_tools', 'docqna_tool_choice',
+						             'docqna_tools', 'docqna_max_calls' ]:
+							if key in st.session_state:
+								del st.session_state[ key ]
+						
+						st.rerun( )
+				
+				with st.expander( label='Response Settings', expanded=False, width='stretch' ):
+					resp_c1, resp_c2, resp_c3, resp_c4, resp_c5 = st.columns(
+						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
+					
+					# ---------- Stream ------------
+					with resp_c1:
+						set_docqna_stream = st.toggle( label='Stream', key='docqna_stream',
+							help=cfg.STREAM )
+						
+						docqna_stream = st.session_state[ 'docqna_stream' ]
+					
+					# ---------- Store ------------
+					with resp_c2:
+						set_docqna_store = st.toggle( label='Store', key='docqna_store',
+							help=cfg.STORE )
+						
+						docqna_store = st.session_state[ 'docqna_store' ]
+					
+					# ---------- Background ------------
+					with resp_c3:
+						set_docqna_background = st.toggle( label='Background', key='docqna_background',
+							help=cfg.BACKGROUND_MODE )
+						
+						docqna_background = st.session_state[ 'docqna_background' ]
+					
+					# ---------- Stops ------------
+					with resp_c4:
+						set_docqna_stops = st.text_input( label='Stop Sequences', key='docqna_stops',
+							help=cfg.STOP_SEQUENCE, width='stretch', placeholder='Enter Stops' )
+						
+						docqna_stops = [ d.strip( ) for d in set_docqna_stops.split( ',' )
+						                 if d.strip( ) ]
+					
+					# ---------- Max Tokens ------------
+					with resp_c5:
+						set_docqna_tokens = st.slider( label='Max Output Tokens', min_value=0, max_value=100000,
+							value=int( st.session_state.get( 'docqna_max_tokens', 0 ) ), step=500,
+							help=cfg.MAX_OUTPUT_TOKENS, key='docqna_max_tokens' )
+						
+						docqna_tokens = st.session_state[ 'docqna_max_tokens' ]
+					
+					# ---------- Reset Settings ------------
+					if st.button( label='Reset', key='docqna_response_reset', width='stretch' ):
+						for key in [ 'docqna_stream', 'docqna_store', 'docqna_background',
+						             'docqna_stops',
+						             'docqna_max_tokens' ]:
+							if key in st.session_state:
+								del st.session_state[ key ]
+						# If using separated UI key for stops
+						if 'docqna_stops_input' in st.session_state:
+							del st.session_state[ 'docqna_stops_input' ]
+						
+						st.rerun( )
+		
+		# ------------------------------------------------------------------
+		# Expander — DocQA System Instructions
+		# ------------------------------------------------------------------
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
+			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
+			prompt_names = fetch_prompt_names( cfg.DB_PATH )
+			if not prompt_names:
+				prompt_names = [ 'No Templates Found' ]
+			
+			with in_left:
+				st.text_area( 'Enter Text', height=50, width='stretch',
+					help=cfg.SYSTEM_INSTRUCTIONS, key='docqna_system_instructions' )
+			
+			def _on_template_change( ) -> None:
+				name = st.session_state.get( 'instructions' )
+				if name and name != 'No Templates Found':
+					text = fetch_prompt_text( cfg.DB_PATH, name )
+					if text is not None:
+						st.session_state[ 'docqna_system_instructions' ] = text
+			
+			with in_right:
+				st.selectbox( 'Select Template', prompt_names,
+					key='instructions', on_change=_on_template_change, index=None )
+			
+			def _on_clear( ) -> None:
+				st.session_state[ 'docqna_system_instructions' ] = ''
+				st.session_state[ 'instructions' ] = ''
+			
+			st.button( 'Clear Instructions', width='stretch', on_click=_on_clear )
+		
+		doc_left, doc_right = st.columns( [ 0.2, 0.8 ], border=True )
+		with doc_left:
+			docqna_uploaded = st.file_uploader( 'Upload', type=[ 'pdf', 'txt', 'md', 'docx' ],
+				accept_multiple_files=False, label_visibility='visible' )
+			
+			if docqna_uploaded is not None:
+				st.session_state.docqna_active_docs = [ docqna_uploaded.name ]
+				st.session_state.doc_bytes = { docqna_uploaded.name: docqna_uploaded.getvalue( ) }
+				st.success( f'{docqna_uploaded.name} has been loaded!' )
+			else:
+				st.info( 'Load a document.' )
+			
+			unload = st.button( label='Unload Document', width='stretch' )
+			if unload:
+				docqna_uploaded = None
+				st.session_state.docqna_active_docs = None
+		
+		with doc_right:
+			if st.session_state.get( 'docqna_active_docs' ):
+				name = st.session_state.docqna_active_docs[ 0 ]
+				file_bytes = st.session_state.doc_bytes.get( name )
+				if file_bytes:
+					st.pdf( file_bytes, height=420 )
+		
+		for msg in st.session_state.docqna_messages:
+			with st.chat_message( msg[ 'role' ] ):
+				st.markdown( msg[ 'content' ] )
+		
+		if prompt := st.chat_input( 'Ask a question about the document' ):
+			st.session_state.docqna_messages.append( { 'role': 'user', 'content': prompt } )
+			response = route_document_query( prompt )
+			st.session_state.docqna_messages.append( { 'role': 'assistant', 'content': response } )
+			st.rerun( )
+
+# ======================================================================================
 # EMBEDDINGS MODE
 # ======================================================================================
 elif mode == 'Embeddings':
@@ -4607,6 +6426,91 @@ elif mode == 'Embeddings':
 				
 				st.data_editor( df_embedding, use_container_width=True, hide_index=True,
 					key='embedding_vectors' )
+
+# ======================================================================================
+# FILES API MODE
+# ======================================================================================
+elif mode == 'Files':
+	st.subheader( '📁 Files API', help=cfg.FILES_API )
+	st.divider( )
+	provider_module = get_provider_module( )
+	files = provider_module.Files( )
+	provider_module = get_provider_module( )
+	files_purpose = st.session_state.get( 'files_purpose' )
+	files_type = st.session_state.get( 'files_type' )
+	files_id = st.session_state.get( 'files_id' )
+	files_url = st.session_state.get( 'files_url' )
+	files_table = st.session_state.get( 'files_table' )
+	
+	for key in [ 'files_domains', 'files_stops', 'files_includes', 'files_input', ]:
+		if key in st.session_state and isinstance( st.session_state[ key ], list ):
+			del st.session_state[ key ]
+	# ------------------------------------------------------------------
+	# Main Chat UI
+	# ------------------------------------------------------------------
+	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
+	with center:
+		list_method = None
+		if hasattr( files, 'list' ):
+			list_method = getattr( files, 'list' )
+		
+		uploaded_file = st.file_uploader( 'Upload file (server-side via Files API)',
+			type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', ], )
+		if uploaded_file:
+			tmp_path = save_temp( uploaded_file )
+			upload_fn = None
+			for name in ('upload_file', 'upload', 'files_upload'):
+				if hasattr( files, name ):
+					upload_fn = getattr( files, name )
+					break
+			if not upload_fn:
+				st.warning( 'No upload function found on chat object.' )
+			else:
+				with st.spinner( 'Uploading to Files API...' ):
+					try:
+						fid = upload_fn( tmp_path )
+						st.success( f'Uploaded; file id: {fid}' )
+					except Exception as exc:
+						st.error( f"Upload failed: {exc}" )
+		
+		if st.button( 'List Files' ):
+			try:
+				files_resp = list_method( )
+				rows = [ ]
+				files_list = (files_resp.data if hasattr( files_resp, 'data' ) else files_resp
+				if isinstance( files_resp, list ) else [ ])
+				
+				for f in files_list:
+					rows.append( { 'id': str( getattr( f, 'id', "" ) ),
+					               'filename': str( getattr( f, 'filename', "" ) ),
+					               'files_purpose': str( getattr( f, 'files_purpose', "" ) ), } )
+				
+				st.session_state.files_table = rows
+			
+			except Exception as exc:
+				st.session_state.files_table = None
+				st.error( f'List files failed: {exc}' )
+			
+			if 'files_list' in locals( ) and files_list:
+				file_ids = [ r.get( 'filename' ) if isinstance( r, dict )
+				             else getattr( r, 'id', None ) for r in files_list ]
+				sel = st.selectbox( label='Select File to Delete', options=file_ids,
+					index=None, placeholder='Options' )
+				if st.button( 'Delete File' ):
+					del_fn = None
+					for name in ('delete_file', 'delete', 'files_delete'):
+						if hasattr( files, name ):
+							del_fn = getattr( files, name )
+							break
+					if not del_fn:
+						st.warning( 'No delete function found on chat object.' )
+					else:
+						with st.spinner( 'Deleting file...' ):
+							try:
+								res = del_fn( sel )
+								st.success( f'Delete result: {res}' )
+							except Exception as exc:
+								st.error( f'Delete failed: {exc}' )
 
 # ======================================================================================
 # VECTORSTORES MODE
@@ -4942,7 +6846,7 @@ elif mode == "Prompt Engineering":
 	# XML / Markdown converters (IDENTICAL BEHAVIOR TO LEEROY)
 	# ------------------------------------------------------------------
 	def xml_to_md( ):
-		st.session_state.pe_text = xml_converter( st.session_state.pe_text )
+		st.session_state.pe_text = convert_xml( st.session_state.pe_text )
 	
 	def md_to_xml( ):
 		st.session_state.pe_text = markdown_converter( st.session_state.pe_text )
@@ -5142,929 +7046,8 @@ elif mode == "Prompt Engineering":
 				reset_selection( )
 
 # ======================================================================================
-# DOCUMENTS MODE
+# FOOTER — SECTION
 # ======================================================================================
-elif mode == 'Document Q&A':
-	st.subheader( '📚 Document Q & A', help=cfg.DOCUMENT_Q_AND_A )
-	st.divider( )
-	provider_module = get_provider_module( )
-	provider_name = st.session_state.get( 'provider', 'GPT' )
-	docqna_number = st.session_state.get( 'docqna_number', 0 )
-	docqna_max_calls = st.session_state.get( 'docqna_max_calls', 0 )
-	docqna_max_searches = st.session_state.get( 'docqna_max_searches', 0 )
-	docqna_max_tokens = st.session_state.get( 'docqna_max_tokens', 0 )
-	docqna_top_percent = st.session_state.get( 'docqna_top_percent', 0.0 )
-	docqna_top_k = st.session_state.get( 'docqna_top_k', 0 )
-	docqna_freq = st.session_state.get( 'docqna_frequency_penalty', 0.0 )
-	docqna_presense = st.session_state.get( 'docqna_presense_penalty', 0.0 )
-	docqna_temperature = st.session_state.get( 'docqna_temperature', 0.0 )
-	docqna_stream = st.session_state.get( 'docqna_stream', False )
-	docqna_parallel_tools = st.session_state.get( 'docqna_parallel_tools', False )
-	docqna_store = st.session_state.get( 'docqna_store', False )
-	docqna_background = st.session_state.get( 'docqna_background', False )
-	docqna_model = st.session_state.get( 'docqna_model', '' )
-	docqna_reasoning = st.session_state.get( 'docqna_reasoning', '' )
-	docqna_resolution = st.session_state.get( 'docqna_resolution', '' )
-	docqna_media_resolution = st.session_state.get( 'docqna_media_resolution', '' )
-	docqna_response_format = st.session_state.get( 'docqna_response_format', '' )
-	docqna_tool_choice = st.session_state.get( 'docqna_tool_choice', '' )
-	docqna_content = st.session_state.get( 'docqna_content', '' )
-	docqna_input = st.session_state.get( 'docqna_input', '' )
-	docqna_tools = st.session_state.get( 'docqna_tools', [ ] )
-	docqna_modalities = st.session_state.get( 'docqna_modalities', [ ] )
-	docqna_context = st.session_state.get( 'docqna_context', [ ] )
-	docqna_include = st.session_state.get( 'docqna_include', [ ] )
-	docqna_domains = st.session_state.get( 'docqna_domains', [ ] )
-	docqna_stops = st.session_state.get( 'docqna_stops', [ ] )
-	docqna_files = st.session_state.get( 'docqna_files' )
-	docqna_uploaded = st.session_state.get( 'docqna_uploaded' )
-	docqna_messages = st.session_state.get( 'docqna_messages' )
-	docqna_active_docs = st.session_state.get( 'docqna_active_docs' )
-	docqna_source = st.session_state.get( 'docqna_source' )
-	docqna_multi_mode = st.session_state.get( 'docqna_multi_mode' )
-	docqna = provider_module.Files( )
-	
-	for key in [ 'docqna_domains', 'docqna_stops', 'docqna_includes', 'docqna_input', ]:
-		if key in st.session_state and isinstance( st.session_state[ key ], list ):
-			del st.session_state[ key ]
-	# ------------------------------------------------------------------
-	#  DOCQNA SETTINGS
-	# ------------------------------------------------------------------
-	if st.session_state.get( 'clear_instructions' ):
-		st.session_state[ 'docqna_system_instructions' ] = ''
-		st.session_state[ 'clear_docqa_instructions' ] = False
-		st.session_state[ 'clear_instructions' ] = False
-	
-	# ------------------------------------------------------------------
-	# Main Chat UI
-	# ------------------------------------------------------------------
-	left, center, right = st.columns( [ 0.05, 0.9, 0.05 ] )
-	with center:
-		# ------------------------------------------------------------------
-		# EXPANDER — GROK DOCQNA LLM CONFIGURATION
-		# ------------------------------------------------------------------
-		if provider_name == 'Grok':
-			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
-				
-				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
-					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-						border=True, gap='medium' )
-					
-					# ------------- Model Options ----------
-					with llm_c1:
-						model_options = list( docqna.model_options )
-						set_docqna_model = st.selectbox( label='Select LLM', options=model_options,
-							key='docqna_model', placeholder='Options', index=None,
-							help='REQUIRED. Text Generation model used by the AI', )
-						
-						docqna_model = st.session_state[ 'docqna_model' ]
-					
-					# ------------- Include Options ----------
-					with llm_c2:
-						include_options = list( docqna.include_options )
-						set_docqna_include = st.multiselect( label='Include:', options=include_options,
-							key='docqna_include', help=cfg.INCLUDE, placeholder='Options' )
-						
-						docqna_include = [ d.strip( ) for d in set_docqna_include
-						                   if d.strip( ) ]
-						
-						docqna_include = st.session_state[ 'docqna_include' ]
-					
-					# ------------- Reasoning Options ----------
-					with llm_c3:
-						reasoning_options = list( docqna.reasoning_options )
-						set_docqna_reasoning = st.selectbox( label='Reasoning Effort:',
-							options=reasoning_options, key='docqna_reasoning',
-							help=cfg.REASONING, index=None, placeholder='Options' )
-						
-						docqna_reasoning = st.session_state[ 'docqna_reasoning' ]
-					
-					# ------------- Choice Options ----------
-					with llm_c4:
-						choice_options = list( docqna.choice_options )
-						set_docqna_choice = st.multiselect( label='Tool Choice:', options=choice_options,
-							key='docqna_tool_choice', help=cfg.INCLUDE, placeholder='Options' )
-						
-						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
-					
-					# ------------- Reset Settings ----------
-					if st.button( label='Reset', key='docqna_model_reset', width='stretch' ):
-						for key in [ 'docqna_model', 'docqna_include',
-						             'docqna_reasoning', 'docqna_tool_choice' ]:
-							if key in st.session_state:
-								del st.session_state[ key ]
-						
-						st.rerun( )
-				
-				with st.expander( label='Inference Settings', expanded=False, width='stretch' ):
-					prm_c1, prm_c2, prm_c3, prm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-						border=True, gap='medium' )
-					
-					# ------------- Top P ----------
-					with prm_c1:
-						set_docqna_top_p = st.slider( label='Top-P', min_value=0.0, max_value=1.0,
-							value=float( st.session_state.get( 'docqna_top_percent', 0.0 ) ),
-							step=0.01, help=cfg.TOP_P, key='docqna_top_percent' )
-						
-						docqna_top_percent = st.session_state[ 'docqna_top_percent' ]
-					
-					# ------------- Temperature  ----------
-					with prm_c2:
-						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0, max_value=1.0,
-							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ), step=0.01,
-							help=cfg.TEMPERATURE, key='docqna_temperature' )
-						
-						docqna_temperature = st.session_state[ 'docqna_temperature' ]
-					
-					# ------------- Number ----------
-					with prm_c3:
-						set_docqna_number = st.slider( label='Number', min_value=0, max_value=10,
-							value=int( st.session_state.get( 'docqna_number', 0 ) ), step=1,
-							help='Optional. Upper limit on the responses returned by the model',
-							key='docqna_number' )
-						
-						docqna_number = st.session_state[ 'docqna_number' ]
-					
-					# ------------- Max tokens  ------------------
-					with prm_c4:
-						set_docqna_tokens = st.slider( label='Max Tokens',
-							min_value=0, max_value=100000, step=500,
-							value=int( st.session_state.get( 'docqna_max_tokens', 0 ) ),
-							help=cfg.MAX_OUTPUT_TOKENS, key='docqna_max_tokens' )
-						
-						docqna_tokens = st.session_state[ 'docqna_max_tokens' ]
-					
-					# ------------- Reset Setting ----------
-					if st.button( label='Reset', key='docqna_inference_reset', width='stretch' ):
-						for key in [ 'docqna_top_percent', 'docqna_max_tokens',
-						             'docqna_temperature', 'docqna_number', ]:
-							if key in st.session_state:
-								del st.session_state[ key ]
-						
-						st.rerun( )
-				
-				with st.expander( label='Tool Settings', expanded=False, width='stretch' ):
-					tool_c1, tool_c2, tool_c3, tool_c4 = st.columns(
-						[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='medium' )
-					
-					# ------------- Asynchronous  ------------------
-					with tool_c1:
-						set_docqna_parallel = st.toggle( label='Asynchronous Tool Calls', key='docqna_parallel_tools',
-							help=cfg.PARALLEL_TOOL_CALLS )
-						
-						docqna_parallel_tools = st.session_state[ 'docqna_parallel_tools' ]
-					
-					# ------------- Max Tool Calls ------------------
-					with tool_c2:
-						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0, max_value=4,
-							value=int( st.session_state.get( 'docqna_max_calls', 0 ) ), step=1,
-							help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
-						
-						docqna_max_calls = st.session_state[ 'docqna_max_calls' ]
-					
-					# -------------  Max Web Searches ------------------
-					with tool_c3:
-						set_max_results = st.slider( label='Max Websearch Results', key='docqna_max_searches',
-							value=int( st.session_state.get( 'docqna_max_searches', 0 ) ),
-							min_value=0, max_value=30, step=1,
-							help='Optional. Upper limit on the number web search results' )
-						
-						docqna_max_searches = st.session_state[ 'docqna_max_searches' ]
-					
-					# ------------- Tools ------------------
-					with tool_c4:
-						tool_options = list( docqna.tool_options )
-						set_docqna_tools = st.multiselect( label='Tools:', options=tool_options,
-							key='docqna_tools', help=cfg.TOOLS, placeholder='Options' )
-						
-						docqna_tools = [ d.strip( ) for d in set_docqna_tools
-						                 if d.strip( ) ]
-						
-						docqna_tools = st.session_state[ 'docqna_tools' ]
-					
-					# ------------- Reset Settings -------------
-					if st.button( label='Reset', key='docqna_tools_reset', width='stretch' ):
-						for key in [ 'docqna_parallel_tools', 'docqna_max_searches',
-						             'docqna_tools', 'docqna_max_calls' ]:
-							if key in st.session_state:
-								del st.session_state[ key ]
-						
-						st.rerun( )
-				
-				with st.expander( label='Response Settings', expanded=False, width='stretch' ):
-					resp_c1, resp_c2, resp_c3, resp_c4 = st.columns(
-						[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='medium' )
-					
-					# ------------- Stream  ------------------
-					with resp_c1:
-						set_docqna_stream = st.toggle( label='Stream', key='docqna_stream',
-							help=cfg.STREAM )
-						
-						docqna_stream = st.session_state[ 'docqna_stream' ]
-					
-					# ------------- Store  ------------------
-					with resp_c2:
-						set_docqna_store = st.toggle( label='Store', key='docqna_store',
-							help=cfg.STORE )
-						
-						docqna_store = st.session_state[ 'docqna_store' ]
-					
-					# ------------- Background  ------------------
-					with resp_c3:
-						set_docqna_background = st.toggle( label='Background', key='docqna_background',
-							help=cfg.BACKGROUND_MODE )
-						
-						docqna_background = st.session_state[ 'docqna_background' ]
-					
-					# ------------- Domains  ------------------
-					with resp_c4:
-						set_docqna_domains = st.text_input( label='Allowed Websites', key='docqna_domains',
-							help=cfg.STOP_SEQUENCE, width='stretch', placeholder='Enter Web Domains' )
-						
-						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' )
-						                   if d.strip( ) ]
-					
-					# ------------- Reset Settings  ------------------
-					if st.button( label='Reset', key='docqna_response_reset', width='stretch' ):
-						for key in [ 'docqna_stream', 'docqna_store',
-						             'docqna_background', 'docqna_domains' ]:
-							if key in st.session_state:
-								del st.session_state[ key ]
-						# If using separated UI key for stops
-						if 'docqna_stops_input' in st.session_state:
-							del st.session_state[ 'docqna_stops_input' ]
-						
-						st.rerun( )
-		
-		# ------------------------------------------------------------------
-		# EXPANDER — GEMINI DOCQNA LLM CONFIGURATION
-		# ------------------------------------------------------------------
-		elif provider_name == 'Gemini':
-			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
-				
-				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
-					llm_c1, llm_c2, llm_c3, llm_c4, llm_c5 = st.columns(
-						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
-					
-					# ---------- Model ------------
-					with llm_c1:
-						model_options = list( docqna.model_options )
-						set_docqna_model = st.selectbox( label='Select Model', options=model_options,
-							key='docqna_model', placeholder='Options', index=None,
-							help='REQUIRED. Text Generation model used by the AI', )
-						
-						docqna_model = st.session_state[ 'docqna_model' ]
-					
-					# ---------- Include ------------
-					with llm_c2:
-						include_options = list( docqna.include_options )
-						set_docqna_include = st.multiselect( label='Include', options=include_options,
-							key='docqna_include', help=cfg.INCLUDE, placeholder='Options' )
-						
-						docqna_include = [ d.strip( ) for d in set_docqna_include
-						                   if d.strip( ) ]
-						
-						docqna_include = st.session_state[ 'docqna_include' ]
-					
-					# ---------- Allowed Domains ------------
-					with llm_c3:
-						set_docqna_domains = st.text_input( label='Allowed Domains', key='docqna_domains_input',
-							value=','.join( st.session_state.get( 'docqna_domains', [ ] ) ),
-							help=cfg.ALLOWED_DOMAINS, width='stretch', placeholder='Enter Domains' )
-						
-						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' )
-						                   if d.strip( ) ]
-						
-						st.session_state[ 'docqna_domains' ] = docqna_domains
-					
-					# ---------- Reasoning/Thinking Level ------------
-					with llm_c4:
-						reasoning_options = list( docqna.reasoning_options )
-						set_docqna_reasoning = st.selectbox( label='Thinking Level:',
-							options=reasoning_options, key='docqna_reasoning',
-							help=cfg.REASONING, index=None, placeholder='Options' )
-						
-						docqna_reasoning = st.session_state[ 'docqna_reasoning' ]
-					
-					# ---------- Media Resolution ------------
-					with llm_c5:
-						media_options = list( docqna.media_options )
-						set_media_resolution = st.selectbox( label='Media Resolution',
-							options=media_options, key='docqna_media_resolution',
-							help=cfg.REASONING, index=None, placeholder='Options' )
-						
-						media_resolution = st.session_state[ 'docqna_media_resolution' ]
-					
-					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_model_reset', width='stretch' ):
-						for key in [ 'docqna_model', 'docqna_include', 'docqna_domains',
-						             'docqna_reasoning', 'docqna_media_resolution' ]:
-							if key in st.session_state:
-								del st.session_state[ key ]
-						
-						st.rerun( )
-				
-				with st.expander( label='Inference Settings', expanded=False, width='stretch' ):
-					prm_c1, prm_c2, prm_c3, prm_c4, prm_c5 = st.columns(
-						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
-					
-					# ---------- Top-P ------------
-					with prm_c1:
-						set_docqna_top_p = st.slider( label='Top-P', min_value=0.0, max_value=1.0,
-							value=float( st.session_state.get( 'docqna_top_percent', 0.0 ) ),
-							step=0.01, help=cfg.TOP_P, key='docqna_top_percent' )
-						
-						docqna_top_percent = st.session_state[ 'docqna_top_percent' ]
-					
-					# ---------- Frequency ------------
-					with prm_c2:
-						set_docqna_freq = st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
-							value=float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) ),
-							step=0.01, help=cfg.FREQUENCY_PENALTY, key='docqna_frequency_penalty' )
-						
-						docqna_fequency = st.session_state[ 'docqna_frequency_penalty' ]
-					
-					# ---------- Presense ------------
-					with prm_c3:
-						set_docqna_presense = st.slider( label='Presense Penalty', min_value=-2.0, max_value=2.0,
-							value=float( st.session_state.get( 'docqna_presense_penalty', 0.0 ) ),
-							step=0.01, help=cfg.PRESENCE_PENALTY, key='docqna_presense_penalty' )
-						
-						docqna_presense = st.session_state[ 'docqna_presense_penalty' ]
-					
-					# ---------- Temperature ------------
-					with prm_c4:
-						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0, max_value=1.0,
-							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ), step=0.01,
-							help=cfg.TEMPERATURE, key='docqna_temperature' )
-						
-						docqna_temperature = st.session_state[ 'docqna_temperature' ]
-					
-					# ---------- Top-K ------------
-					with prm_c5:
-						set_docqna_topk = st.slider( label='Top K', min_value=0, max_value=20,
-							value=int( st.session_state.get( 'docqna_top_k', 0 ) ), step=1,
-							help=cfg.TOP_K,
-							key='docqna_top_k' )
-						
-						docqna_top_k = st.session_state[ 'docqna_top_k' ]
-					
-					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_inference_reset', width='stretch' ):
-						for key in [ 'docqna_top_percent', 'docqna_frequency_penalty',
-						             'docqna_presense_penalty', 'docqna_temperature',
-						             'docqna_top_k', ]:
-							if key in st.session_state:
-								del st.session_state[ key ]
-						
-						st.rerun( )
-				
-				with st.expander( label='Tool Settings', expanded=False, width='stretch' ):
-					tool_c1, tool_c2, tool_c3, tool_c4, tool_c5 = st.columns(
-						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
-					
-					# ---------- Number/Candidates ------------
-					with tool_c1:
-						set_docqna_number = st.slider( label='Candidates', min_value=0, max_value=50,
-							value=int( st.session_state.get( 'docqna_number', 0 ) ), step=1,
-							help='Optional. Upper limit on the responses returned by the model',
-							key='docqna_number' )
-						
-						docqna_number = st.session_state[ 'docqna_number' ]
-					
-					# ---------- Max Calls ------------
-					with tool_c2:
-						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0, max_value=10,
-							value=int( st.session_state.get( 'docqna_max_calls', 0 ) ), step=1,
-							help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
-						
-						docqna_max_calls = st.session_state[ 'docqna_max_calls' ]
-					
-					# ---------- Choice/Calling Mode ------------
-					with tool_c3:
-						choice_options = list( docqna.choice_options )
-						set_docqna_choice = st.selectbox( label='Calling Mode', options=choice_options,
-							key='docqna_tool_choice', help=cfg.CHOICE, index=None, placeholder='Options' )
-						
-						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
-					
-					# ---------- Tools ------------
-					with tool_c4:
-						tool_options = list( docqna.tool_options )
-						set_docqna_tools = st.multiselect( label='Available Tools', options=tool_options,
-							key='docqna_tools', help=cfg.TOOLS, placeholder='Options' )
-						
-						docqna_tools = [ d.strip( ) for d in set_docqna_tools
-						                 if d.strip( ) ]
-						
-						docqna_tools = st.session_state[ 'docqna_tools' ]
-					
-					# ---------- Modalities ------------
-					with tool_c5:
-						modality_options = list( docqna.modality_options )
-						set_docqna_modalities = st.multiselect( label='Response Modalities', options=modality_options,
-							key='docqna_modalities', help='Optional. Modality of the response',
-							placeholder='Options' )
-						
-						docqna_modalities = [ d.strip( ) for d in set_docqna_modalities
-						                      if d.strip( ) ]
-						
-						docqna_modalities = st.session_state[ 'docqna_modalities' ]
-					
-					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_tools_reset', width='stretch' ):
-						for key in [ 'docqna_parallel_tools', 'docqna_tool_choice', 'docqna_number',
-						             'docqna_tools', 'docqna_max_calls', 'docqna_modalities' ]:
-							if key in st.session_state:
-								del st.session_state[ key ]
-						
-						st.rerun( )
-				
-				with st.expander( label='Response Settings', expanded=False, width='stretch' ):
-					resp_c1, resp_c2, resp_c3, resp_c4, resp_c5 = st.columns(
-						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
-					
-					# ---------- Stream ------------
-					with resp_c1:
-						set_docqna_stream = st.toggle( label='Stream', key='docqna_stream',
-							help=cfg.STREAM )
-						
-						docqna_stream = st.session_state[ 'docqna_stream' ]
-					
-					# ---------- Store ------------
-					with resp_c2:
-						set_docqna_store = st.toggle( label='Store', key='docqna_store', help=cfg.STORE )
-						
-						docqna_store = st.session_state[ 'docqna_store' ]
-					
-					# ---------- Background ------------
-					with resp_c3:
-						set_docqna_background = st.toggle( label='Background', key='docqna_background',
-							help=cfg.BACKGROUND_MODE )
-						
-						docqna_background = st.session_state[ 'docqna_background' ]
-					
-					# ---------- Stops ------------
-					with resp_c4:
-						set_docqna_stops = st.text_input( label='Stop Sequences', key='docqna_stops',
-							help=cfg.STOP_SEQUENCE, width='stretch', placeholder='Enter Stops' )
-						
-						docqna_stops = [ d.strip( ) for d in set_docqna_stops.split( ',' )
-						                 if d.strip( ) ]
-					
-					# ---------- Max Tokens ------------
-					with resp_c5:
-						set_docqna_tokens = st.slider( label='Max Tokens', min_value=0, max_value=100000,
-							value=int( st.session_state.get( 'docqna_max_tokens', 0 ) ), step=500,
-							help=cfg.MAX_OUTPUT_TOKENS, key='docqna_max_tokens' )
-						
-						docqna_tokens = st.session_state[ 'docqna_max_tokens' ]
-					
-					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_response_reset', width='stretch' ):
-						for key in [ 'docqna_stream', 'docqna_store', 'docqna_background',
-						             'docqna_stops',
-						             'docqna_max_tokens' ]:
-							if key in st.session_state:
-								del st.session_state[ key ]
-						# If using separated UI key for stops
-						if 'docqna_stops_input' in st.session_state:
-							del st.session_state[ 'docqna_stops_input' ]
-						
-						st.rerun( )
-		
-		# ------------------------------------------------------------------
-		# EXPANDER — GPT DOCQNA LLM CONFIGURATION
-		# ------------------------------------------------------------------
-		elif provider_name == 'GPT':
-			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
-				
-				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
-					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-						border=True, gap='medium' )
-					
-					# ---------- Model ------------
-					with llm_c1:
-						model_options = list( docqna.model_options )
-						set_docqna_model = st.selectbox( label='Select Model', options=model_options,
-							key='docqna_model', placeholder='Options', index=None,
-							help='REQUIRED. Text Generation model used by the AI', )
-						
-						docqna_model = st.session_state[ 'docqna_model' ]
-					
-					# ---------- Include ------------
-					with llm_c2:
-						include_options = list( docqna.include_options )
-						set_docqna_include = st.multiselect( label='Include:', options=include_options,
-							key='docqna_include', help=cfg.INCLUDE, placeholder='Options' )
-						
-						docqna_include = [ d.strip( ) for d in set_docqna_include
-						                   if d.strip( ) ]
-						
-						docqna_include = st.session_state[ 'docqna_include' ]
-					
-					# ---------- Allowed Domains ------------
-					with llm_c3:
-						set_docqna_domains = st.text_input( label='Allowed Domains', key='docqna_domains_input',
-							value=','.join( st.session_state.get( 'docqna_domains', [ ] ) ),
-							help=cfg.ALLOWED_DOMAINS, width='stretch', placeholder='Enter Domains' )
-						
-						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' )
-						                   if d.strip( ) ]
-						
-						st.session_state[ 'docqna_domains' ] = docqna_domains
-					
-					# ---------- Reasoning ------------
-					with llm_c4:
-						reasoning_options = list( docqna.reasoning_options )
-						set_docqna_reasoning = st.selectbox( label='Reasoning Effort:',
-							options=reasoning_options, key='docqna_reasoning',
-							help=cfg.REASONING, index=None, placeholder='Options' )
-						
-						docqna_reasoning = st.session_state[ 'docqna_reasoning' ]
-					
-					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_model_reset', width='stretch' ):
-						for key in [ 'docqna_model', 'docqna_include', 'docqna_domains',
-						             'docqna_reasoning' ]:
-							if key in st.session_state:
-								del st.session_state[ key ]
-						
-						st.rerun( )
-				
-				with st.expander( label='Inference Settings', expanded=False, width='stretch' ):
-					prm_c1, prm_c2, prm_c3, prm_c4, prm_c5 = st.columns(
-						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
-					
-					# ---------- Top-P ------------
-					with prm_c1:
-						set_docqna_top_p = st.slider( label='Top-P', min_value=0.0, max_value=1.0,
-							value=float( st.session_state.get( 'docqna_top_percent', 0.0 ) ),
-							step=0.01, help=cfg.TOP_P, key='docqna_top_percent' )
-						
-						docqna_top_percent = st.session_state[ 'docqna_top_percent' ]
-					
-					# ---------- Frequency ------------
-					with prm_c2:
-						set_docqna_freq = st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
-							value=float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) ),
-							step=0.01, help=cfg.FREQUENCY_PENALTY, key='docqna_frequency_penalty' )
-						
-						docqna_fequency = st.session_state[ 'docqna_frequency_penalty' ]
-					
-					# ---------- Presense ------------
-					with prm_c3:
-						set_docqna_presense = st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0,
-							value=float( st.session_state.get( 'docqna_presense_penalty', 0.0 ) ),
-							step=0.01, help=cfg.PRESENCE_PENALTY, key='docqna_presense_penalty' )
-						
-						docqna_presense = st.session_state[ 'docqna_presense_penalty' ]
-					
-					# ---------- Temperature ------------
-					with prm_c4:
-						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0, max_value=1.0,
-							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ), step=0.01,
-							help=cfg.TEMPERATURE, key='docqna_temperature' )
-						
-						docqna_temperature = st.session_state[ 'docqna_temperature' ]
-					
-					# ---------- Number ------------
-					with prm_c5:
-						set_docqna_number = st.slider( label='Number', min_value=0, max_value=10,
-							value=int( st.session_state.get( 'docqna_number', 0 ) ), step=1,
-							help='Optional. Upper limit on the responses returned by the model',
-							key='docqna_number' )
-						
-						docqna_number = st.session_state[ 'docqna_number' ]
-					
-					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_inference_reset', width='stretch' ):
-						for key in [ 'docqna_top_percent', 'docqna_frequency_penalty',
-						             'docqna_presense_penalty', 'docqna_temperature',
-						             'docqna_number', ]:
-							if key in st.session_state:
-								del st.session_state[ key ]
-						
-						st.rerun( )
-				
-				with st.expander( label='Tool Settings', expanded=False, width='stretch' ):
-					tool_c1, tool_c2, tool_c3, tool_c4 = st.columns(
-						[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='medium' )
-					
-					# ---------- Allow Parallel ------------
-					with tool_c1:
-						set_docqna_parallel = st.toggle( label='Asychronous Calls',
-							key='docqna_parallel_tools',
-							help=cfg.PARALLEL_TOOL_CALLS )
-						
-						docqna_parallel_tools = st.session_state[ 'docqna_parallel_tools' ]
-					
-					# ---------- Max Calls ------------
-					with tool_c2:
-						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0, max_value=5,
-							value=int( st.session_state.get( 'docqna_max_calls', 0 ) ), step=1,
-							help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
-						
-						docqna_max_calls = st.session_state[ 'docqna_max_calls' ]
-					
-					# ---------- Choice ------------
-					with tool_c3:
-						choice_options = list( docqna.choice_options )
-						set_docqna_choice = st.selectbox( label='Tool Choice:', options=choice_options,
-							key='docqna_tool_choice', help=cfg.CHOICE, index=None, placeholder='Options' )
-						
-						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
-					
-					# ---------- Tools ------------
-					with tool_c4:
-						tool_options = list( docqna.tool_options )
-						set_docqna_tools = st.multiselect( label='Available Tools', options=tool_options,
-							key='docqna_tools', help=cfg.TOOLS, placeholder='Options' )
-						
-						docqna_tools = [ d.strip( ) for d in set_docqna_tools
-						                 if d.strip( ) ]
-						
-						docqna_tools = st.session_state[ 'docqna_tools' ]
-					
-					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_tools_reset', width='stretch' ):
-						for key in [ 'docqna_parallel_tools', 'docqna_tool_choice',
-						             'docqna_tools', 'docqna_max_calls' ]:
-							if key in st.session_state:
-								del st.session_state[ key ]
-						
-						st.rerun( )
-				
-				with st.expander( label='Response Settings', expanded=False, width='stretch' ):
-					resp_c1, resp_c2, resp_c3, resp_c4, resp_c5 = st.columns(
-						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
-					
-					# ---------- Stream ------------
-					with resp_c1:
-						set_docqna_stream = st.toggle( label='Stream', key='docqna_stream',
-							help=cfg.STREAM )
-						
-						docqna_stream = st.session_state[ 'docqna_stream' ]
-					
-					# ---------- Store ------------
-					with resp_c2:
-						set_docqna_store = st.toggle( label='Store', key='docqna_store',
-							help=cfg.STORE )
-						
-						docqna_store = st.session_state[ 'docqna_store' ]
-					
-					# ---------- Background ------------
-					with resp_c3:
-						set_docqna_background = st.toggle( label='Background', key='docqna_background',
-							help=cfg.BACKGROUND_MODE )
-						
-						docqna_background = st.session_state[ 'docqna_background' ]
-					
-					# ---------- Stops ------------
-					with resp_c4:
-						set_docqna_stops = st.text_input( label='Stop Sequences', key='docqna_stops',
-							help=cfg.STOP_SEQUENCE, width='stretch', placeholder='Enter Stops' )
-						
-						docqna_stops = [ d.strip( ) for d in set_docqna_stops.split( ',' )
-						                 if d.strip( ) ]
-					
-					# ---------- Max Tokens ------------
-					with resp_c5:
-						set_docqna_tokens = st.slider( label='Max Output Tokens', min_value=0, max_value=100000,
-							value=int( st.session_state.get( 'docqna_max_tokens', 0 ) ), step=500,
-							help=cfg.MAX_OUTPUT_TOKENS, key='docqna_max_tokens' )
-						
-						docqna_tokens = st.session_state[ 'docqna_max_tokens' ]
-					
-					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_response_reset', width='stretch' ):
-						for key in [ 'docqna_stream', 'docqna_store', 'docqna_background',
-						             'docqna_stops',
-						             'docqna_max_tokens' ]:
-							if key in st.session_state:
-								del st.session_state[ key ]
-						# If using separated UI key for stops
-						if 'docqna_stops_input' in st.session_state:
-							del st.session_state[ 'docqna_stops_input' ]
-						
-						st.rerun( )
-		
-		# ------------------------------------------------------------------
-		# Expander — DocQA System Instructions
-		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
-			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
-			prompt_names = fetch_prompt_names( cfg.DB_PATH )
-			if not prompt_names:
-				prompt_names = [ 'No Templates Found' ]
-			
-			with in_left:
-				st.text_area( 'Enter Text', height=50, width='stretch',
-					help=cfg.SYSTEM_INSTRUCTIONS, key='docqna_system_instructions' )
-			
-			def _on_template_change( ) -> None:
-				name = st.session_state.get( 'instructions' )
-				if name and name != 'No Templates Found':
-					text = fetch_prompt_text( cfg.DB_PATH, name )
-					if text is not None:
-						st.session_state[ 'docqna_system_instructions' ] = text
-			
-			with in_right:
-				st.selectbox( 'Select Template', prompt_names,
-					key='instructions', on_change=_on_template_change, index=None )
-			
-			def _on_clear( ) -> None:
-				st.session_state[ 'docqna_system_instructions' ] = ''
-				st.session_state[ 'instructions' ] = ''
-			
-			st.button( 'Clear Instructions', width='stretch', on_click=_on_clear )
-		
-		doc_left, doc_right = st.columns( [ 0.2, 0.8 ], border=True )
-		with doc_left:
-			docqna_uploaded = st.file_uploader( 'Upload', type=[ 'pdf', 'txt', 'md', 'docx' ],
-				accept_multiple_files=False, label_visibility='visible' )
-			
-			if docqna_uploaded is not None:
-				st.session_state.docqna_active_docs = [ docqna_uploaded.name ]
-				st.session_state.doc_bytes = { docqna_uploaded.name: docqna_uploaded.getvalue( ) }
-				st.success( f'{docqna_uploaded.name} has been loaded!' )
-			else:
-				st.info( 'Load a document.' )
-			
-			unload = st.button( label='Unload Document', width='stretch' )
-			if unload:
-				docqna_uploaded = None
-				st.session_state.docqna_active_docs = None
-		
-		with doc_right:
-			if st.session_state.get( 'docqna_active_docs' ):
-				name = st.session_state.docqna_active_docs[ 0 ]
-				file_bytes = st.session_state.doc_bytes.get( name )
-				if file_bytes:
-					st.pdf( file_bytes, height=420 )
-		
-		for msg in st.session_state.docqna_messages:
-			with st.chat_message( msg[ 'role' ] ):
-				st.markdown( msg[ 'content' ] )
-		
-		if prompt := st.chat_input( 'Ask a question about the document' ):
-			st.session_state.docqna_messages.append( { 'role': 'user', 'content': prompt } )
-			response = route_document_query( prompt )
-			st.session_state.docqna_messages.append( { 'role': 'assistant', 'content': response } )
-			st.rerun( )
-
-# ======================================================================================
-# FILES API MODE
-# ======================================================================================
-if mode == "Files":
-	try:
-		chat  # type: ignore
-	except NameError:
-		chat = Chat( )
-	
-	list_method = None
-	for name in (
-				'retrieve_files',
-				'retreive_files',
-				'list_files',
-				'get_files',
-	):
-		if hasattr( chat, name ):
-			list_method = getattr( chat, name )
-			break
-	
-	uploaded_file = st.file_uploader(
-		'Upload file (server-side via Files API)',
-		type=[
-				'pdf',
-				'txt',
-				'md',
-				'docx',
-				'png',
-				'jpg',
-				'jpeg',
-		],
-	)
-	if uploaded_file:
-		tmp_path = save_temp( uploaded_file )
-		upload_fn = None
-		for name in ("upload_file", "upload", "files_upload"):
-			if hasattr( chat, name ):
-				upload_fn = getattr( chat, name )
-				break
-		if not upload_fn:
-			st.warning(
-				"No upload function found on chat object (upload_file)."
-			)
-		else:
-			with st.spinner( "Uploading to Files API..." ):
-				try:
-					fid = upload_fn( tmp_path )
-					st.success( f"Uploaded; file id: {fid}" )
-				except Exception as exc:
-					st.error( f"Upload failed: {exc}" )
-	
-	if st.button( "List files" ):
-		if not list_method:
-			st.warning(
-				"No file-listing method found on chat object."
-			)
-		else:
-			with st.spinner( "Listing files..." ):
-				try:
-					files_resp = list_method( )
-					files_list = [ ]
-					if files_resp is None:
-						files_list = [ ]
-					elif isinstance( files_resp, dict ):
-						files_list = (
-								files_resp.get( "data" )
-								or files_resp.get( "files" )
-								or [ ]
-						)
-					elif isinstance( files_resp, list ):
-						files_list = files_resp
-					else:
-						try:
-							files_list = getattr(
-								files_resp, "data", files_resp
-							)
-						except Exception:
-							files_list = [ files_resp ]
-					
-					rows = [ ]
-					for f in files_list:
-						try:
-							fid = (
-									f.get( "id" )
-									if isinstance( f, dict )
-									else getattr( f, "id", None )
-							)
-							name = (
-									f.get( "filename" )
-									if isinstance( f, dict )
-									else getattr(
-										f, "filename", None
-									)
-							)
-							purpose = (
-									f.get( "purpose" )
-									if isinstance( f, dict )
-									else getattr(
-										f, "purpose", None
-									)
-							)
-						except Exception:
-							fid = None
-							name = str( f )
-							purpose = None
-						rows.append(
-							{
-									"id": fid,
-									"filename": name,
-									"purpose": purpose,
-							}
-						)
-					if rows:
-						st.table( rows )
-					else:
-						st.info( "No files returned." )
-				except Exception as exc:
-					st.error( f"List files failed: {exc}" )
-	
-	if "files_list" in locals( ) and files_list:
-		file_ids = [
-				r.get( "id" )
-				if isinstance( r, dict )
-				else getattr( r, "id", None )
-				for r in files_list
-		]
-		sel = st.selectbox(
-			"Select file id to delete", options=file_ids
-		)
-		if st.button( "Delete selected file" ):
-			del_fn = None
-			for name in ("delete_file", "delete", "files_delete"):
-				if hasattr( chat, name ):
-					del_fn = getattr( chat, name )
-					break
-			if not del_fn:
-				st.warning(
-					"No delete function found on chat object."
-				)
-			else:
-				with st.spinner( "Deleting file..." ):
-					try:
-						res = del_fn( sel )
-						st.success( f"Delete result: {res}" )
-					except Exception as exc:
-						st.error( f"Delete failed: {exc}" )
-
-# ======================================================================================
-# Footer —
-# ======================================================================================
-
-# ---- Add bottom padding so content is not hidden behind footer
 st.markdown(
 	"""
 	<style>
@@ -6076,7 +7059,7 @@ st.markdown(
 	unsafe_allow_html=True,
 )
 
-# ---- Fixed footer container
+# ---- Fixed Container
 st.markdown(
 	"""
 	<style>
@@ -6087,9 +7070,9 @@ st.markdown(
 		width: 100%;
 		background-color: rgba(17, 17, 17, 0.95);
 		border-top: 1px solid #2a2a2a;
-		padding: 6px 16px;
-		font-size: 0.85rem;
-		color: #9aa0a6;
+		padding: 10px 16px;
+		font-size: 0.80rem;
+		color: #35618c;
 		z-index: 1000;
 	}
 	.boo-status-inner {
@@ -6103,59 +7086,305 @@ st.markdown(
 	unsafe_allow_html=True,
 )
 
-# ---- Resolve active model by mode
-_mode_to_model_key = {
+# ======================================================================================
+# FOOTER RENDERING
+# ======================================================================================
+_mode_to_model_key = \
+{
 		'Text': 'text_model',
 		'Images': 'image_model',
-		'Audio': 'audio_model',
-		'Embeddings': 'embed_model',
+		'TTS': 'tts_model',
+		'Translation': 'translation_model',
+		'Transcription': 'transcription_model',
+		'Embedding': 'embedding_model',
+		'DocQnA': 'docqna_model',
+		'Files': 'files_model',
+		'Stores': 'stores_model'
 }
 
-provider_val = st.session_state.get( "provider", "—" )
-mode_val = mode or "—"
-
-active_model = st.session_state.get(
-	_mode_to_model_key.get( mode, "" ),
-	None,
-)
-
-# ---- Build right-side (mode-gated)
+provider_val = st.session_state.get( 'provider', '—' )
+mode_val = mode or '—'
+active_model = st.session_state.get( _mode_to_model_key.get( mode, "" ), None )
 right_parts = [ ]
-
 if active_model is not None:
 	right_parts.append( f'Model: {active_model}' )
 
+# ---- Rendered Variables
 if mode == 'Text':
-	temperature = st.session_state.get( 'temperature' )
-	top_p = st.session_state.get( 'top_p' )
+	temperature = st.session_state.get( 'text_temperature' )
+	top_p = st.session_state.get( 'text_top_percent' )
+	freq = st.session_state.get( 'text_frequency_penalty' )
+	presence = st.session_state.get( 'text_presense_penalty' )
+	number = st.session_state.get( 'text_number' )
+	stream = st.session_state.get( 'text_stream' )
+	parallel_tools = st.session_state.get( 'text_parallel_tools' )
+	max_calls = st.session_state.get( 'text_max_tools' )
+	store = st.session_state.get( 'text_store' )
+	tools = st.session_state.get( 'text_tools' )
+	include = st.session_state.get( 'text_include' )
+	domains = st.session_state.get( 'text_domains' )
+	input_mode = st.session_state.get( 'text_input' )
+	tool_choice = st.session_state.get( 'text_tool_choice' )
+	background = st.session_state.get( 'text_background' )
+	messages = st.session_state.get( 'text_messages' )
+	max_tokens = st.session_state.get( 'text_max_tokens' )
+	
+	if temperature is not None:
+		right_parts.append( f'Temp: {temperature:.1%}' )
+	if top_p is not None:
+		right_parts.append( f'Top-P: {top_p:.1%}' )
+	if freq is not None:
+		right_parts.append( f'Freq: {freq:.2f}' )
+	if presence is not None:
+		right_parts.append( f'Presence: {presence:.2f}' )
+	if number is not None:
+		right_parts.append( f'N: {number}' )
+	if max_tokens is not None:
+		right_parts.append( f'Max Tokens: {max_tokens}' )
+	
+	if stream:
+		right_parts.append( 'Stream: On' )
+	if parallel_tools:
+		right_parts.append( 'Parallel Tools: On' )
+	if max_calls is not None:
+		right_parts.append( f'Max Calls: {max_calls}' )
+	if store:
+		right_parts.append( 'Store: On' )
+	if tools:
+		right_parts.append( f'Tools: {len( tools )}' )
+	if include:
+		right_parts.append( 'Include: On' )
+	if domains:
+		right_parts.append( 'Domains: Set' )
+	if input_mode:
+		right_parts.append( 'Input: Set' )
+	if tool_choice:
+		right_parts.append( f'Tool Choice: On' )
+	if background:
+		right_parts.append( 'Background: On' )
+	if messages:
+		right_parts.append( 'Messages: Set' )
+
+elif mode == 'Images':
+	image_mode = st.session_state.get( 'image_mode' )
+	image_size = st.session_state.get( 'image_size' )
+	image_aspect = st.session_state.get( 'image_aspect' )
+	image_style = st.session_state.get( 'image_style' )
+	image_backcolor = st.session_state.get( 'image_backcolor' )
+	image_quality = st.session_state.get( 'image_quality' )
+	image_fmt = st.session_state.get( 'image_format' )
+	image_reasoning = st.session_state.get( 'image_reasoning' )
+	image_detail = st.session_state.get( 'image_detail' )
+	image_number = st.session_state.get( 'image_number' )
+	image_stream = st.session_state.get( 'image_stream' )
+	image_store = st.session_state.get( 'image_store' )
+	image_background = st.session_state.get( 'image_background' )
+	image_include = st.session_state.get( 'image_include' )
+	image_parallel_tools = st.session_state.get( 'image_parallel_tools' )
+	image_max_calls = st.session_state.get( 'text_max_tools' )
+	image_tools = st.session_state.get( 'image_tools' )
+	
+	if image_aspect is not None:
+		right_parts.append( f'Aspect: {image_aspect}' )
+	elif image_size is not None:
+		right_parts.append( f'Size: {image_size}' )
+	
+	if image_mode is not None:
+		right_parts.append( f'Mode: {image_mode}' )
+	if image_reasoning is not None:
+		right_parts.append( f'Reasoning: {image_reasoning}' )
+	if image_style is not None:
+		right_parts.append( f'Style: {image_style}' )
+	if image_quality is not None:
+		right_parts.append( f'Quality: {image_quality}' )
+	if image_backcolor is not None:
+		right_parts.append( f'Backcolor: {image_backcolor}' )
+	if image_fmt is not None:
+		right_parts.append( f'Format: {image_fmt}' )
+	if image_detail is not None:
+		right_parts.append( f'Detail: {image_detail}' )
+	
+	if image_number is not None:
+		right_parts.append( f'N: {image_number}' )
+	if image_parallel_tools:
+		right_parts.append( 'Parallel Tools: On' )
+	if image_max_calls is not None:
+		right_parts.append( f'Max Calls: {image_max_calls}' )
+	if image_tools:
+		right_parts.append( f'Tools: {len( image_tools )}' )
+	if image_include:
+		right_parts.append( 'Include: On' )
+	if image_stream:
+		right_parts.append( 'Stream: On' )
+	if image_store:
+		right_parts.append( 'Store: On' )
+	if image_background:
+		right_parts.append( 'Background: On' )
+
+elif mode == 'Audio':
+	audio_task = st.session_state.get( 'audio_task' )
+	audio_format = st.session_state.get( 'audio_response_format' )
+	audio_top_p = st.session_state.get( 'audio_top_percent' )
+	audio_freq = st.session_state.get( 'audio_frequency_penalty' )
+	audio_presence = st.session_state.get( 'audio_presense_penalty' )
+	audio_number = st.session_state.get( 'audio_number' )
+	audio_temperature = st.session_state.get( 'audio_temperature' )
+	audio_stream = st.session_state.get( 'audio_stream' )
+	audio_store = st.session_state.get( 'audio_store' )
+	audio_input_mode = st.session_state.get( 'audio_input' )
+	audio_reasoning = st.session_state.get( 'audio_reasoning' )
+	audio_tool_choice = st.session_state.get( 'audio_tool_choice' )
+	audio_messages = st.session_state.get( 'audio_messages' )
+	audio_background = st.session_state.get( 'audio_background' )
+	audio_file = st.session_state.get( 'audio_file' )
+	audio_rate = st.session_state.get( 'audio_rate' )
+	audio_start = st.session_state.get( 'audio_start' )
+	audio_end = st.session_state.get( 'audio_end' )
+	audio_loop = st.session_state.get( 'audio_loop' )
+	audio_play = st.session_state.get( 'auto_play' )
+	audio_voice = st.session_state.get( 'voice', None )
+	
+	if audio_task is not None:
+		right_parts.append( f'Task: {audio_task}' )
+	if audio_format is not None:
+		right_parts.append( f'Format: {audio_format}' )
+	
+	if audio_temperature is not None:
+		right_parts.append( f'Temp: {audio_temperature:.1%}' )
+	if audio_top_p is not None:
+		right_parts.append( f'Top-P: {audio_top_p:.1%}' )
+	if audio_freq is not None:
+		right_parts.append( f'Freq: {audio_freq:.2f}' )
+	if audio_presence is not None:
+		right_parts.append( f'Presence: {audio_presence:.2f}' )
+	if audio_number is not None:
+		right_parts.append( f'N: {audio_number}' )
+	
+	if audio_stream:
+		right_parts.append( 'Stream: On' )
+	if audio_store:
+		right_parts.append( 'Store: On' )
+	if audio_reasoning:
+		right_parts.append( 'Reasoning: On' )
+	if audio_input:
+		right_parts.append( 'Input: Set' )
+	if audio_tool_choice:
+		right_parts.append( f'Tool Choice: {audio_tool_choice}' )
+	if audio_messages:
+		right_parts.append( 'Messages: Set' )
+	if audio_background:
+		right_parts.append( 'Background: On' )
+	
+	if audio_voice:
+		right_parts.append( f'Voice: {audio_voice}' )
+	if audio_rate is not None:
+		right_parts.append( f'Rate: {audio_rate}' )
+	if (audio_start or audio_end) and audio_end >= audio_start:
+		right_parts.append( f'Trim: {audio_start}s–{audio_end}s' )
+	if audio_loop:
+		right_parts.append( 'Loop: On' )
+	if audio_play:
+		right_parts.append( 'Autoplay: On' )
+	if audio_file is not None:
+		right_parts.append( 'File: Set' )
+
+elif mode == 'Embeddings':
+	model = st.session_state.get( 'embedding_model' )
+	dimensions = st.session_state.get( 'embeddings_dimensions' )
+	encoding = st.session_state.get( 'embeddings_encoding_format' )
+	input_data = st.session_state.get( 'embedding_text_input' )
+	
+	if model is not None:
+		right_parts.append( f'Model: {model}' )
+	
+	if dimensions is not None:
+		right_parts.append( f'Dim: {dimensions}' )
+	
+	if encoding is not None:
+		right_parts.append( f'Format: {encoding}' )
+	
+	if input_data:
+		right_parts.append( 'Input: Set' )
+
+elif mode == 'Files':
+	files_purpose = st.session_state.get( 'files_purpose' )
+	files_type = st.session_state.get( 'files_type' )
+	files_id = st.session_state.get( 'files_id' )
+	files_url = st.session_state.get( 'files_url' )
+	
+	if files_purpose is not None:
+		right_parts.append( f'Purpose: {files_purpose}' )
+	
+	if files_type is not None:
+		right_parts.append( f'Type: {files_type}' )
+	
+	if files_id is not None:
+		right_parts.append( f'File ID: {files_id}' )
+	
+	if files_url is not None:
+		right_parts.append( 'URL: Set' )
+
+elif mode == 'VectorStores':
+	model = st.session_state.get( 'stores_model' )
+	fmt = st.session_state.get( 'stores_response_format' )
+	temperature = st.session_state.get( 'stores_temperature' )
+	top_p = st.session_state.get( 'stores_top_percent' )
+	freq = st.session_state.get( 'stores_frequency_penalty' )
+	presence = st.session_state.get( 'stores_presense_penalty' )
+	number = st.session_state.get( 'stores_number' )
+	stream = st.session_state.get( 'stores_stream' )
+	store = st.session_state.get( 'stores_store' )
+	input_data = st.session_state.get( 'stores_input' )
+	reasoning = st.session_state.get( 'stores_reasoning' )
+	tool_choice = st.session_state.get( 'stores_tool_choice' )
+	messages = st.session_state.get( 'stores_messages' )
+	background = st.session_state.get( 'stores_background' )
+	
+	if model is not None:
+		right_parts.append( f'Model: {model}' )
+	
+	if fmt is not None:
+		right_parts.append( f'Format: {fmt}' )
 	
 	if temperature is not None:
 		right_parts.append( f'Temp: {temperature}' )
+	
 	if top_p is not None:
 		right_parts.append( f'Top-P: {top_p}' )
-
-elif mode == 'Images':
-	size = st.session_state.get( 'image_size' )
-	aspect = st.session_state.get( 'image_aspect' )
 	
-	if aspect is not None:
-		right_parts.append( f'Aspect: {aspect}' )
-	elif size is not None:
-		right_parts.append( f'Size: {size}' )
+	if freq is not None:
+		right_parts.append( f'Freq: {freq}' )
+	
+	if presence is not None:
+		right_parts.append( f'Presence: {presence}' )
+	
+	if number is not None:
+		right_parts.append( f'N: {number}' )
+	
+	if stream:
+		right_parts.append( 'Stream: On' )
+	
+	if store:
+		right_parts.append( 'Store: On' )
+	
+	if reasoning is not None:
+		right_parts.append( f'Reasoning: {reasoning}' )
+	
+	if tool_choice is not None:
+		right_parts.append( f'Tool Choice: {tool_choice}' )
+	
+	if input_data:
+		right_parts.append( 'Input: Set' )
+	
+	if messages:
+		right_parts.append( 'Messages: Set' )
+	
+	if background:
+		right_parts.append( 'Background: On' )
 
-elif mode == 'Audio':
-	task = st.session_state.get( 'audio_task' )
-	if task is not None:
-		right_parts.append( f'Task: {task}' )
+right_text = ' ◽ '.join( right_parts ) if right_parts else '—'
 
-elif mode == 'Embeddings':
-	method = st.session_state.get( 'embed_method' )
-	if method is not None:
-		right_parts.append( f'Method: {method}' )
-
-right_text = " · ".join( right_parts ) if right_parts else "—"
-
-# ---- Render footer
+# ---- Rendering Method
 st.markdown(
 	f"""
     <div class="boo-status-bar">

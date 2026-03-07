@@ -48,13 +48,13 @@ from typing import Optional, List, Dict
 from pathlib import Path
 
 BLUE_DIVIDER = "<div style='height:2px;align:left;background:#0078FC;margin:6px 0 10px 0;'></div>"
-APP_TITLE = 'Buddy'
-APP_SUBTITLE = 'Budget Execution AI'
+APP_TITLE = 'Boo'
+APP_SUBTITLE = 'Multi-Modal AI'
 OPEN_TAG = re.compile( r'<([A-Za-z0-9_\-:.]+)>' )
 CLOSE_TAG = re.compile( r'</([A-Za-z0-9_\-:.]+)>' )
 MARKDOWN_HEADING_PATTERN = re.compile( r'^##\s+(?P<title>.+?)\s*$' )
 XML_BLOCK_PATTERN = re.compile( r'<(?P<tag>[a-zA-Z0-9_:-]+)>(?P<body>.*?)</\1>', re.DOTALL )
-DB_PATH = 'stores/sqlite/Data.db'
+DB_PATH = 'stores/sqlite/datamodels/Data.db'
 AUDIO_TEST_FILE = r'stores/audio/conditions.mp3'
 ANALYST = '❓'
 BOO = '🧠'
@@ -83,7 +83,7 @@ BASE_DIR = Path(__file__).resolve().parent
 FAVICON_PATH = BASE_DIR / 'resources' / 'images' / 'favicon.ico'
 
 # ----------------- GPT CONFIG -------------------
-GPT_LOGO = r'resources/gpt.png'
+GPT_LOGO = r'resources/images/gpt.png'
 
 GPT_VECTOR_STORES = [ 'vs_699506f7d5348191990e0557c717fa9d',
                       'vs_699505df9ac48191a525c0ecb86fef66',
@@ -139,7 +139,8 @@ GPT_REASONING_MODELS = [ 'gpt-5', 'gpt-5-mini', 'gpt-5-nano', 'gpt-4o', 'gpt-4.1
 
 
 # ---------------- GROK CONFIG ------------------
-GROK_LOGO = r'resources/grok.png'
+GROK_LOGO = r'resources/images/grok.png'
+
 GROK_MODES = [ 'Text',
                'Images',
                'Document Q&A',
@@ -157,7 +158,8 @@ GROK_COLLECTIONS = [ { 'DOD Regulations': 'collection_a7973fd2-a336-4ed0-a495-4f
                      { 'Public Laws': 'collection_c1d0b83e-2f59-4f10-9cf7-51392b490fee' }, ]
 
 # ---------------- GEMINI CONFIG ------------------
-GEMINI_LOGO = r'resources/gemini.png'
+GEMINI_LOGO = r'resources/images/gemini.png'
+
 GEMINI_MODES = [ 'Text',
                  'Images',
                  'Files',
