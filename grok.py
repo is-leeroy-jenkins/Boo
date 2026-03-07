@@ -84,20 +84,19 @@ class Grok:
 		are expected to route through the helpers defined here.
 	
 	"""
-	base_url: Optional[ str ]
 	api_key: Optional[ str ]
-	organization: Optional[ str ]
 	timeout: Optional[ float ]
-	number: Optional[ int ]
 	model: Optional[ str ]
 	store_messages: Optional[ bool ]
 	response_format: Optional[ str ]
 	temperature: Optional[ float ]
-	tool_choice: Optional[ str ]
 	top_percent: Optional[ float ]
 	frequency_penalty: Optional[ float ]
 	presence_penalty: Optional[ float ]
 	max_output_tokens: Optional[ int ]
+	tool_choice: Optional[ str ]
+	tools: Optional[ List[ str ] ]
+	stops: Optional[ List[ str ] ]
 	instructions: Optional[ str ]
 	content: Optional[ str ]
 	messages: Optional[ List[ Dict[ str, Any ] ] ]
@@ -118,7 +117,6 @@ class Grok:
 			
 		"""
 		self.api_key = cfg.XAI_API_KEY
-		self.organization = None
 		self.timeout = None
 		self.instructions = None
 		self.content = None
@@ -128,10 +126,12 @@ class Grok:
 		self.temperature = None
 		self.top_percent = None
 		self.tool_choice = None
+		self.tools = [ ]
 		self.frequency_penalty = None
 		self.presence_penalty = None
 		self.response_format = None
 		self.messages = [ ]
+		self.stops = [ ]
 		self.collections = None
 		self.files = None
 
@@ -160,14 +160,23 @@ class Chat( Grok ):
 	reasoning_effort: Optional[ str ]
 	previous_response_id: Optional[ str ]
 	include: Optional[ List[ str ] ]
-	allowed_websites: Optional[ List[ str ] ]
+	allowed_domains: Optional[ List[ str ] ]
 	max_search_results: Optional[ int ]
 	tool_calls: Optional[ List[ str ] ]
 	parallel_tool_calls: Optional[ bool ]
 	client: Optional[ Client ]
 	chat: Optional[ Any  ]
 	
-	def __init__( self ):
+	def __init__( self, prompt: str=None, model: str= 'grok-4-fast-reasoning', temperature: float = None,
+			top_p: float = None, presense: float=None, store: bool=None, stream: bool=None,
+			stops: List[ str ]=[ ], response_format: str=None, number: int=None,
+			instruct: str=None, context: List[ Dict[ str, str ] ]=[ ],
+			include: List[ Dict[ str, str ] ]=[ ], tools: List[ Dict[ str, str ] ]=[ ],
+			max_tools: int=None, tool_choice: str=None, file_path: str=None, allowed_domains: List[ str ]=[ ],
+			background: bool=None, is_parallel: bool = None, max_tokens: int = None, frequency: float=None,
+			input: List[ Dict[ str, str ] ]=[ ], file_ids: List[ str ]=[ ], previous_id: str = None,
+			reasoning: Dict[ str, str ] = { }, output_text: str=None, max_search_results: int=None,
+			content: str=None, vector_store_ids: List[ str ]=[ ] ):
 		"""
 		
 			Purpose:
@@ -185,17 +194,23 @@ class Chat( Grok ):
 		"""
 		super( ).__init__( )
 		self.client = None
-		self.prompt = None
-		self.model = None
-		self.max_output_tokens = None
-		self.temperature = None
-		self.top_percent = None
-		self.max_search_results = None
-		self.reasoning_effort = None
-		self.previous_response_id = None
-		self.parallel_tool_calls = None
-		self.allowed_websites = [ ]
-		self.include = [ ]
+		self.prompt = prompt
+		self.model = model
+		self.max_output_tokens = max_tokens
+		self.temperature = temperature
+		self.top_percent = top_p
+		self.presence_penalty = presense
+		self.response_format = response_format
+		self.max_search_results = max_search_results
+		self.reasoning_effort = reasoning
+		self.previous_response_id = previous_id
+		self.parallel_tool_calls = is_parallel
+		self.store_messages = store
+		self.stops = stops
+		self.tool_choice = tool_choice
+		self.instructions = instruct
+		self.allowed_domains = allowed_domains
+		self.include = include
 		self.tool_calls = [ ]
 		self.collections = \
 		{
@@ -328,9 +343,9 @@ class Chat( Grok ):
 		'''
 		return [ 'auto', 'required', 'none' ]
 	
-	def create( self, prompt: str, model: str='grok-3-mini', max_tokens: int=10000,
-			temperature: float=0.8, top_p: float=0.9, effort: str='high', format: str='text',
-			store: bool=True, include: List[ str ]=None, instruct: str=None ):
+	def create( self, prompt: str, model: str='grok-3-mini', max_tokens: int=None,
+			temperature: float=None, top_p: float=None, effort: str=None, format: str=None,
+			store: bool=None, include: List[ str ]=None, instruct: str=None ):
 		"""
 		
 			Purpose:
@@ -387,8 +402,7 @@ class Chat( Grok ):
 			ex.module = 'grok'
 			ex.cause = 'Chat'
 			ex.method = 'create( prompt: str, model: str )'
-			error = ErrorDialog( ex )
-			error.show( )
+			raise ex
 
 class TTS( Grok ):
 	"""
@@ -431,9 +445,7 @@ class TTS( Grok ):
 	language: Optional[ str ]
 	prompt: Optional[ str ]
 	
-	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9,
-			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			model: str='grok-3-mini-fast', store: bool=True, stream: bool=True, instruct: str =None ):
+	def __init__( self, model: str='grok-3-mini-fast' ):
 		'''
 
 	        Purpose:
@@ -445,16 +457,16 @@ class TTS( Grok ):
 		self.api_key = cfg.XAI_API_KEY
 		self.client = None
 		self.model = model
-		self.number = number
+		self.number = None
 		self.prompt = None
-		self.temperature = temperature
-		self.top_percent = top_p
-		self.frequency_penalty = frequency
-		self.presence_penalty = presence
-		self.max_completion_tokens = max_tokens
-		self.store = store
-		self.stream = stream
-		self.instructions = instruct
+		self.temperature = None
+		self.top_percent = None
+		self.frequency_penalty = None
+		self.presence_penalty = None
+		self.max_completion_tokens = None
+		self.store = None
+		self.stream = None
+		self.instructions = None
 		self.messages = []
 		self.audio_path = None
 		self.response = None
@@ -551,9 +563,9 @@ class TTS( Grok ):
 		         1.0,
 		         4.0 ]
 	
-	def generate( self, prompt: str, model: str='grok-3-mini', max_tokens: int=10000,
-			temperature: float=0.8, top_p: float=0.9, effort: str='high', format: str='text',
-			store: bool=True, include: List[ str ]=None, instruct: str=None ):
+	def generate( self, prompt: str, model: str='grok-3-mini', max_tokens: int=None,
+			temperature: float=None, top_p: float=None, effort: str=None, format: str=None,
+			store: bool=None, include: List[ str ]=None, instruct: str=None ):
 		"""
 		
 			Purpose:
@@ -818,8 +830,8 @@ class Transcription( Grok ):
 		         'Chinese' ]
 	
 	def transcribe( self, prompt: str, path: str, model: str='grok-3-mini-fast', language: str='en',
-			temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
-			presence: float=0.0, max_tokens: int=10000, store: bool=True, stream: bool=True,
+			temperature: float=None, top_p: float=None, frequency: float=None,
+			presence: float=None, max_tokens: int=None, store: bool=None, stream: bool=None,
 			instruct: str=None ) -> str:
 		"""
 		
@@ -848,14 +860,14 @@ class Transcription( Grok ):
 			with open( path, 'rb' ) as self.audio_file:
 				self.chat = self.client.chat.create( model=self.model,
 					file=self.audio_file, messages=self.messages )
-			return resp.text
+				self.response = self.chat.sample( )
+			return self.response.output_text
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'Transcription'
 			ex.method = 'transcribe(self, path)'
-			error = ErrorDialog( ex )
-			error.show( )
+			raise ex
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -873,7 +885,7 @@ class Transcription( Grok ):
 	        List[ str ] | None
 
         '''
-		return [ 'num',
+		return [ 'number',
 		         'temperature',
 		         'top_percent',
 		         'frequency_penalty',
@@ -933,22 +945,20 @@ class Translation( Grok ):
 	chat: Optional[ Any ]
 	messages = Optional[ List[ Dict[ str, Any ] ] ]
 	
-	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9,
-			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			store: bool=True, stream: bool=True, instruct: str =None ):
+	def __init__( self, model: str='grok-3-fast' ):
 		super( ).__init__( )
 		self.api_key = cfg.OPENAI_API_KEY
 		self.client = None
-		self.model = 'grok-3-fast'
-		self.number = number
-		self.temperature = temperature
-		self.top_percent = top_p
-		self.frequency_penalty = frequency
-		self.presence_penalty = presence
-		self.max_completion_tokens = max_tokens
-		self.store = store
-		self.stream = stream
-		self.instructions = instruct
+		self.model = model
+		self.number = None
+		self.temperature = None
+		self.top_percent = None
+		self.frequency_penalty = None
+		self.presence_penalty = None
+		self.max_completion_tokens = None
+		self.store = None
+		self.stream = None
+		self.instructions = None
 		self.prompt = None
 		self.audio_file = None
 		self.response = None
@@ -1031,9 +1041,9 @@ class Translation( Grok ):
 		         'sage',
 		         'shiver', ]
 	
-	def translate( self, text: str, path: str, number: int=1, temperature: float=0.8,
-			top_p: float=0.9, frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			store: bool=True, stream: bool=True, instruct: str=None ) -> str | None:
+	def translate( self, text: str, path: str, number: int=None, temperature: float=None,
+			top_p: float=None, frequency: float=None, presence: float=None, max_tokens: int=None,
+			store: bool=None, stream: bool=None, instruct: str=None ) -> str | None:
 		"""
 
 	        Purpose
@@ -1066,7 +1076,6 @@ class Translation( Grok ):
 			self.store = store
 			self.stream = stream
 			self.instructions = instruct
-			self.prompt = prompt
 			self.messages.append( system( self.instructions ) )
 			self.messages.append( user( self.prompt ) )
 			self.client = Client( api_key=cfg.XAI_API_KEY )
@@ -1079,8 +1088,7 @@ class Translation( Grok ):
 			exception.module = 'grok'
 			exception.cause = 'Translation'
 			exception.method = 'translate( self, text: str )'
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -1331,8 +1339,7 @@ class Images( Grok ):
 			ex.module = 'grok'
 			ex.cause = 'Images'
 			ex.method = 'create( prompt: str, model: str )'
-			error = ErrorDialog( ex )
-			error.show( )
+			raise ex
 	
 	def edit( self, image_path: str, prompt: str, model: str='grok-imagine-image',
 			aspect_ratio: str=None, resolution: str=None, quality: str=None,
@@ -1382,9 +1389,8 @@ class Images( Grok ):
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'Embeddings'
-			ex.method = ''
-			error = ErrorDialog( ex )
-			error.show( )
+			ex.method = 'edit( self, **kwarge ) -> str'
+			raise ex
 	
 	def analyze( self, prompt: str, image_url: str, model: str='grok-4-1-fast-reasoning',
 			max_output_tokens: int=10000, temperature: float=0.9, top_p: float=0.8,
@@ -1441,8 +1447,7 @@ class Images( Grok ):
 			ex.module = 'grok'
 			ex.cause = 'Images'
 			ex.method = 'analyze( prompt: str, image_url: str  )'
-			error = ErrorDialog( ex )
-			error.show( )
+			raise ex
 
 class Files( Grok ):
 	"""
@@ -1899,8 +1904,7 @@ class Files( Grok ):
 			throw_if( 'file_id', file_id )
 			self.file_id = file_id
 			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( {
-					'Authorization': f'Bearer {cfg.GROK_API_KEY}' } )
+			self.client.headers.update( { 'Authorization': f'Bearer {cfg.GROK_API_KEY}' } )
 			_content = self.client.files.content( file_id=self.file_id )
 			return _content
 		except Exception as e:
@@ -2065,11 +2069,6 @@ class VectorStores( Grok ):
 			self.client = Client( api_key=self.api_key )
 			self.client.headers.update( { 'Authorization': f'Bearer {cfg.GROK_API_KEY}',
 			                              'Content-Type': 'application/json', } )
-			payload = { 'name': self.file_name, 'file_ids': self.file_ids }
-			if description:
-				payload[ 'description' ] = description
-			
-			url = f'{self.base_url}/collections'
 			response = self.client.collections.create( name=self.file_name, model_name=self.model )
 			response.raise_for_status( )
 			return response.json( )
@@ -2103,8 +2102,7 @@ class VectorStores( Grok ):
 			ex.module = 'grok'
 			ex.cause = 'VectorStores'
 			ex.method = 'list( self ) -> List[ Any ] '
-			error = ErrorDialog( ex )
-			error.show( )
+			raise ex
 	
 	def retrieve( self, store_id: str ) -> Any | None:
 		"""
@@ -2171,7 +2169,7 @@ class VectorStores( Grok ):
 			self.client.headers.update( {
 					'Authorization': f'Bearer {cfg.GROK_API_KEY}',
 					'Content-Type': 'application/json', } )
-			self.response = client.collections.search( query=self.prompt,
+			self.response = self.client.collections.search( query=self.prompt,
 				collection_ids=[ self.store_id ],)
 			return self.response.output_text
 		except Exception as e:
@@ -2252,9 +2250,8 @@ class VectorStores( Grok ):
 					'Content-Type': 'application/json', } )
 			with open( self.file_path, 'rb' ) as file:
 				file_data = file.read( )
-				self.document = self.client.collections.upload_document( collection_id=self.store_id,
+				_document = self.client.collections.upload_document( collection_id=self.store_id,
 					name=self.file_name, data=file_data, content_type="text/html", )
-			return response.json( )
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
@@ -2280,7 +2277,8 @@ class VectorStores( Grok ):
 		"""
 		try:
 			throw_if( 'store_id', store_id )
-			url = f'{self.base_url}/collections/{collection_id}'
+			self.store_id = store_id
+			url = f'{self.base_url}/collections/{self.store_id}'
 			self.client = Client( api_key=self.api_key )
 			self.client.headers.update({'Authorization': f'Bearer {cfg.GROK_API_KEY}',
 					'Content-Type': 'application/json', } )

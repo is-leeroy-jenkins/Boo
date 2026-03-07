@@ -2017,7 +2017,7 @@ def build_document_user_input( user_query: str, k: int = 6 ) -> str:
 # ==============================================================================
 
 def initialize_database( ) -> None:
-	Path( "stores/sqlite" ).mkdir( parents=True, exist_ok=True )
+	Path( "stores/sqlite/datamodels" ).mkdir( parents=True, exist_ok=True )
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
 		conn.execute( """
                       CREATE TABLE IF NOT EXISTS chat_history
@@ -2872,19 +2872,20 @@ init_state( )
 # SIDEBAR
 # ======================================================================================
 with st.sidebar:
-	provider = st.session_state.get( "provider", "GPT" )
+	provider = st.session_state.get( 'provider', 'GPT' )
 	
-	st.subheader( "Provider" )
+	style_subheaders( )
+	st.subheader( 'Provider' )
 	st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 	
-	provider = st.selectbox( "Choose provider", list( cfg.PROVIDERS.keys( ) ),
-		index=list( cfg.PROVIDERS.keys( ) ).index( st.session_state.get( "provider", "GPT" ) ) )
+	provider = st.selectbox( 'Choose provider', list( cfg.PROVIDERS.keys( ) ),
+		index=list( cfg.PROVIDERS.keys( ) ).index( st.session_state.get( 'provider', 'GPT' ) ) )
 	
-	st.session_state[ "provider" ] = provider
+	st.session_state[ 'provider' ] = provider
 	logo_path = cfg.LOGO_MAP.get( provider )
 	st.logo( logo_path, size='large' )
 
-	with st.expander( "Keys:", expanded=False ):
+	with st.expander( 'Keys:', expanded=False ):
 		openai_key = st.text_input(
 			"OpenAI API Key",
 			type="password",
@@ -2918,7 +2919,7 @@ with st.sidebar:
 			st.session_state.groq_api_key = groq_key
 			os.environ[ "GROQ_API_KEY" ] = groq_key
 		
-	st.subheader( "Mode" )
+	st.subheader( 'Mode' )
 	st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 	if provider == 'Gemini':
 		mode = st.sidebar.radio( 'Select Mode', cfg.GEMINI_MODES, index=0 )
@@ -2964,7 +2965,7 @@ if mode == 'Text':
 	text_stops = st.session_state.get( 'text_stops', [ ] )
 	text = provider_module.Chat( )
 	
-	for key in [ 'text_domains', 'text_stops', 'text_includes', 'text_input', ]:
+	for key in [ 'text_domains', 'text_stops', 'text_include', 'text_input', ]:
 		if key in st.session_state and isinstance( st.session_state[ key ], list ):
 			del st.session_state[ key ]
 	
@@ -3432,7 +3433,7 @@ if mode == 'Text':
 					with llm_c2:
 						include_options = list( text.include_options )
 						set_text_include = st.multiselect( label='Include:', options=include_options,
-							key='text_include', help=cfg.INCLUDE, placeholder='Options' )
+							key='text_include', max_selections=4, help=cfg.INCLUDE, placeholder='Options' )
 						
 						text_include = [ d.strip( ) for d in set_text_include
 						                 if d.strip( ) ]

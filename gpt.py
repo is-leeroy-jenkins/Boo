@@ -47,9 +47,9 @@ import os
 from pathlib import Path
 import tiktoken
 from openai import OpenAI
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 from openai.types.responses import Response
-from openai.types import CreateEmbeddingResponse, VectorStore
+from openai.types import CreateEmbeddingResponse, VectorStore, FileObject
 from boogr import Error
 import config as cfg
 
@@ -89,33 +89,29 @@ class GPT:
 	stream: Optional[ bool ]
 	background: Optional[ bool ]
 	number: Optional[ int ]
-	response_format: Optional[ str ]
+	response_format: Optional[ Dict[ str, str ] ]
 	context: Optional[ List[ Dict[ str, str ] ] ]
 	instructions: Optional[ str ]
 	
-	def __init__( self, model: str='gpt-5-nano', prompt: str=None, temperature: float=None,
-			top_p: float=None, presence: float=None, store: bool=None, stream: bool=None,
-			stops: List[ str ]=[ ], format: str=None, number: int=None, instruct: str=None,
-			context: List[ Dict[ str, str ] ]=[ ], background: bool=None,
-			max_tokens: int=None, frequency: float=None ):
+	def __init__( self  ):
 		self.api_key = cfg.OPENAI_API_KEY
-		self.model = model
+		self.model = None
 		self.client = None
-		self.number = number
-		self.stops = stops
-		self.response_format = format
-		self.number = number
-		self.temperature = temperature
-		self.top_percent = top_p
-		self.frequency_penalty = frequency
-		self.presence_penalty = presence
-		self.max_tokens = max_tokens
-		self.prompt = prompt
-		self.store = store
-		self.stream = stream
-		self.background = background
-		self.instructions = instruct
-		self.context = context
+		self.number = None
+		self.stops = [ ]
+		self.response_format = { }
+		self.number = None
+		self.temperature = None
+		self.top_percent = None
+		self.frequency_penalty = None
+		self.presence_penalty = None
+		self.max_tokens = None
+		self.prompt = None
+		self.store = None
+		self.stream = None
+		self.background = None
+		self.instructions = None
+		self.context = [ ]
 
 class Chat( GPT ):
 	"""
@@ -187,7 +183,7 @@ class Chat( GPT ):
 	max_tools = Optional[ int ]
 	input: Optional[ List[ Dict[ str, str ] ] | str ]
 	tools: Optional[ List[ Dict[ str, str ] ] ]
-	reasoning: Optional[ Dict[ str, str ] ]
+	reasoning_effort: Optional[ Dict[ str, str ] ]
 	image_url: Optional[ str ]
 	image_path: Optional[ str ]
 	file_url: Optional[ str ]
@@ -201,29 +197,30 @@ class Chat( GPT ):
 	content: Optional[ str ]
 	vector_store_ids: Optional[ List[ str ] ]
 	file_ids: Optional[ List[ str ] ]
-	response: Optional[ openai.types.responses.Response ]
-	file: Optional[ openai.types.file_object.FileObject ]
+	response: Optional[ Response ]
+	file: Optional[ FileObject ]
 	purpose: Optional[ str ]
-	domains: Optional[ str ]
 	
 	def __init__( self, model: str='gpt-5-nano', prompt: str=None, temperature: float=None,
 			top_p: float=None, presense: float=None, store: bool=None, stream: bool=None,
-			stops: List[ str ]=[ ], format: str=None, number: int=None,
-			instruct: str=None, context: List[ Dict[ str, str ] ]=[ ], domains: List[ str ]=[ ],
+			stops: List[ str ]=[ ], response_format: Dict[ str, str ]=None, number: int=None,
+			instruct: str=None, context: List[ Dict[ str, str ] ]=[ ], allowed_domains: List[ str ]=[ ],
 			include: List[ Dict[ str, str ] ]=[ ], tools: List[ Dict[ str, str ] ]=[ ],
-			max_tools: Optional[ int ]=None, tool_choice: Optional[ str ]=None, file_path: str=None,
+			max_tools: int=None, tool_choice: str=None, file_path: str=None,
 			background: bool=None, is_parallel: bool=None, max_tokens: int=None, frequency: float=None,
 			input: List[ Dict[ str, str ] ]=[ ], file_ids: List[ str ]=[ ], previous_id: str=None,
-			reasoning: Dict[ str, str ]={}, output_text: str=None, max_search_results: Optional[ int ]=None,
-			content: str=None, vector_store_ids: Optional[ List[ str ] ]=None ):
-		super( ).__init__( model, prompt, temperature, top_p, presense, store, stream, stops,
-			format, number, instruct, context, background, max_tokens, frequency )
+			reasoning: Dict[ str, str ]={}, output_text: str=None, max_search_results: int=None,
+			content: str=None, vector_store_ids: List[ str ]=[ ] ):
+		super( ).__init__( )
 		self.api_key = cfg.OPENAI_API_KEY
 		self.client = None
 		self.model = model
 		self.prompt = prompt
+		self.number = number
+		self.response_format = response_format
 		self.temperature = temperature
 		self.top_percent = top_p
+		self.allowed_domains = allowed_domains
 		self.frequency_penalty = frequency
 		self.presence_penalty = presense
 		self.max_tokens = max_tokens
@@ -234,16 +231,14 @@ class Chat( GPT ):
 		self.stops = stops
 		self.background = background
 		self.conetxt = context
-		self.response_format = format
 		self.input = input
 		self.include = include
+		self.allowed_domains = allowed_domains
 		self.output_text = output_text
 		self.max_tools = max_tools
-		self.allowed_domains = is_parallel
 		self.vector_store_ids = vector_store_ids
 		self.file_ids = file_ids
 		self.tools = tools
-		self.domains = domains
 		self.previous_id = previous_id
 		self.reasoning = reasoning
 		self.parallel_tools = is_parallel
@@ -351,6 +346,17 @@ class Chat( GPT ):
 		         'evals' ]
 	
 	@property
+	def format_options( self ) -> List[ str ] | None:
+		'''
+		
+			Returns:
+			--------
+			A List[ str ] of file purposes
+
+		'''
+		return [ 'text', 'json_object', 'json_schema' ]
+	
+	@property
 	def reasoning_options( self ) -> List[ str ] | None:
 		'''
 
@@ -367,9 +373,11 @@ class Chat( GPT ):
 		         'xhigh' ]
 	
 	def generate_text( self, prompt: str, model: str, temperature: float=None,
-			top_p: float=None, frequency: float=None, presence: float=None, max_tokens: int=None,
-			store: bool=None, stream: bool=None, instruct: str=None, background: bool=False,
-			reasoning: str=None, include: str=None  ) -> str | None:
+			format: Dict[ str, str ]=None, top_p: float=None, frequency: float=None,
+			max_tools: int=None, presence: float=None, max_tokens: int=None, store: bool=None,
+			stream: bool=None, instruct: str=None, background: bool=False, reasoning: str=None,
+			include: List[ str ]=[ ], tools: List[ Dict[ str, str ] ]=[ ],
+			allowed_domains: List[ str ]=[ ],) -> str | None:
 		"""
 	
 	        Purpose
@@ -401,9 +409,13 @@ class Chat( GPT ):
 			self.stream = stream
 			self.background = background
 			self.instructions = instruct
-			self.reasoning = {'effort': reasoning }
-			self.input = self.prompt
+			self.response_format = format
+			self.max_tools = max_tools
+			self.tools = tools
 			self.include = include
+			self.allowed_domains = allowed_domains
+			self.reasoning_effort = { 'effort': reasoning }
+			self.input.append( { 'text': self.prompt } )
 			self.client = OpenAI( api_key=self.api_key )
 			if self.model.startswith( 'gpt-5' ):
 				self.response = self.client.responses.create( model=self.model, input=self.input,
@@ -418,9 +430,9 @@ class Chat( GPT ):
 			exception.module = 'gpt'
 			exception.cause = 'Chat'
 			exception.method = 'generate_text( self, prompt: str )'
-			raise  exception
+			raise exception
 	
-	def generate_image( self, prompt: str, number: int=None, model: str=None,
+	def generate_image( self, prompt: str, number: int=None, model: str=None, style: str=None,
 			size: str=None, quality: str=None, fmt: str=None,  ) -> str | None:
 		'''
 	
@@ -445,6 +457,7 @@ class Chat( GPT ):
 			self.number = number
 			self.model = model
 			self.size = size
+			self.style = style
 			self.quality = quality
 			self.response_format = fmt
 			self.client = OpenAI( api_key=self.api_key )
@@ -459,7 +472,12 @@ class Chat( GPT ):
 			exception.method = ('generate_image( self, prompt: str ) -> str | None')
 			raise exception
 	
-	def analyze_image( self, prompt: str, url: str ) -> str | None:
+	def analyze_image( self, prompt: str, url: str, temperature: float=None,
+			top_p: float=None, frequency: float=None, presence: float=None, max_tokens: int=None,
+			store: bool=None, stream: bool=None, instruct: str=None, background: bool=None,
+			reasoning: Dict[ str, str ]={ }, include: List[ str ]=[ ],
+			format: Dict[ str, str ]={}, tools: List[ Dict[ str, str ] ]=[ ],
+			allowed_domains: List[ str ]=[ ], ) -> str | None:
 		"""
 
 	        Purpose
@@ -481,6 +499,20 @@ class Chat( GPT ):
 			throw_if( 'url', url )
 			self.prompt = prompt
 			self.image_url = url
+			self.temperature = temperature
+			self.top_percent = top_p
+			self.response_format = format
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.store = store
+			self.stream = stream
+			self.background = background
+			self.instructions = instruct
+			self.reasoning = reasoning
+			self.include = include
+			self.allowed_domains = allowed_domains
+			self.tools = tools
 			self.input = [
 			{
 				'role': 'user',
@@ -503,45 +535,10 @@ class Chat( GPT ):
 			exception.module = 'gpt'
 			exception.cause = 'Chat'
 			exception.method = 'analyze_image( self, prompt: str, url: str )'
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
-	def edit_image( self, prompt: str, src_url: str, dest_path: str ) -> str | None:
-		'''
 			
-			Purpose:
-			--------
-			
-			
-			Parameters:
-			---------
-			prompt: str - instructions guiding the LLM
-			src_url: str - The path to the source image
-			dest_path: str - name of the edited image
-	
-			Returns:
-			----------
-			
-			
-		'''
-		try:
-			throw_if( 'prompt', prompt )
-			throw_if( 'src_url', src_url )
-			throw_if( 'dest_path', dest_path )
-			self.prompt = prompt
-			self.client = OpenAI( api_key=self.api_key )
-			_source = src_url
-			_url = dest_path
-			
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gpt'
-			exception.cause = 'Chat'
-			exception.method = 'analyze_image( self, prompt: str, url: str )'
-			error = ErrorDialog( exception )
-			error.show( )
-			
-	def summarize_document( self, prompt: str, pdf_path: str) -> str | None:
+	def summarize_document( self, prompt: str, pdf_path: str ) -> str | None:
 		"""
 	
 	        Purpose
@@ -564,6 +561,7 @@ class Chat( GPT ):
 			throw_if( 'pdf_path', pdf_path )
 			self.prompt = prompt
 			self.file_path = pdf_path
+			self.client = OpenAI( api_key=self.api_key )
 			self.file = self.client.files.create( file=open( file=self.file_path, mode='rb' ),
 				purpose='user_data' )
 			self.messages = [
@@ -590,8 +588,7 @@ class Chat( GPT ):
 			exception.module = 'gpt'
 			exception.cause = 'Chat'
 			exception.method = 'summarize_document( self, prompt: str, path: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
 	def search_web( self, prompt: str, model: str='gpt-4.1-nano-2025-04-14',
 			recency: int=30, max_results: int=100, ) -> str | None:
@@ -616,6 +613,7 @@ class Chat( GPT ):
 			self.model = model
 			self.search_recency = recency
 			self.max_search_results = max_results
+			self.client = OpenAI( api_key=self.api_key )
 			self.web_options = { 'search_recency_days': self.search_recency,
 			                     'max_search_results': self.max_search_results }
 			self.messages = [
@@ -633,175 +631,8 @@ class Chat( GPT ):
 			exception.cause = 'Chat'
 			exception.method = ('search_web( self, prompt: str, model: str, '
 			                    'recency: int=30, max_results: int=8 ) -> str | None')
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 
-	def upload_file( self, filepath: str, purpose: str='user_data' ) -> str | None:
-		'''
-			
-			Returns:
-			--------
-			A List[ str ] of file_ids
-
-		'''
-		try:
-			throw_if( 'filepath', filepath )
-			self.filepath = filepath
-			self.purpose = purpose
-			self.client = OpenAI( api_key=self.api_key )
-			self.file = self.client.files.create( file=open( file=filepath, mode='rb' ),
-				purpose=self.purpose )
-			return self.file.id
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gpt'
-			exception.cause = 'Chat'
-			exception.method = 'upload_file( self, filepath: str, purpose: str=user_data ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def retrieve_file( self, id: str ) -> List[ str ] | None:
-		'''
-			
-			Returns:
-			--------
-			A List[ str ] of file_ids
-
-		'''
-		try:
-			throw_if( 'id', id )
-			self.client = OpenAI( api_key=self.api_key )
-			_files = self.client.files.retrieve( file_id=id )
-			return _files
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gpt'
-			exception.cause = 'Chat'
-			exception.method = 'retrieve_file( self, id: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def retrieve_files( self, purpose: str = "user_data" ):
-		self.purpose = purpose
-		self.client = OpenAI( api_key=self.api_key )
-		page = self.client.files.list( )  # no purpose arg
-		files = getattr( page, "data", None ) or page
-		out = [ ]
-		for f in files:
-			if purpose and getattr( f, "purpose", None ) != purpose:
-				continue
-			out.append( {
-					"id": str( getattr( f, "id", "" ) ),
-					"filename": str( getattr( f, "filename", "" ) ),
-					"purpose": str( getattr( f, "purpose", "" ) ),
-			} )
-		return out
-	
-	def retrieve_content( self, id: str ) -> str | None:
-		'''
-			
-			Returns:
-			--------
-			A List[ str ] of file_ids
-
-		'''
-		try:
-			throw_if( 'id', id )
-			self.client = OpenAI( api_key=self.api_key )
-			_files = self.client.files.content( file_id=id )
-			return _files
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gpt'
-			exception.cause = 'Chat'
-			exception.method = 'retrieve_file( self, id: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def delete_file( self, id: str ) -> bool | None:
-		'''
-			
-			Returns:
-			--------
-			A List[ str ] of file_ids
-
-		'''
-		try:
-			throw_if( 'id', id )
-			self.client = OpenAI( api_key=self.api_key )
-			_deleted = self.client.files.delete( file_id=id )
-			return bool( _deleted )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gpt'
-			exception.cause = 'Chat'
-			exception.method = 'delete_file( self, id: str ) -> FileDeleted '
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def create_store( self, store_name: str ) -> VectorStore | None:
-		'''
-			
-			Returns:
-			--------
-			A List[ str ] of file_ids
-
-		'''
-		try:
-			throw_if( 'store_name', store_name )
-			self.client = OpenAI( api_key=self.api_key )
-			_store = self.client.vector_stores.create( name=store_name )
-			return _store
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gpt'
-			exception.cause = 'Chat'
-			exception.method = 'create_store( self, id: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def retrieve_store( self, id: str ) -> VectorStore | None:
-		'''
-			
-			Returns:
-			--------
-			A List[ str ] of file_ids
-
-		'''
-		try:
-			throw_if( 'id', id )
-			self.client = OpenAI( api_key=self.api_key )
-			vector_store = self.client.vector_stores.retrieve( vector_store_id=id )
-			return vector_store
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gpt'
-			exception.cause = 'Chat'
-			exception.method = 'retrieve_store( self, purpose: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def delete_store( self, id: str ) -> bool | None:
-		'''
-			
-			Returns:
-			--------
-			A List[ str ] of file_ids
-
-		'''
-		try:
-			throw_if( 'id', id )
-			self.client = OpenAI( api_key=self.api_key )
-			_deleted = self.client.vector_stores.delete( vector_store_id=id )
-			return bool( _deleted )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gpt'
-			exception.cause = 'Chat'
-			exception.method = 'retrieve_store( self, purpose: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
-		
 	def __dir__( self ) -> List[ str ] | None:
 		return [ 'num',
 		         'temperature',
@@ -828,29 +659,14 @@ class Chat( GPT ):
 		         'name',
 		         'id',
 		         'description',
-		         'get_format_options',
-		         'get_model_options',
+		         'format_options',
+		         'model_options',
 		         'reasoning_effort',
-		         'purpose_options',
 		         'input_text',
-		         'metadata',
-		         'get_files',
-		         'get_data',
-		         'dump',
-		         'translate',
-		         'transcribe',
 		         'generate_text',
-		         'generate_image',
 		         'analyze_image',
-		         'edit_image',
 		         'summarize_document',
-		         'search_web',
-		         'search_files',
-		         'retrieve_file',
-		         'retrieve_files',
-		         'retrieve_content',
-		         'delete_file',
-		         'upload_file', ]
+		         'search_web']
 
 class Images( GPT ):
 	"""
@@ -921,18 +737,19 @@ class Images( GPT ):
 	def __init__( self, prompt: str=None, model: str='gpt-image-1', temperature: float=None,
 			top_p: float=None, presence: float=None, frequency: float=None,
 			max_tokens: int=None, store: bool=None, stream: bool=False,  backcolor: str=None,
-			instruct: str=None, background: bool=None, messages: List[ Dict[ str, str ] ]=[ ],
-			format: str=None,  number: int=None, include: List[ Dict[ str, str ] ]=[ ],
-			tools: List[ Dict[ str, str ] ]=[ ], max_tools: Optional[ int ]=None,
-			tool_choice: Optional[ str ]=None, image_path: str=None, is_parallel: bool=None,
-			input: List[ Dict[ str, str ] ]=[ ], previous_id: str=None,
-			reasoning: Dict[ str, str ]=[ ],  input_text: str=None, image_url: str=None,
+			instruct: str=None, background: bool=None, number: int=None,
+			image_format: str=None,  include: List[ Dict[ str, str ] ]=[ ],
+			tools: List[ Dict[ str, str ] ]=[ ], max_tools: int=None,
+			respose_format: Dict[ str, str ]={ }, tool_choice: str=None, image_path: str=None,
+			is_parallel: bool=None, input: List[ Dict[ str, str ] ]=[ ], previous_id: str=None,
+			reasoning: Dict[ str, str ]={ },  input_text: str=None, image_url: str=None,
 			content: List[ Dict[ str, str ] ]=[ ], quality: str=None, size: str=None,
 			detail: str=None, style: str=None ):
-		super( ).__init__( model, prompt, temperature, top_p, presence, store, stream,
-			format, number, instruct, messages, background, max_tokens, frequency )
+		super( ).__init__( )
 		self.api_key = cfg.OPENAI_API_KEY
 		self.client = None
+		self.model = model
+		self.number = number
 		self.previous_id = previous_id
 		self.temperature = temperature
 		self.top_percent = top_p
@@ -957,11 +774,10 @@ class Images( GPT ):
 		self.include = include
 		self.quality = quality
 		self.detail = detail
-		self.model = None
 		self.size = size
 		self.style = style
-		self.response_format = format
-		self.output_format = None
+		self.response_format = respose_format
+		self.output_format = image_format
 		self.parallel_tools = is_parallel
 	
 	@property
@@ -996,7 +812,11 @@ class Images( GPT ):
 		         'gpt-4.1',
 		         'gpt-4.1-mini',
 		         'gpt-4o',
-		         'gpt-4o-mini' ]
+		         'gpt-4o-mini',
+		         "dall-e-2",
+		         "dall-e-3",
+		         "gpt-image-1",
+		         "gpt-image-1-mini" ]
 	
 	@property
 	def size_options( self ) -> List[ str ]:
@@ -1143,7 +963,7 @@ class Images( GPT ):
 		         'minimal',
 		         'xhigh' ]
 	
-	def generate( self, prompt: str, number: int=1, model: str ='dall-e-3',
+	def generate( self, prompt: str, number: int=1, model: str='gpt-image-1-mini',
 			size: str='1024x1024', quality: str='standard', fmt: str = '.png' ) -> str | None:
 		'''
 	
@@ -1182,7 +1002,7 @@ class Images( GPT ):
 			exception.method = ('generate_image( self, prompt: str ) -> str | None')
 			raise exception
 	
-	def analyze( self, text: str, path: str, model: str='gpt-4o-mini', ) -> str:
+	def analyze( self, text: str, path: str, instruct: str, model: str='gpt-4o-mini' ) -> str:
 		'''
 	
 	        Purpose:
@@ -1203,30 +1023,33 @@ class Images( GPT ):
 		try:
 			throw_if( 'text', text )
 			throw_if( 'path', path )
+			throw_if( 'instruct', instruct )
+			self.instructions = instruct
 			self.input_text = text
 			self.model = model
 			self.file_path = path
+			self.include.append( 'message.input_image.image_url' )
 			self.input = [
-					{
-							'role': 'user',
-							'content': [
-									{ 'type': 'input_text', 'text': self.input_text },
-									{ 'type': 'input_image', 'image_url': self.file_path },
-							],
-					} ]
-			
+			{
+					'role': 'user',
+					'content': [
+							{ 'type': 'input_text', 'text': self.input_text },
+							{ 'type': 'input_image', 'image_url': self.file_path },
+					],
+			} ]
+	
 			self.client = OpenAI( api_key=self.api_key )
 			self.response = self.client.responses.create( model=self.model, input=self.input,
 				max_output_tokens=self.max_completion_tokens, temperature=self.temperature,
-				tool_choice=self.tool_choice, stream=self.stream, store=self.store )
+				tool_choice=self.tool_choice, include=self.include,
+				instructions=self.instructions, stream=self.stream, store=self.store )
 			return self.response.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gpt'
 			exception.cause = 'Image'
 			exception.method = 'analyze( self, path: str, text: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
+			raise  exception
 	
 	def edit( self, prompt: str, path: str, size: str='1024x1024' ) -> str:
 		"""
@@ -1252,6 +1075,7 @@ class Images( GPT ):
 			self.file_path = path
 			self.size = size
 			self.client = OpenAI( api_key=self.api_key )
+			self.client.images.create_variation()
 			self.response = self.client.images.edit( model=self.model,
 				image=open( self.file_path, 'rb' ), prompt=self.input_text, n=self.number,
 				size=self.size, )
@@ -1261,8 +1085,7 @@ class Images( GPT ):
 			exception.module = 'gpt'
 			exception.cause = 'Image'
 			exception.method = 'edit( self, text: str, path: str, size: str=1024x1024 ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -1353,7 +1176,7 @@ class TTS(  ):
 	input: Optional[ str ]
 	instructions: Optional[ str ]
 	response: Optional[ Response ]
-	streamed_response: Optional[ SpeechWithStreamingResponse ]
+	streamed_response: Optional[ Response ]
 	tools: Optional[ List[ Dict[ str, str ] ] ]
 	response_format: Optional[ str ]
 	file_path: Optional[ str ]
@@ -1472,8 +1295,7 @@ class TTS(  ):
 			exception.module = 'gpt'
 			exception.cause = 'TTS'
 			exception.method = 'create_speech( self, prompt: str, path: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -1545,8 +1367,7 @@ class Transcription( GPT ):
 			max_tokens: int=None, stream: bool=None, store: bool=None, language: str=None,
 			instruct: str=None, format: str=None,  background: bool=None,
 			messages: List[ Dict[ str, str ] ]=None, stops: List[ str ]=None  ):
-		super( ).__init__( model, prompt, temperature, top_p, presence, store, stream, stops,
-			format, number, instruct, messages, background, max_tokens, frequency )
+		super( ).__init__(  )
 		self.api_key = cfg.OPENAI_API_KEY
 		self.temperature = temperature
 		self.top_percent = top_p
@@ -1655,8 +1476,7 @@ class Transcription( GPT ):
 			ex.module = 'boo'
 			ex.cause = 'Transcription'
 			ex.method = 'transcribe(self, path)'
-			error = ErrorDialog( ex )
-			error.show( )
+			raise ex
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -1848,14 +1668,13 @@ class Translation( GPT ):
 			with open( filepath, 'rb' ) as audio_file:
 				self.response = self.client.audio.translations.create( model=self.model,
 					file=audio_file )
-			return resp.text
+			return self.response.text
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'gpt'
 			ex.cause = 'Translation'
 			ex.method = 'translate(self, path)'
-			error = ErrorDialog( ex )
-			error.show( )
+			raise ex
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -1990,6 +1809,7 @@ class Embeddings( GPT ):
 			self.model = model
 			self.encoding_format = format
 			self.dimensions = dimensions
+			self.client = OpenAI( api_key=self.api_key )
 			if self.model == 'text-embedding-3-large' and self.dimensions is not None:
 				self.response = self.client.embeddings.create( input=self.input_text, model=self.model,
 					encoding_format=self.encoding_format, dimensions=self.dimensions )
@@ -2035,8 +1855,7 @@ class Embeddings( GPT ):
 			exception.module = 'gpt'
 			exception.cause = 'Embedding'
 			exception.method = 'count_tokens( self, text: str, coding: str ) -> int'
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
 	def __dir__( self ) -> List[ str ] | None:
 		'''
@@ -2321,6 +2140,7 @@ class Files( GPT ):
 			self.prompt = prompt
 			self.file_path = filepath
 			self.model = model
+			self.client = OpenAI( api_key=self.api_key )
 			self.file = self.client.files.create( file=open( file=self.file_path, mode='rb' ),
 				purpose='user_data' )
 			self.messages = [{'role': 'user',
@@ -2565,8 +2385,7 @@ class VectorStores( GPT ):
 			exception.module = 'gpt'
 			exception.cause = 'VectorStore'
 			exception.method = 'create( self, store_name: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
 	def list( self, store_id: str ) -> List[ Any ] | None:
 		try:
@@ -2580,8 +2399,7 @@ class VectorStores( GPT ):
 			exception.module = 'gpt'
 			exception.cause = 'VectorStore'
 			exception.method = 'list( self, store_id: str ) -> Any'
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
 	def retrieve( self, store_id: str ) -> Any | None:
 		'''
@@ -2602,8 +2420,7 @@ class VectorStores( GPT ):
 			exception.module = 'gpt'
 			exception.cause = 'VectorStore'
 			exception.method = 'retrieve( self, id: str ) -> Any'
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
 	def search( self, prompt: str, store_id: str, model: str='gpt-4.1-nano-2025-04-14' ) -> str | None:
 		"""
@@ -2643,8 +2460,7 @@ class VectorStores( GPT ):
 			exception.cause = 'VectorStore'
 			exception.method = ('search(self, prompt: str, store_id: str, '
 			                    'model: str=gpt-4.1-nano) -> str')
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
 	def survey( self, prompt: str, store_ids: List[ str ]=None, results: int=10,
 			model: str='gpt-4.1-nano' ) -> str | None:
@@ -2677,6 +2493,7 @@ class VectorStores( GPT ):
 				'vector_store_ids': self.vector_store_ids,
 				'max_num_results': self.max_search_results,
 			} ]
+			self.client = OpenAI( api_key=self.api_key )
 			self.response = self.client.responses.create( model=self.model, tools=self.tools,
 				input=self.prompt )
 			return self.response.output_text
@@ -2686,10 +2503,9 @@ class VectorStores( GPT ):
 			exception.cause = 'VectorStore'
 			exception.method = ('survey( self, prompt: str, store_ids: List[ str ], '
 			                    'results: int=10, model: str=gpt-4.1-nano )->str')
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
-	def update( self, store_id: str, filename: str ) -> None:
+	def update( self, store_id: str, filename: str ) -> VectorStore | None:
 		try:
 			throw_if( 'store_id', store_id )
 			throw_if( 'filename', filename )
@@ -2703,8 +2519,7 @@ class VectorStores( GPT ):
 			exception.module = 'gpt'
 			exception.cause = 'VectorStore'
 			exception.method = 'update( self, store_id: str, filename: str )'
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
 	def delete( self, store_id: str ) -> None:
 		'''
@@ -2724,8 +2539,7 @@ class VectorStores( GPT ):
 			exception.module = 'gpt'
 			exception.cause = 'VectorStore'
 			exception.method = 'delete( self, id: str )'
-			error = ErrorDialog( exception )
-			error.show( )
+			raise exception
 	
 	def __dir__( self ) -> List[ str ] | None:
 		return [ 'client',
