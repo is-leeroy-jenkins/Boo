@@ -41,24 +41,40 @@
   </summary>
   ******************************************************************************************
 '''
+from google.genai.file_search_stores import FileSearchStores
+import config as cfg
+from boogr import ErrorDialog, Error
 import os
 import requests
 import PIL.Image
 from pathlib import Path
 from typing import Any, List, Optional, Dict, Union
 from google import genai
+from google.cloud import storage
 from google.genai import types
+from google.genai.pagers import Pager
 from google.genai.types import (Part, GenerateContentConfig, ImageConfig, FunctionCallingConfig,
                                 GenerateImagesConfig, GenerateVideosConfig, ThinkingConfig,
                                 GeneratedImage, EmbedContentConfig, Content, ContentEmbedding,
-                                Candidate, HttpOptions, GenerateImagesResponse,
-                                GenerateContentResponse, GenerateVideosResponse, Image, File)
-import config as cfg
-from boogr import ErrorDialog, Error
+                                Candidate, HttpOptions, GenerateImagesResponse, Field, FileSearchStore,
+                                GenerateContentResponse, GenerateVideosResponse, Image, File,
+                                SpeakerVoiceConfig, VoiceConfig, SpeechConfig, Tool, ToolConfig,
+                                GoogleSearch, UrlContext )
 
 def throw_if( name: str, value: object ):
 	if value is None:
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
+
+def encode_image( image_path: str ) -> str:
+	"""
+		
+		Purpose:
+		---------
+		Encodes a local image to a base64 string for vision API requests.
+		
+	"""
+	with open( image_path, "rb" ) as image_file:
+		return base64.b64encode( image_file.read( ) ).decode( 'utf-8' )
 
 class Gemini( ):
 	'''
@@ -88,7 +104,7 @@ class Gemini( ):
 		image_config      : ImageConfig - Multimodal settings
 		tool_config       : list - Collection of Tool objects for grounding
 		candidate_count   : int - Response count
-		modalities        : list - I/O types
+		response_modalities        : list - I/O types
 		stops             : list - Stop sequences
 		frequency_penalty : float - Repetition control
 		presence_penalty  : float - Topic control
@@ -96,191 +112,54 @@ class Gemini( ):
 
 	'''
 	number: Optional[ int ]
-	api_key: Optional[ str ]
+	google_api_key: Optional[ str ]
+	gemini_api_key: Optional[ str ]
 	instructions: Optional[ str ]
 	prompt: Optional[ str ]
 	model: Optional[ str ]
 	api_version: Optional[ str ]
-	max_output_tokens: Optional[ int ]
+	max_tokens: Optional[ int ]
 	temperature: Optional[ float ]
 	top_p: Optional[ float ]
 	top_k: Optional[ int ]
+	candidate_count: Optional[ int ]
+	media_resolution: Optional[ str ]
+	response_modalities: Optional[ List[ str ] ]
+	stops: Optional[ List[ str ] ]
+	domains: Optional[ List[ str ] ]
+	frequency_penalty: Optional[ float ]
+	presence_penalty: Optional[ float ]
+	response_format: Optional[ str ]
+	content_response: Optional[ GenerateContentResponse ]
+	image_response: Optional[ GenerateImagesResponse ]
 	content_config: Optional[ GenerateContentConfig ]
 	function_config: Optional[ FunctionCallingConfig ]
 	thought_config: Optional[ ThinkingConfig ]
 	genimg_config: Optional[ GenerateImagesConfig ]
 	image_config: Optional[ ImageConfig ]
 	tool_config: Optional[ List[ types.Tool ] ]
-	candidate_count: Optional[ int ]
-	modalities: Optional[ List[ str ] ]
-	stops: Optional[ List[ str ] ]
-	frequency_penalty: Optional[ float ]
-	presence_penalty: Optional[ float ]
-	response_format: Optional[ str ]
+	tool_choice: Optional[ str ]
+	tools: Optional[ List[ str ] ]
 	
 	def __init__( self ):
-		self.api_key = cfg.GOOGLE_API_KEY
-		self.model = None;
-		self.content_config = None;
-		self.image_config = None
-		self.function_config = None;
-		self.thought_config = None;
-		self.genimg_config = None
-		self.tool_config = None;
-		self.api_version = None;
-		self.temperature = 0.7
-		self.top_p = 0.9;
-		self.top_k = 40;
-		self.candidate_count = 1
-		self.frequency_penalty = 0.0;
-		self.presence_penalty = 0.0;
-		self.max_output_tokens = 2048
-		self.instructions = None;
-		self.prompt = None;
+		self.google_api_key = cfg.GOOGLE_API_KEY
+		self.gemini_api_key = cfg.GEMINI_API_KEY
+		self.model = None
+		self.api_version = None
+		self.temperature = None
+		self.top_p = None
+		self.top_k = None
+		self.candidate_count = None
+		self.frequency_penalty = None
+		self.presence_penalty = None
+		self.max_tokens = None
+		self.instructions = None
+		self.prompt = None
 		self.response_format = None
-		self.number = 1;
-		self.modalities = None;
-		self.stops = None
-
-class FileStore( Gemini ):
-	'''
-
-		Purpose:
-		--------
-		Class encapsulating Gemini's FileStores API for uploading and managing remote assets.
-
-		Attributes:
-		-----------
-		client       : Client - Initialized GenAI client
-		file_id      : str - ID of the target file
-		display_name : str - User-friendly label for the file
-		mime_type    : str - Content type of the file
-		file_path    : str - Local filesystem path
-		file_list    : list - Collection of remote File objects
-		response     : any - RAW API response object
-		use_vertex   : bool - Integration flag
-
-		Methods:
-		--------
-		upload( path, name )      : Uploads a local file to Gemini storage
-		retrieve( file_id )       : Fetches metadata for a specific remote file
-		list_files( )             : Lists all files currently in remote storage
-		delete( file_id )         : Removes a file from remote storage
-
-	'''
-	client: Optional[ genai.Client ]
-	file_id: Optional[ str ]
-	display_name: Optional[ str ]
-	mime_type: Optional[ str ]
-	file_path: Optional[ str ]
-	file_list: Optional[ List[ File ] ]
-	response: Optional[ Any ]
-	use_vertex: Optional[ bool ]
-	
-	def __init__( self, use_ai: bool=False, version: str='v1alpha' ):
-		super( ).__init__( )
-		self.use_vertex = use_ai
-		self.api_version = version
-		self.http_options = HttpOptions( api_version=self.api_version )
-		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
-			http_options=self.http_options )
-		self.file_id = None;
-		self.display_name = None;
-		self.mime_type = None
-		self.file_path = None;
-		self.file_list = [ ];
-		self.response = None
-	
-	def upload( self, path: str, name: str=None ) -> File | None:
-		"""
-		Purpose: Uploads a file from a local path to Gemini's remote temporal storage.
-		Parameters:
-		-----------
-		path: str - Local filesystem path to the file.
-		name: str - Optional display name for the file.
-		Returns:
-		--------
-		Optional[ File ] - Metadata object of the uploaded file.
-		"""
-		try:
-			throw_if( 'path', path )
-			self.file_path = path;
-			self.display_name = name
-			self.response = self.client.files.upload( path=self.file_path,
-				config={
-						'display_name': self.display_name } )
-			return self.response
-		except Exception as e:
-			exception = Error( e );
-			exception.module = 'gemini'
-			exception.cause = 'FileStore'
-			exception.method = 'upload( self, path: str, name: str ) -> Optional[ File ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def retrieve( self, file_id: str ) -> Optional[ File ]:
-		"""
-		Purpose: Retrieves the metadata and state of a previously uploaded file.
-		Parameters:
-		-----------
-		file_id: str - The unique identifier of the remote file.
-		Returns:
-		--------
-		Optional[ File ] - File metadata object.
-		"""
-		try:
-			throw_if( 'file_id', file_id )
-			self.file_id = file_id
-			self.response = self.client.files.get( name=self.file_id )
-			return self.response
-		except Exception as e:
-			exception = Error( e );
-			exception.module = 'gemini'
-			exception.cause = 'FileStore'
-			exception.method = 'retrieve( self, file_id: str ) -> Optional[ File ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def list_files( self ) -> List[ File ] | None:
-		"""
-		Purpose: Returns a list of all files currently stored in the user's remote project.
-		Returns:
-		--------
-		Optional[ List[ File ] ] - List of File metadata objects.
-		"""
-		try:
-			self.file_list = list( self.client.files.list( ) )
-			return self.file_list
-		except Exception as e:
-			exception = Error( e );
-			exception.module = 'gemini'
-			exception.cause = 'FileStore'
-			exception.method = 'list_files( self ) -> Optional[ List[ File ] ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def delete( self, file_id: str ) -> bool | None:
-		"""
-		Purpose: Deletes a specific file from remote storage to free up project quota.
-		Parameters:
-		-----------
-		file_id: str - Unique identifier of the file to remove.
-		Returns:
-		--------
-		bool - True if deletion was successful.
-		"""
-		try:
-			throw_if( 'file_id', file_id )
-			self.file_id = file_id
-			self.client.files.delete( name=self.file_id )
-			return True
-		except Exception as e:
-			exception = Error( e );
-			exception.module = 'gemini'
-			exception.cause = 'FileStore'
-			exception.method = 'delete( self, file_id: str ) -> bool'
-			error = ErrorDialog( exception )
-			error.show( )
+		self.number = None
+		self.response_modalities = [ ]
+		self.stops = [ ]
+		self.tools = [ ]
 
 class Chat( Gemini ):
 	'''
@@ -314,63 +193,78 @@ class Chat( Gemini ):
 	use_vertex: Optional[ bool ]
 	http_options: Optional[ HttpOptions ]
 	client: Optional[ genai.Client ]
+	storage_client: Optional[ storage.Client ]
 	contents: Optional[ Union[ str, List[ str ] ] ]
-	content_response: Optional[ GenerateContentResponse ]
-	image_response: Optional[ GenerateImagesResponse ]
 	image_uri: Optional[ str ]
 	audio_uri: Optional[ str ]
 	file_path: Optional[ str ]
-	response_modalities: Optional[ List[ str ] ]
+	files: Optional[ List[ str ] ]
 	
-	def __init__( self, n: int=1, model: str = 'gemini-2.0-flash', version: str='v1alpha',
-			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9,
-			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			instruct: str=None, contents: List[ str ]=None ):
+	def __init__( self, model: str='gemini-2.5-flash-lite' ):
 		super( ).__init__( )
-		self.number = n
-		self.model = model
-		self.api_version = version
-		self.top_p = top_p;
-		self.temperature = temperature
-		self.frequency_penalty = frequency
-		self.presence_penalty = presence
-		self.candidate_count = n;
-		self.max_tokens = max_tokens
-		self.use_vertex = use_ai
-		self.instructions = instruct;
-		self.contents = contents
-		self.http_options = HttpOptions( api_version=self.api_version )
-		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
-			http_options=self.http_options )
-		self.response_modalities = [ 'TEXT', 'IMAGE' ]
-		self.content_config = None;
-		self.image_config = None;
+		self.api_version = None
+		self.client = None
+		self.content_config = None
+		self.image_config = None
 		self.function_config = None
-		self.thought_config = None;
-		self.tool_config = None;
+		self.thought_config = None
+		self.genimg_config = None
+		self.tool_config = None
+		self.tools = [ ]
+		self.response_modalities = [ ]
+		self.files = [ ]
+		self.http_options = { }
+		self.number = None
+		self.model = model
+		self.top_p = None
+		self.top_k = None
+		self.temperature = None
+		self.frequency_penalty = None
+		self.presence_penalty = None
+		self.candidate_count = None
+		self.max_tokens = None
+		self.use_vertex = None
+		self.instructions = None
+		self.media_resolution = None
+		self.tool_choice = None
+		self.contents = None
+		self.client = None
+		self.storage_client = None
 		self.content_response = None
-		self.image_response = None;
-		self.image_uri = None;
-		self.audio_uri = None;
+		self.image_response = None
+		self.image_uri = None
+		self.audio_uri = None
 		self.file_path = None
 	
 	@property
 	def model_options( self ) -> List[ str ] | None:
-		"""Returns list of available chat models."""
-		return [ 'gemini-2.0-flash',
-		         'gemini-2.0-flash-lite',
-		         'gemini-1.5-pro',
-		         'gemini-1.5-flash' ]
+		"""
+			
+			Purpose:
+			--------
+			Returns list of available chat models.
+			
+		"""
+		return [ 'gemini-2.5-flash',
+		         'gemini-2.5 flash-lite',
+				 'gemini-2.0-flash',
+		         'gemini-2.0-flash-lite' ]
 	
 	@property
 	def version_options( self ) -> List[ str ] | None:
-		"""Returns list of available API versions."""
+		"""
+			
+			Purpose:
+			--------
+			Returns list of available API versions.
+			
+		"""
 		return [ 'v1',
 		         'v1alpha',
 		         'v1beta1' ]
 	
 	@property
-	def mime_options( self ):
+	def format_options( self ):
 		'''
 			
 			Returns:
@@ -378,15 +272,99 @@ class Chat( Gemini ):
 			A List[ str ] of mime types
 			
 		'''
-		return [ 'application/json',
-		         'text/plain',
+		return [ 'text/plain',
+		         'application/json',
 		         'text/x.enum' ]
 	
-	def generate_text( self, prompt: str, model: str='gemini-2.0-flash', temperature: float=0.8,
-			top_p: float=0.9, frequency: float=0.0, presence: float=0.0,
-			max_tokens: int=10000, stops: List[str]=None ) -> GenerateContentResponse | None:
+	@property
+	def tool_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of available tools options
+
+		'''
+		return [ 'google_search',
+		         'google_maps',
+		         'file_search',
+		         'url_context',
+		         'code_execution',
+		         'computer_use' ]
+	
+	@property
+	def media_options( self ):
+		'''
+		
+		Purpose:
+		--------
+		Returns a List[ str ] of media resolution options.
+		
+		'''
+		return [ 'media_resolution_high',
+		         'media_resolution_medium',
+		         'media_resolution_low' ]
+	
+	@property
+	def choice_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of available tools options
+
+		'''
+		return [ 'AUTO',
+		         'ANY',
+		         'NONE',
+		         'VALIDATED' ]
+	
+	@property
+	def reasoning_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of thinking effort options
+
+		'''
+		return [ 'THINKING_LEVEL_UNSPECIFIED','MINIMAL',
+		         'LOW', 'MEDIUM', 'HIGH' ]
+	
+	@property
+	def include_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of the includeable options
+
+		'''
+		return [ 'file_search_call.results',
+		         'message.input_image.image_url',
+		         'message.output_text.logprobs',
+		         'reasoning.encrypted_content' ]
+	
+	@property
+	def modality_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of available modality options
+
+		'''
+		return [ 'MODALITY_UNSPECIFIED', 'TEXT', 'IMAGE', 'AUDIO' ]
+	
+	def generate_text( self, prompt: str, model: str='gemini-2.5-flash-lite', temperature: float=None,
+			top_p: float=None, frequency: float=None, presence: float=None,
+			max_tokens: int=None, stops: List[str]=None, instruct: str=None ) -> str | None:
 		"""
-			Purpose: Generates a text completion based on the provided prompt and configuration.
+		
+			Purpose:
+			-----------
+			Generates a text completion based on the provided prompt and configuration.
+			
 			Parameters:
 			-----------
 			prompt: str - The text input for the model.
@@ -405,13 +383,15 @@ class Chat( Gemini ):
 			self.presence_penalty = presence
 			self.max_tokens = max_tokens
 			self.stops = stops
+			self.instructions = instruct
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
 				top_p=self.top_p, max_output_tokens=self.max_tokens,
 				candidate_count=self.candidate_count, system_instruction=self.instructions,
 				frequency_penalty=self.frequency_penalty, presence_penalty=self.presence_penalty )
+			self.client = genai.Client( api_key=self.gemini_api_key )
 			self.content_response = self.client.models.generate_content( model=self.model,
 				contents=self.contents, config=self.content_config )
-			return self.content_response
+			return self.content_response.text
 		except Exception as e:
 			exception = Error( e );
 			exception.module = 'gemini'
@@ -420,7 +400,9 @@ class Chat( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def web_search( self, prompt: str, model: str = 'gemini-2.0-flash' ) -> Optional[ str ]:
+	def web_search( self, prompt: str, model: str='gemini-2.5-flash-lite', temperature: float=None,
+			top_p: float=None, frequency: float=None, presence: float=None,
+			max_tokens: int=None, stops: List[ str ]=None, instruct: str=None ) -> str | None:
 		"""
 		
 			Purpose:
@@ -441,9 +423,18 @@ class Chat( Gemini ):
 			throw_if( 'prompt', prompt )
 			self.contents = prompt;
 			self.model = model
+			self.contents = prompt;
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.instructions = instruct
 			self.tool_config = [ types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
 				tools=self.tool_config, system_instruction=self.instructions )
+			self.client = genai.Client( api_key=self.gemini_api_key )
 			response = self.client.models.generate_content( model=self.model,
 				contents=self.contents, config=self.content_config )
 			return response.text
@@ -455,7 +446,9 @@ class Chat( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def search_maps( self, prompt: str, model: str='gemini-2.0-flash' ) -> Optional[ str ]:
+	def search_maps( self, prompt: str, model: str='gemini-2.5-flash-lite', temperature: float=None,
+			top_p: float=None, frequency: float=None, presence: float=None,
+			max_tokens: int=None, stops: List[ str ]=None, instruct: str=None ) -> str | None:
 		"""
 		
 			Purpose:
@@ -475,9 +468,18 @@ class Chat( Gemini ):
 			throw_if( 'prompt', prompt )
 			self.contents = f"Using Google Search and Maps data, answer: {prompt}"
 			self.model = model
+			self.contents = prompt;
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.instructions = instruct
 			self.tool_config = [ types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
 				tools=self.tool_config  )
+			self.client = genai.Client( api_key=self.gemini_api_key )
 			response = self.client.models.generate_content( model=self.model,
 				contents=self.contents, config=self.content_config )
 			return response.text
@@ -489,7 +491,9 @@ class Chat( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 	
-	def analyze_image( self, prompt: str, filepath: str, model: str='gemini-2.0-flash' ) -> str | None:
+	def analyze_image( self, prompt: str, filepath: str, model: str='gemini-2.5-flash-lite',
+			temperature: float=None, top_p: float=None, frequency: float=None, presence: float=None,
+			max_tokens: int=None, stops: List[ str ]=None, instruct: str=None ) -> str | None:
 		"""
 			
 			Purpose:
@@ -513,9 +517,17 @@ class Chat( Gemini ):
 			self.prompt = prompt
 			self.file_path = filepath
 			self.model = model
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.instructions = instruct
 			img = PIL.Image.open( self.file_path )
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
 				top_p=self.top_p, max_output_tokens=self.max_tokens )
+			self.client = genai.Client( api_key=self.gemini_api_key )
 			response = self.client.models.generate_content( model=self.model,
 				contents=[ img,  self.prompt ], config=self.content_config )
 			return response.text
@@ -526,50 +538,443 @@ class Chat( Gemini ):
 			exception.method = 'analyze_image( self, prompt, filepath, model ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
+
+class Images( Gemini ):
+	"""
+
+	    Purpose
+	    ___________
+	    Class for generating images from text using Google Imagen models.
+
+	    Attributes:
+	    -----------
+	    client       : Client - GenAI instance
+	    aspect_ratio : str - W:H ratio
+	    use_vertex   : bool - Integration flag
+
+	    Methods:
+	    --------
+	    generate( prompt, aspect ) : Generates Imagen asset
+
+    """
+	client: Optional[ genai.Client ]
+	aspect_ratio: Optional[ str ]
+	use_vertex: Optional[ bool ]
+	resolution: Optional[ str ]
+	size: Optional[ str ]
 	
-	def summarize_document( self, prompt: str, filepath: str, model: str='gemini-2.0-flash' ) -> str | None:
+	def __init__( self, model: str='gemini-2.5-flash-image' ):
+		super( ).__init__( )
+		self.number = None
+		self.model = model
+		self.client = None
+		self.instructions = None
+		self.content_config = None
+		self.image_config = None
+		self.function_config = None
+		self.thought_config = None
+		self.genimg_config = None
+		self.tool_config = None
+		self.response_modalities = [ ]
+		self.tools = [ ]
+		self.stops = [ ]
+		self.domains = [ ]
+		self.http_options = { }
+		self.temperature = None
+		self.size = None
+		self.top_p = None
+		self.top_k = None
+		self.aspect_ratio = None
+		self.frequency_penalty = None
+		self.presence_penalty = None
+		self.candidate_count = None
+		self.max_output_tokens = None
+		self.use_vertex = None
+		self.media_resolution = None
+		self.tool_choice = None
+	
+	@property
+	def model_options( self ) -> List[ str ] | None:
 		"""
 			
 			Purpose:
+			--------
+			Returns list of image generation models.
+			
+		"""
+		return [ 'gemini-2.5-flash-image', 'gemini-2.5-flash', 'gemini-2.5-flash-lite',
+		         'gemini-3-flash-preview', 'gemini-3.1-flash-image-preview', ]
+	
+	@property
+	def include_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of the includeable options
+
+		'''
+		return [ 'file_search_call.results',
+		         'message.input_image.image_url',
+		         'message.output_text.logprobs',
+		         'reasoning.encrypted_content' ]
+	
+	@property
+	def aspect_options( self ) -> List[ str ] | None:
+		"""
+			
+			Purpose:
+			--------
+			Returns list of allowed aspect ratios.
+			
+		"""
+		return [ '1:1', '1:4', '1:8', '2:3', '3:2', '3:4', '4:1', '4:3', '4:5', '5:4', '8:1',
+		         '9:16', '16:9', '21:9' ]
+	
+	@property
+	def media_options( self ):
+		'''
+		
+		Purpose:
+		--------
+		Returns a List[ str ] of media resolution options.
+		
+		'''
+		return [ 'media_resolution_high',
+		         'media_resolution_medium',
+		         'media_resolution_low' ]
+	
+	@property
+	def modality_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of available modality options
+
+		'''
+		return [ 'MODALITY_UNSPECIFIED', 'TEXT', 'IMAGE', 'AUDIO', 'DOCUMENT' ]
+	
+	@property
+	def reasoning_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of thinking effort options
+
+		'''
+		return [ 'THINKING_LEVEL_UNSPECIFIED', 'MINIMAL',
+		         'LOW', 'MEDIUM', 'HIGH' ]
+	
+	@property
+	def size_options( self ):
+		'''
+			
+			Purpose:
+			---------
+			Returns list of image sizes
+			
+		'''
+		return [ '1K', '2K', '4K' ]
+	
+	@property
+	def tool_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of available tools options
+
+		'''
+		return [ 'google_search',
+		         'google_maps',
+		         'file_search',
+		         'code_execution',
+		         'computer_use' ]
+	
+	@property
+	def choice_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of available tools options
+
+		'''
+		return [ 'AUTO',
+		         'ANY',
+		         'NONE',
+		         'VALIDATED' ]
+	
+	@property
+	def format_options( self ) -> List[ str ] | None:
+		'''
+			
+			Returns:
+			--------
+			A List[ str ] of mime types
+			
+		'''
+		return [ 'text/plain',
+		         'application/json',
+		         'text/x.enum' ]
+	
+	@property
+	def mime_options( self ) -> List[ str ] | None:
+		'''
+			
+			Returns:
+			--------
+			A List[ str ] of mime types
+			
+		'''
+		return [ 'image/jpeg',
+		         'image/png',
+		         'image/webp',
+		         'image/heic',
+		         'image/heif' ]
+	
+	@property
+	def resolution_options( self ) -> List[ str ] | None:
+		'''
+			
+			Purpose:
 			-------
-			Uploads and summarizes a PDF or text document.
+			Returns a list of resolution options
+			
+		'''
+		return [ '512px', '1K', '2K', '4K' ]
+	
+	def generate( self, prompt: str, model: str='gemini-2.5-flash-image', aspect: str=None,
+			number: int=None, temperature: float=None, top_p: float=None,
+			frequency: float=None, presence: float=None, max_tokens: int=None,
+			instruct: str=None ) -> Optional[ Image ]:
+		"""
+			
+			Purpose:
+			-----------
+			Generates a new image based on a descriptive text prompt.
 			
 			Parameters:
 			-----------
-			prompt: str - Summarization instructions.
-			filepath: str - Path to the document file.
-			model: str - The model identifier for processing.
+			prompt: str - Image description.
+			aspect: str - Aspect ratio.
+			
 			Returns:
 			--------
-			Optional[ str ] - The document summary or None on failure.
+			Optional[ Image ] - The Image data object.
 			
 		"""
 		try:
 			throw_if( 'prompt', prompt )
-			throw_if( 'filepath', filepath )
 			self.prompt = prompt
-			self.file_path = filepath
 			self.model = model
-			self.content_config = GenerateContentConfig( temperature=self.temperature )
-			if self.use_vertex:
-				with open( self.file_path, 'rb' ) as f:
-					doc_part = Part.from_bytes( data=f.read( ), mime_type="application/pdf" )
-				response = self.client.models.generate_content( model=self.model,
-					contents=[ doc_part, self.prompt ], config=self.content_config )
-			else:
-				uploaded_file = self.client.files.upload( path=self.file_path )
-				response = self.client.models.generate_content( model=self.model,
-					contents=[ uploaded_file, self.prompt ], config=self.content_config )
+			self.number = number
+			self.aspect_ratio = aspect
+			self.top_p = top_p
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.instructions = instruct
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.genimg_config = GenerateImagesConfig( aspect_ratio=self.aspect_ratio,
+				number_of_images=self.number )
+			response = self.client.models.generate_images( model=self.model,
+				prompt=self.prompt, config=self.genimg_config )
+			return response.generated_images[ 0 ]
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Images'
+			exception.method = 'generate( self, prompt, aspect ) -> Image'
+			raise exception
+	
+	def analyze( self, prompt: str, model: str='gemini-2.5-flash-image', aspect: str=None,
+			number: int=None, temperature: float=None, top_p: float=None,
+			frequency: float=None, presence: float=None, max_tokens: int=None,
+			instruct: str=None ) -> Optional[ Image ]:
+		"""
+			
+			Purpose:
+			-----------
+			Generates a new image based on a descriptive text prompt.
+			
+			Parameters:
+			-----------
+			prompt: str - Image description.
+			aspect: str - Aspect ratio.
+			
+			Returns:
+			--------
+			Optional[ Image ] - The Image data object.
+			
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.prompt = prompt
+			self.model = model
+			self.number = number
+			self.aspect_ratio = aspect
+			self.top_p = top_p
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.instructions = instruct
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.genimg_config = GenerateImagesConfig( aspect_ratio=self.aspect_ratio,
+				number_of_images=self.number )
+			response = self.client.models.generate_images( model=self.model,
+				prompt=self.prompt, config=self.genimg_config )
+			return response.generated_images[ 0 ]
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Images'
+			exception.method = 'generate( self, prompt, aspect ) -> Image'
+			raise exception
+	
+	def edit( self, prompt: str, model: str='gemini-2.5-flash-image', aspect: str=None,
+			number: int=None, temperature: float=None, top_p: float=None,
+			frequency: float=None, presence: float=None, max_tokens: int=None,
+			instruct: str=None ) -> Optional[ Image ]:
+		"""
+			
+			Purpose:
+			-----------
+			Generates a new image based on a descriptive text prompt.
+			
+			Parameters:
+			-----------
+			prompt: str - Image description.
+			aspect: str - Aspect ratio.
+			
+			Returns:
+			--------
+			Optional[ Image ] - The Image data object.
+			
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.prompt = prompt
+			self.model = model
+			self.number = number
+			self.aspect_ratio = aspect
+			self.top_p = top_p
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.instructions = instruct
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.genimg_config = GenerateImagesConfig( aspect_ratio=self.aspect_ratio,
+				number_of_images=self.number )
+			response = self.client.models.generate_images( model=self.model,
+				prompt=self.prompt, config=self.genimg_config )
+			return response.generated_images[ 0 ]
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Images'
+			exception.method = 'edit( self, prompt, aspect ) -> Image'
+			raise exception
+	
+	def web_search( self, prompt: str, model: str = 'gemini-2.5-flash-lite', temperature: float = None,
+			top_p: float = None, frequency: float = None, presence: float = None,
+			max_tokens: int = None, stops: List[ str ] = None, instruct: str = None ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Generates a response grounded in Google Search results.
+			
+			Parameters:
+			-----------
+			prompt: str - The query for search-augmented generation.
+			model: str - The Gemini model identifier.
+			
+			Returns:
+			--------
+			Optional[ str ] - The grounded text response.
+		
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.contents = prompt;
+			self.model = model
+			self.contents = prompt;
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.instructions = instruct
+			self.tool_config = [
+					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
+			self.content_config = GenerateContentConfig( temperature=self.temperature,
+				tools=self.tool_config, system_instruction=self.instructions )
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			response = self.client.models.generate_content( model=self.model,
+				contents=self.contents, config=self.content_config )
+			return response.text
+		except Exception as e:
+			exception = Error( e );
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'web_search( self, prompt, model ) -> Optional[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	def search_maps( self, prompt: str, model: str = 'gemini-2.5-flash-lite', temperature: float = None,
+			top_p: float = None, frequency: float = None, presence: float = None,
+			max_tokens: int = None, stops: List[ str ] = None, instruct: str = None ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Uses Google Search grounding specifically for location and place-based queries.
+			
+			Parameters:
+			-----------
+			prompt: str - The location or directions query.
+			model: str - The Gemini model identifier.
+			Returns:
+			--------
+			Optional[ str ] - The grounded response containing place data.
+			
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.contents = f"Using Google Search and Maps data, answer: {prompt}"
+			self.model = model
+			self.contents = prompt;
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.instructions = instruct
+			self.tool_config = [
+					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
+			self.content_config = GenerateContentConfig( temperature=self.temperature,
+				tools=self.tool_config )
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			response = self.client.models.generate_content( model=self.model,
+				contents=self.contents, config=self.content_config )
 			return response.text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = 'summarize_document( self, prompt, filepath, model ) -> str'
+			exception.method = 'search_maps( self, prompt, model ) -> Optional[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
 
-class Embedding( Gemini ):
+class Embeddings( Gemini ):
 	'''
 
 		Purpose:
@@ -602,37 +1007,29 @@ class Embedding( Gemini ):
 	embedding: Optional[ List[ float ] ]
 	encoding_format: Optional[ str ]
 	dimensions: Optional[ int ]
-	use_vertex: Optional[ bool ]
 	task_type: Optional[ str ]
-	http_options: Optional[ HttpOptions ]
 	embedding_config: Optional[ types.EmbedContentConfig ]
 	contents: Optional[ List[ str ] ]
 	input_text: Optional[ str ]
 	file_path: Optional[ str ]
 	response_modalities: Optional[ str ]
 	
-	def __init__( self, model: str='text-embedding-004', version: str='v1alpha',
-			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
-			presence: float=0.0, max_tokens: int=10000 ):
+	def __init__( self, model: str='gemini-embedding-001'  ):
 		super( ).__init__( )
 		self.model = model
-		self.api_version = version
-		self.use_vertex = use_ai
-		self.temperature = temperature
-		self.top_p = top_p
-		self.frequency_penalty = frequency
-		self.presence_penalty = presence
-		self.max_tokens = max_tokens
-		self.http_options = HttpOptions( api_version=self.api_version )
-		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
-			http_options=self.http_options )
+		self.temperature = None
+		self.top_p = None
+		self.frequency_penalty = None
+		self.presence_penalty = None
+		self.max_tokens = None
+		self.client = None
 		self.embedding = None;
-		self.response = None;
+		self.response = None
 		self.encoding_format = None
-		self.input_text = None;
-		self.file_path = None;
+		self.input_text = None
+		self.file_path = None
 		self.dimensions = None
-		self.task_type = None;
+		self.task_type = None
 		self.response_modalities = None
 		self.embedding_config = None;
 		self.content_config = None
@@ -640,10 +1037,35 @@ class Embedding( Gemini ):
 	@property
 	def model_options( self ) -> List[ str ] | None:
 		"""Returns list of embedding models."""
-		return [ 'text-embedding-004',
+		return [ 'gemini-embedding-001',
 		         'text-multilingual-embedding-002' ]
 	
-	def generate( self, text: str, model: str='text-embedding-004' ) -> Optional[ List[ float ] ]:
+	@property
+	def encoding_options( self ) -> List[ str ]:
+		'''
+			
+			Returns:
+			--------
+			List[ str ] of available format options
+
+		'''
+		return [ 'float', 'base64' ]
+	
+	@property
+	def task_options( self ) -> List[ str ]:
+		'''
+			
+			Returns:
+			--------
+			List[ str ] of available embedding tasks
+
+		'''
+		return [ 'RETRIEVAL_QUERY', 'RETRIEVAL_DOCUMENT', 'SEMANTIC_SIMILARITY',
+		         'CLASSIFICATION', 'CLUSTERING' ]
+	
+	def create( self, text: str, model: str='gemini-embedding-001', temperature: float=None,
+			top_p: float=None, frequency: float=None, presence: float=None,
+			max_tokens: int=None ) -> List[ float ] | None:
 		"""
 			
 			Purpose:
@@ -664,6 +1086,12 @@ class Embedding( Gemini ):
 			throw_if( 'text', text )
 			self.input_text = text;
 			self.model = model
+			self.temperature = temperature
+			self.top_p = top_p
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.client = genai.Client( api_key=self.gemini_api_key )
 			self.embedding_config = EmbedContentConfig( task_type=self.task_type )
 			self.response = self.client.models.embed_content( model=self.model,
 				contents=self.input_text, config=self.embedding_config )
@@ -703,54 +1131,122 @@ class TTS( Gemini ):
 	speed: Optional[ float ]
 	voice: Optional[ str ]
 	response: Optional[ GenerateContentResponse ]
+	voice_config: Optional[ VoiceConfig ]
+	speaker_config: Optional[ SpeakerVoiceConfig ]
+	speech_config: Optional[ SpeechConfig ]
 	client: Optional[ genai.Client ]
+	language_code: Optional[ str ]
 	audio_path: Optional[ str ]
 	response_format: Optional[ str ]
+	response_modalities = Optional[ List[ str ] ]
 	input_text: Optional[ str ]
-	use_vertex: Optional[ bool ]
 	
-	def __init__( self, n: int=1, model: str='gemini-2.0-flash', version: str='v1alpha',
-			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
-			presence: float=0.0, max_tokens: int=10000, instruct: str=None ):
+	def __init__( self, model: str='gemini-2.5-flash-preview-tts'  ):
 		super( ).__init__( )
-		self.number = n
+		self.number = None
 		self.model = model
-		self.api_version = version
-		self.use_vertex = use_ai
-		self.temperature = temperature
-		self.top_p = top_p
-		self.frequency_penalty = frequency
-		self.presence_penalty = presence
-		self.max_tokens = max_tokens
-		self.instructions = instruct
-		self.http_options = HttpOptions( api_version=self.api_version )
-		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
-			http_options=self.http_options )
-		self.voice = 'Puck'
-		self.speed = 1.0
-		self.response_format = 'MP3'
+		self.speech_client = None
+		self.temperature = None
+		self.top_p = None
+		self.frequency_penalty = None
+		self.presence_penalty = None
+		self.max_tokens = None
+		self.instructions = None
+		self.language_code = None
+		self.voice_config = None
+		self.speaker_config = None
+		self.speech_config = None
+		self.content_config = None
+		self.client = None
+		self.voice = None
+		self.speed = None
+		self.response_format = None
 		self.audio_path = None
 		self.input_text = None
-		self.content_config = None
+		self.response_modalities = [ ]
 	
 	@property
 	def model_options( self ) -> List[ str ] | None:
-		"""Returns list of models supporting audio output."""
-		return [ 'gemini-2.0-flash',
-		         'gemini-1.5-flash' ]
+		"""
+			
+			Purpose:
+			--------
+			Returns list of models supporting audio output.
+			
+			
+		"""
+		return [ 'gemini-2.5-flash-preview-tts',
+		         'gemini-2.5-pro-preview-tts' ]
 	
 	@property
 	def voice_options( self ) -> List[ str ] | None:
-		"""Returns list of available voice personas."""
-		return [ 'Achernar',
-		         'Aoede',
-		         'Erinome',
-		         'Kore',
-		         'Orus',
-		         'Puck' ]
+		"""
+			
+			Purpose:
+			--------
+			Returns list of available voice personas.
+			
+		"""
+		return [ 'Zephyr', 'Puck', 'Charon', 'Kore', 'Fenrir', 'Leda', 'Orus', 'Aoede', 'Callirhoe',
+		         'Autonoe', 'Enceladus', 'Iapetus', 'Umbriel', 'Algieba', 'Despina', 'Erinome',
+		         'Algenib', 'Rasalgethi', 'Laomedeia', 'Achernar', 'Alnilam', 'Schedar', 'Gacrux',
+		         'Pulcherrima', 'Achird', 'Zubenelgenubi', 'Vindemiatrix', 'Sadachbia',
+		         'Sadaltager', 'Sulafar' ]
 	
-	def create_audio( self, text: str, filepath: str, format: str='MP3',
-			speed: float=1.0, voice: str='Puck' ) -> Optional[ str ]:
+	@property
+	def language_options( self ) -> List[ str ] | None:
+		'''
+			
+			Purpose:
+			--------
+			Returns a list of language options
+			
+		'''
+		return [ 'de-DE',
+		         'en-AU',
+		         'en-GB',
+		         'en-IN',
+		         'en-US',
+		         'es-US',
+		         'fr-FR',
+		         'hi-IN',
+		         'pt-BR',
+		         'ar-XA',
+		         'es-ES',
+		         'fr-CA',
+		         'id-ID',
+		         'it-IT',
+		         'ja-JP',
+		         'tr-TR',
+		         'vi-VN',
+		         'bn-IN',
+		         'gu-IN',
+		         'kn-IN',
+		         'ml-IN',
+		         'mr-IN',
+		         'ta-IN',
+		         'te-IN',
+		         'nl-NL',
+		         'ko-KR',
+		         'cmn-CN',
+		         'pl-PL',
+		         'ru-RU',
+		         'th-TH' ]
+	
+	@property
+	def format_options( self ) -> List[ str ] | None:
+		'''
+			
+			Purpose:
+			---------
+			Returns a list of audio mime types
+			
+		'''
+		return [ 'audio/wav', 'audio/mp3', 'audio/aiff', 'audio/aac', 'audio/ogg', 'audio/flac' ]
+	
+	def create_speech( self, text: str, filepath: str, model: str='gemini-2.5-flash-preview-tts',
+			format: str=None, speed: float=None, voice: str=None, frequency: float=None,
+			presense: float=None, max_tokens: int=None, instruct: str=None ) -> str | None:
 		"""
 		
 			Purpose:
@@ -773,27 +1269,37 @@ class TTS( Gemini ):
 		try:
 			throw_if( 'text', text )
 			throw_if( 'filepath', filepath )
+			throw_if( 'model', model )
 			self.input_text = text
 			self.audio_path = filepath
 			self.response_format = format
 			self.speed = speed
 			self.voice = voice
+			self.max_tokens = max_tokens
+			self.model = model
+			self.frequency_penalty = frequency
+			self.presence_penalty = presense
+			self.instructions = instruct
+			self.response_modalities.append( 'AUDIO' )
+			self.voice_config = VoiceConfig( )
+			self.speaker_config = SpeakerVoiceConfig( )
+			self.speech_config = SpeechConfig( )
 			prompt = f"Read the following aloud with a {self.voice} persona: {self.input_text}"
-			self.content_config = GenerateContentConfig( response_modalities=[ 'AUDIO' ],
+			self.content_config = GenerateContentConfig( response_modalities=self.response_modalities,
 				temperature=self.temperature )
+			self.client = genai.Client( api_key=self.gemini_api_key )
 			self.response = self.client.models.generate_content( model=self.model,
 				contents=prompt, config=self.content_config )
 			for part in self.response.candidates[ 0 ].content.parts:
 				if part.inline_data:
 					with open( self.audio_path, 'wb' ) as f:
 						f.write( part.inline_data.data )
-					return self.audio_path
-			return None
+			return self.audio_path
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'TTS'
-			exception.method = 'create_audio( self, text, filepath, format, speed, voice ) -> str'
+			exception.method = 'create_speech( self, text, filepath, format, speed, voice ) -> str'
 			error = ErrorDialog( exception )
 			error.show( )
 
@@ -819,43 +1325,61 @@ class Transcription( Gemini ):
 	client: Optional[ genai.Client ]
 	transcript: Optional[ str ]
 	file_path: Optional[ str ]
-	use_vertex: Optional[ bool ]
 	
-	def __init__( self, n: int=1, model: str='gemini-2.0-flash', version: str='v1alpha',
-			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
-			presence: float=0.0, max_tokens: int=10000, instruct: str=None ):
+	def __init__( self, n: int=1, model: str='gemini-3-flash-preview', temperature: float=0.8,
+			top_p: float=0.9, frequency: float=0.0, presence: float=0.0,
+			max_tokens: int=10000, instruct: str=None ):
 		super( ).__init__( )
 		self.number = n
 		self.model = model
-		self.api_version = version
-		self.use_vertex = use_ai
 		self.temperature = temperature
 		self.top_p = top_p
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
 		self.max_tokens = max_tokens
 		self.instructions = instruct
-		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
-			http_options=HttpOptions( api_version=self.api_version ) )
+		self.client = genai.Client( api_key=self.gemini_api_key )
 		self.transcript = None
 		self.file_path = None
 		self.content_config = None
 	
 	@property
 	def model_options( self ) -> List[ str ] | None:
-		"""Returns list of models supporting audio input."""
-		return [ 'gemini-2.0-flash',
-		         'gemini-1.5-flash' ]
+		"""
+			
+			Purpose:
+			--------
+			Returns list of models supporting audio input.
+			
+		"""
+		return [ 'gemini-3-flash-preview', 'gemini-2.0-flash',  ]
 	
 	@property
 	def language_options( self ) -> List[ str ] | None:
-		"""Returns list of available target languages."""
+		"""
+			
+			Purpose:
+			--------
+			Returns list of available target languages.
+			
+		"""
 		return [ 'English',
 		         'Spanish',
 		         'French',
 		         'Japanese',
 		         'German',
 		         'Chinese' ]
+	
+	@property
+	def format_options( self ) -> List[ str ] | None:
+		'''
+			
+			Purpose:
+			---------
+			Returns a list of audio mime types
+			
+		'''
+		return [ 'audio/wav', 'audio/mp3', 'audio/aiff', 'audio/aac', 'audio/ogg', 'audio/flac' ]
 	
 	def transcribe( self, path: str, model: str='gemini-2.0-flash' ) -> Optional[ str ]:
 		"""
@@ -921,38 +1445,56 @@ class Translation( Gemini ):
 	client: Optional[ genai.Client ]
 	target_language: Optional[ str ]
 	source_language: Optional[ str ]
-	use_vertex: Optional[ bool ]
 	
-	def __init__( self, n: int=1, model: str = 'gemini-2.0-flash', version: str='v1alpha',
-			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9,
-			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
+	def __init__( self, n: int=1, model: str='gemini-2.0-flash', temperature: float=0.8,
+			top_p: float=0.9, frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
 			instruct: str=None ):
 		super( ).__init__( )
 		self.number = n
 		self.model = model
-		self.api_version = version
-		self.use_vertex = use_ai
 		self.temperature = temperature
 		self.top_p = top_p
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
 		self.max_tokens = max_tokens
 		self.instructions = instruct
-		self.client = genai.Client( vertexai=self.use_vertex, api_key=self.api_key,
-			http_options=HttpOptions( api_version=self.api_version ) )
+		self.client = genai.Client( api_key=self.gemini_api_key )
 		self.target_language = None
 		self.source_language = None
 		self.content_config = None
 	
 	@property
 	def model_options( self ) -> List[ str ] | None:
-		"""Returns list of translation-capable models."""
+		"""
+			
+			Purpose:
+			--------
+			Returns list of translation-capable models.
+			
+		"""
 		return [ 'gemini-2.0-flash',
 		         'gemini-1.5-pro' ]
 	
 	@property
+	def format_options( self ) -> List[ str ] | None:
+		'''
+			
+			Purpose:
+			---------
+			Returns a list of audio mime types
+			
+		'''
+		return [ 'audio/wav', 'audio/mp3', 'audio/aiff', 'audio/aac', 'audio/ogg', 'audio/flac' ]
+	
+	@property
 	def language_options( self ) -> List[ str ] | None:
-		"""Returns list of available target languages."""
+		"""
+			
+			Purpose:
+			--------
+			Returns list of available target languages.
+			
+		"""
 		return [ 'English',
 		         'Spanish',
 		         'French',
@@ -995,92 +1537,932 @@ class Translation( Gemini ):
 			error = ErrorDialog( exception )
 			error.show( )
 
-class Image( Gemini ):
-	"""
+class Files( Gemini ):
+	'''
 
-	    Purpose
-	    ___________
-	    Class for generating images from text using Google Imagen models.
+		Purpose:
+		--------
+		Class encapsulating Gemini's FileStores API for uploading and managing remote assets.
 
-	    Attributes:
-	    -----------
-	    client       : Client - GenAI instance
-	    aspect_ratio : str - W:H ratio
-	    use_vertex   : bool - Integration flag
+		Attributes:
+		-----------
+		client       : Client - Initialized GenAI client
+		file_id      : str - ID of the target file
+		display_name : str - User-friendly label for the file
+		mime_type    : str - Content type of the file
+		file_path    : str - Local filesystem path
+		file_list    : list - Collection of remote File objects
+		response     : any - RAW API response object
+		use_vertex   : bool - Integration flag
 
-	    Methods:
-	    --------
-	    generate( prompt, aspect ) : Generates Imagen asset
+		Methods:
+		--------
+		upload( path, name )      : Uploads a local file to Gemini storage
+		retrieve( file_id )       : Fetches metadata for a specific remote file
+		list_files( )             : Lists all files currently in remote storage
+		delete( file_id )         : Removes a file from remote storage
 
-    """
-	client: Optional[ genai.Client ]
-	aspect_ratio: Optional[ str ]
+	'''
+	api_version: Optional[ str ]
+	google_api_key: Optional[ str ]
+	storage_client: Optional[ storage.Client ]
+	project_id: Optional[ str ]
+	project_location: Optional[ str ]
+	file_id: Optional[ str ]
+	bucket_id: Optional[ str ]
+	display_name: Optional[ str ]
+	mime_type: Optional[ str ]
+	file_path: Optional[ str ]
+	file_list: Optional[ List[ File ] ]
+	file_paths: Optional[ List[ str ] ]
+	file_lists: Optional[ List[ File ] ]
+	response: Optional[ Any ]
 	use_vertex: Optional[ bool ]
+	collections: Optional[ Dict[ str, str ] ]
+	documents: Optional[ Dict[ str, str ] ]
 	
-	def __init__( self, n: int=1, model: str='imagen-3.0-generate-001', version: str='v1alpha',
-			use_ai: bool=False, temperature: float=0.8, top_p: float=0.9,
-			frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
-			instruct: str=None ):
+	def __init__( self, model: str='gemini-2.0-flash' ):
 		super( ).__init__( )
-		self.number = n
-		self.model = model
-		self.api_version = version
-		self.use_vertex = use_ai
-		self.temperature = temperature
-		self.top_p = top_p
-		self.frequency_penalty = frequency
-		self.presence_penalty = presence
-		self.max_tokens = max_tokens
-		self.instructions = instruct
-		self.client = genai.Client( vertexai=self.use_vertex,
-			http_options=HttpOptions( api_version=self.api_version ) )
-		self.aspect_ratio = '1:1'
-		self.genimg_config = None
+		self.google_api_key = cfg.GOOGLE_API_KEY
+		self.project_id = cfg.GOOGLE_CLOUD_PROJECT_ID
+		self.project_location = cfg.GOOGLE_CLOUD_LOCATION
+		self.model = None
+		self.top_p = None
+		self.top_k = None
+		self.temperature = None
+		self.frequency_penalty = None
+		self.presence_penalty = None
+		self.max_tokens = None
+		self.tool_choice = None
+		self.stops = [ ]
+		self.response_modalities = [ ]
+		self.tools = [ ]
+		self.domains = [ ]
+		self.http_options = { }
+		self.storage_client = None
+		self.bucket_id = None
+		self.file_id = None
+		self.display_name = None
+		self.media_resolution = None
+		self.mime_type = None
+		self.file_path = None
+		self.file_list = [ ]
+		self.response = None
+		self.collections = { }
+		self.documents = { }
 	
 	@property
-	def model_options( self ) -> List[ str ] | None:
-		"""Returns list of image generation models."""
-		return [ 'imagen-3.0-generate-001',
-		         'imagen-3.0-fast-generate-001' ]
-	
-	@property
-	def aspect_options( self ) -> List[ str ] | None:
-		"""Returns list of allowed aspect ratios."""
-		return [ '1:1',
-		         '3:4',
-		         '4:3',
-		         '9:16',
-		         '16:9' ]
-	
-	def generate( self, prompt: str, aspect: str='1:1' ) -> Optional[ Image ]:
+	def file_options( self ) -> List[ str ] | None:
 		"""
 			
 			Purpose:
-			Generates a new image based on a descriptive text prompt.
+			--------
+			Returns list of available chat models.
+			
+		"""
+		return self.files
+	
+	@property
+	def model_options( self ) -> List[ str ] | None:
+		"""
+			
+			Purpose:
+			--------
+			Returns list of available chat models.
+			
+		"""
+		return [ 'gemini-3.5-flash',
+		         'gemini-3.5 flash-lite',
+		         'gemini-3.0-flash',
+		         'gemini-3.0-flash-lite' ]
+	
+	@property
+	def media_options( self ):
+		'''
+		
+		Purpose:
+		--------
+		Returns a List[ str ] of media resolution options.
+		
+		'''
+		return [ 'media_resolution_high',
+		         'media_resolution_medium',
+		         'media_resolution_low' ]
+	
+	@property
+	def include_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of the includeable options
+
+		'''
+		return [ 'file_search_call.results',
+		         'message.input_image.image_url',
+		         'message.output_text.logprobs',
+		         'reasoning.encrypted_content' ]
+	
+	@property
+	def reasoning_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of thinking effort options
+
+		'''
+		return [ 'THINKING_LEVEL_UNSPECIFIED', 'MINIMAL',
+		         'LOW', 'MEDIUM', 'HIGH' ]
+	
+	@property
+	def choice_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of available tools options
+
+		'''
+		return [ 'AUTO',
+		         'ANY',
+		         'NONE',
+		         'VALIDATED' ]
+	
+	@property
+	def tool_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of available tools options
+
+		'''
+		return [ 'google_search',
+		         'google_maps',
+		         'file_search',
+		         'url_context',
+		         'code_execution',
+		         'computer_use' ]
+	
+	@property
+	def modality_options( self ) -> List[ str ] | None:
+		'''
+
+			Returns:
+			--------
+			A List[ str ] of available modality options
+
+		'''
+		return [ 'MODALITY_UNSPECIFIED', 'TEXT', 'IMAGE', 'AUDIO' ]
+	
+	@property
+	def media_options( self ):
+		'''
+		
+		Purpose:
+		--------
+		Returns a List[ str ] of media resolution options.
+		
+		'''
+		return [ 'media_resolution_high',
+		         'media_resolution_medium',
+		         'media_resolution_low' ]
+	
+	def upload( self, filepath: str, name: str=None ) -> File | None:
+		"""
+		
+			Purpose:
+			--------
+			Uploads a file from a local path to Gemini's remote temporal storage.
 			
 			Parameters:
 			-----------
-			prompt: str - Image description.
-			aspect: str - Aspect ratio.
+			path: str - Local filesystem path to the file.
+			name: str - Optional display name for the file.
+			Returns:
+			--------
+			Optional[ File ] - Metadata object of the uploaded file.
+			
+		"""
+		try:
+			throw_if( 'filepath', filepath )
+			throw_if( 'name', name )
+			self.file_path = filepath;
+			self.display_name = name
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.response = self.client.files.upload( path=self.file_path,
+				config={ 'display_name': self.display_name } )
+			return self.response
+		except Exception as e:
+			ex = Error( e );
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'upload( self, path: str, name: str ) -> Optional[ File ]'
+			raise ex
+	
+	def list( self, model: str='gemini-2.0-flash', temperature: float=None,
+			top_p: float=None, frequency: float=None, presence: float=None,
+			max_tokens: int=None, stops: List[ str ]=None ) -> List[ str ]:
+		"""
+			
+			Purpose:
+			-------
+			Uploads and summarizes a PDF or text document.
+			
+			Parameters:
+			-----------
+			prompt: str - Summarization instructions.
+			filepath: str - Path to the document file.
+			model: str - The model identifier for processing.
+			Returns:
+			--------
+			Optional[ str ] - The document summary or None on failure.
+			
+		"""
+		try:
+			self.model = model
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.storage_client = storage.Client( api_key=cfg.GOOGLE_API_KEY )
+			name = "jeni-financial"
+			prefix = "regulations"
+			bucket = self.storage_client.bucket( bucket_name=name )
+			for blob in bucket.list_blobs( prefix=prefix ):
+				self.files.append( blob.name )
+			return self.files
+		except Exception as e:
+			ex = Error( e );
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'list_files( self ) -> Optional[ List[ File ] ]'
+			raise ex
+	
+	def retrieve( self, file_id: str ) -> Optional[ File ]:
+		"""
+			
+			Purpose:
+			--------
+			Retrieves the metadata and state of a previously uploaded file.
+			
+			Parameters:
+			-----------
+			file_id: str - The unique identifier of the remote file.
 			
 			Returns:
 			--------
-			Optional[ Image ] - The Image data object.
+			Optional[ File ] - File metadata object.
+		
+		"""
+		try:
+			throw_if( 'file_id', file_id )
+			self.file_id = file_id
+			self.response = self.client.files.get( name=self.file_id )
+			return self.response
+		except Exception as e:
+			ex = Error( e );
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'retrieve( self, file_id: str ) -> Optional[ File ]'
+			raise ex
+	
+	def summarize( self, prompt: str, filepath: str, model: str='gemini-2.0-flash',
+			temperature: float=None, top_p: float=None, frequency: float=None, presence: float=None,
+			max_tokens: int=None, stops: List[ str ]=None, instruct: str=None ) -> str | None:
+		"""
+			
+			Purpose:
+			-------
+			Uploads and summarizes a PDF or text document.
+			
+			Parameters:
+			-----------
+			prompt: str - Summarization instructions.
+			filepath: str - Path to the document file.
+			model: str - The model identifier for processing.
+			Returns:
+			--------
+			Optional[ str ] - The document summary or None on failure.
 			
 		"""
 		try:
 			throw_if( 'prompt', prompt )
+			throw_if( 'filepath', filepath )
 			self.prompt = prompt
-			self.aspect_ratio = aspect
-			self.genimg_config = GenerateImagesConfig( aspect_ratio=self.aspect_ratio,
-				number_of_images=self.number )
-			response = self.client.models.generate_images( model=self.model,
-				prompt=self.prompt, config=self.genimg_config )
-			return response.generated_images[ 0 ]
+			self.file_path = filepath
+			self.model = model
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.instructions = instruct
+			self.content_config = GenerateContentConfig( temperature=self.temperature )
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			if self.use_vertex:
+				with open( self.file_path, 'rb' ) as f:
+					doc_part = Part.from_bytes( data=f.read( ), mime_type="application/pdf" )
+				response = self.client.models.generate_content( model=self.model,
+					contents=[ doc_part, self.prompt ], config=self.content_config )
+			else:
+				uploaded_file = self.client.files.upload( path=self.file_path )
+				response = self.client.models.generate_content( model=self.model,
+					contents=[ uploaded_file, self.prompt ], config=self.content_config )
+			return response.text
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'summarize_document( self, prompt, filepath, model ) -> str'
+			raise ex
+	
+	def search( self, prompt: str, filepath: str, model: str='gemini-2.0-flash',
+			temperature: float=None, top_p: float=None, frequency: float=None, presence: float=None,
+			max_tokens: int=None, stops: List[ str ]=None, instruct: str=None ) -> str | None:
+		"""
+			
+			Purpose:
+			-------
+			Uploads and summarizes a PDF or text document.
+			
+			Parameters:
+			-----------
+			prompt: str - Summarization instructions.
+			filepath: str - Path to the document file.
+			model: str - The model identifier for processing.
+			Returns:
+			--------
+			Optional[ str ] - The document summary or None on failure.
+			
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			throw_if( 'filepath', filepath )
+			self.prompt = prompt
+			self.file_path = filepath
+			self.model = model
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.instructions = instruct
+			self.content_config = GenerateContentConfig( temperature=self.temperature )
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			if self.use_vertex:
+				with open( self.file_path, 'rb' ) as f:
+					doc_part = Part.from_bytes( data=f.read( ), mime_type="application/pdf" )
+				response = self.client.models.generate_content( model=self.model,
+					contents=[ doc_part, self.prompt ], config=self.content_config )
+			else:
+				uploaded_file = self.client.files.upload( path=self.file_path )
+				response = self.client.models.generate_content( model=self.model,
+					contents=[ uploaded_file,
+					           self.prompt ], config=self.content_config )
+			return response.text
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'search( self, prompt, filepath, model ) -> str'
+			raise ex
+	
+	def survey( self, prompt: str, filepaths: List[ str ], model: str='gemini-2.0-flash',
+			temperature: float=None, top_p: float=None, frequency: float=None,
+			presence: float=None, max_tokens: int=None, stops: List[ str ]=None ) -> str | None:
+		"""
+			
+			Purpose:
+			-------
+			Uploads and summarizes a PDF or text document.
+			
+			Parameters:
+			-----------
+			prompt: str - Summarization instructions.
+			filepath: str - Path to the document file.
+			model: str - The model identifier for processing.
+			Returns:
+			--------
+			Optional[ str ] - The document summary or None on failure.
+			
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			throw_if( 'filepaths', filepaths )
+			self.prompt = prompt
+			self.file_paths = filepaths
+			self.model = model
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.content_config = GenerateContentConfig( temperature=self.temperature )
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			if self.use_vertex:
+				with open( self.file_path, 'rb' ) as f:
+					doc_part = Part.from_bytes( data=f.read( ), mime_type="application/pdf" )
+				response = self.client.models.generate_content( model=self.model,
+					contents=[ doc_part, self.prompt ], config=self.content_config )
+			else:
+				uploaded_file = self.client.files.upload( path=self.file_paths )
+				response = self.client.models.generate_content( model=self.model,
+					contents=[ uploaded_file, self.prompt ], config=self.content_config )
+			return response.text
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'survey( self, prompt, filepaths, model ) -> str'
+			raise ex
+	
+	def web_search( self, prompt: str, model: str='gemini-2.5-flash-lite', temperature: float=None,
+			top_p: float=None, frequency: float=None, presence: float=None,
+			max_tokens: int=None, stops: List[ str ]=None, instruct: str=None ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Generates a response grounded in Google Search results.
+			
+			Parameters:
+			-----------
+			prompt: str - The query for search-augmented generation.
+			model: str - The Gemini model identifier.
+			
+			Returns:
+			--------
+			Optional[ str ] - The grounded text response.
+		
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.contents = prompt;
+			self.model = model
+			self.contents = prompt;
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.instructions = instruct
+			self.tool_config = [
+					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
+			self.content_config = GenerateContentConfig( temperature=self.temperature,
+				tools=self.tool_config, system_instruction=self.instructions )
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			response = self.client.models.generate_content( model=self.model,
+				contents=self.contents, config=self.content_config )
+			return response.text
+		except Exception as e:
+			exception = Error( e );
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'web_search( self, prompt, model ) -> Optional[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	def search_maps( self, prompt: str, model: str='gemini-2.5-flash-lite', temperature: float=None,
+			top_p: float=None, frequency: float=None, presence: float=None,
+			max_tokens: int=None, stops: List[ str ]=None, instruct: str=None ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Uses Google Search grounding specifically for location and place-based queries.
+			
+			Parameters:
+			-----------
+			prompt: str - The location or directions query.
+			model: str - The Gemini model identifier.
+			Returns:
+			--------
+			Optional[ str ] - The grounded response containing place data.
+			
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.contents = f"Using Google Search and Maps data, answer: {prompt}"
+			self.model = model
+			self.contents = prompt;
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.instructions = instruct
+			self.tool_config = [
+					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
+			self.content_config = GenerateContentConfig( temperature=self.temperature,
+				tools=self.tool_config )
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			response = self.client.models.generate_content( model=self.model,
+				contents=self.contents, config=self.content_config )
+			return response.text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
-			exception.cause = 'Images'
-			exception.method = 'generate( self, prompt, aspect ) -> Image'
+			exception.cause = 'Chat'
+			exception.method = 'search_maps( self, prompt, model ) -> Optional[ str ]'
 			error = ErrorDialog( exception )
 			error.show( )
+	
+	def delete( self, file_id: str ) -> bool | None:
+		"""
+		
+			Purpose:
+			--------
+			Deletes a specific file from remote storage to free up project quota.
+			
+			Parameters:
+			-----------
+			file_id: str - Unique identifier of the file to remove.
+			
+			Returns:
+			--------
+			bool - True if deletion was successful.
+		
+		"""
+		try:
+			throw_if( 'file_id', file_id )
+			self.file_id = file_id
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client.files.delete( name=self.file_id )
+		except Exception as e:
+			ex = Error( e );
+			ex.module = 'gemini'
+			ex.cause = 'FileStore'
+			ex.method = 'delete( self, file_id: str ) -> bool'
+			raise ex
+
+class VectorStores( Gemini ):
+	'''
+
+		Purpose:
+		--------
+		Encapsulate Google Cloud Storage as a Vector Store backend for the Buddy
+		application. Buckets are treated as collections and objects (blobs) as
+		stored vector documents or assets.
+
+		Attributes:
+		-----------
+		project_id   : str | None
+		bucket_name  : str | None
+		object_name  : str | None
+		file_path    : str | None
+		client       : storage.Client | None
+		bucket       : storage.Bucket | None
+		response     : Any
+		collections  : Dict[ str, str ] | None
+		documents    : Dict[ str, str ] | None
+
+		Methods:
+		--------
+		upload( path, bucket, name )
+		retrieve( bucket, name )
+		list( bucket )
+		delete( bucket, name )
+
+	'''
+	project_id: Optional[ str ]
+	bucket_name: Optional[ str ]
+	object_name: Optional[ str ]
+	file_path: Optional[ str ]
+	file_ids: Optional[ List[ str ] ]
+	store_ids: Optional[ List[ str ] ]
+	client: Optional[ storage.Client ]
+	bucket: Optional[ storage.Bucket ]
+	response: Optional[ Any ]
+	collections: Optional[ Dict[ str, str ] ]
+	documents: Optional[ Dict[ str, str ] ]
+	
+	def __init__( self ):
+		self.project_id = cfg.GOOGLE_CLOUD_PROJECT_ID
+		self.client = storage.Client( project=self.project_id )
+		self.bucket_name = None
+		self.object_name = None
+		self.file_path = None
+		self.media_resolution = None
+		self.file_ids = [ ]
+		self.store_ids = [ ]
+		self.stops = [ ]
+		self.response_modalities = [ ]
+		self.tools = [ ]
+		self.domains = [ ]
+		self.http_options = { }
+		self.bucket = None
+		self.response = None
+		self.collections = \
+		{
+			'Federal Financial Data': 'jeni-financial/data',
+			'Federal Financial Regulations': 'jeni-financial/regulations',
+			'DoW Financial Data': 'jeni_dow/budget/data',
+			'DoW Financial Regulations': 'jeni_dow/budget/regulations',
+			'DoA Financial Data': 'jenni-doa/Financial Data',
+		}
+		self.documents = \
+		{
+			'Account_Balances.csv': 'file-U6wFeRGSeg38Db5uJzo5sj',
+			'SF133.csv': 'file-32s641QK1Xb5QUatY3zfWF',
+			'Authority.csv': 'file-Qi2rw2QsdxKBX1iiaQxY3m',
+			'Outlays.csv': 'file-GHEwSWR7ezMvHrQ3X648wn'
+		}
+	
+	@property
+	def model_options( self ) -> List[ str ] | None:
+		"""Returns list of available chat models."""
+		return [ 'gemini-2.5-flash',
+		         'gemini-2.5 flash image',
+		         'gemini-2.5 flash-tts',
+		         'gemini-2.5 flash-lite',
+		         'gemini-2.0-flash',
+		         'gemini-2.0-flash-lite' ]
+	
+	@property
+	def media_options( self ):
+		'''
+		
+		Purpose:
+		--------
+		Returns a List[ str ] of media resolution options.
+		
+		'''
+		return [ 'media_resolution_high',
+		         'media_resolution_medium',
+		         'media_resolution_low' ]
+	
+	def create( self, bucket: str, name: str ):
+		"""
+
+			Purpose:
+			--------
+			Delete an object from a GCS bucket.
+
+			Parameters:
+			-----------
+			bucket : str
+				GCS bucket name.
+			name   : str
+				Object (blob) name.
+
+			Returns:
+			--------
+			bool
+
+		"""
+		try:
+			throw_if( 'bucket', bucket )
+			throw_if( 'name', name )
+			self.bucket_name = bucket
+			self.object_name = name
+			self.bucket = self.client.bucket( self.bucket_name )
+			blob = self.bucket.blob( self.object_name )
+			blob.delete( )
+			return True
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'VectorStores'
+			ex.method = 'delete( self, bucket, name )'
+			raise ex
+	
+	def upload( self, path: str, bucket: str, name: str=None ):
+		"""
+
+			Purpose:
+			--------
+			Upload a local file to a Google Cloud Storage bucket.
+
+			Parameters:
+			-----------
+			path   : str
+				Local filesystem path to the file.
+			bucket : str
+				Target GCS bucket name.
+			name   : str | None
+				Optional object name override.
+
+			Returns:
+			--------
+			storage.Blob | None
+
+		"""
+		try:
+			throw_if( 'path', path )
+			throw_if( 'bucket', bucket )
+			self.file_path = path
+			self.bucket_name = bucket
+			self.object_name = name or path.split( '/' )[ -1 ]
+			self.bucket = self.client.bucket( self.bucket_name )
+			blob = self.bucket.blob( self.object_name )
+			blob.upload_from_filename( self.file_path )
+			self.response = blob
+			return blob
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'VectorStores'
+			ex.method = 'upload( self, path, bucket, name )'
+			raise ex
+	
+	def retrieve( self, bucket: str, name: str ):
+		"""
+	
+				Purpose:
+				--------
+				Retrieve metadata for a stored object in GCS.
+	
+				Parameters:
+				-----------
+				bucket : str
+					GCS bucket name.
+				name   : str
+					Object (blob) name.
+	
+				Returns:
+				--------
+				storage.Blob | None
+
+		"""
+		try:
+			throw_if( 'bucket', bucket )
+			throw_if( 'name', name )
+			self.bucket_name = bucket
+			self.object_name = name
+			self.bucket = self.client.bucket( self.bucket_name )
+			blob = self.bucket.get_blob( self.object_name )
+			return blob
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'VectorStores'
+			ex.method = 'retrieve( self, bucket, name )'
+			raise ex
+	
+	def list( self, bucket: str ):
+		"""
+
+			Purpose:
+			--------
+			List all objects stored in a given GCS bucket.
+
+			Parameters:
+			-----------
+			bucket : str
+				GCS bucket name.
+
+			Returns:
+			--------
+			List[ storage.Blob ] | None
+
+		"""
+		try:
+			throw_if( 'bucket', bucket )
+			self.bucket_name = bucket
+			self.bucket = self.client.bucket( self.bucket_name )
+			blobs = list( self.bucket.list_blobs( ) )
+			self.documents = { blob.name: blob.id for blob in blobs }
+			return blobs
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'VectorStores'
+			ex.method = 'list( self, bucket )'
+			raise ex
+	
+	def web_search( self, prompt: str, model: str = 'gemini-2.5-flash-lite', temperature: float = None,
+			top_p: float = None, frequency: float = None, presence: float = None,
+			max_tokens: int = None, stops: List[ str ] = None, instruct: str = None ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Generates a response grounded in Google Search results.
+			
+			Parameters:
+			-----------
+			prompt: str - The query for search-augmented generation.
+			model: str - The Gemini model identifier.
+			
+			Returns:
+			--------
+			Optional[ str ] - The grounded text response.
+		
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.contents = prompt;
+			self.model = model
+			self.contents = prompt;
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.instructions = instruct
+			self.tool_config = [
+					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
+			self.content_config = GenerateContentConfig( temperature=self.temperature,
+				tools=self.tool_config, system_instruction=self.instructions )
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			response = self.client.models.generate_content( model=self.model,
+				contents=self.contents, config=self.content_config )
+			return response.text
+		except Exception as e:
+			exception = Error( e );
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'web_search( self, prompt, model ) -> Optional[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	def search_maps( self, prompt: str, model: str='gemini-2.5-flash-lite', temperature: float=None,
+			top_p: float=None, frequency: float=None, presence: float=None,
+			max_tokens: int=None, stops: List[ str ]=None, instruct: str=None ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Uses Google Search grounding specifically for location and place-based queries.
+			
+			Parameters:
+			-----------
+			prompt: str - The location or directions query.
+			model: str - The Gemini model identifier.
+			Returns:
+			--------
+			Optional[ str ] - The grounded response containing place data.
+			
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.contents = f"Using Google Search and Maps data, answer: {prompt}"
+			self.model = model
+			self.contents = prompt;
+			self.top_p = top_p;
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.instructions = instruct
+			self.tool_config = [
+					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
+			self.content_config = GenerateContentConfig( temperature=self.temperature,
+				tools=self.tool_config )
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			response = self.client.models.generate_content( model=self.model,
+				contents=self.contents, config=self.content_config )
+			return response.text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'search_maps( self, prompt, model ) -> Optional[ str ]'
+			error = ErrorDialog( exception )
+			error.show( )
+	
+	def delete( self, bucket: str, name: str ):
+		"""
+
+			Purpose:
+			--------
+			Delete an object from a GCS bucket.
+
+			Parameters:
+			-----------
+			bucket : str
+				GCS bucket name.
+			name   : str
+				Object (blob) name.
+
+			Returns:
+			--------
+			bool
+
+		"""
+		try:
+			throw_if( 'bucket', bucket )
+			throw_if( 'name', name )
+			self.bucket_name = bucket
+			self.object_name = name
+			self.bucket = self.client.bucket( self.bucket_name )
+			blob = self.bucket.blob( self.object_name )
+			blob.delete( )
+			return True
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'VectorStores'
+			ex.method = 'delete( self, bucket, name )'
+			raise ex
