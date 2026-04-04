@@ -13,3 +13,4 @@ tiktoken
 xai-sdk
 pillow>=10.0.0
 requests>=2.32.4,<3
+plotly-express
