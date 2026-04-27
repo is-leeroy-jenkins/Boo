@@ -174,23 +174,17 @@ init_state( 'is_grounded', False )
 init_state( 'selected_prompt_id', '' )
 init_state( 'pending_system_prompt_name', '' )
 
-init_state(
-	'last_call_usage',
-	{
+init_state( 'last_call_usage', {
 			'prompt_tokens': 0,
 			'completion_tokens': 0,
 			'total_tokens': 0,
-	}
-)
+	} )
 
-init_state(
-	'token_usage',
-	{
+init_state( 'token_usage', {
 			'prompt_tokens': 0,
 			'completion_tokens': 0,
 			'total_tokens': 0,
-	}
-)
+	} )
 
 # ---------- SHARED MODEL PARAMETERS ------------------------------------------
 
@@ -873,7 +867,7 @@ def extract_answer( response: Any ) -> str:
 		# ---------------------------------------
 		# Direct text items
 		# ---------------------------------------
-		if item_type in TEXT_TYPES:
+		if item_type in cfg.TEXT_TYPES:
 			text = getattr( item, 'text', None )
 			if isinstance( text, str ) and text.strip( ):
 				texts.append( text )
@@ -1024,7 +1018,7 @@ def extract_analysis( response: Any ) -> Dict[ str, Any ]:
 				normalized = normalize( out )
 				artifacts[ 'files' ].append( normalized )
 			
-			elif out_type in TEXT_TYPES:
+			elif out_type in cfg.TEXT_TYPES:
 				text = getattr( out, 'text', None )
 				if isinstance( text, str ) and text.strip( ):
 					artifacts[ 'text' ].append( text )
@@ -1112,7 +1106,7 @@ def _extract_usage_from_response( resp: Any ) -> Dict[ str, int ]:
 	
 	return usage
 
-def _update_token_counters( resp: Any ) -> None:
+def update_token_counters( resp: Any ) -> None:
 	"""
 	
 		Purpose:
@@ -1269,7 +1263,7 @@ def convert_xml( text: str ) -> str:
 			markdown_blocks.append( body )
 	return "\n\n".join( markdown_blocks )
 
-def markdown_converter( text: Any ) -> str:
+def convert_markdown( text: Any ) -> str:
 	"""
 		Purpose:
 		--------
@@ -3235,13 +3229,10 @@ def render_provider_keys( ) -> None:
 		
 	"""
 	with st.expander( 'Keys:', expanded=False ):
-		openai_key = st.text_input(
-			'OpenAI API Key',
-			type='password',
+		openai_key = st.text_input( 'OpenAI API Key', type='password',
 			value=st.session_state.get( 'openai_api_key', '' ) or '',
 			help='Overrides OPENAI_API_KEY from config.py for this session only.',
-			key='sidebar_openai_api_key'
-		)
+			key='sidebar_openai_api_key' )
 		
 		gemini_key = st.text_input(
 			'Gemini API Key',
@@ -4008,8 +3999,8 @@ if mode == 'Text':
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
-			elif '_update_token_counters' in globals( ):
-				_update_token_counters( response )
+			elif 'update_token_counters' in globals( ):
+				update_token_counters( response )
 		except Exception:
 			pass
 	
@@ -5009,8 +5000,8 @@ elif mode == 'Images':
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
-			elif '_update_token_counters' in globals( ):
-				_update_token_counters( response )
+			elif 'update_token_counters' in globals( ):
+				update_token_counters( response )
 			elif 'update_counters' in globals( ):
 				update_counters( response )
 		except Exception:
@@ -6296,8 +6287,8 @@ elif mode == 'Audio':
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
-			elif '_update_token_counters' in globals( ):
-				_update_token_counters( response )
+			elif 'update_token_counters' in globals( ):
+				update_token_counters( response )
 			elif 'update_counters' in globals( ):
 				update_counters( response )
 		except Exception:
@@ -8325,10 +8316,10 @@ elif mode == 'Embeddings':
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
-			elif '_update_token_counters' in globals( ):
-				_update_token_counters( response )
+			elif 'update_token_counters' in globals( ):
+				update_token_counters( response )
 			elif 'update_counters' in globals( ):
-				update_counters( response )
+				count_tokens( response )
 		except Exception:
 			pass
 	
@@ -10575,7 +10566,7 @@ elif mode == "Prompt Engineering":
 		st.session_state.pe_text = convert_xml( st.session_state.pe_text )
 	
 	def md_to_xml( ):
-		st.session_state.pe_text = markdown_converter( st.session_state.pe_text )
+		st.session_state.pe_text = convert_markdown( st.session_state.pe_text )
 	
 	# ------------------------------------------------------------------
 	# Controls (table filters)
@@ -10957,7 +10948,7 @@ elif mode == 'Audio':
 	audio_temperature = st.session_state.get( 'audio_temperature' )
 	audio_stream = st.session_state.get( 'audio_stream' )
 	audio_store = st.session_state.get( 'audio_store' )
-	audio_input_mode = st.session_state.get( 'audio_input' )
+	audio_input = st.session_state.get( 'audio_input' )
 	audio_reasoning = st.session_state.get( 'audio_reasoning' )
 	audio_tool_choice = st.session_state.get( 'audio_tool_choice' )
 	audio_messages = st.session_state.get( 'audio_messages' )

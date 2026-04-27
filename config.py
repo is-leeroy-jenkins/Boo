@@ -220,6 +220,28 @@ LOGO_MAP = {
 		'Gemini': GEMINI_LOGO,
 		'Grok': GROK_LOGO }
 
+TEXT_TYPES = [
+		'txt',
+		'md',
+		'csv',
+		'json',
+		'xml',
+		'html',
+		'htm',
+		'py',
+		'cs',
+		'cpp',
+		'c',
+		'h',
+		'hpp',
+		'java',
+		'js',
+		'ts',
+		'sql',
+		'yaml',
+		'yml',
+		'log',
+]
 
 # -------- DEFINITIONS -------------------
 TEMPERATURE = r'''Optional. A number between 0 and 2. Higher values like 0.8 will make the output
