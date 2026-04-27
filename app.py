@@ -10810,6 +10810,7 @@ _mode_to_model_key = \
 {
 		'Text': 'text_model',
 		'Images': 'image_model',
+		'Audio': 'translation_model',
 		'TTS': 'tts_model',
 		'Translation': 'translation_model',
 		'Transcription': 'transcription_model',
