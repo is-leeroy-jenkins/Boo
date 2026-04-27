@@ -70,7 +70,7 @@ GROQ_API_KEY = os.getenv( 'GROQ_API_KEY' )
 GOOGLE_API_KEY = os.getenv( 'GOOGLE_API_KEY' )
 GOOGLE_CSE_ID = os.getenv( 'GOOGLE_CSE_ID' )
 GOOGLE_CLOUD_LOCATION = os.getenv( 'GOOGLE_CLOUD_LOCATION' )
-GOOGLE_CLOUD_PROJECT = os.getenv( 'GOOGLE_CLOUD_PROJECT' )
+GOOGLE_CLOUD_PROJECT_ID = os.getenv( 'GOOGLE_CLOUD_PROJECT_ID' )
 OUTPUT_FILE_NAME = "boo.wav"
 SAMPLE_RATE = 48000
 MODELS = [ 'gpt-5-nano-2025-08-07', 'gpt-4.1-nano-2025-04-14', 'gpt-4o-mini', ]
@@ -99,16 +99,18 @@ GPT_DOMAINS = [ 'congress.gov',
                 'omb.gov',
                 'defense.gov' ]
 
-GPT_MODES = [ 'Text',
-              'Images',
-              'Audio',
-              'Embeddings',
-              'Document Q&A',
-              'Files',
-              'Vector Stores',
-              'Prompt Engineering',
-              'Data Management',
-              'Export' ]
+GPT_MODES = [
+		'Text',
+		'Images',
+		'Audio',
+		'Embeddings',
+		'Document Q&A',
+		'Files',
+		'Vector Stores',
+		'Prompt Engineering',
+		'Data Management',
+		'Export'
+]
 
 GPT_GENERATION = [ 'gpt-image-1.5', 'dall-e-2', 'dall-e-3', 'gpt-image-1', 'gpt-image-1-mini' ]
 
@@ -155,16 +157,19 @@ GROK_COLLECTIONS = [ { 'DOD Regulations': 'collection_a7973fd2-a336-4ed0-a495-4f
 # ---------------- GEMINI CONFIG ------------------
 GEMINI_LOGO = r'resources/images/gemini.png'
 
-GEMINI_MODES = [ 'Text',
-                 'Images',
-                 'Files',
-                 'Document Q&A',
-                 'Embeddings',
-                 'Audio',
-                 'Vector Stores',
-                 'Prompt Engineering',
-                 'Data Management',
-                 'Export' ]
+GEMINI_MODES = [
+		'Text',
+		'Images',
+		'Audio',
+		'Embeddings',
+		'Document Q&A',
+		'Files',
+		'File Search Stores',
+		'Google Cloud Buckets',
+		'Prompt Engineering',
+		'Data Management',
+		'Export'
+]
 
 GEMINI_GENERATION = [ 'gemini-2.5-flash-image', 'gemini-3-flash-preview',
                       'gemini-3-pro-image-preview', 'gemini-3.1-flash-image-preview', ]
@@ -176,17 +181,33 @@ GEMINI_EDITING = [ 'gemini-2.5-flash-image', 'gemini-2.5-flash-lite',
                    'gemini-3.1-flash-image-preview' ]
 
 # ----------------- MAPS ---------------------------
-MODE_CLASS_MAP = {
-		'Chat': None,
-		'Text': [ 'Chat' ],
-		'Images': [ 'Images' ],
-		'Audio': [ 'TTS',
-		           'Translation',
-		           'Transcription' ],
-		'Embeddings': [ 'Embeddings' ],
-		'Documents': [ 'Files' ],
-		'Files': [ 'Files' ],
-		'Vector Stores': [ 'VectorStores' ],
+PROVIDER_CLASS_MAP = {
+		'GPT': {
+				'Text': 'Chat',
+				'Images': 'Images',
+				'Audio': [ 'TTS', 'Translation', 'Transcription' ],
+				'Embeddings': 'Embeddings',
+				'Document Q&A': 'Files',
+				'Files': 'Files',
+				'Vector Stores': 'VectorStores',
+		},
+		'Gemini': {
+				'Text': 'Chat',
+				'Images': 'Images',
+				'Audio': [ 'TTS', 'Translation', 'Transcription' ],
+				'Embeddings': 'Embeddings',
+				'Document Q&A': 'Files',
+				'Files': 'Files',
+				'File Search Stores': 'FileSearch',
+				'Google Cloud Buckets': 'CloudBuckets',
+		},
+		'Grok': {
+				'Text': 'Chat',
+				'Images': 'Images',
+				'Document Q&A': 'Files',
+				'Files': 'Files',
+				'Vector Stores': 'VectorStores',
+		},
 }
 
 CLASS_MODE_MAP = {
@@ -198,6 +219,7 @@ LOGO_MAP = {
 		'GPT': GPT_LOGO,
 		'Gemini': GEMINI_LOGO,
 		'Grok': GROK_LOGO }
+
 
 # -------- DEFINITIONS -------------------
 TEMPERATURE = r'''Optional. A number between 0 and 2. Higher values like 0.8 will make the output
