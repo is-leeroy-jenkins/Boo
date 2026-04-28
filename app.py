@@ -9973,14 +9973,16 @@ elif mode == 'Files':
 				value for value in current_values
 				if value in valid_options
 		]
-	
-	def call_files_method( method_names: List[ str ],
-			kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
+		
+	def call_files_method( method_names: List[ str ], kwargs: Optional[ Dict[ str, Any ] ]=None ) -> Any:
 		"""
 			
 			Purpose:
 			--------
 			Call the first compatible provider Files wrapper method from an ordered method list.
+			The caller may provide provider-neutral aliases such as file_id, id, name, path,
+			file_path, and filepath. This dispatcher inspects the selected provider method
+			signature and passes only arguments accepted by that method.
 		
 			Parameters:
 			-----------
@@ -9988,7 +9990,7 @@ elif mode == 'Files':
 				Ordered method names to try.
 			
 			kwargs: Optional[Dict[str, Any]]
-				Keyword arguments for the provider method.
+				Provider-neutral keyword arguments for the provider method.
 		
 			Returns:
 			--------
@@ -9996,27 +9998,119 @@ elif mode == 'Files':
 				Provider method result.
 			
 		"""
+		import inspect
+		
 		kwargs = kwargs or { }
+		last_error = None
+		
+		clean_kwargs = {
+				key: value
+				for key, value in kwargs.items( )
+				if value is not None and value != '' and value != [ ]
+		}
 		
 		for method_name in method_names:
 			method = getattr( files, method_name, None )
-			if callable( method ):
-				try:
-					return method( **kwargs )
-				except TypeError:
-					clean_kwargs = {
-							key: value
-							for key, value in kwargs.items( )
-							if value is not None and value != '' and value != [ ]
-					}
-					
+			if not callable( method ):
+				continue
+			
+			try:
+				signature = inspect.signature( method )
+				parameters = signature.parameters
+				
+				has_var_keyword = any(
+					parameter.kind == inspect.Parameter.VAR_KEYWORD
+					for parameter in parameters.values( )
+				)
+				
+				accepted_names = {
+						name for name, parameter in parameters.items( )
+						if parameter.kind in [
+								inspect.Parameter.POSITIONAL_OR_KEYWORD,
+								inspect.Parameter.KEYWORD_ONLY,
+						]
+				}
+				
+				aliased_kwargs = dict( clean_kwargs )
+				
+				if 'id' in accepted_names and 'id' not in aliased_kwargs:
+					for alias in [ 'file_id', 'name', 'document_id' ]:
+						if alias in clean_kwargs:
+							aliased_kwargs[ 'id' ] = clean_kwargs[ alias ]
+							break
+				
+				if 'file_id' in accepted_names and 'file_id' not in aliased_kwargs:
+					for alias in [ 'id', 'name', 'document_id' ]:
+						if alias in clean_kwargs:
+							aliased_kwargs[ 'file_id' ] = clean_kwargs[ alias ]
+							break
+				
+				if 'name' in accepted_names and 'name' not in aliased_kwargs:
+					for alias in [ 'id', 'file_id', 'document_id' ]:
+						if alias in clean_kwargs:
+							aliased_kwargs[ 'name' ] = clean_kwargs[ alias ]
+							break
+				
+				if 'filepath' in accepted_names and 'filepath' not in aliased_kwargs:
+					for alias in [ 'file_path', 'path' ]:
+						if alias in clean_kwargs:
+							aliased_kwargs[ 'filepath' ] = clean_kwargs[ alias ]
+							break
+				
+				if 'file_path' in accepted_names and 'file_path' not in aliased_kwargs:
+					for alias in [ 'filepath', 'path' ]:
+						if alias in clean_kwargs:
+							aliased_kwargs[ 'file_path' ] = clean_kwargs[ alias ]
+							break
+				
+				if 'path' in accepted_names and 'path' not in aliased_kwargs:
+					for alias in [ 'filepath', 'file_path' ]:
+						if alias in clean_kwargs:
+							aliased_kwargs[ 'path' ] = clean_kwargs[ alias ]
+							break
+				
+				if has_var_keyword:
+					return method( **aliased_kwargs )
+				
+				filtered_kwargs = {
+						key: value
+						for key, value in aliased_kwargs.items( )
+						if key in accepted_names
+				}
+				
+				if filtered_kwargs:
+					return method( **filtered_kwargs )
+				
+				if len( clean_kwargs ) == 1:
+					return method( list( clean_kwargs.values( ) )[ 0 ] )
+				
+				return method( )
+			
+			except TypeError as exc:
+				last_error = exc
+				
+				if 'id' in clean_kwargs:
 					try:
-						return method( **clean_kwargs )
-					except TypeError:
-						if len( clean_kwargs ) == 1:
-							return method( list( clean_kwargs.values( ) )[ 0 ] )
-						
-						raise
+						return method( clean_kwargs[ 'id' ] )
+					except TypeError as inner_exc:
+						last_error = inner_exc
+				
+				if 'file_id' in clean_kwargs:
+					try:
+						return method( clean_kwargs[ 'file_id' ] )
+					except TypeError as inner_exc:
+						last_error = inner_exc
+				
+				if 'name' in clean_kwargs:
+					try:
+						return method( clean_kwargs[ 'name' ] )
+					except TypeError as inner_exc:
+						last_error = inner_exc
+				
+				continue
+		
+		if last_error is not None:
+			raise last_error
 		
 		raise AttributeError( f'Provider "{provider_name}" does not expose any Files method from: '
 		                      f'{", ".join( method_names )}.' )
