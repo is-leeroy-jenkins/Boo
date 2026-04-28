@@ -3479,20 +3479,7 @@ def _safe( module: str, attr: str, fallback: Any ) -> Any:
 	except Exception:
 		return fallback
 
-# ==============================================================================
-# Page Setup
-# ==============================================================================
-AVATARS = { 'user': cfg.ANALYST, 'assistant': cfg.BOO, }
-st.set_page_config( page_title=cfg.APP_TITLE, layout='wide', page_icon=cfg.FAVICON,
-	initial_sidebar_state='collapsed', )
-
-st.caption( cfg.APP_SUBTITLE )
-inject_response_css( )
-init_state( )
-
-# ======================================================================================
-# SIDEBAR
-# ======================================================================================
+# ------------ SIDEBAR UTILITIES
 
 def get_provider_options( ) -> List[ str ]:
 	"""
@@ -3759,6 +3746,20 @@ def render_provider_keys( ) -> None:
 			st.session_state[ 'google_cloud_location' ] = google_cloud_location
 			os.environ[ 'GOOGLE_CLOUD_LOCATION' ] = google_cloud_location
 
+# ==============================================================================
+# Page Setup
+# ==============================================================================
+AVATARS = { 'user': cfg.ANALYST, 'assistant': cfg.BOO, }
+st.set_page_config( page_title=cfg.APP_TITLE, layout='wide', page_icon=cfg.FAVICON,
+	initial_sidebar_state='collapsed', )
+
+st.caption( cfg.APP_SUBTITLE )
+inject_response_css( )
+init_state( )
+
+# ======================================================================================
+# SIDEBAR
+# ======================================================================================
 with st.sidebar:
 	provider_options = get_provider_options( )
 	current_provider = st.session_state.get( 'provider', 'GPT' )
@@ -12211,8 +12212,7 @@ st.markdown(
 	}
 	</style>
 	""",
-	unsafe_allow_html=True,
-)
+	unsafe_allow_html=True, )
 
 # ---- Fixed Container
 st.markdown(
@@ -12238,8 +12238,7 @@ st.markdown(
 	}
 	</style>
 	""",
-	unsafe_allow_html=True,
-)
+	unsafe_allow_html=True, )
 
 # ======================================================================================
 # FOOTER RENDERING
