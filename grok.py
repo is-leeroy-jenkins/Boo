@@ -5550,41 +5550,112 @@ class Files( Grok ):
 	
 		Purpose:
 		--------
-		Provide file upload, retrieval, listing, deletion, and
-		file-based querying functionality using the xAI (Grok) REST API.
+		Provide xAI file upload, listing, retrieval, content download, deletion, and
+		file-aware question answering through the OpenAI-compatible xAI API surface.
 
-		This class manages file storage and enables file-based chat
-		via the Responses API.
-
-		Parameters:
+		Attributes:
 		-----------
-		None
+		client:
+			OpenAI-compatible xAI client.
 
-		Returns:
+		api_key:
+			xAI API key used for authorization.
+
+		base_url:
+			xAI API base URL.
+
+		file_path:
+			Local file path used for upload or file-aware requests.
+
+		file_name:
+			File name sent during upload.
+
+		file_id:
+			xAI uploaded file identifier.
+
+		file_ids:
+			List of uploaded file identifiers.
+
+		purpose:
+			File purpose value used by the OpenAI-compatible Files API.
+
+		model:
+			xAI model used for file-aware Responses API requests.
+
+		prompt:
+			User prompt for file-aware Responses API requests.
+
+		request:
+			Last request payload or request metadata.
+
+		response:
+			Last response object.
+
+		content:
+			Last downloaded file content.
+
+		output_text:
+			Last normalized text output.
+
+		documents:
+			Known file-name to file-id mapping retained for UI compatibility.
+
+		Methods:
 		--------
-		None
-	
+		upload:
+			Upload a local file.
+
+		list:
+			List uploaded files.
+
+		list_files:
+			Alias for list.
+
+		retrieve:
+			Retrieve file metadata.
+
+		extract:
+			Download file content.
+
+		content:
+			Alias for extract.
+
+		download:
+			Alias for extract.
+
+		delete:
+			Delete an uploaded file.
+
+		summarize:
+			Ask a question about an uploaded file or newly uploaded file.
+
+		survey:
+			Alias for summarize supporting legacy plural arguments.
+
 	"""
-	client: Optional[ Client ]
-	prompt: Optional[ str ]
-	file_name: Optional[ str ]
-	response_format: Optional[ str ]
-	instructions: Optional[ str ]
+	client: Optional[ OpenAI ]
+	api_key: Optional[ str ]
+	base_url: Optional[ str ]
 	file_path: Optional[ str ]
-	file_paths: Optional[ List[ str ] ]
-	file_names: Optional[ List[ str ] ]
+	file_name: Optional[ str ]
 	file_id: Optional[ str ]
-	purpose: Optional[ str ]
-	content: Optional[ List[ Dict[ str, Any ] ] ]
 	file_ids: Optional[ List[ str ] ]
-	documents: Optional[ Dict[ str, Any ] ]
+	purpose: Optional[ str ]
+	model: Optional[ str ]
+	prompt: Optional[ str ]
+	instructions: Optional[ str ]
+	request: Optional[ Dict[ str, Any ] ]
+	response: Optional[ Any ]
+	content: Optional[ Any ]
+	output_text: Optional[ str ]
+	documents: Optional[ Dict[ str, str ] ]
 	
 	def __init__( self ):
 		"""
 		
 			Purpose:
 			--------
-			Initialize the Files capability.
+			Initialize the xAI Files wrapper.
 
 			Parameters:
 			-----------
@@ -5596,32 +5667,60 @@ class Files( Grok ):
 		
 		"""
 		super( ).__init__( )
+		self.api_key = os.getenv( 'XAI_API_KEY' ) or cfg.XAI_API_KEY
+		self.base_url = getattr( cfg, 'XAI_BASE_URL', 'https://api.x.ai/v1' )
 		self.client = None
 		self.model = None
 		self.instructions = None
-		self.content = None
 		self.prompt = None
 		self.response = None
+		self.request = { }
+		self.content = None
+		self.output_text = None
 		self.file_id = None
+		self.file_ids = [ ]
 		self.file_path = None
-		self.file_Name = None
-		self.input = None
-		self.purpose = None
-		self.documents = \
-		{
-			'AccountBalances.csv': 'file_4731bb8c-d8ff-48c0-9dae-3092fbcab214',
-			'SF133.csv': 'file_41037cc2-e1f4-4cce-b25a-5c1d1f0172b2',
-			'Authority.csv': 'file_cbde06d5-988b-483f-880c-441613bfe54f',
-			'Outlays.csv': 'file_78479189-7d47-4edb-9abc-2931172430e9'
+		self.file_name = None
+		self.file_paths = [ ]
+		self.file_names = [ ]
+		self.purpose = 'assistants'
+		self.response_format = None
+		self.temperature = None
+		self.top_percent = None
+		self.frequency_penalty = None
+		self.presence_penalty = None
+		self.max_output_tokens = None
+		self.store = None
+		self.stream = None
+		self.include = [ ]
+		self.tools = [ ]
+		self.tool_choice = None
+		self.previous_id = None
+		self.previous_response_id = None
+		self.conversation_id = None
+		self.limit = None
+		self.next_token = None
+		self.order = None
+		self.sort_by = None
+		self.filter = None
+		self.team_id = None
+		self.download_format = None
+		self.page_number = None
+		self.extra_kwargs = { }
+		self.documents = {
+				'AccountBalances.csv': 'file_4731bb8c-d8ff-48c0-9dae-3092fbcab214',
+				'SF133.csv': 'file_41037cc2-e1f4-4cce-b25a-5c1d1f0172b2',
+				'Authority.csv': 'file_cbde06d5-988b-483f-880c-441613bfe54f',
+				'Outlays.csv': 'file_78479189-7d47-4edb-9abc-2931172430e9',
 		}
-
+	
 	@property
 	def model_options( self ) -> List[ str ]:
 		"""
 		
 			Purpose:
 			--------
-			Return list of efficient file interaction models.
+			Return xAI models appropriate for file-aware Responses API workflows.
 
 			Parameters:
 			-----------
@@ -5629,16 +5728,71 @@ class Files( Grok ):
 
 			Returns:
 			--------
-			List[str]
+			List[str]:
+				xAI model option names.
 		
 		"""
-		return [ 'grok-4', 'grok-4-0709', 'grok-4-latest', 'grok-4-1-fast',
-		         'grok-4-1-fast-reasoning', 'grok-4-1-fast-reasoning-latest',
-		         'grok-4-1-fast-non-reasoning', 'grok-4-1-fast-non-reasoning-latest', 'grok-4-fast',
-		         'grok-4-fast-reasoning', 'grok-4-fast-reasoning-latest',
-		         'grok-4-fast-non-reasoning', 'grok-4-fast-non-reasoning-latest',
-		         'grok-code-fast-1', 'grok-3', 'grok-3-latest', 'grok-3-mini', 'grok-3-fast',
-		         'grok-3-fast-latest', 'grok-3-mini-fast', 'grok-3-mini-fast-latest' ]
+		return [
+				'grok-4.20-reasoning',
+				'grok-4.20',
+				'grok-4',
+				'grok-4-latest',
+				'grok-4-fast-reasoning',
+				'grok-4-fast-non-reasoning',
+				'grok-code-fast-1',
+				'grok-3',
+				'grok-3-mini',
+				'grok-3-fast',
+				'grok-3-mini-fast',
+		]
+	
+	@property
+	def purpose_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return file purpose options consumed by the Files UI.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				File purpose option names.
+		
+		"""
+		return [
+				'assistants',
+				'batch',
+				'fine-tune',
+				'user_data',
+		]
+	
+	@property
+	def format_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return file-aware response format options consumed by the Files UI.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Response format option names.
+		
+		"""
+		return [
+				'text',
+				'json_object',
+		]
 	
 	@property
 	def tool_options( self ) -> List[ str ]:
@@ -5646,7 +5800,7 @@ class Files( Grok ):
 		
 			Purpose:
 			--------
-			Return list of efficient file interaction models.
+			Return file-aware tool options consumed by the Files UI.
 
 			Parameters:
 			-----------
@@ -5654,33 +5808,21 @@ class Files( Grok ):
 
 			Returns:
 			--------
-			List[str]
+			List[str]:
+				Tool option names.
 		
 		"""
-		return [ 'code_execution()' ]
+		return [
+				'code_interpreter',
+		]
 	
 	@property
 	def include_options( self ) -> List[ str ]:
-		return [ 'web_search_call_output',
-		         'x_search_call_output',
-		         'code_execution_call_output',
-		         'collections_search_call_output',
-		         'attachment_search_call_output',
-		         'mcp_call_output',
-		         'inline_citations',
-		         'verbose_streaming' ]
-	
-	@property
-	def reasoning_options( self ) -> List[ str ]:
 		"""
 		
 			Purpose:
 			--------
-			Return supported reasoning effort levels.
-
-			Notes:
-			------
-			Only valid for model = 'grok-3-mini'.
+			Return file-aware include options consumed by the Files UI.
 
 			Parameters:
 			-----------
@@ -5688,23 +5830,699 @@ class Files( Grok ):
 
 			Returns:
 			--------
-			List[str]
+			List[str]:
+				Include option names.
 		
 		"""
-		return [ 'low', 'high' ]
+		return [
+				'code_execution_call_output',
+		]
 	
-	@property
-	def choice_options( self ) -> List[ str ] | None:
-		'''
+	def initialize_client( self ) -> None:
+		"""
+		
+			Purpose:
+			--------
+			Initialize the OpenAI-compatible xAI client from assigned members.
+
+			Parameters:
+			-----------
+			None
 
 			Returns:
 			--------
-			A List[ str ] of available tools options
-
-		'''
-		return [ 'auto', 'required', 'none' ]
+			None
+		
+		"""
+		try:
+			throw_if( 'api_key', self.api_key )
+			throw_if( 'base_url', self.base_url )
+			self.client = OpenAI( api_key=self.api_key, base_url=self.base_url )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'initialize_client( self )'
+			raise ex
 	
-	def upload( self, filepath: str, filename: str ) -> None:
+	def build_headers( self ) -> Dict[ str, str ]:
+		"""
+		
+			Purpose:
+			--------
+			Build authorization headers for xAI Files REST endpoints.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, str]:
+				HTTP headers.
+		
+		"""
+		try:
+			throw_if( 'api_key', self.api_key )
+			return {
+					'Authorization': f'Bearer {self.api_key}',
+			}
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'build_headers( self )'
+			raise ex
+	
+	def build_json_headers( self ) -> Dict[ str, str ]:
+		"""
+		
+			Purpose:
+			--------
+			Build JSON authorization headers for xAI Files REST endpoints.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, str]:
+				HTTP headers.
+		
+		"""
+		try:
+			headers = self.build_headers( )
+			headers[ 'Content-Type' ] = 'application/json'
+			return headers
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'build_json_headers( self )'
+			raise ex
+	
+	def normalize_file_id( self, response: Any = None ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Extract a file identifier from a response object or dictionary.
+
+			Parameters:
+			-----------
+			response: Any
+				Response object or dictionary.
+
+			Returns:
+			--------
+			str | None:
+				File identifier when available.
+		
+		"""
+		try:
+			value = response if response is not None else self.response
+			
+			if value is None:
+				return None
+			
+			if isinstance( value, dict ):
+				file_id = value.get( 'id' ) or value.get( 'file_id' )
+				return str( file_id ) if file_id else None
+			
+			file_id = getattr( value, 'id', None ) or getattr( value, 'file_id', None )
+			return str( file_id ) if file_id else None
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'normalize_file_id( self, response )'
+			raise ex
+	
+	def get_output_text( self ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Extract text output from the last Responses API response.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			str | None:
+				Text output when available.
+		
+		"""
+		try:
+			if self.response is None:
+				return None
+			
+			output_text = getattr( self.response, 'output_text', None )
+			if output_text:
+				self.output_text = output_text
+				return self.output_text
+			
+			output = getattr( self.response, 'output', None )
+			if not isinstance( output, list ):
+				return None
+			
+			parts: List[ str ] = [ ]
+			for item in output:
+				if getattr( item, 'type', None ) != 'message':
+					continue
+				
+				content = getattr( item, 'content', None )
+				if not isinstance( content, list ):
+					continue
+				
+				for block in content:
+					text = getattr( block, 'text', None )
+					if text:
+						parts.append( text )
+			
+			self.output_text = ''.join( parts ).strip( ) if parts else None
+			return self.output_text
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'get_output_text( self )'
+			raise ex
+	
+	def build_upload_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build upload request metadata from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Upload request metadata.
+		
+		"""
+		try:
+			throw_if( 'file_path', self.file_path )
+			path = Path( self.file_path )
+			
+			if not path.exists( ):
+				raise FileNotFoundError( f'File was not found: {self.file_path}' )
+			
+			self.file_name = self.file_name or path.name
+			throw_if( 'file_name', self.file_name )
+			self.request = {
+					'file_path': str( path ),
+					'file_name': self.file_name,
+					'purpose': self.purpose,
+			}
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'build_upload_request( self )'
+			raise ex
+	
+	def execute_upload( self ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Execute the file upload using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Any:
+				File upload response.
+		
+		"""
+		try:
+			self.initialize_client( )
+			throw_if( 'file_path', self.file_path )
+			throw_if( 'purpose', self.purpose )
+			with open( self.file_path, 'rb' ) as file_stream:
+				self.response = self.client.files.create( file=file_stream, purpose=self.purpose )
+			
+			self.file_id = self.normalize_file_id( self.response )
+			if self.file_id and self.file_id not in self.file_ids:
+				self.file_ids.append( self.file_id )
+			
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'execute_upload( self )'
+			raise ex
+	
+	def build_list_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build file-list query parameters from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				File-list query parameters.
+		
+		"""
+		try:
+			self.request = { }
+			
+			if self.team_id:
+				self.request[ 'team_id' ] = self.team_id
+			
+			if isinstance( self.limit, int ) and self.limit > 0:
+				self.request[ 'limit' ] = self.limit
+			
+			if self.next_token:
+				self.request[ 'next_token' ] = self.next_token
+			
+			if self.order:
+				self.request[ 'order' ] = self.order
+			
+			if self.sort_by:
+				self.request[ 'sort_by' ] = self.sort_by
+			
+			if self.filter:
+				self.request[ 'filter' ] = self.filter
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'build_list_request( self )'
+			raise ex
+	
+	def execute_list( self ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Execute the file-list request using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Any:
+				File-list response.
+		
+		"""
+		try:
+			throw_if( 'base_url', self.base_url )
+			response = requests.get( url=f'{self.base_url.rstrip( "/" )}/files',
+				headers=self.build_headers( ), params=self.request, timeout=self.timeout or 3600 )
+			response.raise_for_status( )
+			self.response = response.json( )
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'execute_list( self )'
+			raise ex
+	
+	def build_retrieve_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build file metadata retrieval query parameters from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				File metadata query parameters.
+		
+		"""
+		try:
+			throw_if( 'file_id', self.file_id )
+			self.request = { }
+			
+			if self.team_id:
+				self.request[ 'team_id' ] = self.team_id
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'build_retrieve_request( self )'
+			raise ex
+	
+	def execute_retrieve( self ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Execute the file metadata retrieval request using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Any:
+				File metadata response.
+		
+		"""
+		try:
+			throw_if( 'base_url', self.base_url )
+			throw_if( 'file_id', self.file_id )
+			response = requests.get( url=f'{self.base_url.rstrip( "/" )}/files/{self.file_id}',
+				headers=self.build_headers( ), params=self.request, timeout=self.timeout or 3600 )
+			response.raise_for_status( )
+			self.response = response.json( )
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'execute_retrieve( self )'
+			raise ex
+	
+	def build_extract_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build file content download query parameters from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				File content query parameters.
+		
+		"""
+		try:
+			throw_if( 'file_id', self.file_id )
+			self.request = { }
+			
+			if self.team_id:
+				self.request[ 'team_id' ] = self.team_id
+			
+			if self.download_format:
+				self.request[ 'format' ] = self.download_format
+			
+			if isinstance( self.page_number, int ) and self.page_number > 0:
+				self.request[ 'page_number' ] = self.page_number
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'build_extract_request( self )'
+			raise ex
+	
+	def execute_extract( self ) -> bytes | str | None:
+		"""
+		
+			Purpose:
+			--------
+			Execute the file content download request using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			bytes | str | None:
+				File bytes or extracted text.
+		
+		"""
+		try:
+			throw_if( 'base_url', self.base_url )
+			throw_if( 'file_id', self.file_id )
+			response = requests.get( url=f'{self.base_url.rstrip( "/" )}/files/{self.file_id}/content',
+				headers=self.build_headers( ), params=self.request, timeout=self.timeout or 3600 )
+			response.raise_for_status( )
+			content_type = str( response.headers.get( 'content-type', '' ) ).lower( )
+			if 'application/json' in content_type:
+				self.content = response.json( )
+				return self.content
+			
+			if self.download_format == 'DOWNLOAD_FORMAT_TEXT' or 'text/' in content_type:
+				self.content = response.text
+				return self.content
+			
+			self.content = response.content
+			return self.content
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'execute_extract( self )'
+			raise ex
+	
+	def build_delete_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build file delete query parameters from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Delete query parameters.
+		
+		"""
+		try:
+			throw_if( 'file_id', self.file_id )
+			self.request = { }
+			
+			if self.team_id:
+				self.request[ 'team_id' ] = self.team_id
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'build_delete_request( self )'
+			raise ex
+	
+	def execute_delete( self ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Execute the file delete request using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Any:
+				Delete response.
+		
+		"""
+		try:
+			throw_if( 'base_url', self.base_url )
+			throw_if( 'file_id', self.file_id )
+			response = requests.delete( url=f'{self.base_url.rstrip( "/" )}/files/{self.file_id}',
+				headers=self.build_headers( ), params=self.request, timeout=self.timeout or 3600 )
+			response.raise_for_status( )
+			if response.content:
+				try:
+					self.response = response.json( )
+				except Exception:
+					self.response = { 'id': self.file_id, 'deleted': True }
+			else:
+				self.response = { 'id': self.file_id, 'deleted': True }
+			
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'execute_delete( self )'
+			raise ex
+	
+	def build_file_input( self ) -> List[ Dict[ str, Any ] ]:
+		"""
+		
+			Purpose:
+			--------
+			Build Responses API input content containing text and uploaded file references.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[Dict[str, Any]]:
+				Responses API content blocks.
+		
+		"""
+		try:
+			throw_if( 'prompt', self.prompt )
+			self.content = [ {
+							'type': 'input_text',
+							'text': self.prompt,
+					}, ]
+			
+			for file_id in self.file_ids:
+				if not isinstance( file_id, str ) or not file_id.strip( ):
+					continue
+				
+				self.content.append( {
+							'type': 'input_file',
+							'file_id': file_id.strip( ),
+					} )
+			
+			return self.content
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'build_file_input( self )'
+			raise ex
+	
+	def build_file_response_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build a file-aware Responses API request from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Responses API request payload.
+		
+		"""
+		try:
+			throw_if( 'model', self.model )
+			throw_if( 'prompt', self.prompt )
+			if not isinstance( self.file_ids, list ) or len( self.file_ids ) == 0:
+				raise ValueError( 'At least one file_id is required for a file-aware response.' )
+			
+			self.request = { 'model': self.model, 'input': [ {
+									'role': 'user',
+									'content': self.build_file_input( ),
+							} ], }
+			if self.instructions:
+				self.request[ 'instructions' ] = self.instructions
+			
+			if isinstance( self.max_output_tokens, int ) and self.max_output_tokens > 0:
+				self.request[ 'max_output_tokens' ] = self.max_output_tokens
+			
+			if self.temperature is not None:
+				self.request[ 'temperature' ] = self.temperature
+			
+			if self.top_percent is not None:
+				self.request[ 'top_p' ] = self.top_percent
+			
+			if self.frequency_penalty is not None:
+				self.request[ 'frequency_penalty' ] = self.frequency_penalty
+			
+			if self.presence_penalty is not None:
+				self.request[ 'presence_penalty' ] = self.presence_penalty
+			
+			if self.store is not None:
+				self.request[ 'store' ] = self.store
+			
+			if self.include:
+				self.request[ 'include' ] = self.include
+			
+			if self.tools:
+				self.request[ 'tools' ] = self.tools
+			
+			if self.tool_choice:
+				self.request[ 'tool_choice' ] = self.tool_choice
+			
+			if self.previous_id:
+				self.request[ 'previous_response_id' ] = self.previous_id
+			
+			if self.conversation_id:
+				self.request[ 'conversation' ] = self.conversation_id
+			
+			if self.response_format:
+				self.request[ 'text' ] = { 'format': { 'type': self.response_format, } }
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'build_file_response_request( self )'
+			raise ex
+	
+	def execute_file_response( self ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Execute a file-aware Responses API request from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			str | None:
+				Model output text.
+		
+		"""
+		try:
+			self.initialize_client( )
+			self.response = self.client.responses.create( **self.request )
+			return self.get_output_text( )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'execute_file_response( self )'
+			raise ex
+	
+	def upload( self, filepath: str, filename: str = None, purpose: str = 'assistants',
+			**kwargs: Any ) -> Any:
 		"""
 		
 			Purpose:
@@ -5713,37 +6531,529 @@ class Files( Grok ):
 
 			Parameters:
 			-----------
-			filepath : str
-			filename : str
+			filepath: str
+				Local file path to upload.
+
+			filename: str
+				Optional file name assigned to the upload.
+
+			purpose: str
+				File purpose value.
+
+			**kwargs: Any
+				Additional UI arguments retained on the wrapper.
 
 			Returns:
 			--------
-			dict
+			Any:
+				Upload response.
 		
 		"""
 		try:
 			throw_if( 'filepath', filepath )
-			throw_if( 'filename', filename )
 			self.file_path = filepath
 			self.file_name = filename
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( {
-				'Authorization': f'Bearer {cfg.GROK_API_KEY}' } )
-			self.client.files.upload( file=open( self.file_path, mode='rb' ),
-				filename=self.file_name )
+			self.purpose = purpose or 'assistants'
+			self.extra_kwargs = kwargs or { }
+			self.build_upload_request( )
+			return self.execute_upload( )
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'Files'
-			ex.method = 'upload( self, filepath: str, filename: str ) -> None'
+			ex.method = 'upload( self, filepath: str, filename: str=None )'
 			raise ex
 	
-	def list( self ) -> ListFilesResponse | None:
+	def list( self, limit: int = None, next_token: str = None, order: str = None,
+			sort_by: str = None, filter: str = None, team_id: str = None, **kwargs: Any ) -> Any:
 		"""
 		
 			Purpose:
 			--------
-			List all stored files.
+			List uploaded xAI files.
+
+			Parameters:
+			-----------
+			limit: int
+				Optional maximum number of files.
+
+			next_token: str
+				Optional pagination token.
+
+			order: str
+				Optional sort order.
+
+			sort_by: str
+				Optional sort field.
+
+			filter: str
+				Optional xAI filter expression.
+
+			team_id: str
+				Optional xAI team identifier.
+
+			**kwargs: Any
+				Additional UI arguments retained on the wrapper.
+
+			Returns:
+			--------
+			Any:
+				File-list response.
+		
+		"""
+		try:
+			self.limit = limit
+			self.next_token = next_token
+			self.order = order
+			self.sort_by = sort_by
+			self.filter = filter
+			self.team_id = team_id
+			self.extra_kwargs = kwargs or { }
+			self.build_list_request( )
+			return self.execute_list( )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'list( self )'
+			raise ex
+	
+	def list_files( self, limit: int = None, next_token: str = None, order: str = None,
+			sort_by: str = None, filter: str = None, team_id: str = None, **kwargs: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Alias for list.
+
+			Parameters:
+			-----------
+			limit: int
+				Optional maximum number of files.
+
+			next_token: str
+				Optional pagination token.
+
+			order: str
+				Optional sort order.
+
+			sort_by: str
+				Optional sort field.
+
+			filter: str
+				Optional xAI filter expression.
+
+			team_id: str
+				Optional xAI team identifier.
+
+			**kwargs: Any
+				Additional UI arguments.
+
+			Returns:
+			--------
+			Any:
+				File-list response.
+		
+		"""
+		try:
+			return self.list( limit=limit, next_token=next_token, order=order,
+				sort_by=sort_by, filter=filter, team_id=team_id, **kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'list_files( self )'
+			raise ex
+	
+	def retrieve( self, file_id: str, team_id: str = None, **kwargs: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Retrieve metadata for an uploaded xAI file.
+
+			Parameters:
+			-----------
+			file_id: str
+				xAI file identifier.
+
+			team_id: str
+				Optional xAI team identifier.
+
+			**kwargs: Any
+				Additional UI arguments retained on the wrapper.
+
+			Returns:
+			--------
+			Any:
+				File metadata response.
+		
+		"""
+		try:
+			throw_if( 'file_id', file_id )
+			self.file_id = file_id
+			self.team_id = team_id
+			self.extra_kwargs = kwargs or { }
+			self.build_retrieve_request( )
+			return self.execute_retrieve( )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'retrieve( self, file_id: str )'
+			raise ex
+	
+	def extract( self, file_id: str, format: str = None, page_number: int = None,
+			team_id: str = None, **kwargs: Any ) -> bytes | str | None:
+		"""
+		
+			Purpose:
+			--------
+			Download content for an uploaded xAI file.
+
+			Parameters:
+			-----------
+			file_id: str
+				xAI file identifier.
+
+			format: str
+				Optional download format.
+
+			page_number: int
+				Optional page number.
+
+			team_id: str
+				Optional xAI team identifier.
+
+			**kwargs: Any
+				Additional UI arguments retained on the wrapper.
+
+			Returns:
+			--------
+			bytes | str | None:
+				File bytes or extracted text.
+		
+		"""
+		try:
+			throw_if( 'file_id', file_id )
+			self.file_id = file_id
+			self.download_format = format
+			self.page_number = page_number
+			self.team_id = team_id
+			self.extra_kwargs = kwargs or { }
+			self.build_extract_request( )
+			return self.execute_extract( )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'extract( self, file_id: str )'
+			raise ex
+	
+	def download( self, file_id: str, format: str = None, page_number: int = None,
+			team_id: str = None, **kwargs: Any ) -> bytes | str | None:
+		"""
+		
+			Purpose:
+			--------
+			Alias for extract.
+
+			Parameters:
+			-----------
+			file_id: str
+				xAI file identifier.
+
+			format: str
+				Optional download format.
+
+			page_number: int
+				Optional page number.
+
+			team_id: str
+				Optional xAI team identifier.
+
+			**kwargs: Any
+				Additional UI arguments.
+
+			Returns:
+			--------
+			bytes | str | None:
+				File bytes or extracted text.
+		
+		"""
+		try:
+			return self.extract( file_id=file_id, format=format, page_number=page_number,
+				team_id=team_id, **kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'download( self, file_id: str )'
+			raise ex
+	
+	def delete( self, file_id: str, team_id: str = None, **kwargs: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Delete an uploaded xAI file.
+
+			Parameters:
+			-----------
+			file_id: str
+				xAI file identifier.
+
+			team_id: str
+				Optional xAI team identifier.
+
+			**kwargs: Any
+				Additional UI arguments retained on the wrapper.
+
+			Returns:
+			--------
+			Any:
+				Delete response.
+		
+		"""
+		try:
+			throw_if( 'file_id', file_id )
+			self.file_id = file_id
+			self.team_id = team_id
+			self.extra_kwargs = kwargs or { }
+			self.build_delete_request( )
+			return self.execute_delete( )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'delete( self, file_id: str )'
+			raise ex
+	
+	def summarize( self, filepath: str = None, filename: str = None, prompt: str = None,
+			file_id: str = None, model: str = 'grok-4.20-reasoning', temperature: float = None,
+			top_p: float = None, frequency: float = None, presence: float = None,
+			max_tokens: int = None, store: bool = None, stream: bool = None,
+			instruct: str = None, include: List[ str ] = None, tools: List[ Any ] = None,
+			tool_choice: str = None, previous_id: str = None, conversation_id: str = None,
+			purpose: str = 'assistants', **kwargs: Any ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Ask a question about an uploaded file or a local file uploaded before the request.
+
+			Parameters:
+			-----------
+			filepath: str
+				Optional local file path to upload.
+
+			filename: str
+				Optional file name for upload.
+
+			prompt: str
+				User question or instruction.
+
+			file_id: str
+				Optional existing xAI file identifier.
+
+			model: str
+				xAI model for file-aware Responses API request.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty.
+
+			presence: float
+				Optional presence penalty.
+
+			max_tokens: int
+				Optional maximum output tokens.
+
+			store: bool
+				Optional response storage flag.
+
+			stream: bool
+				Optional stream flag retained on the wrapper.
+
+			instruct: str
+				Optional instructions.
+
+			include: List[str]
+				Optional include fields.
+
+			tools: List[Any]
+				Optional Responses API tools.
+
+			tool_choice: str
+				Optional tool-choice value.
+
+			previous_id: str
+				Optional previous response identifier.
+
+			conversation_id: str
+				Optional conversation identifier.
+
+			purpose: str
+				File upload purpose when filepath is provided.
+
+			**kwargs: Any
+				Additional UI arguments retained on the wrapper.
+
+			Returns:
+			--------
+			str | None:
+				Model output text.
+		
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.prompt = prompt
+			self.model = model
+			self.instructions = instruct
+			self.temperature = temperature
+			self.top_percent = top_p
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_output_tokens = max_tokens
+			self.store = store
+			self.stream = stream
+			self.include = include if include is not None else [ ]
+			self.tools = tools if tools is not None else [ ]
+			self.tool_choice = tool_choice
+			self.previous_id = previous_id
+			self.previous_response_id = previous_id
+			self.conversation_id = conversation_id
+			self.extra_kwargs = kwargs or { }
+			self.file_ids = [ ]
+			
+			if file_id:
+				self.file_id = file_id
+				self.file_ids.append( file_id )
+			
+			if filepath:
+				upload_response = self.upload( filepath=filepath, filename=filename,
+					purpose=purpose )
+				uploaded_id = self.normalize_file_id( upload_response )
+				if uploaded_id and uploaded_id not in self.file_ids:
+					self.file_ids.append( uploaded_id )
+			
+			self.build_file_response_request( )
+			return self.execute_file_response( )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'summarize( self, filepath: str, prompt: str )'
+			raise ex
+	
+	def survey( self, filepaths: List[ str ], filenames: List[ str ], prompt: str,
+			model: str = 'grok-4.20-reasoning', temperature: float = None, top_p: float = None,
+			frequency: float = None, presence: float = None, max_tokens: int = None,
+			store: bool = None, stream: bool = None, instruct: str = None,
+			purpose: str = 'assistants', **kwargs: Any ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Ask a question about one or more local files after uploading them to xAI.
+
+			Parameters:
+			-----------
+			filepaths: List[str]
+				Local file paths to upload.
+
+			filenames: List[str]
+				File names corresponding to each path.
+
+			prompt: str
+				User question or instruction.
+
+			model: str
+				xAI model for file-aware Responses API request.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty.
+
+			presence: float
+				Optional presence penalty.
+
+			max_tokens: int
+				Optional maximum output tokens.
+
+			store: bool
+				Optional response storage flag.
+
+			stream: bool
+				Optional stream flag retained on the wrapper.
+
+			instruct: str
+				Optional instructions.
+
+			purpose: str
+				File upload purpose.
+
+			**kwargs: Any
+				Additional UI arguments.
+
+			Returns:
+			--------
+			str | None:
+				Model output text.
+		
+		"""
+		try:
+			throw_if( 'filepaths', filepaths )
+			throw_if( 'filenames', filenames )
+			throw_if( 'prompt', prompt )
+			
+			if len( filepaths ) != len( filenames ):
+				raise ValueError( 'filepaths and filenames must have the same length.' )
+			
+			self.file_ids = [ ]
+			for index, filepath in enumerate( filepaths ):
+				upload_response = self.upload( filepath=filepath, filename=filenames[ index ],
+					purpose=purpose )
+				uploaded_id = self.normalize_file_id( upload_response )
+				if uploaded_id and uploaded_id not in self.file_ids:
+					self.file_ids.append( uploaded_id )
+			
+			self.prompt = prompt
+			self.model = model
+			self.instructions = instruct
+			self.temperature = temperature
+			self.top_percent = top_p
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_output_tokens = max_tokens
+			self.store = store
+			self.stream = stream
+			self.extra_kwargs = kwargs or { }
+			self.build_file_response_request( )
+			return self.execute_file_response( )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'survey( self, filepaths: List[ str ], filenames: List[ str ] )'
+			raise ex
+	
+	def __dir__( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return member names for inspection.
 
 			Parameters:
 			-----------
@@ -5751,308 +7061,85 @@ class Files( Grok ):
 
 			Returns:
 			--------
-			List[dict]
+			List[str] | None:
+				Member names.
 		
 		"""
-		try:
-			self.client = Client( api_key=self.api_key )
-			files_response = self.client.files.list( )
-			return files_response
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'list( self ) -> List[ Any ]'
-			raise ex
-	
-	def retrieve( self, file_id: str ) -> Any | None:
-		"""
-		
-			Purpose:
-			--------
-			Retrieve metadata for a specific file.
-
-			Parameters:
-			-----------
-			file_id : str
-
-			Returns:
-			--------
-			dict
-		
-		"""
-		try:
-			throw_if( 'file_id', file_id )
-			self.file_id = file_id
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( {
-					'Authorization': f'Bearer {cfg.GROK_API_KEY}' } )
-			metadata = self.client.files.get( file_id=self.file_id )
-			return metadata
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'retrieve( self, file_id: str ) -> Any | None'
-			raise ex
-	
-	def summarize( self, filepath: str, filename: str, prompt: str, model: str='grok-4-fast',
-			temperature: float=None, top_p: float=None, frequency: float=None,
-			presence: float=None, max_tokens: int=None, store: bool=None,
-			stream: bool=None, instruct: str=None ) -> str | None:
-		"""
-		
-			Purpose:
-			--------
-			Chat with an uploaded file by attaching it to a Responses API
-			request and asking a question about its contents.
-
-			Parameters:
-			-----------
-			file_id : str
-			prompt : str
-			model : str | None
-			max_output_tokens : int | None
-			temperature : float | None
-			top_p : float | None
-			store : bool
-			previous_response_id : str | None
-
-			Returns:
-			--------
-			str
-		
-		"""
-		try:
-			throw_if( 'filepath', filepath )
-			throw_if( 'filename', filename )
-			throw_if( 'prompt', prompt )
-			self.model = model
-			self.prompt = prompt
-			self.instructions = instruct
-			self.temperature = temperature
-			self.top_p = top_p
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = max_tokens
-			self.store = store
-			self.stream = stream
-			self.messages.append( system( self.instructions ) )
-			self.messages.append( user( self.user ) )
-			self.file_path = filepath
-			self.filename = filename
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( {
-					'Authorization': f'Bearer {cfg.GROK_API_KEY}' } )
-			self.file = self.client.files.upload( open( self.file_path, 'rb' ),
-				filename=self.file_name )
-			self.chat = self.client.chat.create( model=self.model )
-			self.chat.append( user( self.prompt, file( self.file.id ) ) )
-			_response = self.chat.sample( )
-			return _response.content
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'search( self, filepath: str, filename: str, prompt: str, model: str ) -> str'
-			raise ex
-	
-	def search( self, filepath: str, filename: str, prompt: str, model: str='grok-4-fast',
-			temperature: float=None, top_p: float=None, frequency: float=None,
-			presence: float=None, max_tokens: int=None, store: bool=None,
-			stream: bool=None, instruct: str=None ) -> str | None:
-		"""
-		
-			Purpose:
-			--------
-			Chat with an uploaded file by attaching it to a Responses API
-			request and asking a question about its contents.
-
-			Parameters:
-			-----------
-			file_id : str
-			prompt : str
-			model : str | None
-			max_output_tokens : int | None
-			temperature : float | None
-			top_p : float | None
-			store : bool
-			previous_response_id : str | None
-
-			Returns:
-			--------
-			str
-		
-		"""
-		try:
-			throw_if( 'filepath', filepath )
-			throw_if( 'filename', filename )
-			throw_if( 'prompt', prompt )
-			self.model = model
-			self.prompt = prompt
-			self.instructions = instruct
-			self.temperature = temperature
-			self.top_p = top_p
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = max_tokens
-			self.store = store
-			self.stream = stream
-			self.messages.append( system( self.instructions ) )
-			self.messages.append( user( self.user ) )
-			self.file_path = filepath
-			self.filename = filename
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( {
-					'Authorization': f'Bearer {cfg.GROK_API_KEY}' } )
-			self.file = self.client.files.upload( open( self.file_path, 'rb' ),
-				filename=self.file_name )
-			self.chat = self.client.chat.create( model=self.model )
-			self.chat.append( user( self.prompt, file( self.file.id ) ) )
-			_response = self.chat.sample( )
-			return _response.content
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'search( self, filepath: str, filename: str, prompt: str, model: str ) -> str'
-			raise ex
-	
-	def survey( self, filepaths: List[ str ], filenames: List[ str ], prompt: str,
-			model: str='grok-4-fast', temperature: float=None, top_p: float=None,
-			frequency: float=None, presence: float=None, max_tokens: int=None, store: bool=None,
-			stream: bool=None, instruct: str=None ) -> str | None:
-		"""
-		
-			Purpose:
-			--------
-			Chat with an uploaded file by attaching it to a Responses API
-			request and asking a question about its contents.
-
-			Parameters:
-			-----------
-			file_id : str
-			prompt : str
-			model : str | None
-			max_output_tokens : int | None
-			temperature : float | None
-			top_p : float | None
-			store : bool
-			previous_response_id : str | None
-
-			Returns:
-			--------
-			str
-		
-		"""
-		try:
-			throw_if( 'filepath', filepaths )
-			throw_if( 'filename', filenames )
-			throw_if( 'prompt', prompt )
-			self.model = model
-			self.prompt = prompt
-			self.instructions = instruct
-			self.temperature = temperature
-			self.top_p = top_p
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = max_tokens
-			self.store = store
-			self.stream = stream
-			self.messages.append( system( self.instructions ) )
-			self.messages.append( user( self.user ) )
-			self.file_paths = filepaths
-			self.filenames = filenames
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( {
-					'Authorization': f'Bearer {cfg.GROK_API_KEY}' } )
-			self.file = self.client.files.upload( open( self.file_path, 'rb' ),
-				filename=self.file_name )
-			self.chat = self.client.chat.create( model=self.model )
-			self.chat.append( user( self.prompt, file( self.file.id ) ) )
-			_response = self.chat.sample( )
-			return _response.content
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = ('survey( self, filepaths: List[ str ], filenames: List[ str ], '
-			             'prompt: str, model: str ) -> str')
-			raise ex
-	
-	def extract( self, file_id: str ) -> bytes | None:
-		"""
-		
-			Purpose:
-			--------
-			Retrieve raw content of a stored file.
-
-			Parameters:
-			-----------
-			file_id : str
-
-			Returns:
-			--------
-			bytes
-		
-		"""
-		try:
-			throw_if( 'file_id', file_id )
-			self.file_id = file_id
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( { 'Authorization': f'Bearer {cfg.GROK_API_KEY}' } )
-			_content = self.client.files.content( file_id=self.file_id )
-			return _content
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'extract( self, file_id: str ) -> bytes | None'
-			raise ex
-	
-	def delete( self, file_id: str ) -> None:
-		"""
-		
-			Purpose:
-			--------
-			Delete a file from storage.
-
-			Parameters:
-			-----------
-			file_id : str
-
-			Returns:
-			--------
-			dict
-		
-		"""
-		try:
-			throw_if( 'file_id', file_id )
-			self.file_id = file_id
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( {
-					'Authorization': f'Bearer {cfg.GROK_API_KEY}' } )
-			self.client.files.delete( file_id=self.file_id )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'delete( self, file_id: str ) -> None'
-			raise ex
-	
-	def __dir__( self ) -> List[ str ] | None:
-		return [ 'client',
-		         'file_path',
-		         'documents',
-		         'response',
-		         'name',
-		         'model',
-		         'file_id',
-		         'list',
-		         'retrieve',
-		         'search',
-		         'delete',
-		         'upload', ]
+		return [
+				'api_key',
+				'base_url',
+				'client',
+				'file_path',
+				'file_name',
+				'file_id',
+				'file_ids',
+				'file_paths',
+				'file_names',
+				'purpose',
+				'model',
+				'prompt',
+				'instructions',
+				'response',
+				'request',
+				'content',
+				'output_text',
+				'documents',
+				'response_format',
+				'temperature',
+				'top_percent',
+				'frequency_penalty',
+				'presence_penalty',
+				'max_output_tokens',
+				'store',
+				'stream',
+				'include',
+				'tools',
+				'tool_choice',
+				'previous_id',
+				'previous_response_id',
+				'conversation_id',
+				'limit',
+				'next_token',
+				'order',
+				'sort_by',
+				'filter',
+				'team_id',
+				'download_format',
+				'page_number',
+				'extra_kwargs',
+				'model_options',
+				'purpose_options',
+				'format_options',
+				'tool_options',
+				'include_options',
+				'initialize_client',
+				'build_headers',
+				'build_json_headers',
+				'normalize_file_id',
+				'get_output_text',
+				'build_upload_request',
+				'execute_upload',
+				'build_list_request',
+				'execute_list',
+				'build_retrieve_request',
+				'execute_retrieve',
+				'build_extract_request',
+				'execute_extract',
+				'build_delete_request',
+				'execute_delete',
+				'build_file_input',
+				'build_file_response_request',
+				'execute_file_response',
+				'upload',
+				'list',
+				'list_files',
+				'retrieve',
+				'extract',
+				'download',
+				'delete',
+				'summarize',
+				'survey',
+		]
 
 class VectorStores( Grok ):
 	"""
