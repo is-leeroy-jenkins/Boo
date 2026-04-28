@@ -5128,23 +5128,22 @@ elif mode == 'Images':
 		"""
 		return str( getattr( cfg, name, fallback ) or fallback )
 		
-		def get_provider_image_models( selected_mode: Optional[ str ] ) -> List[ str ]:
-			"""
-				
-				Purpose:
-				--------
-				Return provider-specific image models for the selected image workflow.
+	def get_provider_image_models( selected_mode: Optional[ str ] ) -> List[ str ]:
+		"""
 			
-				Parameters:
-				-----------
-				selected_mode (Optional[str]): Image workflow name.
-			
-				Returns:
-				--------
-				List[str]: Model names for the selected provider and image workflow.
-				
-			"""
+			Purpose:
+			--------
+			Return provider-specific image models for the selected image workflow.
 		
+			Parameters:
+			-----------
+			selected_mode (Optional[str]): Image workflow name.
+		
+			Returns:
+			--------
+			List[str]: Model names for the selected provider and image workflow.
+			
+		"""
 		mode_name = selected_mode or ''
 		
 		if provider_name == 'GPT':
@@ -5185,6 +5184,93 @@ elif mode == 'Images':
 			models = [ model_value ] if model_value else [ ]
 		
 		return models
+		
+	def provider_has_image_method( method_names: List[ str ] ) -> bool:
+		"""
+			
+			Purpose:
+			--------
+			Determine whether the active Images wrapper exposes at least one method from a
+			provider-neutral image workflow method list.
+		
+			Parameters:
+			-----------
+			method_names: List[str]
+				Ordered method names to inspect on the active Images wrapper.
+		
+			Returns:
+			--------
+			bool:
+				True if at least one callable method exists; otherwise, False.
+			
+		"""
+		for method_name in method_names:
+			method = getattr( image, method_name, None )
+			if callable( method ):
+				return True
+		
+		return False
+	
+	def get_provider_image_workflows( ) -> List[ str ]:
+		"""
+			
+			Purpose:
+			--------
+			Return provider-supported image workflows based on the active Images wrapper.
+		
+			Parameters:
+			-----------
+			None
+		
+			Returns:
+			--------
+			List[str]:
+				Image workflow labels safe to present for the selected provider.
+			
+		"""
+		workflows: List[ str ] = [ ]
+		
+		if provider_has_image_method( [ 'generate', 'generate_image', 'create', 'create_image' ] ):
+			workflows.append( 'Generation' )
+		
+		if provider_has_image_method( [ 'analyze', 'analyze_image', 'vision', 'describe' ] ):
+			workflows.append( 'Analysis' )
+		
+		if provider_has_image_method( [ 'edit', 'edit_image', 'modify', 'generate_edit' ] ):
+			workflows.append( 'Editing' )
+		
+		return workflows
+	
+	def image_workflow_supported( workflow: str ) -> bool:
+		"""
+			
+			Purpose:
+			--------
+			Determine whether a specific image workflow is supported by the active provider
+			wrapper.
+		
+			Parameters:
+			-----------
+			workflow: str
+				Image workflow label.
+		
+			Returns:
+			--------
+			bool:
+				True if the workflow is supported; otherwise, False.
+			
+		"""
+		if workflow == 'Generation':
+			return provider_has_image_method(
+				[ 'generate', 'generate_image', 'create', 'create_image' ] )
+		
+		if workflow == 'Analysis':
+			return provider_has_image_method( [ 'analyze', 'analyze_image', 'vision', 'describe' ] )
+		
+		if workflow == 'Editing':
+			return provider_has_image_method( [ 'edit', 'edit_image', 'modify', 'generate_edit' ] )
+		
+		return False
 	
 	def call_existing_image_method( instance: Any, method_names: List[ str ],
 			kwargs: Dict[ str, Any ] ) -> Any:
