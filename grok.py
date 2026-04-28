@@ -106,6 +106,7 @@ class Grok( ):
 	"""
 	api_key: Optional[ str ]
 	timeout: Optional[ float ]
+	base_url: Optional[ str ]
 	model: Optional[ str ]
 	store_messages: Optional[ bool ]
 	response_format: Optional[ str ]
@@ -137,6 +138,7 @@ class Grok( ):
 			
 		"""
 		self.api_key = cfg.XAI_API_KEY
+		self.base_url = cfg.XAI_BASE_URL
 		self.timeout = None
 		self.instructions = None
 		self.content = None
@@ -1578,62 +1580,128 @@ class Chat( Grok ):
 				'generate_text',
 				'get_grounding_sources',
 		]
-	
+
 class TTS( Grok ):
 	"""
 	
-	    Purpose
-	    ___________
-	    Class used for interacting with OpenAI's TTS API (TTS)
-	
-	
-	    Parameters
-	    ------------
-	    num: int=1
-	    temp: float=0.8
-	    top: float=0.9
-	    freq: float=0.0
-	    pres: float=0.0
-	    max: int=10000
-	    store: bool=True
-	    stream: bool=True
-	
-	    Attributes
-	    -----------
-	    self.api_key, self.system_instructions, self.client, self.small_model, self.reasoning_effort,
-	    self.response, self.num, self.temperature, self.top_percent,
-	    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-	    self.store, self.stream, self.modalities, self.stops, self.content,
-	    self.input_text, self.response, self.completion, self.file, self.path,
-	    self.messages, self.image_url, self.response_format,
-	    self.tools, self.vector_store_ids, self.descriptions, self.assistants
-	
-	    Methods
-	    ------------
-	    get_model_options( self ) -> str
-	    create_small_embedding( self, prompt: str, path: str )
+		Purpose:
+		--------
+		Provide text-to-speech audio generation using the xAI Text to Speech REST API.
 
-    """
-	client: Optional[ Client ]
-	speed: Optional[ float ]
+		Attributes:
+		-----------
+		api_key:
+			xAI API key used for authorization.
+
+		base_url:
+			xAI REST API base URL.
+
+		model:
+			Logical model/API label retained for UI compatibility.
+
+		input_text:
+			Text submitted for speech synthesis.
+
+		voice:
+			xAI TTS voice identifier.
+
+		language:
+			BCP-47 language code or auto.
+
+		response_format:
+			Audio codec/output format.
+
+		sample_rate:
+			Optional output sample rate.
+
+		bit_rate:
+			Optional MP3 bit rate.
+
+		speed:
+			Optional playback speed retained for UI compatibility.
+
+		audio_path:
+			Optional destination file path.
+
+		audio_bytes:
+			Generated audio bytes returned by the API.
+
+		request:
+			JSON request payload sent to the xAI TTS endpoint.
+
+		response:
+			Raw requests.Response object.
+
+		Methods:
+		--------
+		create_speech:
+			Generate speech audio from text.
+
+		synthesize:
+			Alias for create_speech.
+
+		generate:
+			Alias for create_speech.
+
+		build_output_format:
+			Build the xAI output_format object.
+
+		build_request:
+			Build the xAI TTS request payload.
+
+		execute_request:
+			Execute the xAI TTS REST request.
+
+		extract_audio:
+			Extract raw audio bytes from the response.
+
+	"""
+	client: Optional[ Any ]
+	model: Optional[ str ]
+	input_text: Optional[ str ]
 	voice: Optional[ str ]
 	language: Optional[ str ]
-	prompt: Optional[ str ]
+	response_format: Optional[ str ]
+	sample_rate: Optional[ int ]
+	bit_rate: Optional[ int ]
+	speed: Optional[ float ]
+	audio_path: Optional[ str ]
+	audio_bytes: Optional[ bytes ]
+	request: Optional[ Dict[ str, Any ] ]
+	response: Optional[ Any ]
 	
-	def __init__( self, model: str='grok-3-mini-fast' ):
-		'''
+	def __init__( self, model: str = 'xai-tts' ):
+		"""
+		
+			Purpose:
+			--------
+			Initialize the Grok Text to Speech wrapper.
 
-	        Purpose:
-	        --------
-	        Constructor to  create_small_embedding TTS objects
+			Parameters:
+			-----------
+			model: str
+				Logical TTS model/API label retained for UI compatibility.
 
-        '''
+			Returns:
+			--------
+			None
+		
+		"""
 		super( ).__init__( )
-		self.api_key = cfg.XAI_API_KEY
+		self.api_key =  cfg.XAI_API_KEY
+		self.base_url = cfg.XAI_BASE_URL
 		self.client = None
 		self.model = model
 		self.number = None
+		self.input_text = None
 		self.prompt = None
+		self.language = 'auto'
+		self.voice = 'eve'
+		self.response_format = 'mp3'
+		self.sample_rate = None
+		self.bit_rate = None
+		self.speed = 1.0
+		self.instructions = None
 		self.temperature = None
 		self.top_percent = None
 		self.frequency_penalty = None
@@ -1641,13 +1709,15 @@ class TTS( Grok ):
 		self.max_completion_tokens = None
 		self.store = None
 		self.stream = None
-		self.instructions = None
-		self.messages = []
 		self.audio_path = None
+		self.file_path = None
+		self.request = { }
 		self.response = None
-		self.response_format = None
-		self.speed = None
-		self.voice = None
+		self.audio_bytes = None
+		self.output_format = None
+		self.optimize_streaming_latency = None
+		self.text_normalization = None
+		self.extra_kwargs = { }
 	
 	@property
 	def model_options( self ) -> List[ str ]:
@@ -1655,7 +1725,7 @@ class TTS( Grok ):
 		
 			Purpose:
 			--------
-			Return supported xAI text-capable models.
+			Return xAI Text to Speech model/API labels for the Audio UI.
 
 			Parameters:
 			-----------
@@ -1663,257 +1733,1006 @@ class TTS( Grok ):
 
 			Returns:
 			--------
-			List[str]
+			List[str]:
+				TTS model/API labels.
 		
 		"""
-		return [ 'grok-4',
-		         'grok-4-0709',
-		         'grok-4-latest',
-		         'grok-4-1-fast',
-		         'grok-4-1-fast-reasoning',
-		         'grok-4-1-fast-reasoning-latest',
-		         'grok-4-1-fast-non-reasoning',
-		         'grok-4-1-fast-non-reasoning-latest',
-		         'grok-4-fast',
-		         'grok-4-fast-reasoning',
-		         'grok-4-fast-reasoning-latest',
-		         'grok-4-fast-non-reasoning',
-		         'grok-4-fast-non-reasoning-latest',
-		         'grok-code-fast-1',
-		         'grok-3',
-		         'grok-3-latest',
-		         'grok-3-mini',
-		         'grok-3-fast',
-		         'grok-3-fast-latest',
-		         'grok-3-mini-fast',
-		         'grok-3-mini-fast-latest' ]
+		return [
+				'xai-tts',
+		]
 	
 	@property
 	def voice_options( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Method that returns a list of voice names
-
-        '''
-		return [ 'alloy',
-		         'ash',
-		         'ballad',
-		         'coral',
-		         'echo',
-		         'fable',
-		         'onyx',
-		         'nova',
-		         'sage',
-		         'shiver', ]
-	
-	@property
-	def format_options( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Method that returns a list of image formats
-
-        '''
-		return [ 'mp3',
-		         'wav',
-		         'aac',
-		         'flac',
-		         'opus',
-		         'pcm' ]
-	
-	@property
-	def speed_options( self ) -> List[ float ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Method that returns a list of floats
-	        representing different audio speeds
-
-        '''
-		return [ 0.25,
-		         1.0,
-		         4.0 ]
-	
-	def generate( self, prompt: str, model: str='grok-3-mini', max_tokens: int=None,
-			temperature: float=None, top_p: float=None, effort: str=None, format: str=None,
-			store: bool=None, include: List[ str ]=None, instruct: str=None ):
 		"""
 		
 			Purpose:
 			--------
-			Generate text using the xAI Responses API.
-
-			If previous_response_id is set, the conversation will be
-			continued server-side.
+			Return xAI Text to Speech voice identifiers.
 
 			Parameters:
 			-----------
-			prompt : str
-				User input prompt.
-			model : str | None
-				Model identifier.
-			max_output_tokens : int | None
-				Maximum number of tokens in the response.
-			temperature : float | None
-			top_p : float | None
-			include_reasoning : bool | None
-				Whether to include encrypted reasoning content.
-			reasoning_effort : str | None
-				Reasoning effort level (grok-3-mini only).
+			None
 
 			Returns:
 			--------
-			str
+			List[str] | None:
+				Voice identifiers.
+		
+		"""
+		return [
+				'eve',
+				'ara',
+				'rex',
+				'sal',
+				'leo',
+		]
+	
+	@property
+	def language_options( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return xAI Text to Speech language options.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Language codes.
+		
+		"""
+		return [
+				'auto',
+				'en',
+				'ar-EG',
+				'ar-SA',
+				'ar-AE',
+				'bn',
+				'zh',
+				'fr',
+				'de',
+				'hi',
+				'id',
+				'it',
+				'ja',
+				'ko',
+				'pt-BR',
+				'pt-PT',
+				'ru',
+				'es-MX',
+				'es-ES',
+				'tr',
+				'vi',
+		]
+	
+	@property
+	def format_options( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return xAI Text to Speech output codec options.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Output codec options.
+		
+		"""
+		return [
+				'mp3',
+				'wav',
+				'pcm',
+				'mulaw',
+				'alaw',
+		]
+	
+	@property
+	def response_format_options( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return xAI Text to Speech response format options.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Response format options.
+		
+		"""
+		return self.format_options
+	
+	@property
+	def output_format_options( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return xAI Text to Speech output format options.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Output format options.
+		
+		"""
+		return self.format_options
+	
+	@property
+	def speed_options( self ) -> List[ float ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return playback speed options retained for Audio UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[float] | None:
+				Playback speed values.
+		
+		"""
+		return [
+				0.25,
+				0.50,
+				0.75,
+				1.00,
+				1.25,
+				1.50,
+				2.00,
+				3.00,
+				4.00,
+		]
+	
+	@property
+	def sample_rate_options( self ) -> List[ int ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return supported xAI Text to Speech sample rates.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[int] | None:
+				Sample rate options.
+		
+		"""
+		return [
+				8000,
+				16000,
+				22050,
+				24000,
+				44100,
+				48000,
+		]
+	
+	@property
+	def bit_rate_options( self ) -> List[ int ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return supported MP3 bit rates.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[int] | None:
+				Bit rate options.
+		
+		"""
+		return [
+				32000,
+				64000,
+				96000,
+				128000,
+				192000,
+		]
+	
+	def validate_voice( self, voice: str = None ) -> str:
+		"""
+		
+			Purpose:
+			--------
+			Validate and normalize an xAI Text to Speech voice identifier.
+
+			Parameters:
+			-----------
+			voice: str
+				Requested voice identifier.
+
+			Returns:
+			--------
+			str:
+				Validated voice identifier.
 		
 		"""
 		try:
-			throw_if( 'prompt', prompt )
-			self.prompt = prompt
-			self.model = model
-			self.max_output_tokens = max_tokens
-			self.temperature = temperature
-			self.top_percent = top_p
-			self.instructions = instruct
-			self.reasoning_effort = effort
-			self.store = store
-			self.response_format = format
-			self.include = include
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( { 'Authorization': f'Bearer {self.api_key}',
-					'Content-Type': 'application/json', } )
-			self.messages.append( system( self.instructions ) )
-			self.messages.append( user( self.user ) )
-			self.chat = self.client.chat.create( model=self.model, messages=self.messages,
-				store_messages=self.store, temperature=self.temperature, top_p=self.top_p,
-				reasoning_effort=self.reasoning_effort, max_tokens=self.max_output_tokens,
-				response_format=self.response_format )
-			return self.chat
+			value = str( voice or 'eve' ).strip( ).lower( )
+			if value not in self.voice_options:
+				return 'eve'
+			
+			return value
 		except Exception as e:
-			exception = Error( e )
-			exception.module = 'grok'
-			exception.cause = 'TTS'
-			exception.method = 'generate( self, prompt: str, path: str ) -> str'
-			error = ErrorDialog( exception )
-			error.show( )
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'validate_voice( self, voice: str=None ) -> str'
+			raise ex
+	
+	def validate_language( self, language: str = None ) -> str:
+		"""
+		
+			Purpose:
+			--------
+			Validate and normalize an xAI Text to Speech language code.
+
+			Parameters:
+			-----------
+			language: str
+				Requested language code.
+
+			Returns:
+			--------
+			str:
+				Validated language code.
+		
+		"""
+		try:
+			value = str( language or 'auto' ).strip( )
+			valid_values = self.language_options
+			
+			if value not in valid_values:
+				return 'auto'
+			
+			return value
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'validate_language( self, language: str=None ) -> str'
+			raise ex
+	
+	def validate_format( self, format: str = None ) -> str:
+		"""
+		
+			Purpose:
+			--------
+			Validate and normalize an xAI Text to Speech output format.
+
+			Parameters:
+			-----------
+			format: str
+				Requested output format.
+
+			Returns:
+			--------
+			str:
+				Validated output codec.
+		
+		"""
+		try:
+			value = str( format or 'mp3' ).strip( ).lower( )
+			
+			if value == 'mu-law':
+				value = 'mulaw'
+			
+			if value == 'a-law':
+				value = 'alaw'
+			
+			if value not in self.format_options:
+				return 'mp3'
+			
+			return value
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'validate_format( self, format: str=None ) -> str'
+			raise ex
+	
+	def validate_sample_rate( self, sample_rate: int = None ) -> int | None:
+		"""
+		
+			Purpose:
+			--------
+			Validate an xAI Text to Speech sample rate.
+
+			Parameters:
+			-----------
+			sample_rate: int
+				Requested sample rate.
+
+			Returns:
+			--------
+			int | None:
+				Validated sample rate or None.
+		
+		"""
+		try:
+			if sample_rate is None:
+				return None
+			
+			value = int( sample_rate )
+			if value not in self.sample_rate_options:
+				return None
+			
+			return value
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'validate_sample_rate( self, sample_rate: int=None ) -> int | None'
+			raise ex
+	
+	def validate_bit_rate( self, bit_rate: int = None ) -> int | None:
+		"""
+		
+			Purpose:
+			--------
+			Validate an xAI Text to Speech MP3 bit rate.
+
+			Parameters:
+			-----------
+			bit_rate: int
+				Requested bit rate.
+
+			Returns:
+			--------
+			int | None:
+				Validated bit rate or None.
+		
+		"""
+		try:
+			if bit_rate is None:
+				return None
+			
+			value = int( bit_rate )
+			if value not in self.bit_rate_options:
+				return None
+			
+			return value
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'validate_bit_rate( self, bit_rate: int=None ) -> int | None'
+			raise ex
+	
+	def validate_speed( self, speed: float = None ) -> float:
+		"""
+		
+			Purpose:
+			--------
+			Validate playback speed for UI compatibility.
+
+			Parameters:
+			-----------
+			speed: float
+				Requested playback speed.
+
+			Returns:
+			--------
+			float:
+				Validated playback speed.
+		
+		"""
+		try:
+			value = 1.0 if speed is None else float( speed )
+			
+			if value < 0.25:
+				return 0.25
+			
+			if value > 4.0:
+				return 4.0
+			
+			return value
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'validate_speed( self, speed: float=None ) -> float'
+			raise ex
+	
+	def build_output_format( self ) -> Dict[ str, Any ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Build the xAI Text to Speech output_format object from assigned members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any] | None:
+				Output format object or None.
+		
+		"""
+		try:
+			throw_if( 'response_format', self.response_format )
+			self.output_format = { 'codec': self.response_format, }
+			
+			if self.sample_rate is not None:
+				self.output_format[ 'sample_rate' ] = self.sample_rate
+			
+			if self.response_format == 'mp3' and self.bit_rate is not None:
+				self.output_format[ 'bit_rate' ] = self.bit_rate
+			
+			return self.output_format
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'build_output_format( self ) -> Dict[ str, Any ] | None'
+			raise ex
+	
+	def build_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build the xAI Text to Speech request payload from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				TTS request payload.
+		
+		"""
+		try:
+			throw_if( 'input_text', self.input_text )
+			throw_if( 'voice', self.voice )
+			throw_if( 'language', self.language )
+			self.request = {
+					'text': self.input_text,
+					'voice_id': self.voice,
+					'language': self.language,
+			}
+			self.output_format = self.build_output_format( )
+			
+			if self.output_format:
+				self.request[ 'output_format' ] = self.output_format
+			
+			if self.optimize_streaming_latency is not None:
+				self.request[ 'optimize_streaming_latency' ] = self.optimize_streaming_latency
+			
+			if self.text_normalization is not None:
+				self.request[ 'text_normalization' ] = self.text_normalization
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'build_request( self ) -> Dict[ str, Any ]'
+			raise ex
+	
+	def execute_request( self ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Execute the xAI Text to Speech REST request using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Any:
+				Raw requests.Response object.
+		
+		"""
+		try:
+			throw_if( 'api_key', self.api_key )
+			throw_if( 'base_url', self.base_url )
+			throw_if( 'request', self.request )
+			self.response = requests.post(
+				url=f'{self.base_url.rstrip( "/" )}/tts',
+				headers={ 'Authorization': f'Bearer {self.api_key}',
+						'Content-Type': 'application/json', },
+				json=self.request, timeout=self.timeout or 3600, )
+			self.response.raise_for_status( )
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'execute_request( self ) -> Any'
+			raise ex
+	
+	def extract_audio( self ) -> bytes | None:
+		"""
+		
+			Purpose:
+			--------
+			Extract raw audio bytes from the xAI Text to Speech response.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			bytes | None:
+				Generated audio bytes.
+		
+		"""
+		try:
+			if self.response is None:
+				return None
+			
+			self.audio_bytes = self.response.content
+			if not self.audio_bytes:
+				return None
+			
+			if self.audio_path:
+				with open( self.audio_path, 'wb' ) as target:
+					target.write( self.audio_bytes )
+			
+			return self.audio_bytes
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'extract_audio( self ) -> bytes | None'
+			raise ex
+	
+	def create_speech( self, text: str, model: str = 'xai-tts', format: str = 'mp3',
+			speed: float = 1.0, voice: str = 'eve', instruct: str = None, file_path: str = None,
+			language: str = 'auto', sample_rate: int = None, bit_rate: int = None,
+			optimize_streaming_latency: int = None, text_normalization: bool = None,
+			**kwargs: Any ) -> bytes | None:
+		"""
+		
+			Purpose:
+			--------
+			Generate speech audio from text using the xAI Text to Speech REST API.
+
+			Parameters:
+			-----------
+			text: str
+				Text input to synthesize.
+
+			model: str
+				Logical TTS model/API label retained for UI compatibility.
+
+			format: str
+				Requested output codec.
+
+			speed: float
+				Playback speed retained for UI compatibility.
+
+			voice: str
+				xAI voice identifier.
+
+			instruct: str
+				Optional instructions retained for UI compatibility. xAI TTS speech style
+				should be expressed using inline speech tags in text.
+
+			file_path: str
+				Optional destination path for generated audio.
+
+			language: str
+				BCP-47 language code or auto.
+
+			sample_rate: int
+				Optional output sample rate.
+
+			bit_rate: int
+				Optional MP3 bit rate.
+
+			optimize_streaming_latency: int
+				Optional xAI latency optimization value.
+
+			text_normalization: bool
+				Optional xAI text normalization flag.
+
+			**kwargs: Any
+				Additional UI arguments retained on the wrapper.
+
+			Returns:
+			--------
+			bytes | None:
+				Generated audio bytes, or None if no bytes are produced.
+		
+		"""
+		try:
+			throw_if( 'text', text )
+			self.input_text = text
+			self.prompt = text
+			self.model = model or 'xai-tts'
+			self.response_format = self.validate_format( format )
+			self.speed = self.validate_speed( speed )
+			self.voice = self.validate_voice( voice )
+			self.language = self.validate_language( language )
+			self.instructions = instruct
+			self.audio_path = file_path
+			self.file_path = file_path
+			self.sample_rate = self.validate_sample_rate( sample_rate )
+			self.bit_rate = self.validate_bit_rate( bit_rate )
+			self.optimize_streaming_latency = optimize_streaming_latency
+			self.text_normalization = text_normalization
+			self.extra_kwargs = kwargs or { }
+			self.build_request( )
+			self.execute_request( )
+			return self.extract_audio( )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'create_speech( self, text: str ) -> bytes | None'
+			raise ex
+	
+	def synthesize( self, text: str, model: str = 'xai-tts', format: str = 'mp3',
+			speed: float = 1.0, voice: str = 'eve', instruct: str = None, file_path: str = None,
+			language: str = 'auto', **kwargs: Any ) -> bytes | None:
+		"""
+		
+			Purpose:
+			--------
+			Provider-neutral alias for text-to-speech generation.
+
+			Parameters:
+			-----------
+			text: str
+				Text input to synthesize.
+
+			model: str
+				Logical TTS model/API label retained for UI compatibility.
+
+			format: str
+				Requested output codec.
+
+			speed: float
+				Playback speed retained for UI compatibility.
+
+			voice: str
+				xAI voice identifier.
+
+			instruct: str
+				Optional instructions retained for UI compatibility.
+
+			file_path: str
+				Optional destination path for generated audio.
+
+			language: str
+				BCP-47 language code or auto.
+
+			**kwargs: Any
+				Additional UI arguments.
+
+			Returns:
+			--------
+			bytes | None:
+				Generated audio bytes.
+		
+		"""
+		try:
+			return self.create_speech( text=text, model=model, format=format, speed=speed,
+				voice=voice, instruct=instruct, file_path=file_path, language=language,
+				**kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'synthesize( self, text: str ) -> bytes | None'
+			raise ex
+	
+	def generate( self, text: str = None, prompt: str = None, model: str = 'xai-tts',
+			format: str = 'mp3', speed: float = 1.0, voice: str = 'eve', instruct: str = None,
+			file_path: str = None, language: str = 'auto', **kwargs: Any ) -> bytes | None:
+		"""
+		
+			Purpose:
+			--------
+			Provider-neutral alias for text-to-speech generation.
+
+			Parameters:
+			-----------
+			text: str
+				Text input to synthesize.
+
+			prompt: str
+				Alias for text input.
+
+			model: str
+				Logical TTS model/API label retained for UI compatibility.
+
+			format: str
+				Requested output codec.
+
+			speed: float
+				Playback speed retained for UI compatibility.
+
+			voice: str
+				xAI voice identifier.
+
+			instruct: str
+				Optional instructions retained for UI compatibility.
+
+			file_path: str
+				Optional destination path for generated audio.
+
+			language: str
+				BCP-47 language code or auto.
+
+			**kwargs: Any
+				Additional UI arguments.
+
+			Returns:
+			--------
+			bytes | None:
+				Generated audio bytes.
+		
+		"""
+		try:
+			input_text = text or prompt
+			throw_if( 'text', input_text )
+			return self.create_speech( text=input_text, model=model, format=format, speed=speed,
+				voice=voice, instruct=instruct, file_path=file_path, language=language,
+				**kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'TTS'
+			ex.method = 'generate( self, text: str ) -> bytes | None'
+			raise ex
 	
 	def __dir__( self ) -> List[ str ] | None:
-		'''
+		"""
+		
+			Purpose:
+			--------
+			Return member names for inspection.
 
-	        Purpose:
-	        --------
-	        Method returns a list of strings representing members
-	
-	        Parameters:
-	        ----------
-	        self
-	
-	        Returns:
-	        ---------
-	        List[ str ] | None
+			Parameters:
+			-----------
+			None
 
-        '''
-		return [ 'num',
-		         'temperature',
-		         'top_percent',
-		         'frequency_penalty',
-		         'presence_penalty',
-		         'max_completion_tokens',
-		         'system_instructions',
-		         'store',
-		         'stream',
-		         'modalities',
-		         'stops',
-		         'content',
-		         'prompt',
-		         'response',
-		         'completion',
-		         'file',
-		         'path',
-		         'messages',
-		         'image_url',
-		         'response_format',
-		         'tools',
-		         'name',
-		         'id',
-		         'description',
-		         'generate_text',
-		         'format_options',
-		         'model_options',
-		         'reasoning_effort',
-		         'effort_options',
-		         'speed_options',
-		         'input_text', ]
+			Returns:
+			--------
+			List[str] | None:
+				Member names.
+		
+		"""
+		return [
+				'api_key',
+				'base_url',
+				'client',
+				'model',
+				'number',
+				'input_text',
+				'prompt',
+				'language',
+				'voice',
+				'response_format',
+				'sample_rate',
+				'bit_rate',
+				'speed',
+				'instructions',
+				'temperature',
+				'top_percent',
+				'frequency_penalty',
+				'presence_penalty',
+				'max_completion_tokens',
+				'store',
+				'stream',
+				'audio_path',
+				'file_path',
+				'request',
+				'response',
+				'audio_bytes',
+				'output_format',
+				'optimize_streaming_latency',
+				'text_normalization',
+				'extra_kwargs',
+				'model_options',
+				'voice_options',
+				'language_options',
+				'format_options',
+				'response_format_options',
+				'output_format_options',
+				'speed_options',
+				'sample_rate_options',
+				'bit_rate_options',
+				'validate_voice',
+				'validate_language',
+				'validate_format',
+				'validate_sample_rate',
+				'validate_bit_rate',
+				'validate_speed',
+				'build_output_format',
+				'build_request',
+				'execute_request',
+				'extract_audio',
+				'create_speech',
+				'synthesize',
+				'generate',
+		]
 
 class Transcription( Grok ):
 	"""
 	
-	    Purpose
-	    ___________
-	    Class used for interacting with OpenAI's TTS API (whisper-1)
-	
-	
-	    Parameters
-	    ------------
-	    num: int=1
-	    temp: float=0.8
-	    top: float=0.9
-	    freq: float=0.0
-	    pres: float=0.0
-	    max: int=10000
-	    store: bool=True
-	    stream: bool=True
-	
-	    Attributes
-	    -----------
-	    self.api_key, self.system_instructions, self.client, self.small_model, self.reasoning_effort,
-	    self.response, self.num, self.temperature, self.top_percent,
-	    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-	    self.store, self.stream, self.modalities, self.stops, self.content,
-	    self.input_text, self.response, self.completion, self.audio_file, self.transcript
-	
-	
-	    Methods
-	    ------------
-	    get_model_options( self ) -> str
-	    create_small_embedding( self, path: str  ) -> str
+		Purpose:
+		--------
+		Provide speech-to-text transcription using xAI chat/file attachment behavior.
 
+		Attributes:
+		-----------
+		client:
+			xAI SDK client instance.
 
-    """
+		model:
+			xAI model used for audio transcription.
+
+		prompt:
+			User or system-generated transcription instruction.
+
+		language:
+			Source language hint.
+
+		file_path:
+			Local audio file path.
+
+		audio_file:
+			Open audio file handle used during the request.
+
+		messages:
+			xAI SDK chat messages.
+
+		response:
+			Raw xAI SDK response object.
+
+		transcript:
+			Normalized transcript text.
+
+		Methods:
+		--------
+		transcribe:
+			Transcribe the provided audio file.
+
+		build_prompt:
+			Build the transcription prompt from assigned members.
+
+		build_messages:
+			Build xAI SDK chat messages from assigned members.
+
+		build_request:
+			Build the request dictionary from assigned members.
+
+		execute_request:
+			Execute the xAI SDK request from assigned members.
+
+		extract_transcript:
+			Extract transcript text from the response.
+
+	"""
 	client: Optional[ Client ]
-	speed: Optional[ float ]
-	voice: Optional[ str ]
-	language: Optional[ str ]
+	model: Optional[ str ]
 	prompt: Optional[ str ]
-	chat: Optional[ Any ]
+	language: Optional[ str ]
+	file_path: Optional[ str ]
+	audio_file: Optional[ Any ]
+	messages: Optional[ List[ Any ] ]
+	response: Optional[ Any ]
+	transcript: Optional[ str ]
+	request: Optional[ Dict[ str, Any ] ]
 	
-	def __init__( self, number: int=1, temperature: float=0.8, top_p: float=0.9,
-			frequency: float=0.0, presence: float=0.0, max_tokens: int =10000, store: bool=True,
-			stream: bool=True, language: str='en', instruct: str=None ):
+	def __init__( self, number: int = 1, model: str = 'grok-3-mini-fast',
+			temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
+			presence: float = 0.0, max_tokens: int = 10000, store: bool = True,
+			stream: bool = False, language: str = 'en', instruct: str = None ):
+		"""
+		
+			Purpose:
+			--------
+			Initialize the Grok transcription wrapper.
+
+			Parameters:
+			-----------
+			number: int
+				Optional response count retained for UI compatibility.
+
+			model: str
+				xAI model used for transcription.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty retained for compatibility.
+
+			presence: float
+				Optional presence penalty retained for compatibility.
+
+			max_tokens: int
+				Optional maximum output token count.
+
+			store: bool
+				Optional storage flag retained for compatibility.
+
+			stream: bool
+				Optional stream flag retained for compatibility.
+
+			language: str
+				Source language hint.
+
+			instruct: str
+				Optional system instruction.
+
+			Returns:
+			--------
+			None
+		
+		"""
 		super( ).__init__( )
-		self.api_key = cfg.XAI_API_KEY
+		self.api_key = os.getenv( 'XAI_API_KEY' ) or cfg.XAI_API_KEY
+		self.base_url = getattr( cfg, 'XAI_BASE_URL', 'https://api.x.ai/v1' )
 		self.client = None
 		self.number = number
+		self.model = model
 		self.temperature = temperature
 		self.top_percent = top_p
 		self.frequency_penalty = frequency
 		self.presence_penalty = presence
+		self.max_output_tokens = max_tokens
 		self.max_completion_tokens = max_tokens
 		self.store = store
 		self.stream = stream
 		self.language = language
 		self.instructions = instruct
 		self.prompt = None
-		self.messages = [ ]
-		self.model = None
-		self.input_text = None
+		self.file_path = None
 		self.audio_file = None
-		self.transcript = None
+		self.messages = [ ]
+		self.request = { }
 		self.response = None
 		self.chat = None
+		self.transcript = None
+		self.response_format = None
+		self.include = [ ]
+		self.extra_kwargs = { }
 	
 	@property
 	def model_options( self ) -> List[ str ]:
@@ -1921,7 +2740,7 @@ class Transcription( Grok ):
 		
 			Purpose:
 			--------
-			Return supported xAI text-capable models.
+			Return xAI text-capable models usable for audio-file transcription workflows.
 
 			Parameters:
 			-----------
@@ -1929,223 +2748,171 @@ class Transcription( Grok ):
 
 			Returns:
 			--------
-			List[str]
+			List[str]:
+				Model option names.
 		
 		"""
-		return [ 'grok-4',
-		         'grok-4-0709',
-		         'grok-4-latest',
-		         'grok-4-1-fast',
-		         'grok-4-1-fast-reasoning',
-		         'grok-4-1-fast-reasoning-latest',
-		         'grok-4-1-fast-non-reasoning',
-		         'grok-4-1-fast-non-reasoning-latest',
-		         'grok-4-fast',
-		         'grok-4-fast-reasoning',
-		         'grok-4-fast-reasoning-latest',
-		         'grok-4-fast-non-reasoning',
-		         'grok-4-fast-non-reasoning-latest',
-		         'grok-code-fast-1',
-		         'grok-3',
-		         'grok-3-latest',
-		         'grok-3-mini',
-		         'grok-3-fast',
-		         'grok-3-fast-latest',
-		         'grok-3-mini-fast',
-		         'grok-3-mini-fast-latest' ]
+		return [
+				'grok-4',
+				'grok-4-latest',
+				'grok-4-fast-reasoning',
+				'grok-4-fast-non-reasoning',
+				'grok-3',
+				'grok-3-latest',
+				'grok-3-mini',
+				'grok-3-fast',
+				'grok-3-mini-fast',
+		]
 	
 	@property
-	def file_options( self ) -> List[ str ] | None:
-		'''
-
-	        Purpose:
-	        --------
-	        Method that returns a list of image formats
-
-        '''
-		return [ 'mp3',
-		         'wav',
-		         'aac',
-		         'flac',
-		         'opus',
-		         'pcm' ]
-	
-	@property
-	def format_options( self ) -> List[ str ] | None:
-		'''
-			
-			Returns:
-			-------
-			List[ str ] output  format options
-			
-		'''
-		return [ 'json',
-		         'text',
-		         'srt',
-		         'verbose_json',
-		         'vtt',
-		         'diarized_json' ]
-	
-	@property
-	def language_options( self ):
-		'''
-	
-	        Purpose:
-	        --------
-	        Method that returns a list of voice names
-
-        '''
-		return [ 'English',
-		         'Spanish',
-		         'Tagalog',
-		         'French',
-		         'Japanese',
-		         'German',
-		         'Italian',
-		         'Chinese' ]
-	
-	def transcribe( self, prompt: str, path: str, model: str='grok-3-mini-fast', language: str='en',
-			temperature: float=None, top_p: float=None, frequency: float=None,
-			presence: float=None, max_tokens: int=None, store: bool=None, stream: bool=None,
-			instruct: str=None ) -> str:
+	def language_options( self ) -> List[ str ]:
 		"""
 		
 			Purpose:
-			----------
-            Transcribe audio with Grok.
-        
-        """
+			--------
+			Return language options for the Audio UI.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Language option names.
+		
+		"""
+		return [
+				'auto',
+				'en',
+				'es',
+				'fr',
+				'de',
+				'it',
+				'ja',
+				'ko',
+				'pt',
+				'zh',
+				'Tagalog',
+				'French',
+				'Japanese',
+				'German',
+				'Italian',
+				'Chinese',
+		]
+	
+	@property
+	def format_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return supported audio input format labels for UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Audio format option names.
+		
+		"""
+		return [
+				'audio/wav',
+				'audio/mp3',
+				'audio/mpeg',
+				'audio/mp4',
+				'audio/m4a',
+				'audio/webm',
+				'audio/ogg',
+				'audio/flac',
+		]
+	
+	@property
+	def response_format_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return response format options retained for Audio UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Response format option names.
+		
+		"""
+		return [
+				'text',
+				'json',
+		]
+	
+	@property
+	def include_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return include options retained for Audio UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Include option names.
+		
+		"""
+		return [ ]
+	
+	def build_prompt( self ) -> str:
+		"""
+		
+			Purpose:
+			--------
+			Build the transcription instruction from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			str:
+				Transcription prompt.
+		
+		"""
 		try:
-			throw_if( 'prompt', prompt )
-			throw_if( 'path', path )
-			self.model = model
-			self.prompt = prompt
-			self.language = language
-			self.instructions = instruct
-			self.temperature = temperature
-			self.top_p = top_p
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = max_tokens
-			self.store = store
-			self.stream = stream
-			self.messages.append( system( self.instructions ) )
-			self.messages.append( user( self.prompt ) )
-			self.client = Client( api_key=cfg.XAI_API_KEY )
-			with open( path, 'rb' ) as self.audio_file:
-				self.chat = self.client.chat.create( model=self.model,
-					file=self.audio_file, messages=self.messages )
-				self.response = self.chat.sample( )
-			return self.response.output_text
+			if isinstance( self.prompt, str ) and self.prompt.strip( ):
+				return self.prompt.strip( )
+			
+			language = self.language or 'auto'
+			return (
+					'Transcribe the attached audio file accurately. '
+					f'Use the language hint "{language}" when helpful. '
+					'Return only the transcript unless additional instructions require otherwise.'
+			)
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'Transcription'
-			ex.method = 'transcribe(self, path)'
+			ex.method = 'build_prompt( self )'
 			raise ex
 	
-	def __dir__( self ) -> List[ str ] | None:
-		'''
-	
-	        Purpose:
-	        --------
-	        Method returns a list of strings representing members
-	
-	        Parameters:
-	        ----------
-	        self
-	
-	        Returns:
-	        ---------
-	        List[ str ] | None
-
-        '''
-		return [ 'number',
-		         'temperature',
-		         'top_percent',
-		         'frequency_penalty',
-		         'presence_penalty',
-		         'max_completion_tokens',
-		         'store',
-		         'stream',
-		         'modalities',
-		         'stops',
-		         'prompt',
-		         'response',
-		         'audio_file',
-		         'messages',
-		         'response_format',
-		         'api_key',
-		         'client',
-		         'input_text',
-		         'transcript', ]
-
-class Translation( Grok ):
-	"""
-
-	    Purpose
-	    ___________
-	    Class used for interacting with OpenAI's TTS API (whisper-1)
-	
-	
-	    Parameters
-	    ------------
-	    num: int=1
-	    temp: float=0.8
-	    top: float=0.9
-	    freq: float=0.0
-	    pres: float=0.0
-	    max: int=10000
-	    store: bool=True
-	    stream: bool=True
-	
-	    Attributes
-	    -----------
-	    self.api_key, self.system_instructions, self.client, self.small_model,  self.reasoning_effort,
-	    self.response, self.num, self.temperature, self.top_percent,
-	    self.frequency_penalty, self.presence_penalty, self.max_completion_tokens,
-	    self.store, self.stream, self.modalities, self.stops, self.content,
-	    self.input_text, self.response, self.completion, self.file, self.path,
-	    self.messages, self.image_url, self.response_format,
-	    self.tools, self.vector_store_ids, self.descriptions, self.assistants
-	
-	    Methods
-	    ------------
-	    create_small_embedding( self, prompt: str, path: str )
-
-    """
-	client: Optional[ Client ]
-	target_language: Optional[ str ]
-	prompt: Optional[ str ]
-	chat: Optional[ Any ]
-	messages = Optional[ List[ Dict[ str, Any ] ] ]
-	
-	def __init__( self, model: str='grok-3-fast' ):
-		super( ).__init__( )
-		self.api_key = cfg.OPENAI_API_KEY
-		self.client = None
-		self.model = model
-		self.number = None
-		self.temperature = None
-		self.top_percent = None
-		self.frequency_penalty = None
-		self.presence_penalty = None
-		self.max_completion_tokens = None
-		self.store = None
-		self.stream = None
-		self.instructions = None
-		self.prompt = None
-		self.audio_file = None
-		self.response = None
-		self.voice = None
-	
-	@property
-	def model_options( self ) -> List[ str ]:
+	def build_messages( self ) -> List[ Any ]:
 		"""
 		
 			Purpose:
 			--------
-			Return supported xAI text-capable models.
+			Build xAI SDK chat messages from assigned wrapper members.
 
 			Parameters:
 			-----------
@@ -2153,194 +2920,1011 @@ class Translation( Grok ):
 
 			Returns:
 			--------
-			List[str]
+			List[Any]:
+				xAI SDK chat messages.
 		
 		"""
-		return [ 'grok-4',
-		         'grok-4-0709',
-		         'grok-4-latest',
-		         'grok-4-1-fast',
-		         'grok-4-1-fast-reasoning',
-		         'grok-4-1-fast-reasoning-latest',
-		         'grok-4-1-fast-non-reasoning',
-		         'grok-4-1-fast-non-reasoning-latest',
-		         'grok-4-fast',
-		         'grok-4-fast-reasoning',
-		         'grok-4-fast-reasoning-latest',
-		         'grok-4-fast-non-reasoning',
-		         'grok-4-fast-non-reasoning-latest',
-		         'grok-code-fast-1',
-		         'grok-3',
-		         'grok-3-latest',
-		         'grok-3-mini',
-		         'grok-3-fast',
-		         'grok-3-fast-latest',
-		         'grok-3-mini-fast',
-		         'grok-3-mini-fast-latest' ]
-	
-	@property
-	def language_options( self ):
-		'''
-	
-	        Purpose:
-	        --------
-	        Method that returns a list of voice names
-
-        '''
-		return [ 'English',
-		         'Spanish',
-		         'Tagalog',
-		         'French',
-		         'Japanese',
-		         'German',
-		         'Italian',
-		         'Chinese' ]
-	
-	@property
-	def voice_options( self ):
-		'''
-
-	        Purpose:
-	        --------
-	        Method that returns a list of voice names
-
-        '''
-		return [ 'alloy',
-		         'ash',
-		         'ballad',
-		         'coral',
-		         'echo',
-		         'fable',
-		         'onyx',
-		         'nova',
-		         'sage',
-		         'shiver', ]
-	
-	def translate( self, text: str, path: str, number: int=None, temperature: float=None,
-			top_p: float=None, frequency: float=None, presence: float=None, max_tokens: int=None,
-			store: bool=None, stream: bool=None, instruct: str=None ) -> str | None:
-		"""
-
-	        Purpose
-	        _______
-	        Generates a translation given a string to an audio file
-	
-	
-	        Parameters
-	        ----------
-	        text: str
-	        path: str
-	
-	
-	        Returns
-	        -------
-	        str
-
-        """
 		try:
-			throw_if( 'text', text )
-			throw_if( 'path', path )
-			self.number = number
-			self.prompt = text
-			self.audio_file = path
-			self.temperature = temperature
-			self.top_percent = top_p
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_completion_tokens = max_tokens
-			self.store = store
-			self.stream = stream
-			self.instructions = instruct
-			self.messages.append( system( self.instructions ) )
-			self.messages.append( user( self.prompt ) )
-			self.client = Client( api_key=cfg.XAI_API_KEY )
-			with open( self.audio_file, 'rb' ) as self.audio_file:
-				self.chat = self.client.chat.create( model=self.model,
-					file=self.audio_file, messages=self.messages )
-			return self.chat
+			self.messages = [ ]
+			
+			if isinstance( self.instructions, str ) and self.instructions.strip( ):
+				self.messages.append( system( self.instructions.strip( ) ) )
+			
+			self.messages.append( user( self.build_prompt( ) ) )
+			return self.messages
 		except Exception as e:
-			exception = Error( e )
-			exception.module = 'grok'
-			exception.cause = 'Translation'
-			exception.method = 'translate( self, text: str )'
-			raise exception
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Transcription'
+			ex.method = 'build_messages( self )'
+			raise ex
+	
+	def build_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build the xAI SDK request dictionary from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Request dictionary.
+		
+		"""
+		try:
+			throw_if( 'model', self.model )
+			throw_if( 'file_path', self.file_path )
+			self.build_messages( )
+			self.request = {
+					'model': self.model,
+					'messages': self.messages,
+			}
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Transcription'
+			ex.method = 'build_request( self )'
+			raise ex
+	
+	def execute_request( self ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Execute the xAI SDK chat/file request using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Any:
+				Raw response object.
+		
+		"""
+		try:
+			throw_if( 'api_key', self.api_key )
+			throw_if( 'file_path', self.file_path )
+			self.client = Client( api_key=self.api_key )
+			with open( self.file_path, 'rb' ) as self.audio_file:
+				self.chat = self.client.chat.create( file=self.audio_file, **self.request )
+				self.response = self.chat.sample( )
+			
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Transcription'
+			ex.method = 'execute_request( self )'
+			raise ex
+	
+	def extract_transcript( self ) -> str:
+		"""
+		
+			Purpose:
+			--------
+			Extract transcript text from the current response object.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			str:
+				Transcript text.
+		
+		"""
+		try:
+			if self.response is None:
+				return ''
+			
+			output_text = getattr( self.response, 'output_text', None )
+			if isinstance( output_text, str ) and output_text.strip( ):
+				self.transcript = output_text.strip( )
+				return self.transcript
+			
+			text = getattr( self.response, 'text', None )
+			if isinstance( text, str ) and text.strip( ):
+				self.transcript = text.strip( )
+				return self.transcript
+			
+			content = getattr( self.response, 'content', None )
+			if isinstance( content, str ) and content.strip( ):
+				self.transcript = content.strip( )
+				return self.transcript
+			
+			self.transcript = str( self.response ).strip( )
+			return self.transcript
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Transcription'
+			ex.method = 'extract_transcript( self )'
+			raise ex
+	
+	def transcribe( self, path: str, model: str = 'grok-3-mini-fast', language: str = 'en',
+			prompt: str = None, temperature: float = None, top_p: float = None,
+			frequency: float = None, presence: float = None, max_tokens: int = None,
+			store: bool = None, stream: bool = None, instruct: str = None,
+			response_format: str = None, include: List[ str ] = None, mime_type: str = None,
+			start_time: float = None, end_time: float = None, **kwargs: Any ) -> str:
+		"""
+		
+			Purpose:
+			--------
+			Transcribe a local audio file using the xAI SDK chat/file workflow.
+
+			Parameters:
+			-----------
+			path: str
+				Local audio file path.
+
+			model: str
+				xAI model name.
+
+			language: str
+				Source language hint.
+
+			prompt: str
+				Optional transcription instruction.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty retained on the wrapper.
+
+			presence: float
+				Optional presence penalty retained on the wrapper.
+
+			max_tokens: int
+				Optional maximum output token count.
+
+			store: bool
+				Optional storage flag retained on the wrapper.
+
+			stream: bool
+				Optional stream flag retained on the wrapper.
+
+			instruct: str
+				Optional system instruction.
+
+			response_format: str
+				Optional response format retained on the wrapper.
+
+			include: List[str]
+				Optional include values retained on the wrapper.
+
+			mime_type: str
+				Optional MIME type retained on the wrapper.
+
+			start_time: float
+				Optional start time retained on the wrapper.
+
+			end_time: float
+				Optional end time retained on the wrapper.
+
+			**kwargs: Any
+				Additional UI values retained on the wrapper.
+
+			Returns:
+			--------
+			str:
+				Transcript text.
+		
+		"""
+		try:
+			throw_if( 'path', path )
+			throw_if( 'model', model )
+			self.file_path = path
+			self.model = model
+			self.language = language
+			self.prompt = prompt
+			self.temperature = temperature if temperature is not None else self.temperature
+			self.top_percent = top_p if top_p is not None else self.top_percent
+			self.frequency_penalty = frequency if frequency is not None else self.frequency_penalty
+			self.presence_penalty = presence if presence is not None else self.presence_penalty
+			self.max_output_tokens = max_tokens if max_tokens is not None else self.max_output_tokens
+			self.max_completion_tokens = self.max_output_tokens
+			self.store = store if store is not None else self.store
+			self.stream = stream if stream is not None else self.stream
+			self.instructions = instruct if instruct is not None else self.instructions
+			self.response_format = response_format
+			self.include = include if include is not None else [ ]
+			self.mime_type = mime_type
+			self.start_time = start_time
+			self.end_time = end_time
+			self.extra_kwargs = kwargs or { }
+			self.build_request( )
+			self.execute_request( )
+			return self.extract_transcript( )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Transcription'
+			ex.method = 'transcribe( self, path: str, model: str ) -> str'
+			raise ex
 	
 	def __dir__( self ) -> List[ str ] | None:
-		'''
+		"""
+		
+			Purpose:
+			--------
+			Return member names for inspection.
 
-	        Purpose:
-	        --------
-	        Method returns a list of strings representing members
-	
-	        Parameters:
-	        ----------
-	        self
-	
-	        Returns:
-	        ---------
-	        List[ str ] | None
+			Parameters:
+			-----------
+			None
 
-        '''
-		return [ 'num',
-		         'temperature',
-		         'top_percent',
-		         'frequency_penalty',
-		         'presence_penalty',
-		         'max_completion_tokens',
-		         'store',
-		         'stream',
-		         'modalities',
-		         'stops',
-		         'prompt',
-		         'response',
-		         'audio_path',
-		         'path',
-		         'messages',
-		         'response_format',
-		         'tools',
-		         'api_key',
-		         'client',
-		         'model',
-		         'translate',
-		         'model_options', ]
+			Returns:
+			--------
+			List[str] | None:
+				Member names.
+		
+		"""
+		return [
+				'api_key',
+				'base_url',
+				'client',
+				'number',
+				'model',
+				'temperature',
+				'top_percent',
+				'frequency_penalty',
+				'presence_penalty',
+				'max_output_tokens',
+				'max_completion_tokens',
+				'store',
+				'stream',
+				'language',
+				'instructions',
+				'prompt',
+				'file_path',
+				'audio_file',
+				'messages',
+				'request',
+				'response',
+				'chat',
+				'transcript',
+				'response_format',
+				'include',
+				'extra_kwargs',
+				'model_options',
+				'language_options',
+				'format_options',
+				'response_format_options',
+				'include_options',
+				'build_prompt',
+				'build_messages',
+				'build_request',
+				'execute_request',
+				'extract_transcript',
+				'transcribe',
+		]
+
+class Translation( Grok ):
+	"""
+	
+		Purpose:
+		--------
+		Provide speech translation from an audio file using xAI chat/file attachment behavior.
+
+		Attributes:
+		-----------
+		client:
+			xAI SDK client instance.
+
+		model:
+			xAI model used for translation.
+
+		prompt:
+			Translation prompt.
+
+		target_language:
+			Requested output language.
+
+		source_language:
+			Optional source language hint.
+
+		file_path:
+			Local audio file path.
+
+		audio_file:
+			Open audio file handle used during the request.
+
+		messages:
+			xAI SDK chat messages.
+
+		response:
+			Raw xAI SDK response object.
+
+		translation:
+			Normalized translation text.
+
+		Methods:
+		--------
+		translate:
+			Translate spoken audio into target-language text.
+
+		build_prompt:
+			Build the translation prompt from assigned members.
+
+		build_messages:
+			Build xAI SDK chat messages from assigned members.
+
+		build_request:
+			Build the request dictionary from assigned members.
+
+		execute_request:
+			Execute the xAI SDK request from assigned members.
+
+		extract_translation:
+			Extract translation text from the response.
+
+	"""
+	client: Optional[ Client ]
+	model: Optional[ str ]
+	prompt: Optional[ str ]
+	target_language: Optional[ str ]
+	source_language: Optional[ str ]
+	file_path: Optional[ str ]
+	audio_file: Optional[ Any ]
+	messages: Optional[ List[ Any ] ]
+	response: Optional[ Any ]
+	translation: Optional[ str ]
+	request: Optional[ Dict[ str, Any ] ]
+	
+	def __init__( self, model: str = 'grok-3-fast', temperature: float = 0.8,
+			top_p: float = 0.9, frequency: float = 0.0, presence: float = 0.0,
+			max_tokens: int = 10000, store: bool = True, stream: bool = False,
+			instruct: str = None ):
+		"""
+		
+			Purpose:
+			--------
+			Initialize the Grok translation wrapper.
+
+			Parameters:
+			-----------
+			model: str
+				xAI model used for translation.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty retained for compatibility.
+
+			presence: float
+				Optional presence penalty retained for compatibility.
+
+			max_tokens: int
+				Optional maximum output token count.
+
+			store: bool
+				Optional storage flag retained for compatibility.
+
+			stream: bool
+				Optional stream flag retained for compatibility.
+
+			instruct: str
+				Optional system instruction.
+
+			Returns:
+			--------
+			None
+		
+		"""
+		super( ).__init__( )
+		self.api_key = os.getenv( 'XAI_API_KEY' ) or cfg.XAI_API_KEY
+		self.base_url = getattr( cfg, 'XAI_BASE_URL', 'https://api.x.ai/v1' )
+		self.client = None
+		self.model = model
+		self.temperature = temperature
+		self.top_percent = top_p
+		self.frequency_penalty = frequency
+		self.presence_penalty = presence
+		self.max_output_tokens = max_tokens
+		self.max_completion_tokens = max_tokens
+		self.store = store
+		self.stream = stream
+		self.instructions = instruct
+		self.prompt = None
+		self.target_language = None
+		self.source_language = None
+		self.file_path = None
+		self.audio_file = None
+		self.messages = [ ]
+		self.request = { }
+		self.response = None
+		self.chat = None
+		self.translation = None
+		self.response_format = None
+		self.include = [ ]
+		self.mime_type = None
+		self.extra_kwargs = { }
+	
+	@property
+	def model_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return xAI text-capable models usable for audio translation workflows.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Model option names.
+		
+		"""
+		return [
+				'grok-4',
+				'grok-4-latest',
+				'grok-4-fast-reasoning',
+				'grok-4-fast-non-reasoning',
+				'grok-3',
+				'grok-3-latest',
+				'grok-3-mini',
+				'grok-3-fast',
+				'grok-3-mini-fast',
+		]
+	
+	@property
+	def language_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return target language options for the Audio UI.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Language option names.
+		
+		"""
+		return [
+				'English',
+				'Spanish',
+				'French',
+				'German',
+				'Italian',
+				'Japanese',
+				'Korean',
+				'Portuguese',
+				'Chinese',
+				'Tagalog',
+		]
+	
+	@property
+	def format_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return supported audio input format labels for UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Audio format option names.
+		
+		"""
+		return [
+				'audio/wav',
+				'audio/mp3',
+				'audio/mpeg',
+				'audio/mp4',
+				'audio/m4a',
+				'audio/webm',
+				'audio/ogg',
+				'audio/flac',
+		]
+	
+	@property
+	def response_format_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return response format options retained for Audio UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Response format option names.
+		
+		"""
+		return [
+				'text',
+				'json',
+		]
+	
+	@property
+	def include_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return include options retained for Audio UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Include option names.
+		
+		"""
+		return [ ]
+	
+	def build_prompt( self ) -> str:
+		"""
+		
+			Purpose:
+			--------
+			Build the translation instruction from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			str:
+				Translation prompt.
+		
+		"""
+		try:
+			throw_if( 'target_language', self.target_language )
+			
+			if isinstance( self.prompt, str ) and self.prompt.strip( ):
+				base_prompt = self.prompt.strip( )
+			else:
+				base_prompt = 'Translate the spoken audio in the attached file.'
+			
+			if self.source_language and str( self.source_language ).strip( ):
+				return (
+						f'{base_prompt} Source language hint: {self.source_language}. '
+						f'Translate the speech into {self.target_language}. '
+						'Return only the translated text unless additional instructions require otherwise.'
+				)
+			
+			return (
+					f'{base_prompt} Translate the speech into {self.target_language}. '
+					'Return only the translated text unless additional instructions require otherwise.'
+			)
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Translation'
+			ex.method = 'build_prompt( self )'
+			raise ex
+	
+	def build_messages( self ) -> List[ Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build xAI SDK chat messages from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[Any]:
+				xAI SDK chat messages.
+		
+		"""
+		try:
+			self.messages = [ ]
+			
+			if isinstance( self.instructions, str ) and self.instructions.strip( ):
+				self.messages.append( system( self.instructions.strip( ) ) )
+			
+			self.messages.append( user( self.build_prompt( ) ) )
+			return self.messages
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Translation'
+			ex.method = 'build_messages( self )'
+			raise ex
+	
+	def build_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build the xAI SDK request dictionary from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Request dictionary.
+		
+		"""
+		try:
+			throw_if( 'model', self.model )
+			throw_if( 'file_path', self.file_path )
+			throw_if( 'target_language', self.target_language )
+			self.build_messages( )
+			self.request = {
+					'model': self.model,
+					'messages': self.messages,
+			}
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Translation'
+			ex.method = 'build_request( self )'
+			raise ex
+	
+	def execute_request( self ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Execute the xAI SDK chat/file request using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Any:
+				Raw response object.
+		
+		"""
+		try:
+			throw_if( 'api_key', self.api_key )
+			throw_if( 'file_path', self.file_path )
+			self.client = Client( api_key=self.api_key )
+			with open( self.file_path, 'rb' ) as self.audio_file:
+				self.chat = self.client.chat.create( file=self.audio_file, **self.request )
+				self.response = self.chat.sample( )
+			
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Translation'
+			ex.method = 'execute_request( self )'
+			raise ex
+	
+	def extract_translation( self ) -> str:
+		"""
+		
+			Purpose:
+			--------
+			Extract translated text from the current response object.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			str:
+				Translated text.
+		
+		"""
+		try:
+			if self.response is None:
+				return ''
+			
+			output_text = getattr( self.response, 'output_text', None )
+			if isinstance( output_text, str ) and output_text.strip( ):
+				self.translation = output_text.strip( )
+				return self.translation
+			
+			text = getattr( self.response, 'text', None )
+			if isinstance( text, str ) and text.strip( ):
+				self.translation = text.strip( )
+				return self.translation
+			
+			content = getattr( self.response, 'content', None )
+			if isinstance( content, str ) and content.strip( ):
+				self.translation = content.strip( )
+				return self.translation
+			
+			self.translation = str( self.response ).strip( )
+			return self.translation
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Translation'
+			ex.method = 'extract_translation( self )'
+			raise ex
+	
+	def translate( self, path: str, model: str = 'grok-3-fast', language: str = 'English',
+			prompt: str = None, source_language: str = None, temperature: float = None,
+			top_p: float = None, frequency: float = None, presence: float = None,
+			max_tokens: int = None, store: bool = None, stream: bool = None,
+			instruct: str = None, response_format: str = None, include: List[ str ] = None,
+			mime_type: str = None, **kwargs: Any ) -> str:
+		"""
+		
+			Purpose:
+			--------
+			Translate spoken audio into the requested target language.
+
+			Parameters:
+			-----------
+			path: str
+				Local audio file path.
+
+			model: str
+				xAI model name.
+
+			language: str
+				Target language.
+
+			prompt: str
+				Optional translation instruction.
+
+			source_language: str
+				Optional source language hint.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty retained on the wrapper.
+
+			presence: float
+				Optional presence penalty retained on the wrapper.
+
+			max_tokens: int
+				Optional maximum output token count.
+
+			store: bool
+				Optional storage flag retained on the wrapper.
+
+			stream: bool
+				Optional stream flag retained on the wrapper.
+
+			instruct: str
+				Optional system instruction.
+
+			response_format: str
+				Optional response format retained on the wrapper.
+
+			include: List[str]
+				Optional include values retained on the wrapper.
+
+			mime_type: str
+				Optional MIME type retained on the wrapper.
+
+			**kwargs: Any
+				Additional UI values retained on the wrapper.
+
+			Returns:
+			--------
+			str:
+				Translated text.
+		
+		"""
+		try:
+			throw_if( 'path', path )
+			throw_if( 'model', model )
+			throw_if( 'language', language )
+			self.file_path = path
+			self.model = model
+			self.target_language = language
+			self.source_language = source_language
+			self.prompt = prompt
+			self.temperature = temperature if temperature is not None else self.temperature
+			self.top_percent = top_p if top_p is not None else self.top_percent
+			self.frequency_penalty = frequency if frequency is not None else self.frequency_penalty
+			self.presence_penalty = presence if presence is not None else self.presence_penalty
+			self.max_output_tokens = max_tokens if max_tokens is not None else self.max_output_tokens
+			self.max_completion_tokens = self.max_output_tokens
+			self.store = store if store is not None else self.store
+			self.stream = stream if stream is not None else self.stream
+			self.instructions = instruct if instruct is not None else self.instructions
+			self.response_format = response_format
+			self.include = include if include is not None else [ ]
+			self.mime_type = mime_type
+			self.extra_kwargs = kwargs or { }
+			self.build_request( )
+			self.execute_request( )
+			return self.extract_translation( )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Translation'
+			ex.method = 'translate( self, path: str, model: str, language: str ) -> str'
+			raise ex
+	
+	def __dir__( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return member names for inspection.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Member names.
+		
+		"""
+		return [
+				'api_key',
+				'base_url',
+				'client',
+				'model',
+				'temperature',
+				'top_percent',
+				'frequency_penalty',
+				'presence_penalty',
+				'max_output_tokens',
+				'max_completion_tokens',
+				'store',
+				'stream',
+				'instructions',
+				'prompt',
+				'target_language',
+				'source_language',
+				'file_path',
+				'audio_file',
+				'messages',
+				'request',
+				'response',
+				'chat',
+				'translation',
+				'response_format',
+				'include',
+				'mime_type',
+				'extra_kwargs',
+				'model_options',
+				'language_options',
+				'format_options',
+				'response_format_options',
+				'include_options',
+				'build_prompt',
+				'build_messages',
+				'build_request',
+				'execute_request',
+				'extract_translation',
+				'translate',
+		]
 
 class Images( Grok ):
 	"""
 	
 		Purpose:
 		--------
-		Provide image generation and image editing functionality using
-		the xAI Images REST API.
+		Provide image generation, image editing, and image analysis functionality using
+		the xAI Images API and xAI-compatible Responses API.
 
-		This class models the /images/generations and /images/edits
-		endpoints exactly as exposed by xAI.
-
-		Parameters:
+		Attributes:
 		-----------
-		None
+		model:
+			xAI model used for image generation, editing, or image understanding.
 
-		Returns:
+		prompt:
+			User prompt or image instruction.
+
+		aspect_ratio:
+			Optional xAI image aspect ratio.
+
+		resolution:
+			Optional xAI image resolution.
+
+		response_format:
+			Optional image response format.
+
+		client:
+			OpenAI-compatible xAI client.
+
+		image_path:
+			Optional local image path used for edit or analysis workflows.
+
+		image_url:
+			Optional public URL or data URI used for edit or analysis workflows.
+
+		detail:
+			Optional image understanding detail level.
+
+		response:
+			Last API response object.
+
+		request:
+			Last request payload built by this wrapper.
+
+		output:
+			Last normalized image or text output.
+
+		Methods:
 		--------
-		None
-	
+		generate:
+			Generate one or more images from a text prompt.
+
+		create:
+			Backward-compatible alias for image generation.
+
+		edit:
+			Edit an image using a local image path or image URL.
+
+		analyze:
+			Analyze an image using xAI-compatible Responses API input.
+
+		vision:
+			Alias for analyze.
+
+		describe:
+			Alias for analyze.
+
 	"""
 	model: Optional[ str ]
+	prompt: Optional[ str ]
 	aspect_ratio: Optional[ str ]
 	resolution: Optional[ str ]
 	response_format: Optional[ str ]
-	client: Optional[ Client ]
-	image: Optional[ image ]
+	client: Optional[ OpenAI ]
 	image_path: Optional[ str ]
+	image_url: Optional[ str ]
 	detail: Optional[ str ]
-	response_format: Optional[ str ]
-	response: Optional[ ImageResponse ]
+	response: Optional[ Any ]
+	request: Optional[ Dict[ str, Any ] ]
+	output: Optional[ Any ]
 	
 	def __init__( self ):
 		"""
 		
 			Purpose:
 			--------
-			Initialize the Images API client.
+			Initialize the Grok Images wrapper.
 
 			Parameters:
 			-----------
@@ -2352,17 +3936,45 @@ class Images( Grok ):
 		
 		"""
 		super( ).__init__( )
+		self.api_key = os.getenv( 'XAI_API_KEY' ) or cfg.XAI_API_KEY
+		self.base_url = getattr( cfg, 'XAI_BASE_URL', 'https://api.x.ai/v1' )
 		self.client = None
 		self.model = None
+		self.prompt = None
+		self.number = None
 		self.aspect_ratio = None
 		self.resolution = None
+		self.size = None
 		self.quality = None
+		self.style = None
 		self.detail = None
 		self.response_format = None
-		self.client = None
+		self.mime_type = None
+		self.compression = None
+		self.background = None
+		self.response_modalities = None
 		self.max_output_tokens = None
 		self.temperature = None
 		self.top_percent = None
+		self.frequency_penalty = None
+		self.presence_penalty = None
+		self.tools = [ ]
+		self.tool_choice = None
+		self.include = [ ]
+		self.allowed_domains = [ ]
+		self.store = None
+		self.stream = None
+		self.is_parallel = None
+		self.max_tools = None
+		self.max_searches = None
+		self.image_path = None
+		self.image_url = None
+		self.mask_path = None
+		self.request = { }
+		self.response = None
+		self.output = None
+		self.extra_body = { }
+		self.extra_kwargs = { }
 	
 	@property
 	def model_options( self ) -> List[ str ]:
@@ -2370,56 +3982,7 @@ class Images( Grok ):
 		
 			Purpose:
 			--------
-			Return supported xAI image generation models.
-
-			Returns:
-			--------
-			List[str]
-		
-		"""
-		return [ "grok-2-image-1212", 'grok-imagine-image' ]
-	
-	@property
-	def tool_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			A List[ str ] of available tools options
-
-		'''
-		return [ 'web_search',
-		         'x_search',
-		         'collections_search',
-		         'code_interpreter' ]
-	
-	@property
-	def aspect_options( self ) -> List[ str ]:
-		return [ '1:1',
-		         '3:4',
-		         '4:3',
-		         '9:16',
-		         '16:9',
-		         '2:3',
-		         '3:2',
-		         '9:19.5',
-		         '19.5:9',
-		         '9:20',
-		         '20:9',
-		         '1:2',
-		         '2:1']
-	
-	@property
-	def reasoning_options( self ) -> List[ str ]:
-		"""
-		
-			Purpose:
-			--------
-			Return supported reasoning effort levels.
-
-			Notes:
-			------
-			Only valid for model = 'grok-3-mini'.
+			Return supported xAI image-related models.
 
 			Parameters:
 			-----------
@@ -2427,202 +3990,1560 @@ class Images( Grok ):
 
 			Returns:
 			--------
-			List[str]
+			List[str]:
+				xAI image generation model names.
 		
 		"""
-		return [ 'low', 'high' ]
+		return [ 'grok-imagine-image', 'grok-2-image-1212' ]
 	
 	@property
-	def size_options( self ) -> List[ str ]:
-		return [ '1K',  '2K' ]
-	
-	@property
-	def quality_options( self ) -> List[ str ]:
-		return [ 'low', 'medium', 'high' ]
-	
-	@property
-	def detail_options( self ) -> List[ str ]:
-		return [ 'auto',
-		         'low',
-		         'high' ]
-	
-	@property
-	def format_options( self ) -> List[ str ]:
-		return [ 'base64', 'url' ]
-	
-	@property
-	def include_options( self ) -> List[ str ]:
-		return [ 'web_search_call_output',
-		         'x_search_call_output',
-		         'code_execution_call_output',
-		         'collections_search_call_output',
-		         'attachment_search_call_output',
-		         'mcp_call_output',
-		         'inline_citations',
-		         'verbose_streaming' ]
-	
-	@property
-	def choice_options( self ) -> List[ str ] | None:
-		'''
-
-			Returns:
-			--------
-			A List[ str ] of available tools options
-
-		'''
-		return [ 'auto', 'required', 'none' ]
-	
-	def create( self, prompt: str, model: str='grok-imagine-image', resolution: str=None,
-			aspect_ratio: str=None,  format: str=None ) -> str | None:
+	def analysis_model_options( self ) -> List[ str ]:
 		"""
 		
 			Purpose:
 			--------
-			Generate one or more images from a text prompt.
+			Return supported xAI image-understanding model names.
 
 			Parameters:
 			-----------
-			prompt : str
-			model : str | None
-			n : int | None
-			aspect_ratio : str | None
-			resolution : str | None
-			quality : str | None
-			style : str | None
-			response_format : str | None
+			None
 
 			Returns:
 			--------
-			List[dict]
+			List[str]:
+				xAI vision-capable model names.
+		
+		"""
+		return [
+				'grok-4.20-reasoning',
+				'grok-4.20',
+				'grok-4',
+				'grok-4-latest',
+				'grok-4-fast-reasoning',
+				'grok-4-fast-non-reasoning',
+		]
+	
+	@property
+	def tool_options( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return image-mode tool options retained for UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Tool option names.
+		
+		"""
+		return [ ]
+	
+	@property
+	def include_options( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return image-mode include options retained for UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Include option names.
+		
+		"""
+		return [ ]
+	
+	@property
+	def choice_options( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return image-mode tool choice options retained for UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Tool choice option names.
+		
+		"""
+		return [ 'auto', 'required', 'none' ]
+	
+	@property
+	def aspect_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return supported xAI image aspect ratios.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Aspect ratio values.
+		
+		"""
+		return [
+				'auto',
+				'1:1',
+				'3:4',
+				'4:3',
+				'9:16',
+				'16:9',
+				'2:3',
+				'3:2',
+				'9:19.5',
+				'19.5:9',
+				'9:20',
+				'20:9',
+				'1:2',
+				'2:1',
+		]
+	
+	@property
+	def size_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return supported xAI image resolutions.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Image resolution values.
+		
+		"""
+		return [ '1k', '2k' ]
+	
+	@property
+	def quality_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return image quality options retained for UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Image quality option values.
+		
+		"""
+		return [ 'auto', 'low', 'medium', 'high' ]
+	
+	@property
+	def style_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return style options retained for UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Style option values.
+		
+		"""
+		return [ ]
+	
+	@property
+	def backcolor_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return background options retained for UI compatibility.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Background option values.
+		
+		"""
+		return [ ]
+	
+	@property
+	def detail_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return supported xAI image-understanding detail options.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Detail option values.
+		
+		"""
+		return [ 'auto', 'low', 'high' ]
+	
+	@property
+	def format_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return xAI image response format options.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Response format option values.
+		
+		"""
+		return [ 'url', 'b64_json' ]
+	
+	@property
+	def mime_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return output format options consumed by the Images UI.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Output option values.
+		
+		"""
+		return [ 'url', 'b64_json' ]
+	
+	@property
+	def output_options( self ) -> List[ str ]:
+		"""
+		
+			Purpose:
+			--------
+			Return output format options consumed by the Images UI.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Output option values.
+		
+		"""
+		return [ 'url', 'b64_json' ]
+	
+	def initialize_client( self ) -> None:
+		"""
+		
+			Purpose:
+			--------
+			Initialize the OpenAI-compatible xAI client from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			None
 		
 		"""
 		try:
-			throw_if( 'prompt', prompt )
-			self.model = model
-			self.resolution = resolution
-			self.aspect_ratio = aspect_ratio
-			self.response_format = format
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update({ 'Authorization': f'Bearer {self.api_key}',
-					'Content-Type': 'application/json', } )
-			self.response = self.client.image.sample( prompt=self.prompt, resolution=self.resolution,
-				model="grok-imagine-image", aspect_ratio=self.aspect_ratio,
-				image_format=self.response_format )
-			return self.response.base64
+			throw_if( 'api_key', self.api_key )
+			throw_if( 'base_url', self.base_url )
+			self.client = OpenAI( api_key=self.api_key, base_url=self.base_url )
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'Images'
-			ex.method = 'create( prompt: str, model: str )'
+			ex.method = 'initialize_client( self )'
 			raise ex
 	
-	def edit( self, image_path: str, prompt: str, model: str='grok-imagine-image',
-			aspect_ratio: str=None, resolution: str=None, quality: str=None,
-			response_format: str=None ) -> str | None:
+	def normalize_resolution( self, value: str = None ) -> str | None:
 		"""
 		
 			Purpose:
 			--------
-			Edit an existing image using a text prompt and optional mask.
+			Normalize UI resolution values to xAI-supported image resolution values.
 
 			Parameters:
 			-----------
-			image_path : str
-			prompt : str
-			mask_path : str | None
-			model : str | None
-			n : int | None
-			aspect_ratio : str | None
-			resolution : str | None
-			quality : str | None
-			style : str | None
-			response_format : str | None
+			value: str
+				Resolution value from the UI.
 
 			Returns:
 			--------
-			List[dict]
+			str | None:
+				Normalized resolution value or None.
+		
+		"""
+		try:
+			if value is None:
+				return None
+			
+			resolution = str( value ).strip( ).lower( )
+			if resolution in [ '1k', '2k' ]:
+				return resolution
+			
+			return None
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'normalize_resolution( self, value )'
+			raise ex
+	
+	def normalize_response_format( self, value: str = None ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Normalize UI response format values to xAI/OpenAI-compatible image format values.
+
+			Parameters:
+			-----------
+			value: str
+				Response format value from the UI.
+
+			Returns:
+			--------
+			str | None:
+				Normalized response format value or None.
+		
+		"""
+		try:
+			if value is None:
+				return None
+			
+			response_format = str( value ).strip( ).lower( )
+			if response_format in [ 'url', 'b64_json' ]:
+				return response_format
+			
+			if response_format == 'base64':
+				return 'b64_json'
+			
+			return None
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'normalize_response_format( self, value )'
+			raise ex
+	
+	def encode_image_data_uri( self, image_path: str ) -> str:
+		"""
+		
+			Purpose:
+			--------
+			Encode a local image path into a base64 data URI accepted by xAI image editing
+			and image understanding requests.
+
+			Parameters:
+			-----------
+			image_path: str
+				Local image path.
+
+			Returns:
+			--------
+			str:
+				Base64 data URI.
 		
 		"""
 		try:
 			throw_if( 'image_path', image_path )
-			throw_if( 'prompt', prompt )
-			self.model = model
-			self.image_path = image_path
-			self.aspect_ratio = aspect_ratio
-			self.resolution = resolution
-			self.quality = quality
-			self.response_format = response_format
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( { 'Authorization': f'Bearer {cfg.GROK_API_KEY}' } )
-			with open( self.image_path, "rb" ) as f:
-				image_data = base64.b64encode( f.read( ) ).decode( "utf-8" )
-				self.response = self.client.image.sample( prompt=self.prompt, model=self.model,
-					aspect_ratio=self.aspect_ratio, image_format=self.response_format,
-					image_url=f"data:image/jpeg;base64,{image_data}", )
-				return self.response.base64
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Embeddings'
-			ex.method = 'edit( self, **kwarge ) -> str'
-			raise ex
-	
-	def analyze( self, prompt: str, image_url: str, model: str='grok-4-1-fast-reasoning',
-			max_output_tokens: int=10000, temperature: float=0.9, top_p: float=0.8,
-			reasoning_effort: str='medium', detail: str='medium'  ):
-		"""
-		
-			Purpose:
-			--------
-			Analyze an image (image understanding) using a text prompt and an image URL.
-
-			This method uses xAI's multimodal input format via the Responses API and
-			returns a text response describing or reasoning about the image.
-
-			Parameters:
-			-----------
-			prompt : str
-			image_url : str
-			model : str | None
-			max_output_tokens : int | None
-			temperature : float | None
-			top_p : float | None
-			include_reasoning : bool | None
-			reasoning_effort : str | None
-			store : bool
-			previous_response_id : str | None
-
-			Returns:
-			--------
-			str
-		
-		"""
-		try:
-			throw_if( "prompt", prompt )
-			throw_if( "image_url", image_url )
-			self.model = model
-			self.prompt = prompt
-			self.image_url = image_url
-			self.max_output_tokens = max_output_tokens
-			self.temperature = temperature
-			self.top_percent = top_p
-			self.detail = detail
-			self.reasoning_effort = reasoning_effort
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( {
-					'Authorization': f'Bearer {self.api_key}',
-					'Content-Type': 'application/json', } )
-			chat_response = self.client.chat.create( model=self.model )
-			chat_response.append( user( self.prompt,
-				image( image_url=self.image_url, detail=self.detail ) ) )
-			image_respose = chat_response.sample()
-			return image_respose.content
+			path = Path( image_path )
+			
+			if not path.exists( ):
+				raise FileNotFoundError( f'Image file was not found: {image_path}' )
+			
+			suffix = path.suffix.lower( ).replace( '.', '' )
+			if suffix == 'jpg':
+				suffix = 'jpeg'
+			
+			if suffix not in [ 'jpeg', 'png', 'webp' ]:
+				suffix = 'jpeg'
+			
+			image_bytes = path.read_bytes( )
+			encoded = base64.b64encode( image_bytes ).decode( 'utf-8' )
+			return f'data:image/{suffix};base64,{encoded}'
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'Images'
-			ex.method = 'analyze( prompt: str, image_url: str  )'
+			ex.method = 'encode_image_data_uri( self, image_path )'
 			raise ex
+	
+	def get_output_text( self ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Extract text output from the last xAI Responses API response.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			str | None:
+				Output text when available.
+		
+		"""
+		try:
+			if self.response is None:
+				return None
+			
+			output_text = getattr( self.response, 'output_text', None )
+			if output_text:
+				return output_text
+			
+			output = getattr( self.response, 'output', None )
+			if not isinstance( output, list ):
+				return None
+			
+			text_parts: List[ str ] = [ ]
+			for item in output:
+				if getattr( item, 'type', None ) != 'message':
+					continue
+				
+				content = getattr( item, 'content', None )
+				if not isinstance( content, list ):
+					continue
+				
+				for block in content:
+					if getattr( block, 'type', None ) == 'output_text':
+						text = getattr( block, 'text', None )
+						if text:
+							text_parts.append( text )
+			
+			return ''.join( text_parts ).strip( ) if text_parts else None
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'get_output_text( self )'
+			raise ex
+	
+	def normalize_image_result( self ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Normalize the last image API response into a renderable value for the Streamlit UI.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Any:
+				URL, base64 JSON string, list of image values, text, or raw response.
+		
+		"""
+		try:
+			if self.response is None:
+				return None
+			
+			data = getattr( self.response, 'data', None )
+			if isinstance( data, list ) and len( data ) > 0:
+				results: List[ Any ] = [ ]
+				
+				for item in data:
+					url = getattr( item, 'url', None )
+					b64_json = getattr( item, 'b64_json', None )
+					
+					if url:
+						results.append( url )
+						continue
+					
+					if b64_json:
+						results.append( b64_json )
+						continue
+					
+					results.append( item )
+				
+				return results[ 0 ] if len( results ) == 1 else results
+			
+			url = getattr( self.response, 'url', None )
+			if url:
+				return url
+			
+			base64_value = getattr( self.response, 'base64', None )
+			if base64_value:
+				return base64_value
+			
+			image_bytes = getattr( self.response, 'image', None )
+			if image_bytes:
+				return image_bytes
+			
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'normalize_image_result( self )'
+			raise ex
+	
+	def build_generation_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build the xAI image generation request from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				OpenAI-compatible image generation request payload.
+		
+		"""
+		try:
+			throw_if( 'prompt', self.prompt )
+			throw_if( 'model', self.model )
+			self.request = {
+					'model': self.model,
+					'prompt': self.prompt,
+			}
+			self.extra_body = { }
+			
+			if isinstance( self.number, int ) and self.number > 0:
+				self.request[ 'n' ] = self.number
+			
+			if self.response_format:
+				self.request[ 'response_format' ] = self.response_format
+			
+			if self.aspect_ratio:
+				self.extra_body[ 'aspect_ratio' ] = self.aspect_ratio
+			
+			if self.resolution:
+				self.extra_body[ 'resolution' ] = self.resolution
+			
+			if self.extra_body:
+				self.request[ 'extra_body' ] = self.extra_body
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'build_generation_request( self )'
+			raise ex
+	
+	def build_edit_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build the xAI JSON image-edit request from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				JSON image edit request payload.
+		
+		"""
+		try:
+			throw_if( 'prompt', self.prompt )
+			throw_if( 'model', self.model )
+			throw_if( 'image_url', self.image_url )
+			self.request = {
+					'model': self.model,
+					'prompt': self.prompt,
+					'image': {
+							'type': 'image_url',
+							'url': self.image_url,
+					},
+			}
+			
+			if self.response_format:
+				self.request[ 'response_format' ] = self.response_format
+			
+			if self.aspect_ratio:
+				self.request[ 'aspect_ratio' ] = self.aspect_ratio
+			
+			if self.resolution:
+				self.request[ 'resolution' ] = self.resolution
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'build_edit_request( self )'
+			raise ex
+	
+	def build_analysis_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build the xAI Responses API image-understanding request from assigned wrapper
+			members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Responses API request payload.
+		
+		"""
+		try:
+			throw_if( 'prompt', self.prompt )
+			throw_if( 'model', self.model )
+			throw_if( 'image_url', self.image_url )
+			self.request = {
+					'model': self.model,
+					'input': [
+							{
+									'role': 'user',
+									'content': [
+											{
+													'type': 'input_image',
+													'image_url': self.image_url,
+											},
+											{
+													'type': 'input_text',
+													'text': self.prompt,
+											},
+									],
+							},
+					],
+			}
+			
+			if self.detail:
+				self.request[ 'input' ][ 0 ][ 'content' ][ 0 ][ 'detail' ] = self.detail
+			
+			if isinstance( self.max_output_tokens, int ) and self.max_output_tokens > 0:
+				self.request[ 'max_output_tokens' ] = self.max_output_tokens
+			
+			if self.temperature is not None:
+				self.request[ 'temperature' ] = self.temperature
+			
+			if self.top_percent is not None:
+				self.request[ 'top_p' ] = self.top_percent
+			
+			if self.store is not None:
+				self.request[ 'store' ] = self.store
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'build_analysis_request( self )'
+			raise ex
+	
+	def generate( self, prompt: str, model: str = 'grok-imagine-image', number: int = None,
+			size: str = None, quality: str = None, style: str = None, fmt: str = None,
+			mime_type: str = None, compression: float = None, background: str = None,
+			aspect_ratio: str = None, response_modalities: str = None, temperature: float = None,
+			top_p: float = None, top_k: int = None, frequency: float = None, presence: float = None,
+			max_tokens: int = None, instruct: str = None, tools: List[ Any ] = None,
+			tool_choice: str = None, include: List[ str ] = None,
+			allowed_domains: List[ str ] = None,
+			store: bool = None, stream: bool = None, is_parallel: bool = None,
+			max_tools: int = None,
+			max_searches: int = None, grounded: bool = False, image_search: bool = False,
+			response_format: str = None, **kwargs: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Generate one or more images from a text prompt using the xAI image generation
+			endpoint.
+
+			Parameters:
+			-----------
+			prompt: str
+				Text prompt used to generate the image.
+
+			model: str
+				xAI image generation model.
+
+			number: int
+				Optional number of images to generate.
+
+			size: str
+				Optional xAI resolution value from the UI.
+
+			quality: str
+				Optional quality value retained for UI compatibility.
+
+			style: str
+				Optional style value retained for UI compatibility.
+
+			fmt: str
+				Optional response format alias.
+
+			mime_type: str
+				Optional response format alias.
+
+			compression: float
+				Optional compression value retained for UI compatibility.
+
+			background: str
+				Optional background value retained for UI compatibility.
+
+			aspect_ratio: str
+				Optional xAI aspect ratio value.
+
+			response_modalities: str
+				Optional response modality retained for UI compatibility.
+
+			temperature: float
+				Optional temperature retained for UI compatibility.
+
+			top_p: float
+				Optional top-p value retained for UI compatibility.
+
+			top_k: int
+				Optional top-k value retained for UI compatibility.
+
+			frequency: float
+				Optional frequency penalty retained for UI compatibility.
+
+			presence: float
+				Optional presence penalty retained for UI compatibility.
+
+			max_tokens: int
+				Optional maximum token value retained for UI compatibility.
+
+			instruct: str
+				Optional instructions retained for UI compatibility.
+
+			tools: List[Any]
+				Optional tools retained for UI compatibility.
+
+			tool_choice: str
+				Optional tool choice retained for UI compatibility.
+
+			include: List[str]
+				Optional include values retained for UI compatibility.
+
+			allowed_domains: List[str]
+				Optional allowed domains retained for UI compatibility.
+
+			store: bool
+				Optional store flag retained for UI compatibility.
+
+			stream: bool
+				Optional stream flag retained for UI compatibility.
+
+			is_parallel: bool
+				Optional parallel tool flag retained for UI compatibility.
+
+			max_tools: int
+				Optional max tools retained for UI compatibility.
+
+			max_searches: int
+				Optional max searches retained for UI compatibility.
+
+			grounded: bool
+				Optional grounding flag retained for UI compatibility.
+
+			image_search: bool
+				Optional image search flag retained for UI compatibility.
+
+			response_format: str
+				Optional response format value.
+
+			**kwargs: Any
+				Additional UI values retained for compatibility.
+
+			Returns:
+			--------
+			Any:
+				Renderable image output.
+		
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			throw_if( 'model', model )
+			self.prompt = prompt
+			self.model = model
+			self.number = number
+			self.size = size
+			self.resolution = self.normalize_resolution( size )
+			self.quality = quality
+			self.style = style
+			self.response_format = self.normalize_response_format(
+				response_format or fmt or mime_type )
+			self.mime_type = mime_type
+			self.compression = compression
+			self.background = background
+			self.aspect_ratio = aspect_ratio
+			self.response_modalities = response_modalities
+			self.temperature = temperature
+			self.top_percent = top_p
+			self.top_k = top_k
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_output_tokens = max_tokens
+			self.instructions = instruct
+			self.tools = tools if tools is not None else [ ]
+			self.tool_choice = tool_choice
+			self.include = include if include is not None else [ ]
+			self.allowed_domains = allowed_domains if allowed_domains is not None else [ ]
+			self.store = store
+			self.stream = stream
+			self.is_parallel = is_parallel
+			self.max_tools = max_tools
+			self.max_searches = max_searches
+			self.grounded = grounded
+			self.image_search = image_search
+			self.extra_kwargs = kwargs or { }
+			self.initialize_client( )
+			self.build_generation_request( )
+			self.response = self.client.images.generate( **self.request )
+			self.output = self.normalize_image_result( )
+			return self.output
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'generate( self, prompt: str, model: str )'
+			raise ex
+	
+	def generate_image( self, prompt: str, model: str = 'grok-imagine-image',
+			number: int = None, size: str = None, quality: str = None, style: str = None,
+			fmt: str = None, mime_type: str = None, compression: float = None,
+			background: str = None, aspect_ratio: str = None,
+			response_modalities: str = None, **kwargs: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Provider-neutral alias for image generation.
+
+			Parameters:
+			-----------
+			prompt: str
+				Text prompt used to generate the image.
+
+			model: str
+				xAI image generation model.
+
+			number: int
+				Optional number of images to generate.
+
+			size: str
+				Optional xAI resolution value from the UI.
+
+			quality: str
+				Optional quality value retained for UI compatibility.
+
+			style: str
+				Optional style value retained for UI compatibility.
+
+			fmt: str
+				Optional response format alias.
+
+			mime_type: str
+				Optional response format alias.
+
+			compression: float
+				Optional compression value retained for UI compatibility.
+
+			background: str
+				Optional background value retained for UI compatibility.
+
+			aspect_ratio: str
+				Optional xAI aspect ratio value.
+
+			response_modalities: str
+				Optional response modality retained for UI compatibility.
+
+			**kwargs: Any
+				Additional UI values.
+
+			Returns:
+			--------
+			Any:
+				Renderable image output.
+		
+		"""
+		try:
+			return self.generate( prompt=prompt, model=model, number=number, size=size,
+				quality=quality, style=style, fmt=fmt, mime_type=mime_type,
+				compression=compression, background=background, aspect_ratio=aspect_ratio,
+				response_modalities=response_modalities, **kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'generate_image( self, prompt: str, model: str )'
+			raise ex
+	
+	def create( self, prompt: str, model: str = 'grok-imagine-image', resolution: str = None,
+			aspect_ratio: str = None, format: str = None, number: int = None,
+			quality: str = None, style: str = None, **kwargs: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Backward-compatible alias for image generation.
+
+			Parameters:
+			-----------
+			prompt: str
+				Text prompt used to generate the image.
+
+			model: str
+				xAI image generation model.
+
+			resolution: str
+				Optional xAI resolution value.
+
+			aspect_ratio: str
+				Optional xAI aspect ratio value.
+
+			format: str
+				Optional response format value.
+
+			number: int
+				Optional number of images to generate.
+
+			quality: str
+				Optional quality value retained for UI compatibility.
+
+			style: str
+				Optional style value retained for UI compatibility.
+
+			**kwargs: Any
+				Additional UI values.
+
+			Returns:
+			--------
+			Any:
+				Renderable image output.
+		
+		"""
+		try:
+			return self.generate( prompt=prompt, model=model, number=number,
+				size=resolution, quality=quality, style=style, fmt=format,
+				aspect_ratio=aspect_ratio, **kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'create( self, prompt: str, model: str )'
+			raise ex
+	
+	def create_image( self, prompt: str, model: str = 'grok-imagine-image',
+			**kwargs: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Backward-compatible alias for image generation.
+
+			Parameters:
+			-----------
+			prompt: str
+				Text prompt used to generate the image.
+
+			model: str
+				xAI image generation model.
+
+			**kwargs: Any
+				Additional UI values.
+
+			Returns:
+			--------
+			Any:
+				Renderable image output.
+		
+		"""
+		try:
+			return self.generate( prompt=prompt, model=model, **kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'create_image( self, prompt: str, model: str )'
+			raise ex
+	
+	def edit( self, image_path: str = None, prompt: str = None, model: str = 'grok-imagine-image',
+			aspect_ratio: str = None, resolution: str = None, quality: str = None,
+			response_format: str = None, path: str = None, mask_path: str = None, mask: str = None,
+			size: str = None, fmt: str = None, mime_type: str = None, **kwargs: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Edit an existing image using a text prompt and local image path or image URL.
+
+			Parameters:
+			-----------
+			image_path: str
+				Local image path or public image URL.
+
+			prompt: str
+				Text instruction used to edit the image.
+
+			model: str
+				xAI image editing model.
+
+			aspect_ratio: str
+				Optional xAI aspect ratio value.
+
+			resolution: str
+				Optional xAI resolution value.
+
+			quality: str
+				Optional quality value retained for UI compatibility.
+
+			response_format: str
+				Optional response format value.
+
+			path: str
+				Alias for image_path from the UI.
+
+			mask_path: str
+				Optional mask path retained for UI compatibility.
+
+			mask: str
+				Optional mask alias retained for UI compatibility.
+
+			size: str
+				Optional resolution alias.
+
+			fmt: str
+				Optional response format alias.
+
+			mime_type: str
+				Optional response format alias.
+
+			**kwargs: Any
+				Additional UI values retained for compatibility.
+
+			Returns:
+			--------
+			Any:
+				Renderable edited image output.
+		
+		"""
+		try:
+			self.image_path = image_path or path
+			throw_if( 'image_path', self.image_path )
+			throw_if( 'prompt', prompt )
+			throw_if( 'model', model )
+			self.prompt = prompt
+			self.model = model
+			self.aspect_ratio = aspect_ratio
+			self.resolution = self.normalize_resolution( resolution or size )
+			self.quality = quality
+			self.response_format = self.normalize_response_format(
+				response_format or fmt or mime_type )
+			self.mask_path = mask_path or mask
+			self.extra_kwargs = kwargs or { }
+			
+			if str( self.image_path ).startswith( 'http://' ) or str(
+					self.image_path ).startswith( 'https://' ):
+				self.image_url = str( self.image_path )
+			elif str( self.image_path ).startswith( 'data:image/' ):
+				self.image_url = str( self.image_path )
+			else:
+				self.image_url = self.encode_image_data_uri( self.image_path )
+			
+			self.build_edit_request( )
+			self.response = requests.post(
+				url=f'{self.base_url.rstrip( "/" )}/images/edits',
+				headers={
+						'Authorization': f'Bearer {self.api_key}',
+						'Content-Type': 'application/json',
+				},
+				json=self.request,
+				timeout=self.timeout or 3600,
+			)
+			self.response.raise_for_status( )
+			self.output = self.response.json( )
+			return self.output
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'edit( self, image_path: str, prompt: str )'
+			raise ex
+	
+	def edit_image( self, image_path: str = None, prompt: str = None,
+			model: str = 'grok-imagine-image', **kwargs: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Provider-neutral alias for image editing.
+
+			Parameters:
+			-----------
+			image_path: str
+				Local image path or public image URL.
+
+			prompt: str
+				Text instruction used to edit the image.
+
+			model: str
+				xAI image editing model.
+
+			**kwargs: Any
+				Additional UI values.
+
+			Returns:
+			--------
+			Any:
+				Renderable edited image output.
+		
+		"""
+		try:
+			return self.edit( image_path=image_path, prompt=prompt, model=model, **kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'edit_image( self, image_path: str, prompt: str )'
+			raise ex
+	
+	def modify( self, image_path: str = None, prompt: str = None,
+			model: str = 'grok-imagine-image', **kwargs: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Provider-neutral alias for image editing.
+
+			Parameters:
+			-----------
+			image_path: str
+				Local image path or public image URL.
+
+			prompt: str
+				Text instruction used to edit the image.
+
+			model: str
+				xAI image editing model.
+
+			**kwargs: Any
+				Additional UI values.
+
+			Returns:
+			--------
+			Any:
+				Renderable edited image output.
+		
+		"""
+		try:
+			return self.edit( image_path=image_path, prompt=prompt, model=model, **kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'modify( self, image_path: str, prompt: str )'
+			raise ex
+	
+	def generate_edit( self, image_path: str = None, prompt: str = None,
+			model: str = 'grok-imagine-image', **kwargs: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Provider-neutral alias for image editing.
+
+			Parameters:
+			-----------
+			image_path: str
+				Local image path or public image URL.
+
+			prompt: str
+				Text instruction used to edit the image.
+
+			model: str
+				xAI image editing model.
+
+			**kwargs: Any
+				Additional UI values.
+
+			Returns:
+			--------
+			Any:
+				Renderable edited image output.
+		
+		"""
+		try:
+			return self.edit( image_path=image_path, prompt=prompt, model=model, **kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'generate_edit( self, image_path: str, prompt: str )'
+			raise ex
+	
+	def analyze( self, prompt: str, image_url: str = None, model: str = 'grok-4.20-reasoning',
+			max_output_tokens: int = 10000, temperature: float = None, top_p: float = None,
+			detail: str = 'high', image_path: str = None, path: str = None, store: bool = False,
+			**kwargs: Any ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Analyze an image using the xAI-compatible Responses API.
+
+			Parameters:
+			-----------
+			prompt: str
+				Text question or instruction about the image.
+
+			image_url: str
+				Public image URL or data URI.
+
+			model: str
+				xAI image-understanding model.
+
+			max_output_tokens: int
+				Optional maximum output tokens.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			detail: str
+				Optional image detail value.
+
+			image_path: str
+				Optional local image path.
+
+			path: str
+				Alias for image_path from the UI.
+
+			store: bool
+				Optional response storage flag. Defaults to False for image requests.
+
+			**kwargs: Any
+				Additional UI values retained for compatibility.
+
+			Returns:
+			--------
+			str | None:
+				Image analysis text.
+		
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			throw_if( 'model', model )
+			self.prompt = prompt
+			self.model = model
+			self.image_path = image_path or path
+			self.detail = detail
+			self.max_output_tokens = max_output_tokens
+			self.temperature = temperature
+			self.top_percent = top_p
+			self.store = store
+			self.extra_kwargs = kwargs or { }
+			
+			if image_url:
+				self.image_url = image_url
+			elif self.image_path:
+				self.image_url = self.encode_image_data_uri( self.image_path )
+			else:
+				raise ValueError( 'Either image_url, image_path, or path is required.' )
+			
+			self.initialize_client( )
+			self.build_analysis_request( )
+			self.response = self.client.responses.create( **self.request )
+			self.output = self.get_output_text( )
+			return self.output
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'analyze( self, prompt: str, image_url: str )'
+			raise ex
+	
+	def analyze_image( self, prompt: str, image_url: str = None, model: str = 'grok-4.20-reasoning',
+			image_path: str = None, path: str = None, **kwargs: Any ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Provider-neutral alias for image analysis.
+
+			Parameters:
+			-----------
+			prompt: str
+				Text question or instruction about the image.
+
+			image_url: str
+				Public image URL or data URI.
+
+			model: str
+				xAI image-understanding model.
+
+			image_path: str
+				Optional local image path.
+
+			path: str
+				Alias for image_path from the UI.
+
+			**kwargs: Any
+				Additional UI values.
+
+			Returns:
+			--------
+			str | None:
+				Image analysis text.
+		
+		"""
+		try:
+			return self.analyze( prompt=prompt, image_url=image_url, model=model,
+				image_path=image_path, path=path, **kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'analyze_image( self, prompt: str, image_url: str )'
+			raise ex
+	
+	def vision( self, prompt: str, image_url: str = None, model: str = 'grok-4.20-reasoning',
+			image_path: str = None, path: str = None, **kwargs: Any ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Provider-neutral alias for image analysis.
+
+			Parameters:
+			-----------
+			prompt: str
+				Text question or instruction about the image.
+
+			image_url: str
+				Public image URL or data URI.
+
+			model: str
+				xAI image-understanding model.
+
+			image_path: str
+				Optional local image path.
+
+			path: str
+				Alias for image_path from the UI.
+
+			**kwargs: Any
+				Additional UI values.
+
+			Returns:
+			--------
+			str | None:
+				Image analysis text.
+		
+		"""
+		try:
+			return self.analyze( prompt=prompt, image_url=image_url, model=model,
+				image_path=image_path, path=path, **kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'vision( self, prompt: str, image_url: str )'
+			raise ex
+	
+	def describe( self, prompt: str, image_url: str = None, model: str = 'grok-4.20-reasoning',
+			image_path: str = None, path: str = None, **kwargs: Any ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Provider-neutral alias for image analysis.
+
+			Parameters:
+			-----------
+			prompt: str
+				Text question or instruction about the image.
+
+			image_url: str
+				Public image URL or data URI.
+
+			model: str
+				xAI image-understanding model.
+
+			image_path: str
+				Optional local image path.
+
+			path: str
+				Alias for image_path from the UI.
+
+			**kwargs: Any
+				Additional UI values.
+
+			Returns:
+			--------
+			str | None:
+				Image analysis text.
+		
+		"""
+		try:
+			return self.analyze( prompt=prompt, image_url=image_url, model=model,
+				image_path=image_path, path=path, **kwargs )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'describe( self, prompt: str, image_url: str )'
+			raise ex
+	
+	def __dir__( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return member names for inspection.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Member names.
+		
+		"""
+		return [
+				'api_key',
+				'base_url',
+				'client',
+				'model',
+				'prompt',
+				'number',
+				'aspect_ratio',
+				'resolution',
+				'size',
+				'quality',
+				'style',
+				'detail',
+				'response_format',
+				'mime_type',
+				'compression',
+				'background',
+				'response_modalities',
+				'max_output_tokens',
+				'temperature',
+				'top_percent',
+				'frequency_penalty',
+				'presence_penalty',
+				'tools',
+				'tool_choice',
+				'include',
+				'allowed_domains',
+				'store',
+				'stream',
+				'is_parallel',
+				'max_tools',
+				'max_searches',
+				'image_path',
+				'image_url',
+				'mask_path',
+				'request',
+				'response',
+				'output',
+				'extra_body',
+				'extra_kwargs',
+				'model_options',
+				'analysis_model_options',
+				'tool_options',
+				'include_options',
+				'choice_options',
+				'aspect_options',
+				'size_options',
+				'quality_options',
+				'style_options',
+				'backcolor_options',
+				'detail_options',
+				'format_options',
+				'mime_options',
+				'output_options',
+				'initialize_client',
+				'normalize_resolution',
+				'normalize_response_format',
+				'encode_image_data_uri',
+				'get_output_text',
+				'normalize_image_result',
+				'build_generation_request',
+				'build_edit_request',
+				'build_analysis_request',
+				'generate',
+				'generate_image',
+				'create',
+				'create_image',
+				'edit',
+				'edit_image',
+				'modify',
+				'generate_edit',
+				'analyze',
+				'analyze_image',
+				'vision',
+				'describe',
+		]
 
 class Files( Grok ):
 	"""

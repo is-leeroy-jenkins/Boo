@@ -45,6 +45,7 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -73,6 +74,29 @@ import grok
 # ==============================================================================
 # SESSION STATE INITIALIZATION
 # ==============================================================================
+
+def throw_if( name: str, value: object ) -> None:
+	"""
+	
+		Purpose:
+		--------
+		Validate that a required value is not empty.
+		
+		Parameters:
+		-----------
+		name (str): Name of the argument being validated.
+		value (object): Value to validate.
+		
+		Returns:
+		--------
+		None
+		
+	"""
+	if value is None:
+		raise ValueError( f'Argument "{name}" cannot be None.' )
+	
+	if isinstance( value, str ) and not value.strip( ):
+		raise ValueError( f'Argument "{name}" cannot be empty.' )
 
 def init_state( key: str, value: Any ) -> None:
 	"""
@@ -888,7 +912,7 @@ def extract_answer( response: Any ) -> str:
 				continue
 			
 			block_type = getattr( block, 'type', None )
-			if block_type in TEXT_TYPES:
+			if block_type in cfg.TEXT_TYPES:
 				text = getattr( block, 'text', None )
 				if isinstance( text, str ) and text.strip( ):
 					texts.append( text )
@@ -1450,8 +1474,7 @@ def route_document_query( prompt: str ) -> str:
 	if not user_input:
 		user_input = (prompt or '').strip( )
 	
-	return run_llm_turn(
-		user_input=user_input,
+	return run_llm_turn( user_input=user_input,
 		temperature=float( st.session_state.get( 'temperature', 0.0 ) ),
 		top_p=float( st.session_state.get( 'top_percent', 0.95 ) ),
 		repeat_penalty=float( st.session_state.get( 'repeat_penalty', 1.1 ) ),
@@ -4443,8 +4466,7 @@ if mode == 'Text':
 				'conversation_id': st.session_state.get( 'text_conversation_id' ) or None,
 		}
 	
-	def build_gemini_text_kwargs( prompt: str, stream_handler: Optional[ Any ] = None ) -> Dict[
-		str, Any ]:
+	def build_gemini_text_kwargs( prompt: str, stream_handler: Optional[ Any ] = None ) -> Dict[ str, Any ]:
 		"""
 			
 			Purpose:
@@ -4646,6 +4668,7 @@ if mode == 'Text':
 		# Expander — Text Mind Controls
 		# ------------------------------------------------------------------
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
+			
 			with st.expander( label='Model Settings', icon='🧊', expanded=False, width='stretch' ):
 				model_c1, model_c2, model_c3, model_c4, model_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
@@ -4956,12 +4979,10 @@ if mode == 'Text':
 		
 		if prompt is not None and str( prompt ).strip( ):
 			prompt = str( prompt ).strip( )
-			st.session_state.text_messages.append(
-				{
+			st.session_state.text_messages.append( {
 						'role': 'user',
 						'content': prompt,
-				}
-			)
+				} )
 			
 			with st.chat_message( 'assistant', avatar=get_text_avatar( 'assistant' ) ):
 				with st.spinner( 'Thinking…' ):
@@ -4993,19 +5014,17 @@ if mode == 'Text':
 						stream_placeholder.markdown( ''.join( stream_buffer ) + '▌' )
 					
 					try:
-						response = call_generate_text(
-							prompt=prompt,
+						response = call_generate_text( prompt=prompt,
 							stream_handler=on_stream_chunk if st.session_state.get(
-								'text_stream', False ) else None
-						)
+								'text_stream', False ) else None )
+						
 						response_obj = getattr( text, 'response', None ) or response
 						
 						if provider_name in [ 'GPT', 'Grok' ]:
 							st.session_state[ 'text_previous_response_id' ] = (
 									getattr( text, 'previous_id', None ) or
 									getattr( text, 'previous_response_id', None ) or
-									st.session_state.get( 'text_previous_response_id', '' ) or ''
-							)
+									st.session_state.get( 'text_previous_response_id', '' ) or '' )
 					
 					except Exception as exc:
 						err = Error( exc )
@@ -5021,12 +5040,10 @@ if mode == 'Text':
 						else:
 							st.markdown( response_text )
 						
-						st.session_state.text_messages.append(
-							{
+						st.session_state.text_messages.append( {
 									'role': 'assistant',
 									'content': response_text,
-							}
-						)
+							} )
 						
 						st.session_state[ 'text_context' ] = build_text_context(
 							include_last_message=True )
@@ -5068,6 +5085,81 @@ if mode == 'Text':
 elif mode == 'Images':
 	provider_name = st.session_state.get( 'provider', 'GPT' )
 	image = get_images_module( provider_name )
+	
+	# ------------------------------------------------------------------
+	# Images Mode State Safety
+	# ------------------------------------------------------------------
+	if 'image_mode' not in st.session_state:
+		st.session_state[ 'image_mode' ] = ''
+	
+	if 'image_analysis_detail' not in st.session_state:
+		st.session_state[ 'image_analysis_detail' ] = 'auto'
+	
+	if 'image_compression' not in st.session_state:
+		st.session_state[ 'image_compression' ] = 0.0
+	
+	if 'image_domains_input' not in st.session_state:
+		st.session_state[ 'image_domains_input' ] = ''
+	
+	if 'image_domains' not in st.session_state:
+		st.session_state[ 'image_domains' ] = [ ]
+	
+	if 'image_mime_type' not in st.session_state:
+		st.session_state[ 'image_mime_type' ] = ''
+	
+	if 'image_output' not in st.session_state:
+		st.session_state[ 'image_output' ] = ''
+	
+	if 'image_backcolor' not in st.session_state:
+		st.session_state[ 'image_backcolor' ] = ''
+	
+	if 'image_aspect_ratio' not in st.session_state:
+		st.session_state[ 'image_aspect_ratio' ] = ''
+	
+	if 'image_detail' not in st.session_state:
+		st.session_state[ 'image_detail' ] = ''
+	
+	if 'image_modality' not in st.session_state:
+		st.session_state[ 'image_modality' ] = ''
+	
+	if 'image_grounded' not in st.session_state:
+		st.session_state[ 'image_grounded' ] = False
+	
+	if 'image_image_search' not in st.session_state:
+		st.session_state[ 'image_image_search' ] = False
+	
+	if 'image_generate_prompt' not in st.session_state:
+		st.session_state[ 'image_generate_prompt' ] = ''
+	
+	if 'image_analysis_prompt' not in st.session_state:
+		st.session_state[ 'image_analysis_prompt' ] = ''
+	
+	if 'image_edit_prompt' not in st.session_state:
+		st.session_state[ 'image_edit_prompt' ] = ''
+	
+	if not isinstance( st.session_state.get( 'image_input' ), list ):
+		st.session_state[ 'image_input' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'generated_images' ), list ):
+		st.session_state[ 'generated_images' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'analyzed_images' ), list ):
+		st.session_state[ 'analyzed_images' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'edited_images' ), list ):
+		st.session_state[ 'edited_images' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'image_include' ), list ):
+		st.session_state[ 'image_include' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'image_tools' ), list ):
+		st.session_state[ 'image_tools' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'image_number' ), int ):
+		st.session_state[ 'image_number' ] = 1
+	
+	if int( st.session_state.get( 'image_number', 1 ) or 1 ) < 1:
+		st.session_state[ 'image_number' ] = 1
 	
 	# ------------------------------------------------------------------
 	# Images Mode Helpers
@@ -5127,7 +5219,69 @@ elif mode == 'Images':
 			
 		"""
 		return str( getattr( cfg, name, fallback ) or fallback )
+	
+	def sanitize_image_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> None:
+		"""
+			
+			Purpose:
+			--------
+			Remove stale provider-specific image selections before rendering controls.
 		
+			Parameters:
+			-----------
+			key: str
+				Session-state key to sanitize.
+			
+			valid_options: List[str]
+				Provider-valid option values.
+			
+			default: Any
+				Value assigned when the current value is invalid.
+		
+			Returns:
+			--------
+			None
+			
+		"""
+		current_value = st.session_state.get( key, default )
+		
+		if current_value in [ None, '' ]:
+			return
+		
+		if valid_options and current_value not in valid_options:
+			st.session_state[ key ] = default
+	
+	def sanitize_image_multiselect( key: str, valid_options: List[ str ] ) -> None:
+		"""
+			
+			Purpose:
+			--------
+			Remove stale provider-specific image multiselect values before rendering controls.
+		
+			Parameters:
+			-----------
+			key: str
+				Session-state key to sanitize.
+			
+			valid_options: List[str]
+				Provider-valid option values.
+		
+			Returns:
+			--------
+			None
+			
+		"""
+		current_values = st.session_state.get( key, [ ] )
+		
+		if not isinstance( current_values, list ):
+			st.session_state[ key ] = [ ]
+			return
+		
+		st.session_state[ key ] = [
+				value for value in current_values
+				if value in valid_options
+		]
+	
 	def get_provider_image_models( selected_mode: Optional[ str ] ) -> List[ str ]:
 		"""
 			
@@ -5184,93 +5338,6 @@ elif mode == 'Images':
 			models = [ model_value ] if model_value else [ ]
 		
 		return models
-		
-	def provider_has_image_method( method_names: List[ str ] ) -> bool:
-		"""
-			
-			Purpose:
-			--------
-			Determine whether the active Images wrapper exposes at least one method from a
-			provider-neutral image workflow method list.
-		
-			Parameters:
-			-----------
-			method_names: List[str]
-				Ordered method names to inspect on the active Images wrapper.
-		
-			Returns:
-			--------
-			bool:
-				True if at least one callable method exists; otherwise, False.
-			
-		"""
-		for method_name in method_names:
-			method = getattr( image, method_name, None )
-			if callable( method ):
-				return True
-		
-		return False
-	
-	def get_provider_image_workflows( ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Return provider-supported image workflows based on the active Images wrapper.
-		
-			Parameters:
-			-----------
-			None
-		
-			Returns:
-			--------
-			List[str]:
-				Image workflow labels safe to present for the selected provider.
-			
-		"""
-		workflows: List[ str ] = [ ]
-		
-		if provider_has_image_method( [ 'generate', 'generate_image', 'create', 'create_image' ] ):
-			workflows.append( 'Generation' )
-		
-		if provider_has_image_method( [ 'analyze', 'analyze_image', 'vision', 'describe' ] ):
-			workflows.append( 'Analysis' )
-		
-		if provider_has_image_method( [ 'edit', 'edit_image', 'modify', 'generate_edit' ] ):
-			workflows.append( 'Editing' )
-		
-		return workflows
-	
-	def image_workflow_supported( workflow: str ) -> bool:
-		"""
-			
-			Purpose:
-			--------
-			Determine whether a specific image workflow is supported by the active provider
-			wrapper.
-		
-			Parameters:
-			-----------
-			workflow: str
-				Image workflow label.
-		
-			Returns:
-			--------
-			bool:
-				True if the workflow is supported; otherwise, False.
-			
-		"""
-		if workflow == 'Generation':
-			return provider_has_image_method(
-				[ 'generate', 'generate_image', 'create', 'create_image' ] )
-		
-		if workflow == 'Analysis':
-			return provider_has_image_method( [ 'analyze', 'analyze_image', 'vision', 'describe' ] )
-		
-		if workflow == 'Editing':
-			return provider_has_image_method( [ 'edit', 'edit_image', 'modify', 'generate_edit' ] )
-		
-		return False
 	
 	def call_existing_image_method( instance: Any, method_names: List[ str ],
 			kwargs: Dict[ str, Any ] ) -> Any:
@@ -5305,7 +5372,7 @@ elif mode == 'Images':
 					return method( **clean_kwargs )
 		
 		raise AttributeError( f'Provider "{provider_name}" does not expose any image method from: '
-			f'{", ".join( method_names )}.' )
+		                      f'{", ".join( method_names )}.' )
 	
 	def save_uploaded_image( uploaded_file: Any ) -> Optional[ str ]:
 		"""
@@ -5717,8 +5784,6 @@ elif mode == 'Images':
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
-			elif 'update_token_counters' in globals( ):
-				update_token_counters( response )
 			elif 'update_counters' in globals( ):
 				count_tokens( response )
 		except Exception:
@@ -5786,22 +5851,22 @@ elif mode == 'Images':
 		"""
 		kwargs = get_image_common_kwargs( prompt )
 		kwargs.update( {
-					'size': st.session_state.get( 'image_size' ) or None,
-					'quality': st.session_state.get( 'image_quality' ) or None,
-					'style': st.session_state.get( 'image_style' ) or None,
-					'fmt': st.session_state.get( 'image_mime_type' )
-					       or st.session_state.get( 'image_output' )
-					       or None,
-					'mime_type': st.session_state.get( 'image_mime_type' ) or None,
-					'compression': st.session_state.get( 'image_compression' ) or None,
-					'background': st.session_state.get( 'image_backcolor' )
-					              or st.session_state.get( 'image_background' )
-					              or None,
-					'aspect_ratio': st.session_state.get( 'image_aspect_ratio' ) or None,
-					'response_modalities': st.session_state.get( 'image_modality' ) or None,
-					'grounded': st.session_state.get( 'image_grounded', False ),
-					'image_search': st.session_state.get( 'image_image_search', False ),
-			} )
+				'size': st.session_state.get( 'image_size' ) or None,
+				'quality': st.session_state.get( 'image_quality' ) or None,
+				'style': st.session_state.get( 'image_style' ) or None,
+				'fmt': st.session_state.get( 'image_mime_type' )
+				       or st.session_state.get( 'image_output' )
+				       or None,
+				'mime_type': st.session_state.get( 'image_mime_type' ) or None,
+				'compression': st.session_state.get( 'image_compression' ) or None,
+				'background': st.session_state.get( 'image_backcolor' )
+				              or st.session_state.get( 'image_background' )
+				              or None,
+				'aspect_ratio': st.session_state.get( 'image_aspect_ratio' ) or None,
+				'response_modalities': st.session_state.get( 'image_modality' ) or None,
+				'grounded': st.session_state.get( 'image_grounded', False ),
+				'image_search': st.session_state.get( 'image_image_search', False ),
+		} )
 		
 		return kwargs
 	
@@ -5838,7 +5903,7 @@ elif mode == 'Images':
 		
 		return kwargs
 	
-	def get_image_edit_kwargs( prompt: str, path: str, mask_path: Optional[ str ] = None ) -> Dict[ str, Any ]:
+	def get_image_edit_kwargs( prompt: str, path: str, mask_path: Optional[ str ]=None ) -> Dict[ str, Any ]:
 		"""
 			
 			Purpose:
@@ -5858,11 +5923,11 @@ elif mode == 'Images':
 		"""
 		kwargs = get_image_generation_kwargs( prompt )
 		kwargs.update( {
-					'path': path,
-					'image_path': path,
-					'mask_path': mask_path,
-					'mask': mask_path,
-			} )
+				'path': path,
+				'image_path': path,
+				'mask_path': mask_path,
+				'mask': mask_path,
+		} )
 		
 		return kwargs
 	
@@ -5940,27 +6005,6 @@ elif mode == 'Images':
 		st.session_state[ 'clear_image_instructions' ] = False
 		st.session_state[ 'clear_instructions' ] = False
 	
-	if not isinstance( st.session_state.get( 'image_input' ), list ):
-		st.session_state[ 'image_input' ] = [ ]
-	
-	if not isinstance( st.session_state.get( 'image_number' ), int ):
-		st.session_state[ 'image_number' ] = 1
-	
-	if int( st.session_state.get( 'image_number', 1 ) or 1 ) < 1:
-		st.session_state[ 'image_number' ] = 1
-	
-	if not isinstance( st.session_state.get( 'image_include' ), list ):
-		st.session_state[ 'image_include' ] = [ ]
-	
-	if not isinstance( st.session_state.get( 'image_tools' ), list ):
-		st.session_state[ 'image_tools' ] = [ ]
-	
-	if 'image_analysis_detail' not in st.session_state:
-		st.session_state[ 'image_analysis_detail' ] = 'auto'
-	
-	if 'image_compression' not in st.session_state:
-		st.session_state[ 'image_compression' ] = 0.0
-	
 	# ------------------------------------------------------------------
 	# Main UI
 	# ------------------------------------------------------------------
@@ -5985,8 +6029,10 @@ elif mode == 'Images':
 				
 				# ---------- Model ------------
 				with llm_c2:
+					image_model_options = get_provider_image_models( image_mode )
+					sanitize_image_selection( 'image_model', image_model_options, '' )
 					st.selectbox( label='Select Model',
-						options=get_provider_image_models( image_mode ),
+						options=image_model_options,
 						key='image_model',
 						help='Required. Model used by the selected image workflow.',
 						index=None, placeholder='Options' )
@@ -5994,6 +6040,7 @@ elif mode == 'Images':
 				# ---------- Analysis Model ------------
 				with llm_c3:
 					analysis_models = get_provider_image_models( 'Analysis' )
+					sanitize_image_selection( 'image_analysis_model', analysis_models, '' )
 					st.selectbox( label='Analysis Model',
 						options=analysis_models,
 						key='image_analysis_model',
@@ -6065,12 +6112,14 @@ elif mode == 'Images':
 			
 			with st.expander( label='Tools / Grounding Settings', icon='🔎',
 					expanded=False, width='stretch' ):
+				
 				tool_c1, tool_c2, tool_c3, tool_c4 = st.columns(
 					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
 				
 				# ---------- Tools ------------
 				with tool_c1:
 					tool_options = get_image_options( image, 'tool_options' )
+					sanitize_image_multiselect( 'image_tools', tool_options )
 					st.multiselect( label='Tools', options=tool_options,
 						key='image_tools', help=get_image_help( 'TOOLS' ),
 						placeholder='Options' )
@@ -6078,6 +6127,7 @@ elif mode == 'Images':
 				# ---------- Include ------------
 				with tool_c2:
 					include_options = get_image_options( image, 'include_options' )
+					sanitize_image_multiselect( 'image_include', include_options )
 					st.multiselect( label='Include', options=include_options,
 						key='image_include', help=get_image_help( 'INCLUDE' ),
 						placeholder='Options' )
@@ -6085,6 +6135,7 @@ elif mode == 'Images':
 				# ---------- Tool Choice ------------
 				with tool_c3:
 					choice_options = get_image_options( image, 'choice_options' )
+					sanitize_image_selection( 'image_tool_choice', choice_options, '' )
 					st.selectbox( label='Tool Choice', options=choice_options,
 						key='image_tool_choice', help=get_image_help( 'CHOICE' ),
 						index=None, placeholder='Options' )
@@ -6109,6 +6160,9 @@ elif mode == 'Images':
 						except Exception:
 							grounding_supported = provider_name == 'Gemini'
 					
+					if not grounding_supported:
+						st.session_state[ 'image_grounded' ] = False
+					
 					st.toggle( label='Google Grounding', key='image_grounded',
 						disabled=not grounding_supported,
 						help='Ground image response through Google Search when supported.' )
@@ -6123,6 +6177,9 @@ elif mode == 'Images':
 									st.session_state.get( 'image_model', '' ) ) )
 						except Exception:
 							image_search_supported = provider_name == 'Gemini'
+					
+					if not image_search_supported:
+						st.session_state[ 'image_image_search' ] = False
 					
 					st.toggle( label='Image Search', key='image_image_search',
 						disabled=not image_search_supported,
@@ -6150,6 +6207,7 @@ elif mode == 'Images':
 			
 			with st.expander( label='Visual Settings', icon='👁️', expanded=False,
 					width='stretch' ):
+				
 				img_c1, img_c2, img_c3, img_c4, img_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
 				
@@ -6157,6 +6215,7 @@ elif mode == 'Images':
 				with img_c1:
 					size_options = get_image_options( image, 'size_options',
 						[ '1024x1024', '1024x1536', '1536x1024' ] )
+					sanitize_image_selection( 'image_size', size_options, '' )
 					st.selectbox( label='Image Size', options=size_options,
 						key='image_size', help='Optional. Generated or edited image size.',
 						index=None, placeholder='Options' )
@@ -6165,6 +6224,7 @@ elif mode == 'Images':
 				with img_c2:
 					quality_options = get_image_options( image, 'quality_options',
 						[ 'auto', 'standard', 'hd', 'low', 'medium', 'high' ] )
+					sanitize_image_selection( 'image_quality', quality_options, '' )
 					st.selectbox( label='Image Quality', options=quality_options,
 						key='image_quality', help='Optional. Image quality.',
 						index=None, placeholder='Options' )
@@ -6172,6 +6232,7 @@ elif mode == 'Images':
 				# ---------- Style ------------
 				with img_c3:
 					style_options = get_image_options( image, 'style_options' )
+					sanitize_image_selection( 'image_style', style_options, '' )
 					st.selectbox( label='Image Style', options=style_options,
 						key='image_style', help='Optional. Image style when supported.',
 						index=None, placeholder='Options' )
@@ -6180,6 +6241,7 @@ elif mode == 'Images':
 				with img_c4:
 					background_options = get_image_options( image, 'backcolor_options',
 						[ 'auto', 'transparent', 'opaque' ] )
+					sanitize_image_selection( 'image_backcolor', background_options, '' )
 					st.selectbox( label='Background', options=background_options,
 						key='image_backcolor', help=get_image_help( 'IMAGE_BACKGROUND' ),
 						index=None, placeholder='Options' )
@@ -6191,6 +6253,7 @@ elif mode == 'Images':
 						output_options = get_image_options( image, 'output_options',
 							[ 'png', 'jpeg', 'webp' ] )
 					
+					sanitize_image_selection( 'image_mime_type', output_options, '' )
 					st.selectbox( label='MIME Format', options=output_options,
 						key='image_mime_type', help=get_image_help( 'IMAGE_RESPONSE' ),
 						index=None, placeholder='Options' )
@@ -6204,6 +6267,7 @@ elif mode == 'Images':
 				with img2_c1:
 					aspect_options = get_image_options( image, 'aspect_options',
 						[ '1:1', '3:4', '4:3', '9:16', '16:9' ] )
+					sanitize_image_selection( 'image_aspect_ratio', aspect_options, '' )
 					st.selectbox( label='Aspect Ratio', options=aspect_options,
 						key='image_aspect_ratio',
 						help='Optional. Output aspect ratio when supported.',
@@ -6213,6 +6277,7 @@ elif mode == 'Images':
 				with img2_c2:
 					detail_options = get_image_options( image, 'detail_options',
 						[ 'auto', 'low', 'high' ] )
+					sanitize_image_selection( 'image_analysis_detail', detail_options, 'auto' )
 					st.selectbox( label='Analysis Detail', options=detail_options,
 						key='image_analysis_detail',
 						help='Optional. Image analysis detail level.',
@@ -6227,6 +6292,7 @@ elif mode == 'Images':
 					else:
 						modality_options = [ 'IMAGE', 'TEXT_AND_IMAGE' ]
 					
+					sanitize_image_selection( 'image_modality', modality_options, '' )
 					st.selectbox( label='Response Mode', options=modality_options,
 						key='image_modality',
 						help='Provider response modality for image workflows.',
@@ -6240,6 +6306,7 @@ elif mode == 'Images':
 		# ------------------------------------------------------------------
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
 				width='stretch' ):
+			
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			prompt_names = fetch_prompt_names( cfg.DB_PATH )
 			if not prompt_names:
@@ -6270,7 +6337,6 @@ elif mode == 'Images':
 		# Tab Section
 		# ------------------------------------------------------------------
 		tab_gen, tab_analyze, tab_edit = st.tabs( [ 'Generate', 'Analyze', 'Edit' ] )
-		
 		with tab_gen:
 			render_image_messages( )
 			generation_prompt = st.text_area( label='Image Generation Prompt',
@@ -6299,8 +6365,7 @@ elif mode == 'Images':
 									rendered = render_image_output( result, 'Generated image' )
 									
 									if rendered:
-										append_image_message(
-											'assistant',
+										append_image_message( 'assistant',
 											'Generated image returned successfully.' )
 									else:
 										append_image_message( 'assistant', str( result ) )
@@ -6398,7 +6463,6 @@ elif mode == 'Images':
 				placeholder='Describe how the uploaded image should be edited.' )
 			
 			edit_c1, edit_c2 = st.columns( [ 0.50, 0.50 ] )
-			
 			with edit_c1:
 				if st.button( 'Edit Image', key='edit_image', width='stretch' ):
 					with st.spinner( 'Editing image…' ):
@@ -6421,8 +6485,7 @@ elif mode == 'Images':
 									rendered = render_image_output( result, 'Edited image' )
 									
 									if rendered:
-										append_image_message(
-											'assistant',
+										append_image_message( 'assistant',
 											'Edited image returned successfully.' )
 									else:
 										append_image_message( 'assistant', str( result ) )
@@ -6447,6 +6510,57 @@ elif mode == 'Audio':
 	tts = get_tts_module( provider_name )
 	
 	# ------------------------------------------------------------------
+	# Audio Mode State Safety
+	# ------------------------------------------------------------------
+	if not isinstance( st.session_state.get( 'audio_messages' ), list ):
+		st.session_state[ 'audio_messages' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'audio_include' ), list ):
+		st.session_state[ 'audio_include' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'audio_domains' ), list ):
+		st.session_state[ 'audio_domains' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'audio_tools' ), list ):
+		st.session_state[ 'audio_tools' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'audio_last_result' ), dict ):
+		st.session_state[ 'audio_last_result' ] = { }
+	
+	if not isinstance( st.session_state.get( 'audio_last_usage' ), dict ):
+		st.session_state[ 'audio_last_usage' ] = { }
+	
+	if 'audio_output' not in st.session_state:
+		st.session_state[ 'audio_output' ] = ''
+	
+	if 'audio_output_bytes' not in st.session_state:
+		st.session_state[ 'audio_output_bytes' ] = None
+	
+	if 'audio_output_path' not in st.session_state:
+		st.session_state[ 'audio_output_path' ] = ''
+	
+	if 'audio_upload_path' not in st.session_state:
+		st.session_state[ 'audio_upload_path' ] = ''
+	
+	if 'audio_recorded_path' not in st.session_state:
+		st.session_state[ 'audio_recorded_path' ] = ''
+	
+	if 'audio_domains_input' not in st.session_state:
+		st.session_state[ 'audio_domains_input' ] = ''
+	
+	if 'audio_tts_input' not in st.session_state:
+		st.session_state[ 'audio_tts_input' ] = ''
+	
+	if 'audio_speed' not in st.session_state:
+		st.session_state[ 'audio_speed' ] = 1.0
+	
+	if 'audio_sample_rate' not in st.session_state:
+		st.session_state[ 'audio_sample_rate' ] = 0
+	
+	if 'audio_bit_rate' not in st.session_state:
+		st.session_state[ 'audio_bit_rate' ] = 0
+	
+	# ------------------------------------------------------------------
 	# Audio Mode Helpers
 	# ------------------------------------------------------------------
 	def get_audio_help( name: str, fallback: str = '' ) -> str:
@@ -6454,17 +6568,20 @@ elif mode == 'Audio':
 			
 			Purpose:
 			--------
-			Return Audio mode help text from config.py without failing when a constant is
-			absent.
+			Return Audio mode help text from config.py without failing when absent.
 		
 			Parameters:
 			-----------
-			name (str): Config attribute name.
-			fallback (str): Fallback help text.
+			name: str
+				Config attribute name.
+			
+			fallback: str
+				Fallback help text.
 		
 			Returns:
 			--------
-			str: Help text value.
+			str
+				Help text value.
 			
 		"""
 		return str( getattr( cfg, name, fallback ) or fallback )
@@ -6479,13 +6596,19 @@ elif mode == 'Audio':
 		
 			Parameters:
 			-----------
-			instance (Any): Audio wrapper instance.
-			attr_name (str): Property or attribute name to inspect.
-			fallback (Optional[List[Any]]): Fallback option values.
+			instance: Any
+				Audio wrapper instance.
+			
+			attr_name: str
+				Property or attribute name to inspect.
+			
+			fallback: Optional[List[Any]]
+				Fallback option values.
 		
 			Returns:
 			--------
-			List[Any]: Option values safe for Streamlit controls.
+			List[Any]
+				Option values safe for Streamlit controls.
 			
 		"""
 		values = getattr( instance, attr_name, None )
@@ -6506,12 +6629,40 @@ elif mode == 'Audio':
 		
 		return fallback or [ ]
 	
+	def audio_has_method( instance: Any, method_names: List[ str ] ) -> bool:
+		"""
+			
+			Purpose:
+			--------
+			Determine whether an Audio wrapper exposes at least one callable method.
+		
+			Parameters:
+			-----------
+			instance: Any
+				Audio wrapper instance.
+			
+			method_names: List[str]
+				Method names to inspect.
+		
+			Returns:
+			--------
+			bool
+				True if at least one callable method exists; otherwise, False.
+			
+		"""
+		for method_name in method_names:
+			method = getattr( instance, method_name, None )
+			if callable( method ):
+				return True
+		
+		return False
+	
 	def get_audio_task_options( ) -> List[ str ]:
 		"""
 			
 			Purpose:
 			--------
-			Return provider-supported Audio mode task options.
+			Return provider-supported Audio mode task options from wrapper capabilities.
 		
 			Parameters:
 			-----------
@@ -6519,80 +6670,108 @@ elif mode == 'Audio':
 		
 			Returns:
 			--------
-			List[str]: Audio task labels.
+			List[str]
+				Audio task labels.
 			
 		"""
-		tasks = [ ]
+		tasks: List[ str ] = [ ]
 		
-		if transcriber is not None:
+		if audio_has_method( transcriber, [ 'transcribe', 'create_transcription', 'create' ] ):
 			tasks.append( 'Transcribe' )
 		
-		if translator is not None:
+		if audio_has_method( translator, [ 'translate', 'create_translation', 'create' ] ):
 			tasks.append( 'Translate' )
 		
-		if tts is not None:
+		if audio_has_method( tts, [ 'create_speech', 'synthesize', 'generate', 'create' ] ):
 			tasks.append( 'Text-to-Speech' )
 		
 		return tasks
+	
+	def get_audio_task_instance( task: Optional[ str ] ) -> Any:
+		"""
+			
+			Purpose:
+			--------
+			Return the wrapper instance associated with the selected Audio task.
+		
+			Parameters:
+			-----------
+			task: Optional[str]
+				Selected Audio task.
+		
+			Returns:
+			--------
+			Any
+				Transcription, Translation, or TTS wrapper.
+			
+		"""
+		if task == 'Translate':
+			return translator
+		
+		if task == 'Text-to-Speech':
+			return tts
+		
+		return transcriber
 	
 	def get_audio_model_options( task: Optional[ str ] ) -> List[ str ]:
 		"""
 			
 			Purpose:
 			--------
-			Return task-aware Audio model options.
+			Return task-aware model options from the active Audio wrapper.
 		
 			Parameters:
 			-----------
-			task (Optional[str]): Selected Audio task.
+			task: Optional[str]
+				Selected Audio task.
 		
 			Returns:
 			--------
-			List[str]: Model option labels.
+			List[str]
+				Model option values.
 			
 		"""
-		if task == 'Transcribe':
-			options = get_audio_options( transcriber, 'model_options' )
-		elif task == 'Translate':
-			options = get_audio_options( translator, 'model_options' )
-		elif task == 'Text-to-Speech':
-			options = get_audio_options( tts, 'model_options' )
-		else:
-			options = [ ]
+		instance = get_audio_task_instance( task )
+		options = get_audio_options( instance, 'model_options' )
 		
-		return [ str( item ) for item in options if str( item ).strip( ) ]
+		if not options:
+			model_value = getattr( instance, 'model', '' )
+			options = [ model_value ] if model_value else [ ]
+		
+		return [ str( option ) for option in options if str( option ).strip( ) ]
 	
 	def get_audio_language_options( task: Optional[ str ] ) -> List[ str ]:
 		"""
 			
 			Purpose:
 			--------
-			Return task-aware Audio language options.
+			Return task-aware language options from the active Audio wrapper.
 		
 			Parameters:
 			-----------
-			task (Optional[str]): Selected Audio task.
+			task: Optional[str]
+				Selected Audio task.
 		
 			Returns:
 			--------
-			List[str]: Language option labels.
+			List[str]
+				Language option values.
 			
 		"""
-		if task == 'Transcribe':
-			options = get_audio_options( transcriber, 'language_options' )
-		elif task == 'Translate':
-			options = get_audio_options( translator, 'language_options' )
-		else:
-			options = [ ]
+		instance = get_audio_task_instance( task )
+		options = get_audio_options( instance, 'language_options' )
 		
-		return [ str( item ) for item in options if str( item ).strip( ) ]
+		if not options:
+			options = [ 'auto', 'en', 'Spanish', 'French', 'German', 'Italian', 'Japanese' ]
+		
+		return [ str( option ) for option in options if str( option ).strip( ) ]
 	
 	def get_audio_voice_options( ) -> List[ str ]:
 		"""
 			
 			Purpose:
 			--------
-			Return text-to-speech voice options.
+			Return text-to-speech voice options from the active TTS wrapper.
 		
 			Parameters:
 			-----------
@@ -6600,45 +6779,83 @@ elif mode == 'Audio':
 		
 			Returns:
 			--------
-			List[str]: Voice option labels.
+			List[str]
+				Voice option values.
 			
 		"""
 		options = get_audio_options( tts, 'voice_options' )
-		return [ str( item ) for item in options if str( item ).strip( ) ]
+		if not options:
+			options = [ getattr( tts, 'voice', '' ) ]
+		
+		return [ str( option ) for option in options if str( option ).strip( ) ]
 	
-	def get_audio_rate_options( ) -> List[ Any ]:
+	def get_audio_format_options( task: Optional[ str ] ) -> List[ Any ]:
 		"""
 			
 			Purpose:
 			--------
-			Return sample-rate options for audio playback and recording.
+			Return task-aware response/audio format options.
 		
 			Parameters:
 			-----------
-			None
+			task: Optional[str]
+				Selected Audio task.
 		
 			Returns:
 			--------
-			List[Any]: Sample-rate option values.
+			List[Any]
+				Format option values.
 			
 		"""
-		options = getattr( cfg, 'SAMPLE_RATES', [ 8000, 11025, 16000, 22050, 24000,
-		                                          32000, 44100, 48000 ] )
+		instance = get_audio_task_instance( task )
 		
-		if isinstance( options, tuple ):
-			options = list( options )
+		if task == 'Text-to-Speech':
+			options = get_audio_options( instance, 'format_options' )
+			if not options:
+				options = get_audio_options( instance, 'response_format_options' )
+			if not options:
+				options = get_audio_options( instance, 'output_format_options' )
+			if not options:
+				options = [ 'mp3', 'wav' ]
+			
+			return options
 		
-		if not isinstance( options, list ):
-			return [ 8000, 11025, 16000, 22050, 24000, 32000, 44100, 48000 ]
+		options = get_audio_options( instance, 'response_format_options' )
+		if not options:
+			options = get_audio_options( instance, 'format_options' )
+		if not options:
+			options = [ 'text', 'json' ]
 		
 		return options
 	
-	def get_audio_speed_options( ) -> List[ float ]:
+	def get_audio_include_options( task: Optional[ str ] ) -> List[ str ]:
 		"""
 			
 			Purpose:
 			--------
-			Return text-to-speech speed options.
+			Return task-aware include options from the active Audio wrapper.
+		
+			Parameters:
+			-----------
+			task: Optional[str]
+				Selected Audio task.
+		
+			Returns:
+			--------
+			List[str]
+				Include option values.
+			
+		"""
+		instance = get_audio_task_instance( task )
+		options = get_audio_options( instance, 'include_options' )
+		return [ str( option ) for option in options if str( option ).strip( ) ]
+	
+	def get_audio_sample_rate_options( ) -> List[ int ]:
+		"""
+			
+			Purpose:
+			--------
+			Return TTS sample-rate options from the active TTS wrapper.
 		
 			Parameters:
 			-----------
@@ -6646,106 +6863,154 @@ elif mode == 'Audio':
 		
 			Returns:
 			--------
-			List[float]: Speech speed values.
+			List[int]
+				Sample-rate option values.
 			
 		"""
-		options = get_audio_options( tts, 'speed_options' )
-		if options:
-			return [ float( item ) for item in options ]
+		options = get_audio_options( tts, 'sample_rate_options' )
+		if not options:
+			options = [ 0, 8000, 16000, 22050, 24000, 44100, 48000 ]
 		
-		return [
-				0.25,
-				0.50,
-				0.75,
-				1.0,
-				1.25,
-				1.50,
-				2.0,
-				3.0,
-				4.0,
-		]
+		values: List[ int ] = [ 0 ]
+		for option in options:
+			try:
+				value = int( option )
+				if value not in values:
+					values.append( value )
+			except Exception:
+				continue
+		
+		return values
 	
-	def get_audio_format_options( task: Optional[ str ], model: Optional[ str ] ) -> List[ str ]:
+	def get_audio_bit_rate_options( ) -> List[ int ]:
 		"""
 			
 			Purpose:
 			--------
-			Return task-aware audio response/output format options.
+			Return TTS bit-rate options from the active TTS wrapper.
 		
 			Parameters:
 			-----------
-			task (Optional[str]): Selected Audio task.
-			model (Optional[str]): Selected Audio model.
+			None
 		
 			Returns:
 			--------
-			List[str]: Format option labels.
+			List[int]
+				Bit-rate option values.
 			
 		"""
-		if task == 'Transcribe':
-			format_map = getattr( transcriber, 'response_format_options', None )
-			if isinstance( format_map, dict ):
-				options = format_map.get( model, [ 'json' ] )
-			else:
-				options = get_audio_options( transcriber, 'format_options',
-					get_audio_options( transcriber, 'response_format_options', [ 'json' ] ) )
+		options = get_audio_options( tts, 'bit_rate_options' )
+		if not options:
+			options = [ 0, 32000, 64000, 96000, 128000, 192000 ]
 		
-		elif task == 'Translate':
-			options = get_audio_options( translator, 'format_options',
-				get_audio_options( translator, 'response_format_options', [ 'json' ] ) )
+		values: List[ int ] = [ 0 ]
+		for option in options:
+			try:
+				value = int( option )
+				if value not in values:
+					values.append( value )
+			except Exception:
+				continue
 		
-		elif task == 'Text-to-Speech':
-			options = get_audio_options( tts, 'format_options',
-				get_audio_options( tts, 'response_format_options',
-					get_audio_options( tts, 'output_format_options', [ 'mp3', 'wav' ] ) ) )
-		
-		else:
-			options = [ ]
-		
-		return [ str( item ) for item in options if str( item ).strip( ) ]
+		return values
 	
-	def get_audio_include_options( task: Optional[ str ], model: Optional[ str ] ) -> List[ str ]:
+	def sanitize_audio_selection( key: str, valid_options: List[ Any ], default: Any = '' ) -> None:
 		"""
 			
 			Purpose:
 			--------
-			Return task-aware Audio include options.
+			Remove stale provider-specific Audio selections before rendering widgets.
 		
 			Parameters:
 			-----------
-			task (Optional[str]): Selected Audio task.
-			model (Optional[str]): Selected Audio model.
+			key: str
+				Session-state key to sanitize.
+			
+			valid_options: List[Any]
+				Provider-valid option values.
+			
+			default: Any
+				Value assigned when the current value is invalid.
 		
 			Returns:
 			--------
-			List[str]: Include option labels.
+			None
 			
 		"""
-		if task != 'Transcribe':
-			return [ ]
+		current_value = st.session_state.get( key, default )
 		
-		include_map = getattr( transcriber, 'include_options', None )
-		if isinstance( include_map, dict ):
-			options = include_map.get( model, [ ] )
-		else:
-			options = get_audio_options( transcriber, 'include_options' )
+		if current_value in [ None, '' ]:
+			return
 		
-		return [ str( item ) for item in options if str( item ).strip( ) ]
+		if valid_options and current_value not in valid_options:
+			st.session_state[ key ] = default
 	
-	def save_uploaded_audio( uploaded_file: Any ) -> Optional[ str ]:
+	def sanitize_audio_multiselect( key: str, valid_options: List[ str ] ) -> None:
 		"""
 			
 			Purpose:
 			--------
-			Save a Streamlit uploaded or recorded audio file to a temporary file path.
+			Remove stale provider-specific Audio multiselect values before rendering widgets.
 		
 			Parameters:
 			-----------
-			uploaded_file (Any): Streamlit uploaded file or audio input object.
+			key: str
+				Session-state key to sanitize.
+			
+			valid_options: List[str]
+				Provider-valid option values.
 		
 			Returns:
 			--------
-			Optional[str]: Temporary file path or None.
+			None
+			
+		"""
+		current_values = st.session_state.get( key, [ ] )
+		
+		if not isinstance( current_values, list ):
+			st.session_state[ key ] = [ ]
+			return
+		
+		st.session_state[ key ] = [ item for item in current_values
+				if item in valid_options ]
+	
+	def parse_audio_domains( value: Any ) -> List[ str ]:
+		"""
+			
+			Purpose:
+			--------
+			Parse comma-delimited allowed-domain input.
+		
+			Parameters:
+			-----------
+			value: Any
+				Raw text input.
+		
+			Returns:
+			--------
+			List[str]
+				Parsed domains.
+			
+		"""
+		raw = str( value or '' )
+		return [ item.strip( ) for item in raw.split( ',' ) if item.strip( ) ]
+	
+	def save_audio_upload( uploaded_file: Any ) -> Optional[ str ]:
+		"""
+			
+			Purpose:
+			--------
+			Save an uploaded or recorded audio object to a temporary file.
+		
+			Parameters:
+			-----------
+			uploaded_file: Any
+				Streamlit uploaded or recorded audio object.
+		
+			Returns:
+			--------
+			Optional[str]
+				Temporary audio path.
 			
 		"""
 		if uploaded_file is None:
@@ -6758,270 +7023,38 @@ elif mode == 'Audio':
 				pass
 		
 		try:
-			suffix = '.wav'
-			if hasattr( uploaded_file, 'name' ):
-				suffix = Path( uploaded_file.name ).suffix or suffix
+			name = getattr( uploaded_file, 'name', 'audio.wav' )
+			_, ext = os.path.splitext( name )
+			ext = ext or '.wav'
 			
-			with tempfile.NamedTemporaryFile( delete=False, suffix=suffix ) as tmp:
-				if hasattr( uploaded_file, 'getvalue' ):
+			with tempfile.NamedTemporaryFile( delete=False, suffix=ext ) as tmp:
+				if hasattr( uploaded_file, 'getbuffer' ):
+					tmp.write( uploaded_file.getbuffer( ) )
+				elif hasattr( uploaded_file, 'getvalue' ):
 					tmp.write( uploaded_file.getvalue( ) )
 				elif hasattr( uploaded_file, 'read' ):
 					tmp.write( uploaded_file.read( ) )
 				else:
-					tmp.write( bytes( uploaded_file ) )
+					return None
 				
 				return tmp.name
 		except Exception:
 			return None
-	
-	def get_audio_prompt_value( task: Optional[ str ] ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Return the prompt/instructions value used for transcription or translation.
-		
-			Parameters:
-			-----------
-			task (Optional[str]): Selected Audio task.
-		
-			Returns:
-			--------
-			str: Prompt text.
-			
-		"""
-		if task == 'Transcribe':
-			return st.session_state.get( 'transcription_prompt', '' ) \
-				or st.session_state.get( 'audio_system_instructions', '' )
-		
-		if task == 'Translate':
-			return st.session_state.get( 'translation_prompt', '' ) \
-				or st.session_state.get( 'audio_system_instructions', '' )
-		
-		return st.session_state.get( 'audio_system_instructions', '' )
-	
-	def get_audio_format_value( task: Optional[ str ] ) -> Optional[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Return the provider response/output format for the selected Audio task.
-		
-			Parameters:
-			-----------
-			task (Optional[str]): Selected Audio task.
-		
-			Returns:
-			--------
-			Optional[str]: Audio format value or None.
-			
-		"""
-		value = st.session_state.get( 'audio_response_format', '' ) \
-		        or st.session_state.get( 'audio_format', '' )
-		
-		if not value:
-			return None
-		
-		return str( value )
-	
-	def call_existing_audio_method( instance: Any, method_names: List[ str ],
-			kwargs: Dict[ str, Any ] ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Call the first available provider Audio wrapper method from an ordered list.
-		
-			Parameters:
-			-----------
-			instance (Any): Provider Audio wrapper instance.
-			method_names (List[str]): Ordered provider method names to try.
-			kwargs (Dict[str, Any]): Keyword arguments for the provider method call.
-		
-			Returns:
-			--------
-			Any: Provider method result.
-			
-		"""
-		for method_name in method_names:
-			method = getattr( instance, method_name, None )
-			if callable( method ):
-				try:
-					return method( **kwargs )
-				except TypeError:
-					clean_kwargs = {
-							key: value
-							for key, value in kwargs.items( )
-							if value is not None and value != '' and value != [ ]
-					}
-					return method( **clean_kwargs )
-		
-		raise AttributeError(
-			f'Provider "{provider_name}" does not expose any audio method from: '
-			f'{", ".join( method_names )}.' )
-	
-	def normalize_audio_text_result( result: Any ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Normalize provider transcription or translation results to displayable text.
-		
-			Parameters:
-			-----------
-			result (Any): Provider result object, dictionary, or text.
-		
-			Returns:
-			--------
-			str: Displayable text result.
-			
-		"""
-		if result is None:
-			return ''
-		
-		if isinstance( result, str ):
-			return result
-		
-		if isinstance( result, dict ):
-			for key in [ 'text', 'transcript', 'translation', 'content', 'output' ]:
-				if key in result and result.get( key ) is not None:
-					return str( result.get( key ) )
-			
-			return str( result )
-		
-		for attr_name in [ 'text', 'transcript', 'translation', 'content', 'output' ]:
-			if hasattr( result, attr_name ):
-				value = getattr( result, attr_name )
-				if value is not None:
-					return str( value )
-		
-		return str( result )
-	
-	def normalize_audio_bytes_result( result: Any ) -> Optional[ bytes ]:
-		"""
-			
-			Purpose:
-			--------
-			Normalize provider text-to-speech results to audio bytes when possible.
-		
-			Parameters:
-			-----------
-			result (Any): Provider TTS result.
-		
-			Returns:
-			--------
-			Optional[bytes]: Audio bytes or None.
-			
-		"""
-		if result is None:
-			return None
-		
-		if isinstance( result, bytes ):
-			return result
-		
-		if isinstance( result, bytearray ):
-			return bytes( result )
-		
-		if isinstance( result, dict ):
-			for key in [ 'audio', 'bytes', 'data', 'content', 'output' ]:
-				value = result.get( key )
-				if isinstance( value, bytes ):
-					return value
-				
-				if isinstance( value, bytearray ):
-					return bytes( value )
-		
-		for attr_name in [ 'audio', 'bytes', 'data', 'content', 'output' ]:
-			if hasattr( result, attr_name ):
-				value = getattr( result, attr_name )
-				if isinstance( value, bytes ):
-					return value
-				
-				if isinstance( value, bytearray ):
-					return bytes( value )
-		
-		if hasattr( result, 'read' ):
-			try:
-				value = result.read( )
-				if isinstance( value, bytes ):
-					return value
-			except Exception:
-				return None
-		
-		return None
-	
-	def extract_audio_usage( response: Any ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Extract token or usage metadata from an Audio provider response.
-		
-			Parameters:
-			-----------
-			response (Any): Provider response object.
-		
-			Returns:
-			--------
-			Dict[str, Any]: Usage metadata.
-			
-		"""
-		if response is None:
-			return { }
-		
-		usage = getattr( response, 'usage', None )
-		if isinstance( usage, dict ):
-			return usage
-		
-		if usage is not None:
-			try:
-				return dict( usage )
-			except Exception:
-				return { 'usage': str( usage ) }
-		
-		if isinstance( response, dict ) and isinstance( response.get( 'usage' ), dict ):
-			return response.get( 'usage' )
-		
-		return { }
-	
-	def update_audio_usage( response: Any ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Update Boo token counters from an Audio provider response when helper functions
-			are available.
-		
-			Parameters:
-			-----------
-			response (Any): Provider response object.
-		
-			Returns:
-			--------
-			None
-			
-		"""
-		try:
-			if 'update_token_counters' in globals( ):
-				update_token_counters( response )
-			elif 'update_token_counters' in globals( ):
-				update_token_counters( response )
-			elif 'update_counters' in globals( ):
-				count_tokens( response )
-		except Exception:
-			pass
 	
 	def append_audio_message( role: str, content: str ) -> None:
 		"""
 			
 			Purpose:
 			--------
-			Append an Audio-mode message without clearing other mode state.
+			Append an Audio-mode chat message.
 		
 			Parameters:
 			-----------
-			role (str): Message role.
-			content (str): Message content.
+			role: str
+				Message role.
+			
+			content: str
+				Message content.
 		
 			Returns:
 			--------
@@ -7031,10 +7064,12 @@ elif mode == 'Audio':
 		if not isinstance( st.session_state.get( 'audio_messages' ), list ):
 			st.session_state[ 'audio_messages' ] = [ ]
 		
-		st.session_state[ 'audio_messages' ].append( {
+		st.session_state[ 'audio_messages' ].append(
+			{
 					'role': role,
 					'content': content,
-			} )
+			}
+		)
 	
 	def render_audio_messages( ) -> None:
 		"""
@@ -7056,18 +7091,18 @@ elif mode == 'Audio':
 			st.session_state[ 'audio_messages' ] = [ ]
 		
 		for msg in st.session_state.get( 'audio_messages', [ ] ):
-			if isinstance( msg, dict ):
-				role = msg.get( 'role', 'assistant' )
-				content = msg.get( 'content', '' )
-				with st.chat_message( role ):
-					st.markdown( content )
+			if not isinstance( msg, dict ):
+				continue
+			
+			with st.chat_message( msg.get( 'role', 'assistant' ), avatar='' ):
+				st.markdown( msg.get( 'content', '' ) )
 	
 	def clear_audio_messages( ) -> None:
 		"""
 			
 			Purpose:
 			--------
-			Clear Audio-mode message and result state.
+			Clear Audio-mode messages and result state.
 		
 			Parameters:
 			-----------
@@ -7081,6 +7116,7 @@ elif mode == 'Audio':
 		st.session_state[ 'audio_messages' ] = [ ]
 		st.session_state[ 'audio_output' ] = ''
 		st.session_state[ 'audio_output_bytes' ] = None
+		st.session_state[ 'audio_output_path' ] = ''
 		st.session_state[ 'audio_last_result' ] = { }
 		st.session_state[ 'audio_last_usage' ] = { }
 	
@@ -7175,10 +7211,11 @@ elif mode == 'Audio':
 				'audio_model',
 				'audio_language',
 				'audio_voice',
-				'audio_rate',
 				'audio_format',
 				'audio_response_format',
 				'audio_speed',
+				'audio_sample_rate',
+				'audio_bit_rate',
 		]:
 			if key in st.session_state:
 				del st.session_state[ key ]
@@ -7202,9 +7239,11 @@ elif mode == 'Audio':
 		for key in [
 				'audio_temperature',
 				'audio_top_percent',
+				'audio_top_k',
 				'audio_frequency_penalty',
 				'audio_presence_penalty',
 				'audio_presense_penalty',
+				'audio_max_tokens',
 				'audio_include',
 				'audio_stream',
 				'audio_store',
@@ -7234,188 +7273,351 @@ elif mode == 'Audio':
 				'audio_end_time',
 				'audio_loop',
 				'audio_autoplay',
+				'audio_output_bytes',
+				'audio_output_path',
+				'audio_upload_path',
+				'audio_recorded_path',
 		]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
-	def run_audio_transcription( file_path: str ) -> Optional[ str ]:
+	def update_audio_usage( instance: Any ) -> None:
 		"""
 			
 			Purpose:
 			--------
-			Run provider transcription and store normalized output.
+			Update Audio usage metadata from a provider wrapper.
 		
 			Parameters:
 			-----------
-			file_path (str): Temporary audio file path.
+			instance: Any
+				Provider Audio wrapper instance.
 		
 			Returns:
 			--------
-			Optional[str]: Transcript text.
+			None
 			
 		"""
-		model = st.session_state.get( 'audio_model' )
-		language = st.session_state.get( 'audio_language' )
-		prompt = get_audio_prompt_value( 'Transcribe' )
-		format_value = get_audio_format_value( 'Transcribe' )
+		try:
+			response = getattr( instance, 'response', None )
+			usage = getattr( response, 'usage', None )
+			
+			if usage is None and hasattr( instance, 'get_usage' ):
+				usage = instance.get_usage( )
+			
+			if usage is None:
+				st.session_state[ 'audio_last_usage' ] = { }
+				return
+			
+			if hasattr( usage, 'model_dump' ):
+				st.session_state[ 'audio_last_usage' ] = usage.model_dump( )
+			elif isinstance( usage, dict ):
+				st.session_state[ 'audio_last_usage' ] = usage
+			else:
+				st.session_state[ 'audio_last_usage' ] = { 'usage': str( usage ) }
+			
+			if 'update_token_counters' in globals( ):
+				update_token_counters( response )
+		except Exception:
+			st.session_state[ 'audio_last_usage' ] = { }
+	
+	def call_existing_audio_method( instance: Any, method_names: List[ str ],
+			kwargs: Dict[ str, Any ] ) -> Any:
+		"""
+			
+			Purpose:
+			--------
+			Call the first available Audio wrapper method from a provider-neutral method list.
 		
-		kwargs = {
-				'path': file_path,
-				'filepath': file_path,
-				'file_path': file_path,
-				'model': model or None,
-				'language': language or None,
-				'prompt': prompt or None,
-				'format': format_value,
-				'response_format': format_value,
+			Parameters:
+			-----------
+			instance: Any
+				Provider Audio wrapper instance.
+			
+			method_names: List[str]
+				Ordered method names to try.
+			
+			kwargs: Dict[str, Any]
+				Keyword arguments for the method call.
+		
+			Returns:
+			--------
+			Any
+				Provider method result.
+			
+		"""
+		for method_name in method_names:
+			method = getattr( instance, method_name, None )
+			if not callable( method ):
+				continue
+			
+			try:
+				return method( **kwargs )
+			except TypeError:
+				clean_kwargs = {
+						key: value
+						for key, value in kwargs.items( )
+						if value is not None and value != '' and value != [ ]
+				}
+				return method( **clean_kwargs )
+		
+		raise AttributeError( f'Provider "{provider_name}" does not expose any audio method '
+		                      f'from: {", ".join( method_names )}.' )
+	
+	def normalize_audio_text_result( result: Any ) -> str:
+		"""
+			
+			Purpose:
+			--------
+			Normalize transcription or translation output into displayable text.
+		
+			Parameters:
+			-----------
+			result: Any
+				Provider result.
+		
+			Returns:
+			--------
+			str
+				Displayable text.
+			
+		"""
+		if result is None:
+			return ''
+		
+		if isinstance( result, str ):
+			return result.strip( )
+		
+		if isinstance( result, dict ):
+			for key in [ 'text', 'transcript', 'translation', 'content', 'output_text' ]:
+				value = result.get( key )
+				if isinstance( value, str ) and value.strip( ):
+					return value.strip( )
+			
+			return str( result )
+		
+		for attr_name in [ 'text', 'transcript', 'translation', 'content', 'output_text' ]:
+			value = getattr( result, attr_name, None )
+			if isinstance( value, str ) and value.strip( ):
+				return value.strip( )
+		
+		return str( result ).strip( )
+	
+	def normalize_audio_bytes_result( result: Any ) -> Optional[ bytes ]:
+		"""
+			
+			Purpose:
+			--------
+			Normalize TTS output into raw audio bytes when possible.
+		
+			Parameters:
+			-----------
+			result: Any
+				Provider TTS result.
+		
+			Returns:
+			--------
+			Optional[bytes]
+				Audio bytes when available.
+			
+		"""
+		if result is None:
+			return None
+		
+		if isinstance( result, bytes ):
+			return result
+		
+		if isinstance( result, bytearray ):
+			return bytes( result )
+		
+		if isinstance( result, dict ):
+			for key in [ 'audio_bytes', 'bytes', 'content', 'data' ]:
+				value = result.get( key )
+				if isinstance( value, bytes ):
+					return value
+				
+				if isinstance( value, bytearray ):
+					return bytes( value )
+		
+		for attr_name in [ 'audio_bytes', 'bytes', 'content', 'data' ]:
+			value = getattr( result, attr_name, None )
+			if isinstance( value, bytes ):
+				return value
+			
+			if isinstance( value, bytearray ):
+				return bytes( value )
+		
+		return None
+	
+	def get_audio_common_kwargs( path: Optional[ str ] = None,
+			prompt: Optional[ str ] = None ) -> Dict[ str, Any ]:
+		"""
+			
+			Purpose:
+			--------
+			Build provider-neutral Audio keyword arguments.
+		
+			Parameters:
+			-----------
+			path: Optional[str]
+				Optional audio file path.
+			
+			prompt: Optional[str]
+				Optional user prompt/instruction.
+		
+			Returns:
+			--------
+			Dict[str, Any]
+				Audio keyword arguments.
+			
+		"""
+		domains = parse_audio_domains( st.session_state.get( 'audio_domains_input', '' ) )
+		if domains:
+			st.session_state[ 'audio_domains' ] = domains
+		
+		return {
+				'path': path,
+				'model': st.session_state.get( 'audio_model' ),
+				'language': st.session_state.get( 'audio_language' ),
+				'prompt': prompt,
 				'temperature': st.session_state.get( 'audio_temperature' ),
+				'top_p': st.session_state.get( 'audio_top_percent' ),
+				'top_k': st.session_state.get( 'audio_top_k' ),
+				'frequency': st.session_state.get( 'audio_frequency_penalty' ),
+				'presence': st.session_state.get( 'audio_presence_penalty' ),
+				'max_tokens': st.session_state.get( 'audio_max_tokens' ),
+				'store': st.session_state.get( 'audio_store' ),
+				'stream': st.session_state.get( 'audio_stream' ),
+				'background': st.session_state.get( 'audio_background' ),
+				'instruct': st.session_state.get( 'audio_system_instructions', '' ),
+				'response_format': st.session_state.get( 'audio_response_format' ) or None,
 				'include': st.session_state.get( 'audio_include', [ ] ),
-				'instruct': st.session_state.get( 'audio_system_instructions', '' ),
+				'mime_type': st.session_state.get( 'audio_format' ) or None,
+				'allowed_domains': st.session_state.get( 'audio_domains', [ ] ),
+				'start_time': st.session_state.get( 'audio_start_time' ),
+				'end_time': st.session_state.get( 'audio_end_time' ),
 		}
-		
-		result = call_existing_audio_method( instance=transcriber,
-			method_names=[ 'transcribe', 'create_transcription', 'generate_transcription' ],
-			kwargs=kwargs )
-		
-		text_result = normalize_audio_text_result( result )
-		response = getattr( transcriber, 'response', None ) or result
-		normalized = getattr( transcriber, 'normalized_result', None )
-		
-		st.session_state[ 'audio_output' ] = text_result
-		st.session_state[ 'audio_last_result' ] = normalized if isinstance( normalized,
-			dict ) else { }
-		st.session_state[ 'audio_last_usage' ] = extract_audio_usage( response )
-		update_audio_usage( response )
-		
-		return text_result
 	
-	def run_audio_translation( file_path: str ) -> Optional[ str ]:
+	def run_audio_transcription( path: str, prompt: Optional[ str ] = None ) -> str:
 		"""
 			
 			Purpose:
 			--------
-			Run provider translation and store normalized output.
+			Run transcription through the active provider wrapper.
 		
 			Parameters:
 			-----------
-			file_path (str): Temporary audio file path.
+			path: str
+				Audio file path.
+			
+			prompt: Optional[str]
+				Optional transcription prompt.
 		
 			Returns:
 			--------
-			Optional[str]: Translation text.
+			str
+				Transcript text.
 			
 		"""
-		model = st.session_state.get( 'audio_model' )
-		language = st.session_state.get( 'audio_language' )
-		prompt = get_audio_prompt_value( 'Translate' )
-		format_value = get_audio_format_value( 'Translate' )
+		kwargs = get_audio_common_kwargs( path=path, prompt=prompt )
+		result = call_existing_audio_method(
+			instance=transcriber,
+			method_names=[ 'transcribe', 'create_transcription', 'create' ],
+			kwargs=kwargs
+		)
+		text_result = normalize_audio_text_result( result )
+		st.session_state[ 'audio_output' ] = text_result
+		st.session_state[ 'audio_last_result' ] = { 'task': 'Transcribe', 'text': text_result }
+		update_audio_usage( transcriber )
+		return text_result
+	
+	def run_audio_translation( path: str, prompt: Optional[ str ] = None ) -> str:
+		"""
+			
+			Purpose:
+			--------
+			Run translation through the active provider wrapper.
 		
+			Parameters:
+			-----------
+			path: str
+				Audio file path.
+			
+			prompt: Optional[str]
+				Optional translation prompt.
+		
+			Returns:
+			--------
+			str
+				Translated text.
+			
+		"""
+		kwargs = get_audio_common_kwargs( path=path, prompt=prompt )
+		result = call_existing_audio_method(
+			instance=translator,
+			method_names=[ 'translate', 'create_translation', 'create' ],
+			kwargs=kwargs
+		)
+		text_result = normalize_audio_text_result( result )
+		st.session_state[ 'audio_output' ] = text_result
+		st.session_state[ 'audio_last_result' ] = { 'task': 'Translate', 'text': text_result }
+		update_audio_usage( translator )
+		return text_result
+	
+	def run_audio_tts( text: str ) -> Optional[ bytes ]:
+		"""
+			
+			Purpose:
+			--------
+			Run text-to-speech through the active provider wrapper.
+		
+			Parameters:
+			-----------
+			text: str
+				Text to synthesize.
+		
+			Returns:
+			--------
+			Optional[bytes]
+				Generated audio bytes.
+			
+		"""
 		kwargs = {
-				'path': file_path,
-				'filepath': file_path,
-				'file_path': file_path,
-				'model': model or None,
-				'language': language or None,
-				'prompt': prompt or None,
-				'format': format_value,
-				'response_format': format_value,
+				'text': text,
+				'prompt': text,
+				'model': st.session_state.get( 'audio_model' ),
+				'format': st.session_state.get( 'audio_response_format' )
+				          or st.session_state.get( 'audio_format' )
+				          or None,
+				'voice': st.session_state.get( 'audio_voice' ) or None,
+				'speed': st.session_state.get( 'audio_speed' ),
+				'language': st.session_state.get( 'audio_language' ) or 'auto',
+				'instruct': st.session_state.get( 'audio_system_instructions', '' ),
+				'file_path': st.session_state.get( 'audio_output_path' ) or None,
+				'sample_rate': st.session_state.get( 'audio_sample_rate' ) or None,
+				'bit_rate': st.session_state.get( 'audio_bit_rate' ) or None,
 				'temperature': st.session_state.get( 'audio_temperature' ),
-				'instruct': st.session_state.get( 'audio_system_instructions', '' ),
+				'top_p': st.session_state.get( 'audio_top_percent' ),
+				'frequency': st.session_state.get( 'audio_frequency_penalty' ),
+				'presence': st.session_state.get( 'audio_presence_penalty' ),
+				'max_tokens': st.session_state.get( 'audio_max_tokens' ),
+				'store': st.session_state.get( 'audio_store' ),
+				'stream': st.session_state.get( 'audio_stream' ),
+				'background': st.session_state.get( 'audio_background' ),
 		}
-		
-		result = call_existing_audio_method( instance=translator,
-			method_names=[ 'translate', 'create_translation', 'generate_translation' ], kwargs=kwargs )
-		
-		text_result = normalize_audio_text_result( result )
-		response = getattr( translator, 'response', None ) or result
-		normalized = getattr( translator, 'normalized_result', None )
-		
-		st.session_state[ 'audio_output' ] = text_result
-		st.session_state[ 'audio_last_result' ] = normalized if isinstance( normalized,
-			dict ) else { }
-		st.session_state[ 'audio_last_usage' ] = extract_audio_usage( response )
-		update_audio_usage( response )
-		
-		return text_result
-	
-	def run_audio_tts( text_value: str ) -> Optional[ bytes ]:
-		"""
-			
-			Purpose:
-			--------
-			Run provider text-to-speech and store generated audio bytes.
-		
-			Parameters:
-			-----------
-			text_value (str): Text to synthesize.
-		
-			Returns:
-			--------
-			Optional[bytes]: Generated audio bytes.
-			
-		"""
-		model = st.session_state.get( 'audio_model' )
-		voice = st.session_state.get( 'audio_voice' )
-		format_value = get_audio_format_value( 'Text-to-Speech' )
-		speed = st.session_state.get( 'audio_speed', st.session_state.get( 'audio_rate', 1.0 ) )
-		
-		kwargs = {
-				'text': text_value,
-				'input': text_value,
-				'model': model or None,
-				'voice': voice or None,
-				'format': format_value,
-				'response_format': format_value,
-				'output_format': format_value,
-				'speed': speed,
-				'rate': speed,
-				'instruct': st.session_state.get( 'audio_system_instructions', '' ),
-		}
-		
-		result = call_existing_audio_method( instance=tts,
-			method_names=[ 'create_speech', 'synthesize', 'generate_speech', 'text_to_speech' ],
-			kwargs=kwargs )
-		
+		result = call_existing_audio_method(
+			instance=tts,
+			method_names=[ 'create_speech', 'synthesize', 'generate', 'create' ],
+			kwargs=kwargs
+		)
 		audio_bytes = normalize_audio_bytes_result( result )
-		response = getattr( tts, 'response', None ) or result
-		normalized = getattr( tts, 'normalized_result', None )
-		
 		st.session_state[ 'audio_output_bytes' ] = audio_bytes
-		st.session_state[ 'audio_last_result' ] = normalized if isinstance( normalized,
-			dict ) else { }
-		st.session_state[ 'audio_last_usage' ] = extract_audio_usage( response )
-		update_audio_usage( response )
-		
+		st.session_state[ 'audio_last_result' ] = {
+				'task': 'Text-to-Speech',
+				'bytes': len( audio_bytes ) if audio_bytes else 0,
+		}
+		update_audio_usage( tts )
 		return audio_bytes
-	
-	# ------------------------------------------------------------------
-	# Session Safety
-	# ------------------------------------------------------------------
-	if st.session_state.get( 'clear_instructions' ):
-		st.session_state[ 'audio_system_instructions' ] = ''
-		st.session_state[ 'clear_audio_instructions' ] = False
-		st.session_state[ 'clear_instructions' ] = False
-	
-	if not isinstance( st.session_state.get( 'audio_messages' ), list ):
-		st.session_state[ 'audio_messages' ] = [ ]
-	
-	if not isinstance( st.session_state.get( 'audio_include' ), list ):
-		st.session_state[ 'audio_include' ] = [ ]
-	
-	if not isinstance( st.session_state.get( 'audio_output' ), str ):
-		st.session_state[ 'audio_output' ] = ''
-	
-	if 'audio_output_bytes' not in st.session_state:
-		st.session_state[ 'audio_output_bytes' ] = None
-	
-	if not isinstance( st.session_state.get( 'audio_last_result' ), dict ):
-		st.session_state[ 'audio_last_result' ] = { }
-	
-	if not isinstance( st.session_state.get( 'audio_last_usage' ), dict ):
-		st.session_state[ 'audio_last_usage' ] = { }
-	
-	if not isinstance( st.session_state.get( 'audio_speed' ), float ):
-		st.session_state[ 'audio_speed' ] = 1.0
 	
 	# ------------------------------------------------------------------
 	# Main UI
@@ -7432,6 +7634,7 @@ elif mode == 'Audio':
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], gap='xxsmall', border=True )
 				
 				task_options = get_audio_task_options( )
+				sanitize_audio_selection( 'audio_task', task_options, '' )
 				
 				# ---------- Task ------------
 				with aud_c1:
@@ -7447,21 +7650,16 @@ elif mode == 'Audio':
 				model_options = get_audio_model_options( audio_task )
 				language_options = get_audio_language_options( audio_task )
 				voice_options = get_audio_voice_options( )
-				format_options = get_audio_format_options(
-					audio_task, st.session_state.get( 'audio_model' ) )
+				format_options = get_audio_format_options( audio_task )
+				include_options = get_audio_include_options( audio_task )
+				sample_rate_options = get_audio_sample_rate_options( )
+				bit_rate_options = get_audio_bit_rate_options( )
 				
-				if st.session_state.get( 'audio_model' ) not in model_options:
-					st.session_state[ 'audio_model' ] = ''
-				
-				if st.session_state.get( 'audio_response_format' ) not in format_options:
-					st.session_state[ 'audio_response_format' ] = ''
-				
-				include_options = get_audio_include_options(
-					audio_task, st.session_state.get( 'audio_model' ) )
-				st.session_state[ 'audio_include' ] = [
-						item for item in st.session_state.get( 'audio_include', [ ] )
-						if item in include_options
-				]
+				sanitize_audio_selection( 'audio_model', model_options, '' )
+				sanitize_audio_selection( 'audio_language', language_options, '' )
+				sanitize_audio_selection( 'audio_voice', voice_options, '' )
+				sanitize_audio_selection( 'audio_response_format', format_options, '' )
+				sanitize_audio_multiselect( 'audio_include', include_options )
 				
 				# ---------- Model ------------
 				with aud_c2:
@@ -7471,139 +7669,140 @@ elif mode == 'Audio':
 				
 				# ---------- Language / Voice ------------
 				with aud_c3:
-					if audio_task in [ 'Transcribe', 'Translate' ]:
-						st.selectbox( label='Language', options=language_options,
-							key='audio_language', placeholder='Options', index=None,
-							help='Optional source-language hint when supported.' )
-					
-					elif audio_task == 'Text-to-Speech':
+					if audio_task == 'Text-to-Speech':
 						st.selectbox( label='Voice', options=voice_options,
 							key='audio_voice', placeholder='Options', index=None,
 							help='Text-to-speech voice when supported.' )
-					
 					else:
-						st.caption( 'Language / Voice' )
-						st.info( 'Select a task first.' )
-				
-				# ---------- Sample Rate ------------
-				with aud_c4:
-					st.selectbox( label='Sample Rate', options=get_audio_rate_options( ),
-						key='audio_rate', placeholder='Options', index=None,
-						help='Sample rate used for recording and playback controls.' )
+						st.selectbox( label='Language', options=language_options,
+							key='audio_language', placeholder='Options', index=None,
+							help='Language hint or translation target when supported.' )
 				
 				# ---------- Format ------------
-				with aud_c5:
+				with aud_c4:
 					st.selectbox( label='Format', options=format_options,
 						key='audio_response_format', placeholder='Options', index=None,
-						help='Task-aware response format or TTS audio output format.' )
+						help='Audio output or text response format.' )
 					st.session_state[ 'audio_format' ] = st.session_state.get(
 						'audio_response_format', '' )
 				
-				st.button( label='Reset', key='audio_model_reset', width='stretch',
+				# ---------- Speed ------------
+				with aud_c5:
+					st.slider( label='Speed', min_value=0.25, max_value=4.00, step=0.25,
+						key='audio_speed',
+						help='Playback/synthesis speed when supported by the provider.' )
+				
+				sr_c1, sr_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall' )
+				
+				# ---------- Sample Rate ------------
+				with sr_c1:
+					st.selectbox( label='Sample Rate', options=sample_rate_options,
+						key='audio_sample_rate', index=None, placeholder='Options',
+						help='Optional TTS sample rate. Zero/blank means provider default.' )
+				
+				# ---------- Bit Rate ------------
+				with sr_c2:
+					st.selectbox( label='Bit Rate', options=bit_rate_options,
+						key='audio_bit_rate', index=None, placeholder='Options',
+						help='Optional TTS MP3 bit rate. Zero/blank means provider default.' )
+				
+				st.button( label='Reset', key='audio_task_reset', width='stretch',
 					on_click=reset_audio_task_controls )
 			
-			with st.expander( label='Inference Options', icon='🎛️', expanded=False,
-					width='stretch' ):
-				prm_one, prm_two, prm_three, prm_four, prm_five = st.columns(
-					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
-				
-				# ---------- Temperature ------------
-				with prm_one:
-					st.slider( label='Temperature', min_value=0.0, max_value=1.0,
-						step=0.01, key='audio_temperature',
-						help='Used by transcription/translation paths where supported.' )
+			with st.expander( label='Inference Settings', icon='🎚️', expanded=False, width='stretch' ):
+				inf_c1, inf_c2, inf_c3, inf_c4, inf_c5 = st.columns(
+					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], gap='xxsmall', border=True )
 				
 				# ---------- Top-P ------------
-				with prm_two:
-					st.slider( label='Top-P', min_value=0.0, max_value=1.0,
-						step=0.01, key='audio_top_percent',
-						help=get_audio_help( 'TOP_P' ) )
+				with inf_c1:
+					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
+						key='audio_top_percent', help=get_audio_help( 'TOP_P' ) )
+				
+				# ---------- Temperature ------------
+				with inf_c2:
+					st.slider( label='Temperature', min_value=0.0, max_value=2.0,
+						step=0.01, key='audio_temperature',
+						help=get_audio_help( 'TEMPERATURE' ) )
 				
 				# ---------- Frequency Penalty ------------
-				with prm_three:
-					st.slider( label='Frequency Penalty', min_value=-2.0,
-						max_value=2.0, step=0.01, key='audio_frequency_penalty',
+				with inf_c3:
+					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
+						step=0.01, key='audio_frequency_penalty',
 						help=get_audio_help( 'FREQUENCY_PENALTY' ) )
 				
 				# ---------- Presence Penalty ------------
-				with prm_four:
+				with inf_c4:
 					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0,
 						step=0.01, key='audio_presence_penalty',
 						help=get_audio_help( 'PRESENCE_PENALTY' ) )
 					st.session_state[ 'audio_presense_penalty' ] = st.session_state.get(
 						'audio_presence_penalty', 0.0 )
 				
-				# ---------- Speed ------------
-				with prm_five:
-					if audio_task == 'Text-to-Speech':
-						st.selectbox( label='Speed', options=get_audio_speed_options( ),
-							key='audio_speed', placeholder='Options', index=None,
-							help='Text-to-speech speed when supported.' )
-					else:
-						st.caption( 'Speed' )
-						st.info( 'Only used by Text-to-Speech.' )
+				# ---------- Max Tokens ------------
+				with inf_c5:
+					st.slider( label='Max Tokens', min_value=0, max_value=100000,
+						step=500, key='audio_max_tokens',
+						help=get_audio_help( 'MAX_OUTPUT_TOKENS' ) )
 				
-				out_c1, out_c2, out_c3, out_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+				ctl_c1, ctl_c2, ctl_c3, ctl_c4 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], gap='xxsmall', border=True )
 				
 				# ---------- Include ------------
-				with out_c1:
-					if include_options:
-						st.multiselect( label='Include', options=include_options,
-							key='audio_include', placeholder='Options',
-							help='Optional transcription include fields.' )
-					else:
-						st.caption( 'Include' )
-						st.info( 'No include options for the selected task/model.' )
-				
-				# ---------- Stream ------------
-				with out_c2:
-					st.toggle( label='Stream', key='audio_stream',
-						help=get_audio_help( 'STREAM' ) )
+				with ctl_c1:
+					st.multiselect( label='Include', options=include_options,
+						key='audio_include', placeholder='Options',
+						help=get_audio_help( 'INCLUDE' ) )
 				
 				# ---------- Store ------------
-				with out_c3:
+				with ctl_c2:
 					st.toggle( label='Store', key='audio_store',
 						help=get_audio_help( 'STORE' ) )
 				
+				# ---------- Stream ------------
+				with ctl_c3:
+					st.toggle( label='Stream', key='audio_stream',
+						help=get_audio_help( 'STREAM' ) )
+				
 				# ---------- Background ------------
-				with out_c4:
+				with ctl_c4:
 					st.toggle( label='Background', key='audio_background',
 						help=get_audio_help( 'BACKGROUND_MODE' ) )
 				
 				st.button( label='Reset', key='audio_inference_reset', width='stretch',
 					on_click=reset_audio_inference_controls )
 			
-			with st.expander( label='Playback Options', icon='▶️', expanded=False,
-					width='stretch' ):
+			with st.expander( label='Playback Settings', icon='🔊', expanded=False, width='stretch' ):
 				play_c1, play_c2, play_c3, play_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+					[ 0.25, 0.25, 0.25, 0.25 ], gap='xxsmall', border=True )
 				
 				# ---------- Start Time ------------
 				with play_c1:
 					st.number_input( label='Start Time', min_value=0.0, step=1.0,
 						key='audio_start_time',
-						help='Audio playback start time in seconds.' )
+						help='Optional playback/transcription segment start time.' )
 				
 				# ---------- End Time ------------
 				with play_c2:
 					st.number_input( label='End Time', min_value=0.0, step=1.0,
 						key='audio_end_time',
-						help='Audio playback end time in seconds. Zero means no end trim.' )
+						help='Optional playback/transcription segment end time.' )
 				
 				# ---------- Loop ------------
 				with play_c3:
 					st.toggle( label='Loop', key='audio_loop',
-						help='Loop local/test audio playback.' )
+						help='Loop playback when Streamlit supports it.' )
 				
 				# ---------- Autoplay ------------
 				with play_c4:
 					st.toggle( label='Autoplay', key='audio_autoplay',
-						help='Autoplay local/test audio when supported by the browser.' )
+						help='Autoplay playback when Streamlit supports it.' )
 				
 				st.button( label='Reset', key='audio_playback_reset', width='stretch',
 					on_click=reset_audio_playback_controls )
 		
+		# ------------------------------------------------------------------
+		# Expander — Audio System Instructions
+		# ------------------------------------------------------------------
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
 				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
@@ -7613,8 +7812,8 @@ elif mode == 'Audio':
 			
 			with in_left:
 				st.text_area( label='Enter Text', height=80, width='stretch',
-					help=get_audio_help( 'SYSTEM_INSTRUCTIONS' ),
-					key='audio_system_instructions' )
+					key='audio_system_instructions',
+					help=get_audio_help( 'SYSTEM_INSTRUCTIONS' ) )
 			
 			with in_right:
 				st.selectbox( label='Use Template', options=prompt_names,
@@ -7633,7 +7832,7 @@ elif mode == 'Audio':
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 		
 		# ------------------------------------------------------------------
-		# Audio Work Area
+		# Audio Workflows
 		# ------------------------------------------------------------------
 		tab_process, tab_tts, tab_playback = st.tabs(
 			[ 'Transcribe / Translate', 'Text-to-Speech', 'Playback' ] )
@@ -7641,33 +7840,30 @@ elif mode == 'Audio':
 		with tab_process:
 			render_audio_messages( )
 			
-			upload_c1, upload_c2 = st.columns( [ 0.50, 0.50 ], gap='medium' )
+			uploaded_audio = st.file_uploader( label='Upload Audio',
+				type=[ 'wav', 'mp3', 'mpeg', 'mp4', 'm4a', 'webm', 'ogg', 'flac' ],
+				accept_multiple_files=False, key='audio_uploaded_file' )
 			
-			with upload_c1:
-				audio_file = st.file_uploader( label='Upload Audio',
-					type=[ 'mp3', 'mp4', 'mpeg', 'mpga', 'm4a', 'wav', 'webm', 'ogg' ],
-					key='audio_file_uploader',
-					accept_multiple_files=False )
+			recorded_audio = None
+			if hasattr( st, 'audio_input' ):
+				recorded_audio = st.audio_input( label='Record Audio', key='audio_recorded_file' )
 			
-			with upload_c2:
-				sample_rate = st.session_state.get( 'audio_rate' )
+			audio_path = None
+			if uploaded_audio is not None:
+				audio_path = save_audio_upload( uploaded_audio )
+				st.session_state[ 'audio_upload_path' ] = audio_path or ''
 				try:
-					sample_rate = int( sample_rate ) if sample_rate else None
+					st.audio( uploaded_audio )
 				except Exception:
-					sample_rate = None
-				
-				if sample_rate:
-					recording = st.audio_input( label='Record Audio', sample_rate=sample_rate,
-						key='audio_recording_input' )
-				else:
-					recording = st.audio_input( label='Record Audio',
-						key='audio_recording_input' )
+					pass
 			
-			audio_source = audio_file or recording
-			audio_path = save_uploaded_audio( audio_source ) if audio_source else None
-			
-			if audio_source is not None:
-				st.audio( audio_source )
+			elif recorded_audio is not None:
+				audio_path = save_audio_upload( recorded_audio )
+				st.session_state[ 'audio_recorded_path' ] = audio_path or ''
+				try:
+					st.audio( recorded_audio )
+				except Exception:
+					pass
 			
 			transcription_prompt = st.text_area( label='Transcription Prompt',
 				key='transcription_prompt', height=80, width='stretch',
@@ -7692,8 +7888,12 @@ elif mode == 'Audio':
 							elif not audio_path:
 								st.warning( 'Upload or record audio before processing.' )
 							
+							elif not st.session_state.get( 'audio_model' ):
+								st.warning( 'Select a model before processing audio.' )
+							
 							elif selected_task == 'Transcribe':
-								result_text = run_audio_transcription( audio_path )
+								result_text = run_audio_transcription(
+									audio_path, transcription_prompt )
 								if result_text:
 									append_audio_message( 'user',
 										'Transcribe uploaded/recorded audio.' )
@@ -7703,7 +7903,8 @@ elif mode == 'Audio':
 									st.warning( 'No transcript was returned.' )
 							
 							elif selected_task == 'Translate':
-								result_text = run_audio_translation( audio_path )
+								result_text = run_audio_translation( audio_path,
+									translation_prompt )
 								if result_text:
 									append_audio_message( 'user',
 										'Translate uploaded/recorded audio.' )
@@ -7745,6 +7946,8 @@ elif mode == 'Audio':
 								st.warning( 'Select Text-to-Speech as the Audio mode first.' )
 							elif not isinstance( tts_input, str ) or not tts_input.strip( ):
 								st.warning( 'Enter text before generating speech.' )
+							elif not st.session_state.get( 'audio_model' ):
+								st.warning( 'Select a model before generating speech.' )
 							else:
 								audio_bytes = run_audio_tts( tts_input.strip( ) )
 								
@@ -7752,16 +7955,8 @@ elif mode == 'Audio':
 									append_audio_message( 'user', tts_input.strip( ) )
 									append_audio_message( 'assistant',
 										'Text-to-speech audio generated successfully.' )
-									
-									format_value = get_audio_format_value(
-										'Text-to-Speech' ) or 'mp3'
-									st.audio( audio_bytes, format=f'audio/{format_value}' )
-									
-									st.download_button( label='Download Audio',
-										data=audio_bytes,
-										file_name=f'tts_output.{format_value}',
-										mime=f'audio/{format_value}',
-										width='stretch' )
+									st.audio( audio_bytes,
+										format=f'audio/{st.session_state.get( "audio_response_format", "mp3" )}' )
 								else:
 									st.warning( 'No audio bytes were returned.' )
 						
@@ -7775,44 +7970,55 @@ elif mode == 'Audio':
 					st.rerun( )
 			
 			if st.session_state.get( 'audio_output_bytes' ):
-				format_value = get_audio_format_value( 'Text-to-Speech' ) or 'mp3'
-				st.audio( st.session_state[ 'audio_output_bytes' ],
-					format=f'audio/{format_value}' )
+				audio_format = st.session_state.get( 'audio_response_format', 'mp3' ) or 'mp3'
+				st.download_button( label='Download Audio',
+					data=st.session_state.get( 'audio_output_bytes' ),
+					file_name=f'tts_output.{audio_format}',
+					mime=f'audio/{audio_format}',
+					width='stretch' )
 		
 		with tab_playback:
-			playback_c1, playback_c2 = st.columns( [ 0.50, 0.50 ], gap='medium' )
+			st.caption( 'Playback generated output, uploaded/recorded audio, or a local test file.' )
 			
-			with playback_c1:
-				st.caption( 'Generated Audio' )
-				if st.session_state.get( 'audio_output_bytes' ):
-					format_value = get_audio_format_value( 'Text-to-Speech' ) or 'mp3'
-					st.audio( st.session_state[ 'audio_output_bytes' ],
-						format=f'audio/{format_value}' )
-				else:
-					st.info( 'No generated audio is available yet.' )
+			if st.session_state.get( 'audio_output_bytes' ):
+				st.audio( st.session_state.get( 'audio_output_bytes' ),
+					format=f'audio/{st.session_state.get( "audio_response_format", "mp3" ) or "mp3"}' )
 			
-			with playback_c2:
-				st.caption( 'Local Audio File' )
-				local_audio = getattr( cfg, 'AUDIO_TEST_FILE', None )
-				if local_audio:
-					try:
-						start_time = float( st.session_state.get( 'audio_start_time', 0.0 ) or 0.0 )
-						end_time = float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 )
-						sample_rate = st.session_state.get( 'audio_rate' )
-						
-						st.audio( local_audio,
-							sample_rate=int( sample_rate ) if sample_rate else None,
-							start_time=start_time,
-							end_time=end_time if end_time > 0 else None,
-							format='audio/wav',
-							loop=bool( st.session_state.get( 'audio_loop', False ) ),
-							autoplay=bool( st.session_state.get( 'audio_autoplay', False ) ) )
-					except TypeError:
-						st.audio( local_audio )
-					except Exception as exc:
-						st.warning( f'Could not play local audio file: {exc}' )
-				else:
-					st.info( 'No local audio test file is configured.' )
+			playback_path = (
+					st.session_state.get( 'audio_upload_path' ) or
+					st.session_state.get( 'audio_recorded_path' ) or
+					st.session_state.get( 'audio_output_path' ) or '' )
+			
+			if playback_path:
+				try:
+					st.audio( playback_path,
+						start_time=float( st.session_state.get( 'audio_start_time', 0.0 ) or 0.0 ),
+						end_time=float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 )
+						if float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ) > 0
+						else None,
+						loop=bool( st.session_state.get( 'audio_loop', False ) ),
+						autoplay=bool( st.session_state.get( 'audio_autoplay', False ) ) )
+				except TypeError:
+					st.audio( playback_path )
+				except Exception as exc:
+					st.warning( f'Could not play audio file: {exc}' )
+			
+			local_audio = getattr( cfg, 'AUDIO_TEST_FILE', None )
+			if local_audio:
+				try:
+					st.audio( local_audio,
+						start_time=float( st.session_state.get( 'audio_start_time', 0.0 ) or 0.0 ),
+						end_time=float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 )
+						if float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ) > 0
+						else None,
+						loop=bool( st.session_state.get( 'audio_loop', False ) ),
+						autoplay=bool( st.session_state.get( 'audio_autoplay', False ) ) )
+				except TypeError:
+					st.audio( local_audio )
+				except Exception as exc:
+					st.warning( f'Could not play local audio file: {exc}' )
+			else:
+				st.info( 'No local audio test file is configured.' )
 		
 		# ------------------------------------------------------------------
 		# Result Metadata
