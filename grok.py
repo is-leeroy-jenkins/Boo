@@ -1507,6 +1507,145 @@ class Chat( Grok ):
 			exception.method = 'get_grounding_sources( self ) -> List[ Dict[ str, Any ] ]'
 			raise exception
 	
+	def answer_document( self, prompt: str, document_text: str, model: str,
+			instructions: str = None, temperature: float = None, top_p: float = None,
+			frequency: float = None, presence: float = None, max_tokens: int = None,
+			store: bool = None, include: List[ str ] = None, tools: List[ str ] = None,
+			tool_choice: str = None, reasoning: str = None,
+			context: List[ Dict[ str, str ] ] = None,
+			vector_store_ids: List[ str ] = None ) -> str | None:
+		"""
+		
+			Purpose:
+			--------
+			Answer a user question against extracted document text using the Grok Chat
+			Responses API wrapper.
+
+			Parameters:
+			-----------
+			prompt: str
+				User question about the document.
+
+			document_text: str
+				Extracted document text used as grounding context.
+
+			model: str
+				Grok model name.
+
+			instructions: str
+				Optional system or developer instructions.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty.
+
+			presence: float
+				Optional presence penalty.
+
+			max_tokens: int
+				Optional maximum output token count.
+
+			store: bool
+				Optional Responses API store flag.
+
+			include: List[str]
+				Optional include values.
+
+			tools: List[str]
+				Optional selected tool names.
+
+			tool_choice: str
+				Optional tool-choice policy.
+
+			reasoning: str
+				Optional reasoning effort.
+
+			context: List[Dict[str, str]]
+				Optional prior conversation context.
+
+			vector_store_ids: List[str]
+				Optional collection identifiers used by file-search tooling.
+
+			Returns:
+			--------
+			str | None
+				Assistant answer text when available.
+		
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			throw_if( 'document_text', document_text )
+			throw_if( 'model', model )
+			
+			self.prompt = prompt
+			self.content = document_text
+			self.model = model
+			self.instructions = instructions
+			self.temperature = temperature
+			self.top_percent = top_p
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_output_tokens = max_tokens
+			self.store_messages = store
+			self.include = include if include is not None else [ ]
+			self.tool_choice = tool_choice
+			self.reasoning = reasoning
+			self.context = context if context is not None else [ ]
+			self.vector_store_ids = vector_store_ids if vector_store_ids is not None else [ ]
+			
+			selected_tools = [ ]
+			if tools is not None:
+				for item in tools:
+					if isinstance( item, dict ):
+						selected_tools.append( item )
+						continue
+					
+					if isinstance( item, str ) and item.strip( ):
+						selected_tools.append( { 'type': item.strip( ) } )
+			
+			self.tools = selected_tools
+			
+			if isinstance( self.tool_choice, list ):
+				self.tool_choice = self.tool_choice[ 0 ] if len( self.tool_choice ) > 0 else None
+			
+			document_prompt = (
+					f'Document Context:\n'
+					f'{self.content}\n\n'
+					f'User Question:\n'
+					f'{self.prompt}'
+			)
+			
+			self.output_text = self.generate_text(
+				prompt=document_prompt,
+				model=self.model,
+				temperature=self.temperature,
+				top_p=self.top_percent,
+				frequency=self.frequency_penalty,
+				presence=self.presence_penalty,
+				max_tokens=self.max_output_tokens,
+				store=self.store_messages,
+				stream=False,
+				instruct=self.instructions,
+				reasoning=self.reasoning,
+				include=self.include,
+				tools=self.tools,
+				tool_choice=self.tool_choice,
+				context=self.context,
+				vector_store_ids=self.vector_store_ids )
+			
+			return self.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'grok'
+			exception.cause = 'Chat'
+			exception.method = 'answer_document( self, prompt: str, document_text: str, model: str ) -> str | None'
+			raise exception
+		
 	def __dir__( self ) -> List[ str ] | None:
 		'''
 		
@@ -1579,6 +1718,7 @@ class Chat( Grok ):
 				'get_usage',
 				'generate_text',
 				'get_grounding_sources',
+				'answer_documents'
 		]
 
 class TTS( Grok ):
@@ -7146,19 +7286,89 @@ class VectorStores( Grok ):
 	
 		Purpose:
 		--------
-		Provide access to xAI Collections for grouping uploaded documents
-		and reusing them across Responses-based interactions.
+		Provide xAI configured collection search behind the application's Vector Stores
+		interface.
 
-		This class manages collection metadata and membership only.
-		Collections are referenced by ID in other APIs (e.g. Responses).
+		This wrapper uses the configured XAI_API_KEY path. It supports listing and retrieving
+		configured collection metadata locally and searching configured xAI collections through
+		the xAI client. Remote collection creation, document upload, and deletion are not
+		performed by this wrapper without collection-management capability.
 
-		Parameters:
+		Attributes:
 		-----------
-		None
+		client:
+			xAI client instance.
 
-		Returns:
+		model:
+			Model used for collection search compatibility.
+
+		prompt:
+			Search prompt.
+
+		response_format:
+			Response format retained for compatibility.
+
+		number:
+			Number retained for compatibility.
+
+		content:
+			Last content value.
+
+		name:
+			Collection name.
+
+		file_path:
+			Local file path retained for compatibility.
+
+		file_name:
+			File name retained for compatibility.
+
+		file_ids:
+			File identifiers retained for compatibility.
+
+		store_ids:
+			UI-facing collection identifiers.
+
+		store_id:
+			UI-facing collection identifier.
+
+		collection_ids:
+			xAI collection identifiers.
+
+		collection_id:
+			xAI collection identifier.
+
+		documents:
+			Friendly document-name to file-id mapping.
+
+		collections:
+			Friendly collection-name to collection-id mapping.
+
+		response:
+			Last provider response.
+
+		Methods:
 		--------
-		None
+		list:
+			List configured collections.
+
+		retrieve:
+			Retrieve configured collection metadata.
+
+		search:
+			Search one configured collection.
+
+		survey:
+			Search multiple configured collections.
+
+		create:
+			Raise a clear collection-management error.
+
+		update:
+			Raise a clear collection-management error.
+
+		delete:
+			Raise a clear collection-management error.
 	
 	"""
 	client: Optional[ Client ]
@@ -7169,37 +7379,68 @@ class VectorStores( Grok ):
 	content: Optional[ str ]
 	name: Optional[ str ]
 	file_path: Optional[ str ]
+	file_name: Optional[ str ]
 	file_ids: Optional[ List[ str ] ]
 	store_ids: Optional[ List[ str ] ]
 	store_id: Optional[ str ]
+	collection_ids: Optional[ List[ str ] ]
+	collection_id: Optional[ str ]
 	documents: Optional[ Dict[ str, str ] ]
 	collections: Optional[ Dict[ str, str ] ]
+	response: Optional[ Any ]
 	
 	def __init__( self ):
+		"""
+		
+			Purpose:
+			--------
+			Initialize the VectorStores wrapper.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			None
+		
+		"""
 		super( ).__init__( )
 		self.api_key = cfg.XAI_API_KEY
-		self.client = None
+		self.base_url = cfg.XAI_BASE_URL
+		self.client = Client( api_key=self.api_key )
 		self.model = None
+		self.prompt = None
+		self.response_format = None
+		self.number = None
 		self.content = None
+		self.name = None
 		self.response = None
 		self.file_ids = [ ]
 		self.store_ids = [ ]
+		self.collection_ids = [ ]
 		self.file_path = None
 		self.file_name = None
 		self.store_id = None
-		self.collections = \
-		{
+		self.collection_id = None
+		default_collections = {
 				'Federal Financial Regulations': 'collection_9195d847-03a1-443c-9240-294c64dd01e2',
 				'Federal Financial Data': 'collection_e28cdcc2-a9e5-430a-bdf5-94fbaf44b6a4',
 				'Explanatory Statements': 'collection_41dc3374-24d0-4692-819c-59e3d7b11b93',
 				'Public Laws': 'collection_c1d0b83e-2f59-4f10-9cf7-51392b490fee'
 		}
-		self.documents = \
-		{
+		configured_collections = getattr( cfg, 'GROK_COLLECTIONS', None )
+		self.collections = configured_collections if isinstance( configured_collections,
+			dict ) else default_collections
+		
+		default_documents = {
 				'Outlays.csv': 'file_b0a448b3-904a-40c7-bae1-64df657fde1c',
 				'Authority.csv': 'file_c6ad236f-0c52-45f4-8883-d3be032d07c2',
 				'Balances.csv': 'file_0f63d120-406f-49e6-97e5-7855f2cb26b5'
 		}
+		configured_documents = getattr( cfg, 'GROK_DOCUMENTS', None )
+		self.documents = configured_documents if isinstance( configured_documents,
+			dict ) else default_documents
 	
 	@property
 	def model_options( self ) -> List[ str ]:
@@ -7216,281 +7457,491 @@ class VectorStores( Grok ):
 			Returns:
 			--------
 			List[str]
+				Model names.
 		
 		"""
-		return [ 'grok-4', 'grok-4-0709', 'grok-4-latest', 'grok-4-1-fast',
-		         'grok-4-1-fast-reasoning', 'grok-4-1-fast-reasoning-latest',
-		         'grok-4-1-fast-non-reasoning', 'grok-4-1-fast-non-reasoning-latest', 'grok-4-fast',
-		         'grok-4-fast-reasoning', 'grok-4-fast-reasoning-latest',
-		         'grok-4-fast-non-reasoning', 'grok-4-fast-non-reasoning-latest',
-		         'grok-code-fast-1', 'grok-3', 'grok-3-latest', 'grok-3-mini', 'grok-3-fast',
-		         'grok-3-fast-latest', 'grok-3-mini-fast', 'grok-3-mini-fast-latest' ]
+		return [
+				'grok-4',
+				'grok-4-0709',
+				'grok-4-latest',
+				'grok-4-1-fast',
+				'grok-4-1-fast-reasoning',
+				'grok-4-1-fast-reasoning-latest',
+				'grok-4-1-fast-non-reasoning',
+				'grok-4-1-fast-non-reasoning-latest',
+				'grok-4-fast',
+				'grok-4-fast-reasoning',
+				'grok-4-fast-reasoning-latest',
+				'grok-4-fast-non-reasoning',
+				'grok-4-fast-non-reasoning-latest',
+				'grok-code-fast-1',
+				'grok-3',
+				'grok-3-latest',
+				'grok-3-mini',
+				'grok-3-fast',
+				'grok-3-fast-latest',
+				'grok-3-mini-fast',
+				'grok-3-mini-fast-latest',
+		]
 	
-	def create( self, name: str, model: str ) -> None:
+	def get_collection_id( self, store_id: str ) -> str:
 		"""
 		
 			Purpose:
 			--------
-			Create a new collection with an initial set of files.
+			Resolve a configured collection name or collection identifier to a collection ID.
 
 			Parameters:
 			-----------
-			name : str
-			file_ids : List[str]
-			description : str | None
+			store_id: str
+				Collection name or collection identifier.
 
 			Returns:
 			--------
-			dict
-		
-		"""
-		try:
-			throw_if( 'name', name )
-			throw_if( 'model', model )
-			self.model = model
-			self.file_name = name
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( { 'Authorization': f'Bearer {cfg.XAI_API_KEY}',
-			                              'Content-Type': 'application/json', } )
-			response = self.client.collections.create( name=self.file_name, model_name=self.model )
-			response.raise_for_status( )
-			return response.json( )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'VectorStores'
-			ex.method = 'create( self, name: str, model: str ) -> None'
-			raise ex
-	
-	def list( self ) -> List[ Any ] | None:
-		"""
-		
-			Purpose:
-			--------
-			List all collections accessible to the account.
-
-			Returns:
-			--------
-			List[dict]
-		
-		"""
-		try:
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( { 'Authorization': f'Bearer {cfg.XAI_API_KEY}',
-					'Content-Type': 'application/json', } )
-			_response = self.client.collections.list( )
-			return list( _response )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'VectorStores'
-			ex.method = 'list( self ) -> List[ Any ] '
-			raise ex
-	
-	def retrieve( self, store_id: str ) -> Any | None:
-		"""
-		
-			Purpose:
-			--------
-			Retrieve metadata for a specific collection.
-
-			Parameters:
-			-----------
-			collection_id : str
-
-			Returns:
-			--------
-			dict
+			str
+				Collection identifier.
 		
 		"""
 		try:
 			throw_if( 'store_id', store_id )
-			self.stores_id = store_id
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( { 'Authorization': f'Bearer {cfg.XAI_API_KEY}',
-					'Content-Type': 'application/json', } )
-			metadata = self.client.collections.get( collection_id=self.collection_id )
-			return metadata
+			value = str( store_id ).strip( )
+			
+			if value in self.collections:
+				return self.collections[ value ]
+			
+			if ' — ' in value:
+				return value.split( ' — ' )[ -1 ].strip( )
+			
+			return value
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'VectorStores'
-			ex.method = 'retrieve( self, stores_id: str ) -> Any '
+			ex.method = 'get_collection_id( self, store_id: str ) -> str'
 			raise ex
 	
-	def search( self, prompt: str, store_id: str, model: str='grok-4-fast' ) -> str | None:
+	def get_collection_rows( self ) -> List[ Dict[ str, Any ] ]:
 		"""
+		
+			Purpose:
+			--------
+			Return configured collection metadata rows for the Vector Stores UI.
 
-	        Purpose:
-	        _______
-	        Method that analyzeses an image given a prompt,
+			Parameters:
+			-----------
+			None
 
-	        Parameters:
-	        ----------
-	        prompt: str
-	        url: str
+			Returns:
+			--------
+			List[Dict[str, Any]]
+				Configured collection rows.
+		
+		"""
+		try:
+			rows = [ ]
+			for name, collection_id in self.collections.items( ):
+				rows.append(
+					{
+							'id': collection_id,
+							'name': name,
+							'display_name': name,
+							'description': '',
+							'status': 'configured',
+							'file_counts': '',
+							'usage_bytes': '',
+							'collection_id': collection_id,
+							'collection_name': name,
+							'collection_description': '',
+					}
+				)
+			
+			return rows
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'get_collection_rows( self ) -> List[ Dict[ str, Any ] ]'
+			raise ex
+	
+	def get_text_output( self, response: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Return response output text when available; otherwise return the response object.
 
-	        Returns:
-	        -------
-	        str | None
+			Parameters:
+			-----------
+			response: Any
+				Provider response.
 
-        """
+			Returns:
+			--------
+			Any
+				Output text or provider response.
+		
+		"""
+		try:
+			if response is None:
+				return None
+			
+			output_text = getattr( response, 'output_text', None )
+			if output_text:
+				return output_text
+			
+			text = getattr( response, 'text', None )
+			if text:
+				return text
+			
+			if isinstance( response, dict ):
+				output_text = response.get( 'output_text' ) or response.get( 'text' )
+				if output_text:
+					return output_text
+			
+			return response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'get_text_output( self, response: Any ) -> Any'
+			raise ex
+	
+	def raise_management_required( self, operation: str ) -> None:
+		"""
+		
+			Purpose:
+			--------
+			Raise a clear error when an operation requires collection-management capability.
+
+			Parameters:
+			-----------
+			operation: str
+				Operation name.
+
+			Returns:
+			--------
+			None
+		
+		"""
+		raise NotImplementedError(
+			f'Grok VectorStores.{operation} requires xAI collection-management capability. '
+			f'This wrapper is currently configured with XAI_API_KEY only. Use configured '
+			f'collections for search, or add the required management credential/path before '
+			f'enabling remote collection management.'
+		)
+	
+	def create( self, name: str, model: str = None ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Block remote collection creation when collection-management capability is not
+			configured.
+
+			Parameters:
+			-----------
+			name: str
+				Collection name.
+
+			model: str
+				Model name retained for interface compatibility.
+
+			Returns:
+			--------
+			Any
+				This method raises NotImplementedError.
+		
+		"""
+		try:
+			throw_if( 'name', name )
+			self.name = name
+			self.file_name = name
+			self.model = model
+			self.raise_management_required( 'create' )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'create( self, name: str, model: str=None ) -> Any'
+			raise ex
+	
+	def list( self ) -> List[ Dict[ str, Any ] ]:
+		"""
+		
+			Purpose:
+			--------
+			List configured xAI collections.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[Dict[str, Any]]
+				Configured collection rows.
+		
+		"""
+		try:
+			self.response = self.get_collection_rows( )
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'list( self ) -> List[ Dict[ str, Any ] ]'
+			raise ex
+	
+	def retrieve( self, store_id: str ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Retrieve configured metadata for a specific collection.
+
+			Parameters:
+			-----------
+			store_id: str
+				Collection identifier or configured collection name.
+
+			Returns:
+			--------
+			Dict[str, Any]
+				Configured collection metadata.
+		
+		"""
+		try:
+			throw_if( 'store_id', store_id )
+			self.store_id = store_id
+			self.collection_id = self.get_collection_id( self.store_id )
+			display_name = ''
+			for name, collection_id in self.collections.items( ):
+				if collection_id == self.collection_id:
+					display_name = name
+					break
+			
+			self.response = {
+					'id': self.collection_id,
+					'name': display_name or self.collection_id,
+					'display_name': display_name or self.collection_id,
+					'description': '',
+					'status': 'configured',
+					'file_counts': '',
+					'usage_bytes': '',
+					'collection_id': self.collection_id,
+					'collection_name': display_name or self.collection_id,
+					'collection_description': '',
+			}
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'retrieve( self, store_id: str ) -> Dict[ str, Any ]'
+			raise ex
+	
+	def search( self, prompt: str, store_id: str, model: str = 'grok-4-fast' ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Search a specific configured xAI collection.
+
+			Parameters:
+			-----------
+			prompt: str
+				Search prompt.
+
+			store_id: str
+				Collection identifier or configured collection name.
+
+			model: str
+				Model name retained for interface compatibility.
+
+			Returns:
+			--------
+			Any
+				Output text when available; otherwise provider response.
+		
+		"""
 		try:
 			throw_if( 'prompt', prompt )
 			throw_if( 'store_id', store_id )
 			self.prompt = prompt
 			self.model = model
 			self.store_id = store_id
-			self.vector_store_ids = [ store_id ]
-			self.tools = [
-					{
-							'text': 'file_search',
-							'vector_store_ids': self.vector_store_ids,
-							'max_num_results': self.max_search_results,
-					} ]
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( {
-					'Authorization': f'Bearer {cfg.XAI_API_KEY}',
-					'Content-Type': 'application/json', } )
+			self.collection_id = self.get_collection_id( self.store_id )
+			self.store_ids = [ self.collection_id ]
+			self.collection_ids = [ self.collection_id ]
 			self.response = self.client.collections.search( query=self.prompt,
-				collection_ids=[ self.store_id ],)
-			return self.response.output_text
+				collection_ids=self.collection_ids )
+			return self.get_text_output( self.response )
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'VectorStores'
-			ex.method = 'search( self, prompt: str, store_id: str, model: str ) -> str'
+			ex.method = 'search( self, prompt: str, store_id: str, model: str ) -> Any'
 			raise ex
 	
-	def survey( self, prompt: str, store_ids: List[ str ], model: str='grok-4-fast' ) -> str | None:
+	def survey( self, prompt: str, store_ids: List[ str ], model: str = 'grok-4-fast' ) -> Any:
 		"""
+		
+			Purpose:
+			--------
+			Search across multiple configured xAI collections.
 
-	        Purpose:
-	        _______
-	        Method that analyzeses an image given a prompt,
+			Parameters:
+			-----------
+			prompt: str
+				Search prompt.
 
-	        Parameters:
-	        ----------
-	        prompt: str
-	        url: str
+			store_ids: List[str]
+				Collection identifiers or configured collection names.
 
-	        Returns:
-	        -------
-	        str | None
+			model: str
+				Model name retained for interface compatibility.
 
-        """
+			Returns:
+			--------
+			Any
+				Output text when available; otherwise provider response.
+		
+		"""
 		try:
 			throw_if( 'prompt', prompt )
 			throw_if( 'store_ids', store_ids )
 			self.prompt = prompt
 			self.model = model
 			self.store_ids = store_ids
-			self.tools = [
-			{
-				'text': 'file_search',
-				'vector_store_ids': self.store_ids,
-			} ]
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( { 'Authorization': f'Bearer {cfg.XAI_API_KEY}',
-					'Content-Type': 'application/json', } )
+			self.collection_ids = [
+					self.get_collection_id( store_id )
+					for store_id in self.store_ids
+			]
 			self.response = self.client.collections.search( query=self.prompt,
-				collection_ids=self.store_ids, )
-			return self.response.output_text
+				collection_ids=self.collection_ids )
+			return self.get_text_output( self.response )
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'VectorStores'
-			ex.method = 'search( self, prompt: str, store_id: str, model: str ) -> str'
+			ex.method = 'survey( self, prompt: str, store_ids: List[ str ], model: str ) -> Any'
 			raise ex
 	
-	def update( self, store_id: str, filepath: str, filename: str ) -> None:
+	def update( self, store_id: str, filepath: str = None, filename: str = None ) -> Any:
 		"""
 		
 			Purpose:
 			--------
-			Update collection membership by adding or removing files.
+			Block document upload to a collection when collection-management capability is not
+			configured.
 
 			Parameters:
 			-----------
-			collection_id : str
-			add_file_ids : List[str] | None
-			remove_file_ids : List[str] | None
+			store_id: str
+				Collection identifier or configured collection name.
+
+			filepath: str
+				Local file path.
+
+			filename: str
+				File name.
 
 			Returns:
 			--------
-			dict
+			Any
+				This method raises NotImplementedError.
 		
 		"""
 		try:
 			throw_if( 'store_id', store_id )
-			throw_if( 'filename', filename )
-			throw_if( 'filepath', filepath )
+			self.store_id = store_id
+			self.collection_id = self.get_collection_id( self.store_id )
 			self.file_path = filepath
 			self.file_name = filename
-			self.store_id = store_id
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update({ 'Authorization': f'Bearer {cfg.XAI_API_KEY}',
-					'Content-Type': 'application/json', } )
-			with open( self.file_path, 'rb' ) as file:
-				file_data = file.read( )
-				_document = self.client.collections.upload_document( collection_id=self.store_id,
-					name=self.file_name, data=file_data, content_type="text/html", )
+			self.raise_management_required( 'update' )
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'VectorStores'
-			ex.method = 'update( self, store_id: str, filepath: str, filename: str ) -> None'
+			ex.method = 'update( self, store_id: str, filepath: str=None, filename: str=None ) -> Any'
 			raise ex
-			
-	def delete( self, store_id: str ) -> None:
+	
+	def delete( self, store_id: str ) -> Any:
 		"""
 		
 			Purpose:
 			--------
-			Delete a collection.
+			Block remote collection deletion when collection-management capability is not
+			configured.
 
 			Parameters:
 			-----------
-			collection_id : str
+			store_id: str
+				Collection identifier or configured collection name.
 
 			Returns:
 			--------
-			dict
+			Any
+				This method raises NotImplementedError.
 		
 		"""
 		try:
 			throw_if( 'store_id', store_id )
 			self.store_id = store_id
-			url = f'{self.base_url}/collections/{self.store_id}'
-			self.client = Client( api_key=self.api_key )
-			self.client.headers.update({'Authorization': f'Bearer {cfg.GROK_API_KEY}',
-					'Content-Type': 'application/json', } )
-			response = self.client.delete( url, timeout=self.timeout )
-			response.raise_for_status( )
-			return response.json( )
+			self.collection_id = self.get_collection_id( self.store_id )
+			self.raise_management_required( 'delete' )
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'VectorStores'
-			ex.method = 'delete( self, store_id: str ) -> None'
+			ex.method = 'delete( self, store_id: str ) -> Any'
 			raise ex
 	
 	def __dir__( self ) -> List[ str ] | None:
-		return [ 'client',
-		         'file_path',
-		         'response',
-		         'file_name',
-		         'model',
-		         'model_options',
-		         'file_ids',
-		         'store_ids',
-		         'store_id',
-		         'create',
-		         'list',
-		         'retrieve',
-		         'search',
-		         'update',
-		         'delete',
-		         'collections',
-		         'documents' ]
-	
+		"""
+		
+			Purpose:
+			--------
+			Return member names for inspection.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None
+				Member names.
+		
+		"""
+		return [
+				'client',
+				'file_path',
+				'file_name',
+				'response',
+				'model',
+				'prompt',
+				'response_format',
+				'number',
+				'content',
+				'name',
+				'file_ids',
+				'store_ids',
+				'store_id',
+				'collection_ids',
+				'collection_id',
+				'documents',
+				'collections',
+				'model_options',
+				'get_collection_id',
+				'get_collection_rows',
+				'get_text_output',
+				'raise_management_required',
+				'create',
+				'list',
+				'retrieve',
+				'search',
+				'survey',
+				'update',
+				'delete',
+		]

@@ -1214,6 +1214,163 @@ def count_tokens( text: str ) -> int:
 	num_tokens = len( encoding.encode( text ) )
 	return num_tokens
 
+# ------------- FILESTORE UTILITIES
+
+def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
+	"""
+	
+		Purpose:
+		--------
+		Normalize provider storage objects to dictionaries for rendering and session state.
+	
+		Parameters:
+		-----------
+		value: Any
+			Provider storage result object.
+	
+		Returns:
+		--------
+		Dict[str, Any]
+			Normalized result dictionary.
+	
+	"""
+	if value is None:
+		return { }
+	
+	if isinstance( value, dict ):
+		result = dict( value )
+	elif hasattr( value, 'model_dump' ):
+		try:
+			dumped = value.model_dump( )
+			result = dumped if isinstance( dumped, dict ) else { 'result': dumped }
+		except Exception:
+			result = { 'result': str( value ) }
+	elif hasattr( value, 'dict' ):
+		try:
+			dumped = value.dict( )
+			result = dumped if isinstance( dumped, dict ) else { 'result': dumped }
+		except Exception:
+			result = { 'result': str( value ) }
+	else:
+		result = { }
+		for attr_name in [
+				'id',
+				'name',
+				'display_name',
+				'description',
+				'status',
+				'state',
+				'file_counts',
+				'usage_bytes',
+				'created_at',
+				'expires_at',
+				'metadata',
+				'deleted',
+				'collection_id',
+				'collection_name',
+				'collection_description',
+				'documents_count',
+				'document_count',
+				'file_id',
+				'filename',
+				'mime_type',
+				'size_bytes',
+				'bytes',
+		]:
+			if hasattr( value, attr_name ):
+				result[ attr_name ] = getattr( value, attr_name )
+		
+		if not result:
+			result = { 'result': str( value ) }
+	
+	collection_id = result.get( 'collection_id' ) or result.get( 'id' ) or ''
+	collection_name = result.get( 'collection_name' ) or result.get( 'display_name' )
+	collection_name = collection_name or result.get( 'name' ) or collection_id or ''
+	description = result.get( 'collection_description' ) or result.get( 'description' ) or ''
+	status = result.get( 'status' ) or result.get( 'state' ) or ''
+	file_counts = result.get( 'file_counts' )
+	file_counts = file_counts if file_counts is not None else result.get( 'documents_count' )
+	file_counts = file_counts if file_counts is not None else result.get( 'document_count' )
+	usage_bytes = result.get( 'usage_bytes' )
+	usage_bytes = usage_bytes if usage_bytes is not None else result.get( 'size_bytes' )
+	usage_bytes = usage_bytes if usage_bytes is not None else result.get( 'bytes' )
+	
+	result[ 'id' ] = str( result.get( 'id' ) or collection_id or '' )
+	result[ 'name' ] = str( result.get( 'name' ) or collection_name or '' )
+	result[ 'display_name' ] = str( result.get( 'display_name' ) or collection_name or '' )
+	result[ 'description' ] = str( result.get( 'description' ) or description or '' )
+	result[ 'status' ] = str( status or '' )
+	result[ 'file_counts' ] = file_counts if file_counts is not None else ''
+	result[ 'usage_bytes' ] = usage_bytes if usage_bytes is not None else ''
+	
+	if collection_id:
+		result[ 'collection_id' ] = str( collection_id )
+	
+	if collection_name:
+		result[ 'collection_name' ] = str( collection_name )
+	
+	if description:
+		result[ 'collection_description' ] = str( description )
+	
+	return result
+
+def render_storage_metadata( metadata: Dict[ str, Any ] ) -> None:
+	"""
+	
+		Purpose:
+		--------
+		Render selected storage metadata.
+	
+		Parameters:
+		-----------
+		metadata: Dict[str, Any]
+			Storage metadata.
+	
+		Returns:
+		--------
+		None
+	
+	"""
+	if not isinstance( metadata, dict ) or len( metadata ) == 0:
+		st.info( 'No metadata loaded yet.' )
+		return
+	
+	st.json( metadata )
+
+def save_uploaded_storage_file( uploaded_file: Any ) -> Optional[ str ]:
+	"""
+	
+		Purpose:
+		--------
+		Save an uploaded file to a temporary path for storage upload methods.
+	
+		Parameters:
+		-----------
+		uploaded_file: Any
+			Streamlit uploaded file object.
+	
+		Returns:
+		--------
+		Optional[str]
+			Temporary file path or None.
+	
+	"""
+	if uploaded_file is None:
+		return None
+	
+	try:
+		return save_temp( uploaded_file )
+	except Exception:
+		pass
+	
+	try:
+		suffix = Path( uploaded_file.name ).suffix or '.tmp'
+		with tempfile.NamedTemporaryFile( delete=False, suffix=suffix ) as tmp:
+			tmp.write( uploaded_file.getvalue( ) )
+			return tmp.name
+	except Exception:
+		return None
+
 # ------------ TEXT UTILITIES
 
 def normalize_text( text: str ) -> str:
@@ -1456,30 +1613,73 @@ def extract_text_from_bytes( file_bytes: bytes ) -> str:
 
 def route_document_query( prompt: str ) -> str:
 	"""
+	
 		Purpose:
 		--------
-		Route a document question through the unified chat pipeline and return a model-generated answer.
+		Route a document question through the selected provider's Chat wrapper and return
+		a model-generated answer.
 
 		Parameters:
 		-----------
-		prompt : str
+		prompt: str
 			The user question to answer about active documents.
 
 		Returns:
 		--------
 		str
 			The assistant answer text.
-	"""
-	user_input = build_document_user_input( prompt )
-	if not user_input:
-		user_input = (prompt or '').strip( )
 	
-	return run_llm_turn( user_input=user_input,
-		temperature=float( st.session_state.get( 'temperature', 0.0 ) ),
-		top_p=float( st.session_state.get( 'top_percent', 0.95 ) ),
-		repeat_penalty=float( st.session_state.get( 'repeat_penalty', 1.1 ) ),
-		max_tokens=int( st.session_state.get( 'max_tokens', 1024 ) ) or 1024,
-		stream=False, output=None )
+	"""
+	try:
+		throw_if( 'prompt', prompt )
+		provider_name = st.session_state.get( 'provider', 'GPT' )
+		docqna = get_chat_module( provider_name )
+		user_input = build_document_user_input( prompt )
+		
+		if not user_input:
+			user_input = (prompt or '').strip( )
+		
+		model = st.session_state.get( 'docqna_model' )
+		if not model:
+			model_options = list( getattr( docqna, 'model_options', [ ] ) or [ ] )
+			model = model_options[ 0 ] if model_options else None
+		
+		if not model:
+			raise ValueError(
+				f'No Document Q&A model is configured for provider "{provider_name}".' )
+		
+		answer = docqna.generate_text( model=model, prompt=user_input,
+			temperature=float( st.session_state.get( 'docqna_temperature', 0.0 ) ),
+			top_p=float( st.session_state.get( 'docqna_top_percent', 0.95 ) ),
+			frequency=float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) ),
+			presence=float( st.session_state.get( 'docqna_presence_penalty', 0.0 ) ),
+			max_tokens=int( st.session_state.get( 'docqna_max_tokens', 4096 ) ) or 4096,
+			store=bool( st.session_state.get( 'docqna_store', False ) ),
+			stream=False,
+			instruct=st.session_state.get( 'docqna_system_instructions', '' ),
+			tools=st.session_state.get( 'docqna_tools', [ ] ),
+			include=st.session_state.get( 'docqna_include', [ ] ),
+			tool_choice=st.session_state.get( 'docqna_tool_choice' ) or None,
+			reasoning=st.session_state.get( 'docqna_reasoning' ) or None, )
+		
+		if isinstance( answer, str ):
+			return answer
+		
+		output_text = getattr( docqna, 'output_text', None )
+		if isinstance( output_text, str ) and output_text.strip( ):
+			return output_text.strip( )
+		
+		output_text = getattr( answer, 'output_text', None )
+		if isinstance( output_text, str ) and output_text.strip( ):
+			return output_text.strip( )
+		
+		return str( answer or '' )
+	except Exception as e:
+		ex = Error( e )
+		ex.module = 'app'
+		ex.cause = 'Document Q&A'
+		ex.method = 'route_document_query( prompt: str ) -> str'
+		raise ex
 
 def summarize_active_document( ) -> str:
 	"""
@@ -1825,270 +2025,6 @@ def build_document_user_input( user_query: str, k: int = 6 ) -> str:
 	prompt_parts.append( f'Question:\n{user_query}\n\nAnswer:' )
 	
 	return '\n\n'.join( prompt_parts ).strip( )
-	
-# ------------ VECTORSTORE UTILITIES
-
-def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
-	"""
-		
-		Purpose:
-		--------
-		Normalize provider storage objects to dictionaries for rendering and session state.
-		This supports OpenAI Vector Stores, xAI Collections, Gemini storage objects, and
-		dictionary-like provider responses.
-	
-		Parameters:
-		-----------
-		value: Any
-			Provider storage result object.
-	
-		Returns:
-		--------
-		Dict[str, Any]
-			Normalized result dictionary.
-		
-	"""
-	if value is None:
-		return { }
-	
-	if isinstance( value, dict ):
-		result = dict( value )
-	elif hasattr( value, 'model_dump' ):
-		try:
-			dumped = value.model_dump( )
-			result = dumped if isinstance( dumped, dict ) else { 'result': dumped }
-		except Exception:
-			result = { }
-	elif hasattr( value, 'dict' ):
-		try:
-			dumped = value.dict( )
-			result = dumped if isinstance( dumped, dict ) else { 'result': dumped }
-		except Exception:
-			result = { }
-	else:
-		result = { }
-		
-		for attr_name in [
-				'id',
-				'name',
-				'display_name',
-				'description',
-				'status',
-				'file_counts',
-				'usage_bytes',
-				'created_at',
-				'expires_at',
-				'metadata',
-				'deleted',
-				'collection_id',
-				'collection_name',
-				'collection_description',
-				'documents_count',
-				'document_count',
-				'file_id',
-				'filename',
-				'state',
-				'mime_type',
-				'size_bytes',
-				'raw',
-		]:
-			if not hasattr( value, attr_name ):
-				continue
-			
-			attr_value = getattr( value, attr_name )
-			try:
-				if hasattr( attr_value, 'model_dump' ):
-					attr_value = attr_value.model_dump( )
-				elif hasattr( attr_value, 'dict' ):
-					attr_value = attr_value.dict( )
-			except Exception:
-				pass
-			
-			result[ attr_name ] = attr_value
-	
-	if not result:
-		return { 'result': str( value ) }
-	
-	collection_id = (
-			result.get( 'collection_id' ) or
-			result.get( 'id' ) or
-			result.get( 'name' ) or
-			''
-	)
-	collection_name = (
-			result.get( 'collection_name' ) or
-			result.get( 'display_name' ) or
-			result.get( 'name' ) or
-			result.get( 'id' ) or
-			''
-	)
-	description = (
-			result.get( 'collection_description' ) or
-			result.get( 'description' ) or
-			''
-	)
-	file_counts = (
-			result.get( 'file_counts' ) or
-			result.get( 'documents_count' ) or
-			result.get( 'document_count' ) or
-			''
-	)
-	usage_bytes = (
-			result.get( 'usage_bytes' ) or
-			result.get( 'size_bytes' ) or
-			result.get( 'bytes' ) or
-			''
-	)
-	status = (
-			result.get( 'status' ) or
-			result.get( 'state' ) or
-			''
-	)
-	
-	result[ 'id' ] = str( result.get( 'id' ) or collection_id or '' )
-	result[ 'name' ] = str( result.get( 'name' ) or collection_name or '' )
-	result[ 'display_name' ] = str( result.get( 'display_name' ) or collection_name or '' )
-	result[ 'description' ] = str( result.get( 'description' ) or description or '' )
-	result[ 'status' ] = str( status or '' )
-	result[ 'file_counts' ] = file_counts
-	result[ 'usage_bytes' ] = usage_bytes
-	
-	if collection_id:
-		result[ 'collection_id' ] = str( collection_id )
-	
-	if collection_name:
-		result[ 'collection_name' ] = str( collection_name )
-	
-	if description:
-		result[ 'collection_description' ] = str( description )
-	
-	return result
-	
-def normalize_storage_rows( result: Any ) -> List[ Dict[ str, Any ] ]:
-	"""
-		
-		Purpose:
-		--------
-		Normalize provider storage list results into table rows.
-	
-		Parameters:
-		-----------
-		result (Any): Provider list result.
-	
-		Returns:
-		--------
-		List[Dict[str, Any]]: Normalized table rows.
-		
-	"""
-	if result is None:
-		return [ ]
-	
-	if hasattr( result, 'data' ):
-		items = getattr( result, 'data' )
-	elif isinstance( result, dict ) and isinstance( result.get( 'data' ), list ):
-		items = result.get( 'data' )
-	elif isinstance( result, dict ) and isinstance( result.get( 'stores' ), list ):
-		items = result.get( 'stores' )
-	elif isinstance( result, dict ) and isinstance( result.get( 'items' ), list ):
-		items = result.get( 'items' )
-	elif isinstance( result, list ):
-		items = result
-	else:
-		items = [ result ]
-	
-	rows = [ ]
-	for item in items:
-		obj = normalize_storage_object( item )
-		if not obj:
-			continue
-		
-		store_id = obj.get( 'id' ) or obj.get( 'name' ) or obj.get( 'display_name' ) or ''
-		store_name = obj.get( 'name' ) or obj.get( 'display_name' ) or obj.get( 'id' ) or ''
-		file_counts = obj.get( 'file_counts', '' )
-		usage_bytes = obj.get( 'usage_bytes', '' )
-		status = obj.get( 'status', '' )
-		
-		rows.append( {
-				'id': str( store_id or '' ),
-				'name': str( store_name or '' ),
-				'status': str( status or '' ),
-				'file_counts': str( file_counts or '' ),
-				'usage_bytes': str( usage_bytes or '' ),
-		} )
-	
-	return rows
-
-def normalize_search_results( result: Any ) -> List[ Dict[ str, Any ] ]:
-	"""
-		
-		Purpose:
-		--------
-		Normalize storage search results into dictionaries for display.
-	
-		Parameters:
-		-----------
-		result (Any): Provider search result.
-	
-		Returns:
-		--------
-		List[Dict[str, Any]]: Normalized search result rows.
-		
-	"""
-	if result is None:
-		return [ ]
-	
-	if hasattr( result, 'data' ):
-		items = getattr( result, 'data' )
-	elif isinstance( result, dict ) and isinstance( result.get( 'data' ), list ):
-		items = result.get( 'data' )
-	elif isinstance( result, dict ) and isinstance( result.get( 'results' ), list ):
-		items = result.get( 'results' )
-	elif isinstance( result, list ):
-		items = result
-	else:
-		items = [ result ]
-	
-	rows = [ ]
-	for item in items:
-		if isinstance( item, dict ):
-			rows.append( item )
-		else:
-			rows.append( normalize_storage_object( item ) )
-	
-	return rows
-
-def save_uploaded_storage_file( uploaded_file: Any ) -> Optional[ str ]:
-	"""
-		
-		Purpose:
-		--------
-		Save an uploaded file to a temporary path for storage upload methods.
-	
-		Parameters:
-		-----------
-		uploaded_file (Any): Streamlit uploaded file object.
-	
-		Returns:
-		--------
-		Optional[str]: Temporary file path or None.
-		
-	"""
-	if uploaded_file is None:
-		return None
-	
-	if 'save_temp' in globals( ):
-		try:
-			return save_temp( uploaded_file )
-		except Exception:
-			pass
-	
-	try:
-		suffix = Path( uploaded_file.name ).suffix or '.tmp'
-		with tempfile.NamedTemporaryFile( delete=False, suffix=suffix ) as tmp:
-			tmp.write( uploaded_file.getvalue( ) )
-			return tmp.name
-	except Exception:
-		return None
 
 # ------------ DATABASE UTILITIES
 
@@ -3956,7 +3892,7 @@ def render_provider_keys( ) -> None:
 			key='sidebar_gemini_api_key' )
 		
 		xai_key = st.text_input( 'xAI API Key', type='password',
-			value=st.session_state.get( 'xai_api_key', '' ) or cfg.XAI_API_KEY,
+			value=st.session_state.get( 'xai_api_key', cfg.XAI_API_KEY ),
 			help='Overrides XAI_API_KEY from config.py for this session only.',
 			key='sidebar_xai_api_key' )
 		
@@ -8360,6 +8296,7 @@ elif mode == 'Document Q&A':
 		# ------------------------------------------------------------------
 		if provider_name == 'Grok':
 			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
+				
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 						border=True, gap='medium' )
@@ -8386,10 +8323,67 @@ elif mode == 'Document Q&A':
 					
 					# ------------- Reasoning Options ----------
 					with llm_c3:
-						reasoning_options = list( docqna.reasoning_options )
-						set_docqna_reasoning = st.selectbox( label='Reasoning Effort:',
-							options=reasoning_options, key='docqna_reasoning',
-							help=cfg.REASONING, index=None, placeholder='Options' )
+						docqna = get_chat_module( provider_name )
+						def get_docqna_options( instance: Any, attr_name: str,
+								fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
+							"""
+							
+								Purpose:
+								--------
+								Return provider option values safely for Document Q&A controls.
+						
+								Parameters:
+								-----------
+								instance: Any
+									Provider Chat wrapper instance.
+						
+								attr_name: str
+									Option property name.
+						
+								fallback: Optional[List[Any]]
+									Fallback option list.
+						
+								Returns:
+								--------
+								List[Any]
+									Provider option values or fallback values.
+							
+							"""
+							values = getattr( instance, attr_name, None )
+							
+							if callable( values ):
+								try:
+									values = values( )
+								except Exception:
+									values = None
+							
+							if values is None:
+								values = fallback or [ ]
+							
+							if isinstance( values, tuple ):
+								values = list( values )
+							
+							if isinstance( values, list ):
+								return values
+							
+							return fallback or [ ]
+						
+						model_options = get_docqna_options( docqna, 'model_options', [ ] )
+						reasoning_options = get_docqna_options( docqna, 'reasoning_options', [ ] )
+						tool_options = get_docqna_options( docqna, 'tool_options', [ ] )
+						include_options = get_docqna_options( docqna, 'include_options', [ ] )
+						choice_options = get_docqna_options( docqna, 'choice_options', [ 'auto', 'required', 'none' ] )
+						format_options = get_docqna_options( docqna, 'format_options', [ 'text' ] )
+						if not reasoning_options:
+							reasoning_options = [ 'none' ]
+						
+						if not format_options:
+							format_options = [ 'text' ]
+						if not reasoning_options:
+							reasoning_options = [ 'none' ]
+						set_docqna_reasoning = st.selectbox( label='Reasoning',
+							options=reasoning_options, key='doc_reasoning', index=0,
+							help='Optional reasoning level when supported by the active provider.' )
 						
 						docqna_reasoning = st.session_state[ 'docqna_reasoning' ]
 					
@@ -8554,6 +8548,7 @@ elif mode == 'Document Q&A':
 		# EXPANDER — GEMINI DOCQNA LLM CONFIGURATION
 		# ------------------------------------------------------------------
 		elif provider_name == 'Gemini':
+			
 			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4, llm_c5 = st.columns(
@@ -8790,6 +8785,7 @@ elif mode == 'Document Q&A':
 		# EXPANDER — GPT DOCQNA LLM CONFIGURATION
 		# ------------------------------------------------------------------
 		elif provider_name == 'GPT':
+			
 			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
@@ -11043,24 +11039,28 @@ elif mode == 'Vector Stores':
 	provider_name = st.session_state.get( 'provider', 'GPT' )
 	
 	# ------------------------------------------------------------------
-	# Vector Store Helpers
+	# Vector Stores Helpers
 	# ------------------------------------------------------------------
 	def get_storage_help( name: str, fallback: str = '' ) -> str:
 		"""
 			
 			Purpose:
 			--------
-			Return storage mode help text from config.py without failing when a constant is
+			Return Vector Stores help text from config.py without failing when a constant is
 			absent.
 		
 			Parameters:
 			-----------
-			name (str): Config attribute name.
-			fallback (str): Fallback help text.
+			name: str
+				Config attribute name.
+			
+			fallback: str
+				Fallback help text.
 		
 			Returns:
 			--------
-			str: Help text value.
+			str
+				Help text value.
 			
 		"""
 		return str( getattr( cfg, name, fallback ) or fallback )
@@ -11071,17 +11071,23 @@ elif mode == 'Vector Stores':
 			
 			Purpose:
 			--------
-			Return list-like option values from a storage wrapper property.
+			Return list-like option values from a Vector Stores wrapper property.
 		
 			Parameters:
 			-----------
-			instance (Any): Provider storage wrapper instance.
-			attr_name (str): Property or attribute name to inspect.
-			fallback (Optional[List[Any]]): Fallback option values.
+			instance: Any
+				Provider Vector Stores wrapper instance.
+			
+			attr_name: str
+				Property or attribute name to inspect.
+			
+			fallback: Optional[List[Any]]
+				Fallback option values.
 		
 			Returns:
 			--------
-			List[Any]: Option values safe for Streamlit controls.
+			List[Any]
+				Option values safe for Streamlit controls.
 			
 		"""
 		values = getattr( instance, attr_name, None )
@@ -11107,16 +11113,20 @@ elif mode == 'Vector Stores':
 			
 			Purpose:
 			--------
-			Parse optional JSON text into a dictionary for storage wrapper calls.
+			Parse optional JSON text into a dictionary.
 		
 			Parameters:
 			-----------
-			value (Any): JSON text value.
-			label (str): User-facing label for warning messages.
+			value: Any
+				Raw JSON text.
+			
+			label: str
+				Label used in warning messages.
 		
 			Returns:
 			--------
-			Dict[str, Any]: Parsed JSON dictionary or an empty dictionary.
+			Dict[str, Any]
+				Parsed dictionary or an empty dictionary.
 			
 		"""
 		raw = str( value or '' ).strip( )
@@ -11141,15 +11151,17 @@ elif mode == 'Vector Stores':
 			
 			Purpose:
 			--------
-			Parse comma-delimited file or store identifiers.
+			Parse comma-delimited identifiers.
 		
 			Parameters:
 			-----------
-			value (Any): Raw identifier text.
+			value: Any
+				Raw identifier text.
 		
 			Returns:
 			--------
-			List[str]: Parsed identifiers.
+			List[str]
+				Parsed identifiers.
 			
 		"""
 		raw = str( value or '' )
@@ -11161,42 +11173,304 @@ elif mode == 'Vector Stores':
 			
 			Purpose:
 			--------
-			Call the first compatible storage wrapper method from an ordered method list.
+			Call the first compatible provider Vector Stores method.
 		
 			Parameters:
 			-----------
-			instance (Any): Storage wrapper instance.
-			method_names (List[str]): Ordered method names to try.
-			kwargs (Optional[Dict[str, Any]]): Keyword arguments for the method.
+			instance: Any
+				Provider Vector Stores wrapper instance.
+			
+			method_names: List[str]
+				Ordered method names to try.
+			
+			kwargs: Optional[Dict[str, Any]]
+				Candidate keyword arguments.
 		
 			Returns:
 			--------
-			Any: Provider storage method result.
+			Any
+				Provider method result.
 			
 		"""
 		kwargs = kwargs or { }
+		
 		for method_name in method_names:
 			method = getattr( instance, method_name, None )
-			if callable( method ):
-				try:
-					return method( **kwargs )
-				except TypeError:
-					clean_kwargs = {
+			if not callable( method ):
+				continue
+			
+			try:
+				import inspect
+				
+				signature = inspect.signature( method )
+				parameters = signature.parameters
+				has_kwargs = any(
+					parameter.kind == inspect.Parameter.VAR_KEYWORD
+					for parameter in parameters.values( )
+				)
+				
+				if has_kwargs:
+					call_kwargs = {
 							key: value
 							for key, value in kwargs.items( )
 							if value is not None and value != '' and value != [ ]
 					}
-					try:
-						return method( **clean_kwargs )
-					except TypeError:
-						if len( clean_kwargs ) == 1:
-							return method( list( clean_kwargs.values( ) )[ 0 ] )
-						raise
+				else:
+					call_kwargs = {
+							key: value
+							for key, value in kwargs.items( )
+							if
+							key in parameters and value is not None and value != '' and value != [ ]
+					}
+				
+				return method( **call_kwargs )
+			except TypeError:
+				clean_kwargs = {
+						key: value
+						for key, value in kwargs.items( )
+						if value is not None and value != '' and value != [ ]
+				}
+				
+				if len( clean_kwargs ) == 1:
+					return method( list( clean_kwargs.values( ) )[ 0 ] )
+				
+				raise
 		
 		raise AttributeError(
 			f'Provider "{provider_name}" does not expose a compatible method from: '
 			f'{", ".join( method_names )}.' )
-
+	
+	def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
+		"""
+			
+			Purpose:
+			--------
+			Normalize a provider storage object into a dictionary for rendering.
+		
+			Parameters:
+			-----------
+			value: Any
+				Provider result object.
+		
+			Returns:
+			--------
+			Dict[str, Any]
+				Normalized storage dictionary.
+			
+		"""
+		if value is None:
+			return { }
+		
+		if isinstance( value, dict ):
+			result = dict( value )
+		elif hasattr( value, 'model_dump' ):
+			try:
+				dumped = value.model_dump( )
+				result = dumped if isinstance( dumped, dict ) else { 'result': dumped }
+			except Exception:
+				result = { 'result': str( value ) }
+		elif hasattr( value, 'dict' ):
+			try:
+				dumped = value.dict( )
+				result = dumped if isinstance( dumped, dict ) else { 'result': dumped }
+			except Exception:
+				result = { 'result': str( value ) }
+		else:
+			result = { }
+			for attr_name in [
+					'id',
+					'name',
+					'display_name',
+					'description',
+					'status',
+					'state',
+					'file_counts',
+					'usage_bytes',
+					'created_at',
+					'expires_at',
+					'metadata',
+					'deleted',
+					'collection_id',
+					'collection_name',
+					'collection_description',
+					'documents_count',
+					'document_count',
+					'size_bytes',
+			]:
+				if hasattr( value, attr_name ):
+					result[ attr_name ] = getattr( value, attr_name )
+			
+			if not result:
+				result = { 'result': str( value ) }
+		
+		collection_id = result.get( 'collection_id' ) or result.get( 'id' ) or ''
+		collection_name = result.get( 'collection_name' ) or result.get( 'display_name' )
+		collection_name = collection_name or result.get( 'name' ) or collection_id or ''
+		description = result.get( 'collection_description' ) or result.get( 'description' ) or ''
+		status = result.get( 'status' ) or result.get( 'state' ) or ''
+		file_counts = result.get( 'file_counts' )
+		file_counts = file_counts if file_counts is not None else result.get( 'documents_count' )
+		file_counts = file_counts if file_counts is not None else result.get( 'document_count' )
+		usage_bytes = result.get( 'usage_bytes' )
+		usage_bytes = usage_bytes if usage_bytes is not None else result.get( 'size_bytes' )
+		
+		result[ 'id' ] = str( result.get( 'id' ) or collection_id or '' )
+		result[ 'name' ] = str( result.get( 'name' ) or collection_name or '' )
+		result[ 'display_name' ] = str( result.get( 'display_name' ) or collection_name or '' )
+		result[ 'description' ] = str( result.get( 'description' ) or description or '' )
+		result[ 'status' ] = str( status or '' )
+		result[ 'file_counts' ] = file_counts if file_counts is not None else ''
+		result[ 'usage_bytes' ] = usage_bytes if usage_bytes is not None else ''
+		
+		if collection_id:
+			result[ 'collection_id' ] = str( collection_id )
+		
+		if collection_name:
+			result[ 'collection_name' ] = str( collection_name )
+		
+		if description:
+			result[ 'collection_description' ] = str( description )
+		
+		return result
+	
+	def normalize_storage_rows( result: Any ) -> List[ Dict[ str, Any ] ]:
+		"""
+			
+			Purpose:
+			--------
+			Normalize provider list results into table rows.
+		
+			Parameters:
+			-----------
+			result: Any
+				Provider list result.
+		
+			Returns:
+			--------
+			List[Dict[str, Any]]
+				Normalized table rows.
+			
+		"""
+		if result is None:
+			return [ ]
+		
+		if hasattr( result, 'data' ):
+			items = getattr( result, 'data' )
+		elif isinstance( result, dict ) and isinstance( result.get( 'data' ), list ):
+			items = result.get( 'data' )
+		elif isinstance( result, dict ) and isinstance( result.get( 'stores' ), list ):
+			items = result.get( 'stores' )
+		elif isinstance( result, dict ) and isinstance( result.get( 'items' ), list ):
+			items = result.get( 'items' )
+		elif isinstance( result, dict ) and isinstance( result.get( 'collections' ), list ):
+			items = result.get( 'collections' )
+		elif isinstance( result, list ):
+			items = result
+		else:
+			items = [ result ]
+		
+		rows = [ ]
+		for item in items:
+			obj = normalize_storage_object( item )
+			if not obj:
+				continue
+			
+			store_id = obj.get( 'id' ) or obj.get( 'collection_id' ) or ''
+			store_name = obj.get( 'name' ) or obj.get( 'display_name' )
+			store_name = store_name or obj.get( 'collection_name' ) or store_id or ''
+			rows.append(
+				{
+						'id': str( store_id or '' ),
+						'name': str( store_name or '' ),
+						'status': str( obj.get( 'status', '' ) or '' ),
+						'file_counts': str( obj.get( 'file_counts', '' ) or '' ),
+						'usage_bytes': str( obj.get( 'usage_bytes', '' ) or '' ),
+				}
+			)
+		
+		return rows
+	
+	def normalize_search_results( result: Any ) -> List[ Dict[ str, Any ] ]:
+		"""
+			
+			Purpose:
+			--------
+			Normalize storage search results into dictionaries for display.
+		
+			Parameters:
+			-----------
+			result: Any
+				Provider search result.
+		
+			Returns:
+			--------
+			List[Dict[str, Any]]
+				Normalized search result rows.
+			
+		"""
+		if result is None:
+			return [ ]
+		
+		if isinstance( result, str ):
+			return [ { 'text': result } ]
+		
+		if hasattr( result, 'data' ):
+			items = getattr( result, 'data' )
+		elif isinstance( result, dict ) and isinstance( result.get( 'data' ), list ):
+			items = result.get( 'data' )
+		elif isinstance( result, dict ) and isinstance( result.get( 'results' ), list ):
+			items = result.get( 'results' )
+		elif isinstance( result, dict ) and isinstance( result.get( 'matches' ), list ):
+			items = result.get( 'matches' )
+		elif isinstance( result, list ):
+			items = result
+		else:
+			items = [ result ]
+		
+		rows = [ ]
+		for item in items:
+			if isinstance( item, dict ):
+				rows.append( item )
+			else:
+				rows.append( normalize_storage_object( item ) )
+		
+		return rows
+	
+	def save_uploaded_storage_file( uploaded_file: Any ) -> Optional[ str ]:
+		"""
+			
+			Purpose:
+			--------
+			Save an uploaded file to a temporary path for storage upload calls.
+		
+			Parameters:
+			-----------
+			uploaded_file: Any
+				Streamlit uploaded file object.
+		
+			Returns:
+			--------
+			Optional[str]
+				Temporary file path or None.
+			
+		"""
+		if uploaded_file is None:
+			return None
+		
+		if 'save_temp' in globals( ):
+			try:
+				return save_temp( uploaded_file )
+			except Exception:
+				pass
+		
+		try:
+			suffix = Path( uploaded_file.name ).suffix or '.tmp'
+			with tempfile.NamedTemporaryFile( delete=False, suffix=suffix ) as tmp:
+				tmp.write( uploaded_file.getvalue( ) )
+				return tmp.name
+		except Exception:
+			return None
+	
 	def get_selected_store_id( table_key: str, manual_key: str, selected_key: str ) -> str:
 		"""
 			
@@ -11206,13 +11480,19 @@ elif mode == 'Vector Stores':
 		
 			Parameters:
 			-----------
-			table_key (str): Session key containing normalized table rows.
-			manual_key (str): Session key containing manually entered identifier.
-			selected_key (str): Session key containing selected identifier.
+			table_key: str
+				Session key containing normalized table rows.
+			
+			manual_key: str
+				Session key containing manually entered identifier.
+			
+			selected_key: str
+				Session key containing selected identifier.
 		
 			Returns:
 			--------
-			str: Selected storage identifier.
+			str
+				Selected storage identifier.
 			
 		"""
 		selected = st.session_state.get( selected_key, '' )
@@ -11237,12 +11517,15 @@ elif mode == 'Vector Stores':
 			
 			Purpose:
 			--------
-			Render normalized storage rows as a dataframe.
+			Render normalized storage rows.
 		
 			Parameters:
 			-----------
-			rows (List[Dict[str, Any]]): Storage table rows.
-			key (str): Streamlit dataframe key.
+			rows: List[Dict[str, Any]]
+				Storage table rows.
+			
+			key: str
+				Streamlit dataframe key.
 		
 			Returns:
 			--------
@@ -11265,7 +11548,8 @@ elif mode == 'Vector Stores':
 		
 			Parameters:
 			-----------
-			metadata (Dict[str, Any]): Storage metadata.
+			metadata: Dict[str, Any]
+				Storage metadata.
 		
 			Returns:
 			--------
@@ -11287,7 +11571,8 @@ elif mode == 'Vector Stores':
 		
 			Parameters:
 			-----------
-			rows (List[Dict[str, Any]]): Search result rows.
+			rows: List[Dict[str, Any]]
+				Search result rows.
 		
 			Returns:
 			--------
@@ -11307,7 +11592,7 @@ elif mode == 'Vector Stores':
 			
 			Purpose:
 			--------
-			Clear Vector Stores output state without clearing upstream mode configuration.
+			Clear Vector Stores output state without clearing upstream configuration.
 		
 			Parameters:
 			-----------
@@ -11324,7 +11609,7 @@ elif mode == 'Vector Stores':
 		st.session_state[ 'stores_batch_result' ] = { }
 	
 	# ------------------------------------------------------------------
-	# Vector Stores Provider Guard
+	# Provider Guard
 	# ------------------------------------------------------------------
 	if provider_name == 'Gemini':
 		st.warning(
@@ -11348,32 +11633,22 @@ elif mode == 'Vector Stores':
 				type( default_value ) ):
 			st.session_state[ key ] = default_value
 	
-	if 'stores_name' not in st.session_state:
-		st.session_state[ 'stores_name' ] = ''
+	for key, default_value in {
+			'stores_name': '',
+			'stores_id': '',
+			'stores_manual_id': '',
+			'stores_description': '',
+			'stores_metadata': '',
+			'stores_query': '',
+			'stores_file_id': '',
+			'stores_file_ids_text': '',
+			'stores_selected_id': '',
+	}.items( ):
+		if key not in st.session_state:
+			st.session_state[ key ] = default_value
 	
-	if 'stores_id' not in st.session_state:
-		st.session_state[ 'stores_id' ] = ''
-	
-	if 'stores_manual_id' not in st.session_state:
-		st.session_state[ 'stores_manual_id' ] = ''
-	
-	if 'stores_description' not in st.session_state:
-		st.session_state[ 'stores_description' ] = ''
-	
-	if 'stores_metadata' not in st.session_state:
-		st.session_state[ 'stores_metadata' ] = ''
-	
-	if 'stores_query' not in st.session_state:
-		st.session_state[ 'stores_query' ] = ''
-	
-	if 'stores_file_id' not in st.session_state:
-		st.session_state[ 'stores_file_id' ] = ''
-	
-	if 'stores_file_ids_text' not in st.session_state:
-		st.session_state[ 'stores_file_ids_text' ] = ''
-	
-	if 'stores_selected_id' not in st.session_state:
-		st.session_state[ 'stores_selected_id' ] = ''
+	if 'stores_max_tokens' not in st.session_state:
+		st.session_state[ 'stores_max_tokens' ] = 0
 	
 	# ------------------------------------------------------------------
 	# Main UI
@@ -11409,6 +11684,7 @@ elif mode == 'Vector Stores':
 					help='Optional. Max tokens for store-backed answers.' )
 			
 			desc_c1, desc_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall' )
+			
 			with desc_c1:
 				st.text_area( label='Description', key='stores_description',
 					height=80, width='stretch',
@@ -11420,6 +11696,7 @@ elif mode == 'Vector Stores':
 					help='Optional. JSON object metadata for create/update calls.' )
 		
 		store_col, detail_col = st.columns( [ 0.50, 0.50 ], border=True, gap='medium' )
+		
 		with store_col:
 			st.markdown( '##### Store Lifecycle' )
 			
@@ -11429,8 +11706,12 @@ elif mode == 'Vector Stores':
 					with st.spinner( 'Creating vector store…' ):
 						try:
 							name = st.session_state.get( 'stores_name', '' ).strip( )
+							
 							if not name:
 								st.warning( 'Enter a vector store name before creating.' )
+							elif provider_name == 'Grok':
+								st.warning(
+									'Grok collection creation requires collection-management capability. Use configured collections for search.' )
 							else:
 								result = call_storage_method(
 									instance=vector,
@@ -11459,11 +11740,19 @@ elif mode == 'Vector Stores':
 				if st.button( 'List Stores', key='list_vector_stores', width='stretch' ):
 					with st.spinner( 'Listing vector stores…' ):
 						try:
-							result = call_storage_method(
-								instance=vector,
-								method_names=[ 'list_stores', 'list', 'list_collections' ],
-								kwargs={ 'limit': 100, 'order': 'desc' }
-							)
+							if provider_name == 'Grok':
+								result = call_storage_method(
+									instance=vector,
+									method_names=[ 'list' ],
+									kwargs={ }
+								)
+							else:
+								result = call_storage_method(
+									instance=vector,
+									method_names=[ 'list_stores', 'list', 'list_collections' ],
+									kwargs={ 'limit': 100, 'order': 'desc' }
+								)
+							
 							rows = normalize_storage_rows( result )
 							st.session_state[ 'stores_table' ] = rows
 							st.success( f'Loaded {len( rows )} store record(s).' )
@@ -11475,14 +11764,17 @@ elif mode == 'Vector Stores':
 			store_ids = [
 					row.get( 'id', '' )
 					for row in rows
-					if isinstance( row, dict ) and row.get( 'id', '' ) ]
+					if isinstance( row, dict ) and row.get( 'id', '' )
+			]
 			
 			st.selectbox( label='Selected Store', options=store_ids,
 				key='stores_selected_id', index=None, placeholder='Options',
 				help='Store selected from latest list.' )
 			
-			selected_store_id = get_selected_store_id( table_key='stores_table',
-				manual_key='stores_manual_id', selected_key='stores_selected_id' )
+			selected_store_id = get_selected_store_id(
+				table_key='stores_table',
+				manual_key='stores_manual_id',
+				selected_key='stores_selected_id' )
 			
 			retrieve_c1, retrieve_c2, retrieve_c3 = st.columns( [ 0.34, 0.33, 0.33 ] )
 			with retrieve_c1:
@@ -11491,11 +11783,23 @@ elif mode == 'Vector Stores':
 						try:
 							if not selected_store_id:
 								st.warning( 'Select or enter a store ID before retrieving.' )
+							elif provider_name == 'Grok':
+								result = call_storage_method(
+									instance=vector,
+									method_names=[ 'retrieve' ],
+									kwargs={ 'store_id': selected_store_id }
+								)
+								metadata = normalize_storage_object( result )
+								st.session_state[ 'stores_store_metadata' ] = metadata
+								st.session_state[ 'stores_id' ] = selected_store_id
+								st.success( 'Store metadata retrieved.' )
 							else:
-								result = call_storage_method( instance=vector,
+								result = call_storage_method(
+									instance=vector,
 									method_names=[ 'retrieve', 'retrieve_store', 'get_collection' ],
 									kwargs={ 'store_id': selected_store_id,
-									         'id': selected_store_id } )
+									         'id': selected_store_id }
+								)
 								metadata = normalize_storage_object( result )
 								st.session_state[ 'stores_store_metadata' ] = metadata
 								st.session_state[ 'stores_id' ] = selected_store_id
@@ -11510,6 +11814,8 @@ elif mode == 'Vector Stores':
 						try:
 							if not selected_store_id:
 								st.warning( 'Select or enter a store ID before updating.' )
+							elif provider_name == 'Grok':
+								st.warning( 'Use configured collections for search.' )
 							else:
 								result = call_storage_method(
 									instance=vector,
@@ -11539,6 +11845,8 @@ elif mode == 'Vector Stores':
 						try:
 							if not selected_store_id:
 								st.warning( 'Select or enter a store ID before deleting.' )
+							elif provider_name == 'Grok':
+								st.warning( 'Use configured collections for search.' )
 							else:
 								result = call_storage_method(
 									instance=vector,
@@ -11568,6 +11876,7 @@ elif mode == 'Vector Stores':
 				placeholder='Search this vector store or collection.' )
 			
 			search_c1, search_c2 = st.columns( [ 0.50, 0.50 ] )
+			
 			with search_c1:
 				if st.button( 'Search Store', key='search_vector_store', width='stretch' ):
 					with st.spinner( 'Searching store…' ):
@@ -11577,17 +11886,31 @@ elif mode == 'Vector Stores':
 							elif not st.session_state.get( 'stores_query', '' ).strip( ):
 								st.warning( 'Enter a search query first.' )
 							else:
-								result = call_storage_method(
-									instance=vector,
-									method_names=[ 'search', 'search_store', 'query',
-									               'query_collection' ],
-									kwargs={
-											'store_id': selected_store_id,
-											'id': selected_store_id,
-											'query': st.session_state.get( 'stores_query',
-												'' ).strip( ),
-									}
-								)
+								query_text = st.session_state.get( 'stores_query', '' ).strip( )
+								
+								if provider_name == 'Grok':
+									result = call_storage_method(
+										instance=vector,
+										method_names=[ 'search' ],
+										kwargs={
+												'store_id': selected_store_id,
+												'prompt': query_text,
+												'model': st.session_state.get(
+													'stores_model' ) or 'grok-4-fast',
+										}
+									)
+								else:
+									result = call_storage_method(
+										instance=vector,
+										method_names=[ 'search', 'search_store', 'query',
+										               'query_collection' ],
+										kwargs={
+												'store_id': selected_store_id,
+												'id': selected_store_id,
+												'query': query_text,
+										}
+									)
+								
 								rows = normalize_search_results( result )
 								st.session_state[ 'stores_search_results' ] = rows
 								st.success( f'Returned {len( rows )} result(s).' )
@@ -11604,18 +11927,23 @@ elif mode == 'Vector Stores':
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 		
 		file_col, batch_col = st.columns( [ 0.50, 0.50 ], border=True, gap='medium' )
+		
 		with file_col:
 			st.markdown( '##### Store Files' )
 			st.text_input( label='File ID', key='stores_file_id',
-				help='OpenAI/Grok file ID to attach, list, or delete.',
+				help='OpenAI file ID to attach, list, or delete.',
 				width='stretch' )
 			
 			file_op_c1, file_op_c2, file_op_c3 = st.columns( [ 0.34, 0.33, 0.33 ] )
+			
 			with file_op_c1:
 				if st.button( 'Attach File', key='attach_vector_store_file', width='stretch' ):
 					with st.spinner( 'Attaching file…' ):
 						try:
-							if not selected_store_id:
+							if provider_name == 'Grok':
+								st.warning(
+									'Grok collection file attachment requires collection-management capability.' )
+							elif not selected_store_id:
 								st.warning( 'Select or enter a store ID first.' )
 							elif not st.session_state.get( 'stores_file_id', '' ).strip( ):
 								st.warning( 'Enter a file ID first.' )
@@ -11641,7 +11969,10 @@ elif mode == 'Vector Stores':
 				if st.button( 'List Files', key='list_vector_store_files', width='stretch' ):
 					with st.spinner( 'Listing store files…' ):
 						try:
-							if not selected_store_id:
+							if provider_name == 'Grok':
+								st.warning(
+									'Grok list-files requires collection-management capability.' )
+							elif not selected_store_id:
 								st.warning( 'Select or enter a store ID first.' )
 							else:
 								result = call_storage_method(
@@ -11661,7 +11992,10 @@ elif mode == 'Vector Stores':
 				if st.button( 'Delete File', key='delete_vector_store_file', width='stretch' ):
 					with st.spinner( 'Deleting store file…' ):
 						try:
-							if not selected_store_id:
+							if provider_name == 'Grok':
+								st.warning(
+									'Grok delete-file requires collection-management capability.' )
+							elif not selected_store_id:
 								st.warning( 'Select or enter a store ID first.' )
 							elif not st.session_state.get( 'stores_file_id', '' ).strip( ):
 								st.warning( 'Enter a file ID first.' )
@@ -11697,11 +12031,15 @@ elif mode == 'Vector Stores':
 				key='stores_file_upload' )
 			
 			batch_c1, batch_c2 = st.columns( [ 0.50, 0.50 ] )
+			
 			with batch_c1:
 				if st.button( 'Create Batch', key='create_vector_store_batch', width='stretch' ):
 					with st.spinner( 'Creating file batch…' ):
 						try:
-							if not selected_store_id:
+							if provider_name == 'Grok':
+								st.warning(
+									'Grok batch attachment requires collection-management capability.' )
+							elif not selected_store_id:
 								st.warning( 'Select or enter a store ID first.' )
 							else:
 								file_ids = parse_storage_ids(
@@ -11729,7 +12067,10 @@ elif mode == 'Vector Stores':
 						width='stretch' ):
 					with st.spinner( 'Uploading and attaching file…' ):
 						try:
-							if not selected_store_id:
+							if provider_name == 'Grok':
+								st.warning(
+									'Grok upload-to-collection requires collection-management capability.' )
+							elif not selected_store_id:
 								st.warning( 'Select or enter a store ID first.' )
 							elif uploaded_store_file is None:
 								st.warning( 'Select a file first.' )
@@ -11738,8 +12079,10 @@ elif mode == 'Vector Stores':
 								result = call_storage_method(
 									instance=vector,
 									method_names=[ 'upload_file', 'upload', 'files_upload' ],
-									kwargs={ 'store_id': selected_store_id, 'id': selected_store_id,
-									         'path': path, 'file_path': path }
+									kwargs={ 'store_id': selected_store_id,
+									         'id': selected_store_id,
+									         'path': path,
+									         'file_path': path }
 								)
 								st.session_state[
 									'stores_batch_result' ] = normalize_storage_object( result )
@@ -13035,19 +13378,17 @@ st.markdown(
 # ======================================================================================
 _mode_to_model_key = \
 {
-		'Text': 'text_model',
-		'Images': 'image_model',
-		'Audio': 'translation_model',
-		'TTS': 'tts_model',
-		'Translation': 'translation_model',
-		'Transcription': 'transcription_model',
-		'Embeddings': 'embedding_model',
-		'Document Q&A': 'docqna_model',
-		'Files': 'files_model',
-		'Vector Stores': 'stores_model',
-		'Prompt Engineering': 'text_model',
-		'Data Management': 'text_model',
-		'Export': 'text_model',
+	'Text': 'text_model',
+	'Images': 'image_model',
+	'Audio': 'audio_model',
+	'Embeddings': 'embed_model',
+	'Document Q&A': 'doc_model',
+	'Files': 'files_model',
+	'Vector Stores': 'stores_model',
+	'File Search Stores': 'filestore_model',
+	'Google Cloud Buckets': 'bucket_model',
+	'Prompt Engineering': 'prompt_model',
+	'Data Management': 'data_model',
 }
 
 provider_val = st.session_state.get( 'provider', '—' )
