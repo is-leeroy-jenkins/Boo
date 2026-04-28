@@ -1825,6 +1825,270 @@ def build_document_user_input( user_query: str, k: int = 6 ) -> str:
 	prompt_parts.append( f'Question:\n{user_query}\n\nAnswer:' )
 	
 	return '\n\n'.join( prompt_parts ).strip( )
+	
+# ------------ VECTORSTORE UTILITIES
+
+def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
+	"""
+		
+		Purpose:
+		--------
+		Normalize provider storage objects to dictionaries for rendering and session state.
+		This supports OpenAI Vector Stores, xAI Collections, Gemini storage objects, and
+		dictionary-like provider responses.
+	
+		Parameters:
+		-----------
+		value: Any
+			Provider storage result object.
+	
+		Returns:
+		--------
+		Dict[str, Any]
+			Normalized result dictionary.
+		
+	"""
+	if value is None:
+		return { }
+	
+	if isinstance( value, dict ):
+		result = dict( value )
+	elif hasattr( value, 'model_dump' ):
+		try:
+			dumped = value.model_dump( )
+			result = dumped if isinstance( dumped, dict ) else { 'result': dumped }
+		except Exception:
+			result = { }
+	elif hasattr( value, 'dict' ):
+		try:
+			dumped = value.dict( )
+			result = dumped if isinstance( dumped, dict ) else { 'result': dumped }
+		except Exception:
+			result = { }
+	else:
+		result = { }
+		
+		for attr_name in [
+				'id',
+				'name',
+				'display_name',
+				'description',
+				'status',
+				'file_counts',
+				'usage_bytes',
+				'created_at',
+				'expires_at',
+				'metadata',
+				'deleted',
+				'collection_id',
+				'collection_name',
+				'collection_description',
+				'documents_count',
+				'document_count',
+				'file_id',
+				'filename',
+				'state',
+				'mime_type',
+				'size_bytes',
+				'raw',
+		]:
+			if not hasattr( value, attr_name ):
+				continue
+			
+			attr_value = getattr( value, attr_name )
+			try:
+				if hasattr( attr_value, 'model_dump' ):
+					attr_value = attr_value.model_dump( )
+				elif hasattr( attr_value, 'dict' ):
+					attr_value = attr_value.dict( )
+			except Exception:
+				pass
+			
+			result[ attr_name ] = attr_value
+	
+	if not result:
+		return { 'result': str( value ) }
+	
+	collection_id = (
+			result.get( 'collection_id' ) or
+			result.get( 'id' ) or
+			result.get( 'name' ) or
+			''
+	)
+	collection_name = (
+			result.get( 'collection_name' ) or
+			result.get( 'display_name' ) or
+			result.get( 'name' ) or
+			result.get( 'id' ) or
+			''
+	)
+	description = (
+			result.get( 'collection_description' ) or
+			result.get( 'description' ) or
+			''
+	)
+	file_counts = (
+			result.get( 'file_counts' ) or
+			result.get( 'documents_count' ) or
+			result.get( 'document_count' ) or
+			''
+	)
+	usage_bytes = (
+			result.get( 'usage_bytes' ) or
+			result.get( 'size_bytes' ) or
+			result.get( 'bytes' ) or
+			''
+	)
+	status = (
+			result.get( 'status' ) or
+			result.get( 'state' ) or
+			''
+	)
+	
+	result[ 'id' ] = str( result.get( 'id' ) or collection_id or '' )
+	result[ 'name' ] = str( result.get( 'name' ) or collection_name or '' )
+	result[ 'display_name' ] = str( result.get( 'display_name' ) or collection_name or '' )
+	result[ 'description' ] = str( result.get( 'description' ) or description or '' )
+	result[ 'status' ] = str( status or '' )
+	result[ 'file_counts' ] = file_counts
+	result[ 'usage_bytes' ] = usage_bytes
+	
+	if collection_id:
+		result[ 'collection_id' ] = str( collection_id )
+	
+	if collection_name:
+		result[ 'collection_name' ] = str( collection_name )
+	
+	if description:
+		result[ 'collection_description' ] = str( description )
+	
+	return result
+	
+def normalize_storage_rows( result: Any ) -> List[ Dict[ str, Any ] ]:
+	"""
+		
+		Purpose:
+		--------
+		Normalize provider storage list results into table rows.
+	
+		Parameters:
+		-----------
+		result (Any): Provider list result.
+	
+		Returns:
+		--------
+		List[Dict[str, Any]]: Normalized table rows.
+		
+	"""
+	if result is None:
+		return [ ]
+	
+	if hasattr( result, 'data' ):
+		items = getattr( result, 'data' )
+	elif isinstance( result, dict ) and isinstance( result.get( 'data' ), list ):
+		items = result.get( 'data' )
+	elif isinstance( result, dict ) and isinstance( result.get( 'stores' ), list ):
+		items = result.get( 'stores' )
+	elif isinstance( result, dict ) and isinstance( result.get( 'items' ), list ):
+		items = result.get( 'items' )
+	elif isinstance( result, list ):
+		items = result
+	else:
+		items = [ result ]
+	
+	rows = [ ]
+	for item in items:
+		obj = normalize_storage_object( item )
+		if not obj:
+			continue
+		
+		store_id = obj.get( 'id' ) or obj.get( 'name' ) or obj.get( 'display_name' ) or ''
+		store_name = obj.get( 'name' ) or obj.get( 'display_name' ) or obj.get( 'id' ) or ''
+		file_counts = obj.get( 'file_counts', '' )
+		usage_bytes = obj.get( 'usage_bytes', '' )
+		status = obj.get( 'status', '' )
+		
+		rows.append( {
+				'id': str( store_id or '' ),
+				'name': str( store_name or '' ),
+				'status': str( status or '' ),
+				'file_counts': str( file_counts or '' ),
+				'usage_bytes': str( usage_bytes or '' ),
+		} )
+	
+	return rows
+
+def normalize_search_results( result: Any ) -> List[ Dict[ str, Any ] ]:
+	"""
+		
+		Purpose:
+		--------
+		Normalize storage search results into dictionaries for display.
+	
+		Parameters:
+		-----------
+		result (Any): Provider search result.
+	
+		Returns:
+		--------
+		List[Dict[str, Any]]: Normalized search result rows.
+		
+	"""
+	if result is None:
+		return [ ]
+	
+	if hasattr( result, 'data' ):
+		items = getattr( result, 'data' )
+	elif isinstance( result, dict ) and isinstance( result.get( 'data' ), list ):
+		items = result.get( 'data' )
+	elif isinstance( result, dict ) and isinstance( result.get( 'results' ), list ):
+		items = result.get( 'results' )
+	elif isinstance( result, list ):
+		items = result
+	else:
+		items = [ result ]
+	
+	rows = [ ]
+	for item in items:
+		if isinstance( item, dict ):
+			rows.append( item )
+		else:
+			rows.append( normalize_storage_object( item ) )
+	
+	return rows
+
+def save_uploaded_storage_file( uploaded_file: Any ) -> Optional[ str ]:
+	"""
+		
+		Purpose:
+		--------
+		Save an uploaded file to a temporary path for storage upload methods.
+	
+		Parameters:
+		-----------
+		uploaded_file (Any): Streamlit uploaded file object.
+	
+		Returns:
+		--------
+		Optional[str]: Temporary file path or None.
+		
+	"""
+	if uploaded_file is None:
+		return None
+	
+	if 'save_temp' in globals( ):
+		try:
+			return save_temp( uploaded_file )
+		except Exception:
+			pass
+	
+	try:
+		suffix = Path( uploaded_file.name ).suffix or '.tmp'
+		with tempfile.NamedTemporaryFile( delete=False, suffix=suffix ) as tmp:
+			tmp.write( uploaded_file.getvalue( ) )
+			return tmp.name
+	except Exception:
+		return None
 
 # ------------ DATABASE UTILITIES
 
@@ -3692,7 +3956,7 @@ def render_provider_keys( ) -> None:
 			key='sidebar_gemini_api_key' )
 		
 		xai_key = st.text_input( 'xAI API Key', type='password',
-			value=st.session_state.get( 'xai_api_key', '' ) or '',
+			value=st.session_state.get( 'xai_api_key', '' ) or cfg.XAI_API_KEY,
 			help='Overrides XAI_API_KEY from config.py for this session only.',
 			key='sidebar_xai_api_key' )
 		
@@ -3772,12 +4036,8 @@ with st.sidebar:
 	st.subheader( 'Provider' )
 	st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 	
-	provider = st.selectbox(
-		label='Choose provider',
-		options=provider_options,
-		index=provider_options.index( current_provider ),
-		key='provider'
-	)
+	provider = st.selectbox( label='Choose provider', options=provider_options,
+		index=provider_options.index( current_provider ), key='provider' )
 	
 	logo_path = getattr( cfg, 'LOGO_MAP', { } ).get( provider )
 	if logo_path:
@@ -9474,6 +9734,94 @@ elif mode == 'Files':
 	files = get_files_module( provider_name )
 	
 	# ------------------------------------------------------------------
+	# Files Mode State Safety
+	# ------------------------------------------------------------------
+	if not isinstance( st.session_state.get( 'files_table' ), list ):
+		st.session_state[ 'files_table' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'files_metadata' ), dict ):
+		st.session_state[ 'files_metadata' ] = { }
+	
+	if not isinstance( st.session_state.get( 'files_delete_result' ), dict ):
+		st.session_state[ 'files_delete_result' ] = { }
+	
+	if not isinstance( st.session_state.get( 'files_uploaded' ), list ):
+		st.session_state[ 'files_uploaded' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'files_messages' ), list ):
+		st.session_state[ 'files_messages' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'files_include' ), list ):
+		st.session_state[ 'files_include' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'files_tools' ), list ):
+		st.session_state[ 'files_tools' ] = [ ]
+	
+	if 'files_manual_id' not in st.session_state:
+		st.session_state[ 'files_manual_id' ] = ''
+	
+	if 'files_retrieve_id' not in st.session_state:
+		st.session_state[ 'files_retrieve_id' ] = ''
+	
+	if 'files_extract_id' not in st.session_state:
+		st.session_state[ 'files_extract_id' ] = ''
+	
+	if 'files_delete_id' not in st.session_state:
+		st.session_state[ 'files_delete_id' ] = ''
+	
+	if 'files_type' not in st.session_state:
+		st.session_state[ 'files_type' ] = ''
+	
+	if 'files_selected_id' not in st.session_state:
+		st.session_state[ 'files_selected_id' ] = ''
+	
+	if 'files_question' not in st.session_state:
+		st.session_state[ 'files_question' ] = ''
+	
+	if 'files_content' not in st.session_state:
+		st.session_state[ 'files_content' ] = None
+	
+	if 'files_content_text' not in st.session_state:
+		st.session_state[ 'files_content_text' ] = ''
+	
+	if 'files_last_answer' not in st.session_state:
+		st.session_state[ 'files_last_answer' ] = ''
+	
+	if 'files_previous_response_id' not in st.session_state:
+		st.session_state[ 'files_previous_response_id' ] = ''
+	
+	if 'files_conversation_id' not in st.session_state:
+		st.session_state[ 'files_conversation_id' ] = ''
+	
+	if 'files_store' not in st.session_state:
+		st.session_state[ 'files_store' ] = False
+	
+	if 'files_stream' not in st.session_state:
+		st.session_state[ 'files_stream' ] = False
+	
+	if 'files_top_percent' not in st.session_state:
+		st.session_state[ 'files_top_percent' ] = 0.0
+	
+	if 'files_frequency_penalty' not in st.session_state:
+		st.session_state[ 'files_frequency_penalty' ] = 0.0
+	
+	if 'files_presence_penalty' not in st.session_state:
+		st.session_state[ 'files_presence_penalty' ] = 0.0
+	
+	if 'files_download_format' not in st.session_state:
+		st.session_state[ 'files_download_format' ] = ''
+	
+	if 'files_page_number' not in st.session_state:
+		st.session_state[ 'files_page_number' ] = 0
+	
+	if 'files_confirm_delete' not in st.session_state:
+		st.session_state[ 'files_confirm_delete' ] = False
+	
+	if st.session_state.get( 'clear_instructions' ):
+		st.session_state[ 'files_system_instructions' ] = ''
+		st.session_state[ 'clear_instructions' ] = False
+	
+	# ------------------------------------------------------------------
 	# Files Mode Helpers
 	# ------------------------------------------------------------------
 	def get_files_help( name: str, fallback: str = '' ) -> str:
@@ -9485,12 +9833,16 @@ elif mode == 'Files':
 		
 			Parameters:
 			-----------
-			name (str): Config attribute name.
-			fallback (str): Fallback help text.
+			name: str
+				Config attribute name.
+			
+			fallback: str
+				Fallback help text.
 		
 			Returns:
 			--------
-			str: Help text value.
+			str
+				Help text value.
 			
 		"""
 		return str( getattr( cfg, name, fallback ) or fallback )
@@ -9505,13 +9857,19 @@ elif mode == 'Files':
 		
 			Parameters:
 			-----------
-			instance (Any): Provider Files wrapper instance.
-			attr_name (str): Property or attribute name to inspect.
-			fallback (Optional[List[Any]]): Fallback option values.
+			instance: Any
+				Provider Files wrapper instance.
+			
+			attr_name: str
+				Property or attribute name to inspect.
+			
+			fallback: Optional[List[Any]]
+				Fallback option values.
 		
 			Returns:
 			--------
-			List[Any]: Option values safe for Streamlit controls.
+			List[Any]
+				Option values safe for Streamlit controls.
 			
 		"""
 		values = getattr( instance, attr_name, None )
@@ -9532,6 +9890,94 @@ elif mode == 'Files':
 		
 		return fallback or [ ]
 	
+	def files_has_method( method_names: List[ str ] ) -> bool:
+		"""
+			
+			Purpose:
+			--------
+			Determine whether the active provider Files wrapper exposes at least one callable
+			method from the supplied method list.
+		
+			Parameters:
+			-----------
+			method_names: List[str]
+				Method names to inspect.
+		
+			Returns:
+			--------
+			bool
+				True if at least one callable method exists.
+			
+		"""
+		for method_name in method_names:
+			method = getattr( files, method_name, None )
+			if callable( method ):
+				return True
+		
+		return False
+	
+	def sanitize_files_selection( key: str, valid_options: List[ Any ], default: Any = '' ) -> None:
+		"""
+			
+			Purpose:
+			--------
+			Remove stale provider-specific Files selections before rendering widgets.
+		
+			Parameters:
+			-----------
+			key: str
+				Session-state key to sanitize.
+			
+			valid_options: List[Any]
+				Provider-valid option values.
+			
+			default: Any
+				Value assigned when the current value is invalid.
+		
+			Returns:
+			--------
+			None
+			
+		"""
+		current_value = st.session_state.get( key, default )
+		
+		if current_value in [ None, '' ]:
+			return
+		
+		if valid_options and current_value not in valid_options:
+			st.session_state[ key ] = default
+	
+	def sanitize_files_multiselect( key: str, valid_options: List[ Any ] ) -> None:
+		"""
+			
+			Purpose:
+			--------
+			Remove stale provider-specific Files multiselect values before rendering widgets.
+		
+			Parameters:
+			-----------
+			key: str
+				Session-state key to sanitize.
+			
+			valid_options: List[Any]
+				Provider-valid option values.
+		
+			Returns:
+			--------
+			None
+			
+		"""
+		current_values = st.session_state.get( key, [ ] )
+		
+		if not isinstance( current_values, list ):
+			st.session_state[ key ] = [ ]
+			return
+		
+		st.session_state[ key ] = [
+				value for value in current_values
+				if value in valid_options
+		]
+	
 	def call_files_method( method_names: List[ str ],
 			kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
 		"""
@@ -9542,12 +9988,16 @@ elif mode == 'Files':
 		
 			Parameters:
 			-----------
-			method_names (List[str]): Ordered method names to try.
-			kwargs (Optional[Dict[str, Any]]): Keyword arguments for the provider method.
+			method_names: List[str]
+				Ordered method names to try.
+			
+			kwargs: Optional[Dict[str, Any]]
+				Keyword arguments for the provider method.
 		
 			Returns:
 			--------
-			Any: Provider method result.
+			Any
+				Provider method result.
 			
 		"""
 		kwargs = kwargs or { }
@@ -9563,138 +10013,108 @@ elif mode == 'Files':
 							for key, value in kwargs.items( )
 							if value is not None and value != '' and value != [ ]
 					}
+					
 					try:
 						return method( **clean_kwargs )
 					except TypeError:
 						if len( clean_kwargs ) == 1:
 							return method( list( clean_kwargs.values( ) )[ 0 ] )
+						
 						raise
 		
 		raise AttributeError( f'Provider "{provider_name}" does not expose any Files method from: '
-			f'{", ".join( method_names )}.' )
+		                      f'{", ".join( method_names )}.' )
 	
-	def save_uploaded_file_for_api( uploaded_file: Any ) -> Optional[ str ]:
+	def normalize_file_id( result: Any ) -> str:
 		"""
 			
 			Purpose:
 			--------
-			Save a Streamlit uploaded file to a temporary path for provider Files wrappers.
+			Extract a provider file identifier from common response shapes.
 		
 			Parameters:
 			-----------
-			uploaded_file (Any): Streamlit uploaded file object.
+			result: Any
+				Provider file response.
 		
 			Returns:
 			--------
-			Optional[str]: Temporary file path or None.
+			str
+				File identifier or empty string.
 			
 		"""
-		if uploaded_file is None:
-			return None
-		
-		if 'save_temp' in globals( ):
-			try:
-				return save_temp( uploaded_file )
-			except Exception:
-				pass
-		
-		try:
-			suffix = Path( uploaded_file.name ).suffix or '.tmp'
-			with tempfile.NamedTemporaryFile( delete=False, suffix=suffix ) as tmp:
-				tmp.write( uploaded_file.getvalue( ) )
-				return tmp.name
-		except Exception:
-			return None
-	
-	def normalize_file_id( file_object: Any ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Extract a provider file identifier from a provider response object.
-		
-			Parameters:
-			-----------
-			file_object (Any): Provider file object, dictionary, or string.
-		
-			Returns:
-			--------
-			str: File identifier.
-			
-		"""
-		if file_object is None:
+		if result is None:
 			return ''
 		
-		if isinstance( file_object, str ):
-			return file_object
+		if isinstance( result, dict ):
+			return str(
+				result.get( 'id' ) or result.get( 'file_id' ) or result.get( 'name' ) or '' )
 		
-		if isinstance( file_object, dict ):
-			for key in [ 'id', 'name', 'file_id', 'uri' ]:
-				if key in file_object and file_object.get( key ):
-					return str( file_object.get( key ) )
-		
-		for attr_name in [ 'id', 'name', 'file_id', 'uri' ]:
-			if hasattr( file_object, attr_name ):
-				value = getattr( file_object, attr_name )
-				if value:
-					return str( value )
-		
-		return str( file_object )
+		return str(
+			getattr( result, 'id', None ) or
+			getattr( result, 'file_id', None ) or
+			getattr( result, 'name', None ) or
+			''
+		)
 	
 	def normalize_files_list( result: Any ) -> List[ Dict[ str, Any ] ]:
 		"""
 			
 			Purpose:
 			--------
-			Normalize provider file listing results into table rows.
+			Normalize provider file-list responses into table rows.
 		
 			Parameters:
 			-----------
-			result (Any): Provider list response.
+			result: Any
+				Provider file-list response.
 		
 			Returns:
 			--------
-			List[Dict[str, Any]]: File table rows.
+			List[Dict[str, Any]]
+				Normalized file rows.
 			
 		"""
 		if result is None:
 			return [ ]
 		
+		items = result
+		if isinstance( result, dict ):
+			items = result.get( 'data' ) or result.get( 'files' ) or result.get( 'items' ) or [ ]
+		
 		if hasattr( result, 'data' ):
 			items = getattr( result, 'data' )
-		elif isinstance( result, dict ) and isinstance( result.get( 'data' ), list ):
-			items = result.get( 'data' )
-		elif isinstance( result, list ):
-			items = result
-		else:
-			items = [ result ]
 		
-		rows = [ ]
+		if hasattr( result, 'files' ):
+			items = getattr( result, 'files' )
+		
+		if not isinstance( items, list ):
+			items = [ items ]
+		
+		rows: List[ Dict[ str, Any ] ] = [ ]
 		for item in items:
 			if item is None:
 				continue
 			
 			if isinstance( item, dict ):
-				file_id = item.get( 'id' ) or item.get( 'name' ) or item.get( 'file_id' ) \
-				          or item.get( 'uri' ) or ''
-				filename = item.get( 'filename' ) or item.get( 'display_name' ) \
-				           or item.get( 'name' ) or ''
-				purpose = item.get( 'purpose' ) or item.get( 'files_purpose' ) \
-				          or item.get( 'mime_type' ) or ''
-				created = item.get( 'created_at' ) or item.get( 'create_time' ) or ''
-				size = item.get( 'bytes' ) or item.get( 'size_bytes' ) or item.get( 'size' ) or ''
-			
+				file_id = item.get( 'id' ) or item.get( 'file_id' ) or item.get( 'name' )
+				filename = item.get( 'filename' ) or item.get( 'display_name' ) or item.get(
+					'name' )
+				purpose = item.get( 'purpose' ) or item.get( 'mime_type' ) or item.get( 'state' )
+				created = item.get( 'created_at' ) or item.get( 'create_time' ) or item.get(
+					'created' )
+				size = item.get( 'bytes' ) or item.get( 'size_bytes' ) or item.get( 'size' )
 			else:
-				file_id = getattr( item, 'id', None ) or getattr( item, 'name', None ) \
-				          or getattr( item, 'file_id', None ) or getattr( item, 'uri', '' )
+				file_id = getattr( item, 'id', None ) or getattr( item, 'file_id',
+					None ) or getattr( item, 'name', None )
 				filename = getattr( item, 'filename', None ) or getattr( item, 'display_name',
-					None ) \
-				           or getattr( item, 'name', '' )
-				purpose = getattr( item, 'purpose', None ) or getattr( item, 'files_purpose', None ) \
-				          or getattr( item, 'mime_type', '' )
-				created = getattr( item, 'created_at', None ) or getattr( item, 'create_time', '' )
-				size = getattr( item, 'bytes', None ) or getattr( item, 'size_bytes', None ) \
-				       or getattr( item, 'size', '' )
+					None ) or getattr( item, 'name', '' )
+				purpose = getattr( item, 'purpose', None ) or getattr( item, 'mime_type',
+					None ) or getattr( item, 'state', '' )
+				created = getattr( item, 'created_at', None ) or getattr( item, 'create_time',
+					None ) or getattr( item, 'created', '' )
+				size = getattr( item, 'bytes', None ) or getattr( item, 'size_bytes',
+					None ) or getattr( item, 'size', '' )
 			
 			rows.append(
 				{
@@ -9707,6 +10127,103 @@ elif mode == 'Files':
 			)
 		
 		return rows
+	
+	def save_uploaded_file_for_api( uploaded_file: Any ) -> Optional[ str ]:
+		"""
+			
+			Purpose:
+			--------
+			Save a Streamlit upload to a temporary file path for provider APIs.
+		
+			Parameters:
+			-----------
+			uploaded_file: Any
+				Streamlit uploaded file object.
+		
+			Returns:
+			--------
+			Optional[str]
+				Temporary file path.
+			
+		"""
+		if uploaded_file is None:
+			return None
+		
+		try:
+			suffix = Path( getattr( uploaded_file, 'name', 'upload.bin' ) ).suffix or '.bin'
+			with tempfile.NamedTemporaryFile( delete=False, suffix=suffix ) as tmp:
+				if hasattr( uploaded_file, 'getbuffer' ):
+					tmp.write( uploaded_file.getbuffer( ) )
+				elif hasattr( uploaded_file, 'getvalue' ):
+					tmp.write( uploaded_file.getvalue( ) )
+				elif hasattr( uploaded_file, 'read' ):
+					tmp.write( uploaded_file.read( ) )
+				else:
+					return None
+				
+				return tmp.name
+		except Exception:
+			return None
+	
+	def normalize_file_content( content: Any ) -> str:
+		"""
+			
+			Purpose:
+			--------
+			Normalize downloaded file content into displayable text when possible.
+		
+			Parameters:
+			-----------
+			content: Any
+				Downloaded provider file content.
+		
+			Returns:
+			--------
+			str
+				Displayable content text.
+			
+		"""
+		if content is None:
+			return ''
+		
+		if isinstance( content, str ):
+			return content
+		
+		if isinstance( content, bytes ):
+			try:
+				return content.decode( 'utf-8' )
+			except Exception:
+				return f'<{len( content )} byte(s)>'
+		
+		if isinstance( content, dict ):
+			return str( content )
+		
+		return str( content )
+	
+	def get_effective_file_id( *keys: str ) -> str:
+		"""
+			
+			Purpose:
+			--------
+			Return the first non-empty file ID from ordered session-state keys.
+		
+			Parameters:
+			-----------
+			*keys: str
+				Session-state keys to inspect.
+		
+			Returns:
+			--------
+			str
+				Resolved file ID or empty string.
+			
+		"""
+		for key in keys:
+			value = st.session_state.get( key, '' )
+			if isinstance( value, str ) and value.strip( ):
+				return value.strip( )
+		
+		return ''
 	
 	def refresh_files_table( ) -> List[ Dict[ str, Any ] ]:
 		"""
@@ -9721,7 +10238,8 @@ elif mode == 'Files':
 		
 			Returns:
 			--------
-			List[Dict[str, Any]]: File table rows.
+			List[Dict[str, Any]]
+				File table rows.
 			
 		"""
 		result = call_files_method( [ 'list', 'list_files', 'files_list' ] )
@@ -9738,25 +10256,31 @@ elif mode == 'Files':
 		
 			Parameters:
 			-----------
-			uploaded_file (Any): Streamlit uploaded file object.
-			purpose (Optional[str]): Provider file purpose.
+			uploaded_file: Any
+				Streamlit uploaded file object.
+			
+			purpose: Optional[str]
+				Provider file purpose.
 		
 			Returns:
 			--------
-			Any: Provider upload result.
+			Any
+				Provider upload result.
 			
 		"""
 		path = save_uploaded_file_for_api( uploaded_file )
 		if not path:
 			raise ValueError( 'Could not create a temporary file for upload.' )
 		
+		filename = getattr( uploaded_file, 'name', None )
 		kwargs = {
 				'path': path,
 				'file_path': path,
 				'filepath': path,
+				'filename': filename,
+				'display_name': filename,
 				'purpose': purpose,
 				'mime_type': getattr( uploaded_file, 'type', None ),
-				'display_name': getattr( uploaded_file, 'name', None ),
 		}
 		
 		return call_files_method( [ 'upload_file', 'upload', 'files_upload', 'create' ], kwargs )
@@ -9770,11 +10294,13 @@ elif mode == 'Files':
 		
 			Parameters:
 			-----------
-			file_id (str): Provider file identifier.
+			file_id: str
+				Provider file identifier.
 		
 			Returns:
 			--------
-			Any: Provider retrieve result.
+			Any
+				Provider retrieve result.
 			
 		"""
 		kwargs = {
@@ -9783,8 +10309,37 @@ elif mode == 'Files':
 				'name': file_id,
 		}
 		
-		return call_files_method( [ 'retrieve', 'retrieve_file', 'get', 'get_file', 'files_retrieve' ],
-			kwargs )
+		return call_files_method(
+			[ 'retrieve', 'retrieve_file', 'get', 'get_file', 'files_retrieve' ], kwargs )
+	
+	def extract_provider_file( file_id: str ) -> Any:
+		"""
+			
+			Purpose:
+			--------
+			Download or extract provider file content by identifier.
+		
+			Parameters:
+			-----------
+			file_id: str
+				Provider file identifier.
+		
+			Returns:
+			--------
+			Any
+				Provider file content.
+			
+		"""
+		kwargs = {
+				'file_id': file_id,
+				'id': file_id,
+				'name': file_id,
+				'format': st.session_state.get( 'files_download_format' ) or None,
+				'page_number': st.session_state.get( 'files_page_number' ) or None,
+		}
+		
+		return call_files_method(
+			[ 'extract', 'download', 'content', 'retrieve_content', 'files_content' ], kwargs )
 	
 	def delete_provider_file( file_id: str ) -> Any:
 		"""
@@ -9795,11 +10350,13 @@ elif mode == 'Files':
 		
 			Parameters:
 			-----------
-			file_id (str): Provider file identifier.
+			file_id: str
+				Provider file identifier.
 		
 			Returns:
 			--------
-			Any: Provider delete result.
+			Any
+				Provider delete result.
 			
 		"""
 		kwargs = {
@@ -9809,6 +10366,62 @@ elif mode == 'Files':
 		}
 		
 		return call_files_method( [ 'delete', 'delete_file', 'files_delete', 'remove' ], kwargs )
+	
+	def ask_provider_file( file_id: str, prompt: str ) -> str:
+		"""
+			
+			Purpose:
+			--------
+			Ask a file-aware question through the selected provider Files wrapper.
+		
+			Parameters:
+			-----------
+			file_id: str
+				Provider file identifier.
+			
+			prompt: str
+				User question or instruction.
+		
+			Returns:
+			--------
+			str
+				Model answer text.
+			
+		"""
+		kwargs = {
+				'file_id': file_id,
+				'id': file_id,
+				'prompt': prompt,
+				'model': st.session_state.get( 'files_model' ) or None,
+				'temperature': st.session_state.get( 'files_temperature' ),
+				'top_p': st.session_state.get( 'files_top_percent' ),
+				'frequency': st.session_state.get( 'files_frequency_penalty' ),
+				'presence': st.session_state.get( 'files_presence_penalty' ),
+				'max_tokens': st.session_state.get( 'files_max_tokens' ),
+				'store': st.session_state.get( 'files_store' ),
+				'stream': st.session_state.get( 'files_stream' ),
+				'instruct': st.session_state.get( 'files_system_instructions', '' ),
+				'include': st.session_state.get( 'files_include', [ ] ),
+				'tools': st.session_state.get( 'files_tools', [ ] ),
+				'tool_choice': st.session_state.get( 'files_tool_choice' ) or None,
+				'previous_id': st.session_state.get( 'files_previous_response_id' ) or None,
+				'conversation_id': st.session_state.get( 'files_conversation_id' ) or None,
+		}
+		
+		result = call_files_method( [ 'summarize', 'ask', 'query', 'answer', 'search', 'survey' ],
+			kwargs )
+		if isinstance( result, str ):
+			return result
+		
+		text = getattr( files, 'output_text', None )
+		if isinstance( text, str ) and text.strip( ):
+			return text.strip( )
+		
+		output_text = getattr( result, 'output_text', None )
+		if isinstance( output_text, str ) and output_text.strip( ):
+			return output_text.strip( )
+		
+		return str( result or '' )
 	
 	def clear_files_outputs( ) -> None:
 		"""
@@ -9829,41 +10442,158 @@ elif mode == 'Files':
 		st.session_state[ 'files_metadata' ] = { }
 		st.session_state[ 'files_results' ] = None
 		st.session_state[ 'files_delete_result' ] = { }
+		st.session_state[ 'files_content' ] = None
+		st.session_state[ 'files_content_text' ] = ''
 		st.session_state[ 'files_last_answer' ] = ''
 	
-	# ------------------------------------------------------------------
-	# Session Safety
-	# ------------------------------------------------------------------
-	if not isinstance( st.session_state.get( 'files_table' ), list ):
-		st.session_state[ 'files_table' ] = [ ]
-	
-	if not isinstance( st.session_state.get( 'files_metadata' ), dict ):
-		st.session_state[ 'files_metadata' ] = { }
-	
-	if not isinstance( st.session_state.get( 'files_delete_result' ), dict ):
-		st.session_state[ 'files_delete_result' ] = { }
-	
-	if not isinstance( st.session_state.get( 'files_uploaded' ), list ):
-		st.session_state[ 'files_uploaded' ] = [ ]
-	
-	if not isinstance( st.session_state.get( 'files_messages' ), list ):
+	def clear_files_messages( ) -> None:
+		"""
+			
+			Purpose:
+			--------
+			Clear Files mode message history.
+		
+			Parameters:
+			-----------
+			None
+		
+			Returns:
+			--------
+			None
+			
+		"""
 		st.session_state[ 'files_messages' ] = [ ]
+		st.session_state[ 'files_last_answer' ] = ''
 	
-	if 'files_manual_id' not in st.session_state:
-		st.session_state[ 'files_manual_id' ] = ''
+	def append_files_message( role: str, content: str ) -> None:
+		"""
+			
+			Purpose:
+			--------
+			Append a Files mode message.
+		
+			Parameters:
+			-----------
+			role: str
+				Message role.
+			
+			content: str
+				Message content.
+		
+			Returns:
+			--------
+			None
+			
+		"""
+		if not isinstance( st.session_state.get( 'files_messages' ), list ):
+			st.session_state[ 'files_messages' ] = [ ]
+		
+		st.session_state[ 'files_messages' ].append(
+			{
+					'role': role,
+					'content': content,
+			}
+		)
 	
-	if 'files_type' not in st.session_state:
-		st.session_state[ 'files_type' ] = ''
+	def render_files_messages( ) -> None:
+		"""
+			
+			Purpose:
+			--------
+			Render Files mode message history.
+		
+			Parameters:
+			-----------
+			None
+		
+			Returns:
+			--------
+			None
+			
+		"""
+		if not isinstance( st.session_state.get( 'files_messages' ), list ):
+			st.session_state[ 'files_messages' ] = [ ]
+		
+		for message in st.session_state.get( 'files_messages', [ ] ):
+			if not isinstance( message, dict ):
+				continue
+			
+			with st.chat_message( message.get( 'role', 'assistant' ), avatar='' ):
+				st.markdown( message.get( 'content', '' ) )
 	
-	if 'files_id' not in st.session_state:
-		st.session_state[ 'files_id' ] = ''
-	
-	if 'files_url' not in st.session_state:
-		st.session_state[ 'files_url' ] = ''
-	
-	if st.session_state.get( 'clear_instructions' ):
+	def clear_files_instructions( ) -> None:
+		"""
+			
+			Purpose:
+			--------
+			Clear Files mode system instructions and selected prompt template.
+		
+			Parameters:
+			-----------
+			None
+		
+			Returns:
+			--------
+			None
+			
+		"""
 		st.session_state[ 'files_system_instructions' ] = ''
-		st.session_state[ 'clear_instructions' ] = False
+		st.session_state[ 'instructions' ] = ''
+	
+	def convert_files_system_instructions( ) -> None:
+		"""
+			
+			Purpose:
+			--------
+			Convert Files mode system instructions between XML-like blocks and Markdown headings.
+		
+			Parameters:
+			-----------
+			None
+		
+			Returns:
+			--------
+			None
+			
+		"""
+		text_value = st.session_state.get( 'files_system_instructions', '' )
+		if not isinstance( text_value, str ) or not text_value.strip( ):
+			return
+		
+		source = text_value.strip( )
+		if cfg.XML_BLOCK_PATTERN.search( source ):
+			converted = convert_xml( source )
+		else:
+			converted = convert_markdown( source )
+		
+		st.session_state[ 'files_system_instructions' ] = converted
+	
+	def load_files_instruction_template( ) -> None:
+		"""
+			
+			Purpose:
+			--------
+			Load the selected prompt template into Files mode system instructions.
+		
+			Parameters:
+			-----------
+			None
+		
+			Returns:
+			--------
+			None
+			
+		"""
+		name = st.session_state.get( 'instructions' )
+		if name and name != 'No Templates Found':
+			prompt_text = fetch_prompt_text( cfg.DB_PATH, name )
+			if prompt_text is not None:
+				st.session_state[ 'files_system_instructions' ] = prompt_text
+	
+	extract_supported = files_has_method(
+		[ 'extract', 'download', 'content', 'retrieve_content', 'files_content' ] )
+	ask_supported = files_has_method(
+		[ 'summarize', 'ask', 'query', 'answer', 'search', 'survey' ] )
 	
 	# ------------------------------------------------------------------
 	# Main UI
@@ -9874,23 +10604,20 @@ elif mode == 'Files':
 		st.divider( )
 		
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
-			
-			with st.expander( label='File Management', icon='📂', expanded=False,
-					width='stretch' ):
+			with st.expander( label='File Management', icon='📂', expanded=False, width='stretch' ):
 				mgmt_c1, mgmt_c2, mgmt_c3, mgmt_c4 = st.columns(
 					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
 				
-				# ---------- Purpose ------------
 				with mgmt_c1:
 					purpose_options = get_files_options( files, 'purpose_options',
-						[ 'assistants', 'batch', 'fine-tune', 'vision', 'user_data' ] )
+						[ 'assistants', 'batch', 'fine-tune', 'user_data' ] )
 					purpose_options = [ str( item ) for item in purpose_options if
 					                    str( item ).strip( ) ]
+					sanitize_files_selection( 'files_purpose', purpose_options, '' )
 					st.selectbox( label='Purpose', options=purpose_options,
 						key='files_purpose', index=None, placeholder='Options',
 						help='Optional provider file purpose.' )
 				
-				# ---------- File Type ------------
 				with mgmt_c2:
 					st.selectbox( label='File Type',
 						options=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json',
@@ -9898,13 +10625,11 @@ elif mode == 'Files':
 						key='files_type', index=None, placeholder='Options',
 						help='Optional local filter for uploaded file types.' )
 				
-				# ---------- Manual ID ------------
 				with mgmt_c3:
 					st.text_input( label='Manual File ID', key='files_manual_id',
-						help='Optional. Paste a provider file ID/name for retrieve or delete.',
+						help='Optional. Paste a provider file ID/name for retrieve, extract, ask, or delete.',
 						width='stretch' )
 				
-				# ---------- Selected ID ------------
 				with mgmt_c4:
 					table_rows = st.session_state.get( 'files_table', [ ] )
 					file_options = [
@@ -9912,7 +10637,7 @@ elif mode == 'Files':
 							for row in table_rows
 							if isinstance( row, dict ) and row.get( 'id', '' )
 					]
-					
+					sanitize_files_selection( 'files_selected_id', file_options, '' )
 					st.selectbox( label='Selected File', options=file_options,
 						key='files_selected_id', index=None, placeholder='Options',
 						help='File selected from the latest provider list.' )
@@ -9923,8 +10648,11 @@ elif mode == 'Files':
 					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
 				
 				with req_c1:
-					st.selectbox( label='Model',
-						options=get_files_options( files, 'model_options', [ ] ),
+					model_options = get_files_options( files, 'model_options', [ ] )
+					model_options = [ str( item ) for item in model_options if
+					                  str( item ).strip( ) ]
+					sanitize_files_selection( 'files_model', model_options, '' )
+					st.selectbox( label='Model', options=model_options,
 						key='files_model', index=None, placeholder='Options',
 						help='Optional provider model for file-aware operations.' )
 				
@@ -9939,15 +10667,101 @@ elif mode == 'Files':
 						help='Optional temperature for file-aware model calls.' )
 				
 				with req_c4:
-					st.selectbox( label='Response Format',
-						options=get_files_options( files, 'format_options', [ ] ),
+					format_options = get_files_options( files, 'format_options', [ ] )
+					format_options = [ str( item ) for item in format_options if
+					                   str( item ).strip( ) ]
+					sanitize_files_selection( 'files_response_format', format_options, '' )
+					st.selectbox( label='Response Format', options=format_options,
 						key='files_response_format', index=None, placeholder='Options',
 						help='Optional response format.' )
+				
+				req2_c1, req2_c2, req2_c3, req2_c4 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+				
+				with req2_c1:
+					st.slider( label='Top-P', min_value=0.0, max_value=1.0,
+						step=0.01, key='files_top_percent',
+						help='Optional top-p for file-aware model calls.' )
+				
+				with req2_c2:
+					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
+						step=0.01, key='files_frequency_penalty',
+						help='Optional frequency penalty for file-aware model calls.' )
+				
+				with req2_c3:
+					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0,
+						step=0.01, key='files_presence_penalty',
+						help='Optional presence penalty for file-aware model calls.' )
+				
+				with req2_c4:
+					choice_options = get_files_options( files, 'choice_options',
+						[ 'auto', 'required', 'none' ] )
+					choice_options = [ str( item ) for item in choice_options if
+					                   str( item ).strip( ) ]
+					sanitize_files_selection( 'files_tool_choice', choice_options, '' )
+					st.selectbox( label='Tool Choice', options=choice_options,
+						key='files_tool_choice', index=None, placeholder='Options',
+						help='Optional provider tool choice.' )
+				
+				req3_c1, req3_c2, req3_c3, req3_c4 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+				
+				with req3_c1:
+					tool_options = get_files_options( files, 'tool_options', [ ] )
+					tool_options = [ str( item ) for item in tool_options if str( item ).strip( ) ]
+					sanitize_files_multiselect( 'files_tools', tool_options )
+					st.multiselect( label='Tools', options=tool_options,
+						key='files_tools', placeholder='Options',
+						help='Optional file-aware provider tools.' )
+				
+				with req3_c2:
+					include_options = get_files_options( files, 'include_options', [ ] )
+					include_options = [ str( item ) for item in include_options if
+					                    str( item ).strip( ) ]
+					sanitize_files_multiselect( 'files_include', include_options )
+					st.multiselect( label='Include', options=include_options,
+						key='files_include', placeholder='Options',
+						help='Optional include fields for file-aware responses.' )
+				
+				with req3_c3:
+					st.toggle( label='Store', key='files_store',
+						help='Optional store flag for file-aware responses.' )
+				
+				with req3_c4:
+					st.toggle( label='Stream', key='files_stream',
+						help='Optional stream flag retained for wrapper compatibility.' )
+		
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch' ):
+			
+			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
+			prompt_names = fetch_prompt_names( cfg.DB_PATH )
+			if not prompt_names:
+				prompt_names = [ 'No Templates Found' ]
+			
+			with in_left:
+				st.text_area( label='Enter Text', height=80, width='stretch',
+					key='files_system_instructions',
+					help=get_files_help( 'SYSTEM_INSTRUCTIONS' ) )
+			
+			with in_right:
+				st.selectbox( label='Use Template', options=prompt_names,
+					key='instructions', on_change=load_files_instruction_template,
+					index=None )
+			
+			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
+			with btn_c1:
+				st.button( label='Clear Instructions', width='stretch',
+					on_click=clear_files_instructions )
+			
+			with btn_c2:
+				st.button( label='XML <-> Markdown', width='stretch',
+					on_click=convert_files_system_instructions )
 		
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 		
-		upload_tab, list_tab, retrieve_tab, delete_tab = st.tabs(
-			[ 'Upload', 'List', 'Retrieve', 'Delete' ] )
+		upload_tab, list_tab, retrieve_tab, extract_tab, ask_tab, delete_tab = st.tabs(
+			[ 'Upload', 'List', 'Retrieve', 'Extract', 'Ask', 'Delete' ] )
 		
 		with upload_tab:
 			allowed_types = [ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json',
@@ -9964,24 +10778,30 @@ elif mode == 'Files':
 						if uploaded_file is None:
 							st.warning( 'Select a file before uploading.' )
 						else:
-							result = upload_provider_file(
-								uploaded_file=uploaded_file,
+							result = upload_provider_file( uploaded_file=uploaded_file,
 								purpose=st.session_state.get( 'files_purpose' ) or None )
 							file_id = normalize_file_id( result )
 							
 							st.session_state[ 'files_results' ] = result
 							st.session_state[ 'files_selected_id' ] = file_id
-							st.session_state[ 'files_uploaded' ].append( {
+							st.session_state[ 'files_uploaded' ].append(
+								{
 										'id': file_id,
 										'filename': uploaded_file.name,
 										'provider': provider_name,
-								} )
+								}
+							)
 							
 							st.success( f'Uploaded file: {file_id}' )
 					
 					except Exception as exc:
 						err = Error( exc )
 						st.error( f'Upload failed: {err.info}' )
+			
+			if st.session_state.get( 'files_results' ) is not None:
+				with st.expander( label='Upload Result', icon='📄', expanded=False,
+						width='stretch' ):
+					st.write( st.session_state.get( 'files_results' ) )
 		
 		with list_tab:
 			list_c1, list_c2 = st.columns( [ 0.50, 0.50 ] )
@@ -10010,11 +10830,11 @@ elif mode == 'Files':
 				st.info( 'No file records loaded yet.' )
 		
 		with retrieve_tab:
-			retrieve_id = st.session_state.get( 'files_selected_id' ) \
-			              or st.session_state.get( 'files_manual_id' )
+			if not st.session_state.get( 'files_retrieve_id' ):
+				st.session_state[ 'files_retrieve_id' ] = get_effective_file_id(
+					'files_selected_id', 'files_manual_id' )
 			
 			st.text_input( label='Retrieve File ID', key='files_retrieve_id',
-				value=retrieve_id or '',
 				help='Provider file ID/name to retrieve.',
 				width='stretch' )
 			
@@ -10041,12 +10861,144 @@ elif mode == 'Files':
 			if st.session_state.get( 'files_metadata' ):
 				st.json( st.session_state.get( 'files_metadata' ) )
 		
+		with extract_tab:
+			if not extract_supported:
+				st.info(
+					f'{provider_name} Files wrapper does not expose an extract/download method.' )
+			
+			if not st.session_state.get( 'files_extract_id' ):
+				st.session_state[ 'files_extract_id' ] = get_effective_file_id(
+					'files_selected_id', 'files_manual_id' )
+			
+			ext_c1, ext_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall' )
+			
+			with ext_c1:
+				st.text_input( label='Extract File ID', key='files_extract_id',
+					help='Provider file ID/name to download or extract.',
+					width='stretch' )
+			
+			with ext_c2:
+				st.selectbox( label='Download Format',
+					options=[ '', 'DOWNLOAD_FORMAT_TEXT', 'DOWNLOAD_FORMAT_BYTES' ],
+					key='files_download_format', index=None, placeholder='Options',
+					help='Optional provider download format.' )
+			
+			st.number_input( label='Page Number', min_value=0, step=1,
+				key='files_page_number',
+				help='Optional page number for providers that support page-level extraction.' )
+			
+			if st.button( 'Extract File Content', key='files_extract_button',
+					width='stretch', disabled=not extract_supported ):
+				with st.spinner( 'Extracting file content…' ):
+					try:
+						file_id = st.session_state.get( 'files_extract_id', '' ).strip( )
+						
+						if not file_id:
+							st.warning( 'Select or enter a file ID before extracting content.' )
+						else:
+							content = extract_provider_file( file_id )
+							content_text = normalize_file_content( content )
+							st.session_state[ 'files_content' ] = content
+							st.session_state[ 'files_content_text' ] = content_text
+							st.session_state[ 'files_results' ] = content
+							st.success( 'File content extracted.' )
+					
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Extract failed: {err.info}' )
+			
+			if st.session_state.get( 'files_content_text' ):
+				st.text_area( label='Extracted Content',
+					value=st.session_state.get( 'files_content_text', '' ),
+					height=300, width='stretch' )
+				
+				st.download_button( label='Download Extracted Text',
+					data=st.session_state.get( 'files_content_text', '' ),
+					file_name='file_content.txt',
+					mime='text/plain',
+					width='stretch' )
+			
+			elif isinstance( st.session_state.get( 'files_content' ), bytes ):
+				st.download_button( label='Download File Content',
+					data=st.session_state.get( 'files_content' ),
+					file_name='file_content.bin',
+					mime='application/octet-stream',
+					width='stretch' )
+		
+		with ask_tab:
+			if not ask_supported:
+				st.info(
+					f'{provider_name} Files wrapper does not expose a compatible file-aware question method.' )
+			
+			render_files_messages( )
+			
+			file_id = get_effective_file_id( 'files_selected_id', 'files_manual_id',
+				'files_retrieve_id', 'files_extract_id' )
+			
+			if file_id:
+				st.caption( f'Active File ID: {file_id}' )
+			else:
+				st.info( 'Select or enter a file ID before asking a file-aware question.' )
+			
+			st.text_area( label='Question', key='files_question',
+				height=120, width='stretch',
+				placeholder='Ask a question about the selected file.' )
+			
+			ask_c1, ask_c2 = st.columns( [ 0.50, 0.50 ] )
+			
+			with ask_c1:
+				if st.button( 'Ask File', key='files_ask_button',
+						width='stretch', disabled=not ask_supported ):
+					with st.spinner( 'Asking file-aware question…' ):
+						try:
+							active_file_id = get_effective_file_id( 'files_selected_id',
+								'files_manual_id', 'files_retrieve_id', 'files_extract_id' )
+							question = st.session_state.get( 'files_question', '' ).strip( )
+							
+							if not active_file_id:
+								st.warning( 'Select or enter a file ID before asking a question.' )
+							elif not question:
+								st.warning( 'Enter a question before asking the file.' )
+							elif not st.session_state.get( 'files_model' ):
+								st.warning( 'Select a model before asking a file-aware question.' )
+							else:
+								append_files_message( 'user', question )
+								answer = ask_provider_file( active_file_id, question )
+								st.session_state[ 'files_last_answer' ] = answer
+								
+								previous_id = (
+										getattr( files, 'previous_id', None ) or
+										getattr( files, 'previous_response_id', None ) or
+										st.session_state.get( 'files_previous_response_id',
+											'' ) or ''
+								)
+								st.session_state[ 'files_previous_response_id' ] = previous_id
+								
+								append_files_message( 'assistant', answer )
+								st.markdown( answer )
+						
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'File question failed: {err.info}' )
+			
+			with ask_c2:
+				if st.button( 'Clear Messages', key='files_clear_messages_button',
+						width='stretch', on_click=clear_files_messages ):
+					st.rerun( )
+			
+			if st.session_state.get( 'files_last_answer' ):
+				st.download_button( label='Download Answer',
+					data=st.session_state.get( 'files_last_answer', '' ),
+					file_name='file_answer.txt',
+					mime='text/plain',
+					width='stretch' )
+		
 		with delete_tab:
-			delete_id = st.session_state.get( 'files_selected_id' ) \
-			            or st.session_state.get( 'files_manual_id' )
+			if not st.session_state.get( 'files_delete_id' ):
+				st.session_state[ 'files_delete_id' ] = get_effective_file_id(
+					'files_selected_id', 'files_manual_id' )
 			
 			st.text_input( label='Delete File ID', key='files_delete_id',
-				value=delete_id or '',
 				help='Provider file ID/name to delete.',
 				width='stretch' )
 			
@@ -10063,8 +11015,19 @@ elif mode == 'Files':
 						else:
 							result = delete_provider_file( file_id )
 							st.session_state[ 'files_delete_result' ] = result if isinstance(
-								result, dict ) else { 'result': str( result ) }
-							st.success( f'Delete request completed for: {file_id}' )
+								result, dict ) else {
+									'result': str( result )
+							}
+							st.session_state[ 'files_results' ] = result
+							st.session_state[ 'files_table' ] = [
+									row for row in st.session_state.get( 'files_table', [ ] )
+									if isinstance( row, dict ) and row.get( 'id' ) != file_id
+							]
+							
+							if st.session_state.get( 'files_selected_id' ) == file_id:
+								st.session_state[ 'files_selected_id' ] = ''
+							
+							st.success( 'File deleted.' )
 					
 					except Exception as exc:
 						err = Error( exc )
@@ -10233,183 +11196,7 @@ elif mode == 'Vector Stores':
 		raise AttributeError(
 			f'Provider "{provider_name}" does not expose a compatible method from: '
 			f'{", ".join( method_names )}.' )
-	
-	def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Normalize provider storage objects to dictionaries for rendering and session state.
-		
-			Parameters:
-			-----------
-			value (Any): Provider result object.
-		
-			Returns:
-			--------
-			Dict[str, Any]: Normalized result dictionary.
-			
-		"""
-		if value is None:
-			return { }
-		
-		if isinstance( value, dict ):
-			return value
-		
-		result = { }
-		for attr_name in [
-				'id',
-				'name',
-				'display_name',
-				'description',
-				'status',
-				'file_counts',
-				'usage_bytes',
-				'created_at',
-				'expires_at',
-				'metadata',
-				'deleted',
-		]:
-			if hasattr( value, attr_name ):
-				attr_value = getattr( value, attr_name )
-				try:
-					if hasattr( attr_value, 'model_dump' ):
-						attr_value = attr_value.model_dump( )
-				except Exception:
-					pass
-				result[ attr_name ] = attr_value
-		
-		if result:
-			return result
-		
-		return { 'result': str( value ) }
-	
-	def normalize_storage_rows( result: Any ) -> List[ Dict[ str, Any ] ]:
-		"""
-			
-			Purpose:
-			--------
-			Normalize provider storage list results into table rows.
-		
-			Parameters:
-			-----------
-			result (Any): Provider list result.
-		
-			Returns:
-			--------
-			List[Dict[str, Any]]: Normalized table rows.
-			
-		"""
-		if result is None:
-			return [ ]
-		
-		if hasattr( result, 'data' ):
-			items = getattr( result, 'data' )
-		elif isinstance( result, dict ) and isinstance( result.get( 'data' ), list ):
-			items = result.get( 'data' )
-		elif isinstance( result, dict ) and isinstance( result.get( 'stores' ), list ):
-			items = result.get( 'stores' )
-		elif isinstance( result, dict ) and isinstance( result.get( 'items' ), list ):
-			items = result.get( 'items' )
-		elif isinstance( result, list ):
-			items = result
-		else:
-			items = [ result ]
-		
-		rows = [ ]
-		for item in items:
-			obj = normalize_storage_object( item )
-			if not obj:
-				continue
-			
-			store_id = obj.get( 'id' ) or obj.get( 'name' ) or obj.get( 'display_name' ) or ''
-			store_name = obj.get( 'name' ) or obj.get( 'display_name' ) or obj.get( 'id' ) or ''
-			file_counts = obj.get( 'file_counts', '' )
-			usage_bytes = obj.get( 'usage_bytes', '' )
-			status = obj.get( 'status', '' )
-			
-			rows.append( {
-						'id': str( store_id or '' ),
-						'name': str( store_name or '' ),
-						'status': str( status or '' ),
-						'file_counts': str( file_counts or '' ),
-						'usage_bytes': str( usage_bytes or '' ),
-				} )
-		
-		return rows
-	
-	def normalize_search_results( result: Any ) -> List[ Dict[ str, Any ] ]:
-		"""
-			
-			Purpose:
-			--------
-			Normalize storage search results into dictionaries for display.
-		
-			Parameters:
-			-----------
-			result (Any): Provider search result.
-		
-			Returns:
-			--------
-			List[Dict[str, Any]]: Normalized search result rows.
-			
-		"""
-		if result is None:
-			return [ ]
-		
-		if hasattr( result, 'data' ):
-			items = getattr( result, 'data' )
-		elif isinstance( result, dict ) and isinstance( result.get( 'data' ), list ):
-			items = result.get( 'data' )
-		elif isinstance( result, dict ) and isinstance( result.get( 'results' ), list ):
-			items = result.get( 'results' )
-		elif isinstance( result, list ):
-			items = result
-		else:
-			items = [ result ]
-		
-		rows = [ ]
-		for item in items:
-			if isinstance( item, dict ):
-				rows.append( item )
-			else:
-				rows.append( normalize_storage_object( item ) )
-		
-		return rows
-	
-	def save_uploaded_storage_file( uploaded_file: Any ) -> Optional[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Save an uploaded file to a temporary path for storage upload methods.
-		
-			Parameters:
-			-----------
-			uploaded_file (Any): Streamlit uploaded file object.
-		
-			Returns:
-			--------
-			Optional[str]: Temporary file path or None.
-			
-		"""
-		if uploaded_file is None:
-			return None
-		
-		if 'save_temp' in globals( ):
-			try:
-				return save_temp( uploaded_file )
-			except Exception:
-				pass
-		
-		try:
-			suffix = Path( uploaded_file.name ).suffix or '.tmp'
-			with tempfile.NamedTemporaryFile( delete=False, suffix=suffix ) as tmp:
-				tmp.write( uploaded_file.getvalue( ) )
-				return tmp.name
-		except Exception:
-			return None
-	
+
 	def get_selected_store_id( table_key: str, manual_key: str, selected_key: str ) -> str:
 		"""
 			
@@ -11353,8 +12140,9 @@ elif mode == 'Google Cloud Buckets':
 										  'bucket_name': selected_bucket_id,
 										  'project_id': project_id, 'location': location }
 									)
-									st.session_state[
-										'bucket_metadata' ] = normalize_storage_object( result )
+									st.session_state[ 'bucket_metadata' ] = \
+										normalize_storage_object( result )
+									
 									st.success( 'Cloud Bucket metadata retrieved.' )
 							except Exception as exc:
 								err = Error( exc )
@@ -11375,8 +12163,9 @@ elif mode == 'Google Cloud Buckets':
 										  'bucket_name': selected_bucket_id,
 										  'project_id': project_id, 'location': location }
 									)
-									st.session_state[
-										'bucket_metadata' ] = normalize_storage_object( result )
+									st.session_state[ 'bucket_metadata' ] = \
+										normalize_storage_object( result )
+									
 									st.success( 'Delete request completed.' )
 							except Exception as exc:
 								err = Error( exc )
@@ -11407,8 +12196,9 @@ elif mode == 'Google Cloud Buckets':
 								  'id': target_bucket, 'project_id': project_id,
 								  'location': location }
 							)
-							st.session_state[ 'bucket_upload_result' ] = normalize_storage_object(
-								result )
+							st.session_state[ 'bucket_upload_result' ] = \
+								normalize_storage_object( result )
+							
 							st.success( 'Upload request completed.' )
 					except Exception as exc:
 						err = Error( exc )

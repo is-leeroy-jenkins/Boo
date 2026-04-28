@@ -7250,7 +7250,7 @@ class VectorStores( Grok ):
 			self.model = model
 			self.file_name = name
 			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( { 'Authorization': f'Bearer {cfg.GROK_API_KEY}',
+			self.client.headers.update( { 'Authorization': f'Bearer {cfg.XAI_API_KEY}',
 			                              'Content-Type': 'application/json', } )
 			response = self.client.collections.create( name=self.file_name, model_name=self.model )
 			response.raise_for_status( )
@@ -7276,7 +7276,7 @@ class VectorStores( Grok ):
 		"""
 		try:
 			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( { 'Authorization': f'Bearer {cfg.GROK_API_KEY}',
+			self.client.headers.update( { 'Authorization': f'Bearer {cfg.XAI_API_KEY}',
 					'Content-Type': 'application/json', } )
 			_response = self.client.collections.list( )
 			return list( _response )
@@ -7307,7 +7307,7 @@ class VectorStores( Grok ):
 			throw_if( 'store_id', store_id )
 			self.stores_id = store_id
 			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( { 'Authorization': f'Bearer {cfg.GROK_API_KEY}',
+			self.client.headers.update( { 'Authorization': f'Bearer {cfg.XAI_API_KEY}',
 					'Content-Type': 'application/json', } )
 			metadata = self.client.collections.get( collection_id=self.collection_id )
 			return metadata
@@ -7350,7 +7350,7 @@ class VectorStores( Grok ):
 					} ]
 			self.client = Client( api_key=self.api_key )
 			self.client.headers.update( {
-					'Authorization': f'Bearer {cfg.GROK_API_KEY}',
+					'Authorization': f'Bearer {cfg.XAI_API_KEY}',
 					'Content-Type': 'application/json', } )
 			self.response = self.client.collections.search( query=self.prompt,
 				collection_ids=[ self.store_id ],)
@@ -7391,7 +7391,7 @@ class VectorStores( Grok ):
 				'vector_store_ids': self.store_ids,
 			} ]
 			self.client = Client( api_key=self.api_key )
-			self.client.headers.update( { 'Authorization': f'Bearer {cfg.GROK_API_KEY}',
+			self.client.headers.update( { 'Authorization': f'Bearer {cfg.XAI_API_KEY}',
 					'Content-Type': 'application/json', } )
 			self.response = self.client.collections.search( query=self.prompt,
 				collection_ids=self.store_ids, )
@@ -7429,7 +7429,7 @@ class VectorStores( Grok ):
 			self.file_name = filename
 			self.store_id = store_id
 			self.client = Client( api_key=self.api_key )
-			self.client.headers.update({ 'Authorization': f'Bearer {cfg.GROK_API_KEY}',
+			self.client.headers.update({ 'Authorization': f'Bearer {cfg.XAI_API_KEY}',
 					'Content-Type': 'application/json', } )
 			with open( self.file_path, 'rb' ) as file:
 				file_data = file.read( )
