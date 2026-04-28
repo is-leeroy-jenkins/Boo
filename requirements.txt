@@ -5,7 +5,7 @@ openpyxl
 openai==2.21.0
 pydantic>=2.7,<2.10
 typing_extensions>=4.11,<5
-pymupdf
+PyMuPDF
 httpx>=0.28.1
 reportlab>=4.0.8
 sentence-transformers==2.7.0

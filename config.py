@@ -47,7 +47,7 @@ import re
 from typing import Optional, List, Dict
 from pathlib import Path
 
-BLUE_DIVIDER = "<div style='height:2px;align:left;background:#0078FC;margin:6px 0 10px 0;'></div>"
+BLUE_DIVIDER = "<div style='height:2px;align:left;background:#0078FC;margin:20px 0 30px 0;'></div>"
 APP_TITLE = 'Boo'
 APP_SUBTITLE = 'Multi-Modal AI'
 OPEN_TAG = re.compile( r'<([A-Za-z0-9_\-:.]+)>' )
@@ -66,7 +66,10 @@ OPENAI_API_KEY = os.getenv( 'OPENAI_API_KEY' )
 GEOAPIFY_API_KEY = os.getenv( 'GEOAPIFY_API_KEY' )
 GEOCODING_API_KEY = os.getenv( 'GEOCODING_API_KEY' )
 GEMINI_API_KEY = os.getenv( 'GEMINI_API_KEY' )
-GROQ_API_KEY = os.getenv( 'GROQ_API_KEY' )
+XAI_API_KEY = os.getenv( 'XAI_API_KEY' )
+XAI_BASE_URL = 'https://api.x.ai/v1'
+GROK_LOGO = r'resources/images/grok.png'
+GROK = '𝕏'
 GOOGLE_API_KEY = os.getenv( 'GOOGLE_API_KEY' )
 GOOGLE_CSE_ID = os.getenv( 'GOOGLE_CSE_ID' )
 GOOGLE_CLOUD_LOCATION = os.getenv( 'GOOGLE_CLOUD_LOCATION' )
@@ -146,6 +149,12 @@ GROK_MODES = [ 'Text',
                'Prompt Engineering',
                'Data Management',
                'Export' ]
+
+GROK_GENERATION = [ 'grok-imagine-image', 'grok-2-image-1212' ]
+
+GROK_ANALYSIS = [ 'grok-4.20', 'grok-4', 'grok-4-latest' ]
+
+GROK_EDITING = [ 'grok-imagine-image' ]
 
 GROK_COLLECTIONS = [ { 'DOD Regulations': 'collection_a7973fd2-a336-4ed0-a495-4ffa947041c6' },
                      { 'DOA Regulations': 'collection_dbf8919e-5f56-435b-806b-642cd57c355e' },
@@ -241,6 +250,35 @@ TEXT_TYPES = [
 		'yaml',
 		'yml',
 		'log',
+]
+
+DOCUMENT_TYPES = [
+		'pdf',
+		'txt',
+		'md',
+		'docx',
+		'json',
+		'csv',
+		'xlsx',
+		'xls',
+]
+
+IMAGE_TYPES = [
+		'png',
+		'jpg',
+		'jpeg',
+		'webp',
+]
+
+AUDIO_TYPES = [
+		'mp3',
+		'mp4',
+		'mpeg',
+		'mpga',
+		'm4a',
+		'wav',
+		'webm',
+		'ogg',
 ]
 
 # -------- DEFINITIONS -------------------
@@ -402,8 +440,8 @@ DOCUMENT_Q_AND_A = r'''A retrieval-augmented workflow that allows users to ask n
 		citation-ready answers tied to user-provided content rather than relying solely on general
 		model knowledge, effectively turning Buddy into a document-aware analytical assistant.  '''
 
-DATA_MANAGEMENT = r'''Structured handling, organization, processing of
-		user-provided data in a self-contained SQLite Database. It allows uploading of files, extracting and
+DATA_MANAGEMENT = r'''Structured handling, organization, processing of user-provided data in a
+		self-contained SQLite Database. It allows uploading of files, extracting and
 		normalizing their content, chunking text for semantic processing, generating embeddings,
 		storing metadata, and enabling controlled retrieval for downstream features such as Document Q&A
 		and Data Analysis. Beyond ingestion, it includes version awareness, indexing, schema inspection

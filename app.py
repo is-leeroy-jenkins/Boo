@@ -49,6 +49,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import tiktoken
 import config as cfg
 import streamlit as st
@@ -58,7 +59,10 @@ from typing import List, Dict, Any, Optional, Tuple
 from boogr import Error
 from sentence_transformers import SentenceTransformer
 
-import fitz  # pymupdf
+try:
+	import fitz
+except Exception:
+	fitz = None
 
 import sqlite3
 import os
@@ -144,7 +148,6 @@ def copy_state_alias( source_key: str, target_key: str, default: Any ) -> None:
 
 init_env_state( 'openai_api_key', 'OPENAI_API_KEY', 'OPENAI_API_KEY' )
 init_env_state( 'gemini_api_key', 'GEMINI_API_KEY', 'GEMINI_API_KEY' )
-init_env_state( 'groq_api_key', 'GROQ_API_KEY', 'GROQ_API_KEY' )
 init_env_state( 'google_api_key', 'GOOGLE_API_KEY', 'GOOGLE_API_KEY' )
 init_env_state( 'google_cse_id', 'GOOGLE_CSE_ID', 'GOOGLE_CSE_ID' )
 init_env_state( 'googlemaps_api_key', 'GOOGLEMAPS_API_KEY', 'GOOGLEMAPS_API_KEY' )
@@ -152,8 +155,8 @@ init_env_state( 'geocoding_api_key', 'GEOCODING_API_KEY', 'GEOCODING_API_KEY' )
 init_env_state( 'geoapify_api_key', 'GEOAPIFY_API_KEY', 'GEOAPIFY_API_KEY' )
 init_env_state( 'google_cloud_project_id', 'GOOGLE_CLOUD_PROJECT_ID', 'GOOGLE_CLOUD_PROJECT_ID' )
 init_env_state( 'google_cloud_location', 'GOOGLE_CLOUD_LOCATION', 'GOOGLE_CLOUD_LOCATION' )
-
-init_state( 'api_keys', { 'GPT': None, 'Groq': None, 'Gemini': None } )
+init_env_state( 'xai_api_key', 'XAI_API_KEY', 'XAI_API_KEY' )
+init_state( 'api_keys', { 'GPT': None, 'Grok': None, 'Gemini': None } )
 init_state( 'provider', 'GPT' )
 init_state( 'mode', 'Text' )
 
@@ -281,6 +284,8 @@ init_state( 'text_context', [ ] )
 init_state( 'text_messages', [ ] )
 init_state( 'text_gemini_history', [ ] )
 init_state( 'text_file_search_store_names', [ ] )
+init_state( 'text_grok_collection_ids', [ ] )
+init_state( 'text_grok_collection_ids_input', '' )
 init_state( 'selected_filestore_id', '' )
 init_state( 'selected_filestore_label', '' )
 
@@ -528,7 +533,7 @@ init_state( 'target_column', '' )
 init_state( 'export_format', '' )
 init_state( 'export_path', '' )
 
-# ---------- NON-DESTRUCTIVE LEGACY ALIASES -----------------------------------
+# ---------- NON-DESTRUCTIVE LIASES -----------------------------------
 
 copy_state_alias( 'text_presense_penalty', 'text_presence_penalty', 0.0 )
 copy_state_alias( 'image_presense_penalty', 'image_presence_penalty', 0.0 )
@@ -538,9 +543,7 @@ copy_state_alias( 'docqna_systems_instructions', 'docqna_system_instructions', '
 copy_state_alias( 'text_parallel_calls', 'text_parallel_tools', False )
 copy_state_alias( 'text_max_tools', 'text_max_calls', 0 )
 
-# ==============================================================================
-# RESPONSE/CHAT UTILITIES
-# ==============================================================================
+# ------------ RESPONSE/CHAT UTILITIES
 
 def extract_response_text( response: object ) -> str:
 	"""
@@ -1187,9 +1190,7 @@ def count_tokens( text: str ) -> int:
 	num_tokens = len( encoding.encode( text ) )
 	return num_tokens
 
-# ==============================================================================
-# TEXT UTILITIES
-# ==============================================================================
+# ------------ TEXT UTILITIES
 
 def normalize_text( text: str ) -> str:
 	"""
@@ -1408,9 +1409,7 @@ def clear_history( ) -> None:
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
 		conn.execute( "DELETE FROM chat_history" )
 
-# ==============================================================================
-# DOCQNA UTILITIES
-# ==============================================================================
+# ------------ DOCQNA UTILITIES
 
 def extract_text_from_bytes( file_bytes: bytes ) -> str:
 	"""
@@ -1457,9 +1456,7 @@ def route_document_query( prompt: str ) -> str:
 		top_p=float( st.session_state.get( 'top_percent', 0.95 ) ),
 		repeat_penalty=float( st.session_state.get( 'repeat_penalty', 1.1 ) ),
 		max_tokens=int( st.session_state.get( 'max_tokens', 1024 ) ) or 1024,
-		stream=False,
-		output=None
-	)
+		stream=False, output=None )
 
 def summarize_active_document( ) -> str:
 	"""
@@ -1806,70 +1803,97 @@ def build_document_user_input( user_query: str, k: int = 6 ) -> str:
 	
 	return '\n\n'.join( prompt_parts ).strip( )
 
-# ==============================================================================
-# DATABASE UTILITIES
-# ==============================================================================
+# ------------ DATABASE UTILITIES
 
 def initialize_database( ) -> None:
-	Path( "stores/sqlite/datamodels" ).mkdir( parents=True, exist_ok=True )
+	"""
+		Purpose:
+		--------
+		Ensure required SQLite tables exist and that the Prompts table contains the
+		columns required by the prompt utilities and Prompt Engineering mode.
+
+		Parameters:
+		-----------
+		None
+
+		Returns:
+		--------
+		None
+	"""
+	Path( 'stores/sqlite' ).mkdir( parents=True, exist_ok=True )
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
-		conn.execute( """
-                      CREATE TABLE IF NOT EXISTS chat_history
-                      (
-                          id
-                          INTEGER
-                          PRIMARY
-                          KEY
-                          AUTOINCREMENT,
-                          role
-                          TEXT,
-                          content
-                          TEXT
-                      )
-		              """ )
-		conn.execute( """
-                      CREATE TABLE IF NOT EXISTS embeddings
-                      (
-                          id
-                          INTEGER
-                          PRIMARY
-                          KEY
-                          AUTOINCREMENT,
-                          chunk
-                          TEXT,
-                          vector
-                          BLOB
-                      )
-		              """ )
-		conn.execute( """
-                      CREATE TABLE IF NOT EXISTS Prompts
-                      (
-                          PromptsId
-                          INTEGER
-                          NOT
-                          NULL
-                          UNIQUE,
-                          Name
-                          TEXT
-                      (
-                          80
-                      ),
-                          Text TEXT,
-                          Version TEXT
-                      (
-                          80
-                      ),
-                          ID TEXT
-                      (
-                          80
-                      ),
-                          PRIMARY KEY
-                      (
-                          PromptsId
-                          AUTOINCREMENT
-                      )
-                          )
-		              """ )
+		conn.execute(
+			"""
+            CREATE TABLE IF NOT EXISTS chat_history
+            (
+                id
+                INTEGER
+                PRIMARY
+                KEY
+                AUTOINCREMENT,
+                role
+                TEXT,
+                content
+                TEXT
+            )
+			"""
+		)
+		
+		conn.execute(
+			"""
+            CREATE TABLE IF NOT EXISTS embeddings
+            (
+                id
+                INTEGER
+                PRIMARY
+                KEY
+                AUTOINCREMENT,
+                chunk
+                TEXT,
+                vector
+                BLOB
+            )
+			"""
+		)
+		
+		conn.execute(
+			"""
+            CREATE TABLE IF NOT EXISTS Prompts
+            (
+                PromptsId
+                INTEGER
+                NOT
+                NULL
+                PRIMARY
+                KEY
+                AUTOINCREMENT,
+                Caption
+                TEXT,
+                Name
+                TEXT
+            (
+                80
+            ),
+                Text TEXT,
+                Version TEXT
+            (
+                80
+            ),
+                ID TEXT
+            (
+                80
+            )
+                )
+			"""
+		)
+		
+		prompt_columns = [ row[ 1 ] for row in
+		                   conn.execute( 'PRAGMA table_info("Prompts");' ).fetchall( ) ]
+		
+		if 'Caption' not in prompt_columns:
+			conn.execute( 'ALTER TABLE "Prompts" ADD COLUMN "Caption" TEXT;' )
+		
+		conn.commit( )
 
 def create_connection( ) -> sqlite3.Connection:
 	return sqlite3.connect( cfg.DB_PATH )
@@ -1884,12 +1908,133 @@ def create_schema( table: str ) -> List[ Tuple ]:
 	with create_connection( ) as conn:
 		return conn.execute( f'PRAGMA table_info("{table}");' ).fetchall( )
 
-def read_table( table: str, limit: int=None, offset: int=0 ) -> pd.DataFrame:
-	query = f'SELECT rowid, * FROM "{table}"'
+def read_table( table: str, limit: int = None, offset: int = 0 ) -> pd.DataFrame:
+	"""
+	
+		Purpose:
+		--------
+		Read a SQLite table into a pandas DataFrame using a normalized scalar-only path.
+	
+		Parameters:
+		-----------
+		table : str
+			Table name.
+		limit : int = None
+			Optional row limit.
+		offset : int = 0
+			Optional row offset.
+	
+		Returns:
+		--------
+		pd.DataFrame
+			DataFrame of plain Python scalar values.
+	
+	"""
+	if not table:
+		return pd.DataFrame( )
+	
+	query = f'SELECT * FROM "{table}"'
 	if limit:
-		query += f" LIMIT {limit} OFFSET {offset}"
+		query += f' LIMIT {int( limit )} OFFSET {int( offset )}'
+	
 	with create_connection( ) as conn:
-		return pd.read_sql_query( query, conn )
+		cur = conn.cursor( )
+		cur.execute( query )
+		
+		raw_columns = [ d[ 0 ] for d in (cur.description or [ ]) ]
+		rows = cur.fetchall( )
+	
+	seen: Dict[ str, int ] = { }
+	columns: List[ str ] = [ ]
+	
+	for col in raw_columns:
+		name = str( col )
+		if name not in seen:
+			seen[ name ] = 0
+			columns.append( name )
+		else:
+			seen[ name ] += 1
+			columns.append( f'{name}_{seen[ name ]}' )
+	
+	def _scalarize( value: Any ) -> Any:
+		if value is None or isinstance( value, (str, int, float, bool) ):
+			return value
+		
+		if isinstance( value, bytes ):
+			try:
+				return value.decode( 'utf-8' )
+			except Exception:
+				return value.hex( )
+		
+		if isinstance( value, (list, tuple, set, dict) ):
+			try:
+				return str( normalize( value ) )
+			except Exception:
+				return str( value )
+		
+		if hasattr( value, 'model_dump' ):
+			try:
+				return str( value.model_dump( ) )
+			except Exception:
+				return str( value )
+		
+		return str( value )
+	
+	normalized_rows: List[ Dict[ str, Any ] ] = [ ]
+	for row in rows:
+		record: Dict[ str, Any ] = { }
+		for idx, col in enumerate( columns ):
+			record[ col ] = _scalarize( row[ idx ] )
+		normalized_rows.append( record )
+	
+	return pd.DataFrame( normalized_rows, columns=columns )
+
+def render_table( df: pd.DataFrame ) -> None:
+	"""
+	
+		Purpose:
+		--------
+		Render a DataFrame safely in Streamlit. Use the normal interactive dataframe
+		first, and fall back to HTML rendering if Streamlit/PyArrow serialization fails.
+	
+		Parameters:
+		-----------
+		df : pd.DataFrame
+			The DataFrame to render.
+	
+		Returns:
+		--------
+		None
+	
+	"""
+	if df is None:
+		st.info( 'No data available.' )
+		return
+	
+	try:
+		st.data_editor( df, use_container_width=True )
+		return
+	except Exception:
+		pass
+	
+	fallback_df = df.copy( )
+	fallback_df = fallback_df.where( pd.notnull( fallback_df ), '' )
+	
+	for col in fallback_df.columns:
+		fallback_df[ col ] = fallback_df[ col ].map(
+			lambda x: x if isinstance( x, (str, int, float, bool) ) or x == '' else str( x ) )
+	
+	st.markdown( fallback_df.to_html( index=False, escape=True ), unsafe_allow_html=True )
+
+def make_display_safe( df: pd.DataFrame ) -> pd.DataFrame:
+	display_df = df.copy( )
+	
+	for col in display_df.columns:
+		display_df[ col ] = display_df[ col ].map(
+			lambda x: '' if x is None else str( x )
+		)
+	
+	return display_df
 
 def drop_table( table: str ) -> None:
 	"""
@@ -1937,7 +2082,7 @@ def create_index( table: str, column: str ) -> None:
 	# ------------------------------------------------------------------
 	tables = list_tables( )
 	if table not in tables:
-		raise ValueError( "Invalid table name." )
+		raise ValueError( 'Invalid table name.' )
 	
 	# ------------------------------------------------------------------
 	# Validate column exists
@@ -1946,7 +2091,7 @@ def create_index( table: str, column: str ) -> None:
 	valid_columns = [ col[ 1 ] for col in schema ]
 	
 	if column not in valid_columns:
-		raise ValueError( "Invalid column name." )
+		raise ValueError( 'Invalid column name.' )
 	
 	# ------------------------------------------------------------------
 	# Sanitize index name (identifier only)
@@ -2014,54 +2159,154 @@ def create_aggregation( df: pd.DataFrame ):
 	
 	st.metric( 'Result', result )
 
-def create_visualization( df: pd.DataFrame ):
+def create_visualization( df: pd.DataFrame ) -> None:
+	"""
+	
+		Purpose:
+		--------
+		Render data visualizations without passing pandas objects directly into
+		Plotly/Narwhals.
+		
+		Parameters:
+		-----------
+		df : pd.DataFrame
+			The input DataFrame.
+		
+		Returns:
+		--------
+		None
+		
+	"""
 	st.subheader( 'Visualization Engine' )
 	
-	numeric_cols = df.select_dtypes( include=[ 'number' ] ).columns.tolist( )
-	categorical_cols = df.select_dtypes( include=[ 'object' ] ).columns.tolist( )
+	if df is None or df.empty:
+		st.info( 'No data available.' )
+		return
 	
-	chart = st.selectbox( 'Chart Type', [ 'Histogram', 'Bar', 'Line',
-	                                      'Scatter', 'Box', 'Pie', 'Correlation' ] )
+	df_plot = df.copy( )
 	
-	if chart == 'Histogram' and numeric_cols:
+	for col in df_plot.columns:
+		if df_plot[ col ].dtype == object:
+			df_plot[ col ] = df_plot[ col ].map(
+				lambda x: '' if x is None else str( x )
+			)
+	
+	numeric_cols: List[ str ] = [ ]
+	for col in df_plot.columns:
+		series_num = pd.to_numeric( df_plot[ col ], errors='coerce' )
+		if series_num.notna( ).any( ):
+			numeric_cols.append( col )
+	
+	categorical_cols: List[ str ] = [ col for col in df_plot.columns if col not in numeric_cols ]
+	
+	chart = st.selectbox(
+		'Chart Type',
+		[ 'Histogram', 'Bar', 'Line', 'Scatter', 'Box', 'Pie', 'Correlation' ] )
+	
+	if chart == 'Histogram':
+		if not numeric_cols:
+			st.info( 'No numeric columns available.' )
+			return
+		
 		col = st.selectbox( 'Column', numeric_cols )
-		fig = px.histogram( df, x=col )
+		values = pd.to_numeric( df_plot[ col ], errors='coerce' ).dropna( ).tolist( )
+		
+		fig = go.Figure( data=[ go.Histogram( x=values ) ] )
+		fig.update_layout( xaxis_title=col, yaxis_title='Count' )
 		st.plotly_chart( fig, use_container_width=True )
 	
 	elif chart == 'Bar':
-		x = st.selectbox( 'X', df.columns )
+		if not numeric_cols:
+			st.info( 'No numeric columns available.' )
+			return
+		
+		x = st.selectbox( 'X', df_plot.columns )
 		y = st.selectbox( 'Y', numeric_cols )
-		fig = px.bar( df, x=x, y=y )
+		
+		x_values = df_plot[ x ].astype( str ).tolist( )
+		y_values = pd.to_numeric( df_plot[ y ], errors='coerce' ).fillna( 0 ).tolist( )
+		
+		fig = go.Figure( data=[ go.Bar( x=x_values, y=y_values ) ] )
+		fig.update_layout( xaxis_title=x, yaxis_title=y )
 		st.plotly_chart( fig, use_container_width=True )
 	
 	elif chart == 'Line':
-		x = st.selectbox( 'X', df.columns )
+		if not numeric_cols:
+			st.info( 'No numeric columns available.' )
+			return
+		
+		x = st.selectbox( 'X', df_plot.columns )
 		y = st.selectbox( 'Y', numeric_cols )
-		fig = px.line( df, x=x, y=y )
+		
+		x_values = df_plot[ x ].astype( str ).tolist( )
+		y_values = pd.to_numeric( df_plot[ y ], errors='coerce' ).fillna( 0 ).tolist( )
+		
+		fig = go.Figure( data=[ go.Scatter( x=x_values, y=y_values, mode='lines' ) ] )
+		fig.update_layout( xaxis_title=x, yaxis_title=y )
 		st.plotly_chart( fig, use_container_width=True )
 	
 	elif chart == 'Scatter':
-		x = st.selectbox( 'X', numeric_cols )
-		y = st.selectbox( 'Y', numeric_cols )
-		fig = px.scatter( df, x=x, y=y )
+		if len( numeric_cols ) < 2:
+			st.info( 'At least two numeric columns are required.' )
+			return
+		
+		x = st.selectbox( 'X', numeric_cols, key='viz_scatter_x' )
+		y = st.selectbox( 'Y', numeric_cols, key='viz_scatter_y' )
+		
+		x_series = pd.to_numeric( df_plot[ x ], errors='coerce' )
+		y_series = pd.to_numeric( df_plot[ y ], errors='coerce' )
+		mask = x_series.notna( ) & y_series.notna( )
+		
+		x_values = x_series[ mask ].tolist( )
+		y_values = y_series[ mask ].tolist( )
+		
+		fig = go.Figure( data=[ go.Scatter( x=x_values, y=y_values, mode='markers' ) ] )
+		fig.update_layout( xaxis_title=x, yaxis_title=y )
 		st.plotly_chart( fig, use_container_width=True )
 	
 	elif chart == 'Box':
-		col = st.selectbox( 'Column', numeric_cols )
-		fig = px.box( df, y=col )
+		if not numeric_cols:
+			st.info( 'No numeric columns available.' )
+			return
+		
+		col = st.selectbox( 'Column', numeric_cols, key='viz_box_col' )
+		values = pd.to_numeric( df_plot[ col ], errors='coerce' ).dropna( ).tolist( )
+		
+		fig = go.Figure( data=[ go.Box( y=values, name=col ) ] )
+		fig.update_layout( yaxis_title=col )
 		st.plotly_chart( fig, use_container_width=True )
 	
 	elif chart == 'Pie':
+		if not categorical_cols:
+			st.info( 'No categorical columns available.' )
+			return
+		
 		col = st.selectbox( 'Category Column', categorical_cols )
-		fig = px.pie( df, names=col )
+		counts = df_plot[ col ].astype( str ).value_counts( )
+		
+		fig = go.Figure(
+			data=[ go.Pie( labels=counts.index.tolist( ), values=counts.values.tolist( ) ) ] )
 		st.plotly_chart( fig, use_container_width=True )
 	
-	elif chart == 'Correlation' and len( numeric_cols ) > 1:
-		corr = df[ numeric_cols ].corr( )
-		fig = px.imshow( corr, text_auto=True )
+	elif chart == 'Correlation':
+		if len( numeric_cols ) < 2:
+			st.info( 'At least two numeric columns are required.' )
+			return
+		
+		corr_df = pd.DataFrame( )
+		for col in numeric_cols:
+			corr_df[ col ] = pd.to_numeric( df_plot[ col ], errors='coerce' )
+		
+		corr = corr_df.corr( )
+		
+		fig = go.Figure(
+			data=[ go.Heatmap(
+				z=corr.values.tolist( ),
+				x=corr.columns.tolist( ),
+				y=corr.index.tolist( ) ) ] )
 		st.plotly_chart( fig, use_container_width=True )
 
-def dm_create_table_from_df( table_name: str, df: pd.DataFrame ):
+def convert_dataframe( table_name: str, df: pd.DataFrame ):
 	columns = [ ]
 	for col in df.columns:
 		sql_type = get_sqlite_type( df[ col ].dtype )
@@ -2106,37 +2351,37 @@ def get_sqlite_type( dtype ) -> str:
 	# ------------------------------------------------------------------
 	# Integer Types (including nullable Int64)
 	# ------------------------------------------------------------------
-	if "int" in dtype_str:
-		return "INTEGER"
+	if 'int' in dtype_str:
+		return 'INTEGER'
 	
 	# ------------------------------------------------------------------
 	# Float Types
 	# ------------------------------------------------------------------
-	if "float" in dtype_str:
-		return "REAL"
+	if 'float' in dtype_str:
+		return 'REAL'
 	
 	# ------------------------------------------------------------------
 	# Boolean
 	# ------------------------------------------------------------------
-	if "bool" in dtype_str:
-		return "INTEGER"
+	if 'bool' in dtype_str:
+		return 'INTEGER'
 	
 	# ------------------------------------------------------------------
 	# Datetime
 	# ------------------------------------------------------------------
-	if "datetime" in dtype_str:
-		return "TEXT"
+	if 'datetime' in dtype_str:
+		return 'TEXT'
 	
 	# ------------------------------------------------------------------
 	# Categorical
 	# ------------------------------------------------------------------
-	if "category" in dtype_str:
-		return "TEXT"
+	if 'category' in dtype_str:
+		return 'TEXT'
 	
 	# ------------------------------------------------------------------
 	# Default fallback
 	# ------------------------------------------------------------------
-	return "TEXT"
+	return 'TEXT'
 
 def create_custom_table( table_name: str, columns: list ) -> None:
 	"""
@@ -2161,27 +2406,27 @@ def create_custom_table( table_name: str, columns: list ) -> None:
 			]
 	"""
 	if not table_name:
-		raise ValueError( "Table name required." )
+		raise ValueError( 'Table name required.' )
 	
 	# Validate identifier
 	if not re.match( r"^[A-Za-z_][A-Za-z0-9_]*$", table_name ):
-		raise ValueError( "Invalid table name." )
+		raise ValueError( 'Invalid table name.' )
 	
 	col_defs = [ ]
 	
 	for col in columns:
-		col_name = col[ "name" ]
-		col_type = col[ "type" ].upper( )
+		col_name = col[ 'name' ]
+		col_type = col[ 'type' ].upper( )
 		
 		if not re.match( r"^[A-Za-z_][A-Za-z0-9_]*$", col_name ):
 			raise ValueError( f"Invalid column name: {col_name}" )
 		
 		definition = f'"{col_name}" {col_type}'
 		
-		if col[ "primary_key" ]:
-			definition += " PRIMARY KEY"
-			if col[ "auto_increment" ] and col_type == "INTEGER":
-				definition += " AUTOINCREMENT"
+		if col[ 'primary_key' ]:
+			definition += ' PRIMARY KEY'
+			if col[ 'auto_increment' ] and col_type == 'INTEGER':
+				definition += ' AUTOINCREMENT'
 		
 		if col[ "not_null" ]:
 			definition += " NOT NULL"
@@ -2287,6 +2532,123 @@ def add_column( table: str, column: str, col_type: str ):
 			f'ALTER TABLE "{table}" ADD COLUMN "{column}" {col_type};' )
 		conn.commit( )
 
+def rename_column( table_name: str, old_name: str, new_name: str ) -> None:
+	"""
+	
+		Purpose:
+		--------
+		Rename a column within an existing SQLite table. Attempts native ALTER TABLE rename
+		first; if it fails, falls back to a schema-safe rebuild preserving column order, data,
+		and indexes.
+
+		Parameters:
+		-----------
+		table_name : str
+			Table containing the column.
+
+		old_name : str
+			Existing column name.
+
+		new_name : str
+			New column name.
+
+		Returns:
+		--------
+		None
+		
+	"""
+	if not table_name or not old_name or not new_name:
+		return
+	
+	with create_connection( ) as conn:
+		try:
+			conn.execute(
+				f'ALTER TABLE "{table_name}" RENAME COLUMN "{old_name}" TO "{new_name}";'
+			)
+			conn.commit( )
+			return
+		except Exception:
+			pass
+		
+		row = conn.execute(
+			"""
+            SELECT sql
+            FROM sqlite_master
+            WHERE type ='table' AND name =?
+			""",
+			(table_name,)
+		).fetchone( )
+		
+		if not row or not row[ 0 ]:
+			raise ValueError( "Table definition not found." )
+		
+		create_sql = row[ 0 ]
+		
+		indexes = conn.execute(
+			"""
+            SELECT sql
+            FROM sqlite_master
+            WHERE type ='index' AND tbl_name=? AND sql IS NOT NULL
+			""",
+			(table_name,)
+		).fetchall( )
+		
+		schema = conn.execute( f'PRAGMA table_info("{table_name}");' ).fetchall( )
+		cols = [ r[ 1 ] for r in schema ]
+		if old_name not in cols:
+			raise ValueError( "Column not found." )
+		
+		mapped_cols = [ (new_name if c == old_name else c) for c in cols ]
+		
+		temp_table = f"{table_name}__rebuild_temp"
+		
+		col_defs: List[ str ] = [ ]
+		pk_cols = [ r for r in schema if int( r[ 5 ] or 0 ) > 0 ]
+		single_pk = len( pk_cols ) == 1
+		
+		for row in schema:
+			col_name = row[ 1 ]
+			col_type = row[ 2 ] or ''
+			not_null = int( row[ 3 ] or 0 )
+			default_value = row[ 4 ]
+			pk = int( row[ 5 ] or 0 )
+			
+			out_name = new_name if col_name == old_name else col_name
+			col_def = f'"{out_name}" {col_type}'.strip( )
+			
+			if not_null:
+				col_def += ' NOT NULL'
+			
+			if default_value is not None:
+				col_def += f' DEFAULT {default_value}'
+			
+			if single_pk and pk == 1:
+				col_def += ' PRIMARY KEY'
+			
+			col_defs.append( col_def )
+		
+		new_create_sql = f'CREATE TABLE "{temp_table}" ({", ".join( col_defs )});'
+		
+		old_select = ", ".join( [ f'"{c}"' for c in cols ] )
+		new_insert = ", ".join( [ f'"{c}"' for c in mapped_cols ] )
+		
+		conn.execute( "BEGIN" )
+		conn.execute( new_create_sql )
+		conn.execute(
+			f'INSERT INTO "{temp_table}" ({new_insert}) SELECT {old_select} FROM "{table_name}";'
+		)
+		
+		conn.execute( f'DROP TABLE "{table_name}";' )
+		conn.execute( f'ALTER TABLE "{temp_table}" RENAME TO "{table_name}";' )
+		
+		for idx in indexes:
+			idx_sql = idx[ 0 ]
+			if idx_sql:
+				idx_sql = idx_sql.replace( f'"{old_name}"', f'"{new_name}"' )
+				conn.execute( idx_sql )
+		
+		conn.commit( )
+
 def create_profile_table( table: str ):
 	df = read_table( table )
 	profile_rows = [ ]
@@ -2300,17 +2662,18 @@ def create_profile_table( table: str ):
 					'column': col, 'dtype': str( series.dtype ),
 					'null_%': round( (null_count / total_rows) * 100, 2 ) if total_rows else 0,
 					'distinct_%': round( (
-								                     distinct_count / total_rows) * 100, 2 ) if total_rows else 0,
+							                     distinct_count / total_rows) * 100,
+						2 ) if total_rows else 0,
 			}
 		
 		if pd.api.types.is_numeric_dtype( series ):
-			row[ "min" ] = series.min( )
-			row[ "max" ] = series.max( )
-			row[ "mean" ] = series.mean( )
+			row[ 'min' ] = series.min( )
+			row[ 'max' ] = series.max( )
+			row[ 'mean' ] = series.mean( )
 		else:
-			row[ "min" ] = None
-			row[ "max" ] = None
-			row[ "mean" ] = None
+			row[ 'min' ] = None
+			row[ 'max' ] = None
+			row[ 'mean' ] = None
 		
 		profile_rows.append( row )
 	
@@ -2318,7 +2681,7 @@ def create_profile_table( table: str ):
 
 def drop_column( table: str, column: str ):
 	if not table or not column:
-		raise ValueError( "Table and column required." )
+		raise ValueError( 'Table and column required.' )
 	
 	with create_connection( ) as conn:
 		# ------------------------------------------------------------
@@ -2334,7 +2697,7 @@ def drop_column( table: str, column: str ):
 		).fetchone( )
 		
 		if not row or not row[ 0 ]:
-			raise ValueError( "Table definition not found." )
+			raise ValueError( 'Table definition not found.' )
 		
 		create_sql = row[ 0 ]
 		
@@ -2414,9 +2777,90 @@ def drop_column( table: str, column: str ):
 		
 		conn.commit( )
 
-# ==============================================================================
-# PROMPT ENGINEERING UTILITIES
-# ==============================================================================
+def rename_table( old_name: str, new_name: str ) -> None:
+	"""
+	
+		Purpose:
+		--------
+		Rename an existing SQLite table. Attempts native ALTER TABLE rename first; if it fails,
+		falls back to a schema-safe rebuild using the original CREATE TABLE statement and
+		preserves indexes.
+
+		Parameters:
+		-----------
+		old_name : str
+			Existing table name.
+
+		new_name : str
+			New table name.
+
+		Returns:
+		--------
+		None
+		
+	"""
+	if not old_name or not new_name:
+		return
+	
+	with create_connection( ) as conn:
+		try:
+			conn.execute( f'ALTER TABLE "{old_name}" RENAME TO "{new_name}";' )
+			conn.commit( )
+			return
+		except Exception:
+			pass
+		
+		row = conn.execute(
+			"""
+            SELECT sql
+            FROM sqlite_master
+            WHERE type ='table' AND name =?
+			""",
+			(old_name,)
+		).fetchone( )
+		
+		if not row or not row[ 0 ]:
+			raise ValueError( "Table definition not found." )
+		
+		create_sql = row[ 0 ]
+		
+		indexes = conn.execute(
+			"""
+            SELECT sql
+            FROM sqlite_master
+            WHERE type ='index' AND tbl_name=? AND sql IS NOT NULL
+			""",
+			(old_name,)
+		).fetchall( )
+		
+		open_paren = create_sql.find( "(" )
+		if open_paren == -1:
+			raise ValueError( "Malformed CREATE TABLE statement." )
+		
+		temp_name = f"{new_name}__rebuild_temp"
+		
+		conn.execute( "BEGIN" )
+		conn.execute( f'CREATE TABLE "{temp_name}" {create_sql[ open_paren: ]}' )
+		
+		cols = [ r[ 1 ] for r in conn.execute( f'PRAGMA table_info("{old_name}");' ).fetchall( ) ]
+		col_list = ", ".join( [ f'"{c}"' for c in cols ] )
+		
+		conn.execute(
+			f'INSERT INTO "{temp_name}" ({col_list}) SELECT {col_list} FROM "{old_name}";'
+		)
+		
+		conn.execute( f'DROP TABLE "{old_name}";' )
+		conn.execute( f'ALTER TABLE "{temp_name}" RENAME TO "{new_name}";' )
+		
+		for idx in indexes:
+			idx_sql = idx[ 0 ]
+			if idx_sql:
+				idx_sql = idx_sql.replace( f'ON "{old_name}"', f'ON "{new_name}"' )
+				conn.execute( idx_sql )
+		
+		conn.commit( )
+
+# ------------ PROMPT ENGINEERING UTILITIES
 
 def fetch_prompt_names( db_path: str ) -> list[ str ]:
 	"""
@@ -2536,9 +2980,7 @@ def build_prompt( user_input: str ) -> str:
 	prompt += f"<|user|>\n{user_input}\n</s>\n<|assistant|>\n"
 	return prompt
 
-# ======================================================================================
-#  PROVIDER UTILITIES
-# ======================================================================================
+# ------------ PROVIDER UTILITIES
 
 def get_provider_name( provider: Optional[ str ] = None ) -> str:
 	"""
@@ -3234,45 +3676,30 @@ def render_provider_keys( ) -> None:
 			help='Overrides OPENAI_API_KEY from config.py for this session only.',
 			key='sidebar_openai_api_key' )
 		
-		gemini_key = st.text_input(
-			'Gemini API Key',
-			type='password',
+		gemini_key = st.text_input( 'Gemini API Key', type='password',
 			value=st.session_state.get( 'gemini_api_key', '' ) or '',
 			help='Overrides GEMINI_API_KEY from config.py for this session only.',
-			key='sidebar_gemini_api_key'
-		)
+			key='sidebar_gemini_api_key' )
 		
-		groq_key = st.text_input(
-			'Groq API Key',
-			type='password',
-			value=st.session_state.get( 'groq_api_key', '' ) or '',
-			help='Overrides GROQ_API_KEY from config.py for this session only.',
-			key='sidebar_groq_api_key'
-		)
+		xai_key = st.text_input( 'xAI API Key', type='password',
+			value=st.session_state.get( 'xai_api_key', '' ) or '',
+			help='Overrides XAI_API_KEY from config.py for this session only.',
+			key='sidebar_xai_api_key' )
 		
-		google_key = st.text_input(
-			'Google API Key',
-			type='password',
+		google_key = st.text_input( 'Google API Key', type='password',
 			value=st.session_state.get( 'google_api_key', '' ) or '',
 			help='Overrides GOOGLE_API_KEY from config.py for this session only.',
-			key='sidebar_google_api_key'
-		)
+			key='sidebar_google_api_key' )
 		
-		google_cse_id = st.text_input(
-			'Google CSE ID',
-			type='password',
+		google_cse_id = st.text_input( 'Google CSE ID', type='password',
 			value=st.session_state.get( 'google_cse_id', '' ) or '',
 			help='Overrides GOOGLE_CSE_ID from config.py for this session only.',
-			key='sidebar_google_cse_id'
-		)
+			key='sidebar_google_cse_id' )
 		
-		google_cloud_project_id = st.text_input(
-			'Google Cloud Project ID',
-			type='password',
+		google_cloud_project_id = st.text_input( 'Google Cloud Project ID', type='password',
 			value=st.session_state.get( 'google_cloud_project_id', '' ) or '',
 			help='Overrides GOOGLE_CLOUD_PROJECT_ID from config.py for this session only.',
-			key='sidebar_google_cloud_project_id'
-		)
+			key='sidebar_google_cloud_project_id' )
 		
 		google_cloud_location = st.text_input(
 			'Google Cloud Location',
@@ -3289,9 +3716,9 @@ def render_provider_keys( ) -> None:
 			st.session_state[ 'gemini_api_key' ] = gemini_key
 			os.environ[ 'GEMINI_API_KEY' ] = gemini_key
 		
-		if groq_key:
-			st.session_state[ 'groq_api_key' ] = groq_key
-			os.environ[ 'GROQ_API_KEY' ] = groq_key
+		if xai_key:
+			st.session_state[ 'xai_api_key' ] = xai_key
+			os.environ[ 'XAI_API_KEY' ] = xai_key
 		
 		if google_key:
 			st.session_state[ 'google_api_key' ] = google_key
@@ -3344,12 +3771,10 @@ with st.sidebar:
 		current_mode = mode_options[ 0 ]
 		st.session_state[ 'mode' ] = current_mode
 	
-	mode = st.radio(
-		label='Select Mode',
+	mode = st.radio( label='Select Mode',
 		options=mode_options,
 		index=get_mode_index( mode_options, current_mode ),
-		key='mode'
-	)
+		key='mode' )
 	
 	st.caption( f'Provider: {provider} | Mode: {mode}' )
 
@@ -3359,6 +3784,42 @@ with st.sidebar:
 if mode == 'Text':
 	provider_name = st.session_state.get( 'provider', 'GPT' )
 	text = get_chat_module( provider_name )
+	
+	# ------------------------------------------------------------------
+	# Text Mode State Safety
+	# ------------------------------------------------------------------
+	if 'text_grok_collection_ids' not in st.session_state:
+		st.session_state[ 'text_grok_collection_ids' ] = [ ]
+	
+	if 'text_grok_collection_ids_input' not in st.session_state:
+		st.session_state[ 'text_grok_collection_ids_input' ] = ''
+	
+	if 'text_vector_store_ids' not in st.session_state:
+		st.session_state[ 'text_vector_store_ids' ] = ''
+	
+	if 'text_domains_input' not in st.session_state:
+		st.session_state[ 'text_domains_input' ] = ''
+	
+	if 'text_urls_input' not in st.session_state:
+		st.session_state[ 'text_urls_input' ] = ''
+	
+	if 'text_stops_input' not in st.session_state:
+		st.session_state[ 'text_stops_input' ] = ''
+	
+	if 'text_response_schema' not in st.session_state:
+		st.session_state[ 'text_response_schema' ] = ''
+	
+	if 'text_json_schema' not in st.session_state:
+		st.session_state[ 'text_json_schema' ] = ''
+	
+	if 'text_json_schema_name' not in st.session_state:
+		st.session_state[ 'text_json_schema_name' ] = 'response_schema'
+	
+	if 'text_json_schema_strict' not in st.session_state:
+		st.session_state[ 'text_json_schema_strict' ] = True
+	
+	if 'text_safety_profile' not in st.session_state:
+		st.session_state[ 'text_safety_profile' ] = ''
 	
 	# ------------------------------------------------------------------
 	# Text Mode Helpers
@@ -3478,6 +3939,121 @@ if mode == 'Text':
 		
 		return bool( value )
 	
+	def get_grok_collection_options( ) -> Dict[ str, str ]:
+		"""
+			
+			Purpose:
+			--------
+			Return configured xAI Collection labels and IDs from config.py.
+		
+			Parameters:
+			-----------
+			None
+		
+			Returns:
+			--------
+			Dict[str, str]: Collection label-to-ID mapping.
+			
+		"""
+		collection_rows = getattr( cfg, 'GROK_COLLECTIONS', [ ] )
+		collections: Dict[ str, str ] = { }
+		
+		if isinstance( collection_rows, list ):
+			for row in collection_rows:
+				if isinstance( row, dict ):
+					for label, value in row.items( ):
+						if label and value:
+							collections[ str( label ) ] = str( value )
+		
+		return collections
+	
+	def get_selected_grok_collection_ids( ) -> List[ str ]:
+		"""
+			
+			Purpose:
+			--------
+			Resolve selected and manually-entered xAI Collection IDs for Grok Text requests.
+		
+			Parameters:
+			-----------
+			None
+		
+			Returns:
+			--------
+			List[str]: Ordered xAI Collection IDs.
+			
+		"""
+		collection_map = get_grok_collection_options( )
+		selected_labels = st.session_state.get( 'text_grok_collection_labels', [ ] )
+		manual_ids = parse_comma_list(
+			st.session_state.get( 'text_grok_collection_ids_input', '' ) )
+		resolved_ids: List[ str ] = [ ]
+		
+		if isinstance( selected_labels, list ):
+			for label in selected_labels:
+				collection_id = collection_map.get( str( label ) )
+				if collection_id and collection_id not in resolved_ids:
+					resolved_ids.append( collection_id )
+		
+		for collection_id in manual_ids:
+			if collection_id not in resolved_ids:
+				resolved_ids.append( collection_id )
+		
+		st.session_state[ 'text_grok_collection_ids' ] = resolved_ids
+		return resolved_ids
+	
+	def sanitize_text_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> None:
+		"""
+			
+			Purpose:
+			--------
+			Remove stale provider-specific single-value selections before rendering controls.
+		
+			Parameters:
+			-----------
+			key (str): Session-state key to sanitize.
+			valid_options (List[str]): Provider-valid option values.
+			default (Any): Value assigned when the current value is invalid.
+		
+			Returns:
+			--------
+			None
+			
+		"""
+		current_value = st.session_state.get( key, default )
+		if current_value in [ None, '' ]:
+			return
+		
+		if valid_options and current_value not in valid_options:
+			st.session_state[ key ] = default
+	
+	def sanitize_text_multiselect( key: str, valid_options: List[ str ] ) -> None:
+		"""
+			
+			Purpose:
+			--------
+			Remove stale provider-specific multiselect values before rendering controls.
+		
+			Parameters:
+			-----------
+			key (str): Session-state key to sanitize.
+			valid_options (List[str]): Provider-valid option values.
+		
+			Returns:
+			--------
+			None
+			
+		"""
+		current_values = st.session_state.get( key, [ ] )
+		if not isinstance( current_values, list ):
+			st.session_state[ key ] = [ ]
+			return
+		
+		st.session_state[ key ] = [
+				value for value in current_values
+				if value in valid_options
+		]
+	
 	def reset_text_model_settings( ) -> None:
 		"""
 			
@@ -3536,7 +4112,7 @@ if mode == 'Text':
 			
 			Purpose:
 			--------
-			Reset Text mode tool, include, vector-store, and grounding controls.
+			Reset Text mode tool, include, vector-store, collection, and grounding controls.
 		
 			Parameters:
 			-----------
@@ -3558,6 +4134,9 @@ if mode == 'Text':
 				'text_parallel_tools',
 				'text_parallel_calls',
 				'text_vector_store_ids',
+				'text_grok_collection_labels',
+				'text_grok_collection_ids',
+				'text_grok_collection_ids_input',
 				'text_urls_input',
 				'text_urls',
 				'text_max_urls',
@@ -3695,7 +4274,7 @@ if mode == 'Text':
 		schema_name = st.session_state.get( 'text_json_schema_name', 'response_schema' )
 		strict = bool( st.session_state.get( 'text_json_schema_strict', True ) )
 		
-		if provider_name == 'GPT' and schema_text and str(
+		if provider_name in [ 'GPT', 'Grok' ] and schema_text and str(
 				response_format ).lower( ) == 'json_schema':
 			try:
 				import json
@@ -3762,12 +4341,18 @@ if mode == 'Text':
 		derived_stops = parse_comma_list( raw_stops )
 		derived_urls = parse_semicolon_list( raw_urls )
 		derived_domains = parse_comma_list( raw_domains )
+		
 		if derived_domains:
 			st.session_state[ 'text_domains' ] = derived_domains
 		
-		derived_modalities = [ str( modality ).strip( )
+		if derived_urls:
+			st.session_state[ 'text_urls' ] = derived_urls
+		
+		derived_modalities = [
+				str( modality ).strip( )
 				for modality in st.session_state.get( 'text_modalities', [ ] )
-				if str( modality ).strip( ) ]
+				if str( modality ).strip( )
+		]
 		
 		return {
 				'prompt': prompt,
@@ -3858,7 +4443,8 @@ if mode == 'Text':
 				'conversation_id': st.session_state.get( 'text_conversation_id' ) or None,
 		}
 	
-	def build_gemini_text_kwargs( prompt: str, stream_handler: Optional[ Any ]=None ) -> Dict[ str, Any ]:
+	def build_gemini_text_kwargs( prompt: str, stream_handler: Optional[ Any ] = None ) -> Dict[
+		str, Any ]:
 		"""
 			
 			Purpose:
@@ -3902,12 +4488,23 @@ if mode == 'Text':
 			
 		"""
 		kwargs = build_text_common_kwargs( prompt )
+		collection_ids = get_selected_grok_collection_ids( )
+		input_mode = st.session_state.get( 'text_input', '' )
+		
+		if input_mode == 'single_turn':
+			kwargs[ 'context' ] = [ ]
+		
+		kwargs[ 'format' ] = build_text_response_format_payload( )
 		kwargs[ 'include' ] = st.session_state.get( 'text_include', [ ] )
 		kwargs[ 'allowed_domains' ] = st.session_state.get( 'text_domains', [ ] )
 		kwargs[ 'background' ] = normalize_bool_or_none( st.session_state.get( 'text_background' ) )
 		kwargs[ 'stream' ] = normalize_bool_or_none( st.session_state.get( 'text_stream' ) )
 		kwargs[ 'store' ] = normalize_bool_or_none( st.session_state.get( 'text_store' ) )
 		kwargs[ 'is_parallel' ] = bool( st.session_state.get( 'text_parallel_tools', False ) )
+		kwargs[ 'max_tools' ] = st.session_state.get( 'text_max_calls' )
+		kwargs[ 'previous_id' ] = st.session_state.get( 'text_previous_response_id' ) or None
+		kwargs[ 'conversation_id' ] = st.session_state.get( 'text_conversation_id' ) or None
+		kwargs[ 'vector_store_ids' ] = collection_ids
 		return kwargs
 	
 	def call_generate_text( prompt: str, stream_handler: Optional[ Any ] = None ) -> Any:
@@ -3999,8 +4596,6 @@ if mode == 'Text':
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
-			elif 'update_token_counters' in globals( ):
-				update_token_counters( response )
 		except Exception:
 			pass
 	
@@ -4051,7 +4646,6 @@ if mode == 'Text':
 		# Expander — Text Mind Controls
 		# ------------------------------------------------------------------
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
-			
 			with st.expander( label='Model Settings', icon='🧊', expanded=False, width='stretch' ):
 				model_c1, model_c2, model_c3, model_c4, model_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
@@ -4062,9 +4656,11 @@ if mode == 'Text':
 					if not model_options:
 						model_options = [
 								st.session_state.get( 'text_model', '' ) or getattr( text, 'model',
-									'' ) ]
+									'' )
+						]
 						model_options = [ item for item in model_options if item ]
 					
+					sanitize_text_selection( 'text_model', model_options, '' )
 					st.selectbox( label='Model', options=model_options, key='text_model',
 						placeholder='Options', index=None,
 						help='Required. Text generation model used by the selected provider.' )
@@ -4072,14 +4668,15 @@ if mode == 'Text':
 				# ---------- Reasoning ------------
 				with model_c2:
 					reasoning_options = get_text_options( text, 'reasoning_options' )
+					sanitize_text_selection( 'text_reasoning', reasoning_options, '' )
 					st.selectbox( label='Reasoning', options=reasoning_options,
-						key='text_reasoning',
-						help=get_text_help( 'REASONING' ), index=None, placeholder='Options' )
+						key='text_reasoning', help=get_text_help( 'REASONING' ), index=None,
+						placeholder='Options' )
 				
 				# ---------- Modalities ------------
 				with model_c3:
-					modality_options = get_text_options( text, 'modality_options',
-						[ 'text' ] )
+					modality_options = get_text_options( text, 'modality_options', [ 'text' ] )
+					sanitize_text_multiselect( 'text_modalities', modality_options )
 					st.multiselect( label='Modalities', options=modality_options,
 						key='text_modalities',
 						help='Optional. Provider-supported response modalities.',
@@ -4088,6 +4685,7 @@ if mode == 'Text':
 				# ---------- Media Resolution ------------
 				with model_c4:
 					media_options = get_text_options( text, 'media_options' )
+					sanitize_text_selection( 'text_media_resolution', media_options, '' )
 					st.selectbox( label='Media Resolution', options=media_options,
 						key='text_media_resolution',
 						help='Optional. Provider-supported media resolution.',
@@ -4120,8 +4718,7 @@ if mode == 'Text':
 				# ---------- Temperature ------------
 				with prm_c3:
 					st.slider( label='Temperature', min_value=0.0, max_value=2.0,
-						step=0.01, help=get_text_help( 'TEMPERATURE' ),
-						key='text_temperature' )
+						step=0.01, help=get_text_help( 'TEMPERATURE' ), key='text_temperature' )
 				
 				# ---------- Frequency Penalty ------------
 				with prm_c4:
@@ -4148,12 +4745,14 @@ if mode == 'Text':
 				# ---------- Tools ------------
 				with tool_c1:
 					tool_options = get_text_options( text, 'tool_options' )
+					sanitize_text_multiselect( 'text_tools', tool_options )
 					st.multiselect( label='Tools', options=tool_options, key='text_tools',
 						help=get_text_help( 'TOOLS' ), placeholder='Options' )
 				
 				# ---------- Include ------------
 				with tool_c2:
 					include_options = get_text_options( text, 'include_options' )
+					sanitize_text_multiselect( 'text_include', include_options )
 					st.multiselect( label='Include', options=include_options,
 						key='text_include', help=get_text_help( 'INCLUDE' ),
 						placeholder='Options' )
@@ -4161,6 +4760,7 @@ if mode == 'Text':
 				# ---------- Tool Choice ------------
 				with tool_c3:
 					choice_options = get_text_options( text, 'choice_options' )
+					sanitize_text_selection( 'text_tool_choice', choice_options, '' )
 					st.selectbox( label='Tool Choice', options=choice_options,
 						key='text_tool_choice', help=get_text_help( 'CHOICE' ),
 						index=None, placeholder='Options' )
@@ -4168,21 +4768,23 @@ if mode == 'Text':
 				# ---------- Max Tool Calls ------------
 				with tool_c4:
 					st.slider( label='Max Tool Calls', min_value=0, max_value=100,
-						step=1, key='text_max_calls',
-						help=get_text_help( 'MAX_TOOL_CALLS' ) )
+						step=1, key='text_max_calls', help=get_text_help( 'MAX_TOOL_CALLS' ) )
 				
 				ctx_c1, ctx_c2, ctx_c3, ctx_c4 = st.columns(
 					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
 				
 				# ---------- Google Grounding ------------
 				with ctx_c1:
-					if provider_name == 'Gemini':
-						st.toggle( label='Google Grounding', key='text_google_grounding',
-							help='When enabled, Gemini grounds this Text response using Google Search.' )
-					else:
-						st.toggle( label='Google Grounding', key='text_google_grounding',
-							disabled=True,
-							help='Google grounding is available only for Gemini Text mode.' )
+					google_grounding_supported = provider_name == 'Gemini'
+					
+					if not google_grounding_supported:
+						st.session_state[ 'text_google_grounding' ] = False
+					
+					st.toggle( label='Google Grounding', key='text_google_grounding',
+						disabled=not google_grounding_supported,
+						help='When enabled, Gemini grounds this Text response using Google Search.'
+						if google_grounding_supported
+						else 'Google grounding is available only for Gemini Text mode.' )
 				
 				# ---------- Parallel Tools ------------
 				with ctx_c2:
@@ -4199,8 +4801,7 @@ if mode == 'Text':
 				
 				# ---------- Input Mode ------------
 				with ctx_c4:
-					st.selectbox( label='Input Mode',
-						options=[ 'conversation', 'single_turn' ],
+					st.selectbox( label='Input Mode', options=[ 'conversation', 'single_turn' ],
 						key='text_input',
 						help='Conversation uses prior Text messages as context; single_turn omits them.',
 						index=None, placeholder='Options' )
@@ -4213,16 +4814,28 @@ if mode == 'Text':
 				
 				# ---------- Allowed Domains ------------
 				st.text_input( label='Allowed Domains', key='text_domains_input',
-					help=get_text_help( 'ALLOWED_DOMAINS' ),
-					width='stretch',
+					help=get_text_help( 'ALLOWED_DOMAINS' ), width='stretch',
 					placeholder='example.com,openai.com' )
 				
-				# ---------- Vector Store IDs ------------
+				# ---------- Vector Store / Collection IDs ------------
 				if provider_name == 'GPT':
 					st.text_input( label='Vector Store IDs', key='text_vector_store_ids',
 						help='Optional. Enter OpenAI vector store IDs separated by commas.',
-						width='stretch',
-						placeholder='vs_abc123,vs_def456' )
+						width='stretch', placeholder='vs_abc123,vs_def456' )
+				
+				elif provider_name == 'Grok':
+					collection_map = get_grok_collection_options( )
+					collection_labels = list( collection_map.keys( ) )
+					
+					if collection_labels:
+						st.multiselect( label='Collections', options=collection_labels,
+							key='text_grok_collection_labels',
+							help='Optional. Select configured xAI Collections for Grok retrieval.',
+							placeholder='Options' )
+					
+					st.text_input( label='Collection IDs', key='text_grok_collection_ids_input',
+						help='Optional. Enter xAI Collection IDs separated by commas.',
+						width='stretch', placeholder='collection_abc123,collection_def456' )
 				
 				st.button( label='Reset', key='reset_text_tools', width='stretch',
 					on_click=reset_text_tool_settings )
@@ -4241,6 +4854,7 @@ if mode == 'Text':
 				# ---------- Response Format ------------
 				with resp_c2:
 					format_options = get_text_options( text, 'format_options' )
+					sanitize_text_selection( 'text_response_format', format_options, '' )
 					st.selectbox( label='Response Format', options=format_options,
 						key='text_response_format',
 						help='Optional. Desired response format or MIME type.',
@@ -4248,13 +4862,11 @@ if mode == 'Text':
 				
 				# ---------- Store ------------
 				with resp_c3:
-					st.toggle( label='Store', key='text_store',
-						help=get_text_help( 'STORE' ) )
+					st.toggle( label='Store', key='text_store', help=get_text_help( 'STORE' ) )
 				
 				# ---------- Stream ------------
 				with resp_c4:
-					st.toggle( label='Stream', key='text_stream',
-						help=get_text_help( 'STREAM' ) )
+					st.toggle( label='Stream', key='text_stream', help=get_text_help( 'STREAM' ) )
 				
 				# ---------- Background ------------
 				with resp_c5:
@@ -4267,7 +4879,7 @@ if mode == 'Text':
 				# ---------- Schema Name ------------
 				with schema_c1:
 					st.text_input( label='Schema Name', key='text_json_schema_name',
-						help='Optional. Name used for GPT JSON schema response format.',
+						help='Optional. Name used for GPT/Grok JSON schema response format.',
 						width='stretch', placeholder='response_schema' )
 				
 				# ---------- Response Schema ------------
@@ -4388,11 +5000,13 @@ if mode == 'Text':
 						)
 						response_obj = getattr( text, 'response', None ) or response
 						
-						if provider_name == 'GPT':
+						if provider_name in [ 'GPT', 'Grok' ]:
 							st.session_state[ 'text_previous_response_id' ] = (
 									getattr( text, 'previous_id', None ) or
+									getattr( text, 'previous_response_id', None ) or
 									st.session_state.get( 'text_previous_response_id', '' ) or ''
 							)
+					
 					except Exception as exc:
 						err = Error( exc )
 						st.error( f'Generation Failed: {err.info}' )
@@ -4513,24 +5127,33 @@ elif mode == 'Images':
 			
 		"""
 		return str( getattr( cfg, name, fallback ) or fallback )
-	
-	def get_provider_image_models( selected_mode: Optional[ str ] ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Return provider-specific image models for the selected image workflow.
 		
-			Parameters:
-			-----------
-			selected_mode (Optional[str]): Image workflow name.
-		
-			Returns:
-			--------
-			List[str]: Model names for the selected provider and image workflow.
+		def get_provider_image_models( selected_mode: Optional[ str ] ) -> List[ str ]:
+			"""
+				
+				Purpose:
+				--------
+				Return provider-specific image models for the selected image workflow.
 			
-		"""
+				Parameters:
+				-----------
+				selected_mode (Optional[str]): Image workflow name.
+			
+				Returns:
+				--------
+				List[str]: Model names for the selected provider and image workflow.
+				
+			"""
+		
 		mode_name = selected_mode or ''
+		
+		if provider_name == 'GPT':
+			if mode_name == 'Generation':
+				return list( getattr( cfg, 'GPT_GENERATION', [ ] ) )
+			if mode_name == 'Analysis':
+				return list( getattr( cfg, 'GPT_ANALYSIS', [ ] ) )
+			if mode_name == 'Editing':
+				return list( getattr( cfg, 'GPT_EDITING', [ ] ) )
 		
 		if provider_name == 'Gemini':
 			if mode_name == 'Generation':
@@ -4540,13 +5163,21 @@ elif mode == 'Images':
 			if mode_name == 'Editing':
 				return list( getattr( cfg, 'GEMINI_EDITING', [ ] ) )
 		
-		if provider_name in [ 'GPT', 'Grok' ]:
+		if provider_name == 'Grok':
 			if mode_name == 'Generation':
-				return list( getattr( cfg, 'GPT_GENERATION', [ ] ) )
+				models = list( getattr( cfg, 'GROK_GENERATION', [ ] ) )
+				if models:
+					return models
+			
 			if mode_name == 'Analysis':
-				return list( getattr( cfg, 'GPT_ANALYSIS', [ ] ) )
+				models = list( getattr( cfg, 'GROK_ANALYSIS', [ ] ) )
+				if models:
+					return models
+			
 			if mode_name == 'Editing':
-				return list( getattr( cfg, 'GPT_EDITING', [ ] ) )
+				models = list( getattr( cfg, 'GROK_EDITING', [ ] ) )
+				if models:
+					return models
 		
 		models = get_image_options( image, 'model_options' )
 		if not models:
@@ -5003,7 +5634,7 @@ elif mode == 'Images':
 			elif 'update_token_counters' in globals( ):
 				update_token_counters( response )
 			elif 'update_counters' in globals( ):
-				update_counters( response )
+				count_tokens( response )
 		except Exception:
 			pass
 	
@@ -6290,7 +6921,7 @@ elif mode == 'Audio':
 			elif 'update_token_counters' in globals( ):
 				update_token_counters( response )
 			elif 'update_counters' in globals( ):
-				update_counters( response )
+				count_tokens( response )
 		except Exception:
 			pass
 	
@@ -9047,13 +9678,11 @@ elif mode == 'Files':
 							
 							st.session_state[ 'files_results' ] = result
 							st.session_state[ 'files_selected_id' ] = file_id
-							st.session_state[ 'files_uploaded' ].append(
-								{
+							st.session_state[ 'files_uploaded' ].append( {
 										'id': file_id,
 										'filename': uploaded_file.name,
 										'provider': provider_name,
-								}
-							)
+								} )
 							
 							st.success( f'Uploaded file: {file_id}' )
 					
@@ -9712,7 +10341,7 @@ elif mode == 'Vector Stores':
 		
 		store_col, detail_col = st.columns( [ 0.50, 0.50 ], border=True, gap='medium' )
 		with store_col:
-			st.subheader( 'Store Lifecycle' )
+			st.markdown( '##### Store Lifecycle' )
 			
 			create_c1, create_c2 = st.columns( [ 0.50, 0.50 ] )
 			with create_c1:
@@ -9783,12 +10412,10 @@ elif mode == 'Vector Stores':
 							if not selected_store_id:
 								st.warning( 'Select or enter a store ID before retrieving.' )
 							else:
-								result = call_storage_method(
-									instance=vector,
+								result = call_storage_method( instance=vector,
 									method_names=[ 'retrieve', 'retrieve_store', 'get_collection' ],
 									kwargs={ 'store_id': selected_store_id,
-									         'id': selected_store_id }
-								)
+									         'id': selected_store_id } )
 								metadata = normalize_storage_object( result )
 								st.session_state[ 'stores_store_metadata' ] = metadata
 								st.session_state[ 'stores_id' ] = selected_store_id
@@ -9851,7 +10478,7 @@ elif mode == 'Vector Stores':
 				'vector_stores_table_view' )
 		
 		with detail_col:
-			st.subheader( 'Selected Store Details' )
+			st.markdown( '##### Selected Store Details' )
 			render_storage_metadata( st.session_state.get( 'stores_store_metadata', { } ) )
 			
 			st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
@@ -9897,9 +10524,8 @@ elif mode == 'Vector Stores':
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 		
 		file_col, batch_col = st.columns( [ 0.50, 0.50 ], border=True, gap='medium' )
-		
 		with file_col:
-			st.subheader( 'Store Files' )
+			st.markdown( '##### Store Files' )
 			st.text_input( label='File ID', key='stores_file_id',
 				help='OpenAI/Grok file ID to attach, list, or delete.',
 				width='stretch' )
@@ -9981,7 +10607,7 @@ elif mode == 'Vector Stores':
 				'vector_store_files_table_view' )
 		
 		with batch_col:
-			st.subheader( 'Batch / Upload' )
+			st.markdown( '##### Batch / Upload' )
 			st.text_area( label='File IDs', key='stores_file_ids_text',
 				height=80, width='stretch',
 				placeholder='file_abc,file_def,file_xyz' )
@@ -10055,7 +10681,6 @@ elif mode == 'File Search Stores':
 		st.stop( )
 	
 	searcher = get_file_search_module( provider_name )
-	
 	def call_file_search_method( method_names: List[ str ], kwargs: Optional[ Dict[ str, Any ] ]=None ) -> Any:
 		"""
 			
@@ -10132,12 +10757,11 @@ elif mode == 'File Search Stores':
 		st.session_state[ 'filestore_manual_id' ] = ''
 	
 	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
-	with center:
+	with (center):
 		st.subheader( '📦 File Search Stores', help=getattr( cfg, 'VECTORSTORES_API', '' ) )
 		st.divider( )
 		
 		stores_left, stores_right = st.columns( [ 0.50, 0.50 ], border=True )
-		
 		with stores_left:
 			
 			with st.expander( label='Create', expanded=True ):
@@ -10152,12 +10776,10 @@ elif mode == 'File Search Stores':
 							if not name:
 								st.warning( 'Enter a File Search Store name.' )
 							else:
-								result = call_file_search_method(
-									[ 'create', 'create_store' ],
-									{ 'name': name, 'display_name': name, 'store_id': name }
-								)
-								st.session_state[ 'filestore_metadata' ] = normalize_storage_object(
-									result )
+								result = call_file_search_method( [ 'create', 'create_store' ],
+									{ 'name': name, 'display_name': name, 'store_id': name } )
+								st.session_state[ 'filestore_metadata' ] = \
+									normalize_storage_object( result )
 								st.success( f'Created File Search Store: {name}' )
 						except Exception as exc:
 							err = Error( exc )
@@ -10201,10 +10823,9 @@ elif mode == 'File Search Stores':
 									result = call_file_search_method(
 										[ 'retrieve', 'retrieve_store', 'get' ],
 										{ 'store_id': selected_store_id, 'id': selected_store_id,
-										  'name': selected_store_id }
-									)
-									st.session_state[
-										'filestore_metadata' ] = normalize_storage_object( result )
+										  'name': selected_store_id } )
+									st.session_state[ 'filestore_metadata' ] = \
+										normalize_storage_object( result )
 									st.success( 'File Search Store metadata retrieved.' )
 							except Exception as exc:
 								err = Error( exc )
@@ -10223,8 +10844,8 @@ elif mode == 'File Search Stores':
 										{ 'store_id': selected_store_id, 'id': selected_store_id,
 										  'name': selected_store_id }
 									)
-									st.session_state[
-										'filestore_metadata' ] = normalize_storage_object( result )
+									st.session_state[ 'filestore_metadata' ] = \
+										normalize_storage_object( result )
 									st.success( 'Delete request completed.' )
 							except Exception as exc:
 								err = Error( exc )
@@ -10557,7 +11178,7 @@ elif mode == "Prompt Engineering":
 			if row:
 				st.session_state.pe_name = row[ 0 ]
 				st.session_state.pe_text = row[ 1 ]
-				st.session_state.pe_version = row[ 2 ]
+				st.session_state.pe_version = int( row[ 2 ] )
 	
 	# ------------------------------------------------------------------
 	# XML / Markdown converters (IDENTICAL BEHAVIOR TO LEEROY)
@@ -10577,37 +11198,20 @@ elif mode == "Prompt Engineering":
 		st.text_input( 'Search (Name/Text contains)', key='pe_search' )
 	
 	with c2:
-		st.selectbox(
-			'Sort by',
-			[ 'PromptsId',
-			  'Name',
-			  'Version' ],
-			key='pe_sort_col',
-		)
+		st.selectbox( 'Sort by', [ 'PromptsId', 'Name', 'Version' ], key='pe_sort_col', )
 	
 	with c3:
-		st.selectbox(
-			'Direction',
-			[ 'ASC',
-			  'DESC' ],
-			key='pe_sort_dir',
-		)
+		st.selectbox( 'Direction', [ 'ASC',  'DESC' ], key='pe_sort_dir', )
 	
 	with c4:
 		st.markdown(
 			"<div style='font-size:0.95rem;font-weight:600;margin-bottom:0.25rem;'>Go to ID</div>",
 			unsafe_allow_html=True,
 		)
-		a1, a2, a3 = st.columns( [ 2,
-		                           1,
-		                           1 ] )
+		a1, a2, a3 = st.columns( [ 2,  1, 1 ] )
 		with a1:
-			jump_id = st.number_input(
-				"Go to ID",
-				min_value=1,
-				step=1,
-				label_visibility="collapsed",
-			)
+			jump_id = st.number_input( "Go to ID", min_value=1, step=1,
+				label_visibility="collapsed", )
 		with a2:
 			if st.button( "Go" ):
 				st.session_state.pe_selected_id = int( jump_id )
@@ -10651,21 +11255,15 @@ elif mode == "Prompt Engineering":
 	# ------------------------------------------------------------------
 	table_rows = [ ]
 	for r in rows:
-		table_rows.append(
-			{
+		table_rows.append( {
 					'Selected': r[ 0 ] == st.session_state.pe_selected_id,
 					'PromptsId': r[ 0 ],
 					'Name': r[ 1 ],
 					'Version': r[ 3 ],
 					'ID': r[ 4 ],
-			}
-		)
+			} )
 	
-	edited = st.data_editor(
-		table_rows,
-		hide_index=True,
-		use_container_width=True,
-	)
+	edited = st.data_editor( table_rows, hide_index=True, use_container_width=True, )
 	
 	selected = [ r for r in edited if r.get( "Selected" ) ]
 	if len( selected ) == 1:
@@ -10762,6 +11360,554 @@ elif mode == "Prompt Engineering":
 			if st.button( 'Clear Selection' ):
 				reset_selection( )
 
+# ==============================================================================
+# DATA MANAGEMENT MODE
+# ==============================================================================
+elif mode == 'Data Management':
+	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
+	with center:
+		st.subheader( '🏛️ Data Management', help=cfg.DATA_MANAGEMENT )
+		tabs = st.tabs( [ 'Import', 'Browse', 'CRUD', 'Explore', 'Filter',
+		                  'Aggregate', 'Visualize', 'Admin', 'SQL' ] )
+		
+		tables = list_tables( )
+		if not tables:
+			st.info( "No tables available." )
+		
+		# ------------------------------------------------------------------------------
+		# UPLOAD TAB
+		# ------------------------------------------------------------------------------
+		with tabs[ 0 ]:
+			uploaded_file = st.file_uploader( 'Upload Excel File', type=[ 'xlsx' ] )
+			overwrite = st.checkbox( 'Overwrite existing tables', value=True )
+			if uploaded_file:
+				try:
+					sheets = pd.read_excel( uploaded_file, sheet_name=None )
+					with create_connection( ) as conn:
+						conn.execute( 'BEGIN' )
+						for sheet_name, df in sheets.items( ):
+							table_name = create_identifier( sheet_name )
+							if overwrite:
+								conn.execute( f'DROP TABLE IF EXISTS "{table_name}"' )
+							
+							# --- Create Table ---
+							columns = [ ]
+							df.columns = [ create_identifier( c ) for c in df.columns ]
+							for col in df.columns:
+								sql_type = get_sqlite_type( df[ col ].dtype )
+								columns.append( f'"{col}" {sql_type}' )
+							
+							create_stmt = (
+									f'CREATE TABLE "{table_name}" '
+									f'({", ".join( columns )});'
+							)
+							
+							conn.execute( create_stmt )
+							
+							# --- Insert Data ---
+							placeholders = ", ".join( [ "?" ] * len( df.columns ) )
+							insert_stmt = (
+									f'INSERT INTO "{table_name}" '
+									f'VALUES ({placeholders});'
+							)
+							
+							conn.executemany( insert_stmt,
+								df.where( pd.notnull( df ), None ).values.tolist( ) )
+						
+						conn.commit( )
+					
+					st.success( 'Import completed successfully (transaction committed).' )
+					st.rerun( )
+				
+				except Exception as e:
+					try:
+						conn.rollback( )
+					except:
+						pass
+					st.error( f'Import failed — transaction rolled back.\n\n{e}' )
+		
+		# ------------------------------------------------------------------------------
+		# BROWSE TAB
+		# ------------------------------------------------------------------------------
+		with tabs[ 1 ]:
+			tables = list_tables( )
+			if tables:
+				table = st.selectbox( 'Table', tables, key='table_name' )
+				df = read_table( table )
+				render_table( df )
+			else:
+				st.info( 'No tables available.' )
+		
+		# ------------------------------------------------------------------------------
+		# CRUD (Schema-Aware)
+		# ------------------------------------------------------------------------------
+		with tabs[ 2 ]:
+			tables = list_tables( )
+			if not tables:
+				st.info( 'No tables available.' )
+			else:
+				crud_header_c1, crud_header_c2, crud_header_c3 = st.columns(
+					[ 0.45, 0.25, 0.30 ], border=True )
+				
+				with crud_header_c1:
+					table = st.selectbox( 'Select Table', tables, key='crud_table' )
+				
+				df = read_table( table )
+				schema = create_schema( table )
+				
+				type_map = { col[ 1 ]: col[ 2 ].upper( ) for col in schema if col[ 1 ] != 'rowid' }
+				
+				with crud_header_c2:
+					st.metric( 'Rows', len( df.index ) )
+				
+				with crud_header_c3:
+					st.metric( 'Columns', len( type_map ) )
+				
+				st.divider( )
+				
+				insert_col, update_col = st.columns( [ 0.50, 0.50 ], border=True )
+				
+				# ------------------------------------------------------------------
+				# INSERT
+				# ------------------------------------------------------------------
+				with insert_col:
+					st.markdown( '#### Insert Row' )
+					insert_data = { }
+					
+					for column, col_type in type_map.items( ):
+						if 'INT' in col_type:
+							insert_data[ column ] = st.number_input(
+								column,
+								step=1,
+								key=f'ins_{table}_{column}' )
+						
+						elif 'REAL' in col_type:
+							insert_data[ column ] = st.number_input(
+								column,
+								format='%.6f',
+								key=f'ins_{table}_{column}' )
+						
+						elif 'BOOL' in col_type:
+							insert_data[ column ] = 1 if st.checkbox(
+								column,
+								key=f'ins_{table}_{column}' ) else 0
+						
+						else:
+							insert_data[ column ] = st.text_input(
+								column,
+								key=f'ins_{table}_{column}' )
+					
+					if st.button( 'Insert Row', key=f'insert_row_{table}',
+							use_container_width=True ):
+						cols = list( insert_data.keys( ) )
+						quoted_cols = [ f'"{c}"' for c in cols ]
+						placeholders = ', '.join( [ '?' ] * len( cols ) )
+						stmt = (
+								f'INSERT INTO "{table}" ({", ".join( quoted_cols )}) '
+								f'VALUES ({placeholders});')
+						
+						with create_connection( ) as conn:
+							conn.execute( stmt, list( insert_data.values( ) ) )
+							conn.commit( )
+						
+						st.success( 'Row inserted.' )
+						st.rerun( )
+				
+				# ------------------------------------------------------------------
+				# UPDATE
+				# ------------------------------------------------------------------
+				with update_col:
+					st.markdown( '#### Update Row' )
+					rowid = st.number_input(
+						'Row ID',
+						min_value=1,
+						step=1,
+						key=f'crud_update_rowid_{table}' )
+					
+					update_data = { }
+					
+					for column, col_type in type_map.items( ):
+						if 'INT' in col_type:
+							val = st.number_input(
+								column,
+								step=1,
+								key=f'upd_{table}_{column}' )
+							update_data[ column ] = val
+						
+						elif 'REAL' in col_type:
+							val = st.number_input(
+								column,
+								format='%.6f',
+								key=f'upd_{table}_{column}' )
+							update_data[ column ] = val
+						
+						elif 'BOOL' in col_type:
+							val = 1 if st.checkbox(
+								column,
+								key=f'upd_{table}_{column}' ) else 0
+							update_data[ column ] = val
+						
+						else:
+							val = st.text_input(
+								column,
+								key=f'upd_{table}_{column}' )
+							update_data[ column ] = val
+					
+					if st.button( 'Update Row', key=f'update_row_{table}',
+							use_container_width=True ):
+						set_clause = ', '.join( [ f'"{c}"=?' for c in update_data ] )
+						stmt = f'UPDATE "{table}" SET {set_clause} WHERE rowid=?;'
+						
+						with create_connection( ) as conn:
+							conn.execute( stmt, list( update_data.values( ) ) + [ rowid ] )
+							conn.commit( )
+						
+						st.success( 'Row updated.' )
+						st.rerun( )
+				
+				st.divider( )
+				
+				delete_col, preview_col = st.columns( [ 0.35, 0.65 ], border=True )
+				
+				# ------------------------------------------------------------------
+				# DELETE
+				# ------------------------------------------------------------------
+				with delete_col:
+					st.markdown( '#### Delete Row' )
+					delete_id = st.number_input(
+						'Row ID to Delete',
+						min_value=1,
+						step=1,
+						key=f'crud_delete_rowid_{table}' )
+					
+					if st.button( 'Delete Row', key=f'delete_row_{table}',
+							use_container_width=True ):
+						with create_connection( ) as conn:
+							conn.execute( f'DELETE FROM "{table}" WHERE rowid=?;', (delete_id,) )
+							conn.commit( )
+						
+						st.success( 'Row deleted.' )
+						st.rerun( )
+				
+				# ------------------------------------------------------------------
+				# PREVIEW
+				# ------------------------------------------------------------------
+				with preview_col:
+					st.markdown( '#### Current Data Preview' )
+					st.data_editor(
+						df.head( 25 ),
+						key=f'dm_crud_preview_{table}',
+						use_container_width=True,
+						disabled=True )
+		
+		# ------------------------------------------------------------------------------
+		# EXPLORE
+		# ------------------------------------------------------------------------------
+		with tabs[ 3 ]:
+			tables = list_tables( )
+			if tables:
+				exp_c1, exp_c2, exp_c3 = st.columns( [ 0.4, 0.4, 0.2 ], border=True )
+				with exp_c1:
+					table = st.selectbox( 'Table', tables, key='explore_table' )
+				with exp_c2:
+					page_size = st.slider( 'Rows per page', 10, 500, 50 )
+				with exp_c3:
+					page = st.number_input( 'Page', min_value=1, step=1 )
+					offset = (page - 1) * page_size
+					df_page = read_table( table, page_size, offset )
+				
+				st.data_editor( df_page )
+		
+		# ------------------------------------------------------------------------------
+		# FILTER
+		# ------------------------------------------------------------------------------
+		with tabs[ 4 ]:
+			tables = list_tables( )
+			if tables:
+				tbl_c1, tbl_c2, tbl_c3 = st.columns( [ 0.25, 0.25, 0.5 ], border=True )
+				with tbl_c1:
+					table = st.selectbox( 'Select Table', tables, key='filter_table' )
+					df = read_table( table )
+				with tbl_c2:
+					column = st.selectbox( 'Select Field', df.columns )
+				with tbl_c3:
+					value = st.text_input( 'Contains', placeholder='Enter Text for Lookup' )
+					if value:
+						df = df[ df[ column ].astype( str ).str.contains( value ) ]
+				
+				st.data_editor( df )
+		
+		# ------------------------------------------------------------------------------
+		# AGGREGATE
+		# ------------------------------------------------------------------------------
+		with tabs[ 5 ]:
+			tables = list_tables( )
+			if tables:
+				agg_c1, agg_c2, agg_c3, agg_c4 = st.columns( [ 0.2, 0.2, 0.2, 0.4 ], border=True )
+				with agg_c1:
+					table = st.selectbox( 'Table', tables, key='agg_table' )
+					df = read_table( table )
+					numeric_cols = df.select_dtypes( include=[ 'number' ] ).columns.tolist( )
+					with agg_c2:
+						if numeric_cols:
+							col = st.selectbox( 'Column', numeric_cols )
+					with agg_c3:
+						agg = st.selectbox( 'Function', [ 'SUM', 'AVG', 'COUNT' ] )
+					with agg_c4:
+						if agg == 'SUM':
+							st.metric( 'Result', df[ col ].sum( ), width='stretch',
+								format='accounting' )
+						
+						elif agg == 'AVG':
+							st.metric( 'Result', df[ col ].mean( ), width='stretch',
+								format='accounting' )
+						
+						elif agg == 'COUNT':
+							st.metric( 'Result', df[ col ].count( ), width='stretch',
+								format='accounting' )
+		
+		# ------------------------------------------------------------------------------
+		# VISUALIZE
+		# ------------------------------------------------------------------------------
+		with tabs[ 6 ]:
+			tables = list_tables( )
+			if tables:
+				table = st.selectbox( 'Table', tables, key='viz_table' )
+				df = read_table( table )
+				create_visualization( df )
+		
+		# ------------------------------------------------------------------------------
+		# ADMIN
+		# ------------------------------------------------------------------------------
+		with tabs[ 7 ]:
+			tables = list_tables( )
+			if tables:
+				table = st.selectbox( 'Table', tables, key='admin_table' )
+			
+			st.divider( )
+			
+			st.subheader( 'Data Profiling' )
+			tables = list_tables( )
+			if tables:
+				table = st.selectbox( 'Select Table', tables, key='profile_table' )
+				if st.button( 'Generate Profile' ):
+					profile_df = create_profile_table( table )
+					render_table( profile_df )
+			
+			st.subheader( 'Drop Table' )
+			
+			tables = list_tables( )
+			if tables:
+				table = st.selectbox( 'Select Table to Drop', tables, key='admin_drop_table' )
+				
+				# Initialize confirmation state
+				if 'dm_confirm_drop' not in st.session_state:
+					st.session_state.dm_confirm_drop = False
+				
+				# Step 1: Initial Drop click
+				if st.button( 'Drop Table', key='admin_drop_button' ):
+					st.session_state.dm_confirm_drop = True
+				
+				# Step 2: Confirmation UI
+				if st.session_state.dm_confirm_drop:
+					st.warning( f'You are about to permanently delete table {table}. '
+					            'This action cannot be undone.' )
+					
+					col1, col2 = st.columns( 2 )
+					
+					if col1.button( 'Confirm Drop', key='admin_confirm_drop' ):
+						try:
+							drop_table( table )
+							st.success( f'Table {table} dropped successfully.' )
+						except Exception as e:
+							st.error( f'Drop failed: {e}' )
+						
+						st.session_state.dm_confirm_drop = False
+						st.rerun( )
+					
+					if col2.button( 'Cancel', key='admin_cancel_drop' ):
+						st.session_state.dm_confirm_drop = False
+						st.rerun( )
+				
+				df = read_table( table )
+				col = st.selectbox( 'Create Index On', df.columns )
+				
+				if st.button( 'Create Index' ):
+					create_index( table, col )
+					st.success( 'Index created.' )
+			
+			st.divider( )
+			
+			st.subheader( 'Create Custom Table' )
+			new_table_name = st.text_input( 'Table Name' )
+			column_count = st.number_input( 'Number of Columns', min_value=1, max_value=20,
+				value=1 )
+			columns = [ ]
+			for i in range( column_count ):
+				st.markdown( f'### Column {i + 1}' )
+				col_name = st.text_input( 'Column Name', key=f'col_name_{i}' )
+				col_type = st.selectbox( 'Column Type', [ 'INTEGER', 'REAL', 'TEXT' ],
+					key=f'col_type_{i}' )
+				
+				not_null = st.checkbox( 'NOT NULL', key=f'not_null_{i}' )
+				primary_key = st.checkbox( 'PRIMARY KEY', key=f'pk_{i}' )
+				auto_inc = st.checkbox( 'AUTOINCREMENT (INTEGER only)', key=f'ai_{i}' )
+				
+				columns.append( {
+						'name': col_name,
+						'type': col_type,
+						'not_null': not_null,
+						'primary_key': primary_key,
+						'auto_increment': auto_inc } )
+			
+			if st.button( 'Create Table' ):
+				try:
+					create_custom_table( new_table_name, columns )
+					st.success( 'Table created successfully.' )
+					st.rerun( )
+				
+				except Exception as e:
+					st.error( f'Error: {e}' )
+			
+			st.divider( )
+			st.subheader( 'Schema Viewer' )
+			
+			tables = list_tables( )
+			if tables:
+				table = st.selectbox( 'Select Table', tables, key='schema_view_table' )
+				
+				# Column schema
+				schema = create_schema( table )
+				schema_df = pd.DataFrame(
+					schema,
+					columns=[ 'cid', 'name', 'type', 'notnull', 'default', 'pk' ] )
+				
+				st.markdown( "### Columns" )
+				st.data_editor(
+					make_display_safe( schema_df ),
+					hide_index=True,
+					use_container_width=True,
+					disabled=True )
+				
+				# Row count
+				with create_connection( ) as conn:
+					count = conn.execute(
+						f'SELECT COUNT(*) FROM "{table}"'
+					).fetchone( )[ 0 ]
+				
+				st.metric( "Row Count", f"{count:,}" )
+				
+				# Indexes
+				indexes = get_indexes( table )
+				if indexes:
+					idx_df = pd.DataFrame(
+						indexes,
+						columns=[ 'seq', 'name', 'unique', 'origin', 'partial' ]
+					)
+					st.markdown( "### Indexes" )
+					st.data_editor(
+						make_display_safe( idx_df ),
+						hide_index=True,
+						use_container_width=True,
+						disabled=True )
+				else:
+					st.info( "No indexes defined." )
+			
+			st.divider( )
+			st.subheader( "ALTER TABLE Operations" )
+			
+			tables = list_tables( )
+			if tables:
+				table = st.selectbox( 'Select Table', tables, key='alter_table_select' )
+				operation = st.selectbox( 'Operation',
+					[ 'Add Column', 'Rename Column', 'Rename Table', 'Drop Column' ] )
+				
+				if operation == 'Add Column':
+					new_col = st.text_input( 'Column Name' )
+					col_type = st.selectbox( 'Column Type', [ 'INTEGER', 'REAL', 'TEXT' ] )
+					
+					if st.button( 'Add Column' ):
+						add_column( table, new_col, col_type )
+						st.success( 'Column added.' )
+						st.rerun( )
+				
+				elif operation == 'Rename Column':
+					schema = create_schema( table )
+					col_names = [ col[ 1 ] for col in schema ]
+					
+					old_col = st.selectbox( 'Column to Rename', col_names )
+					new_col = st.text_input( 'New Column Name' )
+					
+					if st.button( 'Rename Column' ):
+						rename_column( table, old_col, new_col )
+						st.success( 'Column renamed.' )
+						st.rerun( )
+				
+				elif operation == 'Rename Table':
+					new_name = st.text_input( 'New Table Name' )
+					
+					if st.button( 'Rename Table' ):
+						rename_table( table, new_name )
+						st.success( 'Table renamed.' )
+						st.rerun( )
+				
+				elif operation == 'Drop Column':
+					schema = create_schema( table )
+					col_names = [ col[ 1 ] for col in schema ]
+					
+					drop_col = st.selectbox( 'Column to Drop', col_names )
+					
+					if st.button( 'Drop Column' ):
+						drop_column( table, drop_col )
+						st.success( 'Column dropped.' )
+						st.rerun( )
+		
+		# ------------------------------------------------------------------------------
+		# SQL
+		# ------------------------------------------------------------------------------
+		with tabs[ 8 ]:
+			st.subheader( 'SQL Console' )
+			query = st.text_area( 'Enter SQL Query' )
+			if st.button( 'Run Query' ):
+				if not is_safe_query( query ):
+					st.error( 'Query blocked: Only read-only SELECT statements are allowed.' )
+				else:
+					try:
+						start_time = time.perf_counter( )
+						with create_connection( ) as conn:
+							result = pd.read_sql_query( query, conn )
+						
+						end_time = time.perf_counter( )
+						elapsed = end_time - start_time
+						
+						# ----------------------------------------------------------
+						# Display Results
+						# ----------------------------------------------------------
+						st.dataframe( result, use_container_width=True )
+						row_count = len( result )
+						
+						# ----------------------------------------------------------
+						# Execution Metrics
+						# ----------------------------------------------------------
+						col1, col2 = st.columns( 2 )
+						col1.metric( 'Rows Returned', f'{row_count:,}' )
+						col2.metric( 'Execution Time (seconds)', f'{elapsed:.6f}' )
+						
+						# Optional slow query warning
+						if elapsed > 2.0:
+							st.warning( 'Slow query detected (> 2 seconds). Consider indexing.' )
+						
+						# ----------------------------------------------------------
+						# Download
+						# ----------------------------------------------------------
+						if not result.empty:
+							csv = result.to_csv( index=False ).encode( 'utf-8' )
+							st.download_button( 'Download CSV', csv,
+								'query_results.csv', 'text/csv' )
+					
+					except Exception as e:
+						st.error( f'Execution failed: {e}' )
+						
 # ======================================================================================
 # FOOTER — SECTION
 # ======================================================================================
@@ -10817,7 +11963,10 @@ _mode_to_model_key = \
 		'Embeddings': 'embedding_model',
 		'Document Q&A': 'docqna_model',
 		'Files': 'files_model',
-		'Vector Stores': 'stores_model'
+		'Vector Stores': 'stores_model',
+		'Prompt Engineering': 'text_model',
+		'Data Management': 'text_model',
+		'Export': 'text_model',
 }
 
 provider_val = st.session_state.get( 'provider', '—' )
