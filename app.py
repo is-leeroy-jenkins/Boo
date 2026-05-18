@@ -139,7 +139,7 @@ def init_env_state( key: str, config_name: str, env_name: str ) -> None:
 	"""
 	init_state( key, '' )
 	if st.session_state.get( key, '' ) == '':
-		default = getattr( cfg, config_name, '' )
+		default = getattr( cfg, config_name, env_name )
 		if default:
 			st.session_state[ key ] = default
 			os.environ[ env_name ] = default
@@ -170,16 +170,16 @@ def copy_state_alias( source_key: str, target_key: str, default: Any ) -> None:
 
 # ---------- API / PROVIDER CONFIGURATION -------------------------------------
 
-init_env_state( 'openai_api_key', 'OPENAI_API_KEY', 'OPENAI_API_KEY' )
-init_env_state( 'gemini_api_key', 'GEMINI_API_KEY', 'GEMINI_API_KEY' )
-init_env_state( 'google_api_key', 'GOOGLE_API_KEY', 'GOOGLE_API_KEY' )
-init_env_state( 'google_cse_id', 'GOOGLE_CSE_ID', 'GOOGLE_CSE_ID' )
-init_env_state( 'googlemaps_api_key', 'GOOGLEMAPS_API_KEY', 'GOOGLEMAPS_API_KEY' )
-init_env_state( 'geocoding_api_key', 'GEOCODING_API_KEY', 'GEOCODING_API_KEY' )
-init_env_state( 'geoapify_api_key', 'GEOAPIFY_API_KEY', 'GEOAPIFY_API_KEY' )
-init_env_state( 'google_cloud_project_id', 'GOOGLE_CLOUD_PROJECT_ID', 'GOOGLE_CLOUD_PROJECT_ID' )
-init_env_state( 'google_cloud_location', 'GOOGLE_CLOUD_LOCATION', 'GOOGLE_CLOUD_LOCATION' )
-init_env_state( 'xai_api_key', 'XAI_API_KEY', 'XAI_API_KEY' )
+init_env_state( 'openai_api_key', 'OPENAI_API_KEY', cfg.OPENAI_API_KEY )
+init_env_state( 'gemini_api_key', 'GEMINI_API_KEY', cfg.GEMINI_API_KEY )
+init_env_state( 'google_api_key', 'GOOGLE_API_KEY', cfg.GOOGLE_API_KEY )
+init_env_state( 'google_cse_id', 'GOOGLE_CSE_ID', cfg.GOOGLE_CSE_ID )
+init_env_state( 'googlemaps_api_key', 'GOOGLEMAPS_API_KEY', cfg.GOOGLEMAPS_API_KEY )
+init_env_state( 'geocoding_api_key', 'GEOCODING_API_KEY', cfg.GEOCODING_API_KEY )
+init_env_state( 'geoapify_api_key', 'GEOAPIFY_API_KEY', cfg.GEOAPIFY_API_KEY )
+init_env_state( 'google_cloud_project_id', 'GOOGLE_CLOUD_PROJECT_ID', cfg.GOOGLE_CLOUD_PROJECT_ID )
+init_env_state( 'google_cloud_location', 'GOOGLE_CLOUD_LOCATION', cfg.GOOGLE_CLOUD_LOCATION )
+init_env_state( 'xai_api_key', 'XAI_API_KEY', cfg.XAI_API_KEY )
 init_state( 'api_keys', { 'GPT': None, 'Grok': None, 'Gemini': None } )
 init_state( 'provider', 'GPT' )
 init_state( 'mode', 'Text' )
@@ -3911,8 +3911,7 @@ def render_provider_keys( ) -> None:
 			help='Overrides GOOGLE_CLOUD_PROJECT_ID from config.py for this session only.',
 			key='sidebar_google_cloud_project_id' )
 		
-		google_cloud_location = st.text_input(
-			'Google Cloud Location',
+		google_cloud_location = st.text_input( 'Google Cloud Location', type='password',
 			value=st.session_state.get( 'google_cloud_location', cfg.GOOGLE_CLOUD_LOCATION ),
 			help='Overrides GOOGLE_CLOUD_LOCATION from config.py for this session only.',
 			key='sidebar_google_cloud_location'
