@@ -3882,12 +3882,12 @@ def render_provider_keys( ) -> None:
 	"""
 	with st.expander( 'Keys:', expanded=False ):
 		openai_key = st.text_input( 'OpenAI API Key', type='password',
-			value=st.session_state.get( 'openai_api_key', '' ) or '',
+			value=st.session_state.get( 'openai_api_key', cfg.OPENAI_API_KEY ),
 			help='Overrides OPENAI_API_KEY from config.py for this session only.',
 			key='sidebar_openai_api_key' )
 		
 		gemini_key = st.text_input( 'Gemini API Key', type='password',
-			value=st.session_state.get( 'gemini_api_key', '' ) or '',
+			value=st.session_state.get( 'gemini_api_key', cfg.GEMINI_API_KEY ),
 			help='Overrides GEMINI_API_KEY from config.py for this session only.',
 			key='sidebar_gemini_api_key' )
 		
@@ -3897,23 +3897,23 @@ def render_provider_keys( ) -> None:
 			key='sidebar_xai_api_key' )
 		
 		google_key = st.text_input( 'Google API Key', type='password',
-			value=st.session_state.get( 'google_api_key', '' ) or '',
+			value=st.session_state.get( 'google_api_key', cfg.GOOGLE_API_KEY ),
 			help='Overrides GOOGLE_API_KEY from config.py for this session only.',
 			key='sidebar_google_api_key' )
 		
 		google_cse_id = st.text_input( 'Google CSE ID', type='password',
-			value=st.session_state.get( 'google_cse_id', '' ) or '',
+			value=st.session_state.get( 'google_cse_id', cfg.GOOGLE_CSE_ID ),
 			help='Overrides GOOGLE_CSE_ID from config.py for this session only.',
 			key='sidebar_google_cse_id' )
 		
 		google_cloud_project_id = st.text_input( 'Google Cloud Project ID', type='password',
-			value=st.session_state.get( 'google_cloud_project_id', '' ) or '',
+			value=st.session_state.get( 'google_cloud_project_id', cfg.GOOGLE_CLOUD_PROJECT_ID ),
 			help='Overrides GOOGLE_CLOUD_PROJECT_ID from config.py for this session only.',
 			key='sidebar_google_cloud_project_id' )
 		
 		google_cloud_location = st.text_input(
 			'Google Cloud Location',
-			value=st.session_state.get( 'google_cloud_location', '' ) or '',
+			value=st.session_state.get( 'google_cloud_location', cfg.GOOGLE_CLOUD_LOCATION ),
 			help='Overrides GOOGLE_CLOUD_LOCATION from config.py for this session only.',
 			key='sidebar_google_cloud_location'
 		)
