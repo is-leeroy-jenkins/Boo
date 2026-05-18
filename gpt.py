@@ -1320,7 +1320,7 @@ class Chat( GPT ):
 		try:
 			throw_if( 'prompt', prompt )
 			throw_if( 'model', model )
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			
 			self.stream_requested = bool( stream )
 			self.background_requested = bool( background )
@@ -2084,7 +2084,7 @@ class Images( GPT ):
 			self.response_format = fmt if isinstance( fmt, str ) and fmt.strip( ) else 'jpeg'
 			self.output_format = self.response_format.lower( ).replace( '.', '' )
 			self.background = background if isinstance( background, str ) else None
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			
 			valid_models = [
 					'gpt-image-2',
@@ -2244,7 +2244,7 @@ class Images( GPT ):
 			self.stream = stream
 			self.detail = detail if isinstance( detail, str ) and detail.strip( ) else 'auto'
 			self.file_path = path
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			
 			valid_details = [
 					'auto',
@@ -2389,7 +2389,7 @@ class Images( GPT ):
 			self.number = number if isinstance( number, int ) and number > 0 else self.number
 			self.number = self.number if isinstance( self.number, int ) and self.number > 0 else 1
 			self.number = min( 10, max( 1, int( self.number ) ) )
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			
 			valid_models = [
 					'gpt-image-2',
@@ -2942,7 +2942,7 @@ class TTS( ):
 			self.speed = self.validate_speed( speed )
 			self.instructions = instruct
 			self.file_path = file_path
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.response = None
 			self.audio_bytes = None
 			
@@ -4141,7 +4141,7 @@ class Translation( GPT ):
 			self.response_format = self.validate_format( format )
 			self.temperature = temperature
 			self.target_language = language
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.request = {
 					'model': self.model,
 			}
@@ -4893,7 +4893,7 @@ class Embeddings( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.request = self.build_request( text=text, model=model, format=format,
 				dimensions=dimensions, user=user )
 			
@@ -5597,7 +5597,7 @@ class Files( GPT ):
 			if not os.path.exists( filepath ):
 				raise FileNotFoundError( f'File not found: {filepath}' )
 			
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.filepath = filepath
 			self.purpose = self.validate_upload_purpose( purpose )
 			self.request = {
@@ -5641,7 +5641,7 @@ class Files( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.purpose = purpose if isinstance( purpose, str ) and purpose.strip( ) else None
 			self.request = { }
 			
@@ -5677,7 +5677,7 @@ class Files( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.file_id = self.validate_file_id( id )
 			self.request = {
 					'file_id': self.file_id,
@@ -5714,7 +5714,7 @@ class Files( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.file_id = self.validate_file_id( id )
 			self.request = {
 					'file_id': self.file_id,
@@ -5749,7 +5749,7 @@ class Files( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.file_id = self.validate_file_id( id )
 			self.request = {
 					'file_id': self.file_id,
@@ -5824,7 +5824,7 @@ class Files( GPT ):
 			content_text = content_text[ :max_chars ] if isinstance( max_chars,
 				int ) else content_text
 			
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.request = {
 					'model': self.model,
 					'input': [
@@ -6825,7 +6825,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.name = self.validate_store_name( name )
 			self.description = description if isinstance( description,
 				str ) and description.strip( ) else None
@@ -6890,7 +6890,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.request = {
 					'limit': limit,
 					'order': order,
@@ -6932,7 +6932,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			self.request = {
 					'vector_store_id': self.store_id,
@@ -6982,7 +6982,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			self.request = { }
 			
@@ -7033,7 +7033,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			self.request = {
 					'vector_store_id': self.store_id,
@@ -7089,7 +7089,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			self.file_id = self.validate_file_id( file_id )
 			self.request = {
@@ -7175,7 +7175,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			self.request = {
 					'limit': limit,
@@ -7218,7 +7218,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			self.file_id = self.validate_file_id( file_id )
 			
@@ -7261,7 +7261,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			self.file_id = self.validate_file_id( file_id )
 			self.request = { }
@@ -7305,7 +7305,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			self.file_id = self.validate_file_id( file_id )
 			
@@ -7353,7 +7353,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			self.file_id = self.validate_file_id( file_id )
 			
@@ -7399,7 +7399,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			clean_file_ids = self.validate_file_ids( file_ids )
 			throw_if( 'file_ids', clean_file_ids )
@@ -7453,7 +7453,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			self.batch_id = self.validate_batch_id( batch_id )
 			
@@ -7496,7 +7496,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			self.batch_id = self.validate_batch_id( batch_id )
 			
@@ -7537,7 +7537,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			self.batch_id = self.validate_batch_id( batch_id )
 			
@@ -7636,7 +7636,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			self.store_id = self.validate_store_id( store_id )
 			throw_if( 'query', query )
 			
@@ -7700,7 +7700,7 @@ class VectorStores( GPT ):
 
         """
 		try:
-			self.client = OpenAI( api_key=self.api_key )
+			self.client = OpenAI( api_key=cfg.OPENAI_API_KEY )
 			clean_store_ids = [
 					item.strip( ) for item in store_ids
 					if isinstance( item, str ) and item.strip( )
@@ -7708,9 +7708,7 @@ class VectorStores( GPT ):
 			
 			throw_if( 'store_ids', clean_store_ids )
 			throw_if( 'prompt', prompt )
-			
 			model_value = model if isinstance( model, str ) and model.strip( ) else 'gpt-4o-mini'
-			
 			input_items: List[ Dict[ str, Any ] ] = [ ]
 			if isinstance( instructions, str ) and instructions.strip( ):
 				input_items.append(
@@ -7746,8 +7744,7 @@ class VectorStores( GPT ):
 			}
 			
 			self.response = self.client.responses.create( **self.request )
-			self.output_text = getattr( self.response, 'output_text', None )
-			
+			self.output_text = getattr( self.response, 'output_text', None )			
 			if self.output_text:
 				return self.output_text
 			
