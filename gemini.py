@@ -1212,14 +1212,7 @@ class Chat( Gemini ):
 			self.model = str( model or self.model or 'gemini-2.5-flash-lite' ).strip( )
 			throw_if( 'model', self.model )
 			
-			self.gemini_api_key = (
-					self.gemini_api_key
-					or self.google_api_key
-					or os.environ.get( 'GEMINI_API_KEY' )
-					or os.environ.get( 'GOOGLE_API_KEY' )
-			)
-			throw_if( 'gemini_api_key', self.gemini_api_key )
-			
+			self.gemini_api_key = cfg.GEMINI_API_KEY
 			self.stream = bool( stream )
 			self.urls = self.build_urls( urls=urls, max_urls=max_urls )
 			self.content_block = self.append_urls_to_content( content=content, urls=self.urls )
@@ -1233,7 +1226,7 @@ class Chat( Gemini ):
 				response_schema=response_schema, safety_profile=safety_profile,
 				file_search_store_names=file_search_store_names )
 			
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			if self.stream:
 				self.stream_response = self.client.models.generate_content_stream(
 					model=self.model, contents=self.contents, config=self.content_config )
@@ -1924,7 +1917,7 @@ class Images( Gemini ):
 			self.instructions = instruct
 			self.output_mime_type = output_mime_type
 			self.response_mode = response_modalities
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			self.content_config = self.get_content_config( image_only=True, grounded=grounded,
 				image_search=image_search, response_modalities=self.response_mode,
 				output_mime_type=self.output_mime_type )
@@ -1982,7 +1975,7 @@ class Images( Gemini ):
 			self.instructions = instruct
 			self.output_mime_type = output_mime_type
 			self.response_mode = response_modalities or 'text'
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			self.content_config = self.get_content_config( image_only=False,
 				grounded=grounded, image_search=image_search,
 				response_modalities=self.response_mode,
@@ -2043,7 +2036,7 @@ class Images( Gemini ):
 			self.instructions = instruct
 			self.output_mime_type = output_mime_type
 			self.response_mode = response_modalities or 'image'
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			self.content_config = self.get_content_config( image_only=True,
 				grounded=grounded, image_search=image_search,
 				response_modalities=self.response_mode,
@@ -2657,7 +2650,7 @@ class TTS( Gemini ):
 				self.config_kwargs[ 'max_output_tokens' ] = int( self.max_tokens )
 			
 			self.content_config = GenerateContentConfig( **self.config_kwargs )
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			self.response = self.client.models.generate_content(
 				model=self.model,
 				contents=self.input_text,
@@ -2729,7 +2722,7 @@ class Transcription( Gemini ):
 		self.presence_penalty = presence
 		self.max_tokens = max_tokens
 		self.instructions = instruct
-		self.client = genai.Client( api_key=self.gemini_api_key )
+		self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 		self.transcript = None
 		self.file_path = None
 		self.response = None
@@ -2999,7 +2992,7 @@ class Translation( Gemini ):
 		self.presence_penalty = presence
 		self.max_tokens = max_tokens
 		self.instructions = instruct
-		self.client = genai.Client( api_key=self.gemini_api_key )
+		self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 		self.target_language = None
 		self.source_language = None
 		self.file_path = None
@@ -3444,7 +3437,7 @@ class Files( Gemini ):
 			throw_if( 'name', name )
 			self.file_path = filepath;
 			self.display_name = name
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			self.response = self.client.files.upload( path=self.file_path,
 				config={ 'display_name': self.display_name } )
 			return self.response
@@ -3558,7 +3551,7 @@ class Files( Gemini ):
 			self.stops = stops
 			self.instructions = instruct
 			self.content_config = GenerateContentConfig( temperature=self.temperature )
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			if self.use_vertex:
 				with open( self.file_path, 'rb' ) as f:
 					doc_part = Part.from_bytes( data=f.read( ), mime_type="application/pdf" )
@@ -3610,7 +3603,7 @@ class Files( Gemini ):
 			self.stops = stops
 			self.instructions = instruct
 			self.content_config = GenerateContentConfig( temperature=self.temperature )
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			if self.use_vertex:
 				with open( self.file_path, 'rb' ) as f:
 					doc_part = Part.from_bytes( data=f.read( ), mime_type="application/pdf" )
@@ -3662,7 +3655,7 @@ class Files( Gemini ):
 			self.max_tokens = max_tokens
 			self.stops = stops
 			self.content_config = GenerateContentConfig( temperature=self.temperature )
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			if self.use_vertex:
 				with open( self.file_path, 'rb' ) as f:
 					doc_part = Part.from_bytes( data=f.read( ), mime_type="application/pdf" )
@@ -3716,7 +3709,7 @@ class Files( Gemini ):
 					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
 				tools=self.tool_config, system_instruction=self.instructions )
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			response = self.client.models.generate_content( model=self.model,
 				contents=self.contents, config=self.content_config )
 			return response.text
@@ -3763,7 +3756,7 @@ class Files( Gemini ):
 					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
 				tools=self.tool_config )
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			response = self.client.models.generate_content( model=self.model,
 				contents=self.contents, config=self.content_config )
 			return response.text
@@ -3794,7 +3787,7 @@ class Files( Gemini ):
 		try:
 			throw_if( 'file_id', file_id )
 			self.file_id = file_id
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			self.client.files.delete( name=self.file_id )
 		except Exception as e:
 			ex = Error( e )
@@ -4275,7 +4268,7 @@ class CloudBuckets( Gemini ):
 					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
 				tools=self.tool_config, system_instruction=self.instructions )
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			response = self.client.models.generate_content( model=self.model,
 				contents=self.contents, config=self.content_config )
 			return response.text
@@ -4322,7 +4315,7 @@ class CloudBuckets( Gemini ):
 					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
 				tools=self.tool_config )
-			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			response = self.client.models.generate_content( model=self.model,
 				contents=self.contents, config=self.content_config )
 			return response.text
