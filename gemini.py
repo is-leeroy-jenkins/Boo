@@ -458,7 +458,7 @@ class Chat( Gemini ):
 			exception.method = 'supports_google_maps( self, model: str=None ) -> bool'
 			raise exception
 	
-	def build_urls( self, urls: List[ str ], max_urls: int = 10 ) -> List[ str ]:
+	def build_urls( self, urls: List[ str ], max_urls: int=10 ) -> List[ str ]:
 		"""
 		
 			Purpose:
@@ -660,7 +660,6 @@ class Chat( Gemini ):
 		"""
 		try:
 			self.reasoning = str( reasoning or '' ).strip( ).upper( )
-			
 			if not self.reasoning:
 				return None
 			
@@ -696,7 +695,6 @@ class Chat( Gemini ):
 		"""
 		try:
 			self.safety_profile = str( safety_profile or '' ).strip( ).upper( )
-			
 			if not self.safety_profile:
 				return None
 			
@@ -718,10 +716,8 @@ class Chat( Gemini ):
 			if len( self.categories ) == 0:
 				return None
 			
-			return [
-					SafetySetting( category=category, threshold=self.threshold )
-					for category in self.categories
-			]
+			return [ SafetySetting( category=category, threshold=self.threshold )
+					for category in self.categories ]
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
@@ -822,9 +818,7 @@ class Chat( Gemini ):
 			exception.method = 'parse_response_schema( self, response_schema: Any )'
 			raise exception
 	
-	def build_contents( self, prompt: str, content: str, context: List[ Any ] = None ) -> str | \
-	                                                                                      List[
-		                                                                                      Content ]:
+	def build_contents( self, prompt: str, content: str, context: List[ Any ] = None ) ->  List[ Content ]:
 		"""
 		
 			Purpose:
@@ -842,7 +836,6 @@ class Chat( Gemini ):
 			Union[ str, List[ Content ] ] - Contents payload for Gemini.
 		
 		"""
-		
 		try:
 			throw_if( 'prompt', prompt )
 			self.prompt = str( prompt ).strip( )
@@ -1033,9 +1026,9 @@ class Chat( Gemini ):
 			exception.method = 'get_structured_history( self ) -> List[ Content ] | None'
 			raise exception
 	
-	def build_config( self, model: str = 'gemini-2.5-flash-lite', number: int = None,
-			temperature: float = None, top_p: float = None, top_k: int = None,
-			frequency: float = None, presence: float = None, max_tokens: int = None,
+	def build_config( self, model: str = 'gemini-2.5-flash-lite', number: int=None,
+			temperature: float = None, top_p: float = None, top_k: int=None,
+			frequency: float = None, presence: float = None, max_tokens: int=None,
 			stops: List[ str ] = None, instruct: str = None, response_format: str = None,
 			tools: List[ str ] = None, tool_choice: str = None, reasoning: str = None,
 			modalities: List[ str ] = None, media_resolution: str = None,
@@ -1164,14 +1157,14 @@ class Chat( Gemini ):
 			raise exception
 	
 	def generate_text( self, prompt: str, model: str = 'gemini-2.5-flash-lite',
-			number: int = None, temperature: float = None, top_p: float = None,
-			top_k: int = None, frequency: float = None, presence: float = None,
-			max_tokens: int = None,
+			number: int=None, temperature: float = None, top_p: float = None,
+			top_k: int=None, frequency: float = None, presence: float = None,
+			max_tokens: int=None,
 			stops: List[ str ] = None, instruct: str = None, response_format: str = None,
 			tools: List[ str ] = None, tool_choice: str = None, reasoning: str = None,
 			modalities: List[ str ] = None, media_resolution: str = None,
 			context: List[ Dict[ str, Any ] ] = None, content: str = None,
-			urls: List[ str ] = None, max_urls: int = None, response_schema: Any = None,
+			urls: List[ str ] = None, max_urls: int=None, response_schema: Any = None,
 			safety_profile: str = None, file_search_store_names: List[ str ] = None,
 			stream: bool = False, stream_handler: Any = None ) -> str | None:
 		"""
@@ -1890,8 +1883,8 @@ class Images( Gemini ):
 			raise exception
 	
 	def generate( self, prompt: str, model: str = 'gemini-2.5-flash-image', aspect: str = None,
-			number: int = None, temperature: float = None, top_p: float = None,
-			frequency: float = None, presence: float = None, max_tokens: int = None,
+			number: int=None, temperature: float = None, top_p: float = None,
+			frequency: float = None, presence: float = None, max_tokens: int=None,
 			resolution: str = None, instruct: str = None, output_mime_type: str = None,
 			response_modalities: str = None, grounded: bool = False,
 			image_search: bool = False ) -> Optional[ PIL.Image.Image ]:
@@ -1948,9 +1941,9 @@ class Images( Gemini ):
 			raise exception
 	
 	def analyze( self, prompt: str, path: str, model: str = 'gemini-2.5-flash-image',
-			aspect: str = None, number: int = None, temperature: float = None,
+			aspect: str = None, number: int=None, temperature: float = None,
 			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int = None, resolution: str = None, instruct: str = None,
+			max_tokens: int=None, resolution: str = None, instruct: str = None,
 			output_mime_type: str = None, response_modalities: str = None,
 			grounded: bool = False, image_search: bool = False ) -> Optional[ str ]:
 		"""
@@ -2007,9 +2000,9 @@ class Images( Gemini ):
 			raise exception
 	
 	def edit( self, prompt: str, path: str, model: str = 'gemini-2.5-flash-image',
-			aspect: str = None, number: int = None, temperature: float = None,
+			aspect: str = None, number: int=None, temperature: float = None,
 			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int = None, resolution: str = None, instruct: str = None,
+			max_tokens: int=None, resolution: str = None, instruct: str = None,
 			output_mime_type: str = None, response_modalities: str = None,
 			grounded: bool = False, image_search: bool = False ) -> Optional[ PIL.Image.Image ]:
 		"""
@@ -2251,7 +2244,7 @@ class Embeddings( Gemini ):
 			raise exception
 	
 	def build_embedding_config( self, model: str = 'gemini-embedding-001',
-			dimensions: int = None, task_type: str = None,
+			dimensions: int=None, task_type: str = None,
 			title: str = None ) -> EmbedContentConfig:
 		"""
 		
@@ -2341,7 +2334,7 @@ class Embeddings( Gemini ):
 			raise exception
 	
 	def create( self, text: str | List[ str ], model: str = 'gemini-embedding-001',
-			dimensions: int = None, task_type: str = None, title: str = None,
+			dimensions: int=None, task_type: str = None, title: str = None,
 			encoding_format: str = 'float' ) -> List[ float ] | List[ List[ float ] ] | None:
 		"""
 			
@@ -2475,8 +2468,8 @@ class TTS( Gemini ):
 		"""
 		return [ 'audio/wav' ]
 	
-	def to_wave_bytes( self, pcm_data: bytes, rate: int = 24000, channels: int = 1,
-			sample_width: int = 2 ) -> bytes:
+	def to_wave_bytes( self, pcm_data: bytes, rate: int=24000, channels: int=1,
+			sample_width: int=2 ) -> bytes:
 		"""
 
 			Purpose:
@@ -2592,7 +2585,7 @@ class TTS( Gemini ):
 	def create_speech( self, text: str, filepath: str = None,
 			model: str = 'gemini-3.1-flash-tts-preview', format: str = 'audio/wav',
 			speed: float = None, voice: str = None, frequency: float = None,
-			presense: float = None, max_tokens: int = None, instruct: str = None,
+			presense: float = None, max_tokens: int=None, instruct: str = None,
 			temperature: float = None, top_p: float = None ) -> bytes | str | None:
 		"""
 
@@ -2724,9 +2717,9 @@ class Transcription( Gemini ):
 	file_path: Optional[ str ]
 	response: Optional[ GenerateContentResponse ]
 	
-	def __init__( self, n: int = 1, model: str = 'gemini-3-flash-preview', temperature: float = 0.8,
+	def __init__( self, n: int=1, model: str = 'gemini-3-flash-preview', temperature: float = 0.8,
 			top_p: float = 0.9, frequency: float = 0.0, presence: float = 0.0,
-			max_tokens: int = 10000, instruct: str = None ):
+			max_tokens: int=10000, instruct: str = None ):
 		super( ).__init__( )
 		self.number = n
 		self.model = model
@@ -2894,7 +2887,7 @@ class Transcription( Gemini ):
 	def transcribe( self, path: str, model: str = 'gemini-3-flash-preview',
 			language: str = None, mime_type: str = None, temperature: float = None,
 			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int = None, start_time: float = None, end_time: float = None,
+			max_tokens: int=None, start_time: float = None, end_time: float = None,
 			instruct: str = None ) -> Optional[ str ]:
 		"""
 
@@ -2994,9 +2987,8 @@ class Translation( Gemini ):
 	file_path: Optional[ str ]
 	response: Optional[ GenerateContentResponse ]
 	
-	def __init__( self, n: int = 1, model: str = 'gemini-3-flash-preview', temperature: float = 0.8,
-			top_p: float = 0.9, frequency: float = 0.0, presence: float = 0.0,
-			max_tokens: int = 10000,
+	def __init__( self, n: int=1, model: str = 'gemini-3-flash-preview', temperature: float = 0.8,
+			top_p: float = 0.9, frequency: float = 0.0, presence: float = 0.0, max_tokens: int=10000,
 			instruct: str = None ):
 		super( ).__init__( )
 		self.number = n
@@ -3165,7 +3157,7 @@ class Translation( Gemini ):
 	def translate( self, path: str, model: str = 'gemini-3-flash-preview',
 			language: str = 'English', source: str = 'Auto', mime_type: str = None,
 			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int = None, start_time: float = None,
+			presence: float = None, max_tokens: int=None, start_time: float = None,
 			end_time: float = None, instruct: str = None ) -> Optional[ str ]:
 		"""
 
@@ -3465,7 +3457,7 @@ class Files( Gemini ):
 	
 	def list( self, model: str = 'gemini-2.0-flash', temperature: float = None,
 			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int = None, stops: List[ str ] = None ) -> List[ str ]:
+			max_tokens: int=None, stops: List[ str ] = None ) -> List[ str ]:
 		"""
 			
 			Purpose:
@@ -3534,7 +3526,7 @@ class Files( Gemini ):
 	
 	def summarize( self, prompt: str, filepath: str, model: str = 'gemini-2.0-flash',
 			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
+			presence: float = None, max_tokens: int=None, stops: List[ str ] = None,
 			instruct: str = None ) -> str | None:
 		"""
 			
@@ -3586,7 +3578,7 @@ class Files( Gemini ):
 	
 	def search( self, prompt: str, filepath: str, model: str = 'gemini-2.0-flash',
 			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
+			presence: float = None, max_tokens: int=None, stops: List[ str ] = None,
 			instruct: str = None ) -> str | None:
 		"""
 			
@@ -3639,7 +3631,7 @@ class Files( Gemini ):
 	
 	def survey( self, prompt: str, filepaths: List[ str ], model: str = 'gemini-2.0-flash',
 			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int = None,
+			presence: float = None, max_tokens: int=None,
 			stops: List[ str ] = None ) -> str | None:
 		"""
 			
@@ -3691,7 +3683,7 @@ class Files( Gemini ):
 	def web_search( self, prompt: str, model: str = 'gemini-2.5-flash-lite',
 			temperature: float = None, top_p: float = None, frequency: float = None,
 			presence: float = None,
-			max_tokens: int = None, stops: List[ str ] = None, instruct: str = None ) -> str | None:
+			max_tokens: int=None, stops: List[ str ] = None, instruct: str = None ) -> str | None:
 		"""
 		
 			Purpose:
@@ -3739,7 +3731,7 @@ class Files( Gemini ):
 	def search_maps( self, prompt: str, model: str = 'gemini-2.5-flash-lite',
 			temperature: float = None, top_p: float = None, frequency: float = None,
 			presence: float = None,
-			max_tokens: int = None, stops: List[ str ] = None, instruct: str = None ) -> str | None:
+			max_tokens: int=None, stops: List[ str ] = None, instruct: str = None ) -> str | None:
 		"""
 		
 			Purpose:
@@ -4250,7 +4242,7 @@ class CloudBuckets( Gemini ):
 	def web_search( self, prompt: str, model: str = 'gemini-2.5-flash-lite',
 			temperature: float = None, top_p: float = None, frequency: float = None,
 			presence: float = None,
-			max_tokens: int = None, stops: List[ str ] = None, instruct: str = None ) -> str | None:
+			max_tokens: int=None, stops: List[ str ] = None, instruct: str = None ) -> str | None:
 		"""
 		
 			Purpose:
@@ -4298,7 +4290,7 @@ class CloudBuckets( Gemini ):
 	def search_maps( self, prompt: str, model: str = 'gemini-2.5-flash-lite',
 			temperature: float = None, top_p: float = None, frequency: float = None,
 			presence: float = None,
-			max_tokens: int = None, stops: List[ str ] = None, instruct: str = None ) -> str | None:
+			max_tokens: int=None, stops: List[ str ] = None, instruct: str = None ) -> str | None:
 		"""
 		
 			Purpose:
