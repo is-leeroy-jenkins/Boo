@@ -8236,8 +8236,6 @@ elif mode == 'Audio':
 # DOCUMENTS MODE
 # ======================================================================================
 elif mode == 'Document Q&A':
-	st.subheader( '📚 Document Q & A', help=cfg.DOCUMENT_Q_AND_A )
-	st.divider( )
 	provider_module = get_provider_module( )
 	provider_name = st.session_state.get( 'provider', 'GPT' )
 	docqna_number = st.session_state.get( 'docqna_number', 0 )
@@ -8291,6 +8289,8 @@ elif mode == 'Document Q&A':
 	# ------------------------------------------------------------------
 	left, center, right = st.columns( [ 0.05, 0.9, 0.05 ] )
 	with center:
+		st.subheader( '📚 Document Q & A', help=cfg.DOCUMENT_Q_AND_A )
+		st.divider( )
 		# ------------------------------------------------------------------
 		# EXPANDER — GROK DOCQNA LLM CONFIGURATION
 		# ------------------------------------------------------------------
