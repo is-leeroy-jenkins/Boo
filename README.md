@@ -23,11 +23,11 @@ and federal applications in mind, it enables secure, scalable, and intelligent a
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/boo-demo.gif)
 
 
-### 🧠 Custom LLM
+## 🧠 Custom LLM
 
 [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/boo)
 
-
+Boo provides a customized compact, instruction-tuned LLM derived from Phi-4-mini-reasoning that is packaged in GGUF Q4_K_M quantization for fast local inference. It targets concise instruction following, lightweight reasoning, summarization, and light code synthesis—ideal for CLI assistants, edge deployments, and RAG agents where latency and footprint matter.
 
 ## 🧭 Table of Contents
 
