@@ -87,11 +87,11 @@ pip install -r requirements.txt
 
 ## ⚙️ Core Classes
 
-- [Chat](https://github.com/is-leeroy-jenkins/Boo/blob/main/gpt.py#L383) 
+- [Chat](https://github.com/is-leeroy-jenkins/Boo/blob/main/gpt.py) 
 - [Models](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py)
-- [Gemini](https://github.com/is-leeroy-jenkins/Boo/blob/main/gemini.py#L63)
+- [Gemini](https://github.com/is-leeroy-jenkins/Boo/blob/main/gemini.py)
 - [Groq](https://github.com/is-leeroy-jenkins/Boo/blob/main/grok.py)
-- [Agents](https://github.com/is-leeroy-jenkins/Boo/blob/main/agents.py#L57)
+- [Agents](https://github.com/is-leeroy-jenkins/Boo/blob/main/agents.py)
 
 
 ## 💻 Capabilities
@@ -119,13 +119,6 @@ pip install -r requirements.txt
 - Requests
 - Custom dependencies: `boogr`, `static`, `guro`
 
-## 📁 File Organization
-
-- [boo](https://github.com/is-leeroy-jenkins/Boo/blob/main/boo.py) – Main application framework
-- [models](https://github.com/is-leeroy-jenkins/Boo/blob/main/models.py) – Models used for structured output
-- [boogr](https://github.com/is-leeroy-jenkins/Boo/blob/main/boogr.py) – a GUI
-- [agents](https://github.com/is-leeroy-jenkins/Boo/blob/main/guro.py) – a prompt library w/ over 100 agents.
-- [data](https://github.com/is-leeroy-jenkins/Boo/tree/main/dbops.py) - Local persistance of embeddings for retreival augmentation base on SLQite. 
 
 ## 🔐 Environment Variables
 
@@ -201,7 +194,7 @@ http://localhost:8501
 
 
 
-## 🧰 Overview
+## 🧰 Core Functionality
 
 Skinny hierarchy:
 
@@ -212,11 +205,6 @@ Skinny hierarchy:
 - **TTS** – text-to-speech helpers (streaming to file).
 - **Transcription / Translation** – Whisper-powered speech-to-text (+ translate).
 - **Vector Store helpers** – list files, search via `file_search` tool, merge results.
-
-
-
-### ✨ Features
-
 - **Responses-first**: consistent `input=[{role, content:[{type:...}]}]` builders.
 - **One client**: a single `OpenAI` instance per process for reliability and testability.
 - **Typed containers**: Pydantic models for prompts/messages with pass-through `__init__`.
