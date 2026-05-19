@@ -296,7 +296,7 @@ setx OPENAI_API_KEY "sk-..."           # Windows
 
 ## 🎨 Image Generation
 
-- Convert natural language prompts into images using DALL·E 3.
+- Convert natural language prompts into images using OpenAI's DALL·E 3, Grok's Imagine, and Gemini's Nano Banana.
 - Specify resolution and rendering quality options.
 - Useful for creating visual illustrations and conceptual diagrams.
 
@@ -308,7 +308,7 @@ print(f"Image URL: {image_url}")
 
 ### 🖼️ Image Analysis
 
-- Analyze visual content by combining image and text prompts.
+- Analyze visual content by combining image and text prompts from Grok, OpenAI, and Gemini.
 
 - Extract meaning, context, or structure from images.
 
