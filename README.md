@@ -24,8 +24,8 @@ and federal applications in mind, it enables secure, scalable, and intelligent a
 
 
 
-- [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/leeroy) 
-___
+[![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/leeroy) 
+
 
 
 ## 🧭 Table of Contents
