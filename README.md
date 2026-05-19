@@ -8,11 +8,6 @@ tailored for federal data analysis, budget execution, and data science. Boo inte
 with multimodal support for text, image, audio, and file analysis and is designed with extensibility 
 and federal applications in mind, it enables secure, scalable, and intelligent automation of analytical tasks.
 
-[![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)](https://boo-py.streamlit.app/)
-
-![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Boo-streamlit.gif)
-
-
 ## 🛠️ Features
 
 
@@ -22,6 +17,11 @@ and federal applications in mind, it enables secure, scalable, and intelligent a
   summarization.
 - Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
 - Web & File Search: Built-in support for semantic document and web search.
+
+[![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)](https://boo-py.streamlit.app/)
+
+![]([https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Boo-streamlit.gif](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/boo-demo.gif))
+
 
 ## 🧠 LLMs 
 
