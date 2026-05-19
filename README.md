@@ -10,9 +10,8 @@ and federal applications in mind, it enables secure, scalable, and intelligent a
 
 ## 🛠️ Features
 
-
-- Unified AI Framework: Integrates OpenAI APIs for text, image, audio, file analysis, transcription,
-  and translation.
+- Unified AI Framework: Integrates OpenAI, Grok and Gemini APIs for text, image, audio, file analysis, transcription,
+  and translation with set up instructions provided below. 
 - Multimodal Capabilities: Supports text generation, image creation, image analysis, and document
   summarization.
 - Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
@@ -77,6 +76,12 @@ pip install -r requirements.txt
 
 ```
 
+
+## 🔑 API KEY SETUP
+
+[OpenAI API Key](https://github.com/is-leeroy-jenkins/Buddy/blob/main/resources/setup/openai.md)
+[Grok API Key](https://github.com/is-leeroy-jenkins/Buddy/blob/main/resources/setup/xai.md)
+[Gemini API Key](https://github.com/is-leeroy-jenkins/Buddy/blob/main/resources/setup/gemini.md)
 
 
 
