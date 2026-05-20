@@ -31,8 +31,11 @@ local analytical data operations.
 
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/boo-demo.gif)
 
+## 🕸️ Streamlit (Web)
 [![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit\&logoColor=white)](https://boo-py.streamlit.app/)
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Boo-streamlit.gif)
+- A Python framework to build dynamic, interactive web applications.
+
 
 ## 🧱 Databricks
 
