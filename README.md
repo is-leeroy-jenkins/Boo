@@ -8,6 +8,9 @@ tailored for federal data analysis, budget execution, and data science. Boo inte
 with multimodal support for text, image, audio, and file analysis and is designed with extensibility 
 and federal applications in mind, it enables secure, scalable, and intelligent automation of analytical tasks.
 
+## Demo
+![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/boo-demo.gif)
+
 ## 🛠️ Features
 
 - Unified AI Framework: Integrates OpenAI, Grok and Gemini APIs for text, image, audio, file analysis, transcription,
@@ -17,6 +20,7 @@ and federal applications in mind, it enables secure, scalable, and intelligent a
 - Vector Store Integration: Embedded vector store lookups for domain-specific knowledge retrieval.
 - Web & File Search: Built-in support for semantic document and web search.
 
+## Streamlit (Web)
 [![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)](https://boo-py.streamlit.app/)
 
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/boo-demo.gif)
@@ -28,6 +32,11 @@ and federal applications in mind, it enables secure, scalable, and intelligent a
 
 Boo provides a customized compact, instruction-tuned LLM derived from Phi-4-mini-reasoning that is packaged in GGUF Q4_K_M quantization for fast local inference. It targets concise instruction following, lightweight reasoning, summarization, and light code synthesis—ideal for CLI assistants, edge deployments, and RAG agents where latency and footprint matter.
 
+## 🧱 Databricks
+[![Boo](https://img.shields.io/badge/Databricks-Boo-FF3621?logo=databricks&logoColor=white)](https://dbc-a0c21f80-7bb3.cloud.databricks.com/browse/folders/3169291152438882?o=7474645703081351)
+- A data engineering, analytics, and artificial intelligence collaborative workspace
+- Codebase
+  
 ## 🧭 Table of Contents
 
 - 🧰 [Overview](https://github.com/is-leeroy-jenkins/Boo?tab=readme-ov-file#-overview)
