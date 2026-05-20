@@ -29,9 +29,10 @@ local analytical data operations.
 
 ## 🎥 Demo
 
-[![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit\&logoColor=white)](https://boo-py.streamlit.app/)
-
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/boo-demo.gif)
+
+[![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit\&logoColor=white)](https://boo-py.streamlit.app/)
+![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Boo-streamlit.gif)
 
 ## 🧱 Databricks
 
