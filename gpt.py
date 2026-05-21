@@ -613,8 +613,7 @@ class Chat( GPT ):
 				'text',
 		]
 	
-	def build_reasoning( self, reasoning: str | Dict[ str, str ] = None ) -> Dict[
-		                                                                         str, str ] | None:
+	def build_reasoning( self, reasoning: str | Dict[ str, str ] = None ) -> Dict[  str, str ] | None:
 		"""
 	
 	        Purpose:
@@ -734,9 +733,8 @@ class Chat( GPT ):
 			exception.cause = 'Chat'
 			exception.method = 'build_input( self, prompt, context, input_data )'
 			raise exception
-	
-	def build_tools( self, tools: List[ Dict[ str, Any ] ] = None,
-			allowed_domains: List[ str ] = None,
+		
+	def build_tools( self, tools: List[ Any ] = None, allowed_domains: List[ str ] = None,
 			vector_store_ids: List[ str ] = None ) -> List[ Dict[ str, Any ] ] | None:
 		"""
 
@@ -746,8 +744,8 @@ class Chat( GPT ):
 
 			Parameters:
 			-----------
-			tools: List[ Dict[ str, Any ] ]
-				Tool dictionaries selected by the application UI.
+			tools: List[ Any ]
+				Tool strings or dictionaries selected by the application UI.
 
 			allowed_domains: List[ str ]
 				Optional list of allowed domains for web_search.
@@ -764,19 +762,21 @@ class Chat( GPT ):
 		try:
 			self.allowed_domains = allowed_domains if allowed_domains is not None else [ ]
 			self.vector_store_ids = vector_store_ids if vector_store_ids is not None else [ ]
+			
 			if tools is None or len( tools ) == 0:
 				return None
 			
 			self.built_tools = [ ]
 			for tool in tools:
-				if not isinstance( tool, dict ):
-					continue
+				if isinstance( tool, dict ):
+					tool_type = str( tool.get( 'type', '' ) or '' ).strip( )
+				else:
+					tool_type = str( tool or '' ).strip( )
 				
-				tool_type = str( tool.get( 'type', '' ) or '' ).strip( )
 				if not tool_type:
 					continue
 				
-				if tool_type == 'web_search':
+				if tool_type in [ 'web_search', 'web_search_preview', 'web_search_2025_08_26' ]:
 					built_tool = { 'type': 'web_search' }
 					if len( self.allowed_domains ) > 0:
 						built_tool[ 'filters' ] = { 'allowed_domains': self.allowed_domains }
@@ -785,14 +785,24 @@ class Chat( GPT ):
 					continue
 				
 				if tool_type == 'file_search':
-					if len( self.vector_store_ids ) == 0:
+					resolved_store_ids = self.vector_store_ids
+					if isinstance( tool, dict ) and len( resolved_store_ids ) == 0:
+						tool_store_ids = tool.get( 'vector_store_ids', [ ] )
+						if isinstance( tool_store_ids, list ):
+							resolved_store_ids = tool_store_ids
+					
+					if len( resolved_store_ids ) == 0:
 						continue
 					
 					self.built_tools.append(
 						{
 								'type': 'file_search',
-								'vector_store_ids': self.vector_store_ids,
+								'vector_store_ids': resolved_store_ids,
 						} )
+					continue
+				
+				if tool_type == 'code_interpreter':
+					self.built_tools.append( { 'type': 'code_interpreter' } )
 					continue
 			
 			return self.built_tools if len( self.built_tools ) > 0 else None
@@ -803,6 +813,99 @@ class Chat( GPT ):
 			exception.method = 'build_tools( self, tools, allowed_domains, vector_store_ids )'
 			raise exception
 	
+	def build_text_format( self, format: Dict[ str, Any ] | str = None ) -> Dict[ str, Any ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Build or validate a Responses API text-format object.
+
+			Parameters:
+			-----------
+			format: Dict[ str, Any ] | str
+				Response format dictionary or response format name.
+
+			Returns:
+			--------
+			Dict[ str, Any ] | None:
+				Responses API text-format object or None.
+
+		"""
+		try:
+			if format is None:
+				return None
+			
+			if isinstance( format, str ) and format.strip( ):
+				value = format.strip( )
+				if value == 'text':
+					return { 'format': { 'type': 'text' } }
+				
+				if value == 'json_object':
+					return { 'format': { 'type': 'json_object' } }
+				
+				return None
+			
+			if not isinstance( format, dict ) or len( format ) == 0:
+				return None
+			
+			if 'format' in format and isinstance( format.get( 'format' ), dict ):
+				text_format = dict( format.get( 'format' ) )
+			elif 'type' in format:
+				text_format = dict( format )
+			else:
+				return None
+			
+			format_type = str( text_format.get( 'type', '' ) or '' ).strip( )
+			if not format_type:
+				return None
+			
+			if format_type == 'text':
+				return { 'format': { 'type': 'text' } }
+			
+			if format_type == 'json_object':
+				return { 'format': { 'type': 'json_object' } }
+			
+			if format_type == 'json_schema':
+				json_schema = text_format.get( 'json_schema' )
+				if isinstance( json_schema, dict ):
+					schema_name = str( json_schema.get( 'name', '' ) or '' ).strip( )
+					schema = json_schema.get( 'schema' )
+					description = json_schema.get( 'description' )
+					strict = json_schema.get( 'strict' )
+				else:
+					schema_name = str( text_format.get( 'name', '' ) or '' ).strip( )
+					schema = text_format.get( 'schema' )
+					description = text_format.get( 'description' )
+					strict = text_format.get( 'strict' )
+				
+				if not schema_name:
+					schema_name = 'response_schema'
+				
+				if not isinstance( schema, dict ) or len( schema ) == 0:
+					return None
+				
+				normalized = {
+						'type': 'json_schema',
+						'name': schema_name,
+						'schema': schema,
+				}
+				
+				if isinstance( description, str ) and description.strip( ):
+					normalized[ 'description' ] = description.strip( )
+				
+				if isinstance( strict, bool ):
+					normalized[ 'strict' ] = strict
+				
+				return { 'format': normalized }
+			
+			return None
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gpt'
+			exception.cause = 'Chat'
+			exception.method = 'build_text_format( self, format )'
+			raise exception
+		
 	def build_tool_choice( self, tool_choice: str = None,
 			tools: List[ Dict[ str, Any ] ] = None ) -> str | None:
 		"""
@@ -907,53 +1010,6 @@ class Chat( GPT ):
 			exception.module = 'gpt'
 			exception.cause = 'Chat'
 			exception.method = 'build_include( self, include, tools )'
-			raise exception
-	
-	def build_text_format( self, format: Dict[ str, Any ] | str = None ) -> Dict[ str, Any ] | None:
-		"""
-		
-			Purpose:
-			--------
-			Build or validate a Responses API text-format object.
-
-			Parameters:
-			-----------
-			format: Dict[ str, Any ] | str
-				Response format dictionary or response format name.
-
-			Returns:
-			--------
-			Dict[ str, Any ] | None:
-				Responses API text-format object or None.
-
-		"""
-		try:
-			if format is None:
-				return None
-			
-			if isinstance( format, dict ) and len( format ) > 0:
-				if 'format' in format and isinstance( format.get( 'format' ), dict ):
-					return format
-				
-				if 'type' in format:
-					return { 'format': format }
-				
-				return None
-			
-			if isinstance( format, str ) and format.strip( ):
-				value = format.strip( )
-				if value == 'text':
-					return { 'format': { 'type': 'text' } }
-				
-				if value == 'json_object':
-					return { 'format': { 'type': 'json_object' } }
-			
-			return None
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gpt'
-			exception.cause = 'Chat'
-			exception.method = 'build_text_format( self, format )'
 			raise exception
 	
 	def build_request( self, prompt: str, model: str, temperature: float = None,
