@@ -263,20 +263,20 @@ class Chat( Grok ):
 	response: Optional[ Any ]
 	file_path: Optional[ str ]
 	
-	def __init__( self, model: str = 'grok-4.20', prompt: str = None, temperature: float = None,
+	def __init__( self, model: str='grok-4.20', prompt: str=None, temperature: float = None,
 			top_p: float = None, presense: float = None, presence: float = None, store: bool = None,
-			stream: bool = None, stops: List[ str ] = None,
-			response_format: Dict[ str, Any ] = None,
-			number: int = None, instruct: str = None, context: List[ Dict[ str, str ] ] = None,
-			allowed_domains: List[ str ] = None, include: List[ str ] = None,
-			tools: List[ Dict[ str, Any ] ] = None, max_tools: int = None,
-			tool_choice: str = None, file_path: str = None, background: bool = None,
+			stream: bool = None, stops: List[ str ]=None,
+			response_format: Dict[ str, Any ]=None,
+			number: int = None, instruct: str=None, context: List[ Dict[ str, str ] ]=None,
+			allowed_domains: List[ str ]=None, include: List[ str ]=None,
+			tools: List[ Dict[ str, Any ] ]=None, max_tools: int = None,
+			tool_choice: str=None, file_path: str=None, background: bool = None,
 			is_parallel: bool = None, max_tokens: int = None, frequency: float = None,
-			input: List[ Dict[ str, Any ] ] = None, file_ids: List[ str ] = None,
-			previous_id: str = None, conversation_id: str = None,
-			reasoning: Dict[ str, str ] | str = None, output_text: str = None,
-			max_search_results: int = None, content: str = None,
-			vector_store_ids: List[ str ] = None ):
+			input: List[ Dict[ str, Any ] ]=None, file_ids: List[ str ]=None,
+			previous_id: str=None, conversation_id: str=None,
+			reasoning: Dict[ str, str ] | str = None, output_text: str=None,
+			max_search_results: int = None, content: str=None,
+			vector_store_ids: List[ str ]=None ):
 		"""
 		
 			Purpose:
@@ -636,7 +636,7 @@ class Chat( Grok ):
 		'''
 		return [ 'auto', ]
 	
-	def build_reasoning( self, reasoning: str | Dict[ str, str ] = None ) -> Dict[ str, str ] | None:
+	def build_reasoning( self, reasoning: str | Dict[ str, str ]=None ) -> Dict[ str, str ] | None:
 		"""
 		
 			Purpose:
@@ -684,8 +684,8 @@ class Chat( Grok ):
 			exception.method = 'build_reasoning( self, reasoning )'
 			raise exception
 	
-	def build_input( self, prompt: str, context: List[ Dict[ str, str ] ] = None,
-			input_data: List[ Dict[ str, Any ] ] = None ) -> List[ Dict[ str, Any ] ]:
+	def build_input( self, prompt: str, context: List[ Dict[ str, str ] ]=None,
+			input_data: List[ Dict[ str, Any ] ]=None ) -> List[ Dict[ str, Any ] ]:
 		"""
 		
 			Purpose:
@@ -729,8 +729,7 @@ class Chat( Grok ):
 					if not isinstance( content, str ) or not content.strip( ):
 						continue
 					
-					self.messages.append(
-						{
+					self.messages.append( {
 								'role': role,
 								'content': [
 										{
@@ -740,8 +739,7 @@ class Chat( Grok ):
 								],
 						} )
 			
-			self.messages.append(
-				{
+			self.messages.append( {
 						'role': 'user',
 						'content': [
 								{
@@ -759,8 +757,8 @@ class Chat( Grok ):
 			exception.method = 'build_input( self, prompt, context, input_data )'
 			raise exception
 	
-	def build_tools( self, tools: List[ Any ] = None, allowed_domains: List[ str ] = None,
-			vector_store_ids: List[ str ] = None ) -> List[ Dict[ str, Any ] ] | None:
+	def build_tools( self, tools: List[ Any ]=None, allowed_domains: List[ str ]=None,
+			vector_store_ids: List[ str ]=None ) -> List[ Dict[ str, Any ] ] | None:
 		"""
 		
 			Purpose:
@@ -803,7 +801,7 @@ class Chat( Grok ):
 				if tool_type == 'web_search':
 					built_tool = { 'type': 'web_search' }
 					if len( self.allowed_domains ) > 0:
-						built_tool[ 'allowed_domains' ] = self.allowed_domains
+						built_tool[ 'allowed_domains' ]=self.allowed_domains
 					
 					self.built_tools.append( built_tool )
 					continue
@@ -835,8 +833,8 @@ class Chat( Grok ):
 			exception.method = 'build_tools( self, tools, allowed_domains, vector_store_ids )'
 			raise exception
 	
-	def build_tool_choice( self, tool_choice: str = None,
-			tools: List[ Dict[ str, Any ] ] = None ) -> str | None:
+	def build_tool_choice( self, tool_choice: str=None,
+			tools: List[ Dict[ str, Any ] ]=None ) -> str | None:
 		"""
 		
 			Purpose:
@@ -879,8 +877,8 @@ class Chat( Grok ):
 			exception.method = 'build_tool_choice( self, tool_choice, tools )'
 			raise exception
 	
-	def build_include( self, include: List[ str ] = None,
-			tools: List[ Dict[ str, Any ] ] = None ) -> List[ str ] | None:
+	def build_include( self, include: List[ str ]=None,
+			tools: List[ Dict[ str, Any ] ]=None ) -> List[ str ] | None:
 		"""
 		
 			Purpose:
@@ -1004,14 +1002,14 @@ class Chat( Grok ):
 			raise exception
 	
 	def build_request( self, prompt: str, model: str, temperature: float = None,
-			format: Dict[ str, Any ] = None, top_p: float = None, frequency: float = None,
+			format: Dict[ str, Any ]=None, top_p: float = None, frequency: float = None,
 			max_tools: int = None, presence: float = None, max_tokens: int = None,
-			store: bool = None, stream: bool = None, instruct: str = None,
-			background: bool = False, reasoning: str = None, include: List[ str ] = None,
-			tools: List[ Any ] = None, allowed_domains: List[ str ] = None,
-			previous_id: str = None, tool_choice: str = None, is_parallel: bool = None,
-			context: List[ Dict[ str, str ] ] = None, input_data: List[ Dict[ str, Any ] ] = None,
-			vector_store_ids: List[ str ] = None, conversation_id: str = None,
+			store: bool = None, stream: bool = None, instruct: str=None,
+			background: bool = False, reasoning: str=None, include: List[ str ]=None,
+			tools: List[ Any ]=None, allowed_domains: List[ str ]=None,
+			previous_id: str=None, tool_choice: str=None, is_parallel: bool = None,
+			context: List[ Dict[ str, str ] ]=None, input_data: List[ Dict[ str, Any ] ]=None,
+			vector_store_ids: List[ str ]=None, conversation_id: str=None,
 			response_schema: Any = None ) -> Dict[ str, Any ]:
 		"""
 		
@@ -1137,53 +1135,53 @@ class Chat( Grok ):
 			}
 			
 			if self.instructions:
-				self.request[ 'instructions' ] = self.instructions
+				self.request[ 'instructions' ]=self.instructions
 			
 			if self.reasoning is not None and self.model == 'grok-4.20-multi-agent':
-				self.request[ 'reasoning' ] = self.reasoning
+				self.request[ 'reasoning' ]=self.reasoning
 			
 			if isinstance( self.max_output_tokens, int ) and self.max_output_tokens > 0:
-				self.request[ 'max_output_tokens' ] = self.max_output_tokens
+				self.request[ 'max_output_tokens' ]=self.max_output_tokens
 			
 			if self.temperature is not None:
-				self.request[ 'temperature' ] = self.temperature
+				self.request[ 'temperature' ]=self.temperature
 			
 			if self.top_percent is not None:
-				self.request[ 'top_p' ] = self.top_percent
+				self.request[ 'top_p' ]=self.top_percent
 			
 			if self.frequency_penalty is not None:
-				self.request[ 'frequency_penalty' ] = self.frequency_penalty
+				self.request[ 'frequency_penalty' ]=self.frequency_penalty
 			
 			if self.presence_penalty is not None:
-				self.request[ 'presence_penalty' ] = self.presence_penalty
+				self.request[ 'presence_penalty' ]=self.presence_penalty
 			
 			if self.store_messages is not None:
-				self.request[ 'store' ] = self.store_messages
+				self.request[ 'store' ]=self.store_messages
 			
 			# Stream and background are retained on self for layout/UI parity. This path returns final text.
 			if self.include is not None and len( self.include ) > 0:
-				self.request[ 'include' ] = self.include
+				self.request[ 'include' ]=self.include
 			
 			if self.tools is not None and len( self.tools ) > 0:
-				self.request[ 'tools' ] = self.tools
+				self.request[ 'tools' ]=self.tools
 			
 			if self.tool_choice:
-				self.request[ 'tool_choice' ] = self.tool_choice
+				self.request[ 'tool_choice' ]=self.tool_choice
 			
 			if self.parallel_tools is not None and self.tools is not None:
-				self.request[ 'parallel_tool_calls' ] = self.parallel_tools
+				self.request[ 'parallel_tool_calls' ]=self.parallel_tools
 			
 			if self.previous_id and self.previous_id.strip( ):
-				self.request[ 'previous_response_id' ] = self.previous_id.strip( )
+				self.request[ 'previous_response_id' ]=self.previous_id.strip( )
 			
 			if self.conversation_id and self.conversation_id.strip( ):
-				self.request[ 'conversation' ] = self.conversation_id.strip( )
+				self.request[ 'conversation' ]=self.conversation_id.strip( )
 			
 			if isinstance( self.max_tools, int ) and self.max_tools > 0 and self.tools is not None:
-				self.request[ 'max_tool_calls' ] = self.max_tools
+				self.request[ 'max_tool_calls' ]=self.max_tools
 			
 			if self.response_format is not None and len( self.response_format ) > 0:
-				self.request[ 'text' ] = self.response_format
+				self.request[ 'text' ]=self.response_format
 			
 			return self.request
 		except Exception as e:
@@ -1275,19 +1273,19 @@ class Chat( Grok ):
 			raise exception
 	
 	def generate_text( self, prompt: str, model: str, temperature: float = None,
-			format: Dict[ str, Any ] = None, top_p: float = None, top_k: int = None,
+			format: Dict[ str, Any ]=None, top_p: float = None, top_k: int = None,
 			frequency: float = None, max_tools: int = None, presence: float = None,
 			max_tokens: int = None, store: bool = None, stream: bool = None,
-			instruct: str = None, background: bool = False, reasoning: str = None,
-			include: List[ str ] = None, tools: List[ Any ] = None,
-			allowed_domains: List[ str ] = None, previous_id: str = None,
-			tool_choice: str = None, is_parallel: bool = None,
-			context: List[ Dict[ str, str ] ] = None, input_data: List[ Dict[ str, Any ] ] = None,
-			vector_store_ids: List[ str ] = None, conversation_id: str = None,
+			instruct: str=None, background: bool = False, reasoning: str=None,
+			include: List[ str ]=None, tools: List[ Any ]=None,
+			allowed_domains: List[ str ]=None, previous_id: str=None,
+			tool_choice: str=None, is_parallel: bool = None,
+			context: List[ Dict[ str, str ] ]=None, input_data: List[ Dict[ str, Any ] ]=None,
+			vector_store_ids: List[ str ]=None, conversation_id: str=None,
 			response_format: Dict[ str, Any ] | str = None, response_schema: Any = None,
-			number: int = None, modalities: List[ str ] = None, media_resolution: str = None,
-			content: str = None, urls: List[ str ] = None, max_urls: int = None,
-			safety_profile: str = None, **kwargs: Any ) -> str | None:
+			number: int = None, modalities: List[ str ]=None, media_resolution: str=None,
+			content: str=None, urls: List[ str ]=None, max_urls: int = None,
+			safety_profile: str=None, **kwargs: Any ) -> str | None:
 		"""
 		
 			Purpose:
@@ -1477,8 +1475,7 @@ class Chat( Grok ):
 						raw_sources = getattr( action, 'sources', None ) if action else None
 						if isinstance( raw_sources, list ):
 							for source in raw_sources:
-								self.sources.append(
-									{
+								self.sources.append( {
 											'title': getattr( source, 'title', None ),
 											'url': getattr( source, 'url', None ),
 											'snippet': getattr( source, 'snippet', None ),
@@ -1508,12 +1505,12 @@ class Chat( Grok ):
 			raise exception
 	
 	def answer_document( self, prompt: str, document_text: str, model: str,
-			instructions: str = None, temperature: float = None, top_p: float = None,
+			instructions: str=None, temperature: float = None, top_p: float = None,
 			frequency: float = None, presence: float = None, max_tokens: int = None,
-			store: bool = None, include: List[ str ] = None, tools: List[ str ] = None,
-			tool_choice: str = None, reasoning: str = None,
-			context: List[ Dict[ str, str ] ] = None,
-			vector_store_ids: List[ str ] = None ) -> str | None:
+			store: bool = None, include: List[ str ]=None, tools: List[ str ]=None,
+			tool_choice: str=None, reasoning: str=None,
+			context: List[ Dict[ str, str ] ]=None,
+			vector_store_ids: List[ str ]=None ) -> str | None:
 		"""
 		
 			Purpose:
@@ -1613,30 +1610,18 @@ class Chat( Grok ):
 			if isinstance( self.tool_choice, list ):
 				self.tool_choice = self.tool_choice[ 0 ] if len( self.tool_choice ) > 0 else None
 			
-			document_prompt = (
-					f'Document Context:\n'
+			document_prompt = ( f'Document Context:\n'
 					f'{self.content}\n\n'
 					f'User Question:\n'
-					f'{self.prompt}'
-			)
+					f'{self.prompt}' )
 			
-			self.output_text = self.generate_text(
-				prompt=document_prompt,
-				model=self.model,
-				temperature=self.temperature,
-				top_p=self.top_percent,
-				frequency=self.frequency_penalty,
-				presence=self.presence_penalty,
-				max_tokens=self.max_output_tokens,
-				store=self.store_messages,
-				stream=False,
-				instruct=self.instructions,
-				reasoning=self.reasoning,
-				include=self.include,
-				tools=self.tools,
-				tool_choice=self.tool_choice,
-				context=self.context,
-				vector_store_ids=self.vector_store_ids )
+			self.output_text = self.generate_text( prompt=document_prompt,
+				model=self.model, temperature=self.temperature, top_p=self.top_percent,
+				frequency=self.frequency_penalty, presence=self.presence_penalty,
+				max_tokens=self.max_output_tokens, store=self.store_messages,
+				stream=False, instruct=self.instructions, reasoning=self.reasoning,
+				include=self.include, tools=self.tools, tool_choice=self.tool_choice,
+				context=self.context, vector_store_ids=self.vector_store_ids )
 			
 			return self.output_text
 		except Exception as e:
@@ -1810,7 +1795,7 @@ class TTS( Grok ):
 	request: Optional[ Dict[ str, Any ] ]
 	response: Optional[ Any ]
 	
-	def __init__( self, model: str = 'xai-tts' ):
+	def __init__( self, model: str='xai-tts' ):
 		"""
 		
 			Purpose:
@@ -2098,7 +2083,7 @@ class TTS( Grok ):
 				192000,
 		]
 	
-	def validate_voice( self, voice: str = None ) -> str:
+	def validate_voice( self, voice: str=None ) -> str:
 		"""
 		
 			Purpose:
@@ -2129,7 +2114,7 @@ class TTS( Grok ):
 			ex.method = 'validate_voice( self, voice: str=None ) -> str'
 			raise ex
 	
-	def validate_language( self, language: str = None ) -> str:
+	def validate_language( self, language: str=None ) -> str:
 		"""
 		
 			Purpose:
@@ -2162,7 +2147,7 @@ class TTS( Grok ):
 			ex.method = 'validate_language( self, language: str=None ) -> str'
 			raise ex
 	
-	def validate_format( self, format: str = None ) -> str:
+	def validate_format( self, format: str=None ) -> str:
 		"""
 		
 			Purpose:
@@ -2325,10 +2310,10 @@ class TTS( Grok ):
 			self.output_format = { 'codec': self.response_format, }
 			
 			if self.sample_rate is not None:
-				self.output_format[ 'sample_rate' ] = self.sample_rate
+				self.output_format[ 'sample_rate' ]=self.sample_rate
 			
 			if self.response_format == 'mp3' and self.bit_rate is not None:
-				self.output_format[ 'bit_rate' ] = self.bit_rate
+				self.output_format[ 'bit_rate' ]=self.bit_rate
 			
 			return self.output_format
 		except Exception as e:
@@ -2367,13 +2352,13 @@ class TTS( Grok ):
 			self.output_format = self.build_output_format( )
 			
 			if self.output_format:
-				self.request[ 'output_format' ] = self.output_format
+				self.request[ 'output_format' ]=self.output_format
 			
 			if self.optimize_streaming_latency is not None:
-				self.request[ 'optimize_streaming_latency' ] = self.optimize_streaming_latency
+				self.request[ 'optimize_streaming_latency' ]=self.optimize_streaming_latency
 			
 			if self.text_normalization is not None:
-				self.request[ 'text_normalization' ] = self.text_normalization
+				self.request[ 'text_normalization' ]=self.text_normalization
 			
 			return self.request
 		except Exception as e:
@@ -2455,9 +2440,9 @@ class TTS( Grok ):
 			ex.method = 'extract_audio( self ) -> bytes | None'
 			raise ex
 	
-	def create_speech( self, text: str, model: str = 'xai-tts', format: str = 'mp3',
-			speed: float = 1.0, voice: str = 'eve', instruct: str = None, file_path: str = None,
-			language: str = 'auto', sample_rate: int = None, bit_rate: int = None,
+	def create_speech( self, text: str, model: str='xai-tts', format: str='mp3',
+			speed: float = 1.0, voice: str='eve', instruct: str=None, file_path: str=None,
+			language: str='auto', sample_rate: int = None, bit_rate: int = None,
 			optimize_streaming_latency: int = None, text_normalization: bool = None,
 			**kwargs: Any ) -> bytes | None:
 		"""
@@ -2541,9 +2526,9 @@ class TTS( Grok ):
 			ex.method = 'create_speech( self, text: str ) -> bytes | None'
 			raise ex
 	
-	def synthesize( self, text: str, model: str = 'xai-tts', format: str = 'mp3',
-			speed: float = 1.0, voice: str = 'eve', instruct: str = None, file_path: str = None,
-			language: str = 'auto', **kwargs: Any ) -> bytes | None:
+	def synthesize( self, text: str, model: str='xai-tts', format: str='mp3',
+			speed: float = 1.0, voice: str='eve', instruct: str=None, file_path: str=None,
+			language: str='auto', **kwargs: Any ) -> bytes | None:
 		"""
 		
 			Purpose:
@@ -2596,9 +2581,9 @@ class TTS( Grok ):
 			ex.method = 'synthesize( self, text: str ) -> bytes | None'
 			raise ex
 	
-	def generate( self, text: str = None, prompt: str = None, model: str = 'xai-tts',
-			format: str = 'mp3', speed: float = 1.0, voice: str = 'eve', instruct: str = None,
-			file_path: str = None, language: str = 'auto', **kwargs: Any ) -> bytes | None:
+	def generate( self, text: str=None, prompt: str=None, model: str='xai-tts',
+			format: str='mp3', speed: float = 1.0, voice: str='eve', instruct: str=None,
+			file_path: str=None, language: str='auto', **kwargs: Any ) -> bytes | None:
 		"""
 		
 			Purpose:
@@ -2796,10 +2781,10 @@ class Transcription( Grok ):
 	transcript: Optional[ str ]
 	request: Optional[ Dict[ str, Any ] ]
 	
-	def __init__( self, number: int = 1, model: str = 'grok-3-mini-fast',
+	def __init__( self, number: int = 1, model: str='grok-3-mini-fast',
 			temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
 			presence: float = 0.0, max_tokens: int = 10000, store: bool = True,
-			stream: bool = False, language: str = 'en', instruct: str = None ):
+			stream: bool = False, language: str='en', instruct: str=None ):
 		"""
 		
 			Purpose:
@@ -3190,11 +3175,11 @@ class Transcription( Grok ):
 			ex.method = 'extract_transcript( self )'
 			raise ex
 	
-	def transcribe( self, path: str, model: str = 'grok-3-mini-fast', language: str = 'en',
-			prompt: str = None, temperature: float = None, top_p: float = None,
+	def transcribe( self, path: str, model: str='grok-3-mini-fast', language: str='en',
+			prompt: str=None, temperature: float = None, top_p: float = None,
 			frequency: float = None, presence: float = None, max_tokens: int = None,
-			store: bool = None, stream: bool = None, instruct: str = None,
-			response_format: str = None, include: List[ str ] = None, mime_type: str = None,
+			store: bool = None, stream: bool = None, instruct: str=None,
+			response_format: str=None, include: List[ str ]=None, mime_type: str=None,
 			start_time: float = None, end_time: float = None, **kwargs: Any ) -> str:
 		"""
 		
@@ -3425,10 +3410,10 @@ class Translation( Grok ):
 	translation: Optional[ str ]
 	request: Optional[ Dict[ str, Any ] ]
 	
-	def __init__( self, model: str = 'grok-3-fast', temperature: float = 0.8,
+	def __init__( self, model: str='grok-3-fast', temperature: float = 0.8,
 			top_p: float = 0.9, frequency: float = 0.0, presence: float = 0.0,
 			max_tokens: int = 10000, store: bool = True, stream: bool = False,
-			instruct: str = None ):
+			instruct: str=None ):
 		"""
 		
 			Purpose:
@@ -3818,12 +3803,12 @@ class Translation( Grok ):
 			ex.method = 'extract_translation( self )'
 			raise ex
 	
-	def translate( self, path: str, model: str = 'grok-3-fast', language: str = 'English',
-			prompt: str = None, source_language: str = None, temperature: float = None,
+	def translate( self, path: str, model: str='grok-3-fast', language: str='English',
+			prompt: str=None, source_language: str=None, temperature: float = None,
 			top_p: float = None, frequency: float = None, presence: float = None,
 			max_tokens: int = None, store: bool = None, stream: bool = None,
-			instruct: str = None, response_format: str = None, include: List[ str ] = None,
-			mime_type: str = None, **kwargs: Any ) -> str:
+			instruct: str=None, response_format: str=None, include: List[ str ]=None,
+			mime_type: str=None, **kwargs: Any ) -> str:
 		"""
 		
 			Purpose:
@@ -4445,7 +4430,7 @@ class Images( Grok ):
 			ex.method = 'initialize_client( self )'
 			raise ex
 	
-	def normalize_resolution( self, value: str = None ) -> str | None:
+	def normalize_resolution( self, value: str=None ) -> str | None:
 		"""
 		
 			Purpose:
@@ -4479,7 +4464,7 @@ class Images( Grok ):
 			ex.method = 'normalize_resolution( self, value )'
 			raise ex
 	
-	def normalize_response_format( self, value: str = None ) -> str | None:
+	def normalize_response_format( self, value: str=None ) -> str | None:
 		"""
 		
 			Purpose:
@@ -4588,7 +4573,7 @@ class Images( Grok ):
 			if not isinstance( output, list ):
 				return None
 			
-			text_parts: List[ str ] = [ ]
+			text_parts: List[ str ]=[ ]
 			for item in output:
 				if getattr( item, 'type', None ) != 'message':
 					continue
@@ -4634,7 +4619,7 @@ class Images( Grok ):
 			
 			data = getattr( self.response, 'data', None )
 			if isinstance( data, list ) and len( data ) > 0:
-				results: List[ Any ] = [ ]
+				results: List[ Any ]=[ ]
 				
 				for item in data:
 					url = getattr( item, 'url', None )
@@ -4690,8 +4675,12 @@ class Images( Grok ):
 		
 		"""
 		try:
-			throw_if( 'prompt', self.prompt )
-			throw_if( 'model', self.model )
+			if self.prompt is None or not str( self.prompt ).strip( ):
+				raise ValueError( 'The image generation prompt cannot be empty.' )
+			
+			if self.model is None or not str( self.model ).strip( ):
+				raise ValueError( 'The image generation model cannot be empty.' )
+			
 			self.request = {
 					'model': self.model,
 					'prompt': self.prompt,
@@ -4699,19 +4688,19 @@ class Images( Grok ):
 			self.extra_body = { }
 			
 			if isinstance( self.number, int ) and self.number > 0:
-				self.request[ 'n' ] = self.number
+				self.request[ 'n' ]=self.number
 			
 			if self.response_format:
-				self.request[ 'response_format' ] = self.response_format
+				self.request[ 'response_format' ]=self.response_format
 			
 			if self.aspect_ratio:
-				self.extra_body[ 'aspect_ratio' ] = self.aspect_ratio
+				self.extra_body[ 'aspect_ratio' ]=self.aspect_ratio
 			
 			if self.resolution:
-				self.extra_body[ 'resolution' ] = self.resolution
+				self.extra_body[ 'resolution' ]=self.resolution
 			
 			if self.extra_body:
-				self.request[ 'extra_body' ] = self.extra_body
+				self.request[ 'extra_body' ]=self.extra_body
 			
 			return self.request
 		except Exception as e:
@@ -4739,9 +4728,15 @@ class Images( Grok ):
 		
 		"""
 		try:
-			throw_if( 'prompt', self.prompt )
-			throw_if( 'model', self.model )
-			throw_if( 'image_url', self.image_url )
+			if self.prompt is None or not str( self.prompt ).strip( ):
+				raise ValueError( 'The image editing prompt cannot be empty.' )
+			
+			if self.model is None or not str( self.model ).strip( ):
+				raise ValueError( 'The image editing model cannot be empty.' )
+			
+			if self.image_url is None or not str( self.image_url ).strip( ):
+				raise ValueError( 'The image editing image URL cannot be empty.' )
+			
 			self.request = {
 					'model': self.model,
 					'prompt': self.prompt,
@@ -4752,13 +4747,13 @@ class Images( Grok ):
 			}
 			
 			if self.response_format:
-				self.request[ 'response_format' ] = self.response_format
+				self.request[ 'response_format' ]=self.response_format
 			
 			if self.aspect_ratio:
-				self.request[ 'aspect_ratio' ] = self.aspect_ratio
+				self.request[ 'aspect_ratio' ]=self.aspect_ratio
 			
 			if self.resolution:
-				self.request[ 'resolution' ] = self.resolution
+				self.request[ 'resolution' ]=self.resolution
 			
 			return self.request
 		except Exception as e:
@@ -4787,9 +4782,15 @@ class Images( Grok ):
 		
 		"""
 		try:
-			throw_if( 'prompt', self.prompt )
-			throw_if( 'model', self.model )
-			throw_if( 'image_url', self.image_url )
+			if self.prompt is None or not str( self.prompt ).strip( ):
+				raise ValueError( 'The image analysis prompt cannot be empty.' )
+			
+			if self.model is None or not str( self.model ).strip( ):
+				raise ValueError( 'The image analysis model cannot be empty.' )
+			
+			if self.image_url is None or not str( self.image_url ).strip( ):
+				raise ValueError( 'The image analysis image URL cannot be empty.' )
+			
 			self.request = {
 					'model': self.model,
 					'input': [
@@ -4810,19 +4811,19 @@ class Images( Grok ):
 			}
 			
 			if self.detail:
-				self.request[ 'input' ][ 0 ][ 'content' ][ 0 ][ 'detail' ] = self.detail
+				self.request[ 'input' ][ 0 ][ 'content' ][ 0 ][ 'detail' ]=self.detail
 			
 			if isinstance( self.max_output_tokens, int ) and self.max_output_tokens > 0:
-				self.request[ 'max_output_tokens' ] = self.max_output_tokens
+				self.request[ 'max_output_tokens' ]=self.max_output_tokens
 			
 			if self.temperature is not None:
-				self.request[ 'temperature' ] = self.temperature
+				self.request[ 'temperature' ]=self.temperature
 			
 			if self.top_percent is not None:
-				self.request[ 'top_p' ] = self.top_percent
+				self.request[ 'top_p' ]=self.top_percent
 			
 			if self.store is not None:
-				self.request[ 'store' ] = self.store
+				self.request[ 'store' ]=self.store
 			
 			return self.request
 		except Exception as e:
@@ -4832,18 +4833,129 @@ class Images( Grok ):
 			ex.method = 'build_analysis_request( self )'
 			raise ex
 	
-	def generate( self, prompt: str, model: str = 'grok-imagine-image', number: int = None,
-			size: str = None, quality: str = None, style: str = None, fmt: str = None,
-			mime_type: str = None, compression: float = None, background: str = None,
-			aspect_ratio: str = None, response_modalities: str = None, temperature: float = None,
+	def edit( self, image_path: str=None, prompt: str=None, model: str='grok-imagine-image',
+			aspect_ratio: str=None, resolution: str=None, quality: str=None,
+			response_format: str=None, path: str=None, mask_path: str=None, mask: str=None,
+			size: str=None, fmt: str=None, mime_type: str=None, **kwargs: Any ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Edit an existing image using a text prompt and local image path or image URL.
+
+			Parameters:
+			-----------
+			image_path: str
+				Local image path, public image URL, or data URI.
+
+			prompt: str
+				Text instruction used to edit the image.
+
+			model: str
+				xAI image editing model.
+
+			aspect_ratio: str
+				Optional xAI aspect ratio value.
+
+			resolution: str
+				Optional xAI resolution value.
+
+			quality: str
+				Optional quality value retained for UI compatibility.
+
+			response_format: str
+				Optional response format value.
+
+			path: str
+				Alias for image_path from the UI.
+
+			mask_path: str
+				Optional mask path retained for UI compatibility.
+
+			mask: str
+				Optional mask alias retained for UI compatibility.
+
+			size: str
+				Optional resolution alias.
+
+			fmt: str
+				Optional response format alias.
+
+			mime_type: str
+				Optional response format alias.
+
+			**kwargs: Any
+				Additional UI values retained for compatibility.
+
+			Returns:
+			--------
+			Any:
+				Renderable edited image output.
+		
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.prompt = prompt
+			
+			throw_if( 'model', model )
+			self.model = model
+			
+			self.image_path = image_path or path
+			if self.image_path is None or not str( self.image_path ).strip( ):
+				raise ValueError( 'The image editing path cannot be empty.' )
+			
+			self.api_key = cfg.XAI_API_KEY
+			if self.api_key is None or not str( self.api_key ).strip( ):
+				raise ValueError( 'XAI_API_KEY is required.' )
+			
+			self.aspect_ratio = aspect_ratio
+			self.resolution = resolution or size
+			self.quality = quality
+			self.response_format = response_format or fmt or mime_type
+			self.mask_path = mask_path or mask
+			self.extra_kwargs = kwargs or { }
+			
+			if str( self.image_path ).startswith( 'http://' ):
+				self.image_url = str( self.image_path )
+			elif str( self.image_path ).startswith( 'https://' ):
+				self.image_url = str( self.image_path )
+			elif str( self.image_path ).startswith( 'data:image/' ):
+				self.image_url = str( self.image_path )
+			else:
+				self.image_url = self.encode_image_data_uri( self.image_path )
+			
+			self.build_edit_request( )
+			self.response = requests.post(
+				url=f'{self.base_url.rstrip( "/" )}/images/edits',
+				headers={
+						'Authorization': f'Bearer {self.api_key}',
+						'Content-Type': 'application/json',
+				},
+				json=self.request,
+				timeout=self.timeout or 3600,
+			)
+			self.response.raise_for_status( )
+			self.output = self.response.json( )
+			return self.output
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Images'
+			ex.method = 'edit( self, image_path, prompt, model )'
+			raise ex
+		
+	def generate( self, prompt: str, model: str='grok-imagine-image', number: int = None,
+			size: str=None, quality: str=None, style: str=None, fmt: str=None,
+			mime_type: str=None, compression: float = None, background: str=None,
+			aspect_ratio: str=None, response_modalities: str=None, temperature: float = None,
 			top_p: float = None, top_k: int = None, frequency: float = None, presence: float = None,
-			max_tokens: int = None, instruct: str = None, tools: List[ Any ] = None,
-			tool_choice: str = None, include: List[ str ] = None,
-			allowed_domains: List[ str ] = None,
+			max_tokens: int = None, instruct: str=None, tools: List[ Any ]=None,
+			tool_choice: str=None, include: List[ str ]=None,
+			allowed_domains: List[ str ]=None,
 			store: bool = None, stream: bool = None, is_parallel: bool = None,
 			max_tools: int = None,
 			max_searches: int = None, grounded: bool = False, image_search: bool = False,
-			response_format: str = None, **kwargs: Any ) -> Any:
+			response_format: str=None, **kwargs: Any ) -> Any:
 		"""
 		
 			Purpose:
@@ -5003,11 +5115,11 @@ class Images( Grok ):
 			ex.method = 'generate( self, prompt: str, model: str )'
 			raise ex
 	
-	def generate_image( self, prompt: str, model: str = 'grok-imagine-image',
-			number: int = None, size: str = None, quality: str = None, style: str = None,
-			fmt: str = None, mime_type: str = None, compression: float = None,
-			background: str = None, aspect_ratio: str = None,
-			response_modalities: str = None, **kwargs: Any ) -> Any:
+	def generate_image( self, prompt: str, model: str='grok-imagine-image',
+			number: int = None, size: str=None, quality: str=None, style: str=None,
+			fmt: str=None, mime_type: str=None, compression: float = None,
+			background: str=None, aspect_ratio: str=None,
+			response_modalities: str=None, **kwargs: Any ) -> Any:
 		"""
 		
 			Purpose:
@@ -5073,9 +5185,9 @@ class Images( Grok ):
 			ex.method = 'generate_image( self, prompt: str, model: str )'
 			raise ex
 	
-	def create( self, prompt: str, model: str = 'grok-imagine-image', resolution: str = None,
-			aspect_ratio: str = None, format: str = None, number: int = None,
-			quality: str = None, style: str = None, **kwargs: Any ) -> Any:
+	def create( self, prompt: str, model: str='grok-imagine-image', resolution: str=None,
+			aspect_ratio: str=None, format: str=None, number: int = None,
+			quality: str=None, style: str=None, **kwargs: Any ) -> Any:
 		"""
 		
 			Purpose:
@@ -5128,7 +5240,7 @@ class Images( Grok ):
 			ex.method = 'create( self, prompt: str, model: str )'
 			raise ex
 	
-	def create_image( self, prompt: str, model: str = 'grok-imagine-image',
+	def create_image( self, prompt: str, model: str='grok-imagine-image',
 			**kwargs: Any ) -> Any:
 		"""
 		
@@ -5162,111 +5274,8 @@ class Images( Grok ):
 			ex.method = 'create_image( self, prompt: str, model: str )'
 			raise ex
 	
-	def edit( self, image_path: str = None, prompt: str = None, model: str = 'grok-imagine-image',
-			aspect_ratio: str = None, resolution: str = None, quality: str = None,
-			response_format: str = None, path: str = None, mask_path: str = None, mask: str = None,
-			size: str = None, fmt: str = None, mime_type: str = None, **kwargs: Any ) -> Any:
-		"""
-		
-			Purpose:
-			--------
-			Edit an existing image using a text prompt and local image path or image URL.
-
-			Parameters:
-			-----------
-			image_path: str
-				Local image path or public image URL.
-
-			prompt: str
-				Text instruction used to edit the image.
-
-			model: str
-				xAI image editing model.
-
-			aspect_ratio: str
-				Optional xAI aspect ratio value.
-
-			resolution: str
-				Optional xAI resolution value.
-
-			quality: str
-				Optional quality value retained for UI compatibility.
-
-			response_format: str
-				Optional response format value.
-
-			path: str
-				Alias for image_path from the UI.
-
-			mask_path: str
-				Optional mask path retained for UI compatibility.
-
-			mask: str
-				Optional mask alias retained for UI compatibility.
-
-			size: str
-				Optional resolution alias.
-
-			fmt: str
-				Optional response format alias.
-
-			mime_type: str
-				Optional response format alias.
-
-			**kwargs: Any
-				Additional UI values retained for compatibility.
-
-			Returns:
-			--------
-			Any:
-				Renderable edited image output.
-		
-		"""
-		try:
-			self.image_path = image_path or path
-			throw_if( 'image_path', self.image_path )
-			throw_if( 'prompt', prompt )
-			throw_if( 'model', model )
-			self.prompt = prompt
-			self.model = model
-			self.aspect_ratio = aspect_ratio
-			self.resolution = self.normalize_resolution( resolution or size )
-			self.quality = quality
-			self.response_format = self.normalize_response_format(
-				response_format or fmt or mime_type )
-			self.mask_path = mask_path or mask
-			self.extra_kwargs = kwargs or { }
-			
-			if str( self.image_path ).startswith( 'http://' ) or str(
-					self.image_path ).startswith( 'https://' ):
-				self.image_url = str( self.image_path )
-			elif str( self.image_path ).startswith( 'data:image/' ):
-				self.image_url = str( self.image_path )
-			else:
-				self.image_url = self.encode_image_data_uri( self.image_path )
-			
-			self.build_edit_request( )
-			self.response = requests.post(
-				url=f'{self.base_url.rstrip( "/" )}/images/edits',
-				headers={
-						'Authorization': f'Bearer {self.api_key}',
-						'Content-Type': 'application/json',
-				},
-				json=self.request,
-				timeout=self.timeout or 3600,
-			)
-			self.response.raise_for_status( )
-			self.output = self.response.json( )
-			return self.output
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Images'
-			ex.method = 'edit( self, image_path: str, prompt: str )'
-			raise ex
-	
-	def edit_image( self, image_path: str = None, prompt: str = None,
-			model: str = 'grok-imagine-image', **kwargs: Any ) -> Any:
+	def edit_image( self, image_path: str=None, prompt: str=None,
+			model: str='grok-imagine-image', **kwargs: Any ) -> Any:
 		"""
 		
 			Purpose:
@@ -5302,8 +5311,8 @@ class Images( Grok ):
 			ex.method = 'edit_image( self, image_path: str, prompt: str )'
 			raise ex
 	
-	def modify( self, image_path: str = None, prompt: str = None,
-			model: str = 'grok-imagine-image', **kwargs: Any ) -> Any:
+	def modify( self, image_path: str=None, prompt: str=None,
+			model: str='grok-imagine-image', **kwargs: Any ) -> Any:
 		"""
 		
 			Purpose:
@@ -5339,8 +5348,8 @@ class Images( Grok ):
 			ex.method = 'modify( self, image_path: str, prompt: str )'
 			raise ex
 	
-	def generate_edit( self, image_path: str = None, prompt: str = None,
-			model: str = 'grok-imagine-image', **kwargs: Any ) -> Any:
+	def generate_edit( self, image_path: str=None, prompt: str=None,
+			model: str='grok-imagine-image', **kwargs: Any ) -> Any:
 		"""
 		
 			Purpose:
@@ -5376,9 +5385,9 @@ class Images( Grok ):
 			ex.method = 'generate_edit( self, image_path: str, prompt: str )'
 			raise ex
 	
-	def analyze( self, prompt: str, image_url: str = None, model: str = 'grok-4.20-reasoning',
+	def analyze( self, prompt: str, image_url: str=None, model: str='grok-4.20-reasoning',
 			max_output_tokens: int = 10000, temperature: float = None, top_p: float = None,
-			detail: str = 'high', image_path: str = None, path: str = None, store: bool = False,
+			detail: str='high', image_path: str=None, path: str=None, store: bool = False,
 			**kwargs: Any ) -> str | None:
 		"""
 		
@@ -5459,8 +5468,8 @@ class Images( Grok ):
 			ex.method = 'analyze( self, prompt: str, image_url: str )'
 			raise ex
 	
-	def analyze_image( self, prompt: str, image_url: str = None, model: str = 'grok-4.20-reasoning',
-			image_path: str = None, path: str = None, **kwargs: Any ) -> str | None:
+	def analyze_image( self, prompt: str, image_url: str=None, model: str='grok-4.20-reasoning',
+			image_path: str=None, path: str=None, **kwargs: Any ) -> str | None:
 		"""
 		
 			Purpose:
@@ -5503,8 +5512,8 @@ class Images( Grok ):
 			ex.method = 'analyze_image( self, prompt: str, image_url: str )'
 			raise ex
 	
-	def vision( self, prompt: str, image_url: str = None, model: str = 'grok-4.20-reasoning',
-			image_path: str = None, path: str = None, **kwargs: Any ) -> str | None:
+	def vision( self, prompt: str, image_url: str=None, model: str='grok-4.20-reasoning',
+			image_path: str=None, path: str=None, **kwargs: Any ) -> str | None:
 		"""
 		
 			Purpose:
@@ -5547,8 +5556,8 @@ class Images( Grok ):
 			ex.method = 'vision( self, prompt: str, image_url: str )'
 			raise ex
 	
-	def describe( self, prompt: str, image_url: str = None, model: str = 'grok-4.20-reasoning',
-			image_path: str = None, path: str = None, **kwargs: Any ) -> str | None:
+	def describe( self, prompt: str, image_url: str=None, model: str='grok-4.20-reasoning',
+			image_path: str=None, path: str=None, **kwargs: Any ) -> str | None:
 		"""
 		
 			Purpose:
@@ -6047,7 +6056,7 @@ class Files( Grok ):
 		"""
 		try:
 			headers = self.build_headers( )
-			headers[ 'Content-Type' ] = 'application/json'
+			headers[ 'Content-Type' ]='application/json'
 			return headers
 		except Exception as e:
 			ex = Error( e )
@@ -6123,7 +6132,7 @@ class Files( Grok ):
 			if not isinstance( output, list ):
 				return None
 			
-			parts: List[ str ] = [ ]
+			parts: List[ str ]=[ ]
 			for item in output:
 				if getattr( item, 'type', None ) != 'message':
 					continue
@@ -6185,42 +6194,6 @@ class Files( Grok ):
 			ex.method = 'build_upload_request( self )'
 			raise ex
 	
-	def execute_upload( self ) -> Any:
-		"""
-		
-			Purpose:
-			--------
-			Execute the file upload using assigned wrapper members.
-
-			Parameters:
-			-----------
-			None
-
-			Returns:
-			--------
-			Any:
-				File upload response.
-		
-		"""
-		try:
-			self.initialize_client( )
-			throw_if( 'file_path', self.file_path )
-			throw_if( 'purpose', self.purpose )
-			with open( self.file_path, 'rb' ) as file_stream:
-				self.response = self.client.files.create( file=file_stream, purpose=self.purpose )
-			
-			self.file_id = self.normalize_file_id( self.response )
-			if self.file_id and self.file_id not in self.file_ids:
-				self.file_ids.append( self.file_id )
-			
-			return self.response
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'execute_upload( self )'
-			raise ex
-	
 	def build_list_request( self ) -> Dict[ str, Any ]:
 		"""
 		
@@ -6242,22 +6215,22 @@ class Files( Grok ):
 			self.request = { }
 			
 			if self.team_id:
-				self.request[ 'team_id' ] = self.team_id
+				self.request[ 'team_id' ]=self.team_id
 			
 			if isinstance( self.limit, int ) and self.limit > 0:
-				self.request[ 'limit' ] = self.limit
+				self.request[ 'limit' ]=self.limit
 			
 			if self.next_token:
-				self.request[ 'next_token' ] = self.next_token
+				self.request[ 'next_token' ]=self.next_token
 			
 			if self.order:
-				self.request[ 'order' ] = self.order
+				self.request[ 'order' ]=self.order
 			
 			if self.sort_by:
-				self.request[ 'sort_by' ] = self.sort_by
+				self.request[ 'sort_by' ]=self.sort_by
 			
 			if self.filter:
-				self.request[ 'filter' ] = self.filter
+				self.request[ 'filter' ]=self.filter
 			
 			return self.request
 		except Exception as e:
@@ -6265,251 +6238,6 @@ class Files( Grok ):
 			ex.module = 'grok'
 			ex.cause = 'Files'
 			ex.method = 'build_list_request( self )'
-			raise ex
-	
-	def execute_list( self ) -> Any:
-		"""
-		
-			Purpose:
-			--------
-			Execute the file-list request using assigned wrapper members.
-
-			Parameters:
-			-----------
-			None
-
-			Returns:
-			--------
-			Any:
-				File-list response.
-		
-		"""
-		try:
-			throw_if( 'base_url', self.base_url )
-			response = requests.get( url=f'{self.base_url.rstrip( "/" )}/files',
-				headers=self.build_headers( ), params=self.request, timeout=self.timeout or 3600 )
-			response.raise_for_status( )
-			self.response = response.json( )
-			return self.response
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'execute_list( self )'
-			raise ex
-	
-	def build_retrieve_request( self ) -> Dict[ str, Any ]:
-		"""
-		
-			Purpose:
-			--------
-			Build file metadata retrieval query parameters from assigned wrapper members.
-
-			Parameters:
-			-----------
-			None
-
-			Returns:
-			--------
-			Dict[str, Any]:
-				File metadata query parameters.
-		
-		"""
-		try:
-			throw_if( 'file_id', self.file_id )
-			self.request = { }
-			
-			if self.team_id:
-				self.request[ 'team_id' ] = self.team_id
-			
-			return self.request
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'build_retrieve_request( self )'
-			raise ex
-	
-	def execute_retrieve( self ) -> Any:
-		"""
-		
-			Purpose:
-			--------
-			Execute the file metadata retrieval request using assigned wrapper members.
-
-			Parameters:
-			-----------
-			None
-
-			Returns:
-			--------
-			Any:
-				File metadata response.
-		
-		"""
-		try:
-			throw_if( 'base_url', self.base_url )
-			throw_if( 'file_id', self.file_id )
-			response = requests.get( url=f'{self.base_url.rstrip( "/" )}/files/{self.file_id}',
-				headers=self.build_headers( ), params=self.request, timeout=self.timeout or 3600 )
-			response.raise_for_status( )
-			self.response = response.json( )
-			return self.response
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'execute_retrieve( self )'
-			raise ex
-	
-	def build_extract_request( self ) -> Dict[ str, Any ]:
-		"""
-		
-			Purpose:
-			--------
-			Build file content download query parameters from assigned wrapper members.
-
-			Parameters:
-			-----------
-			None
-
-			Returns:
-			--------
-			Dict[str, Any]:
-				File content query parameters.
-		
-		"""
-		try:
-			throw_if( 'file_id', self.file_id )
-			self.request = { }
-			
-			if self.team_id:
-				self.request[ 'team_id' ] = self.team_id
-			
-			if self.download_format:
-				self.request[ 'format' ] = self.download_format
-			
-			if isinstance( self.page_number, int ) and self.page_number > 0:
-				self.request[ 'page_number' ] = self.page_number
-			
-			return self.request
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'build_extract_request( self )'
-			raise ex
-	
-	def execute_extract( self ) -> bytes | str | None:
-		"""
-		
-			Purpose:
-			--------
-			Execute the file content download request using assigned wrapper members.
-
-			Parameters:
-			-----------
-			None
-
-			Returns:
-			--------
-			bytes | str | None:
-				File bytes or extracted text.
-		
-		"""
-		try:
-			throw_if( 'base_url', self.base_url )
-			throw_if( 'file_id', self.file_id )
-			response = requests.get( url=f'{self.base_url.rstrip( "/" )}/files/{self.file_id}/content',
-				headers=self.build_headers( ), params=self.request, timeout=self.timeout or 3600 )
-			response.raise_for_status( )
-			content_type = str( response.headers.get( 'content-type', '' ) ).lower( )
-			if 'application/json' in content_type:
-				self.content = response.json( )
-				return self.content
-			
-			if self.download_format == 'DOWNLOAD_FORMAT_TEXT' or 'text/' in content_type:
-				self.content = response.text
-				return self.content
-			
-			self.content = response.content
-			return self.content
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'execute_extract( self )'
-			raise ex
-	
-	def build_delete_request( self ) -> Dict[ str, Any ]:
-		"""
-		
-			Purpose:
-			--------
-			Build file delete query parameters from assigned wrapper members.
-
-			Parameters:
-			-----------
-			None
-
-			Returns:
-			--------
-			Dict[str, Any]:
-				Delete query parameters.
-		
-		"""
-		try:
-			throw_if( 'file_id', self.file_id )
-			self.request = { }
-			
-			if self.team_id:
-				self.request[ 'team_id' ] = self.team_id
-			
-			return self.request
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'build_delete_request( self )'
-			raise ex
-	
-	def execute_delete( self ) -> Any:
-		"""
-		
-			Purpose:
-			--------
-			Execute the file delete request using assigned wrapper members.
-
-			Parameters:
-			-----------
-			None
-
-			Returns:
-			--------
-			Any:
-				Delete response.
-		
-		"""
-		try:
-			throw_if( 'base_url', self.base_url )
-			throw_if( 'file_id', self.file_id )
-			response = requests.delete( url=f'{self.base_url.rstrip( "/" )}/files/{self.file_id}',
-				headers=self.build_headers( ), params=self.request, timeout=self.timeout or 3600 )
-			response.raise_for_status( )
-			if response.content:
-				try:
-					self.response = response.json( )
-				except Exception:
-					self.response = { 'id': self.file_id, 'deleted': True }
-			else:
-				self.response = { 'id': self.file_id, 'deleted': True }
-			
-			return self.response
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'Files'
-			ex.method = 'execute_delete( self )'
 			raise ex
 	
 	def build_file_input( self ) -> List[ Dict[ str, Any ] ]:
@@ -6581,43 +6309,43 @@ class Files( Grok ):
 									'content': self.build_file_input( ),
 							} ], }
 			if self.instructions:
-				self.request[ 'instructions' ] = self.instructions
+				self.request[ 'instructions' ]=self.instructions
 			
 			if isinstance( self.max_output_tokens, int ) and self.max_output_tokens > 0:
-				self.request[ 'max_output_tokens' ] = self.max_output_tokens
+				self.request[ 'max_output_tokens' ]=self.max_output_tokens
 			
 			if self.temperature is not None:
-				self.request[ 'temperature' ] = self.temperature
+				self.request[ 'temperature' ]=self.temperature
 			
 			if self.top_percent is not None:
-				self.request[ 'top_p' ] = self.top_percent
+				self.request[ 'top_p' ]=self.top_percent
 			
 			if self.frequency_penalty is not None:
-				self.request[ 'frequency_penalty' ] = self.frequency_penalty
+				self.request[ 'frequency_penalty' ]=self.frequency_penalty
 			
 			if self.presence_penalty is not None:
-				self.request[ 'presence_penalty' ] = self.presence_penalty
+				self.request[ 'presence_penalty' ]=self.presence_penalty
 			
 			if self.store is not None:
-				self.request[ 'store' ] = self.store
+				self.request[ 'store' ]=self.store
 			
 			if self.include:
-				self.request[ 'include' ] = self.include
+				self.request[ 'include' ]=self.include
 			
 			if self.tools:
-				self.request[ 'tools' ] = self.tools
+				self.request[ 'tools' ]=self.tools
 			
 			if self.tool_choice:
-				self.request[ 'tool_choice' ] = self.tool_choice
+				self.request[ 'tool_choice' ]=self.tool_choice
 			
 			if self.previous_id:
-				self.request[ 'previous_response_id' ] = self.previous_id
+				self.request[ 'previous_response_id' ]=self.previous_id
 			
 			if self.conversation_id:
-				self.request[ 'conversation' ] = self.conversation_id
+				self.request[ 'conversation' ]=self.conversation_id
 			
 			if self.response_format:
-				self.request[ 'text' ] = { 'format': { 'type': self.response_format, } }
+				self.request[ 'text' ]={ 'format': { 'type': self.response_format, } }
 			
 			return self.request
 		except Exception as e:
@@ -6654,8 +6382,341 @@ class Files( Grok ):
 			ex.cause = 'Files'
 			ex.method = 'execute_file_response( self )'
 			raise ex
+		
+	def execute_upload( self ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Execute the xAI file upload request using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Any:
+				File upload response.
+		
+		"""
+		try:
+			self.initialize_client( )
+			
+			if self.file_path is None or not str( self.file_path ).strip( ):
+				raise ValueError( 'The file upload path cannot be empty.' )
+			
+			if self.purpose is None or not str( self.purpose ).strip( ):
+				raise ValueError( 'The file upload purpose cannot be empty.' )
+			
+			with open( self.file_path, 'rb' ) as file_stream:
+				self.response = self.client.files.create(
+					file=file_stream,
+					purpose=self.purpose
+				)
+			
+			self.file_id = self.normalize_file_id( self.response )
+			if self.file_id and self.file_id not in self.file_ids:
+				self.file_ids.append( self.file_id )
+			
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'execute_upload( self )'
+			raise ex
 	
-	def upload( self, filepath: str, filename: str = None, purpose: str = 'assistants',
+	def execute_list( self ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Execute the file-list request using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Any:
+				File-list response.
+		
+		"""
+		try:
+			if self.base_url is None or not str( self.base_url ).strip( ):
+				raise ValueError( 'The xAI base URL cannot be empty.' )
+			
+			response = requests.get(
+				url=f'{self.base_url.rstrip( "/" )}/files',
+				headers=self.build_headers( ),
+				params=self.request,
+				timeout=self.timeout or 3600
+			)
+			response.raise_for_status( )
+			self.response = response.json( )
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'execute_list( self )'
+			raise ex
+	
+	def build_retrieve_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build file metadata retrieval query parameters from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				File metadata query parameters.
+		
+		"""
+		try:
+			if self.file_id is None or not str( self.file_id ).strip( ):
+				raise ValueError( 'The file ID cannot be empty.' )
+			
+			self.request = { }
+			
+			if self.team_id:
+				self.request[ 'team_id' ]=self.team_id
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'build_retrieve_request( self )'
+			raise ex
+	
+	def execute_retrieve( self ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Execute the file metadata retrieval request using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Any:
+				File metadata response.
+		
+		"""
+		try:
+			if self.base_url is None or not str( self.base_url ).strip( ):
+				raise ValueError( 'The xAI base URL cannot be empty.' )
+			
+			if self.file_id is None or not str( self.file_id ).strip( ):
+				raise ValueError( 'The file ID cannot be empty.' )
+			
+			response = requests.get(
+				url=f'{self.base_url.rstrip( "/" )}/files/{self.file_id}',
+				headers=self.build_headers( ),
+				params=self.request,
+				timeout=self.timeout or 3600
+			)
+			response.raise_for_status( )
+			self.response = response.json( )
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'execute_retrieve( self )'
+			raise ex
+	
+	def build_extract_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build file content download query parameters from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				File content query parameters.
+		
+		"""
+		try:
+			if self.file_id is None or not str( self.file_id ).strip( ):
+				raise ValueError( 'The file ID cannot be empty.' )
+			
+			self.request = { }
+			
+			if self.team_id:
+				self.request[ 'team_id' ]=self.team_id
+			
+			if self.download_format:
+				self.request[ 'format' ]=self.download_format
+			
+			if isinstance( self.page_number, int ) and self.page_number > 0:
+				self.request[ 'page_number' ]=self.page_number
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'build_extract_request( self )'
+			raise ex
+	
+	def execute_extract( self ) -> bytes | str | None:
+		"""
+		
+			Purpose:
+			--------
+			Execute the file content download request using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			bytes | str | None:
+				File bytes or extracted text.
+		
+		"""
+		try:
+			if self.base_url is None or not str( self.base_url ).strip( ):
+				raise ValueError( 'The xAI base URL cannot be empty.' )
+			
+			if self.file_id is None or not str( self.file_id ).strip( ):
+				raise ValueError( 'The file ID cannot be empty.' )
+			
+			response = requests.get(
+				url=f'{self.base_url.rstrip( "/" )}/files/{self.file_id}/content',
+				headers=self.build_headers( ),
+				params=self.request,
+				timeout=self.timeout or 3600
+			)
+			response.raise_for_status( )
+			content_type = str( response.headers.get( 'content-type', '' ) ).lower( )
+			
+			if 'application/json' in content_type:
+				self.content = response.json( )
+				return self.content
+			
+			if self.download_format == 'DOWNLOAD_FORMAT_TEXT' or 'text/' in content_type:
+				self.content = response.text
+				return self.content
+			
+			self.content = response.content
+			return self.content
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'execute_extract( self )'
+			raise ex
+	
+	def build_delete_request( self ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Build file delete query parameters from assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Delete query parameters.
+		
+		"""
+		try:
+			if self.file_id is None or not str( self.file_id ).strip( ):
+				raise ValueError( 'The file ID cannot be empty.' )
+			
+			self.request = { }
+			
+			if self.team_id:
+				self.request[ 'team_id' ]=self.team_id
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'build_delete_request( self )'
+			raise ex
+	
+	def execute_delete( self ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Execute the file delete request using assigned wrapper members.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			Any:
+				Delete response.
+		
+		"""
+		try:
+			if self.base_url is None or not str( self.base_url ).strip( ):
+				raise ValueError( 'The xAI base URL cannot be empty.' )
+			
+			if self.file_id is None or not str( self.file_id ).strip( ):
+				raise ValueError( 'The file ID cannot be empty.' )
+			
+			response = requests.delete(
+				url=f'{self.base_url.rstrip( "/" )}/files/{self.file_id}',
+				headers=self.build_headers( ),
+				params=self.request,
+				timeout=self.timeout or 3600
+			)
+			response.raise_for_status( )
+			
+			if response.content:
+				try:
+					self.response = response.json( )
+				except Exception:
+					self.response = {
+							'id': self.file_id,
+							'deleted': True,
+					}
+			else:
+				self.response = {
+						'id': self.file_id,
+						'deleted': True,
+				}
+			
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'Files'
+			ex.method = 'execute_delete( self )'
+			raise ex
+		
+	def upload( self, filepath: str, filename: str=None, purpose: str='assistants',
 			**kwargs: Any ) -> Any:
 		"""
 		
@@ -6698,8 +6759,8 @@ class Files( Grok ):
 			ex.method = 'upload( self, filepath: str, filename: str=None )'
 			raise ex
 	
-	def list( self, limit: int = None, next_token: str = None, order: str = None,
-			sort_by: str = None, filter: str = None, team_id: str = None, **kwargs: Any ) -> Any:
+	def list( self, limit: int = None, next_token: str=None, order: str=None,
+			sort_by: str=None, filter: str=None, team_id: str=None, **kwargs: Any ) -> Any:
 		"""
 		
 			Purpose:
@@ -6752,8 +6813,8 @@ class Files( Grok ):
 			ex.method = 'list( self )'
 			raise ex
 	
-	def list_files( self, limit: int = None, next_token: str = None, order: str = None,
-			sort_by: str = None, filter: str = None, team_id: str = None, **kwargs: Any ) -> Any:
+	def list_files( self, limit: int = None, next_token: str=None, order: str=None,
+			sort_by: str=None, filter: str=None, team_id: str=None, **kwargs: Any ) -> Any:
 		"""
 		
 			Purpose:
@@ -6799,7 +6860,7 @@ class Files( Grok ):
 			ex.method = 'list_files( self )'
 			raise ex
 	
-	def retrieve( self, file_id: str, team_id: str = None, **kwargs: Any ) -> Any:
+	def retrieve( self, file_id: str, team_id: str=None, **kwargs: Any ) -> Any:
 		"""
 		
 			Purpose:
@@ -6837,8 +6898,8 @@ class Files( Grok ):
 			ex.method = 'retrieve( self, file_id: str )'
 			raise ex
 	
-	def extract( self, file_id: str, format: str = None, page_number: int = None,
-			team_id: str = None, **kwargs: Any ) -> bytes | str | None:
+	def extract( self, file_id: str, format: str=None, page_number: int = None,
+			team_id: str=None, **kwargs: Any ) -> bytes | str | None:
 		"""
 		
 			Purpose:
@@ -6884,8 +6945,8 @@ class Files( Grok ):
 			ex.method = 'extract( self, file_id: str )'
 			raise ex
 	
-	def download( self, file_id: str, format: str = None, page_number: int = None,
-			team_id: str = None, **kwargs: Any ) -> bytes | str | None:
+	def download( self, file_id: str, format: str=None, page_number: int = None,
+			team_id: str=None, **kwargs: Any ) -> bytes | str | None:
 		"""
 		
 			Purpose:
@@ -6925,7 +6986,7 @@ class Files( Grok ):
 			ex.method = 'download( self, file_id: str )'
 			raise ex
 	
-	def delete( self, file_id: str, team_id: str = None, **kwargs: Any ) -> Any:
+	def delete( self, file_id: str, team_id: str=None, **kwargs: Any ) -> Any:
 		"""
 		
 			Purpose:
@@ -6963,13 +7024,13 @@ class Files( Grok ):
 			ex.method = 'delete( self, file_id: str )'
 			raise ex
 	
-	def summarize( self, filepath: str = None, filename: str = None, prompt: str = None,
-			file_id: str = None, model: str = 'grok-4.20-reasoning', temperature: float = None,
+	def summarize( self, filepath: str=None, filename: str=None, prompt: str=None,
+			file_id: str=None, model: str='grok-4.20-reasoning', temperature: float = None,
 			top_p: float = None, frequency: float = None, presence: float = None,
 			max_tokens: int = None, store: bool = None, stream: bool = None,
-			instruct: str = None, include: List[ str ] = None, tools: List[ Any ] = None,
-			tool_choice: str = None, previous_id: str = None, conversation_id: str = None,
-			purpose: str = 'assistants', **kwargs: Any ) -> str | None:
+			instruct: str=None, include: List[ str ]=None, tools: List[ Any ]=None,
+			tool_choice: str=None, previous_id: str=None, conversation_id: str=None,
+			purpose: str='assistants', **kwargs: Any ) -> str | None:
 		"""
 		
 			Purpose:
@@ -7086,10 +7147,10 @@ class Files( Grok ):
 			raise ex
 	
 	def survey( self, filepaths: List[ str ], filenames: List[ str ], prompt: str,
-			model: str = 'grok-4.20-reasoning', temperature: float = None, top_p: float = None,
+			model: str='grok-4.20-reasoning', temperature: float = None, top_p: float = None,
 			frequency: float = None, presence: float = None, max_tokens: int = None,
-			store: bool = None, stream: bool = None, instruct: str = None,
-			purpose: str = 'assistants', **kwargs: Any ) -> str | None:
+			store: bool = None, stream: bool = None, instruct: str=None,
+			purpose: str='assistants', **kwargs: Any ) -> str | None:
 		"""
 		
 			Purpose:
@@ -7402,7 +7463,11 @@ class VectorStores( Grok ):
 		super( ).__init__( )
 		self.api_key = cfg.XAI_API_KEY
 		self.base_url = cfg.XAI_BASE_URL
-		self.client = Client( api_key=cfg.OPEN_API_KEY )
+		
+		if self.api_key is None or not str( self.api_key ).strip( ):
+			raise ValueError( 'XAI_API_KEY is required.' )
+		
+		self.client = Client( api_key=self.api_key )
 		self.model = None
 		self.prompt = None
 		self.response_format = None
@@ -7417,6 +7482,7 @@ class VectorStores( Grok ):
 		self.file_name = None
 		self.store_id = None
 		self.collection_id = None
+		
 		default_collections = {
 				'Federal Financial Regulations': 'collection_9195d847-03a1-443c-9240-294c64dd01e2',
 				'Federal Financial Data': 'collection_e28cdcc2-a9e5-430a-bdf5-94fbaf44b6a4',
@@ -7432,6 +7498,7 @@ class VectorStores( Grok ):
 				'Authority.csv': 'file_c6ad236f-0c52-45f4-8883-d3be032d07c2',
 				'Balances.csv': 'file_0f63d120-406f-49e6-97e5-7855f2cb26b5'
 		}
+		
 		configured_documents = getattr( cfg, 'GROK_DOCUMENTS', None )
 		self.documents = configured_documents if isinstance( configured_documents,
 			dict ) else default_documents
@@ -7624,7 +7691,7 @@ class VectorStores( Grok ):
 			f'enabling remote collection management.'
 		)
 	
-	def create( self, name: str, model: str = None ) -> Any:
+	def create( self, name: str, model: str=None ) -> Any:
 		"""
 		
 			Purpose:
@@ -7734,7 +7801,7 @@ class VectorStores( Grok ):
 			ex.method = 'retrieve( self, store_id: str ) -> Dict[ str, Any ]'
 			raise ex
 	
-	def search( self, prompt: str, store_id: str, model: str = 'grok-4-fast' ) -> Any:
+	def search( self, prompt: str, store_id: str, model: str='grok-4-fast' ) -> Any:
 		"""
 		
 			Purpose:
@@ -7777,7 +7844,7 @@ class VectorStores( Grok ):
 			ex.method = 'search( self, prompt: str, store_id: str, model: str ) -> Any'
 			raise ex
 	
-	def survey( self, prompt: str, store_ids: List[ str ], model: str = 'grok-4-fast' ) -> Any:
+	def survey( self, prompt: str, store_ids: List[ str ], model: str='grok-4-fast' ) -> Any:
 		"""
 		
 			Purpose:
@@ -7821,7 +7888,7 @@ class VectorStores( Grok ):
 			ex.method = 'survey( self, prompt: str, store_ids: List[ str ], model: str ) -> Any'
 			raise ex
 	
-	def update( self, store_id: str, filepath: str = None, filename: str = None ) -> Any:
+	def update( self, store_id: str, filepath: str=None, filename: str=None ) -> Any:
 		"""
 		
 			Purpose:
