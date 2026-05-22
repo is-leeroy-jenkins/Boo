@@ -7667,8 +7667,7 @@ class VectorStores( GPT ):
 			exception.method = 'list( self, store_id: str ) -> List[ Dict[ str, Any ] ]'
 			raise exception
 	
-	def list_files( self, store_id: str, limit: int=100,
-			order: str='desc' ) -> List[ Dict[ str, Any ] ]:
+	def list_files( self, store_id: str, limit: int=100, order: str='desc' ) -> List[ Dict[ str, Any ] ]:
 		"""
 
 	        Purpose:
@@ -7887,8 +7886,7 @@ class VectorStores( GPT ):
 			exception.method = 'retrieve_file_content( self, store_id: str, file_id: str )'
 			raise exception
 	
-	def create_file_batch( self, store_id: str, file_ids: List[ str ],
-			attributes: Dict[ str, Any ]=None,
+	def create_file_batch( self, store_id: str, file_ids: List[ str ], attributes: Dict[ str, Any ]=None,
 			chunking_strategy: Dict[ str, Any ]=None ) -> Dict[ str, Any ] | None:
 		"""
 
@@ -7988,8 +7986,7 @@ class VectorStores( GPT ):
 			exception.method = 'retrieve_file_batch( self, store_id: str, batch_id: str )'
 			raise exception
 	
-	def list_file_batch_files( self, store_id: str, batch_id: str,
-			limit: int=100 ) -> List[ Dict[ str, Any ] ]:
+	def list_file_batch_files( self, store_id: str, batch_id: str, limit: int=100 ) -> List[ Dict[ str, Any ] ]:
 		"""
 
 	        Purpose:
