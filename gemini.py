@@ -532,81 +532,6 @@ class Chat( Gemini ):
 			exception.method = ('append_urls_to_content( self, **kwargs ) -> str')
 			raise exception
 	
-	def build_tools( self, tools: List[ str ] ) -> List[ Tool ] | None:
-		"""
-		
-			Purpose:
-			--------
-			Builds the Google Search grounding tool for Text mode when explicitly enabled.
-			
-			Parameters:
-			-----------
-			tools: List[ str ] - Derived tool names for the request.
-			file_search_store_names: List[ str ] - Ignored for Google Search-only grounding.
-			
-			Returns:
-			--------
-			List[ Tool ] | None - Google Search tool list or None.
-		
-		"""
-		try:
-			self.tools = [
-					str( tool ).strip( )
-					for tool in (tools or [ ])
-					if str( tool ).strip( )
-			]
-			
-			if 'google_search' not in self.tools:
-				return None
-			
-			return [ Tool( google_search=GoogleSearch( ) ) ]
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'build_tools( self, tools: List[ str ], file_search_store_names: List[ str ] )'
-			raise exception
-	
-	def build_tool_config( self, tool_choice: str, tools: List[ Tool ] ) -> ToolConfig | None:
-		"""
-		
-			Purpose:
-			--------
-			Builds Gemini tool configuration from the selected tool-choice mode.
-			
-			Parameters:
-			-----------
-			tool_choice: str - Tool choice mode selected in the UI.
-			tools: List[ Tool ] - Configured Gemini tool objects.
-			
-			Returns:
-			--------
-			ToolConfig | None - Tool configuration or None.
-		
-		"""
-		try:
-			throw_if( tool_choice, 'tool_choice' )
-			throw_if( tools, 'tools' )
-			self.tool_choice = tool_choice.strip( ).upper( )
-			self.tool_objects = tools if tools is not None else [ ]
-			if not self.tool_choice or self.tool_choice == 'auto':
-				return None
-			
-			if len( self.tool_objects ) == 0:
-				return None
-			
-			if self.tool_choice not in [ 'any', 'none', 'validated' ]:
-				return None
-			
-			return ToolConfig( function_calling_config=FunctionCallingConfig(
-				mode=self.tool_choice ) )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = ('build_tool_config( self, **kwargs) -> ToolConfig | None')
-			raise exception
-	
 	def build_modalities( self, modalities: List[ str ] ) -> List[ str ] | None:
 		"""
 			
@@ -1025,10 +950,123 @@ class Chat( Gemini ):
 			exception.cause = 'Chat'
 			exception.method = 'get_structured_history( self ) -> List[ Content ] | None'
 			raise exception
+		
+	def build_tools( self, tools: List[ str ], file_search_store_names: List[ str ] = None ) -> List[ Tool ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Build Gemini built-in tool objects selected in Text mode.
+			
+			Parameters:
+			-----------
+			tools: List[str]
+				Tool names selected by the Text mode UI.
+
+			file_search_store_names: List[str]
+				File Search Store resource names required when file_search is selected.
+			
+			Returns:
+			--------
+			List[Tool] | None:
+				Configured Gemini tool objects or None.
+		
+		"""
+		try:
+			self.tools = [
+					str( tool ).strip( )
+					for tool in (tools or [ ])
+					if str( tool ).strip( )
+			]
+			
+			self.file_search_store_names = file_search_store_names or [ ]
+			self.tool_objects = [ ]
+			
+			if len( self.tools ) == 0:
+				return None
+			
+			if 'google_search' in self.tools:
+				self.tool_objects.append( Tool( google_search=GoogleSearch( ) ) )
+			
+			if 'url_context' in self.tools:
+				self.tool_objects.append( Tool( url_context=UrlContext( ) ) )
+			
+			if 'file_search' in self.tools:
+				throw_if( 'file_search_store_names', file_search_store_names )
+				self.file_search_store_names = file_search_store_names
+				self.tool_objects.append(
+					Tool(
+						file_search=FileSearch(
+							file_search_store_names=self.file_search_store_names
+						)
+					)
+				)
+			
+			if 'code_execution' in self.tools:
+				self.tool_objects.append(
+					Tool( code_execution=types.ToolCodeExecution( ) )
+				)
+			
+			return self.tool_objects if len( self.tool_objects ) > 0 else None
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'build_tools( self, tools, file_search_store_names )'
+			raise exception
 	
-	def build_config( self, model: str = 'gemini-2.5-flash-lite', number: int=None,
-			temperature: float = None, top_p: float = None, top_k: int=None,
-			frequency: float = None, presence: float = None, max_tokens: int=None,
+	def build_tool_config( self, tool_choice: str, tools: List[ Tool ] ) -> ToolConfig | None:
+		"""
+		
+			Purpose:
+			--------
+			Build Gemini tool configuration when a supported tool-choice mode is selected.
+			
+			Parameters:
+			-----------
+			tool_choice: str
+				Tool-choice mode selected in the UI.
+
+			tools: List[Tool]
+				Configured Gemini tool objects.
+			
+			Returns:
+			--------
+			ToolConfig | None:
+				Tool configuration or None.
+		
+		"""
+		try:
+			self.tool_choice = str( tool_choice or '' ).strip( ).upper( )
+			self.tool_objects = tools if tools is not None else [ ]
+			
+			if not self.tool_choice:
+				return None
+			
+			if self.tool_choice == 'AUTO':
+				return None
+			
+			if self.tool_choice not in [ 'ANY', 'NONE', 'VALIDATED' ]:
+				return None
+			
+			if len( self.tool_objects ) == 0:
+				raise ValueError( 'Gemini tool configuration requires at least one tool.' )
+			
+			return ToolConfig(
+				function_calling_config=FunctionCallingConfig(
+					mode=self.tool_choice
+				)
+			)
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'build_tool_config( self, tool_choice, tools )'
+			raise exception
+	
+	def build_config( self, model: str = 'gemini-2.5-flash-lite', number: int = None,
+			temperature: float = None, top_p: float = None, top_k: int = None,
+			frequency: float = None, presence: float = None, max_tokens: int = None,
 			stops: List[ str ] = None, instruct: str = None, response_format: str = None,
 			tools: List[ str ] = None, tool_choice: str = None, reasoning: str = None,
 			modalities: List[ str ] = None, media_resolution: str = None,
@@ -1038,38 +1076,76 @@ class Chat( Gemini ):
 		
 			Purpose:
 			--------
-			Builds the GenerateContentConfig object used for Gemini text generation.
+			Build the GenerateContentConfig object used for Gemini Text mode generation.
 			
 			Parameters:
 			-----------
-			model: str - Gemini model identifier.
-			number: int - Candidate count.
-			temperature: float - Sampling temperature.
-			top_p: float - Nucleus sampling probability.
-			top_k: int - Top-k token selection count.
-			frequency: float - Frequency penalty.
-			presence: float - Presence penalty.
-			max_tokens: int - Maximum output tokens.
-			stops: List[ str ] - Stop sequences.
-			instruct: str - System instruction text.
-			response_format: str - Response MIME type.
-			tools: List[ str ] - Selected tool names.
-			tool_choice: str - Tool-choice mode.
-			reasoning: str - Thinking level.
-			modalities: List[ str ] - Response modalities.
-			media_resolution: str - Media resolution.
-			response_schema: Any - Structured-output schema.
-			safety_profile: str - Safety profile.
-			file_search_store_names: List[ str ] - Gemini File Search Store names.
+			model: str
+				Gemini model identifier.
+
+			number: int
+				Candidate count.
+
+			temperature: float
+				Sampling temperature.
+
+			top_p: float
+				Nucleus sampling probability.
+
+			top_k: int
+				Top-k token selection count.
+
+			frequency: float
+				Frequency penalty.
+
+			presence: float
+				Presence penalty.
+
+			max_tokens: int
+				Maximum output tokens.
+
+			stops: List[str]
+				Stop sequences.
+
+			instruct: str
+				System instruction text.
+
+			response_format: str
+				Response MIME type.
+
+			tools: List[str]
+				Selected Gemini tool names.
+
+			tool_choice: str
+				Tool-choice mode.
+
+			reasoning: str
+				Thinking level.
+
+			modalities: List[str]
+				Response modalities.
+
+			media_resolution: str
+				Media resolution.
+
+			response_schema: Any
+				Structured-output schema.
+
+			safety_profile: str
+				Safety profile.
+
+			file_search_store_names: List[str]
+				Gemini File Search Store resource names.
 			
 			Returns:
 			--------
-			GenerateContentConfig - Configured content settings.
+			GenerateContentConfig:
+				Configured content generation settings.
 		
 		"""
 		try:
-			self.model = str( model or self.model or 'gemini-2.5-flash-lite' ).strip( )
-			throw_if( 'model', self.model )
+			throw_if( 'model', model )
+			self.model = str( model ).strip( )
 			
 			self.number = number
 			self.candidate_count = int( self.number or 0 )
@@ -1086,9 +1162,18 @@ class Chat( Gemini ):
 			self.safety_settings = self.build_safety_settings( safety_profile )
 			self.tool_choice = tool_choice
 			self.media_resolution = str( media_resolution ).strip( ) if media_resolution else None
-			self.tool_objects = self.build_tools( tools=tools )
-			self.function_tool_config = self.build_tool_config( tool_choice=self.tool_choice,
-				tools=self.tool_objects )
+			self.file_search_store_names = file_search_store_names or [ ]
+			
+			self.tool_objects = self.build_tools(
+				tools=tools,
+				file_search_store_names=self.file_search_store_names
+			)
+			
+			self.function_tool_config = self.build_tool_config(
+				tool_choice=self.tool_choice,
+				tools=self.tool_objects
+			)
+			
 			self.response_modalities = self.build_modalities( modalities=modalities )
 			self.thought_config = self.build_reasoning( reasoning )
 			self.config_kwargs = { }
@@ -1874,55 +1959,142 @@ class Images( Gemini ):
 			exception.cause = 'Images'
 			exception.method = 'get_output_text( self ) -> Optional[ str ]'
 			raise exception
-	
-	def generate( self, prompt: str, model: str = 'gemini-2.5-flash-image', aspect: str = None,
-			number: int=None, temperature: float = None, top_p: float = None,
-			frequency: float = None, presence: float = None, max_tokens: int=None,
-			resolution: str = None, instruct: str = None, output_mime_type: str = None,
-			response_modalities: str = None, grounded: bool = False,
-			image_search: bool = False ) -> Optional[ PIL.Image.Image ]:
+		
+	def generate( self, prompt: str, model: str = 'gemini-2.5-flash-image',
+			aspect: str = None, number: int = None, temperature: float = None,
+			top_p: float = None, frequency: float = None, presence: float = None,
+			max_tokens: int = None, resolution: str = None, instruct: str = None,
+			output_mime_type: str = None, response_modalities: str = None,
+			grounded: bool = False, image_search: bool = False, size: str = None,
+			quality: str = None, style: str = None, fmt: str = None,
+			mime_type: str = None, compression: float = None, background: str = None,
+			aspect_ratio: str = None, **kwargs: Any ) -> Optional[ PIL.Image.Image ]:
 		"""
 			
 			Purpose:
 			-----------
-			Generates a new image based on a descriptive text prompt.
+			Generate an image from a text prompt using Gemini native image generation.
 			
 			Parameters:
 			-----------
-			prompt: str - Image description.
-			aspect: str - Aspect ratio.
-			resolution: str - Output image size when supported by the selected model.
-			output_mime_type: str - Requested output MIME type for returned image content.
-			response_modalities: str - UI-selected Gemini response mode.
-			grounded: bool - Enables Google Search grounding when supported by the selected model.
-			image_search: bool - Enables Google Image Search grounding when supported by the selected model.
+			prompt: str
+				Text prompt used to generate the image.
+
+			model: str
+				Gemini image model.
+
+			aspect: str
+				Optional Gemini aspect-ratio value.
+
+			number: int
+				Optional candidate count.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty retained for UI compatibility.
+
+			presence: float
+				Optional presence penalty retained for UI compatibility.
+
+			max_tokens: int
+				Optional maximum output tokens.
+
+			resolution: str
+				Optional image resolution value.
+
+			instruct: str
+				Optional system instruction.
+
+			output_mime_type: str
+				Optional output MIME type.
+
+			response_modalities: str
+				Optional response modality.
+
+			grounded: bool
+				Whether Google Search grounding is enabled.
+
+			image_search: bool
+				Whether image search grounding is enabled.
+
+			size: str
+				Provider-neutral size alias from app.py.
+
+			quality: str
+				Provider-neutral quality value retained for compatibility.
+
+			style: str
+				Provider-neutral style value retained for compatibility.
+
+			fmt: str
+				Provider-neutral output format alias.
+
+			mime_type: str
+				Provider-neutral MIME type alias.
+
+			compression: float
+				Provider-neutral compression value retained for compatibility.
+
+			background: str
+				Provider-neutral background value retained for compatibility.
+
+			aspect_ratio: str
+				Provider-neutral aspect-ratio alias from app.py.
+
+			**kwargs: Any
+				Additional provider-neutral UI arguments ignored when unsupported.
 			
 			Returns:
 			--------
-			Optional[ PIL.Image.Image ] - The generated image.
+			Optional[PIL.Image.Image]:
+				The first returned image, if any.
 			
 		"""
 		try:
 			throw_if( 'prompt', prompt )
 			self.prompt = prompt
+			
+			throw_if( 'model', model )
 			self.model = model
+			
+			self.gemini_api_key = cfg.GEMINI_API_KEY
+			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
+				raise ValueError( 'GEMINI_API_KEY is required.' )
+			
 			self.number = number
-			self.aspect_ratio = aspect
-			self.size = resolution
+			self.aspect_ratio = aspect or aspect_ratio
+			self.media_resolution = resolution or size
+			self.size = self.media_resolution
+			self.quality = quality
+			self.style = style
 			self.top_p = top_p
 			self.temperature = temperature
 			self.frequency_penalty = frequency
 			self.presence_penalty = presence
 			self.max_output_tokens = max_tokens
 			self.instructions = instruct
-			self.output_mime_type = output_mime_type
-			self.response_mode = response_modalities
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			self.content_config = self.get_content_config( image_only=True, grounded=grounded,
-				image_search=image_search, response_modalities=self.response_mode,
-				output_mime_type=self.output_mime_type )
-			self.content_response = self.client.models.generate_content( model=self.model,
-				contents=[ self.prompt ], config=self.content_config )
+			self.output_mime_type = output_mime_type or mime_type or fmt
+			self.compression = compression
+			self.background = background
+			self.response_mode = response_modalities or 'image'
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.content_config = self.get_content_config(
+				image_only=True,
+				grounded=grounded,
+				image_search=image_search,
+				response_modalities=self.response_mode,
+				output_mime_type=self.output_mime_type
+			)
+			self.content_response = self.client.models.generate_content(
+				model=self.model,
+				contents=[ self.prompt ],
+				config=self.content_config
+			)
 			self.response = self.content_response
 			self.capture_metadata( )
 			return self.get_first_image( )
@@ -1930,43 +2102,105 @@ class Images( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = 'generate( self, prompt, aspect ) -> Optional[ PIL.Image.Image ]'
+			exception.method = 'generate( self, prompt, model ) -> Optional[ PIL.Image.Image ]'
 			raise exception
 	
 	def analyze( self, prompt: str, path: str, model: str = 'gemini-2.5-flash-image',
-			aspect: str = None, number: int=None, temperature: float = None,
+			aspect: str = None, number: int = None, temperature: float = None,
 			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int=None, resolution: str = None, instruct: str = None,
+			max_tokens: int = None, resolution: str = None, instruct: str = None,
 			output_mime_type: str = None, response_modalities: str = None,
-			grounded: bool = False, image_search: bool = False ) -> Optional[ str ]:
+			grounded: bool = False, image_search: bool = False, image_path: str = None,
+			detail: str = None, **kwargs: Any ) -> Optional[ str ]:
 		"""
 			
 			Purpose:
 			-----------
-			Analyzes a local image using a text prompt and image input.
+			Analyze a local image using a text prompt and Gemini multimodal input.
 			
 			Parameters:
 			-----------
-			prompt: str - Analysis instruction.
-			path: str - Path to the local image.
-			output_mime_type: str - Reserved for API consistency; not used for text analysis output.
-			response_modalities: str - UI-selected Gemini response mode.
-			grounded: bool - Enables Google Search grounding when supported by the selected model.
-			image_search: bool - Enables Google Image Search grounding when supported by the selected model.
+			prompt: str
+				Analysis instruction.
+
+			path: str
+				Path to the local image.
+
+			model: str
+				Gemini image-analysis model.
+
+			aspect: str
+				Optional aspect-ratio value retained for compatibility.
+
+			number: int
+				Optional candidate count.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty retained for compatibility.
+
+			presence: float
+				Optional presence penalty retained for compatibility.
+
+			max_tokens: int
+				Optional maximum output tokens.
+
+			resolution: str
+				Optional media resolution.
+
+			instruct: str
+				Optional system instruction.
+
+			output_mime_type: str
+				Optional output MIME type.
+
+			response_modalities: str
+				Optional response modality.
+
+			grounded: bool
+				Whether Google Search grounding is enabled.
+
+			image_search: bool
+				Whether image search grounding is enabled.
+
+			image_path: str
+				Provider-neutral image path alias from app.py.
+
+			detail: str
+				Provider-neutral image detail value retained for compatibility.
+
+			**kwargs: Any
+				Additional provider-neutral UI arguments ignored when unsupported.
 			
 			Returns:
 			--------
-			Optional[ str ] - The analysis text.
+			Optional[str]:
+				The image analysis text.
 			
 		"""
 		try:
 			throw_if( 'prompt', prompt )
-			throw_if( 'path', path )
 			self.prompt = prompt
+			
+			throw_if( 'path', path )
+			self.file_path = path
+			
+			throw_if( 'model', model )
 			self.model = model
+			
+			self.gemini_api_key = cfg.GEMINI_API_KEY
+			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
+				raise ValueError( 'GEMINI_API_KEY is required.' )
+			
 			self.number = number
 			self.aspect_ratio = aspect
 			self.media_resolution = resolution
+			self.detail = detail
 			self.top_p = top_p
 			self.temperature = temperature
 			self.frequency_penalty = frequency
@@ -1975,13 +2209,20 @@ class Images( Gemini ):
 			self.instructions = instruct
 			self.output_mime_type = output_mime_type
 			self.response_mode = response_modalities or 'text'
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			self.content_config = self.get_content_config( image_only=False,
-				grounded=grounded, image_search=image_search,
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.content_config = self.get_content_config(
+				image_only=False,
+				grounded=grounded,
+				image_search=image_search,
 				response_modalities=self.response_mode,
-				output_mime_type=self.output_mime_type )
-			self.content_response = self.client.models.generate_content( model=self.model,
-				contents=[ self.prompt, self.open_image( path ) ], config=self.content_config )
+				output_mime_type=self.output_mime_type
+			)
+			self.image_input = self.open_image( self.file_path )
+			self.content_response = self.client.models.generate_content(
+				model=self.model,
+				contents=[ self.prompt, self.image_input ],
+				config=self.content_config
+			)
 			self.response = self.content_response
 			self.capture_metadata( )
 			return self.get_output_text( )
@@ -1993,56 +2234,158 @@ class Images( Gemini ):
 			raise exception
 	
 	def edit( self, prompt: str, path: str, model: str = 'gemini-2.5-flash-image',
-			aspect: str = None, number: int=None, temperature: float = None,
+			aspect: str = None, number: int = None, temperature: float = None,
 			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int=None, resolution: str = None, instruct: str = None,
+			max_tokens: int = None, resolution: str = None, instruct: str = None,
 			output_mime_type: str = None, response_modalities: str = None,
-			grounded: bool = False, image_search: bool = False ) -> Optional[ PIL.Image.Image ]:
+			grounded: bool = False, image_search: bool = False, image_path: str = None,
+			mask_path: str = None, mask: str = None, size: str = None,
+			quality: str = None, style: str = None, fmt: str = None,
+			mime_type: str = None, compression: float = None, background: str = None,
+			aspect_ratio: str = None, **kwargs: Any ) -> Optional[ PIL.Image.Image ]:
 		"""
 			
 			Purpose:
 			-----------
-			Edits a local image using a text instruction and image input.
+			Edit a local image using a text instruction and Gemini multimodal input.
 			
 			Parameters:
 			-----------
-			prompt: str - Editing instruction.
-			path: str - Path to the local image.
-			aspect: str - Aspect ratio.
-			resolution: str - Output image size when supported by the selected model.
-			output_mime_type: str - Requested output MIME type for returned image content.
-			response_modalities: str - UI-selected Gemini response mode.
-			grounded: bool - Enables Google Search grounding when supported by the selected model.
-			image_search: bool - Enables Google Image Search grounding when supported by the selected model.
+			prompt: str
+				Editing instruction.
+
+			path: str
+				Path to the local image.
+
+			model: str
+				Gemini image-editing model.
+
+			aspect: str
+				Optional Gemini aspect-ratio value.
+
+			number: int
+				Optional candidate count.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty retained for compatibility.
+
+			presence: float
+				Optional presence penalty retained for compatibility.
+
+			max_tokens: int
+				Optional maximum output tokens.
+
+			resolution: str
+				Optional image resolution.
+
+			instruct: str
+				Optional system instruction.
+
+			output_mime_type: str
+				Optional output MIME type.
+
+			response_modalities: str
+				Optional response modality.
+
+			grounded: bool
+				Whether Google Search grounding is enabled.
+
+			image_search: bool
+				Whether image search grounding is enabled.
+
+			image_path: str
+				Provider-neutral image path alias from app.py.
+
+			mask_path: str
+				Optional mask path retained for compatibility.
+
+			mask: str
+				Optional mask path alias retained for compatibility.
+
+			size: str
+				Provider-neutral size alias from app.py.
+
+			quality: str
+				Provider-neutral quality value retained for compatibility.
+
+			style: str
+				Provider-neutral style value retained for compatibility.
+
+			fmt: str
+				Provider-neutral output format alias.
+
+			mime_type: str
+				Provider-neutral MIME type alias.
+
+			compression: float
+				Provider-neutral compression value retained for compatibility.
+
+			background: str
+				Provider-neutral background value retained for compatibility.
+
+			aspect_ratio: str
+				Provider-neutral aspect-ratio alias from app.py.
+
+			**kwargs: Any
+				Additional provider-neutral UI arguments ignored when unsupported.
 			
 			Returns:
 			--------
-			Optional[ PIL.Image.Image ] - The edited image.
+			Optional[PIL.Image.Image]:
+				The edited image.
 			
 		"""
 		try:
 			throw_if( 'prompt', prompt )
-			throw_if( 'path', path )
 			self.prompt = prompt
+			
+			throw_if( 'path', path )
+			self.file_path = path
+			
+			throw_if( 'model', model )
 			self.model = model
+			
+			self.gemini_api_key = cfg.GEMINI_API_KEY
+			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
+				raise ValueError( 'GEMINI_API_KEY is required.' )
+			
 			self.number = number
-			self.aspect_ratio = aspect
-			self.size = resolution
+			self.aspect_ratio = aspect or aspect_ratio
+			self.media_resolution = resolution or size
+			self.size = self.media_resolution
+			self.quality = quality
+			self.style = style
+			self.mask_path = mask_path or mask
 			self.top_p = top_p
 			self.temperature = temperature
 			self.frequency_penalty = frequency
 			self.presence_penalty = presence
 			self.max_output_tokens = max_tokens
 			self.instructions = instruct
-			self.output_mime_type = output_mime_type
+			self.output_mime_type = output_mime_type or mime_type or fmt
+			self.compression = compression
+			self.background = background
 			self.response_mode = response_modalities or 'image'
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			self.content_config = self.get_content_config( image_only=True,
-				grounded=grounded, image_search=image_search,
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.content_config = self.get_content_config(
+				image_only=True,
+				grounded=grounded,
+				image_search=image_search,
 				response_modalities=self.response_mode,
-				output_mime_type=self.output_mime_type )
-			self.content_response = self.client.models.generate_content( model=self.model,
-				contents=[ self.prompt, self.open_image( path ) ], config=self.content_config )
+				output_mime_type=self.output_mime_type
+			)
+			self.image_input = self.open_image( self.file_path )
+			self.content_response = self.client.models.generate_content(
+				model=self.model,
+				contents=[ self.prompt, self.image_input ],
+				config=self.content_config
+			)
 			self.response = self.content_response
 			self.capture_metadata( )
 			return self.get_first_image( )
@@ -2212,7 +2555,6 @@ class Embeddings( Gemini ):
 		"""
 		try:
 			throw_if( 'text', text )
-			
 			if isinstance( text, list ):
 				self.contents = [ ]
 				for item in text:
@@ -2234,53 +2576,6 @@ class Embeddings( Gemini ):
 			exception.module = 'gemini'
 			exception.cause = 'Embeddings'
 			exception.method = 'normalize_contents( self, text: str | List[ str ] )'
-			raise exception
-	
-	def build_embedding_config( self, model: str = 'gemini-embedding-001',
-			dimensions: int=None, task_type: str = None,
-			title: str = None ) -> EmbedContentConfig:
-		"""
-		
-			Purpose:
-			--------
-			Builds the Gemini embedding configuration for the selected model.
-			
-			Parameters:
-			-----------
-			model: str - Gemini embedding model identifier.
-			dimensions: int - Optional output dimensionality.
-			task_type: str - Optional embedding task type.
-			title: str - Optional retrieval-document title.
-			
-			Returns:
-			--------
-			EmbedContentConfig - Embedding configuration object.
-		
-		"""
-		try:
-			self.model = model
-			self.dimensions = dimensions
-			self.task_type = task_type.strip( ).upper( )
-			self.title = title.strip( )
-			self.config_kwargs = { }
-			
-			if self.dimensions is not None:
-				self.config_kwargs[ 'output_dimensionality' ] = self.dimensions
-			
-			if self.task_type and 'gemini-embedding-2' not in self.model:
-				self.config_kwargs[ 'task_type' ] = self.task_type
-			
-			if self.title and self.task_type == 'RETRIEVAL_DOCUMENT' \
-					and 'gemini-embedding-2' not in self.model:
-				self.config_kwargs[ 'title' ] = self.title
-			
-			self.embedding_config = EmbedContentConfig( **self.config_kwargs )
-			return self.embedding_config
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Embeddings'
-			exception.method = 'build_embedding_config( self, model, dimensions, task_type, title )'
 			raise exception
 	
 	def extract_embeddings( self ) -> List[ float ] | List[ List[ float ] ] | None:
@@ -2325,53 +2620,152 @@ class Embeddings( Gemini ):
 			exception.cause = 'Embeddings'
 			exception.method = 'extract_embeddings( self )'
 			raise exception
+		
+	def build_embedding_config( self, model: str = 'gemini-embedding-001', dimensions: int = None,
+			task_type: str = None, title: str = None ) -> EmbedContentConfig:
+		"""
+		
+			Purpose:
+			--------
+			Build the Gemini embedding configuration for the selected model.
+			
+			Parameters:
+			-----------
+			model: str
+				Gemini embedding model identifier.
+
+			dimensions: int
+				Optional output dimensionality.
+
+			task_type: str
+				Optional Gemini embedding task type.
+
+			title: str
+				Optional retrieval-document title.
+			
+			Returns:
+			--------
+			EmbedContentConfig:
+				Configured Gemini embedding options.
+		
+		"""
+		try:
+			throw_if( 'model', model )
+			self.model = model
+			self.dimensions = dimensions
+			self.task_type = task_type
+			self.title = title
+			self.normalized_dimensions = self.normalize_dimensions( self.dimensions )
+			self.config_kwargs = { }
+			
+			if self.normalized_dimensions is not None:
+				self.config_kwargs[ 'output_dimensionality' ] = self.normalized_dimensions
+			
+			if self.task_type is not None and str( self.task_type ).strip( ):
+				self.task_type = str( self.task_type ).strip( ).upper( )
+				self.config_kwargs[ 'task_type' ] = self.task_type
+			
+			if self.title is not None and str( self.title ).strip( ) \
+					and self.task_type == 'RETRIEVAL_DOCUMENT':
+				self.title = str( self.title ).strip( )
+				self.config_kwargs[ 'title' ] = self.title
+			
+			self.embedding_config = EmbedContentConfig( **self.config_kwargs )
+			return self.embedding_config
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Embeddings'
+			exception.method = 'build_embedding_config( self, model, dimensions, task_type, title )'
+			raise exception
 	
 	def create( self, text: str | List[ str ], model: str = 'gemini-embedding-001',
-			dimensions: int=None, task_type: str = None, title: str = None,
+			dimensions: int = None, task_type: str = None, title: str = None,
 			encoding_format: str = 'float' ) -> List[ float ] | List[ List[ float ] ] | None:
 		"""
 			
 			Purpose:
 			--------
-			Generates one or more vector representations of the provided text.
+			Generate one or more vector representations from text using Gemini embeddings.
 			
 			Parameters:
 			-----------
-			text: str | List[ str ] - Input text string or chunk list.
-			model: str - Embedding model identifier.
-			dimensions: int - Optional output dimensionality.
-			task_type: str - Optional embedding task type.
-			title: str - Optional retrieval-document title.
-			encoding_format: str - UI-retained encoding format value.
+			text: str | List[str]
+				Input text string or list of text chunks.
+
+			model: str
+				Gemini embedding model identifier.
+
+			dimensions: int
+				Optional output dimensionality.
+
+			task_type: str
+				Optional Gemini embedding task type.
+
+			title: str
+				Optional retrieval-document title.
+
+			encoding_format: str
+				UI-retained encoding format value.
 			
 			Returns:
 			--------
-			List[ float ] | List[ List[ float ] ] | None - Embedding vector or vectors.
+			List[float] | List[List[float]] | None:
+				Single embedding vector, multiple embedding vectors, or None.
 		
 		"""
 		try:
 			throw_if( 'text', text )
-			self.api_key = cfg.GEMINI_API_KEY
-			throw_if( 'api_key', self.api_key )
+			self.input_text = text
+			
+			throw_if( 'model', model )
+			self.model = model
+			
 			self.dimensions = dimensions
 			self.task_type = task_type
 			self.title = title
 			self.encoding_format = encoding_format
-			self.input_text = self.normalize_contents( text=text )
-			self.model = model.strip( )
-			self.encoding_format = encoding_format
-			self.embedding_config = self.build_embedding_config( model=self.model,
-				dimensions=self.imensions, task_type=self.task_type, title=self.title )
-			self.client = genai.Client( api_key=self.api_key )
-			self.response = self.client.models.embed_content( model=self.model,
-				contents=self.input_text, config=self.embedding_config )
+			self.gemini_api_key = cfg.GEMINI_API_KEY
+			
+			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
+				raise ValueError( 'GEMINI_API_KEY is required.' )
+			
+			if self.model not in self.model_options:
+				raise ValueError( f'Unsupported Gemini embedding model: {self.model}' )
+			
+			if self.encoding_format not in self.encoding_options:
+				self.encoding_format = 'float'
+			
+			self.contents = self.normalize_contents( self.input_text )
+			if self.contents is None:
+				raise ValueError( 'The Gemini embedding contents cannot be None.' )
+			
+			if isinstance( self.contents, str ) and not self.contents.strip( ):
+				raise ValueError( 'The Gemini embedding contents cannot be empty.' )
+			
+			if isinstance( self.contents, list ) and len( self.contents ) == 0:
+				raise ValueError( 'The Gemini embedding contents list cannot be empty.' )
+			
+			self.embedding_config = self.build_embedding_config(
+				model=self.model,
+				dimensions=self.dimensions,
+				task_type=self.task_type,
+				title=self.title
+			)
+			
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.response = self.client.models.embed_content(
+				model=self.model,
+				contents=self.contents,
+				config=self.embedding_config
+			)
 			
 			return self.extract_embeddings( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Embeddings'
-			exception.method = 'create( self, text, model ) -> List[ float ] | List[ List[ float ] ]'
+			exception.method = 'create( self, text, model, dimensions, task_type, title, encoding_format )'
 			raise exception
 
 class TTS( Gemini ):
@@ -2574,72 +2968,137 @@ class TTS( Gemini ):
 			exception.cause = 'TTS'
 			exception.method = 'normalize_tts_prompt( self, **kwargs ) -> str'
 			raise exception
-	
+		
 	def create_speech( self, text: str, filepath: str = None,
 			model: str = 'gemini-3.1-flash-tts-preview', format: str = 'audio/wav',
 			speed: float = None, voice: str = None, frequency: float = None,
-			presense: float = None, max_tokens: int=None, instruct: str = None,
-			temperature: float = None, top_p: float = None ) -> bytes | str | None:
+			presense: float = None, presence: float = None, max_tokens: int = None,
+			instruct: str = None, temperature: float = None, top_p: float = None,
+			file_path: str = None, language: str = None, sample_rate: int = None,
+			bit_rate: int = None, store: bool = None, stream: bool = None,
+			background: bool = None, **kwargs: Any ) -> bytes | None:
 		"""
 
 			Purpose:
 			--------
-			Converts text to speech using Gemini TTS. If filepath is provided, the generated
-			WAV is written to disk; otherwise WAV bytes are returned.
+			Convert text to speech using Gemini TTS and return generated WAV bytes.
 
 			Parameters:
 			-----------
-			text: str - Input text string.
-			filepath: str - Optional target local path.
-			model: str - Gemini TTS model identifier.
-			format: str - Output audio format.
-			speed: float - Optional delivery pace hint converted into prompt text.
-			voice: str - Gemini prebuilt voice name.
-			frequency: float - UI-retained value; not sent to Gemini TTS.
-			presense: float - UI-retained value; not sent to Gemini TTS.
-			max_tokens: int - Maximum output token budget.
-			instruct: str - Optional delivery/system instruction.
-			temperature: float - Sampling temperature.
-			top_p: float - Nucleus sampling threshold.
+			text: str
+				Input text string.
+
+			filepath: str
+				Optional target local path.
+
+			model: str
+				Gemini TTS model identifier.
+
+			format: str
+				Output audio format.
+
+			speed: float
+				Optional delivery pace hint converted into prompt text.
+
+			voice: str
+				Gemini prebuilt voice name.
+
+			frequency: float
+				UI-retained value; not sent to Gemini TTS.
+
+			presense: float
+				Legacy misspelled presence value retained for compatibility.
+
+			presence: float
+				UI-retained value; not sent to Gemini TTS.
+
+			max_tokens: int
+				Maximum output token budget.
+
+			instruct: str
+				Optional delivery/system instruction.
+
+			temperature: float
+				Sampling temperature.
+
+			top_p: float
+				Nucleus sampling threshold.
+
+			file_path: str
+				Provider-neutral output path alias supplied by app.py.
+
+			language: str
+				Provider-neutral language value retained for compatibility.
+
+			sample_rate: int
+				Provider-neutral sample-rate value retained for compatibility.
+
+			bit_rate: int
+				Provider-neutral bit-rate value retained for compatibility.
+
+			store: bool
+				Provider-neutral storage flag retained for compatibility.
+
+			stream: bool
+				Provider-neutral streaming flag retained for compatibility.
+
+			background: bool
+				Provider-neutral background flag retained for compatibility.
+
+			**kwargs: Any
+				Additional provider-neutral Audio mode arguments retained for compatibility.
 
 			Returns:
 			--------
-			bytes | str | None - WAV bytes or local path to the created file.
+			bytes | None:
+				Generated WAV bytes.
 
 		"""
 		try:
 			throw_if( 'text', text )
-			self.input_text = self.normalize_tts_prompt(
-				text=text,
-				speed=speed,
-				instruct=instruct )
-			self.audio_path = filepath
+			self.raw_text = text
+			throw_if( 'model', model )
+			self.model = model
+			self.gemini_api_key = cfg.GEMINI_API_KEY
+			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
+				raise ValueError( 'GEMINI_API_KEY is required.' )
+			
+			self.audio_path = filepath or file_path
 			self.response_format = str( format or 'audio/wav' ).strip( )
 			self.speed = speed
 			self.voice = self.normalize_voice( voice )
 			self.frequency_penalty = frequency
-			self.presence_penalty = presense
+			self.presence_penalty = presence if presence is not None else presense
 			self.max_tokens = max_tokens
-			self.model = str( model or self.model or 'gemini-3.1-flash-tts-preview' ).strip( )
+			self.instructions = instruct
 			self.temperature = temperature
 			self.top_p = top_p
+			self.language = language
+			self.sample_rate = sample_rate
+			self.bit_rate = bit_rate
+			self.store = store
+			self.stream = stream
+			self.background = background
 			self.response_modalities = [ 'AUDIO' ]
-			
 			if self.response_format != 'audio/wav':
 				raise ValueError( 'Gemini TTS wrapper currently supports local WAV output only.' )
 			
 			if self.model not in self.model_options:
 				raise ValueError( f'Unsupported Gemini TTS model: {self.model}' )
 			
-			self.voice_config = VoiceConfig(
-				prebuilt_voice_config=types.PrebuiltVoiceConfig(
+			self.input_text = self.normalize_tts_prompt( text=self.raw_text, speed=self.speed,
+				instruct=self.instructions )
+			
+			if self.input_text is None or not str( self.input_text ).strip( ):
+				raise ValueError( 'The Gemini TTS prompt cannot be empty.' )
+			
+			self.voice_config = VoiceConfig( prebuilt_voice_config=types.PrebuiltVoiceConfig(
 					voice_name=self.voice ) )
 			self.speech_config = SpeechConfig( voice_config=self.voice_config )
 			self.config_kwargs = {
 					'response_modalities': self.response_modalities,
-					'speech_config': self.speech_config
+					'speech_config': self.speech_config,
 			}
-			
 			if self.temperature is not None:
 				self.config_kwargs[ 'temperature' ] = self.temperature
 			
@@ -2650,41 +3109,40 @@ class TTS( Gemini ):
 				self.config_kwargs[ 'max_output_tokens' ] = int( self.max_tokens )
 			
 			self.content_config = GenerateContentConfig( **self.config_kwargs )
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			self.response = self.client.models.generate_content(
-				model=self.model,
-				contents=self.input_text,
-				config=self.content_config )
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.response = self.client.models.generate_content( model=self.model,
+				contents=self.input_text, config=self.content_config )
 			
 			self.audio_bytes = None
-			for part in self.response.candidates[ 0 ].content.parts:
-				if getattr( part, 'inline_data', None ) is not None and part.inline_data.data:
-					self.audio_bytes = self.to_wave_bytes( part.inline_data.data )
-					break
+			self.candidates = getattr( self.response, 'candidates', None )
+			if self.candidates:
+				for candidate in self.candidates:
+					content = getattr( candidate, 'content', None )
+					parts = getattr( content, 'parts', None ) if content is not None else [ ]
+					
+					for part in parts or [ ]:
+						inline_data = getattr( part, 'inline_data', None )
+						if inline_data is not None and inline_data.data:
+							self.audio_bytes = self.to_wave_bytes( inline_data.data )
+							break
+					
+					if self.audio_bytes is not None:
+						break
 			
-			if self.audio_bytes is None:
+			if self.audio_bytes is None or len( self.audio_bytes ) == 0:
 				raise ValueError( 'No audio bytes were returned by Gemini TTS.' )
 			
 			if self.audio_path is not None and str( self.audio_path ).strip( ):
 				with open( self.audio_path, 'wb' ) as f:
 					f.write( self.audio_bytes )
-				
-				return self.audio_path
 			
 			return self.audio_bytes
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'TTS'
-			exception.method = (
-					'create_speech( self, text: str, filepath: str=None, '
-					'model: str="gemini-3.1-flash-tts-preview", format: str="audio/wav", '
-					'speed: float=None, voice: str=None, frequency: float=None, '
-					'presense: float=None, max_tokens: int=None, instruct: str=None, '
-					'temperature: float=None, top_p: float=None ) -> bytes | str | None')
-			error = ErrorDialog( exception )
-			error.show( )
-			return None
+			exception.method = 'create_speech( self, text, filepath, model, format, speed, voice )'
+			raise exception
 
 class Transcription( Gemini ):
 	"""
@@ -2876,53 +3334,130 @@ class Transcription( Gemini ):
 		
 		self.prompt_parts.append( 'Return only the transcript text.' )
 		return ' '.join( self.prompt_parts )
-	
-	def transcribe( self, path: str, model: str = 'gemini-3-flash-preview',
+		
+	def transcribe( self, path: str = None, model: str = 'gemini-3-flash-preview',
 			language: str = None, mime_type: str = None, temperature: float = None,
 			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int=None, start_time: float = None, end_time: float = None,
-			instruct: str = None ) -> Optional[ str ]:
+			max_tokens: int = None, start_time: float = None, end_time: float = None,
+			instruct: str = None, prompt: str = None, response_format: str = None,
+			include: List[ str ] = None, top_k: int = None, store: bool = None,
+			stream: bool = None, background: bool = None,
+			allowed_domains: List[ str ] = None, **kwargs: Any ) -> Optional[ str ]:
 		"""
 
 			Purpose:
 			--------
-			Transcribes an audio file into text using Gemini audio understanding.
+			Transcribe an audio file into text using Gemini audio understanding.
 
 			Parameters:
 			-----------
-			path: str - Local path to the source audio.
-			model: str - Specific GenAI model ID.
-			language: str - Optional language hint.
-			mime_type: str - Optional mime-type override.
-			temperature: float - Sampling temperature.
-			top_p: float - Nucleus sampling threshold.
-			frequency: float - Frequency penalty.
-			presence: float - Presence penalty.
-			max_tokens: int - Maximum output tokens.
-			start_time: float - Optional start timestamp in seconds.
-			end_time: float - Optional end timestamp in seconds.
-			instruct: str - Optional system instruction.
+			path: str
+				Local path to the source audio.
+
+			model: str
+				Gemini model identifier.
+
+			language: str
+				Optional language hint.
+
+			mime_type: str
+				Optional MIME-type override.
+
+			temperature: float
+				Sampling temperature.
+
+			top_p: float
+				Nucleus sampling threshold.
+
+			frequency: float
+				Frequency penalty retained for compatibility.
+
+			presence: float
+				Presence penalty retained for compatibility.
+
+			max_tokens: int
+				Maximum output tokens.
+
+			start_time: float
+				Optional start timestamp in seconds.
+
+			end_time: float
+				Optional end timestamp in seconds.
+
+			instruct: str
+				Optional system instruction.
+
+			prompt: str
+				Optional user transcription instruction.
+
+			response_format: str
+				Provider-neutral response-format value retained for compatibility.
+
+			include: List[str]
+				Provider-neutral include list retained for compatibility.
+
+			top_k: int
+				Optional top-k token selection count.
+
+			store: bool
+				Provider-neutral storage flag retained for compatibility.
+
+			stream: bool
+				Provider-neutral streaming flag retained for compatibility.
+
+			background: bool
+				Provider-neutral background flag retained for compatibility.
+
+			allowed_domains: List[str]
+				Provider-neutral domain list retained for compatibility.
+
+			**kwargs: Any
+				Additional provider-neutral Audio mode values ignored when unsupported.
 
 			Returns:
 			--------
-			Optional[ str ] - Verbatim transcript text.
+			Optional[str]:
+				Verbatim transcript text.
 
 		"""
 		try:
-			import mimetypes
+			self.api_key = cfg.GEMINI_API_KEY
+			throw_if( 'api_key', self.api_key )
 			
-			throw_if( 'path', path )
-			self.file_path = path
+			self.file_path = path or kwargs.get( 'filepath' ) or kwargs.get( 'file_path' )
+			throw_if( 'path', self.file_path )
+			
 			self.model = str( model or self.model or 'gemini-3-flash-preview' ).strip( )
+			throw_if( 'model', self.model )
+			
 			self.temperature = temperature if temperature is not None else self.temperature
 			self.top_p = top_p if top_p is not None else self.top_p
+			self.top_k = top_k
 			self.frequency_penalty = frequency if frequency is not None else self.frequency_penalty
 			self.presence_penalty = presence if presence is not None else self.presence_penalty
 			self.max_tokens = max_tokens if max_tokens is not None else self.max_tokens
 			self.instructions = instruct if instruct is not None else self.instructions
-			self.mime_type = self.normalize_mime_type( path=self.file_path, mime_type=mime_type )
-			self.prompt = self.build_prompt( language=language, start_time=start_time,
-				end_time=end_time )
+			self.response_format = response_format
+			self.include = include if include is not None else [ ]
+			self.store = store
+			self.stream = stream
+			self.background = background
+			self.allowed_domains = allowed_domains if allowed_domains is not None else [ ]
+			self.mime_type = self.normalize_mime_type(
+				path=self.file_path,
+				mime_type=mime_type
+			)
+			
+			self.prompt = self.build_prompt(
+				language=language,
+				start_time=start_time,
+				end_time=end_time
+			)
+			
+			if prompt is not None and str( prompt ).strip( ):
+				self.prompt = f'{str( prompt ).strip( )}\n\n{self.prompt}'
+			
+			throw_if( 'prompt', self.prompt )
 			
 			self.config_kwargs = { }
 			
@@ -2932,27 +3467,37 @@ class Transcription( Gemini ):
 			if self.top_p is not None:
 				self.config_kwargs[ 'top_p' ] = self.top_p
 			
-			if self.max_tokens is not None:
-				self.config_kwargs[ 'max_output_tokens' ] = self.max_tokens
+			if self.top_k is not None and int( self.top_k or 0 ) > 0:
+				self.config_kwargs[ 'top_k' ] = int( self.top_k )
+			
+			if self.max_tokens is not None and int( self.max_tokens or 0 ) > 0:
+				self.config_kwargs[ 'max_output_tokens' ] = int( self.max_tokens )
 			
 			if self.instructions is not None and str( self.instructions ).strip( ):
 				self.config_kwargs[ 'system_instruction' ] = str( self.instructions ).strip( )
 			
 			self.content_config = GenerateContentConfig( **self.config_kwargs )
+			self.client = genai.Client( api_key=self.api_key )
 			self.uploaded_file = self.client.files.upload( file=self.file_path )
+			throw_if( 'uploaded_file', self.uploaded_file )
+			
 			self.response = self.client.models.generate_content(
 				model=self.model,
 				contents=[ self.prompt, self.uploaded_file ],
-				config=self.content_config )
-			self.transcript = self.response.text
-			return self.transcript
+				config=self.content_config
+			)
+			
+			self.transcript = getattr( self.response, 'text', None )
+			if isinstance( self.transcript, str ) and self.transcript.strip( ):
+				return self.transcript.strip( )
+			
+			return None
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'gemini'
 			ex.cause = 'Transcription'
-			ex.method = 'transcribe( self, path, model, language ) -> str'
-			error = ErrorDialog( ex )
-			error.show( )
+			ex.method = 'transcribe( self, path: str=None, **kwargs ) -> Optional[ str ]'
+			raise ex
 
 class Translation( Gemini ):
 	"""
@@ -3146,83 +3691,181 @@ class Translation( Gemini ):
 		
 		self.prompt_parts.append( 'Return only the translated text.' )
 		return ' '.join( self.prompt_parts )
-	
+		
 	def translate( self, path: str, model: str = 'gemini-3-flash-preview',
 			language: str = 'English', source: str = 'Auto', mime_type: str = None,
 			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int=None, start_time: float = None,
-			end_time: float = None, instruct: str = None ) -> Optional[ str ]:
+			presence: float = None, max_tokens: int = None, start_time: float = None,
+			end_time: float = None, instruct: str = None, prompt: str = None,
+			response_format: str = None, include: List[ str ] = None, top_k: int = None,
+			store: bool = None, stream: bool = None, background: bool = None,
+			allowed_domains: List[ str ] = None, **kwargs: Any ) -> Optional[ str ]:
 		"""
 
 			Purpose:
 			--------
-			Translates spoken audio from one language to another.
+			Translate spoken audio from one language to another using Gemini audio
+			understanding.
 
 			Parameters:
 			-----------
-			path: str - Local path to the source audio.
-			model: str - Specific GenAI model ID.
-			language: str - Target language.
-			source: str - Source language hint.
-			mime_type: str - Optional mime-type override.
-			temperature: float - Sampling temperature.
-			top_p: float - Nucleus sampling threshold.
-			frequency: float - Frequency penalty.
-			presence: float - Presence penalty.
-			max_tokens: int - Maximum output tokens.
-			start_time: float - Optional start timestamp in seconds.
-			end_time: float - Optional end timestamp in seconds.
-			instruct: str - Optional system instruction.
+			path: str
+				Local path to the source audio.
+
+			model: str
+				Gemini model identifier.
+
+			language: str
+				Target language.
+
+			source: str
+				Source language hint.
+
+			mime_type: str
+				Optional MIME-type override.
+
+			temperature: float
+				Sampling temperature.
+
+			top_p: float
+				Nucleus sampling threshold.
+
+			frequency: float
+				Frequency penalty retained for compatibility.
+
+			presence: float
+				Presence penalty retained for compatibility.
+
+			max_tokens: int
+				Maximum output tokens.
+
+			start_time: float
+				Optional start timestamp in seconds.
+
+			end_time: float
+				Optional end timestamp in seconds.
+
+			instruct: str
+				Optional system instruction.
+
+			prompt: str
+				Optional user translation instruction.
+
+			response_format: str
+				Provider-neutral response-format value retained for compatibility.
+
+			include: List[str]
+				Provider-neutral include list retained for compatibility.
+
+			top_k: int
+				Optional top-k token selection count.
+
+			store: bool
+				Provider-neutral storage flag retained for compatibility.
+
+			stream: bool
+				Provider-neutral streaming flag retained for compatibility.
+
+			background: bool
+				Provider-neutral background flag retained for compatibility.
+
+			allowed_domains: List[str]
+				Provider-neutral domain list retained for compatibility.
+
+			**kwargs: Any
+				Additional provider-neutral Audio mode arguments retained for compatibility.
 
 			Returns:
 			--------
-			Optional[ str ] - Translated text.
+			Optional[str]:
+				Translated text.
 
 		"""
 		try:
-			import mimetypes
-			
 			throw_if( 'path', path )
 			self.file_path = path
-			self.model = str( model or self.model or 'gemini-3-flash-preview' ).strip( )
-			self.target_language = str( language or 'English' ).strip( )
+			
+			throw_if( 'model', model )
+			self.model = model
+			
+			throw_if( 'language', language )
+			self.target_language = language
+			
+			self.gemini_api_key = cfg.GEMINI_API_KEY
+			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
+				raise ValueError( 'GEMINI_API_KEY is required.' )
+			
+			if self.model not in self.model_options:
+				raise ValueError( f'Unsupported Gemini translation model: {self.model}' )
+			
 			self.source_language = str( source or 'Auto' ).strip( )
+			self.mime_type = self.normalize_mime_type(
+				path=self.file_path,
+				mime_type=mime_type
+			)
 			self.temperature = temperature if temperature is not None else self.temperature
 			self.top_p = top_p if top_p is not None else self.top_p
+			self.top_k = top_k
 			self.frequency_penalty = frequency if frequency is not None else self.frequency_penalty
 			self.presence_penalty = presence if presence is not None else self.presence_penalty
 			self.max_tokens = max_tokens if max_tokens is not None else self.max_tokens
 			self.instructions = instruct if instruct is not None else self.instructions
-			self.mime_type = self.normalize_mime_type( path=self.file_path, mime_type=mime_type )
-			self.prompt = self.build_prompt( target=self.target_language,
-				source=self.source_language,
+			self.response_format = response_format
+			self.include = include if include is not None else [ ]
+			self.store = store
+			self.stream = stream
+			self.background = background
+			self.allowed_domains = allowed_domains if allowed_domains is not None else [ ]
+			self.prompt = self.build_prompt( target=self.target_language, source=self.source_language,
 				start_time=start_time, end_time=end_time )
 			
+			if prompt is not None and str( prompt ).strip( ):
+				self.prompt = f'{str( prompt ).strip( )}\n\n{self.prompt}'
+			
+			if self.prompt is None or not str( self.prompt ).strip( ):
+				raise ValueError( 'The Gemini translation prompt cannot be empty.' )
+			
 			self.config_kwargs = { }
+			
 			if self.temperature is not None:
 				self.config_kwargs[ 'temperature' ] = self.temperature
 			
 			if self.top_p is not None:
 				self.config_kwargs[ 'top_p' ] = self.top_p
 			
-			if self.max_tokens is not None:
-				self.config_kwargs[ 'max_output_tokens' ] = self.max_tokens
+			if self.top_k is not None and int( self.top_k or 0 ) > 0:
+				self.config_kwargs[ 'top_k' ] = int( self.top_k )
+			
+			if self.max_tokens is not None and int( self.max_tokens or 0 ) > 0:
+				self.config_kwargs[ 'max_output_tokens' ] = int( self.max_tokens )
 			
 			if self.instructions is not None and str( self.instructions ).strip( ):
 				self.config_kwargs[ 'system_instruction' ] = str( self.instructions ).strip( )
 			
 			self.content_config = GenerateContentConfig( **self.config_kwargs )
+			self.client = genai.Client( api_key=self.gemini_api_key )
 			self.uploaded_file = self.client.files.upload( file=self.file_path )
-			self.response = self.client.models.generate_content( model=self.model,
-				contents=[ self.prompt, self.uploaded_file ], config=self.content_config )
-			return self.response.text
+			
+			if self.uploaded_file is None:
+				raise ValueError( 'The audio file could not be uploaded to Gemini.' )
+			
+			self.response = self.client.models.generate_content(
+				model=self.model,
+				contents=[ self.prompt, self.uploaded_file ],
+				config=self.content_config
+			)
+			
+			self.translation = getattr( self.response, 'text', None )
+			if isinstance( self.translation, str ) and self.translation.strip( ):
+				return self.translation.strip( )
+			
+			return None
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'gemini'
 			ex.cause = 'Translation'
-			ex.method = 'translate( self, path, model, language, source ) -> str'
-			error = ErrorDialog( ex )
-			error.show( )
+			ex.method = 'translate( self, path, model, language ) -> Optional[ str ]'
+			raise ex
 
 class Files( Gemini ):
 	'''
@@ -3415,238 +4058,228 @@ class Files( Gemini ):
 		return [ 'media_resolution_high',
 		         'media_resolution_medium',
 		         'media_resolution_low' ]
-	
-	def upload( self, filepath: str, name: str = None ) -> File | None:
+		
+	def upload( self, filepath: str, name: str = None, display_name: str = None,
+			filename: str = None, mime_type: str = None, purpose: str = None ) -> File | None:
 		"""
 		
 			Purpose:
 			--------
-			Uploads a file from a local path to Gemini's remote temporal storage.
+			Upload a local file to Gemini Files storage.
 			
 			Parameters:
 			-----------
-			path: str - Local filesystem path to the file.
-			name: str - Optional display name for the file.
+			filepath: str
+				Local filesystem path to the file.
+
+			name: str
+				Optional display name for the file.
+
+			display_name: str
+				Optional display-name alias supplied by app.py.
+
+			filename: str
+				Optional filename alias supplied by app.py.
+
+			mime_type: str
+				Optional MIME type retained for app.py compatibility.
+
+			purpose: str
+				Optional provider-neutral purpose retained for app.py compatibility.
+
 			Returns:
 			--------
-			Optional[ File ] - Metadata object of the uploaded file.
+			File | None:
+				Gemini uploaded file metadata object.
 			
 		"""
 		try:
 			throw_if( 'filepath', filepath )
-			throw_if( 'name', name )
-			self.file_path = filepath;
-			self.display_name = name
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			self.response = self.client.files.upload( path=self.file_path,
-				config={ 'display_name': self.display_name } )
+			self.file_path = filepath
+			
+			if not os.path.exists( self.file_path ):
+				raise FileNotFoundError( f'File not found: {self.file_path}' )
+			
+			self.display_name = name or display_name or filename or Path( self.file_path ).name
+			self.mime_type = mime_type
+			self.purpose = purpose
+			self.gemini_api_key = cfg.GEMINI_API_KEY
+			
+			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
+				raise ValueError( 'GEMINI_API_KEY is required.' )
+			
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.response = self.client.files.upload(
+				path=self.file_path,
+				config={ 'display_name': self.display_name }
+			)
+			
+			self.file_id = getattr( self.response, 'name', None )
+			if self.file_id is None:
+				self.file_id = getattr( self.response, 'uri', None )
+			
 			return self.response
 		except Exception as e:
-			ex = Error( e );
+			ex = Error( e )
 			ex.module = 'gemini'
 			ex.cause = 'Files'
-			ex.method = 'upload( self, path: str, name: str ) -> Optional[ File ]'
+			ex.method = 'upload( self, filepath, name, display_name, filename, mime_type, purpose )'
+			raise ex
+	
+	def upload_file( self, path: str, file_path: str = None, filepath: str = None,
+			name: str = None, display_name: str = None, filename: str = None,
+			mime_type: str = None, purpose: str = None ) -> File | None:
+		"""
+		
+			Purpose:
+			--------
+			Compatibility alias for uploading a local file through app.py Files Mode.
+			
+			Parameters:
+			-----------
+			path: str
+				Local filesystem path supplied by app.py.
+
+			file_path: str
+				Optional file path alias.
+
+			filepath: str
+				Optional file path alias.
+
+			name: str
+				Optional display name.
+
+			display_name: str
+				Optional display-name alias.
+
+			filename: str
+				Optional filename alias.
+
+			mime_type: str
+				Optional MIME type.
+
+			purpose: str
+				Optional provider-neutral purpose.
+
+			Returns:
+			--------
+			File | None:
+				Gemini uploaded file metadata object.
+		
+		"""
+		try:
+			throw_if( 'path', path )
+			self.file_path = path
+			
+			return self.upload(
+				filepath=self.file_path,
+				name=name,
+				display_name=display_name,
+				filename=filename,
+				mime_type=mime_type,
+				purpose=purpose
+			)
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'upload_file( self, path, file_path, filepath, name, display_name, filename )'
+			raise ex
+	
+	def files_upload( self, path: str, file_path: str = None, filepath: str = None,
+			name: str = None, display_name: str = None, filename: str = None,
+			mime_type: str = None, purpose: str = None ) -> File | None:
+		"""
+		
+			Purpose:
+			--------
+			Compatibility alias for uploading a local file through app.py Files Mode.
+			
+			Parameters:
+			-----------
+			path: str
+				Local filesystem path supplied by app.py.
+
+			file_path: str
+				Optional file path alias.
+
+			filepath: str
+				Optional file path alias.
+
+			name: str
+				Optional display name.
+
+			display_name: str
+				Optional display-name alias.
+
+			filename: str
+				Optional filename alias.
+
+			mime_type: str
+				Optional MIME type.
+
+			purpose: str
+				Optional provider-neutral purpose.
+
+			Returns:
+			--------
+			File | None:
+				Gemini uploaded file metadata object.
+		
+		"""
+		try:
+			throw_if( 'path', path )
+			self.file_path = path
+			self.file_paths = file_path
+			self.filepath = filepath
+			return self.upload( filepath=self.file_path, name=name, display_name=display_name,
+				filename=filename, mime_type=mime_type, purpose=purpose )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'files_upload( self, path, file_path, filepath, name, display_name, filename )'
 			raise ex
 	
 	def list( self, model: str = 'gemini-2.0-flash', temperature: float = None,
 			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int=None, stops: List[ str ] = None ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			-------
-			Uploads and summarizes a PDF or text document.
-			
-			Parameters:
-			-----------
-			prompt: str - Summarization instructions.
-			filepath: str - Path to the document file.
-			model: str - The model identifier for processing.
-			Returns:
-			--------
-			Optional[ str ] - The document summary or None on failure.
-			
-		"""
-		try:
-			self.model = model
-			self.top_p = top_p;
-			self.temperature = temperature
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = max_tokens
-			self.stops = stops
-			self.storage_client = storage.Client( api_key=cfg.GOOGLE_API_KEY )
-			name = "jeni-financial"
-			prefix = "regulations"
-			bucket = self.storage_client.bucket( bucket_name=name )
-			for blob in bucket.list_blobs( prefix=prefix ):
-				self.files.append( blob.name )
-			return self.files
-		except Exception as e:
-			ex = Error( e );
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'list_files( self ) -> Optional[ List[ File ] ]'
-			raise ex
-	
-	def retrieve( self, file_id: str ) -> Optional[ File ]:
+			max_tokens: int = None, stops: List[ str ] = None ) -> List[ File ]:
 		"""
 			
 			Purpose:
 			--------
-			Retrieves the metadata and state of a previously uploaded file.
+			List files currently stored in Gemini Files storage.
 			
 			Parameters:
 			-----------
-			file_id: str - The unique identifier of the remote file.
-			
+			model: str
+				Model identifier retained for Files Mode compatibility.
+
+			temperature: float
+				Optional UI value retained for compatibility.
+
+			top_p: float
+				Optional UI value retained for compatibility.
+
+			frequency: float
+				Optional UI value retained for compatibility.
+
+			presence: float
+				Optional UI value retained for compatibility.
+
+			max_tokens: int
+				Optional UI value retained for compatibility.
+
+			stops: List[str]
+				Optional UI value retained for compatibility.
+
 			Returns:
 			--------
-			Optional[ File ] - File metadata object.
-		
-		"""
-		try:
-			throw_if( 'file_id', file_id )
-			self.file_id = file_id
-			self.response = self.client.files.get( name=self.file_id )
-			return self.response
-		except Exception as e:
-			ex = Error( e );
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'retrieve( self, file_id: str ) -> Optional[ File ]'
-			raise ex
-	
-	def summarize( self, prompt: str, filepath: str, model: str = 'gemini-2.0-flash',
-			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int=None, stops: List[ str ] = None,
-			instruct: str = None ) -> str | None:
-		"""
-			
-			Purpose:
-			-------
-			Uploads and summarizes a PDF or text document.
-			
-			Parameters:
-			-----------
-			prompt: str - Summarization instructions.
-			filepath: str - Path to the document file.
-			model: str - The model identifier for processing.
-			Returns:
-			--------
-			Optional[ str ] - The document summary or None on failure.
+			List[File]:
+				List of Gemini file metadata objects.
 			
 		"""
 		try:
-			throw_if( 'prompt', prompt )
-			throw_if( 'filepath', filepath )
-			self.prompt = prompt
-			self.file_path = filepath
-			self.model = model
-			self.top_p = top_p;
-			self.temperature = temperature
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = max_tokens
-			self.stops = stops
-			self.instructions = instruct
-			self.content_config = GenerateContentConfig( temperature=self.temperature )
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			if self.use_vertex:
-				with open( self.file_path, 'rb' ) as f:
-					doc_part = Part.from_bytes( data=f.read( ), mime_type="application/pdf" )
-				response = self.client.models.generate_content( model=self.model,
-					contents=[ doc_part, self.prompt ], config=self.content_config )
-			else:
-				uploaded_file = self.client.files.upload( path=self.file_path )
-				response = self.client.models.generate_content( model=self.model,
-					contents=[ uploaded_file, self.prompt ], config=self.content_config )
-			return response.text
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'summarize_document( self, prompt, filepath, model ) -> str'
-			raise ex
-	
-	def search( self, prompt: str, filepath: str, model: str = 'gemini-2.0-flash',
-			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int=None, stops: List[ str ] = None,
-			instruct: str = None ) -> str | None:
-		"""
-			
-			Purpose:
-			-------
-			Uploads and summarizes a PDF or text document.
-			
-			Parameters:
-			-----------
-			prompt: str - Summarization instructions.
-			filepath: str - Path to the document file.
-			model: str - The model identifier for processing.
-			Returns:
-			--------
-			Optional[ str ] - The document summary or None on failure.
-			
-		"""
-		try:
-			throw_if( 'prompt', prompt )
-			throw_if( 'filepath', filepath )
-			self.prompt = prompt
-			self.file_path = filepath
-			self.model = model
-			self.top_p = top_p;
-			self.temperature = temperature
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = max_tokens
-			self.stops = stops
-			self.instructions = instruct
-			self.content_config = GenerateContentConfig( temperature=self.temperature )
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			if self.use_vertex:
-				with open( self.file_path, 'rb' ) as f:
-					doc_part = Part.from_bytes( data=f.read( ), mime_type="application/pdf" )
-				response = self.client.models.generate_content( model=self.model,
-					contents=[ doc_part, self.prompt ], config=self.content_config )
-			else:
-				uploaded_file = self.client.files.upload( path=self.file_path )
-				response = self.client.models.generate_content( model=self.model,
-					contents=[ uploaded_file,
-					           self.prompt ], config=self.content_config )
-			return response.text
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'search( self, prompt, filepath, model ) -> str'
-			raise ex
-	
-	def survey( self, prompt: str, filepaths: List[ str ], model: str = 'gemini-2.0-flash',
-			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int=None,
-			stops: List[ str ] = None ) -> str | None:
-		"""
-			
-			Purpose:
-			-------
-			Uploads and summarizes a PDF or text document.
-			
-			Parameters:
-			-----------
-			prompt: str - Summarization instructions.
-			filepath: str - Path to the document file.
-			model: str - The model identifier for processing.
-			Returns:
-			--------
-			Optional[ str ] - The document summary or None on failure.
-			
-		"""
-		try:
-			throw_if( 'prompt', prompt )
-			throw_if( 'filepaths', filepaths )
-			self.prompt = prompt
-			self.file_paths = filepaths
 			self.model = model
 			self.top_p = top_p
 			self.temperature = temperature
@@ -3654,23 +4287,605 @@ class Files( Gemini ):
 			self.presence_penalty = presence
 			self.max_tokens = max_tokens
 			self.stops = stops
-			self.content_config = GenerateContentConfig( temperature=self.temperature )
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			if self.use_vertex:
-				with open( self.file_path, 'rb' ) as f:
-					doc_part = Part.from_bytes( data=f.read( ), mime_type="application/pdf" )
-				response = self.client.models.generate_content( model=self.model,
-					contents=[ doc_part, self.prompt ], config=self.content_config )
-			else:
-				uploaded_file = self.client.files.upload( path=self.file_paths )
-				response = self.client.models.generate_content( model=self.model,
-					contents=[ uploaded_file, self.prompt ], config=self.content_config )
-			return response.text
+			self.gemini_api_key = cfg.GEMINI_API_KEY
+			
+			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
+				raise ValueError( 'GEMINI_API_KEY is required.' )
+			
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.file_list = list( self.client.files.list( ) )
+			return self.file_list
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'gemini'
 			ex.cause = 'Files'
-			ex.method = 'survey( self, prompt, filepaths, model ) -> str'
+			ex.method = 'list( self, model, temperature, top_p, frequency, presence, max_tokens, stops )'
+			raise ex
+	
+	def list_files( self ) -> List[ File ]:
+		"""
+			
+			Purpose:
+			--------
+			Compatibility alias for listing Gemini files.
+			
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[File]:
+				List of Gemini file metadata objects.
+			
+		"""
+		try:
+			return self.list( )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'list_files( self ) -> List[ File ]'
+			raise ex
+	
+	def retrieve( self, file_id: str ) -> Optional[ File ]:
+		"""
+			
+			Purpose:
+			--------
+			Retrieve metadata for a Gemini file.
+			
+			Parameters:
+			-----------
+			file_id: str
+				Gemini file resource name.
+
+			Returns:
+			--------
+			Optional[File]:
+				File metadata object.
+		
+		"""
+		try:
+			throw_if( 'file_id', file_id )
+			self.file_id = file_id
+			self.gemini_api_key = cfg.GEMINI_API_KEY
+			
+			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
+				raise ValueError( 'GEMINI_API_KEY is required.' )
+			
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.response = self.client.files.get( name=self.file_id )
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'retrieve( self, file_id ) -> Optional[ File ]'
+			raise ex
+	
+	def extract( self, file_id: str, format: str = None,
+			page_number: int = None ) -> Dict[ str, Any ] | None:
+		"""
+			
+			Purpose:
+			--------
+			Return Gemini file metadata for Files Mode content/extract requests.
+			
+			Parameters:
+			-----------
+			file_id: str
+				Gemini file resource name.
+
+			format: str
+				Optional download format retained for compatibility.
+
+			page_number: int
+				Optional page number retained for compatibility.
+
+			Returns:
+			--------
+			Dict[str, Any] | None:
+				File metadata dictionary.
+		
+		"""
+		try:
+			throw_if( 'file_id', file_id )
+			self.file_id = file_id
+			self.format = format
+			self.page_number = page_number
+			self.response = self.retrieve( self.file_id )
+			
+			if self.response is None:
+				return None
+			
+			if hasattr( self.response, 'model_dump' ):
+				return self.response.model_dump( )
+			
+			return {
+					'name': getattr( self.response, 'name', self.file_id ),
+					'display_name': getattr( self.response, 'display_name', None ),
+					'mime_type': getattr( self.response, 'mime_type', None ),
+					'uri': getattr( self.response, 'uri', None ),
+					'state': getattr( self.response, 'state', None ),
+			}
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'extract( self, file_id, format, page_number )'
+			raise ex
+	
+	def download( self, file_id: str, format: str = None,
+			page_number: int = None ) -> Dict[ str, Any ] | None:
+		"""
+			
+			Purpose:
+			--------
+			Compatibility alias for extract.
+			
+			Parameters:
+			-----------
+			file_id: str
+				Gemini file resource name.
+
+			format: str
+				Optional download format.
+
+			page_number: int
+				Optional page number.
+
+			Returns:
+			--------
+			Dict[str, Any] | None:
+				File metadata dictionary.
+		
+		"""
+		try:
+			throw_if( 'file_id', file_id )
+			self.file_id = file_id
+			return self.extract(
+				file_id=self.file_id,
+				format=format,
+				page_number=page_number
+			)
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'download( self, file_id, format, page_number )'
+			raise ex
+	
+	def content( self, file_id: str, format: str = None,
+			page_number: int = None ) -> Dict[ str, Any ] | None:
+		"""
+			
+			Purpose:
+			--------
+			Compatibility alias for extract.
+			
+			Parameters:
+			-----------
+			file_id: str
+				Gemini file resource name.
+
+			format: str
+				Optional download format.
+
+			page_number: int
+				Optional page number.
+
+			Returns:
+			--------
+			Dict[str, Any] | None:
+				File metadata dictionary.
+		
+		"""
+		try:
+			throw_if( 'file_id', file_id )
+			self.file_id = file_id
+			return self.extract(
+				file_id=self.file_id,
+				format=format,
+				page_number=page_number
+			)
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'content( self, file_id, format, page_number )'
+			raise ex
+	
+	def delete( self, file_id: str ) -> bool | None:
+		"""
+		
+			Purpose:
+			--------
+			Delete a Gemini file from remote storage.
+			
+			Parameters:
+			-----------
+			file_id: str
+				Gemini file resource name.
+			
+			Returns:
+			--------
+			bool | None:
+				True when the delete request completes.
+		
+		"""
+		try:
+			throw_if( 'file_id', file_id )
+			self.file_id = file_id
+			self.gemini_api_key = cfg.GEMINI_API_KEY
+			
+			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
+				raise ValueError( 'GEMINI_API_KEY is required.' )
+			
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.client.files.delete( name=self.file_id )
+			return True
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'delete( self, file_id ) -> bool'
+			raise ex
+	
+	def summarize( self, prompt: str, filepath: str = None, file_id: str = None,
+			id: str = None, model: str = 'gemini-2.0-flash',
+			temperature: float = None, top_p: float = None, frequency: float = None,
+			presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
+			instruct: str = None, tools: List[ str ] = None, tool_choice: str = None,
+			include: List[ str ] = None, store: bool = None, stream: bool = None,
+			previous_id: str = None, conversation_id: str = None ) -> str | None:
+		"""
+			
+			Purpose:
+			--------
+			Ask a question about a Gemini file or a local file.
+			
+			Parameters:
+			-----------
+			prompt: str
+				User question or summarization instruction.
+
+			filepath: str
+				Optional local file path.
+
+			file_id: str
+				Optional Gemini file resource name.
+
+			id: str
+				Optional Gemini file resource-name alias.
+
+			model: str
+				Gemini model identifier.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty retained for compatibility.
+
+			presence: float
+				Optional presence penalty retained for compatibility.
+
+			max_tokens: int
+				Optional maximum output tokens.
+
+			stops: List[str]
+				Optional stop sequences.
+
+			instruct: str
+				Optional system instruction.
+
+			tools: List[str]
+				Optional tool list retained for compatibility.
+
+			tool_choice: str
+				Optional tool-choice value retained for compatibility.
+
+			include: List[str]
+				Optional include list retained for compatibility.
+
+			store: bool
+				Optional store flag retained for compatibility.
+
+			stream: bool
+				Optional stream flag retained for compatibility.
+
+			previous_id: str
+				Optional previous response ID retained for compatibility.
+
+			conversation_id: str
+				Optional conversation ID retained for compatibility.
+
+			Returns:
+			--------
+			str | None:
+				Model response text.
+			
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.prompt = prompt
+			
+			throw_if( 'model', model )
+			self.model = model
+			
+			self.file_id = file_id or id
+			self.file_path = filepath
+			self.top_p = top_p
+			self.temperature = temperature
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops
+			self.instructions = instruct
+			self.tools = tools if tools is not None else [ ]
+			self.tool_choice = tool_choice
+			self.include = include if include is not None else [ ]
+			self.store = store
+			self.stream = stream
+			self.previous_id = previous_id
+			self.conversation_id = conversation_id
+			self.gemini_api_key = cfg.GEMINI_API_KEY
+			
+			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
+				raise ValueError( 'GEMINI_API_KEY is required.' )
+			
+			if not self.file_id and not self.file_path:
+				raise ValueError( 'A Gemini file ID or local filepath is required.' )
+			
+			self.config_kwargs = { }
+			
+			if self.temperature is not None:
+				self.config_kwargs[ 'temperature' ] = self.temperature
+			
+			if self.top_p is not None:
+				self.config_kwargs[ 'top_p' ] = self.top_p
+			
+			if self.max_tokens is not None and int( self.max_tokens or 0 ) > 0:
+				self.config_kwargs[ 'max_output_tokens' ] = int( self.max_tokens )
+			
+			if self.instructions is not None and str( self.instructions ).strip( ):
+				self.config_kwargs[ 'system_instruction' ] = str( self.instructions ).strip( )
+			
+			if self.stops is not None and len( self.stops ) > 0:
+				self.config_kwargs[ 'stop_sequences' ] = self.stops
+			
+			self.content_config = GenerateContentConfig( **self.config_kwargs )
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			
+			if self.file_id:
+				self.uploaded_file = self.client.files.get( name=self.file_id )
+			else:
+				self.uploaded_file = self.client.files.upload( path=self.file_path )
+			
+			if self.uploaded_file is None:
+				raise ValueError( 'The Gemini file could not be resolved.' )
+			
+			self.response = self.client.models.generate_content(
+				model=self.model,
+				contents=[ self.uploaded_file, self.prompt ],
+				config=self.content_config
+			)
+			
+			self.output_text = getattr( self.response, 'text', None )
+			return self.output_text
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'summarize( self, prompt, filepath, file_id, id, model ) -> str'
+			raise ex
+	
+	def search( self, prompt: str, filepath: str = None, file_id: str = None,
+			id: str = None, model: str = 'gemini-2.0-flash',
+			temperature: float = None, top_p: float = None, frequency: float = None,
+			presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
+			instruct: str = None, tools: List[ str ] = None, tool_choice: str = None,
+			include: List[ str ] = None, store: bool = None, stream: bool = None,
+			previous_id: str = None, conversation_id: str = None ) -> str | None:
+		"""
+			
+			Purpose:
+			--------
+			Compatibility alias for summarize.
+			
+			Parameters:
+			-----------
+			prompt: str
+				User question or summarization instruction.
+
+			filepath: str
+				Optional local file path.
+
+			file_id: str
+				Optional Gemini file resource name.
+
+			id: str
+				Optional Gemini file resource-name alias.
+
+			model: str
+				Gemini model identifier.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty retained for compatibility.
+
+			presence: float
+				Optional presence penalty retained for compatibility.
+
+			max_tokens: int
+				Optional maximum output tokens.
+
+			stops: List[str]
+				Optional stop sequences.
+
+			instruct: str
+				Optional system instruction.
+
+			tools: List[str]
+				Optional tool list retained for compatibility.
+
+			tool_choice: str
+				Optional tool-choice value retained for compatibility.
+
+			include: List[str]
+				Optional include list retained for compatibility.
+
+			store: bool
+				Optional store flag retained for compatibility.
+
+			stream: bool
+				Optional stream flag retained for compatibility.
+
+			previous_id: str
+				Optional previous response ID retained for compatibility.
+
+			conversation_id: str
+				Optional conversation ID retained for compatibility.
+
+			Returns:
+			--------
+			str | None:
+				Model response text.
+			
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.prompt = prompt
+			
+			return self.summarize( prompt=self.prompt, filepath=filepath, file_id=file_id,
+				id=id, model=model, temperature=temperature, top_p=top_p, frequency=frequency,
+				presence=presence, max_tokens=max_tokens, stops=stops, instruct=instruct,
+				tools=tools, tool_choice=tool_choice, include=include, store=store,
+				stream=stream, previous_id=previous_id, conversation_id=conversation_id )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'search( self, prompt, filepath, file_id, id, model ) -> str'
+			raise ex
+	
+	def survey( self, prompt: str, filepaths: List[ str ] = None,
+			file_id: str = None, id: str = None, model: str = 'gemini-2.0-flash',
+			temperature: float = None, top_p: float = None, frequency: float = None,
+			presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
+			instruct: str = None, tools: List[ str ] = None, tool_choice: str = None,
+			include: List[ str ] = None, store: bool = None, stream: bool = None,
+			previous_id: str = None, conversation_id: str = None ) -> str | None:
+		"""
+			
+			Purpose:
+			--------
+			Ask a question about one or more local files or a selected Gemini file.
+			
+			Parameters:
+			-----------
+			prompt: str
+				User question or summarization instruction.
+
+			filepaths: List[str]
+				Optional local file paths.
+
+			file_id: str
+				Optional Gemini file resource name.
+
+			id: str
+				Optional Gemini file resource-name alias.
+
+			model: str
+				Gemini model identifier.
+
+			temperature: float
+				Optional sampling temperature.
+
+			top_p: float
+				Optional nucleus sampling value.
+
+			frequency: float
+				Optional frequency penalty retained for compatibility.
+
+			presence: float
+				Optional presence penalty retained for compatibility.
+
+			max_tokens: int
+				Optional maximum output tokens.
+
+			stops: List[str]
+				Optional stop sequences.
+
+			instruct: str
+				Optional system instruction.
+
+			tools: List[str]
+				Optional tool list retained for compatibility.
+
+			tool_choice: str
+				Optional tool-choice value retained for compatibility.
+
+			include: List[str]
+				Optional include list retained for compatibility.
+
+			store: bool
+				Optional store flag retained for compatibility.
+
+			stream: bool
+				Optional stream flag retained for compatibility.
+
+			previous_id: str
+				Optional previous response ID retained for compatibility.
+
+			conversation_id: str
+				Optional conversation ID retained for compatibility.
+
+			Returns:
+			--------
+			str | None:
+				Model response text.
+			
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.prompt = prompt
+			
+			if file_id or id:
+				return self.summarize( prompt=self.prompt, file_id=file_id, id=id,
+					model=model, temperature=temperature, top_p=top_p, frequency=frequency,
+					presence=presence, max_tokens=max_tokens, stops=stops,
+					instruct=instruct, tools=tools, tool_choice=tool_choice,
+					include=include, store=store, stream=stream, previous_id=previous_id,
+					conversation_id=conversation_id )
+			
+			throw_if( 'filepaths', filepaths )
+			self.file_paths = filepaths
+			self.outputs = [ ]
+			for filepath in self.file_paths:
+				self.outputs.append(
+					self.summarize( prompt=self.prompt, filepath=filepath, model=model,
+						temperature=temperature, top_p=top_p, frequency=frequency,
+						presence=presence, max_tokens=max_tokens, stops=stops,
+						instruct=instruct, tools=tools, tool_choice=tool_choice, include=include,
+						store=store, stream=stream, previous_id=previous_id,
+						conversation_id=conversation_id ) )
+			
+			return '\n\n'.join( [ item for item in self.outputs if item ] )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'Files'
+			ex.method = 'survey( self, prompt, filepaths, file_id, id, model ) -> str'
 			raise ex
 	
 	def web_search( self, prompt: str, model: str = 'gemini-2.5-flash-lite',
@@ -3996,7 +5211,196 @@ class FileSearch( Gemini ):
 			exception.cause = 'FileSearch'
 			exception.method = 'delete( self, store_id: str, force: bool=True ) -> bool | Any'
 			raise exception
+		
+	def upload_file( self, path: str, store_id: str, file_path: str = None, id: str = None,
+			display_name: str = None, mime_type: str = None ) -> Any:
+		"""
 
+			Purpose:
+			--------
+			Upload a local file and import it into a Gemini File Search Store.
+
+			Parameters:
+			-----------
+			path: str
+				Local filesystem path to upload.
+
+			store_id: str
+				Gemini File Search Store resource name.
+
+			file_path: str
+				Optional path alias retained for app.py compatibility.
+
+			id: str
+				Optional store identifier alias retained for app.py compatibility.
+
+			display_name: str
+				Optional display name for the uploaded file.
+
+			mime_type: str
+				Optional MIME type for the uploaded file.
+
+			Returns:
+			--------
+			Any:
+				Gemini File Search upload/import operation result.
+
+		"""
+		try:
+			throw_if( 'path', path )
+			self.file_path = path
+			
+			throw_if( 'store_id', store_id )
+			self.store_id = store_id
+			
+			self.display_name = display_name or Path( self.file_path ).name
+			self.mime_type = mime_type
+			self.gemini_api_key = cfg.GEMINI_API_KEY
+			
+			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
+				raise ValueError( 'GEMINI_API_KEY is required.' )
+			
+			if not os.path.exists( self.file_path ):
+				raise FileNotFoundError( f'File not found: {self.file_path}' )
+			
+			self.client = genai.Client( api_key=self.gemini_api_key )
+			self.uploaded_file = self.client.files.upload(
+				path=self.file_path,
+				config={ 'display_name': self.display_name }
+			)
+			
+			if self.uploaded_file is None:
+				raise ValueError( 'The file could not be uploaded to Gemini Files.' )
+			
+			self.file_name = getattr( self.uploaded_file, 'name', None )
+			if self.file_name is None or not str( self.file_name ).strip( ):
+				raise ValueError( 'Gemini Files upload did not return a file resource name.' )
+			
+			self.response = self.client.file_search_stores.import_file(
+				file_search_store_name=self.store_id,
+				file_name=self.file_name
+			)
+			
+			return self.response
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = 'upload_file( self, path, store_id, file_path, id, display_name, mime_type )'
+			raise exception
+	
+	def upload( self, path: str, store_id: str, file_path: str = None, id: str = None,
+			display_name: str = None, mime_type: str = None ) -> Any:
+		"""
+
+			Purpose:
+			--------
+			Compatibility alias for upload_file.
+
+			Parameters:
+			-----------
+			path: str
+				Local filesystem path to upload.
+
+			store_id: str
+				Gemini File Search Store resource name.
+
+			file_path: str
+				Optional path alias retained for app.py compatibility.
+
+			id: str
+				Optional store identifier alias retained for app.py compatibility.
+
+			display_name: str
+				Optional display name for the uploaded file.
+
+			mime_type: str
+				Optional MIME type for the uploaded file.
+
+			Returns:
+			--------
+			Any:
+				Gemini File Search upload/import operation result.
+
+		"""
+		try:
+			throw_if( 'path', path )
+			self.file_path = path
+			
+			throw_if( 'store_id', store_id )
+			self.store_id = store_id
+			
+			return self.upload_file(
+				path=self.file_path,
+				store_id=self.store_id,
+				file_path=file_path,
+				id=id,
+				display_name=display_name,
+				mime_type=mime_type
+			)
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = 'upload( self, path, store_id, file_path, id, display_name, mime_type )'
+			raise exception
+	
+	def files_upload( self, path: str, store_id: str, file_path: str = None, id: str = None,
+			display_name: str = None, mime_type: str = None ) -> Any:
+		"""
+
+			Purpose:
+			--------
+			Compatibility alias for upload_file.
+
+			Parameters:
+			-----------
+			path: str
+				Local filesystem path to upload.
+
+			store_id: str
+				Gemini File Search Store resource name.
+
+			file_path: str
+				Optional path alias retained for app.py compatibility.
+
+			id: str
+				Optional store identifier alias retained for app.py compatibility.
+
+			display_name: str
+				Optional display name for the uploaded file.
+
+			mime_type: str
+				Optional MIME type for the uploaded file.
+
+			Returns:
+			--------
+			Any:
+				Gemini File Search upload/import operation result.
+
+		"""
+		try:
+			throw_if( 'path', path )
+			self.file_path = path
+			
+			throw_if( 'store_id', store_id )
+			self.store_id = store_id
+			
+			return self.upload_file(
+				path=self.file_path,
+				store_id=self.store_id,
+				file_path=file_path,
+				id=id,
+				display_name=display_name,
+				mime_type=mime_type
+			)
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = 'files_upload( self, path, store_id, file_path, id, display_name, mime_type )'
+			raise exception
+		
 class CloudBuckets( Gemini ):
 	'''
 

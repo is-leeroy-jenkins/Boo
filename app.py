@@ -1830,90 +1830,151 @@ def _docqna_rebuild_index_if_needed( embedder: SentenceTransformer ) -> None:
 		Purpose:
 		--------
 		Builds or refreshes the Document Q&A vector index when active documents change.
-	
+
 		Parameters:
 		-----------
 		embedder:
 			The SentenceTransformer used to generate embeddings.
-	
+
 		Returns:
 		--------
 		None
 		
 	'''
-	active_docs: List[ str ] = st.session_state.get( 'active_docs', [ ] )
-	doc_bytes: Dict[ str, bytes ] = st.session_state.get( 'doc_bytes', { } )
-	
-	fp = _docqna_compute_fingerprint( active_docs, doc_bytes )
-	if fp and fp == st.session_state.get( 'docqna_fingerprint', '' ):
-		return
-	
-	st.session_state[ 'docqna_fingerprint' ] = fp
-	st.session_state[ 'docqna_chunk_count' ] = 0
-	st.session_state[ 'docqna_fallback_rows' ] = [ ]
-	
-	dim_value = getattr( embedder, 'get_sentence_embedding_dimension', lambda: 384 )( )
-	dim = int( dim_value ) if dim_value else 384
-	
-	vec_ready = _docqna_ensure_vec_schema( dim )
-	st.session_state[ 'docqna_vec_ready' ] = bool( vec_ready )
-	
-	conn = create_connection( )
 	try:
-		cur = conn.cursor( )
+		throw_if( 'embedder', embedder )
 		
-		if vec_ready:
-			try:
-				cur.execute( 'DELETE FROM docqna_vec;' )
-				conn.commit( )
-			except Exception:
-				st.session_state[ 'docqna_vec_ready' ] = False
-				vec_ready = False
+		active_docs: List[ str ] = st.session_state.get( 'docqna_active_docs', [ ] )
+		if active_docs is None:
+			active_docs = [ ]
 		
-		total_chunks = 0
-		fallback_rows: List[ Tuple[ str, str, bytes ] ] = [ ]
+		if not active_docs:
+			active_docs = st.session_state.get( 'active_docs', [ ] )
 		
-		for name in active_docs:
-			b = doc_bytes.get( name )
-			if not b:
-				continue
-			
-			text = _docqna_extract_text_from_pdf_bytes( b )
-			if not text:
-				continue
-			
-			chunks = chunk_text( text )
-			if not chunks:
-				continue
-			
-			vecs = embedder.encode( chunks, show_progress_bar=False )
-			vecs = np.asarray( vecs, dtype=np.float32 )
+		if active_docs is None:
+			active_docs = [ ]
+		
+		doc_bytes: Dict[ str, bytes ] = st.session_state.get( 'doc_bytes', { } )
+		if doc_bytes is None:
+			doc_bytes = { }
+		
+		st.session_state[ 'active_docs' ] = active_docs
+		
+		fp = _docqna_compute_fingerprint( active_docs, doc_bytes )
+		if fp and fp == st.session_state.get( 'docqna_fingerprint', '' ):
+			return
+		
+		st.session_state[ 'docqna_fingerprint' ] = fp
+		st.session_state[ 'docqna_chunk_count' ] = 0
+		st.session_state[ 'docqna_fallback_rows' ] = [ ]
+		
+		dim_value = getattr( embedder, 'get_sentence_embedding_dimension', lambda: 384 )( )
+		dim = int( dim_value ) if dim_value else 384
+		
+		vec_ready = _docqna_ensure_vec_schema( dim )
+		st.session_state[ 'docqna_vec_ready' ] = bool( vec_ready )
+		
+		conn = create_connection( )
+		try:
+			cur = conn.cursor( )
 			
 			if vec_ready:
-				for chunk_text_value, v in zip( chunks, vecs ):
-					cur.execute(
-						'INSERT INTO docqna_vec ( embedding, doc_name, chunk ) VALUES ( ?, ?, ? );',
-						(v.tobytes( ), name, chunk_text_value)
-					)
-			else:
-				for chunk_text_value, v in zip( chunks, vecs ):
-					fallback_rows.append( (name, chunk_text_value, v.tobytes( )) )
+				try:
+					cur.execute( 'DELETE FROM docqna_vec;' )
+					conn.commit( )
+				except Exception:
+					st.session_state[ 'docqna_vec_ready' ] = False
+					vec_ready = False
 			
-			total_chunks += int( len( chunks ) )
+			total_chunks = 0
+			fallback_rows: List[ Tuple[ str, str, bytes ] ] = [ ]
+			
+			for name in active_docs:
+				file_bytes = doc_bytes.get( name )
+				if not file_bytes:
+					continue
+				
+				suffix = Path( name ).suffix.lower( )
+				if suffix == '.pdf':
+					text = _docqna_extract_text_from_pdf_bytes( file_bytes )
+				else:
+					text = extract_text_from_bytes( file_bytes )
+				
+				if not text:
+					continue
+				
+				chunks = chunk_text( text )
+				if not chunks:
+					continue
+				
+				vecs = embedder.encode( chunks, show_progress_bar=False )
+				vecs = np.asarray( vecs, dtype=np.float32 )
+				
+				if vec_ready:
+					for chunk_value, vector in zip( chunks, vecs ):
+						cur.execute(
+							'INSERT INTO docqna_vec ( embedding, doc_name, chunk ) VALUES ( ?, ?, ? );',
+							(vector.tobytes( ), name, chunk_value)
+						)
+				else:
+					for chunk_value, vector in zip( chunks, vecs ):
+						fallback_rows.append( (name, chunk_value, vector.tobytes( )) )
+				
+				total_chunks += int( len( chunks ) )
+			
+			conn.commit( )
+			st.session_state[ 'docqna_chunk_count' ] = total_chunks
+			
+			if not vec_ready:
+				st.session_state[ 'docqna_fallback_rows' ] = fallback_rows
 		
-		conn.commit( )
-		st.session_state[ 'docqna_chunk_count' ] = total_chunks
-		
-		if not vec_ready:
-			st.session_state[ 'docqna_fallback_rows' ] = fallback_rows
-	
-	except Exception:
-		st.session_state[ 'docqna_vec_ready' ] = False
-		st.session_state[ 'docqna_fallback_rows' ] = [ ]
-		st.session_state[ 'docqna_chunk_count' ] = 0
-	finally:
-		conn.close( )
+		except Exception:
+			st.session_state[ 'docqna_vec_ready' ] = False
+			st.session_state[
+				'docqna_fallback_rows' ] = fallback_rows if 'fallback_rows' in locals( ) else [ ]
+			st.session_state[ 'docqna_chunk_count' ] = 0
+		finally:
+			conn.close( )
+	except Exception as e:
+		ex = Error( e )
+		ex.module = 'app'
+		ex.cause = 'Document Q&A'
+		ex.method = '_docqna_rebuild_index_if_needed( embedder: SentenceTransformer ) -> None'
+		raise ex
 
+@st.cache_resource( show_spinner=False )
+def load_embedder( ) -> SentenceTransformer:
+	"""
+		
+		Purpose:
+		--------
+		Load and cache the SentenceTransformer embedder used by Document Q&A retrieval.
+
+		Parameters:
+		-----------
+		None
+
+		Returns:
+		--------
+		SentenceTransformer:
+			Cached sentence-transformer embedding model.
+		
+	"""
+	try:
+		model_name = 'sentence-transformers/all-MiniLM-L6-v2'
+		embedder = SentenceTransformer( model_name )
+		
+		if embedder is None:
+			raise ValueError( 'The Document Q&A embedder could not be loaded.' )
+		
+		return embedder
+	except Exception as e:
+		exception = Error( e )
+		exception.module = 'app'
+		exception.cause = 'Document Q&A'
+		exception.method = 'load_embedder( ) -> SentenceTransformer'
+		raise exception
+	
 def retrieve_top_doc_chunks( query: str, k: int = 6 ) -> List[ Tuple[ str, str, float ] ]:
 	'''
 	
@@ -1964,8 +2025,7 @@ def retrieve_top_doc_chunks( query: str, k: int = 6 ) -> List[ Tuple[ str, str, 
 		finally:
 			conn.close( )
 	
-	fallback_rows: List[
-		Tuple[ str, str, bytes ] ] = st.session_state.get( 'docqna_fallback_rows', [ ] )
+	fallback_rows: List[ Tuple[ str, str, bytes ] ] = st.session_state.get( 'docqna_fallback_rows', [ ] )
 	results: List[ Tuple[ str, str, float ] ] = [ ]
 	
 	for doc_name, chunk_text_value, vec_blob in fallback_rows:
@@ -8549,6 +8609,7 @@ elif mode == 'Document Q&A':
 		elif provider_name == 'Gemini':
 			
 			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
+				
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4, llm_c5 = st.columns(
 						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
@@ -8786,6 +8847,7 @@ elif mode == 'Document Q&A':
 		elif provider_name == 'GPT':
 			
 			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
+				
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 						border=True, gap='medium' )
@@ -9048,7 +9110,37 @@ elif mode == 'Document Q&A':
 				name = st.session_state.docqna_active_docs[ 0 ]
 				file_bytes = st.session_state.doc_bytes.get( name )
 				if file_bytes:
-					st.pdf( file_bytes, height=420 )
+					suffix = Path( name ).suffix.lower( )
+					if suffix == '.pdf':
+						try:
+							encoded_pdf = base64.b64encode( file_bytes ).decode( 'utf-8' )
+							st.markdown( f"""
+								<iframe
+									src="data:application/pdf;base64,{encoded_pdf}"
+									width="100%"
+									height="420"
+									type="application/pdf">
+								</iframe>
+								""", unsafe_allow_html=True )
+						except Exception as exc:
+							st.warning( f'Could not render PDF preview: {exc}' )
+							st.download_button( label='Download Document', data=file_bytes,
+								file_name=name, mime='application/pdf', width='stretch' )
+					
+					elif suffix in [ '.txt', '.md' ]:
+						try:
+							preview_text = file_bytes.decode( 'utf-8', errors='ignore' )
+							st.text_area( label='Document Preview', value=preview_text[ :20000 ],
+								height=420, width='stretch', disabled=True )
+						except Exception as exc:
+							st.warning( f'Could not render text preview: {exc}' )
+							st.download_button( label='Download Document', data=file_bytes,
+								file_name=name, mime='text/plain', width='stretch' )
+					
+					else:
+						st.info( 'Preview is not available for this document type.' )
+						st.download_button( label='Download Document', data=file_bytes,
+							file_name=name, mime='application/octet-stream', width='stretch' )
 		
 		for msg in st.session_state.docqna_messages:
 			with st.chat_message( msg[ 'role' ] ):
@@ -9264,13 +9356,14 @@ elif mode == 'Embeddings':
 				]
 		
 		return [ ]
-	
+		
 	def call_embeddings_create( chunks: List[ str ] ) -> Any:
 		"""
 			
 			Purpose:
 			--------
-			Call the selected provider Embeddings wrapper using the first compatible method.
+			Call the selected provider Embeddings wrapper using provider-specific argument
+			mapping while preserving each wrapper's public method contract.
 		
 			Parameters:
 			-----------
@@ -9281,37 +9374,58 @@ elif mode == 'Embeddings':
 			Any: Provider embedding result.
 			
 		"""
-		input_value = chunks if len( chunks ) != 1 else chunks[ 0 ]
-		dimensions = st.session_state.get( 'embedding_dimensions',
-			st.session_state.get( 'embeddings_dimensions', 0 ) )
-		encoding_format = st.session_state.get( 'embedding_encoding_format',
-			st.session_state.get( 'embeddings_encoding_format', '' ) )
-		
-		kwargs = {
-				'input': input_value,
-				'text': input_value,
-				'texts': chunks,
-				'model': st.session_state.get( 'embedding_model' ) or None,
-				'dimensions': dimensions if int( dimensions or 0 ) > 0 else None,
-				'encoding_format': encoding_format or None,
-				'format': encoding_format or None,
-		}
-		
-		for method_name in [ 'create', 'embed', 'embed_text', 'generate', 'create_embeddings' ]:
-			method = getattr( embedding, method_name, None )
-			if callable( method ):
-				try:
-					return method( **kwargs )
-				except TypeError:
-					clean_kwargs = {
-							key: value
-							for key, value in kwargs.items( )
-							if value is not None and value != '' and value != [ ]
-					}
-					return method( **clean_kwargs )
-		
-		raise AttributeError(
-			f'Provider "{provider_name}" does not expose a compatible Embeddings method.' )
+		try:
+			throw_if( 'chunks', chunks )
+			
+			input_value = chunks if len( chunks ) != 1 else chunks[ 0 ]
+			dimensions = st.session_state.get(
+				'embedding_dimensions',
+				st.session_state.get( 'embeddings_dimensions', 0 )
+			)
+			encoding_format = st.session_state.get(
+				'embedding_encoding_format',
+				st.session_state.get( 'embeddings_encoding_format', '' )
+			)
+			model = st.session_state.get( 'embedding_model' ) or None
+			
+			throw_if( 'model', model )
+			
+			if provider_name == 'GPT':
+				return embedding.create(
+					text=input_value,
+					model=model,
+					format=encoding_format or 'float',
+					dimensions=dimensions if int( dimensions or 0 ) > 0 else None
+				)
+			
+			if provider_name == 'Gemini':
+				return embedding.create(
+					text=input_value,
+					model=model,
+					encoding_format=encoding_format or 'float',
+					dimensions=dimensions if int( dimensions or 0 ) > 0 else None
+				)
+			
+			if provider_name == 'Grok':
+				return embedding.create(
+					text=input_value,
+					model=model,
+					format=encoding_format or 'float',
+					dimensions=dimensions if int( dimensions or 0 ) > 0 else None
+				)
+			
+			return embedding.create(
+				text=input_value,
+				model=model,
+				format=encoding_format or 'float',
+				dimensions=dimensions if int( dimensions or 0 ) > 0 else None
+			)
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'app'
+			exception.cause = 'Embeddings'
+			exception.method = 'call_embeddings_create( chunks: List[ str ] ) -> Any'
+			raise exception
 	
 	def extract_embedding_usage( result: Any ) -> Dict[ str, Any ]:
 		"""
