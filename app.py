@@ -1963,7 +1963,6 @@ def load_embedder( ) -> SentenceTransformer:
 	try:
 		model_name = 'sentence-transformers/all-MiniLM-L6-v2'
 		embedder = SentenceTransformer( model_name )
-		
 		if embedder is None:
 			raise ValueError( 'The Document Q&A embedder could not be loaded.' )
 		
