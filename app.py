@@ -12375,45 +12375,88 @@ elif mode == 'File Search Stores':
 		st.stop( )
 	
 	searcher = get_file_search_module( provider_name )
-	def call_file_search_method( method_names: List[ str ], kwargs: Optional[ Dict[ str, Any ] ]=None ) -> Any:
+	
+	def call_file_search_method( method_names: List[ str ],
+			kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
 		"""
 			
 			Purpose:
 			--------
-			Call the first compatible Gemini FileSearch wrapper method.
+			Call the first compatible Gemini FileSearch wrapper method using only keyword
+			arguments accepted by the target method.
 		
 			Parameters:
 			-----------
 			method_names (List[str]): Ordered method names to try.
-			kwargs (Optional[Dict[str, Any]]): Keyword arguments for the method.
+			kwargs (Optional[Dict[str, Any]]): Candidate keyword arguments for the method.
 		
 			Returns:
 			--------
 			Any: Provider method result.
 			
 		"""
-		kwargs = kwargs or { }
-		
-		for method_name in method_names:
-			method = getattr( searcher, method_name, None )
-			if callable( method ):
-				try:
-					return method( **kwargs )
-				except TypeError:
-					clean_kwargs = {
-							key: value
-							for key, value in kwargs.items( )
-							if value is not None and value != '' and value != [ ]
-					}
-					try:
-						return method( **clean_kwargs )
-					except TypeError:
-						if len( clean_kwargs ) == 1:
-							return method( list( clean_kwargs.values( ) )[ 0 ] )
-						raise
-		
-		raise AttributeError(
-			f'Gemini FileSearch does not expose any method from: {", ".join( method_names )}.' )
+	
+		try:
+			import inspect
+			
+			throw_if( 'method_names', method_names )
+			candidate_kwargs = kwargs or { }
+			
+			for method_name in method_names:
+				method = getattr( searcher, method_name, None )
+				if not callable( method ):
+					continue
+				
+				signature = inspect.signature( method )
+				parameters = signature.parameters
+				accepted_names = set( parameters.keys( ) )
+				accepts_kwargs = any( parameter.kind == inspect.Parameter.VAR_KEYWORD
+					for parameter in parameters.values( ) )
+				
+				clean_kwargs = { key: value for key, value in candidate_kwargs.items( )
+						if value is not None and value != '' and value != [ ] }
+				
+				if 'store_id' in accepted_names and not clean_kwargs.get( 'store_id' ):
+					if clean_kwargs.get( 'id' ):
+						clean_kwargs[ 'store_id' ] = clean_kwargs[ 'id' ]
+					elif clean_kwargs.get( 'name' ) and method_name not in [ 'create', 'create_store' ]:
+						clean_kwargs[ 'store_id' ] = clean_kwargs[ 'name' ]
+				
+				if 'path' in accepted_names and not clean_kwargs.get( 'path' ):
+					if clean_kwargs.get( 'file_path' ):
+						clean_kwargs[ 'path' ] = clean_kwargs[ 'file_path' ]
+				
+				if 'name' in accepted_names and not clean_kwargs.get( 'name' ):
+					if clean_kwargs.get( 'display_name' ):
+						clean_kwargs[ 'name' ] = clean_kwargs[ 'display_name' ]
+					elif clean_kwargs.get( 'store_id' ) and method_name in [ 'create', 'create_store' ]:
+						clean_kwargs[ 'name' ] = clean_kwargs[ 'store_id' ]
+				
+				if accepts_kwargs:
+					return method( **clean_kwargs )
+				
+				method_kwargs = { key: value for key, value in clean_kwargs.items( )
+				                  if key in accepted_names }
+				
+				required_names = [ name for name, parameter in parameters.items( )
+						if parameter.default == inspect.Parameter.empty
+						   and parameter.kind in [ inspect.Parameter.POSITIONAL_OR_KEYWORD,
+								   inspect.Parameter.KEYWORD_ONLY,  ] ]
+				
+				missing_names = [ name for name in required_names if name not in method_kwargs ]
+				if missing_names:
+					continue
+				
+				return method( **method_kwargs )
+			
+			raise AttributeError( f'Gemini FileSearch does not expose any compatible method from: '
+				f'{", ".join( method_names )}.' )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'app'
+			exception.cause = 'File Search Stores'
+			exception.method = 'call_file_search_method( method_names, kwargs )'
+			raise exception
 	
 	def clear_filestore_outputs( ) -> None:
 		"""
