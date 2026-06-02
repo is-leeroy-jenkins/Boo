@@ -118,19 +118,94 @@ def init_state( key: str, value: Any ) -> None:
 	if key not in st.session_state:
 		st.session_state[ key ] = value
 
-def init_env_state( key: str, config_name: str, env_name: str ) -> None:
+def get_runtime_config_value( session_key: str, config_name: str, env_name: str ) -> str:
 	"""
 		
 		Purpose:
 		--------
-		Initialize a session-state API/configuration key from config.py and mirror the value to
-		os.environ when a configured value exists.
+		Return the current runtime value for a configuration item by checking Streamlit
+		session state, config.py, and os.environ in a safe order.
+	
+		Parameters:
+		-----------
+		session_key (str): Streamlit session-state key used by the application.
+		config_name (str): Attribute name to read from config.py.
+		env_name (str): Environment variable name to read from os.environ.
+	
+		Returns:
+		--------
+		str: Normalized string value safe for Streamlit text inputs.
+		
+	"""
+	session_value = st.session_state.get( session_key, '' )
+	config_value = getattr( cfg, config_name, None )
+	env_value = os.environ.get( env_name, '' )
+	
+	if session_value:
+		return str( session_value ).strip( )
+	
+	if config_value:
+		return str( config_value ).strip( )
+	
+	if env_value:
+		return str( env_value ).strip( )
+	
+	return ''
+
+def sync_provider_config( session_key: str, config_name: str, env_name: str, value: Any,
+		provider: Optional[ str ] = None ) -> None:
+	"""
+		
+		Purpose:
+		--------
+		Synchronize a runtime provider setting across Streamlit session state, config.py,
+		and os.environ.
+	
+		Parameters:
+		-----------
+		session_key (str): Streamlit session-state key to update.
+		config_name (str): Attribute name to update on config.py.
+		env_name (str): Environment variable name to update.
+		value (Any): User-entered or configured value.
+		provider (Optional[str]): Optional provider name used to update api_keys.
+	
+		Returns:
+		--------
+		None
+		
+	"""
+	text = str( value ).strip( ) if value is not None else ''
+	st.session_state[ session_key ] = text
+	
+	if text:
+		os.environ[ env_name ] = text
+		setattr( cfg, config_name, text )
+	else:
+		os.environ.pop( env_name, None )
+		setattr( cfg, config_name, None )
+	
+	if provider:
+		if 'api_keys' not in st.session_state or not isinstance( st.session_state[ 'api_keys' ],
+				dict ):
+			st.session_state[ 'api_keys' ] = { 'GPT': None, 'Grok': None, 'Gemini': None }
+		
+		st.session_state[ 'api_keys' ][ provider ] = text if text else None
+
+def init_env_state( key: str, config_name: str, env_name: str,
+		provider: Optional[ str ] = None ) -> None:
+	"""
+		
+		Purpose:
+		--------
+		Initialize a session-state API/configuration key from the current runtime
+		configuration and mirror the value to config.py and os.environ.
 	
 		Parameters:
 		-----------
 		key (str): Session-state key to initialize.
-		config_name (str): Attribute name to read from config.py.
-		env_name (str): Environment variable name to assign.
+		config_name (str): Attribute name to read from and write to config.py.
+		env_name (str): Environment variable name to read from and write to os.environ.
+		provider (Optional[str]): Optional provider name used to update api_keys.
 	
 		Returns:
 		--------
@@ -138,11 +213,8 @@ def init_env_state( key: str, config_name: str, env_name: str ) -> None:
 		
 	"""
 	init_state( key, '' )
-	if st.session_state.get( key, '' ) == '':
-		default = getattr( cfg, config_name, env_name )
-		if default:
-			st.session_state[ key ] = default
-			os.environ[ env_name ] = default
+	value = get_runtime_config_value( key, config_name, env_name )
+	sync_provider_config( key, config_name, env_name, value, provider )
 
 def copy_state_alias( source_key: str, target_key: str, default: Any ) -> None:
 	"""
@@ -170,20 +242,19 @@ def copy_state_alias( source_key: str, target_key: str, default: Any ) -> None:
 
 # ---------- API / PROVIDER CONFIGURATION -------------------------------------
 
-init_env_state( 'openai_api_key', 'OPENAI_API_KEY', cfg.OPENAI_API_KEY )
-init_env_state( 'gemini_api_key', 'GEMINI_API_KEY', cfg.GEMINI_API_KEY )
-init_env_state( 'google_api_key', 'GOOGLE_API_KEY', cfg.GOOGLE_API_KEY )
-init_env_state( 'google_cse_id', 'GOOGLE_CSE_ID', cfg.GOOGLE_CSE_ID )
-init_env_state( 'googlemaps_api_key', 'GOOGLEMAPS_API_KEY', cfg.GOOGLEMAPS_API_KEY )
-init_env_state( 'geocoding_api_key', 'GEOCODING_API_KEY', cfg.GEOCODING_API_KEY )
-init_env_state( 'geoapify_api_key', 'GEOAPIFY_API_KEY', cfg.GEOAPIFY_API_KEY )
-init_env_state( 'google_cloud_project_id', 'GOOGLE_CLOUD_PROJECT_ID', cfg.GOOGLE_CLOUD_PROJECT_ID )
-init_env_state( 'google_cloud_location', 'GOOGLE_CLOUD_LOCATION', cfg.GOOGLE_CLOUD_LOCATION )
-init_env_state( 'xai_api_key', 'XAI_API_KEY', cfg.XAI_API_KEY )
 init_state( 'api_keys', { 'GPT': None, 'Grok': None, 'Gemini': None } )
+init_env_state( 'openai_api_key', 'OPENAI_API_KEY', 'OPENAI_API_KEY', 'GPT' )
+init_env_state( 'gemini_api_key', 'GEMINI_API_KEY', 'GEMINI_API_KEY', 'Gemini' )
+init_env_state( 'google_api_key', 'GOOGLE_API_KEY', 'GOOGLE_API_KEY' )
+init_env_state( 'google_cse_id', 'GOOGLE_CSE_ID', 'GOOGLE_CSE_ID' )
+init_env_state( 'googlemaps_api_key', 'GOOGLEMAPS_API_KEY', 'GOOGLEMAPS_API_KEY' )
+init_env_state( 'geocoding_api_key', 'GEOCODING_API_KEY', 'GEOCODING_API_KEY' )
+init_env_state( 'geoapify_api_key', 'GEOAPIFY_API_KEY', 'GEOAPIFY_API_KEY' )
+init_env_state( 'google_cloud_project_id', 'GOOGLE_CLOUD_PROJECT_ID', 'GOOGLE_CLOUD_PROJECT_ID' )
+init_env_state( 'google_cloud_location', 'GOOGLE_CLOUD_LOCATION', 'GOOGLE_CLOUD_LOCATION' )
+init_env_state( 'xai_api_key', 'XAI_API_KEY', 'XAI_API_KEY', 'Grok' )
 init_state( 'provider', 'GPT' )
 init_state( 'mode', 'Text' )
-
 if st.session_state[ 'provider' ] is None:
 	st.session_state[ 'provider' ] = 'GPT'
 
@@ -3928,7 +3999,8 @@ def render_provider_keys( ) -> None:
 		
 		Purpose:
 		--------
-		Render API key controls and update session/environment values from user input.
+		Render API key controls and update session, environment, and config.py values
+		from user input.
 	
 		Parameters:
 		-----------
@@ -3941,68 +4013,61 @@ def render_provider_keys( ) -> None:
 	"""
 	with st.expander( 'Keys:', expanded=False ):
 		openai_key = st.text_input( 'OpenAI API Key', type='password',
-			value=st.session_state.get( 'openai_api_key', cfg.OPENAI_API_KEY ),
+			value=get_runtime_config_value( 'openai_api_key', 'OPENAI_API_KEY',
+				'OPENAI_API_KEY' ),
 			help='Overrides OPENAI_API_KEY from config.py for this session only.',
 			key='sidebar_openai_api_key' )
 		
 		gemini_key = st.text_input( 'Gemini API Key', type='password',
-			value=st.session_state.get( 'gemini_api_key', cfg.GEMINI_API_KEY ),
+			value=get_runtime_config_value( 'gemini_api_key', 'GEMINI_API_KEY',
+				'GEMINI_API_KEY' ),
 			help='Overrides GEMINI_API_KEY from config.py for this session only.',
 			key='sidebar_gemini_api_key' )
 		
 		xai_key = st.text_input( 'xAI API Key', type='password',
-			value=st.session_state.get( 'xai_api_key', cfg.XAI_API_KEY ),
+			value=get_runtime_config_value( 'xai_api_key', 'XAI_API_KEY',
+				'XAI_API_KEY' ),
 			help='Overrides XAI_API_KEY from config.py for this session only.',
 			key='sidebar_xai_api_key' )
 		
 		google_key = st.text_input( 'Google API Key', type='password',
-			value=st.session_state.get( 'google_api_key', cfg.GOOGLE_API_KEY ),
+			value=get_runtime_config_value( 'google_api_key', 'GOOGLE_API_KEY',
+				'GOOGLE_API_KEY' ),
 			help='Overrides GOOGLE_API_KEY from config.py for this session only.',
 			key='sidebar_google_api_key' )
 		
 		google_cse_id = st.text_input( 'Google CSE ID', type='password',
-			value=st.session_state.get( 'google_cse_id', cfg.GOOGLE_CSE_ID ),
+			value=get_runtime_config_value( 'google_cse_id', 'GOOGLE_CSE_ID',
+				'GOOGLE_CSE_ID' ),
 			help='Overrides GOOGLE_CSE_ID from config.py for this session only.',
 			key='sidebar_google_cse_id' )
 		
 		google_cloud_project_id = st.text_input( 'Google Cloud Project ID', type='password',
-			value=st.session_state.get( 'google_cloud_project_id', cfg.GOOGLE_CLOUD_PROJECT_ID ),
+			value=get_runtime_config_value( 'google_cloud_project_id',
+				'GOOGLE_CLOUD_PROJECT_ID', 'GOOGLE_CLOUD_PROJECT_ID' ),
 			help='Overrides GOOGLE_CLOUD_PROJECT_ID from config.py for this session only.',
 			key='sidebar_google_cloud_project_id' )
 		
 		google_cloud_location = st.text_input( 'Google Cloud Location', type='password',
-			value=st.session_state.get( 'google_cloud_location', cfg.GOOGLE_CLOUD_LOCATION ),
+			value=get_runtime_config_value( 'google_cloud_location',
+				'GOOGLE_CLOUD_LOCATION', 'GOOGLE_CLOUD_LOCATION' ),
 			help='Overrides GOOGLE_CLOUD_LOCATION from config.py for this session only.',
-			key='sidebar_google_cloud_location'
-		)
+			key='sidebar_google_cloud_location' )
 		
-		if openai_key:
-			st.session_state[ 'openai_api_key' ] = openai_key
-			os.environ[ 'OPENAI_API_KEY' ] = openai_key
-		
-		if gemini_key:
-			st.session_state[ 'gemini_api_key' ] = gemini_key
-			os.environ[ 'GEMINI_API_KEY' ] = gemini_key
-		
-		if xai_key:
-			st.session_state[ 'xai_api_key' ] = xai_key
-			os.environ[ 'XAI_API_KEY' ] = xai_key
-		
-		if google_key:
-			st.session_state[ 'google_api_key' ] = google_key
-			os.environ[ 'GOOGLE_API_KEY' ] = google_key
-		
-		if google_cse_id:
-			st.session_state[ 'google_cse_id' ] = google_cse_id
-			os.environ[ 'GOOGLE_CSE_ID' ] = google_cse_id
-		
-		if google_cloud_project_id:
-			st.session_state[ 'google_cloud_project_id' ] = google_cloud_project_id
-			os.environ[ 'GOOGLE_CLOUD_PROJECT_ID' ] = google_cloud_project_id
-		
-		if google_cloud_location:
-			st.session_state[ 'google_cloud_location' ] = google_cloud_location
-			os.environ[ 'GOOGLE_CLOUD_LOCATION' ] = google_cloud_location
+		sync_provider_config( 'openai_api_key', 'OPENAI_API_KEY', 'OPENAI_API_KEY',
+			openai_key, 'GPT' )
+		sync_provider_config( 'gemini_api_key', 'GEMINI_API_KEY', 'GEMINI_API_KEY',
+			gemini_key, 'Gemini' )
+		sync_provider_config( 'xai_api_key', 'XAI_API_KEY', 'XAI_API_KEY',
+			xai_key, 'Grok' )
+		sync_provider_config( 'google_api_key', 'GOOGLE_API_KEY', 'GOOGLE_API_KEY',
+			google_key )
+		sync_provider_config( 'google_cse_id', 'GOOGLE_CSE_ID', 'GOOGLE_CSE_ID',
+			google_cse_id )
+		sync_provider_config( 'google_cloud_project_id', 'GOOGLE_CLOUD_PROJECT_ID',
+			'GOOGLE_CLOUD_PROJECT_ID', google_cloud_project_id )
+		sync_provider_config( 'google_cloud_location', 'GOOGLE_CLOUD_LOCATION',
+			'GOOGLE_CLOUD_LOCATION', google_cloud_location )
 
 # ==============================================================================
 # Page Setup

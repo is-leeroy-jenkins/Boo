@@ -1479,70 +1479,6 @@ class Images( GPT ):
 	    Purpose:
 	    --------
 	    Provides OpenAI image generation, image editing, and image analysis functionality.
-
-	    Attributes:
-	    -----------
-	    api_key:
-	        OpenAI API key loaded from config.py.
-
-	    client:
-	        OpenAI client instance.
-
-	    model:
-	        Image generation/editing model or vision analysis model.
-
-	    prompt:
-	        Prompt used for image generation or image editing.
-
-	    input_text:
-	        Prompt used for image analysis or image editing.
-
-	    response:
-	        Last OpenAI API response object.
-
-	    number:
-	        Number of images requested.
-
-	    size:
-	        Requested output image size.
-
-	    quality:
-	        Requested output image quality.
-
-	    detail:
-	        Vision detail level for image analysis.
-
-	    response_format:
-	        Requested image output format.
-
-	    mime_format:
-	        Requested MIME/output image format.
-
-	    background:
-	        Requested background behavior.
-
-	    compression:
-	        Requested compression value.
-
-	    image_path:
-	        Local image path used for analysis or editing.
-
-	    image_url:
-	        Image URL, when returned by the API.
-
-	    file:
-	        File object returned by the Files API for vision analysis.
-
-	    Methods:
-	    --------
-	    generate:
-	        Generates one or more images from a text prompt.
-
-	    analyze:
-	        Analyzes an uploaded image using a vision-capable Responses API model.
-
-	    edit:
-	        Edits one or more images from an uploaded source image and prompt.
 	
 	"""
 	quality: Optional[ str ]
@@ -1552,127 +1488,131 @@ class Images( GPT ):
 	include: Optional[ List[ str ] ]
 	tool_choice: Optional[ str ]
 	parallel_tools: Optional[ bool ]
-	input: Optional[ List[ Dict[ str, str ] ] | str ]
+	input: Optional[ List[ Dict[ str, Any ] ] | str ]
 	instructions: Optional[ str ]
 	max_tools: Optional[ int ]
-	tools: Optional[ List[ Dict[ str, str ] ] ]
-	messages: Optional[ List[ Dict[ str, str ] ] ]
-	reasoning: Optional[ Dict[ str, str ] ]
-	image_url: Optional[ str ]
-	image_path: Optional[ str ]
-	file_url: Optional[ str ]
-	file_path: Optional[ str ]
-	style: Optional[ str ]
+	tools: Optional[ List[ Dict[ str, Any ] ] ]
+	messages: Optional[ List[ Dict[ str, Any ] ] ]
+	reasoning: Optional[ Dict[ str, Any ] ]
 	allowed_domains: Optional[ List[ str ] ]
-	response_format: Optional[ str ]
-	mime_format: Optional[ str ]
-	background: Optional[ bool ]
-	backcolor: Optional[ str ]
-	compression: Optional[ float ]
+	max_tokens: Optional[ int ]
+	temperature: Optional[ float ]
+	store: Optional[ bool ]
+	stream: Optional[ bool ]
+	response: Optional[ Any ]
+	request: Optional[ Dict[ str, Any ] ]
+	output_text: Optional[ str ]
+	output: Optional[ Any ]
+	file_path: Optional[ str ]
+	image_path: Optional[ str ]
+	image_url: Optional[ str ]
+	mask_path: Optional[ str ]
 	
-	def __init__( self, prompt: str=None, model: str='gpt-image-1', temperature: float=None,
-			top_p: float=None, presence: float=None, frequency: float=None, max_tokens: int=None, 
-			store: bool=None, stream: bool=False, backcolor: str=None, instruct: str=None, 
-			background: bool=None, number: int=None, image_format: str=None,
-			include: List[ Dict[ str, str ] ]=None, tools: List[ Dict[ str, str ] ]=None,
-			max_tools: int=None, respose_format: Dict[ str, str ]=None,
-			response_format: Dict[ str, str ]=None, tool_choice: str=None, image_path: str=None,
-			is_parallel: bool=None, input: List[ Dict[ str, str ] ]=None, previous_id: str=None,
-			reasoning: Dict[ str, str ]=None, input_text: str=None, image_url: str=None,
-			content: List[ Dict[ str, str ] ]=None, quality: str=None, size: str=None,
-			detail: str=None, style: str=None, compression: float=None ):
+	def __init__( self, prompt: str = None, model: str = 'gpt-image-1', temperature: float = None,
+			top_p: float = None, presence: float = None, frequency: float = None,
+			max_tokens: int = None,
+			store: bool = None, stream: bool = False, backcolor: str = None, instruct: str = None,
+			background: bool = None, number: int = None, image_format: str = None,
+			include: List[ Dict[ str, str ] ] = None, tools: List[ Dict[ str, str ] ] = None,
+			max_tools: int = None, respose_format: Dict[ str, str ] = None,
+			response_format: Dict[ str, str ] = None, tool_choice: str = None,
+			image_path: str = None,
+			is_parallel: bool = None, input: List[ Dict[ str, str ] ] = None,
+			previous_id: str = None,
+			reasoning: Dict[ str, str ] = None, input_text: str = None, image_url: str = None,
+			content: List[ Dict[ str, str ] ] = None, quality: str = None, size: str = None,
+			detail: str = None, style: str = None, compression: float = None ):
 		"""
 		
 			Purpose:
 			--------
-			Initialize the Images wrapper with optional defaults used by generation,
-			analysis, and editing calls.
+			Initialize the OpenAI Images wrapper with optional default values.
 
 			Parameters:
 			-----------
 			prompt: str
-				Optional prompt used as default input text.
+				Optional default prompt.
 
 			model: str
-				Optional OpenAI image or vision model.
+				Optional default image model.
 
 			temperature: float
-				Optional sampling temperature for vision analysis.
+				Optional temperature retained for image analysis compatibility.
 
 			top_p: float
-				Optional top-p value retained for compatibility.
+				Optional top-p value retained for UI compatibility.
 
 			presence: float
-				Optional presence penalty retained for compatibility.
+				Optional presence penalty retained for UI compatibility.
 
 			frequency: float
-				Optional frequency penalty retained for compatibility.
+				Optional frequency penalty retained for UI compatibility.
 
 			max_tokens: int
-				Optional maximum output token count for vision analysis.
+				Optional maximum output token count for analysis.
 
 			store: bool
-				Optional Responses API store setting.
+				Optional Responses API store flag.
 
 			stream: bool
-				Optional Responses API stream setting.
+				Optional stream flag retained for compatibility.
 
 			backcolor: str
-				Optional background setting retained for compatibility.
+				Optional background color or background behavior.
 
 			instruct: str
-				Optional system/developer instructions.
+				Optional system instructions.
 
 			background: bool
 				Optional background flag retained for compatibility.
 
 			number: int
-				Optional number of images to request.
+				Optional image count.
 
 			image_format: str
-				Optional output image format.
+				Optional image output format.
 
-			include: List[ Dict[ str, str ] ]
-				Optional include fields retained for compatibility.
+			include: List[Dict[str, str]]
+				Optional include values retained for compatibility.
 
-			tools: List[ Dict[ str, str ] ]
-				Optional tools retained for compatibility.
+			tools: List[Dict[str, str]]
+				Optional tool values retained for compatibility.
 
 			max_tools: int
-				Optional maximum tool calls retained for compatibility.
+				Optional maximum tool count retained for compatibility.
 
-			respose_format: Dict[ str, str ]
-				Backward-compatible misspelled response format parameter.
+			respose_format: Dict[str, str]
+				Backward-compatible misspelled response format value.
 
-			response_format: Dict[ str, str ]
-				Optional corrected response format parameter.
+			response_format: Dict[str, str]
+				Optional response format.
 
 			tool_choice: str
-				Optional tool-choice setting retained for compatibility.
+				Optional tool choice retained for compatibility.
 
 			image_path: str
 				Optional local image path.
 
 			is_parallel: bool
-				Optional parallel-tool setting retained for compatibility.
+				Optional parallel-tool flag retained for compatibility.
 
-			input: List[ Dict[ str, str ] ]
+			input: List[Dict[str, str]]
 				Optional Responses API input payload.
 
 			previous_id: str
 				Optional previous response identifier.
 
-			reasoning: Dict[ str, str ]
-				Optional reasoning object retained for compatibility.
+			reasoning: Dict[str, str]
+				Optional reasoning value retained for compatibility.
 
 			input_text: str
-				Optional prompt text.
+				Optional input text.
 
 			image_url: str
 				Optional image URL.
 
-			content: List[ Dict[ str, str ] ]
-				Optional content payload retained for compatibility.
+			content: List[Dict[str, str]]
+				Optional content value retained for compatibility.
 
 			quality: str
 				Optional image quality.
@@ -1681,13 +1621,13 @@ class Images( GPT ):
 				Optional image size.
 
 			detail: str
-				Optional vision detail value.
+				Optional image-analysis detail level.
 
 			style: str
-				Optional style retained for compatibility.
+				Optional DALL-E style value.
 
 			compression: float
-				Optional output compression value.
+				Optional image compression value.
 
 			Returns:
 			--------
@@ -1698,57 +1638,64 @@ class Images( GPT ):
 		self.api_key = cfg.OPENAI_API_KEY
 		self.client = None
 		self.model = model
-		self.number = number
-		self.previous_id = previous_id
+		self.prompt = prompt
+		self.input_text = input_text
 		self.temperature = temperature
 		self.top_percent = top_p
-		self.frequency_penalty = frequency
 		self.presence_penalty = presence
+		self.frequency_penalty = frequency
 		self.max_tokens = max_tokens
 		self.store = store
 		self.stream = stream
-		self.instruct = instruct
-		self.max_tools = max_tools
-		self.reasoning = reasoning
-		self.tools = tools
-		self.tool_choice = tool_choice
-		self.input_text = input_text if input_text is not None else prompt
-		self.input = input
-		self.content = content
-		self.background = background
+		self.background = backcolor if backcolor is not None else background
 		self.backcolor = backcolor
+		self.instructions = instruct
+		self.number = number
+		self.mime_format = image_format
+		self.output_format = image_format
+		self.include = include if include is not None else [ ]
+		self.tools = tools if tools is not None else [ ]
+		self.max_tools = max_tools
+		self.response_format = response_format if response_format is not None else respose_format
+		self.tool_choice = tool_choice
 		self.image_path = image_path
+		self.file_path = image_path
+		self.parallel_tools = is_parallel
+		self.input = input
+		self.previous_id = previous_id
+		self.reasoning = reasoning
 		self.image_url = image_url
-		self.include = include
+		self.content = content
 		self.quality = quality
-		self.detail = detail
 		self.size = size
+		self.detail = detail
 		self.style = style
 		self.compression = compression
-		self.response_format = response_format if response_format is not None else respose_format
-		self.mime_format = image_format
-		self.parallel_tools = is_parallel
+		self.messages = [ ]
+		self.allowed_domains = [ ]
+		self.request = None
 		self.response = None
-		self.file = None
+		self.output = None
+		self.output_text = None
+		self.mask_path = None
 	
 	@property
 	def style_options( self ) -> List[ str ]:
-		'''
+		"""
+		
+			Purpose:
+			--------
+			Return style options retained for DALL-E compatibility.
 
-	        Purpose:
-	        --------
-	        Return style options retained for legacy DALL-E compatibility.
+			Parameters:
+			-----------
+			None
 
-	        Parameters:
-	        -----------
-	        None
-
-	        Returns:
-	        --------
-	        List[ str ]:
-	            Style option names.
-
-        '''
+			Returns:
+			--------
+			List[str]: Style option names.
+		
+		"""
 		return [
 				'vivid',
 				'natural',
@@ -1756,22 +1703,69 @@ class Images( GPT ):
 	
 	@property
 	def model_options( self ) -> List[ str ] | None:
-		'''
+		"""
+		
+			Purpose:
+			--------
+			Return GPT image models supported by this wrapper.
 
-	        Purpose:
-	        --------
-	        Returns GPT image models supported by this OpenAI Images API wrapper.
+			Parameters:
+			-----------
+			None
 
-	        Parameters:
-	        -----------
-	        None
+			Returns:
+			--------
+			List[str] | None: GPT image model names.
+		
+		"""
+		return [
+				'gpt-image-2',
+				'gpt-image-1.5',
+				'gpt-image-1',
+				'gpt-image-1-mini',
+		]
+	
+	@property
+	def generation_model_options( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return GPT image generation models supported by this wrapper.
 
-	        Returns:
-	        --------
-	        List[ str ] | None:
-	            List of GPT image model names.
+			Parameters:
+			-----------
+			None
 
-        '''
+			Returns:
+			--------
+			List[str] | None: GPT image generation model names.
+		
+		"""
+		return [
+				'gpt-image-2',
+				'gpt-image-1.5',
+				'gpt-image-1',
+				'gpt-image-1-mini',
+		]
+	
+	@property
+	def edit_model_options( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return GPT image editing models supported by this wrapper.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None: GPT image editing model names.
+		
+		"""
 		return [
 				'gpt-image-2',
 				'gpt-image-1.5',
@@ -1781,22 +1775,21 @@ class Images( GPT ):
 	
 	@property
 	def size_options( self ) -> List[ str ]:
-		'''
+		"""
+		
+			Purpose:
+			--------
+			Return supported image size options for current GPT image workflows.
 
-	        Purpose:
-	        --------
-	        Returns supported image size options for current GPT image workflows.
+			Parameters:
+			-----------
+			None
 
-	        Parameters:
-	        -----------
-	        None
-
-	        Returns:
-	        --------
-	        List[ str ]:
-	            Image size options supported by generation and editing controls.
-
-        '''
+			Returns:
+			--------
+			List[str]: Image size options.
+		
+		"""
 		return [
 				'auto',
 				'1024x1024',
@@ -1806,22 +1799,21 @@ class Images( GPT ):
 	
 	@property
 	def analysis_model_options( self ) -> List[ str ] | None:
-		'''
+		"""
+		
+			Purpose:
+			--------
+			Return vision-capable Responses API models for image analysis.
 
-	        Purpose:
-	        --------
-	        Returns vision-capable Responses API models for image analysis.
+			Parameters:
+			-----------
+			None
 
-	        Parameters:
-	        -----------
-	        None
-
-	        Returns:
-	        --------
-	        List[ str ] | None:
-	            List of model names suitable for image analysis.
-
-        '''
+			Returns:
+			--------
+			List[str] | None: Model names suitable for image analysis.
+		
+		"""
 		return [
 				'gpt-5.4',
 				'gpt-5.4-mini',
@@ -1835,22 +1827,21 @@ class Images( GPT ):
 	
 	@property
 	def format_options( self ) -> List[ str ]:
-		'''
-	
-	        Purpose:
-	        --------
-	        Return legacy image response format options.
+		"""
+		
+			Purpose:
+			--------
+			Return legacy image response format options.
 
-	        Parameters:
-	        -----------
-	        None
+			Parameters:
+			-----------
+			None
 
-	        Returns:
-	        --------
-	        List[ str ]:
-	            Legacy response format names.
-
-        '''
+			Returns:
+			--------
+			List[str]: Legacy response format names.
+		
+		"""
 		return [
 				'url',
 				'b64_json',
@@ -1858,22 +1849,21 @@ class Images( GPT ):
 	
 	@property
 	def mime_options( self ) -> List[ str ]:
-		'''
-	
-	        Purpose:
-	        --------
-	        Return supported image output formats.
+		"""
+		
+			Purpose:
+			--------
+			Return supported image output formats.
 
-	        Parameters:
-	        -----------
-	        None
+			Parameters:
+			-----------
+			None
 
-	        Returns:
-	        --------
-	        List[ str ]:
-	            Image output formats.
-
-        '''
+			Returns:
+			--------
+			List[str]: Image output formats.
+		
+		"""
 		return [
 				'png',
 				'jpeg',
@@ -1882,8 +1872,8 @@ class Images( GPT ):
 	
 	@property
 	def include_options( self ) -> List[ str ] | None:
-		'''
-
+		"""
+		
 			Purpose:
 			--------
 			Return Responses API include options relevant to image and multimodal calls.
@@ -1894,10 +1884,9 @@ class Images( GPT ):
 
 			Returns:
 			--------
-			List[ str ] | None:
-				Include option names.
-
-		'''
+			List[str] | None: Include option names.
+		
+		"""
 		return [
 				'file_search_call.results',
 				'web_search_call.results',
@@ -1911,8 +1900,8 @@ class Images( GPT ):
 	
 	@property
 	def tool_options( self ) -> List[ str ] | None:
-		'''
-
+		"""
+		
 			Purpose:
 			--------
 			Return Responses API tool options retained for Image mode compatibility.
@@ -1923,10 +1912,9 @@ class Images( GPT ):
 
 			Returns:
 			--------
-			List[ str ] | None:
-				Tool option names.
-
-		'''
+			List[str] | None: Tool option names.
+		
+		"""
 		return [
 				'web_search',
 				'image_generation',
@@ -1937,8 +1925,8 @@ class Images( GPT ):
 	
 	@property
 	def choice_options( self ) -> List[ str ] | None:
-		'''
-
+		"""
+		
 			Purpose:
 			--------
 			Return tool-choice options retained for Image mode compatibility.
@@ -1949,10 +1937,9 @@ class Images( GPT ):
 
 			Returns:
 			--------
-			List[ str ] | None:
-				Tool-choice option names.
-
-		'''
+			List[str] | None: Tool-choice option names.
+		
+		"""
 		return [
 				'auto',
 				'required',
@@ -1961,22 +1948,21 @@ class Images( GPT ):
 	
 	@property
 	def backcolor_options( self ) -> List[ str ]:
-		'''
-	
-	        Purpose:
-	        --------
-	        Return supported background behavior options for image generation/editing.
+		"""
+		
+			Purpose:
+			--------
+			Return supported background behavior options for image generation and editing.
 
-	        Parameters:
-	        -----------
-	        None
+			Parameters:
+			-----------
+			None
 
-	        Returns:
-	        --------
-	        List[ str ]:
-	            Background option names.
-
-        '''
+			Returns:
+			--------
+			List[str]: Background option names.
+		
+		"""
 		return [
 				'auto',
 				'transparent',
@@ -1985,22 +1971,21 @@ class Images( GPT ):
 	
 	@property
 	def quality_options( self ) -> List[ str ]:
-		'''
+		"""
+		
+			Purpose:
+			--------
+			Return supported GPT image quality options.
 
-	        Purpose:
-	        --------
-	        Returns supported GPT image quality options.
+			Parameters:
+			-----------
+			None
 
-	        Parameters:
-	        -----------
-	        None
-
-	        Returns:
-	        --------
-	        List[ str ]:
-	            Image quality options supported by GPT image generation and editing.
-
-        '''
+			Returns:
+			--------
+			List[str]: Image quality options.
+		
+		"""
 		return [
 				'auto',
 				'low',
@@ -2010,22 +1995,21 @@ class Images( GPT ):
 	
 	@property
 	def detail_options( self ) -> List[ str ]:
-		'''
+		"""
+		
+			Purpose:
+			--------
+			Return supported vision detail options for image analysis.
 
-	        Purpose:
-	        --------
-	        Return supported vision detail options for image analysis.
+			Parameters:
+			-----------
+			None
 
-	        Parameters:
-	        -----------
-	        None
-
-	        Returns:
-	        --------
-	        List[ str ]:
-	            Vision detail options.
-
-        '''
+			Returns:
+			--------
+			List[str]: Vision detail options.
+		
+		"""
 		return [
 				'auto',
 				'low',
@@ -2035,8 +2019,8 @@ class Images( GPT ):
 	
 	@property
 	def reasoning_options( self ) -> List[ str ] | None:
-		'''
-
+		"""
+		
 			Purpose:
 			--------
 			Return reasoning effort options retained for Image mode compatibility.
@@ -2047,10 +2031,9 @@ class Images( GPT ):
 
 			Returns:
 			--------
-			List[ str ] | None:
-				Reasoning effort names.
-
-		'''
+			List[str] | None: Reasoning effort names.
+		
+		"""
 		return [
 				'low',
 				'medium',
@@ -2062,7 +2045,7 @@ class Images( GPT ):
 	
 	@property
 	def modality_options( self ) -> List[ str ] | None:
-		'''
+		"""
 		
 			Purpose:
 			--------
@@ -2074,69 +2057,63 @@ class Images( GPT ):
 
 			Returns:
 			--------
-			List[ str ] | None:
-				Modality option names.
-
-		'''
+			List[str] | None: Modality option names.
+		
+		"""
 		return [
 				'text',
 				'auto',
 				'image',
 				'audio',
 		]
+	
+	def generate( self, prompt: str = None, number: int = 1, model: str = 'gpt-image-1-mini',
+			size: str = '1024x1024', quality: str = 'auto', fmt: str = 'jpeg',
+			compression: float = None, background: str = None, style: str = None,
+			**kwargs: Any ) -> str | bytes | list[ str | bytes ] | None:
+		"""
 		
-		def generate( self, prompt: str=None, number: int=1, model: str='gpt-image-1-mini',
-				size: str='1024x1024', quality: str='auto', fmt: str='jpeg',
-				compression: float=None, background: str=None, style: str=None,
-				**kwargs: Any ) -> str | bytes | list[ str | bytes ] | None:
-			'''
-	
-				Purpose:
-				--------
-				Generate one or more images from a text prompt using the OpenAI Images API.
-	
-				Parameters:
-				-----------
-				prompt: str
-					Text prompt used to generate the image.
-	
-				number: int
-					Number of images to request.
-	
-				model: str
-					OpenAI image model name.
-	
-				size: str
-					Requested output image size.
-	
-				quality: str
-					Requested image quality.
-	
-				fmt: str
-					Requested image output format for GPT image models or response format for
-					DALL-E models.
-	
-				compression: float
-					Optional compression value from 0.0 to 1.0 or 0 to 100 for jpeg and webp
-					outputs.
-	
-				background: str
-					Optional background mode.
-	
-				style: str
-					Optional DALL-E 3 style.
-	
-				**kwargs: Any
-					Provider-neutral keyword arguments supplied by app.py and ignored when they
-					are not supported by the OpenAI Images API.
-	
-				Returns:
-				--------
-				str | bytes | list[str | bytes] | None:
-					Generated image bytes, URL fallback, list of outputs, or None.
-	
-			'''
+			Purpose:
+			--------
+			Generate one or more images from a text prompt using the OpenAI Images API.
+
+			Parameters:
+			-----------
+			prompt: str
+				Text prompt used to generate the image.
+
+			number: int
+				Number of images to request.
+
+			model: str
+				OpenAI image model name.
+
+			size: str
+				Requested output image size.
+
+			quality: str
+				Requested image quality.
+
+			fmt: str
+				Requested image output format.
+
+			compression: float
+				Optional compression value.
+
+			background: str
+				Optional background mode.
+
+			style: str
+				Optional DALL-E style.
+
+			**kwargs: Any
+				Additional UI keyword arguments.
+
+			Returns:
+			--------
+			str | bytes | list[str | bytes] | None: Generated image output.
 		
+		"""
 		try:
 			input_text = (
 					prompt
@@ -2145,159 +2122,88 @@ class Images( GPT ):
 					or kwargs.get( 'content' )
 			)
 			throw_if( 'input_text', input_text )
-			
-			api_key = cfg.OPENAI_API_KEY
-			if api_key is None or not str( api_key ).strip( ):
-				raise ValueError( 'OPENAI_API_KEY is required.' )
-			
-			model = str( model or 'gpt-image-1-mini' ).strip( )
 			throw_if( 'model', model )
 			
-			number = number if isinstance( number, int ) and number > 0 else kwargs.get(
-				'n', 1 )
-			number = min( 10, max( 1, int( number or 1 ) ) )
+			if cfg.OPENAI_API_KEY is None or not str( cfg.OPENAI_API_KEY ).strip( ):
+				raise ValueError( 'OPENAI_API_KEY is required.' )
 			
-			size = str( size or '1024x1024' ).strip( )
-			quality = str( quality or 'auto' ).strip( )
-			output_format = str(
-				kwargs.get( 'mime_type' ) or fmt or kwargs.get( 'response_format' ) or 'jpeg'
-			).strip( ).lower( ).replace( '.', '' )
-			background = background if isinstance( background,
-				str ) and background.strip( ) else None
-			style = style if isinstance( style, str ) and style.strip( ) else kwargs.get( 'style' )
-			
-			valid_models = [
-					'gpt-image-2',
-					'gpt-image-2-2026-04-21',
-					'gpt-image-1.5',
-					'gpt-image-1',
-					'gpt-image-1-mini',
-					'chatgpt-image-latest',
-					'dall-e-2',
-					'dall-e-3',
-			]
-			
-			if model not in valid_models:
-				raise ValueError( f'Unsupported GPT image generation model: {model}' )
-			
-			self.prompt = input_text
-			self.model = model
-			self.number = number
-			self.size = size
-			self.quality = quality
-			self.output_format = output_format
+			self.api_key = cfg.OPENAI_API_KEY
+			self.prompt = str( input_text ).strip( )
+			self.model = str( model ).strip( )
+			self.number = number if isinstance( number, int ) and number > 0 else 1
+			self.size = str( size or '1024x1024' ).strip( )
+			self.quality = str( quality or 'auto' ).strip( )
+			self.output_format = str( fmt or 'jpeg' ).strip( ).lower( ).replace( '.', '' )
+			self.compression = compression
 			self.background = background
 			self.style = style
-			self.client = OpenAI( api_key=api_key )
 			
-			request = {
+			if self.output_format.startswith( 'image/' ):
+				self.output_format = self.output_format.replace( 'image/', '' )
+			
+			self.client = OpenAI( api_key=self.api_key )
+			self.request = {
 					'model': self.model,
 					'prompt': self.prompt,
+					'n': self.number,
+					'size': self.size,
+					'quality': self.quality,
 			}
 			
-			if self.model == 'dall-e-2':
-				if self.size not in [ '256x256', '512x512', '1024x1024' ]:
-					self.size = '1024x1024'
-				
-				response_format = self.output_format
-				if response_format not in [ 'url', 'b64_json' ]:
-					response_format = 'url'
-				
-				request[ 'size' ]=self.size
-				request[ 'n' ]=self.number
-				request[ 'response_format' ]=response_format
-			
-			elif self.model == 'dall-e-3':
-				if self.size not in [ '1024x1024', '1792x1024', '1024x1792' ]:
-					self.size = '1024x1024'
-				
-				if self.quality not in [ 'standard', 'hd' ]:
-					self.quality = 'standard'
-				
-				request[ 'size' ]=self.size
-				request[ 'quality' ]=self.quality
-				request[ 'n' ]=1
-				
-				if self.style in [ 'vivid', 'natural' ]:
-					request[ 'style' ]=self.style
-				
-				response_format = self.output_format
-				if response_format in [ 'url', 'b64_json' ]:
-					request[ 'response_format' ]=response_format
-			
-			else:
-				if self.size not in [ 'auto', '1024x1024', '1024x1536', '1536x1024' ]:
-					self.size = '1024x1024'
-				
-				if self.quality not in [ 'auto', 'low', 'medium', 'high' ]:
-					self.quality = 'auto'
-				
-				if self.output_format not in [ 'png', 'jpeg', 'webp' ]:
+			if self.model.startswith( 'gpt-image' ):
+				if self.output_format not in self.mime_options:
 					self.output_format = 'jpeg'
 				
-				if self.background not in [ 'auto', 'transparent', 'opaque' ]:
-					self.background = None
+				self.request[ 'output_format' ] = self.output_format
 				
-				if self.model.startswith( 'gpt-image-2' ) and self.background == 'transparent':
-					self.background = 'auto'
+				if self.background in self.backcolor_options:
+					self.request[ 'background' ] = self.background
 				
-				request[ 'n' ]=self.number
-				request[ 'size' ]=self.size
-				request[ 'quality' ]=self.quality
-				request[ 'output_format' ]=self.output_format
-				
-				if self.background:
-					request[ 'background' ]=self.background
-				
-				if compression is None:
-					compression = kwargs.get( 'output_compression' )
-				
-				if compression is not None and self.output_format in [ 'jpeg', 'webp' ]:
-					if isinstance( compression, float ) and compression <= 1.0:
-						output_compression = int( round( compression * 100 ) )
+				if self.compression is not None and self.output_format in [ 'jpeg', 'webp' ]:
+					if isinstance( self.compression, float ) and self.compression <= 1.0:
+						self.compression = int( round( self.compression * 100 ) )
 					else:
-						output_compression = int( round( compression ) )
+						self.compression = int( round( self.compression ) )
 					
-					output_compression = max( 0, min( 100, output_compression ) )
-					request[ 'output_compression' ]=output_compression
+					self.compression = max( 0, min( 100, int( self.compression ) ) )
+					self.request[ 'output_compression' ] = self.compression
+			else:
+				if self.output_format in self.format_options:
+					self.request[ 'response_format' ] = self.output_format
+				
+				if self.style in self.style_options:
+					self.request[ 'style' ] = self.style
 			
-			self.request = request
 			self.response = self.client.images.generate( **self.request )
-			self.data = getattr( self.response, 'data', None )
-			outputs = [ ]
 			
-			if self.data:
-				for item in self.data:
-					b64_json = getattr( item, 'b64_json', None )
-					url = getattr( item, 'url', None )
-					
-					if b64_json:
-						outputs.append( base64.b64decode( b64_json ) )
-					elif url:
-						outputs.append( url )
+			if getattr( self.response, 'data', None ):
+				self.output = [ ]
+				for item in self.response.data:
+					if getattr( item, 'b64_json', None ):
+						self.output.append( base64.b64decode( item.b64_json ) )
+					elif getattr( item, 'url', None ):
+						self.output.append( item.url )
+				
+				if len( self.output ) == 1:
+					return self.output[ 0 ]
+				
+				if len( self.output ) > 1:
+					return self.output
 			
-			self.outputs = outputs
-			
-			if len( self.outputs ) == 1:
-				return self.outputs[ 0 ]
-			
-			if len( self.outputs ) > 1:
-				return self.outputs
-			
-			return None
+			return self.response
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gpt'
-			exception.cause = 'Image'
-			exception.method = 'generate( self, prompt: str=None, **kwargs )'
+			exception.cause = 'Images'
+			exception.method = 'generate( self, prompt: str=None, model: str=None )'
 			raise exception
 	
-	def analyze( self, text: str=None, path: str=None, instruct: str=None,
-			model: str='gpt-4o-mini', max_tokens: int=None, temperature: float=None,
-			include: List[ str ]=None, store: bool=None, stream: bool=None,
-			detail: str='auto', **kwargs: Any ) -> str | None:
-		'''
-
+	def analyze( self, text: str = None, path: str = None, model: str = 'gpt-4o-mini',
+			instruct: str = None, max_tokens: int = None, temperature: float = None,
+			include: List[ str ] = None, store: bool = None, stream: bool = None,
+			detail: str = 'auto', **kwargs: Any ) -> str | None:
+		"""
+		
 			Purpose:
 			--------
 			Analyze an uploaded image using a vision-capable Responses API model.
@@ -2305,172 +2211,161 @@ class Images( GPT ):
 			Parameters:
 			-----------
 			text: str
-				Analysis prompt.
+				Image analysis prompt.
 
 			path: str
 				Local image path.
 
-			instruct: str
-				Optional system or developer instructions.
-
 			model: str
 				Vision-capable model name.
+
+			instruct: str
+				Optional instructions.
 
 			max_tokens: int
 				Optional maximum output token count.
 
 			temperature: float
-				Optional sampling temperature.
+				Optional temperature.
 
 			include: List[str]
-				Optional Responses API include fields.
+				Optional include values.
 
 			store: bool
-				Optional Responses API store flag.
+				Optional store flag.
 
 			stream: bool
-				Optional Responses API stream flag.
+				Optional stream flag.
 
 			detail: str
-				Optional vision detail level: auto, low, or high.
+				Optional image detail level.
 
 			**kwargs: Any
-				Provider-neutral keyword arguments supplied by app.py and ignored when they
-				are not supported by the OpenAI Responses API.
+				Additional UI keyword arguments.
 
 			Returns:
 			--------
-			str | None:
-				Text analysis result.
-
-		'''
+			str | None: Image analysis text.
+		
+		"""
 		try:
-			input_text = ( text or kwargs.get( 'prompt' )
-					or kwargs.get( 'input_text' )
+			input_text = ( text or kwargs.get( 'prompt' ) or kwargs.get( 'input_text' )
 					or kwargs.get( 'content' ) )
-			throw_if( 'input_text', input_text )
-			
 			file_path = path or kwargs.get( 'image_path' ) or kwargs.get( 'file_path' )
+			throw_if( 'input_text', input_text )
 			throw_if( 'file_path', file_path )
-			
-			api_key = cfg.OPENAI_API_KEY
-			if api_key is None or not str( api_key ).strip( ):
-				raise ValueError( 'OPENAI_API_KEY is required.' )
-			
-			model = str( model or 'gpt-4o-mini' ).strip( )
 			throw_if( 'model', model )
 			
-			if model.startswith( 'gpt-image' ) or model.startswith( 'dall-e' ):
-				model = 'gpt-4o-mini'
+			if cfg.OPENAI_API_KEY is None or not str( cfg.OPENAI_API_KEY ).strip( ):
+				raise ValueError( 'OPENAI_API_KEY is required.' )
 			
-			detail = str( detail or 'auto' ).strip( )
-			if detail == 'original':
-				detail = 'auto'
-			
-			if detail not in [ 'auto', 'low', 'high' ]:
-				detail = 'auto'
-			
-			self.input_text = input_text
-			self.file_path = file_path
-			self.model = model
-			self.instructions = instruct if isinstance( instruct, str ) else kwargs.get(
-				'instructions', '' )
-			self.max_tokens = max_tokens if max_tokens is not None else kwargs.get(
-				'max_output_tokens' )
+			self.api_key = cfg.OPENAI_API_KEY
+			self.input_text = str( input_text ).strip( )
+			self.file_path = str( file_path ).strip( )
+			self.image_path = self.file_path
+			self.model = str( model ).strip( )
+			self.instructions = instruct
+			self.max_tokens = max_tokens
 			self.temperature = temperature
-			self.include = include if include is not None else kwargs.get( 'include', [ ] )
+			self.include = include if include is not None else [ ]
 			self.store = store
 			self.stream = stream
-			self.detail = detail
-			self.client = OpenAI( api_key=api_key )
+			self.detail = str( detail or 'auto' ).strip( )
 			
-			suffix = Path( self.file_path ).suffix.lower( ).replace( '.', '' )
-			mime_type = {
-					'jpg': 'jpeg',
-					'jpeg': 'jpeg',
-					'png': 'png',
-					'webp': 'webp',
-					'gif': 'gif',
-			}.get( suffix, 'png' )
+			if self.model.startswith( 'gpt-image' ):
+				self.model = 'gpt-4o-mini'
 			
-			with open( self.file_path, 'rb' ) as source:
-				encoded_image = base64.b64encode( source.read( ) ).decode( 'utf-8' )
+			if self.detail == 'original':
+				self.detail = 'auto'
 			
-			image_content = {
-					'type': 'input_image',
-					'image_url': f'data:image/{mime_type};base64,{encoded_image}',
-					'detail': self.detail,
-			}
+			if self.detail not in [ 'auto', 'low', 'high' ]:
+				self.detail = 'auto'
+			
+			self.file_suffix = Path( self.file_path ).suffix.lower( ).replace( '.', '' )
+			if self.file_suffix == 'jpg':
+				self.file_suffix = 'jpeg'
+			
+			if self.file_suffix not in [ 'jpeg', 'png', 'webp', 'gif' ]:
+				self.file_suffix = 'png'
+			
+			with open( self.file_path, 'rb' ) as image_file:
+				self.encoded_image = base64.b64encode( image_file.read( ) ).decode( 'utf-8' )
 			
 			self.input = [
 					{
 							'role': 'user',
 							'content': [
-									{ 'type': 'input_text', 'text': self.input_text },
-									image_content,
+									{
+											'type': 'input_text',
+											'text': self.input_text,
+									},
+									{
+											'type': 'input_image',
+											'image_url': f'data:image/{self.file_suffix};base64,{self.encoded_image}',
+											'detail': self.detail,
+									},
 							],
 					}
 			]
 			
-			request = {
+			self.request = {
 					'model': self.model,
 					'input': self.input,
 			}
 			
 			if self.instructions and str( self.instructions ).strip( ):
-				request[ 'instructions' ]=str( self.instructions ).strip( )
+				self.request[ 'instructions' ] = str( self.instructions ).strip( )
 			
 			if isinstance( self.max_tokens, int ) and self.max_tokens > 0:
-				request[ 'max_output_tokens' ]=self.max_tokens
+				self.request[ 'max_output_tokens' ] = self.max_tokens
 			
 			if self.temperature is not None and not self.model.startswith( 'gpt-5' ):
-				request[ 'temperature' ]=self.temperature
+				self.request[ 'temperature' ] = self.temperature
 			
 			if isinstance( self.include, list ) and len( self.include ) > 0:
-				request[ 'include' ]=self.include
-			
-			if self.stream is not None:
-				request[ 'stream' ]=self.stream
+				self.request[ 'include' ] = self.include
 			
 			if self.store is not None:
-				request[ 'store' ]=self.store
+				self.request[ 'store' ] = self.store
 			
-			self.request = request
+			if self.stream is not None:
+				self.request[ 'stream' ] = self.stream
+			
+			self.client = OpenAI( api_key=self.api_key )
 			self.response = self.client.responses.create( **self.request )
-			self.output_text = getattr( self.response, 'output_text', None )
 			
+			self.output_text = getattr( self.response, 'output_text', None )
 			if self.output_text:
 				return self.output_text
 			
-			if hasattr( self.response, 'output' ) and self.response.output:
+			try:
 				for item in self.response.output:
 					if getattr( item, 'type', None ) != 'message':
 						continue
 					
-					if not hasattr( item, 'content' ) or item.content is None:
-						continue
-					
 					for block in item.content:
 						if getattr( block, 'type', None ) == 'output_text':
-							output_text = getattr( block, 'text', None )
-							if output_text:
-								self.output_text = output_text
+							self.output_text = getattr( block, 'text', None )
+							if self.output_text:
 								return self.output_text
+			except Exception:
+				pass
 			
 			return None
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gpt'
-			exception.cause = 'Image'
-			exception.method = 'analyze( self, text: str=None, path: str=None, **kwargs )'
+			exception.cause = 'Images'
+			exception.method = 'analyze( self, text: str=None, path: str=None, model: str=None )'
 			raise exception
 	
-	def edit( self, prompt: str=None, path: str=None, model: str='gpt-image-1-mini',
-			size: str='1024x1024', quality: str='auto', fmt: str='jpeg',
-			compression: float=None, background: str=None, number: int=None,
-			mask_path: str=None, mask: str=None, **kwargs: Any ) -> str | bytes | list[ str | bytes ] | None:
+	def edit( self, prompt: str = None, path: str = None, model: str = 'gpt-image-1-mini',
+			size: str = '1024x1024', quality: str = 'auto', fmt: str = 'jpeg',
+			compression: float = None, background: str = None, number: int = 1,
+			mask_path: str = None, mask: str = None,
+			**kwargs: Any ) -> str | bytes | list[ str | bytes ] | None:
 		"""
-
+		
 			Purpose:
 			--------
 			Edit an uploaded image using the OpenAI Images API.
@@ -2493,17 +2388,16 @@ class Images( GPT ):
 				Requested output image quality.
 
 			fmt: str
-				Requested output image format for GPT image models.
+				Requested output image format.
 
 			compression: float
-				Optional compression value from 0.0 to 1.0 or 0 to 100 for jpeg and webp
-				outputs.
+				Optional compression value.
 
 			background: str
 				Optional background mode.
 
 			number: int
-				Optional number of edited images to request.
+				Number of edited images requested.
 
 			mask_path: str
 				Optional local mask path.
@@ -2512,157 +2406,98 @@ class Images( GPT ):
 				Optional local mask path alias.
 
 			**kwargs: Any
-				Provider-neutral keyword arguments supplied by app.py and ignored when they
-				are not supported by the OpenAI Images API.
+				Additional UI keyword arguments.
 
 			Returns:
 			--------
-			str | bytes | list[str | bytes] | None:
-				Edited image bytes, URL fallback, list of outputs, or None.
-
+			str | bytes | list[str | bytes] | None: Edited image output.
+		
 		"""
 		source = None
 		mask_source = None
 		
 		try:
-			input_text = ( prompt or kwargs.get( 'text' ) or kwargs.get( 'input_text' )
-					or kwargs.get( 'content' ) )
-			throw_if( 'input_text', input_text )
+			input_text = ( prompt or kwargs.get( 'text' )
+					or kwargs.get( 'input_text' ) or kwargs.get( 'content' ) )
 			file_path = path or kwargs.get( 'image_path' ) or kwargs.get( 'file_path' )
+			throw_if( 'input_text', input_text )
 			throw_if( 'file_path', file_path )
-			api_key = cfg.OPENAI_API_KEY
-			if api_key is None or not str( api_key ).strip( ):
+			throw_if( 'model', model )
+			
+			if cfg.OPENAI_API_KEY is None or not str( cfg.OPENAI_API_KEY ).strip( ):
 				raise ValueError( 'OPENAI_API_KEY is required.' )
 			
-			model = str( model or 'gpt-image-1-mini' ).strip( )
-			throw_if( 'model', model )
-			mask_path = mask_path or mask or kwargs.get( 'mask_path' ) or kwargs.get( 'mask' )
-			number = number if isinstance( number, int ) and number > 0 else kwargs.get(
-				'n', self.number )
-			number = number if isinstance( number, int ) and number > 0 else 1
-			number = min( 10, max( 1, int( number ) ) )
-			size = str( size or '1024x1024' ).strip( )
-			quality = str( quality or 'auto' ).strip( )
-			output_format = str(
-				kwargs.get( 'mime_type' ) or fmt or kwargs.get( 'response_format' ) or 'jpeg'
-			).strip( ).lower( ).replace( '.', '' )
-			background = background if isinstance( background, str ) and background.strip( ) else None
-			
-			valid_models = [
-					'gpt-image-2',
-					'gpt-image-2-2026-04-21',
-					'gpt-image-1.5',
-					'gpt-image-1',
-					'gpt-image-1-mini',
-					'chatgpt-image-latest',
-					'dall-e-2',
-			]
-			
-			if model not in valid_models:
-				raise ValueError( f'Unsupported GPT image edit model: {model}' )
-			
-			self.input_text = input_text
-			self.file_path = file_path
-			self.mask_path = mask_path
-			self.model = model
-			self.number = number
-			self.size = size
-			self.quality = quality
-			self.output_format = output_format
+			self.api_key = cfg.OPENAI_API_KEY
+			self.input_text = str( input_text ).strip( )
+			self.prompt = self.input_text
+			self.file_path = str( file_path ).strip( )
+			self.image_path = self.file_path
+			self.mask_path = mask_path or mask or kwargs.get( 'mask_path' ) or kwargs.get( 'mask' )
+			self.model = str( model ).strip( )
+			self.number = number if isinstance( number, int ) and number > 0 else 1
+			self.size = str( size or '1024x1024' ).strip( )
+			self.quality = str( quality or 'auto' ).strip( )
+			self.output_format = str( fmt or 'jpeg' ).strip( ).lower( ).replace( '.', '' )
+			self.compression = compression
 			self.background = background
-			self.client = OpenAI( api_key=api_key )
+			if self.output_format.startswith( 'image/' ):
+				self.output_format = self.output_format.replace( 'image/', '' )
 			
-			request = {
+			self.request = {
 					'model': self.model,
 					'prompt': self.input_text,
 					'n': self.number,
+					'size': self.size,
+					'quality': self.quality,
 			}
 			
-			if self.model == 'dall-e-2':
-				if self.size not in [ '256x256', '512x512', '1024x1024' ]:
-					self.size = '1024x1024'
-				
-				response_format = self.output_format
-				if response_format not in [ 'url', 'b64_json' ]:
-					response_format = 'url'
-				
-				request[ 'size' ]=self.size
-				request[ 'response_format' ]=response_format
+			if self.output_format in self.mime_options:
+				self.request[ 'output_format' ] = self.output_format
+			elif self.output_format in self.format_options:
+				self.request[ 'response_format' ] = self.output_format
 			
-			else:
-				if self.size not in [ 'auto', '1024x1024', '1024x1536', '1536x1024' ]:
-					self.size = '1024x1024'
-				
-				if self.quality not in [ 'auto', 'low', 'medium', 'high' ]:
-					self.quality = 'auto'
-				
-				if self.output_format not in [ 'png', 'jpeg', 'webp' ]:
-					self.output_format = 'jpeg'
-				
-				if self.background not in [ 'auto', 'opaque', 'transparent' ]:
-					self.background = None
-				
-				if self.model.startswith( 'gpt-image-2' ) and self.background == 'transparent':
-					self.background = 'auto'
-				
-				request[ 'size' ]=self.size
-				request[ 'quality' ]=self.quality
-				request[ 'output_format' ]=self.output_format
-				if self.background:
-					request[ 'background' ]=self.background
-				
-				if compression is None:
-					compression = kwargs.get( 'output_compression' )
-				
-				if compression is not None and self.output_format in [ 'jpeg', 'webp' ]:
-					if isinstance( compression, float ) and compression <= 1.0:
-						output_compression = int( round( compression * 100 ) )
-					else:
-						output_compression = int( round( compression ) )
-					
-					output_compression = max( 0, min( 100, output_compression ) )
-					request[ 'output_compression' ]=output_compression
+			if self.background in self.backcolor_options:
+				self.request[ 'background' ] = self.background
 			
+			if self.compression is not None and self.output_format in [ 'jpeg', 'webp' ]:
+				if isinstance( self.compression, float ) and self.compression <= 1.0:
+					self.compression = int( round( self.compression * 100 ) )
+				else:
+					self.compression = int( round( self.compression ) )
+				
+				self.compression = max( 0, min( 100, int( self.compression ) ) )
+				self.request[ 'output_compression' ] = self.compression
+			
+			self.client = OpenAI( api_key=self.api_key )
 			source = open( self.file_path, 'rb' )
-			self.request = request
 			
 			if self.mask_path:
 				mask_source = open( self.mask_path, 'rb' )
-				self.response = self.client.images.edit(
-					image=source,
-					mask=mask_source,
-					**self.request
-				)
+				self.response = self.client.images.edit( image=source, mask=mask_source,
+					**self.request )
 			else:
 				self.response = self.client.images.edit( image=source, **self.request )
 			
-			self.data = getattr( self.response, 'data', None )
-			outputs = [ ]
+			if getattr( self.response, 'data', None ):
+				self.output = [ ]
+				for item in self.response.data:
+					if getattr( item, 'b64_json', None ):
+						self.output.append( base64.b64decode( item.b64_json ) )
+					elif getattr( item, 'url', None ):
+						self.output.append( item.url )
+				
+				if len( self.output ) == 1:
+					return self.output[ 0 ]
+				
+				if len( self.output ) > 1:
+					return self.output
 			
-			if self.data:
-				for item in self.data:
-					b64_json = getattr( item, 'b64_json', None )
-					url = getattr( item, 'url', None )
-					
-					if b64_json:
-						outputs.append( base64.b64decode( b64_json ) )
-					elif url:
-						outputs.append( url )
-			
-			self.outputs = outputs
-			
-			if len( self.outputs ) == 1:
-				return self.outputs[ 0 ]
-			
-			if len( self.outputs ) > 1:
-				return self.outputs
-			
-			return None
+			return self.response
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gpt'
-			exception.cause = 'Image'
-			exception.method = 'edit( self, prompt: str=None, path: str=None, **kwargs )'
+			exception.cause = 'Images'
+			exception.method = 'edit( self, prompt: str=None, path: str=None, model: str=None )'
 			raise exception
 		finally:
 			if source is not None:
@@ -2672,51 +2507,76 @@ class Images( GPT ):
 				mask_source.close( )
 	
 	def __dir__( self ) -> List[ str ] | None:
-		'''
-	
-	        Purpose:
-	        --------
-	        Method returns a list of strings representing members.
+		"""
+		
+			Purpose:
+			--------
+			Return member names for inspection.
 
-	        Parameters:
-	        ----------
-	        None
+			Parameters:
+			-----------
+			None
 
-	        Returns:
-	        --------
-	        List[ str ] | None:
-	            Member names.
-
-        '''
+			Returns:
+			--------
+			List[str] | None: Member names.
+		
+		"""
 		return [
-				'number',
+				'api_key',
+				'client',
+				'model',
+				'prompt',
+				'input_text',
 				'temperature',
 				'top_percent',
 				'frequency_penalty',
 				'presence_penalty',
-				'max_completion_tokens',
+				'max_tokens',
 				'store',
 				'stream',
-				'modalities',
-				'stops',
-				'api_key',
-				'client',
-				'path',
-				'input_text',
+				'background',
+				'number',
+				'response_format',
+				'instructions',
+				'include',
+				'tool_choice',
+				'previous_id',
+				'parallel_tools',
+				'max_tools',
+				'input',
+				'tools',
+				'reasoning',
+				'allowed_domains',
+				'output_text',
+				'response',
+				'request',
+				'output',
+				'image_path',
 				'image_url',
+				'file_path',
+				'mask_path',
 				'size',
 				'quality',
 				'detail',
-				'model',
+				'style',
+				'compression',
 				'style_options',
 				'model_options',
+				'generation_model_options',
+				'edit_model_options',
+				'size_options',
 				'analysis_model_options',
-				'detail_options',
 				'format_options',
 				'mime_options',
-				'size_options',
-				'quality_options',
+				'include_options',
+				'tool_options',
+				'choice_options',
 				'backcolor_options',
+				'quality_options',
+				'detail_options',
+				'reasoning_options',
+				'modality_options',
 				'generate',
 				'analyze',
 				'edit',
