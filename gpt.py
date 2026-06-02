@@ -2085,9 +2085,9 @@ class Images( GPT ):
 				'audio',
 		]
 		
-		def generate( self, prompt: str = None, number: int = 1, model: str = 'gpt-image-1-mini',
-				size: str = '1024x1024', quality: str = 'auto', fmt: str = 'jpeg',
-				compression: float = None, background: str = None, style: str = None,
+		def generate( self, prompt: str=None, number: int=1, model: str='gpt-image-1-mini',
+				size: str='1024x1024', quality: str='auto', fmt: str='jpeg',
+				compression: float=None, background: str=None, style: str=None,
 				**kwargs: Any ) -> str | bytes | list[ str | bytes ] | None:
 			'''
 	
@@ -2203,9 +2203,9 @@ class Images( GPT ):
 				if response_format not in [ 'url', 'b64_json' ]:
 					response_format = 'url'
 				
-				request[ 'size' ] = self.size
-				request[ 'n' ] = self.number
-				request[ 'response_format' ] = response_format
+				request[ 'size' ]=self.size
+				request[ 'n' ]=self.number
+				request[ 'response_format' ]=response_format
 			
 			elif self.model == 'dall-e-3':
 				if self.size not in [ '1024x1024', '1792x1024', '1024x1792' ]:
@@ -2214,16 +2214,16 @@ class Images( GPT ):
 				if self.quality not in [ 'standard', 'hd' ]:
 					self.quality = 'standard'
 				
-				request[ 'size' ] = self.size
-				request[ 'quality' ] = self.quality
-				request[ 'n' ] = 1
+				request[ 'size' ]=self.size
+				request[ 'quality' ]=self.quality
+				request[ 'n' ]=1
 				
 				if self.style in [ 'vivid', 'natural' ]:
-					request[ 'style' ] = self.style
+					request[ 'style' ]=self.style
 				
 				response_format = self.output_format
 				if response_format in [ 'url', 'b64_json' ]:
-					request[ 'response_format' ] = response_format
+					request[ 'response_format' ]=response_format
 			
 			else:
 				if self.size not in [ 'auto', '1024x1024', '1024x1536', '1536x1024' ]:
@@ -2241,13 +2241,13 @@ class Images( GPT ):
 				if self.model.startswith( 'gpt-image-2' ) and self.background == 'transparent':
 					self.background = 'auto'
 				
-				request[ 'n' ] = self.number
-				request[ 'size' ] = self.size
-				request[ 'quality' ] = self.quality
-				request[ 'output_format' ] = self.output_format
+				request[ 'n' ]=self.number
+				request[ 'size' ]=self.size
+				request[ 'quality' ]=self.quality
+				request[ 'output_format' ]=self.output_format
 				
 				if self.background:
-					request[ 'background' ] = self.background
+					request[ 'background' ]=self.background
 				
 				if compression is None:
 					compression = kwargs.get( 'output_compression' )
@@ -2259,7 +2259,7 @@ class Images( GPT ):
 						output_compression = int( round( compression ) )
 					
 					output_compression = max( 0, min( 100, output_compression ) )
-					request[ 'output_compression' ] = output_compression
+					request[ 'output_compression' ]=output_compression
 			
 			self.request = request
 			self.response = self.client.images.generate( **self.request )
@@ -2292,10 +2292,10 @@ class Images( GPT ):
 			exception.method = 'generate( self, prompt: str=None, **kwargs )'
 			raise exception
 	
-	def analyze( self, text: str = None, path: str = None, instruct: str = None,
-			model: str = 'gpt-4o-mini', max_tokens: int = None, temperature: float = None,
-			include: List[ str ] = None, store: bool = None, stream: bool = None,
-			detail: str = 'auto', **kwargs: Any ) -> str | None:
+	def analyze( self, text: str=None, path: str=None, instruct: str=None,
+			model: str='gpt-4o-mini', max_tokens: int=None, temperature: float=None,
+			include: List[ str ]=None, store: bool=None, stream: bool=None,
+			detail: str='auto', **kwargs: Any ) -> str | None:
 		'''
 
 			Purpose:
@@ -2345,12 +2345,9 @@ class Images( GPT ):
 
 		'''
 		try:
-			input_text = (
-					text
-					or kwargs.get( 'prompt' )
+			input_text = ( text or kwargs.get( 'prompt' )
 					or kwargs.get( 'input_text' )
-					or kwargs.get( 'content' )
-			)
+					or kwargs.get( 'content' ) )
 			throw_if( 'input_text', input_text )
 			
 			file_path = path or kwargs.get( 'image_path' ) or kwargs.get( 'file_path' )
@@ -2421,22 +2418,22 @@ class Images( GPT ):
 			}
 			
 			if self.instructions and str( self.instructions ).strip( ):
-				request[ 'instructions' ] = str( self.instructions ).strip( )
+				request[ 'instructions' ]=str( self.instructions ).strip( )
 			
 			if isinstance( self.max_tokens, int ) and self.max_tokens > 0:
-				request[ 'max_output_tokens' ] = self.max_tokens
+				request[ 'max_output_tokens' ]=self.max_tokens
 			
 			if self.temperature is not None and not self.model.startswith( 'gpt-5' ):
-				request[ 'temperature' ] = self.temperature
+				request[ 'temperature' ]=self.temperature
 			
 			if isinstance( self.include, list ) and len( self.include ) > 0:
-				request[ 'include' ] = self.include
+				request[ 'include' ]=self.include
 			
 			if self.stream is not None:
-				request[ 'stream' ] = self.stream
+				request[ 'stream' ]=self.stream
 			
 			if self.store is not None:
-				request[ 'store' ] = self.store
+				request[ 'store' ]=self.store
 			
 			self.request = request
 			self.response = self.client.responses.create( **self.request )
@@ -2468,10 +2465,10 @@ class Images( GPT ):
 			exception.method = 'analyze( self, text: str=None, path: str=None, **kwargs )'
 			raise exception
 	
-	def edit( self, prompt: str = None, path: str = None, model: str = 'gpt-image-1-mini',
-			size: str = '1024x1024', quality: str = 'auto', fmt: str = 'jpeg',
-			compression: float = None, background: str = None, number: int = None,
-			mask_path: str = None, mask: str = None, **kwargs: Any ) -> str | bytes | list[ str | bytes ] | None:
+	def edit( self, prompt: str=None, path: str=None, model: str='gpt-image-1-mini',
+			size: str='1024x1024', quality: str='auto', fmt: str='jpeg',
+			compression: float=None, background: str=None, number: int=None,
+			mask_path: str=None, mask: str=None, **kwargs: Any ) -> str | bytes | list[ str | bytes ] | None:
 		"""
 
 			Purpose:
@@ -2589,8 +2586,8 @@ class Images( GPT ):
 				if response_format not in [ 'url', 'b64_json' ]:
 					response_format = 'url'
 				
-				request[ 'size' ] = self.size
-				request[ 'response_format' ] = response_format
+				request[ 'size' ]=self.size
+				request[ 'response_format' ]=response_format
 			
 			else:
 				if self.size not in [ 'auto', '1024x1024', '1024x1536', '1536x1024' ]:
@@ -2608,11 +2605,11 @@ class Images( GPT ):
 				if self.model.startswith( 'gpt-image-2' ) and self.background == 'transparent':
 					self.background = 'auto'
 				
-				request[ 'size' ] = self.size
-				request[ 'quality' ] = self.quality
-				request[ 'output_format' ] = self.output_format
+				request[ 'size' ]=self.size
+				request[ 'quality' ]=self.quality
+				request[ 'output_format' ]=self.output_format
 				if self.background:
-					request[ 'background' ] = self.background
+					request[ 'background' ]=self.background
 				
 				if compression is None:
 					compression = kwargs.get( 'output_compression' )
@@ -2624,7 +2621,7 @@ class Images( GPT ):
 						output_compression = int( round( compression ) )
 					
 					output_compression = max( 0, min( 100, output_compression ) )
-					request[ 'output_compression' ] = output_compression
+					request[ 'output_compression' ]=output_compression
 			
 			source = open( self.file_path, 'rb' )
 			self.request = request
@@ -3081,9 +3078,9 @@ class TTS( ):
 			exception.method = 'validate_speed( self, speed: float=None ) -> float'
 			raise exception
 		
-	def create_speech( self, text: str = None, model: str = 'gpt-4o-mini-tts',
-			format: str = 'mp3', speed: float = 1.0, voice: str = 'alloy',
-			instruct: str = None, file_path: str = None, **kwargs: Any ) -> bytes | None:
+	def create_speech( self, text: str=None, model: str='gpt-4o-mini-tts',
+			format: str='mp3', speed: float=1.0, voice: str='alloy',
+			instruct: str=None, file_path: str=None, **kwargs: Any ) -> bytes | None:
 		"""
 
 			Purpose:
@@ -3165,7 +3162,7 @@ class TTS( ):
 				}
 				
 				if self.instructions and self.model not in ('tts-1', 'tts-1-hd'):
-					request[ 'instructions' ] = self.instructions
+					request[ 'instructions' ]=self.instructions
 				
 				self.request = request
 				
@@ -3775,9 +3772,9 @@ class Transcription( GPT ):
 			exception.method = 'normalize_response( self, response: Any ) -> Dict[ str, Any ]'
 			raise exception
 		
-	def transcribe( self, path: str = None, model: str = 'gpt-4o-transcribe',
-			language: str = None, prompt: str = None, format: str = None,
-			temperature: float = None, include: List[ str ] = None,
+	def transcribe( self, path: str=None, model: str='gpt-4o-transcribe',
+			language: str=None, prompt: str=None, format: str=None,
+			temperature: float=None, include: List[ str ]=None,
 			**kwargs: Any ) -> str | None:
 		"""
 
@@ -3856,19 +3853,19 @@ class Transcription( GPT ):
 			}
 			
 			if self.language:
-				request[ 'language' ] = self.language
+				request[ 'language' ]=self.language
 			
 			if self.prompt:
-				request[ 'prompt' ] = self.prompt
+				request[ 'prompt' ]=self.prompt
 			
 			if self.response_format:
-				request[ 'response_format' ] = self.response_format
+				request[ 'response_format' ]=self.response_format
 			
 			if self.include:
-				request[ 'include' ] = self.include
+				request[ 'include' ]=self.include
 			
 			if self.temperature is not None and self.model == 'whisper-1':
-				request[ 'temperature' ] = self.temperature
+				request[ 'temperature' ]=self.temperature
 			
 			self.request = request
 			
@@ -4340,8 +4337,8 @@ class Translation( GPT ):
 			exception.method = 'normalize_response( self, response: Any ) -> Dict[ str, Any ]'
 			raise exception
 		
-	def translate( self, filepath: str = None, model: str = 'whisper-1', prompt: str = None,
-			format: str = None, temperature: float = None, language: str = None,
+	def translate( self, filepath: str=None, model: str='whisper-1', prompt: str=None,
+			format: str=None, temperature: float=None, language: str=None,
 			**kwargs: Any ) -> str | None:
 		"""
 
@@ -4405,13 +4402,13 @@ class Translation( GPT ):
 			self.client = OpenAI( api_key=api_key )
 			request = { 'model': self.model, }
 			if self.prompt:
-				request[ 'prompt' ] = self.prompt
+				request[ 'prompt' ]=self.prompt
 			
 			if self.response_format:
-				request[ 'response_format' ] = self.response_format
+				request[ 'response_format' ]=self.response_format
 			
 			if self.temperature is not None:
-				request[ 'temperature' ] = self.temperature
+				request[ 'temperature' ]=self.temperature
 			
 			self.request = request
 			
@@ -5059,8 +5056,8 @@ class Embeddings( GPT ):
 			exception.method = 'validate_token_limits( self, text: str | List[ str ] )'
 			raise exception
 		
-	def build_request( self, text: str | List[ str ], model: str = 'text-embedding-3-small',
-			format: str = 'float', dimensions: int = None, user: str = None ) -> Dict[ str, Any ]:
+	def build_request( self, text: str | List[ str ], model: str='text-embedding-3-small',
+			format: str='float', dimensions: int=None, user: str=None ) -> Dict[ str, Any ]:
 		"""
 	
 			Purpose:
@@ -5117,10 +5114,10 @@ class Embeddings( GPT ):
 			}
 			
 			if self.dimensions is not None:
-				self.request[ 'dimensions' ] = self.dimensions
+				self.request[ 'dimensions' ]=self.dimensions
 			
 			if self.user:
-				self.request[ 'user' ] = self.user.strip( )
+				self.request[ 'user' ]=self.user.strip( )
 			
 			return self.request
 		except Exception as e:
@@ -5130,9 +5127,9 @@ class Embeddings( GPT ):
 			exception.method = 'build_request( self, text, model, format, dimensions, user )'
 			raise exception
 	
-	def create( self, text: str | List[ str ], model: str = 'text-embedding-3-small',
-			format: str = 'float', dimensions: int = None,
-			user: str = None ) -> List[ float ] | List[ List[ float ] ] | str | List[ str ] | None:
+	def create( self, text: str | List[ str ], model: str='text-embedding-3-small',
+			format: str='float', dimensions: int=None,
+			user: str=None ) -> List[ float ] | List[ List[ float ] ] | str | List[ str ] | None:
 		"""
 	
 	        Purpose:
@@ -7077,9 +7074,9 @@ class VectorStores( GPT ):
 			exception.method = 'normalize_search_results( self, response: Any )'
 			raise exception
 	
-	def create( self, name: str, description: str = None, metadata: Dict[ str, Any ] = None,
-			expires_after: Dict[ str, Any ] = None, file_ids: List[ str ] = None,
-			chunking_strategy: Dict[ str, Any ] = None ) -> Dict[ str, Any ] | None:
+	def create( self, name: str, description: str=None, metadata: Dict[ str, Any ]=None,
+			expires_after: Dict[ str, Any ]=None, file_ids: List[ str ]=None,
+			chunking_strategy: Dict[ str, Any ]=None ) -> Dict[ str, Any ] | None:
 		"""
 
 	        Purpose:
@@ -7121,29 +7118,29 @@ class VectorStores( GPT ):
 			self.request = { 'name': self.name, }
 			
 			if isinstance( metadata, dict ) and len( metadata ) > 0:
-				self.request[ 'metadata' ] = dict( metadata )
+				self.request[ 'metadata' ]=dict( metadata )
 			
 			if self.description:
 				if 'metadata' not in self.request:
-					self.request[ 'metadata' ] = { }
+					self.request[ 'metadata' ]={ }
 				
-				self.request[ 'metadata' ][ 'description' ] = self.description
+				self.request[ 'metadata' ][ 'description' ]=self.description
 			
 			if isinstance( expires_after, dict ) and len( expires_after ) > 0:
-				self.request[ 'expires_after' ] = expires_after
+				self.request[ 'expires_after' ]=expires_after
 			
 			clean_file_ids = self.validate_file_ids( file_ids )
 			if len( clean_file_ids ) > 0:
-				self.request[ 'file_ids' ] = clean_file_ids
+				self.request[ 'file_ids' ]=clean_file_ids
 			
 			if isinstance( chunking_strategy, dict ) and len( chunking_strategy ) > 0:
-				self.request[ 'chunking_strategy' ] = chunking_strategy
+				self.request[ 'chunking_strategy' ]=chunking_strategy
 			
 			self.response = self.client.vector_stores.create( **self.request )
 			self.vector_store = self.normalize_vector_store( self.response )
 			
 			if self.description:
-				self.vector_store[ 'description' ] = self.description
+				self.vector_store[ 'description' ]=self.description
 			
 			self.store_id = self.vector_store.get( 'id' )
 			return self.vector_store
@@ -7154,9 +7151,9 @@ class VectorStores( GPT ):
 			exception.method = 'create( self, name: str, **kwargs ) -> Dict[ str, Any ] | None'
 			raise exception
 		
-	def update( self, store_id: str, name: str = None, description: str = None,
-			metadata: Dict[ str, Any ] = None,
-			expires_after: Dict[ str, Any ] = None ) -> Dict[ str, Any ] | None:
+	def update( self, store_id: str, name: str=None, description: str=None,
+			metadata: Dict[ str, Any ]=None,
+			expires_after: Dict[ str, Any ]=None ) -> Dict[ str, Any ] | None:
 		"""
 
 			Purpose:
@@ -7195,19 +7192,19 @@ class VectorStores( GPT ):
 			self.request = { }
 			
 			if isinstance( name, str ) and name.strip( ):
-				self.request[ 'name' ] = name.strip( )
+				self.request[ 'name' ]=name.strip( )
 			
 			if isinstance( metadata, dict ):
-				self.request[ 'metadata' ] = dict( metadata )
+				self.request[ 'metadata' ]=dict( metadata )
 			
 			if self.description:
 				if 'metadata' not in self.request:
-					self.request[ 'metadata' ] = { }
+					self.request[ 'metadata' ]={ }
 				
-				self.request[ 'metadata' ][ 'description' ] = self.description
+				self.request[ 'metadata' ][ 'description' ]=self.description
 			
 			if isinstance( expires_after, dict ) and len( expires_after ) > 0:
-				self.request[ 'expires_after' ] = expires_after
+				self.request[ 'expires_after' ]=expires_after
 			
 			if len( self.request ) == 0:
 				return self.retrieve( self.store_id )
@@ -7219,7 +7216,7 @@ class VectorStores( GPT ):
 			self.vector_store = self.normalize_vector_store( self.response )
 			
 			if self.description:
-				self.vector_store[ 'description' ] = self.description
+				self.vector_store[ 'description' ]=self.description
 			
 			return self.vector_store
 		except Exception as e:
@@ -7418,9 +7415,9 @@ class VectorStores( GPT ):
 			exception.method = 'attach_file( self, store_id: str, file_id: str )'
 			raise exception
 		
-	def upload_file( self, store_id: str, path: str, file_path: str = None,
-			purpose: str = 'assistants', attributes: Dict[ str, Any ] = None,
-			chunking_strategy: Dict[ str, Any ] = None ) -> Dict[ str, Any ] | None:
+	def upload_file( self, store_id: str, path: str, file_path: str=None,
+			purpose: str='assistants', attributes: Dict[ str, Any ]=None,
+			chunking_strategy: Dict[ str, Any ]=None ) -> Dict[ str, Any ] | None:
 		"""
 
 			Purpose:
@@ -7503,11 +7500,11 @@ class VectorStores( GPT ):
 			)
 			
 			self.result = dict( self.vector_file or { } )
-			self.result[ 'uploaded_file_id' ] = self.file_id
-			self.result[ 'uploaded_filename' ] = self.uploaded_file.get(
+			self.result[ 'uploaded_file_id' ]=self.file_id
+			self.result[ 'uploaded_filename' ]=self.uploaded_file.get(
 				'filename', Path( self.file_path ).name )
-			self.result[ 'uploaded_file' ] = self.uploaded_file
-			self.result[ 'vector_store_id' ] = self.store_id
+			self.result[ 'uploaded_file' ]=self.uploaded_file
+			self.result[ 'vector_store_id' ]=self.store_id
 			return self.result
 		except Exception as e:
 			exception = Error( e )
@@ -7519,9 +7516,9 @@ class VectorStores( GPT ):
 			if source is not None:
 				source.close( )
 	
-	def upload( self, store_id: str, path: str, file_path: str = None,
-			purpose: str = 'assistants', attributes: Dict[ str, Any ] = None,
-			chunking_strategy: Dict[ str, Any ] = None ) -> Dict[ str, Any ] | None:
+	def upload( self, store_id: str, path: str, file_path: str=None,
+			purpose: str='assistants', attributes: Dict[ str, Any ]=None,
+			chunking_strategy: Dict[ str, Any ]=None ) -> Dict[ str, Any ] | None:
 		"""
 
 	        Purpose:
@@ -7576,9 +7573,9 @@ class VectorStores( GPT ):
 			exception.method = 'upload( self, store_id, path, file_path, purpose, attributes, chunking_strategy )'
 			raise exception
 	
-	def files_upload( self, store_id: str, path: str, file_path: str = None,
-			purpose: str = 'assistants', attributes: Dict[ str, Any ] = None,
-			chunking_strategy: Dict[ str, Any ] = None ) -> Dict[ str, Any ] | None:
+	def files_upload( self, store_id: str, path: str, file_path: str=None,
+			purpose: str='assistants', attributes: Dict[ str, Any ]=None,
+			chunking_strategy: Dict[ str, Any ]=None ) -> Dict[ str, Any ] | None:
 		"""
 
 	        Purpose:

@@ -263,15 +263,15 @@ class Chat( Grok ):
 	response: Optional[ Any ]
 	file_path: Optional[ str ]
 	
-	def __init__( self, model: str='grok-4.20', prompt: str=None, temperature: float = None,
-			top_p: float = None, presense: float = None, presence: float = None, store: bool = None,
+	def __init__( self, model: str='grok-4.20', prompt: str=None, temperature: float=None,
+			top_p: float=None, presense: float=None, presence: float=None, store: bool = None,
 			stream: bool = None, stops: List[ str ]=None,
 			response_format: Dict[ str, Any ]=None,
 			number: int = None, instruct: str=None, context: List[ Dict[ str, str ] ]=None,
 			allowed_domains: List[ str ]=None, include: List[ str ]=None,
 			tools: List[ Dict[ str, Any ] ]=None, max_tools: int = None,
 			tool_choice: str=None, file_path: str=None, background: bool = None,
-			is_parallel: bool = None, max_tokens: int = None, frequency: float = None,
+			is_parallel: bool = None, max_tokens: int = None, frequency: float=None,
 			input: List[ Dict[ str, Any ] ]=None, file_ids: List[ str ]=None,
 			previous_id: str=None, conversation_id: str=None,
 			reasoning: Dict[ str, str ] | str = None, output_text: str=None,
@@ -519,12 +519,7 @@ class Chat( Grok ):
 				Tool option names.
 
 		'''
-		return [
-				'web_search',
-				'x_search',
-				'collections_search',
-				'code_execution',
-		]
+		return [ 'web_search', 'x_search', 'collections_search', 'code_execution', ]
 	
 	@property
 	def choice_options( self ) -> List[ str ] | None:
@@ -564,11 +559,7 @@ class Chat( Grok ):
 				Response-format names.
 
 		'''
-		return [
-				'text',
-				'json_object',
-				'json_schema',
-		]
+		return [ 'text', 'json_object', 'json_schema', ]
 	
 	@property
 	def reasoning_options( self ) -> List[ str ] | None:
@@ -588,13 +579,7 @@ class Chat( Grok ):
 				Reasoning effort names.
 
 		'''
-		return [
-				'none',
-				'low',
-				'medium',
-				'high',
-				'xhigh',
-		]
+		return [ 'none', 'low', 'medium', 'high', 'xhigh', ]
 	
 	@property
 	def modality_options( self ) -> List[ str ] | None:
@@ -1001,9 +986,9 @@ class Chat( Grok ):
 			exception.method = 'build_text_format( self, format, response_schema )'
 			raise exception
 	
-	def build_request( self, prompt: str, model: str, temperature: float = None,
-			format: Dict[ str, Any ]=None, top_p: float = None, frequency: float = None,
-			max_tools: int = None, presence: float = None, max_tokens: int = None,
+	def build_request( self, prompt: str, model: str, temperature: float=None,
+			format: Dict[ str, Any ]=None, top_p: float=None, frequency: float=None,
+			max_tools: int = None, presence: float=None, max_tokens: int = None,
 			store: bool = None, stream: bool = None, instruct: str=None,
 			background: bool = False, reasoning: str=None, include: List[ str ]=None,
 			tools: List[ Any ]=None, allowed_domains: List[ str ]=None,
@@ -1272,9 +1257,9 @@ class Chat( Grok ):
 			exception.method = 'get_usage( self ) -> Any'
 			raise exception
 	
-	def generate_text( self, prompt: str, model: str, temperature: float = None,
-			format: Dict[ str, Any ]=None, top_p: float = None, top_k: int = None,
-			frequency: float = None, max_tools: int = None, presence: float = None,
+	def generate_text( self, prompt: str, model: str, temperature: float=None,
+			format: Dict[ str, Any ]=None, top_p: float=None, top_k: int = None,
+			frequency: float=None, max_tools: int = None, presence: float=None,
 			max_tokens: int = None, store: bool = None, stream: bool = None,
 			instruct: str=None, background: bool = False, reasoning: str=None,
 			include: List[ str ]=None, tools: List[ Any ]=None,
@@ -1505,8 +1490,8 @@ class Chat( Grok ):
 			raise exception
 	
 	def answer_document( self, prompt: str, document_text: str, model: str,
-			instructions: str=None, temperature: float = None, top_p: float = None,
-			frequency: float = None, presence: float = None, max_tokens: int = None,
+			instructions: str=None, temperature: float=None, top_p: float=None,
+			frequency: float=None, presence: float=None, max_tokens: int = None,
 			store: bool = None, include: List[ str ]=None, tools: List[ str ]=None,
 			tool_choice: str=None, reasoning: str=None,
 			context: List[ Dict[ str, str ] ]=None,
@@ -2253,7 +2238,7 @@ class TTS( Grok ):
 			ex.method = 'validate_bit_rate( self, bit_rate: int=None ) -> int | None'
 			raise ex
 	
-	def validate_speed( self, speed: float = None ) -> float:
+	def validate_speed( self, speed: float=None ) -> float:
 		"""
 		
 			Purpose:
@@ -2441,7 +2426,7 @@ class TTS( Grok ):
 			raise ex
 	
 	def create_speech( self, text: str, model: str='xai-tts', format: str='mp3',
-			speed: float = 1.0, voice: str='eve', instruct: str=None, file_path: str=None,
+			speed: float=1.0, voice: str='eve', instruct: str=None, file_path: str=None,
 			language: str='auto', sample_rate: int = None, bit_rate: int = None,
 			optimize_streaming_latency: int = None, text_normalization: bool = None,
 			**kwargs: Any ) -> bytes | None:
@@ -2527,7 +2512,7 @@ class TTS( Grok ):
 			raise ex
 	
 	def synthesize( self, text: str, model: str='xai-tts', format: str='mp3',
-			speed: float = 1.0, voice: str='eve', instruct: str=None, file_path: str=None,
+			speed: float=1.0, voice: str='eve', instruct: str=None, file_path: str=None,
 			language: str='auto', **kwargs: Any ) -> bytes | None:
 		"""
 		
@@ -2582,7 +2567,7 @@ class TTS( Grok ):
 			raise ex
 	
 	def generate( self, text: str=None, prompt: str=None, model: str='xai-tts',
-			format: str='mp3', speed: float = 1.0, voice: str='eve', instruct: str=None,
+			format: str='mp3', speed: float=1.0, voice: str='eve', instruct: str=None,
 			file_path: str=None, language: str='auto', **kwargs: Any ) -> bytes | None:
 		"""
 		
@@ -2782,8 +2767,8 @@ class Transcription( Grok ):
 	request: Optional[ Dict[ str, Any ] ]
 	
 	def __init__( self, number: int = 1, model: str='grok-3-mini-fast',
-			temperature: float = 0.8, top_p: float = 0.9, frequency: float = 0.0,
-			presence: float = 0.0, max_tokens: int = 10000, store: bool = True,
+			temperature: float=0.8, top_p: float=0.9, frequency: float=0.0,
+			presence: float=0.0, max_tokens: int = 10000, store: bool = True,
 			stream: bool = False, language: str='en', instruct: str=None ):
 		"""
 		
@@ -3176,11 +3161,11 @@ class Transcription( Grok ):
 			raise ex
 	
 	def transcribe( self, path: str, model: str='grok-3-mini-fast', language: str='en',
-			prompt: str=None, temperature: float = None, top_p: float = None,
-			frequency: float = None, presence: float = None, max_tokens: int = None,
+			prompt: str=None, temperature: float=None, top_p: float=None,
+			frequency: float=None, presence: float=None, max_tokens: int = None,
 			store: bool = None, stream: bool = None, instruct: str=None,
 			response_format: str=None, include: List[ str ]=None, mime_type: str=None,
-			start_time: float = None, end_time: float = None, **kwargs: Any ) -> str:
+			start_time: float=None, end_time: float=None, **kwargs: Any ) -> str:
 		"""
 		
 			Purpose:
@@ -3410,8 +3395,8 @@ class Translation( Grok ):
 	translation: Optional[ str ]
 	request: Optional[ Dict[ str, Any ] ]
 	
-	def __init__( self, model: str='grok-3-fast', temperature: float = 0.8,
-			top_p: float = 0.9, frequency: float = 0.0, presence: float = 0.0,
+	def __init__( self, model: str='grok-3-fast', temperature: float=0.8,
+			top_p: float=0.9, frequency: float=0.0, presence: float=0.0,
 			max_tokens: int = 10000, store: bool = True, stream: bool = False,
 			instruct: str=None ):
 		"""
@@ -3804,8 +3789,8 @@ class Translation( Grok ):
 			raise ex
 	
 	def translate( self, path: str, model: str='grok-3-fast', language: str='English',
-			prompt: str=None, source_language: str=None, temperature: float = None,
-			top_p: float = None, frequency: float = None, presence: float = None,
+			prompt: str=None, source_language: str=None, temperature: float=None,
+			top_p: float=None, frequency: float=None, presence: float=None,
 			max_tokens: int = None, store: bool = None, stream: bool = None,
 			instruct: str=None, response_format: str=None, include: List[ str ]=None,
 			mime_type: str=None, **kwargs: Any ) -> str:
@@ -4946,9 +4931,9 @@ class Images( Grok ):
 		
 	def generate( self, prompt: str, model: str='grok-imagine-image', number: int = None,
 			size: str=None, quality: str=None, style: str=None, fmt: str=None,
-			mime_type: str=None, compression: float = None, background: str=None,
-			aspect_ratio: str=None, response_modalities: str=None, temperature: float = None,
-			top_p: float = None, top_k: int = None, frequency: float = None, presence: float = None,
+			mime_type: str=None, compression: float=None, background: str=None,
+			aspect_ratio: str=None, response_modalities: str=None, temperature: float=None,
+			top_p: float=None, top_k: int = None, frequency: float=None, presence: float=None,
 			max_tokens: int = None, instruct: str=None, tools: List[ Any ]=None,
 			tool_choice: str=None, include: List[ str ]=None,
 			allowed_domains: List[ str ]=None,
@@ -5117,7 +5102,7 @@ class Images( Grok ):
 	
 	def generate_image( self, prompt: str, model: str='grok-imagine-image',
 			number: int = None, size: str=None, quality: str=None, style: str=None,
-			fmt: str=None, mime_type: str=None, compression: float = None,
+			fmt: str=None, mime_type: str=None, compression: float=None,
 			background: str=None, aspect_ratio: str=None,
 			response_modalities: str=None, **kwargs: Any ) -> Any:
 		"""
@@ -5386,7 +5371,7 @@ class Images( Grok ):
 			raise ex
 	
 	def analyze( self, prompt: str, image_url: str=None, model: str='grok-4.20-reasoning',
-			max_output_tokens: int = 10000, temperature: float = None, top_p: float = None,
+			max_output_tokens: int = 10000, temperature: float=None, top_p: float=None,
 			detail: str='high', image_path: str=None, path: str=None, store: bool = False,
 			**kwargs: Any ) -> str | None:
 		"""
@@ -7025,8 +7010,8 @@ class Files( Grok ):
 			raise ex
 	
 	def summarize( self, filepath: str=None, filename: str=None, prompt: str=None,
-			file_id: str=None, model: str='grok-4.20-reasoning', temperature: float = None,
-			top_p: float = None, frequency: float = None, presence: float = None,
+			file_id: str=None, model: str='grok-4.20-reasoning', temperature: float=None,
+			top_p: float=None, frequency: float=None, presence: float=None,
 			max_tokens: int = None, store: bool = None, stream: bool = None,
 			instruct: str=None, include: List[ str ]=None, tools: List[ Any ]=None,
 			tool_choice: str=None, previous_id: str=None, conversation_id: str=None,
@@ -7147,8 +7132,8 @@ class Files( Grok ):
 			raise ex
 	
 	def survey( self, filepaths: List[ str ], filenames: List[ str ], prompt: str,
-			model: str='grok-4.20-reasoning', temperature: float = None, top_p: float = None,
-			frequency: float = None, presence: float = None, max_tokens: int = None,
+			model: str='grok-4.20-reasoning', temperature: float=None, top_p: float=None,
+			frequency: float=None, presence: float=None, max_tokens: int = None,
 			store: bool = None, stream: bool = None, instruct: str=None,
 			purpose: str='assistants', **kwargs: Any ) -> str | None:
 		"""
