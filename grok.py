@@ -1847,9 +1847,7 @@ class TTS( Grok ):
 				TTS model/API labels.
 		
 		"""
-		return [
-				'xai-tts',
-		]
+		return [ 'xai-tts', ]
 	
 	@property
 	def voice_options( self ) -> List[ str ] | None:

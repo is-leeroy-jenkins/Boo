@@ -85,9 +85,16 @@ FAVICON = r'resources/images/favicon.ico'
 # ----------------- GPT CONFIG -------------------
 GPT_LOGO = r'resources/images/gpt.png'
 
-GPT_VECTOR_STORES = [ 'vs_699506f7d5348191990e0557c717fa9d',
-                      'vs_699505df9ac48191a525c0ecb86fef66',
-                      'vs_712r5W5833G6aLxIYIbuvVcK' ]
+GPT_VECTOR_STORES = { 'Governance': 'vs_6a1850a9bdc08191912353eedf59aede',
+                      'Public Laws': 'vs_699506f7d5348191990e0557c717fa9d',
+                      'Explanatory Statements': 'vs_699505df9ac48191a525c0ecb86fef66',
+                      'Army Techniques Publications': 'vs_699356ef052c81918da14c4ed3bcea17',
+                      'Army Field Manuals': 'vs_69935542863481918d150c1e89c38633',
+                      'Army Regulations': 'vs_6993550488408191919cd70968ba8be8',
+                      'DoD Armory': 'vs_697f86ad98888191b967685ae558bfc0',
+                      'Army Style Guides': 'vs_68f4efd7d4c4819191458dd6cde6f2cc',
+                      'Apportionments': 'vs_68a34aaff93481918c3b3fef8c4e8fea',
+                      'Financial Regulations': 'vs_712r5W5833G6aLxIYIbuvVcK'  }
 
 GPT_FILES = [ 'file-Wd8G8pbLSgVjHur8Qv4mdt',
               'file-WPmTsHFYDLGHbyERqJdyqv',
@@ -124,18 +131,6 @@ GPT_ANALYSIS = [ 'gpt-5.2', 'gpt-5.1', 'gpt-5', 'gpt-5-nano', 'gpt-image-1', 'gp
 GPT_EDITING = [ 'gpt-image-1.5', 'gpt-image-1', 'gpt-image-1-mini', 'chatgpt-image-latest',
                 'dall-e-2' ]
 
-GPT_VECTORSTORES = [ 'vs_712r5W5833G6aLxIYIbuvVcK', 'vs_699506f7d5348191990e0557c717fa9d' ]
-
-GPT_FILES = [ 'file-Wd8G8pbLSgVjHur8Qv4mdt',
-              'file-WPmTsHFYDLGHbyERqJdyqv',
-              'file-DW5TuqYoEfqFfqFFsMXBvy',
-              'file-U8ExiB6aJunAeT6872HtEU',
-              'file-FHkNiF6Rv29eCkAWEagevT',
-              'file-XsjQorjtffHTWjth8EVnkL',
-              'file-32s641QK1Xb5QUatY3zfWF' ]
-
-GPT_DOMAINS = [ 'congress.gov', 'google.com', 'gao.gov', 'omb.gov', 'defense.gov' ]
-
 GPT_REASONING_MODELS = [ 'gpt-5', 'gpt-5-mini', 'gpt-5-nano', 'gpt-4o', 'gpt-4.1', 'gpt-4.1-mini' ]
 
 
@@ -157,12 +152,17 @@ GROK_ANALYSIS = [ 'grok-4.20', 'grok-4', 'grok-4-latest' ]
 
 GROK_EDITING = [ 'grok-imagine-image' ]
 
-GROK_COLLECTIONS = [ { 'DOD Regulations': 'collection_a7973fd2-a336-4ed0-a495-4ffa947041c6' },
-                     { 'DOA Regulations': 'collection_dbf8919e-5f56-435b-806b-642cd57c355e' },
-                     { 'Financial Regulations': 'collection_9195d847-03a1-443c-9240-294c64dd01e2' },
-                     {
-		                     'Explanatory Statements': 'collection_41dc3374-24d0-4692-819c-59e3d7b11b93' },
-                     { 'Public Laws': 'collection_c1d0b83e-2f59-4f10-9cf7-51392b490fee' }, ]
+GROK_COLLECTIONS = { 'DoD Regulations': 'collection_a7973fd2-a336-4ed0-a495-4ffa947041c6',
+                     'Federal Financial Data': 'collection_e28cdcc2-a9e5-430a-bdf5-94fbaf44b6a4',
+                     'Army Techniques Publications': 'collection_bbcf0fe6-7568-4a76-bb2a-1ff100ecd585',
+                     'Army Style Guides': 'collection_fcf99d97-2512-42ed-bd18-d85bfb8e1cba',
+                     'Army Field Manuals': 'collection_6e334f5c-2557-42ef-9719-545f23049106',
+                     'DoD Data': 'collection_137a5ed3-2f20-4082-bf44-73df43a356a4',
+                     'DoD Regulations': 'collection_a7973fd2-a336-4ed0-a495-4ffa947041c6',
+                     'Federal Financial Regulations': 'collection_9195d847-03a1-443c-9240-294c64dd01e2',
+                     'Explanatory Statements': 'collection_41dc3374-24d0-4692-819c-59e3d7b11b93',
+                     'Public Laws': 'collection_c1d0b83e-2f59-4f10-9cf7-51392b490fee',
+                     'Governance': 'collection_a01f0ed0-37a9-4323-8691-9a9de9d7053a' }
 
 # ---------------- GEMINI CONFIG ------------------
 GEMINI_LOGO = r'resources/images/gemini.png'
@@ -191,6 +191,7 @@ GEMINI_EDITING = [ 'gemini-2.5-flash-image', 'gemini-2.5-flash-lite',
                    'gemini-3.1-flash-image-preview' ]
 
 # ----------------- MAPS ---------------------------
+
 PROVIDER_CLASS_MAP = {
 		'GPT': {
 				'Text': 'Chat',

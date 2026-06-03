@@ -55,6 +55,7 @@ import tiktoken
 import config as cfg
 import streamlit as st
 import tempfile
+import time
 import re
 from typing import List, Dict, Any, Optional, Tuple
 from boogr import Error
@@ -3313,25 +3314,86 @@ def delete_prompt( pid: int ) -> None:
 		conn.execute( "DELETE FROM Prompts WHERE PromptsId=?", (pid,) )
 
 def build_prompt( user_input: str ) -> str:
-	prompt = f"<|system|>\n{st.session_state.system_prompt}\n</s>\n"
+	"""
+		
+		Purpose:
+		--------
+		Build a local chat prompt from system instructions, optional semantic context,
+		loaded document text, prior chat messages, and the current user input.
 	
-	if st.session_state.use_semantic:
-		with sqlite3.connect( DB_PATH ) as conn:
-			rows = conn.execute( "SELECT chunk, vector FROM embeddings" ).fetchall( )
-		if rows:
-			q = embedder.encode( [ user_input ] )[ 0 ]
-			scored = [ (c, cosine_sim( q, np.frombuffer( v ) )) for c, v in rows ]
-			for c, _ in sorted( scored, key=lambda x: x[ 1 ], reverse=True )[ :top_k ]:
-				prompt += f"<|system|>\n{c}\n</s>\n"
+		Parameters:
+		-----------
+		user_input (str): Current user message.
 	
-	for d in st.session_state.basic_docs[ :6 ]:
-		prompt += f"<|system|>\n{d}\n</s>\n"
-	
-	for r, c in st.session_state.messages:
-		prompt += f"<|{r}|>\n{c}\n</s>\n"
-	
-	prompt += f"<|user|>\n{user_input}\n</s>\n<|assistant|>\n"
-	return prompt
+		Returns:
+		--------
+		str: Formatted prompt text.
+		
+	"""
+	try:
+		throw_if( 'user_input', user_input )
+		top_k = int( st.session_state.get( 'text_top_k', 6 ) or 6 )
+		system_prompt = str( st.session_state.get( 'system_prompt',
+				st.session_state.get( 'instructions', '' ) ) or '' ).strip( )
+		basic_docs = st.session_state.get( 'basic_docs', [ ] )
+		messages = st.session_state.get( 'messages', [ ] )
+		use_semantic = bool( st.session_state.get( 'use_semantic', False ) )
+		prompt = ''
+		if system_prompt:
+			prompt += f'<|system|>\n{system_prompt}\n</s>\n'
+		if use_semantic:
+			try:
+				with sqlite3.connect( cfg.DB_PATH ) as conn:
+					rows = conn.execute( 'SELECT chunk, vector FROM embeddings' ).fetchall( )
+				if rows:
+					embedder = load_embedder( )
+					query_vector = embedder.encode( [ user_input ] )[ 0 ]
+					query_vector = np.asarray( query_vector, dtype=np.float32 )
+					scored = [ ]
+					for chunk, vector_blob in rows:
+						if chunk is None or vector_blob is None:
+							continue
+						
+						vector = np.frombuffer( vector_blob, dtype=np.float32 )
+						if vector.size != query_vector.size:
+							alternate_vector = np.frombuffer( vector_blob, dtype=np.float64 )
+							if alternate_vector.size != query_vector.size:
+								continue
+							
+							vector = alternate_vector.astype( np.float32 )
+						score = cosine_sim( query_vector, vector )
+						scored.append( (chunk, score) )
+					
+					for chunk, _ in sorted( scored, key=lambda item: item[ 1 ], reverse=True )[ :top_k ]:
+						prompt += f'<|system|>\n{chunk}\n</s>\n'
+			except Exception:
+				pass
+		if isinstance( basic_docs, list ):
+			for document in basic_docs[ :6 ]:
+				if document:
+					prompt += f'<|system|>\n{document}\n</s>\n'
+		
+		if isinstance( messages, list ):
+			for message in messages:
+				if isinstance( message, dict ):
+					role = message.get( 'role', 'user' )
+					content = message.get( 'content', '' )
+				elif isinstance( message, (list, tuple) ) and len( message ) >= 2:
+					role, content = message[ 0 ], message[ 1 ]
+				else:
+					continue
+				
+				if role and content:
+					prompt += f'<|{role}|>\n{content}\n</s>\n'
+		
+		prompt += f'<|user|>\n{user_input}\n</s>\n<|assistant|>\n'
+		return prompt
+	except Exception as e:
+		exception = Error( e )
+		exception.module = 'app'
+		exception.cause = 'Prompt Builder'
+		exception.method = 'build_prompt( user_input: str ) -> str'
+		raise exception
 
 # ------------ PROVIDER UTILITIES
 
@@ -4114,10 +4176,11 @@ with st.sidebar:
 		current_mode = mode_options[ 0 ]
 		st.session_state[ 'mode' ] = current_mode
 	
-	mode = st.radio( label='Select Mode',
-		options=mode_options,
-		index=get_mode_index( mode_options, current_mode ),
-		key='mode' )
+	with st.expander( 'Modes:', expanded=False ):
+		mode = st.radio( label='Select Mode',
+			options=mode_options,
+			index=get_mode_index( mode_options, current_mode ),
+			key='mode' )
 	
 	st.caption( f'Provider: {provider} | Mode: {mode}' )
 
@@ -12639,238 +12702,290 @@ elif mode == 'Google Cloud Buckets':
 	
 	buckets = get_cloud_buckets_module( provider_name )
 	
-	def call_bucket_method( method_names: List[ str ], kwargs: Optional[ Dict[ str, Any ] ]=None ) -> Any:
+	def call_bucket_method( method_names: List[ str ],
+			kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
 		"""
 			
 			Purpose:
 			--------
-			Call the first compatible Gemini CloudBuckets wrapper method.
+			Call the first compatible Gemini CloudBuckets wrapper method using only keyword
+			arguments accepted by the target method.
 		
 			Parameters:
 			-----------
 			method_names (List[str]): Ordered method names to try.
-			kwargs (Optional[Dict[str, Any]]): Keyword arguments for the method.
+			kwargs (Optional[Dict[str, Any]]): Candidate keyword arguments for the method.
 		
 			Returns:
 			--------
 			Any: Provider method result.
 			
 		"""
-		kwargs = kwargs or { }
-		
-		for method_name in method_names:
-			method = getattr( buckets, method_name, None )
-			if callable( method ):
-				try:
-					return method( **kwargs )
-				except TypeError:
-					clean_kwargs = {
-							key: value
-							for key, value in kwargs.items( )
-							if value is not None and value != '' and value != [ ]
-					}
-					try:
-						return method( **clean_kwargs )
-					except TypeError:
-						if len( clean_kwargs ) == 1:
-							return method( list( clean_kwargs.values( ) )[ 0 ] )
-						raise
-		
-		raise AttributeError(
-			f'Gemini CloudBuckets does not expose any method from: {", ".join( method_names )}.'
-		)
-	
-	def clear_bucket_outputs( ) -> None:
-		"""
+		try:
+			import inspect
 			
-			Purpose:
-			--------
-			Clear Google Cloud Buckets output state.
-		
-			Parameters:
-			-----------
-			None
-		
-			Returns:
-			--------
-			None
-			
-		"""
-		st.session_state[ 'bucket_results' ] = None
-		st.session_state[ 'bucket_metadata' ] = { }
-		st.session_state[ 'bucket_upload_result' ] = { }
-	
-	for key, default_value in {
-			'bucket_table': [ ],
-			'bucket_metadata': { },
-			'bucket_upload_result': { },
-	}.items( ):
-		if key not in st.session_state or not isinstance( st.session_state.get( key ),
-				type( default_value ) ):
-			st.session_state[ key ] = default_value
-	
-	if 'bucket_name' not in st.session_state:
-		st.session_state[ 'bucket_name' ] = ''
-	
-	if 'bucket_manual_id' not in st.session_state:
-		st.session_state[ 'bucket_manual_id' ] = ''
-	
-	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
-	with center:
-		st.subheader( '🧊 Google Cloud Buckets', help=getattr( cfg, 'VECTORSTORES_API', '' ) )
-		st.divider( )
-		
-		project_id = st.session_state.get( 'google_cloud_project_id', '' ) \
-		             or getattr( cfg, 'GOOGLE_CLOUD_PROJECT_ID', '' )
-		location = st.session_state.get( 'google_cloud_location', '' ) \
-		           or getattr( cfg, 'GOOGLE_CLOUD_LOCATION', '' )
-		
-		st.caption(
-			f'Project: {project_id or "Not configured"} | Location: {location or "Not configured"}' )
-		
-		buckets_left, buckets_right = st.columns( [ 0.50, 0.50 ], border=True )
-		with buckets_left:
-			
-			with st.expander( label='Create', expanded=True ):
-				st.text_input( label='New Cloud Bucket Name', key='bucket_name',
-					width='stretch' )
+			throw_if( 'method_names', method_names )
+			candidate_kwargs = kwargs or { }
+			for method_name in method_names:
+				method = getattr( buckets, method_name, None )
+				if not callable( method ):
+					continue
 				
-				if st.button( 'Create Cloud Bucket', key='create_bucket', width='stretch' ):
-					with st.spinner( 'Creating cloud bucket…' ):
+				signature = inspect.signature( method )
+				parameters = signature.parameters
+				accepted_names = set( parameters.keys( ) )
+				accepts_kwargs = any( parameter.kind == inspect.Parameter.VAR_KEYWORD
+					for parameter in parameters.values( ) )
+				
+				clean_kwargs = { key: value for key, value in candidate_kwargs.items( )
+						if value is not None and value != '' and value != [ ] }
+				
+				if 'bucket' in accepted_names and not clean_kwargs.get( 'bucket' ):
+					if clean_kwargs.get( 'bucket_name' ):
+						clean_kwargs[ 'bucket' ] = clean_kwargs[ 'bucket_name' ]
+					elif clean_kwargs.get( 'store_id' ):
+						clean_kwargs[ 'bucket' ] = clean_kwargs[ 'store_id' ]
+					elif clean_kwargs.get( 'id' ):
+						clean_kwargs[ 'bucket' ] = clean_kwargs[ 'id' ]
+				
+				if 'name' in accepted_names and not clean_kwargs.get( 'name' ):
+					if method_name in [ 'create', 'create_bucket' ] and clean_kwargs.get( 'bucket' ):
+						clean_kwargs[ 'name' ] = clean_kwargs[ 'bucket' ]
+					elif clean_kwargs.get( 'object_name' ):
+						clean_kwargs[ 'name' ] = clean_kwargs[ 'object_name' ]
+					elif clean_kwargs.get( 'file_name' ):
+						clean_kwargs[ 'name' ] = clean_kwargs[ 'file_name' ]
+					elif clean_kwargs.get( 'display_name' ):
+						clean_kwargs[ 'name' ] = clean_kwargs[ 'display_name' ]
+				
+				if 'path' in accepted_names and not clean_kwargs.get( 'path' ):
+					if clean_kwargs.get( 'file_path' ):
+						clean_kwargs[ 'path' ] = clean_kwargs[ 'file_path' ]
+				
+				if accepts_kwargs:
+					return method( **clean_kwargs )
+				
+				method_kwargs = { key: value for key, value in clean_kwargs.items( )
+						if key in accepted_names }
+				
+				required_names = [ name for name, parameter in parameters.items( )
+						if parameter.default == inspect.Parameter.empty
+						   and parameter.kind in [ inspect.Parameter.POSITIONAL_OR_KEYWORD,
+								   inspect.Parameter.KEYWORD_ONLY, ] ]
+				
+				missing_names = [
+						name
+						for name in required_names
+						if name not in method_kwargs
+				]
+				
+				if missing_names:
+					continue
+				
+				return method( **method_kwargs )
+			
+			raise AttributeError(
+				f'Gemini CloudBuckets does not expose any compatible method from: '
+				f'{", ".join( method_names )}.'
+			)
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'app'
+			exception.cause = 'Google Cloud Buckets'
+			exception.method = 'call_bucket_method( method_names, kwargs )'
+			raise exception
+		
+		def clear_bucket_outputs( ) -> None:
+			"""
+				
+				Purpose:
+				--------
+				Clear Google Cloud Buckets output state.
+			
+				Parameters:
+				-----------
+				None
+			
+				Returns:
+				--------
+				None
+				
+			"""
+			st.session_state[ 'bucket_results' ] = None
+			st.session_state[ 'bucket_metadata' ] = { }
+			st.session_state[ 'bucket_upload_result' ] = { }
+		
+		for key, default_value in {
+				'bucket_table': [ ],
+				'bucket_metadata': { },
+				'bucket_upload_result': { },
+		}.items( ):
+			if key not in st.session_state or not isinstance( st.session_state.get( key ),
+					type( default_value ) ):
+				st.session_state[ key ] = default_value
+		
+		if 'bucket_name' not in st.session_state:
+			st.session_state[ 'bucket_name' ] = ''
+		
+		if 'bucket_manual_id' not in st.session_state:
+			st.session_state[ 'bucket_manual_id' ] = ''
+		
+		left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
+		with center:
+			st.subheader( '🧊 Google Cloud Buckets', help=getattr( cfg, 'VECTORSTORES_API', '' ) )
+			st.divider( )
+			
+			project_id = st.session_state.get( 'google_cloud_project_id', '' ) \
+			             or getattr( cfg, 'GOOGLE_CLOUD_PROJECT_ID', '' )
+			location = st.session_state.get( 'google_cloud_location', '' ) \
+			           or getattr( cfg, 'GOOGLE_CLOUD_LOCATION', '' )
+			
+			st.caption(
+				f'Project: {project_id or "Not configured"} | Location: {location or "Not configured"}' )
+			
+			buckets_left, buckets_right = st.columns( [ 0.50, 0.50 ], border=True )
+			with buckets_left:
+				
+				with st.expander( label='Create', expanded=True ):
+					st.text_input( label='New Cloud Bucket Name', key='bucket_name',
+						width='stretch' )
+					
+					if st.button( 'Create Cloud Bucket', key='create_bucket', width='stretch' ):
+						with st.spinner( 'Creating cloud bucket…' ):
+							try:
+								name = st.session_state.get( 'bucket_name', '' ).strip( )
+								if not name:
+									st.warning( 'Enter a Cloud Bucket name.' )
+								else:
+									result = call_bucket_method(
+										[ 'create', 'create_bucket' ],
+										{ 'name': name, 'bucket_name': name,
+										  'project_id': project_id, 'location': location }
+									)
+									st.session_state[ 'bucket_metadata' ] = normalize_storage_object(
+										result )
+									st.success( f'Created Cloud Bucket: {name}' )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'Create bucket failed: {err.info}' )
+				
+				with st.expander( label='Retrieve / Delete', expanded=True ):
+					collections = getattr( buckets, 'collections', None )
+					options = list( collections.items( ) ) if isinstance( collections, dict ) else [ ]
+					option_labels = [ f'{name} — {bucket_id}' for name, bucket_id in options ]
+					
+					if option_labels:
+						selected_label = st.selectbox( label='Select Cloud Bucket',
+							options=option_labels, key='bucket_select',
+							index=None, placeholder='Options' )
+						
+						selected_id = ''
+						for name, bucket_id in options:
+							if f'{name} — {bucket_id}' == selected_label:
+								selected_id = bucket_id
+								break
+						
+						st.session_state[ 'bucket_selected_id' ] = selected_id
+					else:
+						st.info( 'No configured Cloud Bucket collections found on the wrapper.' )
+					
+					st.text_input( label='Manual Cloud Bucket ID / Name', key='bucket_manual_id',
+						width='stretch' )
+					
+					selected_bucket_id = st.session_state.get( 'bucket_selected_id', '' ) \
+					                     or st.session_state.get( 'bucket_manual_id', '' )
+					
+					bucket_c1, bucket_c2 = st.columns( [ 0.50, 0.50 ] )
+					
+					with bucket_c1:
+						if st.button( 'Retrieve Cloud Bucket', key='retrieve_bucket',
+								width='stretch' ):
+							with st.spinner( 'Retrieving cloud bucket…' ):
+								try:
+									if not selected_bucket_id:
+										st.warning( 'Select or enter a Cloud Bucket ID.' )
+									else:
+										result = call_bucket_method(
+											[ 'retrieve', 'retrieve_bucket', 'get' ],
+											{ 'store_id': selected_bucket_id, 'id': selected_bucket_id,
+											  'name': selected_bucket_id,
+											  'bucket_name': selected_bucket_id,
+											  'project_id': project_id, 'location': location }
+										)
+										st.session_state[ 'bucket_metadata' ] = \
+											normalize_storage_object( result )
+										
+										st.success( 'Cloud Bucket metadata retrieved.' )
+								except Exception as exc:
+									err = Error( exc )
+									st.error( f'Retrieve bucket failed: {err.info}' )
+					
+					with bucket_c2:
+						if st.button( 'Delete Cloud Bucket', key='delete_bucket',
+								width='stretch' ):
+							with st.spinner( 'Deleting cloud bucket…' ):
+								try:
+									if not selected_bucket_id:
+										st.warning( 'Select or enter a Cloud Bucket ID.' )
+									else:
+										result = call_bucket_method(
+											[ 'delete', 'delete_bucket', 'remove' ],
+											{ 'store_id': selected_bucket_id, 'id': selected_bucket_id,
+											  'name': selected_bucket_id,
+											  'bucket_name': selected_bucket_id,
+											  'project_id': project_id, 'location': location }
+										)
+										st.session_state[ 'bucket_metadata' ] = \
+											normalize_storage_object( result )
+										
+										st.success( 'Delete request completed.' )
+								except Exception as exc:
+									err = Error( exc )
+									st.error( f'Delete bucket failed: {err.info}' )
+			
+			with buckets_right:
+				st.subheader( 'Upload' )
+				uploaded_file = st.file_uploader( label='Upload File to Cloud Bucket',
+					type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv' ],
+					key='bucket_uploader' )
+				
+				target_bucket = st.session_state.get( 'bucket_selected_id', '' ) \
+				                or st.session_state.get( 'bucket_manual_id', '' )
+				
+				if st.button( 'Upload File', key='upload_bucket_file', width='stretch' ):
+					with st.spinner( 'Uploading file…' ):
 						try:
-							name = st.session_state.get( 'bucket_name', '' ).strip( )
-							if not name:
-								st.warning( 'Enter a Cloud Bucket name.' )
+							if uploaded_file is None:
+								st.warning( 'Select a file first.' )
+							elif not target_bucket:
+								st.warning( 'Select or enter a Cloud Bucket first.' )
 							else:
+								path = save_uploaded_storage_file( uploaded_file )
 								result = call_bucket_method(
-									[ 'create', 'create_bucket' ],
-									{ 'name': name, 'bucket_name': name,
-									  'project_id': project_id, 'location': location }
+									[ 'upload_file', 'upload', 'files_upload' ],
+									{ 'path': path, 'file_path': path,
+									  'bucket_name': target_bucket, 'store_id': target_bucket,
+									  'id': target_bucket, 'project_id': project_id,
+									  'location': location }
 								)
-								st.session_state[ 'bucket_metadata' ] = normalize_storage_object(
-									result )
-								st.success( f'Created Cloud Bucket: {name}' )
+								st.session_state[ 'bucket_upload_result' ] = \
+									normalize_storage_object( result )
+								
+								st.success( 'Upload request completed.' )
 						except Exception as exc:
 							err = Error( exc )
-							st.error( f'Create bucket failed: {err.info}' )
+							st.error( f'Bucket upload failed: {err.info}' )
+				
+				if st.button( 'Clear Outputs', key='clear_bucket_outputs',
+						width='stretch', on_click=clear_bucket_outputs ):
+					st.rerun( )
+				
+				st.caption( 'Upload Result' )
+				render_storage_metadata( st.session_state.get( 'bucket_upload_result', { } ) )
 			
-			with st.expander( label='Retrieve / Delete', expanded=True ):
-				collections = getattr( buckets, 'collections', None )
-				options = list( collections.items( ) ) if isinstance( collections, dict ) else [ ]
-				option_labels = [ f'{name} — {bucket_id}' for name, bucket_id in options ]
-				
-				if option_labels:
-					selected_label = st.selectbox( label='Select Cloud Bucket',
-						options=option_labels, key='bucket_select',
-						index=None, placeholder='Options' )
-					
-					selected_id = ''
-					for name, bucket_id in options:
-						if f'{name} — {bucket_id}' == selected_label:
-							selected_id = bucket_id
-							break
-					
-					st.session_state[ 'bucket_selected_id' ] = selected_id
-				else:
-					st.info( 'No configured Cloud Bucket collections found on the wrapper.' )
-				
-				st.text_input( label='Manual Cloud Bucket ID / Name', key='bucket_manual_id',
-					width='stretch' )
-				
-				selected_bucket_id = st.session_state.get( 'bucket_selected_id', '' ) \
-				                     or st.session_state.get( 'bucket_manual_id', '' )
-				
-				bucket_c1, bucket_c2 = st.columns( [ 0.50, 0.50 ] )
-				
-				with bucket_c1:
-					if st.button( 'Retrieve Cloud Bucket', key='retrieve_bucket',
-							width='stretch' ):
-						with st.spinner( 'Retrieving cloud bucket…' ):
-							try:
-								if not selected_bucket_id:
-									st.warning( 'Select or enter a Cloud Bucket ID.' )
-								else:
-									result = call_bucket_method(
-										[ 'retrieve', 'retrieve_bucket', 'get' ],
-										{ 'store_id': selected_bucket_id, 'id': selected_bucket_id,
-										  'name': selected_bucket_id,
-										  'bucket_name': selected_bucket_id,
-										  'project_id': project_id, 'location': location }
-									)
-									st.session_state[ 'bucket_metadata' ] = \
-										normalize_storage_object( result )
-									
-									st.success( 'Cloud Bucket metadata retrieved.' )
-							except Exception as exc:
-								err = Error( exc )
-								st.error( f'Retrieve bucket failed: {err.info}' )
-				
-				with bucket_c2:
-					if st.button( 'Delete Cloud Bucket', key='delete_bucket',
-							width='stretch' ):
-						with st.spinner( 'Deleting cloud bucket…' ):
-							try:
-								if not selected_bucket_id:
-									st.warning( 'Select or enter a Cloud Bucket ID.' )
-								else:
-									result = call_bucket_method(
-										[ 'delete', 'delete_bucket', 'remove' ],
-										{ 'store_id': selected_bucket_id, 'id': selected_bucket_id,
-										  'name': selected_bucket_id,
-										  'bucket_name': selected_bucket_id,
-										  'project_id': project_id, 'location': location }
-									)
-									st.session_state[ 'bucket_metadata' ] = \
-										normalize_storage_object( result )
-									
-									st.success( 'Delete request completed.' )
-							except Exception as exc:
-								err = Error( exc )
-								st.error( f'Delete bucket failed: {err.info}' )
-		
-		with buckets_right:
-			st.subheader( 'Upload' )
-			uploaded_file = st.file_uploader( label='Upload File to Cloud Bucket',
-				type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv' ],
-				key='bucket_uploader' )
-			
-			target_bucket = st.session_state.get( 'bucket_selected_id', '' ) \
-			                or st.session_state.get( 'bucket_manual_id', '' )
-			
-			if st.button( 'Upload File', key='upload_bucket_file', width='stretch' ):
-				with st.spinner( 'Uploading file…' ):
-					try:
-						if uploaded_file is None:
-							st.warning( 'Select a file first.' )
-						elif not target_bucket:
-							st.warning( 'Select or enter a Cloud Bucket first.' )
-						else:
-							path = save_uploaded_storage_file( uploaded_file )
-							result = call_bucket_method(
-								[ 'upload_file', 'upload', 'files_upload' ],
-								{ 'path': path, 'file_path': path,
-								  'bucket_name': target_bucket, 'store_id': target_bucket,
-								  'id': target_bucket, 'project_id': project_id,
-								  'location': location }
-							)
-							st.session_state[ 'bucket_upload_result' ] = \
-								normalize_storage_object( result )
-							
-							st.success( 'Upload request completed.' )
-					except Exception as exc:
-						err = Error( exc )
-						st.error( f'Bucket upload failed: {err.info}' )
-			
-			if st.button( 'Clear Outputs', key='clear_bucket_outputs',
-					width='stretch', on_click=clear_bucket_outputs ):
-				st.rerun( )
-			
-			st.caption( 'Upload Result' )
-			render_storage_metadata( st.session_state.get( 'bucket_upload_result', { } ) )
-		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
-		st.subheader( 'Cloud Bucket Metadata' )
-		render_storage_metadata( st.session_state.get( 'bucket_metadata', { } ) )
+			st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
+			st.subheader( 'Cloud Bucket Metadata' )
+			render_storage_metadata( st.session_state.get( 'bucket_metadata', { } ) )
 		
 # ======================================================================================
 # PROMPT ENGINEERING MODE
@@ -13518,22 +13633,16 @@ elif mode == 'Data Management':
 				
 				# Column schema
 				schema = create_schema( table )
-				schema_df = pd.DataFrame(
-					schema,
-					columns=[ 'cid', 'name', 'type', 'notnull', 'default', 'pk' ] )
+				schema_df = pd.DataFrame( schema, columns=[ 'cid', 'name', 'type',
+				                                            'notnull', 'default', 'pk' ] )
 				
 				st.markdown( "### Columns" )
-				st.data_editor(
-					make_display_safe( schema_df ),
-					hide_index=True,
-					use_container_width=True,
-					disabled=True )
+				st.data_editor( make_display_safe( schema_df ), hide_index=True,
+					use_container_width=True, disabled=True )
 				
 				# Row count
 				with create_connection( ) as conn:
-					count = conn.execute(
-						f'SELECT COUNT(*) FROM "{table}"'
-					).fetchone( )[ 0 ]
+					count = conn.execute( f'SELECT COUNT(*) FROM "{table}"' ).fetchone( )[ 0 ]
 				
 				st.metric( "Row Count", f"{count:,}" )
 				

@@ -4046,19 +4046,6 @@ class Files( Gemini ):
 		'''
 		return [ 'MODALITY_UNSPECIFIED', 'TEXT', 'IMAGE', 'AUDIO' ]
 	
-	@property
-	def media_options( self ):
-		'''
-		
-		Purpose:
-		--------
-		Returns a List[ str ] of media resolution options.
-		
-		'''
-		return [ 'media_resolution_high',
-		         'media_resolution_medium',
-		         'media_resolution_low' ]
-		
 	def upload( self, filepath: str, name: str = None, display_name: str = None,
 			filename: str = None, mime_type: str = None, purpose: str = None ) -> File | None:
 		"""
@@ -4495,19 +4482,25 @@ class Files( Gemini ):
 			ex.cause = 'Files'
 			ex.method = 'content( self, file_id, format, page_number )'
 			raise ex
-	
-	def delete( self, file_id: str ) -> bool | None:
+		
+	def delete( self, file_id: str = None, id: str = None, name: str = None ) -> bool | None:
 		"""
 		
 			Purpose:
 			--------
 			Delete a Gemini file from remote storage.
-			
+
 			Parameters:
 			-----------
 			file_id: str
 				Gemini file resource name.
-			
+
+			id: str
+				Optional file resource-name alias supplied by app.py.
+
+			name: str
+				Optional file resource-name alias supplied by app.py.
+
 			Returns:
 			--------
 			bool | None:
@@ -4515,10 +4508,10 @@ class Files( Gemini ):
 		
 		"""
 		try:
-			throw_if( 'file_id', file_id )
-			self.file_id = file_id
+			value = file_id or id or name
+			throw_if( 'file_id', value )
+			self.file_id = str( value ).strip( )
 			self.gemini_api_key = cfg.GEMINI_API_KEY
-			
 			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
 				raise ValueError( 'GEMINI_API_KEY is required.' )
 			
@@ -4529,7 +4522,7 @@ class Files( Gemini ):
 			ex = Error( e )
 			ex.module = 'gemini'
 			ex.cause = 'Files'
-			ex.method = 'delete( self, file_id ) -> bool'
+			ex.method = 'delete( self, file_id: str=None, id: str=None, name: str=None ) -> bool'
 			raise ex
 	
 	def summarize( self, prompt: str, filepath: str = None, file_id: str = None,

@@ -2042,7 +2042,7 @@ class Images( GPT ):
 				'minimal',
 				'xhigh',
 		]
-	
+		
 	@property
 	def modality_options( self ) -> List[ str ] | None:
 		"""
@@ -2057,7 +2057,8 @@ class Images( GPT ):
 
 			Returns:
 			--------
-			List[str] | None: Modality option names.
+			List[str] | None:
+				Modality option names.
 		
 		"""
 		return [
@@ -2111,19 +2112,15 @@ class Images( GPT ):
 
 			Returns:
 			--------
-			str | bytes | list[str | bytes] | None: Generated image output.
+			str | bytes | list[str | bytes] | None:
+				Generated image output.
 		
 		"""
 		try:
-			input_text = (
-					prompt
-					or kwargs.get( 'text' )
-					or kwargs.get( 'input_text' )
-					or kwargs.get( 'content' )
-			)
+			input_text = ( prompt or kwargs.get( 'text' ) or kwargs.get( 'input_text' )
+			               or kwargs.get( 'content' ) )
 			throw_if( 'input_text', input_text )
 			throw_if( 'model', model )
-			
 			if cfg.OPENAI_API_KEY is None or not str( cfg.OPENAI_API_KEY ).strip( ):
 				raise ValueError( 'OPENAI_API_KEY is required.' )
 			
@@ -2145,18 +2142,58 @@ class Images( GPT ):
 			self.request = {
 					'model': self.model,
 					'prompt': self.prompt,
-					'n': self.number,
-					'size': self.size,
-					'quality': self.quality,
 			}
 			
-			if self.model.startswith( 'gpt-image' ):
+			if self.model == 'dall-e-2':
+				if self.size not in [ '256x256', '512x512', '1024x1024' ]:
+					self.size = '1024x1024'
+				
+				if self.output_format not in self.format_options:
+					self.output_format = 'url'
+				
+				self.request[ 'size' ] = self.size
+				self.request[ 'n' ] = self.number
+				self.request[ 'response_format' ] = self.output_format
+			
+			elif self.model == 'dall-e-3':
+				if self.size not in [ '1024x1024', '1792x1024', '1024x1792' ]:
+					self.size = '1024x1024'
+				
+				if self.quality not in [ 'standard', 'hd' ]:
+					self.quality = 'standard'
+				
+				self.request[ 'size' ] = self.size
+				self.request[ 'quality' ] = self.quality
+				self.request[ 'n' ] = 1
+				
+				if self.style in self.style_options:
+					self.request[ 'style' ] = self.style
+				
+				if self.output_format in self.format_options:
+					self.request[ 'response_format' ] = self.output_format
+			
+			else:
+				if self.size not in self.size_options:
+					self.size = '1024x1024'
+				
+				if self.quality not in self.quality_options:
+					self.quality = 'auto'
+				
 				if self.output_format not in self.mime_options:
 					self.output_format = 'jpeg'
 				
+				if self.background not in self.backcolor_options:
+					self.background = None
+				
+				if self.model.startswith( 'gpt-image-2' ) and self.background == 'transparent':
+					self.background = 'auto'
+				
+				self.request[ 'n' ] = self.number
+				self.request[ 'size' ] = self.size
+				self.request[ 'quality' ] = self.quality
 				self.request[ 'output_format' ] = self.output_format
 				
-				if self.background in self.backcolor_options:
+				if self.background:
 					self.request[ 'background' ] = self.background
 				
 				if self.compression is not None and self.output_format in [ 'jpeg', 'webp' ]:
@@ -2167,12 +2204,6 @@ class Images( GPT ):
 					
 					self.compression = max( 0, min( 100, int( self.compression ) ) )
 					self.request[ 'output_compression' ] = self.compression
-			else:
-				if self.output_format in self.format_options:
-					self.request[ 'response_format' ] = self.output_format
-				
-				if self.style in self.style_options:
-					self.request[ 'style' ] = self.style
 			
 			self.response = self.client.images.generate( **self.request )
 			
