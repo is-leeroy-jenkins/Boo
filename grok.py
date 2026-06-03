@@ -7446,7 +7446,6 @@ class VectorStores( Grok ):
 		super( ).__init__( )
 		self.api_key = cfg.XAI_API_KEY
 		self.base_url = cfg.XAI_BASE_URL
-		
 		if self.api_key is None or not str( self.api_key ).strip( ):
 			raise ValueError( 'XAI_API_KEY is required.' )
 		
