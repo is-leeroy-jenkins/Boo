@@ -2058,10 +2058,8 @@ class Images( Gemini ):
 		try:
 			throw_if( 'prompt', prompt )
 			self.prompt = prompt
-			
 			throw_if( 'model', model )
 			self.model = model
-			
 			self.gemini_api_key = cfg.GEMINI_API_KEY
 			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
 				raise ValueError( 'GEMINI_API_KEY is required.' )
@@ -2083,18 +2081,11 @@ class Images( Gemini ):
 			self.background = background
 			self.response_mode = response_modalities or 'image'
 			self.client = genai.Client( api_key=self.gemini_api_key )
-			self.content_config = self.get_content_config(
-				image_only=True,
-				grounded=grounded,
-				image_search=image_search,
-				response_modalities=self.response_mode,
-				output_mime_type=self.output_mime_type
-			)
-			self.content_response = self.client.models.generate_content(
-				model=self.model,
-				contents=[ self.prompt ],
-				config=self.content_config
-			)
+			self.content_config = self.get_content_config( image_only=True,
+				grounded=grounded, image_search=image_search, response_modalities=self.response_mode,
+				output_mime_type=self.output_mime_type )
+			self.content_response = self.client.models.generate_content( model=self.model,
+				contents=[ self.prompt ], config=self.content_config )
 			self.response = self.content_response
 			self.capture_metadata( )
 			return self.get_first_image( )
@@ -2186,13 +2177,10 @@ class Images( Gemini ):
 		try:
 			throw_if( 'prompt', prompt )
 			self.prompt = prompt
-			
 			throw_if( 'path', path )
 			self.file_path = path
-			
 			throw_if( 'model', model )
 			self.model = model
-			
 			self.gemini_api_key = cfg.GEMINI_API_KEY
 			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
 				raise ValueError( 'GEMINI_API_KEY is required.' )
@@ -2210,19 +2198,12 @@ class Images( Gemini ):
 			self.output_mime_type = output_mime_type
 			self.response_mode = response_modalities or 'text'
 			self.client = genai.Client( api_key=self.gemini_api_key )
-			self.content_config = self.get_content_config(
-				image_only=False,
-				grounded=grounded,
-				image_search=image_search,
-				response_modalities=self.response_mode,
-				output_mime_type=self.output_mime_type
-			)
+			self.content_config = self.get_content_config( image_only=False, grounded=grounded,
+				image_search=image_search, response_modalities=self.response_mode,
+				output_mime_type=self.output_mime_type )
 			self.image_input = self.open_image( self.file_path )
-			self.content_response = self.client.models.generate_content(
-				model=self.model,
-				contents=[ self.prompt, self.image_input ],
-				config=self.content_config
-			)
+			self.content_response = self.client.models.generate_content( model=self.model,
+				contents=[ self.prompt, self.image_input ], config=self.content_config )
 			self.response = self.content_response
 			self.capture_metadata( )
 			return self.get_output_text( )
@@ -5292,34 +5273,14 @@ class FileSearch( Gemini ):
 			exception.cause = 'FileSearch'
 			exception.method = 'upload_file( self, path, store_id, file_path, id, display_name, mime_type )'
 			raise exception
-		
+
 class CloudBuckets( Gemini ):
 	'''
 
 		Purpose:
 		--------
-		Encapsulate Google Cloud Storage as a Vector Store backend for the Buddy
-		application. Buckets are treated as collections and objects (blobs) as
-		stored vector documents or assets.
-
-		Attributes:
-		-----------
-		project_id   : str | None
-		bucket_name  : str | None
-		object_name  : str | None
-		file_path    : str | None
-		client       : storage.Client | None
-		bucket       : storage.Bucket | None
-		response     : Any
-		collections  : Dict[ str, str ] | None
-		documents    : Dict[ str, str ] | None
-
-		Methods:
-		--------
-		upload( path, bucket, name )
-		retrieve( bucket, name )
-		list( bucket )
-		delete( bucket, name )
+		Encapsulate Google Cloud Storage object operations for the Gemini Google Cloud
+		Buckets mode.
 
 	'''
 	project_id: Optional[ str ]
@@ -5335,6 +5296,21 @@ class CloudBuckets( Gemini ):
 	documents: Optional[ Dict[ str, str ] ]
 	
 	def __init__( self ):
+		"""
+		
+			Purpose:
+			--------
+			Initialize the Google Cloud Storage wrapper.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			None
+		
+		"""
 		self.project_id = cfg.GOOGLE_CLOUD_PROJECT_ID
 		self.client = storage.Client( project=self.project_id )
 		self.bucket_name = None
@@ -5350,81 +5326,151 @@ class CloudBuckets( Gemini ):
 		self.http_options = { }
 		self.bucket = None
 		self.response = None
-		self.collections = \
-			{
-					'Federal Financial Data': 'jeni-financial/data',
-					'Federal Financial Regulations': 'jeni-financial/regulations',
-					'DoW Financial Data': 'jeni-dow/budget/data',
-					'DoW Financial Regulations': 'jeni-dow/budget/regulations',
-					'DoA Financial Data': 'jenni-doa/Financial Data',
-			}
-		self.documents = \
-			{
-					'Account_Balances.csv': 'file-U6wFeRGSeg38Db5uJzo5sj',
-					'SF133.csv': 'file-32s641QK1Xb5QUatY3zfWF',
-					'Authority.csv': 'file-Qi2rw2QsdxKBX1iiaQxY3m',
-					'Outlays.csv': 'file-GHEwSWR7ezMvHrQ3X648wn'
-			}
+		self.collections = {
+				'Federal Financial Data': 'jeni-financial/data',
+				'Federal Financial Regulations': 'jeni-financial/regulations',
+				'DoW Financial Data': 'jeni-dow/budget/data',
+				'DoW Financial Regulations': 'jeni-dow/budget/regulations',
+				'DoA Financial Data': 'jenni-doa/Financial Data',
+		}
+		self.documents = {
+				'Account_Balances.csv': 'file-U6wFeRGSeg38Db5uJzo5sj',
+				'SF133.csv': 'file-32s641QK1Xb5QUatY3zfWF',
+				'Authority.csv': 'file-Qi2rw2QsdxKBX1iiaQxY3m',
+				'Outlays.csv': 'file-GHEwSWR7ezMvHrQ3X648wn'
+		}
 	
 	@property
 	def model_options( self ) -> List[ str ] | None:
-		"""Returns list of available chat llm."""
-		return [ 'gemini-2.5-flash',
-		         'gemini-2.5 flash image',
-		         'gemini-2.5 flash-tts',
-		         'gemini-2.5 flash-lite',
-		         'gemini-2.0-flash',
-		         'gemini-2.0-flash-lite' ]
+		"""
+		
+			Purpose:
+			--------
+			Return Gemini model options retained for Google Cloud Buckets mode UI parity.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Model option names.
+		
+		"""
+		return [
+				'gemini-2.5-flash',
+				'gemini-2.5-flash-image',
+				'gemini-2.5-flash-tts',
+				'gemini-2.5-flash-lite',
+				'gemini-2.0-flash',
+				'gemini-2.0-flash-lite',
+		]
 	
 	@property
-	def media_options( self ):
-		'''
+	def media_options( self ) -> List[ str ]:
+		"""
 		
-		Purpose:
-		--------
-		Returns a List[ str ] of media resolution options.
+			Purpose:
+			--------
+			Return media-resolution options retained for UI parity.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str]:
+				Media-resolution option names.
 		
-		'''
-		return [ 'media_resolution_high',
-		         'media_resolution_medium',
-		         'media_resolution_low' ]
+		"""
+		return [
+				'media_resolution_high',
+				'media_resolution_medium',
+				'media_resolution_low',
+		]
 	
-	def create( self, bucket: str, name: str ):
+	def create( self, bucket: str=None, name: str=None,
+			bucket_name: str=None ) -> storage.Bucket:
 		"""
 
 			Purpose:
 			--------
-			Delete an object from a GCS bucket.
+			Create or retrieve a Google Cloud Storage bucket handle.
 
 			Parameters:
 			-----------
-			bucket : str
+			bucket: str
 				GCS bucket name.
-			name   : str
-				Object (blob) name.
+
+			name: str
+				Optional bucket-name alias supplied by app.py.
+
+			bucket_name: str
+				Optional bucket-name alias supplied by app.py.
 
 			Returns:
 			--------
-			bool
+			storage.Bucket:
+				Created or retrieved bucket handle.
 
 		"""
 		try:
-			throw_if( 'bucket', bucket )
-			throw_if( 'name', name )
-			self.bucket_name = bucket
-			self.object_name = name
+			value = bucket or bucket_name or name
+			throw_if( 'bucket', value )
+			self.bucket_name = str( value ).strip( )
 			self.bucket = self.client.bucket( self.bucket_name )
-			blob = self.bucket.blob( self.object_name )
-			blob.delete( )
-			return True
+			
+			if not self.bucket.exists( ):
+				self.bucket = self.client.create_bucket( self.bucket_name )
+			
+			self.response = self.bucket
+			return self.response
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'gemini'
-			ex.cause = 'VectorStores'
-			ex.method = 'delete( self, bucket, name )'
+			ex.cause = 'CloudBuckets'
+			ex.method = 'create( self, bucket: str=None, name: str=None, bucket_name: str=None )'
 			raise ex
 	
-	def upload( self, path: str, bucket: str, name: str=None ):
+	def create_bucket( self, bucket: str=None, name: str=None,
+			bucket_name: str=None ) -> storage.Bucket:
+		"""
+
+			Purpose:
+			--------
+			Create or retrieve a Google Cloud Storage bucket handle.
+
+			Parameters:
+			-----------
+			bucket: str
+				GCS bucket name.
+
+			name: str
+				Optional bucket-name alias supplied by app.py.
+
+			bucket_name: str
+				Optional bucket-name alias supplied by app.py.
+
+			Returns:
+			--------
+			storage.Bucket:
+				Created or retrieved bucket handle.
+
+		"""
+		try:
+			return self.create( bucket=bucket, name=name, bucket_name=bucket_name )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'CloudBuckets'
+			ex.method = 'create_bucket( self, bucket: str=None, name: str=None )'
+			raise ex
+	
+	def upload_file( self, path: str=None, bucket: str=None, name: str=None,
+			file_path: str=None, bucket_name: str=None, id: str=None,
+			store_id: str=None ) -> storage.Blob:
 		"""
 
 			Purpose:
@@ -5433,227 +5479,473 @@ class CloudBuckets( Gemini ):
 
 			Parameters:
 			-----------
-			path   : str
+			path: str
 				Local filesystem path to the file.
-			bucket : str
+
+			bucket: str
 				Target GCS bucket name.
-			name   : str | None
+
+			name: str
 				Optional object name override.
 
+			file_path: str
+				Optional path alias supplied by app.py.
+
+			bucket_name: str
+				Optional bucket-name alias supplied by app.py.
+
+			id: str
+				Optional bucket-name alias supplied by app.py.
+
+			store_id: str
+				Optional bucket-name alias supplied by app.py.
+
 			Returns:
 			--------
-			storage.Blob | None
+			storage.Blob:
+				Uploaded blob.
 
 		"""
 		try:
-			throw_if( 'path', path )
-			throw_if( 'bucket', bucket )
-			self.file_path = path
-			self.bucket_name = bucket
-			self.object_name = name or path.split( '/' )[ -1 ]
+			self.file_path = path or file_path
+			throw_if( 'file_path', self.file_path )
+			
+			self.bucket_name = bucket or bucket_name or store_id or id
+			throw_if( 'bucket', self.bucket_name )
+			
+			self.file_path = str( self.file_path ).strip( )
+			self.bucket_name = str( self.bucket_name ).strip( )
+			self.object_name = str( name or Path( self.file_path ).name ).strip( )
 			self.bucket = self.client.bucket( self.bucket_name )
-			blob = self.bucket.blob( self.object_name )
-			blob.upload_from_filename( self.file_path )
-			self.response = blob
-			return blob
+			
+			if not self.bucket.exists( ):
+				raise ValueError( f'Google Cloud Storage bucket not found: {self.bucket_name}' )
+			
+			self.response = self.bucket.blob( self.object_name )
+			self.response.upload_from_filename( self.file_path )
+			return self.response
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'gemini'
-			ex.cause = 'VectorStores'
-			ex.method = 'upload( self, path, bucket, name )'
+			ex.cause = 'CloudBuckets'
+			ex.method = 'upload_file( self, path: str=None, bucket: str=None, name: str=None )'
 			raise ex
 	
-	def retrieve( self, bucket: str, name: str ):
-		"""
-	
-				Purpose:
-				--------
-				Retrieve metadata for a stored object in GCS.
-	
-				Parameters:
-				-----------
-				bucket : str
-					GCS bucket name.
-				name   : str
-					Object (blob) name.
-	
-				Returns:
-				--------
-				storage.Blob | None
-
-		"""
-		try:
-			throw_if( 'bucket', bucket )
-			throw_if( 'name', name )
-			self.bucket_name = bucket
-			self.object_name = name
-			self.bucket = self.client.bucket( self.bucket_name )
-			blob = self.bucket.get_blob( self.object_name )
-			return blob
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'VectorStores'
-			ex.method = 'retrieve( self, bucket, name )'
-			raise ex
-	
-	def list( self, bucket: str ):
+	def upload( self, path: str=None, bucket: str=None, name: str=None,
+			file_path: str=None, bucket_name: str=None, id: str=None,
+			store_id: str=None ) -> storage.Blob:
 		"""
 
 			Purpose:
 			--------
-			List all objects stored in a given GCS bucket.
+			Upload a local file to a Google Cloud Storage bucket.
 
 			Parameters:
 			-----------
-			bucket : str
+			path: str
+				Local filesystem path to the file.
+
+			bucket: str
+				Target GCS bucket name.
+
+			name: str
+				Optional object name override.
+
+			file_path: str
+				Optional path alias supplied by app.py.
+
+			bucket_name: str
+				Optional bucket-name alias supplied by app.py.
+
+			id: str
+				Optional bucket-name alias supplied by app.py.
+
+			store_id: str
+				Optional bucket-name alias supplied by app.py.
+
+			Returns:
+			--------
+			storage.Blob:
+				Uploaded blob.
+
+		"""
+		try:
+			return self.upload_file( path=path, bucket=bucket, name=name, file_path=file_path,
+				bucket_name=bucket_name, id=id, store_id=store_id )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'CloudBuckets'
+			ex.method = 'upload( self, path: str=None, bucket: str=None, name: str=None )'
+			raise ex
+	
+	def files_upload( self, path: str=None, bucket: str=None, name: str=None,
+			file_path: str=None, bucket_name: str=None, id: str=None,
+			store_id: str=None ) -> storage.Blob:
+		"""
+
+			Purpose:
+			--------
+			Upload a local file to a Google Cloud Storage bucket.
+
+			Parameters:
+			-----------
+			path: str
+				Local filesystem path to the file.
+
+			bucket: str
+				Target GCS bucket name.
+
+			name: str
+				Optional object name override.
+
+			file_path: str
+				Optional path alias supplied by app.py.
+
+			bucket_name: str
+				Optional bucket-name alias supplied by app.py.
+
+			id: str
+				Optional bucket-name alias supplied by app.py.
+
+			store_id: str
+				Optional bucket-name alias supplied by app.py.
+
+			Returns:
+			--------
+			storage.Blob:
+				Uploaded blob.
+
+		"""
+		try:
+			return self.upload_file( path=path, bucket=bucket, name=name, file_path=file_path,
+				bucket_name=bucket_name, id=id, store_id=store_id )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'CloudBuckets'
+			ex.method = 'files_upload( self, path: str=None, bucket: str=None, name: str=None )'
+			raise ex
+	
+	def retrieve( self, bucket: str=None, name: str=None,
+			bucket_name: str=None, id: str=None, store_id: str=None ) -> Any:
+		"""
+
+			Purpose:
+			--------
+			Retrieve a Google Cloud Storage bucket or object.
+
+			Parameters:
+			-----------
+			bucket: str
 				GCS bucket name.
 
+			name: str
+				Optional object name. When omitted, bucket metadata is returned.
+
+			bucket_name: str
+				Optional bucket-name alias supplied by app.py.
+
+			id: str
+				Optional bucket-name alias supplied by app.py.
+
+			store_id: str
+				Optional bucket-name alias supplied by app.py.
+
 			Returns:
 			--------
-			List[ storage.Blob ] | None
+			Any:
+				Bucket metadata or object metadata.
 
 		"""
 		try:
-			throw_if( 'bucket', bucket )
-			self.bucket_name = bucket
+			self.bucket_name = bucket or bucket_name or store_id or id or name
+			throw_if( 'bucket', self.bucket_name )
+			self.bucket_name = str( self.bucket_name ).strip( )
 			self.bucket = self.client.bucket( self.bucket_name )
-			blobs = list( self.bucket.list_blobs( ) )
-			self.documents = { blob.name: blob.id for blob in blobs }
-			return blobs
+			
+			if not self.bucket.exists( ):
+				raise ValueError( f'Google Cloud Storage bucket not found: {self.bucket_name}' )
+			
+			if name and name != self.bucket_name:
+				self.object_name = str( name ).strip( )
+				self.response = self.bucket.get_blob( self.object_name )
+				return self.response
+			
+			self.bucket.reload( )
+			self.response = self.bucket
+			return self.response
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'gemini'
-			ex.cause = 'VectorStores'
-			ex.method = 'list( self, bucket )'
+			ex.cause = 'CloudBuckets'
+			ex.method = 'retrieve( self, bucket: str=None, name: str=None )'
 			raise ex
 	
-	def web_search( self, prompt: str, model: str='gemini-2.5-flash-lite',
-			temperature: float=None, top_p: float=None, frequency: float=None,
-			presence: float=None,
-			max_tokens: int=None, stops: List[ str ]=None, instruct: str=None ) -> str | None:
-		"""
-		
-			Purpose:
-			--------
-			Generates a response grounded in Google Search results.
-			
-			Parameters:
-			-----------
-			prompt: str - The query for search-augmented generation.
-			model: str - The Gemini model identifier.
-			
-			Returns:
-			--------
-			Optional[ str ] - The grounded text response.
-		
-		"""
-		try:
-			throw_if( 'prompt', prompt )
-			self.contents = prompt;
-			self.model = model
-			self.contents = prompt;
-			self.top_p = top_p;
-			self.temperature = temperature
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = max_tokens
-			self.stops = stops
-			self.instructions = instruct
-			self.tool_config = [
-					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
-			self.content_config = GenerateContentConfig( temperature=self.temperature,
-				tools=self.tool_config, system_instruction=self.instructions )
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			response = self.client.models.generate_content( model=self.model,
-				contents=self.contents, config=self.content_config )
-			return response.text
-		except Exception as e:
-			exception = Error( e );
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'web_search( self, prompt, model ) -> Optional[ str ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def search_maps( self, prompt: str, model: str='gemini-2.5-flash-lite',
-			temperature: float=None, top_p: float=None, frequency: float=None,
-			presence: float=None,
-			max_tokens: int=None, stops: List[ str ]=None, instruct: str=None ) -> str | None:
-		"""
-		
-			Purpose:
-			--------
-			Uses Google Search grounding specifically for location and place-based queries.
-			
-			Parameters:
-			-----------
-			prompt: str - The location or directions query.
-			model: str - The Gemini model identifier.
-			Returns:
-			--------
-			Optional[ str ] - The grounded response containing place data.
-			
-		"""
-		try:
-			throw_if( 'prompt', prompt )
-			self.contents = f"Using Google Search and Maps data, answer: {prompt}"
-			self.model = model
-			self.contents = prompt;
-			self.top_p = top_p;
-			self.temperature = temperature
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = max_tokens
-			self.stops = stops
-			self.instructions = instruct
-			self.tool_config = [
-					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
-			self.content_config = GenerateContentConfig( temperature=self.temperature,
-				tools=self.tool_config )
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			response = self.client.models.generate_content( model=self.model,
-				contents=self.contents, config=self.content_config )
-			return response.text
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'search_maps( self, prompt, model ) -> Optional[ str ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def delete( self, bucket: str, name: str ):
+	def retrieve_bucket( self, bucket: str=None, name: str=None,
+			bucket_name: str=None, id: str=None, store_id: str=None ) -> Any:
 		"""
 
 			Purpose:
 			--------
-			Delete an object from a GCS bucket.
+			Retrieve a Google Cloud Storage bucket or object.
 
 			Parameters:
 			-----------
-			bucket : str
+			bucket: str
 				GCS bucket name.
-			name   : str
-				Object (blob) name.
+
+			name: str
+				Optional object name. When omitted, bucket metadata is returned.
+
+			bucket_name: str
+				Optional bucket-name alias supplied by app.py.
+
+			id: str
+				Optional bucket-name alias supplied by app.py.
+
+			store_id: str
+				Optional bucket-name alias supplied by app.py.
 
 			Returns:
 			--------
-			bool
+			Any:
+				Bucket metadata or object metadata.
 
 		"""
 		try:
-			throw_if( 'bucket', bucket )
-			throw_if( 'name', name )
-			self.bucket_name = bucket
-			self.object_name = name
+			return self.retrieve( bucket=bucket, name=name, bucket_name=bucket_name,
+				id=id, store_id=store_id )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'CloudBuckets'
+			ex.method = 'retrieve_bucket( self, bucket: str=None, name: str=None )'
+			raise ex
+	
+	def get( self, bucket: str=None, name: str=None,
+			bucket_name: str=None, id: str=None, store_id: str=None ) -> Any:
+		"""
+
+			Purpose:
+			--------
+			Retrieve a Google Cloud Storage bucket or object.
+
+			Parameters:
+			-----------
+			bucket: str
+				GCS bucket name.
+
+			name: str
+				Optional object name. When omitted, bucket metadata is returned.
+
+			bucket_name: str
+				Optional bucket-name alias supplied by app.py.
+
+			id: str
+				Optional bucket-name alias supplied by app.py.
+
+			store_id: str
+				Optional bucket-name alias supplied by app.py.
+
+			Returns:
+			--------
+			Any:
+				Bucket metadata or object metadata.
+
+		"""
+		try:
+			return self.retrieve( bucket=bucket, name=name, bucket_name=bucket_name,
+				id=id, store_id=store_id )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'CloudBuckets'
+			ex.method = 'get( self, bucket: str=None, name: str=None )'
+			raise ex
+	
+	def list( self, bucket: str=None, bucket_name: str=None,
+			id: str=None, store_id: str=None ) -> List[ storage.Blob ]:
+		"""
+
+			Purpose:
+			--------
+			List all objects stored in a Google Cloud Storage bucket.
+
+			Parameters:
+			-----------
+			bucket: str
+				GCS bucket name.
+
+			bucket_name: str
+				Optional bucket-name alias supplied by app.py.
+
+			id: str
+				Optional bucket-name alias supplied by app.py.
+
+			store_id: str
+				Optional bucket-name alias supplied by app.py.
+
+			Returns:
+			--------
+			List[storage.Blob]:
+				Stored objects.
+
+		"""
+		try:
+			self.bucket_name = bucket or bucket_name or store_id or id
+			throw_if( 'bucket', self.bucket_name )
+			self.bucket_name = str( self.bucket_name ).strip( )
 			self.bucket = self.client.bucket( self.bucket_name )
-			blob = self.bucket.blob( self.object_name )
-			blob.delete( )
+			if not self.bucket.exists( ):
+				raise ValueError( f'Google Cloud Storage bucket not found: {self.bucket_name}' )
+			
+			self.response = list( self.bucket.list_blobs( ) )
+			return self.response
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'CloudBuckets'
+			ex.method = 'list( self, bucket: str=None )'
+			raise ex
+	
+	def delete( self, bucket: str=None, name: str=None,
+			bucket_name: str=None, id: str=None, store_id: str=None ) -> bool:
+		"""
+
+			Purpose:
+			--------
+			Delete a Google Cloud Storage object when an object name is supplied; otherwise
+			delete the bucket only when it is empty.
+
+			Parameters:
+			-----------
+			bucket: str
+				GCS bucket name.
+
+			name: str
+				Optional object name. When omitted, the bucket delete operation is attempted.
+
+			bucket_name: str
+				Optional bucket-name alias supplied by app.py.
+
+			id: str
+				Optional bucket-name alias supplied by app.py.
+
+			store_id: str
+				Optional bucket-name alias supplied by app.py.
+
+			Returns:
+			--------
+			bool:
+				True when the delete request completes.
+
+		"""
+		try:
+			self.bucket_name = bucket or bucket_name or store_id or id or name
+			throw_if( 'bucket', self.bucket_name )
+			self.bucket_name = str( self.bucket_name ).strip( )
+			self.bucket = self.client.bucket( self.bucket_name )
+			
+			if not self.bucket.exists( ):
+				raise ValueError( f'Google Cloud Storage bucket not found: {self.bucket_name}' )
+			
+			if name and name != self.bucket_name:
+				self.object_name = str( name ).strip( )
+				self.response = self.bucket.blob( self.object_name )
+				self.response.delete( )
+				return True
+			
+			self.bucket.delete( )
+			self.response = True
 			return True
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'gemini'
-			ex.cause = 'VectorStores'
-			ex.method = 'delete( self, bucket, name )'
+			ex.cause = 'CloudBuckets'
+			ex.method = 'delete( self, bucket: str=None, name: str=None )'
+			raise ex
+	
+	def delete_bucket( self, bucket: str=None, name: str=None,
+			bucket_name: str=None, id: str=None, store_id: str=None ) -> bool:
+		"""
+
+			Purpose:
+			--------
+			Delete a Google Cloud Storage object when an object name is supplied; otherwise
+			delete the bucket only when it is empty.
+
+			Parameters:
+			-----------
+			bucket: str
+				GCS bucket name.
+
+			name: str
+				Optional object name. When omitted, the bucket delete operation is attempted.
+
+			bucket_name: str
+				Optional bucket-name alias supplied by app.py.
+
+			id: str
+				Optional bucket-name alias supplied by app.py.
+
+			store_id: str
+				Optional bucket-name alias supplied by app.py.
+
+			Returns:
+			--------
+			bool:
+				True when the delete request completes.
+
+		"""
+		try:
+			return self.delete( bucket=bucket, name=name, bucket_name=bucket_name,
+				id=id, store_id=store_id )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'CloudBuckets'
+			ex.method = 'delete_bucket( self, bucket: str=None, name: str=None )'
+			raise ex
+	
+	def remove( self, bucket: str=None, name: str=None,
+			bucket_name: str=None, id: str=None, store_id: str=None ) -> bool:
+		"""
+
+			Purpose:
+			--------
+			Delete a Google Cloud Storage object when an object name is supplied; otherwise
+			delete the bucket only when it is empty.
+
+			Parameters:
+			-----------
+			bucket: str
+				GCS bucket name.
+
+			name: str
+				Optional object name. When omitted, the bucket delete operation is attempted.
+
+			bucket_name: str
+				Optional bucket-name alias supplied by app.py.
+
+			id: str
+				Optional bucket-name alias supplied by app.py.
+
+			store_id: str
+				Optional bucket-name alias supplied by app.py.
+
+			Returns:
+			--------
+			bool:
+				True when the delete request completes.
+
+		"""
+		try:
+			return self.delete( bucket=bucket, name=name, bucket_name=bucket_name,
+				id=id, store_id=store_id )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gemini'
+			ex.cause = 'CloudBuckets'
+			ex.method = 'remove( self, bucket: str=None, name: str=None )'
 			raise ex
