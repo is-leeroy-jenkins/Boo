@@ -7324,100 +7324,30 @@ class VectorStores( Grok ):
 	
 		Purpose:
 		--------
-		Provide xAI configured collection search behind the application's Vector Stores
-		interface.
+		Provide xAI Collections management and configured collection search behind the
+		application's Vector Stores interface.
 
-		This wrapper uses the configured XAI_API_KEY path. It supports listing and retrieving
-		configured collection metadata locally and searching configured xAI collections through
-		the xAI client. Remote collection creation, document upload, and deletion are not
-		performed by this wrapper without collection-management capability.
+		This wrapper uses two xAI credential paths:
 
-		Attributes:
-		-----------
-		client:
-			xAI client instance.
+			1. XAI_MANAGEMENT_KEY for Collections Management API operations.
+			2. XAI_API_KEY for searching within collections.
 
-		model:
-			Model used for collection search compatibility.
-
-		prompt:
-			Search prompt.
-
-		response_format:
-			Response format retained for compatibility.
-
-		number:
-			Number retained for compatibility.
-
-		content:
-			Last content value.
-
-		name:
-			Collection name.
-
-		file_path:
-			Local file path retained for compatibility.
-
-		file_name:
-			File name retained for compatibility.
-
-		file_ids:
-			File identifiers retained for compatibility.
-
-		store_ids:
-			UI-facing collection identifiers.
-
-		store_id:
-			UI-facing collection identifier.
-
-		collection_ids:
-			xAI collection identifiers.
-
-		collection_id:
-			xAI collection identifier.
-
-		documents:
-			Friendly document-name to file-id mapping.
-
-		collections:
-			Friendly collection-name to collection-id mapping.
-
-		response:
-			Last provider response.
-
-		Methods:
-		--------
-		list:
-			List configured collections.
-
-		retrieve:
-			Retrieve configured collection metadata.
-
-		search:
-			Search one configured collection.
-
-		survey:
-			Search multiple configured collections.
-
-		create:
-			Raise a clear collection-management error.
-
-		update:
-			Raise a clear collection-management error.
-
-		delete:
-			Raise a clear collection-management error.
-	
 	"""
 	client: Optional[ Client ]
+	api_key: Optional[ str ]
+	management_key: Optional[ str ]
+	base_url: Optional[ str ]
+	management_base_url: Optional[ str ]
 	model: Optional[ str ]
 	prompt: Optional[ str ]
 	response_format: Optional[ str ]
 	number: Optional[ int ]
 	content: Optional[ str ]
 	name: Optional[ str ]
+	description: Optional[ str ]
 	file_path: Optional[ str ]
 	file_name: Optional[ str ]
+	file_id: Optional[ str ]
 	file_ids: Optional[ List[ str ] ]
 	store_ids: Optional[ List[ str ] ]
 	store_id: Optional[ str ]
@@ -7425,14 +7355,25 @@ class VectorStores( Grok ):
 	collection_id: Optional[ str ]
 	documents: Optional[ Dict[ str, str ] ]
 	collections: Optional[ Dict[ str, str ] ]
+	request: Optional[ Dict[ str, Any ] ]
 	response: Optional[ Any ]
+	result: Optional[ Any ]
+	params: Optional[ Dict[ str, Any ] ]
+	payload: Optional[ Dict[ str, Any ] ]
+	headers: Optional[ Dict[ str, str ] ]
+	team_id: Optional[ str ]
+	limit: Optional[ int ]
+	order: Optional[ str ]
+	sort_by: Optional[ str ]
+	pagination_token: Optional[ str ]
+	filter: Optional[ str ]
 	
 	def __init__( self ):
 		"""
 		
 			Purpose:
 			--------
-			Initialize the VectorStores wrapper.
+			Initialize the xAI Collections wrapper.
 
 			Parameters:
 			-----------
@@ -7445,18 +7386,25 @@ class VectorStores( Grok ):
 		"""
 		super( ).__init__( )
 		self.api_key = cfg.XAI_API_KEY
+		self.management_key = cfg.XAI_MANAGEMENT_KEY
 		self.base_url = cfg.XAI_BASE_URL
-		if self.api_key is None or not str( self.api_key ).strip( ):
-			raise ValueError( 'XAI_API_KEY is required.' )
-		
-		self.client = Client( api_key=self.api_key )
+		self.management_base_url = getattr( cfg, 'XAI_MANAGEMENT_BASE_URL',
+			'https://management-api.x.ai/v1' )
+		self.client = None
 		self.model = None
 		self.prompt = None
 		self.response_format = None
 		self.number = None
 		self.content = None
 		self.name = None
+		self.description = None
 		self.response = None
+		self.result = None
+		self.request = { }
+		self.params = { }
+		self.payload = { }
+		self.headers = { }
+		self.file_id = None
 		self.file_ids = [ ]
 		self.store_ids = [ ]
 		self.collection_ids = [ ]
@@ -7464,34 +7412,22 @@ class VectorStores( Grok ):
 		self.file_name = None
 		self.store_id = None
 		self.collection_id = None
-		
-		default_collections = {
-				'Federal Financial Regulations': 'collection_9195d847-03a1-443c-9240-294c64dd01e2',
-				'Federal Financial Data': 'collection_e28cdcc2-a9e5-430a-bdf5-94fbaf44b6a4',
-				'Explanatory Statements': 'collection_41dc3374-24d0-4692-819c-59e3d7b11b93',
-				'Public Laws': 'collection_c1d0b83e-2f59-4f10-9cf7-51392b490fee'
-		}
-		configured_collections = getattr( cfg, 'GROK_COLLECTIONS', None )
-		self.collections = configured_collections if isinstance( configured_collections,
-			dict ) else default_collections
-		
-		default_documents = {
-				'Outlays.csv': 'file_b0a448b3-904a-40c7-bae1-64df657fde1c',
-				'Authority.csv': 'file_c6ad236f-0c52-45f4-8883-d3be032d07c2',
-				'Balances.csv': 'file_0f63d120-406f-49e6-97e5-7855f2cb26b5'
-		}
-		
-		configured_documents = getattr( cfg, 'GROK_DOCUMENTS', None )
-		self.documents = configured_documents if isinstance( configured_documents,
-			dict ) else default_documents
+		self.team_id = None
+		self.limit = None
+		self.order = None
+		self.sort_by = None
+		self.pagination_token = None
+		self.filter = None
+		self.collections = cfg.GROK_COLLECTIONS
+		self.documents = getattr( cfg, 'GROK_DOCUMENTS', { } )
 	
 	@property
-	def model_options( self ) -> List[ str ]:
+	def model_options( self ) -> List[ str ] | None:
 		"""
 		
 			Purpose:
 			--------
-			Return list of efficient file interaction models.
+			Return xAI model names retained for Vector Stores search compatibility.
 
 			Parameters:
 			-----------
@@ -7499,32 +7435,93 @@ class VectorStores( Grok ):
 
 			Returns:
 			--------
-			List[str]
-				Model names.
+			List[str] | None:
+				Model option names.
 		
 		"""
 		return [
+				'grok-4.20',
+				'grok-4.20-reasoning',
 				'grok-4',
-				'grok-4-0709',
 				'grok-4-latest',
-				'grok-4-1-fast',
-				'grok-4-1-fast-reasoning',
-				'grok-4-1-fast-reasoning-latest',
-				'grok-4-1-fast-non-reasoning',
-				'grok-4-1-fast-non-reasoning-latest',
-				'grok-4-fast',
 				'grok-4-fast-reasoning',
-				'grok-4-fast-reasoning-latest',
 				'grok-4-fast-non-reasoning',
-				'grok-4-fast-non-reasoning-latest',
-				'grok-code-fast-1',
 				'grok-3',
-				'grok-3-latest',
 				'grok-3-mini',
 				'grok-3-fast',
-				'grok-3-fast-latest',
 				'grok-3-mini-fast',
-				'grok-3-mini-fast-latest',
+		]
+	
+	@property
+	def order_options( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return xAI Management API ordering options for collection and document lists.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Order option names.
+		
+		"""
+		return [
+				'asc',
+				'desc',
+		]
+	
+	@property
+	def collection_sort_options( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return xAI Management API collection sort fields.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Collection sort field names.
+		
+		"""
+		return [
+				'collection_name',
+				'created_at',
+				'documents_count',
+		]
+	
+	@property
+	def document_sort_options( self ) -> List[ str ] | None:
+		"""
+		
+			Purpose:
+			--------
+			Return xAI Management API document sort fields.
+
+			Parameters:
+			-----------
+			None
+
+			Returns:
+			--------
+			List[str] | None:
+				Document sort field names.
+		
+		"""
+		return [
+				'name',
+				'created_at',
+				'size_bytes',
+				'status',
 		]
 	
 	def get_collection_id( self, store_id: str ) -> str:
@@ -7532,30 +7529,29 @@ class VectorStores( Grok ):
 		
 			Purpose:
 			--------
-			Resolve a configured collection name or collection identifier to a collection ID.
+			Resolve a configured collection name or raw collection ID to a collection ID.
 
 			Parameters:
 			-----------
 			store_id: str
-				Collection name or collection identifier.
+				Configured collection name or raw xAI collection ID.
 
 			Returns:
 			--------
-			str
-				Collection identifier.
+			str:
+				Resolved xAI collection ID.
 		
 		"""
 		try:
 			throw_if( 'store_id', store_id )
-			value = str( store_id ).strip( )
+			self.store_id = str( store_id ).strip( )
 			
-			if value in self.collections:
-				return self.collections[ value ]
+			if self.store_id in self.collections:
+				self.collection_id = self.collections[ self.store_id ]
+			else:
+				self.collection_id = self.store_id
 			
-			if ' — ' in value:
-				return value.split( ' — ' )[ -1 ].strip( )
-			
-			return value
+			return self.collection_id
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
@@ -7563,12 +7559,48 @@ class VectorStores( Grok ):
 			ex.method = 'get_collection_id( self, store_id: str ) -> str'
 			raise ex
 	
-	def get_collection_rows( self ) -> List[ Dict[ str, Any ] ]:
+	def get_collection_name( self, collection_id: str ) -> str:
 		"""
 		
 			Purpose:
 			--------
-			Return configured collection metadata rows for the Vector Stores UI.
+			Return a configured friendly collection name when one is known.
+
+			Parameters:
+			-----------
+			collection_id: str
+				xAI collection ID.
+
+			Returns:
+			--------
+			str:
+				Friendly collection name or collection ID.
+		
+		"""
+		try:
+			throw_if( 'collection_id', collection_id )
+			self.collection_id = str( collection_id ).strip( )
+			
+			for name, configured_id in self.collections.items( ):
+				if configured_id == self.collection_id:
+					self.name = name
+					return self.name
+			
+			self.name = self.collection_id
+			return self.name
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'get_collection_name( self, collection_id: str ) -> str'
+			raise ex
+	
+	def build_management_headers( self ) -> Dict[ str, str ]:
+		"""
+		
+			Purpose:
+			--------
+			Build xAI Management API JSON headers.
 
 			Parameters:
 			-----------
@@ -7576,34 +7608,180 @@ class VectorStores( Grok ):
 
 			Returns:
 			--------
-			List[Dict[str, Any]]
-				Configured collection rows.
+			Dict[str, str]:
+				Management API request headers.
 		
 		"""
 		try:
-			rows = [ ]
-			for name, collection_id in self.collections.items( ):
-				rows.append(
-					{
-							'id': collection_id,
-							'name': name,
-							'display_name': name,
-							'description': '',
-							'status': 'configured',
-							'file_counts': '',
-							'usage_bytes': '',
-							'collection_id': collection_id,
-							'collection_name': name,
-							'collection_description': '',
-					}
-				)
-			
-			return rows
+			throw_if( 'XAI_MANAGEMENT_KEY', self.management_key )
+			self.headers = {
+					'Authorization': f'Bearer {self.management_key}',
+					'Content-Type': 'application/json',
+			}
+			return self.headers
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'VectorStores'
-			ex.method = 'get_collection_rows( self ) -> List[ Dict[ str, Any ] ]'
+			ex.method = 'build_management_headers( self ) -> Dict[ str, str ]'
+			raise ex
+	
+	def execute_management_request( self, method: str, endpoint: str,
+			params: Dict[ str, Any ] = None, payload: Dict[ str, Any ] = None ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Execute an xAI Collections Management API request.
+
+			Parameters:
+			-----------
+			method: str
+				HTTP method name.
+
+			endpoint: str
+				Management API endpoint path beginning with a slash.
+
+			params: Dict[str, Any]
+				Optional query parameters.
+
+			payload: Dict[str, Any]
+				Optional JSON payload.
+
+			Returns:
+			--------
+			Any:
+				Decoded JSON response, empty dictionary, or raw text.
+		
+		"""
+		try:
+			throw_if( 'method', method )
+			throw_if( 'endpoint', endpoint )
+			self.method = str( method ).strip( ).upper( )
+			self.endpoint = str( endpoint ).strip( )
+			self.params = {
+					key: value
+					for key, value in (params or { }).items( )
+					if value is not None and value != '' and value != [ ]
+			}
+			self.payload = {
+					key: value
+					for key, value in (payload or { }).items( )
+					if value is not None and value != '' and value != [ ]
+			}
+			self.headers = self.build_management_headers( )
+			self.url = f'{self.management_base_url.rstrip( "/" )}/{self.endpoint.lstrip( "/" )}'
+			
+			self.response = requests.request( method=self.method, url=self.url,
+				headers=self.headers, params=self.params if self.params else None,
+				json=self.payload if self.payload else None, timeout=3600 )
+			self.response.raise_for_status( )
+			
+			if not self.response.content:
+				self.result = { }
+				return self.result
+			
+			try:
+				self.result = self.response.json( )
+				return self.result
+			except Exception:
+				self.result = self.response.text
+				return self.result
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'execute_management_request( self, method: str, endpoint: str ) -> Any'
+			raise ex
+	
+	def normalize_collection( self, item: Dict[ str, Any ] ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Normalize an xAI collection response for app.py display.
+
+			Parameters:
+			-----------
+			item: Dict[str, Any]
+				Raw xAI collection response.
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Normalized collection metadata.
+		
+		"""
+		try:
+			throw_if( 'item', item )
+			self.collection = item
+			self.collection_id = ( self.collection.get( 'collection_id' )
+					or self.collection.get( 'id' ) or '' )
+			self.name = ( self.collection.get( 'collection_name' ) or self.collection.get( 'name' )
+					or self.get_collection_name( self.collection_id ) )
+			
+			return {
+					'id': self.collection_id,
+					'name': self.name,
+					'display_name': self.name,
+					'description': self.collection.get( 'collection_description', '' ),
+					'status': self.collection.get( 'status', '' ),
+					'file_counts': self.collection.get( 'documents_count', '' ),
+					'usage_bytes': '',
+					'collection_id': self.collection_id,
+					'collection_name': self.name,
+					'collection_description': self.collection.get( 'collection_description', '' ),
+					'created_at': self.collection.get( 'created_at', '' ),
+					'documents_count': self.collection.get( 'documents_count', '' ),
+					'collection_type': self.collection.get( 'collection_type', '' ),
+					'metadata': self.collection,
+			}
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'normalize_collection( self, item: Dict[ str, Any ] ) -> Dict[ str, Any ]'
+			raise ex
+	
+	def normalize_collection_list( self, response: Any ) -> List[ Dict[ str, Any ] ]:
+		"""
+		
+			Purpose:
+			--------
+			Normalize an xAI collection list response for app.py display.
+
+			Parameters:
+			-----------
+			response: Any
+				Raw xAI list collections response.
+
+			Returns:
+			--------
+			List[Dict[str, Any]]:
+				Normalized collection rows.
+		
+		"""
+		try:
+			self.response = response
+			
+			if isinstance( self.response, dict ):
+				self.items = self.response.get( 'collections', [ ] )
+			elif isinstance( self.response, list ):
+				self.items = self.response
+			else:
+				self.items = [ ]
+			
+			self.collection_rows = [
+					self.normalize_collection( item )
+					for item in self.items
+					if isinstance( item, dict )
+			]
+			return self.collection_rows
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'normalize_collection_list( self, response: Any ) -> List[ Dict[ str, Any ] ]'
 			raise ex
 	
 	def get_text_output( self, response: Any ) -> Any:
@@ -7611,35 +7789,35 @@ class VectorStores( Grok ):
 		
 			Purpose:
 			--------
-			Return response output text when available; otherwise return the response object.
+			Return text output from an xAI collection search response when available.
 
 			Parameters:
 			-----------
 			response: Any
-				Provider response.
+				xAI SDK search response.
 
 			Returns:
 			--------
-			Any
-				Output text or provider response.
+			Any:
+				Text output when available; otherwise the original response.
 		
 		"""
 		try:
 			if response is None:
 				return None
 			
-			output_text = getattr( response, 'output_text', None )
-			if output_text:
-				return output_text
+			self.output_text = getattr( response, 'output_text', None )
+			if self.output_text:
+				return self.output_text
 			
-			text = getattr( response, 'text', None )
-			if text:
-				return text
+			self.output_text = getattr( response, 'text', None )
+			if self.output_text:
+				return self.output_text
 			
 			if isinstance( response, dict ):
-				output_text = response.get( 'output_text' ) or response.get( 'text' )
-				if output_text:
-					return output_text
+				self.output_text = response.get( 'output_text' ) or response.get( 'text' )
+				if self.output_text:
+					return self.output_text
 			
 			return response
 		except Exception as e:
@@ -7649,37 +7827,16 @@ class VectorStores( Grok ):
 			ex.method = 'get_text_output( self, response: Any ) -> Any'
 			raise ex
 	
-	def raise_management_required( self, operation: str ) -> None:
+	def create( self, name: str, model: str = None, description: str = None,
+			index_configuration: Dict[ str, Any ] = None,
+			chunk_configuration: Dict[ str, Any ] = None,
+			field_definitions: List[ Dict[ str, Any ] ] = None,
+			**kwargs: Any ) -> Dict[ str, Any ]:
 		"""
 		
 			Purpose:
 			--------
-			Raise a clear error when an operation requires collection-management capability.
-
-			Parameters:
-			-----------
-			operation: str
-				Operation name.
-
-			Returns:
-			--------
-			None
-		
-		"""
-		raise NotImplementedError(
-			f'Grok VectorStores.{operation} requires xAI collection-management capability. '
-			f'This wrapper is currently configured with XAI_API_KEY only. Use configured '
-			f'collections for search, or add the required management credential/path before '
-			f'enabling remote collection management.'
-		)
-	
-	def create( self, name: str, model: str=None ) -> Any:
-		"""
-		
-			Purpose:
-			--------
-			Block remote collection creation when collection-management capability is not
-			configured.
+			Create an xAI collection using the Collections Management API.
 
 			Parameters:
 			-----------
@@ -7687,47 +7844,116 @@ class VectorStores( Grok ):
 				Collection name.
 
 			model: str
-				Model name retained for interface compatibility.
+				Optional embedding model name for index configuration.
+
+			description: str
+				Optional collection description.
+
+			index_configuration: Dict[str, Any]
+				Optional xAI index configuration.
+
+			chunk_configuration: Dict[str, Any]
+				Optional xAI chunk configuration.
+
+			field_definitions: List[Dict[str, Any]]
+				Optional collection field definitions.
+
+			**kwargs: Any
+				Additional management payload fields.
 
 			Returns:
 			--------
-			Any
-				This method raises NotImplementedError.
+			Dict[str, Any]:
+				Normalized collection metadata.
 		
 		"""
 		try:
 			throw_if( 'name', name )
-			self.name = name
-			self.file_name = name
+			self.name = str( name ).strip( )
+			self.description = description
 			self.model = model
-			self.raise_management_required( 'create' )
+			self.index_configuration = index_configuration
+			self.chunk_configuration = chunk_configuration
+			self.field_definitions = field_definitions
+			self.extra_kwargs = kwargs or { }
+			self.payload = {
+					'collection_name': self.name,
+					'collection_description': self.description,
+					'index_configuration': self.index_configuration,
+					'chunk_configuration': self.chunk_configuration,
+					'field_definitions': self.field_definitions,
+			}
+			
+			if self.model and self.index_configuration is None:
+				self.payload[ 'index_configuration' ] = { 'model_name': self.model }
+			
+			for key, value in self.extra_kwargs.items( ):
+				if value is not None:
+					self.payload[ key ] = value
+			
+			self.result = self.execute_management_request( method='POST', endpoint='/collections',
+				payload=self.payload )
+			return self.normalize_collection( self.result )
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
 			ex.cause = 'VectorStores'
-			ex.method = 'create( self, name: str, model: str=None ) -> Any'
+			ex.method = 'create( self, name: str, model: str=None ) -> Dict[ str, Any ]'
 			raise ex
 	
-	def list( self ) -> List[ Dict[ str, Any ] ]:
+	def list( self, team_id: str = None, limit: int = None, order: str = None,
+			sort_by: str = None, pagination_token: str = None,
+			filter: str = None ) -> List[ Dict[ str, Any ] ]:
 		"""
 		
 			Purpose:
 			--------
-			List configured xAI collections.
+			List xAI collections using the Collections Management API.
 
 			Parameters:
 			-----------
-			None
+			team_id: str
+				Optional xAI team ID.
+
+			limit: int
+				Optional maximum number of collections to return.
+
+			order: str
+				Optional ordering.
+
+			sort_by: str
+				Optional collection sort field.
+
+			pagination_token: str
+				Optional pagination token.
+
+			filter: str
+				Optional xAI collection filter expression.
 
 			Returns:
 			--------
-			List[Dict[str, Any]]
-				Configured collection rows.
+			List[Dict[str, Any]]:
+				Normalized collection rows.
 		
 		"""
 		try:
-			self.response = self.get_collection_rows( )
-			return self.response
+			self.team_id = team_id
+			self.limit = limit
+			self.order = order
+			self.sort_by = sort_by
+			self.pagination_token = pagination_token
+			self.filter = filter
+			self.params = {
+					'team_id': self.team_id,
+					'limit': self.limit,
+					'order': self.order,
+					'sort_by': self.sort_by,
+					'pagination_token': self.pagination_token,
+					'filter': self.filter,
+			}
+			self.result = self.execute_management_request( method='GET',  endpoint='/collections',
+				params=self.params )
+			return self.normalize_collection_list( self.result )
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
@@ -7735,47 +7961,36 @@ class VectorStores( Grok ):
 			ex.method = 'list( self ) -> List[ Dict[ str, Any ] ]'
 			raise ex
 	
-	def retrieve( self, store_id: str ) -> Dict[ str, Any ]:
+	def retrieve( self, store_id: str, team_id: str = None ) -> Dict[ str, Any ]:
 		"""
 		
 			Purpose:
 			--------
-			Retrieve configured metadata for a specific collection.
+			Retrieve xAI collection metadata using the Collections Management API.
 
 			Parameters:
 			-----------
 			store_id: str
 				Collection identifier or configured collection name.
 
+			team_id: str
+				Optional xAI team ID.
+
 			Returns:
 			--------
-			Dict[str, Any]
-				Configured collection metadata.
+			Dict[str, Any]:
+				Normalized collection metadata.
 		
 		"""
 		try:
 			throw_if( 'store_id', store_id )
-			self.store_id = store_id
+			self.store_id = str( store_id ).strip( )
 			self.collection_id = self.get_collection_id( self.store_id )
-			display_name = ''
-			for name, collection_id in self.collections.items( ):
-				if collection_id == self.collection_id:
-					display_name = name
-					break
-			
-			self.response = {
-					'id': self.collection_id,
-					'name': display_name or self.collection_id,
-					'display_name': display_name or self.collection_id,
-					'description': '',
-					'status': 'configured',
-					'file_counts': '',
-					'usage_bytes': '',
-					'collection_id': self.collection_id,
-					'collection_name': display_name or self.collection_id,
-					'collection_description': '',
-			}
-			return self.response
+			self.team_id = team_id
+			self.params = { 'team_id': self.team_id }
+			self.result = self.execute_management_request( method='GET',
+				endpoint=f'/collections/{self.collection_id}', params=self.params )
+			return self.normalize_collection( self.result )
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'grok'
@@ -7783,12 +7998,455 @@ class VectorStores( Grok ):
 			ex.method = 'retrieve( self, store_id: str ) -> Dict[ str, Any ]'
 			raise ex
 	
-	def search( self, prompt: str, store_id: str, model: str='grok-4-fast' ) -> Any:
+	def update( self, store_id: str, name: str = None, description: str = None,
+			chunk_configuration: Dict[ str, Any ] = None,
+			index_configuration: Dict[ str, Any ] = None,
+			field_definitions: List[ Dict[ str, Any ] ] = None,
+			team_id: str = None, **kwargs: Any ) -> Dict[ str, Any ]:
 		"""
 		
 			Purpose:
 			--------
-			Search a specific configured xAI collection.
+			Update xAI collection configuration using the Collections Management API.
+
+			Parameters:
+			-----------
+			store_id: str
+				Collection identifier or configured collection name.
+
+			name: str
+				Optional updated collection name.
+
+			description: str
+				Optional updated collection description.
+
+			chunk_configuration: Dict[str, Any]
+				Optional updated chunk configuration.
+
+			index_configuration: Dict[str, Any]
+				Optional updated index configuration.
+
+			field_definitions: List[Dict[str, Any]]
+				Optional updated field definitions.
+
+			team_id: str
+				Optional xAI team ID.
+
+			**kwargs: Any
+				Additional update payload fields.
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Normalized collection metadata.
+		
+		"""
+		try:
+			throw_if( 'store_id', store_id )
+			self.store_id = str( store_id ).strip( )
+			self.collection_id = self.get_collection_id( self.store_id )
+			self.name = name
+			self.description = description
+			self.chunk_configuration = chunk_configuration
+			self.index_configuration = index_configuration
+			self.field_definitions = field_definitions
+			self.team_id = team_id
+			self.extra_kwargs = kwargs or { }
+			self.params = { 'team_id': self.team_id }
+			self.payload = {
+					'collectionName': self.name,
+					'collectionDescription': self.description,
+					'chunkConfiguration': self.chunk_configuration,
+					'indexConfiguration': self.index_configuration,
+					'fieldDefinitions': self.field_definitions,
+			}
+			
+			for key, value in self.extra_kwargs.items( ):
+				if value is not None:
+					self.payload[ key ] = value
+			
+			self.result = self.execute_management_request( method='PUT',
+				endpoint=f'/collections/{self.collection_id}', params=self.params,
+				payload=self.payload )
+			return self.normalize_collection( self.result )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'update( self, store_id: str ) -> Dict[ str, Any ]'
+			raise ex
+	
+	def delete( self, store_id: str, team_id: str = None ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Delete an xAI collection using the Collections Management API.
+
+			Parameters:
+			-----------
+			store_id: str
+				Collection identifier or configured collection name.
+
+			team_id: str
+				Optional xAI team ID.
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Delete confirmation.
+		
+		"""
+		try:
+			throw_if( 'store_id', store_id )
+			self.store_id = str( store_id ).strip( )
+			self.collection_id = self.get_collection_id( self.store_id )
+			self.team_id = team_id
+			self.params = { 'team_id': self.team_id }
+			self.result = self.execute_management_request( method='DELETE',
+				endpoint=f'/collections/{self.collection_id}', params=self.params )
+			return {
+					'id': self.collection_id,
+					'collection_id': self.collection_id,
+					'deleted': True,
+					'object': 'collection.deleted',
+					'metadata': self.result,
+			}
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'delete( self, store_id: str ) -> Dict[ str, Any ]'
+			raise ex
+	
+	def add_document( self, store_id: str, file_id: str,
+			fields: Dict[ str, Any ] = None, team_id: str = None ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Add an existing xAI file/document to a collection.
+
+			Parameters:
+			-----------
+			store_id: str
+				Collection identifier or configured collection name.
+
+			file_id: str
+				xAI file/document ID.
+
+			fields: Dict[str, Any]
+				Optional document fields.
+
+			team_id: str
+				Optional xAI team ID.
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Add-document confirmation.
+		
+		"""
+		try:
+			throw_if( 'store_id', store_id )
+			throw_if( 'file_id', file_id )
+			self.store_id = str( store_id ).strip( )
+			self.collection_id = self.get_collection_id( self.store_id )
+			self.file_id = str( file_id ).strip( )
+			self.fields = fields if fields is not None else { }
+			self.team_id = team_id
+			self.params = { 'team_id': self.team_id }
+			self.payload = { 'fields': self.fields }
+			self.result = self.execute_management_request( method='POST',
+				endpoint=f'/collections/{self.collection_id}/documents/{self.file_id}',
+				params=self.params, payload=self.payload )
+			return {
+					'collection_id': self.collection_id,
+					'file_id': self.file_id,
+					'added': True,
+					'metadata': self.result,
+			}
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'add_document( self, store_id: str, file_id: str ) -> Dict[ str, Any ]'
+			raise ex
+	
+	def list_documents( self, store_id: str, team_id: str = None, limit: int = None,
+			order: str = None, sort_by: str = None, pagination_token: str = None,
+			name: str = None, filter: str = None ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			List documents in an xAI collection.
+
+			Parameters:
+			-----------
+			store_id: str
+				Collection identifier or configured collection name.
+
+			team_id: str
+				Optional xAI team ID.
+
+			limit: int
+				Optional maximum number of documents.
+
+			order: str
+				Optional ordering.
+
+			sort_by: str
+				Optional document sort field.
+
+			pagination_token: str
+				Optional pagination token.
+
+			name: str
+				Optional deprecated document-name filter.
+
+			filter: str
+				Optional xAI document filter expression.
+
+			Returns:
+			--------
+			Any:
+				Raw Management API document list response.
+		
+		"""
+		try:
+			throw_if( 'store_id', store_id )
+			self.store_id = str( store_id ).strip( )
+			self.collection_id = self.get_collection_id( self.store_id )
+			self.team_id = team_id
+			self.limit = limit
+			self.order = order
+			self.sort_by = sort_by
+			self.pagination_token = pagination_token
+			self.name = name
+			self.filter = filter
+			self.params = {
+					'team_id': self.team_id,
+					'limit': self.limit,
+					'order': self.order,
+					'sort_by': self.sort_by,
+					'pagination_token': self.pagination_token,
+					'name': self.name,
+					'filter': self.filter,
+			}
+			self.result = self.execute_management_request( method='GET',
+				endpoint=f'/collections/{self.collection_id}/documents', params=self.params )
+			return self.result
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'list_documents( self, store_id: str ) -> Any'
+			raise ex
+	
+	def retrieve_document( self, store_id: str, file_id: str,
+			team_id: str = None ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Retrieve document metadata from an xAI collection.
+
+			Parameters:
+			-----------
+			store_id: str
+				Collection identifier or configured collection name.
+
+			file_id: str
+				xAI file/document ID.
+
+			team_id: str
+				Optional xAI team ID.
+
+			Returns:
+			--------
+			Any:
+				Raw Management API document metadata response.
+		
+		"""
+		try:
+			throw_if( 'store_id', store_id )
+			throw_if( 'file_id', file_id )
+			self.store_id = str( store_id ).strip( )
+			self.collection_id = self.get_collection_id( self.store_id )
+			self.file_id = str( file_id ).strip( )
+			self.team_id = team_id
+			self.params = { 'team_id': self.team_id }
+			self.result = self.execute_management_request(
+				method='GET',
+				endpoint=f'/collections/{self.collection_id}/documents/{self.file_id}',
+				params=self.params
+			)
+			return self.result
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'retrieve_document( self, store_id: str, file_id: str ) -> Any'
+			raise ex
+	
+	def regenerate_document( self, store_id: str, file_id: str,
+			team_id: str = None ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Regenerate indices for a document in an xAI collection.
+
+			Parameters:
+			-----------
+			store_id: str
+				Collection identifier or configured collection name.
+
+			file_id: str
+				xAI file/document ID.
+
+			team_id: str
+				Optional xAI team ID.
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Regenerate confirmation.
+		
+		"""
+		try:
+			throw_if( 'store_id', store_id )
+			throw_if( 'file_id', file_id )
+			self.store_id = str( store_id ).strip( )
+			self.collection_id = self.get_collection_id( self.store_id )
+			self.file_id = str( file_id ).strip( )
+			self.team_id = team_id
+			self.params = { 'team_id': self.team_id }
+			self.result = self.execute_management_request(
+				method='PATCH',
+				endpoint=f'/collections/{self.collection_id}/documents/{self.file_id}',
+				params=self.params
+			)
+			return {
+					'collection_id': self.collection_id,
+					'file_id': self.file_id,
+					'regenerated': True,
+					'metadata': self.result,
+			}
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'regenerate_document( self, store_id: str, file_id: str ) -> Dict[ str, Any ]'
+			raise ex
+	
+	def remove_document( self, store_id: str, file_id: str,
+			team_id: str = None ) -> Dict[ str, Any ]:
+		"""
+		
+			Purpose:
+			--------
+			Remove a document from an xAI collection.
+
+			Parameters:
+			-----------
+			store_id: str
+				Collection identifier or configured collection name.
+
+			file_id: str
+				xAI file/document ID.
+
+			team_id: str
+				Optional xAI team ID.
+
+			Returns:
+			--------
+			Dict[str, Any]:
+				Remove-document confirmation.
+		
+		"""
+		try:
+			throw_if( 'store_id', store_id )
+			throw_if( 'file_id', file_id )
+			self.store_id = str( store_id ).strip( )
+			self.collection_id = self.get_collection_id( self.store_id )
+			self.file_id = str( file_id ).strip( )
+			self.team_id = team_id
+			self.params = { 'team_id': self.team_id }
+			self.result = self.execute_management_request(
+				method='DELETE',
+				endpoint=f'/collections/{self.collection_id}/documents/{self.file_id}',
+				params=self.params
+			)
+			return {
+					'collection_id': self.collection_id,
+					'file_id': self.file_id,
+					'removed': True,
+					'metadata': self.result,
+			}
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'remove_document( self, store_id: str, file_id: str ) -> Dict[ str, Any ]'
+			raise ex
+	
+	def batch_get_documents( self, store_id: str, file_ids: List[ str ],
+			team_id: str = None ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Batch retrieve document metadata from an xAI collection.
+
+			Parameters:
+			-----------
+			store_id: str
+				Collection identifier or configured collection name.
+
+			file_ids: List[str]
+				xAI file/document IDs.
+
+			team_id: str
+				Optional xAI team ID.
+
+			Returns:
+			--------
+			Any:
+				Raw Management API batch document response.
+		
+		"""
+		try:
+			throw_if( 'store_id', store_id )
+			throw_if( 'file_ids', file_ids )
+			self.store_id = str( store_id ).strip( )
+			self.collection_id = self.get_collection_id( self.store_id )
+			self.file_ids = file_ids
+			self.team_id = team_id
+			self.params = {
+					'team_id': self.team_id,
+					'file_ids': self.file_ids,
+			}
+			self.result = self.execute_management_request(
+				method='GET',
+				endpoint=f'/collections/{self.collection_id}/documents:batchGet',
+				params=self.params
+			)
+			return self.result
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'grok'
+			ex.cause = 'VectorStores'
+			ex.method = 'batch_get_documents( self, store_id: str, file_ids: List[ str ] ) -> Any'
+			raise ex
+	
+	def search( self, prompt: str, store_id: str, model: str = 'grok-4-fast' ) -> Any:
+		"""
+		
+			Purpose:
+			--------
+			Search a specific xAI collection using the standard xAI API key path.
 
 			Parameters:
 			-----------
@@ -7803,21 +8461,25 @@ class VectorStores( Grok ):
 
 			Returns:
 			--------
-			Any
+			Any:
 				Output text when available; otherwise provider response.
 		
 		"""
 		try:
 			throw_if( 'prompt', prompt )
 			throw_if( 'store_id', store_id )
-			self.prompt = prompt
+			throw_if( 'XAI_API_KEY', self.api_key )
+			self.prompt = str( prompt ).strip( )
 			self.model = model
-			self.store_id = store_id
+			self.store_id = str( store_id ).strip( )
 			self.collection_id = self.get_collection_id( self.store_id )
 			self.store_ids = [ self.collection_id ]
 			self.collection_ids = [ self.collection_id ]
-			self.response = self.client.collections.search( query=self.prompt,
-				collection_ids=self.collection_ids )
+			self.client = Client( api_key=self.api_key )
+			self.response = self.client.collections.search(
+				query=self.prompt,
+				collection_ids=self.collection_ids
+			)
 			return self.get_text_output( self.response )
 		except Exception as e:
 			ex = Error( e )
@@ -7826,12 +8488,13 @@ class VectorStores( Grok ):
 			ex.method = 'search( self, prompt: str, store_id: str, model: str ) -> Any'
 			raise ex
 	
-	def survey( self, prompt: str, store_ids: List[ str ], model: str='grok-4-fast' ) -> Any:
+	def survey( self, prompt: str, store_ids: List[ str ],
+			model: str = 'grok-4-fast' ) -> Any:
 		"""
 		
 			Purpose:
 			--------
-			Search across multiple configured xAI collections.
+			Search multiple xAI collections using the standard xAI API key path.
 
 			Parameters:
 			-----------
@@ -7846,20 +8509,20 @@ class VectorStores( Grok ):
 
 			Returns:
 			--------
-			Any
+			Any:
 				Output text when available; otherwise provider response.
 		
 		"""
 		try:
 			throw_if( 'prompt', prompt )
 			throw_if( 'store_ids', store_ids )
-			self.prompt = prompt
+			throw_if( 'XAI_API_KEY', self.api_key )
+			self.prompt = str( prompt ).strip( )
 			self.model = model
 			self.store_ids = store_ids
-			self.collection_ids = [
-					self.get_collection_id( store_id )
-					for store_id in self.store_ids
-			]
+			self.collection_ids = [ self.get_collection_id( store_id )
+					for store_id in self.store_ids ]
+			self.client = Client( api_key=self.api_key )
 			self.response = self.client.collections.search( query=self.prompt,
 				collection_ids=self.collection_ids )
 			return self.get_text_output( self.response )
@@ -7868,76 +8531,6 @@ class VectorStores( Grok ):
 			ex.module = 'grok'
 			ex.cause = 'VectorStores'
 			ex.method = 'survey( self, prompt: str, store_ids: List[ str ], model: str ) -> Any'
-			raise ex
-	
-	def update( self, store_id: str, filepath: str=None, filename: str=None ) -> Any:
-		"""
-		
-			Purpose:
-			--------
-			Block document upload to a collection when collection-management capability is not
-			configured.
-
-			Parameters:
-			-----------
-			store_id: str
-				Collection identifier or configured collection name.
-
-			filepath: str
-				Local file path.
-
-			filename: str
-				File name.
-
-			Returns:
-			--------
-			Any
-				This method raises NotImplementedError.
-		
-		"""
-		try:
-			throw_if( 'store_id', store_id )
-			self.store_id = store_id
-			self.collection_id = self.get_collection_id( self.store_id )
-			self.file_path = filepath
-			self.file_name = filename
-			self.raise_management_required( 'update' )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'VectorStores'
-			ex.method = 'update( self, store_id: str, filepath: str=None, filename: str=None ) -> Any'
-			raise ex
-	
-	def delete( self, store_id: str ) -> Any:
-		"""
-		
-			Purpose:
-			--------
-			Block remote collection deletion when collection-management capability is not
-			configured.
-
-			Parameters:
-			-----------
-			store_id: str
-				Collection identifier or configured collection name.
-
-			Returns:
-			--------
-			Any
-				This method raises NotImplementedError.
-		
-		"""
-		try:
-			throw_if( 'store_id', store_id )
-			self.store_id = store_id
-			self.collection_id = self.get_collection_id( self.store_id )
-			self.raise_management_required( 'delete' )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'grok'
-			ex.cause = 'VectorStores'
-			ex.method = 'delete( self, store_id: str ) -> Any'
 			raise ex
 	
 	def __dir__( self ) -> List[ str ] | None:
@@ -7953,21 +8546,26 @@ class VectorStores( Grok ):
 
 			Returns:
 			--------
-			List[str] | None
+			List[str] | None:
 				Member names.
 		
 		"""
 		return [
+				'api_key',
+				'management_key',
+				'base_url',
+				'management_base_url',
 				'client',
-				'file_path',
-				'file_name',
-				'response',
 				'model',
 				'prompt',
 				'response_format',
 				'number',
 				'content',
 				'name',
+				'description',
+				'file_path',
+				'file_name',
+				'file_id',
 				'file_ids',
 				'store_ids',
 				'store_id',
@@ -7975,16 +8573,40 @@ class VectorStores( Grok ):
 				'collection_id',
 				'documents',
 				'collections',
+				'request',
+				'response',
+				'result',
+				'params',
+				'payload',
+				'headers',
+				'team_id',
+				'limit',
+				'order',
+				'sort_by',
+				'pagination_token',
+				'filter',
 				'model_options',
+				'order_options',
+				'collection_sort_options',
+				'document_sort_options',
 				'get_collection_id',
-				'get_collection_rows',
+				'get_collection_name',
+				'build_management_headers',
+				'execute_management_request',
+				'normalize_collection',
+				'normalize_collection_list',
 				'get_text_output',
-				'raise_management_required',
 				'create',
 				'list',
 				'retrieve',
-				'search',
-				'survey',
 				'update',
 				'delete',
+				'add_document',
+				'list_documents',
+				'retrieve_document',
+				'regenerate_document',
+				'remove_document',
+				'batch_get_documents',
+				'search',
+				'survey',
 		]
