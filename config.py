@@ -69,6 +69,7 @@ GEMINI_API_KEY = os.getenv( 'GEMINI_API_KEY' )
 XAI_API_KEY = os.getenv( 'XAI_API_KEY' )
 XAI_MANAGEMENT_KEY = os.getenv( 'XAI_MANAGEMENT_KEY' )
 XAI_BASE_URL = 'https://api.x.ai/v1'
+XAI_MANAGEMENT_BASE_URL = os.getenv( 'XAI_MANAGEMENT_BASE_URL' )
 GROK_LOGO = r'resources/images/grok.png'
 GROK = '𝕏'
 GOOGLE_API_KEY = os.getenv( 'GOOGLE_API_KEY' )
