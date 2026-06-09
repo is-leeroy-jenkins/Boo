@@ -44,6 +44,10 @@ local analytical data operations.
 * Databricks workspace repository for the Boo codebase.
 * Supports collaborative development, analytics, notebook execution, and application deployment.
 
+## 📚 Documentation
+
+[Boo Docs](https://is-leeroy-jenkins.github.io/Boo/)
+
 ## 🧠 Custom LLM
 
 [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/boo)
@@ -779,6 +783,11 @@ Boo exposes the following active runtime parameters across modes:
 | SQL query blocked                 | Use a read-only `SELECT`, `WITH`, `EXPLAIN`, or safe `PRAGMA` query.                                           |
 | DataFrame rendering fails         | The app includes a display-safe fallback renderer for problematic SQLite/PyArrow values.                       |
 
+## Documentation
+
+The Boo documentation site is published with MkDocs Material and GitHub Pages.
+
+[Boo Documentation](https://is-leeroy-jenkins.github.io/Boo/)
 
 ## 🚀 Application Badges
 

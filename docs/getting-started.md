@@ -11,11 +11,13 @@ serve the MkDocs documentation site.
 Before running the application or documentation site, confirm that the workstation has the following
 tools installed:
 
-* Python 3.11 or later
-* Git
-* PowerShell
-* A local clone of the Boo repository
-* Access to the required provider API keys, if provider-backed workflows will be used
+| Requirement | Purpose |
+| --- | --- |
+| Python 3.11 or later | Runs the Streamlit application and provider wrapper modules. |
+| Git | Clones and updates the Boo repository. |
+| PowerShell | Runs the Windows setup commands shown in this guide. |
+| Local Boo repository clone | Provides the application source and `docs/` directory. |
+| Provider API keys | Enables provider-backed workflows. Keys are only required for the providers being used. |
 
 ## Create the Virtual Environment
 
@@ -37,6 +39,16 @@ After activation, the PowerShell prompt should show the active environment name:
 (.venv) PS C:\path\to\Boo>
 ```
 
+## Upgrade Packaging Tools
+
+After activating the virtual environment, upgrade the packaging tools:
+
+```powershell
+python -m pip install --upgrade pip setuptools wheel
+```
+
+This helps avoid dependency installation failures caused by stale packaging packages.
+
 ## Install Application Dependencies
 
 Install the application dependencies from `requirements.txt`:
@@ -56,22 +68,22 @@ pip install -r requirements-docs.txt
 ```
 
 The documentation dependencies are intentionally separated from the application dependencies so the
-Streamlit runtime does not need to carry MkDocs packages unless documentation generation is required
-in that environment.
+Streamlit runtime does not need to carry MkDocs packages unless documentation generation is required.
 
 ## Configure Provider Credentials
 
-The application reads provider credentials from `config.py`, environment variables, or Streamlit
-runtime state depending on the workflow.
+Boo reads provider credentials from `config.py`, environment variables, Streamlit secrets, or
+runtime state depending on the workflow and the local implementation.
 
 Common provider configuration values include:
 
-| Provider      | Configuration Value | Purpose                                                                      |
-| ------------- | ------------------- | ---------------------------------------------------------------------------- |
-| OpenAI        | `OPENAI_API_KEY`    | Enables GPT text, image, audio, embedding, file, and vector-store workflows. |
-| Google Gemini | `GEMINI_API_KEY`    | Enables Gemini text, image, file, and grounded generation workflows.         |
-| Google APIs   | `GOOGLE_API_KEY`    | Supports related Google API workflows where configured.                      |
-| xAI Grok      | `XAI_API_KEY`       | Enables Grok text, image, and native xAI SDK workflows.                      |
+| Provider | Configuration Value | Purpose |
+| --- | --- | --- |
+| OpenAI | `OPENAI_API_KEY` | Enables GPT text, image, audio, embedding, file, and vector-store workflows. |
+| Google Gemini | `GEMINI_API_KEY` | Enables Gemini text, multimodal, file, and grounded generation workflows. |
+| Google APIs | `GOOGLE_API_KEY` | Supports related Google API workflows where configured. |
+| xAI Grok | `XAI_API_KEY` | Enables Grok text, image-capable, and native xAI SDK workflows. |
+| xAI Management | `XAI_MANAGEMENT_KEY` | Enables management operations where the Grok wrapper requires a separate management credential. |
 
 For local development, API keys may be set in PowerShell before launching the application:
 
@@ -79,9 +91,23 @@ For local development, API keys may be set in PowerShell before launching the ap
 $env:OPENAI_API_KEY = "your-openai-api-key"
 $env:GEMINI_API_KEY = "your-gemini-api-key"
 $env:XAI_API_KEY = "your-xai-api-key"
+$env:XAI_MANAGEMENT_KEY = "your-xai-management-key"
 ```
 
 Do not commit real API keys to the repository.
+
+## Recommended Local Configuration Pattern
+
+A clean local development setup normally follows this pattern:
+
+1. Store stable non-secret defaults in `config.py`.
+2. Store secrets in environment variables or `.streamlit/secrets.toml`.
+3. Keep provider-specific model names, vector-store names, and feature flags centralized.
+4. Avoid hard-coded local paths when the same path can be provided by an environment variable.
+5. Validate required provider credentials inside provider wrapper methods before making SDK calls.
+
+This pattern keeps the repository portable across development workstations, Streamlit Cloud,
+containers, and server-hosted environments.
 
 ## Run the Streamlit Application
 
@@ -139,6 +165,7 @@ Use this sequence for normal development:
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 pip install -r requirements-docs.txt
 streamlit run app.py
@@ -163,10 +190,25 @@ mkdocs build
 
 If the build succeeds, the terminal should report that the site was generated successfully.
 
-If the build fails while importing `app.py`, remove the `app.py` API reference page temporarily and
-document only import-safe modules such as `gpt.py`, `gemini.py`, and `grok.py`. Streamlit
-applications often execute UI code at import time, which can make direct API documentation
-generation fragile.
+## MkDocs Configuration
+
+The `mkdocs.yml` configuration should include `mkdocstrings` with Google-style docstring parsing:
+
+```yaml
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          paths:
+            - .
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+```
 
 ## Troubleshooting
 
@@ -203,26 +245,22 @@ mkdocs --version
 Confirm that `mkdocs.yml` includes the `mkdocstrings` plugin and that the documented modules are
 importable from the repository root.
 
-The `mkdocs.yml` configuration should include:
+Also confirm that the documented module names match the actual source filenames. For example:
 
-```yaml
-plugins:
-  - search
-  - autorefs
-  - mkdocstrings:
-      handlers:
-        python:
-          paths:
-            - .
-          options:
-            docstring_style: google
+```markdown
+::: gpt
+::: gemini
+::: grok
 ```
+
+These directives expect `gpt.py`, `gemini.py`, and `grok.py` to be importable from the repository
+root or from a configured package path.
 
 ### The `app.py` API page fails during build
 
 If `::: app` causes a build failure, the likely cause is Streamlit runtime code executing during
-module import. In that case, remove the `app.py` API page from `mkdocs.yml` and document import-safe
-provider modules first.
+module import. Streamlit applications often run page setup, session-state initialization, and widget
+creation at import time.
 
 A safer long-term pattern is to move reusable application logic into import-safe modules, such as:
 
@@ -235,15 +273,23 @@ src/provider_router.py
 
 Then document those modules instead of directly documenting `app.py`.
 
-## Next Step
+### A provider wrapper fails during documentation build
 
-After this page is added, continue by adding:
+Provider wrappers should not require live API credentials simply to import. If MkDocs fails because a
+provider wrapper creates a client at import time, move client construction into the method that makes
+the provider call. Importing the module should define classes and functions only.
 
-```text
-docs/configuration.md
-docs/user-guide.md
-docs/architecture.md
-docs/api/gpt.md
-docs/api/gemini.md
-docs/api/grok.md
+## Completion Checklist
+
+Before committing documentation changes, run:
+
+```powershell
+mkdocs build
 ```
+
+Then confirm:
+
+- the site builds without import errors;
+- the API reference pages render the expected classes and methods;
+- navigation links in `mkdocs.yml` point to existing files;
+- no real API keys, local secrets, or generated `site/` files were committed.

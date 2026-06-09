@@ -1,20 +1,74 @@
 site_name: Boo Documentation
-site_description: Documentation for the Boo multi-provider AI assistant application.
+site_description: Documentation for Multi-Modal AI, Boo.
 site_author: Terry D. Eppler
-repo_name: Boo
-repo_url: ""
+site_url: https://is-leeroy-jenkins.github.io/Boo/
+repo_url: https://github.com/is-leeroy-jenkins/Boo
+repo_name: is-leeroy-jenkins/Boo
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Configuration: configuration.md
+  - User Guide: user-guide.md
+  - Architecture: architecture.md
+  - API Reference:
+      - Application: app.md
+      - GPT: gpt.md
+      - Gemini: gemini.md
+      - Grok: grok.md
 
 theme:
   name: material
+  language: en
+  icon:
+    logo: material/robot-happy-outline
+    repo: fontawesome/brands/github
+    admonition:
+      note: material/information-outline
+      abstract: material/clipboard-text-outline
+      info: material/information-outline
+      tip: material/lightbulb-on-outline
+      success: material/check-circle-outline
+      question: material/help-circle-outline
+      warning: material/alert-outline
+      failure: material/close-circle-outline
+      danger: material/alert-octagon-outline
+      bug: material/bug-outline
+      example: material/code-braces
+      quote: material/format-quote-close
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: cyan
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: cyan
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
   features:
-    - navigation.tabs
-    - navigation.sections
+    - announce.dismiss
+    - content.action.copy
+    - content.code.copy
+    - content.code.select
+    - content.tabs.link
     - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.path
+    - navigation.sections
+    - navigation.tabs
     - navigation.top
     - search.highlight
     - search.share
-    - content.code.copy
-    - content.tabs.link
+    - search.suggest
+    - toc.follow
 
 plugins:
   - search
@@ -26,16 +80,14 @@ plugins:
             - .
           options:
             docstring_style: google
-            show_source: true
+            heading_level: 2
             show_root_heading: true
             show_root_full_path: false
-            show_signature_annotations: true
-            separate_signature: true
+            show_source: true
             members_order: source
-            inherited_members: false
-            merge_init_into_class: true
-            docstring_section_style: table
-            show_if_no_docstring: false
+            separate_signature: true
+            show_signature_annotations: true
+            signature_crossrefs: true
 
 markdown_extensions:
   - admonition
@@ -47,21 +99,29 @@ markdown_extensions:
   - toc:
       permalink: true
   - pymdownx.details
-  - pymdownx.superfences
   - pymdownx.highlight:
       anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.tasklist:
       custom_checkbox: true
 
-nav:
-  - Home: index.md
-  - Getting Started: getting-started.md
-  - Configuration: configuration.md
-  - User Guide: user-guide.md
-  - Architecture: architecture.md
-  - API Reference:
-      - GPT Provider: api/gpt.md
-      - Gemini Provider: api/gemini.md
-      - Grok Provider: api/grok.md
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/
+      name: GitHub
+
+copyright: Copyright &copy; 2026 Terry D. Eppler
