@@ -58,7 +58,7 @@ import tempfile
 import time
 import re
 from typing import List, Dict, Any, Optional, Tuple
-from boogr import Error
+from boogr import Error, Logger
 from sentence_transformers import SentenceTransformer
 
 try:
@@ -77,22 +77,19 @@ import grok
 # ==============================================================================
 
 def throw_if( name: str, value: object ) -> None:
-	"""
+	"""Throw if.
 	
-		Purpose:
-		--------
-		Validate that a required value is not empty.
-		
-		Parameters:
-		-----------
-		name (str): Name of the argument being validated.
-		value (object): Value to validate.
-		
-		Returns:
-		--------
-		None
-		
-	"""
+	Purpose:
+	    Validates that a required argument contains a usable value before the surrounding workflow
+	    continues. This guard centralizes early validation so provider wrappers and UI routines fail
+	    with consistent, readable error messages.
+	
+	Args:
+	    name (str): Name value used by the operation.
+	    value (object): Value value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	if value is None:
 		raise ValueError( f'Argument "{name}" cannot be None.' )
 	
@@ -100,44 +97,37 @@ def throw_if( name: str, value: object ) -> None:
 		raise ValueError( f'Argument "{name}" cannot be empty.' )
 
 def init_state( key: str, value: Any ) -> None:
-	"""
-		
-		Purpose:
-		--------
-		Initialize a Streamlit session-state key only when the key is not already present.
+	"""Init state.
 	
-		Parameters:
-		-----------
-		key (str): Session-state key to initialize.
-		value (Any): Default value assigned only when the key is absent.
+	Purpose:
+	    Performs the init_state workflow using the inputs supplied by the caller and the current runtime
+	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		None
-		
-	"""
+	Args:
+	    key (str): Key value used by the operation.
+	    value (Any): Value value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	if key not in st.session_state:
 		st.session_state[ key ] = value
 
 def get_runtime_config_value( session_key: str, config_name: str, env_name: str ) -> str:
-	"""
-		
-		Purpose:
-		--------
-		Return the current runtime value for a configuration item by checking Streamlit
-		session state, config.py, and os.environ in a safe order.
+	"""Get runtime config value.
 	
-		Parameters:
-		-----------
-		session_key (str): Streamlit session-state key used by the application.
-		config_name (str): Attribute name to read from config.py.
-		env_name (str): Environment variable name to read from os.environ.
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		str: Normalized string value safe for Streamlit text inputs.
-		
-	"""
+	Args:
+	    session_key (str): Session key value used by the operation.
+	    config_name (str): Config name value used by the operation.
+	    env_name (str): Env name value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	session_value = st.session_state.get( session_key, '' )
 	config_value = getattr( cfg, config_name, None )
 	env_value = os.environ.get( env_name, '' )
@@ -155,26 +145,22 @@ def get_runtime_config_value( session_key: str, config_name: str, env_name: str 
 
 def sync_provider_config( session_key: str, config_name: str, env_name: str, value: Any,
 		provider: Optional[ str ] = None ) -> None:
-	"""
-		
-		Purpose:
-		--------
-		Synchronize a runtime provider setting across Streamlit session state, config.py,
-		and os.environ.
+	"""Sync provider config.
 	
-		Parameters:
-		-----------
-		session_key (str): Streamlit session-state key to update.
-		config_name (str): Attribute name to update on config.py.
-		env_name (str): Environment variable name to update.
-		value (Any): User-entered or configured value.
-		provider (Optional[str]): Optional provider name used to update api_keys.
+	Purpose:
+	    Performs the sync_provider_config workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		None
-		
-	"""
+	Args:
+	    session_key (str): Session key value used by the operation.
+	    config_name (str): Config name value used by the operation.
+	    env_name (str): Env name value used by the operation.
+	    value (Any): Value value used by the operation.
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	text = str( value ).strip( ) if value is not None else ''
 	st.session_state[ session_key ] = text
 	
@@ -194,47 +180,40 @@ def sync_provider_config( session_key: str, config_name: str, env_name: str, val
 
 def init_env_state( key: str, config_name: str, env_name: str,
 		provider: Optional[ str ] = None ) -> None:
-	"""
-		
-		Purpose:
-		--------
-		Initialize a session-state API/configuration key from the current runtime
-		configuration and mirror the value to config.py and os.environ.
+	"""Init env state.
 	
-		Parameters:
-		-----------
-		key (str): Session-state key to initialize.
-		config_name (str): Attribute name to read from and write to config.py.
-		env_name (str): Environment variable name to read from and write to os.environ.
-		provider (Optional[str]): Optional provider name used to update api_keys.
+	Purpose:
+	    Performs the init_env_state workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		None
-		
-	"""
+	Args:
+	    key (str): Key value used by the operation.
+	    config_name (str): Config name value used by the operation.
+	    env_name (str): Env name value used by the operation.
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	init_state( key, '' )
 	value = get_runtime_config_value( key, config_name, env_name )
 	sync_provider_config( key, config_name, env_name, value, provider )
 
 def copy_state_alias( source_key: str, target_key: str, default: Any ) -> None:
-	"""
-		
-		Purpose:
-		--------
-		Create a non-destructive alias between legacy and corrected session-state keys.
+	"""Copy state alias.
 	
-		Parameters:
-		-----------
-		source_key (str): Existing source key that may contain a value.
-		target_key (str): Target key that should receive the value when absent.
-		default (Any): Default value used when neither key exists.
+	Purpose:
+	    Performs the copy_state_alias workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		None
-		
-	"""
+	Args:
+	    source_key (str): Source key value used by the operation.
+	    target_key (str): Target key value used by the operation.
+	    default (Any): Default value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	if target_key not in st.session_state:
 		st.session_state[ target_key ] = st.session_state.get( source_key, default )
 	
@@ -274,16 +253,16 @@ init_state( 'selected_prompt_id', '' )
 init_state( 'pending_system_prompt_name', '' )
 
 init_state( 'last_call_usage', {
-			'prompt_tokens': 0,
-			'completion_tokens': 0,
-			'total_tokens': 0,
-	} )
+		'prompt_tokens': 0,
+		'completion_tokens': 0,
+		'total_tokens': 0,
+} )
 
 init_state( 'token_usage', {
-			'prompt_tokens': 0,
-			'completion_tokens': 0,
-			'total_tokens': 0,
-	} )
+		'prompt_tokens': 0,
+		'completion_tokens': 0,
+		'total_tokens': 0,
+} )
 
 # ---------- SHARED MODEL PARAMETERS ------------------------------------------
 
@@ -642,21 +621,18 @@ copy_state_alias( 'text_max_tools', 'text_max_calls', 0 )
 # ------------ RESPONSE/CHAT UTILITIES
 
 def extract_response_text( response: object ) -> str:
-	"""
-		
-		Purpose:
-		--------
-		Safely extract assistant text from a Responses API object.
+	"""Extract response text.
 	
-		Parameters:
-		-----------
-		response (object): The response returned from the OpenAI client.
+	Purpose:
+	    Extracts structured information from a provider response, uploaded file, or application data
+	    object. The function normalizes provider-specific shapes into values that can be rendered,
+	    stored, or passed to later processing steps.
 	
-		Returns:
-		--------
-		str: Concatenated assistant text output. Empty string if none found.
-		
-	"""
+	Args:
+	    response (object): Response value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	if response is None:
 		return ""
 	
@@ -684,43 +660,34 @@ def extract_response_text( response: object ) -> str:
 	return "".join( text_chunks ).strip( )
 
 def encode_image_base64( path: str ) -> str:
-	"""
+	"""Encode image base64.
 	
-		Purpose:
-		_________
-		
-		Parametes:
-		----------
-		
-		
-		Returns:
-		--------
-		
-		
-	"""
+	Purpose:
+	    Performs the encode_image_base64 workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
+	
+	Args:
+	    path (str): Path value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	data = Path( path ).read_bytes( )
 	return base64.b64encode( data ).decode( "utf-8" )
 
 def normalize_text( text: str ) -> str:
-	"""
-		
-		Purpose
-		-------
-		Normalize text by:
-			• Converting to lowercase
-			• Removing punctuation except sentence delimiters (. ! ?)
-			• Ensuring clean sentence boundary spacing
-			• Collapsing whitespace
+	"""Normalize text.
 	
-		Parameters
-		----------
-		text: str
+	Purpose:
+	    Normalizes incoming values into a predictable representation for application processing. The
+	    function reduces provider, user-input, or serialization differences before values are stored or
+	    displayed.
 	
-		Returns
-		-------
-		str
-		
-	"""
+	Args:
+	    text (str): Text value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	if not text:
 		return ""
 	
@@ -739,24 +706,19 @@ def normalize_text( text: str ) -> str:
 	return text
 
 def chunk_text( text: str, max_tokens: int = 400 ) -> list[ str ]:
-	"""
-		
-		Purpose
-		-------
-		Segment normalized text into chunks by:
-			1. Sentence boundaries
-			2. Fallback to token windowing if needed
+	"""Chunk text.
 	
-		Parameters
-		----------
-		text: str
-		max_tokens: int
+	Purpose:
+	    Performs the chunk_text workflow using the inputs supplied by the caller and the current runtime
+	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-		Returns
-		-------
-		list[str]
-		
-	"""
+	Args:
+	    text (str): Text value used by the operation.
+	    max_tokens (int): Max tokens value used by the operation.
+	
+	Returns:
+	    List[str]: Return value produced by the operation."""
 	if not text:
 		return [ ]
 	
@@ -792,13 +754,18 @@ def cosine_sim( a: np.ndarray, b: np.ndarray ) -> float:
 	return float( np.dot( a, b ) / denom ) if denom else 0.0
 
 def sanitize_markdown( text: str ) -> str:
-	"""
+	"""Sanitize markdown.
 	
-		Purpose:
-		_________
-		
-		
-	"""
+	Purpose:
+	    Performs the sanitize_markdown workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
+	
+	Args:
+	    text (str): Text value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	# Remove bold markers
 	text = re.sub( r"\*\*(.*?)\*\*", r"\1", text )
 	# Optional: remove italics
@@ -806,13 +773,15 @@ def sanitize_markdown( text: str ) -> str:
 	return text
 
 def inject_response_css( ) -> None:
-	"""
+	"""Inject response css.
 	
-		Purpose:
-		_________
-		Set the the format via css.
-		
-	"""
+	Purpose:
+	    Performs the inject_response_css workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	st.markdown(
 		"""
 		<style>
@@ -852,13 +821,15 @@ def inject_response_css( ) -> None:
 		""", unsafe_allow_html=True )
 
 def style_subheaders( ) -> None:
-	"""
+	"""Style subheaders.
 	
-		Purpose:
-		_________
-		Sets the style of subheaders in the main UI
-		
-	"""
+	Purpose:
+	    Performs the style_subheaders workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	st.markdown(
 		"""
 		<style>
@@ -874,14 +845,15 @@ def style_subheaders( ) -> None:
 	)
 
 def init_state( ) -> None:
-	"""
+	"""Init state.
 	
-		Purpose:
-		_________
-		Initializes all session state variables.
-		
-		
-	"""
+	Purpose:
+	    Performs the init_state workflow using the inputs supplied by the caller and the current runtime
+	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	if 'chat_history' not in st.session_state:
 		st.session_state.chat_history = [ ]
 	
@@ -898,13 +870,14 @@ def init_state( ) -> None:
 		st.session_state.setdefault( k, "" )
 
 def reset_state( ) -> None:
-	"""
+	"""Reset state.
 	
-		Purpose:
-		_________
-		Resets the session state to default values
-		
-	"""
+	Purpose:
+	    Removes or resets the requested application state or provider resource in a controlled manner.
+	    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	st.session_state.chat_history = [ ]
 	st.session_state.last_answer = ""
 	st.session_state.last_sources = [ ]
@@ -931,23 +904,18 @@ def normalize( obj ):
 	return str( obj )
 
 def extract_answer( response: Any ) -> str:
-	"""
+	"""Extract answer.
 	
-		Purpose:
-		_________
-		Parses-out answer text from a structured response object.
-		
-		Parameters:
-		------------
-		response: Any
-			Structured API response expected to contain an `output` attribute.
-		
-		Returns:
-		---------
-		str
-			Concatenated assistant text or empty string.
+	Purpose:
+	    Extracts structured information from a provider response, uploaded file, or application data
+	    object. The function normalizes provider-specific shapes into values that can be rendered,
+	    stored, or passed to later processing steps.
 	
-	"""
+	Args:
+	    response (Any): Response value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	texts: List[ str ] = [ ]
 	
 	if response is None:
@@ -992,23 +960,18 @@ def extract_answer( response: Any ) -> str:
 	return '\n'.join( texts ).strip( )
 
 def extract_sources( response: Any ) -> List[ Dict[ str, Any ] ]:
-	"""
+	"""Extract sources.
 	
-		Purpose:
-		_________
-		Parses-out sources from structured response object.
-		
-		Parameters:
-		------------
-		response: Any
-			Structured API response.
-		
-		Returns:
-		---------
-		List[ Dict[ str, Any ] ]
-			List of normalized source dictionaries.
+	Purpose:
+	    Extracts structured information from a provider response, uploaded file, or application data
+	    object. The function normalizes provider-specific shapes into values that can be rendered,
+	    stored, or passed to later processing steps.
 	
-	"""
+	Args:
+	    response (Any): Response value used by the operation.
+	
+	Returns:
+	    List[Dict[str, Any]]: Return value produced by the operation."""
 	sources: List[ Dict[ str, Any ] ] = [ ]
 	
 	if response is None:
@@ -1063,23 +1026,18 @@ def extract_sources( response: Any ) -> List[ Dict[ str, Any ] ]:
 	return sources
 
 def extract_analysis( response: Any ) -> Dict[ str, Any ]:
-	"""
+	"""Extract analysis.
 	
-		Purpose:
-		_________
-		Parses-out code interpreter artifacts from structured response object.
-		
-		Parameters:
-		------------
-		response: Any
-			Structured API response.
-		
-		Returns:
-		---------
-		Dict[ str, Any ]
-			Dictionary containing tables, files, and text artifacts.
+	Purpose:
+	    Extracts structured information from a provider response, uploaded file, or application data
+	    object. The function normalizes provider-specific shapes into values that can be rendered,
+	    stored, or passed to later processing steps.
 	
-	"""
+	Args:
+	    response (Any): Response value used by the operation.
+	
+	Returns:
+	    Dict[str, Any]: Return value produced by the operation."""
 	artifacts: Dict[ str, Any ] = {
 			'tables': [ ],
 			'files': [ ],
@@ -1125,22 +1083,17 @@ def extract_analysis( response: Any ) -> Dict[ str, Any ]:
 	return artifacts
 
 def save_temp( upload ) -> str | None:
-	"""
-		Purpose:
-		--------
-		Save a Streamlit UploadedFile object to a temporary file on disk
-		and return the filesystem path.
+	"""Save temp.
 	
-		Parameters:
-		-----------
-		upload : streamlit.runtime.uploaded_file_manager.UploadedFile
-			Uploaded file object from st.file_uploader.
+	Purpose:
+	    Persists or stages input data so it can be used by later provider or application workflows. The
+	    function standardizes file handling and returns a stable reference for downstream processing.
 	
-		Returns:
-		--------
-		str | None
-			Path to the temporary file, or None if invalid input.
-	"""
+	Args:
+	    upload (object): Upload value used by the operation.
+	
+	Returns:
+	    Optional[str]: Return value produced by the operation."""
 	if upload is None:
 		return None
 	
@@ -1156,15 +1109,18 @@ def save_temp( upload ) -> str | None:
 		return None
 
 def _extract_usage_from_response( resp: Any ) -> Dict[ str, int ]:
-	"""
+	"""Extract usage from response.
 	
-		Purpose:
-		_________
-		Extract token usage from a response object/dict.
-		Returns dict with prompt_tokens, completion_tokens, total_tokens.
-		Defensive: returns zeros if not present.
-		
-	"""
+	Purpose:
+	    Performs the _extract_usage_from_response workflow using the inputs supplied by the caller and
+	    the current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
+	
+	Args:
+	    resp (Any): Resp value used by the operation.
+	
+	Returns:
+	    Dict[str, int]: Return value produced by the operation."""
 	usage = { 'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, }
 	if not resp:
 		return usage
@@ -1206,13 +1162,18 @@ def _extract_usage_from_response( resp: Any ) -> Dict[ str, int ]:
 	return usage
 
 def update_token_counters( resp: Any ) -> None:
-	"""
+	"""Update token counters.
 	
-		Purpose:
-		_________
-		Update session_state.last_call_usage and accumulate into session_state.token_usage.
-		
-	"""
+	Purpose:
+	    Performs the update_token_counters workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
+	
+	Args:
+	    resp (Any): Resp value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	usage = _extract_usage_from_response( resp )
 	st.session_state.last_call_usage = usage
 	st.session_state.token_usage[ "prompt_tokens" ] += usage.get( "prompt_tokens", 0 )
@@ -1220,10 +1181,18 @@ def update_token_counters( resp: Any ) -> None:
 	st.session_state.token_usage[ "total_tokens" ] += usage.get( "total_tokens", 0 )
 
 def _display_value( val: Any ) -> str:
-	"""
-		Render a friendly display string for header values.
-		None -> em dash; otherwise str(value).
-	"""
+	"""Display value.
+	
+	Purpose:
+	    Performs the _display_value workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
+	
+	Args:
+	    val (Any): Val value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	if val is None:
 		return "—"
 	try:
@@ -1266,22 +1235,18 @@ def format_results( results ):
 	return f"<p>{formatted_results}</p>"
 
 def count_tokens( text: str ) -> int:
-	"""
-		
-		Purpose
-		----------
-		Returns the number of tokens in a text string.
-		
-		Parmeters
-		-----------
-		string : str
-		encoding_name : str
-		
-		Return
-		------------
-		int
-		
-	"""
+	"""Count tokens.
+	
+	Purpose:
+	    Performs the count_tokens workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
+	
+	Args:
+	    text (str): Text value used by the operation.
+	
+	Returns:
+	    int: Return value produced by the operation."""
 	encoding = tiktoken.get_encoding( 'cl100k_base' )
 	num_tokens = len( encoding.encode( text ) )
 	return num_tokens
@@ -1289,23 +1254,18 @@ def count_tokens( text: str ) -> int:
 # ------------- FILESTORE UTILITIES
 
 def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
-	"""
+	"""Normalize storage object.
 	
-		Purpose:
-		--------
-		Normalize provider storage objects to dictionaries for rendering and session state.
+	Purpose:
+	    Normalizes incoming values into a predictable representation for application processing. The
+	    function reduces provider, user-input, or serialization differences before values are stored or
+	    displayed.
 	
-		Parameters:
-		-----------
-		value: Any
-			Provider storage result object.
+	Args:
+	    value (Any): Value value used by the operation.
 	
-		Returns:
-		--------
-		Dict[str, Any]
-			Normalized result dictionary.
-	
-	"""
+	Returns:
+	    Dict[str, Any]: Return value produced by the operation."""
 	if value is None:
 		return { }
 	
@@ -1387,22 +1347,18 @@ def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
 	return result
 
 def render_storage_metadata( metadata: Dict[ str, Any ] ) -> None:
-	"""
+	"""Render storage metadata.
 	
-		Purpose:
-		--------
-		Render selected storage metadata.
+	Purpose:
+	    Renders the requested user interface element or result block in Streamlit using normalized
+	    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+	    steps so the screen output remains predictable.
 	
-		Parameters:
-		-----------
-		metadata: Dict[str, Any]
-			Storage metadata.
+	Args:
+	    metadata (Dict[str, Any]): Metadata value used by the operation.
 	
-		Returns:
-		--------
-		None
-	
-	"""
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	if not isinstance( metadata, dict ) or len( metadata ) == 0:
 		st.info( 'No metadata loaded yet.' )
 		return
@@ -1410,23 +1366,17 @@ def render_storage_metadata( metadata: Dict[ str, Any ] ) -> None:
 	st.json( metadata )
 
 def save_uploaded_storage_file( uploaded_file: Any ) -> Optional[ str ]:
-	"""
+	"""Save uploaded storage file.
 	
-		Purpose:
-		--------
-		Save an uploaded file to a temporary path for storage upload methods.
+	Purpose:
+	    Persists or stages input data so it can be used by later provider or application workflows. The
+	    function standardizes file handling and returns a stable reference for downstream processing.
 	
-		Parameters:
-		-----------
-		uploaded_file: Any
-			Streamlit uploaded file object.
+	Args:
+	    uploaded_file (Any): Uploaded file value used by the operation.
 	
-		Returns:
-		--------
-		Optional[str]
-			Temporary file path or None.
-	
-	"""
+	Returns:
+	    Optional[str]: Return value produced by the operation."""
 	if uploaded_file is None:
 		return None
 	
@@ -1446,25 +1396,18 @@ def save_uploaded_storage_file( uploaded_file: Any ) -> Optional[ str ]:
 # ------------ TEXT UTILITIES
 
 def normalize_text( text: str ) -> str:
-	"""
-		
-		Purpose
-		-------
-		Normalize text by:
-			• Converting to lowercase
-			• Removing punctuation except sentence delimiters (. ! ?)
-			• Ensuring clean sentence boundary spacing
-			• Collapsing whitespace
+	"""Normalize text.
 	
-		Parameters
-		----------
-		text: str
+	Purpose:
+	    Normalizes incoming values into a predictable representation for application processing. The
+	    function reduces provider, user-input, or serialization differences before values are stored or
+	    displayed.
 	
-		Returns
-		-------
-		str
-		
-	"""
+	Args:
+	    text (str): Text value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	if not text:
 		return ""
 	
@@ -1482,7 +1425,7 @@ def normalize_text( text: str ) -> str:
 	
 	return text
 
-def chunk_text( text: str, size: int=1200, overlap: int=200 ) -> List[ str ]:
+def chunk_text( text: str, size: int = 1200, overlap: int = 200 ) -> List[ str ]:
 	chunks, i = [ ], 0
 	while i < len( text ):
 		chunks.append( text[ i:i + size ] )
@@ -1490,21 +1433,18 @@ def chunk_text( text: str, size: int=1200, overlap: int=200 ) -> List[ str ]:
 	return chunks
 
 def convert_xml( text: str ) -> str:
-	"""
-		
-			Purpose:
-			_________
-			Convert XML-delimited prompt text into Markdown by treating XML-like
-			tags as section delimiters, not as strict XML.
+	"""Convert xml.
 	
-			Parameters:
-			-----------
-			text (str) - Prompt text containing XML-like opening and closing tags.
+	Purpose:
+	    Performs the convert_xml workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-			Returns:
-			---------
-			Markdown-formatted text using level-2 headings (##).
-	"""
+	Args:
+	    text (str): Text value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	markdown_blocks: List[ str ] = [ ]
 	for match in cfg.XML_BLOCK_PATTERN.finditer( text ):
 		raw_tag: str = match.group( "tag" )
@@ -1518,27 +1458,18 @@ def convert_xml( text: str ) -> str:
 	return "\n\n".join( markdown_blocks )
 
 def convert_markdown( text: Any ) -> str:
-	"""
-		Purpose:
-		--------
-		Convert between Markdown headings and simple XML-like heading tags.
+	"""Convert markdown.
 	
-		Behavior:
-		---------
-		Auto-detects direction:
-		  - If <h1>...</h1> / <h2>...</h2> ... exist, converts to Markdown (# / ## / ###).
-		  - Otherwise converts Markdown headings (# / ## / ###) to <hN>...</hN> tags.
+	Purpose:
+	    Performs the convert_markdown workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-		Parameters:
-		-----------
-		text : Any
-			Source text. Non-string values return "".
+	Args:
+	    text (Any): Text value used by the operation.
 	
-		Returns:
-		--------
-		str
-			Converted text.
-	"""
+	Returns:
+	    str: Return value produced by the operation."""
 	if not isinstance( text, str ) or not text.strip( ):
 		return ""
 	
@@ -1584,13 +1515,15 @@ def convert_markdown( text: Any ) -> str:
 	return out.strip( )
 
 def inject_response_css( ) -> None:
-	"""
+	"""Inject response css.
 	
-		Purpose:
-		_________
-		Set the the format via css.
-		
-	"""
+	Purpose:
+	    Performs the inject_response_css workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	st.markdown(
 		"""
 		<style>
@@ -1630,13 +1563,15 @@ def inject_response_css( ) -> None:
 		""", unsafe_allow_html=True )
 
 def style_subheaders( ) -> None:
-	"""
+	"""Style subheaders.
 	
-		Purpose:
-		_________
-		Sets the style of subheaders in the main UI
-		
-	"""
+	Purpose:
+	    Performs the style_subheaders workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	st.markdown(
 		"""
 		<style>
@@ -1665,9 +1600,18 @@ def clear_history( ) -> None:
 # ------------ DOCQNA UTILITIES
 
 def extract_text_from_bytes( file_bytes: bytes ) -> str:
-	"""
-		Extracts text from PDF or text-based documents.
-	"""
+	"""Extract text from bytes.
+	
+	Purpose:
+	    Extracts structured information from a provider response, uploaded file, or application data
+	    object. The function normalizes provider-specific shapes into values that can be rendered,
+	    stored, or passed to later processing steps.
+	
+	Args:
+	    file_bytes (bytes): File bytes value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	try:
 		import fitz  # PyMuPDF
 		
@@ -1684,24 +1628,21 @@ def extract_text_from_bytes( file_bytes: bytes ) -> str:
 			return ""
 
 def route_document_query( prompt: str ) -> str:
-	"""
+	"""Route document query.
 	
-		Purpose:
-		--------
-		Route a document question through the selected provider's Chat wrapper and return
-		a model-generated answer.
-
-		Parameters:
-		-----------
-		prompt: str
-			The user question to answer about active documents.
-
-		Returns:
-		--------
-		str
-			The assistant answer text.
+	Purpose:
+	    Performs the route_document_query workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
 	
-	"""
+	Args:
+	    prompt (str): Prompt value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger."""
 	try:
 		throw_if( 'prompt', prompt )
 		provider_name = st.session_state.get( 'provider', 'GPT' )
@@ -1751,12 +1692,19 @@ def route_document_query( prompt: str ) -> str:
 		ex.module = 'app'
 		ex.cause = 'Document Q&A'
 		ex.method = 'route_document_query( prompt: str ) -> str'
+		Logger( ).write( ex )
 		raise ex
 
 def summarize_active_document( ) -> str:
-	"""
-		Uses the routing layer to summarize the currently active document.
-	"""
+	"""Summarize active document.
+	
+	Purpose:
+	    Performs the summarize_active_document workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	system_instructions = st.session_state.get( "system_instructions", "" )
 	summary_prompt = """
 		Provide a clear, structured summary of this document.
@@ -1775,24 +1723,19 @@ def summarize_active_document( ) -> str:
 	return route_document_query( summary_prompt.strip( ) )
 
 def _docqna_compute_fingerprint( active_docs: List[ str ], doc_bytes: Dict[ str, bytes ] ) -> str:
-	'''
-		
-		Purpose:
-		--------
-		Computes a stable fingerprint for the currently selected active documents and their byte contents.
+	"""Docqna compute fingerprint.
 	
-		Parameters:
-		-----------
-		active_docs:
-			A List[ str ] of active document names.
-		doc_bytes:
-			A Dict[ str, bytes ] mapping document name to file bytes.
+	Purpose:
+	    Performs the _docqna_compute_fingerprint workflow using the inputs supplied by the caller and
+	    the current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		A str fingerprint suitable for cache invalidation.
+	Args:
+	    active_docs (List[str]): Active docs value used by the operation.
+	    doc_bytes (Dict[str, bytes]): Doc bytes value used by the operation.
 	
-	'''
+	Returns:
+	    str: Return value produced by the operation."""
 	h = hashlib.sha256( )
 	for name in sorted( active_docs ):
 		b = doc_bytes.get( name, b'' )
@@ -1802,22 +1745,18 @@ def _docqna_compute_fingerprint( active_docs: List[ str ], doc_bytes: Dict[ str,
 	return h.hexdigest( )
 
 def _docqna_extract_text_from_pdf_bytes( file_bytes: bytes ) -> str:
-	'''
+	"""Docqna extract text from pdf bytes.
 	
-		Purpose:
-		--------
-		Extracts text from a PDF byte stream using PyMuPDF.
+	Purpose:
+	    Performs the _docqna_extract_text_from_pdf_bytes workflow using the inputs supplied by the
+	    caller and the current runtime configuration. The function keeps this behavior isolated so
+	    related UI, provider, and data-processing paths can call it consistently.
 	
-		Parameters:
-		-----------
-		file_bytes:
-			The PDF bytes.
+	Args:
+	    file_bytes (bytes): File bytes value used by the operation.
 	
-		Returns:
-		--------
-		A str containing extracted text.
-	
-	'''
+	Returns:
+	    str: Return value produced by the operation."""
 	if not file_bytes:
 		return ''
 	
@@ -1831,22 +1770,18 @@ def _docqna_extract_text_from_pdf_bytes( file_bytes: bytes ) -> str:
 		return ''
 
 def _docqna_safe_load_sqlite_vec( conn: sqlite3.Connection ) -> bool:
-	'''
-		
-		Purpose:
-		--------
-		Attempts to load sqlite-vec into the provided SQLite connection.
+	"""Docqna safe load sqlite vec.
 	
-		Parameters:
-		-----------
-		conn:
-			The sqlite3.Connection.
+	Purpose:
+	    Performs the _docqna_safe_load_sqlite_vec workflow using the inputs supplied by the caller and
+	    the current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		True if sqlite-vec loaded successfully; otherwise False.
-		
-	'''
+	Args:
+	    conn (sqlite3.Connection): Conn value used by the operation.
+	
+	Returns:
+	    bool: Return value produced by the operation."""
 	try:
 		import sqlite_vec
 		
@@ -1856,22 +1791,18 @@ def _docqna_safe_load_sqlite_vec( conn: sqlite3.Connection ) -> bool:
 		return False
 
 def _docqna_ensure_vec_schema( dim: int ) -> bool:
-	'''
+	"""Docqna ensure vec schema.
 	
-		Purpose:
-		--------
-		Creates the sqlite-vec virtual table used for Document Q&A embeddings if possible.
+	Purpose:
+	    Performs the _docqna_ensure_vec_schema workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
 	
-		Parameters:
-		-----------
-		dim:
-			The embedding dimension (e.g., 384 for all-MiniLM-L6-v2).
+	Args:
+	    dim (int): Dim value used by the operation.
 	
-		Returns:
-		--------
-		True if the schema exists and is usable; otherwise False.
-	
-	'''
+	Returns:
+	    bool: Return value produced by the operation."""
 	conn = create_connection( )
 	try:
 		ok = _docqna_safe_load_sqlite_vec( conn )
@@ -1897,22 +1828,21 @@ def _docqna_ensure_vec_schema( dim: int ) -> bool:
 		conn.close( )
 
 def _docqna_rebuild_index_if_needed( embedder: SentenceTransformer ) -> None:
-	'''
-		
-		Purpose:
-		--------
-		Builds or refreshes the Document Q&A vector index when active documents change.
-
-		Parameters:
-		-----------
-		embedder:
-			The SentenceTransformer used to generate embeddings.
-
-		Returns:
-		--------
-		None
-		
-	'''
+	"""Docqna rebuild index if needed.
+	
+	Purpose:
+	    Performs the _docqna_rebuild_index_if_needed workflow using the inputs supplied by the caller
+	    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
+	
+	Args:
+	    embedder (SentenceTransformer): Embedder value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger."""
 	try:
 		throw_if( 'embedder', embedder )
 		
@@ -2012,26 +1942,23 @@ def _docqna_rebuild_index_if_needed( embedder: SentenceTransformer ) -> None:
 		ex.module = 'app'
 		ex.cause = 'Document Q&A'
 		ex.method = '_docqna_rebuild_index_if_needed( embedder: SentenceTransformer ) -> None'
+		Logger( ).write( ex )
 		raise ex
 
 @st.cache_resource( show_spinner=False )
 def load_embedder( ) -> SentenceTransformer:
-	"""
-		
-		Purpose:
-		--------
-		Load and cache the SentenceTransformer embedder used by Document Q&A retrieval.
-
-		Parameters:
-		-----------
-		None
-
-		Returns:
-		--------
-		SentenceTransformer:
-			Cached sentence-transformer embedding model.
-		
-	"""
+	"""Load embedder.
+	
+	Purpose:
+	    Performs the load_embedder workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
+	
+	Returns:
+	    SentenceTransformer: Return value produced by the operation.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger."""
 	try:
 		model_name = 'sentence-transformers/all-MiniLM-L6-v2'
 		embedder = SentenceTransformer( model_name )
@@ -2044,28 +1971,23 @@ def load_embedder( ) -> SentenceTransformer:
 		exception.module = 'app'
 		exception.cause = 'Document Q&A'
 		exception.method = 'load_embedder( ) -> SentenceTransformer'
+		Logger( ).write( exception )
 		raise exception
-	
+
 def retrieve_top_doc_chunks( query: str, k: int = 6 ) -> List[ Tuple[ str, str, float ] ]:
-	'''
+	"""Retrieve top doc chunks.
 	
-		Purpose:
-		--------
-		Retrieves top-k document chunks relevant to the query, using sqlite-vec when available, and falling
-		back to in-memory cosine similarity when not.
+	Purpose:
+	    Performs the retrieve_top_doc_chunks workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
 	
-		Parameters:
-		-----------
-		query:
-			The user query string.
-		k:
-			The number of chunks to return.
+	Args:
+	    query (str): Query value used by the operation.
+	    k (int): K value used by the operation.
 	
-		Returns:
-		--------
-		A List[ Tuple[ str, str, float ] ] of (doc_name, chunk, score_or_distance).
-	
-	'''
+	Returns:
+	    List[Tuple[str, str, float]]: Return value produced by the operation."""
 	if not query or not query.strip( ):
 		return [ ]
 	
@@ -2096,7 +2018,8 @@ def retrieve_top_doc_chunks( query: str, k: int = 6 ) -> List[ Tuple[ str, str, 
 		finally:
 			conn.close( )
 	
-	fallback_rows: List[ Tuple[ str, str, bytes ] ] = st.session_state.get( 'docqna_fallback_rows', [ ] )
+	fallback_rows: List[ Tuple[ str, str, bytes ] ] = st.session_state.get( 'docqna_fallback_rows',
+		[ ] )
 	results: List[ Tuple[ str, str, float ] ] = [ ]
 	
 	for doc_name, chunk_text_value, vec_blob in fallback_rows:
@@ -2114,24 +2037,19 @@ def retrieve_top_doc_chunks( query: str, k: int = 6 ) -> List[ Tuple[ str, str, 
 	return results[ : int( k ) ]
 
 def build_document_user_input( user_query: str, k: int = 6 ) -> str:
-	'''
+	"""Build document user input.
 	
-		Purpose:
-		--------
-		Builds a Document Q&A prompt that injects retrieved chunks (RAG) instead of stuffing full documents.
+	Purpose:
+	    Builds the normalized data structure required by the application workflow. The function converts
+	    caller input, session state, or provider-specific options into a stable shape that downstream
+	    API calls and rendering code can consume safely.
 	
-		Parameters:
-		-----------
-		user_query:
-			The user question.
-		k:
-			The number of retrieved chunks to include.
+	Args:
+	    user_query (str): User query value used by the operation.
+	    k (int): K value used by the operation.
 	
-		Returns:
-		--------
-		A str prompt suitable for llama.cpp completion.
-	
-	'''
+	Returns:
+	    str: Return value produced by the operation."""
 	system = str( st.session_state.get( 'system_instructions', '' ) or '' ).strip( )
 	hits = retrieve_top_doc_chunks( user_query, k=int( k ) )
 	
@@ -2160,20 +2078,15 @@ def build_document_user_input( user_query: str, k: int = 6 ) -> str:
 # ------------ DATABASE UTILITIES
 
 def initialize_database( ) -> None:
-	"""
-		Purpose:
-		--------
-		Ensure required SQLite tables exist and that the Prompts table contains the
-		columns required by the prompt utilities and Prompt Engineering mode.
-
-		Parameters:
-		-----------
-		None
-
-		Returns:
-		--------
-		None
-	"""
+	"""Initialize database.
+	
+	Purpose:
+	    Performs the initialize_database workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	Path( 'stores/sqlite' ).mkdir( parents=True, exist_ok=True )
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
 		conn.execute(
@@ -2263,27 +2176,20 @@ def create_schema( table: str ) -> List[ Tuple ]:
 		return conn.execute( f'PRAGMA table_info("{table}");' ).fetchall( )
 
 def read_table( table: str, limit: int = None, offset: int = 0 ) -> pd.DataFrame:
-	"""
+	"""Read table.
 	
-		Purpose:
-		--------
-		Read a SQLite table into a pandas DataFrame using a normalized scalar-only path.
+	Purpose:
+	    Performs the read_table workflow using the inputs supplied by the caller and the current runtime
+	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-		Parameters:
-		-----------
-		table : str
-			Table name.
-		limit : int = None
-			Optional row limit.
-		offset : int = 0
-			Optional row offset.
+	Args:
+	    table (str): Table value used by the operation.
+	    limit (int): Limit value used by the operation.
+	    offset (int): Offset value used by the operation.
 	
-		Returns:
-		--------
-		pd.DataFrame
-			DataFrame of plain Python scalar values.
-	
-	"""
+	Returns:
+	    pd.DataFrame: Return value produced by the operation."""
 	if not table:
 		return pd.DataFrame( )
 	
@@ -2344,23 +2250,18 @@ def read_table( table: str, limit: int = None, offset: int = 0 ) -> pd.DataFrame
 	return pd.DataFrame( normalized_rows, columns=columns )
 
 def render_table( df: pd.DataFrame ) -> None:
-	"""
+	"""Render table.
 	
-		Purpose:
-		--------
-		Render a DataFrame safely in Streamlit. Use the normal interactive dataframe
-		first, and fall back to HTML rendering if Streamlit/PyArrow serialization fails.
+	Purpose:
+	    Renders the requested user interface element or result block in Streamlit using normalized
+	    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+	    steps so the screen output remains predictable.
 	
-		Parameters:
-		-----------
-		df : pd.DataFrame
-			The DataFrame to render.
+	Args:
+	    df (pd.DataFrame): Df value used by the operation.
 	
-		Returns:
-		--------
-		None
-	
-	"""
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	if df is None:
 		st.info( 'No data available.' )
 		return
@@ -2391,16 +2292,18 @@ def make_display_safe( df: pd.DataFrame ) -> pd.DataFrame:
 	return display_df
 
 def drop_table( table: str ) -> None:
-	"""
-		Purpose:
-		--------
-		Safely drop a table if it exists.
+	"""Drop table.
 	
-		Parameters:
-		-----------
-		table : str
-			Table name.
-	"""
+	Purpose:
+	    Performs the drop_table workflow using the inputs supplied by the caller and the current runtime
+	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
+	
+	Args:
+	    table (str): Table value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	if not table:
 		return
 	
@@ -2409,25 +2312,19 @@ def drop_table( table: str ) -> None:
 		conn.commit( )
 
 def create_index( table: str, column: str ) -> None:
-	"""
-		Purpose:
-		--------
-		Create a safe SQLite index on a specified table column.
+	"""Create index.
 	
-		Handles:
-			- Spaces in column names
-			- Special characters
-			- Reserved words
-			- Duplicate index names
-			- Validation against actual table schema
+	Purpose:
+	    Creates the requested resource, connection, schema object, or user interface artifact using
+	    validated inputs. The function encapsulates setup details so callers can rely on a consistent
+	    resource lifecycle.
 	
-		Parameters:
-		-----------
-		table : str
-			Table name.
-		column : str
-			Column name to index.
-	"""
+	Args:
+	    table (str): Table value used by the operation.
+	    column (str): Column value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	if not table or not column:
 		return
 	
@@ -2514,23 +2411,18 @@ def create_aggregation( df: pd.DataFrame ):
 	st.metric( 'Result', result )
 
 def create_visualization( df: pd.DataFrame ) -> None:
-	"""
+	"""Create visualization.
 	
-		Purpose:
-		--------
-		Render data visualizations without passing pandas objects directly into
-		Plotly/Narwhals.
-		
-		Parameters:
-		-----------
-		df : pd.DataFrame
-			The input DataFrame.
-		
-		Returns:
-		--------
-		None
-		
-	"""
+	Purpose:
+	    Creates the requested resource, connection, schema object, or user interface artifact using
+	    validated inputs. The function encapsulates setup details so callers can rely on a consistent
+	    resource lifecycle.
+	
+	Args:
+	    df (pd.DataFrame): Df value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	st.subheader( 'Visualization Engine' )
 	
 	if df is None or df.empty:
@@ -2685,21 +2577,18 @@ def insert_data( table_name: str, df: pd.DataFrame ):
 		conn.commit( )
 
 def get_sqlite_type( dtype ) -> str:
-	"""
-		Purpose:
-		--------
-		Map a pandas dtype to an appropriate SQLite column type.
+	"""Get sqlite type.
 	
-		Parameters:
-		-----------
-		dtype : pandas dtype
-			The dtype of a pandas Series.
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		str
-			SQLite column type.
-	"""
+	Args:
+	    dtype (object): Dtype value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	dtype_str = str( dtype ).lower( )
 	
 	# ------------------------------------------------------------------
@@ -2738,27 +2627,19 @@ def get_sqlite_type( dtype ) -> str:
 	return 'TEXT'
 
 def create_custom_table( table_name: str, columns: list ) -> None:
-	"""
-		Purpose:
-		--------
-		Create a custom SQLite table from column definitions.
+	"""Create custom table.
 	
-		Parameters:
-		-----------
-		table_name : str
-			Name of table.
+	Purpose:
+	    Creates the requested resource, connection, schema object, or user interface artifact using
+	    validated inputs. The function encapsulates setup details so callers can rely on a consistent
+	    resource lifecycle.
 	
-		columns : list of dict
-			[
-				{
-					"name": str,
-					"type": str,
-					"not_null": bool,
-					"primary_key": bool,
-					"auto_increment": bool
-				}
-			]
-	"""
+	Args:
+	    table_name (str): Table name value used by the operation.
+	    columns (list): Columns value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	if not table_name:
 		raise ValueError( 'Table name required.' )
 	
@@ -2794,23 +2675,18 @@ def create_custom_table( table_name: str, columns: list ) -> None:
 		conn.commit( )
 
 def is_safe_query( query: str ) -> bool:
-	"""
+	"""Is safe query.
 	
-		Purpose:
-		--------
-		Determine whether a SQL query is read-only and safe to execute.
+	Purpose:
+	    Performs the is_safe_query workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-		Allows:
-			SELECT
-			WITH (CTE returning SELECT)
-			EXPLAIN SELECT
-			PRAGMA (read-only)
+	Args:
+	    query (str): Query value used by the operation.
 	
-		Blocks:
-			INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, ATTACH,
-			DETACH, VACUUM, REPLACE, TRIGGER, and multiple statements.
-			
-	"""
+	Returns:
+	    bool: Return value produced by the operation."""
 	if not query or not isinstance( query, str ):
 		return False
 	
@@ -2849,17 +2725,18 @@ def is_safe_query( query: str ) -> bool:
 	return True
 
 def create_identifier( name: str ) -> str:
-	"""
+	"""Create identifier.
 	
-		Purpose:
-		--------
-		Sanitize a string into a safe SQLite identifier.
+	Purpose:
+	    Creates the requested resource, connection, schema object, or user interface artifact using
+	    validated inputs. The function encapsulates setup details so callers can rely on a consistent
+	    resource lifecycle.
 	
-		- Replaces invalid characters with underscores
-		- Ensures it starts with a letter or underscore
-		- Prevents empty names
-		
-	"""
+	Args:
+	    name (str): Name value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	if not name or not isinstance( name, str ):
 		raise ValueError( 'Invalid Identifier.' )
 	
@@ -2887,30 +2764,20 @@ def add_column( table: str, column: str, col_type: str ):
 		conn.commit( )
 
 def rename_column( table_name: str, old_name: str, new_name: str ) -> None:
-	"""
+	"""Rename column.
 	
-		Purpose:
-		--------
-		Rename a column within an existing SQLite table. Attempts native ALTER TABLE rename
-		first; if it fails, falls back to a schema-safe rebuild preserving column order, data,
-		and indexes.
-
-		Parameters:
-		-----------
-		table_name : str
-			Table containing the column.
-
-		old_name : str
-			Existing column name.
-
-		new_name : str
-			New column name.
-
-		Returns:
-		--------
-		None
-		
-	"""
+	Purpose:
+	    Performs the rename_column workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
+	
+	Args:
+	    table_name (str): Table name value used by the operation.
+	    old_name (str): Old name value used by the operation.
+	    new_name (str): New name value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	if not table_name or not old_name or not new_name:
 		return
 	
@@ -3132,27 +2999,19 @@ def drop_column( table: str, column: str ):
 		conn.commit( )
 
 def rename_table( old_name: str, new_name: str ) -> None:
-	"""
+	"""Rename table.
 	
-		Purpose:
-		--------
-		Rename an existing SQLite table. Attempts native ALTER TABLE rename first; if it fails,
-		falls back to a schema-safe rebuild using the original CREATE TABLE statement and
-		preserves indexes.
-
-		Parameters:
-		-----------
-		old_name : str
-			Existing table name.
-
-		new_name : str
-			New table name.
-
-		Returns:
-		--------
-		None
-		
-	"""
+	Purpose:
+	    Performs the rename_table workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
+	
+	Args:
+	    old_name (str): Old name value used by the operation.
+	    new_name (str): New name value used by the operation.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	if not old_name or not new_name:
 		return
 	
@@ -3217,21 +3076,18 @@ def rename_table( old_name: str, new_name: str ) -> None:
 # ------------ PROMPT ENGINEERING UTILITIES
 
 def fetch_prompt_names( db_path: str ) -> list[ str ]:
-	"""
-		Purpose:
-		--------
-		Retrieve template names from Prompts table.
+	"""Fetch prompt names.
 	
-		Parameters:
-		-----------
-		db_path : str
-			SQLite database path.
+	Purpose:
+	    Performs the fetch_prompt_names workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		list[str]
-			Sorted prompt names.
-	"""
+	Args:
+	    db_path (str): Db path value used by the operation.
+	
+	Returns:
+	    List[str]: Return value produced by the operation."""
 	try:
 		conn = sqlite3.connect( db_path )
 		cur = conn.cursor( )
@@ -3243,23 +3099,19 @@ def fetch_prompt_names( db_path: str ) -> list[ str ]:
 		return [ ]
 
 def fetch_prompt_text( db_path: str, name: str ) -> str | None:
-	"""
-		Purpose:
-		--------
-		Retrieve template text by name.
+	"""Fetch prompt text.
 	
-		Parameters:
-		-----------
-		db_path : str
-			SQLite database path.
-		name : str
-			Template name.
+	Purpose:
+	    Performs the fetch_prompt_text workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		str | None
-			Prompt text if found.
-	"""
+	Args:
+	    db_path (str): Db path value used by the operation.
+	    name (str): Name value used by the operation.
+	
+	Returns:
+	    Optional[str]: Return value produced by the operation."""
 	try:
 		conn = sqlite3.connect( db_path )
 		cur = conn.cursor( )
@@ -3314,27 +3166,26 @@ def delete_prompt( pid: int ) -> None:
 		conn.execute( "DELETE FROM Prompts WHERE PromptsId=?", (pid,) )
 
 def build_prompt( user_input: str ) -> str:
-	"""
-		
-		Purpose:
-		--------
-		Build a local chat prompt from system instructions, optional semantic context,
-		loaded document text, prior chat messages, and the current user input.
+	"""Build prompt.
 	
-		Parameters:
-		-----------
-		user_input (str): Current user message.
+	Purpose:
+	    Builds the normalized data structure required by the application workflow. The function converts
+	    caller input, session state, or provider-specific options into a stable shape that downstream
+	    API calls and rendering code can consume safely.
 	
-		Returns:
-		--------
-		str: Formatted prompt text.
-		
-	"""
+	Args:
+	    user_input (str): User input value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger."""
 	try:
 		throw_if( 'user_input', user_input )
 		top_k = int( st.session_state.get( 'text_top_k', 6 ) or 6 )
 		system_prompt = str( st.session_state.get( 'system_prompt',
-				st.session_state.get( 'instructions', '' ) ) or '' ).strip( )
+			st.session_state.get( 'instructions', '' ) ) or '' ).strip( )
 		basic_docs = st.session_state.get( 'basic_docs', [ ] )
 		messages = st.session_state.get( 'messages', [ ] )
 		use_semantic = bool( st.session_state.get( 'use_semantic', False ) )
@@ -3364,7 +3215,8 @@ def build_prompt( user_input: str ) -> str:
 						score = cosine_sim( query_vector, vector )
 						scored.append( (chunk, score) )
 					
-					for chunk, _ in sorted( scored, key=lambda item: item[ 1 ], reverse=True )[ :top_k ]:
+					for chunk, _ in sorted( scored, key=lambda item: item[ 1 ], reverse=True )[
+						:top_k ]:
 						prompt += f'<|system|>\n{chunk}\n</s>\n'
 			except Exception:
 				pass
@@ -3393,27 +3245,24 @@ def build_prompt( user_input: str ) -> str:
 		exception.module = 'app'
 		exception.cause = 'Prompt Builder'
 		exception.method = 'build_prompt( user_input: str ) -> str'
+		Logger( ).write( exception )
 		raise exception
 
 # ------------ PROVIDER UTILITIES
 
 def get_provider_name( provider: Optional[ str ] = None ) -> str:
-	"""
-		
-		Purpose:
-		--------
-		Return a validated provider name for provider-aware wrapper dispatch.
+	"""Get provider name.
 	
-		Parameters:
-		-----------
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		str: Valid provider name mapped in cfg.PROVIDERS.
-		
-	"""
+	Args:
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	selected = provider or st.session_state.get( 'provider', 'GPT' )
 	providers = getattr( cfg, 'PROVIDERS', { 'GPT': 'gpt', 'Gemini': 'gemini', 'Grok': 'grok' } )
 	
@@ -3424,23 +3273,18 @@ def get_provider_name( provider: Optional[ str ] = None ) -> str:
 	return selected
 
 def get_provider_module( provider: Optional[ str ] = None ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Return the imported provider module for the selected provider without using dynamic
-		class-name imports that overwrite shared wrapper names.
+	"""Get provider module.
 	
-		Parameters:
-		-----------
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		Any: Imported provider module, such as gpt, gemini, or grok.
-		
-	"""
+	Args:
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	selected = get_provider_name( provider )
 	provider_modules = {
 			'GPT': gpt,
@@ -3455,23 +3299,19 @@ def get_provider_module( provider: Optional[ str ] = None ) -> Any:
 	return module
 
 def provider_has_class( class_name: str, provider: Optional[ str ] = None ) -> bool:
-	"""
-		
-		Purpose:
-		--------
-		Determine whether the selected provider module exposes a wrapper class.
+	"""Provider has class.
 	
-		Parameters:
-		-----------
-		class_name (str): Public wrapper class name to inspect.
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Performs the provider_has_class workflow using the inputs supplied by the caller and the current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		bool: True if the selected provider exposes the requested class; otherwise, False.
-		
-	"""
+	Args:
+	    class_name (str): Class name value used by the operation.
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    bool: Return value produced by the operation."""
 	if not class_name:
 		return False
 	
@@ -3479,23 +3319,19 @@ def provider_has_class( class_name: str, provider: Optional[ str ] = None ) -> b
 	return hasattr( provider_module, class_name )
 
 def get_provider_class( class_name: str, provider: Optional[ str ] = None ) -> type:
-	"""
-		
-		Purpose:
-		--------
-		Return a provider wrapper class by common interface name.
+	"""Get provider class.
 	
-		Parameters:
-		-----------
-		class_name (str): Public wrapper class name to retrieve.
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		type: Provider wrapper class.
-		
-	"""
+	Args:
+	    class_name (str): Class name value used by the operation.
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    type: Return value produced by the operation."""
 	if not class_name:
 		raise ValueError( 'class_name cannot be empty.' )
 	
@@ -3510,237 +3346,187 @@ def get_provider_class( class_name: str, provider: Optional[ str ] = None ) -> t
 	return getattr( provider_module, class_name )
 
 def get_provider_instance( class_name: str, provider: Optional[ str ] = None ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Instantiate a provider wrapper class by common interface name.
+	"""Get provider instance.
 	
-		Parameters:
-		-----------
-		class_name (str): Public wrapper class name to instantiate.
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		Any: Provider wrapper instance.
-		
-	"""
+	Args:
+	    class_name (str): Class name value used by the operation.
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	provider_class = get_provider_class( class_name, provider )
 	return provider_class( )
 
 def get_chat_module( provider: Optional[ str ] = None ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Return a Chat wrapper instance for the selected provider.
+	"""Get chat module.
 	
-		Parameters:
-		-----------
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		Any: Chat wrapper instance.
-		
-	"""
+	Args:
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'Chat', provider )
 
 def get_tts_module( provider: Optional[ str ] = None ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Return a TTS wrapper instance for the selected provider.
+	"""Get tts module.
 	
-		Parameters:
-		-----------
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		Any: TTS wrapper instance.
-		
-	"""
+	Args:
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'TTS', provider )
 
 def get_images_module( provider: Optional[ str ] = None ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Return an Images wrapper instance for the selected provider.
+	"""Get images module.
 	
-		Parameters:
-		-----------
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		Any: Images wrapper instance.
-		
-	"""
+	Args:
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'Images', provider )
 
 def get_embeddings_module( provider: Optional[ str ] = None ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Return an Embeddings wrapper instance for the selected provider.
+	"""Get embeddings module.
 	
-		Parameters:
-		-----------
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		Any: Embeddings wrapper instance.
-		
-	"""
+	Args:
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'Embeddings', provider )
 
 def get_translation_module( provider: Optional[ str ] = None ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Return a Translation wrapper instance for the selected provider.
+	"""Get translation module.
 	
-		Parameters:
-		-----------
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		Any: Translation wrapper instance.
-		
-	"""
+	Args:
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'Translation', provider )
 
 def get_transcription_module( provider: Optional[ str ] = None ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Return a Transcription wrapper instance for the selected provider.
+	"""Get transcription module.
 	
-		Parameters:
-		-----------
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		Any: Transcription wrapper instance.
-		
-	"""
+	Args:
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'Transcription', provider )
 
 def get_files_module( provider: Optional[ str ] = None ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Return a Files wrapper instance for the selected provider.
+	"""Get files module.
 	
-		Parameters:
-		-----------
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		Any: Files wrapper instance.
-		
-	"""
+	Args:
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'Files', provider )
 
 def get_vectorstores_module( provider: Optional[ str ] = None ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Return a VectorStores wrapper instance for the selected provider.
+	"""Get vectorstores module.
 	
-		Parameters:
-		-----------
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		Any: VectorStores wrapper instance.
-		
-	"""
+	Args:
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'VectorStores', provider )
 
 def get_file_search_module( provider: Optional[ str ] = None ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Return a FileSearch wrapper instance for providers that expose file-search-store
-		functionality.
+	"""Get file search module.
 	
-		Parameters:
-		-----------
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		Any: FileSearch wrapper instance.
-		
-	"""
+	Args:
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'FileSearch', provider )
 
 def get_cloud_buckets_module( provider: Optional[ str ] = None ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Return a CloudBuckets wrapper instance for providers that expose cloud-bucket
-		functionality.
+	"""Get cloud buckets module.
 	
-		Parameters:
-		-----------
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		Any: CloudBuckets wrapper instance.
-		
-	"""
+	Args:
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'CloudBuckets', provider )
 
-def get_mode_classes( mode: Optional[ str ]=None, provider: Optional[ str ]=None ) -> List[ str ]:
-	"""
-		
-		Purpose:
-		--------
-		Return the wrapper class names mapped to a Boo mode for the selected provider.
+def get_mode_classes( mode: Optional[ str ] = None, provider: Optional[ str ] = None ) -> List[
+	str ]:
+	"""Get mode classes.
 	
-		Parameters:
-		-----------
-		mode (Optional[str]): Mode name override. If omitted, the mode is read from
-			st.session_state['mode'].
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		List[str]: Wrapper class names associated with the selected mode.
-		
-	"""
+	Args:
+	    mode (Optional[str]): Mode value used by the operation.
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    List[str]: Return value produced by the operation."""
 	selected_mode = mode or st.session_state.get( 'mode', 'Text' )
 	selected_provider = get_provider_name( provider )
 	provider_class_map = getattr( cfg, 'PROVIDER_CLASS_MAP', None )
@@ -3768,24 +3554,19 @@ def get_mode_classes( mode: Optional[ str ]=None, provider: Optional[ str ]=None
 
 def provider_supports_mode( mode: Optional[ str ] = None,
 		provider: Optional[ str ] = None ) -> bool:
-	"""
-		
-		Purpose:
-		--------
-		Determine whether the selected provider exposes all wrapper classes required by a mode.
+	"""Provider supports mode.
 	
-		Parameters:
-		-----------
-		mode (Optional[str]): Mode name override. If omitted, the mode is read from
-			st.session_state['mode'].
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Performs the provider_supports_mode workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		bool: True if the selected provider supports all classes mapped to the selected mode.
-		
-	"""
+	Args:
+	    mode (Optional[str]): Mode value used by the operation.
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    bool: Return value produced by the operation."""
 	classes = get_mode_classes( mode, provider )
 	if not classes:
 		return True
@@ -3793,25 +3574,19 @@ def provider_supports_mode( mode: Optional[ str ] = None,
 	return all( provider_has_class( class_name, provider ) for class_name in classes )
 
 def require_provider_mode( mode: Optional[ str ] = None, provider: Optional[ str ] = None ) -> bool:
-	"""
-		
-		Purpose:
-		--------
-		Display a Streamlit warning when the selected provider does not expose all wrapper
-		classes required by a mode.
+	"""Require provider mode.
 	
-		Parameters:
-		-----------
-		mode (Optional[str]): Mode name override. If omitted, the mode is read from
-			st.session_state['mode'].
-		provider (Optional[str]): Provider name override. If omitted, the provider is read from
-			st.session_state['provider'].
+	Purpose:
+	    Performs the require_provider_mode workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		bool: True if the provider supports the mode; otherwise, False.
-		
-	"""
+	Args:
+	    mode (Optional[str]): Mode value used by the operation.
+	    provider (Optional[str]): Provider value used by the operation.
+	
+	Returns:
+	    bool: Return value produced by the operation."""
 	selected_mode = mode or st.session_state.get( 'mode', 'Text' )
 	selected_provider = get_provider_name( provider )
 	classes = get_mode_classes( selected_mode, selected_provider )
@@ -3830,41 +3605,32 @@ def require_provider_mode( mode: Optional[ str ] = None, provider: Optional[ str
 	return True
 
 def _provider( ) -> str:
-	"""
-		
-		Purpose:
-		--------
-		Return the currently selected provider name.
+	"""Provider.
 	
-		Parameters:
-		-----------
-		None
+	Purpose:
+	    Performs the _provider workflow using the inputs supplied by the caller and the current runtime
+	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		str: Current provider name.
-		
-	"""
+	Returns:
+	    str: Return value produced by the operation."""
 	return get_provider_name( )
 
 def _safe( module: str, attr: str, fallback: Any ) -> Any:
-	"""
-		
-		Purpose:
-		--------
-		Safely retrieve an attribute from an imported module by module name.
+	"""Safe.
 	
-		Parameters:
-		-----------
-		module (str): Module name to import.
-		attr (str): Attribute name to retrieve.
-		fallback (Any): Value returned if the module or attribute cannot be resolved.
+	Purpose:
+	    Performs the _safe workflow using the inputs supplied by the caller and the current runtime
+	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		Any: Resolved module attribute or fallback value.
-		
-	"""
+	Args:
+	    module (str): Module value used by the operation.
+	    attr (str): Attr value used by the operation.
+	    fallback (Any): Fallback value used by the operation.
+	
+	Returns:
+	    Any: Return value produced by the operation."""
 	try:
 		mod = __import__( module )
 		return getattr( mod, attr, fallback )
@@ -3874,40 +3640,31 @@ def _safe( module: str, attr: str, fallback: Any ) -> Any:
 # ------------ SIDEBAR UTILITIES
 
 def get_provider_options( ) -> List[ str ]:
-	"""
-		
-		Purpose:
-		--------
-		Return configured provider names for the Boo sidebar provider selector.
+	"""Get provider options.
 	
-		Parameters:
-		-----------
-		None
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		List[str]: Provider names from cfg.PROVIDERS.
-		
-	"""
+	Returns:
+	    List[str]: Return value produced by the operation."""
 	providers = getattr( cfg, 'PROVIDERS', { 'GPT': 'gpt', 'Gemini': 'gemini', 'Grok': 'grok' } )
 	return list( providers.keys( ) )
 
 def get_raw_provider_modes( provider: str ) -> List[ str ]:
-	"""
-		
-		Purpose:
-		--------
-		Return the configured mode list for a provider before runtime wrapper filtering.
+	"""Get raw provider modes.
 	
-		Parameters:
-		-----------
-		provider (str): Provider name selected in the sidebar.
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		List[str]: Configured mode names for the provider.
-		
-	"""
+	Args:
+	    provider (str): Provider value used by the operation.
+	
+	Returns:
+	    List[str]: Return value produced by the operation."""
 	class_mode_map = getattr( cfg, 'CLASS_MODE_MAP', None )
 	
 	if isinstance( class_mode_map, dict ) and provider in class_mode_map:
@@ -3923,21 +3680,18 @@ def get_raw_provider_modes( provider: str ) -> List[ str ]:
 	return list( getattr( cfg, 'GPT_MODES', [ ] ) )
 
 def normalize_mode_name( mode_name: Optional[ str ] ) -> str:
-	"""
-		
-		Purpose:
-		--------
-		Normalize legacy mode labels to Boo's preferred canonical labels.
+	"""Normalize mode name.
 	
-		Parameters:
-		-----------
-		mode_name (Optional[str]): Mode label to normalize.
+	Purpose:
+	    Normalizes incoming values into a predictable representation for application processing. The
+	    function reduces provider, user-input, or serialization differences before values are stored or
+	    displayed.
 	
-		Returns:
-		--------
-		str: Canonical mode label.
-		
-	"""
+	Args:
+	    mode_name (Optional[str]): Mode name value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
 	if not mode_name:
 		return 'Text'
 	
@@ -3951,21 +3705,18 @@ def normalize_mode_name( mode_name: Optional[ str ] ) -> str:
 	return mode_aliases.get( mode_name, mode_name )
 
 def normalize_mode_list( modes: List[ str ] ) -> List[ str ]:
-	"""
-		
-		Purpose:
-		--------
-		Normalize configured mode names and remove duplicates while preserving order.
+	"""Normalize mode list.
 	
-		Parameters:
-		-----------
-		modes (List[str]): Raw configured mode labels.
+	Purpose:
+	    Normalizes incoming values into a predictable representation for application processing. The
+	    function reduces provider, user-input, or serialization differences before values are stored or
+	    displayed.
 	
-		Returns:
-		--------
-		List[str]: Ordered canonical mode labels.
-		
-	"""
+	Args:
+	    modes (List[str]): Modes value used by the operation.
+	
+	Returns:
+	    List[str]: Return value produced by the operation."""
 	normalized = [ ]
 	
 	for item in modes:
@@ -3976,21 +3727,18 @@ def normalize_mode_list( modes: List[ str ] ) -> List[ str ]:
 	return normalized
 
 def mode_requires_runtime_wrapper( mode_name: str ) -> bool:
-	"""
-		
-		Purpose:
-		--------
-		Determine whether a mode should be filtered by provider wrapper availability.
+	"""Mode requires runtime wrapper.
 	
-		Parameters:
-		-----------
-		mode_name (str): Canonical mode label.
+	Purpose:
+	    Performs the mode_requires_runtime_wrapper workflow using the inputs supplied by the caller and
+	    the current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
 	
-		Returns:
-		--------
-		bool: True if mode requires wrapper classes; otherwise, False.
-		
-	"""
+	Args:
+	    mode_name (str): Mode name value used by the operation.
+	
+	Returns:
+	    bool: Return value produced by the operation."""
 	non_wrapper_modes = [
 			'Prompt Engineering',
 			'Data Management',
@@ -4000,21 +3748,18 @@ def mode_requires_runtime_wrapper( mode_name: str ) -> bool:
 	return mode_name not in non_wrapper_modes
 
 def get_supported_provider_modes( provider: str ) -> List[ str ]:
-	"""
-		
-		Purpose:
-		--------
-		Return provider modes filtered by configured mode lists and runtime wrapper support.
+	"""Get supported provider modes.
 	
-		Parameters:
-		-----------
-		provider (str): Provider name selected in the sidebar.
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		List[str]: Mode labels safe to present for the selected provider.
-		
-	"""
+	Args:
+	    provider (str): Provider value used by the operation.
+	
+	Returns:
+	    List[str]: Return value produced by the operation."""
 	raw_modes = get_raw_provider_modes( provider )
 	modes = normalize_mode_list( raw_modes )
 	supported = [ ]
@@ -4033,22 +3778,19 @@ def get_supported_provider_modes( provider: str ) -> List[ str ]:
 	return supported
 
 def get_mode_index( modes: List[ str ], current_mode: Optional[ str ] ) -> int:
-	"""
-		
-		Purpose:
-		--------
-		Return a safe index for the current mode within a filtered mode list.
+	"""Get mode index.
 	
-		Parameters:
-		-----------
-		modes (List[str]): Filtered provider mode labels.
-		current_mode (Optional[str]): Current session-state mode.
+	Purpose:
+	    Returns normalized information for the application component. The method provides a stable view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    can consume it consistently.
 	
-		Returns:
-		--------
-		int: Safe selected index.
-		
-	"""
+	Args:
+	    modes (List[str]): Modes value used by the operation.
+	    current_mode (Optional[str]): Current mode value used by the operation.
+	
+	Returns:
+	    int: Return value produced by the operation."""
 	mode_name = normalize_mode_name( current_mode )
 	
 	if mode_name in modes:
@@ -4057,22 +3799,15 @@ def get_mode_index( modes: List[ str ], current_mode: Optional[ str ] ) -> int:
 	return 0
 
 def render_provider_keys( ) -> None:
-	"""
-		
-		Purpose:
-		--------
-		Render API key controls and update session, environment, and config.py values
-		from user input.
+	"""Render provider keys.
 	
-		Parameters:
-		-----------
-		None
+	Purpose:
+	    Renders the requested user interface element or result block in Streamlit using normalized
+	    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+	    steps so the screen output remains predictable.
 	
-		Returns:
-		--------
-		None
-		
-	"""
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
 	with st.expander( 'Keys:', expanded=False ):
 		openai_key = st.text_input( 'OpenAI API Key', type='password',
 			value=get_runtime_config_value( 'openai_api_key', 'OPENAI_API_KEY',
@@ -4154,20 +3889,20 @@ with st.sidebar:
 		st.session_state[ 'provider' ] = current_provider
 	
 	style_subheaders( )
-	st.subheader( 'Provider' )
-	st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
+	st.divider( )
 	
-	provider = st.selectbox( label='Choose provider', options=provider_options,
-		index=provider_options.index( current_provider ), key='provider' )
+	# ------------------------------------------------------------------
+	# Provider Selection
+	# ------------------------------------------------------------------
+	with st.expander( 'Providers:', expanded=True ):
+		provider = st.radio( label='Select Provider', options=provider_options,
+			index=provider_options.index( current_provider ), key='provider' )
 	
 	logo_path = getattr( cfg, 'LOGO_MAP', { } ).get( provider )
 	if logo_path:
 		st.logo( logo_path, size='large' )
 	
-	render_provider_keys( )
-	
-	st.subheader( 'Mode' )
-	st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
+	st.divider( )
 	
 	mode_options = get_supported_provider_modes( provider )
 	current_mode = normalize_mode_name( st.session_state.get( 'mode', 'Text' ) )
@@ -4183,6 +3918,8 @@ with st.sidebar:
 			key='mode' )
 	
 	st.caption( f'Provider: {provider} | Mode: {mode}' )
+	st.divider( )
+	render_provider_keys( )
 
 # ======================================================================================
 # TEXT MODE
@@ -4232,23 +3969,20 @@ if mode == 'Text':
 	# ------------------------------------------------------------------
 	def get_text_options( instance: Any, attr_name: str,
 			fallback: Optional[ List[ str ] ] = None ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Return list-like option values from a provider wrapper property.
+		"""Get text options.
 		
-			Parameters:
-			-----------
-			instance (Any): Provider wrapper instance.
-			attr_name (str): Property or attribute name to inspect.
-			fallback (Optional[List[str]]): Fallback values returned when the attribute is absent.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[str]: Option values safe for Streamlit controls.
-			
-		"""
+		Args:
+		    instance (Any): Instance value used by the operation.
+		    attr_name (str): Attr name value used by the operation.
+		    fallback (Optional[List[str]]): Fallback value used by the operation.
+		
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		values = getattr( instance, attr_name, None )
 		if callable( values ):
 			try:
@@ -4268,99 +4002,81 @@ if mode == 'Text':
 		return fallback or [ ]
 	
 	def get_text_help( name: str, fallback: str = '' ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Return help text from config.py without failing when a constant is absent.
+		"""Get text help.
 		
-			Parameters:
-			-----------
-			name (str): Config attribute name.
-			fallback (str): Fallback help text.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			str: Help text value.
-			
-		"""
+		Args:
+		    name (str): Name value used by the operation.
+		    fallback (str): Fallback value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
 	def parse_semicolon_list( value: Any ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Parse semicolon-delimited user input into an ordered list of strings.
+		"""Parse semicolon list.
 		
-			Parameters:
-			-----------
-			value (Any): User input value.
+		Purpose:
+		    Performs the parse_semicolon_list workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			List[str]: Parsed non-empty values.
-			
-		"""
+		Args:
+		    value (Any): Value value used by the operation.
+		
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		raw_value = str( value or '' )
 		return [ item.strip( ) for item in raw_value.split( ';' ) if item.strip( ) ]
 	
 	def parse_comma_list( value: Any ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Parse comma-delimited user input into an ordered list of strings.
+		"""Parse comma list.
 		
-			Parameters:
-			-----------
-			value (Any): User input value.
+		Purpose:
+		    Performs the parse_comma_list workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			List[str]: Parsed non-empty values.
-			
-		"""
+		Args:
+		    value (Any): Value value used by the operation.
+		
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		raw_value = str( value or '' )
 		return [ item.strip( ) for item in raw_value.split( ',' ) if item.strip( ) ]
 	
 	def normalize_bool_or_none( value: Any ) -> Optional[ bool ]:
-		"""
-			
-			Purpose:
-			--------
-			Normalize optional API booleans so falsey UI toggles can be omitted when necessary.
+		"""Normalize bool or none.
 		
-			Parameters:
-			-----------
-			value (Any): Boolean-like value.
+		Purpose:
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
+		    displayed.
 		
-			Returns:
-			--------
-			Optional[bool]: True, False, or None.
-			
-		"""
+		Args:
+		    value (Any): Value value used by the operation.
+		
+		Returns:
+		    Optional[bool]: Return value produced by the operation."""
 		if value is None:
 			return None
 		
 		return bool( value )
 	
 	def get_grok_collection_options( ) -> Dict[ str, str ]:
-		"""
-			
-			Purpose:
-			--------
-			Return configured xAI Collection labels and IDs from config.py.
+		"""Get grok collection options.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			Dict[str, str]: Collection label-to-ID mapping.
-			
-		"""
+		Returns:
+		    Dict[str, str]: Return value produced by the operation."""
 		collection_rows = getattr( cfg, 'GROK_COLLECTIONS', [ ] )
 		collections: Dict[ str, str ] = { }
 		
@@ -4374,21 +4090,15 @@ if mode == 'Text':
 		return collections
 	
 	def get_selected_grok_collection_ids( ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Resolve selected and manually-entered xAI Collection IDs for Grok Text requests.
+		"""Get selected grok collection ids.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[str]: Ordered xAI Collection IDs.
-			
-		"""
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		collection_map = get_grok_collection_options( )
 		selected_labels = st.session_state.get( 'text_grok_collection_labels', [ ] )
 		manual_ids = parse_comma_list(
@@ -4409,23 +4119,20 @@ if mode == 'Text':
 		return resolved_ids
 	
 	def sanitize_text_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Remove stale provider-specific single-value selections before rendering controls.
+		"""Sanitize text selection.
 		
-			Parameters:
-			-----------
-			key (str): Session-state key to sanitize.
-			valid_options (List[str]): Provider-valid option values.
-			default (Any): Value assigned when the current value is invalid.
+		Purpose:
+		    Performs the sanitize_text_selection workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    key (str): Key value used by the operation.
+		    valid_options (List[str]): Valid options value used by the operation.
+		    default (Any): Default value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		current_value = st.session_state.get( key, default )
 		if current_value in [ None, '' ]:
 			return
@@ -4434,22 +4141,19 @@ if mode == 'Text':
 			st.session_state[ key ] = default
 	
 	def sanitize_text_multiselect( key: str, valid_options: List[ str ] ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Remove stale provider-specific multiselect values before rendering controls.
+		"""Sanitize text multiselect.
 		
-			Parameters:
-			-----------
-			key (str): Session-state key to sanitize.
-			valid_options (List[str]): Provider-valid option values.
+		Purpose:
+		    Performs the sanitize_text_multiselect workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    key (str): Key value used by the operation.
+		    valid_options (List[str]): Valid options value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		current_values = st.session_state.get( key, [ ] )
 		if not isinstance( current_values, list ):
 			st.session_state[ key ] = [ ]
@@ -4461,21 +4165,14 @@ if mode == 'Text':
 		]
 	
 	def reset_text_model_settings( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Reset Text mode model-oriented controls through a widget-safe callback.
+		"""Reset text model settings.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		for key in [
 				'text_model',
 				'text_reasoning',
@@ -4487,21 +4184,14 @@ if mode == 'Text':
 				del st.session_state[ key ]
 	
 	def reset_text_inference_settings( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Reset Text mode inference controls through a widget-safe callback.
+		"""Reset text inference settings.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		for key in [
 				'text_temperature',
 				'text_top_percent',
@@ -4514,21 +4204,14 @@ if mode == 'Text':
 				del st.session_state[ key ]
 	
 	def reset_text_tool_settings( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Reset Text mode tool, include, vector-store, collection, and grounding controls.
+		"""Reset text tool settings.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		for key in [
 				'text_google_grounding',
 				'text_max_calls',
@@ -4555,21 +4238,14 @@ if mode == 'Text':
 				del st.session_state[ key ]
 	
 	def reset_text_response_settings( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Reset Text mode response/output controls through a widget-safe callback.
+		"""Reset text response settings.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		for key in [
 				'text_stream',
 				'text_store',
@@ -4591,40 +4267,27 @@ if mode == 'Text':
 				del st.session_state[ key ]
 	
 	def clear_text_instructions( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Clear Text mode system instructions and selected prompt template.
+		"""Clear text instructions.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		st.session_state[ 'text_system_instructions' ] = ''
 		st.session_state[ 'instructions' ] = ''
 	
 	def convert_text_system_instructions( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Convert Text mode system instructions between XML-like blocks and Markdown headings.
+		"""Convert text system instructions.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Performs the convert_text_system_instructions workflow using the inputs supplied by the caller
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		text_value = st.session_state.get( 'text_system_instructions', '' )
 		if not isinstance( text_value, str ) or not text_value.strip( ):
 			return
@@ -4638,21 +4301,15 @@ if mode == 'Text':
 		st.session_state[ 'text_system_instructions' ] = converted
 	
 	def load_text_instruction_template( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Load the selected prompt template into Text mode system instructions.
+		"""Load text instruction template.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Performs the load_text_instruction_template workflow using the inputs supplied by the caller and
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		name = st.session_state.get( 'instructions' )
 		if name and name != 'No Templates Found':
 			prompt_text = fetch_prompt_text( cfg.DB_PATH, name )
@@ -4660,21 +4317,15 @@ if mode == 'Text':
 				st.session_state[ 'text_system_instructions' ] = prompt_text
 	
 	def build_text_response_format_payload( ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Build a provider-safe response format payload from Text mode response controls.
+		"""Build text response format payload.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Builds the normalized data structure required by the application workflow. The function converts
+		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    API calls and rendering code can consume safely.
 		
-			Returns:
-			--------
-			Any: String format value, JSON schema payload, or None.
-			
-		"""
+		Returns:
+		    Any: Return value produced by the operation."""
 		response_format = st.session_state.get( 'text_response_format', '' )
 		schema_text = st.session_state.get( 'text_json_schema', '' )
 		schema_name = st.session_state.get( 'text_json_schema_name', 'response_schema' )
@@ -4700,21 +4351,18 @@ if mode == 'Text':
 		return response_format or None
 	
 	def build_text_context( include_last_message: bool = False ) -> List[ Dict[ str, Any ] ]:
-		"""
-			
-			Purpose:
-			--------
-			Build provider-neutral chat context from Text mode message history.
+		"""Build text context.
 		
-			Parameters:
-			-----------
-			include_last_message (bool): Whether the most recent message should be included.
+		Purpose:
+		    Builds the normalized data structure required by the application workflow. The function converts
+		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    API calls and rendering code can consume safely.
 		
-			Returns:
-			--------
-			List[Dict[str, Any]]: Chat context messages.
-			
-		"""
+		Args:
+		    include_last_message (bool): Include last message value used by the operation.
+		
+		Returns:
+		    List[Dict[str, Any]]: Return value produced by the operation."""
 		messages = st.session_state.get( 'text_messages', [ ] )
 		if not isinstance( messages, list ):
 			return [ ]
@@ -4725,21 +4373,18 @@ if mode == 'Text':
 		return messages[ :-1 ]
 	
 	def build_text_common_kwargs( prompt: str ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Build provider-neutral Text mode keyword arguments for shared wrapper calls.
+		"""Build text common kwargs.
 		
-			Parameters:
-			-----------
-			prompt (str): User prompt submitted through the chat input.
+		Purpose:
+		    Builds the normalized data structure required by the application workflow. The function converts
+		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    API calls and rendering code can consume safely.
 		
-			Returns:
-			--------
-			Dict[str, Any]: Keyword arguments used by provider-specific dispatch.
-			
-		"""
+		Args:
+		    prompt (str): Prompt value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		raw_stops = st.session_state.get( 'text_stops_input', '' )
 		raw_urls = st.session_state.get( 'text_urls_input', '' )
 		raw_domains = st.session_state.get( 'text_domains_input', '' )
@@ -4787,21 +4432,18 @@ if mode == 'Text':
 		}
 	
 	def build_gpt_text_kwargs( prompt: str ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Build GPT/OpenAI-oriented Text mode keyword arguments for the GPT wrapper.
+		"""Build gpt text kwargs.
 		
-			Parameters:
-			-----------
-			prompt (str): User prompt submitted through the chat input.
+		Purpose:
+		    Builds the normalized data structure required by the application workflow. The function converts
+		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    API calls and rendering code can consume safely.
 		
-			Returns:
-			--------
-			Dict[str, Any]: GPT-compatible keyword arguments.
-			
-		"""
+		Args:
+		    prompt (str): Prompt value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		vector_store_ids = parse_comma_list( st.session_state.get( 'text_vector_store_ids', '' ) )
 		tools = st.session_state.get( 'text_tools', [ ] )
 		include = st.session_state.get( 'text_include', [ ] )
@@ -4849,23 +4491,21 @@ if mode == 'Text':
 				'conversation_id': st.session_state.get( 'text_conversation_id' ) or None,
 		}
 	
-	def build_gemini_text_kwargs( prompt: str, stream_handler: Optional[ Any ] = None ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Build Gemini-oriented Text mode keyword arguments for the Gemini wrapper.
+	def build_gemini_text_kwargs( prompt: str, stream_handler: Optional[ Any ] = None ) -> Dict[
+		str, Any ]:
+		"""Build gemini text kwargs.
 		
-			Parameters:
-			-----------
-			prompt (str): User prompt submitted through the chat input.
-			stream_handler (Optional[Any]): Optional callback for streamed output chunks.
+		Purpose:
+		    Builds the normalized data structure required by the application workflow. The function converts
+		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    API calls and rendering code can consume safely.
 		
-			Returns:
-			--------
-			Dict[str, Any]: Gemini-compatible keyword arguments.
-			
-		"""
+		Args:
+		    prompt (str): Prompt value used by the operation.
+		    stream_handler (Optional[Any]): Stream handler value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		kwargs = build_text_common_kwargs( prompt )
 		grounding_enabled = bool( st.session_state.get( 'text_google_grounding', False ) )
 		kwargs[ 'tools' ] = [ 'google_search' ] if grounding_enabled else st.session_state.get(
@@ -4877,21 +4517,18 @@ if mode == 'Text':
 		return kwargs
 	
 	def build_grok_text_kwargs( prompt: str ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Build Grok-oriented Text mode keyword arguments for the Grok wrapper.
+		"""Build grok text kwargs.
 		
-			Parameters:
-			-----------
-			prompt (str): User prompt submitted through the chat input.
+		Purpose:
+		    Builds the normalized data structure required by the application workflow. The function converts
+		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    API calls and rendering code can consume safely.
 		
-			Returns:
-			--------
-			Dict[str, Any]: Grok-compatible keyword arguments.
-			
-		"""
+		Args:
+		    prompt (str): Prompt value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		kwargs = build_text_common_kwargs( prompt )
 		collection_ids = get_selected_grok_collection_ids( )
 		input_mode = st.session_state.get( 'text_input', '' )
@@ -4913,23 +4550,19 @@ if mode == 'Text':
 		return kwargs
 	
 	def call_generate_text( prompt: str, stream_handler: Optional[ Any ] = None ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Dispatch Text generation to the selected provider while preserving each provider's
-			shared public wrapper interface.
+		"""Call generate text.
 		
-			Parameters:
-			-----------
-			prompt (str): User prompt submitted through the chat input.
-			stream_handler (Optional[Any]): Optional callback for streamed output chunks.
+		Purpose:
+		    Performs the call_generate_text workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Any: Provider response text or response object.
-			
-		"""
+		Args:
+		    prompt (str): Prompt value used by the operation.
+		    stream_handler (Optional[Any]): Stream handler value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation."""
 		if provider_name == 'GPT':
 			kwargs = build_gpt_text_kwargs( prompt )
 		elif provider_name == 'Gemini':
@@ -4948,22 +4581,19 @@ if mode == 'Text':
 			return text.generate_text( **clean_kwargs )
 	
 	def extract_text_sources( instance: Any, response: Any ) -> List[ Dict[ str, Any ] ]:
-		"""
-			
-			Purpose:
-			--------
-			Extract grounding or retrieval sources from a provider wrapper when available.
+		"""Extract text sources.
 		
-			Parameters:
-			-----------
-			instance (Any): Provider wrapper instance.
-			response (Any): Provider response object or response text.
+		Purpose:
+		    Extracts structured information from a provider response, uploaded file, or application data
+		    object. The function normalizes provider-specific shapes into values that can be rendered,
+		    stored, or passed to later processing steps.
 		
-			Returns:
-			--------
-			List[Dict[str, Any]]: Source dictionaries for rendering.
-			
-		"""
+		Args:
+		    instance (Any): Instance value used by the operation.
+		    response (Any): Response value used by the operation.
+		
+		Returns:
+		    List[Dict[str, Any]]: Return value produced by the operation."""
 		if hasattr( instance, 'get_grounding_sources' ):
 			try:
 				sources = instance.get_grounding_sources( )
@@ -4983,21 +4613,18 @@ if mode == 'Text':
 		return [ ]
 	
 	def update_text_usage( response: Any ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Update token counters using whichever counter helper exists in the current Boo file.
+		"""Update text usage.
 		
-			Parameters:
-			-----------
-			response (Any): Provider response object.
+		Purpose:
+		    Performs the update_text_usage workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    response (Any): Response value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
@@ -5005,21 +4632,18 @@ if mode == 'Text':
 			pass
 	
 	def get_text_avatar( role: str ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Return the avatar used for Text mode chat messages.
+		"""Get text avatar.
 		
-			Parameters:
-			-----------
-			role (str): Message role.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			str: Avatar token or empty string.
-			
-		"""
+		Args:
+		    role (str): Role value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		if role != 'assistant':
 			return ''
 		
@@ -5051,7 +4675,6 @@ if mode == 'Text':
 		# Expander — Text Mind Controls
 		# ------------------------------------------------------------------
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
-			
 			with st.expander( label='Model Settings', icon='🧊', expanded=False, width='stretch' ):
 				model_c1, model_c2, model_c3, model_c4, model_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
@@ -5363,9 +4986,9 @@ if mode == 'Text':
 		if prompt is not None and str( prompt ).strip( ):
 			prompt = str( prompt ).strip( )
 			st.session_state.text_messages.append( {
-						'role': 'user',
-						'content': prompt,
-				} )
+					'role': 'user',
+					'content': prompt,
+			} )
 			
 			with st.chat_message( 'assistant', avatar=get_text_avatar( 'assistant' ) ):
 				with st.spinner( 'Thinking…' ):
@@ -5375,21 +4998,18 @@ if mode == 'Text':
 					stream_placeholder = st.empty( )
 					
 					def on_stream_chunk( chunk: str ) -> None:
-						"""
-							
-							Purpose:
-							--------
-							Render streamed Text mode output chunks.
+						"""On stream chunk.
 						
-							Parameters:
-							-----------
-							chunk (str): Streamed text chunk.
+						Purpose:
+						    Performs the on_stream_chunk workflow using the inputs supplied by the caller and the current
+						    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+						    data-processing paths can call it consistently.
 						
-							Returns:
-							--------
-							None
-							
-						"""
+						Args:
+						    chunk (str): Chunk value used by the operation.
+						
+						Returns:
+						    None: This function performs its work through side effects and does not return a value."""
 						if chunk is None:
 							return
 						
@@ -5407,7 +5027,7 @@ if mode == 'Text':
 							st.session_state[ 'text_previous_response_id' ] = (
 									getattr( text, 'previous_id', None ) or
 									getattr( text, 'previous_response_id', None ) or
-									st.session_state.get( 'text_previous_response_id', '' ) or '' )
+									st.session_state.get( 'text_previous_response_id', '' ) or '')
 					
 					except Exception as exc:
 						err = Error( exc )
@@ -5424,9 +5044,9 @@ if mode == 'Text':
 							st.markdown( response_text )
 						
 						st.session_state.text_messages.append( {
-									'role': 'assistant',
-									'content': response_text,
-							} )
+								'role': 'assistant',
+								'content': response_text,
+						} )
 						
 						st.session_state[ 'text_context' ] = build_text_context(
 							include_last_message=True )
@@ -5549,23 +5169,20 @@ elif mode == 'Images':
 	# ------------------------------------------------------------------
 	def get_image_options( instance: Any, attr_name: str,
 			fallback: Optional[ List[ str ] ] = None ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Return list-like option values from an Images wrapper property.
+		"""Get image options.
 		
-			Parameters:
-			-----------
-			instance (Any): Provider Images wrapper instance.
-			attr_name (str): Property or attribute name to inspect.
-			fallback (Optional[List[str]]): Fallback option values.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[str]: Option values safe for Streamlit controls.
-			
-		"""
+		Args:
+		    instance (Any): Instance value used by the operation.
+		    attr_name (str): Attr name value used by the operation.
+		    fallback (Optional[List[str]]): Fallback value used by the operation.
+		
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		values = getattr( instance, attr_name, None )
 		if callable( values ):
 			try:
@@ -5585,47 +5202,36 @@ elif mode == 'Images':
 		return fallback or [ ]
 	
 	def get_image_help( name: str, fallback: str = '' ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Return image-mode help text from config.py without failing when absent.
+		"""Get image help.
 		
-			Parameters:
-			-----------
-			name (str): Config attribute name.
-			fallback (str): Fallback help text.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			str: Help text value.
-			
-		"""
+		Args:
+		    name (str): Name value used by the operation.
+		    fallback (str): Fallback value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
 	def sanitize_image_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Remove stale provider-specific image selections before rendering controls.
+		"""Sanitize image selection.
 		
-			Parameters:
-			-----------
-			key: str
-				Session-state key to sanitize.
-			
-			valid_options: List[str]
-				Provider-valid option values.
-			
-			default: Any
-				Value assigned when the current value is invalid.
+		Purpose:
+		    Performs the sanitize_image_selection workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    key (str): Key value used by the operation.
+		    valid_options (List[str]): Valid options value used by the operation.
+		    default (Any): Default value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		current_value = st.session_state.get( key, default )
 		
 		if current_value in [ None, '' ]:
@@ -5635,25 +5241,19 @@ elif mode == 'Images':
 			st.session_state[ key ] = default
 	
 	def sanitize_image_multiselect( key: str, valid_options: List[ str ] ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Remove stale provider-specific image multiselect values before rendering controls.
+		"""Sanitize image multiselect.
 		
-			Parameters:
-			-----------
-			key: str
-				Session-state key to sanitize.
-			
-			valid_options: List[str]
-				Provider-valid option values.
+		Purpose:
+		    Performs the sanitize_image_multiselect workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    key (str): Key value used by the operation.
+		    valid_options (List[str]): Valid options value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		current_values = st.session_state.get( key, [ ] )
 		
 		if not isinstance( current_values, list ):
@@ -5666,21 +5266,18 @@ elif mode == 'Images':
 		]
 	
 	def get_provider_image_models( selected_mode: Optional[ str ] ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Return provider-specific image models for the selected image workflow.
+		"""Get provider image models.
 		
-			Parameters:
-			-----------
-			selected_mode (Optional[str]): Image workflow name.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[str]: Model names for the selected provider and image workflow.
-			
-		"""
+		Args:
+		    selected_mode (Optional[str]): Selected mode value used by the operation.
+		
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		mode_name = selected_mode or ''
 		
 		if provider_name == 'GPT':
@@ -5724,23 +5321,20 @@ elif mode == 'Images':
 	
 	def call_existing_image_method( instance: Any, method_names: List[ str ],
 			kwargs: Dict[ str, Any ] ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Call the first available Images wrapper method from a provider-neutral method list.
+		"""Call existing image method.
 		
-			Parameters:
-			-----------
-			instance (Any): Provider Images wrapper instance.
-			method_names (List[str]): Ordered method names to try.
-			kwargs (Dict[str, Any]): Keyword arguments for the method call.
+		Purpose:
+		    Performs the call_existing_image_method workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Any: Provider method result.
-			
-		"""
+		Args:
+		    instance (Any): Instance value used by the operation.
+		    method_names (List[str]): Method names value used by the operation.
+		    kwargs (Dict[str, Any]): Kwargs value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation."""
 		for method_name in method_names:
 			method = getattr( instance, method_name, None )
 			if callable( method ):
@@ -5758,22 +5352,17 @@ elif mode == 'Images':
 		                      f'{", ".join( method_names )}.' )
 	
 	def save_uploaded_image( uploaded_file: Any ) -> Optional[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Save an uploaded Streamlit image to a temporary file path for provider wrappers that
-			expect a local path.
+		"""Save uploaded image.
 		
-			Parameters:
-			-----------
-			uploaded_file (Any): Streamlit uploaded file object.
+		Purpose:
+		    Persists or stages input data so it can be used by later provider or application workflows. The
+		    function standardizes file handling and returns a stable reference for downstream processing.
 		
-			Returns:
-			--------
-			Optional[str]: Temporary file path or None.
-			
-		"""
+		Args:
+		    uploaded_file (Any): Uploaded file value used by the operation.
+		
+		Returns:
+		    Optional[str]: Return value produced by the operation."""
 		if uploaded_file is None:
 			return None
 		
@@ -5795,22 +5384,19 @@ elif mode == 'Images':
 			return None
 	
 	def append_image_message( role: str, content: str ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Append an Images-mode message without clearing other mode state.
+		"""Append image message.
 		
-			Parameters:
-			-----------
-			role (str): Message role.
-			content (str): Message content.
+		Purpose:
+		    Performs the append_image_message workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    role (str): Role value used by the operation.
+		    content (str): Content value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		if not isinstance( st.session_state.get( 'image_input' ), list ):
 			st.session_state[ 'image_input' ] = [ ]
 		
@@ -5822,21 +5408,15 @@ elif mode == 'Images':
 		)
 	
 	def render_image_messages( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Render Images-mode message history.
+		"""Render image messages.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Renders the requested user interface element or result block in Streamlit using normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    steps so the screen output remains predictable.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		if not isinstance( st.session_state.get( 'image_input' ), list ):
 			st.session_state[ 'image_input' ] = [ ]
 		
@@ -5846,62 +5426,41 @@ elif mode == 'Images':
 					st.markdown( msg.get( 'content', '' ) )
 	
 	def clear_image_messages( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Clear only Images-mode message/result state.
+		"""Clear image messages.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		st.session_state[ 'image_input' ] = [ ]
 		st.session_state[ 'generated_images' ] = [ ]
 		st.session_state[ 'analyzed_images' ] = [ ]
 		st.session_state[ 'edited_images' ] = [ ]
 	
 	def clear_image_instructions( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Clear Images-mode system instructions and selected prompt template.
+		"""Clear image instructions.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		st.session_state[ 'image_system_instructions' ] = ''
 		st.session_state[ 'instructions' ] = ''
 	
 	def convert_image_system_instructions( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Convert Images-mode system instructions between XML-like blocks and Markdown
-			headings.
+		"""Convert image system instructions.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Performs the convert_image_system_instructions workflow using the inputs supplied by the caller
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		text_value = st.session_state.get( 'image_system_instructions', '' )
 		if not isinstance( text_value, str ) or not text_value.strip( ):
 			return
@@ -5915,21 +5474,15 @@ elif mode == 'Images':
 		st.session_state[ 'image_system_instructions' ] = converted
 	
 	def load_image_instruction_template( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Load the selected prompt template into Images-mode system instructions.
+		"""Load image instruction template.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Performs the load_image_instruction_template workflow using the inputs supplied by the caller
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		name = st.session_state.get( 'instructions' )
 		if name and name != 'No Templates Found':
 			prompt_text = fetch_prompt_text( cfg.DB_PATH, name )
@@ -5937,21 +5490,14 @@ elif mode == 'Images':
 				st.session_state[ 'image_system_instructions' ] = prompt_text
 	
 	def reset_image_model_settings( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Reset Images-mode model controls through a widget-safe callback.
+		"""Reset image model settings.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		for key in [
 				'image_mode',
 				'image_model',
@@ -5964,21 +5510,14 @@ elif mode == 'Images':
 				del st.session_state[ key ]
 	
 	def reset_image_inference_settings( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Reset Images-mode inference controls through a widget-safe callback.
+		"""Reset image inference settings.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		for key in [
 				'image_temperature',
 				'image_top_percent',
@@ -5992,21 +5531,14 @@ elif mode == 'Images':
 				del st.session_state[ key ]
 	
 	def reset_image_tool_settings( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Reset Images-mode tool, include, grounding, and domain controls.
+		"""Reset image tool settings.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		for key in [
 				'image_tools',
 				'image_include',
@@ -6024,21 +5556,14 @@ elif mode == 'Images':
 				del st.session_state[ key ]
 	
 	def reset_image_visual_settings( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Reset Images-mode visual output controls.
+		"""Reset image visual settings.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		for key in [
 				'image_resolution',
 				'image_media_resolution',
@@ -6058,42 +5583,35 @@ elif mode == 'Images':
 				del st.session_state[ key ]
 	
 	def parse_image_domains( value: Any ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Parse comma-delimited allowed image domains.
+		"""Parse image domains.
 		
-			Parameters:
-			-----------
-			value (Any): Text input value.
+		Purpose:
+		    Performs the parse_image_domains workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			List[str]: Parsed domain values.
-			
-		"""
+		Args:
+		    value (Any): Value value used by the operation.
+		
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		raw = str( value or '' )
 		return [ item.strip( ) for item in raw.split( ',' ) if item.strip( ) ]
 	
 	def render_image_output( result: Any, caption: str = 'Image output' ) -> bool:
-		"""
-			
-			Purpose:
-			--------
-			Render an image result returned as bytes, path, URL, list, tuple, dictionary, or
-			provider object.
+		"""Render image output.
 		
-			Parameters:
-			-----------
-			result (Any): Provider image result.
-			caption (str): Caption displayed below rendered image output.
+		Purpose:
+		    Renders the requested user interface element or result block in Streamlit using normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    steps so the screen output remains predictable.
 		
-			Returns:
-			--------
-			bool: True if at least one image-like item was rendered.
-			
-		"""
+		Args:
+		    result (Any): Result value used by the operation.
+		    caption (str): Caption value used by the operation.
+		
+		Returns:
+		    bool: Return value produced by the operation."""
 		if result is None:
 			return False
 		
@@ -6149,21 +5667,18 @@ elif mode == 'Images':
 		return False
 	
 	def update_image_usage( response: Any ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Update token counters using whichever counter helper exists in the current Boo file.
+		"""Update image usage.
 		
-			Parameters:
-			-----------
-			response (Any): Provider response object.
+		Purpose:
+		    Performs the update_image_usage workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    response (Any): Response value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
@@ -6173,21 +5688,18 @@ elif mode == 'Images':
 			pass
 	
 	def get_image_common_kwargs( prompt: str ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Build provider-neutral keyword arguments for Images wrapper calls.
+		"""Get image common kwargs.
 		
-			Parameters:
-			-----------
-			prompt (str): User prompt.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			Dict[str, Any]: Common Images keyword arguments.
-			
-		"""
+		Args:
+		    prompt (str): Prompt value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		domains = parse_image_domains( st.session_state.get( 'image_domains_input', '' ) )
 		if domains:
 			st.session_state[ 'image_domains' ] = domains
@@ -6217,21 +5729,18 @@ elif mode == 'Images':
 		}
 	
 	def get_image_generation_kwargs( prompt: str ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Build keyword arguments for image generation.
+		"""Get image generation kwargs.
 		
-			Parameters:
-			-----------
-			prompt (str): Image generation prompt.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			Dict[str, Any]: Image generation keyword arguments.
-			
-		"""
+		Args:
+		    prompt (str): Prompt value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		kwargs = get_image_common_kwargs( prompt )
 		kwargs.update( {
 				'size': st.session_state.get( 'image_size' ) or None,
@@ -6254,22 +5763,19 @@ elif mode == 'Images':
 		return kwargs
 	
 	def get_image_analysis_kwargs( prompt: str, path: str ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Build keyword arguments for image analysis.
+		"""Get image analysis kwargs.
 		
-			Parameters:
-			-----------
-			prompt (str): Image analysis prompt.
-			path (str): Uploaded image temporary path.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			Dict[str, Any]: Image analysis keyword arguments.
-			
-		"""
+		Args:
+		    prompt (str): Prompt value used by the operation.
+		    path (str): Path value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		kwargs = get_image_common_kwargs( prompt )
 		kwargs.update(
 			{
@@ -6286,24 +5792,22 @@ elif mode == 'Images':
 		
 		return kwargs
 	
-	def get_image_edit_kwargs( prompt: str, path: str, mask_path: Optional[ str ]=None ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Build keyword arguments for image editing.
+	def get_image_edit_kwargs( prompt: str, path: str, mask_path: Optional[ str ] = None ) -> Dict[
+		str, Any ]:
+		"""Get image edit kwargs.
 		
-			Parameters:
-			-----------
-			prompt (str): Image editing prompt.
-			path (str): Uploaded image temporary path.
-			mask_path (Optional[str]): Optional uploaded mask temporary path.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			Dict[str, Any]: Image editing keyword arguments.
-			
-		"""
+		Args:
+		    prompt (str): Prompt value used by the operation.
+		    path (str): Path value used by the operation.
+		    mask_path (Optional[str]): Mask path value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		kwargs = get_image_generation_kwargs( prompt )
 		kwargs.update( {
 				'path': path,
@@ -6315,21 +5819,18 @@ elif mode == 'Images':
 		return kwargs
 	
 	def run_image_generation( prompt: str ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Dispatch image generation to the selected provider.
+		"""Run image generation.
 		
-			Parameters:
-			-----------
-			prompt (str): Image generation prompt.
+		Purpose:
+		    Performs the run_image_generation workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Any: Provider generation result.
-			
-		"""
+		Args:
+		    prompt (str): Prompt value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation."""
 		kwargs = get_image_generation_kwargs( prompt )
 		return call_existing_image_method(
 			instance=image,
@@ -6338,44 +5839,38 @@ elif mode == 'Images':
 		)
 	
 	def run_image_analysis( prompt: str, path: str ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Dispatch image analysis to the selected provider.
+		"""Run image analysis.
 		
-			Parameters:
-			-----------
-			prompt (str): Image analysis prompt.
-			path (str): Uploaded image temporary path.
+		Purpose:
+		    Performs the run_image_analysis workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Any: Provider analysis result.
-			
-		"""
+		Args:
+		    prompt (str): Prompt value used by the operation.
+		    path (str): Path value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation."""
 		kwargs = get_image_analysis_kwargs( prompt, path )
 		return call_existing_image_method( instance=image,
 			method_names=[ 'analyze', 'analyze_image', 'vision', 'describe' ], kwargs=kwargs )
 	
 	def run_image_editing( prompt: str, path: str, mask_path: Optional[ str ] = None ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Dispatch image editing to the selected provider.
+		"""Run image editing.
 		
-			Parameters:
-			-----------
-			prompt (str): Image editing prompt.
-			path (str): Uploaded image temporary path.
-			mask_path (Optional[str]): Optional uploaded mask temporary path.
+		Purpose:
+		    Performs the run_image_editing workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Any: Provider editing result.
-			
-		"""
+		Args:
+		    prompt (str): Prompt value used by the operation.
+		    path (str): Path value used by the operation.
+		    mask_path (Optional[str]): Mask path value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation."""
 		kwargs = get_image_edit_kwargs( prompt, path, mask_path )
 		return call_existing_image_method( instance=image,
 			method_names=[ 'edit', 'edit_image', 'modify', 'generate_edit' ], kwargs=kwargs )
@@ -6397,7 +5892,6 @@ elif mode == 'Images':
 		st.divider( )
 		
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
-			
 			with st.expander( label='LLM Settings', icon='🧊', expanded=False, width='stretch' ):
 				llm_c1, llm_c2, llm_c3, llm_c4 = st.columns(
 					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
@@ -6495,7 +5989,6 @@ elif mode == 'Images':
 			
 			with st.expander( label='Tools / Grounding Settings', icon='🔎',
 					expanded=False, width='stretch' ):
-				
 				tool_c1, tool_c2, tool_c3, tool_c4 = st.columns(
 					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
 				
@@ -6590,7 +6083,6 @@ elif mode == 'Images':
 			
 			with st.expander( label='Visual Settings', icon='👁️', expanded=False,
 					width='stretch' ):
-				
 				img_c1, img_c2, img_c3, img_c4, img_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
 				
@@ -6689,7 +6181,6 @@ elif mode == 'Images':
 		# ------------------------------------------------------------------
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
 				width='stretch' ):
-			
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			prompt_names = fetch_prompt_names( cfg.DB_PATH )
 			if not prompt_names:
@@ -6791,7 +6282,7 @@ elif mode == 'Images':
 								st.warning( 'Enter an analysis prompt before analyzing the image.' )
 							elif not st.session_state.get(
 									'image_model' ) and not st.session_state.get(
-									'image_analysis_model' ):
+								'image_analysis_model' ):
 								st.warning( 'Select a model before analyzing an image.' )
 							else:
 								if st.session_state.get( 'image_analysis_model' ):
@@ -6947,53 +6438,37 @@ elif mode == 'Audio':
 	# Audio Mode Helpers
 	# ------------------------------------------------------------------
 	def get_audio_help( name: str, fallback: str = '' ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Return Audio mode help text from config.py without failing when absent.
+		"""Get audio help.
 		
-			Parameters:
-			-----------
-			name: str
-				Config attribute name.
-			
-			fallback: str
-				Fallback help text.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			str
-				Help text value.
-			
-		"""
+		Args:
+		    name (str): Name value used by the operation.
+		    fallback (str): Fallback value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
 	def get_audio_options( instance: Any, attr_name: str,
 			fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Return list-like option values from an Audio wrapper property.
+		"""Get audio options.
 		
-			Parameters:
-			-----------
-			instance: Any
-				Audio wrapper instance.
-			
-			attr_name: str
-				Property or attribute name to inspect.
-			
-			fallback: Optional[List[Any]]
-				Fallback option values.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[Any]
-				Option values safe for Streamlit controls.
-			
-		"""
+		Args:
+		    instance (Any): Instance value used by the operation.
+		    attr_name (str): Attr name value used by the operation.
+		    fallback (Optional[List[Any]]): Fallback value used by the operation.
+		
+		Returns:
+		    List[Any]: Return value produced by the operation."""
 		values = getattr( instance, attr_name, None )
 		if callable( values ):
 			try:
@@ -7013,26 +6488,19 @@ elif mode == 'Audio':
 		return fallback or [ ]
 	
 	def audio_has_method( instance: Any, method_names: List[ str ] ) -> bool:
-		"""
-			
-			Purpose:
-			--------
-			Determine whether an Audio wrapper exposes at least one callable method.
+		"""Audio has method.
 		
-			Parameters:
-			-----------
-			instance: Any
-				Audio wrapper instance.
-			
-			method_names: List[str]
-				Method names to inspect.
+		Purpose:
+		    Performs the audio_has_method workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			bool
-				True if at least one callable method exists; otherwise, False.
-			
-		"""
+		Args:
+		    instance (Any): Instance value used by the operation.
+		    method_names (List[str]): Method names value used by the operation.
+		
+		Returns:
+		    bool: Return value produced by the operation."""
 		for method_name in method_names:
 			method = getattr( instance, method_name, None )
 			if callable( method ):
@@ -7041,22 +6509,15 @@ elif mode == 'Audio':
 		return False
 	
 	def get_audio_task_options( ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Return provider-supported Audio mode task options from wrapper capabilities.
+		"""Get audio task options.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[str]
-				Audio task labels.
-			
-		"""
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		tasks: List[ str ] = [ ]
 		
 		if audio_has_method( transcriber, [ 'transcribe', 'create_transcription', 'create' ] ):
@@ -7071,23 +6532,18 @@ elif mode == 'Audio':
 		return tasks
 	
 	def get_audio_task_instance( task: Optional[ str ] ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Return the wrapper instance associated with the selected Audio task.
+		"""Get audio task instance.
 		
-			Parameters:
-			-----------
-			task: Optional[str]
-				Selected Audio task.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			Any
-				Transcription, Translation, or TTS wrapper.
-			
-		"""
+		Args:
+		    task (Optional[str]): Task value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation."""
 		if task == 'Translate':
 			return translator
 		
@@ -7097,23 +6553,18 @@ elif mode == 'Audio':
 		return transcriber
 	
 	def get_audio_model_options( task: Optional[ str ] ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Return task-aware model options from the active Audio wrapper.
+		"""Get audio model options.
 		
-			Parameters:
-			-----------
-			task: Optional[str]
-				Selected Audio task.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[str]
-				Model option values.
-			
-		"""
+		Args:
+		    task (Optional[str]): Task value used by the operation.
+		
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		instance = get_audio_task_instance( task )
 		options = get_audio_options( instance, 'model_options' )
 		
@@ -7124,23 +6575,18 @@ elif mode == 'Audio':
 		return [ str( option ) for option in options if str( option ).strip( ) ]
 	
 	def get_audio_language_options( task: Optional[ str ] ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Return task-aware language options from the active Audio wrapper.
+		"""Get audio language options.
 		
-			Parameters:
-			-----------
-			task: Optional[str]
-				Selected Audio task.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[str]
-				Language option values.
-			
-		"""
+		Args:
+		    task (Optional[str]): Task value used by the operation.
+		
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		instance = get_audio_task_instance( task )
 		options = get_audio_options( instance, 'language_options' )
 		
@@ -7150,22 +6596,15 @@ elif mode == 'Audio':
 		return [ str( option ) for option in options if str( option ).strip( ) ]
 	
 	def get_audio_voice_options( ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Return text-to-speech voice options from the active TTS wrapper.
+		"""Get audio voice options.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[str]
-				Voice option values.
-			
-		"""
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		options = get_audio_options( tts, 'voice_options' )
 		if not options:
 			options = [ getattr( tts, 'voice', '' ) ]
@@ -7173,23 +6612,18 @@ elif mode == 'Audio':
 		return [ str( option ) for option in options if str( option ).strip( ) ]
 	
 	def get_audio_format_options( task: Optional[ str ] ) -> List[ Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Return task-aware response/audio format options.
+		"""Get audio format options.
 		
-			Parameters:
-			-----------
-			task: Optional[str]
-				Selected Audio task.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[Any]
-				Format option values.
-			
-		"""
+		Args:
+		    task (Optional[str]): Task value used by the operation.
+		
+		Returns:
+		    List[Any]: Return value produced by the operation."""
 		instance = get_audio_task_instance( task )
 		
 		if task == 'Text-to-Speech':
@@ -7212,44 +6646,32 @@ elif mode == 'Audio':
 		return options
 	
 	def get_audio_include_options( task: Optional[ str ] ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Return task-aware include options from the active Audio wrapper.
+		"""Get audio include options.
 		
-			Parameters:
-			-----------
-			task: Optional[str]
-				Selected Audio task.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[str]
-				Include option values.
-			
-		"""
+		Args:
+		    task (Optional[str]): Task value used by the operation.
+		
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		instance = get_audio_task_instance( task )
 		options = get_audio_options( instance, 'include_options' )
 		return [ str( option ) for option in options if str( option ).strip( ) ]
 	
 	def get_audio_sample_rate_options( ) -> List[ int ]:
-		"""
-			
-			Purpose:
-			--------
-			Return TTS sample-rate options from the active TTS wrapper.
+		"""Get audio sample rate options.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[int]
-				Sample-rate option values.
-			
-		"""
+		Returns:
+		    List[int]: Return value produced by the operation."""
 		options = get_audio_options( tts, 'sample_rate_options' )
 		if not options:
 			options = [ 0, 8000, 16000, 22050, 24000, 44100, 48000 ]
@@ -7266,22 +6688,15 @@ elif mode == 'Audio':
 		return values
 	
 	def get_audio_bit_rate_options( ) -> List[ int ]:
-		"""
-			
-			Purpose:
-			--------
-			Return TTS bit-rate options from the active TTS wrapper.
+		"""Get audio bit rate options.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[int]
-				Bit-rate option values.
-			
-		"""
+		Returns:
+		    List[int]: Return value produced by the operation."""
 		options = get_audio_options( tts, 'bit_rate_options' )
 		if not options:
 			options = [ 0, 32000, 64000, 96000, 128000, 192000 ]
@@ -7298,28 +6713,20 @@ elif mode == 'Audio':
 		return values
 	
 	def sanitize_audio_selection( key: str, valid_options: List[ Any ], default: Any = '' ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Remove stale provider-specific Audio selections before rendering widgets.
+		"""Sanitize audio selection.
 		
-			Parameters:
-			-----------
-			key: str
-				Session-state key to sanitize.
-			
-			valid_options: List[Any]
-				Provider-valid option values.
-			
-			default: Any
-				Value assigned when the current value is invalid.
+		Purpose:
+		    Performs the sanitize_audio_selection workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    key (str): Key value used by the operation.
+		    valid_options (List[Any]): Valid options value used by the operation.
+		    default (Any): Default value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		current_value = st.session_state.get( key, default )
 		
 		if current_value in [ None, '' ]:
@@ -7329,25 +6736,19 @@ elif mode == 'Audio':
 			st.session_state[ key ] = default
 	
 	def sanitize_audio_multiselect( key: str, valid_options: List[ str ] ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Remove stale provider-specific Audio multiselect values before rendering widgets.
+		"""Sanitize audio multiselect.
 		
-			Parameters:
-			-----------
-			key: str
-				Session-state key to sanitize.
-			
-			valid_options: List[str]
-				Provider-valid option values.
+		Purpose:
+		    Performs the sanitize_audio_multiselect workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    key (str): Key value used by the operation.
+		    valid_options (List[str]): Valid options value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		current_values = st.session_state.get( key, [ ] )
 		
 		if not isinstance( current_values, list ):
@@ -7355,47 +6756,36 @@ elif mode == 'Audio':
 			return
 		
 		st.session_state[ key ] = [ item for item in current_values
-				if item in valid_options ]
+		                            if item in valid_options ]
 	
 	def parse_audio_domains( value: Any ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Parse comma-delimited allowed-domain input.
+		"""Parse audio domains.
 		
-			Parameters:
-			-----------
-			value: Any
-				Raw text input.
+		Purpose:
+		    Performs the parse_audio_domains workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			List[str]
-				Parsed domains.
-			
-		"""
+		Args:
+		    value (Any): Value value used by the operation.
+		
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		raw = str( value or '' )
 		return [ item.strip( ) for item in raw.split( ',' ) if item.strip( ) ]
 	
 	def save_audio_upload( uploaded_file: Any ) -> Optional[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Save an uploaded or recorded audio object to a temporary file.
+		"""Save audio upload.
 		
-			Parameters:
-			-----------
-			uploaded_file: Any
-				Streamlit uploaded or recorded audio object.
+		Purpose:
+		    Persists or stages input data so it can be used by later provider or application workflows. The
+		    function standardizes file handling and returns a stable reference for downstream processing.
 		
-			Returns:
-			--------
-			Optional[str]
-				Temporary audio path.
-			
-		"""
+		Args:
+		    uploaded_file (Any): Uploaded file value used by the operation.
+		
+		Returns:
+		    Optional[str]: Return value produced by the operation."""
 		if uploaded_file is None:
 			return None
 		
@@ -7425,25 +6815,19 @@ elif mode == 'Audio':
 			return None
 	
 	def append_audio_message( role: str, content: str ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Append an Audio-mode chat message.
+		"""Append audio message.
 		
-			Parameters:
-			-----------
-			role: str
-				Message role.
-			
-			content: str
-				Message content.
+		Purpose:
+		    Performs the append_audio_message workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    role (str): Role value used by the operation.
+		    content (str): Content value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		if not isinstance( st.session_state.get( 'audio_messages' ), list ):
 			st.session_state[ 'audio_messages' ] = [ ]
 		
@@ -7455,21 +6839,15 @@ elif mode == 'Audio':
 		)
 	
 	def render_audio_messages( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Render Audio-mode message history.
+		"""Render audio messages.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Renders the requested user interface element or result block in Streamlit using normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    steps so the screen output remains predictable.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		if not isinstance( st.session_state.get( 'audio_messages' ), list ):
 			st.session_state[ 'audio_messages' ] = [ ]
 		
@@ -7481,21 +6859,14 @@ elif mode == 'Audio':
 				st.markdown( msg.get( 'content', '' ) )
 	
 	def clear_audio_messages( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Clear Audio-mode messages and result state.
+		"""Clear audio messages.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		st.session_state[ 'audio_messages' ] = [ ]
 		st.session_state[ 'audio_output' ] = ''
 		st.session_state[ 'audio_output_bytes' ] = None
@@ -7504,41 +6875,27 @@ elif mode == 'Audio':
 		st.session_state[ 'audio_last_usage' ] = { }
 	
 	def clear_audio_instructions( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Clear Audio-mode system instructions and selected prompt template.
+		"""Clear audio instructions.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		st.session_state[ 'audio_system_instructions' ] = ''
 		st.session_state[ 'instructions' ] = ''
 	
 	def convert_audio_system_instructions( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Convert Audio-mode system instructions between XML-like blocks and Markdown
-			headings.
+		"""Convert audio system instructions.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Performs the convert_audio_system_instructions workflow using the inputs supplied by the caller
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		text_value = st.session_state.get( 'audio_system_instructions', '' )
 		if not isinstance( text_value, str ) or not text_value.strip( ):
 			return
@@ -7552,21 +6909,15 @@ elif mode == 'Audio':
 		st.session_state[ 'audio_system_instructions' ] = converted
 	
 	def load_audio_instruction_template( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Load the selected prompt template into Audio-mode system instructions.
+		"""Load audio instruction template.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Performs the load_audio_instruction_template workflow using the inputs supplied by the caller
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		name = st.session_state.get( 'instructions' )
 		if name and name != 'No Templates Found':
 			prompt_text = fetch_prompt_text( cfg.DB_PATH, name )
@@ -7574,21 +6925,14 @@ elif mode == 'Audio':
 				st.session_state[ 'audio_system_instructions' ] = prompt_text
 	
 	def reset_audio_task_controls( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Reset Audio task/model controls through a widget-safe callback.
+		"""Reset audio task controls.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		for key in [
 				'audio_task',
 				'audio_model',
@@ -7604,21 +6948,14 @@ elif mode == 'Audio':
 				del st.session_state[ key ]
 	
 	def reset_audio_inference_controls( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Reset Audio inference controls through a widget-safe callback.
+		"""Reset audio inference controls.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		for key in [
 				'audio_temperature',
 				'audio_top_percent',
@@ -7636,21 +6973,14 @@ elif mode == 'Audio':
 				del st.session_state[ key ]
 	
 	def reset_audio_playback_controls( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Reset Audio playback controls through a widget-safe callback.
+		"""Reset audio playback controls.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		for key in [
 				'audio_start_time',
 				'audio_end_time',
@@ -7665,22 +6995,18 @@ elif mode == 'Audio':
 				del st.session_state[ key ]
 	
 	def update_audio_usage( instance: Any ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Update Audio usage metadata from a provider wrapper.
+		"""Update audio usage.
 		
-			Parameters:
-			-----------
-			instance: Any
-				Provider Audio wrapper instance.
+		Purpose:
+		    Performs the update_audio_usage workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    instance (Any): Instance value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		try:
 			response = getattr( instance, 'response', None )
 			usage = getattr( response, 'usage', None )
@@ -7706,65 +7032,149 @@ elif mode == 'Audio':
 	
 	def call_existing_audio_method( instance: Any, method_names: List[ str ],
 			kwargs: Dict[ str, Any ] ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Call the first available Audio wrapper method from a provider-neutral method list.
+		"""Call existing audio method.
 		
-			Parameters:
-			-----------
-			instance: Any
-				Provider Audio wrapper instance.
-			
-			method_names: List[str]
-				Ordered method names to try.
-			
-			kwargs: Dict[str, Any]
-				Keyword arguments for the method call.
+		Purpose:
+		    Performs the call_existing_audio_method workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Any
-				Provider method result.
+		Args:
+		    instance (Any): Instance value used by the operation.
+		    method_names (List[str]): Method names value used by the operation.
+		    kwargs (Dict[str, Any]): Kwargs value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger."""
+		try:
+			import inspect
 			
-		"""
-		for method_name in method_names:
-			method = getattr( instance, method_name, None )
-			if not callable( method ):
-				continue
+			throw_if( 'instance', instance )
+			throw_if( 'method_names', method_names )
 			
-			try:
-				return method( **kwargs )
-			except TypeError:
-				clean_kwargs = {
+			for method_name in method_names:
+				method = getattr( instance, method_name, None )
+				if not callable( method ):
+					continue
+				
+				signature = inspect.signature( method )
+				parameters = signature.parameters
+				accepted_names = set( parameters.keys( ) )
+				accepts_kwargs = any(
+					parameter.kind == inspect.Parameter.VAR_KEYWORD
+					for parameter in parameters.values( )
+				)
+				
+				candidate_kwargs = {
 						key: value
-						for key, value in kwargs.items( )
+						for key, value in (kwargs or { }).items( )
 						if value is not None and value != '' and value != [ ]
 				}
-				return method( **clean_kwargs )
-		
-		raise AttributeError( f'Provider "{provider_name}" does not expose any audio method '
-		                      f'from: {", ".join( method_names )}.' )
+				
+				if 'output_format' in accepted_names and 'output_format' not in candidate_kwargs:
+					if candidate_kwargs.get( 'format' ):
+						candidate_kwargs[ 'output_format' ] = candidate_kwargs[ 'format' ]
+					elif candidate_kwargs.get( 'response_format' ):
+						candidate_kwargs[ 'output_format' ] = candidate_kwargs[ 'response_format' ]
+				
+				if 'format' in accepted_names and 'format' not in candidate_kwargs:
+					if candidate_kwargs.get( 'response_format' ):
+						candidate_kwargs[ 'format' ] = candidate_kwargs[ 'response_format' ]
+					elif candidate_kwargs.get( 'output_format' ):
+						candidate_kwargs[ 'format' ] = candidate_kwargs[ 'output_format' ]
+				
+				if 'voice_id' in accepted_names and 'voice_id' not in candidate_kwargs:
+					if candidate_kwargs.get( 'voice' ):
+						candidate_kwargs[ 'voice_id' ] = candidate_kwargs[ 'voice' ]
+				
+				if 'voice' in accepted_names and 'voice' not in candidate_kwargs:
+					if candidate_kwargs.get( 'voice_id' ):
+						candidate_kwargs[ 'voice' ] = candidate_kwargs[ 'voice_id' ]
+				
+				if 'filepath' in accepted_names and 'filepath' not in candidate_kwargs:
+					if candidate_kwargs.get( 'file_path' ):
+						candidate_kwargs[ 'filepath' ] = candidate_kwargs[ 'file_path' ]
+					elif candidate_kwargs.get( 'audio_path' ):
+						candidate_kwargs[ 'filepath' ] = candidate_kwargs[ 'audio_path' ]
+					elif candidate_kwargs.get( 'path' ):
+						candidate_kwargs[ 'filepath' ] = candidate_kwargs[ 'path' ]
+				
+				if 'audio_path' in accepted_names and 'audio_path' not in candidate_kwargs:
+					if candidate_kwargs.get( 'file_path' ):
+						candidate_kwargs[ 'audio_path' ] = candidate_kwargs[ 'file_path' ]
+					elif candidate_kwargs.get( 'filepath' ):
+						candidate_kwargs[ 'audio_path' ] = candidate_kwargs[ 'filepath' ]
+					elif candidate_kwargs.get( 'path' ):
+						candidate_kwargs[ 'audio_path' ] = candidate_kwargs[ 'path' ]
+				
+				if 'file_path' in accepted_names and 'file_path' not in candidate_kwargs:
+					if candidate_kwargs.get( 'filepath' ):
+						candidate_kwargs[ 'file_path' ] = candidate_kwargs[ 'filepath' ]
+					elif candidate_kwargs.get( 'audio_path' ):
+						candidate_kwargs[ 'file_path' ] = candidate_kwargs[ 'audio_path' ]
+					elif candidate_kwargs.get( 'path' ):
+						candidate_kwargs[ 'file_path' ] = candidate_kwargs[ 'path' ]
+				
+				if 'target_language' in accepted_names and 'target_language' not in candidate_kwargs:
+					if candidate_kwargs.get( 'language' ):
+						candidate_kwargs[ 'target_language' ] = candidate_kwargs[ 'language' ]
+				
+				if accepts_kwargs:
+					return method( **candidate_kwargs )
+				
+				method_kwargs = {
+						key: value
+						for key, value in candidate_kwargs.items( )
+						if key in accepted_names
+				}
+				
+				required_names = [
+						name
+						for name, parameter in parameters.items( )
+						if parameter.default == inspect.Parameter.empty
+						   and parameter.kind in [
+								   inspect.Parameter.POSITIONAL_OR_KEYWORD,
+								   inspect.Parameter.KEYWORD_ONLY,
+						   ]
+				]
+				
+				missing_names = [
+						name
+						for name in required_names
+						if name not in method_kwargs
+				]
+				
+				if missing_names:
+					continue
+				
+				return method( **method_kwargs )
+			
+			raise AttributeError( f'Provider "{provider_name}" does not expose any audio method '
+			                      f'from: {", ".join( method_names )}.' )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Audio'
+			ex.method = 'call_existing_audio_method( instance, method_names, kwargs )'
+			Logger( ).write( ex )
+			raise ex
 	
 	def normalize_audio_text_result( result: Any ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Normalize transcription or translation output into displayable text.
+		"""Normalize audio text result.
 		
-			Parameters:
-			-----------
-			result: Any
-				Provider result.
+		Purpose:
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
+		    displayed.
 		
-			Returns:
-			--------
-			str
-				Displayable text.
-			
-		"""
+		Args:
+		    result (Any): Result value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		if result is None:
 			return ''
 		
@@ -7787,23 +7197,18 @@ elif mode == 'Audio':
 		return str( result ).strip( )
 	
 	def normalize_audio_bytes_result( result: Any ) -> Optional[ bytes ]:
-		"""
-			
-			Purpose:
-			--------
-			Normalize TTS output into raw audio bytes when possible.
+		"""Normalize audio bytes result.
 		
-			Parameters:
-			-----------
-			result: Any
-				Provider TTS result.
+		Purpose:
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
+		    displayed.
 		
-			Returns:
-			--------
-			Optional[bytes]
-				Audio bytes when available.
-			
-		"""
+		Args:
+		    result (Any): Result value used by the operation.
+		
+		Returns:
+		    Optional[bytes]: Return value produced by the operation."""
 		if result is None:
 			return None
 		
@@ -7834,26 +7239,19 @@ elif mode == 'Audio':
 	
 	def get_audio_common_kwargs( path: Optional[ str ] = None,
 			prompt: Optional[ str ] = None ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Build provider-neutral Audio keyword arguments.
+		"""Get audio common kwargs.
 		
-			Parameters:
-			-----------
-			path: Optional[str]
-				Optional audio file path.
-			
-			prompt: Optional[str]
-				Optional user prompt/instruction.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			Dict[str, Any]
-				Audio keyword arguments.
-			
-		"""
+		Args:
+		    path (Optional[str]): Path value used by the operation.
+		    prompt (Optional[str]): Prompt value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		domains = parse_audio_domains( st.session_state.get( 'audio_domains_input', '' ) )
 		if domains:
 			st.session_state[ 'audio_domains' ] = domains
@@ -7882,26 +7280,19 @@ elif mode == 'Audio':
 		}
 	
 	def run_audio_transcription( path: str, prompt: Optional[ str ] = None ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Run transcription through the active provider wrapper.
+		"""Run audio transcription.
 		
-			Parameters:
-			-----------
-			path: str
-				Audio file path.
-			
-			prompt: Optional[str]
-				Optional transcription prompt.
+		Purpose:
+		    Performs the run_audio_transcription workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			str
-				Transcript text.
-			
-		"""
+		Args:
+		    path (str): Path value used by the operation.
+		    prompt (Optional[str]): Prompt value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		kwargs = get_audio_common_kwargs( path=path, prompt=prompt )
 		result = call_existing_audio_method(
 			instance=transcriber,
@@ -7915,26 +7306,19 @@ elif mode == 'Audio':
 		return text_result
 	
 	def run_audio_translation( path: str, prompt: Optional[ str ] = None ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Run translation through the active provider wrapper.
+		"""Run audio translation.
 		
-			Parameters:
-			-----------
-			path: str
-				Audio file path.
-			
-			prompt: Optional[str]
-				Optional translation prompt.
+		Purpose:
+		    Performs the run_audio_translation workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			str
-				Translated text.
-			
-		"""
+		Args:
+		    path (str): Path value used by the operation.
+		    prompt (Optional[str]): Prompt value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		kwargs = get_audio_common_kwargs( path=path, prompt=prompt )
 		result = call_existing_audio_method(
 			instance=translator,
@@ -7948,23 +7332,18 @@ elif mode == 'Audio':
 		return text_result
 	
 	def run_audio_tts( text: str ) -> Optional[ bytes ]:
-		"""
-			
-			Purpose:
-			--------
-			Run text-to-speech through the active provider wrapper.
+		"""Run audio tts.
 		
-			Parameters:
-			-----------
-			text: str
-				Text to synthesize.
+		Purpose:
+		    Performs the run_audio_tts workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Optional[bytes]
-				Generated audio bytes.
-			
-		"""
+		Args:
+		    text (str): Text value used by the operation.
+		
+		Returns:
+		    Optional[bytes]: Return value produced by the operation."""
 		kwargs = {
 				'text': text,
 				'prompt': text,
@@ -8011,7 +7390,6 @@ elif mode == 'Audio':
 		st.divider( )
 		
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
-			
 			with st.expander( label='LLM Settings', icon='🧊', expanded=False, width='stretch' ):
 				aud_c1, aud_c2, aud_c3, aud_c4, aud_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], gap='xxsmall', border=True )
@@ -8092,7 +7470,8 @@ elif mode == 'Audio':
 				st.button( label='Reset', key='audio_task_reset', width='stretch',
 					on_click=reset_audio_task_controls )
 			
-			with st.expander( label='Inference Settings', icon='🎚️', expanded=False, width='stretch' ):
+			with st.expander( label='Inference Settings', icon='🎚️', expanded=False,
+					width='stretch' ):
 				inf_c1, inf_c2, inf_c3, inf_c4, inf_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], gap='xxsmall', border=True )
 				
@@ -8154,7 +7533,8 @@ elif mode == 'Audio':
 				st.button( label='Reset', key='audio_inference_reset', width='stretch',
 					on_click=reset_audio_inference_controls )
 			
-			with st.expander( label='Playback Settings', icon='🔊', expanded=False, width='stretch' ):
+			with st.expander( label='Playback Settings', icon='🔊', expanded=False,
+					width='stretch' ):
 				play_c1, play_c2, play_c3, play_c4 = st.columns(
 					[ 0.25, 0.25, 0.25, 0.25 ], gap='xxsmall', border=True )
 				
@@ -8361,7 +7741,8 @@ elif mode == 'Audio':
 					width='stretch' )
 		
 		with tab_playback:
-			st.caption( 'Playback generated output, uploaded/recorded audio, or a local test file.' )
+			st.caption(
+				'Playback generated output, uploaded/recorded audio, or a local test file.' )
 			
 			if st.session_state.get( 'audio_output_bytes' ):
 				st.audio( st.session_state.get( 'audio_output_bytes' ),
@@ -8370,7 +7751,7 @@ elif mode == 'Audio':
 			playback_path = (
 					st.session_state.get( 'audio_upload_path' ) or
 					st.session_state.get( 'audio_recorded_path' ) or
-					st.session_state.get( 'audio_output_path' ) or '' )
+					st.session_state.get( 'audio_output_path' ) or '')
 			
 			if playback_path:
 				try:
@@ -8481,8 +7862,8 @@ elif mode == 'Document Q&A':
 		# EXPANDER — GROK DOCQNA LLM CONFIGURATION
 		# ------------------------------------------------------------------
 		if provider_name == 'Grok':
-			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
-				
+			with st.expander( label='LLM Configuration', icon='🧠', expanded=False,
+					width='stretch' ):
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 						border=True, gap='medium' )
@@ -8499,7 +7880,8 @@ elif mode == 'Document Q&A':
 					# ------------- Include Options ----------
 					with llm_c2:
 						include_options = list( docqna.include_options )
-						set_docqna_include = st.multiselect( label='Include:', options=include_options,
+						set_docqna_include = st.multiselect( label='Include:',
+							options=include_options,
 							key='docqna_include', help=cfg.INCLUDE, placeholder='Options' )
 						
 						docqna_include = [ d.strip( ) for d in set_docqna_include
@@ -8510,31 +7892,23 @@ elif mode == 'Document Q&A':
 					# ------------- Reasoning Options ----------
 					with llm_c3:
 						docqna = get_chat_module( provider_name )
+						
 						def get_docqna_options( instance: Any, attr_name: str,
 								fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
-							"""
+							"""Get docqna options.
 							
-								Purpose:
-								--------
-								Return provider option values safely for Document Q&A controls.
-						
-								Parameters:
-								-----------
-								instance: Any
-									Provider Chat wrapper instance.
-						
-								attr_name: str
-									Option property name.
-						
-								fallback: Optional[List[Any]]
-									Fallback option list.
-						
-								Returns:
-								--------
-								List[Any]
-									Provider option values or fallback values.
+							Purpose:
+							    Returns normalized information for the application component. The method provides a stable view
+							    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+							    can consume it consistently.
 							
-							"""
+							Args:
+							    instance (Any): Instance value used by the operation.
+							    attr_name (str): Attr name value used by the operation.
+							    fallback (Optional[List[Any]]): Fallback value used by the operation.
+							
+							Returns:
+							    List[Any]: Return value produced by the operation."""
 							values = getattr( instance, attr_name, None )
 							
 							if callable( values ):
@@ -8558,7 +7932,8 @@ elif mode == 'Document Q&A':
 						reasoning_options = get_docqna_options( docqna, 'reasoning_options', [ ] )
 						tool_options = get_docqna_options( docqna, 'tool_options', [ ] )
 						include_options = get_docqna_options( docqna, 'include_options', [ ] )
-						choice_options = get_docqna_options( docqna, 'choice_options', [ 'auto', 'required', 'none' ] )
+						choice_options = get_docqna_options( docqna, 'choice_options',
+							[ 'auto', 'required', 'none' ] )
 						format_options = get_docqna_options( docqna, 'format_options', [ 'text' ] )
 						if not reasoning_options:
 							reasoning_options = [ 'none' ]
@@ -8576,7 +7951,8 @@ elif mode == 'Document Q&A':
 					# ------------- Choice Options ----------
 					with llm_c4:
 						choice_options = list( docqna.choice_options )
-						set_docqna_choice = st.multiselect( label='Tool Choice:', options=choice_options,
+						set_docqna_choice = st.multiselect( label='Tool Choice:',
+							options=choice_options,
 							key='docqna_tool_choice', help=cfg.INCLUDE, placeholder='Options' )
 						
 						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
@@ -8604,8 +7980,10 @@ elif mode == 'Document Q&A':
 					
 					# ------------- Temperature  ----------
 					with prm_c2:
-						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0, max_value=1.0,
-							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ), step=0.01,
+						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0,
+							max_value=1.0,
+							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ),
+							step=0.01,
 							help=cfg.TEMPERATURE, key='docqna_temperature' )
 						
 						docqna_temperature = st.session_state[ 'docqna_temperature' ]
@@ -8643,14 +8021,16 @@ elif mode == 'Document Q&A':
 					
 					# ------------- Asynchronous  ------------------
 					with tool_c1:
-						set_docqna_parallel = st.toggle( label='Asynchronous Tool Calls', key='docqna_parallel_tools',
+						set_docqna_parallel = st.toggle( label='Asynchronous Tool Calls',
+							key='docqna_parallel_tools',
 							help=cfg.PARALLEL_TOOL_CALLS )
 						
 						docqna_parallel_tools = st.session_state[ 'docqna_parallel_tools' ]
 					
 					# ------------- Max Tool Calls ------------------
 					with tool_c2:
-						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0, max_value=4,
+						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0,
+							max_value=4,
 							value=int( st.session_state.get( 'docqna_max_calls', 0 ) ), step=1,
 							help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
 						
@@ -8658,7 +8038,8 @@ elif mode == 'Document Q&A':
 					
 					# -------------  Max Web Searches ------------------
 					with tool_c3:
-						set_max_results = st.slider( label='Max Websearch Results', key='docqna_max_searches',
+						set_max_results = st.slider( label='Max Websearch Results',
+							key='docqna_max_searches',
 							value=int( st.session_state.get( 'docqna_max_searches', 0 ) ),
 							min_value=0, max_value=30, step=1,
 							help='Optional. Upper limit on the number web search results' )
@@ -8705,15 +8086,18 @@ elif mode == 'Document Q&A':
 					
 					# ------------- Background  ------------------
 					with resp_c3:
-						set_docqna_background = st.toggle( label='Background', key='docqna_background',
+						set_docqna_background = st.toggle( label='Background',
+							key='docqna_background',
 							help=cfg.BACKGROUND_MODE )
 						
 						docqna_background = st.session_state[ 'docqna_background' ]
 					
 					# ------------- Domains  ------------------
 					with resp_c4:
-						set_docqna_domains = st.text_input( label='Allowed Websites', key='docqna_domains',
-							help=cfg.STOP_SEQUENCE, width='stretch', placeholder='Enter Web Domains' )
+						set_docqna_domains = st.text_input( label='Allowed Websites',
+							key='docqna_domains',
+							help=cfg.STOP_SEQUENCE, width='stretch',
+							placeholder='Enter Web Domains' )
 						
 						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' )
 						                   if d.strip( ) ]
@@ -8734,9 +8118,8 @@ elif mode == 'Document Q&A':
 		# EXPANDER — GEMINI DOCQNA LLM CONFIGURATION
 		# ------------------------------------------------------------------
 		elif provider_name == 'Gemini':
-			
-			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
-				
+			with st.expander( label='LLM Configuration', icon='🧠', expanded=False,
+					width='stretch' ):
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4, llm_c5 = st.columns(
 						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
@@ -8744,7 +8127,8 @@ elif mode == 'Document Q&A':
 					# ---------- Model ------------
 					with llm_c1:
 						model_options = list( docqna.model_options )
-						set_docqna_model = st.selectbox( label='Select Model', options=model_options,
+						set_docqna_model = st.selectbox( label='Select Model',
+							options=model_options,
 							key='docqna_model', placeholder='Options', index=None,
 							help='REQUIRED. Text Generation model used by the AI', )
 						
@@ -8753,7 +8137,8 @@ elif mode == 'Document Q&A':
 					# ---------- Include ------------
 					with llm_c2:
 						include_options = list( docqna.include_options )
-						set_docqna_include = st.multiselect( label='Include', options=include_options,
+						set_docqna_include = st.multiselect( label='Include',
+							options=include_options,
 							key='docqna_include', help=cfg.INCLUDE, placeholder='Options' )
 						
 						docqna_include = [ d.strip( ) for d in set_docqna_include
@@ -8763,7 +8148,8 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Allowed Domains ------------
 					with llm_c3:
-						set_docqna_domains = st.text_input( label='Allowed Domains', key='docqna_domains_input',
+						set_docqna_domains = st.text_input( label='Allowed Domains',
+							key='docqna_domains_input',
 							value=','.join( st.session_state.get( 'docqna_domains', [ ] ) ),
 							help=cfg.ALLOWED_DOMAINS, width='stretch', placeholder='Enter Domains' )
 						
@@ -8813,7 +8199,8 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Frequency ------------
 					with prm_c2:
-						set_docqna_freq = st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
+						set_docqna_freq = st.slider( label='Frequency Penalty', min_value=-2.0,
+							max_value=2.0,
 							value=float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) ),
 							step=0.01, help=cfg.FREQUENCY_PENALTY, key='docqna_frequency_penalty' )
 						
@@ -8821,7 +8208,8 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Presense ------------
 					with prm_c3:
-						set_docqna_presense = st.slider( label='Presense Penalty', min_value=-2.0, max_value=2.0,
+						set_docqna_presense = st.slider( label='Presense Penalty', min_value=-2.0,
+							max_value=2.0,
 							value=float( st.session_state.get( 'docqna_presense_penalty', 0.0 ) ),
 							step=0.01, help=cfg.PRESENCE_PENALTY, key='docqna_presense_penalty' )
 						
@@ -8829,8 +8217,10 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Temperature ------------
 					with prm_c4:
-						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0, max_value=1.0,
-							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ), step=0.01,
+						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0,
+							max_value=1.0,
+							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ),
+							step=0.01,
 							help=cfg.TEMPERATURE, key='docqna_temperature' )
 						
 						docqna_temperature = st.session_state[ 'docqna_temperature' ]
@@ -8860,7 +8250,8 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Number/Candidates ------------
 					with tool_c1:
-						set_docqna_number = st.slider( label='Candidates', min_value=0, max_value=50,
+						set_docqna_number = st.slider( label='Candidates', min_value=0,
+							max_value=50,
 							value=int( st.session_state.get( 'docqna_number', 0 ) ), step=1,
 							help='Optional. Upper limit on the responses returned by the model',
 							key='docqna_number' )
@@ -8869,7 +8260,8 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Max Calls ------------
 					with tool_c2:
-						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0, max_value=10,
+						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0,
+							max_value=10,
 							value=int( st.session_state.get( 'docqna_max_calls', 0 ) ), step=1,
 							help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
 						
@@ -8878,15 +8270,18 @@ elif mode == 'Document Q&A':
 					# ---------- Choice/Calling Mode ------------
 					with tool_c3:
 						choice_options = list( docqna.choice_options )
-						set_docqna_choice = st.selectbox( label='Calling Mode', options=choice_options,
-							key='docqna_tool_choice', help=cfg.CHOICE, index=None, placeholder='Options' )
+						set_docqna_choice = st.selectbox( label='Calling Mode',
+							options=choice_options,
+							key='docqna_tool_choice', help=cfg.CHOICE, index=None,
+							placeholder='Options' )
 						
 						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
 					
 					# ---------- Tools ------------
 					with tool_c4:
 						tool_options = list( docqna.tool_options )
-						set_docqna_tools = st.multiselect( label='Available Tools', options=tool_options,
+						set_docqna_tools = st.multiselect( label='Available Tools',
+							options=tool_options,
 							key='docqna_tools', help=cfg.TOOLS, placeholder='Options' )
 						
 						docqna_tools = [ d.strip( ) for d in set_docqna_tools
@@ -8897,7 +8292,8 @@ elif mode == 'Document Q&A':
 					# ---------- Modalities ------------
 					with tool_c5:
 						modality_options = list( docqna.modality_options )
-						set_docqna_modalities = st.multiselect( label='Response Modalities', options=modality_options,
+						set_docqna_modalities = st.multiselect( label='Response Modalities',
+							options=modality_options,
 							key='docqna_modalities', help='Optional. Modality of the response',
 							placeholder='Options' )
 						
@@ -8928,20 +8324,23 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Store ------------
 					with resp_c2:
-						set_docqna_store = st.toggle( label='Store', key='docqna_store', help=cfg.STORE )
+						set_docqna_store = st.toggle( label='Store', key='docqna_store',
+							help=cfg.STORE )
 						
 						docqna_store = st.session_state[ 'docqna_store' ]
 					
 					# ---------- Background ------------
 					with resp_c3:
-						set_docqna_background = st.toggle( label='Background', key='docqna_background',
+						set_docqna_background = st.toggle( label='Background',
+							key='docqna_background',
 							help=cfg.BACKGROUND_MODE )
 						
 						docqna_background = st.session_state[ 'docqna_background' ]
 					
 					# ---------- Stops ------------
 					with resp_c4:
-						set_docqna_stops = st.text_input( label='Stop Sequences', key='docqna_stops',
+						set_docqna_stops = st.text_input( label='Stop Sequences',
+							key='docqna_stops',
 							help=cfg.STOP_SEQUENCE, width='stretch', placeholder='Enter Stops' )
 						
 						docqna_stops = [ d.strip( ) for d in set_docqna_stops.split( ',' )
@@ -8949,7 +8348,8 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Max Tokens ------------
 					with resp_c5:
-						set_docqna_tokens = st.slider( label='Max Tokens', min_value=0, max_value=100000,
+						set_docqna_tokens = st.slider( label='Max Tokens', min_value=0,
+							max_value=100000,
 							value=int( st.session_state.get( 'docqna_max_tokens', 0 ) ), step=500,
 							help=cfg.MAX_OUTPUT_TOKENS, key='docqna_max_tokens' )
 						
@@ -8972,9 +8372,8 @@ elif mode == 'Document Q&A':
 		# EXPANDER — GPT DOCQNA LLM CONFIGURATION
 		# ------------------------------------------------------------------
 		elif provider_name == 'GPT':
-			
-			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
-				
+			with st.expander( label='LLM Configuration', icon='🧠', expanded=False,
+					width='stretch' ):
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 						border=True, gap='medium' )
@@ -8982,7 +8381,8 @@ elif mode == 'Document Q&A':
 					# ---------- Model ------------
 					with llm_c1:
 						model_options = list( docqna.model_options )
-						set_docqna_model = st.selectbox( label='Select Model', options=model_options,
+						set_docqna_model = st.selectbox( label='Select Model',
+							options=model_options,
 							key='docqna_model', placeholder='Options', index=None,
 							help='REQUIRED. Text Generation model used by the AI', )
 						
@@ -8991,7 +8391,8 @@ elif mode == 'Document Q&A':
 					# ---------- Include ------------
 					with llm_c2:
 						include_options = list( docqna.include_options )
-						set_docqna_include = st.multiselect( label='Include:', options=include_options,
+						set_docqna_include = st.multiselect( label='Include:',
+							options=include_options,
 							key='docqna_include', help=cfg.INCLUDE, placeholder='Options' )
 						
 						docqna_include = [ d.strip( ) for d in set_docqna_include
@@ -9001,7 +8402,8 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Allowed Domains ------------
 					with llm_c3:
-						set_docqna_domains = st.text_input( label='Allowed Domains', key='docqna_domains_input',
+						set_docqna_domains = st.text_input( label='Allowed Domains',
+							key='docqna_domains_input',
 							value=','.join( st.session_state.get( 'docqna_domains', [ ] ) ),
 							help=cfg.ALLOWED_DOMAINS, width='stretch', placeholder='Enter Domains' )
 						
@@ -9042,7 +8444,8 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Frequency ------------
 					with prm_c2:
-						set_docqna_freq = st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
+						set_docqna_freq = st.slider( label='Frequency Penalty', min_value=-2.0,
+							max_value=2.0,
 							value=float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) ),
 							step=0.01, help=cfg.FREQUENCY_PENALTY, key='docqna_frequency_penalty' )
 						
@@ -9050,7 +8453,8 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Presense ------------
 					with prm_c3:
-						set_docqna_presense = st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0,
+						set_docqna_presense = st.slider( label='Presence Penalty', min_value=-2.0,
+							max_value=2.0,
 							value=float( st.session_state.get( 'docqna_presense_penalty', 0.0 ) ),
 							step=0.01, help=cfg.PRESENCE_PENALTY, key='docqna_presense_penalty' )
 						
@@ -9058,8 +8462,10 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Temperature ------------
 					with prm_c4:
-						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0, max_value=1.0,
-							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ), step=0.01,
+						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0,
+							max_value=1.0,
+							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ),
+							step=0.01,
 							help=cfg.TEMPERATURE, key='docqna_temperature' )
 						
 						docqna_temperature = st.session_state[ 'docqna_temperature' ]
@@ -9097,7 +8503,8 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Max Calls ------------
 					with tool_c2:
-						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0, max_value=5,
+						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0,
+							max_value=5,
 							value=int( st.session_state.get( 'docqna_max_calls', 0 ) ), step=1,
 							help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
 						
@@ -9106,15 +8513,18 @@ elif mode == 'Document Q&A':
 					# ---------- Choice ------------
 					with tool_c3:
 						choice_options = list( docqna.choice_options )
-						set_docqna_choice = st.selectbox( label='Tool Choice:', options=choice_options,
-							key='docqna_tool_choice', help=cfg.CHOICE, index=None, placeholder='Options' )
+						set_docqna_choice = st.selectbox( label='Tool Choice:',
+							options=choice_options,
+							key='docqna_tool_choice', help=cfg.CHOICE, index=None,
+							placeholder='Options' )
 						
 						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
 					
 					# ---------- Tools ------------
 					with tool_c4:
 						tool_options = list( docqna.tool_options )
-						set_docqna_tools = st.multiselect( label='Available Tools', options=tool_options,
+						set_docqna_tools = st.multiselect( label='Available Tools',
+							options=tool_options,
 							key='docqna_tools', help=cfg.TOOLS, placeholder='Options' )
 						
 						docqna_tools = [ d.strip( ) for d in set_docqna_tools
@@ -9151,14 +8561,16 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Background ------------
 					with resp_c3:
-						set_docqna_background = st.toggle( label='Background', key='docqna_background',
+						set_docqna_background = st.toggle( label='Background',
+							key='docqna_background',
 							help=cfg.BACKGROUND_MODE )
 						
 						docqna_background = st.session_state[ 'docqna_background' ]
 					
 					# ---------- Stops ------------
 					with resp_c4:
-						set_docqna_stops = st.text_input( label='Stop Sequences', key='docqna_stops',
+						set_docqna_stops = st.text_input( label='Stop Sequences',
+							key='docqna_stops',
 							help=cfg.STOP_SEQUENCE, width='stretch', placeholder='Enter Stops' )
 						
 						docqna_stops = [ d.strip( ) for d in set_docqna_stops.split( ',' )
@@ -9166,7 +8578,8 @@ elif mode == 'Document Q&A':
 					
 					# ---------- Max Tokens ------------
 					with resp_c5:
-						set_docqna_tokens = st.slider( label='Max Output Tokens', min_value=0, max_value=100000,
+						set_docqna_tokens = st.slider( label='Max Output Tokens', min_value=0,
+							max_value=100000,
 							value=int( st.session_state.get( 'docqna_max_tokens', 0 ) ), step=500,
 							help=cfg.MAX_OUTPUT_TOKENS, key='docqna_max_tokens' )
 						
@@ -9290,44 +8703,37 @@ elif mode == 'Embeddings':
 	# Embeddings Mode Helpers
 	# ------------------------------------------------------------------
 	def get_embedding_help( name: str, fallback: str = '' ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Return Embeddings mode help text from config.py without failing when a constant is
-			absent.
+		"""Get embedding help.
 		
-			Parameters:
-			-----------
-			name (str): Config attribute name.
-			fallback (str): Fallback help text.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			str: Help text value.
-			
-		"""
+		Args:
+		    name (str): Name value used by the operation.
+		    fallback (str): Fallback value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
 	def get_embedding_options( instance: Any, attr_name: str,
 			fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Return list-like option values from an Embeddings wrapper property.
+		"""Get embedding options.
 		
-			Parameters:
-			-----------
-			instance (Any): Provider Embeddings wrapper instance.
-			attr_name (str): Property or attribute name to inspect.
-			fallback (Optional[List[Any]]): Fallback option values.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[Any]: Option values safe for Streamlit controls.
-			
-		"""
+		Args:
+		    instance (Any): Instance value used by the operation.
+		    attr_name (str): Attr name value used by the operation.
+		    fallback (Optional[List[Any]]): Fallback value used by the operation.
+		
+		Returns:
+		    List[Any]: Return value produced by the operation."""
 		values = getattr( instance, attr_name, None )
 		if callable( values ):
 			try:
@@ -9347,45 +8753,38 @@ elif mode == 'Embeddings':
 		return fallback or [ ]
 	
 	def normalize_embedding_text( value: Any ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Normalize user-provided embedding input text.
+		"""Normalize embedding text.
 		
-			Parameters:
-			-----------
-			value (Any): Raw text-like value.
+		Purpose:
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
+		    displayed.
 		
-			Returns:
-			--------
-			str: Normalized text value.
-			
-		"""
+		Args:
+		    value (Any): Value value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		if value is None:
 			return ''
 		
 		return str( value ).replace( '\r\n', '\n' ).strip( )
 	
 	def chunk_embedding_text( text_value: str, chunk_size: int, overlap: int ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Chunk embedding text using token-aware helpers when available, with a safe word-based
-			fallback.
+		"""Chunk embedding text.
 		
-			Parameters:
-			-----------
-			text_value (str): Text to split into embedding chunks.
-			chunk_size (int): Maximum chunk size.
-			overlap (int): Overlap between adjacent chunks.
+		Purpose:
+		    Performs the chunk_embedding_text workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			List[str]: Text chunks.
-			
-		"""
+		Args:
+		    text_value (str): Text value value used by the operation.
+		    chunk_size (int): Chunk size value used by the operation.
+		    overlap (int): Overlap value used by the operation.
+		
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		source = normalize_embedding_text( text_value )
 		if not source:
 			return [ ]
@@ -9421,21 +8820,18 @@ elif mode == 'Embeddings':
 		return chunks
 	
 	def normalize_embedding_vectors( vectors: Any ) -> List[ List[ float ] ]:
-		"""
-			
-			Purpose:
-			--------
-			Normalize provider embedding vectors into a two-dimensional float matrix.
+		"""Normalize embedding vectors.
 		
-			Parameters:
-			-----------
-			vectors (Any): Provider vector result.
+		Purpose:
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
+		    displayed.
 		
-			Returns:
-			--------
-			List[List[float]]: Two-dimensional vector matrix.
-			
-		"""
+		Args:
+		    vectors (Any): Vectors value used by the operation.
+		
+		Returns:
+		    List[List[float]]: Return value produced by the operation."""
 		if vectors is None:
 			return [ ]
 		
@@ -9483,24 +8879,23 @@ elif mode == 'Embeddings':
 				]
 		
 		return [ ]
-		
+	
 	def call_embeddings_create( chunks: List[ str ] ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Call the selected provider Embeddings wrapper using provider-specific argument
-			mapping while preserving each wrapper's public method contract.
+		"""Call embeddings create.
 		
-			Parameters:
-			-----------
-			chunks (List[str]): Text chunks to embed.
+		Purpose:
+		    Performs the call_embeddings_create workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Any: Provider embedding result.
-			
-		"""
+		Args:
+		    chunks (List[str]): Chunks value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger."""
 		try:
 			throw_if( 'chunks', chunks )
 			
@@ -9552,24 +8947,22 @@ elif mode == 'Embeddings':
 			exception.module = 'app'
 			exception.cause = 'Embeddings'
 			exception.method = 'call_embeddings_create( chunks: List[ str ] ) -> Any'
+			Logger( ).write( exception )
 			raise exception
 	
 	def extract_embedding_usage( result: Any ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Extract usage metadata from an Embeddings provider response.
+		"""Extract embedding usage.
 		
-			Parameters:
-			-----------
-			result (Any): Provider embedding result.
+		Purpose:
+		    Extracts structured information from a provider response, uploaded file, or application data
+		    object. The function normalizes provider-specific shapes into values that can be rendered,
+		    stored, or passed to later processing steps.
 		
-			Returns:
-			--------
-			Dict[str, Any]: Usage metadata.
-			
-		"""
+		Args:
+		    result (Any): Result value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		response = getattr( embedding, 'response', None ) or result
 		
 		if response is None:
@@ -9592,24 +8985,21 @@ elif mode == 'Embeddings':
 	
 	def build_embedding_metrics( source_text: str, chunks: List[ str ],
 			vectors: List[ List[ float ] ], usage: Dict[ str, Any ] ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Build display metrics for an Embeddings run.
+		"""Build embedding metrics.
 		
-			Parameters:
-			-----------
-			source_text (str): Original source text.
-			chunks (List[str]): Text chunks embedded.
-			vectors (List[List[float]]): Normalized embedding vectors.
-			usage (Dict[str, Any]): Provider usage metadata.
+		Purpose:
+		    Builds the normalized data structure required by the application workflow. The function converts
+		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    API calls and rendering code can consume safely.
 		
-			Returns:
-			--------
-			Dict[str, Any]: Embedding metrics.
-			
-		"""
+		Args:
+		    source_text (str): Source text value used by the operation.
+		    chunks (List[str]): Chunks value used by the operation.
+		    vectors (List[List[float]]): Vectors value used by the operation.
+		    usage (Dict[str, Any]): Usage value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		words = source_text.split( )
 		total_words = len( words )
 		unique_words = len( set( words ) )
@@ -9630,22 +9020,19 @@ elif mode == 'Embeddings':
 	
 	def build_embeddings_dataframe( chunks: List[ str ],
 			vectors: List[ List[ float ] ] ) -> pd.DataFrame:
-		"""
-			
-			Purpose:
-			--------
-			Build a dataframe from embedding vectors and chunk metadata.
+		"""Build embeddings dataframe.
 		
-			Parameters:
-			-----------
-			chunks (List[str]): Embedded text chunks.
-			vectors (List[List[float]]): Normalized embedding vectors.
+		Purpose:
+		    Builds the normalized data structure required by the application workflow. The function converts
+		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    API calls and rendering code can consume safely.
 		
-			Returns:
-			--------
-			pd.DataFrame: Embedding dataframe.
-			
-		"""
+		Args:
+		    chunks (List[str]): Chunks value used by the operation.
+		    vectors (List[List[float]]): Vectors value used by the operation.
+		
+		Returns:
+		    pd.DataFrame: Return value produced by the operation."""
 		if not vectors:
 			return pd.DataFrame( )
 		
@@ -9662,21 +9049,18 @@ elif mode == 'Embeddings':
 		return df_vectors
 	
 	def render_embedding_metrics( metrics: Dict[ str, Any ] ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Render Embeddings mode metric cards.
+		"""Render embedding metrics.
 		
-			Parameters:
-			-----------
-			metrics (Dict[str, Any]): Embedding metric values.
+		Purpose:
+		    Renders the requested user interface element or result block in Streamlit using normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    steps so the screen output remains predictable.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    metrics (Dict[str, Any]): Metrics value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		col_m1, col_m2, col_m3, col_m4, col_m5 = st.columns( 5, border=True )
 		col_m1.metric( 'Tokens', metrics.get( 'tokens', 0 ) )
 		col_m2.metric( 'Chunks', metrics.get( 'chunks', 0 ) )
@@ -9685,21 +9069,14 @@ elif mode == 'Embeddings':
 		col_m5.metric( 'TTR', f"{float( metrics.get( 'ttr', 0.0 ) ):.3f}" )
 	
 	def reset_embeddings_all( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Reset Embeddings mode input, output, and display state.
+		"""Reset embeddings all.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		for key in [
 				'embedding_input',
 				'embedding_text',
@@ -9718,21 +9095,18 @@ elif mode == 'Embeddings':
 				del st.session_state[ key ]
 	
 	def update_embedding_usage( response: Any ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Update Boo token counters from an Embeddings provider response when helpers exist.
+		"""Update embedding usage.
 		
-			Parameters:
-			-----------
-			response (Any): Provider response object.
+		Purpose:
+		    Performs the update_embedding_usage workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    response (Any): Response value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
@@ -10061,53 +9435,37 @@ elif mode == 'Files':
 	# Files Mode Helpers
 	# ------------------------------------------------------------------
 	def get_files_help( name: str, fallback: str = '' ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Return Files mode help text from config.py without failing when a constant is absent.
+		"""Get files help.
 		
-			Parameters:
-			-----------
-			name: str
-				Config attribute name.
-			
-			fallback: str
-				Fallback help text.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			str
-				Help text value.
-			
-		"""
+		Args:
+		    name (str): Name value used by the operation.
+		    fallback (str): Fallback value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
 	def get_files_options( instance: Any, attr_name: str,
 			fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Return list-like option values from a Files wrapper property.
+		"""Get files options.
 		
-			Parameters:
-			-----------
-			instance: Any
-				Provider Files wrapper instance.
-			
-			attr_name: str
-				Property or attribute name to inspect.
-			
-			fallback: Optional[List[Any]]
-				Fallback option values.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[Any]
-				Option values safe for Streamlit controls.
-			
-		"""
+		Args:
+		    instance (Any): Instance value used by the operation.
+		    attr_name (str): Attr name value used by the operation.
+		    fallback (Optional[List[Any]]): Fallback value used by the operation.
+		
+		Returns:
+		    List[Any]: Return value produced by the operation."""
 		values = getattr( instance, attr_name, None )
 		if callable( values ):
 			try:
@@ -10127,24 +9485,18 @@ elif mode == 'Files':
 		return fallback or [ ]
 	
 	def files_has_method( method_names: List[ str ] ) -> bool:
-		"""
-			
-			Purpose:
-			--------
-			Determine whether the active provider Files wrapper exposes at least one callable
-			method from the supplied method list.
+		"""Files has method.
 		
-			Parameters:
-			-----------
-			method_names: List[str]
-				Method names to inspect.
+		Purpose:
+		    Performs the files_has_method workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			bool
-				True if at least one callable method exists.
-			
-		"""
+		Args:
+		    method_names (List[str]): Method names value used by the operation.
+		
+		Returns:
+		    bool: Return value produced by the operation."""
 		for method_name in method_names:
 			method = getattr( files, method_name, None )
 			if callable( method ):
@@ -10153,28 +9505,20 @@ elif mode == 'Files':
 		return False
 	
 	def sanitize_files_selection( key: str, valid_options: List[ Any ], default: Any = '' ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Remove stale provider-specific Files selections before rendering widgets.
+		"""Sanitize files selection.
 		
-			Parameters:
-			-----------
-			key: str
-				Session-state key to sanitize.
-			
-			valid_options: List[Any]
-				Provider-valid option values.
-			
-			default: Any
-				Value assigned when the current value is invalid.
+		Purpose:
+		    Performs the sanitize_files_selection workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    key (str): Key value used by the operation.
+		    valid_options (List[Any]): Valid options value used by the operation.
+		    default (Any): Default value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		current_value = st.session_state.get( key, default )
 		
 		if current_value in [ None, '' ]:
@@ -10184,25 +9528,19 @@ elif mode == 'Files':
 			st.session_state[ key ] = default
 	
 	def sanitize_files_multiselect( key: str, valid_options: List[ Any ] ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Remove stale provider-specific Files multiselect values before rendering widgets.
+		"""Sanitize files multiselect.
 		
-			Parameters:
-			-----------
-			key: str
-				Session-state key to sanitize.
-			
-			valid_options: List[Any]
-				Provider-valid option values.
+		Purpose:
+		    Performs the sanitize_files_multiselect workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    key (str): Key value used by the operation.
+		    valid_options (List[Any]): Valid options value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		current_values = st.session_state.get( key, [ ] )
 		
 		if not isinstance( current_values, list ):
@@ -10213,31 +9551,22 @@ elif mode == 'Files':
 				value for value in current_values
 				if value in valid_options
 		]
+	
+	def call_files_method( method_names: List[ str ],
+			kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
+		"""Call files method.
 		
-	def call_files_method( method_names: List[ str ], kwargs: Optional[ Dict[ str, Any ] ]=None ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Call the first compatible provider Files wrapper method from an ordered method list.
-			The caller may provide provider-neutral aliases such as file_id, id, name, path,
-			file_path, and filepath. This dispatcher inspects the selected provider method
-			signature and passes only arguments accepted by that method.
+		Purpose:
+		    Performs the call_files_method workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Parameters:
-			-----------
-			method_names: List[str]
-				Ordered method names to try.
-			
-			kwargs: Optional[Dict[str, Any]]
-				Provider-neutral keyword arguments for the provider method.
+		Args:
+		    method_names (List[str]): Method names value used by the operation.
+		    kwargs (Optional[Dict[str, Any]]): Kwargs value used by the operation.
 		
-			Returns:
-			--------
-			Any
-				Provider method result.
-			
-		"""
+		Returns:
+		    Any: Return value produced by the operation."""
 		import inspect
 		
 		kwargs = kwargs or { }
@@ -10356,23 +9685,18 @@ elif mode == 'Files':
 		                      f'{", ".join( method_names )}.' )
 	
 	def normalize_file_id( result: Any ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Extract a provider file identifier from common response shapes.
+		"""Normalize file id.
 		
-			Parameters:
-			-----------
-			result: Any
-				Provider file response.
+		Purpose:
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
+		    displayed.
 		
-			Returns:
-			--------
-			str
-				File identifier or empty string.
-			
-		"""
+		Args:
+		    result (Any): Result value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		if result is None:
 			return ''
 		
@@ -10388,23 +9712,18 @@ elif mode == 'Files':
 		)
 	
 	def normalize_files_list( result: Any ) -> List[ Dict[ str, Any ] ]:
-		"""
-			
-			Purpose:
-			--------
-			Normalize provider file-list responses into table rows.
+		"""Normalize files list.
 		
-			Parameters:
-			-----------
-			result: Any
-				Provider file-list response.
+		Purpose:
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
+		    displayed.
 		
-			Returns:
-			--------
-			List[Dict[str, Any]]
-				Normalized file rows.
-			
-		"""
+		Args:
+		    result (Any): Result value used by the operation.
+		
+		Returns:
+		    List[Dict[str, Any]]: Return value produced by the operation."""
 		if result is None:
 			return [ ]
 		
@@ -10459,23 +9778,17 @@ elif mode == 'Files':
 		return rows
 	
 	def save_uploaded_file_for_api( uploaded_file: Any ) -> Optional[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Save a Streamlit upload to a temporary file path for provider APIs.
+		"""Save uploaded file for api.
 		
-			Parameters:
-			-----------
-			uploaded_file: Any
-				Streamlit uploaded file object.
+		Purpose:
+		    Persists or stages input data so it can be used by later provider or application workflows. The
+		    function standardizes file handling and returns a stable reference for downstream processing.
 		
-			Returns:
-			--------
-			Optional[str]
-				Temporary file path.
-			
-		"""
+		Args:
+		    uploaded_file (Any): Uploaded file value used by the operation.
+		
+		Returns:
+		    Optional[str]: Return value produced by the operation."""
 		if uploaded_file is None:
 			return None
 		
@@ -10496,23 +9809,18 @@ elif mode == 'Files':
 			return None
 	
 	def normalize_file_content( content: Any ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Normalize downloaded file content into displayable text when possible.
+		"""Normalize file content.
 		
-			Parameters:
-			-----------
-			content: Any
-				Downloaded provider file content.
+		Purpose:
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
+		    displayed.
 		
-			Returns:
-			--------
-			str
-				Displayable content text.
-			
-		"""
+		Args:
+		    content (Any): Content value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		if content is None:
 			return ''
 		
@@ -10531,23 +9839,18 @@ elif mode == 'Files':
 		return str( content )
 	
 	def get_effective_file_id( *keys: str ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Return the first non-empty file ID from ordered session-state keys.
+		"""Get effective file id.
 		
-			Parameters:
-			-----------
-			*keys: str
-				Session-state keys to inspect.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			str
-				Resolved file ID or empty string.
-			
-		"""
+		Args:
+		    *keys (str): Additional positional arguments retained for compatibility with caller workflows.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		for key in keys:
 			value = st.session_state.get( key, '' )
 			if isinstance( value, str ) and value.strip( ):
@@ -10556,48 +9859,33 @@ elif mode == 'Files':
 		return ''
 	
 	def refresh_files_table( ) -> List[ Dict[ str, Any ] ]:
-		"""
-			
-			Purpose:
-			--------
-			List provider files and persist normalized rows to session state.
+		"""Refresh files table.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Performs the refresh_files_table workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			List[Dict[str, Any]]
-				File table rows.
-			
-		"""
+		Returns:
+		    List[Dict[str, Any]]: Return value produced by the operation."""
 		result = call_files_method( [ 'list', 'list_files', 'files_list' ] )
 		rows = normalize_files_list( result )
 		st.session_state[ 'files_table' ] = rows
 		return rows
 	
 	def upload_provider_file( uploaded_file: Any, purpose: Optional[ str ] = None ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Upload a file through the selected provider Files wrapper.
+		"""Upload provider file.
 		
-			Parameters:
-			-----------
-			uploaded_file: Any
-				Streamlit uploaded file object.
-			
-			purpose: Optional[str]
-				Provider file purpose.
+		Purpose:
+		    Persists or stages input data so it can be used by later provider or application workflows. The
+		    function standardizes file handling and returns a stable reference for downstream processing.
 		
-			Returns:
-			--------
-			Any
-				Provider upload result.
-			
-		"""
+		Args:
+		    uploaded_file (Any): Uploaded file value used by the operation.
+		    purpose (Optional[str]): Purpose value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation."""
 		path = save_uploaded_file_for_api( uploaded_file )
 		if not path:
 			raise ValueError( 'Could not create a temporary file for upload.' )
@@ -10616,23 +9904,18 @@ elif mode == 'Files':
 		return call_files_method( [ 'upload_file', 'upload', 'files_upload', 'create' ], kwargs )
 	
 	def retrieve_provider_file( file_id: str ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Retrieve provider file metadata by identifier.
+		"""Retrieve provider file.
 		
-			Parameters:
-			-----------
-			file_id: str
-				Provider file identifier.
+		Purpose:
+		    Performs the retrieve_provider_file workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Any
-				Provider retrieve result.
-			
-		"""
+		Args:
+		    file_id (str): File id value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation."""
 		kwargs = {
 				'file_id': file_id,
 				'id': file_id,
@@ -10643,23 +9926,18 @@ elif mode == 'Files':
 			[ 'retrieve', 'retrieve_file', 'get', 'get_file', 'files_retrieve' ], kwargs )
 	
 	def extract_provider_file( file_id: str ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Download or extract provider file content by identifier.
+		"""Extract provider file.
 		
-			Parameters:
-			-----------
-			file_id: str
-				Provider file identifier.
+		Purpose:
+		    Extracts structured information from a provider response, uploaded file, or application data
+		    object. The function normalizes provider-specific shapes into values that can be rendered,
+		    stored, or passed to later processing steps.
 		
-			Returns:
-			--------
-			Any
-				Provider file content.
-			
-		"""
+		Args:
+		    file_id (str): File id value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation."""
 		kwargs = {
 				'file_id': file_id,
 				'id': file_id,
@@ -10672,23 +9950,17 @@ elif mode == 'Files':
 			[ 'extract', 'download', 'content', 'retrieve_content', 'files_content' ], kwargs )
 	
 	def delete_provider_file( file_id: str ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Delete provider file by identifier.
+		"""Delete provider file.
 		
-			Parameters:
-			-----------
-			file_id: str
-				Provider file identifier.
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			Any
-				Provider delete result.
-			
-		"""
+		Args:
+		    file_id (str): File id value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation."""
 		kwargs = {
 				'file_id': file_id,
 				'id': file_id,
@@ -10698,26 +9970,19 @@ elif mode == 'Files':
 		return call_files_method( [ 'delete', 'delete_file', 'files_delete', 'remove' ], kwargs )
 	
 	def ask_provider_file( file_id: str, prompt: str ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Ask a file-aware question through the selected provider Files wrapper.
+		"""Ask provider file.
 		
-			Parameters:
-			-----------
-			file_id: str
-				Provider file identifier.
-			
-			prompt: str
-				User question or instruction.
+		Purpose:
+		    Performs the ask_provider_file workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			str
-				Model answer text.
-			
-		"""
+		Args:
+		    file_id (str): File id value used by the operation.
+		    prompt (str): Prompt value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		kwargs = {
 				'file_id': file_id,
 				'id': file_id,
@@ -10754,21 +10019,14 @@ elif mode == 'Files':
 		return str( result or '' )
 	
 	def clear_files_outputs( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Clear Files mode output and transient selection state.
+		"""Clear files outputs.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		st.session_state[ 'files_metadata' ] = { }
 		st.session_state[ 'files_results' ] = None
 		st.session_state[ 'files_delete_result' ] = { }
@@ -10777,44 +10035,31 @@ elif mode == 'Files':
 		st.session_state[ 'files_last_answer' ] = ''
 	
 	def clear_files_messages( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Clear Files mode message history.
+		"""Clear files messages.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		st.session_state[ 'files_messages' ] = [ ]
 		st.session_state[ 'files_last_answer' ] = ''
 	
 	def append_files_message( role: str, content: str ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Append a Files mode message.
+		"""Append files message.
 		
-			Parameters:
-			-----------
-			role: str
-				Message role.
-			
-			content: str
-				Message content.
+		Purpose:
+		    Performs the append_files_message workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    role (str): Role value used by the operation.
+		    content (str): Content value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		if not isinstance( st.session_state.get( 'files_messages' ), list ):
 			st.session_state[ 'files_messages' ] = [ ]
 		
@@ -10826,21 +10071,15 @@ elif mode == 'Files':
 		)
 	
 	def render_files_messages( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Render Files mode message history.
+		"""Render files messages.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Renders the requested user interface element or result block in Streamlit using normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    steps so the screen output remains predictable.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		if not isinstance( st.session_state.get( 'files_messages' ), list ):
 			st.session_state[ 'files_messages' ] = [ ]
 		
@@ -10852,40 +10091,27 @@ elif mode == 'Files':
 				st.markdown( message.get( 'content', '' ) )
 	
 	def clear_files_instructions( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Clear Files mode system instructions and selected prompt template.
+		"""Clear files instructions.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		st.session_state[ 'files_system_instructions' ] = ''
 		st.session_state[ 'instructions' ] = ''
 	
 	def convert_files_system_instructions( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Convert Files mode system instructions between XML-like blocks and Markdown headings.
+		"""Convert files system instructions.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Performs the convert_files_system_instructions workflow using the inputs supplied by the caller
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		text_value = st.session_state.get( 'files_system_instructions', '' )
 		if not isinstance( text_value, str ) or not text_value.strip( ):
 			return
@@ -10899,21 +10125,15 @@ elif mode == 'Files':
 		st.session_state[ 'files_system_instructions' ] = converted
 	
 	def load_files_instruction_template( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Load the selected prompt template into Files mode system instructions.
+		"""Load files instruction template.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Performs the load_files_instruction_template workflow using the inputs supplied by the caller
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		name = st.session_state.get( 'instructions' )
 		if name and name != 'No Templates Found':
 			prompt_text = fetch_prompt_text( cfg.DB_PATH, name )
@@ -11063,7 +10283,6 @@ elif mode == 'Files':
 		
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
 				width='stretch' ):
-			
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			prompt_names = fetch_prompt_names( cfg.DB_PATH )
 			if not prompt_names:
@@ -11376,54 +10595,37 @@ elif mode == 'Vector Stores':
 	# Vector Stores Helpers
 	# ------------------------------------------------------------------
 	def get_storage_help( name: str, fallback: str = '' ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Return Vector Stores help text from config.py without failing when a constant is
-			absent.
+		"""Get storage help.
 		
-			Parameters:
-			-----------
-			name: str
-				Config attribute name.
-			
-			fallback: str
-				Fallback help text.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			str
-				Help text value.
-			
-		"""
+		Args:
+		    name (str): Name value used by the operation.
+		    fallback (str): Fallback value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
 	def get_storage_options( instance: Any, attr_name: str,
 			fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Return list-like option values from a Vector Stores wrapper property.
+		"""Get storage options.
 		
-			Parameters:
-			-----------
-			instance: Any
-				Provider Vector Stores wrapper instance.
-			
-			attr_name: str
-				Property or attribute name to inspect.
-			
-			fallback: Optional[List[Any]]
-				Fallback option values.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			List[Any]
-				Option values safe for Streamlit controls.
-			
-		"""
+		Args:
+		    instance (Any): Instance value used by the operation.
+		    attr_name (str): Attr name value used by the operation.
+		    fallback (Optional[List[Any]]): Fallback value used by the operation.
+		
+		Returns:
+		    List[Any]: Return value produced by the operation."""
 		values = getattr( instance, attr_name, None )
 		if callable( values ):
 			try:
@@ -11443,26 +10645,19 @@ elif mode == 'Vector Stores':
 		return fallback or [ ]
 	
 	def parse_storage_json( value: Any, label: str = 'JSON' ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Parse optional JSON text into a dictionary.
+		"""Parse storage json.
 		
-			Parameters:
-			-----------
-			value: Any
-				Raw JSON text.
-			
-			label: str
-				Label used in warning messages.
+		Purpose:
+		    Performs the parse_storage_json workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Dict[str, Any]
-				Parsed dictionary or an empty dictionary.
-			
-		"""
+		Args:
+		    value (Any): Value value used by the operation.
+		    label (str): Label value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		raw = str( value or '' ).strip( )
 		if not raw:
 			return { }
@@ -11481,51 +10676,37 @@ elif mode == 'Vector Stores':
 			return { }
 	
 	def parse_storage_ids( value: Any ) -> List[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Parse comma-delimited identifiers.
+		"""Parse storage ids.
 		
-			Parameters:
-			-----------
-			value: Any
-				Raw identifier text.
+		Purpose:
+		    Performs the parse_storage_ids workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			List[str]
-				Parsed identifiers.
-			
-		"""
+		Args:
+		    value (Any): Value value used by the operation.
+		
+		Returns:
+		    List[str]: Return value produced by the operation."""
 		raw = str( value or '' )
 		return [ item.strip( ) for item in raw.split( ',' ) if item.strip( ) ]
 	
 	def call_storage_method( instance: Any, method_names: List[ str ],
 			kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Call the first compatible provider Vector Stores method.
+		"""Call storage method.
 		
-			Parameters:
-			-----------
-			instance: Any
-				Provider Vector Stores wrapper instance.
-			
-			method_names: List[str]
-				Ordered method names to try.
-			
-			kwargs: Optional[Dict[str, Any]]
-				Candidate keyword arguments.
+		Purpose:
+		    Performs the call_storage_method workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Any
-				Provider method result.
-			
-		"""
+		Args:
+		    instance (Any): Instance value used by the operation.
+		    method_names (List[str]): Method names value used by the operation.
+		    kwargs (Optional[Dict[str, Any]]): Kwargs value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation."""
 		kwargs = kwargs or { }
 		
 		for method_name in method_names:
@@ -11575,23 +10756,18 @@ elif mode == 'Vector Stores':
 			f'{", ".join( method_names )}.' )
 	
 	def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
-		"""
-			
-			Purpose:
-			--------
-			Normalize a provider storage object into a dictionary for rendering.
+		"""Normalize storage object.
 		
-			Parameters:
-			-----------
-			value: Any
-				Provider result object.
+		Purpose:
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
+		    displayed.
 		
-			Returns:
-			--------
-			Dict[str, Any]
-				Normalized storage dictionary.
-			
-		"""
+		Args:
+		    value (Any): Value value used by the operation.
+		
+		Returns:
+		    Dict[str, Any]: Return value produced by the operation."""
 		if value is None:
 			return { }
 		
@@ -11668,23 +10844,18 @@ elif mode == 'Vector Stores':
 		return result
 	
 	def normalize_storage_rows( result: Any ) -> List[ Dict[ str, Any ] ]:
-		"""
-			
-			Purpose:
-			--------
-			Normalize provider list results into table rows.
+		"""Normalize storage rows.
 		
-			Parameters:
-			-----------
-			result: Any
-				Provider list result.
+		Purpose:
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
+		    displayed.
 		
-			Returns:
-			--------
-			List[Dict[str, Any]]
-				Normalized table rows.
-			
-		"""
+		Args:
+		    result (Any): Result value used by the operation.
+		
+		Returns:
+		    List[Dict[str, Any]]: Return value produced by the operation."""
 		if result is None:
 			return [ ]
 		
@@ -11725,23 +10896,18 @@ elif mode == 'Vector Stores':
 		return rows
 	
 	def normalize_search_results( result: Any ) -> List[ Dict[ str, Any ] ]:
-		"""
-			
-			Purpose:
-			--------
-			Normalize storage search results into dictionaries for display.
+		"""Normalize search results.
 		
-			Parameters:
-			-----------
-			result: Any
-				Provider search result.
+		Purpose:
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
+		    displayed.
 		
-			Returns:
-			--------
-			List[Dict[str, Any]]
-				Normalized search result rows.
-			
-		"""
+		Args:
+		    result (Any): Result value used by the operation.
+		
+		Returns:
+		    List[Dict[str, Any]]: Return value produced by the operation."""
 		if result is None:
 			return [ ]
 		
@@ -11771,23 +10937,17 @@ elif mode == 'Vector Stores':
 		return rows
 	
 	def save_uploaded_storage_file( uploaded_file: Any ) -> Optional[ str ]:
-		"""
-			
-			Purpose:
-			--------
-			Save an uploaded file to a temporary path for storage upload calls.
+		"""Save uploaded storage file.
 		
-			Parameters:
-			-----------
-			uploaded_file: Any
-				Streamlit uploaded file object.
+		Purpose:
+		    Persists or stages input data so it can be used by later provider or application workflows. The
+		    function standardizes file handling and returns a stable reference for downstream processing.
 		
-			Returns:
-			--------
-			Optional[str]
-				Temporary file path or None.
-			
-		"""
+		Args:
+		    uploaded_file (Any): Uploaded file value used by the operation.
+		
+		Returns:
+		    Optional[str]: Return value produced by the operation."""
 		if uploaded_file is None:
 			return None
 		
@@ -11806,29 +10966,20 @@ elif mode == 'Vector Stores':
 			return None
 	
 	def get_selected_store_id( table_key: str, manual_key: str, selected_key: str ) -> str:
-		"""
-			
-			Purpose:
-			--------
-			Return selected or manually entered storage identifier.
+		"""Get selected store id.
 		
-			Parameters:
-			-----------
-			table_key: str
-				Session key containing normalized table rows.
-			
-			manual_key: str
-				Session key containing manually entered identifier.
-			
-			selected_key: str
-				Session key containing selected identifier.
+		Purpose:
+		    Returns normalized information for the application component. The method provides a stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
 		
-			Returns:
-			--------
-			str
-				Selected storage identifier.
-			
-		"""
+		Args:
+		    table_key (str): Table key value used by the operation.
+		    manual_key (str): Manual key value used by the operation.
+		    selected_key (str): Selected key value used by the operation.
+		
+		Returns:
+		    str: Return value produced by the operation."""
 		selected = st.session_state.get( selected_key, '' )
 		manual = st.session_state.get( manual_key, '' )
 		
@@ -11847,25 +10998,19 @@ elif mode == 'Vector Stores':
 		return ''
 	
 	def render_storage_table( rows: List[ Dict[ str, Any ] ], key: str ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Render normalized storage rows.
+		"""Render storage table.
 		
-			Parameters:
-			-----------
-			rows: List[Dict[str, Any]]
-				Storage table rows.
-			
-			key: str
-				Streamlit dataframe key.
+		Purpose:
+		    Renders the requested user interface element or result block in Streamlit using normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    steps so the screen output remains predictable.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    rows (List[Dict[str, Any]]): Rows value used by the operation.
+		    key (str): Key value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		df_rows = pd.DataFrame( rows or [ ] )
 		if df_rows.empty:
 			st.info( 'No storage records loaded yet.' )
@@ -11874,22 +11019,18 @@ elif mode == 'Vector Stores':
 		st.data_editor( df_rows, use_container_width=True, hide_index=True, key=key )
 	
 	def render_storage_metadata( metadata: Dict[ str, Any ] ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Render selected storage metadata.
+		"""Render storage metadata.
 		
-			Parameters:
-			-----------
-			metadata: Dict[str, Any]
-				Storage metadata.
+		Purpose:
+		    Renders the requested user interface element or result block in Streamlit using normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    steps so the screen output remains predictable.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    metadata (Dict[str, Any]): Metadata value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		if not isinstance( metadata, dict ) or len( metadata ) == 0:
 			st.info( 'No metadata loaded yet.' )
 			return
@@ -11897,22 +11038,18 @@ elif mode == 'Vector Stores':
 		st.json( metadata )
 	
 	def render_storage_search_results( rows: List[ Dict[ str, Any ] ] ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Render normalized storage search results.
+		"""Render storage search results.
 		
-			Parameters:
-			-----------
-			rows: List[Dict[str, Any]]
-				Search result rows.
+		Purpose:
+		    Renders the requested user interface element or result block in Streamlit using normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    steps so the screen output remains predictable.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Args:
+		    rows (List[Dict[str, Any]]): Rows value used by the operation.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		if not isinstance( rows, list ) or len( rows ) == 0:
 			st.info( 'No search results loaded yet.' )
 			return
@@ -11922,21 +11059,14 @@ elif mode == 'Vector Stores':
 			key='stores_search_results_view' )
 	
 	def clear_vector_store_outputs( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Clear Vector Stores output state without clearing upstream configuration.
+		"""Clear vector store outputs.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		st.session_state[ 'stores_store_metadata' ] = { }
 		st.session_state[ 'stores_search_results' ] = [ ]
 		st.session_state[ 'stores_files_table' ] = [ ]
@@ -12441,24 +11571,23 @@ elif mode == 'File Search Stores':
 	
 	def call_file_search_method( method_names: List[ str ],
 			kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Call the first compatible Gemini FileSearch wrapper method using only keyword
-			arguments accepted by the target method.
+		"""Call file search method.
 		
-			Parameters:
-			-----------
-			method_names (List[str]): Ordered method names to try.
-			kwargs (Optional[Dict[str, Any]]): Candidate keyword arguments for the method.
+		Purpose:
+		    Performs the call_file_search_method workflow using the inputs supplied by the caller and the
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Any: Provider method result.
-			
-		"""
-	
+		Args:
+		    method_names (List[str]): Method names value used by the operation.
+		    kwargs (Optional[Dict[str, Any]]): Kwargs value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger."""
+		
 		try:
 			import inspect
 			
@@ -12474,15 +11603,16 @@ elif mode == 'File Search Stores':
 				parameters = signature.parameters
 				accepted_names = set( parameters.keys( ) )
 				accepts_kwargs = any( parameter.kind == inspect.Parameter.VAR_KEYWORD
-					for parameter in parameters.values( ) )
+				                      for parameter in parameters.values( ) )
 				
 				clean_kwargs = { key: value for key, value in candidate_kwargs.items( )
-						if value is not None and value != '' and value != [ ] }
+				                 if value is not None and value != '' and value != [ ] }
 				
 				if 'store_id' in accepted_names and not clean_kwargs.get( 'store_id' ):
 					if clean_kwargs.get( 'id' ):
 						clean_kwargs[ 'store_id' ] = clean_kwargs[ 'id' ]
-					elif clean_kwargs.get( 'name' ) and method_name not in [ 'create', 'create_store' ]:
+					elif clean_kwargs.get( 'name' ) and method_name not in [ 'create',
+					                                                         'create_store' ]:
 						clean_kwargs[ 'store_id' ] = clean_kwargs[ 'name' ]
 				
 				if 'path' in accepted_names and not clean_kwargs.get( 'path' ):
@@ -12492,7 +11622,8 @@ elif mode == 'File Search Stores':
 				if 'name' in accepted_names and not clean_kwargs.get( 'name' ):
 					if clean_kwargs.get( 'display_name' ):
 						clean_kwargs[ 'name' ] = clean_kwargs[ 'display_name' ]
-					elif clean_kwargs.get( 'store_id' ) and method_name in [ 'create', 'create_store' ]:
+					elif clean_kwargs.get( 'store_id' ) and method_name in [ 'create',
+					                                                         'create_store' ]:
 						clean_kwargs[ 'name' ] = clean_kwargs[ 'store_id' ]
 				
 				if accepts_kwargs:
@@ -12502,9 +11633,9 @@ elif mode == 'File Search Stores':
 				                  if key in accepted_names }
 				
 				required_names = [ name for name, parameter in parameters.items( )
-						if parameter.default == inspect.Parameter.empty
-						   and parameter.kind in [ inspect.Parameter.POSITIONAL_OR_KEYWORD,
-								   inspect.Parameter.KEYWORD_ONLY,  ] ]
+				                   if parameter.default == inspect.Parameter.empty
+				                   and parameter.kind in [ inspect.Parameter.POSITIONAL_OR_KEYWORD,
+				                                           inspect.Parameter.KEYWORD_ONLY, ] ]
 				
 				missing_names = [ name for name in required_names if name not in method_kwargs ]
 				if missing_names:
@@ -12513,30 +11644,24 @@ elif mode == 'File Search Stores':
 				return method( **method_kwargs )
 			
 			raise AttributeError( f'Gemini FileSearch does not expose any compatible method from: '
-				f'{", ".join( method_names )}.' )
+			                      f'{", ".join( method_names )}.' )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'app'
 			exception.cause = 'File Search Stores'
 			exception.method = 'call_file_search_method( method_names, kwargs )'
+			Logger( ).write( exception )
 			raise exception
 	
 	def clear_filestore_outputs( ) -> None:
-		"""
-			
-			Purpose:
-			--------
-			Clear File Search Stores output state.
+		"""Clear filestore outputs.
 		
-			Parameters:
-			-----------
-			None
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
-			Returns:
-			--------
-			None
-			
-		"""
+		Returns:
+		    None: This function performs its work through side effects and does not return a value."""
 		st.session_state[ 'filestore_results' ] = None
 		st.session_state[ 'filestore_metadata' ] = { }
 		st.session_state[ 'filestore_upload_result' ] = { }
@@ -12563,7 +11688,6 @@ elif mode == 'File Search Stores':
 		
 		stores_left, stores_right = st.columns( [ 0.50, 0.50 ], border=True )
 		with stores_left:
-			
 			with st.expander( label='Create', expanded=True ):
 				st.text_input( label='New File Search Store Name', key='filestore_name',
 					width='stretch' )
@@ -12704,23 +11828,22 @@ elif mode == 'Google Cloud Buckets':
 	
 	def call_bucket_method( method_names: List[ str ],
 			kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
-		"""
-			
-			Purpose:
-			--------
-			Call the first compatible Gemini CloudBuckets wrapper method using only keyword
-			arguments accepted by the target method.
+		"""Call bucket method.
 		
-			Parameters:
-			-----------
-			method_names (List[str]): Ordered method names to try.
-			kwargs (Optional[Dict[str, Any]]): Candidate keyword arguments for the method.
+		Purpose:
+		    Performs the call_bucket_method workflow using the inputs supplied by the caller and the current
+		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    data-processing paths can call it consistently.
 		
-			Returns:
-			--------
-			Any: Provider method result.
-			
-		"""
+		Args:
+		    method_names (List[str]): Method names value used by the operation.
+		    kwargs (Optional[Dict[str, Any]]): Kwargs value used by the operation.
+		
+		Returns:
+		    Any: Return value produced by the operation.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger."""
 		try:
 			import inspect
 			
@@ -12735,10 +11858,10 @@ elif mode == 'Google Cloud Buckets':
 				parameters = signature.parameters
 				accepted_names = set( parameters.keys( ) )
 				accepts_kwargs = any( parameter.kind == inspect.Parameter.VAR_KEYWORD
-					for parameter in parameters.values( ) )
+				                      for parameter in parameters.values( ) )
 				
 				clean_kwargs = { key: value for key, value in candidate_kwargs.items( )
-						if value is not None and value != '' and value != [ ] }
+				                 if value is not None and value != '' and value != [ ] }
 				
 				if 'bucket' in accepted_names and not clean_kwargs.get( 'bucket' ):
 					if clean_kwargs.get( 'bucket_name' ):
@@ -12749,7 +11872,8 @@ elif mode == 'Google Cloud Buckets':
 						clean_kwargs[ 'bucket' ] = clean_kwargs[ 'id' ]
 				
 				if 'name' in accepted_names and not clean_kwargs.get( 'name' ):
-					if method_name in [ 'create', 'create_bucket' ] and clean_kwargs.get( 'bucket' ):
+					if method_name in [ 'create', 'create_bucket' ] and clean_kwargs.get(
+							'bucket' ):
 						clean_kwargs[ 'name' ] = clean_kwargs[ 'bucket' ]
 					elif clean_kwargs.get( 'object_name' ):
 						clean_kwargs[ 'name' ] = clean_kwargs[ 'object_name' ]
@@ -12766,12 +11890,12 @@ elif mode == 'Google Cloud Buckets':
 					return method( **clean_kwargs )
 				
 				method_kwargs = { key: value for key, value in clean_kwargs.items( )
-						if key in accepted_names }
+				                  if key in accepted_names }
 				
 				required_names = [ name for name, parameter in parameters.items( )
-						if parameter.default == inspect.Parameter.empty
-						   and parameter.kind in [ inspect.Parameter.POSITIONAL_OR_KEYWORD,
-								   inspect.Parameter.KEYWORD_ONLY, ] ]
+				                   if parameter.default == inspect.Parameter.empty
+				                   and parameter.kind in [ inspect.Parameter.POSITIONAL_OR_KEYWORD,
+				                                           inspect.Parameter.KEYWORD_ONLY, ] ]
 				
 				missing_names = [
 						name
@@ -12793,24 +11917,18 @@ elif mode == 'Google Cloud Buckets':
 			exception.module = 'app'
 			exception.cause = 'Google Cloud Buckets'
 			exception.method = 'call_bucket_method( method_names, kwargs )'
+			Logger( ).write( exception )
 			raise exception
 		
 		def clear_bucket_outputs( ) -> None:
-			"""
-				
-				Purpose:
-				--------
-				Clear Google Cloud Buckets output state.
+			"""Clear bucket outputs.
 			
-				Parameters:
-				-----------
-				None
+			Purpose:
+			    Removes or resets the requested application state or provider resource in a controlled manner.
+			    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 			
-				Returns:
-				--------
-				None
-				
-			"""
+			Returns:
+			    None: This function performs its work through side effects and does not return a value."""
 			st.session_state[ 'bucket_results' ] = None
 			st.session_state[ 'bucket_metadata' ] = { }
 			st.session_state[ 'bucket_upload_result' ] = { }
@@ -12845,7 +11963,6 @@ elif mode == 'Google Cloud Buckets':
 			
 			buckets_left, buckets_right = st.columns( [ 0.50, 0.50 ], border=True )
 			with buckets_left:
-				
 				with st.expander( label='Create', expanded=True ):
 					st.text_input( label='New Cloud Bucket Name', key='bucket_name',
 						width='stretch' )
@@ -12862,7 +11979,8 @@ elif mode == 'Google Cloud Buckets':
 										{ 'name': name, 'bucket_name': name,
 										  'project_id': project_id, 'location': location }
 									)
-									st.session_state[ 'bucket_metadata' ] = normalize_storage_object(
+									st.session_state[
+										'bucket_metadata' ] = normalize_storage_object(
 										result )
 									st.success( f'Created Cloud Bucket: {name}' )
 							except Exception as exc:
@@ -12871,7 +11989,8 @@ elif mode == 'Google Cloud Buckets':
 				
 				with st.expander( label='Retrieve / Delete', expanded=True ):
 					collections = getattr( buckets, 'collections', None )
-					options = list( collections.items( ) ) if isinstance( collections, dict ) else [ ]
+					options = list( collections.items( ) ) if isinstance( collections,
+						dict ) else [ ]
 					option_labels = [ f'{name} — {bucket_id}' for name, bucket_id in options ]
 					
 					if option_labels:
@@ -12907,7 +12026,8 @@ elif mode == 'Google Cloud Buckets':
 									else:
 										result = call_bucket_method(
 											[ 'retrieve', 'retrieve_bucket', 'get' ],
-											{ 'store_id': selected_bucket_id, 'id': selected_bucket_id,
+											{ 'store_id': selected_bucket_id,
+											  'id': selected_bucket_id,
 											  'name': selected_bucket_id,
 											  'bucket_name': selected_bucket_id,
 											  'project_id': project_id, 'location': location }
@@ -12930,7 +12050,8 @@ elif mode == 'Google Cloud Buckets':
 									else:
 										result = call_bucket_method(
 											[ 'delete', 'delete_bucket', 'remove' ],
-											{ 'store_id': selected_bucket_id, 'id': selected_bucket_id,
+											{ 'store_id': selected_bucket_id,
+											  'id': selected_bucket_id,
 											  'name': selected_bucket_id,
 											  'bucket_name': selected_bucket_id,
 											  'project_id': project_id, 'location': location }
@@ -12986,7 +12107,7 @@ elif mode == 'Google Cloud Buckets':
 			st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 			st.subheader( 'Cloud Bucket Metadata' )
 			render_storage_metadata( st.session_state.get( 'bucket_metadata', { } ) )
-		
+
 # ======================================================================================
 # PROMPT ENGINEERING MODE
 # ======================================================================================
@@ -13056,14 +12177,14 @@ elif mode == "Prompt Engineering":
 		st.selectbox( 'Sort by', [ 'PromptsId', 'Name', 'Version' ], key='pe_sort_col', )
 	
 	with c3:
-		st.selectbox( 'Direction', [ 'ASC',  'DESC' ], key='pe_sort_dir', )
+		st.selectbox( 'Direction', [ 'ASC', 'DESC' ], key='pe_sort_dir', )
 	
 	with c4:
 		st.markdown(
 			"<div style='font-size:0.95rem;font-weight:600;margin-bottom:0.25rem;'>Go to ID</div>",
 			unsafe_allow_html=True,
 		)
-		a1, a2, a3 = st.columns( [ 2,  1, 1 ] )
+		a1, a2, a3 = st.columns( [ 2, 1, 1 ] )
 		with a1:
 			jump_id = st.number_input( "Go to ID", min_value=1, step=1,
 				label_visibility="collapsed", )
@@ -13111,12 +12232,12 @@ elif mode == "Prompt Engineering":
 	table_rows = [ ]
 	for r in rows:
 		table_rows.append( {
-					'Selected': r[ 0 ] == st.session_state.pe_selected_id,
-					'PromptsId': r[ 0 ],
-					'Name': r[ 1 ],
-					'Version': r[ 3 ],
-					'ID': r[ 4 ],
-			} )
+				'Selected': r[ 0 ] == st.session_state.pe_selected_id,
+				'PromptsId': r[ 0 ],
+				'Name': r[ 1 ],
+				'Version': r[ 3 ],
+				'ID': r[ 4 ],
+		} )
 	
 	edited = st.data_editor( table_rows, hide_index=True, use_container_width=True, )
 	
@@ -13756,7 +12877,7 @@ elif mode == 'Data Management':
 					
 					except Exception as e:
 						st.error( f'Execution failed: {e}' )
-						
+
 # ======================================================================================
 # FOOTER — SECTION
 # ======================================================================================
@@ -13800,19 +12921,19 @@ st.markdown(
 # FOOTER RENDERING
 # ======================================================================================
 _mode_to_model_key = \
-{
-	'Text': 'text_model',
-	'Images': 'image_model',
-	'Audio': 'audio_model',
-	'Embeddings': 'embed_model',
-	'Document Q&A': 'doc_model',
-	'Files': 'files_model',
-	'Vector Stores': 'stores_model',
-	'File Search Stores': 'filestore_model',
-	'Google Cloud Buckets': 'bucket_model',
-	'Prompt Engineering': 'prompt_model',
-	'Data Management': 'data_model',
-}
+	{
+			'Text': 'text_model',
+			'Images': 'image_model',
+			'Audio': 'audio_model',
+			'Embeddings': 'embed_model',
+			'Document Q&A': 'doc_model',
+			'Files': 'files_model',
+			'Vector Stores': 'stores_model',
+			'File Search Stores': 'filestore_model',
+			'Google Cloud Buckets': 'bucket_model',
+			'Prompt Engineering': 'prompt_model',
+			'Data Management': 'data_model',
+	}
 
 provider_val = st.session_state.get( 'provider', '—' )
 mode_val = mode or '—'
@@ -14108,3 +13229,4 @@ st.markdown(
     """,
 	unsafe_allow_html=True,
 )
+

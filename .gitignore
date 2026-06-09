@@ -183,3 +183,8 @@ stores/sqlite/Locations.db
 !/stores/sqlite/datamodels/Data.db
 /stores/sqlite/datamodels/Data.db
 /stores/sqlite/Locations.db
+
+site/
+.cache/
+__pycache__/
+*.pyc

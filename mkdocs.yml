@@ -1,0 +1,67 @@
+site_name: Boo Documentation
+site_description: Documentation for the Boo multi-provider AI assistant application.
+site_author: Terry D. Eppler
+repo_name: Boo
+repo_url: ""
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.tabs.link
+
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          paths:
+            - .
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_signature_annotations: true
+            separate_signature: true
+            members_order: source
+            inherited_members: false
+            merge_init_into_class: true
+            docstring_section_style: table
+            show_if_no_docstring: false
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Configuration: configuration.md
+  - User Guide: user-guide.md
+  - Architecture: architecture.md
+  - API Reference:
+      - GPT Provider: api/gpt.md
+      - Gemini Provider: api/gemini.md
+      - Grok Provider: api/grok.md
