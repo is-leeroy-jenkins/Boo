@@ -46,7 +46,7 @@ local analytical data operations.
 
 ## 📚 Documentation
 
-[Boo Docs](https://is-leeroy-jenkins.github.io/Boo/)
+[Open the Boo Documentation](https://is-leeroy-jenkins.github.io/Boo/)
 
 ## 🧠 Custom LLM
 
