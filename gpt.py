@@ -310,10 +310,7 @@ class Chat( GPT ):
 		self.purpose = None
 		self.request = { }
 		self.messages = [ ]
-		self.vector_stores = {
-				'Guidance': 'vs_712r5W5833G6aLxIYIbuvVcK',
-				'Appropriations': 'vs_8fEoYp1zVvk5D8atfWLbEupN',
-		}
+		self.vector_stores = cfg.GPT_VECTOR_STORES
 		self.files = {
 				'Account_Balances.csv': 'file-U6wFeRGSeg38Db5uJzo5sj',
 				'SF133.csv': 'file-WT2h2F5SNxqK2CxyAMSDg6',
