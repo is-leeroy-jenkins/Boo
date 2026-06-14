@@ -15,7 +15,7 @@
   <a href="#-design-and-architecture">Architecture</a> |
   <a href="#-capabilities">Capabilities</a> |
 </p>
-
+___
 Boo is a Python and Streamlit application for building, running, and managing provider-aware
 artificial intelligence workflows across OpenAI GPT, Google Gemini, and xAI Grok. It supports text
 generation, image generation and analysis, image editing, audio transcription, audio translation,
