@@ -3,7 +3,7 @@
 <img src="https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/boo_project.png" width="800" height="200"/>
 
 
-<p align="center">
+<p align="left">
   <a href="#-overview">Overview</a>  ·
   <a href="#-features">Features</a>  ·
   <a href="#-application-modes">Modes</a>  ·
