@@ -4,17 +4,19 @@
 
 
 <p align="center">
-  <a href="#-overview">Overview</a> |
-  <a href="#-features">Features</a> |
-  <a href="#-application-modes">Modes</a> |
-  <a href="#-requirements">Requirements</a> |
-  <a href="#-api-key-setup">Setup</a> |
-  <a href="#-installation">Installation</a> |
-  <a href="#-running-the-streamlit-application">Run</a> |
-  <a href="#-configuration">Configuration</a> |
-  <a href="#-design-and-architecture">Architecture</a> |
-  <a href="#-capabilities">Capabilities</a> |
+  <a href="#-overview">Overview</a>  ·
+  <a href="#-features">Features</a>  ·
+  <a href="#-application-modes">Modes</a>  ·
+  <a href="#-requirements">Requirements</a> ·
+  <a href="#-api-key-setup">Setup</a>  ·
+  <a href="#-installation">Installation</a>  ·
+  <a href="#-running-the-streamlit-application">Run</a>  ·
+  <a href="#-configuration">Configuration</a>  ·
+  <a href="#-design-and-architecture">Architecture</a>  ·
+  <a href="#-capabilities">Capabilities</a>  ·
 </p>
+
+___
 
 Boo is a Python and Streamlit application for building, running, and managing provider-aware
 artificial intelligence workflows across OpenAI GPT, Google Gemini, and xAI Grok. It supports text
@@ -27,7 +29,6 @@ Boo is designed for federal data analysis, budget execution support, document re
 retrieval, prompt management, multimodal artificial intelligence experimentation, and controlled
 local analytical data operations.
 
-___
 
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-0078FC?style=for-the-badge&logo=github)](https://is-leeroy-jenkins.github.io/Boo/)
 
