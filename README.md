@@ -38,9 +38,9 @@ local analytical data operations.
 ## 🕸️ Streamlit (Web)
 [![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit\&logoColor=white)](https://boo-py.streamlit.app/)
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Boo-streamlit.gif)
-- A Python framework to build dynamic, interactive web applications.
 
-## 📦 Azure (Container)
+
+## 📦 Azure
 [![Containerized](https://img.shields.io/badge/Docker-App-2496ED?logo=docker&logoColor=white)](https://boo.lemonpond-4e3d1906.eastus.azurecontainerapps.io)
 
 ## 🧱 Databricks
