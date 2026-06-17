@@ -33,8 +33,6 @@ local analytical data operations.
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-0078FC?style=for-the-badge&logo=github)](https://is-leeroy-jenkins.github.io/Boo/)
 
 ## 🎥 Demo
-
-[![Boo on Azure](https://img.shields.io/badge/Boo-Azure%20Container%20App-0078D4?logo=microsoftazure&logoColor=white)](https://boo.lemonpond-4e3d1906.eastus.azurecontainerapps.io)
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/boo-demo.gif)
 
 ## 🕸️ Streamlit (Web)
@@ -42,6 +40,9 @@ local analytical data operations.
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Boo-streamlit.gif)
 - A Python framework to build dynamic, interactive web applications.
 
+## 📦 Azure (Container)
+
+[![Boo on Azure](https://img.shields.io/badge/Boo-Azure%20Container%20App-0078D4?logo=microsoftazure&logoColor=white)](https://boo.lemonpond-4e3d1906.eastus.azurecontainerapps.io)
 
 ## 🧱 Databricks
 
