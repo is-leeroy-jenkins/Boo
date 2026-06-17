@@ -29,7 +29,7 @@ Boo is designed for federal data analysis, budget execution support, document re
 retrieval, prompt management, multimodal artificial intelligence experimentation, and controlled
 local analytical data operations.
 
-
+## 📖 Documentation 
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-0078FC?style=for-the-badge&logo=github)](https://is-leeroy-jenkins.github.io/Boo/)
 
 ## 🎥 Demo
@@ -40,7 +40,7 @@ local analytical data operations.
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Boo-streamlit.gif)
 
 
-## 📦 Azure
+## 🧊 Azure
 [![Containerized](https://img.shields.io/badge/Docker-App-2496ED?logo=docker&logoColor=white)](https://boo.lemonpond-4e3d1906.eastus.azurecontainerapps.io)
 
 ## 🧱 Databricks
