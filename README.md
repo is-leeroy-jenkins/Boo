@@ -35,7 +35,7 @@ local analytical data operations.
 ## 🎥 Demo
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/boo-demo.gif)
 
-## 🕸️ Streamlit (Web)
+## 🕸️ Streamlit
 [![Streamlit App](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit\&logoColor=white)](https://boo-py.streamlit.app/)
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/Boo-streamlit.gif)
 
@@ -50,7 +50,7 @@ local analytical data operations.
 * Databricks workspace repository for the Boo codebase.
 * Supports collaborative development, analytics, notebook execution, and application deployment.
 
-## 🧠 Custom LLM
+## 🧠 LLM
 
 [![HuggingFace](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm.svg)](https://huggingface.co/leeroy-jankins/boo)
 
