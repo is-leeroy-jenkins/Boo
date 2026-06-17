@@ -42,8 +42,7 @@ local analytical data operations.
 
 ## 📦 Azure (Container)
 
-[![Boo on Azure](https://img.shields.io/badge/Boo-Azure%20Container%20App-0078D4?logo=microsoftazure&logoColor=white)](https://boo.lemonpond-4e3d1906.eastus.azurecontainerapps.io)
-
+[![Containerized](https://img.shields.io/badge/Docker-App-2496ED?logo=docker&logoColor=white)](https://boo.lemonpond-4e3d1906.eastus.azurecontainerapps.io)
 ## 🧱 Databricks
 
 [![Boo](https://img.shields.io/badge/Databricks-Boo-FF3621?logo=databricks\&logoColor=white)](https://dbc-a0c21f80-7bb3.cloud.databricks.com/browse/folders/3169291152438882?o=7474645703081351)
