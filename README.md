@@ -34,6 +34,7 @@ local analytical data operations.
 
 ## 🎥 Demo
 
+[![Boo on Azure](https://img.shields.io/badge/Boo-Azure%20Container%20App-0078D4?logo=microsoftazure&logoColor=white)](https://boo.lemonpond-4e3d1906.eastus.azurecontainerapps.io)
 ![](https://github.com/is-leeroy-jenkins/Boo/blob/main/resources/images/boo-demo.gif)
 
 ## 🕸️ Streamlit (Web)
