@@ -186,7 +186,7 @@ def get_text( name: str, default: str ) -> str:
 	
 # ----------------- CONSTANTS -------------------
 
-BLUE_DIVIDER = "<div style='height:2px;align:left;background:#0078FC;margin:20px 30px 30px 0;'></div>"
+BLUE_DIVIDER = "<div style='height:2px;align:left;background:#0078FC;margin:0px 30px 30px 0;'></div>"
 APP_TITLE = 'Boo'
 APP_SUBTITLE = 'Multi-Modal AI'
 OPEN_TAG = re.compile( r'<([A-Za-z0-9_\-:.]+)>' )
@@ -228,6 +228,7 @@ LOG_DIR: Path = get_path( 'LOG_DIR', ROOT_DIR / 'logging' )
 LOG_PATH: str = get_text( 'LOG_PATH', str( LOG_DIR / 'Exceptions.db' ) )
 LOG_FILE: str = get_text( 'LOG_FILE', 'Exceptions' )
 FAVICON = r'resources/images/favicon.ico'
+
 
 # ----------------- GPT CONFIG -------------------
 

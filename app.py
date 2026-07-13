@@ -293,7 +293,27 @@ init_state( 'docqna_system_instructions', '' )
 init_state( 'docqna_systems_instructions', st.session_state[ 'docqna_system_instructions' ] )
 init_state( 'files_system_instructions', '' )
 init_state( 'stores_system_instructions', '' )
+init_state( 'filestore_system_instructions', '' )
 init_state( 'bucket_system_instructions', '' )
+
+# ---------- PROMPT TEMPLATE SELECTION STATE ----------------------------------
+
+init_state( 'text_prompt_category', '' )
+init_state( 'text_prompt_id', None )
+init_state( 'image_prompt_category', '' )
+init_state( 'image_prompt_id', None )
+init_state( 'audio_prompt_category', '' )
+init_state( 'audio_prompt_id', None )
+init_state( 'docqna_prompt_category', '' )
+init_state( 'docqna_prompt_id', None )
+init_state( 'files_prompt_category', '' )
+init_state( 'files_prompt_id', None )
+init_state( 'stores_prompt_category', '' )
+init_state( 'stores_prompt_id', None )
+init_state( 'filestore_prompt_category', '' )
+init_state( 'filestore_prompt_id', None )
+init_state( 'bucket_prompt_category', '' )
+init_state( 'bucket_prompt_id', None )
 
 # ---------- SHARED GENERATION PARAMETERS -------------------------------------
 
@@ -1326,7 +1346,6 @@ def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
 	usage_bytes = result.get( 'usage_bytes' )
 	usage_bytes = usage_bytes if usage_bytes is not None else result.get( 'size_bytes' )
 	usage_bytes = usage_bytes if usage_bytes is not None else result.get( 'bytes' )
-	
 	result[ 'id' ] = str( result.get( 'id' ) or collection_id or '' )
 	result[ 'name' ] = str( result.get( 'name' ) or collection_name or '' )
 	result[ 'display_name' ] = str( result.get( 'display_name' ) or collection_name or '' )
@@ -2089,76 +2108,96 @@ def initialize_database( ) -> None:
 	    None: This function performs its work through side effects and does not return a value."""
 	Path( 'stores/sqlite' ).mkdir( parents=True, exist_ok=True )
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
-		conn.execute(
-			"""
-            CREATE TABLE IF NOT EXISTS chat_history
-            (
-                id
-                INTEGER
-                PRIMARY
-                KEY
-                AUTOINCREMENT,
-                role
-                TEXT,
-                content
-                TEXT
-            )
-			"""
-		)
+		prompt_table_exists = conn.execute( """
+			SELECT 1
+			FROM sqlite_master
+			WHERE type = 'table'
+				AND name = 'Prompts';
+			""" ).fetchone( ) is not None
 		
-		conn.execute(
-			"""
-            CREATE TABLE IF NOT EXISTS embeddings
-            (
-                id
-                INTEGER
-                PRIMARY
-                KEY
-                AUTOINCREMENT,
-                chunk
-                TEXT,
-                vector
-                BLOB
-            )
-			"""
-		)
+		if not prompt_table_exists:
+			conn.execute( """
+				CREATE TABLE Prompts
+				(
+					PromptsId INTEGER NOT NULL PRIMARY KEY,
+					Caption TEXT NOT NULL,
+					Name TEXT NOT NULL,
+					Category TEXT NOT NULL,
+					Prompt TEXT NOT NULL
+				);
+				""" )
+		else:
+			prompt_columns = { str( row[ 1 ] )
+					for row in conn.execute( 'PRAGMA table_info("Prompts");' ).fetchall( ) }
+			
+			required_columns = {
+					'PromptsId',
+					'Caption',
+					'Name',
+					'Category',
+					'Prompt',
+			}
+			if prompt_columns != required_columns:
+				conn.execute( """
+					CREATE TABLE Prompts_New
+					(
+						PromptsId INTEGER NOT NULL PRIMARY KEY,
+						Caption TEXT NOT NULL,
+						Name TEXT NOT NULL,
+						Category TEXT NOT NULL,
+						Prompt TEXT NOT NULL
+					);
+					""" )
+				
+				source_text_column = ( 'Prompt'
+						if 'Prompt' in prompt_columns
+						else 'Text'
+						if 'Text' in prompt_columns
+						else None )
+				
+				if source_text_column is not None:
+					category_expression = (
+							'COALESCE(NULLIF(TRIM(Category), \'\'), \'Uncategorized\')'
+							if 'Category' in prompt_columns
+							else '\'Uncategorized\''
+					)
+					
+					conn.execute( f"""
+						INSERT INTO Prompts_New
+						(
+							PromptsId,
+							Caption,
+							Name,
+							Category,
+							Prompt
+						)
+						SELECT
+							PromptsId,
+							COALESCE(NULLIF(TRIM(Caption), ''), 'Prompt ' || PromptsId),
+							COALESCE(NULLIF(TRIM(Name), ''), 'Prompt' || PromptsId),
+							{category_expression},
+							COALESCE({source_text_column}, '')
+						FROM Prompts
+						WHERE PromptsId IS NOT NULL;
+						""" )
+				
+				conn.execute( 'DROP TABLE Prompts;' )
+				conn.execute( 'ALTER TABLE Prompts_New RENAME TO Prompts;' )
 		
-		conn.execute(
-			"""
-            CREATE TABLE IF NOT EXISTS Prompts
-            (
-                PromptsId
-                INTEGER
-                NOT
-                NULL
-                PRIMARY
-                KEY
-                AUTOINCREMENT,
-                Caption
-                TEXT,
-                Name
-                TEXT
-            (
-                80
-            ),
-                Text TEXT,
-                Version TEXT
-            (
-                80
-            ),
-                ID TEXT
-            (
-                80
-            )
-                )
-			"""
-		)
+		conn.execute( """
+			CREATE INDEX IF NOT EXISTS IX_Prompts_Category
+				ON Prompts ( Category );
+			""" )
 		
-		prompt_columns = [ row[ 1 ] for row in
-		                   conn.execute( 'PRAGMA table_info("Prompts");' ).fetchall( ) ]
+		conn.execute( """
+			CREATE INDEX IF NOT EXISTS IX_Prompts_Caption
+				ON Prompts ( Caption );
+			""" )
 		
-		if 'Caption' not in prompt_columns:
-			conn.execute( 'ALTER TABLE "Prompts" ADD COLUMN "Caption" TEXT;' )
+		conn.execute( """
+			CREATE INDEX IF NOT EXISTS IX_Prompts_Name
+				ON Prompts ( Name );
+			""" )
 		
 		conn.commit( )
 
@@ -3075,95 +3114,481 @@ def rename_table( old_name: str, new_name: str ) -> None:
 
 # ------------ PROMPT ENGINEERING UTILITIES
 
-def fetch_prompt_names( db_path: str ) -> list[ str ]:
-	"""Fetch prompt names.
-	
-	Purpose:
-	    Performs the fetch_prompt_names workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-	    data-processing paths can call it consistently.
-	
-	Args:
-	    db_path (str): Db path value used by the operation.
-	
-	Returns:
-	    List[str]: Return value produced by the operation."""
-	try:
-		conn = sqlite3.connect( db_path )
-		cur = conn.cursor( )
-		cur.execute( "SELECT Caption FROM Prompts ORDER BY PromptsId;" )
-		rows = cur.fetchall( )
-		conn.close( )
-		return [ r[ 0 ] for r in rows if r and r[ 0 ] is not None ]
-	except Exception:
-		return [ ]
+PROMPT_CATEGORY_MODE_MAP: Dict[ str, List[ str ] ] = {
+		'Text': [
+				'Writing / Administrative',
+				'Research / Academic',
+				'Data Analytics & Governance',
+				'Software Engineering',
+				'Business / Finance / Marketing',
+				'Compliance / Legal / Budget',
+				'Prompt Engineering',
+				'Instruction/ Training / Planning',
+		],
+		'Images': [
+				'Image Generation',
+				'Image Analysis',
+				'Image Editing',
+		],
+		'Audio': [
+				'Transcription API',
+				'Translation API',
+				'Speech API',
+		],
+		'Document Q&A': [
+				'Research / Academic',
+				'Data Analytics & Governance',
+				'Business / Finance / Marketing',
+				'Compliance / Legal / Budget',
+				'Instruction/ Training / Planning',
+				'Writing / Administrative',
+		],
+		'Files': [
+				'Writing / Administrative',
+				'Research / Academic',
+				'Data Analytics & Governance',
+				'Software Engineering',
+				'Business / Finance / Marketing',
+				'Compliance / Legal / Budget',
+				'Instruction/ Training / Planning',
+		],
+		'Vector Stores': [
+				'Research / Academic',
+				'Data Analytics & Governance',
+				'Software Engineering',
+				'Compliance / Legal / Budget',
+				'Instruction/ Training / Planning',
+		],
+		'File Search Stores': [
+				'Research / Academic',
+				'Data Analytics & Governance',
+				'Software Engineering',
+				'Compliance / Legal / Budget',
+				'Instruction/ Training / Planning',
+		],
+		'Cloud Buckets': [
+				'Data Analytics & Governance',
+				'Software Engineering',
+				'Research / Academic',
+				'Compliance / Legal / Budget',
+		],
+}
 
-def fetch_prompt_text( db_path: str, name: str ) -> str | None:
-	"""Fetch prompt text.
+def fetch_prompt_categories( mode_name: str ) -> List[ str ]:
+	"""Fetch prompt categories.
 	
 	Purpose:
-	    Performs the fetch_prompt_text workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-	    data-processing paths can call it consistently.
+	    Returns populated prompt categories authorized for the selected application mode. Categories
+	    retain their configured display order and categories without corresponding database records are
+	    excluded.
 	
 	Args:
-	    db_path (str): Db path value used by the operation.
-	    name (str): Name value used by the operation.
+	    mode_name (str): Application mode used to determine the permitted prompt categories.
 	
 	Returns:
-	    Optional[str]: Return value produced by the operation."""
+	    List[str]: Ordered prompt categories available to the selected mode.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger.
+	"""
 	try:
-		conn = sqlite3.connect( db_path )
-		cur = conn.cursor( )
-		cur.execute( "SELECT Text FROM Prompts WHERE Caption = ?;", (name,) )
-		row = cur.fetchone( )
-		conn.close( )
-		return str( row[ 0 ] ) if row and row[ 0 ] is not None else None
-	except Exception:
-		return None
+		throw_if( 'mode_name', mode_name )
+		permitted_categories = PROMPT_CATEGORY_MODE_MAP.get( mode_name, [ ] )
+		
+		if not permitted_categories:
+			return [ ]
+		
+		placeholders = ', '.join( [ '?' ] * len( permitted_categories ) )
+		
+		with sqlite3.connect( cfg.DB_PATH ) as conn:
+			rows = conn.execute(
+				f"""
+				SELECT DISTINCT Category
+				FROM Prompts
+				WHERE Category IN ({placeholders})
+					AND TRIM(Category) <> '';
+				""",
+				tuple( permitted_categories ),
+			).fetchall( )
+		
+		available_categories = {
+				str( row[ 0 ] ).strip( )
+				for row in rows
+				if row and row[ 0 ] is not None and str( row[ 0 ] ).strip( )
+		}
+		
+		return [
+				category
+				for category in permitted_categories
+				if category in available_categories
+		]
+	except Exception as e:
+		ex = Error( e )
+		ex.module = 'app'
+		ex.cause = 'Prompt Templates'
+		ex.method = 'fetch_prompt_categories( mode_name: str ) -> List[ str ]'
+		Logger( ).write( ex )
+		raise ex
+
+def fetch_prompt_options( category: str ) -> List[ Dict[ str, Any ] ]:
+	"""Fetch prompt options.
+	
+	Purpose:
+	    Returns prompt-template identifiers and display metadata for the selected category. The result
+	    provides stable numeric identifiers for widget state while preserving captions for presentation.
+	
+	Args:
+	    category (str): Prompt category used to filter the available templates.
+	
+	Returns:
+	    List[Dict[str, Any]]: Prompt identifiers and display metadata ordered by caption and identifier.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger.
+	"""
+	try:
+		if not category or not str( category ).strip( ):
+			return [ ]
+		
+		with sqlite3.connect( cfg.DB_PATH ) as conn:
+			rows = conn.execute(
+				"""
+				SELECT
+					PromptsId,
+					Caption,
+					Name,
+					Category
+				FROM Prompts
+				WHERE Category = ?
+				ORDER BY Caption, PromptsId;
+				""",
+				(str( category ).strip( ),),
+			).fetchall( )
+		
+		return [
+				{
+						'PromptsId': int( row[ 0 ] ),
+						'Caption': str( row[ 1 ] or '' ),
+						'Name': str( row[ 2 ] or '' ),
+						'Category': str( row[ 3 ] or '' ),
+				}
+				for row in rows
+		]
+	except Exception as e:
+		ex = Error( e )
+		ex.module = 'app'
+		ex.cause = 'Prompt Templates'
+		ex.method = 'fetch_prompt_options( category: str ) -> List[ Dict[ str, Any ] ]'
+		Logger( ).write( ex )
+		raise ex
+
+def fetch_prompt_by_id( prompt_id: int ) -> Optional[ Dict[ str, Any ] ]:
+	"""Fetch prompt by identifier.
+	
+	Purpose:
+	    Returns the complete prompt-template record associated with a stable numeric identifier. The
+	    identifier-based lookup prevents ambiguous template selection when captions or names are
+	    duplicated.
+	
+	Args:
+	    prompt_id (int): Numeric primary key of the prompt-template record.
+	
+	Returns:
+	    Optional[Dict[str, Any]]: Complete prompt-template record when found; otherwise None.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger.
+	"""
+	try:
+		if prompt_id is None:
+			return None
+		
+		with sqlite3.connect( cfg.DB_PATH ) as conn:
+			cur = conn.execute(
+				"""
+				SELECT
+					PromptsId,
+					Caption,
+					Name,
+					Category,
+					Prompt
+				FROM Prompts
+				WHERE PromptsId = ?;
+				""",
+				(int( prompt_id ),),
+			)
+			
+			row = cur.fetchone( )
+			
+			if row is None:
+				return None
+			
+			return {
+					'PromptsId': int( row[ 0 ] ),
+					'Caption': str( row[ 1 ] or '' ),
+					'Name': str( row[ 2 ] or '' ),
+					'Category': str( row[ 3 ] or '' ),
+					'Prompt': str( row[ 4 ] or '' ),
+			}
+	except Exception as e:
+		ex = Error( e )
+		ex.module = 'app'
+		ex.cause = 'Prompt Templates'
+		ex.method = 'fetch_prompt_by_id( prompt_id: int ) -> Optional[ Dict[ str, Any ] ]'
+		Logger( ).write( ex )
+		raise ex
+
+def reset_prompt_template_selection( prompt_id_key: str ) -> None:
+	"""Reset prompt template selection.
+	
+	Purpose:
+	    Clears a mode-specific prompt-template selection when its category changes without modifying the
+	    current system-instruction text.
+	
+	Args:
+	    prompt_id_key (str): Session-state key storing the selected prompt identifier.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger.
+	"""
+	try:
+		throw_if( 'prompt_id_key', prompt_id_key )
+		st.session_state[ prompt_id_key ] = None
+	except Exception as e:
+		ex = Error( e )
+		ex.module = 'app'
+		ex.cause = 'Prompt Templates'
+		ex.method = 'reset_prompt_template_selection( prompt_id_key: str ) -> None'
+		Logger( ).write( ex )
+		raise ex
+
+def load_prompt_template( prompt_id_key: str, instructions_key: str, ) -> None:
+	"""Load prompt template.
+	
+	Purpose:
+	    Loads the selected prompt body into a mode-specific system-instruction field while preserving
+	    independent template state across application modes.
+	
+	Args:
+	    prompt_id_key (str): Session-state key storing the selected prompt identifier.
+	    instructions_key (str): Session-state key receiving the selected prompt body.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger.
+	"""
+	try:
+		throw_if( 'prompt_id_key', prompt_id_key )
+		throw_if( 'instructions_key', instructions_key )
+		
+		prompt_id = st.session_state.get( prompt_id_key )
+		
+		if prompt_id is None:
+			return
+		
+		record = fetch_prompt_by_id( int( prompt_id ) )
+		
+		if record is None:
+			return
+		
+		st.session_state[ instructions_key ] = record[ 'Prompt' ]
+	except Exception as e:
+		ex = Error( e )
+		ex.module = 'app'
+		ex.cause = 'Prompt Templates'
+		ex.method = (
+				'load_prompt_template( prompt_id_key: str, '
+				'instructions_key: str ) -> None'
+		)
+		Logger( ).write( ex )
+		raise ex
+
+def format_prompt_option( prompt_id: int, prompt_options: List[ Dict[ str, Any ] ], ) -> str:
+	"""Format prompt option.
+	
+	Purpose:
+	    Resolves a prompt identifier to its human-readable caption for presentation in a Streamlit
+	    selection control.
+	
+	Args:
+	    prompt_id (int): Numeric prompt identifier rendered by the selection control.
+	    prompt_options (List[Dict[str, Any]]): Available prompt records used to resolve the caption.
+	
+	Returns:
+	    str: Prompt caption when found; otherwise the numeric identifier as text.
+	"""
+	for option in prompt_options:
+		if int( option.get( 'PromptsId', -1 ) ) == int( prompt_id ):
+			return str( option.get( 'Caption', prompt_id ) )
+	
+	return str( prompt_id )
 
 def fetch_prompts_df( ) -> pd.DataFrame:
-	with sqlite3.connect( cfg.DB_PATH ) as conn:
-		df = pd.read_sql_query(
-			"SELECT PromptsId, Caption,  Name, Version, ID FROM Prompts ORDER BY PromptsId DESC",
-			conn )
-	df.insert( 0, "Selected", False )
-	return df
-
-def fetch_prompt_by_id( pid: int ) -> Dict[ str, Any ] | None:
-	with sqlite3.connect( cfg.DB_PATH ) as conn:
-		cur = conn.execute(
-			"SELECT PromptsId, Caption, Name, Text, Version, ID FROM Prompts WHERE PromptsId=?",
-			(pid,)
-		)
-		row = cur.fetchone( )
-		return dict( zip( [ c[ 0 ] for c in cur.description ], row ) ) if row else None
-
-def fetch_prompt_by_name( name: str ) -> Dict[ str, Any ] | None:
-	with sqlite3.connect( cfg.DB_PATH ) as conn:
-		cur = conn.execute(
-			"SELECT PromptsId, Caption, Name, Text, Version, ID FROM Prompts WHERE Caption=?",
-			(name,)
-		)
-		row = cur.fetchone( )
-		return dict( zip( [ c[ 0 ] for c in cur.description ], row ) ) if row else None
+	"""Fetch prompts dataframe.
+	
+	Purpose:
+	    Returns prompt-template metadata for management and review without rendering large prompt bodies
+	    directly in the primary data grid.
+	
+	Returns:
+	    pd.DataFrame: Prompt-template metadata with a selection column.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger.
+	"""
+	try:
+		with sqlite3.connect( cfg.DB_PATH ) as conn:
+			df_prompts = pd.read_sql_query(
+				"""
+				SELECT
+					PromptsId,
+					Caption,
+					Name,
+					Category
+				FROM Prompts
+				ORDER BY PromptsId DESC;
+				""",
+				conn,
+			)
+		
+		df_prompts.insert( 0, 'Selected', False )
+		return df_prompts
+	except Exception as e:
+		ex = Error( e )
+		ex.module = 'app'
+		ex.cause = 'Prompt Templates'
+		ex.method = 'fetch_prompts_df( ) -> pd.DataFrame'
+		Logger( ).write( ex )
+		raise ex
 
 def insert_prompt( data: Dict[ str, Any ] ) -> None:
-	with sqlite3.connect( cfg.DB_PATH ) as conn:
-		conn.execute( 'INSERT INTO Prompts (Caption, Name, Text, Version, ID) VALUES (?, ?, ?, ?)',
-			(data[ 'Caption' ], data[ 'Name' ], data[ 'Text' ], data[ 'Version' ], data[ 'ID' ]) )
+	"""Insert prompt.
+	
+	Purpose:
+	    Creates a prompt-template record using the canonical category-aware prompt schema.
+	
+	Args:
+	    data (Dict[str, Any]): Prompt-template values containing Caption, Name, Category, and Prompt.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger.
+	"""
+	try:
+		throw_if( 'data', data )
+		with sqlite3.connect( cfg.DB_PATH ) as conn:
+			conn.execute(
+				"""
+				INSERT INTO Prompts
+				(
+					Caption,
+					Name,
+					Category,
+					Prompt
+				)
+				VALUES
+				(
+					?,
+					?,
+					?,
+					?
+				);
+				""",
+				(
+						str( data[ 'Caption' ] ).strip( ),
+						str( data[ 'Name' ] ).strip( ),
+						str( data[ 'Category' ] ).strip( ),
+						str( data[ 'Prompt' ] ),
+				),)
+			conn.commit( )
+	except Exception as e:
+		ex = Error( e )
+		ex.module = 'app'
+		ex.cause = 'Prompt Templates'
+		ex.method = 'insert_prompt( data: Dict[ str, Any ] ) -> None'
+		Logger( ).write( ex )
+		raise ex
 
-def update_prompt( pid: int, data: Dict[ str, Any ] ) -> None:
-	with sqlite3.connect( cfg.DB_PATH ) as conn:
-		conn.execute(
-			"UPDATE Prompts SET Caption=?, Name=?, Text=?, Version=?, ID=? WHERE PromptsId=?",
-			(data[ "Caption" ], data[ "Name" ], data[ "Text" ], data[ "Version" ], data[ "ID" ],
-			 pid)
+def update_prompt( prompt_id: int, data: Dict[ str, Any ] ) -> None:
+	"""Update prompt.
+	
+	Purpose:
+	    Updates an existing prompt-template record using the canonical category-aware prompt schema.
+	
+	Args:
+	    prompt_id (int): Numeric primary key of the prompt-template record.
+	    data (Dict[str, Any]): Replacement Caption, Name, Category, and Prompt values.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger.
+	"""
+	try:
+		throw_if( 'data', data )
+		with sqlite3.connect( cfg.DB_PATH ) as conn:
+			conn.execute( """
+				UPDATE Prompts
+				SET
+					Caption = ?,
+					Name = ?,
+					Category = ?,
+					Prompt = ?
+				WHERE PromptsId = ?;
+				""", ( str( data[ 'Caption' ] ).strip( ),
+						str( data[ 'Name' ] ).strip( ),
+						str( data[ 'Category' ] ).strip( ),
+						str( data[ 'Prompt' ] ),
+						int( prompt_id ), ), )
+			conn.commit( )
+	except Exception as e:
+		ex = Error( e )
+		ex.module = 'app'
+		ex.cause = 'Prompt Templates'
+		ex.method = (
+				'update_prompt( prompt_id: int, '
+				'data: Dict[ str, Any ] ) -> None'
 		)
+		Logger( ).write( ex )
+		raise ex
 
-def delete_prompt( pid: int ) -> None:
-	with sqlite3.connect( cfg.DB_PATH ) as conn:
-		conn.execute( "DELETE FROM Prompts WHERE PromptsId=?", (pid,) )
+def delete_prompt( prompt_id: int ) -> None:
+	"""Delete prompt.
+	
+	Purpose:
+	    Removes the prompt-template record associated with the supplied numeric identifier.
+	
+	Args:
+	    prompt_id (int): Numeric primary key of the prompt-template record.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value.
+	
+	Raises:
+	    Exception: Re-raises exceptions after recording them with the application logger.
+	"""
+	try:
+		with sqlite3.connect( cfg.DB_PATH ) as conn:
+			conn.execute(
+				'DELETE FROM Prompts WHERE PromptsId = ?;',
+				(int( prompt_id ),),
+			)
+			conn.commit( )
+	except Exception as e:
+		ex = Error( e )
+		ex.module = 'app'
+		ex.cause = 'Prompt Templates'
+		ex.method = 'delete_prompt( prompt_id: int ) -> None'
+		Logger( ).write( ex )
+		raise ex
 
 def build_prompt( user_input: str ) -> str:
 	"""Build prompt.
@@ -3512,8 +3937,7 @@ def get_cloud_buckets_module( provider: Optional[ str ] = None ) -> Any:
 	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'CloudBuckets', provider )
 
-def get_mode_classes( mode: Optional[ str ] = None, provider: Optional[ str ] = None ) -> List[
-	str ]:
+def get_mode_classes( mode: Optional[ str ] = None, provider: Optional[ str ] = None ) -> List[ str ]:
 	"""Get mode classes.
 	
 	Purpose:
@@ -3883,7 +4307,6 @@ init_state( )
 with st.sidebar:
 	provider_options = get_provider_options( )
 	current_provider = st.session_state.get( 'provider', 'GPT' )
-	
 	if current_provider not in provider_options:
 		current_provider = provider_options[ 0 ] if provider_options else 'GPT'
 		st.session_state[ 'provider' ] = current_provider
@@ -4159,27 +4582,23 @@ if mode == 'Text':
 			st.session_state[ key ] = [ ]
 			return
 		
-		st.session_state[ key ] = [
-				value for value in current_values
-				if value in valid_options
-		]
+		st.session_state[ key ] = [ value for value in current_values
+				if value in valid_options ]
 	
 	def reset_text_model_settings( ) -> None:
 		"""Reset text model settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		for key in [
-				'text_model',
-				'text_reasoning',
-				'text_modalities',
-				'text_media_resolution',
-				'text_number',
-		]:
+		    None: This function performs its work through side effects and does not return a
+		    value."""
+		for key in [ 'text_model', 'text_reasoning', 'text_modalities', 'text_media_resolution',
+			'text_number', ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
@@ -4187,19 +4606,17 @@ if mode == 'Text':
 		"""Reset text inference settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		for key in [
-				'text_temperature',
-				'text_top_percent',
-				'text_top_k',
-				'text_frequency_penalty',
-				'text_presence_penalty',
-				'text_presense_penalty',
-		]:
+		    None: This function performs its work through side effects and does not return a
+		    value."""
+		for key in [ 'text_temperature', 'text_top_percent', 'text_top_k',
+			'text_frequency_penalty',
+			'text_presence_penalty', 'text_presense_penalty', ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
@@ -4207,33 +4624,20 @@ if mode == 'Text':
 		"""Reset text tool settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		for key in [
-				'text_google_grounding',
-				'text_max_calls',
-				'text_tool_choice',
-				'text_include',
-				'text_tools',
-				'text_domains_input',
-				'text_domains',
-				'text_parallel_tools',
-				'text_parallel_calls',
-				'text_vector_store_ids',
-				'text_grok_collection_labels',
-				'text_grok_collection_ids',
-				'text_grok_collection_ids_input',
-				'text_urls_input',
-				'text_urls',
-				'text_max_urls',
-				'selected_filestore_id',
-				'selected_filestore_label',
-				'text_file_search_store_names',
-				'text_file_search_store_select',
-		]:
+		    None: This function performs its work through side effects and does not return a
+		    value."""
+		for key in [ 'text_google_grounding', 'text_max_calls', 'text_tool_choice', 'text_include',
+			'text_tools', 'text_domains_input', 'text_domains', 'text_parallel_tools',
+			'text_parallel_calls', 'text_vector_store_ids', 'text_grok_collection_labels',
+			'text_grok_collection_ids', 'text_grok_collection_ids_input', 'text_urls_input',
+			'text_urls', 'text_max_urls', 'selected_filestore_id', 'selected_filestore_label',
+			'text_file_search_store_names', 'text_file_search_store_select', ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
@@ -4241,28 +4645,19 @@ if mode == 'Text':
 		"""Reset text response settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		for key in [
-				'text_stream',
-				'text_store',
-				'text_max_tokens',
-				'text_background',
-				'text_response_format',
-				'text_response_schema',
-				'text_json_schema',
-				'text_json_schema_name',
-				'text_json_schema_strict',
-				'text_stops',
-				'text_stops_input',
-				'text_previous_response_id',
-				'text_conversation_id',
-				'text_input',
-				'text_safety_profile',
-		]:
+		    None: This function performs its work through side effects and does not return a
+		    value."""
+		for key in [ 'text_stream', 'text_store', 'text_max_tokens', 'text_background',
+			'text_response_format', 'text_response_schema', 'text_json_schema',
+			'text_json_schema_name', 'text_json_schema_strict', 'text_stops', 'text_stops_input',
+			'text_previous_response_id', 'text_conversation_id', 'text_input',
+			'text_safety_profile', ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
@@ -4491,8 +4886,8 @@ if mode == 'Text':
 				'conversation_id': st.session_state.get( 'text_conversation_id' ) or None,
 		}
 	
-	def build_gemini_text_kwargs( prompt: str, stream_handler: Optional[ Any ] = None ) -> Dict[
-		str, Any ]:
+	def build_gemini_text_kwargs( prompt: str,
+		stream_handler: Optional[ Any ] = None ) -> Dict[ str, Any ]:
 		"""Build gemini text kwargs.
 		
 		Purpose:
@@ -4675,6 +5070,7 @@ if mode == 'Text':
 		# Expander — Text Mind Controls
 		# ------------------------------------------------------------------
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
+			
 			with st.expander( label='Model Settings', icon='🧊', expanded=False, width='stretch' ):
 				model_c1, model_c2, model_c3, model_c4, model_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
@@ -5022,7 +5418,6 @@ if mode == 'Text':
 								'text_stream', False ) else None )
 						
 						response_obj = getattr( text, 'response', None ) or response
-						
 						if provider_name in [ 'GPT', 'Grok' ]:
 							st.session_state[ 'text_previous_response_id' ] = (
 									getattr( text, 'previous_id', None ) or
@@ -5051,7 +5446,6 @@ if mode == 'Text':
 						st.session_state[ 'text_context' ] = build_text_context(
 							include_last_message=True )
 						st.session_state[ 'last_answer' ] = response_text
-						
 						sources = extract_text_sources( text, response_obj )
 						st.session_state[ 'last_sources' ] = sources
 						
@@ -7603,18 +7997,71 @@ elif mode == 'Audio':
 		with tab_process:
 			render_audio_messages( )
 			
-			uploaded_audio = st.file_uploader( label='Upload Audio',
-				type=[ 'wav', 'mp3', 'mpeg', 'mp4', 'm4a', 'webm', 'ogg', 'flac' ],
-				accept_multiple_files=False, key='audio_uploaded_file' )
+			# ------------------------------------------------------------------
+			# Audio Input Controls
+			# ------------------------------------------------------------------
+			audio_input_c1, audio_input_c2 = st.columns(
+				[ 0.50, 0.50 ], gap='small' )
 			
-			recorded_audio = None
-			if hasattr( st, 'audio_input' ):
-				recorded_audio = st.audio_input( label='Record Audio', key='audio_recorded_file' )
+			# ---------- Upload Audio ------------
+			with audio_input_c1:
+				uploaded_audio = st.file_uploader( label='Upload Audio',
+					type=[
+							'wav',
+							'mp3',
+							'mpeg',
+							'mp4',
+							'm4a',
+							'webm',
+							'ogg',
+							'flac',
+					],
+					accept_multiple_files=False,
+					key='audio_uploaded_file' )
 			
+			# ---------- Record Audio ------------
+			with audio_input_c2:
+				recorded_audio = None
+				
+				if hasattr( st, 'audio_input' ):
+					recorded_audio = st.audio_input( label='Record Audio',
+						key='audio_recorded_file' )
+			
+			# ------------------------------------------------------------------
+			# Audio Prompt Controls
+			# ------------------------------------------------------------------
+			audio_prompt_c1, audio_prompt_c2 = st.columns(
+				[ 0.50, 0.50 ], gap='small' )
+			
+			# ---------- Transcription Prompt ------------
+			with audio_prompt_c1:
+				transcription_prompt = st.text_area(
+					label='Transcription Prompt',
+					key='transcription_prompt',
+					height=80,
+					width='stretch',
+					placeholder=(
+							'Optional transcription prompt or vocabulary/context hints.'
+					) )
+			
+			# ---------- Translation Prompt ------------
+			with audio_prompt_c2:
+				translation_prompt = st.text_area(
+					label='Translation Prompt',
+					key='translation_prompt',
+					height=80,
+					width='stretch',
+					placeholder='Optional translation prompt or instructions.' )
+			
+			# ------------------------------------------------------------------
+			# Audio Source Resolution
+			# ------------------------------------------------------------------
 			audio_path = None
+			
 			if uploaded_audio is not None:
 				audio_path = save_audio_upload( uploaded_audio )
 				st.session_state[ 'audio_upload_path' ] = audio_path or ''
+				
 				try:
 					st.audio( uploaded_audio )
 				except Exception:
@@ -7623,18 +8070,11 @@ elif mode == 'Audio':
 			elif recorded_audio is not None:
 				audio_path = save_audio_upload( recorded_audio )
 				st.session_state[ 'audio_recorded_path' ] = audio_path or ''
+				
 				try:
 					st.audio( recorded_audio )
 				except Exception:
 					pass
-			
-			transcription_prompt = st.text_area( label='Transcription Prompt',
-				key='transcription_prompt', height=80, width='stretch',
-				placeholder='Optional transcription prompt or vocabulary/context hints.' )
-			
-			translation_prompt = st.text_area( label='Translation Prompt',
-				key='translation_prompt', height=80, width='stretch',
-				placeholder='Optional translation prompt or instructions.' )
 			
 			process_c1, process_c2 = st.columns( [ 0.50, 0.50 ] )
 			
