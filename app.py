@@ -81,7 +81,8 @@ def throw_if( name: str, value: object ) -> None:
 	
 	Purpose:
 	    Validates that a required argument contains a usable value before the surrounding workflow
-	    continues. This guard centralizes early validation so provider wrappers and UI routines fail
+	    continues. This guard centralizes early validation so provider wrappers and UI routines
+	    fail
 	    with consistent, readable error messages.
 	
 	Args:
@@ -100,7 +101,8 @@ def init_state( key: str, value: Any ) -> None:
 	"""Init state.
 	
 	Purpose:
-	    Performs the init_state workflow using the inputs supplied by the caller and the current runtime
+	    Performs the init_state workflow using the inputs supplied by the caller and the current
+	    runtime
 	    configuration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
@@ -117,8 +119,10 @@ def get_runtime_config_value( session_key: str, config_name: str, env_name: str 
 	"""Get runtime config value.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -144,7 +148,7 @@ def get_runtime_config_value( session_key: str, config_name: str, env_name: str 
 	return ''
 
 def sync_provider_config( session_key: str, config_name: str, env_name: str, value: Any,
-		provider: Optional[ str ] = None ) -> None:
+	provider: Optional[ str ] = None ) -> None:
 	"""Sync provider config.
 	
 	Purpose:
@@ -179,12 +183,14 @@ def sync_provider_config( session_key: str, config_name: str, env_name: str, val
 		st.session_state[ 'api_keys' ][ provider ] = text if text else None
 
 def init_env_state( key: str, config_name: str, env_name: str,
-		provider: Optional[ str ] = None ) -> None:
+	provider: Optional[ str ] = None ) -> None:
 	"""Init env state.
 	
 	Purpose:
-	    Performs the init_env_state workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    Performs the init_env_state workflow using the inputs supplied by the caller and the
+	    current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -203,8 +209,10 @@ def copy_state_alias( source_key: str, target_key: str, default: Any ) -> None:
 	"""Copy state alias.
 	
 	Purpose:
-	    Performs the copy_state_alias workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    Performs the copy_state_alias workflow using the inputs supplied by the caller and the
+	    current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -252,17 +260,9 @@ init_state( 'is_grounded', False )
 init_state( 'selected_prompt_id', '' )
 init_state( 'pending_system_prompt_name', '' )
 
-init_state( 'last_call_usage', {
-		'prompt_tokens': 0,
-		'completion_tokens': 0,
-		'total_tokens': 0,
-} )
+init_state( 'last_call_usage', { 'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, } )
 
-init_state( 'token_usage', {
-		'prompt_tokens': 0,
-		'completion_tokens': 0,
-		'total_tokens': 0,
-} )
+init_state( 'token_usage', { 'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, } )
 
 # ---------- SHARED MODEL PARAMETERS ------------------------------------------
 
@@ -644,7 +644,8 @@ def extract_response_text( response: object ) -> str:
 	"""Extract response text.
 	
 	Purpose:
-	    Extracts structured information from a provider response, uploaded file, or application data
+	    Extracts structured information from a provider response, uploaded file, or application
+	    data
 	    object. The function normalizes provider-specific shapes into values that can be rendered,
 	    stored, or passed to later processing steps.
 	
@@ -699,8 +700,10 @@ def normalize_text( text: str ) -> str:
 	"""Normalize text.
 	
 	Purpose:
-	    Normalizes incoming values into a predictable representation for application processing. The
-	    function reduces provider, user-input, or serialization differences before values are stored or
+	    Normalizes incoming values into a predictable representation for application processing.
+	    The
+	    function reduces provider, user-input, or serialization differences before values are
+	    stored or
 	    displayed.
 	
 	Args:
@@ -729,7 +732,8 @@ def chunk_text( text: str, max_tokens: int = 400 ) -> list[ str ]:
 	"""Chunk text.
 	
 	Purpose:
-	    Performs the chunk_text workflow using the inputs supplied by the caller and the current runtime
+	    Performs the chunk_text workflow using the inputs supplied by the caller and the current
+	    runtime
 	    configuration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
@@ -777,8 +781,10 @@ def sanitize_markdown( text: str ) -> str:
 	"""Sanitize markdown.
 	
 	Purpose:
-	    Performs the sanitize_markdown workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    Performs the sanitize_markdown workflow using the inputs supplied by the caller and the
+	    current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -802,8 +808,7 @@ def inject_response_css( ) -> None:
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value."""
-	st.markdown(
-		"""
+	st.markdown( """
 		<style>
 		/* Chat message text */
 		.stChatMessage p {
@@ -844,14 +849,15 @@ def style_subheaders( ) -> None:
 	"""Style subheaders.
 	
 	Purpose:
-	    Performs the style_subheaders workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    Performs the style_subheaders workflow using the inputs supplied by the caller and the
+	    current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value."""
-	st.markdown(
-		"""
+	st.markdown( """
 		<style>
 		div[data-testid="stMarkdownContainer"] h2,
 		div[data-testid="stMarkdownContainer"] h3,
@@ -860,15 +866,14 @@ def style_subheaders( ) -> None:
 			color: rgb(0, 120, 252) !important;
 		}
 		</style>
-		""",
-		unsafe_allow_html=True,
-	)
+		""", unsafe_allow_html=True, )
 
 def init_state( ) -> None:
 	"""Init state.
 	
 	Purpose:
-	    Performs the init_state workflow using the inputs supplied by the caller and the current runtime
+	    Performs the init_state workflow using the inputs supplied by the caller and the current
+	    runtime
 	    configuration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
@@ -883,29 +888,25 @@ def init_state( ) -> None:
 	if 'execution_mode' not in st.session_state:
 		st.session_state.execution_mode = 'Standard'
 	
-	for k in ('audio_system_instructions',
-	          'image_system_instructions',
-	          'docqna_system_instructions',
-	          'text_system_instructions'):
+	for k in ('audio_system_instructions', 'image_system_instructions',
+		'docqna_system_instructions', 'text_system_instructions'):
 		st.session_state.setdefault( k, "" )
 
 def reset_state( ) -> None:
 	"""Reset state.
 	
 	Purpose:
-	    Removes or resets the requested application state or provider resource in a controlled manner.
-	    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+	    Removes or resets the requested application state or provider resource in a controlled
+	    manner.
+	    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+	    logic.
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value."""
 	st.session_state.chat_history = [ ]
 	st.session_state.last_answer = ""
 	st.session_state.last_sources = [ ]
-	st.session_state.last_analysis = {
-			'tables': [ ],
-			'files': [ ],
-			'text': [ ],
-	}
+	st.session_state.last_analysis = { 'tables': [ ], 'files': [ ], 'text': [ ], }
 
 def normalize( obj ):
 	if obj is None or isinstance( obj, (str, int, float, bool) ):
@@ -927,7 +928,8 @@ def extract_answer( response: Any ) -> str:
 	"""Extract answer.
 	
 	Purpose:
-	    Extracts structured information from a provider response, uploaded file, or application data
+	    Extracts structured information from a provider response, uploaded file, or application
+	    data
 	    object. The function normalizes provider-specific shapes into values that can be rendered,
 	    stored, or passed to later processing steps.
 	
@@ -983,7 +985,8 @@ def extract_sources( response: Any ) -> List[ Dict[ str, Any ] ]:
 	"""Extract sources.
 	
 	Purpose:
-	    Extracts structured information from a provider response, uploaded file, or application data
+	    Extracts structured information from a provider response, uploaded file, or application
+	    data
 	    object. The function normalizes provider-specific shapes into values that can be rendered,
 	    stored, or passed to later processing steps.
 	
@@ -1023,7 +1026,7 @@ def extract_sources( response: Any ) -> List[ Dict[ str, Any ] ]:
 					continue
 				
 				sources.append( { 'title': s.get( 'title' ), 'snippet': s.get( 'snippet' ),
-				                  'url': s.get( 'url' ), 'files_id': None, } )
+					'url': s.get( 'url' ), 'files_id': None, } )
 		
 		# ------------------------------------------------
 		# File search (vector store)
@@ -1039,9 +1042,10 @@ def extract_sources( response: Any ) -> List[ Dict[ str, Any ] ]:
 				if not isinstance( s, dict ):
 					continue
 				
-				sources.append( { 'title': s.get( 'file_name' ) or s.get( 'title' ),
-				                  'snippet': s.get( 'text' ), 'url': None,
-				                  'files_id': s.get( 'files_id' ), } )
+				sources.append(
+					{ 'title': s.get( 'file_name' ) or s.get( 'title' ), 'snippet': s.get(
+						'text' ),
+						'url': None, 'files_id': s.get( 'files_id' ), } )
 	
 	return sources
 
@@ -1049,7 +1053,8 @@ def extract_analysis( response: Any ) -> Dict[ str, Any ]:
 	"""Extract analysis.
 	
 	Purpose:
-	    Extracts structured information from a provider response, uploaded file, or application data
+	    Extracts structured information from a provider response, uploaded file, or application
+	    data
 	    object. The function normalizes provider-specific shapes into values that can be rendered,
 	    stored, or passed to later processing steps.
 	
@@ -1058,10 +1063,7 @@ def extract_analysis( response: Any ) -> Dict[ str, Any ]:
 	
 	Returns:
 	    Dict[str, Any]: Return value produced by the operation."""
-	artifacts: Dict[ str, Any ] = {
-			'tables': [ ],
-			'files': [ ],
-			'text': [ ] }
+	artifacts: Dict[ str, Any ] = { 'tables': [ ], 'files': [ ], 'text': [ ] }
 	
 	if response is None:
 		return artifacts
@@ -1106,8 +1108,10 @@ def save_temp( upload ) -> str | None:
 	"""Save temp.
 	
 	Purpose:
-	    Persists or stages input data so it can be used by later provider or application workflows. The
-	    function standardizes file handling and returns a stable reference for downstream processing.
+	    Persists or stages input data so it can be used by later provider or application
+	    workflows. The
+	    function standardizes file handling and returns a stable reference for downstream
+	    processing.
 	
 	Args:
 	    upload (object): Upload value used by the operation.
@@ -1132,7 +1136,8 @@ def _extract_usage_from_response( resp: Any ) -> Dict[ str, int ]:
 	"""Extract usage from response.
 	
 	Purpose:
-	    Performs the _extract_usage_from_response workflow using the inputs supplied by the caller and
+	    Performs the _extract_usage_from_response workflow using the inputs supplied by the caller
+	    and
 	    the current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
@@ -1161,21 +1166,15 @@ def _extract_usage_from_response( resp: Any ) -> Dict[ str, int ]:
 		if isinstance( raw, dict ):
 			usage[ "prompt_tokens" ] = int( raw.get( "prompt_tokens", 0 ) )
 			usage[ "completion_tokens" ] = int(
-				raw.get( "completion_tokens", raw.get( "output_tokens", 0 ) )
-			)
-			usage[ "total_tokens" ] = int(
-				raw.get(
-					"total_tokens",
-					usage[ "prompt_tokens" ] + usage[ "completion_tokens" ],
-				)
-			)
+				raw.get( "completion_tokens", raw.get( "output_tokens", 0 ) ) )
+			usage[ "total_tokens" ] = int( raw.get( "total_tokens",
+				usage[ "prompt_tokens" ] + usage[ "completion_tokens" ], ) )
 		else:
 			usage[ "prompt_tokens" ] = int( getattr( raw, "prompt_tokens", 0 ) )
 			usage[ "completion_tokens" ] = int(
 				getattr( raw, "completion_tokens", getattr( raw, "output_tokens", 0 ) ) )
-			usage[ "total_tokens" ] = int(
-				getattr( raw, "total_tokens",
-					usage[ "prompt_tokens" ] + usage[ "completion_tokens" ], ) )
+			usage[ "total_tokens" ] = int( getattr( raw, "total_tokens",
+				usage[ "prompt_tokens" ] + usage[ "completion_tokens" ], ) )
 	except Exception:
 		usage[ "total_tokens" ] = (usage[ "prompt_tokens" ] + usage[ "completion_tokens" ])
 	
@@ -1204,8 +1203,10 @@ def _display_value( val: Any ) -> str:
 	"""Display value.
 	
 	Purpose:
-	    Performs the _display_value workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    Performs the _display_value workflow using the inputs supplied by the caller and the
+	    current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -1222,17 +1223,13 @@ def _display_value( val: Any ) -> str:
 
 def build_intent_prefix( mode: str ) -> str:
 	if mode == 'Guidance Only':
-		return (
-				'[ANALYST INTENT]\n'
-				'Respond using authoritative policy and guidance only. '
-				'Do not perform financial computation.\n\n'
-		)
+		return ('[ANALYST INTENT]\n'
+		        'Respond using authoritative policy and guidance only. '
+		        'Do not perform financial computation.\n\n')
 	if mode == 'Analysis Only':
-		return (
-				'[ANALYST INTENT]\n'
-				'Respond using financial analysis and computation only. '
-				'Minimize policy citation.\n\n'
-		)
+		return ('[ANALYST INTENT]\n'
+		        'Respond using financial analysis and computation only. '
+		        'Minimize policy citation.\n\n')
 	return ''
 
 def save_message( role: str, content: str ) -> None:
@@ -1259,7 +1256,8 @@ def count_tokens( text: str ) -> int:
 	
 	Purpose:
 	    Performs the count_tokens workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -1277,8 +1275,10 @@ def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
 	"""Normalize storage object.
 	
 	Purpose:
-	    Normalizes incoming values into a predictable representation for application processing. The
-	    function reduces provider, user-input, or serialization differences before values are stored or
+	    Normalizes incoming values into a predictable representation for application processing.
+	    The
+	    function reduces provider, user-input, or serialization differences before values are
+	    stored or
 	    displayed.
 	
 	Args:
@@ -1305,30 +1305,10 @@ def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
 			result = { 'result': str( value ) }
 	else:
 		result = { }
-		for attr_name in [
-				'id',
-				'name',
-				'display_name',
-				'description',
-				'status',
-				'state',
-				'file_counts',
-				'usage_bytes',
-				'created_at',
-				'expires_at',
-				'metadata',
-				'deleted',
-				'collection_id',
-				'collection_name',
-				'collection_description',
-				'documents_count',
-				'document_count',
-				'file_id',
-				'filename',
-				'mime_type',
-				'size_bytes',
-				'bytes',
-		]:
+		for attr_name in [ 'id', 'name', 'display_name', 'description', 'status', 'state',
+			'file_counts', 'usage_bytes', 'created_at', 'expires_at', 'metadata', 'deleted',
+			'collection_id', 'collection_name', 'collection_description', 'documents_count',
+			'document_count', 'file_id', 'filename', 'mime_type', 'size_bytes', 'bytes', ]:
 			if hasattr( value, attr_name ):
 				result[ attr_name ] = getattr( value, attr_name )
 		
@@ -1370,7 +1350,8 @@ def render_storage_metadata( metadata: Dict[ str, Any ] ) -> None:
 	
 	Purpose:
 	    Renders the requested user interface element or result block in Streamlit using normalized
-	    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+	    inputs. The function keeps presentation logic isolated from provider calls and
+	    data-processing
 	    steps so the screen output remains predictable.
 	
 	Args:
@@ -1388,8 +1369,10 @@ def save_uploaded_storage_file( uploaded_file: Any ) -> Optional[ str ]:
 	"""Save uploaded storage file.
 	
 	Purpose:
-	    Persists or stages input data so it can be used by later provider or application workflows. The
-	    function standardizes file handling and returns a stable reference for downstream processing.
+	    Persists or stages input data so it can be used by later provider or application
+	    workflows. The
+	    function standardizes file handling and returns a stable reference for downstream
+	    processing.
 	
 	Args:
 	    uploaded_file (Any): Uploaded file value used by the operation.
@@ -1418,8 +1401,10 @@ def normalize_text( text: str ) -> str:
 	"""Normalize text.
 	
 	Purpose:
-	    Normalizes incoming values into a predictable representation for application processing. The
-	    function reduces provider, user-input, or serialization differences before values are stored or
+	    Normalizes incoming values into a predictable representation for application processing.
+	    The
+	    function reduces provider, user-input, or serialization differences before values are
+	    stored or
 	    displayed.
 	
 	Args:
@@ -1456,7 +1441,8 @@ def convert_xml( text: str ) -> str:
 	
 	Purpose:
 	    Performs the convert_xml workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -1480,8 +1466,10 @@ def convert_markdown( text: Any ) -> str:
 	"""Convert markdown.
 	
 	Purpose:
-	    Performs the convert_markdown workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    Performs the convert_markdown workflow using the inputs supplied by the caller and the
+	    current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -1543,8 +1531,7 @@ def inject_response_css( ) -> None:
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value."""
-	st.markdown(
-		"""
+	st.markdown( """
 		<style>
 		/* Chat message text */
 		.stChatMessage p {
@@ -1585,14 +1572,15 @@ def style_subheaders( ) -> None:
 	"""Style subheaders.
 	
 	Purpose:
-	    Performs the style_subheaders workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    Performs the style_subheaders workflow using the inputs supplied by the caller and the
+	    current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value."""
-	st.markdown(
-		"""
+	st.markdown( """
 		<style>
 		div[data-testid="stMarkdownContainer"] h2,
 		div[data-testid="stMarkdownContainer"] h3,
@@ -1601,8 +1589,7 @@ def style_subheaders( ) -> None:
 			color: rgb(0, 120, 252) !important;
 		}
 		</style>
-		""",
-		unsafe_allow_html=True, )
+		""", unsafe_allow_html=True, )
 
 def save_message( role: str, content: str ) -> None:
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
@@ -1622,7 +1609,8 @@ def extract_text_from_bytes( file_bytes: bytes ) -> str:
 	"""Extract text from bytes.
 	
 	Purpose:
-	    Extracts structured information from a provider response, uploaded file, or application data
+	    Extracts structured information from a provider response, uploaded file, or application
+	    data
 	    object. The function normalizes provider-specific shapes into values that can be rendered,
 	    stored, or passed to later processing steps.
 	
@@ -1686,8 +1674,7 @@ def route_document_query( prompt: str ) -> str:
 			frequency=float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) ),
 			presence=float( st.session_state.get( 'docqna_presence_penalty', 0.0 ) ),
 			max_tokens=int( st.session_state.get( 'docqna_max_tokens', 4096 ) ) or 4096,
-			store=bool( st.session_state.get( 'docqna_store', False ) ),
-			stream=False,
+			store=bool( st.session_state.get( 'docqna_store', False ) ), stream=False,
 			instruct=st.session_state.get( 'docqna_system_instructions', '' ),
 			tools=st.session_state.get( 'docqna_tools', [ ] ),
 			include=st.session_state.get( 'docqna_include', [ ] ),
@@ -1718,7 +1705,8 @@ def summarize_active_document( ) -> str:
 	"""Summarize active document.
 	
 	Purpose:
-	    Performs the summarize_active_document workflow using the inputs supplied by the caller and the
+	    Performs the summarize_active_document workflow using the inputs supplied by the caller
+	    and the
 	    current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
@@ -1745,7 +1733,8 @@ def _docqna_compute_fingerprint( active_docs: List[ str ], doc_bytes: Dict[ str,
 	"""Docqna compute fingerprint.
 	
 	Purpose:
-	    Performs the _docqna_compute_fingerprint workflow using the inputs supplied by the caller and
+	    Performs the _docqna_compute_fingerprint workflow using the inputs supplied by the caller
+	    and
 	    the current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
@@ -1792,7 +1781,8 @@ def _docqna_safe_load_sqlite_vec( conn: sqlite3.Connection ) -> bool:
 	"""Docqna safe load sqlite vec.
 	
 	Purpose:
-	    Performs the _docqna_safe_load_sqlite_vec workflow using the inputs supplied by the caller and
+	    Performs the _docqna_safe_load_sqlite_vec workflow using the inputs supplied by the caller
+	    and
 	    the current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
@@ -1813,7 +1803,8 @@ def _docqna_ensure_vec_schema( dim: int ) -> bool:
 	"""Docqna ensure vec schema.
 	
 	Purpose:
-	    Performs the _docqna_ensure_vec_schema workflow using the inputs supplied by the caller and the
+	    Performs the _docqna_ensure_vec_schema workflow using the inputs supplied by the caller
+	    and the
 	    current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
@@ -1829,16 +1820,14 @@ def _docqna_ensure_vec_schema( dim: int ) -> bool:
 			return False
 		
 		cur = conn.cursor( )
-		cur.execute(
-			f'''
+		cur.execute( f'''
 			CREATE VIRTUAL TABLE IF NOT EXISTS docqna_vec
 			USING vec0(
 				embedding float[{int( dim )}],
 				doc_name TEXT,
 				chunk TEXT
 			);
-			'''
-		)
+			''' )
 		conn.commit( )
 		return True
 	except Exception:
@@ -1850,8 +1839,10 @@ def _docqna_rebuild_index_if_needed( embedder: SentenceTransformer ) -> None:
 	"""Docqna rebuild index if needed.
 	
 	Purpose:
-	    Performs the _docqna_rebuild_index_if_needed workflow using the inputs supplied by the caller
-	    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+	    Performs the _docqna_rebuild_index_if_needed workflow using the inputs supplied by the
+	    caller
+	    and the current runtime configuration. The function keeps this behavior isolated so
+	    related UI,
 	    provider, and data-processing paths can call it consistently.
 	
 	Args:
@@ -1934,9 +1925,8 @@ def _docqna_rebuild_index_if_needed( embedder: SentenceTransformer ) -> None:
 				if vec_ready:
 					for chunk_value, vector in zip( chunks, vecs ):
 						cur.execute(
-							'INSERT INTO docqna_vec ( embedding, doc_name, chunk ) VALUES ( ?, ?, ? );',
-							(vector.tobytes( ), name, chunk_value)
-						)
+							'INSERT INTO docqna_vec ( embedding, doc_name, chunk ) VALUES ( ?, ?, '
+							'? );', (vector.tobytes( ), name, chunk_value) )
 				else:
 					for chunk_value, vector in zip( chunks, vecs ):
 						fallback_rows.append( (name, chunk_value, vector.tobytes( )) )
@@ -1970,7 +1960,8 @@ def load_embedder( ) -> SentenceTransformer:
 	
 	Purpose:
 	    Performs the load_embedder workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Returns:
@@ -1997,7 +1988,8 @@ def retrieve_top_doc_chunks( query: str, k: int = 6 ) -> List[ Tuple[ str, str, 
 	"""Retrieve top doc chunks.
 	
 	Purpose:
-	    Performs the retrieve_top_doc_chunks workflow using the inputs supplied by the caller and the
+	    Performs the retrieve_top_doc_chunks workflow using the inputs supplied by the caller and
+	    the
 	    current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
@@ -2021,15 +2013,12 @@ def retrieve_top_doc_chunks( query: str, k: int = 6 ) -> List[ Tuple[ str, str, 
 		try:
 			_docqna_safe_load_sqlite_vec( conn )
 			cur = conn.cursor( )
-			cur.execute(
-				'''
-                SELECT doc_name, chunk, distance
-                FROM docqna_vec
-                WHERE embedding MATCH ?
-                ORDER BY distance ASC LIMIT ?;
-				''',
-				(qv.tobytes( ), int( k ))
-			)
+			cur.execute( '''
+                         SELECT doc_name, chunk, distance
+                         FROM docqna_vec
+                         WHERE embedding MATCH ?
+                         ORDER BY distance ASC LIMIT ?;
+			             ''', (qv.tobytes( ), int( k )) )
 			rows = cur.fetchall( )
 			return [ (r[ 0 ], r[ 1 ], float( r[ 2 ] )) for r in rows ]
 		except Exception:
@@ -2059,8 +2048,10 @@ def build_document_user_input( user_query: str, k: int = 6 ) -> str:
 	"""Build document user input.
 	
 	Purpose:
-	    Builds the normalized data structure required by the application workflow. The function converts
-	    caller input, session state, or provider-specific options into a stable shape that downstream
+	    Builds the normalized data structure required by the application workflow. The function
+	    converts
+	    caller input, session state, or provider-specific options into a stable shape that
+	    downstream
 	    API calls and rendering code can consume safely.
 	
 	Args:
@@ -2085,10 +2076,10 @@ def build_document_user_input( user_query: str, k: int = 6 ) -> str:
 	
 	if context:
 		prompt_parts.append(
-			'Use the following document excerpts to answer the question. If the excerpts do not contain '
+			'Use the following document excerpts to answer the question. If the excerpts do not '
+			'contain '
 			'the answer, say you do not have enough information.\n\n'
-			f'{context}'
-		)
+			f'{context}' )
 	
 	prompt_parts.append( f'Question:\n{user_query}\n\nAnswer:' )
 	
@@ -2109,58 +2100,49 @@ def initialize_database( ) -> None:
 	Path( 'stores/sqlite' ).mkdir( parents=True, exist_ok=True )
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
 		prompt_table_exists = conn.execute( """
-			SELECT 1
-			FROM sqlite_master
-			WHERE type = 'table'
-				AND name = 'Prompts';
-			""" ).fetchone( ) is not None
+                                            SELECT 1
+                                            FROM sqlite_master
+                                            WHERE type = 'table'
+                                              AND name = 'Prompts';
+		                                    """ ).fetchone( ) is not None
 		
 		if not prompt_table_exists:
 			conn.execute( """
-				CREATE TABLE Prompts
-				(
-					PromptsId INTEGER NOT NULL PRIMARY KEY,
-					Caption TEXT NOT NULL,
-					Name TEXT NOT NULL,
-					Category TEXT NOT NULL,
-					Prompt TEXT NOT NULL
-				);
-				""" )
+                          CREATE TABLE Prompts
+                          (
+                              PromptsId INTEGER NOT NULL PRIMARY KEY,
+                              Caption   TEXT    NOT NULL,
+                              Name      TEXT    NOT NULL,
+                              Category  TEXT    NOT NULL,
+                              Prompt    TEXT    NOT NULL
+                          );
+			              """ )
 		else:
-			prompt_columns = { str( row[ 1 ] )
-					for row in conn.execute( 'PRAGMA table_info("Prompts");' ).fetchall( ) }
+			prompt_columns = { str( row[ 1 ] ) for row in
+				conn.execute( 'PRAGMA table_info("Prompts");' ).fetchall( ) }
 			
-			required_columns = {
-					'PromptsId',
-					'Caption',
-					'Name',
-					'Category',
-					'Prompt',
-			}
+			required_columns = { 'PromptsId', 'Caption', 'Name', 'Category', 'Prompt', }
 			if prompt_columns != required_columns:
 				conn.execute( """
-					CREATE TABLE Prompts_New
-					(
-						PromptsId INTEGER NOT NULL PRIMARY KEY,
-						Caption TEXT NOT NULL,
-						Name TEXT NOT NULL,
-						Category TEXT NOT NULL,
-						Prompt TEXT NOT NULL
-					);
-					""" )
+                              CREATE TABLE Prompts_New
+                              (
+                                  PromptsId INTEGER NOT NULL PRIMARY KEY,
+                                  Caption   TEXT    NOT NULL,
+                                  Name      TEXT    NOT NULL,
+                                  Category  TEXT    NOT NULL,
+                                  Prompt    TEXT    NOT NULL
+                              );
+				              """ )
 				
-				source_text_column = ( 'Prompt'
-						if 'Prompt' in prompt_columns
-						else 'Text'
-						if 'Text' in prompt_columns
-						else None )
+				source_text_column = (
+					'Prompt' if 'Prompt' in prompt_columns else 'Text' if 'Text' in prompt_columns
+					else None)
 				
 				if source_text_column is not None:
 					category_expression = (
-							'COALESCE(NULLIF(TRIM(Category), \'\'), \'Uncategorized\')'
-							if 'Category' in prompt_columns
-							else '\'Uncategorized\''
-					)
+						'COALESCE(NULLIF(TRIM(Category), \'\'), \'Uncategorized\')' if 'Category'
+						                                                               in
+						                                                               prompt_columns else '\'Uncategorized\'')
 					
 					conn.execute( f"""
 						INSERT INTO Prompts_New
@@ -2185,19 +2167,19 @@ def initialize_database( ) -> None:
 				conn.execute( 'ALTER TABLE Prompts_New RENAME TO Prompts;' )
 		
 		conn.execute( """
-			CREATE INDEX IF NOT EXISTS IX_Prompts_Category
-				ON Prompts ( Category );
-			""" )
+                      CREATE INDEX IF NOT EXISTS IX_Prompts_Category
+                          ON Prompts ( Category );
+		              """ )
 		
 		conn.execute( """
-			CREATE INDEX IF NOT EXISTS IX_Prompts_Caption
-				ON Prompts ( Caption );
-			""" )
+                      CREATE INDEX IF NOT EXISTS IX_Prompts_Caption
+                          ON Prompts ( Caption );
+		              """ )
 		
 		conn.execute( """
-			CREATE INDEX IF NOT EXISTS IX_Prompts_Name
-				ON Prompts ( Name );
-			""" )
+                      CREATE INDEX IF NOT EXISTS IX_Prompts_Name
+                          ON Prompts ( Name );
+		              """ )
 		
 		conn.commit( )
 
@@ -2218,7 +2200,8 @@ def read_table( table: str, limit: int = None, offset: int = 0 ) -> pd.DataFrame
 	"""Read table.
 	
 	Purpose:
-	    Performs the read_table workflow using the inputs supplied by the caller and the current runtime
+	    Performs the read_table workflow using the inputs supplied by the caller and the current
+	    runtime
 	    configuration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
@@ -2293,7 +2276,8 @@ def render_table( df: pd.DataFrame ) -> None:
 	
 	Purpose:
 	    Renders the requested user interface element or result block in Streamlit using normalized
-	    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+	    inputs. The function keeps presentation logic isolated from provider calls and
+	    data-processing
 	    steps so the screen output remains predictable.
 	
 	Args:
@@ -2324,9 +2308,7 @@ def make_display_safe( df: pd.DataFrame ) -> pd.DataFrame:
 	display_df = df.copy( )
 	
 	for col in display_df.columns:
-		display_df[ col ] = display_df[ col ].map(
-			lambda x: '' if x is None else str( x )
-		)
+		display_df[ col ] = display_df[ col ].map( lambda x: '' if x is None else str( x ) )
 	
 	return display_df
 
@@ -2334,7 +2316,8 @@ def drop_table( table: str ) -> None:
 	"""Drop table.
 	
 	Purpose:
-	    Performs the drop_table workflow using the inputs supplied by the caller and the current runtime
+	    Performs the drop_table workflow using the inputs supplied by the caller and the current
+	    runtime
 	    configuration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
@@ -2355,7 +2338,8 @@ def create_index( table: str, column: str ) -> None:
 	
 	Purpose:
 	    Creates the requested resource, connection, schema object, or user interface artifact using
-	    validated inputs. The function encapsulates setup details so callers can rely on a consistent
+	    validated inputs. The function encapsulates setup details so callers can rely on a
+	    consistent
 	    resource lifecycle.
 	
 	Args:
@@ -2454,7 +2438,8 @@ def create_visualization( df: pd.DataFrame ) -> None:
 	
 	Purpose:
 	    Creates the requested resource, connection, schema object, or user interface artifact using
-	    validated inputs. The function encapsulates setup details so callers can rely on a consistent
+	    validated inputs. The function encapsulates setup details so callers can rely on a
+	    consistent
 	    resource lifecycle.
 	
 	Args:
@@ -2472,9 +2457,7 @@ def create_visualization( df: pd.DataFrame ) -> None:
 	
 	for col in df_plot.columns:
 		if df_plot[ col ].dtype == object:
-			df_plot[ col ] = df_plot[ col ].map(
-				lambda x: '' if x is None else str( x )
-			)
+			df_plot[ col ] = df_plot[ col ].map( lambda x: '' if x is None else str( x ) )
 	
 	numeric_cols: List[ str ] = [ ]
 	for col in df_plot.columns:
@@ -2484,8 +2467,7 @@ def create_visualization( df: pd.DataFrame ) -> None:
 	
 	categorical_cols: List[ str ] = [ col for col in df_plot.columns if col not in numeric_cols ]
 	
-	chart = st.selectbox(
-		'Chart Type',
+	chart = st.selectbox( 'Chart Type',
 		[ 'Histogram', 'Bar', 'Line', 'Scatter', 'Box', 'Pie', 'Correlation' ] )
 	
 	if chart == 'Histogram':
@@ -2584,11 +2566,8 @@ def create_visualization( df: pd.DataFrame ) -> None:
 		
 		corr = corr_df.corr( )
 		
-		fig = go.Figure(
-			data=[ go.Heatmap(
-				z=corr.values.tolist( ),
-				x=corr.columns.tolist( ),
-				y=corr.index.tolist( ) ) ] )
+		fig = go.Figure( data=[ go.Heatmap( z=corr.values.tolist( ), x=corr.columns.tolist( ),
+			y=corr.index.tolist( ) ) ] )
 		st.plotly_chart( fig, use_container_width=True )
 
 def convert_dataframe( table_name: str, df: pd.DataFrame ):
@@ -2619,8 +2598,10 @@ def get_sqlite_type( dtype ) -> str:
 	"""Get sqlite type.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -2670,7 +2651,8 @@ def create_custom_table( table_name: str, columns: list ) -> None:
 	
 	Purpose:
 	    Creates the requested resource, connection, schema object, or user interface artifact using
-	    validated inputs. The function encapsulates setup details so callers can rely on a consistent
+	    validated inputs. The function encapsulates setup details so callers can rely on a
+	    consistent
 	    resource lifecycle.
 	
 	Args:
@@ -2718,7 +2700,8 @@ def is_safe_query( query: str ) -> bool:
 	
 	Purpose:
 	    Performs the is_safe_query workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -2754,8 +2737,8 @@ def is_safe_query( query: str ) -> bool:
 	# ------------------------------------------------------------------
 	# Block dangerous keywords anywhere
 	# ------------------------------------------------------------------
-	blocked_keywords = ('insert ', 'update ', 'delete ', 'drop ', 'alter ',
-	                    'create ', 'attach ', 'detach ', 'vacuum ', 'replace ', 'trigger ')
+	blocked_keywords = ('insert ', 'update ', 'delete ', 'drop ', 'alter ', 'create ', 'attach ',
+		'detach ', 'vacuum ', 'replace ', 'trigger ')
 	
 	for keyword in blocked_keywords:
 		if keyword in q:
@@ -2768,7 +2751,8 @@ def create_identifier( name: str ) -> str:
 	
 	Purpose:
 	    Creates the requested resource, connection, schema object, or user interface artifact using
-	    validated inputs. The function encapsulates setup details so callers can rely on a consistent
+	    validated inputs. The function encapsulates setup details so callers can rely on a
+	    consistent
 	    resource lifecycle.
 	
 	Args:
@@ -2798,8 +2782,7 @@ def add_column( table: str, column: str, col_type: str ):
 	col_type = col_type.upper( )
 	
 	with create_connection( ) as conn:
-		conn.execute(
-			f'ALTER TABLE "{table}" ADD COLUMN "{column}" {col_type};' )
+		conn.execute( f'ALTER TABLE "{table}" ADD COLUMN "{column}" {col_type};' )
 		conn.commit( )
 
 def rename_column( table_name: str, old_name: str, new_name: str ) -> None:
@@ -2807,7 +2790,8 @@ def rename_column( table_name: str, old_name: str, new_name: str ) -> None:
 	
 	Purpose:
 	    Performs the rename_column workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -2823,35 +2807,28 @@ def rename_column( table_name: str, old_name: str, new_name: str ) -> None:
 	with create_connection( ) as conn:
 		try:
 			conn.execute(
-				f'ALTER TABLE "{table_name}" RENAME COLUMN "{old_name}" TO "{new_name}";'
-			)
+				f'ALTER TABLE "{table_name}" RENAME COLUMN "{old_name}" TO "{new_name}";' )
 			conn.commit( )
 			return
 		except Exception:
 			pass
 		
-		row = conn.execute(
-			"""
-            SELECT sql
-            FROM sqlite_master
-            WHERE type ='table' AND name =?
-			""",
-			(table_name,)
-		).fetchone( )
+		row = conn.execute( """
+                            SELECT sql
+                            FROM sqlite_master
+                            WHERE type ='table' AND name =?
+		                    """, (table_name,) ).fetchone( )
 		
 		if not row or not row[ 0 ]:
 			raise ValueError( "Table definition not found." )
 		
 		create_sql = row[ 0 ]
 		
-		indexes = conn.execute(
-			"""
-            SELECT sql
-            FROM sqlite_master
-            WHERE type ='index' AND tbl_name=? AND sql IS NOT NULL
-			""",
-			(table_name,)
-		).fetchall( )
+		indexes = conn.execute( """
+                                SELECT sql
+                                FROM sqlite_master
+                                WHERE type ='index' AND tbl_name=? AND sql IS NOT NULL
+		                        """, (table_name,) ).fetchall( )
 		
 		schema = conn.execute( f'PRAGMA table_info("{table_name}");' ).fetchall( )
 		cols = [ r[ 1 ] for r in schema ]
@@ -2895,8 +2872,7 @@ def rename_column( table_name: str, old_name: str, new_name: str ) -> None:
 		conn.execute( "BEGIN" )
 		conn.execute( new_create_sql )
 		conn.execute(
-			f'INSERT INTO "{temp_table}" ({new_insert}) SELECT {old_select} FROM "{table_name}";'
-		)
+			f'INSERT INTO "{temp_table}" ({new_insert}) SELECT {old_select} FROM "{table_name}";' )
 		
 		conn.execute( f'DROP TABLE "{table_name}";' )
 		conn.execute( f'ALTER TABLE "{temp_table}" RENAME TO "{table_name}";' )
@@ -2917,14 +2893,9 @@ def create_profile_table( table: str ):
 		series = df[ col ]
 		null_count = series.isna( ).sum( )
 		distinct_count = series.nunique( dropna=True )
-		row = \
-			{
-					'column': col, 'dtype': str( series.dtype ),
-					'null_%': round( (null_count / total_rows) * 100, 2 ) if total_rows else 0,
-					'distinct_%': round( (
-							                     distinct_count / total_rows) * 100,
-						2 ) if total_rows else 0,
-			}
+		row = { 'column': col, 'dtype': str( series.dtype ),
+			'null_%': round( (null_count / total_rows) * 100, 2 ) if total_rows else 0,
+			'distinct_%': round( (distinct_count / total_rows) * 100, 2 ) if total_rows else 0, }
 		
 		if pd.api.types.is_numeric_dtype( series ):
 			row[ 'min' ] = series.min( )
@@ -2947,14 +2918,11 @@ def drop_column( table: str, column: str ):
 		# ------------------------------------------------------------
 		# Fetch original CREATE TABLE statement
 		# ------------------------------------------------------------
-		row = conn.execute(
-			"""
-            SELECT sql
-            FROM sqlite_master
-            WHERE type ='table' AND name =?
-			""",
-			(table,)
-		).fetchone( )
+		row = conn.execute( """
+                            SELECT sql
+                            FROM sqlite_master
+                            WHERE type ='table' AND name =?
+		                    """, (table,) ).fetchone( )
 		
 		if not row or not row[ 0 ]:
 			raise ValueError( 'Table definition not found.' )
@@ -2989,11 +2957,7 @@ def drop_column( table: str, column: str ):
 		# ------------------------------------------------------------
 		temp_table = f"{table}_rebuild_temp"
 		
-		new_create_sql = (
-				f'CREATE TABLE "{temp_table}" ('
-				+ ", ".join( new_defs )
-				+ ");"
-		)
+		new_create_sql = (f'CREATE TABLE "{temp_table}" (' + ", ".join( new_defs ) + ");")
 		
 		# ------------------------------------------------------------
 		# Begin transaction
@@ -3002,32 +2966,22 @@ def drop_column( table: str, column: str ):
 		
 		conn.execute( new_create_sql )
 		
-		remaining_cols = [
-				c.split( )[ 0 ].strip( '"' )
-				for c in new_defs
-		]
+		remaining_cols = [ c.split( )[ 0 ].strip( '"' ) for c in new_defs ]
 		
 		col_list = ", ".join( [ f'"{c}"' for c in remaining_cols ] )
 		
-		conn.execute(
-			f'INSERT INTO "{temp_table}" ({col_list}) '
-			f'SELECT {col_list} FROM "{table}";'
-		)
+		conn.execute( f'INSERT INTO "{temp_table}" ({col_list}) '
+		              f'SELECT {col_list} FROM "{table}";' )
 		
 		# Preserve indexes
-		indexes = conn.execute(
-			"""
-            SELECT sql
-            FROM sqlite_master
-            WHERE type ='index' AND tbl_name=? AND sql IS NOT NULL
-			""",
-			(table,)
-		).fetchall( )
+		indexes = conn.execute( """
+                                SELECT sql
+                                FROM sqlite_master
+                                WHERE type ='index' AND tbl_name=? AND sql IS NOT NULL
+		                        """, (table,) ).fetchall( )
 		
 		conn.execute( f'DROP TABLE "{table}";' )
-		conn.execute(
-			f'ALTER TABLE "{temp_table}" RENAME TO "{table}";'
-		)
+		conn.execute( f'ALTER TABLE "{temp_table}" RENAME TO "{table}";' )
 		
 		# Recreate indexes
 		for idx in indexes:
@@ -3042,7 +2996,8 @@ def rename_table( old_name: str, new_name: str ) -> None:
 	
 	Purpose:
 	    Performs the rename_table workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -3062,28 +3017,22 @@ def rename_table( old_name: str, new_name: str ) -> None:
 		except Exception:
 			pass
 		
-		row = conn.execute(
-			"""
-            SELECT sql
-            FROM sqlite_master
-            WHERE type ='table' AND name =?
-			""",
-			(old_name,)
-		).fetchone( )
+		row = conn.execute( """
+                            SELECT sql
+                            FROM sqlite_master
+                            WHERE type ='table' AND name =?
+		                    """, (old_name,) ).fetchone( )
 		
 		if not row or not row[ 0 ]:
 			raise ValueError( "Table definition not found." )
 		
 		create_sql = row[ 0 ]
 		
-		indexes = conn.execute(
-			"""
-            SELECT sql
-            FROM sqlite_master
-            WHERE type ='index' AND tbl_name=? AND sql IS NOT NULL
-			""",
-			(old_name,)
-		).fetchall( )
+		indexes = conn.execute( """
+                                SELECT sql
+                                FROM sqlite_master
+                                WHERE type ='index' AND tbl_name=? AND sql IS NOT NULL
+		                        """, (old_name,) ).fetchall( )
 		
 		open_paren = create_sql.find( "(" )
 		if open_paren == -1:
@@ -3098,8 +3047,7 @@ def rename_table( old_name: str, new_name: str ) -> None:
 		col_list = ", ".join( [ f'"{c}"' for c in cols ] )
 		
 		conn.execute(
-			f'INSERT INTO "{temp_name}" ({col_list}) SELECT {col_list} FROM "{old_name}";'
-		)
+			f'INSERT INTO "{temp_name}" ({col_list}) SELECT {col_list} FROM "{old_name}";' )
 		
 		conn.execute( f'DROP TABLE "{old_name}";' )
 		conn.execute( f'ALTER TABLE "{temp_name}" RENAME TO "{new_name}";' )
@@ -3115,71 +3063,35 @@ def rename_table( old_name: str, new_name: str ) -> None:
 # ------------ PROMPT ENGINEERING UTILITIES
 
 PROMPT_CATEGORY_MODE_MAP: Dict[ str, List[ str ] ] = {
-		'Text': [
-				'Writing / Administrative',
-				'Research / Academic',
-				'Data Analytics & Governance',
-				'Software Engineering',
-				'Business / Finance / Marketing',
-				'Compliance / Legal / Budget',
-				'Prompt Engineering',
-				'Instruction/ Training / Planning',
-		],
-		'Images': [
-				'Image Generation',
-				'Image Analysis',
-				'Image Editing',
-		],
-		'Audio': [
-				'Transcription API',
-				'Translation API',
-				'Speech API',
-		],
-		'Document Q&A': [
-				'Research / Academic',
-				'Data Analytics & Governance',
-				'Business / Finance / Marketing',
-				'Compliance / Legal / Budget',
-				'Instruction/ Training / Planning',
-				'Writing / Administrative',
-		],
-		'Files': [
-				'Writing / Administrative',
-				'Research / Academic',
-				'Data Analytics & Governance',
-				'Software Engineering',
-				'Business / Finance / Marketing',
-				'Compliance / Legal / Budget',
-				'Instruction/ Training / Planning',
-		],
-		'Vector Stores': [
-				'Research / Academic',
-				'Data Analytics & Governance',
-				'Software Engineering',
-				'Compliance / Legal / Budget',
-				'Instruction/ Training / Planning',
-		],
-		'File Search Stores': [
-				'Research / Academic',
-				'Data Analytics & Governance',
-				'Software Engineering',
-				'Compliance / Legal / Budget',
-				'Instruction/ Training / Planning',
-		],
-		'Cloud Buckets': [
-				'Data Analytics & Governance',
-				'Software Engineering',
-				'Research / Academic',
-				'Compliance / Legal / Budget',
-		],
-}
+	'Text': [ 'Writing / Administrative', 'Research / Academic', 'Data Analytics & Governance',
+		'Software Engineering', 'Business / Finance / Marketing', 'Compliance / Legal / Budget',
+		'Prompt Engineering', 'Instruction/ Training / Planning', ],
+	'Images': [ 'Image Generation', 'Image Analysis', 'Image Editing', ],
+	'Audio': [ 'Transcription API', 'Translation API', 'Speech API', ],
+	'Document Q&A': [ 'Research / Academic', 'Data Analytics & Governance',
+		'Business / Finance / Marketing', 'Compliance / Legal / Budget',
+		'Instruction/ Training / Planning', 'Writing / Administrative', ],
+	'Files': [ 'Writing / Administrative', 'Research / Academic', 'Data Analytics & Governance',
+		'Software Engineering', 'Business / Finance / Marketing', 'Compliance / Legal / Budget',
+		'Instruction/ Training / Planning', ],
+	'Vector Stores': [ 'Research / Academic', 'Data Analytics & Governance', 'Software '
+	                                                                         'Engineering',
+		'Compliance / Legal / Budget', 'Instruction/ Training / Planning', ],
+	'File Search Stores': [ 'Research / Academic', 'Data Analytics & Governance',
+		'Software Engineering', 'Compliance / Legal / Budget',
+		'Instruction/ Training / Planning', ],
+	'Cloud Buckets': [ 'Data Analytics & Governance', 'Software Engineering', 'Research / '
+	                                                                          'Academic',
+		'Compliance / Legal / Budget', ], }
 
 def fetch_prompt_categories( mode_name: str ) -> List[ str ]:
 	"""Fetch prompt categories.
 	
 	Purpose:
-	    Returns populated prompt categories authorized for the selected application mode. Categories
-	    retain their configured display order and categories without corresponding database records are
+	    Returns populated prompt categories authorized for the selected application mode.
+	    Categories
+	    retain their configured display order and categories without corresponding database
+	    records are
 	    excluded.
 	
 	Args:
@@ -3201,27 +3113,18 @@ def fetch_prompt_categories( mode_name: str ) -> List[ str ]:
 		placeholders = ', '.join( [ '?' ] * len( permitted_categories ) )
 		
 		with sqlite3.connect( cfg.DB_PATH ) as conn:
-			rows = conn.execute(
-				f"""
+			rows = conn.execute( f"""
 				SELECT DISTINCT Category
 				FROM Prompts
 				WHERE Category IN ({placeholders})
 					AND TRIM(Category) <> '';
-				""",
-				tuple( permitted_categories ),
-			).fetchall( )
+				""", tuple( permitted_categories ), ).fetchall( )
 		
-		available_categories = {
-				str( row[ 0 ] ).strip( )
-				for row in rows
-				if row and row[ 0 ] is not None and str( row[ 0 ] ).strip( )
-		}
+		available_categories = { str( row[ 0 ] ).strip( ) for row in rows if
+			row and row[ 0 ] is not None and str( row[ 0 ] ).strip( ) }
 		
-		return [
-				category
-				for category in permitted_categories
-				if category in available_categories
-		]
+		return [ category for category in permitted_categories if category in
+		                                                          available_categories ]
 	except Exception as e:
 		ex = Error( e )
 		ex.module = 'app'
@@ -3234,14 +3137,17 @@ def fetch_prompt_options( category: str ) -> List[ Dict[ str, Any ] ]:
 	"""Fetch prompt options.
 	
 	Purpose:
-	    Returns prompt-template identifiers and display metadata for the selected category. The result
-	    provides stable numeric identifiers for widget state while preserving captions for presentation.
+	    Returns prompt-template identifiers and display metadata for the selected category. The
+	    result
+	    provides stable numeric identifiers for widget state while preserving captions for
+	    presentation.
 	
 	Args:
 	    category (str): Prompt category used to filter the available templates.
 	
 	Returns:
-	    List[Dict[str, Any]]: Prompt identifiers and display metadata ordered by caption and identifier.
+	    List[Dict[str, Any]]: Prompt identifiers and display metadata ordered by caption and
+	    identifier.
 	
 	Raises:
 	    Exception: Re-raises exceptions after recording them with the application logger.
@@ -3251,29 +3157,18 @@ def fetch_prompt_options( category: str ) -> List[ Dict[ str, Any ] ]:
 			return [ ]
 		
 		with sqlite3.connect( cfg.DB_PATH ) as conn:
-			rows = conn.execute(
-				"""
-				SELECT
-					PromptsId,
-					Caption,
-					Name,
-					Category
-				FROM Prompts
-				WHERE Category = ?
-				ORDER BY Caption, PromptsId;
-				""",
-				(str( category ).strip( ),),
-			).fetchall( )
+			rows = conn.execute( """
+                                 SELECT PromptsId,
+                                        Caption,
+                                        Name,
+                                        Category
+                                 FROM Prompts
+                                 WHERE Category = ?
+                                 ORDER BY Caption, PromptsId;
+			                     """, (str( category ).strip( ),), ).fetchall( )
 		
-		return [
-				{
-						'PromptsId': int( row[ 0 ] ),
-						'Caption': str( row[ 1 ] or '' ),
-						'Name': str( row[ 2 ] or '' ),
-						'Category': str( row[ 3 ] or '' ),
-				}
-				for row in rows
-		]
+		return [ { 'PromptsId': int( row[ 0 ] ), 'Caption': str( row[ 1 ] or '' ),
+			'Name': str( row[ 2 ] or '' ), 'Category': str( row[ 3 ] or '' ), } for row in rows ]
 	except Exception as e:
 		ex = Error( e )
 		ex.module = 'app'
@@ -3286,7 +3181,8 @@ def fetch_prompt_by_id( prompt_id: int ) -> Optional[ Dict[ str, Any ] ]:
 	"""Fetch prompt by identifier.
 	
 	Purpose:
-	    Returns the complete prompt-template record associated with a stable numeric identifier. The
+	    Returns the complete prompt-template record associated with a stable numeric identifier.
+	    The
 	    identifier-based lookup prevents ambiguous template selection when captions or names are
 	    duplicated.
 	
@@ -3304,32 +3200,24 @@ def fetch_prompt_by_id( prompt_id: int ) -> Optional[ Dict[ str, Any ] ]:
 			return None
 		
 		with sqlite3.connect( cfg.DB_PATH ) as conn:
-			cur = conn.execute(
-				"""
-				SELECT
-					PromptsId,
-					Caption,
-					Name,
-					Category,
-					Prompt
-				FROM Prompts
-				WHERE PromptsId = ?;
-				""",
-				(int( prompt_id ),),
-			)
+			cur = conn.execute( """
+                                SELECT PromptsId,
+                                       Caption,
+                                       Name,
+                                       Category,
+                                       Prompt
+                                FROM Prompts
+                                WHERE PromptsId = ?;
+			                    """, (int( prompt_id ),), )
 			
 			row = cur.fetchone( )
 			
 			if row is None:
 				return None
 			
-			return {
-					'PromptsId': int( row[ 0 ] ),
-					'Caption': str( row[ 1 ] or '' ),
-					'Name': str( row[ 2 ] or '' ),
-					'Category': str( row[ 3 ] or '' ),
-					'Prompt': str( row[ 4 ] or '' ),
-			}
+			return { 'PromptsId': int( row[ 0 ] ), 'Caption': str( row[ 1 ] or '' ),
+				'Name': str( row[ 2 ] or '' ), 'Category': str( row[ 3 ] or '' ),
+				'Prompt': str( row[ 4 ] or '' ), }
 	except Exception as e:
 		ex = Error( e )
 		ex.module = 'app'
@@ -3342,7 +3230,8 @@ def reset_prompt_template_selection( prompt_id_key: str ) -> None:
 	"""Reset prompt template selection.
 	
 	Purpose:
-	    Clears a mode-specific prompt-template selection when its category changes without modifying the
+	    Clears a mode-specific prompt-template selection when its category changes without
+	    modifying the
 	    current system-instruction text.
 	
 	Args:
@@ -3369,7 +3258,8 @@ def load_prompt_template( prompt_id_key: str, instructions_key: str, ) -> None:
 	"""Load prompt template.
 	
 	Purpose:
-	    Loads the selected prompt body into a mode-specific system-instruction field while preserving
+	    Loads the selected prompt body into a mode-specific system-instruction field while
+	    preserving
 	    independent template state across application modes.
 	
 	Args:
@@ -3401,10 +3291,8 @@ def load_prompt_template( prompt_id_key: str, instructions_key: str, ) -> None:
 		ex = Error( e )
 		ex.module = 'app'
 		ex.cause = 'Prompt Templates'
-		ex.method = (
-				'load_prompt_template( prompt_id_key: str, '
-				'instructions_key: str ) -> None'
-		)
+		ex.method = ('load_prompt_template( prompt_id_key: str, '
+		             'instructions_key: str ) -> None')
 		Logger( ).write( ex )
 		raise ex
 
@@ -3417,7 +3305,8 @@ def format_prompt_option( prompt_id: int, prompt_options: List[ Dict[ str, Any ]
 	
 	Args:
 	    prompt_id (int): Numeric prompt identifier rendered by the selection control.
-	    prompt_options (List[Dict[str, Any]]): Available prompt records used to resolve the caption.
+	    prompt_options (List[Dict[str, Any]]): Available prompt records used to resolve the
+	    caption.
 	
 	Returns:
 	    str: Prompt caption when found; otherwise the numeric identifier as text.
@@ -3432,7 +3321,8 @@ def fetch_prompts_df( ) -> pd.DataFrame:
 	"""Fetch prompts dataframe.
 	
 	Purpose:
-	    Returns prompt-template metadata for management and review without rendering large prompt bodies
+	    Returns prompt-template metadata for management and review without rendering large prompt
+	    bodies
 	    directly in the primary data grid.
 	
 	Returns:
@@ -3443,18 +3333,14 @@ def fetch_prompts_df( ) -> pd.DataFrame:
 	"""
 	try:
 		with sqlite3.connect( cfg.DB_PATH ) as conn:
-			df_prompts = pd.read_sql_query(
-				"""
-				SELECT
-					PromptsId,
-					Caption,
-					Name,
-					Category
-				FROM Prompts
-				ORDER BY PromptsId DESC;
-				""",
-				conn,
-			)
+			df_prompts = pd.read_sql_query( """
+                                            SELECT PromptsId,
+                                                   Caption,
+                                                   Name,
+                                                   Category
+                                            FROM Prompts
+                                            ORDER BY PromptsId DESC;
+			                                """, conn, )
 		
 		df_prompts.insert( 0, 'Selected', False )
 		return df_prompts
@@ -3473,7 +3359,8 @@ def insert_prompt( data: Dict[ str, Any ] ) -> None:
 	    Creates a prompt-template record using the canonical category-aware prompt schema.
 	
 	Args:
-	    data (Dict[str, Any]): Prompt-template values containing Caption, Name, Category, and Prompt.
+	    data (Dict[str, Any]): Prompt-template values containing Caption, Name, Category,
+	    and Prompt.
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value.
@@ -3484,29 +3371,18 @@ def insert_prompt( data: Dict[ str, Any ] ) -> None:
 	try:
 		throw_if( 'data', data )
 		with sqlite3.connect( cfg.DB_PATH ) as conn:
-			conn.execute(
-				"""
-				INSERT INTO Prompts
-				(
-					Caption,
-					Name,
-					Category,
-					Prompt
-				)
-				VALUES
-				(
-					?,
-					?,
-					?,
-					?
-				);
-				""",
-				(
-						str( data[ 'Caption' ] ).strip( ),
-						str( data[ 'Name' ] ).strip( ),
-						str( data[ 'Category' ] ).strip( ),
-						str( data[ 'Prompt' ] ),
-				),)
+			conn.execute( """
+                          INSERT INTO Prompts
+                          (Caption,
+                           Name,
+                           Category,
+                           Prompt)
+                          VALUES (?,
+                                  ?,
+                                  ?,
+                                  ?);
+			              """, (str( data[ 'Caption' ] ).strip( ), str( data[ 'Name' ] ).strip( ),
+				str( data[ 'Category' ] ).strip( ), str( data[ 'Prompt' ] ),), )
 			conn.commit( )
 	except Exception as e:
 		ex = Error( e )
@@ -3520,7 +3396,8 @@ def update_prompt( prompt_id: int, data: Dict[ str, Any ] ) -> None:
 	"""Update prompt.
 	
 	Purpose:
-	    Updates an existing prompt-template record using the canonical category-aware prompt schema.
+	    Updates an existing prompt-template record using the canonical category-aware prompt
+	    schema.
 	
 	Args:
 	    prompt_id (int): Numeric primary key of the prompt-template record.
@@ -3536,27 +3413,21 @@ def update_prompt( prompt_id: int, data: Dict[ str, Any ] ) -> None:
 		throw_if( 'data', data )
 		with sqlite3.connect( cfg.DB_PATH ) as conn:
 			conn.execute( """
-				UPDATE Prompts
-				SET
-					Caption = ?,
-					Name = ?,
-					Category = ?,
-					Prompt = ?
-				WHERE PromptsId = ?;
-				""", ( str( data[ 'Caption' ] ).strip( ),
-						str( data[ 'Name' ] ).strip( ),
-						str( data[ 'Category' ] ).strip( ),
-						str( data[ 'Prompt' ] ),
-						int( prompt_id ), ), )
+                          UPDATE Prompts
+                          SET Caption  = ?,
+                              Name     = ?,
+                              Category = ?,
+                              Prompt   = ?
+                          WHERE PromptsId = ?;
+			              """, (str( data[ 'Caption' ] ).strip( ), str( data[ 'Name' ] ).strip( ),
+				str( data[ 'Category' ] ).strip( ), str( data[ 'Prompt' ] ), int( prompt_id ),), )
 			conn.commit( )
 	except Exception as e:
 		ex = Error( e )
 		ex.module = 'app'
 		ex.cause = 'Prompt Templates'
-		ex.method = (
-				'update_prompt( prompt_id: int, '
-				'data: Dict[ str, Any ] ) -> None'
-		)
+		ex.method = ('update_prompt( prompt_id: int, '
+		             'data: Dict[ str, Any ] ) -> None')
 		Logger( ).write( ex )
 		raise ex
 
@@ -3577,10 +3448,7 @@ def delete_prompt( prompt_id: int ) -> None:
 	"""
 	try:
 		with sqlite3.connect( cfg.DB_PATH ) as conn:
-			conn.execute(
-				'DELETE FROM Prompts WHERE PromptsId = ?;',
-				(int( prompt_id ),),
-			)
+			conn.execute( 'DELETE FROM Prompts WHERE PromptsId = ?;', (int( prompt_id ),), )
 			conn.commit( )
 	except Exception as e:
 		ex = Error( e )
@@ -3594,8 +3462,10 @@ def build_prompt( user_input: str ) -> str:
 	"""Build prompt.
 	
 	Purpose:
-	    Builds the normalized data structure required by the application workflow. The function converts
-	    caller input, session state, or provider-specific options into a stable shape that downstream
+	    Builds the normalized data structure required by the application workflow. The function
+	    converts
+	    caller input, session state, or provider-specific options into a stable shape that
+	    downstream
 	    API calls and rendering code can consume safely.
 	
 	Args:
@@ -3679,8 +3549,10 @@ def get_provider_name( provider: Optional[ str ] = None ) -> str:
 	"""Get provider name.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3701,8 +3573,10 @@ def get_provider_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get provider module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3711,11 +3585,7 @@ def get_provider_module( provider: Optional[ str ] = None ) -> Any:
 	Returns:
 	    Any: Return value produced by the operation."""
 	selected = get_provider_name( provider )
-	provider_modules = {
-			'GPT': gpt,
-			'Gemini': gemini,
-			'Grok': grok,
-	}
+	provider_modules = { 'GPT': gpt, 'Gemini': gemini, 'Grok': grok, }
 	
 	module = provider_modules.get( selected )
 	if module is None:
@@ -3727,8 +3597,10 @@ def provider_has_class( class_name: str, provider: Optional[ str ] = None ) -> b
 	"""Provider has class.
 	
 	Purpose:
-	    Performs the provider_has_class workflow using the inputs supplied by the caller and the current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+	    Performs the provider_has_class workflow using the inputs supplied by the caller and the
+	    current
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -3747,8 +3619,10 @@ def get_provider_class( class_name: str, provider: Optional[ str ] = None ) -> t
 	"""Get provider class.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3765,8 +3639,7 @@ def get_provider_class( class_name: str, provider: Optional[ str ] = None ) -> t
 	
 	if not hasattr( provider_module, class_name ):
 		raise AttributeError(
-			f'Provider "{selected}" does not expose a "{class_name}" wrapper class.'
-		)
+			f'Provider "{selected}" does not expose a "{class_name}" wrapper class.' )
 	
 	return getattr( provider_module, class_name )
 
@@ -3774,8 +3647,10 @@ def get_provider_instance( class_name: str, provider: Optional[ str ] = None ) -
 	"""Get provider instance.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3791,8 +3666,10 @@ def get_chat_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get chat module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3806,8 +3683,10 @@ def get_tts_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get tts module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3821,8 +3700,10 @@ def get_images_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get images module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3836,8 +3717,10 @@ def get_embeddings_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get embeddings module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3851,8 +3734,10 @@ def get_translation_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get translation module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3866,8 +3751,10 @@ def get_transcription_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get transcription module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3881,8 +3768,10 @@ def get_files_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get files module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3896,8 +3785,10 @@ def get_vectorstores_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get vectorstores module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3911,8 +3802,10 @@ def get_file_search_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get file search module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3926,8 +3819,10 @@ def get_cloud_buckets_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get cloud buckets module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3937,12 +3832,15 @@ def get_cloud_buckets_module( provider: Optional[ str ] = None ) -> Any:
 	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'CloudBuckets', provider )
 
-def get_mode_classes( mode: Optional[ str ] = None, provider: Optional[ str ] = None ) -> List[ str ]:
+def get_mode_classes( mode: Optional[ str ] = None, provider: Optional[ str ] = None ) -> List[
+	str ]:
 	"""Get mode classes.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -3977,11 +3875,12 @@ def get_mode_classes( mode: Optional[ str ] = None, provider: Optional[ str ] = 
 	return [ ]
 
 def provider_supports_mode( mode: Optional[ str ] = None,
-		provider: Optional[ str ] = None ) -> bool:
+	provider: Optional[ str ] = None ) -> bool:
 	"""Provider supports mode.
 	
 	Purpose:
-	    Performs the provider_supports_mode workflow using the inputs supplied by the caller and the
+	    Performs the provider_supports_mode workflow using the inputs supplied by the caller and
+	    the
 	    current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
@@ -4014,16 +3913,12 @@ def require_provider_mode( mode: Optional[ str ] = None, provider: Optional[ str
 	selected_mode = mode or st.session_state.get( 'mode', 'Text' )
 	selected_provider = get_provider_name( provider )
 	classes = get_mode_classes( selected_mode, selected_provider )
-	missing = [
-			class_name for class_name in classes
-			if not provider_has_class( class_name, selected_provider )
-	]
+	missing = [ class_name for class_name in classes if
+		not provider_has_class( class_name, selected_provider ) ]
 	
 	if missing:
-		st.warning(
-			f'{selected_provider} does not currently expose the required wrapper(s) for '
-			f'{selected_mode}: {", ".join( missing )}.'
-		)
+		st.warning( f'{selected_provider} does not currently expose the required wrapper(s) for '
+		            f'{selected_mode}: {", ".join( missing )}.' )
 		return False
 	
 	return True
@@ -4032,7 +3927,8 @@ def _provider( ) -> str:
 	"""Provider.
 	
 	Purpose:
-	    Performs the _provider workflow using the inputs supplied by the caller and the current runtime
+	    Performs the _provider workflow using the inputs supplied by the caller and the current
+	    runtime
 	    configuration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
@@ -4067,8 +3963,10 @@ def get_provider_options( ) -> List[ str ]:
 	"""Get provider options.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	logic
 	    can consume it consistently.
 	
 	Returns:
@@ -4080,8 +3978,10 @@ def get_raw_provider_modes( provider: str ) -> List[ str ]:
 	"""Get raw provider modes.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -4107,8 +4007,10 @@ def normalize_mode_name( mode_name: Optional[ str ] ) -> str:
 	"""Normalize mode name.
 	
 	Purpose:
-	    Normalizes incoming values into a predictable representation for application processing. The
-	    function reduces provider, user-input, or serialization differences before values are stored or
+	    Normalizes incoming values into a predictable representation for application processing.
+	    The
+	    function reduces provider, user-input, or serialization differences before values are
+	    stored or
 	    displayed.
 	
 	Args:
@@ -4119,12 +4021,8 @@ def normalize_mode_name( mode_name: Optional[ str ] ) -> str:
 	if not mode_name:
 		return 'Text'
 	
-	mode_aliases = {
-			'Embedding': 'Embeddings',
-			'Documents': 'Document Q&A',
-			'Data Export': 'Export',
-			'Export Data': 'Export',
-	}
+	mode_aliases = { 'Embedding': 'Embeddings', 'Documents': 'Document Q&A',
+		'Data Export': 'Export', 'Export Data': 'Export', }
 	
 	return mode_aliases.get( mode_name, mode_name )
 
@@ -4132,8 +4030,10 @@ def normalize_mode_list( modes: List[ str ] ) -> List[ str ]:
 	"""Normalize mode list.
 	
 	Purpose:
-	    Normalizes incoming values into a predictable representation for application processing. The
-	    function reduces provider, user-input, or serialization differences before values are stored or
+	    Normalizes incoming values into a predictable representation for application processing.
+	    The
+	    function reduces provider, user-input, or serialization differences before values are
+	    stored or
 	    displayed.
 	
 	Args:
@@ -4154,7 +4054,8 @@ def mode_requires_runtime_wrapper( mode_name: str ) -> bool:
 	"""Mode requires runtime wrapper.
 	
 	Purpose:
-	    Performs the mode_requires_runtime_wrapper workflow using the inputs supplied by the caller and
+	    Performs the mode_requires_runtime_wrapper workflow using the inputs supplied by the
+	    caller and
 	    the current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
@@ -4163,11 +4064,7 @@ def mode_requires_runtime_wrapper( mode_name: str ) -> bool:
 	
 	Returns:
 	    bool: Return value produced by the operation."""
-	non_wrapper_modes = [
-			'Prompt Engineering',
-			'Data Management',
-			'Export',
-	]
+	non_wrapper_modes = [ 'Prompt Engineering', 'Data Management', 'Export', ]
 	
 	return mode_name not in non_wrapper_modes
 
@@ -4175,8 +4072,10 @@ def get_supported_provider_modes( provider: str ) -> List[ str ]:
 	"""Get supported provider modes.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -4205,8 +4104,10 @@ def get_mode_index( modes: List[ str ], current_mode: Optional[ str ] ) -> int:
 	"""Get mode index.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+	    Returns normalized information for the application component. The method provides a stable
+	    view
+	    of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic
 	    can consume it consistently.
 	
 	Args:
@@ -4227,64 +4128,57 @@ def render_provider_keys( ) -> None:
 	
 	Purpose:
 	    Renders the requested user interface element or result block in Streamlit using normalized
-	    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+	    inputs. The function keeps presentation logic isolated from provider calls and
+	    data-processing
 	    steps so the screen output remains predictable.
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value."""
 	with st.expander( 'Keys:', expanded=False ):
 		openai_key = st.text_input( 'OpenAI API Key', type='password',
-			value=get_runtime_config_value( 'openai_api_key', 'OPENAI_API_KEY',
-				'OPENAI_API_KEY' ),
+			value=get_runtime_config_value( 'openai_api_key', 'OPENAI_API_KEY', 'OPENAI_API_KEY' ),
 			help='Overrides OPENAI_API_KEY from config.py for this session only.',
 			key='sidebar_openai_api_key' )
 		
 		gemini_key = st.text_input( 'Gemini API Key', type='password',
-			value=get_runtime_config_value( 'gemini_api_key', 'GEMINI_API_KEY',
-				'GEMINI_API_KEY' ),
+			value=get_runtime_config_value( 'gemini_api_key', 'GEMINI_API_KEY', 'GEMINI_API_KEY' ),
 			help='Overrides GEMINI_API_KEY from config.py for this session only.',
 			key='sidebar_gemini_api_key' )
 		
 		xai_key = st.text_input( 'xAI API Key', type='password',
-			value=get_runtime_config_value( 'xai_api_key', 'XAI_API_KEY',
-				'XAI_API_KEY' ),
+			value=get_runtime_config_value( 'xai_api_key', 'XAI_API_KEY', 'XAI_API_KEY' ),
 			help='Overrides XAI_API_KEY from config.py for this session only.',
 			key='sidebar_xai_api_key' )
 		
 		google_key = st.text_input( 'Google API Key', type='password',
-			value=get_runtime_config_value( 'google_api_key', 'GOOGLE_API_KEY',
-				'GOOGLE_API_KEY' ),
+			value=get_runtime_config_value( 'google_api_key', 'GOOGLE_API_KEY', 'GOOGLE_API_KEY' ),
 			help='Overrides GOOGLE_API_KEY from config.py for this session only.',
 			key='sidebar_google_api_key' )
 		
 		google_cse_id = st.text_input( 'Google CSE ID', type='password',
-			value=get_runtime_config_value( 'google_cse_id', 'GOOGLE_CSE_ID',
-				'GOOGLE_CSE_ID' ),
+			value=get_runtime_config_value( 'google_cse_id', 'GOOGLE_CSE_ID', 'GOOGLE_CSE_ID' ),
 			help='Overrides GOOGLE_CSE_ID from config.py for this session only.',
 			key='sidebar_google_cse_id' )
 		
 		google_cloud_project_id = st.text_input( 'Google Cloud Project ID', type='password',
-			value=get_runtime_config_value( 'google_cloud_project_id',
-				'GOOGLE_CLOUD_PROJECT_ID', 'GOOGLE_CLOUD_PROJECT_ID' ),
+			value=get_runtime_config_value( 'google_cloud_project_id', 'GOOGLE_CLOUD_PROJECT_ID',
+				'GOOGLE_CLOUD_PROJECT_ID' ),
 			help='Overrides GOOGLE_CLOUD_PROJECT_ID from config.py for this session only.',
 			key='sidebar_google_cloud_project_id' )
 		
 		google_cloud_location = st.text_input( 'Google Cloud Location', type='password',
-			value=get_runtime_config_value( 'google_cloud_location',
-				'GOOGLE_CLOUD_LOCATION', 'GOOGLE_CLOUD_LOCATION' ),
+			value=get_runtime_config_value( 'google_cloud_location', 'GOOGLE_CLOUD_LOCATION',
+				'GOOGLE_CLOUD_LOCATION' ),
 			help='Overrides GOOGLE_CLOUD_LOCATION from config.py for this session only.',
 			key='sidebar_google_cloud_location' )
 		
-		sync_provider_config( 'openai_api_key', 'OPENAI_API_KEY', 'OPENAI_API_KEY',
-			openai_key, 'GPT' )
-		sync_provider_config( 'gemini_api_key', 'GEMINI_API_KEY', 'GEMINI_API_KEY',
-			gemini_key, 'Gemini' )
-		sync_provider_config( 'xai_api_key', 'XAI_API_KEY', 'XAI_API_KEY',
-			xai_key, 'Grok' )
-		sync_provider_config( 'google_api_key', 'GOOGLE_API_KEY', 'GOOGLE_API_KEY',
-			google_key )
-		sync_provider_config( 'google_cse_id', 'GOOGLE_CSE_ID', 'GOOGLE_CSE_ID',
-			google_cse_id )
+		sync_provider_config( 'openai_api_key', 'OPENAI_API_KEY', 'OPENAI_API_KEY', openai_key,
+			'GPT' )
+		sync_provider_config( 'gemini_api_key', 'GEMINI_API_KEY', 'GEMINI_API_KEY', gemini_key,
+			'Gemini' )
+		sync_provider_config( 'xai_api_key', 'XAI_API_KEY', 'XAI_API_KEY', xai_key, 'Grok' )
+		sync_provider_config( 'google_api_key', 'GOOGLE_API_KEY', 'GOOGLE_API_KEY', google_key )
+		sync_provider_config( 'google_cse_id', 'GOOGLE_CSE_ID', 'GOOGLE_CSE_ID', google_cse_id )
 		sync_provider_config( 'google_cloud_project_id', 'GOOGLE_CLOUD_PROJECT_ID',
 			'GOOGLE_CLOUD_PROJECT_ID', google_cloud_project_id )
 		sync_provider_config( 'google_cloud_location', 'GOOGLE_CLOUD_LOCATION',
@@ -4335,10 +4229,8 @@ with st.sidebar:
 		st.session_state[ 'mode' ] = current_mode
 	
 	with st.expander( 'Modes:', expanded=False ):
-		mode = st.radio( label='Select Mode',
-			options=mode_options,
-			index=get_mode_index( mode_options, current_mode ),
-			key='mode' )
+		mode = st.radio( label='Select Mode', options=mode_options,
+			index=get_mode_index( mode_options, current_mode ), key='mode' )
 	
 	st.caption( f'Provider: {provider} | Mode: {mode}' )
 	st.divider( )
@@ -4391,12 +4283,14 @@ if mode == 'Text':
 	# Text Mode Helpers
 	# ------------------------------------------------------------------
 	def get_text_options( instance: Any, attr_name: str,
-			fallback: Optional[ List[ str ] ] = None ) -> List[ str ]:
+		fallback: Optional[ List[ str ] ] = None ) -> List[ str ]:
 		"""Get text options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -4428,8 +4322,10 @@ if mode == 'Text':
 		"""Get text help.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -4444,7 +4340,8 @@ if mode == 'Text':
 		"""Parse semicolon list.
 		
 		Purpose:
-		    Performs the parse_semicolon_list workflow using the inputs supplied by the caller and the
+		    Performs the parse_semicolon_list workflow using the inputs supplied by the caller and
+		    the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -4460,8 +4357,10 @@ if mode == 'Text':
 		"""Parse comma list.
 		
 		Purpose:
-		    Performs the parse_comma_list workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the parse_comma_list workflow using the inputs supplied by the caller and the
+		    current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -4476,8 +4375,10 @@ if mode == 'Text':
 		"""Normalize bool or none.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
+		    Normalizes incoming values into a predictable representation for application
+		    processing. The
+		    function reduces provider, user-input, or serialization differences before values are
+		    stored or
 		    displayed.
 		
 		Args:
@@ -4494,8 +4395,10 @@ if mode == 'Text':
 		"""Get grok collection options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Returns:
@@ -4516,8 +4419,10 @@ if mode == 'Text':
 		"""Get selected grok collection ids.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Returns:
@@ -4545,7 +4450,8 @@ if mode == 'Text':
 		"""Sanitize text selection.
 		
 		Purpose:
-		    Performs the sanitize_text_selection workflow using the inputs supplied by the caller and the
+		    Performs the sanitize_text_selection workflow using the inputs supplied by the caller
+		    and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -4555,7 +4461,8 @@ if mode == 'Text':
 		    default (Any): Default value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		current_value = st.session_state.get( key, default )
 		if current_value in [ None, '' ]:
 			return
@@ -4567,7 +4474,8 @@ if mode == 'Text':
 		"""Sanitize text multiselect.
 		
 		Purpose:
-		    Performs the sanitize_text_multiselect workflow using the inputs supplied by the caller and the
+		    Performs the sanitize_text_multiselect workflow using the inputs supplied by the
+		    caller and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -4576,14 +4484,14 @@ if mode == 'Text':
 		    valid_options (List[str]): Valid options value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		current_values = st.session_state.get( key, [ ] )
 		if not isinstance( current_values, list ):
 			st.session_state[ key ] = [ ]
 			return
 		
-		st.session_state[ key ] = [ value for value in current_values
-				if value in valid_options ]
+		st.session_state[ key ] = [ value for value in current_values if value in valid_options ]
 	
 	def reset_text_model_settings( ) -> None:
 		"""Reset text model settings.
@@ -4665,11 +4573,14 @@ if mode == 'Text':
 		"""Clear text instructions.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+ logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+ value."""
 		st.session_state[ 'text_system_instructions' ] = ''
 		st.session_state[ 'instructions' ] = ''
 	
@@ -4677,12 +4588,15 @@ if mode == 'Text':
 		"""Convert text system instructions.
 		
 		Purpose:
-		    Performs the convert_text_system_instructions workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    Performs the convert_text_system_instructions workflow using the inputs supplied by
+		    the caller
+		    and the current runtime configuration. The function keeps this behavior isolated so
+		    related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		text_value = st.session_state.get( 'text_system_instructions', '' )
 		if not isinstance( text_value, str ) or not text_value.strip( ):
 			return
@@ -4699,24 +4613,34 @@ if mode == 'Text':
 		"""Load text instruction template.
 		
 		Purpose:
-		    Performs the load_text_instruction_template workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Loads the selected Text-mode prompt template into the Text-mode system-instruction
+		    field using the stable prompt identifier stored in session state.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		name = st.session_state.get( 'instructions' )
-		if name and name != 'No Templates Found':
-			prompt_text = fetch_prompt_text( cfg.DB_PATH, name )
-			if prompt_text is not None:
-				st.session_state[ 'text_system_instructions' ] = prompt_text
+		    None: This function performs its work through side effects and does not return a value.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			load_prompt_template( prompt_id_key='text_prompt_id',
+				instructions_key='text_system_instructions', )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Text Mode'
+			ex.method = 'load_text_instruction_template( ) -> None'
+			Logger( ).write( ex )
+			raise ex
 	
 	def build_text_response_format_payload( ) -> Any:
 		"""Build text response format payload.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The function converts
-		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    Builds the normalized data structure required by the application workflow. The
+		    function converts
+		    caller input, session state, or provider-specific options into a stable shape that
+		    downstream
 		    API calls and rendering code can consume safely.
 		
 		Returns:
@@ -4732,16 +4656,12 @@ if mode == 'Text':
 				import json
 				
 				schema = json.loads( schema_text )
-				return {
-						'type': 'json_schema',
-						'json_schema': {
-								'name': schema_name or 'response_schema',
-								'strict': strict,
-								'schema': schema,
-						},
-				}
+				return { 'type': 'json_schema',
+					'json_schema': { 'name': schema_name or 'response_schema', 'strict': strict,
+						'schema': schema, }, }
 			except Exception:
-				st.warning( 'Text JSON schema is not valid JSON. Falling back to selected format.' )
+				st.warning( 'Text JSON schema is not valid JSON. Falling back to selected '
+				            'format.' )
 		
 		return response_format or None
 	
@@ -4749,8 +4669,10 @@ if mode == 'Text':
 		"""Build text context.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The function converts
-		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    Builds the normalized data structure required by the application workflow. The
+		    function converts
+		    caller input, session state, or provider-specific options into a stable shape that
+		    downstream
 		    API calls and rendering code can consume safely.
 		
 		Args:
@@ -4771,8 +4693,10 @@ if mode == 'Text':
 		"""Build text common kwargs.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The function converts
-		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    Builds the normalized data structure required by the application workflow. The
+		    function converts
+		    caller input, session state, or provider-specific options into a stable shape that
+		    downstream
 		    API calls and rendering code can consume safely.
 		
 		Args:
@@ -4794,44 +4718,38 @@ if mode == 'Text':
 		if derived_urls:
 			st.session_state[ 'text_urls' ] = derived_urls
 		
-		derived_modalities = [
-				str( modality ).strip( )
-				for modality in st.session_state.get( 'text_modalities', [ ] )
-				if str( modality ).strip( )
-		]
+		derived_modalities = [ str( modality ).strip( ) for modality in
+			st.session_state.get( 'text_modalities', [ ] ) if str( modality ).strip( ) ]
 		
-		return {
-				'prompt': prompt,
-				'model': st.session_state.get( 'text_model' ),
-				'number': st.session_state.get( 'text_number' ),
-				'temperature': st.session_state.get( 'text_temperature' ),
-				'top_p': st.session_state.get( 'text_top_percent' ),
-				'top_k': st.session_state.get( 'text_top_k' ),
-				'frequency': st.session_state.get( 'text_frequency_penalty' ),
-				'presence': st.session_state.get( 'text_presence_penalty' ),
-				'max_tokens': st.session_state.get( 'text_max_tokens' ),
-				'stops': derived_stops,
-				'instruct': st.session_state.get( 'text_system_instructions' ),
-				'response_format': st.session_state.get( 'text_response_format' ) or None,
-				'tools': st.session_state.get( 'text_tools', [ ] ),
-				'tool_choice': st.session_state.get( 'text_tool_choice' ) or None,
-				'reasoning': st.session_state.get( 'text_reasoning' ) or None,
-				'modalities': derived_modalities,
-				'media_resolution': st.session_state.get( 'text_media_resolution' ) or None,
-				'context': build_text_context( include_last_message=False ),
-				'content': st.session_state.get( 'text_content' ),
-				'urls': derived_urls,
-				'max_urls': st.session_state.get( 'text_max_urls' ),
-				'response_schema': st.session_state.get( 'text_response_schema' ) or None,
-				'safety_profile': st.session_state.get( 'text_safety_profile' ) or None,
-		}
+		return { 'prompt': prompt, 'model': st.session_state.get( 'text_model' ),
+			'number': st.session_state.get( 'text_number' ),
+			'temperature': st.session_state.get( 'text_temperature' ),
+			'top_p': st.session_state.get( 'text_top_percent' ),
+			'top_k': st.session_state.get( 'text_top_k' ),
+			'frequency': st.session_state.get( 'text_frequency_penalty' ),
+			'presence': st.session_state.get( 'text_presence_penalty' ),
+			'max_tokens': st.session_state.get( 'text_max_tokens' ), 'stops': derived_stops,
+			'instruct': st.session_state.get( 'text_system_instructions' ),
+			'response_format': st.session_state.get( 'text_response_format' ) or None,
+			'tools': st.session_state.get( 'text_tools', [ ] ),
+			'tool_choice': st.session_state.get( 'text_tool_choice' ) or None,
+			'reasoning': st.session_state.get( 'text_reasoning' ) or None,
+			'modalities': derived_modalities,
+			'media_resolution': st.session_state.get( 'text_media_resolution' ) or None,
+			'context': build_text_context( include_last_message=False ),
+			'content': st.session_state.get( 'text_content' ), 'urls': derived_urls,
+			'max_urls': st.session_state.get( 'text_max_urls' ),
+			'response_schema': st.session_state.get( 'text_response_schema' ) or None,
+			'safety_profile': st.session_state.get( 'text_safety_profile' ) or None, }
 	
 	def build_gpt_text_kwargs( prompt: str ) -> Dict[ str, Any ]:
 		"""Build gpt text kwargs.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The function converts
-		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    Builds the normalized data structure required by the application workflow. The
+		    function converts
+		    caller input, session state, or provider-specific options into a stable shape that
+		    downstream
 		    API calls and rendering code can consume safely.
 		
 		Args:
@@ -4846,12 +4764,7 @@ if mode == 'Text':
 		input_mode = st.session_state.get( 'text_input', '' )
 		
 		if 'file_search' in tools and vector_store_ids:
-			text_tools = [
-					{
-							'type': 'file_search',
-							'vector_store_ids': vector_store_ids,
-					}
-			]
+			text_tools = [ { 'type': 'file_search', 'vector_store_ids': vector_store_ids, } ]
 		else:
 			text_tools = tools
 		
@@ -4860,39 +4773,35 @@ if mode == 'Text':
 		else:
 			context = build_text_context( include_last_message=False )
 		
-		return {
-				'prompt': prompt,
-				'model': st.session_state.get( 'text_model' ),
-				'temperature': st.session_state.get( 'text_temperature' ),
-				'format': build_text_response_format_payload( ),
-				'top_p': st.session_state.get( 'text_top_percent' ),
-				'frequency': st.session_state.get( 'text_frequency_penalty' ),
-				'presence': st.session_state.get( 'text_presence_penalty' ),
-				'max_tools': st.session_state.get( 'text_max_calls' ),
-				'max_tokens': st.session_state.get( 'text_max_tokens' ),
-				'store': normalize_bool_or_none( st.session_state.get( 'text_store' ) ),
-				'stream': normalize_bool_or_none( st.session_state.get( 'text_stream' ) ),
-				'instruct': st.session_state.get( 'text_system_instructions' ),
-				'background': normalize_bool_or_none( st.session_state.get( 'text_background' ) ),
-				'reasoning': st.session_state.get( 'text_reasoning' ) or None,
-				'include': include,
-				'tools': text_tools,
-				'allowed_domains': st.session_state.get( 'text_domains', [ ] ),
-				'previous_id': st.session_state.get( 'text_previous_response_id' ) or None,
-				'tool_choice': tool_choice,
-				'is_parallel': bool( st.session_state.get( 'text_parallel_tools', False ) ),
-				'context': context,
-				'vector_store_ids': vector_store_ids,
-				'conversation_id': st.session_state.get( 'text_conversation_id' ) or None,
-		}
+		return { 'prompt': prompt, 'model': st.session_state.get( 'text_model' ),
+			'temperature': st.session_state.get( 'text_temperature' ),
+			'format': build_text_response_format_payload( ),
+			'top_p': st.session_state.get( 'text_top_percent' ),
+			'frequency': st.session_state.get( 'text_frequency_penalty' ),
+			'presence': st.session_state.get( 'text_presence_penalty' ),
+			'max_tools': st.session_state.get( 'text_max_calls' ),
+			'max_tokens': st.session_state.get( 'text_max_tokens' ),
+			'store': normalize_bool_or_none( st.session_state.get( 'text_store' ) ),
+			'stream': normalize_bool_or_none( st.session_state.get( 'text_stream' ) ),
+			'instruct': st.session_state.get( 'text_system_instructions' ),
+			'background': normalize_bool_or_none( st.session_state.get( 'text_background' ) ),
+			'reasoning': st.session_state.get( 'text_reasoning' ) or None, 'include': include,
+			'tools': text_tools, 'allowed_domains': st.session_state.get( 'text_domains', [ ] ),
+			'previous_id': st.session_state.get( 'text_previous_response_id' ) or None,
+			'tool_choice': tool_choice,
+			'is_parallel': bool( st.session_state.get( 'text_parallel_tools', False ) ),
+			'context': context, 'vector_store_ids': vector_store_ids,
+			'conversation_id': st.session_state.get( 'text_conversation_id' ) or None, }
 	
-	def build_gemini_text_kwargs( prompt: str,
-		stream_handler: Optional[ Any ] = None ) -> Dict[ str, Any ]:
+	def build_gemini_text_kwargs( prompt: str, stream_handler: Optional[ Any ] = None ) -> Dict[
+		str, Any ]:
 		"""Build gemini text kwargs.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The function converts
-		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    Builds the normalized data structure required by the application workflow. The
+		    function converts
+		    caller input, session state, or provider-specific options into a stable shape that
+		    downstream
 		    API calls and rendering code can consume safely.
 		
 		Args:
@@ -4915,8 +4824,10 @@ if mode == 'Text':
 		"""Build grok text kwargs.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The function converts
-		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    Builds the normalized data structure required by the application workflow. The
+		    function converts
+		    caller input, session state, or provider-specific options into a stable shape that
+		    downstream
 		    API calls and rendering code can consume safely.
 		
 		Args:
@@ -4934,7 +4845,8 @@ if mode == 'Text':
 		kwargs[ 'format' ] = build_text_response_format_payload( )
 		kwargs[ 'include' ] = st.session_state.get( 'text_include', [ ] )
 		kwargs[ 'allowed_domains' ] = st.session_state.get( 'text_domains', [ ] )
-		kwargs[ 'background' ] = normalize_bool_or_none( st.session_state.get( 'text_background' ) )
+		kwargs[ 'background' ] = normalize_bool_or_none( st.session_state.get( 'text_background'
+		) )
 		kwargs[ 'stream' ] = normalize_bool_or_none( st.session_state.get( 'text_stream' ) )
 		kwargs[ 'store' ] = normalize_bool_or_none( st.session_state.get( 'text_store' ) )
 		kwargs[ 'is_parallel' ] = bool( st.session_state.get( 'text_parallel_tools', False ) )
@@ -4948,8 +4860,10 @@ if mode == 'Text':
 		"""Call generate text.
 		
 		Purpose:
-		    Performs the call_generate_text workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the call_generate_text workflow using the inputs supplied by the caller and
+		    the current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -4968,19 +4882,18 @@ if mode == 'Text':
 		try:
 			return text.generate_text( **kwargs )
 		except TypeError:
-			clean_kwargs = {
-					key: value
-					for key, value in kwargs.items( )
-					if value is not None and value != '' and value != [ ]
-			}
+			clean_kwargs = { key: value for key, value in kwargs.items( ) if
+				value is not None and value != '' and value != [ ] }
 			return text.generate_text( **clean_kwargs )
 	
 	def extract_text_sources( instance: Any, response: Any ) -> List[ Dict[ str, Any ] ]:
 		"""Extract text sources.
 		
 		Purpose:
-		    Extracts structured information from a provider response, uploaded file, or application data
-		    object. The function normalizes provider-specific shapes into values that can be rendered,
+		    Extracts structured information from a provider response, uploaded file,
+		    or application data
+		    object. The function normalizes provider-specific shapes into values that can be
+		    rendered,
 		    stored, or passed to later processing steps.
 		
 		Args:
@@ -5011,15 +4924,18 @@ if mode == 'Text':
 		"""Update text usage.
 		
 		Purpose:
-		    Performs the update_text_usage workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the update_text_usage workflow using the inputs supplied by the caller and
+		    the current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
 		    response (Any): Response value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
@@ -5030,8 +4946,10 @@ if mode == 'Text':
 		"""Get text avatar.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -5070,7 +4988,6 @@ if mode == 'Text':
 		# Expander — Text Mind Controls
 		# ------------------------------------------------------------------
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
-			
 			with st.expander( label='Model Settings', icon='🧊', expanded=False, width='stretch' ):
 				model_c1, model_c2, model_c3, model_c4, model_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
@@ -5080,9 +4997,8 @@ if mode == 'Text':
 					model_options = get_text_options( text, 'model_options' )
 					if not model_options:
 						model_options = [
-								st.session_state.get( 'text_model', '' ) or getattr( text, 'model',
-									'' )
-						]
+							st.session_state.get( 'text_model', '' ) or getattr( text, 'model',
+								'' ) ]
 						model_options = [ item for item in model_options if item ]
 					
 					sanitize_text_selection( 'text_model', model_options, '' )
@@ -5113,8 +5029,8 @@ if mode == 'Text':
 					sanitize_text_selection( 'text_media_resolution', media_options, '' )
 					st.selectbox( label='Media Resolution', options=media_options,
 						key='text_media_resolution',
-						help='Optional. Provider-supported media resolution.',
-						index=None, placeholder='Options' )
+						help='Optional. Provider-supported media resolution.', index=None,
+						placeholder='Options' )
 				
 				# ---------- Candidate Count ------------
 				with model_c5:
@@ -5142,30 +5058,28 @@ if mode == 'Text':
 				
 				# ---------- Temperature ------------
 				with prm_c3:
-					st.slider( label='Temperature', min_value=0.0, max_value=2.0,
-						step=0.01, help=get_text_help( 'TEMPERATURE' ), key='text_temperature' )
+					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
+						help=get_text_help( 'TEMPERATURE' ), key='text_temperature' )
 				
 				# ---------- Frequency Penalty ------------
 				with prm_c4:
-					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
-						step=0.01, help=get_text_help( 'FREQUENCY_PENALTY' ),
-						key='text_frequency_penalty' )
+					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						help=get_text_help( 'FREQUENCY_PENALTY' ), key='text_frequency_penalty' )
 				
 				# ---------- Presence Penalty ------------
 				with prm_c5:
-					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0,
-						step=0.01, help=get_text_help( 'PRESENCE_PENALTY' ),
-						key='text_presence_penalty' )
+					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						help=get_text_help( 'PRESENCE_PENALTY' ), key='text_presence_penalty' )
 					st.session_state[ 'text_presense_penalty' ] = st.session_state.get(
 						'text_presence_penalty', 0.0 )
 				
 				st.button( label='Reset', key='text_inference_reset', width='stretch',
 					on_click=reset_text_inference_settings )
 			
-			with st.expander( label='Tools / Grounding Settings', icon='🔎',
-					expanded=False, width='stretch' ):
-				tool_c1, tool_c2, tool_c3, tool_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+			with st.expander( label='Tools / Grounding Settings', icon='🔎', expanded=False,
+					width='stretch' ):
+				tool_c1, tool_c2, tool_c3, tool_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+					border=True, gap='xxsmall' )
 				
 				# ---------- Tools ------------
 				with tool_c1:
@@ -5178,25 +5092,24 @@ if mode == 'Text':
 				with tool_c2:
 					include_options = get_text_options( text, 'include_options' )
 					sanitize_text_multiselect( 'text_include', include_options )
-					st.multiselect( label='Include', options=include_options,
-						key='text_include', help=get_text_help( 'INCLUDE' ),
-						placeholder='Options' )
+					st.multiselect( label='Include', options=include_options, key='text_include',
+						help=get_text_help( 'INCLUDE' ), placeholder='Options' )
 				
 				# ---------- Tool Choice ------------
 				with tool_c3:
 					choice_options = get_text_options( text, 'choice_options' )
 					sanitize_text_selection( 'text_tool_choice', choice_options, '' )
 					st.selectbox( label='Tool Choice', options=choice_options,
-						key='text_tool_choice', help=get_text_help( 'CHOICE' ),
-						index=None, placeholder='Options' )
+						key='text_tool_choice', help=get_text_help( 'CHOICE' ), index=None,
+						placeholder='Options' )
 				
 				# ---------- Max Tool Calls ------------
 				with tool_c4:
-					st.slider( label='Max Tool Calls', min_value=0, max_value=100,
-						step=1, key='text_max_calls', help=get_text_help( 'MAX_TOOL_CALLS' ) )
+					st.slider( label='Max Tool Calls', min_value=0, max_value=100, step=1,
+						key='text_max_calls', help=get_text_help( 'MAX_TOOL_CALLS' ) )
 				
-				ctx_c1, ctx_c2, ctx_c3, ctx_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+				ctx_c1, ctx_c2, ctx_c3, ctx_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+					border=True, gap='xxsmall' )
 				
 				# ---------- Google Grounding ------------
 				with ctx_c1:
@@ -5207,9 +5120,10 @@ if mode == 'Text':
 					
 					st.toggle( label='Google Grounding', key='text_google_grounding',
 						disabled=not google_grounding_supported,
-						help='When enabled, Gemini grounds this Text response using Google Search.'
-						if google_grounding_supported
-						else 'Google grounding is available only for Gemini Text mode.' )
+						help='When enabled, Gemini grounds this Text response using Google '
+						     'Search.' if google_grounding_supported else 'Google grounding is '
+						                                                  'available only for '
+						                                                  'Gemini Text mode.' )
 				
 				# ---------- Parallel Tools ------------
 				with ctx_c2:
@@ -5228,8 +5142,8 @@ if mode == 'Text':
 				with ctx_c4:
 					st.selectbox( label='Input Mode', options=[ 'conversation', 'single_turn' ],
 						key='text_input',
-						help='Conversation uses prior Text messages as context; single_turn omits them.',
-						index=None, placeholder='Options' )
+						help='Conversation uses prior Text messages as context; single_turn omits '
+						     'them.', index=None, placeholder='Options' )
 				
 				# ---------- URLs ------------
 				st.text_input( label='URLs', key='text_urls_input',
@@ -5265,16 +5179,15 @@ if mode == 'Text':
 				st.button( label='Reset', key='reset_text_tools', width='stretch',
 					on_click=reset_text_tool_settings )
 			
-			with st.expander( label='Output / Response Settings', icon='↔️',
-					expanded=False, width='stretch' ):
+			with st.expander( label='Output / Response Settings', icon='↔️', expanded=False,
+					width='stretch' ):
 				resp_c1, resp_c2, resp_c3, resp_c4, resp_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
 				
 				# ---------- Max Tokens ------------
 				with resp_c1:
-					st.slider( label='Max Tokens', min_value=0, max_value=100000,
-						step=500, help=get_text_help( 'MAX_OUTPUT_TOKENS' ),
-						key='text_max_tokens' )
+					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+						help=get_text_help( 'MAX_OUTPUT_TOKENS' ), key='text_max_tokens' )
 				
 				# ---------- Response Format ------------
 				with resp_c2:
@@ -5282,8 +5195,8 @@ if mode == 'Text':
 					sanitize_text_selection( 'text_response_format', format_options, '' )
 					st.selectbox( label='Response Format', options=format_options,
 						key='text_response_format',
-						help='Optional. Desired response format or MIME type.',
-						index=None, placeholder='Options' )
+						help='Optional. Desired response format or MIME type.', index=None,
+						placeholder='Options' )
 				
 				# ---------- Store ------------
 				with resp_c3:
@@ -5298,8 +5211,8 @@ if mode == 'Text':
 					st.toggle( label='Background', key='text_background',
 						help=get_text_help( 'BACKGROUND_MODE' ) )
 				
-				schema_c1, schema_c2, schema_c3 = st.columns(
-					[ 0.25, 0.50, 0.25 ], border=True, gap='xxsmall' )
+				schema_c1, schema_c2, schema_c3 = st.columns( [ 0.25, 0.50, 0.25 ], border=True,
+					gap='xxsmall' )
 				
 				# ---------- Schema Name ------------
 				with schema_c1:
@@ -5332,29 +5245,62 @@ if mode == 'Text':
 		# ------------------------------------------------------------------
 		# Expander — System Instructions
 		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
-			prompt_names = fetch_prompt_names( cfg.DB_PATH )
-			if not prompt_names:
-				prompt_names = [ 'No Templates Found' ]
 			
+			# ------------------------------------------------------------------
+			# Text Prompt Categories
+			# ------------------------------------------------------------------
+			text_prompt_categories = fetch_prompt_categories( 'Text' )
+			current_text_category = st.session_state.get( 'text_prompt_category' )
+			if current_text_category not in text_prompt_categories:
+				st.session_state[ 'text_prompt_category' ] = None
+			
+			selected_text_category = st.session_state.get( 'text_prompt_category' )
+			text_prompt_options = fetch_prompt_options(
+				selected_text_category ) if selected_text_category else [ ]
+			
+			text_prompt_ids = [ int( option[ 'PromptsId' ] ) for option in text_prompt_options ]
+			
+			if st.session_state.get( 'text_prompt_id' ) not in text_prompt_ids:
+				st.session_state[ 'text_prompt_id' ] = None
+			
+			# ------------------------------------------------------------------
+			# Instruction Text
+			# ------------------------------------------------------------------
 			with in_left:
 				st.text_area( label='Enter Text', height=120, width='stretch',
-					help=get_text_help( 'SYSTEM_INSTRUCTIONS' ),
-					key='text_system_instructions' )
+					help=get_text_help( 'SYSTEM_INSTRUCTIONS' ), key='text_system_instructions', )
 			
+			# ------------------------------------------------------------------
+			# Prompt Template Selection
+			# ------------------------------------------------------------------
 			with in_right:
-				st.selectbox( label='Use Template', options=prompt_names, index=None,
-					key='instructions', on_change=load_text_instruction_template )
+				st.selectbox( label='Category', options=text_prompt_categories, index=None,
+					key='text_prompt_category', placeholder='Select Category',
+					help='Limits prompt templates to categories associated with Text generation.',
+					on_change=reset_prompt_template_selection, args=('text_prompt_id',), )
+				
+				st.selectbox( label='Use Template', options=text_prompt_ids, index=None,
+					key='text_prompt_id', placeholder='Select Template',
+					disabled=not text_prompt_ids,
+					format_func=lambda prompt_id: format_prompt_option( prompt_id,
+						text_prompt_options, ),
+					help='Loads the selected prompt into the Text system-instruction field.',
+					on_change=load_text_instruction_template, )
 			
+			# ------------------------------------------------------------------
+			# Instruction Actions
+			# ------------------------------------------------------------------
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
 			with btn_c1:
 				st.button( label='Clear Instructions', width='stretch',
-					on_click=clear_text_instructions )
+					on_click=clear_text_instructions, )
 			
 			with btn_c2:
 				st.button( label='XML <-> Markdown', width='stretch',
-					on_click=convert_text_system_instructions )
+					on_click=convert_text_system_instructions, )
 		
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 		
@@ -5381,10 +5327,7 @@ if mode == 'Text':
 		
 		if prompt is not None and str( prompt ).strip( ):
 			prompt = str( prompt ).strip( )
-			st.session_state.text_messages.append( {
-					'role': 'user',
-					'content': prompt,
-			} )
+			st.session_state.text_messages.append( { 'role': 'user', 'content': prompt, } )
 			
 			with st.chat_message( 'assistant', avatar=get_text_avatar( 'assistant' ) ):
 				with st.spinner( 'Thinking…' ):
@@ -5397,15 +5340,18 @@ if mode == 'Text':
 						"""On stream chunk.
 						
 						Purpose:
-						    Performs the on_stream_chunk workflow using the inputs supplied by the caller and the current
-						    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+						    Performs the on_stream_chunk workflow using the inputs supplied by the
+						    caller and the current
+						    runtime configuration. The function keeps this behavior isolated so
+						    related UI, provider, and
 						    data-processing paths can call it consistently.
 						
 						Args:
 						    chunk (str): Chunk value used by the operation.
 						
 						Returns:
-						    None: This function performs its work through side effects and does not return a value."""
+						    None: This function performs its work through side effects and does
+not return a value."""
 						if chunk is None:
 							return
 						
@@ -5414,15 +5360,15 @@ if mode == 'Text':
 					
 					try:
 						response = call_generate_text( prompt=prompt,
-							stream_handler=on_stream_chunk if st.session_state.get(
-								'text_stream', False ) else None )
+							stream_handler=on_stream_chunk if st.session_state.get( 'text_stream',
+								False ) else None )
 						
 						response_obj = getattr( text, 'response', None ) or response
 						if provider_name in [ 'GPT', 'Grok' ]:
 							st.session_state[ 'text_previous_response_id' ] = (
-									getattr( text, 'previous_id', None ) or
-									getattr( text, 'previous_response_id', None ) or
-									st.session_state.get( 'text_previous_response_id', '' ) or '')
+									getattr( text, 'previous_id', None ) or getattr( text,
+								'previous_response_id', None ) or st.session_state.get(
+								'text_previous_response_id', '' ) or '')
 					
 					except Exception as exc:
 						err = Error( exc )
@@ -5438,10 +5384,8 @@ if mode == 'Text':
 						else:
 							st.markdown( response_text )
 						
-						st.session_state.text_messages.append( {
-								'role': 'assistant',
-								'content': response_text,
-						} )
+						st.session_state.text_messages.append(
+							{ 'role': 'assistant', 'content': response_text, } )
 						
 						st.session_state[ 'text_context' ] = build_text_context(
 							include_last_message=True )
@@ -5562,12 +5506,14 @@ elif mode == 'Images':
 	# Images Mode Helpers
 	# ------------------------------------------------------------------
 	def get_image_options( instance: Any, attr_name: str,
-			fallback: Optional[ List[ str ] ] = None ) -> List[ str ]:
+		fallback: Optional[ List[ str ] ] = None ) -> List[ str ]:
 		"""Get image options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -5599,8 +5545,10 @@ elif mode == 'Images':
 		"""Get image help.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -5611,11 +5559,13 @@ elif mode == 'Images':
 		    str: Return value produced by the operation."""
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
-	def sanitize_image_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> None:
+	def sanitize_image_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> \
+			None:
 		"""Sanitize image selection.
 		
 		Purpose:
-		    Performs the sanitize_image_selection workflow using the inputs supplied by the caller and the
+		    Performs the sanitize_image_selection workflow using the inputs supplied by the caller
+		    and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -5625,7 +5575,8 @@ elif mode == 'Images':
 		    default (Any): Default value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		current_value = st.session_state.get( key, default )
 		
 		if current_value in [ None, '' ]:
@@ -5638,7 +5589,8 @@ elif mode == 'Images':
 		"""Sanitize image multiselect.
 		
 		Purpose:
-		    Performs the sanitize_image_multiselect workflow using the inputs supplied by the caller and the
+		    Performs the sanitize_image_multiselect workflow using the inputs supplied by the
+		    caller and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -5647,24 +5599,24 @@ elif mode == 'Images':
 		    valid_options (List[str]): Valid options value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		current_values = st.session_state.get( key, [ ] )
 		
 		if not isinstance( current_values, list ):
 			st.session_state[ key ] = [ ]
 			return
 		
-		st.session_state[ key ] = [
-				value for value in current_values
-				if value in valid_options
-		]
+		st.session_state[ key ] = [ value for value in current_values if value in valid_options ]
 	
 	def get_provider_image_models( selected_mode: Optional[ str ] ) -> List[ str ]:
 		"""Get provider image models.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -5714,11 +5666,12 @@ elif mode == 'Images':
 		return models
 	
 	def call_existing_image_method( instance: Any, method_names: List[ str ],
-			kwargs: Dict[ str, Any ] ) -> Any:
+		kwargs: Dict[ str, Any ] ) -> Any:
 		"""Call existing image method.
 		
 		Purpose:
-		    Performs the call_existing_image_method workflow using the inputs supplied by the caller and the
+		    Performs the call_existing_image_method workflow using the inputs supplied by the
+		    caller and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -5735,11 +5688,8 @@ elif mode == 'Images':
 				try:
 					return method( **kwargs )
 				except TypeError:
-					clean_kwargs = {
-							key: value
-							for key, value in kwargs.items( )
-							if value is not None and value != '' and value != [ ]
-					}
+					clean_kwargs = { key: value for key, value in kwargs.items( ) if
+						value is not None and value != '' and value != [ ] }
 					return method( **clean_kwargs )
 		
 		raise AttributeError( f'Provider "{provider_name}" does not expose any image method from: '
@@ -5749,8 +5699,10 @@ elif mode == 'Images':
 		"""Save uploaded image.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application workflows. The
-		    function standardizes file handling and returns a stable reference for downstream processing.
+		    Persists or stages input data so it can be used by later provider or application
+		    workflows. The
+		    function standardizes file handling and returns a stable reference for downstream
+		    processing.
 		
 		Args:
 		    uploaded_file (Any): Uploaded file value used by the operation.
@@ -5781,7 +5733,8 @@ elif mode == 'Images':
 		"""Append image message.
 		
 		Purpose:
-		    Performs the append_image_message workflow using the inputs supplied by the caller and the
+		    Performs the append_image_message workflow using the inputs supplied by the caller and
+		    the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -5790,27 +5743,26 @@ elif mode == 'Images':
 		    content (str): Content value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		if not isinstance( st.session_state.get( 'image_input' ), list ):
 			st.session_state[ 'image_input' ] = [ ]
 		
-		st.session_state[ 'image_input' ].append(
-			{
-					'role': role,
-					'content': content,
-			}
-		)
+		st.session_state[ 'image_input' ].append( { 'role': role, 'content': content, } )
 	
 	def render_image_messages( ) -> None:
 		"""Render image messages.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    Renders the requested user interface element or result block in Streamlit using
+		    normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and
+		    data-processing
 		    steps so the screen output remains predictable.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		if not isinstance( st.session_state.get( 'image_input' ), list ):
 			st.session_state[ 'image_input' ] = [ ]
 		
@@ -5823,11 +5775,14 @@ elif mode == 'Images':
 		"""Clear image messages.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		st.session_state[ 'image_input' ] = [ ]
 		st.session_state[ 'generated_images' ] = [ ]
 		st.session_state[ 'analyzed_images' ] = [ ]
@@ -5837,11 +5792,14 @@ elif mode == 'Images':
 		"""Clear image instructions.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		st.session_state[ 'image_system_instructions' ] = ''
 		st.session_state[ 'instructions' ] = ''
 	
@@ -5849,12 +5807,15 @@ elif mode == 'Images':
 		"""Convert image system instructions.
 		
 		Purpose:
-		    Performs the convert_image_system_instructions workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    Performs the convert_image_system_instructions workflow using the inputs supplied by
+		    the caller
+		    and the current runtime configuration. The function keeps this behavior isolated so
+		    related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		text_value = st.session_state.get( 'image_system_instructions', '' )
 		if not isinstance( text_value, str ) or not text_value.strip( ):
 			return
@@ -5871,35 +5832,40 @@ elif mode == 'Images':
 		"""Load image instruction template.
 		
 		Purpose:
-		    Performs the load_image_instruction_template workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Loads the selected Images-mode prompt template into the Images-mode system-instruction
+		    field using the stable prompt identifier stored in session state.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		name = st.session_state.get( 'instructions' )
-		if name and name != 'No Templates Found':
-			prompt_text = fetch_prompt_text( cfg.DB_PATH, name )
-			if prompt_text is not None:
-				st.session_state[ 'image_system_instructions' ] = prompt_text
+		    None: This function performs its work through side effects and does not return a value.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			load_prompt_template( prompt_id_key='image_prompt_id',
+				instructions_key='image_system_instructions', )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Images Mode'
+			ex.method = 'load_image_instruction_template( ) -> None'
+			Logger( ).write( ex )
+			raise ex
 	
 	def reset_image_model_settings( ) -> None:
 		"""Reset image model settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		for key in [
-				'image_mode',
-				'image_model',
-				'image_analysis_model',
-				'image_generation_model',
-				'image_editing_model',
-				'image_number',
-		]:
+		    None: This function performs its work through side effects and does not return a
+		    value."""
+		for key in [ 'image_mode', 'image_model', 'image_analysis_model', 'image_generation_model',
+			'image_editing_model', 'image_number', ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
@@ -5907,20 +5873,17 @@ elif mode == 'Images':
 		"""Reset image inference settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		for key in [
-				'image_temperature',
-				'image_top_percent',
-				'image_top_k',
-				'image_frequency_penalty',
-				'image_presence_penalty',
-				'image_presense_penalty',
-				'image_max_tokens',
-		]:
+		    None: This function performs its work through side effects and does not return a
+		    value."""
+		for key in [ 'image_temperature', 'image_top_percent', 'image_top_k',
+			'image_frequency_penalty', 'image_presence_penalty', 'image_presense_penalty',
+			'image_max_tokens', ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
@@ -5928,24 +5891,17 @@ elif mode == 'Images':
 		"""Reset image tool settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		for key in [
-				'image_tools',
-				'image_include',
-				'image_tool_choice',
-				'image_domains_input',
-				'image_domains',
-				'image_grounded',
-				'image_image_search',
-				'image_parallel_tools',
-				'image_parallel_calls',
-				'image_max_calls',
-				'image_max_searches',
-		]:
+		    None: This function performs its work through side effects and does not return a
+		    value."""
+		for key in [ 'image_tools', 'image_include', 'image_tool_choice', 'image_domains_input',
+			'image_domains', 'image_grounded', 'image_image_search', 'image_parallel_tools',
+			'image_parallel_calls', 'image_max_calls', 'image_max_searches', ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
@@ -5953,26 +5909,18 @@ elif mode == 'Images':
 		"""Reset image visual settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		for key in [
-				'image_resolution',
-				'image_media_resolution',
-				'image_mime_type',
-				'image_output',
-				'image_size',
-				'image_quality',
-				'image_style',
-				'image_backcolor',
-				'image_aspect_ratio',
-				'image_detail',
-				'image_analysis_detail',
-				'image_compression',
-				'image_modality',
-		]:
+		    None: This function performs its work through side effects and does not return a
+		    value."""
+		for key in [ 'image_resolution', 'image_media_resolution', 'image_mime_type',
+			'image_output', 'image_size', 'image_quality', 'image_style', 'image_backcolor',
+			'image_aspect_ratio', 'image_detail', 'image_analysis_detail', 'image_compression',
+			'image_modality', ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
@@ -5980,7 +5928,8 @@ elif mode == 'Images':
 		"""Parse image domains.
 		
 		Purpose:
-		    Performs the parse_image_domains workflow using the inputs supplied by the caller and the
+		    Performs the parse_image_domains workflow using the inputs supplied by the caller and
+		    the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -5996,8 +5945,10 @@ elif mode == 'Images':
 		"""Render image output.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    Renders the requested user interface element or result block in Streamlit using
+		    normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and
+		    data-processing
 		    steps so the screen output remains predictable.
 		
 		Args:
@@ -6064,15 +6015,18 @@ elif mode == 'Images':
 		"""Update image usage.
 		
 		Purpose:
-		    Performs the update_image_usage workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the update_image_usage workflow using the inputs supplied by the caller and
+		    the current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
 		    response (Any): Response value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
@@ -6085,8 +6039,10 @@ elif mode == 'Images':
 		"""Get image common kwargs.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -6098,36 +6054,35 @@ elif mode == 'Images':
 		if domains:
 			st.session_state[ 'image_domains' ] = domains
 		
-		return {
-				'prompt': prompt,
-				'model': st.session_state.get( 'image_model' ),
-				'number': st.session_state.get( 'image_number' ),
-				'temperature': st.session_state.get( 'image_temperature' ),
-				'top_p': st.session_state.get( 'image_top_percent' ),
-				'top_k': st.session_state.get( 'image_top_k' ),
-				'frequency': st.session_state.get( 'image_frequency_penalty' ),
-				'presence': st.session_state.get( 'image_presence_penalty' ),
-				'max_tokens': st.session_state.get( 'image_max_tokens' ),
-				'instruct': st.session_state.get( 'image_system_instructions', '' ),
-				'tools': st.session_state.get( 'image_tools', [ ] ),
-				'tool_choice': st.session_state.get( 'image_tool_choice' ) or None,
-				'include': st.session_state.get( 'image_include', [ ] ),
-				'allowed_domains': st.session_state.get( 'image_domains', [ ] ),
-				'store': st.session_state.get( 'image_store' ),
-				'stream': st.session_state.get( 'image_stream' ),
-				'background': st.session_state.get( 'image_background' ),
-				'is_parallel': st.session_state.get( 'image_parallel_tools',
-					st.session_state.get( 'image_parallel_calls', False ) ),
-				'max_tools': st.session_state.get( 'image_max_calls' ),
-				'max_searches': st.session_state.get( 'image_max_searches' ),
-		}
+		return { 'prompt': prompt, 'model': st.session_state.get( 'image_model' ),
+			'number': st.session_state.get( 'image_number' ),
+			'temperature': st.session_state.get( 'image_temperature' ),
+			'top_p': st.session_state.get( 'image_top_percent' ),
+			'top_k': st.session_state.get( 'image_top_k' ),
+			'frequency': st.session_state.get( 'image_frequency_penalty' ),
+			'presence': st.session_state.get( 'image_presence_penalty' ),
+			'max_tokens': st.session_state.get( 'image_max_tokens' ),
+			'instruct': st.session_state.get( 'image_system_instructions', '' ),
+			'tools': st.session_state.get( 'image_tools', [ ] ),
+			'tool_choice': st.session_state.get( 'image_tool_choice' ) or None,
+			'include': st.session_state.get( 'image_include', [ ] ),
+			'allowed_domains': st.session_state.get( 'image_domains', [ ] ),
+			'store': st.session_state.get( 'image_store' ),
+			'stream': st.session_state.get( 'image_stream' ),
+			'background': st.session_state.get( 'image_background' ),
+			'is_parallel': st.session_state.get( 'image_parallel_tools',
+				st.session_state.get( 'image_parallel_calls', False ) ),
+			'max_tools': st.session_state.get( 'image_max_calls' ),
+			'max_searches': st.session_state.get( 'image_max_searches' ), }
 	
 	def get_image_generation_kwargs( prompt: str ) -> Dict[ str, Any ]:
 		"""Get image generation kwargs.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -6136,23 +6091,19 @@ elif mode == 'Images':
 		Returns:
 		    Dict[str, Any]: Return value produced by the operation."""
 		kwargs = get_image_common_kwargs( prompt )
-		kwargs.update( {
-				'size': st.session_state.get( 'image_size' ) or None,
-				'quality': st.session_state.get( 'image_quality' ) or None,
-				'style': st.session_state.get( 'image_style' ) or None,
-				'fmt': st.session_state.get( 'image_mime_type' )
-				       or st.session_state.get( 'image_output' )
-				       or None,
-				'mime_type': st.session_state.get( 'image_mime_type' ) or None,
-				'compression': st.session_state.get( 'image_compression' ) or None,
-				'background': st.session_state.get( 'image_backcolor' )
-				              or st.session_state.get( 'image_background' )
-				              or None,
-				'aspect_ratio': st.session_state.get( 'image_aspect_ratio' ) or None,
-				'response_modalities': st.session_state.get( 'image_modality' ) or None,
-				'grounded': st.session_state.get( 'image_grounded', False ),
-				'image_search': st.session_state.get( 'image_image_search', False ),
-		} )
+		kwargs.update( { 'size': st.session_state.get( 'image_size' ) or None,
+			'quality': st.session_state.get( 'image_quality' ) or None,
+			'style': st.session_state.get( 'image_style' ) or None,
+			'fmt': st.session_state.get( 'image_mime_type' ) or st.session_state.get(
+				'image_output' ) or None,
+			'mime_type': st.session_state.get( 'image_mime_type' ) or None,
+			'compression': st.session_state.get( 'image_compression' ) or None,
+			'background': st.session_state.get( 'image_backcolor' ) or st.session_state.get(
+				'image_background' ) or None,
+			'aspect_ratio': st.session_state.get( 'image_aspect_ratio' ) or None,
+			'response_modalities': st.session_state.get( 'image_modality' ) or None,
+			'grounded': st.session_state.get( 'image_grounded', False ),
+			'image_search': st.session_state.get( 'image_image_search', False ), } )
 		
 		return kwargs
 	
@@ -6160,8 +6111,10 @@ elif mode == 'Images':
 		"""Get image analysis kwargs.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -6171,18 +6124,12 @@ elif mode == 'Images':
 		Returns:
 		    Dict[str, Any]: Return value produced by the operation."""
 		kwargs = get_image_common_kwargs( prompt )
-		kwargs.update(
-			{
-					'path': path,
-					'image_path': path,
-					'detail': st.session_state.get( 'image_analysis_detail' )
-					          or st.session_state.get( 'image_detail' )
-					          or None,
-					'response_modalities': st.session_state.get( 'image_modality' ) or None,
-					'grounded': st.session_state.get( 'image_grounded', False ),
-					'image_search': st.session_state.get( 'image_image_search', False ),
-			}
-		)
+		kwargs.update( { 'path': path, 'image_path': path,
+			'detail': st.session_state.get( 'image_analysis_detail' ) or st.session_state.get(
+				'image_detail' ) or None,
+			'response_modalities': st.session_state.get( 'image_modality' ) or None,
+			'grounded': st.session_state.get( 'image_grounded', False ),
+			'image_search': st.session_state.get( 'image_image_search', False ), } )
 		
 		return kwargs
 	
@@ -6191,8 +6138,10 @@ elif mode == 'Images':
 		"""Get image edit kwargs.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -6203,12 +6152,8 @@ elif mode == 'Images':
 		Returns:
 		    Dict[str, Any]: Return value produced by the operation."""
 		kwargs = get_image_generation_kwargs( prompt )
-		kwargs.update( {
-				'path': path,
-				'image_path': path,
-				'mask_path': mask_path,
-				'mask': mask_path,
-		} )
+		kwargs.update(
+			{ 'path': path, 'image_path': path, 'mask_path': mask_path, 'mask': mask_path, } )
 		
 		return kwargs
 	
@@ -6216,7 +6161,8 @@ elif mode == 'Images':
 		"""Run image generation.
 		
 		Purpose:
-		    Performs the run_image_generation workflow using the inputs supplied by the caller and the
+		    Performs the run_image_generation workflow using the inputs supplied by the caller and
+		    the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -6226,18 +6172,18 @@ elif mode == 'Images':
 		Returns:
 		    Any: Return value produced by the operation."""
 		kwargs = get_image_generation_kwargs( prompt )
-		return call_existing_image_method(
-			instance=image,
+		return call_existing_image_method( instance=image,
 			method_names=[ 'generate', 'generate_image', 'create', 'create_image' ],
-			kwargs=kwargs
-		)
+			kwargs=kwargs )
 	
 	def run_image_analysis( prompt: str, path: str ) -> Any:
 		"""Run image analysis.
 		
 		Purpose:
-		    Performs the run_image_analysis workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the run_image_analysis workflow using the inputs supplied by the caller and
+		    the current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -6254,8 +6200,10 @@ elif mode == 'Images':
 		"""Run image editing.
 		
 		Purpose:
-		    Performs the run_image_editing workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the run_image_editing workflow using the inputs supplied by the caller and
+		    the current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -6287,33 +6235,31 @@ elif mode == 'Images':
 		
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
 			with st.expander( label='LLM Settings', icon='🧊', expanded=False, width='stretch' ):
-				llm_c1, llm_c2, llm_c3, llm_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+				llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+					border=True, gap='xxsmall' )
 				
 				# ---------- Image Mode ------------
 				with llm_c1:
 					st.selectbox( label='Image Mode',
-						options=[ 'Generation', 'Analysis', 'Editing' ],
-						key='image_mode', help='Available provider image workflows.',
-						index=None, placeholder='Options' )
+						options=[ 'Generation', 'Analysis', 'Editing' ], key='image_mode',
+						help='Available provider image workflows.', index=None,
+						placeholder='Options' )
 					image_mode = st.session_state.get( 'image_mode', '' )
 				
 				# ---------- Model ------------
 				with llm_c2:
 					image_model_options = get_provider_image_models( image_mode )
 					sanitize_image_selection( 'image_model', image_model_options, '' )
-					st.selectbox( label='Select Model',
-						options=image_model_options,
+					st.selectbox( label='Select Model', options=image_model_options,
 						key='image_model',
-						help='Required. Model used by the selected image workflow.',
-						index=None, placeholder='Options' )
+						help='Required. Model used by the selected image workflow.', index=None,
+						placeholder='Options' )
 				
 				# ---------- Analysis Model ------------
 				with llm_c3:
 					analysis_models = get_provider_image_models( 'Analysis' )
 					sanitize_image_selection( 'image_analysis_model', analysis_models, '' )
-					st.selectbox( label='Analysis Model',
-						options=analysis_models,
+					st.selectbox( label='Analysis Model', options=analysis_models,
 						key='image_analysis_model',
 						help='Optional. Separate model used for image analysis when supported.',
 						index=None, placeholder='Options' )
@@ -6334,21 +6280,20 @@ elif mode == 'Images':
 				
 				# ---------- Top-P ------------
 				with prm_c1:
-					st.slider( label='Top-P', key='image_top_percent',
-						min_value=0.0, max_value=1.0, step=0.01,
-						help=get_image_help( 'TOP_P' ) )
+					st.slider( label='Top-P', key='image_top_percent', min_value=0.0,
+						max_value=1.0,
+						step=0.01, help=get_image_help( 'TOP_P' ) )
 				
 				# ---------- Top-K ------------
 				with prm_c2:
-					st.slider( label='Top-K', key='image_top_k',
-						min_value=0, max_value=200, step=1,
+					st.slider( label='Top-K', key='image_top_k', min_value=0, max_value=200,
+						step=1,
 						help=get_image_help( 'TOP_K' ) )
 				
 				# ---------- Temperature ------------
 				with prm_c3:
-					st.slider( label='Temperature', key='image_temperature',
-						min_value=0.0, max_value=2.0, step=0.01,
-						help=get_image_help( 'TEMPERATURE' ) )
+					st.slider( label='Temperature', key='image_temperature', min_value=0.0,
+						max_value=2.0, step=0.01, help=get_image_help( 'TEMPERATURE' ) )
 				
 				# ---------- Frequency Penalty ------------
 				with prm_c4:
@@ -6368,65 +6313,60 @@ elif mode == 'Images':
 				
 				# ---------- Max Tokens ------------
 				with resp_c1:
-					st.slider( label='Max Tokens', key='image_max_tokens',
-						min_value=0, max_value=100000, step=500,
-						help=get_image_help( 'MAX_OUTPUT_TOKENS' ) )
+					st.slider( label='Max Tokens', key='image_max_tokens', min_value=0,
+						max_value=100000, step=500, help=get_image_help( 'MAX_OUTPUT_TOKENS' ) )
 				
 				# ---------- Compression ------------
 				with resp_c2:
-					st.slider( label='Compression', key='image_compression',
-						min_value=0.0, max_value=1.0, step=0.01,
+					st.slider( label='Compression', key='image_compression', min_value=0.0,
+						max_value=1.0, step=0.01,
 						help='Optional. Image compression when supported by the provider.' )
 				
 				st.button( label='Reset', key='image_inference_reset', width='stretch',
 					on_click=reset_image_inference_settings )
 			
-			with st.expander( label='Tools / Grounding Settings', icon='🔎',
-					expanded=False, width='stretch' ):
-				tool_c1, tool_c2, tool_c3, tool_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+			with st.expander( label='Tools / Grounding Settings', icon='🔎', expanded=False,
+					width='stretch' ):
+				tool_c1, tool_c2, tool_c3, tool_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+					border=True, gap='xxsmall' )
 				
 				# ---------- Tools ------------
 				with tool_c1:
 					tool_options = get_image_options( image, 'tool_options' )
 					sanitize_image_multiselect( 'image_tools', tool_options )
-					st.multiselect( label='Tools', options=tool_options,
-						key='image_tools', help=get_image_help( 'TOOLS' ),
-						placeholder='Options' )
+					st.multiselect( label='Tools', options=tool_options, key='image_tools',
+						help=get_image_help( 'TOOLS' ), placeholder='Options' )
 				
 				# ---------- Include ------------
 				with tool_c2:
 					include_options = get_image_options( image, 'include_options' )
 					sanitize_image_multiselect( 'image_include', include_options )
-					st.multiselect( label='Include', options=include_options,
-						key='image_include', help=get_image_help( 'INCLUDE' ),
-						placeholder='Options' )
+					st.multiselect( label='Include', options=include_options, key='image_include',
+						help=get_image_help( 'INCLUDE' ), placeholder='Options' )
 				
 				# ---------- Tool Choice ------------
 				with tool_c3:
 					choice_options = get_image_options( image, 'choice_options' )
 					sanitize_image_selection( 'image_tool_choice', choice_options, '' )
 					st.selectbox( label='Tool Choice', options=choice_options,
-						key='image_tool_choice', help=get_image_help( 'CHOICE' ),
-						index=None, placeholder='Options' )
+						key='image_tool_choice', help=get_image_help( 'CHOICE' ), index=None,
+						placeholder='Options' )
 				
 				# ---------- Max Calls ------------
 				with tool_c4:
-					st.slider( label='Max Calls', min_value=0, max_value=100,
-						step=1, key='image_max_calls',
-						help=get_image_help( 'MAX_TOOL_CALLS' ) )
+					st.slider( label='Max Calls', min_value=0, max_value=100, step=1,
+						key='image_max_calls', help=get_image_help( 'MAX_TOOL_CALLS' ) )
 				
-				ctx_c1, ctx_c2, ctx_c3, ctx_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+				ctx_c1, ctx_c2, ctx_c3, ctx_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+					border=True, gap='xxsmall' )
 				
 				# ---------- Gemini Grounding ------------
 				with ctx_c1:
 					grounding_supported = provider_name == 'Gemini'
 					if hasattr( image, 'supports_search_grounding' ):
 						try:
-							grounding_supported = bool(
-								image.supports_search_grounding(
-									st.session_state.get( 'image_model', '' ) ) )
+							grounding_supported = bool( image.supports_search_grounding(
+								st.session_state.get( 'image_model', '' ) ) )
 						except Exception:
 							grounding_supported = provider_name == 'Gemini'
 					
@@ -6442,9 +6382,8 @@ elif mode == 'Images':
 					image_search_supported = provider_name == 'Gemini'
 					if hasattr( image, 'supports_image_search' ):
 						try:
-							image_search_supported = bool(
-								image.supports_image_search(
-									st.session_state.get( 'image_model', '' ) ) )
+							image_search_supported = bool( image.supports_image_search(
+								st.session_state.get( 'image_model', '' ) ) )
 						except Exception:
 							image_search_supported = provider_name == 'Gemini'
 					
@@ -6464,13 +6403,13 @@ elif mode == 'Images':
 				
 				# ---------- Max Searches ------------
 				with ctx_c4:
-					st.slider( label='Max Searches', min_value=0, max_value=100,
-						step=1, key='image_max_searches',
+					st.slider( label='Max Searches', min_value=0, max_value=100, step=1,
+						key='image_max_searches',
 						help='Optional. Maximum image/web searches when supported.' )
 				
 				st.text_input( label='Allowed Domains', key='image_domains_input',
-					help=get_image_help( 'ALLOWED_DOMAINS' ),
-					width='stretch', placeholder='example.com,openai.com' )
+					help=get_image_help( 'ALLOWED_DOMAINS' ), width='stretch',
+					placeholder='example.com,openai.com' )
 				
 				st.button( label='Reset', key='image_tools_reset', width='stretch',
 					on_click=reset_image_tool_settings )
@@ -6485,9 +6424,9 @@ elif mode == 'Images':
 					size_options = get_image_options( image, 'size_options',
 						[ '1024x1024', '1024x1536', '1536x1024' ] )
 					sanitize_image_selection( 'image_size', size_options, '' )
-					st.selectbox( label='Image Size', options=size_options,
-						key='image_size', help='Optional. Generated or edited image size.',
-						index=None, placeholder='Options' )
+					st.selectbox( label='Image Size', options=size_options, key='image_size',
+						help='Optional. Generated or edited image size.', index=None,
+						placeholder='Options' )
 				
 				# ---------- Quality ------------
 				with img_c2:
@@ -6495,16 +6434,16 @@ elif mode == 'Images':
 						[ 'auto', 'standard', 'hd', 'low', 'medium', 'high' ] )
 					sanitize_image_selection( 'image_quality', quality_options, '' )
 					st.selectbox( label='Image Quality', options=quality_options,
-						key='image_quality', help='Optional. Image quality.',
-						index=None, placeholder='Options' )
+						key='image_quality', help='Optional. Image quality.', index=None,
+						placeholder='Options' )
 				
 				# ---------- Style ------------
 				with img_c3:
 					style_options = get_image_options( image, 'style_options' )
 					sanitize_image_selection( 'image_style', style_options, '' )
-					st.selectbox( label='Image Style', options=style_options,
-						key='image_style', help='Optional. Image style when supported.',
-						index=None, placeholder='Options' )
+					st.selectbox( label='Image Style', options=style_options, key='image_style',
+						help='Optional. Image style when supported.', index=None,
+						placeholder='Options' )
 				
 				# ---------- Background ------------
 				with img_c4:
@@ -6524,13 +6463,13 @@ elif mode == 'Images':
 					
 					sanitize_image_selection( 'image_mime_type', output_options, '' )
 					st.selectbox( label='MIME Format', options=output_options,
-						key='image_mime_type', help=get_image_help( 'IMAGE_RESPONSE' ),
-						index=None, placeholder='Options' )
-					st.session_state[ 'image_output' ] = st.session_state.get(
-						'image_mime_type', '' )
+						key='image_mime_type', help=get_image_help( 'IMAGE_RESPONSE' ), index=None,
+						placeholder='Options' )
+					st.session_state[ 'image_output' ] = st.session_state.get( 'image_mime_type',
+						'' )
 				
-				img2_c1, img2_c2, img2_c3 = st.columns(
-					[ 0.34, 0.33, 0.33 ], border=True, gap='xxsmall' )
+				img2_c1, img2_c2, img2_c3 = st.columns( [ 0.34, 0.33, 0.33 ], border=True,
+					gap='xxsmall' )
 				
 				# ---------- Aspect Ratio ------------
 				with img2_c1:
@@ -6539,8 +6478,8 @@ elif mode == 'Images':
 					sanitize_image_selection( 'image_aspect_ratio', aspect_options, '' )
 					st.selectbox( label='Aspect Ratio', options=aspect_options,
 						key='image_aspect_ratio',
-						help='Optional. Output aspect ratio when supported.',
-						index=None, placeholder='Options' )
+						help='Optional. Output aspect ratio when supported.', index=None,
+						placeholder='Options' )
 				
 				# ---------- Detail ------------
 				with img2_c2:
@@ -6548,8 +6487,7 @@ elif mode == 'Images':
 						[ 'auto', 'low', 'high' ] )
 					sanitize_image_selection( 'image_analysis_detail', detail_options, 'auto' )
 					st.selectbox( label='Analysis Detail', options=detail_options,
-						key='image_analysis_detail',
-						help='Optional. Image analysis detail level.',
+						key='image_analysis_detail', help='Optional. Image analysis detail level.',
 						index=None, placeholder='Options' )
 					st.session_state[ 'image_detail' ] = st.session_state.get(
 						'image_analysis_detail', '' )
@@ -6564,11 +6502,11 @@ elif mode == 'Images':
 					sanitize_image_selection( 'image_modality', modality_options, '' )
 					st.selectbox( label='Response Mode', options=modality_options,
 						key='image_modality',
-						help='Provider response modality for image workflows.',
-						index=None, placeholder='Options' )
+						help='Provider response modality for image workflows.', index=None,
+						placeholder='Options' )
 				
 				st.button( label='Reset', key='image_visual_reset', width='stretch',
-					on_click=reset_image_visual_settings )
+					on_click=reset_image_visual_settings )  #
 		
 		# ------------------------------------------------------------------
 		# Expander — Image System Instructions
@@ -6576,28 +6514,61 @@ elif mode == 'Images':
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
 				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
-			prompt_names = fetch_prompt_names( cfg.DB_PATH )
-			if not prompt_names:
-				prompt_names = [ 'No Templates Found' ]
 			
+			# ------------------------------------------------------------------
+			# Image Prompt Categories
+			# ------------------------------------------------------------------
+			image_prompt_categories = fetch_prompt_categories( 'Images' )
+			current_image_category = st.session_state.get( 'image_prompt_category' )
+			
+			if current_image_category not in image_prompt_categories:
+				st.session_state[ 'image_prompt_category' ] = None
+			
+			selected_image_category = st.session_state.get( 'image_prompt_category' )
+			image_prompt_options = fetch_prompt_options(
+				selected_image_category ) if selected_image_category else [ ]
+			
+			image_prompt_ids = [ int( option[ 'PromptsId' ] ) for option in image_prompt_options ]
+			
+			if st.session_state.get( 'image_prompt_id' ) not in image_prompt_ids:
+				st.session_state[ 'image_prompt_id' ] = None
+			
+			# ------------------------------------------------------------------
+			# Instruction Text
+			# ------------------------------------------------------------------
 			with in_left:
 				st.text_area( label='Enter Text', height=80, width='stretch',
 					help=get_image_help( 'SYSTEM_INSTRUCTIONS' ),
-					key='image_system_instructions' )
+					key='image_system_instructions', )
 			
+			# ------------------------------------------------------------------
+			# Prompt Template Selection
+			# ------------------------------------------------------------------
 			with in_right:
-				st.selectbox( label='Use Template', options=prompt_names,
-					key='instructions', on_change=load_image_instruction_template,
-					index=None )
+				st.selectbox( label='Category', options=image_prompt_categories, index=None,
+					key='image_prompt_category', placeholder='Select Category',
+					help='Limits prompt templates to categories associated with image workflows.',
+					on_change=reset_prompt_template_selection, args=('image_prompt_id',), )
+				
+				st.selectbox( label='Use Template', options=image_prompt_ids, index=None,
+					key='image_prompt_id', placeholder='Select Template',
+					disabled=not image_prompt_ids,
+					format_func=lambda prompt_id: format_prompt_option( prompt_id,
+						image_prompt_options, ),
+					help='Loads the selected prompt into the Images system-instruction field.',
+					on_change=load_image_instruction_template, )
 			
+			# ------------------------------------------------------------------
+			# Instruction Actions
+			# ------------------------------------------------------------------
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
 			with btn_c1:
 				st.button( label='Clear Instructions', width='stretch',
-					on_click=clear_image_instructions )
+					on_click=clear_image_instructions, )
 			
 			with btn_c2:
 				st.button( label='XML <-> Markdown', width='stretch',
-					on_click=convert_image_system_instructions )
+					on_click=convert_image_system_instructions, )
 		
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 		
@@ -6612,7 +6583,6 @@ elif mode == 'Images':
 				placeholder='Describe the image to generate.' )
 			
 			gen_c1, gen_c2 = st.columns( [ 0.50, 0.50 ] )
-			
 			with gen_c1:
 				if st.button( 'Generate Image', key='generate_image', width='stretch' ):
 					with st.spinner( 'Generating…' ):
@@ -6644,8 +6614,8 @@ elif mode == 'Images':
 							st.error( f'Image generation failed: {err.info}' )
 			
 			with gen_c2:
-				if st.button( 'Clear Messages', key='clear_image_generation',
-						width='stretch', on_click=clear_image_messages ):
+				if st.button( 'Clear Messages', key='clear_image_generation', width='stretch',
+						on_click=clear_image_messages ):
 					st.rerun( )
 		
 		with tab_analyze:
@@ -6664,7 +6634,6 @@ elif mode == 'Images':
 				placeholder='Ask a question about the uploaded image.' )
 			
 			ana_c1, ana_c2 = st.columns( [ 0.50, 0.50 ] )
-			
 			with ana_c1:
 				if st.button( 'Analyze Image', key='analyze_image', width='stretch' ):
 					with st.spinner( 'Analyzing image…' ):
@@ -6673,7 +6642,8 @@ elif mode == 'Images':
 								st.warning( 'Upload an image before analyzing.' )
 							elif not isinstance( analysis_prompt,
 									str ) or not analysis_prompt.strip( ):
-								st.warning( 'Enter an analysis prompt before analyzing the image.' )
+								st.warning( 'Enter an analysis prompt before analyzing the '
+								            'image.' )
 							elif not st.session_state.get(
 									'image_model' ) and not st.session_state.get(
 								'image_analysis_model' ):
@@ -6701,8 +6671,8 @@ elif mode == 'Images':
 							st.error( f'Analysis Failed: {err.info}' )
 			
 			with ana_c2:
-				if st.button( 'Clear Messages', key='clear_image_analysis',
-						width='stretch', on_click=clear_image_messages ):
+				if st.button( 'Clear Messages', key='clear_image_analysis', width='stretch',
+						on_click=clear_image_messages ):
 					st.rerun( )
 		
 		with tab_edit:
@@ -6726,8 +6696,8 @@ elif mode == 'Images':
 				st.image( uploaded_mask, caption='Uploaded mask preview', width=250 )
 			
 			render_image_messages( )
-			edit_prompt = st.text_area( label='Image Editing Prompt',
-				key='image_edit_prompt', height=120, width='stretch',
+			edit_prompt = st.text_area( label='Image Editing Prompt', key='image_edit_prompt',
+				height=120, width='stretch',
 				placeholder='Describe how the uploaded image should be edited.' )
 			
 			edit_c1, edit_c2 = st.columns( [ 0.50, 0.50 ] )
@@ -6764,8 +6734,8 @@ elif mode == 'Images':
 							st.error( f'Image edit failed: {err.info}' )
 			
 			with edit_c2:
-				if st.button( 'Clear Messages', key='clear_image_edit',
-						width='stretch', on_click=clear_image_messages ):
+				if st.button( 'Clear Messages', key='clear_image_edit', width='stretch',
+						on_click=clear_image_messages ):
 					st.rerun( )
 
 # ======================================================================================
@@ -6835,8 +6805,10 @@ elif mode == 'Audio':
 		"""Get audio help.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -6848,12 +6820,14 @@ elif mode == 'Audio':
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
 	def get_audio_options( instance: Any, attr_name: str,
-			fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
+		fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
 		"""Get audio options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -6885,8 +6859,10 @@ elif mode == 'Audio':
 		"""Audio has method.
 		
 		Purpose:
-		    Performs the audio_has_method workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the audio_has_method workflow using the inputs supplied by the caller and the
+		    current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -6906,8 +6882,10 @@ elif mode == 'Audio':
 		"""Get audio task options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Returns:
@@ -6929,8 +6907,10 @@ elif mode == 'Audio':
 		"""Get audio task instance.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -6950,8 +6930,10 @@ elif mode == 'Audio':
 		"""Get audio model options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+ downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -6972,8 +6954,10 @@ elif mode == 'Audio':
 		"""Get audio language options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -6993,8 +6977,10 @@ elif mode == 'Audio':
 		"""Get audio voice options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+ downstream logic
 		    can consume it consistently.
 		
 		Returns:
@@ -7009,8 +6995,10 @@ elif mode == 'Audio':
 		"""Get audio format options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+ downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -7043,8 +7031,10 @@ elif mode == 'Audio':
 		"""Get audio include options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+ downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -7060,8 +7050,10 @@ elif mode == 'Audio':
 		"""Get audio sample rate options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+ downstream logic
 		    can consume it consistently.
 		
 		Returns:
@@ -7085,8 +7077,10 @@ elif mode == 'Audio':
 		"""Get audio bit rate options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+downstream logic
 		    can consume it consistently.
 		
 		Returns:
@@ -7106,11 +7100,13 @@ elif mode == 'Audio':
 		
 		return values
 	
-	def sanitize_audio_selection( key: str, valid_options: List[ Any ], default: Any = '' ) -> None:
+	def sanitize_audio_selection( key: str, valid_options: List[ Any ], default: Any = '' ) -> \
+			None:
 		"""Sanitize audio selection.
 		
 		Purpose:
-		    Performs the sanitize_audio_selection workflow using the inputs supplied by the caller and the
+		    Performs the sanitize_audio_selection workflow using the inputs supplied by the caller
+		    and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -7120,7 +7116,8 @@ elif mode == 'Audio':
 		    default (Any): Default value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		current_value = st.session_state.get( key, default )
 		
 		if current_value in [ None, '' ]:
@@ -7133,7 +7130,8 @@ elif mode == 'Audio':
 		"""Sanitize audio multiselect.
 		
 		Purpose:
-		    Performs the sanitize_audio_multiselect workflow using the inputs supplied by the caller and the
+		    Performs the sanitize_audio_multiselect workflow using the inputs supplied by the
+		    caller and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -7142,21 +7140,22 @@ elif mode == 'Audio':
 		    valid_options (List[str]): Valid options value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		current_values = st.session_state.get( key, [ ] )
 		
 		if not isinstance( current_values, list ):
 			st.session_state[ key ] = [ ]
 			return
 		
-		st.session_state[ key ] = [ item for item in current_values
-		                            if item in valid_options ]
+		st.session_state[ key ] = [ item for item in current_values if item in valid_options ]
 	
 	def parse_audio_domains( value: Any ) -> List[ str ]:
 		"""Parse audio domains.
 		
 		Purpose:
-		    Performs the parse_audio_domains workflow using the inputs supplied by the caller and the
+		    Performs the parse_audio_domains workflow using the inputs supplied by the caller and
+		    the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -7172,8 +7171,10 @@ elif mode == 'Audio':
 		"""Save audio upload.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application workflows. The
-		    function standardizes file handling and returns a stable reference for downstream processing.
+		    Persists or stages input data so it can be used by later provider or application
+		    workflows. The
+		    function standardizes file handling and returns a stable reference for downstream
+				processing.
 		
 		Args:
 		    uploaded_file (Any): Uploaded file value used by the operation.
@@ -7212,7 +7213,8 @@ elif mode == 'Audio':
 		"""Append audio message.
 		
 		Purpose:
-		    Performs the append_audio_message workflow using the inputs supplied by the caller and the
+		    Performs the append_audio_message workflow using the inputs supplied by the caller and
+		    the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -7221,27 +7223,26 @@ elif mode == 'Audio':
 		    content (str): Content value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		if not isinstance( st.session_state.get( 'audio_messages' ), list ):
 			st.session_state[ 'audio_messages' ] = [ ]
 		
-		st.session_state[ 'audio_messages' ].append(
-			{
-					'role': role,
-					'content': content,
-			}
-		)
+		st.session_state[ 'audio_messages' ].append( { 'role': role, 'content': content, } )
 	
 	def render_audio_messages( ) -> None:
 		"""Render audio messages.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    Renders the requested user interface element or result block in Streamlit using
+		    normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and
+		    data-processing
 		    steps so the screen output remains predictable.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+			value."""
 		if not isinstance( st.session_state.get( 'audio_messages' ), list ):
 			st.session_state[ 'audio_messages' ] = [ ]
 		
@@ -7256,11 +7257,14 @@ elif mode == 'Audio':
 		"""Clear audio messages.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		st.session_state[ 'audio_messages' ] = [ ]
 		st.session_state[ 'audio_output' ] = ''
 		st.session_state[ 'audio_output_bytes' ] = None
@@ -7272,11 +7276,14 @@ elif mode == 'Audio':
 		"""Clear audio instructions.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		st.session_state[ 'audio_system_instructions' ] = ''
 		st.session_state[ 'instructions' ] = ''
 	
@@ -7284,12 +7291,15 @@ elif mode == 'Audio':
 		"""Convert audio system instructions.
 		
 		Purpose:
-		    Performs the convert_audio_system_instructions workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    Performs the convert_audio_system_instructions workflow using the inputs supplied by
+		    the caller
+		    and the current runtime configuration. The function keeps this behavior isolated so
+		    related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		text_value = st.session_state.get( 'audio_system_instructions', '' )
 		if not isinstance( text_value, str ) or not text_value.strip( ):
 			return
@@ -7306,38 +7316,40 @@ elif mode == 'Audio':
 		"""Load audio instruction template.
 		
 		Purpose:
-		    Performs the load_audio_instruction_template workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Loads the selected Audio-mode prompt template into the Audio-mode system-instruction
+		    field using the stable prompt identifier stored in session state.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		name = st.session_state.get( 'instructions' )
-		if name and name != 'No Templates Found':
-			prompt_text = fetch_prompt_text( cfg.DB_PATH, name )
-			if prompt_text is not None:
-				st.session_state[ 'audio_system_instructions' ] = prompt_text
+		    None: This function performs its work through side effects and does not return a value.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			load_prompt_template( prompt_id_key='audio_prompt_id',
+				instructions_key='audio_system_instructions', )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Audio Mode'
+			ex.method = 'load_audio_instruction_template( ) -> None'
+			Logger( ).write( ex )
+			raise ex
 	
 	def reset_audio_task_controls( ) -> None:
 		"""Reset audio task controls.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+ manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		for key in [
-				'audio_task',
-				'audio_model',
-				'audio_language',
-				'audio_voice',
-				'audio_format',
-				'audio_response_format',
-				'audio_speed',
-				'audio_sample_rate',
-				'audio_bit_rate',
-		]:
+		    None: This function performs its work through side effects and does not return a
+		value."""
+		for key in [ 'audio_task', 'audio_model', 'audio_language', 'audio_voice', 'audio_format',
+			'audio_response_format', 'audio_speed', 'audio_sample_rate', 'audio_bit_rate', ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
@@ -7345,24 +7357,18 @@ elif mode == 'Audio':
 		"""Reset audio inference controls.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		for key in [
-				'audio_temperature',
-				'audio_top_percent',
-				'audio_top_k',
-				'audio_frequency_penalty',
-				'audio_presence_penalty',
-				'audio_presense_penalty',
-				'audio_max_tokens',
-				'audio_include',
-				'audio_stream',
-				'audio_store',
-				'audio_background',
-		]:
+		    None: This function performs its work through side effects and does not return a
+		    value."""
+		for key in [ 'audio_temperature', 'audio_top_percent', 'audio_top_k',
+			'audio_frequency_penalty', 'audio_presence_penalty', 'audio_presense_penalty',
+			'audio_max_tokens', 'audio_include', 'audio_stream', 'audio_store',
+			'audio_background', ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
@@ -7370,21 +7376,17 @@ elif mode == 'Audio':
 		"""Reset audio playback controls.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+ logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		for key in [
-				'audio_start_time',
-				'audio_end_time',
-				'audio_loop',
-				'audio_autoplay',
-				'audio_output_bytes',
-				'audio_output_path',
-				'audio_upload_path',
-				'audio_recorded_path',
-		]:
+		    None: This function performs its work through side effects and does not return a
+		    value."""
+		for key in [ 'audio_start_time', 'audio_end_time', 'audio_loop', 'audio_autoplay',
+			'audio_output_bytes', 'audio_output_path', 'audio_upload_path',
+			'audio_recorded_path', ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
@@ -7392,15 +7394,18 @@ elif mode == 'Audio':
 		"""Update audio usage.
 		
 		Purpose:
-		    Performs the update_audio_usage workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the update_audio_usage workflow using the inputs supplied by the caller and
+		    the current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
 		    instance (Any): Instance value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+ value."""
 		try:
 			response = getattr( instance, 'response', None )
 			usage = getattr( response, 'usage', None )
@@ -7425,11 +7430,12 @@ elif mode == 'Audio':
 			st.session_state[ 'audio_last_usage' ] = { }
 	
 	def call_existing_audio_method( instance: Any, method_names: List[ str ],
-			kwargs: Dict[ str, Any ] ) -> Any:
+		kwargs: Dict[ str, Any ] ) -> Any:
 		"""Call existing audio method.
 		
 		Purpose:
-		    Performs the call_existing_audio_method workflow using the inputs supplied by the caller and the
+		    Performs the call_existing_audio_method workflow using the inputs supplied by the
+		    caller and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -7458,15 +7464,11 @@ elif mode == 'Audio':
 				parameters = signature.parameters
 				accepted_names = set( parameters.keys( ) )
 				accepts_kwargs = any(
-					parameter.kind == inspect.Parameter.VAR_KEYWORD
-					for parameter in parameters.values( )
-				)
+					parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in
+						parameters.values( ) )
 				
-				candidate_kwargs = {
-						key: value
-						for key, value in (kwargs or { }).items( )
-						if value is not None and value != '' and value != [ ]
-				}
+				candidate_kwargs = { key: value for key, value in (kwargs or { }).items( ) if
+					value is not None and value != '' and value != [ ] }
 				
 				if 'output_format' in accepted_names and 'output_format' not in candidate_kwargs:
 					if candidate_kwargs.get( 'format' ):
@@ -7512,34 +7514,24 @@ elif mode == 'Audio':
 					elif candidate_kwargs.get( 'path' ):
 						candidate_kwargs[ 'file_path' ] = candidate_kwargs[ 'path' ]
 				
-				if 'target_language' in accepted_names and 'target_language' not in candidate_kwargs:
+				if (
+						'target_language' in accepted_names and 'target_language' not in
+						candidate_kwargs):
 					if candidate_kwargs.get( 'language' ):
 						candidate_kwargs[ 'target_language' ] = candidate_kwargs[ 'language' ]
 				
 				if accepts_kwargs:
 					return method( **candidate_kwargs )
 				
-				method_kwargs = {
-						key: value
-						for key, value in candidate_kwargs.items( )
-						if key in accepted_names
-				}
+				method_kwargs = { key: value for key, value in candidate_kwargs.items( ) if
+					key in accepted_names }
 				
-				required_names = [
-						name
-						for name, parameter in parameters.items( )
-						if parameter.default == inspect.Parameter.empty
-						   and parameter.kind in [
-								   inspect.Parameter.POSITIONAL_OR_KEYWORD,
-								   inspect.Parameter.KEYWORD_ONLY,
-						   ]
-				]
+				required_names = [ name for name, parameter in parameters.items( ) if
+					parameter.default == inspect.Parameter.empty and parameter.kind in [
+						inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.KEYWORD_ONLY,
+					] ]
 				
-				missing_names = [
-						name
-						for name in required_names
-						if name not in method_kwargs
-				]
+				missing_names = [ name for name in required_names if name not in method_kwargs ]
 				
 				if missing_names:
 					continue
@@ -7560,8 +7552,10 @@ elif mode == 'Audio':
 		"""Normalize audio text result.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
+		    Normalizes incoming values into a predictable representation for application
+ processing. The
+		    function reduces provider, user-input, or serialization differences before values are
+		    stored or
 		    displayed.
 		
 		Args:
@@ -7594,8 +7588,10 @@ elif mode == 'Audio':
 		"""Normalize audio bytes result.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
+		    Normalizes incoming values into a predictable representation for application
+		    processing. The
+		    function reduces provider, user-input, or serialization differences before values are
+		    stored or
 		    displayed.
 		
 		Args:
@@ -7631,13 +7627,16 @@ elif mode == 'Audio':
 		
 		return None
 	
-	def get_audio_common_kwargs( path: Optional[ str ] = None,
-			prompt: Optional[ str ] = None ) -> Dict[ str, Any ]:
+	def get_audio_common_kwargs( path: Optional[ str ] = None, prompt: Optional[ str ] = None ) \
+			-> \
+			Dict[ str, Any ]:
 		"""Get audio common kwargs.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -7650,34 +7649,31 @@ elif mode == 'Audio':
 		if domains:
 			st.session_state[ 'audio_domains' ] = domains
 		
-		return {
-				'path': path,
-				'model': st.session_state.get( 'audio_model' ),
-				'language': st.session_state.get( 'audio_language' ),
-				'prompt': prompt,
-				'temperature': st.session_state.get( 'audio_temperature' ),
-				'top_p': st.session_state.get( 'audio_top_percent' ),
-				'top_k': st.session_state.get( 'audio_top_k' ),
-				'frequency': st.session_state.get( 'audio_frequency_penalty' ),
-				'presence': st.session_state.get( 'audio_presence_penalty' ),
-				'max_tokens': st.session_state.get( 'audio_max_tokens' ),
-				'store': st.session_state.get( 'audio_store' ),
-				'stream': st.session_state.get( 'audio_stream' ),
-				'background': st.session_state.get( 'audio_background' ),
-				'instruct': st.session_state.get( 'audio_system_instructions', '' ),
-				'response_format': st.session_state.get( 'audio_response_format' ) or None,
-				'include': st.session_state.get( 'audio_include', [ ] ),
-				'mime_type': st.session_state.get( 'audio_format' ) or None,
-				'allowed_domains': st.session_state.get( 'audio_domains', [ ] ),
-				'start_time': st.session_state.get( 'audio_start_time' ),
-				'end_time': st.session_state.get( 'audio_end_time' ),
-		}
+		return { 'path': path, 'model': st.session_state.get( 'audio_model' ),
+			'language': st.session_state.get( 'audio_language' ), 'prompt': prompt,
+			'temperature': st.session_state.get( 'audio_temperature' ),
+			'top_p': st.session_state.get( 'audio_top_percent' ),
+			'top_k': st.session_state.get( 'audio_top_k' ),
+			'frequency': st.session_state.get( 'audio_frequency_penalty' ),
+			'presence': st.session_state.get( 'audio_presence_penalty' ),
+			'max_tokens': st.session_state.get( 'audio_max_tokens' ),
+			'store': st.session_state.get( 'audio_store' ),
+			'stream': st.session_state.get( 'audio_stream' ),
+			'background': st.session_state.get( 'audio_background' ),
+			'instruct': st.session_state.get( 'audio_system_instructions', '' ),
+			'response_format': st.session_state.get( 'audio_response_format' ) or None,
+			'include': st.session_state.get( 'audio_include', [ ] ),
+			'mime_type': st.session_state.get( 'audio_format' ) or None,
+			'allowed_domains': st.session_state.get( 'audio_domains', [ ] ),
+			'start_time': st.session_state.get( 'audio_start_time' ),
+			'end_time': st.session_state.get( 'audio_end_time' ), }
 	
 	def run_audio_transcription( path: str, prompt: Optional[ str ] = None ) -> str:
 		"""Run audio transcription.
 		
 		Purpose:
-		    Performs the run_audio_transcription workflow using the inputs supplied by the caller and the
+		    Performs the run_audio_transcription workflow using the inputs supplied by the caller
+		    and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -7688,11 +7684,8 @@ elif mode == 'Audio':
 		Returns:
 		    str: Return value produced by the operation."""
 		kwargs = get_audio_common_kwargs( path=path, prompt=prompt )
-		result = call_existing_audio_method(
-			instance=transcriber,
-			method_names=[ 'transcribe', 'create_transcription', 'create' ],
-			kwargs=kwargs
-		)
+		result = call_existing_audio_method( instance=transcriber,
+			method_names=[ 'transcribe', 'create_transcription', 'create' ], kwargs=kwargs )
 		text_result = normalize_audio_text_result( result )
 		st.session_state[ 'audio_output' ] = text_result
 		st.session_state[ 'audio_last_result' ] = { 'task': 'Transcribe', 'text': text_result }
@@ -7703,7 +7696,8 @@ elif mode == 'Audio':
 		"""Run audio translation.
 		
 		Purpose:
-		    Performs the run_audio_translation workflow using the inputs supplied by the caller and the
+		    Performs the run_audio_translation workflow using the inputs supplied by the caller
+		    and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -7714,11 +7708,8 @@ elif mode == 'Audio':
 		Returns:
 		    str: Return value produced by the operation."""
 		kwargs = get_audio_common_kwargs( path=path, prompt=prompt )
-		result = call_existing_audio_method(
-			instance=translator,
-			method_names=[ 'translate', 'create_translation', 'create' ],
-			kwargs=kwargs
-		)
+		result = call_existing_audio_method( instance=translator,
+			method_names=[ 'translate', 'create_translation', 'create' ], kwargs=kwargs )
 		text_result = normalize_audio_text_result( result )
 		st.session_state[ 'audio_output' ] = text_result
 		st.session_state[ 'audio_last_result' ] = { 'task': 'Translate', 'text': text_result }
@@ -7729,8 +7720,10 @@ elif mode == 'Audio':
 		"""Run audio tts.
 		
 		Purpose:
-		    Performs the run_audio_tts workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the run_audio_tts workflow using the inputs supplied by the caller and the
+		    current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -7738,40 +7731,29 @@ elif mode == 'Audio':
 		
 		Returns:
 		    Optional[bytes]: Return value produced by the operation."""
-		kwargs = {
-				'text': text,
-				'prompt': text,
-				'model': st.session_state.get( 'audio_model' ),
-				'format': st.session_state.get( 'audio_response_format' )
-				          or st.session_state.get( 'audio_format' )
-				          or None,
-				'voice': st.session_state.get( 'audio_voice' ) or None,
-				'speed': st.session_state.get( 'audio_speed' ),
-				'language': st.session_state.get( 'audio_language' ) or 'auto',
-				'instruct': st.session_state.get( 'audio_system_instructions', '' ),
-				'file_path': st.session_state.get( 'audio_output_path' ) or None,
-				'sample_rate': st.session_state.get( 'audio_sample_rate' ) or None,
-				'bit_rate': st.session_state.get( 'audio_bit_rate' ) or None,
-				'temperature': st.session_state.get( 'audio_temperature' ),
-				'top_p': st.session_state.get( 'audio_top_percent' ),
-				'frequency': st.session_state.get( 'audio_frequency_penalty' ),
-				'presence': st.session_state.get( 'audio_presence_penalty' ),
-				'max_tokens': st.session_state.get( 'audio_max_tokens' ),
-				'store': st.session_state.get( 'audio_store' ),
-				'stream': st.session_state.get( 'audio_stream' ),
-				'background': st.session_state.get( 'audio_background' ),
-		}
-		result = call_existing_audio_method(
-			instance=tts,
-			method_names=[ 'create_speech', 'synthesize', 'generate', 'create' ],
-			kwargs=kwargs
-		)
+		kwargs = { 'text': text, 'prompt': text, 'model': st.session_state.get( 'audio_model' ),
+			'format': st.session_state.get( 'audio_response_format' ) or st.session_state.get(
+				'audio_format' ) or None, 'voice': st.session_state.get( 'audio_voice' ) or None,
+			'speed': st.session_state.get( 'audio_speed' ),
+			'language': st.session_state.get( 'audio_language' ) or 'auto',
+			'instruct': st.session_state.get( 'audio_system_instructions', '' ),
+			'file_path': st.session_state.get( 'audio_output_path' ) or None,
+			'sample_rate': st.session_state.get( 'audio_sample_rate' ) or None,
+			'bit_rate': st.session_state.get( 'audio_bit_rate' ) or None,
+			'temperature': st.session_state.get( 'audio_temperature' ),
+			'top_p': st.session_state.get( 'audio_top_percent' ),
+			'frequency': st.session_state.get( 'audio_frequency_penalty' ),
+			'presence': st.session_state.get( 'audio_presence_penalty' ),
+			'max_tokens': st.session_state.get( 'audio_max_tokens' ),
+			'store': st.session_state.get( 'audio_store' ),
+			'stream': st.session_state.get( 'audio_stream' ),
+			'background': st.session_state.get( 'audio_background' ), }
+		result = call_existing_audio_method( instance=tts,
+			method_names=[ 'create_speech', 'synthesize', 'generate', 'create' ], kwargs=kwargs )
 		audio_bytes = normalize_audio_bytes_result( result )
 		st.session_state[ 'audio_output_bytes' ] = audio_bytes
-		st.session_state[ 'audio_last_result' ] = {
-				'task': 'Text-to-Speech',
-				'bytes': len( audio_bytes ) if audio_bytes else 0,
-		}
+		st.session_state[ 'audio_last_result' ] = { 'task': 'Text-to-Speech',
+			'bytes': len( audio_bytes ) if audio_bytes else 0, }
 		update_audio_usage( tts )
 		return audio_bytes
 	
@@ -7819,14 +7801,13 @@ elif mode == 'Audio':
 				# ---------- Model ------------
 				with aud_c2:
 					st.selectbox( label='Model', options=model_options, key='audio_model',
-						placeholder='Options', index=None,
-						help='Task-aware Audio API model.' )
+						placeholder='Options', index=None, help='Task-aware Audio API model.' )
 				
 				# ---------- Language / Voice ------------
 				with aud_c3:
 					if audio_task == 'Text-to-Speech':
-						st.selectbox( label='Voice', options=voice_options,
-							key='audio_voice', placeholder='Options', index=None,
+						st.selectbox( label='Voice', options=voice_options, key='audio_voice',
+							placeholder='Options', index=None,
 							help='Text-to-speech voice when supported.' )
 					else:
 						st.selectbox( label='Language', options=language_options,
@@ -7857,8 +7838,8 @@ elif mode == 'Audio':
 				
 				# ---------- Bit Rate ------------
 				with sr_c2:
-					st.selectbox( label='Bit Rate', options=bit_rate_options,
-						key='audio_bit_rate', index=None, placeholder='Options',
+					st.selectbox( label='Bit Rate', options=bit_rate_options, key='audio_bit_rate',
+						index=None, placeholder='Options',
 						help='Optional TTS MP3 bit rate. Zero/blank means provider default.' )
 				
 				st.button( label='Reset', key='audio_task_reset', width='stretch',
@@ -7876,48 +7857,42 @@ elif mode == 'Audio':
 				
 				# ---------- Temperature ------------
 				with inf_c2:
-					st.slider( label='Temperature', min_value=0.0, max_value=2.0,
-						step=0.01, key='audio_temperature',
-						help=get_audio_help( 'TEMPERATURE' ) )
+					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
+						key='audio_temperature', help=get_audio_help( 'TEMPERATURE' ) )
 				
 				# ---------- Frequency Penalty ------------
 				with inf_c3:
-					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
-						step=0.01, key='audio_frequency_penalty',
-						help=get_audio_help( 'FREQUENCY_PENALTY' ) )
+					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='audio_frequency_penalty', help=get_audio_help( 'FREQUENCY_PENALTY' ) )
 				
 				# ---------- Presence Penalty ------------
 				with inf_c4:
-					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0,
-						step=0.01, key='audio_presence_penalty',
-						help=get_audio_help( 'PRESENCE_PENALTY' ) )
+					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='audio_presence_penalty', help=get_audio_help( 'PRESENCE_PENALTY' ) )
 					st.session_state[ 'audio_presense_penalty' ] = st.session_state.get(
 						'audio_presence_penalty', 0.0 )
 				
 				# ---------- Max Tokens ------------
 				with inf_c5:
-					st.slider( label='Max Tokens', min_value=0, max_value=100000,
-						step=500, key='audio_max_tokens',
-						help=get_audio_help( 'MAX_OUTPUT_TOKENS' ) )
+					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+						key='audio_max_tokens', help=get_audio_help( 'MAX_OUTPUT_TOKENS' ) )
 				
-				ctl_c1, ctl_c2, ctl_c3, ctl_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], gap='xxsmall', border=True )
+				ctl_c1, ctl_c2, ctl_c3, ctl_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+					gap='xxsmall', border=True )
 				
 				# ---------- Include ------------
 				with ctl_c1:
-					st.multiselect( label='Include', options=include_options,
-						key='audio_include', placeholder='Options',
-						help=get_audio_help( 'INCLUDE' ) )
+					st.multiselect( label='Include', options=include_options, key='audio_include',
+						placeholder='Options', help=get_audio_help( 'INCLUDE' ) )
 				
 				# ---------- Store ------------
 				with ctl_c2:
-					st.toggle( label='Store', key='audio_store',
-						help=get_audio_help( 'STORE' ) )
+					st.toggle( label='Store', key='audio_store', help=get_audio_help( 'STORE' ) )
 				
 				# ---------- Stream ------------
 				with ctl_c3:
-					st.toggle( label='Stream', key='audio_stream',
-						help=get_audio_help( 'STREAM' ) )
+					st.toggle( label='Stream', key='audio_stream', help=get_audio_help( 'STREAM'
+					) )
 				
 				# ---------- Background ------------
 				with ctl_c4:
@@ -7929,8 +7904,8 @@ elif mode == 'Audio':
 			
 			with st.expander( label='Playback Settings', icon='🔊', expanded=False,
 					width='stretch' ):
-				play_c1, play_c2, play_c3, play_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], gap='xxsmall', border=True )
+				play_c1, play_c2, play_c3, play_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+					gap='xxsmall', border=True )
 				
 				# ---------- Start Time ------------
 				with play_c1:
@@ -7955,36 +7930,69 @@ elif mode == 'Audio':
 						help='Autoplay playback when Streamlit supports it.' )
 				
 				st.button( label='Reset', key='audio_playback_reset', width='stretch',
-					on_click=reset_audio_playback_controls )
-		
-		# ------------------------------------------------------------------
+					on_click=reset_audio_playback_controls )  #  #
+			# ------------------------------------------------------------------
 		# Expander — Audio System Instructions
 		# ------------------------------------------------------------------
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
 				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
-			prompt_names = fetch_prompt_names( cfg.DB_PATH )
-			if not prompt_names:
-				prompt_names = [ 'No Templates Found' ]
 			
+			# ------------------------------------------------------------------
+			# Audio Prompt Categories
+			# ------------------------------------------------------------------
+			audio_prompt_categories = fetch_prompt_categories( 'Audio' )
+			current_audio_category = st.session_state.get( 'audio_prompt_category' )
+			
+			if current_audio_category not in audio_prompt_categories:
+				st.session_state[ 'audio_prompt_category' ] = None
+			
+			selected_audio_category = st.session_state.get( 'audio_prompt_category' )
+			audio_prompt_options = fetch_prompt_options(
+				selected_audio_category ) if selected_audio_category else [ ]
+			
+			audio_prompt_ids = [ int( option[ 'PromptsId' ] ) for option in audio_prompt_options ]
+			
+			if st.session_state.get( 'audio_prompt_id' ) not in audio_prompt_ids:
+				st.session_state[ 'audio_prompt_id' ] = None
+			
+			# ------------------------------------------------------------------
+			# Instruction Text
+			# ------------------------------------------------------------------
 			with in_left:
 				st.text_area( label='Enter Text', height=80, width='stretch',
-					key='audio_system_instructions',
-					help=get_audio_help( 'SYSTEM_INSTRUCTIONS' ) )
+					key='audio_system_instructions', help=get_audio_help( 'SYSTEM_INSTRUCTIONS'
+					), )
 			
+			# ------------------------------------------------------------------
+			# Prompt Template Selection
+			# ------------------------------------------------------------------
 			with in_right:
-				st.selectbox( label='Use Template', options=prompt_names,
-					key='instructions', on_change=load_audio_instruction_template,
-					index=None )
+				st.selectbox( label='Category', options=audio_prompt_categories, index=None,
+					key='audio_prompt_category', placeholder='Select Category',
+					help='Limits prompt templates to categories associated with audio workflows.',
+					on_change=reset_prompt_template_selection, args=('audio_prompt_id',), )
+				
+				st.selectbox( label='Use Template', options=audio_prompt_ids, index=None,
+					key='audio_prompt_id', placeholder='Select Template',
+					disabled=not audio_prompt_ids,
+					format_func=lambda prompt_id: format_prompt_option( prompt_id,
+						audio_prompt_options, ),
+					help='Loads the selected prompt into the Audio system-instruction field.',
+					on_change=load_audio_instruction_template, )
 			
+			# ------------------------------------------------------------------
+			# Instruction Actions
+			# ------------------------------------------------------------------
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
+			
 			with btn_c1:
 				st.button( label='Clear Instructions', width='stretch',
-					on_click=clear_audio_instructions )
+					on_click=clear_audio_instructions, )
 			
 			with btn_c2:
 				st.button( label='XML <-> Markdown', width='stretch',
-					on_click=convert_audio_system_instructions )
+					on_click=convert_audio_system_instructions, )
 		
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 		
@@ -8000,24 +8008,13 @@ elif mode == 'Audio':
 			# ------------------------------------------------------------------
 			# Audio Input Controls
 			# ------------------------------------------------------------------
-			audio_input_c1, audio_input_c2 = st.columns(
-				[ 0.50, 0.50 ], gap='small' )
+			audio_input_c1, audio_input_c2 = st.columns( [ 0.50, 0.50 ], gap='small' )
 			
 			# ---------- Upload Audio ------------
 			with audio_input_c1:
 				uploaded_audio = st.file_uploader( label='Upload Audio',
-					type=[
-							'wav',
-							'mp3',
-							'mpeg',
-							'mp4',
-							'm4a',
-							'webm',
-							'ogg',
-							'flac',
-					],
-					accept_multiple_files=False,
-					key='audio_uploaded_file' )
+					type=[ 'wav', 'mp3', 'mpeg', 'mp4', 'm4a', 'webm', 'ogg', 'flac', ],
+					accept_multiple_files=False, key='audio_uploaded_file' )
 			
 			# ---------- Record Audio ------------
 			with audio_input_c2:
@@ -8030,27 +8027,18 @@ elif mode == 'Audio':
 			# ------------------------------------------------------------------
 			# Audio Prompt Controls
 			# ------------------------------------------------------------------
-			audio_prompt_c1, audio_prompt_c2 = st.columns(
-				[ 0.50, 0.50 ], gap='small' )
+			audio_prompt_c1, audio_prompt_c2 = st.columns( [ 0.50, 0.50 ], gap='small' )
 			
 			# ---------- Transcription Prompt ------------
 			with audio_prompt_c1:
-				transcription_prompt = st.text_area(
-					label='Transcription Prompt',
-					key='transcription_prompt',
-					height=80,
-					width='stretch',
-					placeholder=(
-							'Optional transcription prompt or vocabulary/context hints.'
-					) )
+				transcription_prompt = st.text_area( label='Transcription Prompt',
+					key='transcription_prompt', height=80, width='stretch',
+					placeholder=('Optional transcription prompt or vocabulary/context hints.') )
 			
 			# ---------- Translation Prompt ------------
 			with audio_prompt_c2:
-				translation_prompt = st.text_area(
-					label='Translation Prompt',
-					key='translation_prompt',
-					height=80,
-					width='stretch',
+				translation_prompt = st.text_area( label='Translation Prompt',
+					key='translation_prompt', height=80, width='stretch',
 					placeholder='Optional translation prompt or instructions.' )
 			
 			# ------------------------------------------------------------------
@@ -8095,8 +8083,8 @@ elif mode == 'Audio':
 								st.warning( 'Select a model before processing audio.' )
 							
 							elif selected_task == 'Transcribe':
-								result_text = run_audio_transcription(
-									audio_path, transcription_prompt )
+								result_text = run_audio_transcription( audio_path,
+									transcription_prompt )
 								if result_text:
 									append_audio_message( 'user',
 										'Transcribe uploaded/recorded audio.' )
@@ -8122,22 +8110,20 @@ elif mode == 'Audio':
 			
 			with process_c2:
 				if st.button( 'Clear Messages', key='audio_clear_process_messages',
-						width='stretch', on_click=clear_audio_messages ):
+						width='stretch',
+						on_click=clear_audio_messages ):
 					st.rerun( )
 			
 			if st.session_state.get( 'audio_output' ):
 				st.download_button( label='Download Text Output',
-					data=st.session_state.get( 'audio_output', '' ),
-					file_name='audio_output.txt',
-					mime='text/plain',
-					width='stretch' )
+					data=st.session_state.get( 'audio_output', '' ), file_name='audio_output.txt',
+					mime='text/plain', width='stretch' )
 		
 		with tab_tts:
 			render_audio_messages( )
 			
-			tts_input = st.text_area( label='Enter Text to Synthesize',
-				key='audio_tts_input', height=160, width='stretch',
-				placeholder='Enter text for speech synthesis.' )
+			tts_input = st.text_area( label='Enter Text to Synthesize', key='audio_tts_input',
+				height=160, width='stretch', placeholder='Enter text for speech synthesis.' )
 			
 			tts_c1, tts_c2 = st.columns( [ 0.50, 0.50 ] )
 			
@@ -8158,8 +8144,8 @@ elif mode == 'Audio':
 									append_audio_message( 'user', tts_input.strip( ) )
 									append_audio_message( 'assistant',
 										'Text-to-speech audio generated successfully.' )
-									st.audio( audio_bytes,
-										format=f'audio/{st.session_state.get( "audio_response_format", "mp3" )}' )
+									st.audio( audio_bytes, format=f'audio/'
+									                              f'{st.session_state.get( "audio_response_format", "mp3" )}' )
 								else:
 									st.warning( 'No audio bytes were returned.' )
 						
@@ -8168,16 +8154,15 @@ elif mode == 'Audio':
 							st.error( f'Text-to-speech failed: {err.info}' )
 			
 			with tts_c2:
-				if st.button( 'Clear Messages', key='audio_clear_tts_messages',
-						width='stretch', on_click=clear_audio_messages ):
+				if st.button( 'Clear Messages', key='audio_clear_tts_messages', width='stretch',
+						on_click=clear_audio_messages ):
 					st.rerun( )
 			
 			if st.session_state.get( 'audio_output_bytes' ):
 				audio_format = st.session_state.get( 'audio_response_format', 'mp3' ) or 'mp3'
 				st.download_button( label='Download Audio',
 					data=st.session_state.get( 'audio_output_bytes' ),
-					file_name=f'tts_output.{audio_format}',
-					mime=f'audio/{audio_format}',
+					file_name=f'tts_output.{audio_format}', mime=f'audio/{audio_format}',
 					width='stretch' )
 		
 		with tab_playback:
@@ -8186,20 +8171,19 @@ elif mode == 'Audio':
 			
 			if st.session_state.get( 'audio_output_bytes' ):
 				st.audio( st.session_state.get( 'audio_output_bytes' ),
-					format=f'audio/{st.session_state.get( "audio_response_format", "mp3" ) or "mp3"}' )
+					format=f'audio/{st.session_state.get( "audio_response_form"
+					                                      "at", "mp3" ) or "mp3"}' )
 			
-			playback_path = (
-					st.session_state.get( 'audio_upload_path' ) or
-					st.session_state.get( 'audio_recorded_path' ) or
-					st.session_state.get( 'audio_output_path' ) or '')
+			playback_path = (st.session_state.get( 'audio_upload_path' ) or st.session_state.get(
+				'audio_recorded_path' ) or st.session_state.get( 'audio_output_path' ) or '')
 			
 			if playback_path:
 				try:
 					st.audio( playback_path,
 						start_time=float( st.session_state.get( 'audio_start_time', 0.0 ) or 0.0 ),
-						end_time=float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 )
-						if float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ) > 0
-						else None,
+						end_time=float(
+							st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ) if float(
+							st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ) > 0 else None,
 						loop=bool( st.session_state.get( 'audio_loop', False ) ),
 						autoplay=bool( st.session_state.get( 'audio_autoplay', False ) ) )
 				except TypeError:
@@ -8212,9 +8196,9 @@ elif mode == 'Audio':
 				try:
 					st.audio( local_audio,
 						start_time=float( st.session_state.get( 'audio_start_time', 0.0 ) or 0.0 ),
-						end_time=float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 )
-						if float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ) > 0
-						else None,
+						end_time=float(
+							st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ) if float(
+							st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ) > 0 else None,
 						loop=bool( st.session_state.get( 'audio_loop', False ) ),
 						autoplay=bool( st.session_state.get( 'audio_autoplay', False ) ) )
 				except TypeError:
@@ -8321,11 +8305,10 @@ elif mode == 'Document Q&A':
 					with llm_c2:
 						include_options = list( docqna.include_options )
 						set_docqna_include = st.multiselect( label='Include:',
-							options=include_options,
-							key='docqna_include', help=cfg.INCLUDE, placeholder='Options' )
+							options=include_options, key='docqna_include', help=cfg.INCLUDE,
+							placeholder='Options' )
 						
-						docqna_include = [ d.strip( ) for d in set_docqna_include
-						                   if d.strip( ) ]
+						docqna_include = [ d.strip( ) for d in set_docqna_include if d.strip( ) ]
 						
 						docqna_include = st.session_state[ 'docqna_include' ]
 					
@@ -8334,18 +8317,21 @@ elif mode == 'Document Q&A':
 						docqna = get_chat_module( provider_name )
 						
 						def get_docqna_options( instance: Any, attr_name: str,
-								fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
+							fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
 							"""Get docqna options.
 							
 							Purpose:
-							    Returns normalized information for the application component. The method provides a stable view
-							    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+							    Returns normalized information for the application component. The
+							    method provides a stable view
+							    of provider capabilities, stored state, or response metadata so UI
+							    controls and downstream logic
 							    can consume it consistently.
 							
 							Args:
 							    instance (Any): Instance value used by the operation.
 							    attr_name (str): Attr name value used by the operation.
-							    fallback (Optional[List[Any]]): Fallback value used by the operation.
+							    fallback (Optional[List[Any]]): Fallback value used by the
+									operation.
 							
 							Returns:
 							    List[Any]: Return value produced by the operation."""
@@ -8384,7 +8370,8 @@ elif mode == 'Document Q&A':
 							reasoning_options = [ 'none' ]
 						set_docqna_reasoning = st.selectbox( label='Reasoning',
 							options=reasoning_options, key='doc_reasoning', index=0,
-							help='Optional reasoning level when supported by the active provider.' )
+							help='Optional reasoning level when supported by the active '
+							     'provider.' )
 						
 						docqna_reasoning = st.session_state[ 'docqna_reasoning' ]
 					
@@ -8392,15 +8379,15 @@ elif mode == 'Document Q&A':
 					with llm_c4:
 						choice_options = list( docqna.choice_options )
 						set_docqna_choice = st.multiselect( label='Tool Choice:',
-							options=choice_options,
-							key='docqna_tool_choice', help=cfg.INCLUDE, placeholder='Options' )
+							options=choice_options, key='docqna_tool_choice', help=cfg.INCLUDE,
+							placeholder='Options' )
 						
 						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
 					
 					# ------------- Reset Settings ----------
 					if st.button( label='Reset', key='docqna_model_reset', width='stretch' ):
-						for key in [ 'docqna_model', 'docqna_include',
-						             'docqna_reasoning', 'docqna_tool_choice' ]:
+						for key in [ 'docqna_model', 'docqna_include', 'docqna_reasoning',
+							'docqna_tool_choice' ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						
@@ -8423,8 +8410,7 @@ elif mode == 'Document Q&A':
 						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0,
 							max_value=1.0,
 							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ),
-							step=0.01,
-							help=cfg.TEMPERATURE, key='docqna_temperature' )
+							step=0.01, help=cfg.TEMPERATURE, key='docqna_temperature' )
 						
 						docqna_temperature = st.session_state[ 'docqna_temperature' ]
 					
@@ -8439,8 +8425,8 @@ elif mode == 'Document Q&A':
 					
 					# ------------- Max tokens  ------------------
 					with prm_c4:
-						set_docqna_tokens = st.slider( label='Max Tokens',
-							min_value=0, max_value=100000, step=500,
+						set_docqna_tokens = st.slider( label='Max Tokens', min_value=0,
+							max_value=100000, step=500,
 							value=int( st.session_state.get( 'docqna_max_tokens', 0 ) ),
 							help=cfg.MAX_OUTPUT_TOKENS, key='docqna_max_tokens' )
 						
@@ -8449,30 +8435,29 @@ elif mode == 'Document Q&A':
 					# ------------- Reset Setting ----------
 					if st.button( label='Reset', key='docqna_inference_reset', width='stretch' ):
 						for key in [ 'docqna_top_percent', 'docqna_max_tokens',
-						             'docqna_temperature', 'docqna_number', ]:
+							'docqna_temperature', 'docqna_number', ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						
 						st.rerun( )
 				
 				with st.expander( label='Tool Settings', expanded=False, width='stretch' ):
-					tool_c1, tool_c2, tool_c3, tool_c4 = st.columns(
-						[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='medium' )
+					tool_c1, tool_c2, tool_c3, tool_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+						border=True, gap='medium' )
 					
 					# ------------- Asynchronous  ------------------
 					with tool_c1:
 						set_docqna_parallel = st.toggle( label='Asynchronous Tool Calls',
-							key='docqna_parallel_tools',
-							help=cfg.PARALLEL_TOOL_CALLS )
+							key='docqna_parallel_tools', help=cfg.PARALLEL_TOOL_CALLS )
 						
 						docqna_parallel_tools = st.session_state[ 'docqna_parallel_tools' ]
 					
 					# ------------- Max Tool Calls ------------------
 					with tool_c2:
 						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0,
-							max_value=4,
-							value=int( st.session_state.get( 'docqna_max_calls', 0 ) ), step=1,
-							help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
+							max_value=4, value=int( st.session_state.get( 'docqna_max_calls',
+								0 ) ),
+							step=1, help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
 						
 						docqna_max_calls = st.session_state[ 'docqna_max_calls' ]
 					
@@ -8492,23 +8477,23 @@ elif mode == 'Document Q&A':
 						set_docqna_tools = st.multiselect( label='Tools:', options=tool_options,
 							key='docqna_tools', help=cfg.TOOLS, placeholder='Options' )
 						
-						docqna_tools = [ d.strip( ) for d in set_docqna_tools
-						                 if d.strip( ) ]
+						docqna_tools = [ d.strip( ) for d in set_docqna_tools if d.strip( ) ]
 						
 						docqna_tools = st.session_state[ 'docqna_tools' ]
 					
 					# ------------- Reset Settings -------------
 					if st.button( label='Reset', key='docqna_tools_reset', width='stretch' ):
 						for key in [ 'docqna_parallel_tools', 'docqna_max_searches',
-						             'docqna_tools', 'docqna_max_calls' ]:
+							'docqna_tools',
+							'docqna_max_calls' ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						
 						st.rerun( )
 				
 				with st.expander( label='Response Settings', expanded=False, width='stretch' ):
-					resp_c1, resp_c2, resp_c3, resp_c4 = st.columns(
-						[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='medium' )
+					resp_c1, resp_c2, resp_c3, resp_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+						border=True, gap='medium' )
 					
 					# ------------- Stream  ------------------
 					with resp_c1:
@@ -8527,25 +8512,23 @@ elif mode == 'Document Q&A':
 					# ------------- Background  ------------------
 					with resp_c3:
 						set_docqna_background = st.toggle( label='Background',
-							key='docqna_background',
-							help=cfg.BACKGROUND_MODE )
+							key='docqna_background', help=cfg.BACKGROUND_MODE )
 						
 						docqna_background = st.session_state[ 'docqna_background' ]
 					
 					# ------------- Domains  ------------------
 					with resp_c4:
 						set_docqna_domains = st.text_input( label='Allowed Websites',
-							key='docqna_domains',
-							help=cfg.STOP_SEQUENCE, width='stretch',
+							key='docqna_domains', help=cfg.STOP_SEQUENCE, width='stretch',
 							placeholder='Enter Web Domains' )
 						
-						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' )
-						                   if d.strip( ) ]
+						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' ) if
+							d.strip( ) ]
 					
 					# ------------- Reset Settings  ------------------
 					if st.button( label='Reset', key='docqna_response_reset', width='stretch' ):
-						for key in [ 'docqna_stream', 'docqna_store',
-						             'docqna_background', 'docqna_domains' ]:
+						for key in [ 'docqna_stream', 'docqna_store', 'docqna_background',
+							'docqna_domains' ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						# If using separated UI key for stops
@@ -8568,9 +8551,8 @@ elif mode == 'Document Q&A':
 					with llm_c1:
 						model_options = list( docqna.model_options )
 						set_docqna_model = st.selectbox( label='Select Model',
-							options=model_options,
-							key='docqna_model', placeholder='Options', index=None,
-							help='REQUIRED. Text Generation model used by the AI', )
+							options=model_options, key='docqna_model', placeholder='Options',
+							index=None, help='REQUIRED. Text Generation model used by the AI', )
 						
 						docqna_model = st.session_state[ 'docqna_model' ]
 					
@@ -8578,11 +8560,10 @@ elif mode == 'Document Q&A':
 					with llm_c2:
 						include_options = list( docqna.include_options )
 						set_docqna_include = st.multiselect( label='Include',
-							options=include_options,
-							key='docqna_include', help=cfg.INCLUDE, placeholder='Options' )
+							options=include_options, key='docqna_include', help=cfg.INCLUDE,
+							placeholder='Options' )
 						
-						docqna_include = [ d.strip( ) for d in set_docqna_include
-						                   if d.strip( ) ]
+						docqna_include = [ d.strip( ) for d in set_docqna_include if d.strip( ) ]
 						
 						docqna_include = st.session_state[ 'docqna_include' ]
 					
@@ -8591,10 +8572,11 @@ elif mode == 'Document Q&A':
 						set_docqna_domains = st.text_input( label='Allowed Domains',
 							key='docqna_domains_input',
 							value=','.join( st.session_state.get( 'docqna_domains', [ ] ) ),
-							help=cfg.ALLOWED_DOMAINS, width='stretch', placeholder='Enter Domains' )
+							help=cfg.ALLOWED_DOMAINS, width='stretch', placeholder='Enter '
+							                                                       'Domains' )
 						
-						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' )
-						                   if d.strip( ) ]
+						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' ) if
+							d.strip( ) ]
 						
 						st.session_state[ 'docqna_domains' ] = docqna_domains
 					
@@ -8602,8 +8584,8 @@ elif mode == 'Document Q&A':
 					with llm_c4:
 						reasoning_options = list( docqna.reasoning_options )
 						set_docqna_reasoning = st.selectbox( label='Thinking Level:',
-							options=reasoning_options, key='docqna_reasoning',
-							help=cfg.REASONING, index=None, placeholder='Options' )
+							options=reasoning_options, key='docqna_reasoning', help=cfg.REASONING,
+							index=None, placeholder='Options' )
 						
 						docqna_reasoning = st.session_state[ 'docqna_reasoning' ]
 					
@@ -8619,7 +8601,7 @@ elif mode == 'Document Q&A':
 					# ---------- Reset Settings ------------
 					if st.button( label='Reset', key='docqna_model_reset', width='stretch' ):
 						for key in [ 'docqna_model', 'docqna_include', 'docqna_domains',
-						             'docqna_reasoning', 'docqna_media_resolution' ]:
+							'docqna_reasoning', 'docqna_media_resolution' ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						
@@ -8660,8 +8642,7 @@ elif mode == 'Document Q&A':
 						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0,
 							max_value=1.0,
 							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ),
-							step=0.01,
-							help=cfg.TEMPERATURE, key='docqna_temperature' )
+							step=0.01, help=cfg.TEMPERATURE, key='docqna_temperature' )
 						
 						docqna_temperature = st.session_state[ 'docqna_temperature' ]
 					
@@ -8669,16 +8650,14 @@ elif mode == 'Document Q&A':
 					with prm_c5:
 						set_docqna_topk = st.slider( label='Top K', min_value=0, max_value=20,
 							value=int( st.session_state.get( 'docqna_top_k', 0 ) ), step=1,
-							help=cfg.TOP_K,
-							key='docqna_top_k' )
+							help=cfg.TOP_K, key='docqna_top_k' )
 						
 						docqna_top_k = st.session_state[ 'docqna_top_k' ]
 					
 					# ---------- Reset Settings ------------
 					if st.button( label='Reset', key='docqna_inference_reset', width='stretch' ):
 						for key in [ 'docqna_top_percent', 'docqna_frequency_penalty',
-						             'docqna_presense_penalty', 'docqna_temperature',
-						             'docqna_top_k', ]:
+							'docqna_presense_penalty', 'docqna_temperature', 'docqna_top_k', ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						
@@ -8691,8 +8670,8 @@ elif mode == 'Document Q&A':
 					# ---------- Number/Candidates ------------
 					with tool_c1:
 						set_docqna_number = st.slider( label='Candidates', min_value=0,
-							max_value=50,
-							value=int( st.session_state.get( 'docqna_number', 0 ) ), step=1,
+							max_value=50, value=int( st.session_state.get( 'docqna_number', 0 ) ),
+							step=1,
 							help='Optional. Upper limit on the responses returned by the model',
 							key='docqna_number' )
 						
@@ -8711,9 +8690,8 @@ elif mode == 'Document Q&A':
 					with tool_c3:
 						choice_options = list( docqna.choice_options )
 						set_docqna_choice = st.selectbox( label='Calling Mode',
-							options=choice_options,
-							key='docqna_tool_choice', help=cfg.CHOICE, index=None,
-							placeholder='Options' )
+							options=choice_options, key='docqna_tool_choice', help=cfg.CHOICE,
+							index=None, placeholder='Options' )
 						
 						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
 					
@@ -8721,11 +8699,10 @@ elif mode == 'Document Q&A':
 					with tool_c4:
 						tool_options = list( docqna.tool_options )
 						set_docqna_tools = st.multiselect( label='Available Tools',
-							options=tool_options,
-							key='docqna_tools', help=cfg.TOOLS, placeholder='Options' )
+							options=tool_options, key='docqna_tools', help=cfg.TOOLS,
+							placeholder='Options' )
 						
-						docqna_tools = [ d.strip( ) for d in set_docqna_tools
-						                 if d.strip( ) ]
+						docqna_tools = [ d.strip( ) for d in set_docqna_tools if d.strip( ) ]
 						
 						docqna_tools = st.session_state[ 'docqna_tools' ]
 					
@@ -8733,19 +8710,19 @@ elif mode == 'Document Q&A':
 					with tool_c5:
 						modality_options = list( docqna.modality_options )
 						set_docqna_modalities = st.multiselect( label='Response Modalities',
-							options=modality_options,
-							key='docqna_modalities', help='Optional. Modality of the response',
-							placeholder='Options' )
+							options=modality_options, key='docqna_modalities',
+							help='Optional. Modality of the response', placeholder='Options' )
 						
-						docqna_modalities = [ d.strip( ) for d in set_docqna_modalities
-						                      if d.strip( ) ]
+						docqna_modalities = [ d.strip( ) for d in set_docqna_modalities if
+							d.strip( ) ]
 						
 						docqna_modalities = st.session_state[ 'docqna_modalities' ]
 					
 					# ---------- Reset Settings ------------
 					if st.button( label='Reset', key='docqna_tools_reset', width='stretch' ):
-						for key in [ 'docqna_parallel_tools', 'docqna_tool_choice', 'docqna_number',
-						             'docqna_tools', 'docqna_max_calls', 'docqna_modalities' ]:
+						for key in [ 'docqna_parallel_tools', 'docqna_tool_choice',
+							'docqna_number',
+							'docqna_tools', 'docqna_max_calls', 'docqna_modalities' ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						
@@ -8772,19 +8749,18 @@ elif mode == 'Document Q&A':
 					# ---------- Background ------------
 					with resp_c3:
 						set_docqna_background = st.toggle( label='Background',
-							key='docqna_background',
-							help=cfg.BACKGROUND_MODE )
+							key='docqna_background', help=cfg.BACKGROUND_MODE )
 						
 						docqna_background = st.session_state[ 'docqna_background' ]
 					
 					# ---------- Stops ------------
 					with resp_c4:
 						set_docqna_stops = st.text_input( label='Stop Sequences',
-							key='docqna_stops',
-							help=cfg.STOP_SEQUENCE, width='stretch', placeholder='Enter Stops' )
+							key='docqna_stops', help=cfg.STOP_SEQUENCE, width='stretch',
+							placeholder='Enter Stops' )
 						
-						docqna_stops = [ d.strip( ) for d in set_docqna_stops.split( ',' )
-						                 if d.strip( ) ]
+						docqna_stops = [ d.strip( ) for d in set_docqna_stops.split( ',' ) if
+							d.strip( ) ]
 					
 					# ---------- Max Tokens ------------
 					with resp_c5:
@@ -8798,8 +8774,7 @@ elif mode == 'Document Q&A':
 					# ---------- Reset Settings ------------
 					if st.button( label='Reset', key='docqna_response_reset', width='stretch' ):
 						for key in [ 'docqna_stream', 'docqna_store', 'docqna_background',
-						             'docqna_stops',
-						             'docqna_max_tokens' ]:
+							'docqna_stops', 'docqna_max_tokens' ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						# If using separated UI key for stops
@@ -8822,9 +8797,8 @@ elif mode == 'Document Q&A':
 					with llm_c1:
 						model_options = list( docqna.model_options )
 						set_docqna_model = st.selectbox( label='Select Model',
-							options=model_options,
-							key='docqna_model', placeholder='Options', index=None,
-							help='REQUIRED. Text Generation model used by the AI', )
+							options=model_options, key='docqna_model', placeholder='Options',
+							index=None, help='REQUIRED. Text Generation model used by the AI', )
 						
 						docqna_model = st.session_state[ 'docqna_model' ]
 					
@@ -8832,11 +8806,10 @@ elif mode == 'Document Q&A':
 					with llm_c2:
 						include_options = list( docqna.include_options )
 						set_docqna_include = st.multiselect( label='Include:',
-							options=include_options,
-							key='docqna_include', help=cfg.INCLUDE, placeholder='Options' )
+							options=include_options, key='docqna_include', help=cfg.INCLUDE,
+							placeholder='Options' )
 						
-						docqna_include = [ d.strip( ) for d in set_docqna_include
-						                   if d.strip( ) ]
+						docqna_include = [ d.strip( ) for d in set_docqna_include if d.strip( ) ]
 						
 						docqna_include = st.session_state[ 'docqna_include' ]
 					
@@ -8845,10 +8818,11 @@ elif mode == 'Document Q&A':
 						set_docqna_domains = st.text_input( label='Allowed Domains',
 							key='docqna_domains_input',
 							value=','.join( st.session_state.get( 'docqna_domains', [ ] ) ),
-							help=cfg.ALLOWED_DOMAINS, width='stretch', placeholder='Enter Domains' )
+							help=cfg.ALLOWED_DOMAINS, width='stretch', placeholder='Enter '
+							                                                       'Domains' )
 						
-						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' )
-						                   if d.strip( ) ]
+						docqna_domains = [ d.strip( ) for d in set_docqna_domains.split( ',' ) if
+							d.strip( ) ]
 						
 						st.session_state[ 'docqna_domains' ] = docqna_domains
 					
@@ -8856,15 +8830,15 @@ elif mode == 'Document Q&A':
 					with llm_c4:
 						reasoning_options = list( docqna.reasoning_options )
 						set_docqna_reasoning = st.selectbox( label='Reasoning Effort:',
-							options=reasoning_options, key='docqna_reasoning',
-							help=cfg.REASONING, index=None, placeholder='Options' )
+							options=reasoning_options, key='docqna_reasoning', help=cfg.REASONING,
+							index=None, placeholder='Options' )
 						
 						docqna_reasoning = st.session_state[ 'docqna_reasoning' ]
 					
 					# ---------- Reset Settings ------------
 					if st.button( label='Reset', key='docqna_model_reset', width='stretch' ):
 						for key in [ 'docqna_model', 'docqna_include', 'docqna_domains',
-						             'docqna_reasoning' ]:
+							'docqna_reasoning' ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						
@@ -8905,8 +8879,7 @@ elif mode == 'Document Q&A':
 						set_docqna_temperature = st.slider( label='Temperature', min_value=0.0,
 							max_value=1.0,
 							value=float( st.session_state.get( 'docqna_temperature', 0.0 ) ),
-							step=0.01,
-							help=cfg.TEMPERATURE, key='docqna_temperature' )
+							step=0.01, help=cfg.TEMPERATURE, key='docqna_temperature' )
 						
 						docqna_temperature = st.session_state[ 'docqna_temperature' ]
 					
@@ -8922,31 +8895,29 @@ elif mode == 'Document Q&A':
 					# ---------- Reset Settings ------------
 					if st.button( label='Reset', key='docqna_inference_reset', width='stretch' ):
 						for key in [ 'docqna_top_percent', 'docqna_frequency_penalty',
-						             'docqna_presense_penalty', 'docqna_temperature',
-						             'docqna_number', ]:
+							'docqna_presense_penalty', 'docqna_temperature', 'docqna_number', ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						
 						st.rerun( )
 				
 				with st.expander( label='Tool Settings', expanded=False, width='stretch' ):
-					tool_c1, tool_c2, tool_c3, tool_c4 = st.columns(
-						[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='medium' )
+					tool_c1, tool_c2, tool_c3, tool_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+						border=True, gap='medium' )
 					
 					# ---------- Allow Parallel ------------
 					with tool_c1:
 						set_docqna_parallel = st.toggle( label='Asychronous Calls',
-							key='docqna_parallel_tools',
-							help=cfg.PARALLEL_TOOL_CALLS )
+							key='docqna_parallel_tools', help=cfg.PARALLEL_TOOL_CALLS )
 						
 						docqna_parallel_tools = st.session_state[ 'docqna_parallel_tools' ]
 					
 					# ---------- Max Calls ------------
 					with tool_c2:
 						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0,
-							max_value=5,
-							value=int( st.session_state.get( 'docqna_max_calls', 0 ) ), step=1,
-							help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
+							max_value=5, value=int( st.session_state.get( 'docqna_max_calls',
+								0 ) ),
+							step=1, help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
 						
 						docqna_max_calls = st.session_state[ 'docqna_max_calls' ]
 					
@@ -8954,9 +8925,8 @@ elif mode == 'Document Q&A':
 					with tool_c3:
 						choice_options = list( docqna.choice_options )
 						set_docqna_choice = st.selectbox( label='Tool Choice:',
-							options=choice_options,
-							key='docqna_tool_choice', help=cfg.CHOICE, index=None,
-							placeholder='Options' )
+							options=choice_options, key='docqna_tool_choice', help=cfg.CHOICE,
+							index=None, placeholder='Options' )
 						
 						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
 					
@@ -8964,18 +8934,17 @@ elif mode == 'Document Q&A':
 					with tool_c4:
 						tool_options = list( docqna.tool_options )
 						set_docqna_tools = st.multiselect( label='Available Tools',
-							options=tool_options,
-							key='docqna_tools', help=cfg.TOOLS, placeholder='Options' )
+							options=tool_options, key='docqna_tools', help=cfg.TOOLS,
+							placeholder='Options' )
 						
-						docqna_tools = [ d.strip( ) for d in set_docqna_tools
-						                 if d.strip( ) ]
+						docqna_tools = [ d.strip( ) for d in set_docqna_tools if d.strip( ) ]
 						
 						docqna_tools = st.session_state[ 'docqna_tools' ]
 					
 					# ---------- Reset Settings ------------
 					if st.button( label='Reset', key='docqna_tools_reset', width='stretch' ):
-						for key in [ 'docqna_parallel_tools', 'docqna_tool_choice',
-						             'docqna_tools', 'docqna_max_calls' ]:
+						for key in [ 'docqna_parallel_tools', 'docqna_tool_choice', 'docqna_tools',
+							'docqna_max_calls' ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						
@@ -9002,19 +8971,18 @@ elif mode == 'Document Q&A':
 					# ---------- Background ------------
 					with resp_c3:
 						set_docqna_background = st.toggle( label='Background',
-							key='docqna_background',
-							help=cfg.BACKGROUND_MODE )
+							key='docqna_background', help=cfg.BACKGROUND_MODE )
 						
 						docqna_background = st.session_state[ 'docqna_background' ]
 					
 					# ---------- Stops ------------
 					with resp_c4:
 						set_docqna_stops = st.text_input( label='Stop Sequences',
-							key='docqna_stops',
-							help=cfg.STOP_SEQUENCE, width='stretch', placeholder='Enter Stops' )
+							key='docqna_stops', help=cfg.STOP_SEQUENCE, width='stretch',
+							placeholder='Enter Stops' )
 						
-						docqna_stops = [ d.strip( ) for d in set_docqna_stops.split( ',' )
-						                 if d.strip( ) ]
+						docqna_stops = [ d.strip( ) for d in set_docqna_stops.split( ',' ) if
+							d.strip( ) ]
 					
 					# ---------- Max Tokens ------------
 					with resp_c5:
@@ -9028,8 +8996,7 @@ elif mode == 'Document Q&A':
 					# ---------- Reset Settings ------------
 					if st.button( label='Reset', key='docqna_response_reset', width='stretch' ):
 						for key in [ 'docqna_stream', 'docqna_store', 'docqna_background',
-						             'docqna_stops',
-						             'docqna_max_tokens' ]:
+							'docqna_stops', 'docqna_max_tokens' ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						# If using separated UI key for stops
@@ -9041,7 +9008,8 @@ elif mode == 'Document Q&A':
 		# ------------------------------------------------------------------
 		# Expander — DocQA System Instructions
 		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			prompt_names = fetch_prompt_names( cfg.DB_PATH )
 			if not prompt_names:
@@ -9059,8 +9027,8 @@ elif mode == 'Document Q&A':
 						st.session_state[ 'docqna_system_instructions' ] = text
 			
 			with in_right:
-				st.selectbox( 'Select Template', prompt_names,
-					key='instructions', on_change=_on_template_change, index=None )
+				st.selectbox( 'Select Template', prompt_names, key='instructions',
+					on_change=_on_template_change, index=None )
 			
 			def _on_clear( ) -> None:
 				st.session_state[ 'docqna_system_instructions' ] = ''
@@ -9146,8 +9114,10 @@ elif mode == 'Embeddings':
 		"""Get embedding help.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -9159,12 +9129,14 @@ elif mode == 'Embeddings':
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
 	def get_embedding_options( instance: Any, attr_name: str,
-			fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
+		fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
 		"""Get embedding options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -9196,8 +9168,10 @@ elif mode == 'Embeddings':
 		"""Normalize embedding text.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
+		    Normalizes incoming values into a predictable representation for application
+			processing. The
+		    function reduces provider, user-input, or serialization differences before values are
+		    stored or
 		    displayed.
 		
 		Args:
@@ -9214,7 +9188,8 @@ elif mode == 'Embeddings':
 		"""Chunk embedding text.
 		
 		Purpose:
-		    Performs the chunk_embedding_text workflow using the inputs supplied by the caller and the
+		    Performs the chunk_embedding_text workflow using the inputs supplied by the caller and
+		    the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -9263,8 +9238,10 @@ elif mode == 'Embeddings':
 		"""Normalize embedding vectors.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
+		    Normalizes incoming values into a predictable representation for application
+		    processing. The
+		    function reduces provider, user-input, or serialization differences before values are
+ stored or
 		    displayed.
 		
 		Args:
@@ -9305,18 +9282,12 @@ elif mode == 'Embeddings':
 				return rows
 			
 			if hasattr( first, 'embedding' ):
-				return [
-						[ float( value ) for value in getattr( item, 'embedding' ) ]
-						for item in vectors
-						if hasattr( item, 'embedding' )
-				]
+				return [ [ float( value ) for value in getattr( item, 'embedding' ) ] for item in
+					vectors if hasattr( item, 'embedding' ) ]
 			
 			if isinstance( first, list ):
-				return [
-						[ float( value ) for value in row ]
-						for row in vectors
-						if isinstance( row, list )
-				]
+				return [ [ float( value ) for value in row ] for row in vectors if
+					isinstance( row, list ) ]
 		
 		return [ ]
 	
@@ -9324,7 +9295,8 @@ elif mode == 'Embeddings':
 		"""Call embeddings create.
 		
 		Purpose:
-		    Performs the call_embeddings_create workflow using the inputs supplied by the caller and the
+		    Performs the call_embeddings_create workflow using the inputs supplied by the caller
+		    and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -9340,48 +9312,32 @@ elif mode == 'Embeddings':
 			throw_if( 'chunks', chunks )
 			
 			input_value = chunks if len( chunks ) != 1 else chunks[ 0 ]
-			dimensions = st.session_state.get(
-				'embedding_dimensions',
-				st.session_state.get( 'embeddings_dimensions', 0 )
-			)
-			encoding_format = st.session_state.get(
-				'embedding_encoding_format',
-				st.session_state.get( 'embeddings_encoding_format', '' )
-			)
+			dimensions = st.session_state.get( 'embedding_dimensions',
+				st.session_state.get( 'embeddings_dimensions', 0 ) )
+			encoding_format = st.session_state.get( 'embedding_encoding_format',
+				st.session_state.get( 'embeddings_encoding_format', '' ) )
 			model = st.session_state.get( 'embedding_model' ) or None
 			
 			throw_if( 'model', model )
 			
 			if provider_name == 'GPT':
-				return embedding.create(
-					text=input_value,
-					model=model,
+				return embedding.create( text=input_value, model=model,
 					format=encoding_format or 'float',
-					dimensions=dimensions if int( dimensions or 0 ) > 0 else None
-				)
+					dimensions=dimensions if int( dimensions or 0 ) > 0 else None )
 			
 			if provider_name == 'Gemini':
-				return embedding.create(
-					text=input_value,
-					model=model,
+				return embedding.create( text=input_value, model=model,
 					encoding_format=encoding_format or 'float',
-					dimensions=dimensions if int( dimensions or 0 ) > 0 else None
-				)
+					dimensions=dimensions if int( dimensions or 0 ) > 0 else None )
 			
 			if provider_name == 'Grok':
-				return embedding.create(
-					text=input_value,
-					model=model,
+				return embedding.create( text=input_value, model=model,
 					format=encoding_format or 'float',
-					dimensions=dimensions if int( dimensions or 0 ) > 0 else None
-				)
+					dimensions=dimensions if int( dimensions or 0 ) > 0 else None )
 			
-			return embedding.create(
-				text=input_value,
-				model=model,
+			return embedding.create( text=input_value, model=model,
 				format=encoding_format or 'float',
-				dimensions=dimensions if int( dimensions or 0 ) > 0 else None
-			)
+				dimensions=dimensions if int( dimensions or 0 ) > 0 else None )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'app'
@@ -9394,8 +9350,10 @@ elif mode == 'Embeddings':
 		"""Extract embedding usage.
 		
 		Purpose:
-		    Extracts structured information from a provider response, uploaded file, or application data
-		    object. The function normalizes provider-specific shapes into values that can be rendered,
+		    Extracts structured information from a provider response, uploaded file,
+		    or application data
+		    object. The function normalizes provider-specific shapes into values that can be
+		rendered,
 		    stored, or passed to later processing steps.
 		
 		Args:
@@ -9424,12 +9382,14 @@ elif mode == 'Embeddings':
 		return { }
 	
 	def build_embedding_metrics( source_text: str, chunks: List[ str ],
-			vectors: List[ List[ float ] ], usage: Dict[ str, Any ] ) -> Dict[ str, Any ]:
+		vectors: List[ List[ float ] ], usage: Dict[ str, Any ] ) -> Dict[ str, Any ]:
 		"""Build embedding metrics.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The function converts
-		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    Builds the normalized data structure required by the application workflow. The
+		    function converts
+		    caller input, session state, or provider-specific options into a stable shape that
+		    downstream
 		    API calls and rendering code can consume safely.
 		
 		Args:
@@ -9446,25 +9406,20 @@ elif mode == 'Embeddings':
 		token_total = count_tokens( source_text ) if 'count_tokens' in globals( ) else total_words
 		dimensions = len( vectors[ 0 ] ) if vectors else 0
 		
-		return {
-				'tokens': token_total,
-				'words': total_words,
-				'unique_words': unique_words,
-				'ttr': (unique_words / total_words) if total_words > 0 else 0.0,
-				'characters': len( source_text ),
-				'chunks': len( chunks ),
-				'vectors': len( vectors ),
-				'dimensions': dimensions,
-				'usage': usage,
-		}
+		return { 'tokens': token_total, 'words': total_words, 'unique_words': unique_words,
+			'ttr': (unique_words / total_words) if total_words > 0 else 0.0,
+			'characters': len( source_text ), 'chunks': len( chunks ), 'vectors': len( vectors ),
+			'dimensions': dimensions, 'usage': usage, }
 	
 	def build_embeddings_dataframe( chunks: List[ str ],
-			vectors: List[ List[ float ] ] ) -> pd.DataFrame:
+		vectors: List[ List[ float ] ] ) -> pd.DataFrame:
 		"""Build embeddings dataframe.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The function converts
-		    caller input, session state, or provider-specific options into a stable shape that downstream
+		    Builds the normalized data structure required by the application workflow. The
+		    function converts
+		    caller input, session state, or provider-specific options into a stable shape that
+		    downstream
 		    API calls and rendering code can consume safely.
 		
 		Args:
@@ -9476,10 +9431,8 @@ elif mode == 'Embeddings':
 		if not vectors:
 			return pd.DataFrame( )
 		
-		df_vectors = pd.DataFrame(
-			vectors,
-			columns=[ f'dim_{index}' for index in range( len( vectors[ 0 ] ) ) ]
-		)
+		df_vectors = pd.DataFrame( vectors,
+			columns=[ f'dim_{index}' for index in range( len( vectors[ 0 ] ) ) ] )
 		
 		df_vectors.insert( 0, 'ChunkIndex', range( 1, len( df_vectors ) + 1 ) )
 		
@@ -9492,15 +9445,18 @@ elif mode == 'Embeddings':
 		"""Render embedding metrics.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    Renders the requested user interface element or result block in Streamlit using
+		    normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and
+ data-processing
 		    steps so the screen output remains predictable.
 		
 		Args:
 		    metrics (Dict[str, Any]): Metrics value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		col_m1, col_m2, col_m3, col_m4, col_m5 = st.columns( 5, border=True )
 		col_m1.metric( 'Tokens', metrics.get( 'tokens', 0 ) )
 		col_m2.metric( 'Chunks', metrics.get( 'chunks', 0 ) )
@@ -9512,25 +9468,18 @@ elif mode == 'Embeddings':
 		"""Reset embeddings all.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
-		for key in [
-				'embedding_input',
-				'embedding_text',
-				'embeddings_input_text',
-				'embedding_chunks',
-				'embeddings_chunks',
-				'embedding_vectors',
-				'embeddings',
-				'embedding_results',
-				'embeddings_df',
-				'embedding_dataframe',
-				'embedding_metrics',
-				'embedding_usage',
-		]:
+		    None: This function performs its work through side effects and does not return a
+value."""
+		for key in [ 'embedding_input', 'embedding_text', 'embeddings_input_text',
+			'embedding_chunks', 'embeddings_chunks', 'embedding_vectors', 'embeddings',
+			'embedding_results', 'embeddings_df', 'embedding_dataframe', 'embedding_metrics',
+			'embedding_usage', ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
@@ -9538,7 +9487,8 @@ elif mode == 'Embeddings':
 		"""Update embedding usage.
 		
 		Purpose:
-		    Performs the update_embedding_usage workflow using the inputs supplied by the caller and the
+		    Performs the update_embedding_usage workflow using the inputs supplied by the caller
+		    and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -9546,7 +9496,8 @@ elif mode == 'Embeddings':
 		    response (Any): Response value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		value."""
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
@@ -9560,35 +9511,51 @@ elif mode == 'Embeddings':
 	# ------------------------------------------------------------------
 	# Session Safety
 	# ------------------------------------------------------------------
-	if 'embeddings_dimensions' in st.session_state and 'embedding_dimensions' not in st.session_state:
+	if (
+			'embeddings_dimensions' in st.session_state and 'embedding_dimensions' not in
+			st.session_state):
 		st.session_state[ 'embedding_dimensions' ] = st.session_state.get( 'embeddings_dimensions',
 			0 )
 	
-	if 'embedding_dimensions' in st.session_state and 'embeddings_dimensions' not in st.session_state:
+	if (
+			'embedding_dimensions' in st.session_state and 'embeddings_dimensions' not in
+			st.session_state):
 		st.session_state[ 'embeddings_dimensions' ] = st.session_state.get( 'embedding_dimensions',
 			0 )
 	
-	if 'embeddings_encoding_format' in st.session_state and 'embedding_encoding_format' not in st.session_state:
+	if (
+			'embeddings_encoding_format' in st.session_state and 'embedding_encoding_format' not
+			in st.session_state):
 		st.session_state[ 'embedding_encoding_format' ] = st.session_state.get(
 			'embeddings_encoding_format', '' )
 	
-	if 'embedding_encoding_format' in st.session_state and 'embeddings_encoding_format' not in st.session_state:
+	if (
+			'embedding_encoding_format' in st.session_state and 'embeddings_encoding_format' not
+			in st.session_state):
 		st.session_state[ 'embeddings_encoding_format' ] = st.session_state.get(
 			'embedding_encoding_format', '' )
 	
-	if 'embeddings_chunk_size' in st.session_state and 'embedding_chunk_size' not in st.session_state:
+	if (
+			'embeddings_chunk_size' in st.session_state and 'embedding_chunk_size' not in
+			st.session_state):
 		st.session_state[ 'embedding_chunk_size' ] = st.session_state.get( 'embeddings_chunk_size',
 			0 )
 	
-	if 'embedding_chunk_size' in st.session_state and 'embeddings_chunk_size' not in st.session_state:
+	if (
+			'embedding_chunk_size' in st.session_state and 'embeddings_chunk_size' not in
+			st.session_state):
 		st.session_state[ 'embeddings_chunk_size' ] = st.session_state.get( 'embedding_chunk_size',
 			0 )
 	
-	if 'embeddings_overlap_amount' in st.session_state and 'embedding_chunk_overlap' not in st.session_state:
+	if (
+			'embeddings_overlap_amount' in st.session_state and 'embedding_chunk_overlap' not in
+			st.session_state):
 		st.session_state[ 'embedding_chunk_overlap' ] = st.session_state.get(
 			'embeddings_overlap_amount', 0 )
 	
-	if 'embedding_chunk_overlap' in st.session_state and 'embeddings_overlap_amount' not in st.session_state:
+	if (
+			'embedding_chunk_overlap' in st.session_state and 'embeddings_overlap_amount' not in
+			st.session_state):
 		st.session_state[ 'embeddings_overlap_amount' ] = st.session_state.get(
 			'embedding_chunk_overlap', 0 )
 	
@@ -9613,8 +9580,8 @@ elif mode == 'Embeddings':
 		st.divider( )
 		
 		with st.expander( label='Configuration', icon='🎚️', expanded=False, width='stretch' ):
-			emb_c1, emb_c2, emb_c3, emb_c4, emb_c5 = st.columns(
-				[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
+			emb_c1, emb_c2, emb_c3, emb_c4, emb_c5 = st.columns( [ 0.20, 0.20, 0.20, 0.20, 0.20 ],
+				border=True, gap='xxsmall' )
 			
 			# --------- Model --------
 			with emb_c1:
@@ -9629,19 +9596,19 @@ elif mode == 'Embeddings':
 				encoding_options = get_embedding_options( embedding, 'encoding_options',
 					[ 'float', 'base64' ] )
 				encoding_options = [ str( item ) for item in encoding_options if
-				                     str( item ).strip( ) ]
+					str( item ).strip( ) ]
 				st.selectbox( label='Encoding Format', options=encoding_options,
 					key='embedding_encoding_format',
-					help='Optional. Format returned by the embedding provider.',
-					index=None, placeholder='Options' )
+					help='Optional. Format returned by the embedding provider.', index=None,
+					placeholder='Options' )
 				st.session_state[ 'embeddings_encoding_format' ] = st.session_state.get(
 					'embedding_encoding_format', '' )
 			
 			# --------- Dimensions --------
 			with emb_c3:
 				st.slider( label='Dimensions', min_value=0, max_value=4096,
-					value=int( st.session_state.get( 'embedding_dimensions', 0 ) or 0 ),
-					step=1, key='embedding_dimensions',
+					value=int( st.session_state.get( 'embedding_dimensions', 0 ) or 0 ), step=1,
+					key='embedding_dimensions',
 					help='Optional. Embedding output dimensions when supported.' )
 				st.session_state[ 'embeddings_dimensions' ] = st.session_state.get(
 					'embedding_dimensions', 0 )
@@ -9649,8 +9616,8 @@ elif mode == 'Embeddings':
 			# --------- Chunk Size --------
 			with emb_c4:
 				st.slider( label='Chunk Size', min_value=0, max_value=8000,
-					value=int( st.session_state.get( 'embedding_chunk_size', 0 ) or 0 ),
-					step=50, key='embedding_chunk_size',
+					value=int( st.session_state.get( 'embedding_chunk_size', 0 ) or 0 ), step=50,
+					key='embedding_chunk_size',
 					help='Maximum words/tokens per chunk. Zero embeds the full input.' )
 				st.session_state[ 'embeddings_chunk_size' ] = st.session_state.get(
 					'embedding_chunk_size', 0 )
@@ -9659,14 +9626,15 @@ elif mode == 'Embeddings':
 			with emb_c5:
 				st.slider( label='Overlap', min_value=0, max_value=2000,
 					value=int( st.session_state.get( 'embedding_chunk_overlap', 0 ) or 0 ),
-					step=25, key='embedding_chunk_overlap',
-					help='Overlap between adjacent chunks.' )
+					step=25,
+					key='embedding_chunk_overlap', help='Overlap between adjacent chunks.' )
 				st.session_state[ 'embeddings_overlap_amount' ] = st.session_state.get(
 					'embedding_chunk_overlap', 0 )
 		
 		with st.expander( label='Source Text', icon='📝', expanded=True, width='stretch' ):
 			source_text = st.text_area( label='Input Text', key='embeddings_input_text',
-				height=240, width='stretch',
+				height=240,
+				width='stretch',
 				placeholder='Paste text to embed, or upload a text-compatible file below.' )
 			st.session_state[ 'embedding_input' ] = source_text
 			st.session_state[ 'embedding_text' ] = source_text
@@ -9756,17 +9724,9 @@ elif mode == 'Embeddings':
 		chunks = st.session_state.get( 'embedding_chunks', [ ] )
 		if isinstance( chunks, list ) and len( chunks ) > 0:
 			with st.expander( label='Chunks', icon='🧩', expanded=False, width='stretch' ):
-				df_chunks = pd.DataFrame(
-					[
-							{
-									'ChunkIndex': index + 1,
-									'Text': chunk,
-									'Tokens': count_tokens( chunk ) if 'count_tokens' in globals( )
-									else len( chunk.split( ) ),
-							}
-							for index, chunk in enumerate( chunks )
-					]
-				)
+				df_chunks = pd.DataFrame( [ { 'ChunkIndex': index + 1, 'Text': chunk,
+					'Tokens': count_tokens( chunk ) if 'count_tokens' in globals( ) else len(
+						chunk.split( ) ), } for index, chunk in enumerate( chunks ) ] )
 				st.data_editor( df_chunks, use_container_width=True, hide_index=True,
 					key='embedding_chunks_view' )
 		
@@ -9878,8 +9838,10 @@ elif mode == 'Files':
 		"""Get files help.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+ downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -9891,12 +9853,14 @@ elif mode == 'Files':
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
 	def get_files_options( instance: Any, attr_name: str,
-			fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
+		fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
 		"""Get files options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -9928,8 +9892,10 @@ elif mode == 'Files':
 		"""Files has method.
 		
 		Purpose:
-		    Performs the files_has_method workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the files_has_method workflow using the inputs supplied by the caller and the
+		    current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -9944,11 +9910,13 @@ elif mode == 'Files':
 		
 		return False
 	
-	def sanitize_files_selection( key: str, valid_options: List[ Any ], default: Any = '' ) -> None:
+	def sanitize_files_selection( key: str, valid_options: List[ Any ], default: Any = '' ) -> \
+			None:
 		"""Sanitize files selection.
 		
 		Purpose:
-		    Performs the sanitize_files_selection workflow using the inputs supplied by the caller and the
+		    Performs the sanitize_files_selection workflow using the inputs supplied by the caller
+		    and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -9958,7 +9926,8 @@ elif mode == 'Files':
 		    default (Any): Default value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		current_value = st.session_state.get( key, default )
 		
 		if current_value in [ None, '' ]:
@@ -9971,7 +9940,8 @@ elif mode == 'Files':
 		"""Sanitize files multiselect.
 		
 		Purpose:
-		    Performs the sanitize_files_multiselect workflow using the inputs supplied by the caller and the
+		    Performs the sanitize_files_multiselect workflow using the inputs supplied by the
+		    caller and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -9980,25 +9950,25 @@ elif mode == 'Files':
 		    valid_options (List[Any]): Valid options value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+value."""
 		current_values = st.session_state.get( key, [ ] )
 		
 		if not isinstance( current_values, list ):
 			st.session_state[ key ] = [ ]
 			return
 		
-		st.session_state[ key ] = [
-				value for value in current_values
-				if value in valid_options
-		]
+		st.session_state[ key ] = [ value for value in current_values if value in valid_options ]
 	
 	def call_files_method( method_names: List[ str ],
-			kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
+		kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
 		"""Call files method.
 		
 		Purpose:
-		    Performs the call_files_method workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the call_files_method workflow using the inputs supplied by the caller and
+		    the current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -10012,11 +9982,8 @@ elif mode == 'Files':
 		kwargs = kwargs or { }
 		last_error = None
 		
-		clean_kwargs = {
-				key: value
-				for key, value in kwargs.items( )
-				if value is not None and value != '' and value != [ ]
-		}
+		clean_kwargs = { key: value for key, value in kwargs.items( ) if
+			value is not None and value != '' and value != [ ] }
 		
 		for method_name in method_names:
 			method = getattr( files, method_name, None )
@@ -10028,17 +9995,12 @@ elif mode == 'Files':
 				parameters = signature.parameters
 				
 				has_var_keyword = any(
-					parameter.kind == inspect.Parameter.VAR_KEYWORD
-					for parameter in parameters.values( )
-				)
+					parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in
+						parameters.values( ) )
 				
-				accepted_names = {
-						name for name, parameter in parameters.items( )
-						if parameter.kind in [
-								inspect.Parameter.POSITIONAL_OR_KEYWORD,
-								inspect.Parameter.KEYWORD_ONLY,
-						]
-				}
+				accepted_names = { name for name, parameter in parameters.items( ) if
+					parameter.kind in [ inspect.Parameter.POSITIONAL_OR_KEYWORD,
+						inspect.Parameter.KEYWORD_ONLY, ] }
 				
 				aliased_kwargs = dict( clean_kwargs )
 				
@@ -10081,11 +10043,8 @@ elif mode == 'Files':
 				if has_var_keyword:
 					return method( **aliased_kwargs )
 				
-				filtered_kwargs = {
-						key: value
-						for key, value in aliased_kwargs.items( )
-						if key in accepted_names
-				}
+				filtered_kwargs = { key: value for key, value in aliased_kwargs.items( ) if
+					key in accepted_names }
 				
 				if filtered_kwargs:
 					return method( **filtered_kwargs )
@@ -10128,8 +10087,10 @@ elif mode == 'Files':
 		"""Normalize file id.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
+		    Normalizes incoming values into a predictable representation for application
+		processing. The
+		    function reduces provider, user-input, or serialization differences before values are
+		stored or
 		    displayed.
 		
 		Args:
@@ -10145,18 +10106,17 @@ elif mode == 'Files':
 				result.get( 'id' ) or result.get( 'file_id' ) or result.get( 'name' ) or '' )
 		
 		return str(
-			getattr( result, 'id', None ) or
-			getattr( result, 'file_id', None ) or
-			getattr( result, 'name', None ) or
-			''
-		)
+			getattr( result, 'id', None ) or getattr( result, 'file_id', None ) or getattr( result,
+				'name', None ) or '' )
 	
 	def normalize_files_list( result: Any ) -> List[ Dict[ str, Any ] ]:
 		"""Normalize files list.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
+		    Normalizes incoming values into a predictable representation for application
+		    processing. The
+		    function reduces provider, user-input, or serialization differences before values are
+ stored or
 		    displayed.
 		
 		Args:
@@ -10205,15 +10165,9 @@ elif mode == 'Files':
 				size = getattr( item, 'bytes', None ) or getattr( item, 'size_bytes',
 					None ) or getattr( item, 'size', '' )
 			
-			rows.append(
-				{
-						'id': str( file_id or '' ),
-						'filename': str( filename or '' ),
-						'purpose': str( purpose or '' ),
-						'created': str( created or '' ),
-						'size': str( size or '' ),
-				}
-			)
+			rows.append( { 'id': str( file_id or '' ), 'filename': str( filename or '' ),
+				'purpose': str( purpose or '' ), 'created': str( created or '' ),
+				'size': str( size or '' ), } )
 		
 		return rows
 	
@@ -10221,8 +10175,10 @@ elif mode == 'Files':
 		"""Save uploaded file for api.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application workflows. The
-		    function standardizes file handling and returns a stable reference for downstream processing.
+		    Persists or stages input data so it can be used by later provider or application
+		    workflows. The
+		    function standardizes file handling and returns a stable reference for downstream
+processing.
 		
 		Args:
 		    uploaded_file (Any): Uploaded file value used by the operation.
@@ -10252,8 +10208,10 @@ elif mode == 'Files':
 		"""Normalize file content.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
+		    Normalizes incoming values into a predictable representation for application
+		processing. The
+		    function reduces provider, user-input, or serialization differences before values are
+		    stored or
 		    displayed.
 		
 		Args:
@@ -10282,12 +10240,15 @@ elif mode == 'Files':
 		"""Get effective file id.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+ stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+				downstream logic
 		    can consume it consistently.
 		
 		Args:
-		    *keys (str): Additional positional arguments retained for compatibility with caller workflows.
+		    *keys (str): Additional positional arguments retained for compatibility with caller
+		    workflows.
 		
 		Returns:
 		    str: Return value produced by the operation."""
@@ -10302,7 +10263,8 @@ elif mode == 'Files':
 		"""Refresh files table.
 		
 		Purpose:
-		    Performs the refresh_files_table workflow using the inputs supplied by the caller and the
+		    Performs the refresh_files_table workflow using the inputs supplied by the caller and
+		    the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -10317,8 +10279,10 @@ elif mode == 'Files':
 		"""Upload provider file.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application workflows. The
-		    function standardizes file handling and returns a stable reference for downstream processing.
+		    Persists or stages input data so it can be used by later provider or application
+ workflows. The
+		    function standardizes file handling and returns a stable reference for downstream
+		    processing.
 		
 		Args:
 		    uploaded_file (Any): Uploaded file value used by the operation.
@@ -10331,15 +10295,9 @@ elif mode == 'Files':
 			raise ValueError( 'Could not create a temporary file for upload.' )
 		
 		filename = getattr( uploaded_file, 'name', None )
-		kwargs = {
-				'path': path,
-				'file_path': path,
-				'filepath': path,
-				'filename': filename,
-				'display_name': filename,
-				'purpose': purpose,
-				'mime_type': getattr( uploaded_file, 'type', None ),
-		}
+		kwargs = { 'path': path, 'file_path': path, 'filepath': path, 'filename': filename,
+			'display_name': filename, 'purpose': purpose,
+			'mime_type': getattr( uploaded_file, 'type', None ), }
 		
 		return call_files_method( [ 'upload_file', 'upload', 'files_upload', 'create' ], kwargs )
 	
@@ -10347,7 +10305,8 @@ elif mode == 'Files':
 		"""Retrieve provider file.
 		
 		Purpose:
-		    Performs the retrieve_provider_file workflow using the inputs supplied by the caller and the
+		    Performs the retrieve_provider_file workflow using the inputs supplied by the caller
+		    and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -10356,11 +10315,7 @@ elif mode == 'Files':
 		
 		Returns:
 		    Any: Return value produced by the operation."""
-		kwargs = {
-				'file_id': file_id,
-				'id': file_id,
-				'name': file_id,
-		}
+		kwargs = { 'file_id': file_id, 'id': file_id, 'name': file_id, }
 		
 		return call_files_method(
 			[ 'retrieve', 'retrieve_file', 'get', 'get_file', 'files_retrieve' ], kwargs )
@@ -10369,8 +10324,10 @@ elif mode == 'Files':
 		"""Extract provider file.
 		
 		Purpose:
-		    Extracts structured information from a provider response, uploaded file, or application data
-		    object. The function normalizes provider-specific shapes into values that can be rendered,
+		    Extracts structured information from a provider response, uploaded file,
+		    or application data
+		    object. The function normalizes provider-specific shapes into values that can be
+		    rendered,
 		    stored, or passed to later processing steps.
 		
 		Args:
@@ -10378,13 +10335,9 @@ elif mode == 'Files':
 		
 		Returns:
 		    Any: Return value produced by the operation."""
-		kwargs = {
-				'file_id': file_id,
-				'id': file_id,
-				'name': file_id,
-				'format': st.session_state.get( 'files_download_format' ) or None,
-				'page_number': st.session_state.get( 'files_page_number' ) or None,
-		}
+		kwargs = { 'file_id': file_id, 'id': file_id, 'name': file_id,
+			'format': st.session_state.get( 'files_download_format' ) or None,
+			'page_number': st.session_state.get( 'files_page_number' ) or None, }
 		
 		return call_files_method(
 			[ 'extract', 'download', 'content', 'retrieve_content', 'files_content' ], kwargs )
@@ -10393,19 +10346,17 @@ elif mode == 'Files':
 		"""Delete provider file.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Args:
 		    file_id (str): File id value used by the operation.
 		
 		Returns:
 		    Any: Return value produced by the operation."""
-		kwargs = {
-				'file_id': file_id,
-				'id': file_id,
-				'name': file_id,
-		}
+		kwargs = { 'file_id': file_id, 'id': file_id, 'name': file_id, }
 		
 		return call_files_method( [ 'delete', 'delete_file', 'files_delete', 'remove' ], kwargs )
 	
@@ -10413,8 +10364,10 @@ elif mode == 'Files':
 		"""Ask provider file.
 		
 		Purpose:
-		    Performs the ask_provider_file workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the ask_provider_file workflow using the inputs supplied by the caller and
+		    the current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -10423,25 +10376,21 @@ elif mode == 'Files':
 		
 		Returns:
 		    str: Return value produced by the operation."""
-		kwargs = {
-				'file_id': file_id,
-				'id': file_id,
-				'prompt': prompt,
-				'model': st.session_state.get( 'files_model' ) or None,
-				'temperature': st.session_state.get( 'files_temperature' ),
-				'top_p': st.session_state.get( 'files_top_percent' ),
-				'frequency': st.session_state.get( 'files_frequency_penalty' ),
-				'presence': st.session_state.get( 'files_presence_penalty' ),
-				'max_tokens': st.session_state.get( 'files_max_tokens' ),
-				'store': st.session_state.get( 'files_store' ),
-				'stream': st.session_state.get( 'files_stream' ),
-				'instruct': st.session_state.get( 'files_system_instructions', '' ),
-				'include': st.session_state.get( 'files_include', [ ] ),
-				'tools': st.session_state.get( 'files_tools', [ ] ),
-				'tool_choice': st.session_state.get( 'files_tool_choice' ) or None,
-				'previous_id': st.session_state.get( 'files_previous_response_id' ) or None,
-				'conversation_id': st.session_state.get( 'files_conversation_id' ) or None,
-		}
+		kwargs = { 'file_id': file_id, 'id': file_id, 'prompt': prompt,
+			'model': st.session_state.get( 'files_model' ) or None,
+			'temperature': st.session_state.get( 'files_temperature' ),
+			'top_p': st.session_state.get( 'files_top_percent' ),
+			'frequency': st.session_state.get( 'files_frequency_penalty' ),
+			'presence': st.session_state.get( 'files_presence_penalty' ),
+			'max_tokens': st.session_state.get( 'files_max_tokens' ),
+			'store': st.session_state.get( 'files_store' ),
+			'stream': st.session_state.get( 'files_stream' ),
+			'instruct': st.session_state.get( 'files_system_instructions', '' ),
+			'include': st.session_state.get( 'files_include', [ ] ),
+			'tools': st.session_state.get( 'files_tools', [ ] ),
+			'tool_choice': st.session_state.get( 'files_tool_choice' ) or None,
+			'previous_id': st.session_state.get( 'files_previous_response_id' ) or None,
+			'conversation_id': st.session_state.get( 'files_conversation_id' ) or None, }
 		
 		result = call_files_method( [ 'summarize', 'ask', 'query', 'answer', 'search', 'survey' ],
 			kwargs )
@@ -10462,11 +10411,14 @@ elif mode == 'Files':
 		"""Clear files outputs.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		value."""
 		st.session_state[ 'files_metadata' ] = { }
 		st.session_state[ 'files_results' ] = None
 		st.session_state[ 'files_delete_result' ] = { }
@@ -10478,11 +10430,14 @@ elif mode == 'Files':
 		"""Clear files messages.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		st.session_state[ 'files_messages' ] = [ ]
 		st.session_state[ 'files_last_answer' ] = ''
 	
@@ -10490,7 +10445,8 @@ elif mode == 'Files':
 		"""Append files message.
 		
 		Purpose:
-		    Performs the append_files_message workflow using the inputs supplied by the caller and the
+		    Performs the append_files_message workflow using the inputs supplied by the caller and
+		    the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -10499,27 +10455,26 @@ elif mode == 'Files':
 		    content (str): Content value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		if not isinstance( st.session_state.get( 'files_messages' ), list ):
 			st.session_state[ 'files_messages' ] = [ ]
 		
-		st.session_state[ 'files_messages' ].append(
-			{
-					'role': role,
-					'content': content,
-			}
-		)
+		st.session_state[ 'files_messages' ].append( { 'role': role, 'content': content, } )
 	
 	def render_files_messages( ) -> None:
 		"""Render files messages.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    Renders the requested user interface element or result block in Streamlit using
+		    normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and
+		    data-processing
 		    steps so the screen output remains predictable.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		if not isinstance( st.session_state.get( 'files_messages' ), list ):
 			st.session_state[ 'files_messages' ] = [ ]
 		
@@ -10534,11 +10489,14 @@ elif mode == 'Files':
 		"""Clear files instructions.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		st.session_state[ 'files_system_instructions' ] = ''
 		st.session_state[ 'instructions' ] = ''
 	
@@ -10546,12 +10504,15 @@ elif mode == 'Files':
 		"""Convert files system instructions.
 		
 		Purpose:
-		    Performs the convert_files_system_instructions workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    Performs the convert_files_system_instructions workflow using the inputs supplied by
+		    the caller
+		    and the current runtime configuration. The function keeps this behavior isolated so
+		    related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		text_value = st.session_state.get( 'files_system_instructions', '' )
 		if not isinstance( text_value, str ) or not text_value.strip( ):
 			return
@@ -10568,12 +10529,15 @@ elif mode == 'Files':
 		"""Load files instruction template.
 		
 		Purpose:
-		    Performs the load_files_instruction_template workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    Performs the load_files_instruction_template workflow using the inputs supplied by the
+		    caller
+		    and the current runtime configuration. The function keeps this behavior isolated so
+		    related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		name = st.session_state.get( 'instructions' )
 		if name and name != 'No Templates Found':
 			prompt_text = fetch_prompt_text( cfg.DB_PATH, name )
@@ -10594,39 +10558,35 @@ elif mode == 'Files':
 		st.divider( )
 		
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
-			with st.expander( label='File Management', icon='📂', expanded=False, width='stretch' ):
-				mgmt_c1, mgmt_c2, mgmt_c3, mgmt_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+			with st.expander( label='File Management', icon='📂', expanded=False,
+					width='stretch' ):
+				mgmt_c1, mgmt_c2, mgmt_c3, mgmt_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+					border=True, gap='xxsmall' )
 				
 				with mgmt_c1:
 					purpose_options = get_files_options( files, 'purpose_options',
 						[ 'assistants', 'batch', 'fine-tune', 'user_data' ] )
 					purpose_options = [ str( item ) for item in purpose_options if
-					                    str( item ).strip( ) ]
+						str( item ).strip( ) ]
 					sanitize_files_selection( 'files_purpose', purpose_options, '' )
-					st.selectbox( label='Purpose', options=purpose_options,
-						key='files_purpose', index=None, placeholder='Options',
-						help='Optional provider file purpose.' )
+					st.selectbox( label='Purpose', options=purpose_options, key='files_purpose',
+						index=None, placeholder='Options', help='Optional provider file purpose.' )
 				
 				with mgmt_c2:
 					st.selectbox( label='File Type',
-						options=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json',
-						          'csv', 'xlsx', 'xls' ],
-						key='files_type', index=None, placeholder='Options',
+						options=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv',
+							'xlsx', 'xls' ], key='files_type', index=None, placeholder='Options',
 						help='Optional local filter for uploaded file types.' )
 				
 				with mgmt_c3:
 					st.text_input( label='Manual File ID', key='files_manual_id',
-						help='Optional. Paste a provider file ID/name for retrieve, extract, ask, or delete.',
-						width='stretch' )
+						help='Optional. Paste a provider file ID/name for retrieve, extract, ask, '
+						     'or delete.', width='stretch' )
 				
 				with mgmt_c4:
 					table_rows = st.session_state.get( 'files_table', [ ] )
-					file_options = [
-							row.get( 'id', '' )
-							for row in table_rows
-							if isinstance( row, dict ) and row.get( 'id', '' )
-					]
+					file_options = [ row.get( 'id', '' ) for row in table_rows if
+						isinstance( row, dict ) and row.get( 'id', '' ) ]
 					sanitize_files_selection( 'files_selected_id', file_options, '' )
 					st.selectbox( label='Selected File', options=file_options,
 						key='files_selected_id', index=None, placeholder='Options',
@@ -10634,83 +10594,82 @@ elif mode == 'Files':
 			
 			with st.expander( label='Request Settings', icon='⚙️', expanded=False,
 					width='stretch' ):
-				req_c1, req_c2, req_c3, req_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+				req_c1, req_c2, req_c3, req_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+					border=True, gap='xxsmall' )
 				
 				with req_c1:
 					model_options = get_files_options( files, 'model_options', [ ] )
 					model_options = [ str( item ) for item in model_options if
-					                  str( item ).strip( ) ]
+						str( item ).strip( ) ]
 					sanitize_files_selection( 'files_model', model_options, '' )
-					st.selectbox( label='Model', options=model_options,
-						key='files_model', index=None, placeholder='Options',
+					st.selectbox( label='Model', options=model_options, key='files_model',
+						index=None, placeholder='Options',
 						help='Optional provider model for file-aware operations.' )
 				
 				with req_c2:
-					st.slider( label='Max Tokens', min_value=0, max_value=100000,
-						step=500, key='files_max_tokens',
+					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+						key='files_max_tokens',
 						help='Optional max tokens for file-aware model calls.' )
 				
 				with req_c3:
-					st.slider( label='Temperature', min_value=0.0, max_value=2.0,
-						step=0.01, key='files_temperature',
+					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
+						key='files_temperature',
 						help='Optional temperature for file-aware model calls.' )
 				
 				with req_c4:
 					format_options = get_files_options( files, 'format_options', [ ] )
 					format_options = [ str( item ) for item in format_options if
-					                   str( item ).strip( ) ]
+						str( item ).strip( ) ]
 					sanitize_files_selection( 'files_response_format', format_options, '' )
 					st.selectbox( label='Response Format', options=format_options,
 						key='files_response_format', index=None, placeholder='Options',
 						help='Optional response format.' )
 				
-				req2_c1, req2_c2, req2_c3, req2_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+				req2_c1, req2_c2, req2_c3, req2_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+					border=True, gap='xxsmall' )
 				
 				with req2_c1:
-					st.slider( label='Top-P', min_value=0.0, max_value=1.0,
-						step=0.01, key='files_top_percent',
-						help='Optional top-p for file-aware model calls.' )
+					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
+						key='files_top_percent', help='Optional top-p for file-aware model '
+						                              'calls.' )
 				
 				with req2_c2:
-					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
-						step=0.01, key='files_frequency_penalty',
+					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='files_frequency_penalty',
 						help='Optional frequency penalty for file-aware model calls.' )
 				
 				with req2_c3:
-					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0,
-						step=0.01, key='files_presence_penalty',
+					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='files_presence_penalty',
 						help='Optional presence penalty for file-aware model calls.' )
 				
 				with req2_c4:
 					choice_options = get_files_options( files, 'choice_options',
 						[ 'auto', 'required', 'none' ] )
 					choice_options = [ str( item ) for item in choice_options if
-					                   str( item ).strip( ) ]
+						str( item ).strip( ) ]
 					sanitize_files_selection( 'files_tool_choice', choice_options, '' )
 					st.selectbox( label='Tool Choice', options=choice_options,
 						key='files_tool_choice', index=None, placeholder='Options',
 						help='Optional provider tool choice.' )
 				
-				req3_c1, req3_c2, req3_c3, req3_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+				req3_c1, req3_c2, req3_c3, req3_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+					border=True, gap='xxsmall' )
 				
 				with req3_c1:
 					tool_options = get_files_options( files, 'tool_options', [ ] )
 					tool_options = [ str( item ) for item in tool_options if str( item ).strip( ) ]
 					sanitize_files_multiselect( 'files_tools', tool_options )
-					st.multiselect( label='Tools', options=tool_options,
-						key='files_tools', placeholder='Options',
-						help='Optional file-aware provider tools.' )
+					st.multiselect( label='Tools', options=tool_options, key='files_tools',
+						placeholder='Options', help='Optional file-aware provider tools.' )
 				
 				with req3_c2:
 					include_options = get_files_options( files, 'include_options', [ ] )
 					include_options = [ str( item ) for item in include_options if
-					                    str( item ).strip( ) ]
+						str( item ).strip( ) ]
 					sanitize_files_multiselect( 'files_include', include_options )
-					st.multiselect( label='Include', options=include_options,
-						key='files_include', placeholder='Options',
+					st.multiselect( label='Include', options=include_options, key='files_include',
+						placeholder='Options',
 						help='Optional include fields for file-aware responses.' )
 				
 				with req3_c3:
@@ -10730,13 +10689,11 @@ elif mode == 'Files':
 			
 			with in_left:
 				st.text_area( label='Enter Text', height=80, width='stretch',
-					key='files_system_instructions',
-					help=get_files_help( 'SYSTEM_INSTRUCTIONS' ) )
+					key='files_system_instructions', help=get_files_help( 'SYSTEM_INSTRUCTIONS' ) )
 			
 			with in_right:
-				st.selectbox( label='Use Template', options=prompt_names,
-					key='instructions', on_change=load_files_instruction_template,
-					index=None )
+				st.selectbox( label='Use Template', options=prompt_names, key='instructions',
+					on_change=load_files_instruction_template, index=None )
 			
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
 			with btn_c1:
@@ -10753,10 +10710,10 @@ elif mode == 'Files':
 			[ 'Upload', 'List', 'Retrieve', 'Extract', 'Ask', 'Delete' ] )
 		
 		with upload_tab:
-			allowed_types = [ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json',
-			                  'csv', 'xlsx', 'xls' ]
-			uploaded_file = st.file_uploader( label='Upload File',
-				type=allowed_types, accept_multiple_files=False, key='files_uploader' )
+			allowed_types = [ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv',
+				'xlsx', 'xls' ]
+			uploaded_file = st.file_uploader( label='Upload File', type=allowed_types,
+				accept_multiple_files=False, key='files_uploader' )
 			
 			if uploaded_file is not None:
 				st.caption( f'Selected: {uploaded_file.name}' )
@@ -10774,12 +10731,8 @@ elif mode == 'Files':
 							st.session_state[ 'files_results' ] = result
 							st.session_state[ 'files_selected_id' ] = file_id
 							st.session_state[ 'files_uploaded' ].append(
-								{
-										'id': file_id,
-										'filename': uploaded_file.name,
-										'provider': provider_name,
-								}
-							)
+								{ 'id': file_id, 'filename': uploaded_file.name,
+									'provider': provider_name, } )
 							
 							st.success( f'Uploaded file: {file_id}' )
 					
@@ -10824,8 +10777,7 @@ elif mode == 'Files':
 					'files_selected_id', 'files_manual_id' )
 			
 			st.text_input( label='Retrieve File ID', key='files_retrieve_id',
-				help='Provider file ID/name to retrieve.',
-				width='stretch' )
+				help='Provider file ID/name to retrieve.', width='stretch' )
 			
 			if st.button( 'Retrieve File', key='files_retrieve_button', width='stretch' ):
 				with st.spinner( 'Retrieving file metadata…' ):
@@ -10837,9 +10789,7 @@ elif mode == 'Files':
 						else:
 							result = retrieve_provider_file( file_id )
 							st.session_state[ 'files_metadata' ] = result if isinstance( result,
-								dict ) else {
-									'result': str( result )
-							}
+								dict ) else { 'result': str( result ) }
 							st.session_state[ 'files_results' ] = result
 							st.success( 'File metadata retrieved.' )
 					
@@ -10857,14 +10807,14 @@ elif mode == 'Files':
 			
 			if not st.session_state.get( 'files_extract_id' ):
 				st.session_state[ 'files_extract_id' ] = get_effective_file_id(
-					'files_selected_id', 'files_manual_id' )
+					'files_selected_id',
+					'files_manual_id' )
 			
 			ext_c1, ext_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall' )
 			
 			with ext_c1:
 				st.text_input( label='Extract File ID', key='files_extract_id',
-					help='Provider file ID/name to download or extract.',
-					width='stretch' )
+					help='Provider file ID/name to download or extract.', width='stretch' )
 			
 			with ext_c2:
 				st.selectbox( label='Download Format',
@@ -10872,12 +10822,11 @@ elif mode == 'Files':
 					key='files_download_format', index=None, placeholder='Options',
 					help='Optional provider download format.' )
 			
-			st.number_input( label='Page Number', min_value=0, step=1,
-				key='files_page_number',
+			st.number_input( label='Page Number', min_value=0, step=1, key='files_page_number',
 				help='Optional page number for providers that support page-level extraction.' )
 			
-			if st.button( 'Extract File Content', key='files_extract_button',
-					width='stretch', disabled=not extract_supported ):
+			if st.button( 'Extract File Content', key='files_extract_button', width='stretch',
+					disabled=not extract_supported ):
 				with st.spinner( 'Extracting file content…' ):
 					try:
 						file_id = st.session_state.get( 'files_extract_id', '' ).strip( )
@@ -10898,26 +10847,22 @@ elif mode == 'Files':
 			
 			if st.session_state.get( 'files_content_text' ):
 				st.text_area( label='Extracted Content',
-					value=st.session_state.get( 'files_content_text', '' ),
-					height=300, width='stretch' )
+					value=st.session_state.get( 'files_content_text', '' ), height=300,
+					width='stretch' )
 				
 				st.download_button( label='Download Extracted Text',
 					data=st.session_state.get( 'files_content_text', '' ),
-					file_name='file_content.txt',
-					mime='text/plain',
-					width='stretch' )
+					file_name='file_content.txt', mime='text/plain', width='stretch' )
 			
 			elif isinstance( st.session_state.get( 'files_content' ), bytes ):
 				st.download_button( label='Download File Content',
-					data=st.session_state.get( 'files_content' ),
-					file_name='file_content.bin',
-					mime='application/octet-stream',
-					width='stretch' )
+					data=st.session_state.get( 'files_content' ), file_name='file_content.bin',
+					mime='application/octet-stream', width='stretch' )
 		
 		with ask_tab:
 			if not ask_supported:
-				st.info(
-					f'{provider_name} Files wrapper does not expose a compatible file-aware question method.' )
+				st.info( f'{provider_name} Files wrapper does not expose a compatible file-aware '
+				         f'question method.' )
 			
 			render_files_messages( )
 			
@@ -10929,15 +10874,14 @@ elif mode == 'Files':
 			else:
 				st.info( 'Select or enter a file ID before asking a file-aware question.' )
 			
-			st.text_area( label='Question', key='files_question',
-				height=120, width='stretch',
+			st.text_area( label='Question', key='files_question', height=120, width='stretch',
 				placeholder='Ask a question about the selected file.' )
 			
 			ask_c1, ask_c2 = st.columns( [ 0.50, 0.50 ] )
 			
 			with ask_c1:
-				if st.button( 'Ask File', key='files_ask_button',
-						width='stretch', disabled=not ask_supported ):
+				if st.button( 'Ask File', key='files_ask_button', width='stretch',
+						disabled=not ask_supported ):
 					with st.spinner( 'Asking file-aware question…' ):
 						try:
 							active_file_id = get_effective_file_id( 'files_selected_id',
@@ -10956,11 +10900,9 @@ elif mode == 'Files':
 								st.session_state[ 'files_last_answer' ] = answer
 								
 								previous_id = (
-										getattr( files, 'previous_id', None ) or
-										getattr( files, 'previous_response_id', None ) or
-										st.session_state.get( 'files_previous_response_id',
-											'' ) or ''
-								)
+										getattr( files, 'previous_id', None ) or getattr( files,
+									'previous_response_id', None ) or st.session_state.get(
+									'files_previous_response_id', '' ) or '')
 								st.session_state[ 'files_previous_response_id' ] = previous_id
 								
 								append_files_message( 'assistant', answer )
@@ -10971,25 +10913,22 @@ elif mode == 'Files':
 							st.error( f'File question failed: {err.info}' )
 			
 			with ask_c2:
-				if st.button( 'Clear Messages', key='files_clear_messages_button',
-						width='stretch', on_click=clear_files_messages ):
+				if st.button( 'Clear Messages', key='files_clear_messages_button', width='stretch',
+						on_click=clear_files_messages ):
 					st.rerun( )
 			
 			if st.session_state.get( 'files_last_answer' ):
 				st.download_button( label='Download Answer',
 					data=st.session_state.get( 'files_last_answer', '' ),
-					file_name='file_answer.txt',
-					mime='text/plain',
-					width='stretch' )
+					file_name='file_answer.txt', mime='text/plain', width='stretch' )
 		
 		with delete_tab:
 			if not st.session_state.get( 'files_delete_id' ):
-				st.session_state[ 'files_delete_id' ] = get_effective_file_id(
-					'files_selected_id', 'files_manual_id' )
+				st.session_state[ 'files_delete_id' ] = get_effective_file_id( 'files_selected_id',
+					'files_manual_id' )
 			
 			st.text_input( label='Delete File ID', key='files_delete_id',
-				help='Provider file ID/name to delete.',
-				width='stretch' )
+				help='Provider file ID/name to delete.', width='stretch' )
 			
 			confirm_delete = st.checkbox( 'Confirm Delete', key='files_confirm_delete' )
 			
@@ -11004,14 +10943,11 @@ elif mode == 'Files':
 						else:
 							result = delete_provider_file( file_id )
 							st.session_state[ 'files_delete_result' ] = result if isinstance(
-								result, dict ) else {
-									'result': str( result )
-							}
+								result, dict ) else { 'result': str( result ) }
 							st.session_state[ 'files_results' ] = result
-							st.session_state[ 'files_table' ] = [
-									row for row in st.session_state.get( 'files_table', [ ] )
-									if isinstance( row, dict ) and row.get( 'id' ) != file_id
-							]
+							st.session_state[ 'files_table' ] = [ row for row in
+								st.session_state.get( 'files_table', [ ] ) if
+								isinstance( row, dict ) and row.get( 'id' ) != file_id ]
 							
 							if st.session_state.get( 'files_selected_id' ) == file_id:
 								st.session_state[ 'files_selected_id' ] = ''
@@ -11038,8 +10974,10 @@ elif mode == 'Vector Stores':
 		"""Get storage help.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+ downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -11051,12 +10989,14 @@ elif mode == 'Vector Stores':
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
 	def get_storage_options( instance: Any, attr_name: str,
-			fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
+		fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
 		"""Get storage options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -11088,8 +11028,10 @@ elif mode == 'Vector Stores':
 		"""Parse storage json.
 		
 		Purpose:
-		    Performs the parse_storage_json workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the parse_storage_json workflow using the inputs supplied by the caller and
+the current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -11119,8 +11061,10 @@ elif mode == 'Vector Stores':
 		"""Parse storage ids.
 		
 		Purpose:
-		    Performs the parse_storage_ids workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the parse_storage_ids workflow using the inputs supplied by the caller and
+		    the current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+ provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -11132,11 +11076,12 @@ elif mode == 'Vector Stores':
 		return [ item.strip( ) for item in raw.split( ',' ) if item.strip( ) ]
 	
 	def call_storage_method( instance: Any, method_names: List[ str ],
-			kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
+		kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
 		"""Call storage method.
 		
 		Purpose:
-		    Performs the call_storage_method workflow using the inputs supplied by the caller and the
+		    Performs the call_storage_method workflow using the inputs supplied by the caller and
+		    the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -11159,32 +11104,20 @@ elif mode == 'Vector Stores':
 				
 				signature = inspect.signature( method )
 				parameters = signature.parameters
-				has_kwargs = any(
-					parameter.kind == inspect.Parameter.VAR_KEYWORD
-					for parameter in parameters.values( )
-				)
+				has_kwargs = any( parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in
+					parameters.values( ) )
 				
 				if has_kwargs:
-					call_kwargs = {
-							key: value
-							for key, value in kwargs.items( )
-							if value is not None and value != '' and value != [ ]
-					}
+					call_kwargs = { key: value for key, value in kwargs.items( ) if
+						value is not None and value != '' and value != [ ] }
 				else:
-					call_kwargs = {
-							key: value
-							for key, value in kwargs.items( )
-							if
-							key in parameters and value is not None and value != '' and value != [ ]
-					}
+					call_kwargs = { key: value for key, value in kwargs.items( ) if
+						key in parameters and value is not None and value != '' and value != [ ] }
 				
 				return method( **call_kwargs )
 			except TypeError:
-				clean_kwargs = {
-						key: value
-						for key, value in kwargs.items( )
-						if value is not None and value != '' and value != [ ]
-				}
+				clean_kwargs = { key: value for key, value in kwargs.items( ) if
+					value is not None and value != '' and value != [ ] }
 				
 				if len( clean_kwargs ) == 1:
 					return method( list( clean_kwargs.values( ) )[ 0 ] )
@@ -11199,8 +11132,10 @@ elif mode == 'Vector Stores':
 		"""Normalize storage object.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
+		    Normalizes incoming values into a predictable representation for application
+ processing. The
+		    function reduces provider, user-input, or serialization differences before values are
+		    stored or
 		    displayed.
 		
 		Args:
@@ -11227,26 +11162,10 @@ elif mode == 'Vector Stores':
 				result = { 'result': str( value ) }
 		else:
 			result = { }
-			for attr_name in [
-					'id',
-					'name',
-					'display_name',
-					'description',
-					'status',
-					'state',
-					'file_counts',
-					'usage_bytes',
-					'created_at',
-					'expires_at',
-					'metadata',
-					'deleted',
-					'collection_id',
-					'collection_name',
-					'collection_description',
-					'documents_count',
-					'document_count',
-					'size_bytes',
-			]:
+			for attr_name in [ 'id', 'name', 'display_name', 'description', 'status', 'state',
+				'file_counts', 'usage_bytes', 'created_at', 'expires_at', 'metadata', 'deleted',
+				'collection_id', 'collection_name', 'collection_description', 'documents_count',
+				'document_count', 'size_bytes', ]:
 				if hasattr( value, attr_name ):
 					result[ attr_name ] = getattr( value, attr_name )
 			
@@ -11287,8 +11206,10 @@ elif mode == 'Vector Stores':
 		"""Normalize storage rows.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
+		    Normalizes incoming values into a predictable representation for application
+ processing. The
+		    function reduces provider, user-input, or serialization differences before values are
+		stored or
 		    displayed.
 		
 		Args:
@@ -11323,15 +11244,10 @@ elif mode == 'Vector Stores':
 			store_id = obj.get( 'id' ) or obj.get( 'collection_id' ) or ''
 			store_name = obj.get( 'name' ) or obj.get( 'display_name' )
 			store_name = store_name or obj.get( 'collection_name' ) or store_id or ''
-			rows.append(
-				{
-						'id': str( store_id or '' ),
-						'name': str( store_name or '' ),
-						'status': str( obj.get( 'status', '' ) or '' ),
-						'file_counts': str( obj.get( 'file_counts', '' ) or '' ),
-						'usage_bytes': str( obj.get( 'usage_bytes', '' ) or '' ),
-				}
-			)
+			rows.append( { 'id': str( store_id or '' ), 'name': str( store_name or '' ),
+				'status': str( obj.get( 'status', '' ) or '' ),
+				'file_counts': str( obj.get( 'file_counts', '' ) or '' ),
+				'usage_bytes': str( obj.get( 'usage_bytes', '' ) or '' ), } )
 		
 		return rows
 	
@@ -11339,8 +11255,10 @@ elif mode == 'Vector Stores':
 		"""Normalize search results.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
+		    Normalizes incoming values into a predictable representation for application
+			processing. The
+		    function reduces provider, user-input, or serialization differences before values are
+ stored or
 		    displayed.
 		
 		Args:
@@ -11380,8 +11298,10 @@ elif mode == 'Vector Stores':
 		"""Save uploaded storage file.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application workflows. The
-		    function standardizes file handling and returns a stable reference for downstream processing.
+		    Persists or stages input data so it can be used by later provider or application
+		    workflows. The
+		    function standardizes file handling and returns a stable reference for downstream
+		    processing.
 		
 		Args:
 		    uploaded_file (Any): Uploaded file value used by the operation.
@@ -11409,8 +11329,10 @@ elif mode == 'Vector Stores':
 		"""Get selected store id.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    Returns normalized information for the application component. The method provides a
+		    stable view
+		    of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -11441,8 +11363,10 @@ elif mode == 'Vector Stores':
 		"""Render storage table.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    Renders the requested user interface element or result block in Streamlit using
+normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and
+		    data-processing
 		    steps so the screen output remains predictable.
 		
 		Args:
@@ -11450,7 +11374,8 @@ elif mode == 'Vector Stores':
 		    key (str): Key value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		df_rows = pd.DataFrame( rows or [ ] )
 		if df_rows.empty:
 			st.info( 'No storage records loaded yet.' )
@@ -11462,15 +11387,18 @@ elif mode == 'Vector Stores':
 		"""Render storage metadata.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    Renders the requested user interface element or result block in Streamlit using
+		    normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and
+		    data-processing
 		    steps so the screen output remains predictable.
 		
 		Args:
 		    metadata (Dict[str, Any]): Metadata value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		if not isinstance( metadata, dict ) or len( metadata ) == 0:
 			st.info( 'No metadata loaded yet.' )
 			return
@@ -11481,15 +11409,18 @@ elif mode == 'Vector Stores':
 		"""Render storage search results.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and data-processing
+		    Renders the requested user interface element or result block in Streamlit using
+		    normalized
+		    inputs. The function keeps presentation logic isolated from provider calls and
+ data-processing
 		    steps so the screen output remains predictable.
 		
 		Args:
 		    rows (List[Dict[str, Any]]): Rows value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		if not isinstance( rows, list ) or len( rows ) == 0:
 			st.info( 'No search results loaded yet.' )
 			return
@@ -11502,11 +11433,14 @@ elif mode == 'Vector Stores':
 		"""Clear vector store outputs.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+		    value."""
 		st.session_state[ 'stores_store_metadata' ] = { }
 		st.session_state[ 'stores_search_results' ] = [ ]
 		st.session_state[ 'stores_files_table' ] = [ ]
@@ -11525,29 +11459,16 @@ elif mode == 'Vector Stores':
 	# ------------------------------------------------------------------
 	# Session Safety
 	# ------------------------------------------------------------------
-	for key, default_value in {
-			'stores_table': [ ],
-			'stores_files_table': [ ],
-			'stores_store_metadata': { },
-			'stores_batch_result': { },
-			'stores_search_results': [ ],
-			'stores_messages': [ ],
-	}.items( ):
+	for key, default_value in { 'stores_table': [ ], 'stores_files_table': [ ],
+		'stores_store_metadata': { }, 'stores_batch_result': { }, 'stores_search_results': [ ],
+		'stores_messages': [ ], }.items( ):
 		if key not in st.session_state or not isinstance( st.session_state.get( key ),
 				type( default_value ) ):
 			st.session_state[ key ] = default_value
 	
-	for key, default_value in {
-			'stores_name': '',
-			'stores_id': '',
-			'stores_manual_id': '',
-			'stores_description': '',
-			'stores_metadata': '',
-			'stores_query': '',
-			'stores_file_id': '',
-			'stores_file_ids_text': '',
-			'stores_selected_id': '',
-	}.items( ):
+	for key, default_value in { 'stores_name': '', 'stores_id': '', 'stores_manual_id': '',
+		'stores_description': '', 'stores_metadata': '', 'stores_query': '', 'stores_file_id': '',
+		'stores_file_ids_text': '', 'stores_selected_id': '', }.items( ):
 		if key not in st.session_state:
 			st.session_state[ key ] = default_value
 	
@@ -11563,40 +11484,39 @@ elif mode == 'Vector Stores':
 		st.divider( )
 		
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
-			ctrl_c1, ctrl_c2, ctrl_c3, ctrl_c4 = st.columns(
-				[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+			ctrl_c1, ctrl_c2, ctrl_c3, ctrl_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
+				border=True, gap='xxsmall' )
 			
 			with ctrl_c1:
 				st.text_input( label='Store Name', key='stores_name',
-					help='Name used when creating a vector store.',
-					width='stretch', placeholder='Enter store name' )
+					help='Name used when creating a vector store.', width='stretch',
+					placeholder='Enter store name' )
 			
 			with ctrl_c2:
 				st.text_input( label='Manual Store ID', key='stores_manual_id',
-					help='Optional. Paste a vector store or collection ID.',
-					width='stretch' )
+					help='Optional. Paste a vector store or collection ID.', width='stretch' )
 			
 			with ctrl_c3:
 				st.selectbox( label='Answer Model',
 					options=get_storage_options( vector, 'model_options', [ ] ),
-					key='stores_model', index=None, placeholder='Options',
+					key='stores_model',
+					index=None, placeholder='Options',
 					help='Optional. Model used for store-backed answers when supported.' )
 			
 			with ctrl_c4:
-				st.slider( label='Max Tokens', min_value=0, max_value=100000,
-					step=500, key='stores_max_tokens',
-					help='Optional. Max tokens for store-backed answers.' )
+				st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+					key='stores_max_tokens', help='Optional. Max tokens for store-backed '
+					                              'answers.' )
 			
 			desc_c1, desc_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall' )
 			
 			with desc_c1:
-				st.text_area( label='Description', key='stores_description',
-					height=80, width='stretch',
-					help='Optional. Vector store description when supported.' )
+				st.text_area( label='Description', key='stores_description', height=80,
+					width='stretch', help='Optional. Vector store description when supported.' )
 			
 			with desc_c2:
-				st.text_area( label='Metadata JSON', key='stores_metadata',
-					height=80, width='stretch',
+				st.text_area( label='Metadata JSON', key='stores_metadata', height=80,
+					width='stretch',
 					help='Optional. JSON object metadata for create/update calls.' )
 		
 		store_col, detail_col = st.columns( [ 0.50, 0.50 ], border=True, gap='medium' )
@@ -11615,23 +11535,19 @@ elif mode == 'Vector Stores':
 								st.warning( 'Enter a vector store name before creating.' )
 							elif provider_name == 'Grok':
 								st.warning(
-									'Grok collection creation requires collection-management capability. Use configured collections for search.' )
+									'Grok collection creation requires collection-management '
+									'capability. Use configured collections for search.' )
 							else:
-								result = call_storage_method(
-									instance=vector,
+								result = call_storage_method( instance=vector,
 									method_names=[ 'create', 'create_store', 'create_collection' ],
-									kwargs={
-											'name': name,
-											'description': st.session_state.get(
-												'stores_description', '' ) or None,
-											'metadata': parse_storage_json(
-												st.session_state.get( 'stores_metadata', '' ),
-												'Vector store metadata' ),
-											'file_ids': parse_storage_ids(
-												st.session_state.get( 'stores_file_ids_text',
-													'' ) ),
-									}
-								)
+									kwargs={ 'name': name,
+										'description': st.session_state.get( 'stores_description',
+											'' ) or None, 'metadata': parse_storage_json(
+											st.session_state.get( 'stores_metadata', '' ),
+											'Vector store metadata' ),
+										'file_ids': parse_storage_ids(
+											st.session_state.get( 'stores_file_ids_text',
+												'' ) ), } )
 								metadata = normalize_storage_object( result )
 								st.session_state[ 'stores_store_metadata' ] = metadata
 								st.session_state[ 'stores_id' ] = metadata.get( 'id', name )
@@ -11645,17 +11561,12 @@ elif mode == 'Vector Stores':
 					with st.spinner( 'Listing vector stores…' ):
 						try:
 							if provider_name == 'Grok':
-								result = call_storage_method(
-									instance=vector,
-									method_names=[ 'list' ],
-									kwargs={ }
-								)
+								result = call_storage_method( instance=vector,
+									method_names=[ 'list' ], kwargs={ } )
 							else:
-								result = call_storage_method(
-									instance=vector,
+								result = call_storage_method( instance=vector,
 									method_names=[ 'list_stores', 'list', 'list_collections' ],
-									kwargs={ 'limit': 100, 'order': 'desc' }
-								)
+									kwargs={ 'limit': 100, 'order': 'desc' } )
 							
 							rows = normalize_storage_rows( result )
 							st.session_state[ 'stores_table' ] = rows
@@ -11665,20 +11576,14 @@ elif mode == 'Vector Stores':
 							st.error( f'List vector stores failed: {err.info}' )
 			
 			rows = st.session_state.get( 'stores_table', [ ] )
-			store_ids = [
-					row.get( 'id', '' )
-					for row in rows
-					if isinstance( row, dict ) and row.get( 'id', '' )
-			]
+			store_ids = [ row.get( 'id', '' ) for row in rows if
+				isinstance( row, dict ) and row.get( 'id', '' ) ]
 			
-			st.selectbox( label='Selected Store', options=store_ids,
-				key='stores_selected_id', index=None, placeholder='Options',
-				help='Store selected from latest list.' )
+			st.selectbox( label='Selected Store', options=store_ids, key='stores_selected_id',
+				index=None, placeholder='Options', help='Store selected from latest list.' )
 			
-			selected_store_id = get_selected_store_id(
-				table_key='stores_table',
-				manual_key='stores_manual_id',
-				selected_key='stores_selected_id' )
+			selected_store_id = get_selected_store_id( table_key='stores_table',
+				manual_key='stores_manual_id', selected_key='stores_selected_id' )
 			
 			retrieve_c1, retrieve_c2, retrieve_c3 = st.columns( [ 0.34, 0.33, 0.33 ] )
 			with retrieve_c1:
@@ -11688,22 +11593,19 @@ elif mode == 'Vector Stores':
 							if not selected_store_id:
 								st.warning( 'Select or enter a store ID before retrieving.' )
 							elif provider_name == 'Grok':
-								result = call_storage_method(
-									instance=vector,
+								result = call_storage_method( instance=vector,
 									method_names=[ 'retrieve' ],
-									kwargs={ 'store_id': selected_store_id }
-								)
+									kwargs={ 'store_id': selected_store_id } )
 								metadata = normalize_storage_object( result )
 								st.session_state[ 'stores_store_metadata' ] = metadata
 								st.session_state[ 'stores_id' ] = selected_store_id
 								st.success( 'Store metadata retrieved.' )
 							else:
-								result = call_storage_method(
-									instance=vector,
-									method_names=[ 'retrieve', 'retrieve_store', 'get_collection' ],
+								result = call_storage_method( instance=vector,
+									method_names=[ 'retrieve', 'retrieve_store',
+										'get_collection' ],
 									kwargs={ 'store_id': selected_store_id,
-									         'id': selected_store_id }
-								)
+										'id': selected_store_id } )
 								metadata = normalize_storage_object( result )
 								st.session_state[ 'stores_store_metadata' ] = metadata
 								st.session_state[ 'stores_id' ] = selected_store_id
@@ -11721,21 +11623,15 @@ elif mode == 'Vector Stores':
 							elif provider_name == 'Grok':
 								st.warning( 'Use configured collections for search.' )
 							else:
-								result = call_storage_method(
-									instance=vector,
+								result = call_storage_method( instance=vector,
 									method_names=[ 'update', 'update_store', 'update_collection' ],
-									kwargs={
-											'store_id': selected_store_id,
-											'id': selected_store_id,
-											'name': st.session_state.get( 'stores_name',
-												'' ) or None,
-											'description': st.session_state.get(
-												'stores_description', '' ) or None,
-											'metadata': parse_storage_json(
-												st.session_state.get( 'stores_metadata', '' ),
-												'Vector store metadata' ),
-									}
-								)
+									kwargs={ 'store_id': selected_store_id, 'id':
+										selected_store_id,
+										'name': st.session_state.get( 'stores_name', '' ) or None,
+										'description': st.session_state.get( 'stores_description',
+											'' ) or None, 'metadata': parse_storage_json(
+											st.session_state.get( 'stores_metadata', '' ),
+											'Vector store metadata' ), } )
 								st.session_state[
 									'stores_store_metadata' ] = normalize_storage_object( result )
 								st.success( 'Store update submitted.' )
@@ -11752,12 +11648,10 @@ elif mode == 'Vector Stores':
 							elif provider_name == 'Grok':
 								st.warning( 'Use configured collections for search.' )
 							else:
-								result = call_storage_method(
-									instance=vector,
+								result = call_storage_method( instance=vector,
 									method_names=[ 'delete', 'delete_store', 'delete_collection' ],
 									kwargs={ 'store_id': selected_store_id,
-									         'id': selected_store_id }
-								)
+										'id': selected_store_id } )
 								st.session_state[
 									'stores_store_metadata' ] = normalize_storage_object( result )
 								st.success( 'Delete request completed.' )
@@ -11775,8 +11669,7 @@ elif mode == 'Vector Stores':
 			
 			st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 			
-			st.text_area( label='Search Query', key='stores_query',
-				height=90, width='stretch',
+			st.text_area( label='Search Query', key='stores_query', height=90, width='stretch',
 				placeholder='Search this vector store or collection.' )
 			
 			search_c1, search_c2 = st.columns( [ 0.50, 0.50 ] )
@@ -11793,27 +11686,17 @@ elif mode == 'Vector Stores':
 								query_text = st.session_state.get( 'stores_query', '' ).strip( )
 								
 								if provider_name == 'Grok':
-									result = call_storage_method(
-										instance=vector,
+									result = call_storage_method( instance=vector,
 										method_names=[ 'search' ],
-										kwargs={
-												'store_id': selected_store_id,
-												'prompt': query_text,
-												'model': st.session_state.get(
-													'stores_model' ) or 'grok-4-fast',
-										}
-									)
+										kwargs={ 'store_id': selected_store_id,
+											'prompt': query_text, 'model': st.session_state.get(
+												'stores_model' ) or 'grok-4-fast', } )
 								else:
-									result = call_storage_method(
-										instance=vector,
+									result = call_storage_method( instance=vector,
 										method_names=[ 'search', 'search_store', 'query',
-										               'query_collection' ],
-										kwargs={
-												'store_id': selected_store_id,
-												'id': selected_store_id,
-												'query': query_text,
-										}
-									)
+											'query_collection' ],
+										kwargs={ 'store_id': selected_store_id,
+											'id': selected_store_id, 'query': query_text, } )
 								
 								rows = normalize_search_results( result )
 								st.session_state[ 'stores_search_results' ] = rows
@@ -11824,7 +11707,8 @@ elif mode == 'Vector Stores':
 			
 			with search_c2:
 				st.button( label='Clear Outputs', key='clear_vector_store_outputs',
-					width='stretch', on_click=clear_vector_store_outputs )
+					width='stretch',
+					on_click=clear_vector_store_outputs )
 			
 			render_storage_search_results( st.session_state.get( 'stores_search_results', [ ] ) )
 		
@@ -11835,8 +11719,7 @@ elif mode == 'Vector Stores':
 		with file_col:
 			st.markdown( '##### Store Files' )
 			st.text_input( label='File ID', key='stores_file_id',
-				help='OpenAI file ID to attach, list, or delete.',
-				width='stretch' )
+				help='OpenAI file ID to attach, list, or delete.', width='stretch' )
 			
 			file_op_c1, file_op_c2, file_op_c3 = st.columns( [ 0.34, 0.33, 0.33 ] )
 			
@@ -11845,23 +11728,19 @@ elif mode == 'Vector Stores':
 					with st.spinner( 'Attaching file…' ):
 						try:
 							if provider_name == 'Grok':
-								st.warning(
-									'Grok collection file attachment requires collection-management capability.' )
+								st.warning( 'Grok collection file attachment requires '
+								            'collection-management capability.' )
 							elif not selected_store_id:
 								st.warning( 'Select or enter a store ID first.' )
 							elif not st.session_state.get( 'stores_file_id', '' ).strip( ):
 								st.warning( 'Enter a file ID first.' )
 							else:
-								result = call_storage_method(
-									instance=vector,
+								result = call_storage_method( instance=vector,
 									method_names=[ 'create_file', 'attach_file', 'add_file' ],
-									kwargs={
-											'store_id': selected_store_id,
-											'id': selected_store_id,
-											'file_id': st.session_state.get( 'stores_file_id',
-												'' ).strip( ),
-									}
-								)
+									kwargs={ 'store_id': selected_store_id, 'id':
+										selected_store_id,
+										'file_id': st.session_state.get( 'stores_file_id',
+											'' ).strip( ), } )
 								st.session_state[
 									'stores_batch_result' ] = normalize_storage_object( result )
 								st.success( 'File attach request completed.' )
@@ -11879,12 +11758,11 @@ elif mode == 'Vector Stores':
 							elif not selected_store_id:
 								st.warning( 'Select or enter a store ID first.' )
 							else:
-								result = call_storage_method(
-									instance=vector,
+								result = call_storage_method( instance=vector,
 									method_names=[ 'list_files', 'files', 'list_store_files' ],
-									kwargs={ 'store_id': selected_store_id, 'id': selected_store_id,
-									         'limit': 100, 'order': 'desc' }
-								)
+									kwargs={ 'store_id': selected_store_id, 'id':
+										selected_store_id,
+										'limit': 100, 'order': 'desc' } )
 								rows = normalize_storage_rows( result )
 								st.session_state[ 'stores_files_table' ] = rows
 								st.success( f'Loaded {len( rows )} store file record(s).' )
@@ -11904,16 +11782,12 @@ elif mode == 'Vector Stores':
 							elif not st.session_state.get( 'stores_file_id', '' ).strip( ):
 								st.warning( 'Enter a file ID first.' )
 							else:
-								result = call_storage_method(
-									instance=vector,
+								result = call_storage_method( instance=vector,
 									method_names=[ 'delete_file', 'remove_file' ],
-									kwargs={
-											'store_id': selected_store_id,
-											'id': selected_store_id,
-											'file_id': st.session_state.get( 'stores_file_id',
-												'' ).strip( ),
-									}
-								)
+									kwargs={ 'store_id': selected_store_id, 'id':
+										selected_store_id,
+										'file_id': st.session_state.get( 'stores_file_id',
+											'' ).strip( ), } )
 								st.session_state[
 									'stores_batch_result' ] = normalize_storage_object( result )
 								st.success( 'Store file delete request completed.' )
@@ -11926,8 +11800,7 @@ elif mode == 'Vector Stores':
 		
 		with batch_col:
 			st.markdown( '##### Batch / Upload' )
-			st.text_area( label='File IDs', key='stores_file_ids_text',
-				height=80, width='stretch',
+			st.text_area( label='File IDs', key='stores_file_ids_text', height=80, width='stretch',
 				placeholder='file_abc,file_def,file_xyz' )
 			
 			uploaded_store_file = st.file_uploader( label='Upload File to Store',
@@ -11941,8 +11814,8 @@ elif mode == 'Vector Stores':
 					with st.spinner( 'Creating file batch…' ):
 						try:
 							if provider_name == 'Grok':
-								st.warning(
-									'Grok batch attachment requires collection-management capability.' )
+								st.warning( 'Grok batch attachment requires collection-management '
+								            'capability.' )
 							elif not selected_store_id:
 								st.warning( 'Select or enter a store ID first.' )
 							else:
@@ -11951,16 +11824,13 @@ elif mode == 'Vector Stores':
 								if not file_ids:
 									st.warning( 'Enter one or more file IDs first.' )
 								else:
-									result = call_storage_method(
-										instance=vector,
+									result = call_storage_method( instance=vector,
 										method_names=[ 'create_file_batch', 'create_batch',
-										               'batch' ],
-										kwargs={ 'store_id': selected_store_id,
-										         'id': selected_store_id,
-										         'file_ids': file_ids }
-									)
+											'batch' ], kwargs={ 'store_id': selected_store_id,
+											'id': selected_store_id, 'file_ids': file_ids } )
 									st.session_state[
-										'stores_batch_result' ] = normalize_storage_object( result )
+										'stores_batch_result' ] = normalize_storage_object(
+										result )
 									st.success( 'Batch request submitted.' )
 						except Exception as exc:
 							err = Error( exc )
@@ -11973,21 +11843,19 @@ elif mode == 'Vector Stores':
 						try:
 							if provider_name == 'Grok':
 								st.warning(
-									'Grok upload-to-collection requires collection-management capability.' )
+									'Grok upload-to-collection requires collection-management '
+									'capability.' )
 							elif not selected_store_id:
 								st.warning( 'Select or enter a store ID first.' )
 							elif uploaded_store_file is None:
 								st.warning( 'Select a file first.' )
 							else:
 								path = save_uploaded_storage_file( uploaded_store_file )
-								result = call_storage_method(
-									instance=vector,
+								result = call_storage_method( instance=vector,
 									method_names=[ 'upload_file', 'upload', 'files_upload' ],
-									kwargs={ 'store_id': selected_store_id,
-									         'id': selected_store_id,
-									         'path': path,
-									         'file_path': path }
-								)
+									kwargs={ 'store_id': selected_store_id, 'id':
+										selected_store_id,
+										'path': path, 'file_path': path } )
 								st.session_state[
 									'stores_batch_result' ] = normalize_storage_object( result )
 								st.success( 'Upload request completed.' )
@@ -12010,11 +11878,12 @@ elif mode == 'File Search Stores':
 	searcher = get_file_search_module( provider_name )
 	
 	def call_file_search_method( method_names: List[ str ],
-			kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
+		kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
 		"""Call file search method.
 		
 		Purpose:
-		    Performs the call_file_search_method workflow using the inputs supplied by the caller and the
+		    Performs the call_file_search_method workflow using the inputs supplied by the caller
+		    and the
 		    current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
@@ -12042,17 +11911,18 @@ elif mode == 'File Search Stores':
 				signature = inspect.signature( method )
 				parameters = signature.parameters
 				accepted_names = set( parameters.keys( ) )
-				accepts_kwargs = any( parameter.kind == inspect.Parameter.VAR_KEYWORD
-				                      for parameter in parameters.values( ) )
+				accepts_kwargs = any(
+					parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in
+						parameters.values( ) )
 				
-				clean_kwargs = { key: value for key, value in candidate_kwargs.items( )
-				                 if value is not None and value != '' and value != [ ] }
+				clean_kwargs = { key: value for key, value in candidate_kwargs.items( ) if
+					value is not None and value != '' and value != [ ] }
 				
 				if 'store_id' in accepted_names and not clean_kwargs.get( 'store_id' ):
 					if clean_kwargs.get( 'id' ):
 						clean_kwargs[ 'store_id' ] = clean_kwargs[ 'id' ]
 					elif clean_kwargs.get( 'name' ) and method_name not in [ 'create',
-					                                                         'create_store' ]:
+						'create_store' ]:
 						clean_kwargs[ 'store_id' ] = clean_kwargs[ 'name' ]
 				
 				if 'path' in accepted_names and not clean_kwargs.get( 'path' ):
@@ -12063,19 +11933,19 @@ elif mode == 'File Search Stores':
 					if clean_kwargs.get( 'display_name' ):
 						clean_kwargs[ 'name' ] = clean_kwargs[ 'display_name' ]
 					elif clean_kwargs.get( 'store_id' ) and method_name in [ 'create',
-					                                                         'create_store' ]:
+						'create_store' ]:
 						clean_kwargs[ 'name' ] = clean_kwargs[ 'store_id' ]
 				
 				if accepts_kwargs:
 					return method( **clean_kwargs )
 				
-				method_kwargs = { key: value for key, value in clean_kwargs.items( )
-				                  if key in accepted_names }
+				method_kwargs = { key: value for key, value in clean_kwargs.items( ) if
+					key in accepted_names }
 				
-				required_names = [ name for name, parameter in parameters.items( )
-				                   if parameter.default == inspect.Parameter.empty
-				                   and parameter.kind in [ inspect.Parameter.POSITIONAL_OR_KEYWORD,
-				                                           inspect.Parameter.KEYWORD_ONLY, ] ]
+				required_names = [ name for name, parameter in parameters.items( ) if
+					parameter.default == inspect.Parameter.empty and parameter.kind in [
+						inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.KEYWORD_ONLY,
+					] ]
 				
 				missing_names = [ name for name in required_names if name not in method_kwargs ]
 				if missing_names:
@@ -12097,20 +11967,20 @@ elif mode == 'File Search Stores':
 		"""Clear filestore outputs.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+		    Removes or resets the requested application state or provider resource in a controlled
+		    manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+ logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value."""
+		    None: This function performs its work through side effects and does not return a
+			value."""
 		st.session_state[ 'filestore_results' ] = None
 		st.session_state[ 'filestore_metadata' ] = { }
 		st.session_state[ 'filestore_upload_result' ] = { }
 	
-	for key, default_value in {
-			'filestore_table': [ ],
-			'filestore_metadata': { },
-			'filestore_upload_result': { },
-	}.items( ):
+	for key, default_value in { 'filestore_table': [ ], 'filestore_metadata': { },
+		'filestore_upload_result': { }, }.items( ):
 		if key not in st.session_state or not isinstance( st.session_state.get( key ),
 				type( default_value ) ):
 			st.session_state[ key ] = default_value
@@ -12122,7 +11992,7 @@ elif mode == 'File Search Stores':
 		st.session_state[ 'filestore_manual_id' ] = ''
 	
 	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
-	with (center):
+	with ((center)):
 		st.subheader( '📦 File Search Stores', help=getattr( cfg, 'VECTORSTORES_API', '' ) )
 		st.divider( )
 		
@@ -12142,8 +12012,8 @@ elif mode == 'File Search Stores':
 							else:
 								result = call_file_search_method( [ 'create', 'create_store' ],
 									{ 'name': name, 'display_name': name, 'store_id': name } )
-								st.session_state[ 'filestore_metadata' ] = \
-									normalize_storage_object( result )
+								st.session_state[ 'filestore_metadata' ] =
+								normalize_storage_object( result )
 								st.success( f'Created File Search Store: {name}' )
 						except Exception as exc:
 							err = Error( exc )
@@ -12156,8 +12026,8 @@ elif mode == 'File Search Stores':
 				
 				if option_labels:
 					selected_label = st.selectbox( label='Select File Search Store',
-						options=option_labels, key='filestore_select',
-						index=None, placeholder='Options' )
+						options=option_labels, key='filestore_select', index=None,
+						placeholder='Options' )
 					
 					selected_id = ''
 					for name, store_id in options:
@@ -12172,8 +12042,8 @@ elif mode == 'File Search Stores':
 				st.text_input( label='Manual File Search Store ID', key='filestore_manual_id',
 					width='stretch' )
 				
-				selected_store_id = st.session_state.get( 'filestore_selected_id', '' ) \
-				                    or st.session_state.get( 'filestore_manual_id', '' )
+				selected_store_id = st.session_state.get( 'filestore_selected_id',
+					'' ) or st.session_state.get( 'filestore_manual_id', '' )
 				
 				retr_c1, retr_c2 = st.columns( [ 0.50, 0.50 ] )
 				with retr_c1:
@@ -12187,9 +12057,9 @@ elif mode == 'File Search Stores':
 									result = call_file_search_method(
 										[ 'retrieve', 'retrieve_store', 'get' ],
 										{ 'store_id': selected_store_id, 'id': selected_store_id,
-										  'name': selected_store_id } )
-									st.session_state[ 'filestore_metadata' ] = \
-										normalize_storage_object( result )
+											'name': selected_store_id } )
+									st.session_state[
+										'filestore_metadata' ] = normalize_storage_object( result )
 									st.success( 'File Search Store metadata retrieved.' )
 							except Exception as exc:
 								err = Error( exc )
@@ -12206,10 +12076,9 @@ elif mode == 'File Search Stores':
 									result = call_file_search_method(
 										[ 'delete', 'delete_store', 'remove' ],
 										{ 'store_id': selected_store_id, 'id': selected_store_id,
-										  'name': selected_store_id }
-									)
-									st.session_state[ 'filestore_metadata' ] = \
-										normalize_storage_object( result )
+											'name': selected_store_id } )
+									st.session_state[
+										'filestore_metadata' ] = normalize_storage_object( result )
 									st.success( 'Delete request completed.' )
 							except Exception as exc:
 								err = Error( exc )
@@ -12221,8 +12090,8 @@ elif mode == 'File Search Stores':
 				type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv' ],
 				key='filestore_uploader' )
 			
-			target_store = st.session_state.get( 'filestore_selected_id', '' ) \
-			               or st.session_state.get( 'filestore_manual_id', '' )
+			target_store = st.session_state.get( 'filestore_selected_id',
+				'' ) or st.session_state.get( 'filestore_manual_id', '' )
 			
 			if st.button( 'Upload File', key='upload_filestore_file', width='stretch' ):
 				with st.spinner( 'Uploading file…' ):
@@ -12234,8 +12103,7 @@ elif mode == 'File Search Stores':
 							result = call_file_search_method(
 								[ 'upload_file', 'upload', 'files_upload' ],
 								{ 'path': path, 'file_path': path, 'store_id': target_store,
-								  'id': target_store }
-							)
+									'id': target_store } )
 							st.session_state[
 								'filestore_upload_result' ] = normalize_storage_object( result )
 							st.success( 'Upload request completed.' )
@@ -12243,8 +12111,8 @@ elif mode == 'File Search Stores':
 						err = Error( exc )
 						st.error( f'Upload failed: {err.info}' )
 			
-			if st.button( 'Clear Outputs', key='clear_filestore_outputs',
-					width='stretch', on_click=clear_filestore_outputs ):
+			if st.button( 'Clear Outputs', key='clear_filestore_outputs', width='stretch',
+					on_click=clear_filestore_outputs ):
 				st.rerun( )
 			
 			st.caption( 'Upload Result' )
@@ -12267,12 +12135,14 @@ elif mode == 'Google Cloud Buckets':
 	buckets = get_cloud_buckets_module( provider_name )
 	
 	def call_bucket_method( method_names: List[ str ],
-			kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
+		kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
 		"""Call bucket method.
 		
 		Purpose:
-		    Performs the call_bucket_method workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
+		    Performs the call_bucket_method workflow using the inputs supplied by the caller and
+			the current
+		    runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -12297,11 +12167,12 @@ elif mode == 'Google Cloud Buckets':
 				signature = inspect.signature( method )
 				parameters = signature.parameters
 				accepted_names = set( parameters.keys( ) )
-				accepts_kwargs = any( parameter.kind == inspect.Parameter.VAR_KEYWORD
-				                      for parameter in parameters.values( ) )
+				accepts_kwargs = any(
+					parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in
+						parameters.values( ) )
 				
-				clean_kwargs = { key: value for key, value in candidate_kwargs.items( )
-				                 if value is not None and value != '' and value != [ ] }
+				clean_kwargs = { key: value for key, value in candidate_kwargs.items( ) if
+					value is not None and value != '' and value != [ ] }
 				
 				if 'bucket' in accepted_names and not clean_kwargs.get( 'bucket' ):
 					if clean_kwargs.get( 'bucket_name' ):
@@ -12329,19 +12200,15 @@ elif mode == 'Google Cloud Buckets':
 				if accepts_kwargs:
 					return method( **clean_kwargs )
 				
-				method_kwargs = { key: value for key, value in clean_kwargs.items( )
-				                  if key in accepted_names }
+				method_kwargs = { key: value for key, value in clean_kwargs.items( ) if
+					key in accepted_names }
 				
-				required_names = [ name for name, parameter in parameters.items( )
-				                   if parameter.default == inspect.Parameter.empty
-				                   and parameter.kind in [ inspect.Parameter.POSITIONAL_OR_KEYWORD,
-				                                           inspect.Parameter.KEYWORD_ONLY, ] ]
+				required_names = [ name for name, parameter in parameters.items( ) if
+					parameter.default == inspect.Parameter.empty and parameter.kind in [
+						inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.KEYWORD_ONLY,
+					] ]
 				
-				missing_names = [
-						name
-						for name in required_names
-						if name not in method_kwargs
-				]
+				missing_names = [ name for name in required_names if name not in method_kwargs ]
 				
 				if missing_names:
 					continue
@@ -12350,8 +12217,7 @@ elif mode == 'Google Cloud Buckets':
 			
 			raise AttributeError(
 				f'Gemini CloudBuckets does not expose any compatible method from: '
-				f'{", ".join( method_names )}.'
-			)
+				f'{", ".join( method_names )}.' )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'app'
@@ -12364,20 +12230,20 @@ elif mode == 'Google Cloud Buckets':
 			"""Clear bucket outputs.
 			
 			Purpose:
-			    Removes or resets the requested application state or provider resource in a controlled manner.
-			    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+			    Removes or resets the requested application state or provider resource in a
+			    controlled manner.
+			    The function keeps cleanup behavior centralized so callers do not duplicate
+			    lifecycle logic.
 			
 			Returns:
-			    None: This function performs its work through side effects and does not return a value."""
+			    None: This function performs its work through side effects and does not return a
+ value."""
 			st.session_state[ 'bucket_results' ] = None
 			st.session_state[ 'bucket_metadata' ] = { }
 			st.session_state[ 'bucket_upload_result' ] = { }
 		
-		for key, default_value in {
-				'bucket_table': [ ],
-				'bucket_metadata': { },
-				'bucket_upload_result': { },
-		}.items( ):
+		for key, default_value in { 'bucket_table': [ ], 'bucket_metadata': { },
+			'bucket_upload_result': { }, }.items( ):
 			if key not in st.session_state or not isinstance( st.session_state.get( key ),
 					type( default_value ) ):
 				st.session_state[ key ] = default_value
@@ -12393,13 +12259,13 @@ elif mode == 'Google Cloud Buckets':
 			st.subheader( '🧊 Google Cloud Buckets', help=getattr( cfg, 'VECTORSTORES_API', '' ) )
 			st.divider( )
 			
-			project_id = st.session_state.get( 'google_cloud_project_id', '' ) \
-			             or getattr( cfg, 'GOOGLE_CLOUD_PROJECT_ID', '' )
-			location = st.session_state.get( 'google_cloud_location', '' ) \
-			           or getattr( cfg, 'GOOGLE_CLOUD_LOCATION', '' )
+			project_id = st.session_state.get( 'google_cloud_project_id', '' ) or getattr( cfg,
+				'GOOGLE_CLOUD_PROJECT_ID', '' )
+			location = st.session_state.get( 'google_cloud_location', '' ) or getattr( cfg,
+				'GOOGLE_CLOUD_LOCATION', '' )
 			
-			st.caption(
-				f'Project: {project_id or "Not configured"} | Location: {location or "Not configured"}' )
+			st.caption( f'Project: {project_id or "Not configured"} | Location: '
+			            f'{location or "Not configured"}' )
 			
 			buckets_left, buckets_right = st.columns( [ 0.50, 0.50 ], border=True )
 			with buckets_left:
@@ -12414,14 +12280,11 @@ elif mode == 'Google Cloud Buckets':
 								if not name:
 									st.warning( 'Enter a Cloud Bucket name.' )
 								else:
-									result = call_bucket_method(
-										[ 'create', 'create_bucket' ],
+									result = call_bucket_method( [ 'create', 'create_bucket' ],
 										{ 'name': name, 'bucket_name': name,
-										  'project_id': project_id, 'location': location }
-									)
+											'project_id': project_id, 'location': location } )
 									st.session_state[
-										'bucket_metadata' ] = normalize_storage_object(
-										result )
+										'bucket_metadata' ] = normalize_storage_object( result )
 									st.success( f'Created Cloud Bucket: {name}' )
 							except Exception as exc:
 								err = Error( exc )
@@ -12435,8 +12298,8 @@ elif mode == 'Google Cloud Buckets':
 					
 					if option_labels:
 						selected_label = st.selectbox( label='Select Cloud Bucket',
-							options=option_labels, key='bucket_select',
-							index=None, placeholder='Options' )
+							options=option_labels, key='bucket_select', index=None,
+							placeholder='Options' )
 						
 						selected_id = ''
 						for name, bucket_id in options:
@@ -12451,8 +12314,8 @@ elif mode == 'Google Cloud Buckets':
 					st.text_input( label='Manual Cloud Bucket ID / Name', key='bucket_manual_id',
 						width='stretch' )
 					
-					selected_bucket_id = st.session_state.get( 'bucket_selected_id', '' ) \
-					                     or st.session_state.get( 'bucket_manual_id', '' )
+					selected_bucket_id = st.session_state.get( 'bucket_selected_id',
+						'' ) or st.session_state.get( 'bucket_manual_id', '' )
 					
 					bucket_c1, bucket_c2 = st.columns( [ 0.50, 0.50 ] )
 					
@@ -12467,13 +12330,13 @@ elif mode == 'Google Cloud Buckets':
 										result = call_bucket_method(
 											[ 'retrieve', 'retrieve_bucket', 'get' ],
 											{ 'store_id': selected_bucket_id,
-											  'id': selected_bucket_id,
-											  'name': selected_bucket_id,
-											  'bucket_name': selected_bucket_id,
-											  'project_id': project_id, 'location': location }
-										)
-										st.session_state[ 'bucket_metadata' ] = \
-											normalize_storage_object( result )
+												'id': selected_bucket_id,
+												'name': selected_bucket_id,
+												'bucket_name': selected_bucket_id,
+												'project_id': project_id, 'location': location } )
+										st.session_state[
+											'bucket_metadata' ] = normalize_storage_object(
+											result )
 										
 										st.success( 'Cloud Bucket metadata retrieved.' )
 								except Exception as exc:
@@ -12491,13 +12354,13 @@ elif mode == 'Google Cloud Buckets':
 										result = call_bucket_method(
 											[ 'delete', 'delete_bucket', 'remove' ],
 											{ 'store_id': selected_bucket_id,
-											  'id': selected_bucket_id,
-											  'name': selected_bucket_id,
-											  'bucket_name': selected_bucket_id,
-											  'project_id': project_id, 'location': location }
-										)
-										st.session_state[ 'bucket_metadata' ] = \
-											normalize_storage_object( result )
+												'id': selected_bucket_id,
+												'name': selected_bucket_id,
+												'bucket_name': selected_bucket_id,
+												'project_id': project_id, 'location': location } )
+										st.session_state[
+											'bucket_metadata' ] = normalize_storage_object(
+											result )
 										
 										st.success( 'Delete request completed.' )
 								except Exception as exc:
@@ -12510,8 +12373,8 @@ elif mode == 'Google Cloud Buckets':
 					type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv' ],
 					key='bucket_uploader' )
 				
-				target_bucket = st.session_state.get( 'bucket_selected_id', '' ) \
-				                or st.session_state.get( 'bucket_manual_id', '' )
+				target_bucket = st.session_state.get( 'bucket_selected_id',
+					'' ) or st.session_state.get( 'bucket_manual_id', '' )
 				
 				if st.button( 'Upload File', key='upload_bucket_file', width='stretch' ):
 					with st.spinner( 'Uploading file…' ):
@@ -12524,21 +12387,20 @@ elif mode == 'Google Cloud Buckets':
 								path = save_uploaded_storage_file( uploaded_file )
 								result = call_bucket_method(
 									[ 'upload_file', 'upload', 'files_upload' ],
-									{ 'path': path, 'file_path': path,
-									  'bucket_name': target_bucket, 'store_id': target_bucket,
-									  'id': target_bucket, 'project_id': project_id,
-									  'location': location }
-								)
-								st.session_state[ 'bucket_upload_result' ] = \
-									normalize_storage_object( result )
+									{ 'path': path, 'file_path': path, 'bucket_name':
+										target_bucket,
+										'store_id': target_bucket, 'id': target_bucket,
+										'project_id': project_id, 'location': location } )
+								st.session_state[
+									'bucket_upload_result' ] = normalize_storage_object( result )
 								
 								st.success( 'Upload request completed.' )
 						except Exception as exc:
 							err = Error( exc )
 							st.error( f'Bucket upload failed: {err.info}' )
 				
-				if st.button( 'Clear Outputs', key='clear_bucket_outputs',
-						width='stretch', on_click=clear_bucket_outputs ):
+				if st.button( 'Clear Outputs', key='clear_bucket_outputs', width='stretch',
+						on_click=clear_bucket_outputs ):
 					st.rerun( )
 				
 				st.caption( 'Upload Result' )
@@ -12586,10 +12448,8 @@ elif mode == "Prompt Engineering":
 	
 	def load_prompt( pid: int ) -> None:
 		with get_conn( ) as conn:
-			cur = conn.execute(
-				f"SELECT Name, Text, Version FROM {TABLE} WHERE PromptsId=?",
-				(pid,),
-			)
+			cur = conn.execute( f"SELECT Name, Text, Version FROM {TABLE} WHERE PromptsId=?",
+				(pid,), )
 			row = cur.fetchone( )
 			if row:
 				st.session_state.pe_name = row[ 0 ]
@@ -12622,8 +12482,7 @@ elif mode == "Prompt Engineering":
 	with c4:
 		st.markdown(
 			"<div style='font-size:0.95rem;font-weight:600;margin-bottom:0.25rem;'>Go to ID</div>",
-			unsafe_allow_html=True,
-		)
+			unsafe_allow_html=True, )
 		a1, a2, a3 = st.columns( [ 2, 1, 1 ] )
 		with a1:
 			jump_id = st.number_input( "Go to ID", min_value=1, step=1,
@@ -12645,8 +12504,7 @@ elif mode == "Prompt Engineering":
 	if st.session_state.pe_search:
 		where = "WHERE Name LIKE ? OR Text LIKE ?"
 		s = f"%{st.session_state.pe_search}%"
-		params.extend( [ s,
-		                 s ] )
+		params.extend( [ s, s ] )
 	
 	offset = (st.session_state.pe_page - 1) * PAGE_SIZE
 	
@@ -12671,13 +12529,9 @@ elif mode == "Prompt Engineering":
 	# ------------------------------------------------------------------
 	table_rows = [ ]
 	for r in rows:
-		table_rows.append( {
-				'Selected': r[ 0 ] == st.session_state.pe_selected_id,
-				'PromptsId': r[ 0 ],
-				'Name': r[ 1 ],
-				'Version': r[ 3 ],
-				'ID': r[ 4 ],
-		} )
+		table_rows.append(
+			{ 'Selected': r[ 0 ] == st.session_state.pe_selected_id, 'PromptsId': r[ 0 ],
+				'Name': r[ 1 ], 'Version': r[ 3 ], 'ID': r[ 4 ], } )
 	
 	edited = st.data_editor( table_rows, hide_index=True, use_container_width=True, )
 	
@@ -12717,11 +12571,7 @@ elif mode == "Prompt Engineering":
 	# Create / Edit Prompt (AUTHORITATIVE EDITOR)
 	# ------------------------------------------------------------------
 	with st.expander( 'Create / Edit Prompt', expanded=True ):
-		st.text_input(
-			'PromptsId',
-			value=st.session_state.pe_selected_id or "",
-			disabled=True,
-		)
+		st.text_input( 'PromptsId', value=st.session_state.pe_selected_id or "", disabled=True, )
 		st.text_input( 'Name', key='pe_name' )
 		st.text_area( 'Text', key='pe_text', height=260 )
 		st.number_input( 'Version', min_value=1, key='pe_version' )
@@ -12732,31 +12582,18 @@ elif mode == "Prompt Engineering":
 			if st.button( "Save Changes" if st.session_state.pe_selected_id else "Create Prompt" ):
 				with get_conn( ) as conn:
 					if st.session_state.pe_selected_id:
-						conn.execute(
-							f"""
+						conn.execute( f"""
                             UPDATE {TABLE}
                             SET Name=?, Text=?, Version=?
                             WHERE PromptsId=?
-                            """,
-							(
-									st.session_state.pe_name,
-									st.session_state.pe_text,
-									st.session_state.pe_version,
-									st.session_state.pe_selected_id,
-							),
-						)
+                            """, (st.session_state.pe_name, st.session_state.pe_text,
+							st.session_state.pe_version, st.session_state.pe_selected_id,), )
 					else:
-						conn.execute(
-							f"""
+						conn.execute( f"""
                             INSERT INTO {TABLE} (Name, Text, Version)
                             VALUES (?, ?, ?)
-                            """,
-							(
-									st.session_state.pe_name,
-									st.session_state.pe_text,
-									st.session_state.pe_version,
-							),
-						)
+                            """, (st.session_state.pe_name, st.session_state.pe_text,
+							st.session_state.pe_version,), )
 					conn.commit( )
 				st.success( 'Saved.' )
 				reset_selection( )
@@ -12764,10 +12601,8 @@ elif mode == "Prompt Engineering":
 		with c2:
 			if st.session_state.pe_selected_id and st.button( 'Delete' ):
 				with get_conn( ) as conn:
-					conn.execute(
-						f'DELETE FROM {TABLE} WHERE PromptsId=?',
-						(st.session_state.pe_selected_id,),
-					)
+					conn.execute( f'DELETE FROM {TABLE} WHERE PromptsId=?',
+						(st.session_state.pe_selected_id,), )
 					conn.commit( )
 				reset_selection( )
 				st.success( 'Deleted.' )
@@ -12783,8 +12618,9 @@ elif mode == 'Data Management':
 	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
 	with center:
 		st.subheader( '🏛️ Data Management', help=cfg.DATA_MANAGEMENT )
-		tabs = st.tabs( [ 'Import', 'Browse', 'CRUD', 'Explore', 'Filter',
-		                  'Aggregate', 'Visualize', 'Admin', 'SQL' ] )
+		tabs = st.tabs(
+			[ 'Import', 'Browse', 'CRUD', 'Explore', 'Filter', 'Aggregate', 'Visualize', 'Admin',
+				'SQL' ] )
 		
 		tables = list_tables( )
 		if not tables:
@@ -12813,19 +12649,15 @@ elif mode == 'Data Management':
 								sql_type = get_sqlite_type( df[ col ].dtype )
 								columns.append( f'"{col}" {sql_type}' )
 							
-							create_stmt = (
-									f'CREATE TABLE "{table_name}" '
-									f'({", ".join( columns )});'
-							)
+							create_stmt = (f'CREATE TABLE "{table_name}" '
+							               f'({", ".join( columns )});')
 							
 							conn.execute( create_stmt )
 							
 							# --- Insert Data ---
 							placeholders = ", ".join( [ "?" ] * len( df.columns ) )
-							insert_stmt = (
-									f'INSERT INTO "{table_name}" '
-									f'VALUES ({placeholders});'
-							)
+							insert_stmt = (f'INSERT INTO "{table_name}" '
+							               f'VALUES ({placeholders});')
 							
 							conn.executemany( insert_stmt,
 								df.where( pd.notnull( df ), None ).values.tolist( ) )
@@ -12862,8 +12694,8 @@ elif mode == 'Data Management':
 			if not tables:
 				st.info( 'No tables available.' )
 			else:
-				crud_header_c1, crud_header_c2, crud_header_c3 = st.columns(
-					[ 0.45, 0.25, 0.30 ], border=True )
+				crud_header_c1, crud_header_c2, crud_header_c3 = st.columns( [ 0.45, 0.25, 0.30 ],
+					border=True )
 				
 				with crud_header_c1:
 					table = st.selectbox( 'Select Table', tables, key='crud_table' )
@@ -12892,25 +12724,19 @@ elif mode == 'Data Management':
 					
 					for column, col_type in type_map.items( ):
 						if 'INT' in col_type:
-							insert_data[ column ] = st.number_input(
-								column,
-								step=1,
+							insert_data[ column ] = st.number_input( column, step=1,
 								key=f'ins_{table}_{column}' )
 						
 						elif 'REAL' in col_type:
-							insert_data[ column ] = st.number_input(
-								column,
-								format='%.6f',
+							insert_data[ column ] = st.number_input( column, format='%.6f',
 								key=f'ins_{table}_{column}' )
 						
 						elif 'BOOL' in col_type:
-							insert_data[ column ] = 1 if st.checkbox(
-								column,
+							insert_data[ column ] = 1 if st.checkbox( column,
 								key=f'ins_{table}_{column}' ) else 0
 						
 						else:
-							insert_data[ column ] = st.text_input(
-								column,
+							insert_data[ column ] = st.text_input( column,
 								key=f'ins_{table}_{column}' )
 					
 					if st.button( 'Insert Row', key=f'insert_row_{table}',
@@ -12918,9 +12744,8 @@ elif mode == 'Data Management':
 						cols = list( insert_data.keys( ) )
 						quoted_cols = [ f'"{c}"' for c in cols ]
 						placeholders = ', '.join( [ '?' ] * len( cols ) )
-						stmt = (
-								f'INSERT INTO "{table}" ({", ".join( quoted_cols )}) '
-								f'VALUES ({placeholders});')
+						stmt = (f'INSERT INTO "{table}" ({", ".join( quoted_cols )}) '
+						        f'VALUES ({placeholders});')
 						
 						with create_connection( ) as conn:
 							conn.execute( stmt, list( insert_data.values( ) ) )
@@ -12934,39 +12759,27 @@ elif mode == 'Data Management':
 				# ------------------------------------------------------------------
 				with update_col:
 					st.markdown( '#### Update Row' )
-					rowid = st.number_input(
-						'Row ID',
-						min_value=1,
-						step=1,
+					rowid = st.number_input( 'Row ID', min_value=1, step=1,
 						key=f'crud_update_rowid_{table}' )
 					
 					update_data = { }
 					
 					for column, col_type in type_map.items( ):
 						if 'INT' in col_type:
-							val = st.number_input(
-								column,
-								step=1,
-								key=f'upd_{table}_{column}' )
+							val = st.number_input( column, step=1, key=f'upd_{table}_{column}' )
 							update_data[ column ] = val
 						
 						elif 'REAL' in col_type:
-							val = st.number_input(
-								column,
-								format='%.6f',
+							val = st.number_input( column, format='%.6f',
 								key=f'upd_{table}_{column}' )
 							update_data[ column ] = val
 						
 						elif 'BOOL' in col_type:
-							val = 1 if st.checkbox(
-								column,
-								key=f'upd_{table}_{column}' ) else 0
+							val = 1 if st.checkbox( column, key=f'upd_{table}_{column}' ) else 0
 							update_data[ column ] = val
 						
 						else:
-							val = st.text_input(
-								column,
-								key=f'upd_{table}_{column}' )
+							val = st.text_input( column, key=f'upd_{table}_{column}' )
 							update_data[ column ] = val
 					
 					if st.button( 'Update Row', key=f'update_row_{table}',
@@ -12990,10 +12803,7 @@ elif mode == 'Data Management':
 				# ------------------------------------------------------------------
 				with delete_col:
 					st.markdown( '#### Delete Row' )
-					delete_id = st.number_input(
-						'Row ID to Delete',
-						min_value=1,
-						step=1,
+					delete_id = st.number_input( 'Row ID to Delete', min_value=1, step=1,
 						key=f'crud_delete_rowid_{table}' )
 					
 					if st.button( 'Delete Row', key=f'delete_row_{table}',
@@ -13010,11 +12820,8 @@ elif mode == 'Data Management':
 				# ------------------------------------------------------------------
 				with preview_col:
 					st.markdown( '#### Current Data Preview' )
-					st.data_editor(
-						df.head( 25 ),
-						key=f'dm_crud_preview_{table}',
-						use_container_width=True,
-						disabled=True )
+					st.data_editor( df.head( 25 ), key=f'dm_crud_preview_{table}',
+						use_container_width=True, disabled=True )
 		
 		# ------------------------------------------------------------------------------
 		# EXPLORE
@@ -13169,12 +12976,8 @@ elif mode == 'Data Management':
 				primary_key = st.checkbox( 'PRIMARY KEY', key=f'pk_{i}' )
 				auto_inc = st.checkbox( 'AUTOINCREMENT (INTEGER only)', key=f'ai_{i}' )
 				
-				columns.append( {
-						'name': col_name,
-						'type': col_type,
-						'not_null': not_null,
-						'primary_key': primary_key,
-						'auto_increment': auto_inc } )
+				columns.append( { 'name': col_name, 'type': col_type, 'not_null': not_null,
+					'primary_key': primary_key, 'auto_increment': auto_inc } )
 			
 			if st.button( 'Create Table' ):
 				try:
@@ -13194,8 +12997,8 @@ elif mode == 'Data Management':
 				
 				# Column schema
 				schema = create_schema( table )
-				schema_df = pd.DataFrame( schema, columns=[ 'cid', 'name', 'type',
-				                                            'notnull', 'default', 'pk' ] )
+				schema_df = pd.DataFrame( schema,
+					columns=[ 'cid', 'name', 'type', 'notnull', 'default', 'pk' ] )
 				
 				st.markdown( "### Columns" )
 				st.data_editor( make_display_safe( schema_df ), hide_index=True,
@@ -13210,16 +13013,11 @@ elif mode == 'Data Management':
 				# Indexes
 				indexes = get_indexes( table )
 				if indexes:
-					idx_df = pd.DataFrame(
-						indexes,
-						columns=[ 'seq', 'name', 'unique', 'origin', 'partial' ]
-					)
+					idx_df = pd.DataFrame( indexes,
+						columns=[ 'seq', 'name', 'unique', 'origin', 'partial' ] )
 					st.markdown( "### Indexes" )
-					st.data_editor(
-						make_display_safe( idx_df ),
-						hide_index=True,
-						use_container_width=True,
-						disabled=True )
+					st.data_editor( make_display_safe( idx_df ), hide_index=True,
+						use_container_width=True, disabled=True )
 				else:
 					st.info( "No indexes defined." )
 			
@@ -13312,8 +13110,8 @@ elif mode == 'Data Management':
 						# ----------------------------------------------------------
 						if not result.empty:
 							csv = result.to_csv( index=False ).encode( 'utf-8' )
-							st.download_button( 'Download CSV', csv,
-								'query_results.csv', 'text/csv' )
+							st.download_button( 'Download CSV', csv, 'query_results.csv',
+								'text/csv' )
 					
 					except Exception as e:
 						st.error( f'Execution failed: {e}' )
@@ -13321,19 +13119,16 @@ elif mode == 'Data Management':
 # ======================================================================================
 # FOOTER — SECTION
 # ======================================================================================
-st.markdown(
-	"""
+st.markdown( """
 	<style>
 	.block-container {
 		padding-bottom: 3rem;
 	}
 	</style>
-	""",
-	unsafe_allow_html=True, )
+	""", unsafe_allow_html=True, )
 
 # ---- Fixed Container
-st.markdown(
-	"""
+st.markdown( """
 	<style>
 	.boo-status-bar {
 		position: fixed;
@@ -13354,26 +13149,16 @@ st.markdown(
 		max-width: 100%;
 	}
 	</style>
-	""",
-	unsafe_allow_html=True, )
+	""", unsafe_allow_html=True, )
 
 # ======================================================================================
 # FOOTER RENDERING
 # ======================================================================================
-_mode_to_model_key = \
-	{
-			'Text': 'text_model',
-			'Images': 'image_model',
-			'Audio': 'audio_model',
-			'Embeddings': 'embed_model',
-			'Document Q&A': 'doc_model',
-			'Files': 'files_model',
-			'Vector Stores': 'stores_model',
-			'File Search Stores': 'filestore_model',
-			'Google Cloud Buckets': 'bucket_model',
-			'Prompt Engineering': 'prompt_model',
-			'Data Management': 'data_model',
-	}
+_mode_to_model_key = { 'Text': 'text_model', 'Images': 'image_model', 'Audio': 'audio_model',
+	'Embeddings': 'embed_model', 'Document Q&A': 'doc_model', 'Files': 'files_model',
+	'Vector Stores': 'stores_model', 'File Search Stores': 'filestore_model',
+	'Google Cloud Buckets': 'bucket_model', 'Prompt Engineering': 'prompt_model',
+	'Data Management': 'data_model', }
 
 provider_val = st.session_state.get( 'provider', '—' )
 mode_val = mode or '—'
@@ -13658,15 +13443,11 @@ elif mode == 'VectorStores':
 right_text = ' ◽ '.join( right_parts ) if right_parts else '—'
 
 # ---- Rendering Method
-st.markdown(
-	f"""
+st.markdown( f"""
     <div class="boo-status-bar">
         <div class="boo-status-inner">
             <span>{provider_val} — {mode_val}</span>
             <span>{right_text}</span>
         </div>
     </div>
-    """,
-	unsafe_allow_html=True,
-)
-
+    """, unsafe_allow_html=True, )
