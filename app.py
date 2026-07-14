@@ -12875,202 +12875,625 @@ value."""
 # ======================================================================================
 # PROMPT ENGINEERING MODE
 # ======================================================================================
-elif mode == "Prompt Engineering":
-	import sqlite3
+elif mode == 'Prompt Engineering':
 	import math
 	
-	DB_PATH = 'stores/sqlite/datamodels/Data.db'
 	TABLE = 'Prompts'
 	PAGE_SIZE = 10
 	
 	# ------------------------------------------------------------------
-	# Session state (single source of truth)
+	# Prompt Engineering State
 	# ------------------------------------------------------------------
 	st.session_state.setdefault( 'pe_page', 1 )
-	st.session_state.setdefault( 'pe_search', "" )
+	st.session_state.setdefault( 'pe_search', '' )
 	st.session_state.setdefault( 'pe_sort_col', 'PromptsId' )
 	st.session_state.setdefault( 'pe_sort_dir', 'ASC' )
 	st.session_state.setdefault( 'pe_selected_id', None )
-	
-	st.session_state.setdefault( 'pe_name', "" )
-	st.session_state.setdefault( 'pe_text', "" )
-	st.session_state.setdefault( 'pe_version', 1 )
-	
-	# ------------------------------------------------------------------
-	# DB helpers
-	# ------------------------------------------------------------------
-	def get_conn( ):
-		return sqlite3.connect( DB_PATH )
-	
-	def reset_selection( ):
-		st.session_state.pe_selected_id = None
-		st.session_state.pe_name = ""
-		st.session_state.pe_text = ""
-		st.session_state.pe_version = 1
-	
-	def load_prompt( pid: int ) -> None:
-		with get_conn( ) as conn:
-			cur = conn.execute( f"SELECT Name, Text, Version FROM {TABLE} WHERE PromptsId=?",
-				(pid,), )
-			row = cur.fetchone( )
-			if row:
-				st.session_state.pe_name = row[ 0 ]
-				st.session_state.pe_text = row[ 1 ]
-				st.session_state.pe_version = int( row[ 2 ] )
+	st.session_state.setdefault( 'pe_caption', '' )
+	st.session_state.setdefault( 'pe_name', '' )
+	st.session_state.setdefault( 'pe_category', None )
+	st.session_state.setdefault( 'pe_prompt', '' )
 	
 	# ------------------------------------------------------------------
-	# XML / Markdown converters (IDENTICAL BEHAVIOR TO LEEROY)
+	# Prompt Engineering Helpers
 	# ------------------------------------------------------------------
-	def xml_to_md( ):
-		st.session_state.pe_text = convert_xml( st.session_state.pe_text )
+	def get_prompt_connection( ) -> sqlite3.Connection:
+		"""Get prompt connection.
+		
+		Purpose:
+		    Creates a SQLite connection to the configured application database for Prompt
+		    Engineering read and write operations.
+		
+		Returns:
+		    sqlite3.Connection: Open SQLite connection to the application database.
+		"""
+		return sqlite3.connect( cfg.DB_PATH )
 	
-	def md_to_xml( ):
-		st.session_state.pe_text = convert_markdown( st.session_state.pe_text )
+	def reset_prompt_page( ) -> None:
+		"""Reset prompt page.
+		
+		Purpose:
+		    Returns the Prompt Engineering result grid to its first page when a search or sort
+		    control changes.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		"""
+		st.session_state[ 'pe_page' ] = 1
+	
+	def reset_prompt_selection( ) -> None:
+		"""Reset prompt selection.
+		
+		Purpose:
+		    Clears the selected Prompt Engineering record and resets the authoritative editor
+		    fields without changing search, sorting, or paging controls.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		"""
+		st.session_state[ 'pe_selected_id' ] = None
+		st.session_state[ 'pe_caption' ] = ''
+		st.session_state[ 'pe_name' ] = ''
+		st.session_state[ 'pe_category' ] = None
+		st.session_state[ 'pe_prompt' ] = ''
+	
+	def load_prompt_record( prompt_id: int ) -> None:
+		"""Load prompt record.
+		
+		Purpose:
+		    Loads the selected category-aware prompt record into the authoritative Prompt
+		    Engineering editor fields.
+		
+		Args:
+		    prompt_id (int): Numeric primary key of the prompt record to load.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			record = fetch_prompt_by_id( int( prompt_id ) )
+			
+			if record is None:
+				reset_prompt_selection( )
+				st.warning( f'Prompt {prompt_id} was not found.' )
+				return
+			
+			st.session_state[ 'pe_selected_id' ] = int( record[ 'PromptsId' ] )
+			st.session_state[ 'pe_caption' ] = str( record[ 'Caption' ] )
+			st.session_state[ 'pe_name' ] = str( record[ 'Name' ] )
+			st.session_state[ 'pe_category' ] = str( record[ 'Category' ] )
+			st.session_state[ 'pe_prompt' ] = str( record[ 'Prompt' ] )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Prompt Engineering'
+			ex.method = 'load_prompt_record( prompt_id: int ) -> None'
+			Logger( ).write( ex )
+			raise ex
+	
+	def fetch_prompt_editor_categories( ) -> List[ str ]:
+		"""Fetch prompt editor categories.
+		
+		Purpose:
+		    Returns the combined set of configured and persisted prompt categories available to
+		    the Prompt Engineering editor.
+		
+		Returns:
+		    List[str]: Sorted prompt categories available for record creation and editing.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			configured_categories = {
+					category
+					for categories in PROMPT_CATEGORY_MODE_MAP.values( )
+					for category in categories
+					if isinstance( category, str ) and category.strip( )
+			}
+			
+			with get_prompt_connection( ) as conn:
+				rows = conn.execute(
+					f"""
+					SELECT DISTINCT Category
+					FROM {TABLE}
+					WHERE Category IS NOT NULL
+						AND TRIM(Category) <> '';
+					"""
+				).fetchall( )
+			
+			persisted_categories = {
+					str( row[ 0 ] ).strip( )
+					for row in rows
+					if row and row[ 0 ] is not None and str( row[ 0 ] ).strip( )
+			}
+			
+			return sorted( configured_categories | persisted_categories )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Prompt Engineering'
+			ex.method = 'fetch_prompt_editor_categories( ) -> List[ str ]'
+			Logger( ).write( ex )
+			raise ex
+	
+	def validate_prompt_editor( ) -> Dict[ str, str ]:
+		"""Validate prompt editor.
+		
+		Purpose:
+		    Validates and normalizes the authoritative Prompt Engineering editor values before a
+		    prompt record is inserted or updated.
+		
+		Returns:
+		    Dict[str, str]: Normalized Caption, Name, Category, and Prompt values.
+		
+		Raises:
+		    ValueError: Raised when a required prompt field is empty.
+		"""
+		data = {
+				'Caption': str( st.session_state.get( 'pe_caption', '' ) or '' ).strip( ),
+				'Name': str( st.session_state.get( 'pe_name', '' ) or '' ).strip( ),
+				'Category': str( st.session_state.get( 'pe_category', '' ) or '' ).strip( ),
+				'Prompt': str( st.session_state.get( 'pe_prompt', '' ) or '' ).strip( ),
+		}
+		
+		for field_name, field_value in data.items( ):
+			if not field_value:
+				raise ValueError( f'{field_name} is required.' )
+		
+		return data
+	
+	def save_prompt_record( ) -> None:
+		"""Save prompt record.
+		
+		Purpose:
+		    Creates or updates the authoritative Prompt Engineering record using the canonical
+		    category-aware prompt schema.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			data = validate_prompt_editor( )
+			selected_id = st.session_state.get( 'pe_selected_id' )
+			
+			if selected_id is None:
+				insert_prompt( data )
+				message = 'Prompt created.'
+			else:
+				update_prompt( int( selected_id ), data )
+				message = 'Prompt updated.'
+			
+			reset_prompt_selection( )
+			st.success( message )
+			st.rerun( )
+		except ValueError as e:
+			st.warning( str( e ) )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Prompt Engineering'
+			ex.method = 'save_prompt_record( ) -> None'
+			Logger( ).write( ex )
+			raise ex
+	
+	def delete_prompt_record( ) -> None:
+		"""Delete prompt record.
+		
+		Purpose:
+		    Deletes the selected Prompt Engineering record and resets the authoritative editor
+		    state.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			selected_id = st.session_state.get( 'pe_selected_id' )
+			
+			if selected_id is None:
+				st.warning( 'Select a prompt before deleting.' )
+				return
+			
+			delete_prompt( int( selected_id ) )
+			reset_prompt_selection( )
+			st.success( 'Prompt deleted.' )
+			st.rerun( )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Prompt Engineering'
+			ex.method = 'delete_prompt_record( ) -> None'
+			Logger( ).write( ex )
+			raise ex
+	
+	def convert_prompt_xml_to_markdown( ) -> None:
+		"""Convert prompt XML to Markdown.
+		
+		Purpose:
+		    Converts XML-style instruction blocks in the authoritative prompt editor to Markdown.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		"""
+		prompt_value = st.session_state.get( 'pe_prompt', '' )
+		
+		if isinstance( prompt_value, str ) and prompt_value.strip( ):
+			st.session_state[ 'pe_prompt' ] = convert_xml( prompt_value )
+	
+	def convert_prompt_markdown_to_xml( ) -> None:
+		"""Convert prompt Markdown to XML.
+		
+		Purpose:
+		    Converts Markdown headings in the authoritative prompt editor to XML-style instruction
+		    blocks.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		"""
+		prompt_value = st.session_state.get( 'pe_prompt', '' )
+		
+		if isinstance( prompt_value, str ) and prompt_value.strip( ):
+			st.session_state[ 'pe_prompt' ] = convert_markdown( prompt_value )
 	
 	# ------------------------------------------------------------------
-	# Controls (table filters)
+	# Sanitize Prompt Engineering State
+	# ------------------------------------------------------------------
+	valid_sort_columns = [
+			'PromptsId',
+			'Caption',
+			'Name',
+			'Category',
+	]
+	
+	if st.session_state.get( 'pe_sort_col' ) not in valid_sort_columns:
+		st.session_state[ 'pe_sort_col' ] = 'PromptsId'
+	
+	if st.session_state.get( 'pe_sort_dir' ) not in [ 'ASC', 'DESC' ]:
+		st.session_state[ 'pe_sort_dir' ] = 'ASC'
+	
+	editor_categories = fetch_prompt_editor_categories( )
+	current_editor_category = st.session_state.get( 'pe_category' )
+	
+	if current_editor_category and current_editor_category not in editor_categories:
+		editor_categories.append( str( current_editor_category ) )
+		editor_categories.sort( )
+	
+	if current_editor_category == '':
+		st.session_state[ 'pe_category' ] = None
+	
+	# ------------------------------------------------------------------
+	# Controls
 	# ------------------------------------------------------------------
 	c1, c2, c3, c4 = st.columns( [ 4, 2, 2, 3 ] )
+	
 	with c1:
-		st.text_input( 'Search (Name/Text contains)', key='pe_search' )
+		st.text_input(
+			label='Search',
+			key='pe_search',
+			placeholder='Caption, name, category, or prompt text',
+			on_change=reset_prompt_page,
+		)
 	
 	with c2:
-		st.selectbox( 'Sort by', [ 'PromptsId', 'Name', 'Version' ], key='pe_sort_col', )
+		st.selectbox(
+			label='Sort by',
+			options=valid_sort_columns,
+			key='pe_sort_col',
+			on_change=reset_prompt_page,
+		)
 	
 	with c3:
-		st.selectbox( 'Direction', [ 'ASC', 'DESC' ], key='pe_sort_dir', )
+		st.selectbox(
+			label='Direction',
+			options=[ 'ASC', 'DESC' ],
+			key='pe_sort_dir',
+			on_change=reset_prompt_page,
+		)
 	
 	with c4:
 		st.markdown(
-			"<div style='font-size:0.95rem;font-weight:600;margin-bottom:0.25rem;'>Go to ID</div>",
-			unsafe_allow_html=True, )
+			"<div style='font-size:0.95rem;font-weight:600;margin-bottom:0.25rem;'>"
+			"Go to ID</div>",
+			unsafe_allow_html=True,
+		)
+		
 		a1, a2, a3 = st.columns( [ 2, 1, 1 ] )
+		
 		with a1:
-			jump_id = st.number_input( "Go to ID", min_value=1, step=1,
-				label_visibility="collapsed", )
+			jump_id = st.number_input(
+				label='Go to ID',
+				min_value=0,
+				step=1,
+				label_visibility='collapsed',
+				key='pe_jump_id',
+			)
+		
 		with a2:
-			if st.button( "Go" ):
-				st.session_state.pe_selected_id = int( jump_id )
-				load_prompt( int( jump_id ) )
+			if st.button( label='Go', key='pe_go_to_id', width='stretch' ):
+				load_prompt_record( int( jump_id ) )
+		
 		with a3:
-			if st.button( "Undo" ):
-				reset_selection( )
+			if st.button( label='Undo', key='pe_undo_selection', width='stretch' ):
+				reset_prompt_selection( )
+				st.rerun( )
 	
 	# ------------------------------------------------------------------
-	# Load prompt table
+	# Query Prompt Records
 	# ------------------------------------------------------------------
-	where = ""
-	params = [ ]
+	where_clause = ''
+	query_params: List[ Any ] = [ ]
+	search_value = str( st.session_state.get( 'pe_search', '' ) or '' ).strip( )
 	
-	if st.session_state.pe_search:
-		where = "WHERE Name LIKE ? OR Text LIKE ?"
-		s = f"%{st.session_state.pe_search}%"
-		params.extend( [ s, s ] )
+	if search_value:
+		where_clause = """
+			WHERE Caption LIKE ?
+				OR Name LIKE ?
+				OR Category LIKE ?
+				OR Prompt LIKE ?
+		"""
+		
+		search_pattern = f'%{search_value}%'
+		query_params.extend( [
+				search_pattern,
+				search_pattern,
+				search_pattern,
+				search_pattern,
+		] )
 	
-	offset = (st.session_state.pe_page - 1) * PAGE_SIZE
+	count_query = f"""
+		SELECT COUNT(*)
+		FROM {TABLE}
+		{where_clause};
+	"""
 	
-	query = f"""
-        SELECT PromptsId, Name, Text, Version, ID
-        FROM {TABLE}
-        {where}
-        ORDER BY {st.session_state.pe_sort_col} {st.session_state.pe_sort_dir}
-        LIMIT {PAGE_SIZE} OFFSET {offset}
-    """
-	
-	count_query = f"SELECT COUNT(*) FROM {TABLE} {where}"
-	
-	with get_conn( ) as conn:
-		rows = conn.execute( query, params ).fetchall( )
-		total_rows = conn.execute( count_query, params ).fetchone( )[ 0 ]
+	with get_prompt_connection( ) as conn:
+		total_rows = int(
+			conn.execute( count_query, tuple( query_params ) ).fetchone( )[ 0 ]
+		)
 	
 	total_pages = max( 1, math.ceil( total_rows / PAGE_SIZE ) )
 	
-	# ------------------------------------------------------------------
-	# Prompt table (selection drives editor — NO DUPLICATE STATE)
-	# ------------------------------------------------------------------
-	table_rows = [ ]
-	for r in rows:
-		table_rows.append(
-			{ 'Selected': r[ 0 ] == st.session_state.pe_selected_id, 'PromptsId': r[ 0 ],
-				'Name': r[ 1 ], 'Version': r[ 3 ], 'ID': r[ 4 ], } )
+	if st.session_state[ 'pe_page' ] > total_pages:
+		st.session_state[ 'pe_page' ] = total_pages
 	
-	edited = st.data_editor( table_rows, hide_index=True, use_container_width=True, )
+	if st.session_state[ 'pe_page' ] < 1:
+		st.session_state[ 'pe_page' ] = 1
 	
-	selected = [ r for r in edited if r.get( "Selected" ) ]
-	if len( selected ) == 1:
-		pid = selected[ 0 ][ "PromptsId" ]
-		if pid != st.session_state.pe_selected_id:
-			st.session_state.pe_selected_id = pid
-			load_prompt( pid )
+	offset = (int( st.session_state[ 'pe_page' ] ) - 1) * PAGE_SIZE
+	
+	data_query = f"""
+		SELECT
+			PromptsId,
+			Caption,
+			Name,
+			Category
+		FROM {TABLE}
+		{where_clause}
+		ORDER BY {st.session_state[ 'pe_sort_col' ]}
+			{st.session_state[ 'pe_sort_dir' ]}
+		LIMIT ?
+		OFFSET ?;
+	"""
+	
+	data_params = query_params + [ PAGE_SIZE, offset ]
+	
+	with get_prompt_connection( ) as conn:
+		rows = conn.execute( data_query, tuple( data_params ) ).fetchall( )
+	
+	# ------------------------------------------------------------------
+	# Prompt Table
+	# ------------------------------------------------------------------
+	df_prompt_rows = pd.DataFrame(
+		[
+				{
+						'Selected': int( row[ 0 ] ) == st.session_state.get(
+							'pe_selected_id'
+						),
+						'PromptsId': int( row[ 0 ] ),
+						'Caption': str( row[ 1 ] or '' ),
+						'Name': str( row[ 2 ] or '' ),
+						'Category': str( row[ 3 ] or '' ),
+				}
+				for row in rows
+		],
+		columns=[
+				'Selected',
+				'PromptsId',
+				'Caption',
+				'Name',
+				'Category',
+		],
+	)
+	
+	df_edited_prompts = st.data_editor(
+		df_prompt_rows,
+		hide_index=True,
+		width='stretch',
+		disabled=[
+				'PromptsId',
+				'Caption',
+				'Name',
+				'Category',
+		],
+		column_config={
+				'Selected': st.column_config.CheckboxColumn(
+					label='Selected',
+					width='small',
+				),
+				'PromptsId': st.column_config.NumberColumn(
+					label='PromptsId',
+					format='%d',
+					width='small',
+				),
+				'Caption': st.column_config.TextColumn(
+					label='Caption',
+					width='medium',
+				),
+				'Name': st.column_config.TextColumn(
+					label='Name',
+					width='medium',
+				),
+				'Category': st.column_config.TextColumn(
+					label='Category',
+					width='medium',
+				),
+		},
+		key='pe_prompt_table',
+	)
+	
+	if isinstance( df_edited_prompts, pd.DataFrame ) and not df_edited_prompts.empty:
+		df_selected_prompts = df_edited_prompts.loc[
+			df_edited_prompts[ 'Selected' ] == True
+		]
+		
+		if len( df_selected_prompts.index ) == 1:
+			selected_id = int( df_selected_prompts.iloc[ 0 ][ 'PromptsId' ] )
+			
+			if selected_id != st.session_state.get( 'pe_selected_id' ):
+				load_prompt_record( selected_id )
+				st.rerun( )
+		
+		elif len( df_selected_prompts.index ) > 1:
+			st.warning( 'Select only one prompt record at a time.' )
 	
 	# ------------------------------------------------------------------
 	# Paging
 	# ------------------------------------------------------------------
 	p1, p2, p3 = st.columns( [ 1, 2, 1 ] )
+	
 	with p1:
-		if st.button( "◀ Prev" ) and st.session_state.pe_page > 1:
-			st.session_state.pe_page -= 1
+		if st.button(
+				label='◀ Prev',
+				key='pe_previous_page',
+				width='stretch',
+				disabled=st.session_state[ 'pe_page' ] <= 1,
+			):
+			st.session_state[ 'pe_page' ] -= 1
+			st.rerun( )
+	
 	with p2:
-		st.markdown( f"Page **{st.session_state.pe_page}** of **{total_pages}**" )
+		st.markdown(
+			f"Page **{st.session_state[ 'pe_page' ]}** of **{total_pages}** "
+			f"— **{total_rows:,} prompts**"
+		)
+	
 	with p3:
-		if st.button( "Next ▶" ) and st.session_state.pe_page < total_pages:
-			st.session_state.pe_page += 1
+		if st.button(
+				label='Next ▶',
+				key='pe_next_page',
+				width='stretch',
+				disabled=st.session_state[ 'pe_page' ] >= total_pages,
+			):
+			st.session_state[ 'pe_page' ] += 1
+			st.rerun( )
 	
 	st.divider( )
 	
 	# ------------------------------------------------------------------
-	# Converter controls (SINGLE TEXT BUFFER — LEEROY STYLE)
+	# XML / Markdown Converter
 	# ------------------------------------------------------------------
-	with st.expander( 'XML ↔ Markdown Converter', expanded=False ):
+	with st.expander( label='XML ↔ Markdown Converter', expanded=False ):
 		b1, b2 = st.columns( 2 )
+		
 		with b1:
-			st.button( 'Convert XML → Markdown', on_click=xml_to_md )
+			st.button(
+				label='Convert XML → Markdown',
+				key='pe_convert_xml_to_markdown',
+				width='stretch',
+				on_click=convert_prompt_xml_to_markdown,
+			)
+		
 		with b2:
-			st.button( 'Convert Markdown → XML', on_click=md_to_xml )
+			st.button(
+				label='Convert Markdown → XML',
+				key='pe_convert_markdown_to_xml',
+				width='stretch',
+				on_click=convert_prompt_markdown_to_xml,
+			)
 	
 	# ------------------------------------------------------------------
-	# Create / Edit Prompt (AUTHORITATIVE EDITOR)
+	# Create / Edit Prompt
 	# ------------------------------------------------------------------
-	with st.expander( 'Create / Edit Prompt', expanded=True ):
-		st.text_input( 'PromptsId', value=st.session_state.pe_selected_id or "", disabled=True, )
-		st.text_input( 'Name', key='pe_name' )
-		st.text_area( 'Text', key='pe_text', height=260 )
-		st.number_input( 'Version', min_value=1, key='pe_version' )
+	with st.expander( label='Create / Edit Prompt', expanded=True ):
+		st.text_input(
+			label='PromptsId',
+			value=st.session_state.get( 'pe_selected_id' ) \
+				if st.session_state.get( 'pe_selected_id' ) is not None else '',
+			disabled=True,
+			key='pe_display_id',
+		)
+		
+		editor_c1, editor_c2, editor_c3 = st.columns(
+			[ 0.34, 0.33, 0.33 ]
+		)
+		
+		with editor_c1:
+			st.text_input(
+				label='Caption',
+				key='pe_caption',
+				placeholder='Human-readable template caption',
+			)
+		
+		with editor_c2:
+			st.text_input(
+				label='Name',
+				key='pe_name',
+				placeholder='Programmatic prompt name',
+			)
+		
+		with editor_c3:
+			st.selectbox(
+				label='Category',
+				options=editor_categories,
+				index=None,
+				key='pe_category',
+				placeholder='Select Category',
+			)
+		
+		st.text_area(
+			label='Prompt',
+			key='pe_prompt',
+			height=260,
+			width='stretch',
+		)
 		
 		c1, c2, c3 = st.columns( 3 )
 		
 		with c1:
-			if st.button( "Save Changes" if st.session_state.pe_selected_id else "Create Prompt" ):
-				with get_conn( ) as conn:
-					if st.session_state.pe_selected_id:
-						conn.execute( f"""
-                            UPDATE {TABLE}
-                            SET Name=?, Text=?, Version=?
-                            WHERE PromptsId=?
-                            """, (st.session_state.pe_name, st.session_state.pe_text,
-							st.session_state.pe_version, st.session_state.pe_selected_id,), )
-					else:
-						conn.execute( f"""
-                            INSERT INTO {TABLE} (Name, Text, Version)
-                            VALUES (?, ?, ?)
-                            """, (st.session_state.pe_name, st.session_state.pe_text,
-							st.session_state.pe_version,), )
-					conn.commit( )
-				st.success( 'Saved.' )
-				reset_selection( )
+			st.button(
+				label='Save Changes'
+				if st.session_state.get( 'pe_selected_id' ) is not None
+				else 'Create Prompt',
+				key='pe_save_prompt',
+				width='stretch',
+				on_click=save_prompt_record,
+			)
 		
 		with c2:
-			if st.session_state.pe_selected_id and st.button( 'Delete' ):
-				with get_conn( ) as conn:
-					conn.execute( f'DELETE FROM {TABLE} WHERE PromptsId=?',
-						(st.session_state.pe_selected_id,), )
-					conn.commit( )
-				reset_selection( )
-				st.success( 'Deleted.' )
+			st.button(
+				label='Delete',
+				key='pe_delete_prompt',
+				width='stretch',
+				disabled=st.session_state.get( 'pe_selected_id' ) is None,
+				on_click=delete_prompt_record,
+			)
 		
 		with c3:
-			if st.button( 'Clear Selection' ):
-				reset_selection( )
+			st.button(
+				label='Clear Selection',
+				key='pe_clear_selection',
+				width='stretch',
+				on_click=reset_prompt_selection,
+			)
 
 # ==============================================================================
 # DATA MANAGEMENT MODE
