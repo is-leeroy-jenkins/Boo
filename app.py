@@ -2170,8 +2170,7 @@ def read_table( table: str, limit: int = None, offset: int = 0 ) -> pd.DataFrame
 	
 	Purpose:
 	    Performs the read_table workflow using the inputs supplied by the caller and the current
-	    runtime
-	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -2286,8 +2285,7 @@ def drop_table( table: str ) -> None:
 	
 	Purpose:
 	    Performs the drop_table workflow using the inputs supplied by the caller and the current
-	    runtime
-	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -2308,8 +2306,7 @@ def create_index( table: str, column: str ) -> None:
 	Purpose:
 	    Creates the requested resource, connection, schema object, or user interface artifact using
 	    validated inputs. The function encapsulates setup details so callers can rely on a
-	    consistent
-	    resource lifecycle.
+	    consistent resource lifecycle.
 	
 	Args:
 	    table (str): Table value used by the operation.
@@ -2568,10 +2565,8 @@ def get_sqlite_type( dtype ) -> str:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    dtype (object): Dtype value used by the operation.
@@ -2621,8 +2616,7 @@ def create_custom_table( table_name: str, columns: list ) -> None:
 	Purpose:
 	    Creates the requested resource, connection, schema object, or user interface artifact using
 	    validated inputs. The function encapsulates setup details so callers can rely on a
-	    consistent
-	    resource lifecycle.
+	    consistent resource lifecycle.
 	
 	Args:
 	    table_name (str): Table name value used by the operation.
@@ -2670,8 +2664,7 @@ def is_safe_query( query: str ) -> bool:
 	Purpose:
 	    Performs the is_safe_query workflow using the inputs supplied by the caller and the current
 	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
-	    and
-	    data-processing paths can call it consistently.
+	    and data-processing paths can call it consistently.
 	
 	Args:
 	    query (str): Query value used by the operation.
@@ -2721,8 +2714,7 @@ def create_identifier( name: str ) -> str:
 	Purpose:
 	    Creates the requested resource, connection, schema object, or user interface artifact using
 	    validated inputs. The function encapsulates setup details so callers can rely on a
-	    consistent
-	    resource lifecycle.
+	    consistent resource lifecycle.
 	
 	Args:
 	    name (str): Name value used by the operation.
@@ -2760,8 +2752,7 @@ def rename_column( table_name: str, old_name: str, new_name: str ) -> None:
 	Purpose:
 	    Performs the rename_column workflow using the inputs supplied by the caller and the current
 	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
-	    and
-	    data-processing paths can call it consistently.
+	    and data-processing paths can call it consistently.
 	
 	Args:
 	    table_name (str): Table name value used by the operation.
@@ -2966,8 +2957,7 @@ def rename_table( old_name: str, new_name: str ) -> None:
 	Purpose:
 	    Performs the rename_table workflow using the inputs supplied by the caller and the current
 	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
-	    and
-	    data-processing paths can call it consistently.
+	    and data-processing paths can call it consistently.
 	
 	Args:
 	    old_name (str): Old name value used by the operation.
@@ -3058,10 +3048,8 @@ def fetch_prompt_categories( mode_name: str ) -> List[ str ]:
 	
 	Purpose:
 	    Returns populated prompt categories authorized for the selected application mode.
-	    Categories
-	    retain their configured display order and categories without corresponding database
-	    records are
-	    excluded.
+	    Categories retain their configured display order and categories without corresponding database
+	    records are excluded.
 	
 	Args:
 	    mode_name (str): Application mode used to determine the permitted prompt categories.
@@ -3107,8 +3095,7 @@ def fetch_prompt_options( category: str ) -> List[ Dict[ str, Any ] ]:
 	
 	Purpose:
 	    Returns prompt-template identifiers and display metadata for the selected category. The
-	    result
-	    provides stable numeric identifiers for widget state while preserving captions for
+	    result provides stable numeric identifiers for widget state while preserving captions for
 	    presentation.
 	
 	Args:
@@ -3151,8 +3138,7 @@ def fetch_prompt_by_id( prompt_id: int ) -> Optional[ Dict[ str, Any ] ]:
 	
 	Purpose:
 	    Returns the complete prompt-template record associated with a stable numeric identifier.
-	    The
-	    identifier-based lookup prevents ambiguous template selection when captions or names are
+	    The identifier-based lookup prevents ambiguous template selection when captions or names are
 	    duplicated.
 	
 	Args:
@@ -3200,8 +3186,7 @@ def reset_prompt_template_selection( prompt_id_key: str ) -> None:
 	
 	Purpose:
 	    Clears a mode-specific prompt-template selection when its category changes without
-	    modifying the
-	    current system-instruction text.
+	    modifying the current system-instruction text.
 	
 	Args:
 	    prompt_id_key (str): Session-state key storing the selected prompt identifier.
@@ -3228,8 +3213,7 @@ def load_prompt_template( prompt_id_key: str, instructions_key: str, ) -> None:
 	
 	Purpose:
 	    Loads the selected prompt body into a mode-specific system-instruction field while
-	    preserving
-	    independent template state across application modes.
+	    preserving independent template state across application modes.
 	
 	Args:
 	    prompt_id_key (str): Session-state key storing the selected prompt identifier.
@@ -3291,8 +3275,7 @@ def fetch_prompts_df( ) -> pd.DataFrame:
 	
 	Purpose:
 	    Returns prompt-template metadata for management and review without rendering large prompt
-	    bodies
-	    directly in the primary data grid.
+	    bodies directly in the primary data grid.
 	
 	Returns:
 	    pd.DataFrame: Prompt-template metadata with a selection column.
@@ -3432,10 +3415,8 @@ def build_prompt( user_input: str ) -> str:
 	
 	Purpose:
 	    Builds the normalized data structure required by the application workflow. The function
-	    converts
-	    caller input, session state, or provider-specific options into a stable shape that
-	    downstream
-	    API calls and rendering code can consume safely.
+	    converts caller input, session state, or provider-specific options into a stable shape that
+	    downstream API calls and rendering code can consume safely.
 	
 	Args:
 	    user_input (str): User input value used by the operation.
@@ -3519,10 +3500,8 @@ def get_provider_name( provider: Optional[ str ] = None ) -> str:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (Optional[str]): Provider value used by the operation.
@@ -3543,10 +3522,8 @@ def get_provider_module( provider: Optional[ str ] = None ) -> Any:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (Optional[str]): Provider value used by the operation.
@@ -3567,10 +3544,8 @@ def provider_has_class( class_name: str, provider: Optional[ str ] = None ) -> b
 	
 	Purpose:
 	    Performs the provider_has_class workflow using the inputs supplied by the caller and the
-	    current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
-	    and
-	    data-processing paths can call it consistently.
+	    current runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and data-processing paths can call it consistently.
 	
 	Args:
 	    class_name (str): Class name value used by the operation.
@@ -3589,10 +3564,8 @@ def get_provider_class( class_name: str, provider: Optional[ str ] = None ) -> t
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    class_name (str): Class name value used by the operation.
@@ -3617,10 +3590,8 @@ def get_provider_instance( class_name: str, provider: Optional[ str ] = None ) -
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    class_name (str): Class name value used by the operation.
@@ -3636,10 +3607,8 @@ def get_chat_module( provider: Optional[ str ] = None ) -> Any:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (Optional[str]): Provider value used by the operation.
@@ -3653,10 +3622,8 @@ def get_tts_module( provider: Optional[ str ] = None ) -> Any:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (Optional[str]): Provider value used by the operation.
@@ -3670,10 +3637,8 @@ def get_images_module( provider: Optional[ str ] = None ) -> Any:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (Optional[str]): Provider value used by the operation.
@@ -3687,10 +3652,8 @@ def get_embeddings_module( provider: Optional[ str ] = None ) -> Any:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (Optional[str]): Provider value used by the operation.
@@ -3704,10 +3667,8 @@ def get_translation_module( provider: Optional[ str ] = None ) -> Any:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (Optional[str]): Provider value used by the operation.
@@ -3721,10 +3682,8 @@ def get_transcription_module( provider: Optional[ str ] = None ) -> Any:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (Optional[str]): Provider value used by the operation.
@@ -3738,10 +3697,8 @@ def get_files_module( provider: Optional[ str ] = None ) -> Any:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (Optional[str]): Provider value used by the operation.
@@ -3755,10 +3712,8 @@ def get_vectorstores_module( provider: Optional[ str ] = None ) -> Any:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (Optional[str]): Provider value used by the operation.
@@ -3772,10 +3727,8 @@ def get_file_search_module( provider: Optional[ str ] = None ) -> Any:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (Optional[str]): Provider value used by the operation.
@@ -3789,10 +3742,8 @@ def get_cloud_buckets_module( provider: Optional[ str ] = None ) -> Any:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (Optional[str]): Provider value used by the operation.
@@ -3801,16 +3752,13 @@ def get_cloud_buckets_module( provider: Optional[ str ] = None ) -> Any:
 	    Any: Return value produced by the operation."""
 	return get_provider_instance( 'CloudBuckets', provider )
 
-def get_mode_classes( mode: Optional[ str ] = None, provider: Optional[ str ] = None ) -> List[
-	str ]:
+def get_mode_classes( mode: Optional[ str ] = None, provider: Optional[ str ] = None ) -> List[ str ]:
 	"""Get mode classes.
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    mode (Optional[str]): Mode value used by the operation.
@@ -3849,8 +3797,7 @@ def provider_supports_mode( mode: Optional[ str ] = None,
 	
 	Purpose:
 	    Performs the provider_supports_mode workflow using the inputs supplied by the caller and
-	    the
-	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    the current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
 	Args:
@@ -3897,8 +3844,7 @@ def _provider( ) -> str:
 	
 	Purpose:
 	    Performs the _provider workflow using the inputs supplied by the caller and the current
-	    runtime
-	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
 	Returns:
@@ -3933,10 +3879,8 @@ def get_provider_options( ) -> List[ str ]:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+		logic can consume it consistently.
 	
 	Returns:
 	    List[str]: Return value produced by the operation."""
@@ -3948,10 +3892,8 @@ def get_raw_provider_modes( provider: str ) -> List[ str ]:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (str): Provider value used by the operation.
@@ -3977,10 +3919,8 @@ def normalize_mode_name( mode_name: Optional[ str ] ) -> str:
 	
 	Purpose:
 	    Normalizes incoming values into a predictable representation for application processing.
-	    The
-	    function reduces provider, user-input, or serialization differences before values are
-	    stored or
-	    displayed.
+	    The function reduces provider, user-input, or serialization differences before values are
+	    stored or displayed.
 	
 	Args:
 	    mode_name (Optional[str]): Mode name value used by the operation.
@@ -4000,10 +3940,8 @@ def normalize_mode_list( modes: List[ str ] ) -> List[ str ]:
 	
 	Purpose:
 	    Normalizes incoming values into a predictable representation for application processing.
-	    The
-	    function reduces provider, user-input, or serialization differences before values are
-	    stored or
-	    displayed.
+	    The function reduces provider, user-input, or serialization differences before values are
+	    stored or displayed.
 	
 	Args:
 	    modes (List[str]): Modes value used by the operation.
@@ -4024,8 +3962,7 @@ def mode_requires_runtime_wrapper( mode_name: str ) -> bool:
 	
 	Purpose:
 	    Performs the mode_requires_runtime_wrapper workflow using the inputs supplied by the
-	    caller and
-	    the current runtime configuration. The function keeps this behavior isolated so related UI,
+	    caller and the current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
 	Args:
@@ -4042,10 +3979,8 @@ def get_supported_provider_modes( provider: str ) -> List[ str ]:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    provider (str): Provider value used by the operation.
@@ -4074,10 +4009,8 @@ def get_mode_index( modes: List[ str ], current_mode: Optional[ str ] ) -> int:
 	
 	Purpose:
 	    Returns normalized information for the application component. The method provides a stable
-	    view
-	    of provider capabilities, stored state, or response metadata so UI controls and downstream
-	    logic
-	    can consume it consistently.
+	    view of provider capabilities, stored state, or response metadata so UI controls and downstream
+	    logic can consume it consistently.
 	
 	Args:
 	    modes (List[str]): Modes value used by the operation.
@@ -4098,8 +4031,7 @@ def render_provider_keys( ) -> None:
 	Purpose:
 	    Renders the requested user interface element or result block in Streamlit using normalized
 	    inputs. The function keeps presentation logic isolated from provider calls and
-	    data-processing
-	    steps so the screen output remains predictable.
+	    data-processing steps so the screen output remains predictable.
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value."""
@@ -4257,10 +4189,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    instance (Any): Instance value used by the operation.
@@ -4292,10 +4222,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    name (str): Name value used by the operation.
@@ -4310,8 +4238,7 @@ if mode == 'Text':
 		
 		Purpose:
 		    Performs the parse_semicolon_list workflow using the inputs supplied by the caller and
-		    the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -4327,10 +4254,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Performs the parse_comma_list workflow using the inputs supplied by the caller and the
-		    current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    value (Any): Value value used by the operation.
@@ -4345,10 +4270,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Normalizes incoming values into a predictable representation for application
-		    processing. The
-		    function reduces provider, user-input, or serialization differences before values are
-		    stored or
-		    displayed.
+		    processing. The function reduces provider, user-input, or serialization differences before values are
+		    stored or displayed.
 		
 		Args:
 		    value (Any): Value value used by the operation.
@@ -4365,10 +4288,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Returns:
 		    Dict[str, str]: Return value produced by the operation."""
@@ -4389,10 +4310,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Returns:
 		    List[str]: Return value produced by the operation."""
@@ -4420,8 +4339,7 @@ if mode == 'Text':
 		
 		Purpose:
 		    Performs the sanitize_text_selection workflow using the inputs supplied by the caller
-		    and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -4444,8 +4362,7 @@ if mode == 'Text':
 		
 		Purpose:
 		    Performs the sanitize_text_multiselect workflow using the inputs supplied by the
-		    caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    caller and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -4467,8 +4384,7 @@ if mode == 'Text':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -4484,8 +4400,7 @@ if mode == 'Text':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -4502,8 +4417,7 @@ if mode == 'Text':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -4523,8 +4437,7 @@ if mode == 'Text':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -4543,9 +4456,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
- logic.
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    logic.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
@@ -4558,10 +4470,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Performs the convert_text_system_instructions workflow using the inputs supplied by
-		    the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+		    the caller and the current runtime configuration. The function keeps this behavior isolated so
+		    related UI, provider, and data-processing paths can call it consistently.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
@@ -4607,10 +4517,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Builds the normalized data structure required by the application workflow. The
-		    function converts
-		    caller input, session state, or provider-specific options into a stable shape that
-		    downstream
-		    API calls and rendering code can consume safely.
+		    function converts caller input, session state, or provider-specific options into a stable shape that
+		    downstream API calls and rendering code can consume safely.
 		
 		Returns:
 		    Any: Return value produced by the operation."""
@@ -4639,10 +4547,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Builds the normalized data structure required by the application workflow. The
-		    function converts
-		    caller input, session state, or provider-specific options into a stable shape that
-		    downstream
-		    API calls and rendering code can consume safely.
+		    function converts caller input, session state, or provider-specific options into a stable shape that
+		    downstream API calls and rendering code can consume safely.
 		
 		Args:
 		    include_last_message (bool): Include last message value used by the operation.
@@ -4663,10 +4569,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Builds the normalized data structure required by the application workflow. The
-		    function converts
-		    caller input, session state, or provider-specific options into a stable shape that
-		    downstream
-		    API calls and rendering code can consume safely.
+		    function converts caller input, session state, or provider-specific options into a stable shape that
+		    downstream API calls and rendering code can consume safely.
 		
 		Args:
 		    prompt (str): Prompt value used by the operation.
@@ -4716,10 +4620,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Builds the normalized data structure required by the application workflow. The
-		    function converts
-		    caller input, session state, or provider-specific options into a stable shape that
-		    downstream
-		    API calls and rendering code can consume safely.
+		    function converts caller input, session state, or provider-specific options into a stable shape that
+		    downstream API calls and rendering code can consume safely.
 		
 		Args:
 		    prompt (str): Prompt value used by the operation.
@@ -4768,10 +4670,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Builds the normalized data structure required by the application workflow. The
-		    function converts
-		    caller input, session state, or provider-specific options into a stable shape that
-		    downstream
-		    API calls and rendering code can consume safely.
+		    function converts caller input, session state, or provider-specific options into a stable shape that
+		    downstream API calls and rendering code can consume safely.
 		
 		Args:
 		    prompt (str): Prompt value used by the operation.
@@ -4794,10 +4694,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Builds the normalized data structure required by the application workflow. The
-		    function converts
-		    caller input, session state, or provider-specific options into a stable shape that
-		    downstream
-		    API calls and rendering code can consume safely.
+		    function converts caller input, session state, or provider-specific options into a stable shape that
+		    downstream API calls and rendering code can consume safely.
 		
 		Args:
 		    prompt (str): Prompt value used by the operation.
@@ -4830,10 +4728,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Performs the call_generate_text workflow using the inputs supplied by the caller and
-		    the current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    prompt (str): Prompt value used by the operation.
@@ -4860,10 +4756,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Extracts structured information from a provider response, uploaded file,
-		    or application data
-		    object. The function normalizes provider-specific shapes into values that can be
-		    rendered,
-		    stored, or passed to later processing steps.
+		    or application data object. The function normalizes provider-specific shapes into values that can be
+		    rendered, stored, or passed to later processing steps.
 		
 		Args:
 		    instance (Any): Instance value used by the operation.
@@ -4894,10 +4788,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Performs the update_text_usage workflow using the inputs supplied by the caller and
-		    the current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    response (Any): Response value used by the operation.
@@ -4916,10 +4808,8 @@ if mode == 'Text':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls
+		    and downstream logic can consume it consistently.
 		
 		Args:
 		    role (str): Role value used by the operation.
@@ -4957,6 +4847,7 @@ if mode == 'Text':
 		# Expander — Text Mind Controls
 		# ------------------------------------------------------------------
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
+			
 			with st.expander( label='Model Settings', icon='🧊', expanded=False, width='stretch' ):
 				model_c1, model_c2, model_c3, model_c4, model_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
@@ -5214,8 +5105,7 @@ if mode == 'Text':
 		# ------------------------------------------------------------------
 		# Expander — System Instructions
 		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
-				width='stretch' ):
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			
 			# ------------------------------------------------------------------
@@ -5231,7 +5121,6 @@ if mode == 'Text':
 				selected_text_category ) if selected_text_category else [ ]
 			
 			text_prompt_ids = [ int( option[ 'ID' ] ) for option in text_prompt_options ]
-			
 			if st.session_state.get( 'text_prompt_id' ) not in text_prompt_ids:
 				st.session_state[ 'text_prompt_id' ] = None
 			
@@ -5310,10 +5199,8 @@ if mode == 'Text':
 						
 						Purpose:
 						    Performs the on_stream_chunk workflow using the inputs supplied by the
-						    caller and the current
-						    runtime configuration. The function keeps this behavior isolated so
-						    related UI, provider, and
-						    data-processing paths can call it consistently.
+						    caller and the current runtime configuration. The function keeps this behavior isolated so
+						    related UI, provider, and  data-processing paths can call it consistently.
 						
 						Args:
 						    chunk (str): Chunk value used by the operation.
@@ -5480,10 +5367,8 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    instance (Any): Instance value used by the operation.
@@ -5515,10 +5400,8 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    name (str): Name value used by the operation.
@@ -5528,14 +5411,13 @@ elif mode == 'Images':
 		    str: Return value produced by the operation."""
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
-	def sanitize_image_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> \
-			None:
+	def sanitize_image_selection( key: str, valid_options: List[ str ],
+		default: Any = '' ) ->  None:
 		"""Sanitize image selection.
 		
 		Purpose:
 		    Performs the sanitize_image_selection workflow using the inputs supplied by the caller
-		    and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -5559,8 +5441,7 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Performs the sanitize_image_multiselect workflow using the inputs supplied by the
-		    caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    caller and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -5583,10 +5464,8 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    selected_mode (Optional[str]): Selected mode value used by the operation.
@@ -5640,8 +5519,7 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Performs the call_existing_image_method workflow using the inputs supplied by the
-		    caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    caller and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -5669,8 +5547,7 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Persists or stages input data so it can be used by later provider or application
-		    workflows. The
-		    function standardizes file handling and returns a stable reference for downstream
+		    workflows. The function standardizes file handling and returns a stable reference for downstream
 		    processing.
 		
 		Args:
@@ -5703,8 +5580,7 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Performs the append_image_message workflow using the inputs supplied by the caller and
-		    the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -5724,10 +5600,8 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Renders the requested user interface element or result block in Streamlit using
-		    normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and
-		    data-processing
-		    steps so the screen output remains predictable.
+		    normalized inputs. The function keeps presentation logic isolated from provider calls and
+		    data-processing steps so the screen output remains predictable.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
@@ -5745,8 +5619,7 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -5762,8 +5635,7 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -5777,10 +5649,8 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Performs the convert_image_system_instructions workflow using the inputs supplied by
-		    the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+		    the caller and the current runtime configuration. The function keeps this behavior isolated so
+		    related UI, provider, and data-processing paths can call it consistently.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
@@ -5826,8 +5696,7 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -5843,8 +5712,7 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -5861,8 +5729,7 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -5879,8 +5746,7 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -5898,8 +5764,7 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Performs the parse_image_domains workflow using the inputs supplied by the caller and
-		    the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -5915,10 +5780,8 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Renders the requested user interface element or result block in Streamlit using
-		    normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and
-		    data-processing
-		    steps so the screen output remains predictable.
+		    normalized inputs. The function keeps presentation logic isolated from provider calls and
+		    data-processing steps so the screen output remains predictable.
 		
 		Args:
 		    result (Any): Result value used by the operation.
@@ -5985,10 +5848,8 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Performs the update_image_usage workflow using the inputs supplied by the caller and
-		    the current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    response (Any): Response value used by the operation.
@@ -6009,10 +5870,8 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    prompt (str): Prompt value used by the operation.
@@ -6049,10 +5908,8 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic  can consume it consistently.
 		
 		Args:
 		    prompt (str): Prompt value used by the operation.
@@ -6081,10 +5938,8 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    prompt (str): Prompt value used by the operation.
@@ -6102,16 +5957,14 @@ elif mode == 'Images':
 		
 		return kwargs
 	
-	def get_image_edit_kwargs( prompt: str, path: str, mask_path: Optional[ str ] = None ) -> Dict[
-		str, Any ]:
+	def get_image_edit_kwargs( prompt: str, path: str,
+		mask_path: Optional[ str ] = None ) -> Dict[ str, Any ]:
 		"""Get image edit kwargs.
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    prompt (str): Prompt value used by the operation.
@@ -6131,8 +5984,7 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Performs the run_image_generation workflow using the inputs supplied by the caller and
-		    the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -6150,10 +6002,8 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Performs the run_image_analysis workflow using the inputs supplied by the caller and
-		    the current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    prompt (str): Prompt value used by the operation.
@@ -6170,10 +6020,8 @@ elif mode == 'Images':
 		
 		Purpose:
 		    Performs the run_image_editing workflow using the inputs supplied by the caller and
-		    the current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    prompt (str): Prompt value used by the operation.
@@ -6203,6 +6051,7 @@ elif mode == 'Images':
 		st.divider( )
 		
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
+			
 			with st.expander( label='LLM Settings', icon='🧊', expanded=False, width='stretch' ):
 				llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 					border=True, gap='xxsmall' )
