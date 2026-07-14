@@ -5128,7 +5128,7 @@ if mode == 'Text':
 			# Instruction Text
 			# ------------------------------------------------------------------
 			with in_left:
-				st.text_area( label='Enter Text', height=120, width='stretch',
+				st.text_area( label='Enter Text', height=140, width='stretch',
 					help=get_text_help( 'SYSTEM_INSTRUCTIONS' ), key='text_system_instructions', )
 			
 			# ------------------------------------------------------------------
@@ -6355,7 +6355,7 @@ elif mode == 'Images':
 			# Instruction Text
 			# ------------------------------------------------------------------
 			with in_left:
-				st.text_area( label='Enter Text', height=80, width='stretch',
+				st.text_area( label='Enter Text', height=140, width='stretch',
 					help=get_image_help( 'SYSTEM_INSTRUCTIONS' ),
 					key='image_system_instructions', )
 			
@@ -6624,10 +6624,8 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    name (str): Name value used by the operation.
@@ -6643,10 +6641,8 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    instance (Any): Instance value used by the operation.
@@ -6678,10 +6674,8 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Performs the audio_has_method workflow using the inputs supplied by the caller and the
-		    current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    instance (Any): Instance value used by the operation.
@@ -6701,10 +6695,8 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Returns:
 		    List[str]: Return value produced by the operation."""
@@ -6726,10 +6718,8 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    task (Optional[str]): Task value used by the operation.
@@ -6749,10 +6739,8 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
- downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls
+		    and downstream logic can consume it consistently.
 		
 		Args:
 		    task (Optional[str]): Task value used by the operation.
@@ -6773,10 +6761,8 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    task (Optional[str]): Task value used by the operation.
@@ -6796,9 +6782,7 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
- downstream logic
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and downstream logic
 		    can consume it consistently.
 		
 		Returns:
@@ -6814,10 +6798,8 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
- downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls
+		    and downstream logic can consume it consistently.
 		
 		Args:
 		    task (Optional[str]): Task value used by the operation.
@@ -6850,10 +6832,8 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
- downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls
+		    and down stream logic can consume it consistently.
 		
 		Args:
 		    task (Optional[str]): Task value used by the operation.
@@ -6869,10 +6849,8 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
- downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI
+		    controls and  downstream logic can consume it consistently.
 		
 		Returns:
 		    List[int]: Return value produced by the operation."""
@@ -6896,10 +6874,8 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI
+		    controls and downstream logic can consume it consistently.
 		
 		Returns:
 		    List[int]: Return value produced by the operation."""
@@ -6924,8 +6900,7 @@ downstream logic
 		
 		Purpose:
 		    Performs the sanitize_audio_selection workflow using the inputs supplied by the caller
-		    and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -6949,8 +6924,7 @@ downstream logic
 		
 		Purpose:
 		    Performs the sanitize_audio_multiselect workflow using the inputs supplied by the
-		    caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    caller and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -6973,8 +6947,7 @@ downstream logic
 		
 		Purpose:
 		    Performs the parse_audio_domains workflow using the inputs supplied by the caller and
-		    the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -6990,9 +6963,8 @@ downstream logic
 		
 		Purpose:
 		    Persists or stages input data so it can be used by later provider or application
-		    workflows. The
-		    function standardizes file handling and returns a stable reference for downstream
-				processing.
+		    workflows. The function standardizes file handling and returns a stable reference
+		    for downstream processing.
 		
 		Args:
 		    uploaded_file (Any): Uploaded file value used by the operation.
@@ -7032,8 +7004,7 @@ downstream logic
 		
 		Purpose:
 		    Performs the append_audio_message workflow using the inputs supplied by the caller and
-		    the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -7053,10 +7024,8 @@ downstream logic
 		
 		Purpose:
 		    Renders the requested user interface element or result block in Streamlit using
-		    normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and
-		    data-processing
-		    steps so the screen output remains predictable.
+		    normalized inputs. The function keeps presentation logic isolated from provider calls and
+		    data-processing steps so the screen output remains predictable.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
@@ -7075,8 +7044,7 @@ downstream logic
 		"""Clear audio messages.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-manner.
+		    Removes or resets the requested application state or provider resource in a controlled manner.
 		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
@@ -7095,8 +7063,7 @@ manner.
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -7110,10 +7077,8 @@ manner.
 		
 		Purpose:
 		    Performs the convert_audio_system_instructions workflow using the inputs supplied by
-		    the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+		    the caller and the current runtime configuration. The function keeps this behavior isolated so
+		    related UI,  provider, and data-processing paths can call it consistently.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
@@ -7158,8 +7123,7 @@ manner.
 		"""Reset audio task controls.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
- manner.
+		    Removes or resets the requested application state or provider resource in a controlled manner.
 		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
@@ -7176,8 +7140,7 @@ manner.
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -7195,9 +7158,8 @@ manner.
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
- logic.
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
+		    lifecycle logic.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
@@ -7213,10 +7175,8 @@ manner.
 		
 		Purpose:
 		    Performs the update_audio_usage workflow using the inputs supplied by the caller and
-		    the current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		provider, and
-		    data-processing paths can call it consistently.
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    instance (Any): Instance value used by the operation.
@@ -7253,8 +7213,7 @@ manner.
 		
 		Purpose:
 		    Performs the call_existing_audio_method workflow using the inputs supplied by the
-		    caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    caller and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -7370,11 +7329,9 @@ manner.
 		"""Normalize audio text result.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application
- processing. The
+		    Normalizes incoming values into a predictable representation for application processing. The
 		    function reduces provider, user-input, or serialization differences before values are
-		    stored or
-		    displayed.
+		    stored or displayed.
 		
 		Args:
 		    result (Any): Result value used by the operation.
@@ -7407,10 +7364,8 @@ manner.
 		
 		Purpose:
 		    Normalizes incoming values into a predictable representation for application
-		    processing. The
-		    function reduces provider, user-input, or serialization differences before values are
-		    stored or
-		    displayed.
+		    processing. The function reduces provider, user-input, or serialization differences before values are
+		    stored or displayed.
 		
 		Args:
 		    result (Any): Result value used by the operation.
@@ -7445,17 +7400,14 @@ manner.
 		
 		return None
 	
-	def get_audio_common_kwargs( path: Optional[ str ] = None, prompt: Optional[ str ] = None ) \
-			-> \
-			Dict[ str, Any ]:
+	def get_audio_common_kwargs( path: Optional[ str ] = None,
+		prompt: Optional[ str ] = None ) ->  Dict[ str, Any ]:
 		"""Get audio common kwargs.
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls
+		    and downstream logic can consume it consistently.
 		
 		Args:
 		    path (Optional[str]): Path value used by the operation.
@@ -7491,8 +7443,7 @@ manner.
 		
 		Purpose:
 		    Performs the run_audio_transcription workflow using the inputs supplied by the caller
-		    and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -7515,8 +7466,7 @@ manner.
 		
 		Purpose:
 		    Performs the run_audio_translation workflow using the inputs supplied by the caller
-		    and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -7539,10 +7489,8 @@ manner.
 		
 		Purpose:
 		    Performs the run_audio_tts workflow using the inputs supplied by the caller and the
-		    current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    text (str): Text value used by the operation.
@@ -7584,6 +7532,7 @@ manner.
 		st.divider( )
 		
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
+			
 			with st.expander( label='LLM Settings', icon='🧊', expanded=False, width='stretch' ):
 				aud_c1, aud_c2, aud_c3, aud_c4, aud_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], gap='xxsmall', border=True )
@@ -7663,8 +7612,7 @@ manner.
 				st.button( label='Reset', key='audio_task_reset', width='stretch',
 					on_click=reset_audio_task_controls )
 			
-			with st.expander( label='Inference Settings', icon='🎚️', expanded=False,
-					width='stretch' ):
+			with st.expander( label='Inference Settings', icon='🎚️', expanded=False, width='stretch' ):
 				inf_c1, inf_c2, inf_c3, inf_c4, inf_c5 = st.columns(
 					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], gap='xxsmall', border=True )
 				
@@ -7720,8 +7668,7 @@ manner.
 				st.button( label='Reset', key='audio_inference_reset', width='stretch',
 					on_click=reset_audio_inference_controls )
 			
-			with st.expander( label='Playback Settings', icon='🔊', expanded=False,
-					width='stretch' ):
+			with st.expander( label='Playback Settings', icon='🔊', expanded=False, width='stretch' ):
 				play_c1, play_c2, play_c3, play_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 					gap='xxsmall', border=True )
 				
@@ -7749,7 +7696,8 @@ manner.
 				
 				st.button( label='Reset', key='audio_playback_reset', width='stretch',
 					on_click=reset_audio_playback_controls )  # #  #
-			# ------------------------------------------------------------------
+			
+		# ------------------------------------------------------------------
 		# Expander — Audio System Instructions
 		# ------------------------------------------------------------------
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
@@ -7778,7 +7726,7 @@ manner.
 			# Instruction Text
 			# ------------------------------------------------------------------
 			with in_left:
-				st.text_area( label='Enter Text', height=80, width='stretch',
+				st.text_area( label='Enter Text', height=140, width='stretch',
 					key='audio_system_instructions', help=get_audio_help( 'SYSTEM_INSTRUCTIONS'
 					), )
 			
@@ -8102,6 +8050,7 @@ elif mode == 'Document Q&A':
 		if provider_name == 'Grok':
 			with st.expander( label='LLM Configuration', icon='🧠', expanded=False,
 					width='stretch' ):
+				
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 						border=True, gap='medium' )
@@ -8357,6 +8306,7 @@ elif mode == 'Document Q&A':
 		elif provider_name == 'Gemini':
 			with st.expander( label='LLM Configuration', icon='🧠', expanded=False,
 					width='stretch' ):
+				
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4, llm_c5 = st.columns(
 						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
@@ -8603,6 +8553,7 @@ elif mode == 'Document Q&A':
 		elif provider_name == 'GPT':
 			with st.expander( label='LLM Configuration', icon='🧠', expanded=False,
 					width='stretch' ):
+				
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 						border=True, gap='medium' )
@@ -8850,7 +8801,7 @@ elif mode == 'Document Q&A':
 			# Instruction Text
 			# ------------------------------------------------------------------
 			with in_left:
-				st.text_area( label='Enter Text', height=50, width='stretch',
+				st.text_area( label='Enter Text', height=140, width='stretch',
 					help=cfg.SYSTEM_INSTRUCTIONS, key='docqna_system_instructions', )
 			
 			# ------------------------------------------------------------------
@@ -9690,10 +9641,8 @@ elif mode == 'Files':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
- downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls
+		    and  downstream logic can consume it consistently.
 		
 		Args:
 		    name (str): Name value used by the operation.
@@ -9709,10 +9658,8 @@ elif mode == 'Files':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    instance (Any): Instance value used by the operation.
@@ -9744,10 +9691,8 @@ elif mode == 'Files':
 		
 		Purpose:
 		    Performs the files_has_method workflow using the inputs supplied by the caller and the
-		    current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    method_names (List[str]): Method names value used by the operation.
@@ -9761,14 +9706,13 @@ elif mode == 'Files':
 		
 		return False
 	
-	def sanitize_files_selection( key: str, valid_options: List[ Any ], default: Any = '' ) -> \
-			None:
+	def sanitize_files_selection( key: str, valid_options: List[ Any ],
+		default: Any = '' ) -> None:
 		"""Sanitize files selection.
 		
 		Purpose:
 		    Performs the sanitize_files_selection workflow using the inputs supplied by the caller
-		    and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -9792,8 +9736,7 @@ elif mode == 'Files':
 		
 		Purpose:
 		    Performs the sanitize_files_multiselect workflow using the inputs supplied by the
-		    caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    caller and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -9817,10 +9760,8 @@ value."""
 		
 		Purpose:
 		    Performs the call_files_method workflow using the inputs supplied by the caller and
-		    the current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    method_names (List[str]): Method names value used by the operation.
@@ -9938,10 +9879,8 @@ value."""
 		"""Normalize file id.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application
-		processing. The
-		    function reduces provider, user-input, or serialization differences before values are
-		stored or
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
 		    displayed.
 		
 		Args:
@@ -9965,10 +9904,8 @@ value."""
 		
 		Purpose:
 		    Normalizes incoming values into a predictable representation for application
-		    processing. The
-		    function reduces provider, user-input, or serialization differences before values are
- stored or
-		    displayed.
+		    processing. The function reduces provider, user-input, or serialization differences
+		    before values are stored or displayed.
 		
 		Args:
 		    result (Any): Result value used by the operation.
@@ -10027,9 +9964,8 @@ value."""
 		
 		Purpose:
 		    Persists or stages input data so it can be used by later provider or application
-		    workflows. The
-		    function standardizes file handling and returns a stable reference for downstream
-processing.
+		    workflows. The function standardizes file handling and returns a stable reference
+		    for downstream processing.
 		
 		Args:
 		    uploaded_file (Any): Uploaded file value used by the operation.
@@ -10060,10 +9996,8 @@ processing.
 		
 		Purpose:
 		    Normalizes incoming values into a predictable representation for application
-		    processing.
-		    The function reduces provider, user-input, or serialization differences before values
-		    are
-		    stored or  displayed.
+		    processing. The function reduces provider, user-input, or serialization differences before values
+		    are stored or  displayed.
 		
 		Args:
 		    content (Any): Content value used by the operation.
@@ -10113,8 +10047,7 @@ processing.
 		
 		Purpose:
 		    Performs the refresh_files_table workflow using the inputs supplied by the caller and
-		    the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Returns:
@@ -10154,8 +10087,7 @@ processing.
 		
 		Purpose:
 		    Performs the retrieve_provider_file workflow using the inputs supplied by the caller
-		    and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -10173,10 +10105,8 @@ processing.
 		
 		Purpose:
 		    Extracts structured information from a provider response, uploaded file,
-		    or application data
-		    object. The function normalizes provider-specific shapes into values that can be
-		    rendered,
-		    stored, or passed to later processing steps.
+		    or application data object. The function normalizes provider-specific shapes into values that can be
+		    rendered, stored, or passed to later processing steps.
 		
 		Args:
 		    file_id (str): File id value used by the operation.
@@ -10195,8 +10125,7 @@ processing.
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Args:
@@ -10213,10 +10142,8 @@ processing.
 		
 		Purpose:
 		    Performs the ask_provider_file workflow using the inputs supplied by the caller and
-		    the current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    file_id (str): File id value used by the operation.
@@ -10260,8 +10187,7 @@ processing.
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -10279,8 +10205,7 @@ processing.
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -10294,8 +10219,7 @@ processing.
 		
 		Purpose:
 		    Performs the append_files_message workflow using the inputs supplied by the caller and
-		    the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -10315,10 +10239,8 @@ processing.
 		
 		Purpose:
 		    Renders the requested user interface element or result block in Streamlit using
-		    normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and
-		    data-processing
-		    steps so the screen output remains predictable.
+		    normalized inputs. The function keeps presentation logic isolated from provider calls and
+		    data-processing steps so the screen output remains predictable.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
@@ -10351,10 +10273,8 @@ processing.
 		
 		Purpose:
 		    Performs the convert_files_system_instructions workflow using the inputs supplied by
-		    the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+		    the caller and the current runtime configuration. The function keeps this behavior isolated so
+		    related UI, provider, and data-processing paths can call it consistently.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
@@ -10484,8 +10404,7 @@ processing.
 				
 				with req2_c1:
 					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
-						key='files_top_percent', help='Optional top-p for file-aware model '
-						                              'calls.' )
+						key='files_top_percent', help='Optional top-p for file-aware model calls.' )
 				
 				with req2_c2:
 					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
@@ -10570,7 +10489,7 @@ processing.
 			with in_left:
 				st.text_area(
 					label='Enter Text',
-					height=80,
+					height=140,
 					width='stretch',
 					key='files_system_instructions',
 					help=get_files_help( 'SYSTEM_INSTRUCTIONS' ),
@@ -10902,9 +10821,7 @@ elif mode == 'Vector Stores':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
- downstream logic
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and downstream logic
 		    can consume it consistently.
 		
 		Args:
@@ -10921,10 +10838,8 @@ elif mode == 'Vector Stores':
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-downstream logic
-		    can consume it consistently.
+		    stable view  of provider capabilities, stored state, or response metadata so UI controls
+		    and downstream logic can consume it consistently.
 		
 		Args:
 		    instance (Any): Instance value used by the operation.
@@ -10955,11 +10870,9 @@ downstream logic
 		"""Parse storage json.
 		
 		Purpose:
-		    Performs the parse_storage_json workflow using the inputs supplied by the caller and
-the current
+		    Performs the parse_storage_json workflow using the inputs supplied by the caller and the current
 		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    value (Any): Value value used by the operation.
@@ -10989,9 +10902,7 @@ the current
 		
 		Purpose:
 		    Performs the parse_storage_ids workflow using the inputs supplied by the caller and
-		    the current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
- provider, and
+		    the current runtime configuration. The function keeps this behavior isolated so related UI, provider, and
 		    data-processing paths can call it consistently.
 		
 		Args:
@@ -11008,8 +10919,7 @@ the current
 		
 		Purpose:
 		    Performs the call_storage_method workflow using the inputs supplied by the caller and
-		    the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -11059,11 +10969,9 @@ the current
 		"""Normalize storage object.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application
- processing. The
+		    Normalizes incoming values into a predictable representation for application processing. The
 		    function reduces provider, user-input, or serialization differences before values are
-		    stored or
-		    displayed.
+		    stored or displayed.
 		
 		Args:
 		    value (Any): Value value used by the operation.
@@ -11133,10 +11041,8 @@ the current
 		"""Normalize storage rows.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application
- processing. The
-		    function reduces provider, user-input, or serialization differences before values are
-		stored or
+		    Normalizes incoming values into a predictable representation for application processing. The
+		    function reduces provider, user-input, or serialization differences before values are stored or
 		    displayed.
 		
 		Args:
@@ -11183,10 +11089,8 @@ the current
 		
 		Purpose:
 		    Normalizes incoming values into a predictable representation for application
-			processing. The
-		    function reduces provider, user-input, or serialization differences before values are
- stored or
-		    displayed.
+			processing. The function reduces provider, user-input, or serialization differences
+			before values are stored or displayed.
 		
 		Args:
 		    result (Any): Result value used by the operation.
@@ -11226,8 +11130,7 @@ the current
 		
 		Purpose:
 		    Persists or stages input data so it can be used by later provider or application
-		    workflows. The
-		    function standardizes file handling and returns a stable reference for downstream
+		    workflows. The function standardizes file handling and returns a stable reference for downstream
 		    processing.
 		
 		Args:
@@ -11257,10 +11160,8 @@ the current
 		
 		Purpose:
 		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    stable view of provider capabilities, stored state, or response metadata so UI controls and
+		    downstream logic can consume it consistently.
 		
 		Args:
 		    table_key (str): Table key value used by the operation.
@@ -11290,11 +11191,9 @@ the current
 		"""Render storage table.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using
-normalized
+		    Renders the requested user interface element or result block in Streamlit using normalized
 		    inputs. The function keeps presentation logic isolated from provider calls and
-		    data-processing
-		    steps so the screen output remains predictable.
+		    data-processing steps so the screen output remains predictable.
 		
 		Args:
 		    rows (List[Dict[str, Any]]): Rows value used by the operation.
@@ -11315,10 +11214,8 @@ normalized
 		
 		Purpose:
 		    Renders the requested user interface element or result block in Streamlit using
-		    normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and
-		    data-processing
-		    steps so the screen output remains predictable.
+		    normalized inputs. The function keeps presentation logic isolated from provider calls and
+		    data-processing steps so the screen output remains predictable.
 		
 		Args:
 		    metadata (Dict[str, Any]): Metadata value used by the operation.
@@ -11337,9 +11234,7 @@ normalized
 		
 		Purpose:
 		    Renders the requested user interface element or result block in Streamlit using
-		    normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and
- data-processing
+		    normalized inputs. The function keeps presentation logic isolated from provider calls and data-processing
 		    steps so the screen output remains predictable.
 		
 		Args:
@@ -11361,8 +11256,7 @@ normalized
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 		    logic.
 		
 		Returns:
@@ -11547,7 +11441,7 @@ normalized
 			with in_left:
 				st.text_area(
 					label='Enter Text',
-					height=80,
+					height=140,
 					width='stretch',
 					key='stores_system_instructions',
 					help=get_storage_help( 'SYSTEM_INSTRUCTIONS' ),
@@ -11973,8 +11867,7 @@ elif mode == 'File Search Stores':
 		
 		Purpose:
 		    Performs the call_file_search_method workflow using the inputs supplied by the caller
-		    and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
+		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
 		    provider, and data-processing paths can call it consistently.
 		
 		Args:
@@ -12058,9 +11951,7 @@ elif mode == 'File Search Stores':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
- logic.
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
@@ -12194,7 +12085,7 @@ elif mode == 'File Search Stores':
 			with in_left:
 				st.text_area(
 					label='Enter Text',
-					height=80,
+					height=140,
 					width='stretch',
 					key='filestore_system_instructions',
 					help=getattr( cfg, 'SYSTEM_INSTRUCTIONS', '' ),
@@ -12280,10 +12171,8 @@ elif mode == 'Google Cloud Buckets':
 		
 		Purpose:
 		    Performs the call_bucket_method workflow using the inputs supplied by the caller and
-			the current
-		    runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and
-		    data-processing paths can call it consistently.
+			the current runtime configuration. The function keeps this behavior isolated so related UI,
+		    provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    method_names (List[str]): Method names value used by the operation.
@@ -12371,8 +12260,7 @@ elif mode == 'Google Cloud Buckets':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a
-		    controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate
+		    controlled manner. The function keeps cleanup behavior centralized so callers do not duplicate
 		    lifecycle logic.
 		
 		Returns:
@@ -12515,7 +12403,7 @@ value."""
 			with in_left:
 				st.text_area(
 					label='Enter Text',
-					height=80,
+					height=140,
 					width='stretch',
 					key='bucket_system_instructions',
 					help=getattr( cfg, 'SYSTEM_INSTRUCTIONS', '' ),
