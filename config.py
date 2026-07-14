@@ -186,7 +186,7 @@ def get_text( name: str, default: str ) -> str:
 	
 # ----------------- CONSTANTS -------------------
 
-BLUE_DIVIDER = "<div style='height:2px;align:left;background:#0078FC;margin:0px 30px 30px 0;'></div>"
+BLUE_DIVIDER = "<div style='height:2px;align:left;background:#0078FC;margin:30px 0px 30px 0px;'></div>"
 APP_TITLE = 'Boo'
 APP_SUBTITLE = 'Multi-Modal AI'
 OPEN_TAG = re.compile( r'<([A-Za-z0-9_\-:.]+)>' )
