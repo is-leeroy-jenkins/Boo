@@ -13756,7 +13756,7 @@ st.markdown( """
 		bottom: 0;
 		left: 0;
 		width: 100%;
-		background-color: rgba(30, 30, 30, 0.95);
+		background-color: rgba(25, 25, 25, 0.95);
 		border-top: 1px solid #2a2a2a;
 		padding: 10px 16px;
 		font-size: 0.80rem;
