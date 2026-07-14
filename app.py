@@ -13600,7 +13600,7 @@ st.markdown( """
 		border-top: 1px solid #2a2a2a;
 		padding: 10px 16px;
 		font-size: 0.80rem;
-		color: #35618c;
+		color: #4aa2f7;
 		z-index: 1000;
 	}
 	.boo-status-inner {
