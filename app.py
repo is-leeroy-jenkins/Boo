@@ -645,8 +645,7 @@ def extract_response_text( response: object ) -> str:
 	
 	Purpose:
 	    Extracts structured information from a provider response, uploaded file, or application
-	    data
-	    object. The function normalizes provider-specific shapes into values that can be rendered,
+	    data  object. The function normalizes provider-specific shapes into values that can be rendered,
 	    stored, or passed to later processing steps.
 	
 	Args:
@@ -701,10 +700,8 @@ def normalize_text( text: str ) -> str:
 	
 	Purpose:
 	    Normalizes incoming values into a predictable representation for application processing.
-	    The
-	    function reduces provider, user-input, or serialization differences before values are
-	    stored or
-	    displayed.
+	    The function reduces provider, user-input, or serialization differences before values are
+	    stored or displayed.
 	
 	Args:
 	    text (str): Text value used by the operation.
@@ -733,8 +730,7 @@ def chunk_text( text: str, max_tokens: int = 400 ) -> list[ str ]:
 	
 	Purpose:
 	    Performs the chunk_text workflow using the inputs supplied by the caller and the current
-	    runtime
-	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -782,10 +778,8 @@ def sanitize_markdown( text: str ) -> str:
 	
 	Purpose:
 	    Performs the sanitize_markdown workflow using the inputs supplied by the caller and the
-	    current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
-	    and
-	    data-processing paths can call it consistently.
+	    current runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and data-processing paths can call it consistently.
 	
 	Args:
 	    text (str): Text value used by the operation.
@@ -850,10 +844,8 @@ def style_subheaders( ) -> None:
 	
 	Purpose:
 	    Performs the style_subheaders workflow using the inputs supplied by the caller and the
-	    current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
-	    and
-	    data-processing paths can call it consistently.
+	    current runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and data-processing paths can call it consistently.
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value."""
@@ -873,8 +865,7 @@ def init_state( ) -> None:
 	
 	Purpose:
 	    Performs the init_state workflow using the inputs supplied by the caller and the current
-	    runtime
-	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
 	Returns:
@@ -897,8 +888,7 @@ def reset_state( ) -> None:
 	
 	Purpose:
 	    Removes or resets the requested application state or provider resource in a controlled
-	    manner.
-	    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+	    manner.  The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
 	    logic.
 	
 	Returns:
@@ -929,8 +919,7 @@ def extract_answer( response: Any ) -> str:
 	
 	Purpose:
 	    Extracts structured information from a provider response, uploaded file, or application
-	    data
-	    object. The function normalizes provider-specific shapes into values that can be rendered,
+	    data object. The function normalizes provider-specific shapes into values that can be rendered,
 	    stored, or passed to later processing steps.
 	
 	Args:
@@ -986,8 +975,7 @@ def extract_sources( response: Any ) -> List[ Dict[ str, Any ] ]:
 	
 	Purpose:
 	    Extracts structured information from a provider response, uploaded file, or application
-	    data
-	    object. The function normalizes provider-specific shapes into values that can be rendered,
+	    data object. The function normalizes provider-specific shapes into values that can be rendered,
 	    stored, or passed to later processing steps.
 	
 	Args:
@@ -1054,8 +1042,7 @@ def extract_analysis( response: Any ) -> Dict[ str, Any ]:
 	
 	Purpose:
 	    Extracts structured information from a provider response, uploaded file, or application
-	    data
-	    object. The function normalizes provider-specific shapes into values that can be rendered,
+	    data object. The function normalizes provider-specific shapes into values that can be rendered,
 	    stored, or passed to later processing steps.
 	
 	Args:
@@ -1109,8 +1096,7 @@ def save_temp( upload ) -> str | None:
 	
 	Purpose:
 	    Persists or stages input data so it can be used by later provider or application
-	    workflows. The
-	    function standardizes file handling and returns a stable reference for downstream
+	    workflows. The function standardizes file handling and returns a stable reference for downstream
 	    processing.
 	
 	Args:
@@ -1137,8 +1123,7 @@ def _extract_usage_from_response( resp: Any ) -> Dict[ str, int ]:
 	
 	Purpose:
 	    Performs the _extract_usage_from_response workflow using the inputs supplied by the caller
-	    and
-	    the current runtime configuration. The function keeps this behavior isolated so related UI,
+	    and the current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
 	Args:
@@ -1204,10 +1189,8 @@ def _display_value( val: Any ) -> str:
 	
 	Purpose:
 	    Performs the _display_value workflow using the inputs supplied by the caller and the
-	    current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
-	    and
-	    data-processing paths can call it consistently.
+	    current runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and data-processing paths can call it consistently.
 	
 	Args:
 	    val (Any): Val value used by the operation.
@@ -1276,10 +1259,8 @@ def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
 	
 	Purpose:
 	    Normalizes incoming values into a predictable representation for application processing.
-	    The
-	    function reduces provider, user-input, or serialization differences before values are
-	    stored or
-	    displayed.
+	    The function reduces provider, user-input, or serialization differences before values are
+	    stored or displayed.
 	
 	Args:
 	    value (Any): Value value used by the operation.
@@ -1370,8 +1351,7 @@ def save_uploaded_storage_file( uploaded_file: Any ) -> Optional[ str ]:
 	
 	Purpose:
 	    Persists or stages input data so it can be used by later provider or application
-	    workflows. The
-	    function standardizes file handling and returns a stable reference for downstream
+	    workflows. The function standardizes file handling and returns a stable reference for downstream
 	    processing.
 	
 	Args:
@@ -1402,10 +1382,8 @@ def normalize_text( text: str ) -> str:
 	
 	Purpose:
 	    Normalizes incoming values into a predictable representation for application processing.
-	    The
-	    function reduces provider, user-input, or serialization differences before values are
-	    stored or
-	    displayed.
+	    The function reduces provider, user-input, or serialization differences before values are
+	    stored or displayed.
 	
 	Args:
 	    text (str): Text value used by the operation.
@@ -1442,8 +1420,7 @@ def convert_xml( text: str ) -> str:
 	Purpose:
 	    Performs the convert_xml workflow using the inputs supplied by the caller and the current
 	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
-	    and
-	    data-processing paths can call it consistently.
+	    and data-processing paths can call it consistently.
 	
 	Args:
 	    text (str): Text value used by the operation.
@@ -1467,10 +1444,8 @@ def convert_markdown( text: Any ) -> str:
 	
 	Purpose:
 	    Performs the convert_markdown workflow using the inputs supplied by the caller and the
-	    current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
-	    and
-	    data-processing paths can call it consistently.
+	    current runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and data-processing paths can call it consistently.
 	
 	Args:
 	    text (Any): Text value used by the operation.
@@ -1573,10 +1548,8 @@ def style_subheaders( ) -> None:
 	
 	Purpose:
 	    Performs the style_subheaders workflow using the inputs supplied by the caller and the
-	    current
-	    runtime configuration. The function keeps this behavior isolated so related UI, provider,
-	    and
-	    data-processing paths can call it consistently.
+	    current  runtime configuration. The function keeps this behavior isolated so related UI, provider,
+	    and data-processing paths can call it consistently.
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value."""
@@ -1610,8 +1583,7 @@ def extract_text_from_bytes( file_bytes: bytes ) -> str:
 	
 	Purpose:
 	    Extracts structured information from a provider response, uploaded file, or application
-	    data
-	    object. The function normalizes provider-specific shapes into values that can be rendered,
+	    data object. The function normalizes provider-specific shapes into values that can be rendered,
 	    stored, or passed to later processing steps.
 	
 	Args:
@@ -1706,8 +1678,7 @@ def summarize_active_document( ) -> str:
 	
 	Purpose:
 	    Performs the summarize_active_document workflow using the inputs supplied by the caller
-	    and the
-	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    and the current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
 	Returns:
@@ -1734,8 +1705,7 @@ def _docqna_compute_fingerprint( active_docs: List[ str ], doc_bytes: Dict[ str,
 	
 	Purpose:
 	    Performs the _docqna_compute_fingerprint workflow using the inputs supplied by the caller
-	    and
-	    the current runtime configuration. The function keeps this behavior isolated so related UI,
+	    and the current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
 	Args:
@@ -1782,8 +1752,7 @@ def _docqna_safe_load_sqlite_vec( conn: sqlite3.Connection ) -> bool:
 	
 	Purpose:
 	    Performs the _docqna_safe_load_sqlite_vec workflow using the inputs supplied by the caller
-	    and
-	    the current runtime configuration. The function keeps this behavior isolated so related UI,
+	    and the current runtime configuration. The function keeps this behavior isolated so related UI,
 	    provider, and data-processing paths can call it consistently.
 	
 	Args:
@@ -7930,7 +7899,7 @@ manner.
 						help='Autoplay playback when Streamlit supports it.' )
 				
 				st.button( label='Reset', key='audio_playback_reset', width='stretch',
-					on_click=reset_audio_playback_controls )  #  #
+					on_click=reset_audio_playback_controls )  # #  #
 			# ------------------------------------------------------------------
 		# Expander — Audio System Instructions
 		# ------------------------------------------------------------------
@@ -8045,7 +8014,6 @@ manner.
 			# Audio Source Resolution
 			# ------------------------------------------------------------------
 			audio_path = None
-			
 			if uploaded_audio is not None:
 				audio_path = save_audio_upload( uploaded_audio )
 				st.session_state[ 'audio_upload_path' ] = audio_path or ''
@@ -8065,7 +8033,6 @@ manner.
 					pass
 			
 			process_c1, process_c2 = st.columns( [ 0.50, 0.50 ] )
-			
 			with process_c1:
 				if st.button( 'Process Audio', key='process_audio', width='stretch' ):
 					with st.spinner( 'Processing audio…' ):
@@ -8121,12 +8088,10 @@ manner.
 		
 		with tab_tts:
 			render_audio_messages( )
-			
 			tts_input = st.text_area( label='Enter Text to Synthesize', key='audio_tts_input',
 				height=160, width='stretch', placeholder='Enter text for speech synthesis.' )
 			
 			tts_c1, tts_c2 = st.columns( [ 0.50, 0.50 ] )
-			
 			with tts_c1:
 				if st.button( 'Generate Audio', key='generate_tts_audio', width='stretch' ):
 					with st.spinner( 'Synthesizing speech…' ):
@@ -9011,30 +8976,72 @@ elif mode == 'Document Q&A':
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
 				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
-			prompt_names = fetch_prompt_names( cfg.DB_PATH )
-			if not prompt_names:
-				prompt_names = [ 'No Templates Found' ]
 			
+			# ------------------------------------------------------------------
+			# Document Q&A Prompt Categories
+			# ------------------------------------------------------------------
+			docqna_prompt_categories = fetch_prompt_categories( 'Document Q&A' )
+			current_docqna_category = st.session_state.get( 'docqna_prompt_category' )
+			
+			if current_docqna_category not in docqna_prompt_categories:
+				st.session_state[ 'docqna_prompt_category' ] = None
+			
+			selected_docqna_category = st.session_state.get( 'docqna_prompt_category' )
+			
+			docqna_prompt_options = fetch_prompt_options(
+				selected_docqna_category ) if selected_docqna_category else [ ]
+			
+			docqna_prompt_ids = [ int( option[ 'PromptsId' ] ) for option in
+				docqna_prompt_options ]
+			
+			if st.session_state.get( 'docqna_prompt_id' ) not in docqna_prompt_ids:
+				st.session_state[ 'docqna_prompt_id' ] = None
+			
+			# ------------------------------------------------------------------
+			# Instruction Text
+			# ------------------------------------------------------------------
 			with in_left:
-				st.text_area( 'Enter Text', height=50, width='stretch',
-					help=cfg.SYSTEM_INSTRUCTIONS, key='docqna_system_instructions' )
+				st.text_area( label='Enter Text', height=50, width='stretch',
+					help=cfg.SYSTEM_INSTRUCTIONS, key='docqna_system_instructions', )
 			
-			def _on_template_change( ) -> None:
-				name = st.session_state.get( 'instructions' )
-				if name and name != 'No Templates Found':
-					text = fetch_prompt_text( cfg.DB_PATH, name )
-					if text is not None:
-						st.session_state[ 'docqna_system_instructions' ] = text
-			
+			# ------------------------------------------------------------------
+			# Prompt Template Selection
+			# ------------------------------------------------------------------
 			with in_right:
-				st.selectbox( 'Select Template', prompt_names, key='instructions',
-					on_change=_on_template_change, index=None )
+				st.selectbox( label='Category', options=docqna_prompt_categories, index=None,
+					key='docqna_prompt_category', placeholder='Select Category',
+					help=('Limits prompt templates to categories associated with '
+					      'Document Q&A workflows.'), on_change=reset_prompt_template_selection,
+					args=('docqna_prompt_id',), )
+				
+				st.selectbox( label='Select Template', options=docqna_prompt_ids, index=None,
+					key='docqna_prompt_id', placeholder='Select Template',
+					disabled=not docqna_prompt_ids,
+					format_func=lambda prompt_id: format_prompt_option( prompt_id,
+						docqna_prompt_options, ),
+					help=('Loads the selected prompt into the Document Q&A '
+					      'system-instruction field.'), on_change=load_prompt_template,
+					args=('docqna_prompt_id', 'docqna_system_instructions',), )
 			
-			def _on_clear( ) -> None:
+			# ------------------------------------------------------------------
+			# Instruction Actions
+			# ------------------------------------------------------------------
+			def clear_docqna_instructions( ) -> None:
+				"""Clear Document Q&A instructions.
+				
+				Purpose:
+				    Clears the active Document Q&A system-instruction text and selected prompt
+				    template without changing the selected prompt category or document state.
+				
+				Returns:
+				    None: This function performs its work through side effects and does not return
+				    a value.
+				"""
 				st.session_state[ 'docqna_system_instructions' ] = ''
-				st.session_state[ 'instructions' ] = ''
+				st.session_state[ 'docqna_prompt_id' ] = None
 			
-			st.button( 'Clear Instructions', width='stretch', on_click=_on_clear )
+			st.button( label='Clear Instructions', width='stretch',
+				on_click=clear_docqna_instructions, )
 		
 		doc_left, doc_right = st.columns( [ 0.2, 0.8 ], border=True )
 		with doc_left:
@@ -9239,10 +9246,8 @@ elif mode == 'Embeddings':
 		
 		Purpose:
 		    Normalizes incoming values into a predictable representation for application
-		    processing. The
-		    function reduces provider, user-input, or serialization differences before values are
- stored or
-		    displayed.
+		    processing. The function reduces provider, user-input, or serialization differences
+		    before values are stored or displayed.
 		
 		Args:
 		    vectors (Any): Vectors value used by the operation.
@@ -9446,10 +9451,8 @@ elif mode == 'Embeddings':
 		
 		Purpose:
 		    Renders the requested user interface element or result block in Streamlit using
-		    normalized
-		    inputs. The function keeps presentation logic isolated from provider calls and
- data-processing
-		    steps so the screen output remains predictable.
+		    normalized inputs. The function keeps presentation logic isolated from provider
+		    calls and data-processing steps so the screen output remains predictable.
 		
 		Args:
 		    metrics (Dict[str, Any]): Metrics value used by the operation.
@@ -9474,8 +9477,8 @@ elif mode == 'Embeddings':
 		    logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-value."""
+		    None: This function performs its work through side effects and does
+		    not return a value."""
 		for key in [ 'embedding_input', 'embedding_text', 'embeddings_input_text',
 			'embedding_chunks', 'embeddings_chunks', 'embedding_vectors', 'embeddings',
 			'embedding_results', 'embeddings_df', 'embedding_dataframe', 'embedding_metrics',
@@ -9488,16 +9491,15 @@ value."""
 		
 		Purpose:
 		    Performs the update_embedding_usage workflow using the inputs supplied by the caller
-		    and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+		    and the current runtime configuration. The function keeps this behavior
+		    isolated so related UI, provider, and data-processing paths can call it consistently.
 		
 		Args:
 		    response (Any): Response value used by the operation.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
-		value."""
+			value."""
 		try:
 			if 'update_token_counters' in globals( ):
 				update_token_counters( response )
@@ -10209,10 +10211,10 @@ processing.
 		
 		Purpose:
 		    Normalizes incoming values into a predictable representation for application
-		processing. The
-		    function reduces provider, user-input, or serialization differences before values are
-		    stored or
-		    displayed.
+		    processing.
+		    The function reduces provider, user-input, or serialization differences before values
+		    are
+		    stored or  displayed.
 		
 		Args:
 		    content (Any): Content value used by the operation.
@@ -10240,11 +10242,9 @@ processing.
 		"""Get effective file id.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
- stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-				downstream logic
-		    can consume it consistently.
+		    Returns normalized information for the application component. The method provides
+		    a  stable view of provider capabilities, stored state, or response metadata so UI
+		    controls and downstream logic can consume it consistently.
 		
 		Args:
 		    *keys (str): Additional positional arguments retained for compatibility with caller
@@ -10279,10 +10279,9 @@ processing.
 		"""Upload provider file.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application
- workflows. The
-		    function standardizes file handling and returns a stable reference for downstream
-		    processing.
+		    Persists or stages input data so it can be used by later provider or
+		    application  workflows. The function standardizes file handling and returns a
+		    stable reference for downstream processing.
 		
 		Args:
 		    uploaded_file (Any): Uploaded file value used by the operation.
@@ -10489,16 +10488,14 @@ processing.
 		"""Clear files instructions.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
-		    logic.
+		    Clears the Files-mode system instructions and selected prompt template without
+		    modifying the selected prompt category or any file-management state.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
+		    None: This function performs its work through side effects and does not return a value.
+		"""
 		st.session_state[ 'files_system_instructions' ] = ''
-		st.session_state[ 'instructions' ] = ''
+		st.session_state[ 'files_prompt_id' ] = None
 	
 	def convert_files_system_instructions( ) -> None:
 		"""Convert files system instructions.
@@ -10529,23 +10526,31 @@ processing.
 		"""Load files instruction template.
 		
 		Purpose:
-		    Performs the load_files_instruction_template workflow using the inputs supplied by the
-		    caller
-		    and the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Loads the selected Files-mode prompt template into the Files-mode
+		    system-instruction field using its stable prompt identifier.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		name = st.session_state.get( 'instructions' )
-		if name and name != 'No Templates Found':
-			prompt_text = fetch_prompt_text( cfg.DB_PATH, name )
-			if prompt_text is not None:
-				st.session_state[ 'files_system_instructions' ] = prompt_text
+		    None: This function performs its work through side effects and does not return a value.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			load_prompt_template(
+				prompt_id_key='files_prompt_id',
+				instructions_key='files_system_instructions',
+			)
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Files Mode'
+			ex.method = 'load_files_instruction_template( ) -> None'
+			Logger( ).write( ex )
+			raise ex
 	
 	extract_supported = files_has_method(
 		[ 'extract', 'download', 'content', 'retrieve_content', 'files_content' ] )
+	
 	ask_supported = files_has_method(
 		[ 'summarize', 'ask', 'query', 'answer', 'search', 'survey' ] )
 	
@@ -10680,29 +10685,102 @@ processing.
 					st.toggle( label='Stream', key='files_stream',
 						help='Optional stream flag retained for wrapper compatibility.' )
 		
+		# ------------------------------------------------------------------
+		# Expander — Files System Instructions
+		# ------------------------------------------------------------------
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
 				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
-			prompt_names = fetch_prompt_names( cfg.DB_PATH )
-			if not prompt_names:
-				prompt_names = [ 'No Templates Found' ]
 			
+			# ------------------------------------------------------------------
+			# Files Prompt Categories
+			# ------------------------------------------------------------------
+			files_prompt_categories = fetch_prompt_categories( 'Files' )
+			current_files_category = st.session_state.get( 'files_prompt_category' )
+			
+			if current_files_category not in files_prompt_categories:
+				st.session_state[ 'files_prompt_category' ] = None
+			
+			selected_files_category = st.session_state.get( 'files_prompt_category' )
+			
+			files_prompt_options = fetch_prompt_options(
+				selected_files_category
+			) if selected_files_category else [ ]
+			
+			files_prompt_ids = [
+					int( option[ 'PromptsId' ] )
+					for option in files_prompt_options
+			]
+			
+			if st.session_state.get( 'files_prompt_id' ) not in files_prompt_ids:
+				st.session_state[ 'files_prompt_id' ] = None
+			
+			# ------------------------------------------------------------------
+			# Instruction Text
+			# ------------------------------------------------------------------
 			with in_left:
-				st.text_area( label='Enter Text', height=80, width='stretch',
-					key='files_system_instructions', help=get_files_help( 'SYSTEM_INSTRUCTIONS' ) )
+				st.text_area(
+					label='Enter Text',
+					height=80,
+					width='stretch',
+					key='files_system_instructions',
+					help=get_files_help( 'SYSTEM_INSTRUCTIONS' ),
+				)
 			
+			# ------------------------------------------------------------------
+			# Prompt Template Selection
+			# ------------------------------------------------------------------
 			with in_right:
-				st.selectbox( label='Use Template', options=prompt_names, key='instructions',
-					on_change=load_files_instruction_template, index=None )
+				st.selectbox(
+					label='Category',
+					options=files_prompt_categories,
+					index=None,
+					key='files_prompt_category',
+					placeholder='Select Category',
+					help=(
+							'Limits prompt templates to categories associated with '
+							'file-processing workflows.'
+					),
+					on_change=reset_prompt_template_selection,
+					args=( 'files_prompt_id', ),
+				)
+				
+				st.selectbox(
+					label='Use Template',
+					options=files_prompt_ids,
+					index=None,
+					key='files_prompt_id',
+					placeholder='Select Template',
+					disabled=not files_prompt_ids,
+					format_func=lambda prompt_id: format_prompt_option(
+						prompt_id,
+						files_prompt_options,
+					),
+					help=(
+							'Loads the selected prompt into the Files '
+							'system-instruction field.'
+					),
+					on_change=load_files_instruction_template,
+				)
 			
+			# ------------------------------------------------------------------
+			# Instruction Actions
+			# ------------------------------------------------------------------
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
+			
 			with btn_c1:
-				st.button( label='Clear Instructions', width='stretch',
-					on_click=clear_files_instructions )
+				st.button(
+					label='Clear Instructions',
+					width='stretch',
+					on_click=clear_files_instructions,
+				)
 			
 			with btn_c2:
-				st.button( label='XML <-> Markdown', width='stretch',
-					on_click=convert_files_system_instructions )
+				st.button(
+					label='XML <-> Markdown',
+					width='stretch',
+					on_click=convert_files_system_instructions,
+				)
 		
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 		
@@ -11446,6 +11524,69 @@ normalized
 		st.session_state[ 'stores_files_table' ] = [ ]
 		st.session_state[ 'stores_batch_result' ] = { }
 	
+	def clear_stores_instructions( ) -> None:
+		"""Clear Vector Stores instructions.
+		
+		Purpose:
+		    Clears the Vector Stores system-instruction text and selected prompt template without
+		    changing the selected prompt category, vector-store configuration, or provider results.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		"""
+		st.session_state[ 'stores_system_instructions' ] = ''
+		st.session_state[ 'stores_prompt_id' ] = None
+	
+	def convert_stores_system_instructions( ) -> None:
+		"""Convert Vector Stores system instructions.
+		
+		Purpose:
+		    Converts the active Vector Stores system instructions between supported XML-style
+		    instruction blocks and Markdown headings.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		"""
+		text_value = st.session_state.get( 'stores_system_instructions', '' )
+		
+		if not isinstance( text_value, str ) or not text_value.strip( ):
+			return
+		
+		source = text_value.strip( )
+		
+		if cfg.XML_BLOCK_PATTERN.search( source ):
+			converted = convert_xml( source )
+		else:
+			converted = convert_markdown( source )
+		
+		st.session_state[ 'stores_system_instructions' ] = converted
+	
+	def load_stores_instruction_template( ) -> None:
+		"""Load Vector Stores instruction template.
+		
+		Purpose:
+		    Loads the selected Vector Stores prompt template into the Vector Stores
+		    system-instruction field using its stable prompt identifier.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			load_prompt_template(
+				prompt_id_key='stores_prompt_id',
+				instructions_key='stores_system_instructions',
+			)
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Vector Stores Mode'
+			ex.method = 'load_stores_instruction_template( ) -> None'
+			Logger( ).write( ex )
+			raise ex
+		
 	# ------------------------------------------------------------------
 	# Provider Guard
 	# ------------------------------------------------------------------
@@ -11519,8 +11660,108 @@ normalized
 					width='stretch',
 					help='Optional. JSON object metadata for create/update calls.' )
 		
+		# ------------------------------------------------------------------
+		# Expander — Vector Stores System Instructions
+		# ------------------------------------------------------------------
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch' ):
+			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
+			
+			# ------------------------------------------------------------------
+			# Vector Stores Prompt Categories
+			# ------------------------------------------------------------------
+			stores_prompt_categories = fetch_prompt_categories( 'Vector Stores' )
+			current_stores_category = st.session_state.get( 'stores_prompt_category' )
+			
+			if current_stores_category not in stores_prompt_categories:
+				st.session_state[ 'stores_prompt_category' ] = None
+			
+			selected_stores_category = st.session_state.get(
+				'stores_prompt_category'
+			)
+			
+			stores_prompt_options = fetch_prompt_options(
+				selected_stores_category
+			) if selected_stores_category else [ ]
+			
+			stores_prompt_ids = [
+					int( option[ 'PromptsId' ] )
+					for option in stores_prompt_options
+			]
+			
+			if st.session_state.get( 'stores_prompt_id' ) not in stores_prompt_ids:
+				st.session_state[ 'stores_prompt_id' ] = None
+			
+			# ------------------------------------------------------------------
+			# Instruction Text
+			# ------------------------------------------------------------------
+			with in_left:
+				st.text_area(
+					label='Enter Text',
+					height=80,
+					width='stretch',
+					key='stores_system_instructions',
+					help=get_storage_help( 'SYSTEM_INSTRUCTIONS' ),
+				)
+			
+			# ------------------------------------------------------------------
+			# Prompt Template Selection
+			# ------------------------------------------------------------------
+			with in_right:
+				st.selectbox(
+					label='Category',
+					options=stores_prompt_categories,
+					index=None,
+					key='stores_prompt_category',
+					placeholder='Select Category',
+					help=(
+							'Limits prompt templates to categories associated with '
+							'vector-store and retrieval workflows.'
+					),
+					on_change=reset_prompt_template_selection,
+					args=( 'stores_prompt_id', ),
+				)
+				
+				st.selectbox(
+					label='Use Template',
+					options=stores_prompt_ids,
+					index=None,
+					key='stores_prompt_id',
+					placeholder='Select Template',
+					disabled=not stores_prompt_ids,
+					format_func=lambda prompt_id: format_prompt_option(
+						prompt_id,
+						stores_prompt_options,
+					),
+					help=(
+							'Loads the selected prompt into the Vector Stores '
+							'system-instruction field.'
+					),
+					on_change=load_stores_instruction_template,
+				)
+			
+			# ------------------------------------------------------------------
+			# Instruction Actions
+			# ------------------------------------------------------------------
+			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
+			
+			with btn_c1:
+				st.button(
+					label='Clear Instructions',
+					key='clear_stores_instructions',
+					width='stretch',
+					on_click=clear_stores_instructions,
+				)
+			
+			with btn_c2:
+				st.button(
+					label='XML <-> Markdown',
+					key='convert_stores_instructions',
+					width='stretch',
+					on_click=convert_stores_system_instructions,
+				)
+				
 		store_col, detail_col = st.columns( [ 0.50, 0.50 ], border=True, gap='medium' )
-		
 		with store_col:
 			st.markdown( '##### Store Lifecycle' )
 			
@@ -11979,6 +12220,69 @@ elif mode == 'File Search Stores':
 		st.session_state[ 'filestore_metadata' ] = { }
 		st.session_state[ 'filestore_upload_result' ] = { }
 	
+	def clear_filestore_instructions( ) -> None:
+		"""Clear File Search Stores instructions.
+		
+		Purpose:
+		    Clears the File Search Stores system-instruction text and selected prompt template without
+		    changing the selected prompt category, store selection, provider results, or uploaded files.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		"""
+		st.session_state[ 'filestore_system_instructions' ] = ''
+		st.session_state[ 'filestore_prompt_id' ] = None
+	
+	def convert_filestore_system_instructions( ) -> None:
+		"""Convert File Search Stores system instructions.
+		
+		Purpose:
+		    Converts the active File Search Stores system instructions between supported XML-style
+		    instruction blocks and Markdown headings.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		"""
+		text_value = st.session_state.get( 'filestore_system_instructions', '' )
+		
+		if not isinstance( text_value, str ) or not text_value.strip( ):
+			return
+		
+		source = text_value.strip( )
+		
+		if cfg.XML_BLOCK_PATTERN.search( source ):
+			converted = convert_xml( source )
+		else:
+			converted = convert_markdown( source )
+		
+		st.session_state[ 'filestore_system_instructions' ] = converted
+	
+	def load_filestore_instruction_template( ) -> None:
+		"""Load File Search Stores instruction template.
+		
+		Purpose:
+		    Loads the selected File Search Stores prompt template into the mode-specific
+		    system-instruction field using its stable prompt identifier.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			load_prompt_template(
+				prompt_id_key='filestore_prompt_id',
+				instructions_key='filestore_system_instructions',
+			)
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'File Search Stores Mode'
+			ex.method = 'load_filestore_instruction_template( ) -> None'
+			Logger( ).write( ex )
+			raise ex
+		
 	for key, default_value in { 'filestore_table': [ ], 'filestore_metadata': { },
 		'filestore_upload_result': { }, }.items( ):
 		if key not in st.session_state or not isinstance( st.session_state.get( key ),
@@ -11992,135 +12296,122 @@ elif mode == 'File Search Stores':
 		st.session_state[ 'filestore_manual_id' ] = ''
 	
 	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
-	with ((center)):
+	with center:
 		st.subheader( '📦 File Search Stores', help=getattr( cfg, 'VECTORSTORES_API', '' ) )
 		st.divider( )
 		
-		stores_left, stores_right = st.columns( [ 0.50, 0.50 ], border=True )
-		with stores_left:
-			with st.expander( label='Create', expanded=True ):
-				st.text_input( label='New File Search Store Name', key='filestore_name',
-					width='stretch' )
-				
-				if st.button( 'Create File Search Store', key='create_filestore',
-						width='stretch' ):
-					with st.spinner( 'Creating file search store…' ):
-						try:
-							name = st.session_state.get( 'filestore_name', '' ).strip( )
-							if not name:
-								st.warning( 'Enter a File Search Store name.' )
-							else:
-								result = call_file_search_method( [ 'create', 'create_store' ],
-									{ 'name': name, 'display_name': name, 'store_id': name } )
-								st.session_state[ 'filestore_metadata' ] =
-								normalize_storage_object( result )
-								st.success( f'Created File Search Store: {name}' )
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'Create file search store failed: {err.info}' )
+		# ------------------------------------------------------------------
+		# Expander — File Search Stores System Instructions
+		# ------------------------------------------------------------------
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch' ):
+			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			
-			with st.expander( label='Retrieve / Delete', expanded=True ):
-				collections = getattr( searcher, 'collections', None )
-				options = list( collections.items( ) ) if isinstance( collections, dict ) else [ ]
-				option_labels = [ f'{name} — {store_id}' for name, store_id in options ]
+			# ------------------------------------------------------------------
+			# File Search Stores Prompt Categories
+			# ------------------------------------------------------------------
+			filestore_prompt_categories = fetch_prompt_categories(
+				'File Search Stores'
+			)
+			
+			current_filestore_category = st.session_state.get(
+				'filestore_prompt_category'
+			)
+			
+			if current_filestore_category not in filestore_prompt_categories:
+				st.session_state[ 'filestore_prompt_category' ] = None
+			
+			selected_filestore_category = st.session_state.get(
+				'filestore_prompt_category'
+			)
+			
+			filestore_prompt_options = fetch_prompt_options(
+				selected_filestore_category
+			) if selected_filestore_category else [ ]
+			
+			filestore_prompt_ids = [
+					int( option[ 'PromptsId' ] )
+					for option in filestore_prompt_options
+			]
+			
+			if st.session_state.get(
+					'filestore_prompt_id'
+			) not in filestore_prompt_ids:
+				st.session_state[ 'filestore_prompt_id' ] = None
+			
+			# ------------------------------------------------------------------
+			# Instruction Text
+			# ------------------------------------------------------------------
+			with in_left:
+				st.text_area(
+					label='Enter Text',
+					height=80,
+					width='stretch',
+					key='filestore_system_instructions',
+					help=getattr( cfg, 'SYSTEM_INSTRUCTIONS', '' ),
+				)
+			
+			# ------------------------------------------------------------------
+			# Prompt Template Selection
+			# ------------------------------------------------------------------
+			with in_right:
+				st.selectbox(
+					label='Category',
+					options=filestore_prompt_categories,
+					index=None,
+					key='filestore_prompt_category',
+					placeholder='Select Category',
+					help=(
+							'Limits prompt templates to categories associated with '
+							'file-search, retrieval, and corpus-management workflows.'
+					),
+					on_change=reset_prompt_template_selection,
+					args=( 'filestore_prompt_id', ),
+				)
 				
-				if option_labels:
-					selected_label = st.selectbox( label='Select File Search Store',
-						options=option_labels, key='filestore_select', index=None,
-						placeholder='Options' )
-					
-					selected_id = ''
-					for name, store_id in options:
-						if f'{name} — {store_id}' == selected_label:
-							selected_id = store_id
-							break
-					
-					st.session_state[ 'filestore_selected_id' ] = selected_id
-				else:
-					st.info( 'No configured File Search Store collections found on the wrapper.' )
-				
-				st.text_input( label='Manual File Search Store ID', key='filestore_manual_id',
-					width='stretch' )
-				
-				selected_store_id = st.session_state.get( 'filestore_selected_id',
-					'' ) or st.session_state.get( 'filestore_manual_id', '' )
-				
-				retr_c1, retr_c2 = st.columns( [ 0.50, 0.50 ] )
-				with retr_c1:
-					if st.button( 'Retrieve File Search Store', key='retrieve_filestore',
-							width='stretch' ):
-						with st.spinner( 'Retrieving file search store…' ):
-							try:
-								if not selected_store_id:
-									st.warning( 'Select or enter a File Search Store ID.' )
-								else:
-									result = call_file_search_method(
-										[ 'retrieve', 'retrieve_store', 'get' ],
-										{ 'store_id': selected_store_id, 'id': selected_store_id,
-											'name': selected_store_id } )
-									st.session_state[
-										'filestore_metadata' ] = normalize_storage_object( result )
-									st.success( 'File Search Store metadata retrieved.' )
-							except Exception as exc:
-								err = Error( exc )
-								st.error( f'Retrieve failed: {err.info}' )
-				
-				with retr_c2:
-					if st.button( 'Delete File Search Store', key='delete_filestore',
-							width='stretch' ):
-						with st.spinner( 'Deleting file search store…' ):
-							try:
-								if not selected_store_id:
-									st.warning( 'Select or enter a File Search Store ID.' )
-								else:
-									result = call_file_search_method(
-										[ 'delete', 'delete_store', 'remove' ],
-										{ 'store_id': selected_store_id, 'id': selected_store_id,
-											'name': selected_store_id } )
-									st.session_state[
-										'filestore_metadata' ] = normalize_storage_object( result )
-									st.success( 'Delete request completed.' )
-							except Exception as exc:
-								err = Error( exc )
-								st.error( f'Delete failed: {err.info}' )
+				st.selectbox(
+					label='Use Template',
+					options=filestore_prompt_ids,
+					index=None,
+					key='filestore_prompt_id',
+					placeholder='Select Template',
+					disabled=not filestore_prompt_ids,
+					format_func=lambda prompt_id: format_prompt_option(
+						prompt_id,
+						filestore_prompt_options,
+					),
+					help=(
+							'Loads the selected prompt into the File Search Stores '
+							'system-instruction field.'
+					),
+					on_change=load_filestore_instruction_template,
+				)
+			
+			# ------------------------------------------------------------------
+			# Instruction Actions
+			# ------------------------------------------------------------------
+			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
+			
+			with btn_c1:
+				st.button(
+					label='Clear Instructions',
+					key='clear_filestore_instructions',
+					width='stretch',
+					on_click=clear_filestore_instructions,
+				)
+			
+			with btn_c2:
+				st.button(
+					label='XML <-> Markdown',
+					key='convert_filestore_instructions',
+					width='stretch',
+					on_click=convert_filestore_system_instructions,
+				)
 		
-		with stores_right:
-			st.subheader( 'Upload' )
-			uploaded_file = st.file_uploader( label='Upload File to File Search Store',
-				type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv' ],
-				key='filestore_uploader' )
-			
-			target_store = st.session_state.get( 'filestore_selected_id',
-				'' ) or st.session_state.get( 'filestore_manual_id', '' )
-			
-			if st.button( 'Upload File', key='upload_filestore_file', width='stretch' ):
-				with st.spinner( 'Uploading file…' ):
-					try:
-						if uploaded_file is None:
-							st.warning( 'Select a file first.' )
-						else:
-							path = save_uploaded_storage_file( uploaded_file )
-							result = call_file_search_method(
-								[ 'upload_file', 'upload', 'files_upload' ],
-								{ 'path': path, 'file_path': path, 'store_id': target_store,
-									'id': target_store } )
-							st.session_state[
-								'filestore_upload_result' ] = normalize_storage_object( result )
-							st.success( 'Upload request completed.' )
-					except Exception as exc:
-						err = Error( exc )
-						st.error( f'Upload failed: {err.info}' )
-			
-			if st.button( 'Clear Outputs', key='clear_filestore_outputs', width='stretch',
-					on_click=clear_filestore_outputs ):
-				st.rerun( )
-			
-			st.caption( 'Upload Result' )
-			render_storage_metadata( st.session_state.get( 'filestore_upload_result', { } ) )
-		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
-		st.subheader( 'File Search Store Metadata' )
-		render_storage_metadata( st.session_state.get( 'filestore_metadata', { } ) )
+		stores_left, stores_right = st.columns(
+			[ 0.50, 0.50 ],
+			border=True,
+		)
 
 # ======================================================================================
 # GOOGLE CLOUD BUCKETS MODE
@@ -12226,189 +12517,360 @@ elif mode == 'Google Cloud Buckets':
 			Logger( ).write( exception )
 			raise exception
 		
-		def clear_bucket_outputs( ) -> None:
-			"""Clear bucket outputs.
-			
-			Purpose:
-			    Removes or resets the requested application state or provider resource in a
-			    controlled manner.
-			    The function keeps cleanup behavior centralized so callers do not duplicate
-			    lifecycle logic.
-			
-			Returns:
-			    None: This function performs its work through side effects and does not return a
- value."""
-			st.session_state[ 'bucket_results' ] = None
-			st.session_state[ 'bucket_metadata' ] = { }
-			st.session_state[ 'bucket_upload_result' ] = { }
+	def clear_bucket_outputs( ) -> None:
+		"""Clear bucket outputs.
 		
-		for key, default_value in { 'bucket_table': [ ], 'bucket_metadata': { },
-			'bucket_upload_result': { }, }.items( ):
-			if key not in st.session_state or not isinstance( st.session_state.get( key ),
-					type( default_value ) ):
-				st.session_state[ key ] = default_value
+		Purpose:
+		    Removes or resets the requested application state or provider resource in a
+		    controlled manner.
+		    The function keeps cleanup behavior centralized so callers do not duplicate
+		    lifecycle logic.
 		
-		if 'bucket_name' not in st.session_state:
-			st.session_state[ 'bucket_name' ] = ''
+		Returns:
+		    None: This function performs its work through side effects and does not return a
+value."""
+		st.session_state[ 'bucket_results' ] = None
+		st.session_state[ 'bucket_metadata' ] = { }
+		st.session_state[ 'bucket_upload_result' ] = { }
+	
+	def clear_bucket_instructions( ) -> None:
+		"""Clear Google Cloud Buckets instructions.
 		
-		if 'bucket_manual_id' not in st.session_state:
-			st.session_state[ 'bucket_manual_id' ] = ''
+		Purpose:
+		    Clears the Google Cloud Buckets system-instruction text and selected prompt template
+		    without changing the selected category, bucket configuration, provider results, or
+		    uploaded files.
 		
-		left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
-		with center:
-			st.subheader( '🧊 Google Cloud Buckets', help=getattr( cfg, 'VECTORSTORES_API', '' ) )
-			st.divider( )
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		"""
+		st.session_state[ 'bucket_system_instructions' ] = ''
+		st.session_state[ 'bucket_prompt_id' ] = None
+	
+	def convert_bucket_system_instructions( ) -> None:
+		"""Convert Google Cloud Buckets system instructions.
+		
+		Purpose:
+		    Converts the active Google Cloud Buckets system instructions between supported
+		    XML-style instruction blocks and Markdown headings.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		"""
+		text_value = st.session_state.get( 'bucket_system_instructions', '' )
+		
+		if not isinstance( text_value, str ) or not text_value.strip( ):
+			return
+		
+		source = text_value.strip( )
+		
+		if cfg.XML_BLOCK_PATTERN.search( source ):
+			converted = convert_xml( source )
+		else:
+			converted = convert_markdown( source )
+		
+		st.session_state[ 'bucket_system_instructions' ] = converted
+	
+	def load_bucket_instruction_template( ) -> None:
+		"""Load Google Cloud Buckets instruction template.
+		
+		Purpose:
+		    Loads the selected Google Cloud Buckets prompt template into the mode-specific
+		    system-instruction field using its stable prompt identifier.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			load_prompt_template(
+				prompt_id_key='bucket_prompt_id',
+				instructions_key='bucket_system_instructions',
+			)
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Google Cloud Buckets Mode'
+			ex.method = 'load_bucket_instruction_template( ) -> None'
+			Logger( ).write( ex )
+			raise ex
+		
+	for key, default_value in { 'bucket_table': [ ], 'bucket_metadata': { },
+		'bucket_upload_result': { }, }.items( ):
+		if key not in st.session_state or not isinstance( st.session_state.get( key ),
+				type( default_value ) ):
+			st.session_state[ key ] = default_value
+	
+	if 'bucket_name' not in st.session_state:
+		st.session_state[ 'bucket_name' ] = ''
+	
+	if 'bucket_manual_id' not in st.session_state:
+		st.session_state[ 'bucket_manual_id' ] = ''
+	
+	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
+	with center:
+		st.subheader( '🧊 Google Cloud Buckets', help=getattr( cfg, 'VECTORSTORES_API', '' ) )
+		st.divider( )
+		
+		project_id = st.session_state.get( 'google_cloud_project_id', '' ) \
+		             or getattr( cfg, 'GOOGLE_CLOUD_PROJECT_ID', '' )
+		location = st.session_state.get( 'google_cloud_location', '' ) \
+		           or getattr( cfg, 'GOOGLE_CLOUD_LOCATION', '' )
+		
+		st.caption(
+			f'Project: {project_id or "Not configured"} | '
+			f'Location: {location or "Not configured"}'
+		)
+		
+		# ------------------------------------------------------------------
+		# Expander — Google Cloud Buckets System Instructions
+		# ------------------------------------------------------------------
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
+			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			
-			project_id = st.session_state.get( 'google_cloud_project_id', '' ) or getattr( cfg,
-				'GOOGLE_CLOUD_PROJECT_ID', '' )
-			location = st.session_state.get( 'google_cloud_location', '' ) or getattr( cfg,
-				'GOOGLE_CLOUD_LOCATION', '' )
+			# ------------------------------------------------------------------
+			# Google Cloud Buckets Prompt Categories
+			# ------------------------------------------------------------------
+			bucket_prompt_categories = fetch_prompt_categories(
+				'Google Cloud Buckets'
+			)
 			
-			st.caption( f'Project: {project_id or "Not configured"} | Location: '
-			            f'{location or "Not configured"}' )
+			current_bucket_category = st.session_state.get(
+				'bucket_prompt_category'
+			)
 			
-			buckets_left, buckets_right = st.columns( [ 0.50, 0.50 ], border=True )
-			with buckets_left:
-				with st.expander( label='Create', expanded=True ):
-					st.text_input( label='New Cloud Bucket Name', key='bucket_name',
-						width='stretch' )
-					
-					if st.button( 'Create Cloud Bucket', key='create_bucket', width='stretch' ):
-						with st.spinner( 'Creating cloud bucket…' ):
-							try:
-								name = st.session_state.get( 'bucket_name', '' ).strip( )
-								if not name:
-									st.warning( 'Enter a Cloud Bucket name.' )
-								else:
-									result = call_bucket_method( [ 'create', 'create_bucket' ],
-										{ 'name': name, 'bucket_name': name,
-											'project_id': project_id, 'location': location } )
-									st.session_state[
-										'bucket_metadata' ] = normalize_storage_object( result )
-									st.success( f'Created Cloud Bucket: {name}' )
-							except Exception as exc:
-								err = Error( exc )
-								st.error( f'Create bucket failed: {err.info}' )
+			if current_bucket_category not in bucket_prompt_categories:
+				st.session_state[ 'bucket_prompt_category' ] = None
+			
+			selected_bucket_category = st.session_state.get(
+				'bucket_prompt_category'
+			)
+			
+			bucket_prompt_options = fetch_prompt_options(
+				selected_bucket_category
+			) if selected_bucket_category else [ ]
+			
+			bucket_prompt_ids = [
+					int( option[ 'PromptsId' ] )
+					for option in bucket_prompt_options
+			]
+			
+			if st.session_state.get( 'bucket_prompt_id' ) not in bucket_prompt_ids:
+				st.session_state[ 'bucket_prompt_id' ] = None
+			
+			# ------------------------------------------------------------------
+			# Instruction Text
+			# ------------------------------------------------------------------
+			with in_left:
+				st.text_area(
+					label='Enter Text',
+					height=80,
+					width='stretch',
+					key='bucket_system_instructions',
+					help=getattr( cfg, 'SYSTEM_INSTRUCTIONS', '' ),
+				)
+			
+			# ------------------------------------------------------------------
+			# Prompt Template Selection
+			# ------------------------------------------------------------------
+			with in_right:
+				st.selectbox(
+					label='Category',
+					options=bucket_prompt_categories,
+					index=None,
+					key='bucket_prompt_category',
+					placeholder='Select Category',
+					help=(
+							'Limits prompt templates to categories associated with '
+							'cloud-storage, governance, and data-management workflows.'
+					),
+					on_change=reset_prompt_template_selection,
+					args=( 'bucket_prompt_id', ),
+				)
 				
-				with st.expander( label='Retrieve / Delete', expanded=True ):
-					collections = getattr( buckets, 'collections', None )
-					options = list( collections.items( ) ) if isinstance( collections,
-						dict ) else [ ]
-					option_labels = [ f'{name} — {bucket_id}' for name, bucket_id in options ]
-					
-					if option_labels:
-						selected_label = st.selectbox( label='Select Cloud Bucket',
-							options=option_labels, key='bucket_select', index=None,
-							placeholder='Options' )
-						
-						selected_id = ''
-						for name, bucket_id in options:
-							if f'{name} — {bucket_id}' == selected_label:
-								selected_id = bucket_id
-								break
-						
-						st.session_state[ 'bucket_selected_id' ] = selected_id
-					else:
-						st.info( 'No configured Cloud Bucket collections found on the wrapper.' )
-					
-					st.text_input( label='Manual Cloud Bucket ID / Name', key='bucket_manual_id',
-						width='stretch' )
-					
-					selected_bucket_id = st.session_state.get( 'bucket_selected_id',
-						'' ) or st.session_state.get( 'bucket_manual_id', '' )
-					
-					bucket_c1, bucket_c2 = st.columns( [ 0.50, 0.50 ] )
-					
-					with bucket_c1:
-						if st.button( 'Retrieve Cloud Bucket', key='retrieve_bucket',
-								width='stretch' ):
-							with st.spinner( 'Retrieving cloud bucket…' ):
-								try:
-									if not selected_bucket_id:
-										st.warning( 'Select or enter a Cloud Bucket ID.' )
-									else:
-										result = call_bucket_method(
-											[ 'retrieve', 'retrieve_bucket', 'get' ],
-											{ 'store_id': selected_bucket_id,
-												'id': selected_bucket_id,
-												'name': selected_bucket_id,
-												'bucket_name': selected_bucket_id,
-												'project_id': project_id, 'location': location } )
-										st.session_state[
-											'bucket_metadata' ] = normalize_storage_object(
-											result )
-										
-										st.success( 'Cloud Bucket metadata retrieved.' )
-								except Exception as exc:
-									err = Error( exc )
-									st.error( f'Retrieve bucket failed: {err.info}' )
-					
-					with bucket_c2:
-						if st.button( 'Delete Cloud Bucket', key='delete_bucket',
-								width='stretch' ):
-							with st.spinner( 'Deleting cloud bucket…' ):
-								try:
-									if not selected_bucket_id:
-										st.warning( 'Select or enter a Cloud Bucket ID.' )
-									else:
-										result = call_bucket_method(
-											[ 'delete', 'delete_bucket', 'remove' ],
-											{ 'store_id': selected_bucket_id,
-												'id': selected_bucket_id,
-												'name': selected_bucket_id,
-												'bucket_name': selected_bucket_id,
-												'project_id': project_id, 'location': location } )
-										st.session_state[
-											'bucket_metadata' ] = normalize_storage_object(
-											result )
-										
-										st.success( 'Delete request completed.' )
-								except Exception as exc:
-									err = Error( exc )
-									st.error( f'Delete bucket failed: {err.info}' )
+				st.selectbox(
+					label='Use Template',
+					options=bucket_prompt_ids,
+					index=None,
+					key='bucket_prompt_id',
+					placeholder='Select Template',
+					disabled=not bucket_prompt_ids,
+					format_func=lambda prompt_id: format_prompt_option(
+						prompt_id,
+						bucket_prompt_options,
+					),
+					help=(
+							'Loads the selected prompt into the Google Cloud Buckets '
+							'system-instruction field.'
+					),
+					on_change=load_bucket_instruction_template,
+				)
 			
-			with buckets_right:
-				st.subheader( 'Upload' )
-				uploaded_file = st.file_uploader( label='Upload File to Cloud Bucket',
-					type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv' ],
-					key='bucket_uploader' )
+			# ------------------------------------------------------------------
+			# Instruction Actions
+			# ------------------------------------------------------------------
+			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
+			
+			with btn_c1:
+				st.button(
+					label='Clear Instructions',
+					key='clear_bucket_instructions',
+					width='stretch',
+					on_click=clear_bucket_instructions,
+				)
+			
+			with btn_c2:
+				st.button(
+					label='XML <-> Markdown',
+					key='convert_bucket_instructions',
+					width='stretch',
+					on_click=convert_bucket_system_instructions,
+				)
+		
+		buckets_left, buckets_right = st.columns( [ 0.50, 0.50 ], border=True, )
+		with buckets_left:
+			with st.expander( label='Create', expanded=True ):
+				st.text_input( label='New Cloud Bucket Name', key='bucket_name',
+					width='stretch' )
 				
-				target_bucket = st.session_state.get( 'bucket_selected_id',
-					'' ) or st.session_state.get( 'bucket_manual_id', '' )
-				
-				if st.button( 'Upload File', key='upload_bucket_file', width='stretch' ):
-					with st.spinner( 'Uploading file…' ):
+				if st.button( 'Create Cloud Bucket', key='create_bucket', width='stretch' ):
+					with st.spinner( 'Creating cloud bucket…' ):
 						try:
-							if uploaded_file is None:
-								st.warning( 'Select a file first.' )
-							elif not target_bucket:
-								st.warning( 'Select or enter a Cloud Bucket first.' )
+							name = st.session_state.get( 'bucket_name', '' ).strip( )
+							if not name:
+								st.warning( 'Enter a Cloud Bucket name.' )
 							else:
-								path = save_uploaded_storage_file( uploaded_file )
-								result = call_bucket_method(
-									[ 'upload_file', 'upload', 'files_upload' ],
-									{ 'path': path, 'file_path': path, 'bucket_name':
-										target_bucket,
-										'store_id': target_bucket, 'id': target_bucket,
+								result = call_bucket_method( [ 'create', 'create_bucket' ],
+									{ 'name': name, 'bucket_name': name,
 										'project_id': project_id, 'location': location } )
 								st.session_state[
-									'bucket_upload_result' ] = normalize_storage_object( result )
-								
-								st.success( 'Upload request completed.' )
+									'bucket_metadata' ] = normalize_storage_object( result )
+								st.success( f'Created Cloud Bucket: {name}' )
 						except Exception as exc:
 							err = Error( exc )
-							st.error( f'Bucket upload failed: {err.info}' )
-				
-				if st.button( 'Clear Outputs', key='clear_bucket_outputs', width='stretch',
-						on_click=clear_bucket_outputs ):
-					st.rerun( )
-				
-				st.caption( 'Upload Result' )
-				render_storage_metadata( st.session_state.get( 'bucket_upload_result', { } ) )
+							st.error( f'Create bucket failed: {err.info}' )
 			
-			st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
-			st.subheader( 'Cloud Bucket Metadata' )
-			render_storage_metadata( st.session_state.get( 'bucket_metadata', { } ) )
+			with st.expander( label='Retrieve / Delete', expanded=True ):
+				collections = getattr( buckets, 'collections', None )
+				options = list( collections.items( ) ) if isinstance( collections,
+					dict ) else [ ]
+				option_labels = [ f'{name} — {bucket_id}' for name, bucket_id in options ]
+				
+				if option_labels:
+					selected_label = st.selectbox( label='Select Cloud Bucket',
+						options=option_labels, key='bucket_select', index=None,
+						placeholder='Options' )
+					
+					selected_id = ''
+					for name, bucket_id in options:
+						if f'{name} — {bucket_id}' == selected_label:
+							selected_id = bucket_id
+							break
+					
+					st.session_state[ 'bucket_selected_id' ] = selected_id
+				else:
+					st.info( 'No configured Cloud Bucket collections found on the wrapper.' )
+				
+				st.text_input( label='Manual Cloud Bucket ID / Name', key='bucket_manual_id',
+					width='stretch' )
+				
+				selected_bucket_id = st.session_state.get( 'bucket_selected_id',
+					'' ) or st.session_state.get( 'bucket_manual_id', '' )
+				
+				bucket_c1, bucket_c2 = st.columns( [ 0.50, 0.50 ] )
+				
+				with bucket_c1:
+					if st.button( 'Retrieve Cloud Bucket', key='retrieve_bucket',
+							width='stretch' ):
+						with st.spinner( 'Retrieving cloud bucket…' ):
+							try:
+								if not selected_bucket_id:
+									st.warning( 'Select or enter a Cloud Bucket ID.' )
+								else:
+									result = call_bucket_method(
+										[ 'retrieve', 'retrieve_bucket', 'get' ],
+										{ 'store_id': selected_bucket_id,
+											'id': selected_bucket_id,
+											'name': selected_bucket_id,
+											'bucket_name': selected_bucket_id,
+											'project_id': project_id, 'location': location } )
+									st.session_state[
+										'bucket_metadata' ] = normalize_storage_object(
+										result )
+									
+									st.success( 'Cloud Bucket metadata retrieved.' )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'Retrieve bucket failed: {err.info}' )
+				
+				with bucket_c2:
+					if st.button( 'Delete Cloud Bucket', key='delete_bucket',
+							width='stretch' ):
+						with st.spinner( 'Deleting cloud bucket…' ):
+							try:
+								if not selected_bucket_id:
+									st.warning( 'Select or enter a Cloud Bucket ID.' )
+								else:
+									result = call_bucket_method(
+										[ 'delete', 'delete_bucket', 'remove' ],
+										{ 'store_id': selected_bucket_id,
+											'id': selected_bucket_id,
+											'name': selected_bucket_id,
+											'bucket_name': selected_bucket_id,
+											'project_id': project_id, 'location': location } )
+									st.session_state[
+										'bucket_metadata' ] = normalize_storage_object(
+										result )
+									
+									st.success( 'Delete request completed.' )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'Delete bucket failed: {err.info}' )
+		
+		with buckets_right:
+			st.subheader( 'Upload' )
+			uploaded_file = st.file_uploader( label='Upload File to Cloud Bucket',
+				type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv' ],
+				key='bucket_uploader' )
+			
+			target_bucket = st.session_state.get( 'bucket_selected_id',
+				'' ) or st.session_state.get( 'bucket_manual_id', '' )
+			
+			if st.button( 'Upload File', key='upload_bucket_file', width='stretch' ):
+				with st.spinner( 'Uploading file…' ):
+					try:
+						if uploaded_file is None:
+							st.warning( 'Select a file first.' )
+						elif not target_bucket:
+							st.warning( 'Select or enter a Cloud Bucket first.' )
+						else:
+							path = save_uploaded_storage_file( uploaded_file )
+							result = call_bucket_method(
+								[ 'upload_file', 'upload', 'files_upload' ],
+								{ 'path': path, 'file_path': path, 'bucket_name':
+									target_bucket,
+									'store_id': target_bucket, 'id': target_bucket,
+									'project_id': project_id, 'location': location } )
+							st.session_state[
+								'bucket_upload_result' ] = normalize_storage_object( result )
+							
+							st.success( 'Upload request completed.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Bucket upload failed: {err.info}' )
+			
+			if st.button( 'Clear Outputs', key='clear_bucket_outputs', width='stretch',
+					on_click=clear_bucket_outputs ):
+				st.rerun( )
+			
+			st.caption( 'Upload Result' )
+			render_storage_metadata( st.session_state.get( 'bucket_upload_result', { } ) )
+		
+		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
+		st.subheader( 'Cloud Bucket Metadata' )
+		render_storage_metadata( st.session_state.get( 'bucket_metadata', { } ) )
 
 # ======================================================================================
 # PROMPT ENGINEERING MODE
@@ -12469,7 +12931,6 @@ elif mode == "Prompt Engineering":
 	# Controls (table filters)
 	# ------------------------------------------------------------------
 	c1, c2, c3, c4 = st.columns( [ 4, 2, 2, 3 ] )
-	
 	with c1:
 		st.text_input( 'Search (Name/Text contains)', key='pe_search' )
 	
