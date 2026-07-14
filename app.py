@@ -2079,7 +2079,7 @@ def initialize_database( ) -> None:
 			conn.execute( """
                           CREATE TABLE Prompts
                           (
-                              PromptsId INTEGER NOT NULL PRIMARY KEY,
+                              ID INTEGER NOT NULL PRIMARY KEY,
                               Caption   TEXT    NOT NULL,
                               Name      TEXT    NOT NULL,
                               Category  TEXT    NOT NULL,
@@ -2090,12 +2090,12 @@ def initialize_database( ) -> None:
 			prompt_columns = { str( row[ 1 ] ) for row in
 				conn.execute( 'PRAGMA table_info("Prompts");' ).fetchall( ) }
 			
-			required_columns = { 'PromptsId', 'Caption', 'Name', 'Category', 'Prompt', }
+			required_columns = { 'ID', 'Caption', 'Name', 'Category', 'Prompt', }
 			if prompt_columns != required_columns:
 				conn.execute( """
                               CREATE TABLE Prompts_New
                               (
-                                  PromptsId INTEGER NOT NULL PRIMARY KEY,
+                                  ID INTEGER NOT NULL PRIMARY KEY,
                                   Caption   TEXT    NOT NULL,
                                   Name      TEXT    NOT NULL,
                                   Category  TEXT    NOT NULL,
@@ -2116,20 +2116,20 @@ def initialize_database( ) -> None:
 					conn.execute( f"""
 						INSERT INTO Prompts_New
 						(
-							PromptsId,
+							ID,
 							Caption,
 							Name,
 							Category,
 							Prompt
 						)
 						SELECT
-							PromptsId,
-							COALESCE(NULLIF(TRIM(Caption), ''), 'Prompt ' || PromptsId),
-							COALESCE(NULLIF(TRIM(Name), ''), 'Prompt' || PromptsId),
+							ID,
+							COALESCE(NULLIF(TRIM(Caption), ''), 'Prompt ' || ID),
+							COALESCE(NULLIF(TRIM(Name), ''), 'Prompt' || ID),
 							{category_expression},
 							COALESCE({source_text_column}, '')
 						FROM Prompts
-						WHERE PromptsId IS NOT NULL;
+						WHERE ID IS NOT NULL;
 						""" )
 				
 				conn.execute( 'DROP TABLE Prompts;' )
@@ -3127,16 +3127,16 @@ def fetch_prompt_options( category: str ) -> List[ Dict[ str, Any ] ]:
 		
 		with sqlite3.connect( cfg.DB_PATH ) as conn:
 			rows = conn.execute( """
-                                 SELECT PromptsId,
+                                 SELECT ID,
                                         Caption,
                                         Name,
                                         Category
                                  FROM Prompts
                                  WHERE Category = ?
-                                 ORDER BY Caption, PromptsId;
+                                 ORDER BY Caption, ID;
 			                     """, (str( category ).strip( ),), ).fetchall( )
 		
-		return [ { 'PromptsId': int( row[ 0 ] ), 'Caption': str( row[ 1 ] or '' ),
+		return [ { 'ID': int( row[ 0 ] ), 'Caption': str( row[ 1 ] or '' ),
 			'Name': str( row[ 2 ] or '' ), 'Category': str( row[ 3 ] or '' ), } for row in rows ]
 	except Exception as e:
 		ex = Error( e )
@@ -3170,13 +3170,13 @@ def fetch_prompt_by_id( prompt_id: int ) -> Optional[ Dict[ str, Any ] ]:
 		
 		with sqlite3.connect( cfg.DB_PATH ) as conn:
 			cur = conn.execute( """
-                                SELECT PromptsId,
+                                SELECT ID,
                                        Caption,
                                        Name,
                                        Category,
                                        Prompt
                                 FROM Prompts
-                                WHERE PromptsId = ?;
+                                WHERE ID = ?;
 			                    """, (int( prompt_id ),), )
 			
 			row = cur.fetchone( )
@@ -3184,7 +3184,7 @@ def fetch_prompt_by_id( prompt_id: int ) -> Optional[ Dict[ str, Any ] ]:
 			if row is None:
 				return None
 			
-			return { 'PromptsId': int( row[ 0 ] ), 'Caption': str( row[ 1 ] or '' ),
+			return { 'ID': int( row[ 0 ] ), 'Caption': str( row[ 1 ] or '' ),
 				'Name': str( row[ 2 ] or '' ), 'Category': str( row[ 3 ] or '' ),
 				'Prompt': str( row[ 4 ] or '' ), }
 	except Exception as e:
@@ -3281,7 +3281,7 @@ def format_prompt_option( prompt_id: int, prompt_options: List[ Dict[ str, Any ]
 	    str: Prompt caption when found; otherwise the numeric identifier as text.
 	"""
 	for option in prompt_options:
-		if int( option.get( 'PromptsId', -1 ) ) == int( prompt_id ):
+		if int( option.get( 'ID', -1 ) ) == int( prompt_id ):
 			return str( option.get( 'Caption', prompt_id ) )
 	
 	return str( prompt_id )
@@ -3303,12 +3303,12 @@ def fetch_prompts_df( ) -> pd.DataFrame:
 	try:
 		with sqlite3.connect( cfg.DB_PATH ) as conn:
 			df_prompts = pd.read_sql_query( """
-                                            SELECT PromptsId,
+                                            SELECT ID,
                                                    Caption,
                                                    Name,
                                                    Category
                                             FROM Prompts
-                                            ORDER BY PromptsId DESC;
+                                            ORDER BY ID DESC;
 			                                """, conn, )
 		
 		df_prompts.insert( 0, 'Selected', False )
@@ -3387,7 +3387,7 @@ def update_prompt( prompt_id: int, data: Dict[ str, Any ] ) -> None:
                               Name     = ?,
                               Category = ?,
                               Prompt   = ?
-                          WHERE PromptsId = ?;
+                          WHERE ID = ?;
 			              """, (str( data[ 'Caption' ] ).strip( ), str( data[ 'Name' ] ).strip( ),
 				str( data[ 'Category' ] ).strip( ), str( data[ 'Prompt' ] ), int( prompt_id ),), )
 			conn.commit( )
@@ -3417,7 +3417,7 @@ def delete_prompt( prompt_id: int ) -> None:
 	"""
 	try:
 		with sqlite3.connect( cfg.DB_PATH ) as conn:
-			conn.execute( 'DELETE FROM Prompts WHERE PromptsId = ?;', (int( prompt_id ),), )
+			conn.execute( 'DELETE FROM Prompts WHERE ID = ?;', (int( prompt_id ),), )
 			conn.commit( )
 	except Exception as e:
 		ex = Error( e )
@@ -5230,7 +5230,7 @@ if mode == 'Text':
 			text_prompt_options = fetch_prompt_options(
 				selected_text_category ) if selected_text_category else [ ]
 			
-			text_prompt_ids = [ int( option[ 'PromptsId' ] ) for option in text_prompt_options ]
+			text_prompt_ids = [ int( option[ 'ID' ] ) for option in text_prompt_options ]
 			
 			if st.session_state.get( 'text_prompt_id' ) not in text_prompt_ids:
 				st.session_state[ 'text_prompt_id' ] = None
@@ -6497,7 +6497,7 @@ elif mode == 'Images':
 			image_prompt_options = fetch_prompt_options(
 				selected_image_category ) if selected_image_category else [ ]
 			
-			image_prompt_ids = [ int( option[ 'PromptsId' ] ) for option in image_prompt_options ]
+			image_prompt_ids = [ int( option[ 'ID' ] ) for option in image_prompt_options ]
 			
 			if st.session_state.get( 'image_prompt_id' ) not in image_prompt_ids:
 				st.session_state[ 'image_prompt_id' ] = None
@@ -7920,7 +7920,7 @@ manner.
 			audio_prompt_options = fetch_prompt_options(
 				selected_audio_category ) if selected_audio_category else [ ]
 			
-			audio_prompt_ids = [ int( option[ 'PromptsId' ] ) for option in audio_prompt_options ]
+			audio_prompt_ids = [ int( option[ 'ID' ] ) for option in audio_prompt_options ]
 			
 			if st.session_state.get( 'audio_prompt_id' ) not in audio_prompt_ids:
 				st.session_state[ 'audio_prompt_id' ] = None
@@ -8991,7 +8991,7 @@ elif mode == 'Document Q&A':
 			docqna_prompt_options = fetch_prompt_options(
 				selected_docqna_category ) if selected_docqna_category else [ ]
 			
-			docqna_prompt_ids = [ int( option[ 'PromptsId' ] ) for option in
+			docqna_prompt_ids = [ int( option[ 'ID' ] ) for option in
 				docqna_prompt_options ]
 			
 			if st.session_state.get( 'docqna_prompt_id' ) not in docqna_prompt_ids:
@@ -10708,7 +10708,7 @@ processing.
 			) if selected_files_category else [ ]
 			
 			files_prompt_ids = [
-					int( option[ 'PromptsId' ] )
+					int( option[ 'ID' ] )
 					for option in files_prompt_options
 			]
 			
@@ -11685,7 +11685,7 @@ normalized
 			) if selected_stores_category else [ ]
 			
 			stores_prompt_ids = [
-					int( option[ 'PromptsId' ] )
+					int( option[ 'ID' ] )
 					for option in stores_prompt_options
 			]
 			
@@ -12330,7 +12330,7 @@ elif mode == 'File Search Stores':
 			) if selected_filestore_category else [ ]
 			
 			filestore_prompt_ids = [
-					int( option[ 'PromptsId' ] )
+					int( option[ 'ID' ] )
 					for option in filestore_prompt_options
 			]
 			
@@ -12653,7 +12653,7 @@ value."""
 			) if selected_bucket_category else [ ]
 			
 			bucket_prompt_ids = [
-					int( option[ 'PromptsId' ] )
+					int( option[ 'ID' ] )
 					for option in bucket_prompt_options
 			]
 			
@@ -12886,7 +12886,7 @@ elif mode == 'Prompt Engineering':
 	# ------------------------------------------------------------------
 	st.session_state.setdefault( 'pe_page', 1 )
 	st.session_state.setdefault( 'pe_search', '' )
-	st.session_state.setdefault( 'pe_sort_col', 'PromptsId' )
+	st.session_state.setdefault( 'pe_sort_col', 'ID' )
 	st.session_state.setdefault( 'pe_sort_dir', 'ASC' )
 	st.session_state.setdefault( 'pe_selected_id', None )
 	st.session_state.setdefault( 'pe_caption', '' )
@@ -12961,7 +12961,7 @@ elif mode == 'Prompt Engineering':
 				st.warning( f'Prompt {prompt_id} was not found.' )
 				return
 			
-			st.session_state[ 'pe_selected_id' ] = int( record[ 'PromptsId' ] )
+			st.session_state[ 'pe_selected_id' ] = int( record[ 'ID' ] )
 			st.session_state[ 'pe_caption' ] = str( record[ 'Caption' ] )
 			st.session_state[ 'pe_name' ] = str( record[ 'Name' ] )
 			st.session_state[ 'pe_category' ] = str( record[ 'Category' ] )
@@ -13148,14 +13148,14 @@ elif mode == 'Prompt Engineering':
 	# Sanitize Prompt Engineering State
 	# ------------------------------------------------------------------
 	valid_sort_columns = [
-			'PromptsId',
+			'ID',
 			'Caption',
 			'Name',
 			'Category',
 	]
 	
 	if st.session_state.get( 'pe_sort_col' ) not in valid_sort_columns:
-		st.session_state[ 'pe_sort_col' ] = 'PromptsId'
+		st.session_state[ 'pe_sort_col' ] = 'ID'
 	
 	if st.session_state.get( 'pe_sort_dir' ) not in [ 'ASC', 'DESC' ]:
 		st.session_state[ 'pe_sort_dir' ] = 'ASC'
@@ -13272,7 +13272,7 @@ elif mode == 'Prompt Engineering':
 	
 	data_query = f"""
 		SELECT
-			PromptsId,
+			ID,
 			Caption,
 			Name,
 			Category
@@ -13298,7 +13298,7 @@ elif mode == 'Prompt Engineering':
 						'Selected': int( row[ 0 ] ) == st.session_state.get(
 							'pe_selected_id'
 						),
-						'PromptsId': int( row[ 0 ] ),
+						'ID': int( row[ 0 ] ),
 						'Caption': str( row[ 1 ] or '' ),
 						'Name': str( row[ 2 ] or '' ),
 						'Category': str( row[ 3 ] or '' ),
@@ -13307,7 +13307,7 @@ elif mode == 'Prompt Engineering':
 		],
 		columns=[
 				'Selected',
-				'PromptsId',
+				'ID',
 				'Caption',
 				'Name',
 				'Category',
@@ -13319,7 +13319,7 @@ elif mode == 'Prompt Engineering':
 		hide_index=True,
 		width='stretch',
 		disabled=[
-				'PromptsId',
+				'ID',
 				'Caption',
 				'Name',
 				'Category',
@@ -13329,8 +13329,8 @@ elif mode == 'Prompt Engineering':
 					label='Selected',
 					width='small',
 				),
-				'PromptsId': st.column_config.NumberColumn(
-					label='PromptsId',
+				'ID': st.column_config.NumberColumn(
+					label='ID',
 					format='%d',
 					width='small',
 				),
@@ -13356,7 +13356,7 @@ elif mode == 'Prompt Engineering':
 		]
 		
 		if len( df_selected_prompts.index ) == 1:
-			selected_id = int( df_selected_prompts.iloc[ 0 ][ 'PromptsId' ] )
+			selected_id = int( df_selected_prompts.iloc[ 0 ][ 'ID' ] )
 			
 			if selected_id != st.session_state.get( 'pe_selected_id' ):
 				load_prompt_record( selected_id )
@@ -13425,7 +13425,7 @@ elif mode == 'Prompt Engineering':
 	# ------------------------------------------------------------------
 	with st.expander( label='Create / Edit Prompt', expanded=True ):
 		st.text_input(
-			label='PromptsId',
+			label='ID',
 			value=st.session_state.get( 'pe_selected_id' ) \
 				if st.session_state.get( 'pe_selected_id' ) is not None else '',
 			disabled=True,
