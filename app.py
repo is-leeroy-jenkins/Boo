@@ -7612,7 +7612,7 @@ elif mode == 'Audio':
 						help='Optional TTS MP3 bit rate. Zero/blank means provider default.' )
 				
 				st.button( label='Reset', key='audio_task_reset', width='stretch',
-					on_click=reset_audio_task_controls )
+					on_click=reset_audio_task_controls, icon='🔄' )
 			
 			with st.expander( label='Inference Settings', icon='🎚️', expanded=False, width='stretch' ):
 				inf_c1, inf_c2, inf_c3, inf_c4, inf_c5 = st.columns(
@@ -7659,8 +7659,7 @@ elif mode == 'Audio':
 				
 				# ---------- Stream ------------
 				with ctl_c3:
-					st.toggle( label='Stream', key='audio_stream', help=get_audio_help( 'STREAM'
-					) )
+					st.toggle( label='Stream', key='audio_stream', help=get_audio_help( 'STREAM' ) )
 				
 				# ---------- Background ------------
 				with ctl_c4:
@@ -7697,7 +7696,7 @@ elif mode == 'Audio':
 						help='Autoplay playback when Streamlit supports it.' )
 				
 				st.button( label='Reset', key='audio_playback_reset', width='stretch',
-					on_click=reset_audio_playback_controls )  # #  #
+					on_click=reset_audio_playback_controls, icon='🔄' )
 			
 		# ------------------------------------------------------------------
 		# Expander — Audio System Instructions
@@ -7711,7 +7710,6 @@ elif mode == 'Audio':
 			# ------------------------------------------------------------------
 			audio_prompt_categories = fetch_prompt_categories( 'Audio' )
 			current_audio_category = st.session_state.get( 'audio_prompt_category' )
-			
 			if current_audio_category not in audio_prompt_categories:
 				st.session_state[ 'audio_prompt_category' ] = None
 			
@@ -7720,7 +7718,6 @@ elif mode == 'Audio':
 				selected_audio_category ) if selected_audio_category else [ ]
 			
 			audio_prompt_ids = [ int( option[ 'ID' ] ) for option in audio_prompt_options ]
-			
 			if st.session_state.get( 'audio_prompt_id' ) not in audio_prompt_ids:
 				st.session_state[ 'audio_prompt_id' ] = None
 			
@@ -7729,8 +7726,7 @@ elif mode == 'Audio':
 			# ------------------------------------------------------------------
 			with in_left:
 				st.text_area( label='Enter Text', height=140, width='stretch',
-					key='audio_system_instructions', help=get_audio_help( 'SYSTEM_INSTRUCTIONS'
-					), )
+					key='audio_system_instructions', help=get_audio_help( 'SYSTEM_INSTRUCTIONS' ), )
 			
 			# ------------------------------------------------------------------
 			# Prompt Template Selection
@@ -7754,12 +7750,14 @@ elif mode == 'Audio':
 			# ------------------------------------------------------------------
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
 			
+			# ----- Clear -----
 			with btn_c1:
 				st.button( label='Clear Instructions', width='stretch',
-					on_click=clear_audio_instructions, )
+					on_click=clear_audio_instructions, icon='🧹' )
 			
+			# ----- Convert -----
 			with btn_c2:
-				st.button( label='XML <-> Markdown', width='stretch',
+				st.button( label='XML ↔️ Markdown', width='stretch',
 					on_click=convert_audio_system_instructions, )
 		
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
@@ -7833,11 +7831,10 @@ elif mode == 'Audio':
 			
 			process_c1, process_c2 = st.columns( [ 0.50, 0.50 ] )
 			with process_c1:
-				if st.button( 'Process Audio', key='process_audio', width='stretch' ):
+				if st.button( 'Process Audio', key='process_audio', width='stretch', icon='⚡' ):
 					with st.spinner( 'Processing audio…' ):
 						try:
 							selected_task = st.session_state.get( 'audio_task' )
-							
 							if selected_task not in [ 'Transcribe', 'Translate' ]:
 								st.warning(
 									'Select Transcribe or Translate before processing audio.' )
@@ -7875,9 +7872,8 @@ elif mode == 'Audio':
 							st.error( f'Audio task failed: {err.info}' )
 			
 			with process_c2:
-				if st.button( 'Clear Messages', key='audio_clear_process_messages',
-						width='stretch',
-						on_click=clear_audio_messages ):
+				if st.button( 'Clear Messages', key='audio_clear_process_messages', width='stretch',
+						on_click=clear_audio_messages, icon='🧹' ):
 					st.rerun( )
 			
 			if st.session_state.get( 'audio_output' ):
@@ -7885,14 +7881,17 @@ elif mode == 'Audio':
 					data=st.session_state.get( 'audio_output', '' ), file_name='audio_output.txt',
 					mime='text/plain', width='stretch' )
 		
+		# ----- Text To Speech -----
 		with tab_tts:
 			render_audio_messages( )
 			tts_input = st.text_area( label='Enter Text to Synthesize', key='audio_tts_input',
 				height=160, width='stretch', placeholder='Enter text for speech synthesis.' )
 			
 			tts_c1, tts_c2 = st.columns( [ 0.50, 0.50 ] )
+			
+			# ----- Generate Audio -----
 			with tts_c1:
-				if st.button( 'Generate Audio', key='generate_tts_audio', width='stretch' ):
+				if st.button( 'Generate Audio', key='generate_tts_audio', width='stretch', icon='🗣️️' ):
 					with st.spinner( 'Synthesizing speech…' ):
 						try:
 							if st.session_state.get( 'audio_task' ) != 'Text-to-Speech':
@@ -7917,9 +7916,10 @@ elif mode == 'Audio':
 							err = Error( exc )
 							st.error( f'Text-to-speech failed: {err.info}' )
 			
+			# ----- Clear Messages -----
 			with tts_c2:
 				if st.button( 'Clear Messages', key='audio_clear_tts_messages', width='stretch',
-						on_click=clear_audio_messages ):
+						on_click=clear_audio_messages, icon='🧹' ):
 					st.rerun( )
 			
 			if st.session_state.get( 'audio_output_bytes' ):
@@ -7975,8 +7975,7 @@ elif mode == 'Audio':
 		# ------------------------------------------------------------------
 		# Result Metadata
 		# ------------------------------------------------------------------
-		if st.session_state.get( 'audio_last_usage' ) or st.session_state.get(
-				'audio_last_result' ):
+		if st.session_state.get( 'audio_last_usage' ) or st.session_state.get( 'audio_last_result' ):
 			with st.expander( label='Audio Result Metadata', icon='📊', expanded=False,
 					width='stretch' ):
 				if st.session_state.get( 'audio_last_usage' ):
@@ -8050,8 +8049,7 @@ elif mode == 'Document Q&A':
 		# EXPANDER — GROK DOCQNA LLM CONFIGURATION
 		# ------------------------------------------------------------------
 		if provider_name == 'Grok':
-			with st.expander( label='LLM Configuration', icon='🧠', expanded=False,
-					width='stretch' ):
+			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
 				
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
@@ -8074,7 +8072,6 @@ elif mode == 'Document Q&A':
 							placeholder='Options' )
 						
 						docqna_include = [ d.strip( ) for d in set_docqna_include if d.strip( ) ]
-						
 						docqna_include = st.session_state[ 'docqna_include' ]
 					
 					# ------------- Reasoning Options ----------
@@ -8150,7 +8147,8 @@ elif mode == 'Document Q&A':
 						docqna_tool_choice = st.session_state[ 'docqna_tool_choice' ]
 					
 					# ------------- Reset Settings ----------
-					if st.button( label='Reset', key='docqna_model_reset', width='stretch' ):
+					if st.button( label='Reset', key='docqna_model_reset',
+							width='stretch', icon='🔄' ):
 						for key in [ 'docqna_model', 'docqna_include', 'docqna_reasoning',
 							'docqna_tool_choice' ]:
 							if key in st.session_state:
@@ -8198,7 +8196,8 @@ elif mode == 'Document Q&A':
 						docqna_tokens = st.session_state[ 'docqna_max_tokens' ]
 					
 					# ------------- Reset Setting ----------
-					if st.button( label='Reset', key='docqna_inference_reset', width='stretch' ):
+					if st.button( label='Reset', key='docqna_inference_reset',
+							width='stretch', icon='🔄' ):
 						for key in [ 'docqna_top_percent', 'docqna_max_tokens',
 							'docqna_temperature', 'docqna_number', ]:
 							if key in st.session_state:
@@ -8243,11 +8242,11 @@ elif mode == 'Document Q&A':
 							key='docqna_tools', help=cfg.TOOLS, placeholder='Options' )
 						
 						docqna_tools = [ d.strip( ) for d in set_docqna_tools if d.strip( ) ]
-						
 						docqna_tools = st.session_state[ 'docqna_tools' ]
 					
 					# ------------- Reset Settings -------------
-					if st.button( label='Reset', key='docqna_tools_reset', width='stretch' ):
+					if st.button( label='Reset', key='docqna_tools_reset',
+							width='stretch', icon='🔄' ):
 						for key in [ 'docqna_parallel_tools', 'docqna_max_searches',
 							'docqna_tools',
 							'docqna_max_calls' ]:
@@ -8291,7 +8290,8 @@ elif mode == 'Document Q&A':
 							d.strip( ) ]
 					
 					# ------------- Reset Settings  ------------------
-					if st.button( label='Reset', key='docqna_response_reset', width='stretch' ):
+					if st.button( label='Reset', key='docqna_response_reset',
+							width='stretch', icon='🔄' ):
 						for key in [ 'docqna_stream', 'docqna_store', 'docqna_background',
 							'docqna_domains' ]:
 							if key in st.session_state:
@@ -8330,7 +8330,6 @@ elif mode == 'Document Q&A':
 							placeholder='Options' )
 						
 						docqna_include = [ d.strip( ) for d in set_docqna_include if d.strip( ) ]
-						
 						docqna_include = st.session_state[ 'docqna_include' ]
 					
 					# ---------- Allowed Domains ------------
@@ -8365,7 +8364,8 @@ elif mode == 'Document Q&A':
 						media_resolution = st.session_state[ 'docqna_media_resolution' ]
 					
 					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_model_reset', width='stretch' ):
+					if st.button( label='Reset', key='docqna_model_reset',
+							width='stretch', icon='🔄' ):
 						for key in [ 'docqna_model', 'docqna_include', 'docqna_domains',
 							'docqna_reasoning', 'docqna_media_resolution' ]:
 							if key in st.session_state:
@@ -8421,7 +8421,8 @@ elif mode == 'Document Q&A':
 						docqna_top_k = st.session_state[ 'docqna_top_k' ]
 					
 					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_inference_reset', width='stretch' ):
+					if st.button( label='Reset', key='docqna_inference_reset',
+							width='stretch', icon='🔄' ):
 						for key in [ 'docqna_top_percent', 'docqna_frequency_penalty',
 							'docqna_presense_penalty', 'docqna_temperature', 'docqna_top_k', ]:
 							if key in st.session_state:
@@ -8469,7 +8470,6 @@ elif mode == 'Document Q&A':
 							placeholder='Options' )
 						
 						docqna_tools = [ d.strip( ) for d in set_docqna_tools if d.strip( ) ]
-						
 						docqna_tools = st.session_state[ 'docqna_tools' ]
 					
 					# ---------- Modalities ------------
@@ -8485,7 +8485,8 @@ elif mode == 'Document Q&A':
 						docqna_modalities = st.session_state[ 'docqna_modalities' ]
 					
 					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_tools_reset', width='stretch' ):
+					if st.button( label='Reset', key='docqna_tools_reset',
+							width='stretch', icon='🔄' ):
 						for key in [ 'docqna_parallel_tools', 'docqna_tool_choice',
 							'docqna_number',
 							'docqna_tools', 'docqna_max_calls', 'docqna_modalities' ]:
@@ -8538,7 +8539,8 @@ elif mode == 'Document Q&A':
 						docqna_tokens = st.session_state[ 'docqna_max_tokens' ]
 					
 					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_response_reset', width='stretch' ):
+					if st.button( label='Reset', key='docqna_response_reset',
+							width='stretch', icon='🔄' ):
 						for key in [ 'docqna_stream', 'docqna_store', 'docqna_background',
 							'docqna_stops', 'docqna_max_tokens' ]:
 							if key in st.session_state:
@@ -8577,7 +8579,6 @@ elif mode == 'Document Q&A':
 							placeholder='Options' )
 						
 						docqna_include = [ d.strip( ) for d in set_docqna_include if d.strip( ) ]
-						
 						docqna_include = st.session_state[ 'docqna_include' ]
 					
 					# ---------- Allowed Domains ------------
@@ -8603,7 +8604,8 @@ elif mode == 'Document Q&A':
 						docqna_reasoning = st.session_state[ 'docqna_reasoning' ]
 					
 					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_model_reset', width='stretch' ):
+					if st.button( label='Reset', key='docqna_model_reset',
+							width='stretch', icon='🔄' ):
 						for key in [ 'docqna_model', 'docqna_include', 'docqna_domains',
 							'docqna_reasoning' ]:
 							if key in st.session_state:
@@ -8660,7 +8662,8 @@ elif mode == 'Document Q&A':
 						docqna_number = st.session_state[ 'docqna_number' ]
 					
 					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_inference_reset', width='stretch' ):
+					if st.button( label='Reset', key='docqna_inference_reset',
+							width='stretch', icon='🔄' ):
 						for key in [ 'docqna_top_percent', 'docqna_frequency_penalty',
 							'docqna_presense_penalty', 'docqna_temperature', 'docqna_number', ]:
 							if key in st.session_state:
@@ -8682,8 +8685,7 @@ elif mode == 'Document Q&A':
 					# ---------- Max Calls ------------
 					with tool_c2:
 						set_docqna_calls = st.slider( label='Max Tool Calls', min_value=0,
-							max_value=5, value=int( st.session_state.get( 'docqna_max_calls',
-								0 ) ),
+							max_value=5, value=int( st.session_state.get( 'docqna_max_calls', 0 ) ),
 							step=1, help=cfg.MAX_TOOL_CALLS, key='docqna_max_calls' )
 						
 						docqna_max_calls = st.session_state[ 'docqna_max_calls' ]
@@ -8705,11 +8707,11 @@ elif mode == 'Document Q&A':
 							placeholder='Options' )
 						
 						docqna_tools = [ d.strip( ) for d in set_docqna_tools if d.strip( ) ]
-						
 						docqna_tools = st.session_state[ 'docqna_tools' ]
 					
 					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_tools_reset', width='stretch' ):
+					if st.button( label='Reset', key='docqna_tools_reset',
+							width='stretch', icon='🔄' ):
 						for key in [ 'docqna_parallel_tools', 'docqna_tool_choice', 'docqna_tools',
 							'docqna_max_calls' ]:
 							if key in st.session_state:
@@ -8761,7 +8763,8 @@ elif mode == 'Document Q&A':
 						docqna_tokens = st.session_state[ 'docqna_max_tokens' ]
 					
 					# ---------- Reset Settings ------------
-					if st.button( label='Reset', key='docqna_response_reset', width='stretch' ):
+					if st.button( label='Reset', key='docqna_response_reset',
+							width='stretch', icon='🔄' ):
 						for key in [ 'docqna_stream', 'docqna_store', 'docqna_background',
 							'docqna_stops', 'docqna_max_tokens' ]:
 							if key in st.session_state:
@@ -8843,7 +8846,7 @@ elif mode == 'Document Q&A':
 				st.session_state[ 'docqna_prompt_id' ] = None
 			
 			st.button( label='Clear Instructions', width='stretch',
-				on_click=clear_docqna_instructions, )
+				on_click=clear_docqna_instructions, icon='🧹')
 		
 		doc_left, doc_right = st.columns( [ 0.2, 0.8 ], border=True )
 		with doc_left:
@@ -9315,50 +9318,42 @@ elif mode == 'Embeddings':
 	# ------------------------------------------------------------------
 	# Session Safety
 	# ------------------------------------------------------------------
-	if (
-			'embeddings_dimensions' in st.session_state and 'embedding_dimensions' not in
+	if ( 'embeddings_dimensions' in st.session_state and 'embedding_dimensions' not in
 			st.session_state):
 		st.session_state[ 'embedding_dimensions' ] = st.session_state.get( 'embeddings_dimensions',
 			0 )
 	
-	if (
-			'embedding_dimensions' in st.session_state and 'embeddings_dimensions' not in
+	if ( 'embedding_dimensions' in st.session_state and 'embeddings_dimensions' not in
 			st.session_state):
 		st.session_state[ 'embeddings_dimensions' ] = st.session_state.get( 'embedding_dimensions',
 			0 )
 	
-	if (
-			'embeddings_encoding_format' in st.session_state and 'embedding_encoding_format' not
+	if ( 'embeddings_encoding_format' in st.session_state and 'embedding_encoding_format' not
 			in st.session_state):
 		st.session_state[ 'embedding_encoding_format' ] = st.session_state.get(
 			'embeddings_encoding_format', '' )
 	
-	if (
-			'embedding_encoding_format' in st.session_state and 'embeddings_encoding_format' not
+	if ( 'embedding_encoding_format' in st.session_state and 'embeddings_encoding_format' not
 			in st.session_state):
 		st.session_state[ 'embeddings_encoding_format' ] = st.session_state.get(
 			'embedding_encoding_format', '' )
 	
-	if (
-			'embeddings_chunk_size' in st.session_state and 'embedding_chunk_size' not in
+	if ( 'embeddings_chunk_size' in st.session_state and 'embedding_chunk_size' not in
 			st.session_state):
 		st.session_state[ 'embedding_chunk_size' ] = st.session_state.get( 'embeddings_chunk_size',
 			0 )
 	
-	if (
-			'embedding_chunk_size' in st.session_state and 'embeddings_chunk_size' not in
+	if ( 'embedding_chunk_size' in st.session_state and 'embeddings_chunk_size' not in
 			st.session_state):
 		st.session_state[ 'embeddings_chunk_size' ] = st.session_state.get( 'embedding_chunk_size',
 			0 )
 	
-	if (
-			'embeddings_overlap_amount' in st.session_state and 'embedding_chunk_overlap' not in
+	if ( 'embeddings_overlap_amount' in st.session_state and 'embedding_chunk_overlap' not in
 			st.session_state):
 		st.session_state[ 'embedding_chunk_overlap' ] = st.session_state.get(
 			'embeddings_overlap_amount', 0 )
 	
-	if (
-			'embedding_chunk_overlap' in st.session_state and 'embeddings_overlap_amount' not in
+	if ( 'embedding_chunk_overlap' in st.session_state and 'embeddings_overlap_amount' not in
 			st.session_state):
 		st.session_state[ 'embeddings_overlap_amount' ] = st.session_state.get(
 			'embedding_chunk_overlap', 0 )
@@ -9510,7 +9505,7 @@ elif mode == 'Embeddings':
 		
 		with action_c2:
 			if st.button( 'Reset All', key='reset_embeddings_all', width='stretch',
-					on_click=reset_embeddings_all ):
+					on_click=reset_embeddings_all, icon='🔄' ):
 				st.rerun( )
 		
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
