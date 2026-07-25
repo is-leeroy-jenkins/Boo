@@ -10324,7 +10324,7 @@ value."""
 	# ------------------------------------------------------------------
 	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
 	with center:
-		st.subheader( '📁 Files API', help=get_files_help( 'FILES_API' ) )
+		st.subheader( '📁 Files API', help=cfg.FILES_API )
 		st.divider( )
 		
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
@@ -10381,11 +10381,11 @@ value."""
 						index=None, placeholder='Options',
 						help='Optional provider model for file-aware operations.' )
 				
-				# -----  -----
+				# ----- Max Tokens -----
 				with req_c2:
 					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
 						key='files_max_tokens',
-						help=cf.MAX_OUTPUT_TOKENS )
+						help=cfg.MAX_OUTPUT_TOKENS )
 				
 				# ----- Temperature -----
 				with req_c3:
