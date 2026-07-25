@@ -4899,7 +4899,7 @@ if mode == 'Text':
 						help='Optional. Number of candidate responses when supported.' )
 				
 				st.button( label='Reset', key='text_model_reset', width='stretch',
-					on_click=reset_text_model_settings )
+					on_click=reset_text_model_settings, icon='🔄' )
 			
 			with st.expander( label='Inference Settings', icon='🎚️', expanded=False,
 					width='stretch' ):
@@ -4934,7 +4934,7 @@ if mode == 'Text':
 						'text_presence_penalty', 0.0 )
 				
 				st.button( label='Reset', key='text_inference_reset', width='stretch',
-					on_click=reset_text_inference_settings )
+					on_click=reset_text_inference_settings, icon='🔄' )
 			
 			with st.expander( label='Tools / Grounding Settings', icon='🔎', expanded=False,
 					width='stretch' ):
@@ -5037,7 +5037,7 @@ if mode == 'Text':
 						width='stretch', placeholder='collection_abc123,collection_def456' )
 				
 				st.button( label='Reset', key='reset_text_tools', width='stretch',
-					on_click=reset_text_tool_settings )
+					on_click=reset_text_tool_settings, icon='🔄' )
 			
 			with st.expander( label='Output / Response Settings', icon='↔️', expanded=False,
 					width='stretch' ):
@@ -5100,7 +5100,7 @@ if mode == 'Text':
 					placeholder='END,STOP,DONE' )
 				
 				st.button( label='Reset', key='text_response_reset', width='stretch',
-					on_click=reset_text_response_settings )
+					on_click=reset_text_response_settings, icon='🔄' )
 		
 		# ------------------------------------------------------------------
 		# Expander — System Instructions
@@ -5154,10 +5154,10 @@ if mode == 'Text':
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
 			with btn_c1:
 				st.button( label='Clear Instructions', width='stretch',
-					on_click=clear_text_instructions, )
+					on_click=clear_text_instructions, icon='🧹' )
 			
 			with btn_c2:
-				st.button( label='XML <-> Markdown', width='stretch',
+				st.button( label='XML ↔️ Markdown', width='stretch',
 					on_click=convert_text_system_instructions, )
 		
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
@@ -5267,7 +5267,7 @@ not return a value."""
 		# ------------------------------------------------------------------
 		# Message Reset
 		# ------------------------------------------------------------------
-		if st.button( 'Clear Messages', key='text_clear_messages' ):
+		if st.button( 'Clear Messages', key='text_clear_messages', icon='🧹' ):
 			st.session_state[ 'text_messages' ] = [ ]
 			st.session_state[ 'text_context' ] = [ ]
 			st.session_state[ 'text_previous_response_id' ] = ''
@@ -6089,7 +6089,7 @@ elif mode == 'Images':
 						help='Number of images or candidates requested when supported.' )
 				
 				st.button( label='Reset', key='image_model_reset', width='stretch',
-					on_click=reset_image_model_settings )
+					on_click=reset_image_model_settings, icon='🔄' )
 			
 			with st.expander( label='Inference Settings', icon='🎚️', expanded=False,
 					width='stretch' ):
@@ -6105,8 +6105,7 @@ elif mode == 'Images':
 				# ---------- Top-K ------------
 				with prm_c2:
 					st.slider( label='Top-K', key='image_top_k', min_value=0, max_value=200,
-						step=1,
-						help=get_image_help( 'TOP_K' ) )
+						step=1, help=get_image_help( 'TOP_K' ) )
 				
 				# ---------- Temperature ------------
 				with prm_c3:
@@ -6141,7 +6140,7 @@ elif mode == 'Images':
 						help='Optional. Image compression when supported by the provider.' )
 				
 				st.button( label='Reset', key='image_inference_reset', width='stretch',
-					on_click=reset_image_inference_settings )
+					on_click=reset_image_inference_settings, icon='🔄' )
 			
 			with st.expander( label='Tools / Grounding Settings', icon='🔎', expanded=False,
 					width='stretch' ):
@@ -6230,7 +6229,7 @@ elif mode == 'Images':
 					placeholder='example.com,openai.com' )
 				
 				st.button( label='Reset', key='image_tools_reset', width='stretch',
-					on_click=reset_image_tool_settings )
+					on_click=reset_image_tool_settings, icon='🔄' )
 			
 			with st.expander( label='Visual Settings', icon='👁️', expanded=False,
 					width='stretch' ):
@@ -6324,7 +6323,7 @@ elif mode == 'Images':
 						placeholder='Options' )
 				
 				st.button( label='Reset', key='image_visual_reset', width='stretch',
-					on_click=reset_image_visual_settings )  #
+					on_click=reset_image_visual_settings, icon='🔄' )
 		
 		# ------------------------------------------------------------------
 		# Expander — Image System Instructions
@@ -6385,7 +6384,7 @@ elif mode == 'Images':
 					on_click=clear_image_instructions, )
 			
 			with btn_c2:
-				st.button( label='XML <-> Markdown', width='stretch',
+				st.button( label='XML ↔️ Markdown', width='stretch',
 					on_click=convert_image_system_instructions, )
 		
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
@@ -6400,9 +6399,10 @@ elif mode == 'Images':
 				key='image_generate_prompt', height=120, width='stretch',
 				placeholder='Describe the image to generate.' )
 			
+			# ----- Generate Image -----
 			gen_c1, gen_c2 = st.columns( [ 0.50, 0.50 ] )
 			with gen_c1:
-				if st.button( 'Generate Image', key='generate_image', width='stretch' ):
+				if st.button( 'Generate Image', key='generate_image', width='stretch', icon='🎨' ):
 					with st.spinner( 'Generating…' ):
 						try:
 							if not isinstance( generation_prompt,
@@ -6433,9 +6433,10 @@ elif mode == 'Images':
 			
 			with gen_c2:
 				if st.button( 'Clear Messages', key='clear_image_generation', width='stretch',
-						on_click=clear_image_messages ):
+						on_click=clear_image_messages, icon='🧹' ):
 					st.rerun( )
 		
+		# ----- Analyze Image -----
 		with tab_analyze:
 			uploaded_img = st.file_uploader( 'Upload an image for analysis',
 				type=[ 'png', 'jpg', 'jpeg', 'webp' ], accept_multiple_files=False,
@@ -6453,7 +6454,7 @@ elif mode == 'Images':
 			
 			ana_c1, ana_c2 = st.columns( [ 0.50, 0.50 ] )
 			with ana_c1:
-				if st.button( 'Analyze Image', key='analyze_image', width='stretch' ):
+				if st.button( 'Analyze Image', key='analyze_image', width='stretch', icon='🔬' ):
 					with st.spinner( 'Analyzing image…' ):
 						try:
 							if not analysis_path:
@@ -6490,9 +6491,10 @@ elif mode == 'Images':
 			
 			with ana_c2:
 				if st.button( 'Clear Messages', key='clear_image_analysis', width='stretch',
-						on_click=clear_image_messages ):
+						on_click=clear_image_messages, icon='🧹' ):
 					st.rerun( )
 		
+		# ----- Edit Image -----
 		with tab_edit:
 			uploaded_img = st.file_uploader( 'Upload Image for Edit',
 				type=[ 'png', 'jpg', 'jpeg', 'webp' ], accept_multiple_files=False,
@@ -6520,7 +6522,7 @@ elif mode == 'Images':
 			
 			edit_c1, edit_c2 = st.columns( [ 0.50, 0.50 ] )
 			with edit_c1:
-				if st.button( 'Edit Image', key='edit_image', width='stretch' ):
+				if st.button( 'Edit Image', key='edit_image', width='stretch', icon='✏️' ):
 					with st.spinner( 'Editing image…' ):
 						try:
 							if not edit_path:
@@ -6553,7 +6555,7 @@ elif mode == 'Images':
 			
 			with edit_c2:
 				if st.button( 'Clear Messages', key='clear_image_edit', width='stretch',
-						on_click=clear_image_messages ):
+						on_click=clear_image_messages, icon='🧹' ):
 					st.rerun( )
 
 # ======================================================================================
@@ -13539,7 +13541,6 @@ elif mode == 'Data Management':
 					render_table( profile_df )
 			
 			st.subheader( 'Drop Table' )
-			
 			tables = list_tables( )
 			if tables:
 				table = st.selectbox( 'Select Table to Drop', tables, key='admin_drop_table' )
@@ -13581,7 +13582,6 @@ elif mode == 'Data Management':
 					st.success( 'Index created.' )
 			
 			st.divider( )
-			
 			st.subheader( 'Create Custom Table' )
 			new_table_name = st.text_input( 'Table Name' )
 			column_count = st.number_input( 'Number of Columns', min_value=1, max_value=20,
@@ -13644,7 +13644,6 @@ elif mode == 'Data Management':
 			
 			st.divider( )
 			st.subheader( "ALTER TABLE Operations" )
-			
 			tables = list_tables( )
 			if tables:
 				table = st.selectbox( 'Select Table', tables, key='alter_table_select' )
