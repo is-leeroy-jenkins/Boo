@@ -10327,7 +10327,14 @@ value."""
 		st.subheader( '📁 Files API', help=cfg.FILES_API )
 		st.divider( )
 		
+		# ------------------------------------------------------------------
+		# Expander - Mind Controls
+		# ------------------------------------------------------------------
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
+			
+			# ------------------------------------------------------------------
+			# Expander - File Management
+			# ------------------------------------------------------------------
 			with st.expander( label='File Management', icon='📂', expanded=False,
 					width='stretch' ):
 				mgmt_c1, mgmt_c2, mgmt_c3, mgmt_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
@@ -10366,6 +10373,9 @@ value."""
 						key='files_selected_id', index=None, placeholder='Options',
 						help='File selected from the latest provider list.' )
 			
+			# ------------------------------------------------------------------
+			# Expander - Request Settings
+			# ------------------------------------------------------------------
 			with st.expander( label='Request Settings', icon='⚙️', expanded=False,
 					width='stretch' ):
 				req_c1, req_c2, req_c3, req_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
@@ -10391,7 +10401,7 @@ value."""
 				with req_c3:
 					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
 						key='files_temperature',
-						help=cfg.Temperature )
+						help=cfg.TEMPERATURE )
 				
 				# ----- Format -----
 				with req_c4:
@@ -10409,19 +10419,19 @@ value."""
 				# ----- Top-P -----
 				with req2_c1:
 					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
-						key='files_top_percent', help='Optional top-p for file-aware model calls.' )
+						key='files_top_percent', help=cfg.TOP_P )
 				
 				# ----- Frequency -----
 				with req2_c2:
 					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
 						key='files_frequency_penalty',
-						help='Optional frequency penalty for file-aware model calls.' )
+						help=cfg.FREQUENCY_PENALTY )
 				
 				# ----- Presence -----
 				with req2_c3:
 					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
 						key='files_presence_penalty',
-						help='Optional presence penalty for file-aware model calls.' )
+						help=cfg.PRESENCE_PENALTY )
 				
 				# ----- Choice -----
 				with req2_c4:
@@ -10432,7 +10442,7 @@ value."""
 					sanitize_files_selection( 'files_tool_choice', choice_options, '' )
 					st.selectbox( label='Tool Choice', options=choice_options,
 						key='files_tool_choice', index=None, placeholder='Options',
-						help='Optional provider tool choice.' )
+						help=cfg.CHOICE )
 				
 				req3_c1, req3_c2, req3_c3, req3_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 					border=True, gap='xxsmall' )
@@ -10443,7 +10453,7 @@ value."""
 					tool_options = [ str( item ) for item in tool_options if str( item ).strip( ) ]
 					sanitize_files_multiselect( 'files_tools', tool_options )
 					st.multiselect( label='Tools', options=tool_options, key='files_tools',
-						placeholder='Options', help='Optional file-aware provider tools.' )
+						placeholder='Options', help=cfg.TOOLS )
 				
 				# ----- Include -----
 				with req3_c2:
@@ -10453,17 +10463,17 @@ value."""
 					sanitize_files_multiselect( 'files_include', include_options )
 					st.multiselect( label='Include', options=include_options, key='files_include',
 						placeholder='Options',
-						help='Optional include fields for file-aware responses.' )
+						help=cfg.INCLUDE )
 				
 				# ----- Store -----
 				with req3_c3:
 					st.toggle( label='Store', key='files_store',
-						help='Optional store flag for file-aware responses.' )
+						help=cfg.STORE )
 				
 				# ----- Stream -----
 				with req3_c4:
 					st.toggle( label='Stream', key='files_stream',
-						help='Optional stream flag retained for wrapper compatibility.' )
+						help=cfg.STREAM )
 		
 		# ------------------------------------------------------------------
 		# Expander — Files System Instructions
