@@ -4124,7 +4124,6 @@ with st.sidebar:
 	
 	mode_options = get_supported_provider_modes( provider )
 	current_mode = normalize_mode_name( st.session_state.get( 'mode', 'Text' ) )
-	
 	if current_mode not in mode_options:
 		current_mode = mode_options[ 0 ]
 		st.session_state[ 'mode' ] = current_mode
@@ -10334,6 +10333,7 @@ value."""
 				mgmt_c1, mgmt_c2, mgmt_c3, mgmt_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 					border=True, gap='xxsmall' )
 				
+				# ----- Purpose ------
 				with mgmt_c1:
 					purpose_options = get_files_options( files, 'purpose_options',
 						[ 'assistants', 'batch', 'fine-tune', 'user_data' ] )
@@ -10343,17 +10343,20 @@ value."""
 					st.selectbox( label='Purpose', options=purpose_options, key='files_purpose',
 						index=None, placeholder='Options', help='Optional provider file purpose.' )
 				
+				# ----- File Type -----
 				with mgmt_c2:
 					st.selectbox( label='File Type',
 						options=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv',
 							'xlsx', 'xls' ], key='files_type', index=None, placeholder='Options',
 						help='Optional local filter for uploaded file types.' )
 				
+				# ----- Manual File -----
 				with mgmt_c3:
 					st.text_input( label='Manual File ID', key='files_manual_id',
 						help='Optional. Paste a provider file ID/name for retrieve, extract, ask, '
 						     'or delete.', width='stretch' )
 				
+				# ----- Selected File -----
 				with mgmt_c4:
 					table_rows = st.session_state.get( 'files_table', [ ] )
 					file_options = [ row.get( 'id', '' ) for row in table_rows if
@@ -10368,6 +10371,7 @@ value."""
 				req_c1, req_c2, req_c3, req_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 					border=True, gap='xxsmall' )
 				
+				# ----- Model -----
 				with req_c1:
 					model_options = get_files_options( files, 'model_options', [ ] )
 					model_options = [ str( item ) for item in model_options if
@@ -10377,16 +10381,19 @@ value."""
 						index=None, placeholder='Options',
 						help='Optional provider model for file-aware operations.' )
 				
+				# -----  -----
 				with req_c2:
 					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
 						key='files_max_tokens',
-						help='Optional max tokens for file-aware model calls.' )
+						help=cf.MAX_OUTPUT_TOKENS )
 				
+				# ----- Temperature -----
 				with req_c3:
 					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
 						key='files_temperature',
-						help='Optional temperature for file-aware model calls.' )
+						help=cfg.Temperature )
 				
+				# ----- Format -----
 				with req_c4:
 					format_options = get_files_options( files, 'format_options', [ ] )
 					format_options = [ str( item ) for item in format_options if
@@ -10399,20 +10406,24 @@ value."""
 				req2_c1, req2_c2, req2_c3, req2_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 					border=True, gap='xxsmall' )
 				
+				# ----- Top-P -----
 				with req2_c1:
 					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
 						key='files_top_percent', help='Optional top-p for file-aware model calls.' )
 				
+				# ----- Frequency -----
 				with req2_c2:
 					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
 						key='files_frequency_penalty',
 						help='Optional frequency penalty for file-aware model calls.' )
 				
+				# ----- Presence -----
 				with req2_c3:
 					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
 						key='files_presence_penalty',
 						help='Optional presence penalty for file-aware model calls.' )
 				
+				# ----- Choice -----
 				with req2_c4:
 					choice_options = get_files_options( files, 'choice_options',
 						[ 'auto', 'required', 'none' ] )
@@ -10426,6 +10437,7 @@ value."""
 				req3_c1, req3_c2, req3_c3, req3_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 					border=True, gap='xxsmall' )
 				
+				# ----- Tools -----
 				with req3_c1:
 					tool_options = get_files_options( files, 'tool_options', [ ] )
 					tool_options = [ str( item ) for item in tool_options if str( item ).strip( ) ]
@@ -10433,6 +10445,7 @@ value."""
 					st.multiselect( label='Tools', options=tool_options, key='files_tools',
 						placeholder='Options', help='Optional file-aware provider tools.' )
 				
+				# ----- Include -----
 				with req3_c2:
 					include_options = get_files_options( files, 'include_options', [ ] )
 					include_options = [ str( item ) for item in include_options if
@@ -10442,10 +10455,12 @@ value."""
 						placeholder='Options',
 						help='Optional include fields for file-aware responses.' )
 				
+				# ----- Store -----
 				with req3_c3:
 					st.toggle( label='Store', key='files_store',
 						help='Optional store flag for file-aware responses.' )
 				
+				# ----- Stream -----
 				with req3_c4:
 					st.toggle( label='Stream', key='files_stream',
 						help='Optional stream flag retained for wrapper compatibility.' )
@@ -10462,21 +10477,14 @@ value."""
 			# ------------------------------------------------------------------
 			files_prompt_categories = fetch_prompt_categories( 'Files' )
 			current_files_category = st.session_state.get( 'files_prompt_category' )
-			
 			if current_files_category not in files_prompt_categories:
 				st.session_state[ 'files_prompt_category' ] = None
 			
 			selected_files_category = st.session_state.get( 'files_prompt_category' )
-			
 			files_prompt_options = fetch_prompt_options(
-				selected_files_category
-			) if selected_files_category else [ ]
+				selected_files_category ) if selected_files_category else [ ]
 			
-			files_prompt_ids = [
-					int( option[ 'ID' ] )
-					for option in files_prompt_options
-			]
-			
+			files_prompt_ids = [ int( option[ 'ID' ] ) for option in files_prompt_options ]
 			if st.session_state.get( 'files_prompt_id' ) not in files_prompt_ids:
 				st.session_state[ 'files_prompt_id' ] = None
 			
@@ -10484,68 +10492,41 @@ value."""
 			# Instruction Text
 			# ------------------------------------------------------------------
 			with in_left:
-				st.text_area(
-					label='Enter Text',
-					height=140,
-					width='stretch',
-					key='files_system_instructions',
-					help=get_files_help( 'SYSTEM_INSTRUCTIONS' ),
-				)
+				st.text_area( label='Enter Text', height=140, width='stretch',
+					key='files_system_instructions', help=get_files_help( 'SYSTEM_INSTRUCTIONS' ), )
 			
 			# ------------------------------------------------------------------
 			# Prompt Template Selection
 			# ------------------------------------------------------------------
 			with in_right:
-				st.selectbox(
-					label='Category',
-					options=files_prompt_categories,
-					index=None,
-					key='files_prompt_category',
-					placeholder='Select Category',
-					help=(
-							'Limits prompt templates to categories associated with '
-							'file-processing workflows.'
-					),
-					on_change=reset_prompt_template_selection,
-					args=( 'files_prompt_id', ),
-				)
+				st.selectbox( label='Category', options=files_prompt_categories, index=None,
+					key='files_prompt_category', placeholder='Select Category',
+					help=('Limits prompt templates to categories associated with '
+					      'file-processing workflows.'), on_change=reset_prompt_template_selection,
+					args=('files_prompt_id',), )
 				
-				st.selectbox(
-					label='Use Template',
-					options=files_prompt_ids,
-					index=None,
-					key='files_prompt_id',
-					placeholder='Select Template',
+				st.selectbox( label='Use Template', options=files_prompt_ids, index=None,
+					key='files_prompt_id', placeholder='Select Template',
 					disabled=not files_prompt_ids,
-					format_func=lambda prompt_id: format_prompt_option(
-						prompt_id,
-						files_prompt_options,
-					),
-					help=(
-							'Loads the selected prompt into the Files '
-							'system-instruction field.'
-					),
-					on_change=load_files_instruction_template,
-				)
+					format_func=lambda prompt_id: format_prompt_option( prompt_id,
+						files_prompt_options, ), help=('Loads the selected prompt into the Files '
+					                                   'system-instruction field.'),
+					on_change=load_files_instruction_template, )
 			
 			# ------------------------------------------------------------------
 			# Instruction Actions
 			# ------------------------------------------------------------------
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
 			
+			# ----- Clear -----
 			with btn_c1:
-				st.button(
-					label='Clear Instructions',
-					width='stretch',
-					on_click=clear_files_instructions,
-				)
+				st.button( label='Clear Instructions', width='stretch',
+					on_click=clear_files_instructions, icon='🧹' )
 			
+			# ----- Convert -----
 			with btn_c2:
-				st.button(
-					label='XML <-> Markdown',
-					width='stretch',
-					on_click=convert_files_system_instructions,
-				)
+				st.button( label='XML ↔️ Markdown', width='stretch',
+					on_click=convert_files_system_instructions, )
 		
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 		
@@ -10561,7 +10542,8 @@ value."""
 			if uploaded_file is not None:
 				st.caption( f'Selected: {uploaded_file.name}' )
 			
-			if st.button( 'Upload File', key='files_upload_button', width='stretch' ):
+			# ----- Upload ------
+			if st.button( 'Upload File', key='files_upload_button', width='stretch', icon='📤' ):
 				with st.spinner( 'Uploading file…' ):
 					try:
 						if uploaded_file is None:
@@ -10591,8 +10573,9 @@ value."""
 		with list_tab:
 			list_c1, list_c2 = st.columns( [ 0.50, 0.50 ] )
 			
+			# ----- List Files -----
 			with list_c1:
-				if st.button( 'List Files', key='files_list_button', width='stretch' ):
+				if st.button( 'List Files', key='files_list_button', width='stretch', icon='🔢' ):
 					with st.spinner( 'Listing files…' ):
 						try:
 							rows = refresh_files_table( )
@@ -10602,9 +10585,10 @@ value."""
 							err = Error( exc )
 							st.error( f'List files failed: {err.info}' )
 			
+			# ----- Clear -----
 			with list_c2:
 				if st.button( 'Clear Outputs', key='files_clear_outputs', width='stretch',
-						on_click=clear_files_outputs ):
+						on_click=clear_files_outputs, icon='🧹' ):
 					st.rerun( )
 			
 			df_files = pd.DataFrame( st.session_state.get( 'files_table', [ ] ) )
@@ -10622,11 +10606,11 @@ value."""
 			st.text_input( label='Retrieve File ID', key='files_retrieve_id',
 				help='Provider file ID/name to retrieve.', width='stretch' )
 			
-			if st.button( 'Retrieve File', key='files_retrieve_button', width='stretch' ):
+			# ----- Retrieve ------
+			if st.button( 'Retrieve File', key='files_retrieve_button', width='stretch', icon='🐕' ):
 				with st.spinner( 'Retrieving file metadata…' ):
 					try:
 						file_id = st.session_state.get( 'files_retrieve_id', '' ).strip( )
-						
 						if not file_id:
 							st.warning( 'Select or enter a file ID before retrieving.' )
 						else:
@@ -10655,10 +10639,12 @@ value."""
 			
 			ext_c1, ext_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall' )
 			
+			# ----- Extract ------
 			with ext_c1:
 				st.text_input( label='Extract File ID', key='files_extract_id',
 					help='Provider file ID/name to download or extract.', width='stretch' )
 			
+			# ----- Download -----
 			with ext_c2:
 				st.selectbox( label='Download Format',
 					options=[ '', 'DOWNLOAD_FORMAT_TEXT', 'DOWNLOAD_FORMAT_BYTES' ],
@@ -10668,12 +10654,12 @@ value."""
 			st.number_input( label='Page Number', min_value=0, step=1, key='files_page_number',
 				help='Optional page number for providers that support page-level extraction.' )
 			
+			# ----- Extract ------
 			if st.button( 'Extract File Content', key='files_extract_button', width='stretch',
-					disabled=not extract_supported ):
+					disabled=not extract_supported, icon='🦷' ):
 				with st.spinner( 'Extracting file content…' ):
 					try:
 						file_id = st.session_state.get( 'files_extract_id', '' ).strip( )
-						
 						if not file_id:
 							st.warning( 'Select or enter a file ID before extracting content.' )
 						else:
@@ -10708,7 +10694,6 @@ value."""
 				         f'question method.' )
 			
 			render_files_messages( )
-			
 			file_id = get_effective_file_id( 'files_selected_id', 'files_manual_id',
 				'files_retrieve_id', 'files_extract_id' )
 			
@@ -10722,9 +10707,10 @@ value."""
 			
 			ask_c1, ask_c2 = st.columns( [ 0.50, 0.50 ] )
 			
+			# ----- Ask ------
 			with ask_c1:
 				if st.button( 'Ask File', key='files_ask_button', width='stretch',
-						disabled=not ask_supported ):
+						disabled=not ask_supported, icon='❓' ):
 					with st.spinner( 'Asking file-aware question…' ):
 						try:
 							active_file_id = get_effective_file_id( 'files_selected_id',
@@ -10755,9 +10741,10 @@ value."""
 							err = Error( exc )
 							st.error( f'File question failed: {err.info}' )
 			
+			# ----- Clear ------
 			with ask_c2:
 				if st.button( 'Clear Messages', key='files_clear_messages_button', width='stretch',
-						on_click=clear_files_messages ):
+						on_click=clear_files_messages, icon='🧹' ):
 					st.rerun( )
 			
 			if st.session_state.get( 'files_last_answer' ):
@@ -10765,6 +10752,7 @@ value."""
 					data=st.session_state.get( 'files_last_answer', '' ),
 					file_name='file_answer.txt', mime='text/plain', width='stretch' )
 		
+		# ----- Delete ------
 		with delete_tab:
 			if not st.session_state.get( 'files_delete_id' ):
 				st.session_state[ 'files_delete_id' ] = get_effective_file_id( 'files_selected_id',
@@ -10776,7 +10764,7 @@ value."""
 			confirm_delete = st.checkbox( 'Confirm Delete', key='files_confirm_delete' )
 			
 			if st.button( 'Delete File', key='files_delete_button', width='stretch',
-					disabled=not confirm_delete ):
+					disabled=not confirm_delete, icon='❌' ):
 				with st.spinner( 'Deleting file…' ):
 					try:
 						file_id = st.session_state.get( 'files_delete_id', '' ).strip( )
@@ -11326,7 +11314,7 @@ elif mode == 'Vector Stores':
 			ex.method = 'load_stores_instruction_template( ) -> None'
 			Logger( ).write( ex )
 			raise ex
-		
+	
 	# ------------------------------------------------------------------
 	# Provider Guard
 	# ------------------------------------------------------------------
@@ -11361,22 +11349,25 @@ elif mode == 'Vector Stores':
 	# ------------------------------------------------------------------
 	left, center, right = st.columns( [ 0.025, 0.95, 0.025 ] )
 	with center:
-		st.subheader( '🧊 Vector Stores', help=get_storage_help( 'VECTORSTORES_API' ) )
+		st.subheader( '🧊 Vector Stores', help=cfg.VECTORSTORES_API )
 		st.divider( )
 		
 		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
 			ctrl_c1, ctrl_c2, ctrl_c3, ctrl_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 				border=True, gap='xxsmall' )
 			
+			# ----- Store Name -----
 			with ctrl_c1:
 				st.text_input( label='Store Name', key='stores_name',
 					help='Name used when creating a vector store.', width='stretch',
 					placeholder='Enter store name' )
 			
+			# ----- Store ID -----
 			with ctrl_c2:
 				st.text_input( label='Manual Store ID', key='stores_manual_id',
 					help='Optional. Paste a vector store or collection ID.', width='stretch' )
 			
+			# ----- Answer Model -----
 			with ctrl_c3:
 				st.selectbox( label='Answer Model',
 					options=get_storage_options( vector, 'model_options', [ ] ),
@@ -11384,17 +11375,19 @@ elif mode == 'Vector Stores':
 					index=None, placeholder='Options',
 					help='Optional. Model used for store-backed answers when supported.' )
 			
+			# ----- Max Tokens -----
 			with ctrl_c4:
 				st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
-					key='stores_max_tokens', help='Optional. Max tokens for store-backed '
-					                              'answers.' )
+					key='stores_max_tokens', help=cfg.MAX_OUTPUT_TOKENS )
 			
 			desc_c1, desc_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall' )
 			
+			# ----- Description -----
 			with desc_c1:
 				st.text_area( label='Description', key='stores_description', height=80,
 					width='stretch', help='Optional. Vector store description when supported.' )
 			
+			# ----- Metadata -----
 			with desc_c2:
 				st.text_area( label='Metadata JSON', key='stores_metadata', height=80,
 					width='stretch',
@@ -11412,23 +11405,14 @@ elif mode == 'Vector Stores':
 			# ------------------------------------------------------------------
 			stores_prompt_categories = fetch_prompt_categories( 'Vector Stores' )
 			current_stores_category = st.session_state.get( 'stores_prompt_category' )
-			
 			if current_stores_category not in stores_prompt_categories:
 				st.session_state[ 'stores_prompt_category' ] = None
 			
-			selected_stores_category = st.session_state.get(
-				'stores_prompt_category'
-			)
-			
+			selected_stores_category = st.session_state.get( 'stores_prompt_category' )
 			stores_prompt_options = fetch_prompt_options(
-				selected_stores_category
-			) if selected_stores_category else [ ]
+				selected_stores_category ) if selected_stores_category else [ ]
 			
-			stores_prompt_ids = [
-					int( option[ 'ID' ] )
-					for option in stores_prompt_options
-			]
-			
+			stores_prompt_ids = [ int( option[ 'ID' ] ) for option in stores_prompt_options ]
 			if st.session_state.get( 'stores_prompt_id' ) not in stores_prompt_ids:
 				st.session_state[ 'stores_prompt_id' ] = None
 			
@@ -11436,78 +11420,53 @@ elif mode == 'Vector Stores':
 			# Instruction Text
 			# ------------------------------------------------------------------
 			with in_left:
-				st.text_area(
-					label='Enter Text',
-					height=140,
-					width='stretch',
+				st.text_area( label='Enter Text', height=140, width='stretch',
 					key='stores_system_instructions',
-					help=get_storage_help( 'SYSTEM_INSTRUCTIONS' ),
-				)
+					help=get_storage_help( 'SYSTEM_INSTRUCTIONS' ), )
 			
 			# ------------------------------------------------------------------
 			# Prompt Template Selection
 			# ------------------------------------------------------------------
 			with in_right:
-				st.selectbox(
-					label='Category',
-					options=stores_prompt_categories,
-					index=None,
-					key='stores_prompt_category',
-					placeholder='Select Category',
-					help=(
-							'Limits prompt templates to categories associated with '
-							'vector-store and retrieval workflows.'
-					),
-					on_change=reset_prompt_template_selection,
-					args=( 'stores_prompt_id', ),
-				)
+				st.selectbox( label='Category', options=stores_prompt_categories, index=None,
+					key='stores_prompt_category', placeholder='Select Category',
+					help=('Limits prompt templates to categories associated with '
+					      'vector-store and retrieval workflows.'),
+					on_change=reset_prompt_template_selection, args=('stores_prompt_id',), )
 				
-				st.selectbox(
-					label='Use Template',
-					options=stores_prompt_ids,
-					index=None,
-					key='stores_prompt_id',
-					placeholder='Select Template',
+				st.selectbox( label='Use Template', options=stores_prompt_ids, index=None,
+					key='stores_prompt_id', placeholder='Select Template',
 					disabled=not stores_prompt_ids,
-					format_func=lambda prompt_id: format_prompt_option(
-						prompt_id,
-						stores_prompt_options,
-					),
-					help=(
-							'Loads the selected prompt into the Vector Stores '
-							'system-instruction field.'
-					),
-					on_change=load_stores_instruction_template,
-				)
+					format_func=lambda prompt_id: format_prompt_option( prompt_id,
+						stores_prompt_options, ),
+					help=('Loads the selected prompt into the Vector Stores '
+					      'system-instruction field.'),
+					on_change=load_stores_instruction_template, )
 			
 			# ------------------------------------------------------------------
 			# Instruction Actions
 			# ------------------------------------------------------------------
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
 			
+			# ----- Clear -----
 			with btn_c1:
-				st.button(
-					label='Clear Instructions',
-					key='clear_stores_instructions',
-					width='stretch',
-					on_click=clear_stores_instructions,
-				)
+				st.button( label='Clear Instructions', key='clear_stores_instructions',
+					width='stretch', on_click=clear_stores_instructions, icon='🧹' )
 			
+			# ----- Convert -----
 			with btn_c2:
-				st.button(
-					label='XML <-> Markdown',
-					key='convert_stores_instructions',
-					width='stretch',
-					on_click=convert_stores_system_instructions,
-				)
-				
+				st.button( label='XML ↔️ Markdown', key='convert_stores_instructions',
+					width='stretch', on_click=convert_stores_system_instructions, )
+		
 		store_col, detail_col = st.columns( [ 0.50, 0.50 ], border=True, gap='medium' )
 		with store_col:
 			st.markdown( '##### Store Lifecycle' )
 			
 			create_c1, create_c2 = st.columns( [ 0.50, 0.50 ] )
+			
+			# ----- Create -----
 			with create_c1:
-				if st.button( 'Create Store', key='create_vector_store', width='stretch' ):
+				if st.button( 'Create Store', key='create_vector_store', width='stretch', icon='➕' ):
 					with st.spinner( 'Creating vector store…' ):
 						try:
 							name = st.session_state.get( 'stores_name', '' ).strip( )
@@ -11538,7 +11497,9 @@ elif mode == 'Vector Stores':
 							st.error( f'Create vector store failed: {err.info}' )
 			
 			with create_c2:
-				if st.button( 'List Stores', key='list_vector_stores', width='stretch' ):
+				
+				# ----- List -----
+				if st.button( 'List Stores', key='list_vector_stores', width='stretch', icon='🔡' ):
 					with st.spinner( 'Listing vector stores…' ):
 						try:
 							if provider_name == 'Grok':
@@ -11568,7 +11529,10 @@ elif mode == 'Vector Stores':
 			
 			retrieve_c1, retrieve_c2, retrieve_c3 = st.columns( [ 0.34, 0.33, 0.33 ] )
 			with retrieve_c1:
-				if st.button( 'Retrieve Store', key='retrieve_vector_store', width='stretch' ):
+				
+				# ----- Retrieve -----
+				if st.button( 'Retrieve Store', key='retrieve_vector_store', width='stretch',
+						icon='🐕' ):
 					with st.spinner( 'Retrieving vector store…' ):
 						try:
 							if not selected_store_id:
@@ -11596,7 +11560,8 @@ elif mode == 'Vector Stores':
 							st.error( f'Retrieve vector store failed: {err.info}' )
 			
 			with retrieve_c2:
-				if st.button( 'Update Store', key='update_vector_store', width='stretch' ):
+				# ----- Update -----
+				if st.button( 'Update Store', key='update_vector_store', width='stretch', icon='✔️' ):
 					with st.spinner( 'Updating vector store…' ):
 						try:
 							if not selected_store_id:
@@ -11621,7 +11586,8 @@ elif mode == 'Vector Stores':
 							st.error( f'Update vector store failed: {err.info}' )
 			
 			with retrieve_c3:
-				if st.button( 'Delete Store', key='delete_vector_store', width='stretch' ):
+				# ----- Delete -----
+				if st.button( 'Delete Store', key='delete_vector_store', width='stretch', icon='❌' ):
 					with st.spinner( 'Deleting vector store…' ):
 						try:
 							if not selected_store_id:
@@ -11647,16 +11613,15 @@ elif mode == 'Vector Stores':
 		with detail_col:
 			st.markdown( '##### Selected Store Details' )
 			render_storage_metadata( st.session_state.get( 'stores_store_metadata', { } ) )
-			
 			st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
-			
 			st.text_area( label='Search Query', key='stores_query', height=90, width='stretch',
 				placeholder='Search this vector store or collection.' )
 			
 			search_c1, search_c2 = st.columns( [ 0.50, 0.50 ] )
 			
+			# ----- Search -----
 			with search_c1:
-				if st.button( 'Search Store', key='search_vector_store', width='stretch' ):
+				if st.button( 'Search Store', key='search_vector_store', width='stretch', icon='🔍' ):
 					with st.spinner( 'Searching store…' ):
 						try:
 							if not selected_store_id:
@@ -11687,9 +11652,9 @@ elif mode == 'Vector Stores':
 							st.error( f'Store search failed: {err.info}' )
 			
 			with search_c2:
+				# ----- Clear -----
 				st.button( label='Clear Outputs', key='clear_vector_store_outputs',
-					width='stretch',
-					on_click=clear_vector_store_outputs )
+					width='stretch', on_click=clear_vector_store_outputs, icon='🧹' )
 			
 			render_storage_search_results( st.session_state.get( 'stores_search_results', [ ] ) )
 		
@@ -11705,7 +11670,9 @@ elif mode == 'Vector Stores':
 			file_op_c1, file_op_c2, file_op_c3 = st.columns( [ 0.34, 0.33, 0.33 ] )
 			
 			with file_op_c1:
-				if st.button( 'Attach File', key='attach_vector_store_file', width='stretch' ):
+				# ----- Attach -----
+				if st.button( 'Attach File', key='attach_vector_store_file', width='stretch',
+						icon='📎' ):
 					with st.spinner( 'Attaching file…' ):
 						try:
 							if provider_name == 'Grok':
@@ -11730,7 +11697,9 @@ elif mode == 'Vector Stores':
 							st.error( f'Attach file failed: {err.info}' )
 			
 			with file_op_c2:
-				if st.button( 'List Files', key='list_vector_store_files', width='stretch' ):
+				# ----- List Files -----
+				if st.button( 'List Files', key='list_vector_store_files', width='stretch',
+						icon='🔡' ):
 					with st.spinner( 'Listing store files…' ):
 						try:
 							if provider_name == 'Grok':
@@ -11752,7 +11721,9 @@ elif mode == 'Vector Stores':
 							st.error( f'List store files failed: {err.info}' )
 			
 			with file_op_c3:
-				if st.button( 'Delete File', key='delete_vector_store_file', width='stretch' ):
+				# ----- Delete -----
+				if st.button( 'Delete File', key='delete_vector_store_file',
+						width='stretch', icon='❌' ):
 					with st.spinner( 'Deleting store file…' ):
 						try:
 							if provider_name == 'Grok':
@@ -11791,7 +11762,9 @@ elif mode == 'Vector Stores':
 			batch_c1, batch_c2 = st.columns( [ 0.50, 0.50 ] )
 			
 			with batch_c1:
-				if st.button( 'Create Batch', key='create_vector_store_batch', width='stretch' ):
+				# ----- Create -----
+				if st.button( 'Create Batch', key='create_vector_store_batch',
+						width='stretch', icon='➕' ):
 					with st.spinner( 'Creating file batch…' ):
 						try:
 							if provider_name == 'Grok':
@@ -11818,8 +11791,9 @@ elif mode == 'Vector Stores':
 							st.error( f'Batch request failed: {err.info}' )
 			
 			with batch_c2:
+				# ----- Upload -----
 				if st.button( 'Upload + Attach', key='upload_attach_vector_store_file',
-						width='stretch' ):
+						width='stretch', icon='📤' ):
 					with st.spinner( 'Uploading and attaching file…' ):
 						try:
 							if provider_name == 'Grok':
@@ -12047,108 +12021,65 @@ elif mode == 'File Search Stores':
 			# ------------------------------------------------------------------
 			# File Search Stores Prompt Categories
 			# ------------------------------------------------------------------
-			filestore_prompt_categories = fetch_prompt_categories(
-				'File Search Stores'
-			)
+			filestore_prompt_categories = fetch_prompt_categories( 'File Search Stores' )
 			
-			current_filestore_category = st.session_state.get(
-				'filestore_prompt_category'
-			)
+			current_filestore_category = st.session_state.get( 'filestore_prompt_category' )
 			
 			if current_filestore_category not in filestore_prompt_categories:
 				st.session_state[ 'filestore_prompt_category' ] = None
 			
-			selected_filestore_category = st.session_state.get(
-				'filestore_prompt_category'
-			)
+			selected_filestore_category = st.session_state.get( 'filestore_prompt_category' )
 			
 			filestore_prompt_options = fetch_prompt_options(
-				selected_filestore_category
-			) if selected_filestore_category else [ ]
+				selected_filestore_category ) if selected_filestore_category else [ ]
 			
-			filestore_prompt_ids = [
-					int( option[ 'ID' ] )
-					for option in filestore_prompt_options
-			]
+			filestore_prompt_ids = [ int( option[ 'ID' ] ) for option in filestore_prompt_options ]
 			
-			if st.session_state.get(
-					'filestore_prompt_id'
-			) not in filestore_prompt_ids:
+			if st.session_state.get( 'filestore_prompt_id' ) not in filestore_prompt_ids:
 				st.session_state[ 'filestore_prompt_id' ] = None
 			
 			# ------------------------------------------------------------------
 			# Instruction Text
 			# ------------------------------------------------------------------
 			with in_left:
-				st.text_area(
-					label='Enter Text',
-					height=140,
-					width='stretch',
+				st.text_area( label='Enter Text', height=140, width='stretch',
 					key='filestore_system_instructions',
-					help=getattr( cfg, 'SYSTEM_INSTRUCTIONS', '' ),
-				)
+					help=cfg.SYSTEM_INSTRUCTIONS, )
 			
 			# ------------------------------------------------------------------
 			# Prompt Template Selection
 			# ------------------------------------------------------------------
 			with in_right:
-				st.selectbox(
-					label='Category',
-					options=filestore_prompt_categories,
-					index=None,
-					key='filestore_prompt_category',
-					placeholder='Select Category',
-					help=(
-							'Limits prompt templates to categories associated with '
-							'file-search, retrieval, and corpus-management workflows.'
-					),
-					on_change=reset_prompt_template_selection,
-					args=( 'filestore_prompt_id', ),
-				)
+				st.selectbox( label='Category', options=filestore_prompt_categories, index=None,
+					key='filestore_prompt_category', placeholder='Select Category',
+					help=('Limits prompt templates to categories associated with '
+					      'file-search, retrieval, and corpus-management workflows.'),
+					on_change=reset_prompt_template_selection, args=('filestore_prompt_id',), )
 				
-				st.selectbox(
-					label='Use Template',
-					options=filestore_prompt_ids,
-					index=None,
-					key='filestore_prompt_id',
-					placeholder='Select Template',
+				st.selectbox( label='Use Template', options=filestore_prompt_ids, index=None,
+					key='filestore_prompt_id', placeholder='Select Template',
 					disabled=not filestore_prompt_ids,
-					format_func=lambda prompt_id: format_prompt_option(
-						prompt_id,
-						filestore_prompt_options,
-					),
-					help=(
-							'Loads the selected prompt into the File Search Stores '
-							'system-instruction field.'
-					),
-					on_change=load_filestore_instruction_template,
-				)
+					format_func=lambda prompt_id: format_prompt_option( prompt_id,
+						filestore_prompt_options, ),
+					help=('Loads the selected prompt into the File Search Stores '
+					      'system-instruction field.'),
+					on_change=load_filestore_instruction_template, )
 			
 			# ------------------------------------------------------------------
 			# Instruction Actions
 			# ------------------------------------------------------------------
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
 			
+			# -----  -----
 			with btn_c1:
-				st.button(
-					label='Clear Instructions',
-					key='clear_filestore_instructions',
-					width='stretch',
-					on_click=clear_filestore_instructions,
-				)
+				st.button( label='Clear Instructions', key='clear_filestore_instructions',
+					width='stretch', on_click=clear_filestore_instructions, icon='🧹')
 			
 			with btn_c2:
-				st.button(
-					label='XML <-> Markdown',
-					key='convert_filestore_instructions',
-					width='stretch',
-					on_click=convert_filestore_system_instructions,
-				)
+				st.button( label='XML ↔️ Markdown', key='convert_filestore_instructions',
+					width='stretch', on_click=convert_filestore_system_instructions, )
 		
-		stores_left, stores_right = st.columns(
-			[ 0.50, 0.50 ],
-			border=True,
-		)
+		stores_left, stores_right = st.columns( [ 0.50, 0.50 ], border=True, )
 
 # ======================================================================================
 # GOOGLE CLOUD BUCKETS MODE
@@ -12345,51 +12276,38 @@ value."""
 	
 	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
 	with center:
-		st.subheader( '🧊 Google Cloud Buckets', help=getattr( cfg, 'VECTORSTORES_API', '' ) )
+		st.subheader( '🧊 Google Cloud Buckets', help=cfg.VECTORSTORES_API)
 		st.divider( )
 		
-		project_id = st.session_state.get( 'google_cloud_project_id', '' ) \
-		             or getattr( cfg, 'GOOGLE_CLOUD_PROJECT_ID', '' )
-		location = st.session_state.get( 'google_cloud_location', '' ) \
-		           or getattr( cfg, 'GOOGLE_CLOUD_LOCATION', '' )
+		project_id = cfg.GOOGLE_CLOUD_PROJECT_ID
+		location = cfg.GOOGLE_CLOUD_LOCATION
 		
-		st.caption(
-			f'Project: {project_id or "Not configured"} | '
-			f'Location: {location or "Not configured"}'
-		)
+		st.caption( f'Project: {project_id or "Not configured"} | '
+		            f'Location: {location or "Not configured"}' )
 		
 		# ------------------------------------------------------------------
 		# Expander — Google Cloud Buckets System Instructions
 		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			
 			# ------------------------------------------------------------------
 			# Google Cloud Buckets Prompt Categories
 			# ------------------------------------------------------------------
-			bucket_prompt_categories = fetch_prompt_categories(
-				'Google Cloud Buckets'
-			)
+			bucket_prompt_categories = fetch_prompt_categories( 'Google Cloud Buckets' )
 			
-			current_bucket_category = st.session_state.get(
-				'bucket_prompt_category'
-			)
+			current_bucket_category = st.session_state.get( 'bucket_prompt_category' )
 			
 			if current_bucket_category not in bucket_prompt_categories:
 				st.session_state[ 'bucket_prompt_category' ] = None
 			
-			selected_bucket_category = st.session_state.get(
-				'bucket_prompt_category'
-			)
+			selected_bucket_category = st.session_state.get( 'bucket_prompt_category' )
 			
 			bucket_prompt_options = fetch_prompt_options(
-				selected_bucket_category
-			) if selected_bucket_category else [ ]
+				selected_bucket_category ) if selected_bucket_category else [ ]
 			
-			bucket_prompt_ids = [
-					int( option[ 'ID' ] )
-					for option in bucket_prompt_options
-			]
+			bucket_prompt_ids = [ int( option[ 'ID' ] ) for option in bucket_prompt_options ]
 			
 			if st.session_state.get( 'bucket_prompt_id' ) not in bucket_prompt_ids:
 				st.session_state[ 'bucket_prompt_id' ] = None
@@ -12398,78 +12316,51 @@ value."""
 			# Instruction Text
 			# ------------------------------------------------------------------
 			with in_left:
-				st.text_area(
-					label='Enter Text',
-					height=140,
-					width='stretch',
+				st.text_area( label='Enter Text', height=140, width='stretch',
 					key='bucket_system_instructions',
-					help=getattr( cfg, 'SYSTEM_INSTRUCTIONS', '' ),
-				)
+					help=getattr( cfg, 'SYSTEM_INSTRUCTIONS', '' ), )
 			
 			# ------------------------------------------------------------------
 			# Prompt Template Selection
 			# ------------------------------------------------------------------
 			with in_right:
-				st.selectbox(
-					label='Category',
-					options=bucket_prompt_categories,
-					index=None,
-					key='bucket_prompt_category',
-					placeholder='Select Category',
-					help=(
-							'Limits prompt templates to categories associated with '
-							'cloud-storage, governance, and data-management workflows.'
-					),
-					on_change=reset_prompt_template_selection,
-					args=( 'bucket_prompt_id', ),
-				)
+				st.selectbox( label='Category', options=bucket_prompt_categories, index=None,
+					key='bucket_prompt_category', placeholder='Select Category',
+					help=('Limits prompt templates to categories associated with '
+					      'cloud-storage, governance, and data-management workflows.'),
+					on_change=reset_prompt_template_selection, args=('bucket_prompt_id',), )
 				
-				st.selectbox(
-					label='Use Template',
-					options=bucket_prompt_ids,
-					index=None,
-					key='bucket_prompt_id',
-					placeholder='Select Template',
+				st.selectbox( label='Use Template', options=bucket_prompt_ids, index=None,
+					key='bucket_prompt_id', placeholder='Select Template',
 					disabled=not bucket_prompt_ids,
-					format_func=lambda prompt_id: format_prompt_option(
-						prompt_id,
-						bucket_prompt_options,
-					),
-					help=(
-							'Loads the selected prompt into the Google Cloud Buckets '
-							'system-instruction field.'
-					),
-					on_change=load_bucket_instruction_template,
-				)
+					format_func=lambda prompt_id: format_prompt_option( prompt_id,
+						bucket_prompt_options, ),
+					help=('Loads the selected prompt into the Google Cloud Buckets '
+					      'system-instruction field.'),
+					on_change=load_bucket_instruction_template, )
 			
 			# ------------------------------------------------------------------
 			# Instruction Actions
 			# ------------------------------------------------------------------
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
 			
+			# ----- Clear -----
 			with btn_c1:
-				st.button(
-					label='Clear Instructions',
-					key='clear_bucket_instructions',
-					width='stretch',
-					on_click=clear_bucket_instructions,
-				)
+				st.button( label='Clear Instructions', key='clear_bucket_instructions',
+					width='stretch', on_click=clear_bucket_instructions, icon='🧹' )
 			
+			# ----- Convert -----
 			with btn_c2:
-				st.button(
-					label='XML <-> Markdown',
-					key='convert_bucket_instructions',
-					width='stretch',
-					on_click=convert_bucket_system_instructions,
-				)
+				st.button( label='XML ↔️ Markdown', key='convert_bucket_instructions',
+					width='stretch', on_click=convert_bucket_system_instructions, )
 		
 		buckets_left, buckets_right = st.columns( [ 0.50, 0.50 ], border=True, )
 		with buckets_left:
 			with st.expander( label='Create', expanded=True ):
-				st.text_input( label='New Cloud Bucket Name', key='bucket_name',
-					width='stretch' )
+				st.text_input( label='New Cloud Bucket Name', key='bucket_name', width='stretch' )
 				
-				if st.button( 'Create Cloud Bucket', key='create_bucket', width='stretch' ):
+				# ----- Create -----
+				if st.button( 'Create Cloud Bucket', key='create_bucket', width='stretch', icon='➕' ):
 					with st.spinner( 'Creating cloud bucket…' ):
 						try:
 							name = st.session_state.get( 'bucket_name', '' ).strip( )
@@ -12477,10 +12368,10 @@ value."""
 								st.warning( 'Enter a Cloud Bucket name.' )
 							else:
 								result = call_bucket_method( [ 'create', 'create_bucket' ],
-									{ 'name': name, 'bucket_name': name,
-										'project_id': project_id, 'location': location } )
-								st.session_state[
-									'bucket_metadata' ] = normalize_storage_object( result )
+									{ 'name': name, 'bucket_name': name, 'project_id': project_id,
+										'location': location } )
+								st.session_state[ 'bucket_metadata' ] = normalize_storage_object(
+									result )
 								st.success( f'Created Cloud Bucket: {name}' )
 						except Exception as exc:
 							err = Error( exc )
@@ -12488,8 +12379,7 @@ value."""
 			
 			with st.expander( label='Retrieve / Delete', expanded=True ):
 				collections = getattr( buckets, 'collections', None )
-				options = list( collections.items( ) ) if isinstance( collections,
-					dict ) else [ ]
+				options = list( collections.items( ) ) if isinstance( collections, dict ) else [ ]
 				option_labels = [ f'{name} — {bucket_id}' for name, bucket_id in options ]
 				
 				if option_labels:
@@ -12516,8 +12406,9 @@ value."""
 				bucket_c1, bucket_c2 = st.columns( [ 0.50, 0.50 ] )
 				
 				with bucket_c1:
+					# ----- Retrieve -----
 					if st.button( 'Retrieve Cloud Bucket', key='retrieve_bucket',
-							width='stretch' ):
+							width='stretch', icon='🐕' ):
 						with st.spinner( 'Retrieving cloud bucket…' ):
 							try:
 								if not selected_bucket_id:
@@ -12525,14 +12416,12 @@ value."""
 								else:
 									result = call_bucket_method(
 										[ 'retrieve', 'retrieve_bucket', 'get' ],
-										{ 'store_id': selected_bucket_id,
-											'id': selected_bucket_id,
+										{ 'store_id': selected_bucket_id, 'id': selected_bucket_id,
 											'name': selected_bucket_id,
 											'bucket_name': selected_bucket_id,
 											'project_id': project_id, 'location': location } )
 									st.session_state[
-										'bucket_metadata' ] = normalize_storage_object(
-										result )
+										'bucket_metadata' ] = normalize_storage_object( result )
 									
 									st.success( 'Cloud Bucket metadata retrieved.' )
 							except Exception as exc:
@@ -12540,8 +12429,8 @@ value."""
 								st.error( f'Retrieve bucket failed: {err.info}' )
 				
 				with bucket_c2:
-					if st.button( 'Delete Cloud Bucket', key='delete_bucket',
-							width='stretch' ):
+					# ----- Delete -----
+					if st.button( 'Delete Cloud Bucket', key='delete_bucket', width='stretch', icon='❌' ):
 						with st.spinner( 'Deleting cloud bucket…' ):
 							try:
 								if not selected_bucket_id:
@@ -12549,14 +12438,12 @@ value."""
 								else:
 									result = call_bucket_method(
 										[ 'delete', 'delete_bucket', 'remove' ],
-										{ 'store_id': selected_bucket_id,
-											'id': selected_bucket_id,
+										{ 'store_id': selected_bucket_id, 'id': selected_bucket_id,
 											'name': selected_bucket_id,
 											'bucket_name': selected_bucket_id,
 											'project_id': project_id, 'location': location } )
 									st.session_state[
-										'bucket_metadata' ] = normalize_storage_object(
-										result )
+										'bucket_metadata' ] = normalize_storage_object( result )
 									
 									st.success( 'Delete request completed.' )
 							except Exception as exc:
@@ -12572,7 +12459,8 @@ value."""
 			target_bucket = st.session_state.get( 'bucket_selected_id',
 				'' ) or st.session_state.get( 'bucket_manual_id', '' )
 			
-			if st.button( 'Upload File', key='upload_bucket_file', width='stretch' ):
+			# ----- Upload -----
+			if st.button( 'Upload File', key='upload_bucket_file', width='stretch', icon='📤' ):
 				with st.spinner( 'Uploading file…' ):
 					try:
 						if uploaded_file is None:
@@ -12583,20 +12471,20 @@ value."""
 							path = save_uploaded_storage_file( uploaded_file )
 							result = call_bucket_method(
 								[ 'upload_file', 'upload', 'files_upload' ],
-								{ 'path': path, 'file_path': path, 'bucket_name':
-									target_bucket,
+								{ 'path': path, 'file_path': path, 'bucket_name': target_bucket,
 									'store_id': target_bucket, 'id': target_bucket,
 									'project_id': project_id, 'location': location } )
-							st.session_state[
-								'bucket_upload_result' ] = normalize_storage_object( result )
+							st.session_state[ 'bucket_upload_result' ] = normalize_storage_object(
+								result )
 							
 							st.success( 'Upload request completed.' )
 					except Exception as exc:
 						err = Error( exc )
 						st.error( f'Bucket upload failed: {err.info}' )
 			
+			# ----- Clear -----
 			if st.button( 'Clear Outputs', key='clear_bucket_outputs', width='stretch',
-					on_click=clear_bucket_outputs ):
+					on_click=clear_bucket_outputs, icon='🧹' ):
 				st.rerun( )
 			
 			st.caption( 'Upload Result' )
