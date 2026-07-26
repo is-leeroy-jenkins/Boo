@@ -4229,9 +4229,7 @@ if mode == 'Text':
 	if 'text_safety_profile' not in st.session_state:
 		st.session_state[ 'text_safety_profile' ] = ''
 	
-	# ------------------------------------------------------------------
-	# Text Mode Helpers
-	# ------------------------------------------------------------------
+	# ----- Text Generation Utilities -------
 	def get_text_options( instance: Any, attr_name: str,
 		fallback: Optional[ List[ str ] ] = None ) -> List[ str ]:
 		"""Get text options.
@@ -4651,11 +4649,9 @@ if mode == 'Text':
 		derived_urls = parse_semicolon_list( raw_urls )
 		derived_domains = parse_comma_list( raw_domains )
 		
-		if derived_domains:
-			st.session_state[ 'text_domains' ] = derived_domains
-		
-		if derived_urls:
-			st.session_state[ 'text_urls' ] = derived_urls
+		st.session_state[ 'text_stops' ] = derived_stops
+		st.session_state[ 'text_domains' ] = derived_domains
+		st.session_state[ 'text_urls' ] = derived_urls
 		
 		derived_modalities = [ str( modality ).strip( ) for modality in
 			st.session_state.get( 'text_modalities', [ ] ) if str( modality ).strip( ) ]
@@ -4711,25 +4707,42 @@ if mode == 'Text':
 		else:
 			context = build_text_context( include_last_message=False )
 		
+		raw_stops = st.session_state.get( 'text_stops_input', '' )
+		raw_urls = st.session_state.get( 'text_urls_input', '' )
+		raw_domains = st.session_state.get( 'text_domains_input', '' )
+		stops = parse_comma_list( raw_stops )
+		urls = parse_semicolon_list( raw_urls )
+		allowed_domains = parse_comma_list( raw_domains )
+		modalities = [ str( modality ).strip( ) for modality in
+			st.session_state.get( 'text_modalities', [ ] ) if str( modality ).strip( ) ]
+		st.session_state[ 'text_stops' ] = stops
+		st.session_state[ 'text_urls' ] = urls
+		st.session_state[ 'text_domains' ] = allowed_domains
+		
 		return { 'prompt': prompt, 'model': st.session_state.get( 'text_model' ),
+			'number': st.session_state.get( 'text_number' ),
 			'temperature': st.session_state.get( 'text_temperature' ),
 			'format': build_text_response_format_payload( ),
 			'top_p': st.session_state.get( 'text_top_percent' ),
+			'top_k': st.session_state.get( 'text_top_k' ),
 			'frequency': st.session_state.get( 'text_frequency_penalty' ),
 			'presence': st.session_state.get( 'text_presence_penalty' ),
 			'max_tools': st.session_state.get( 'text_max_calls' ),
-			'max_tokens': st.session_state.get( 'text_max_tokens' ),
+			'max_tokens': st.session_state.get( 'text_max_tokens' ), 'stops': stops,
 			'store': normalize_bool_or_none( st.session_state.get( 'text_store' ) ),
 			'stream': normalize_bool_or_none( st.session_state.get( 'text_stream' ) ),
 			'instruct': st.session_state.get( 'text_system_instructions' ),
 			'background': normalize_bool_or_none( st.session_state.get( 'text_background' ) ),
 			'reasoning': st.session_state.get( 'text_reasoning' ) or None, 'include': include,
-			'tools': text_tools, 'allowed_domains': st.session_state.get( 'text_domains', [ ] ),
+			'tools': text_tools, 'allowed_domains': allowed_domains,
 			'previous_id': st.session_state.get( 'text_previous_response_id' ) or None,
 			'tool_choice': tool_choice,
 			'is_parallel': bool( st.session_state.get( 'text_parallel_tools', False ) ),
 			'context': context, 'vector_store_ids': vector_store_ids,
-			'conversation_id': st.session_state.get( 'text_conversation_id' ) or None, }
+			'conversation_id': st.session_state.get( 'text_conversation_id' ) or None,
+			'modalities': modalities,
+			'media_resolution': st.session_state.get( 'text_media_resolution' ) or None,
+			'urls': urls, 'max_urls': st.session_state.get( 'text_max_urls' ), }
 	
 	def build_gemini_text_kwargs( prompt: str,
 		stream_handler: Optional[ Any ] = None ) -> Dict[ str, Any ]:
@@ -4753,6 +4766,14 @@ if mode == 'Text':
 			'text_tools', [ ] )
 		kwargs[ 'file_search_store_names' ] = st.session_state.get( 'text_file_search_store_names',
 			[ ] )
+		kwargs[ 'include' ] = st.session_state.get( 'text_include', [ ] )
+		kwargs[ 'store' ] = normalize_bool_or_none( st.session_state.get( 'text_store' ) )
+		kwargs[ 'background' ] = normalize_bool_or_none( st.session_state.get( 'text_background'
+		) )
+		kwargs[ 'is_parallel' ] = bool( st.session_state.get( 'text_parallel_tools', False ) )
+		kwargs[ 'max_tools' ] = st.session_state.get( 'text_max_calls' )
+		kwargs[ 'allowed_domains' ] = st.session_state.get( 'text_domains', [ ] )
+		kwargs[ 'format' ] = build_text_response_format_payload( )
 		kwargs[ 'stream' ] = bool( st.session_state.get( 'text_stream', False ) )
 		kwargs[ 'stream_handler' ] = stream_handler
 		return kwargs
@@ -4814,12 +4835,7 @@ if mode == 'Text':
 		else:
 			kwargs = build_grok_text_kwargs( prompt )
 		
-		try:
-			return text.generate_text( **kwargs )
-		except TypeError:
-			clean_kwargs = { key: value for key, value in kwargs.items( ) if
-				value is not None and value != '' and value != [ ] }
-			return text.generate_text( **clean_kwargs )
+		return text.generate_text( **kwargs )
 	
 	def extract_text_sources( instance: Any, response: Any ) -> List[ Dict[ str, Any ] ]:
 		"""Extract text sources.
@@ -5099,8 +5115,8 @@ if mode == 'Text':
 				# ---------- Vector Store / Collection IDs ------------
 				if provider_name == 'GPT':
 					st.text_input( label='Vector Store IDs', key='text_vector_store_ids',
-						help=cfg.VECTORSTORES_API,
-						width='stretch', placeholder='vs_abc123,vs_def456' )
+						help=cfg.VECTORSTORES_API, width='stretch',
+						placeholder='vs_abc123,vs_def456' )
 				
 				elif provider_name == 'Grok':
 					collection_map = get_grok_collection_options( )
@@ -5179,8 +5195,7 @@ if mode == 'Text':
 				
 				# ---------- Stop Sequences ------------
 				st.text_input( label='Stop Sequences', key='text_stops_input',
-					help=cfg.STOP_SEQUENCE, width='stretch',
-					placeholder='END,STOP,DONE' )
+					help=cfg.STOP_SEQUENCE, width='stretch', placeholder='END,STOP,DONE' )
 				
 				st.button( label='Reset', key='text_response_reset', width='stretch',
 					on_click=reset_text_response_settings, icon='🔄' )
@@ -5293,7 +5308,8 @@ if mode == 'Text':
 						
 						Returns:
 						    None: This function performs its work through side effects and does
-not return a value."""
+						        not return a value.
+						"""
 						if chunk is None:
 							return
 						
@@ -5369,9 +5385,6 @@ elif mode == 'Images':
 	provider_name = st.session_state.get( 'provider', 'GPT' )
 	image = get_images_module( provider_name )
 	
-	# ------------------------------------------------------------------
-	# Images Mode State Safety
-	# ------------------------------------------------------------------
 	if 'image_mode' not in st.session_state:
 		st.session_state[ 'image_mode' ] = ''
 	
@@ -5497,8 +5510,8 @@ elif mode == 'Images':
 		    str: Return value produced by the operation."""
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
-	def sanitize_image_selection( key: str, valid_options: List[ str ],
-		default: Any = '' ) -> None:
+	def sanitize_image_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> \
+			None:
 		"""Sanitize image selection.
 		
 		Purpose:
@@ -5983,8 +5996,7 @@ elif mode == 'Images':
 		Returns:
 		    Dict[str, Any]: Return value produced by the operation."""
 		domains = parse_image_domains( st.session_state.get( 'image_domains_input', '' ) )
-		if domains:
-			st.session_state[ 'image_domains' ] = domains
+		st.session_state[ 'image_domains' ] = domains
 		
 		return { 'prompt': prompt, 'model': st.session_state.get( 'image_model' ),
 			'number': st.session_state.get( 'image_number' ),
@@ -6028,9 +6040,8 @@ elif mode == 'Images':
 			'fmt': st.session_state.get( 'image_mime_type' ) or st.session_state.get(
 				'image_output' ) or None,
 			'mime_type': st.session_state.get( 'image_mime_type' ) or None,
-			'compression': st.session_state.get( 'image_compression' ) or None,
-			'background': st.session_state.get( 'image_backcolor' ) or st.session_state.get(
-				'image_background' ) or None,
+			'compression': st.session_state.get( 'image_compression' ),
+			'backcolor': st.session_state.get( 'image_backcolor' ) or None,
 			'aspect_ratio': st.session_state.get( 'image_aspect_ratio' ) or None,
 			'response_modalities': st.session_state.get( 'image_modality' ) or None,
 			'grounded': st.session_state.get( 'image_grounded', False ),
@@ -6054,6 +6065,8 @@ elif mode == 'Images':
 		Returns:
 		    Dict[str, Any]: Return value produced by the operation."""
 		kwargs = get_image_common_kwargs( prompt )
+		kwargs[ 'model' ] = st.session_state.get( 'image_analysis_model' ) or st.session_state.get(
+			'image_model' )
 		kwargs.update( { 'path': path, 'image_path': path,
 			'detail': st.session_state.get( 'image_analysis_detail' ) or st.session_state.get(
 				'image_detail' ) or None,
@@ -6063,8 +6076,8 @@ elif mode == 'Images':
 		
 		return kwargs
 	
-	def get_image_edit_kwargs( prompt: str, path: str,
-		mask_path: Optional[ str ] = None ) -> Dict[ str, Any ]:
+	def get_image_edit_kwargs( prompt: str, path: str, mask_path: Optional[ str ] = None ) -> Dict[
+		str, Any ]:
 		"""Get image edit kwargs.
 		
 		Purpose:
@@ -6215,12 +6228,14 @@ elif mode == 'Images':
 				# ---------- Top-P ------------
 				with prm_c1:
 					st.slider( label='Top-P', key='image_top_percent', min_value=0.0,
-						max_value=1.0, step=0.01, help=cfg.TOP_P )
+						max_value=1.0,
+						step=0.01, help=cfg.TOP_P )
 				
 				# ---------- Top-K ------------
 				with prm_c2:
 					st.slider( label='Top-K', key='image_top_k', min_value=0, max_value=200,
-						step=1, help=cfg.TOP_K )
+						step=1,
+						help=cfg.TOP_K )
 				
 				# ---------- Temperature ------------
 				with prm_c3:
@@ -6230,14 +6245,12 @@ elif mode == 'Images':
 				# ---------- Frequency Penalty ------------
 				with prm_c4:
 					st.slider( label='Frequency Penalty', key='image_frequency_penalty',
-						min_value=-2.0, max_value=2.0, step=0.01,
-						help=cfg.FREQUECY_PENALTY )
+						min_value=-2.0, max_value=2.0, step=0.01, help=cfg.FREQUECY_PENALTY )
 				
 				# ---------- Presence Penalty ------------
 				with prm_c5:
 					st.slider( label='Presence Penalty', key='image_presence_penalty',
-						min_value=-2.0, max_value=2.0, step=0.01,
-						help=cfg.PRESENCE_PENALTY )
+						min_value=-2.0, max_value=2.0, step=0.01, help=cfg.PRESENCE_PENALTY )
 					st.session_state[ 'image_presense_penalty' ] = st.session_state.get(
 						'image_presence_penalty', 0.0 )
 				
@@ -6392,8 +6405,8 @@ elif mode == 'Images':
 						[ 'auto', 'transparent', 'opaque' ] )
 					sanitize_image_selection( 'image_backcolor', background_options, '' )
 					st.selectbox( label='Background', options=background_options,
-						key='image_backcolor', help=cfg.IMAGE_BACKGROUND,
-						index=None, placeholder='Options' )
+						key='image_backcolor', help=cfg.IMAGE_BACKGROUND, index=None,
+						placeholder='Options' )
 				
 				# ---------- MIME / Output Format ------------
 				with img_c5:
@@ -6634,7 +6647,8 @@ elif mode == 'Images':
 			
 			render_image_messages( )
 			edit_prompt = st.text_area( label='Image Editing Prompt', key='image_edit_prompt',
-				height=120, width='stretch', placeholder='Describe how the image should be edited.' )
+				height=120, width='stretch',
+				placeholder='Describe how the image should be edited.' )
 			
 			edit_c1, edit_c2 = st.columns( [ 0.50, 0.50 ] )
 			
@@ -6734,7 +6748,7 @@ elif mode == 'Audio':
 	if 'audio_bit_rate' not in st.session_state:
 		st.session_state[ 'audio_bit_rate' ] = 0
 	
-	# ------ Audio Mode Helpers ------
+	# ------ Audio Mode Utilities ------
 	def get_audio_help( name: str, fallback: str = '' ) -> str:
 		"""Get audio help.
 		
@@ -6889,7 +6903,8 @@ elif mode == 'Audio':
 		    task (Optional[str]): Task value used by the operation.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
+		    List[str]: Return value produced by the operation.
+		"""
 		instance = get_audio_task_instance( task )
 		options = get_audio_options( instance, 'language_options' )
 		
@@ -6908,7 +6923,8 @@ elif mode == 'Audio':
 		    can consume it consistently.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
+		    List[str]: Return value produced by the operation.
+		"""
 		options = get_audio_options( tts, 'voice_options' )
 		if not options:
 			options = [ getattr( tts, 'voice', '' ) ]
@@ -6927,7 +6943,8 @@ elif mode == 'Audio':
 		    task (Optional[str]): Task value used by the operation.
 		
 		Returns:
-		    List[Any]: Return value produced by the operation."""
+		    List[Any]: Return value produced by the operation.
+		"""
 		instance = get_audio_task_instance( task )
 		
 		if task == 'Text-to-Speech':
@@ -6961,7 +6978,8 @@ elif mode == 'Audio':
 		    task (Optional[str]): Task value used by the operation.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
+		    List[str]: Return value produced by the operation.
+		"""
 		instance = get_audio_task_instance( task )
 		options = get_audio_options( instance, 'include_options' )
 		return [ str( option ) for option in options if str( option ).strip( ) ]
@@ -6975,7 +6993,8 @@ elif mode == 'Audio':
 		    controls and  downstream logic can consume it consistently.
 		
 		Returns:
-		    List[int]: Return value produced by the operation."""
+		    List[int]: Return value produced by the operation.
+		"""
 		options = get_audio_options( tts, 'sample_rate_options' )
 		if not options:
 			options = [ 0, 8000, 16000, 22050, 24000, 44100, 48000 ]
@@ -7000,7 +7019,8 @@ elif mode == 'Audio':
 		    controls and downstream logic can consume it consistently.
 		
 		Returns:
-		    List[int]: Return value produced by the operation."""
+		    List[int]: Return value produced by the operation.
+		"""
 		options = get_audio_options( tts, 'bit_rate_options' )
 		if not options:
 			options = [ 0, 32000, 64000, 96000, 128000, 192000 ]
@@ -7033,7 +7053,7 @@ elif mode == 'Audio':
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
-		    value."""
+		        value."""
 		current_value = st.session_state.get( key, default )
 		
 		if current_value in [ None, '' ]:
@@ -7057,7 +7077,8 @@ elif mode == 'Audio':
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
-		    value."""
+		        value.
+		"""
 		current_values = st.session_state.get( key, [ ] )
 		
 		if not isinstance( current_values, list ):
@@ -7139,7 +7160,8 @@ elif mode == 'Audio':
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
-		    value."""
+		        value.
+		"""
 		if not isinstance( st.session_state.get( 'audio_messages' ), list ):
 			st.session_state[ 'audio_messages' ] = [ ]
 		
@@ -7156,7 +7178,8 @@ elif mode == 'Audio':
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
-			value."""
+				value.
+		"""
 		if not isinstance( st.session_state.get( 'audio_messages' ), list ):
 			st.session_state[ 'audio_messages' ] = [ ]
 		
@@ -7172,13 +7195,14 @@ elif mode == 'Audio':
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
+		    lifecycle
 		    logic.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
-		    value."""
+		        value.
+		"""
 		st.session_state[ 'audio_messages' ] = [ ]
 		st.session_state[ 'audio_output' ] = ''
 		st.session_state[ 'audio_output_bytes' ] = None
@@ -7197,7 +7221,8 @@ elif mode == 'Audio':
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
-		    value."""
+		        value.
+		"""
 		st.session_state[ 'audio_system_instructions' ] = ''
 		st.session_state[ 'instructions' ] = ''
 	
@@ -7212,7 +7237,8 @@ elif mode == 'Audio':
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
-		    value."""
+		        value.
+		"""
 		text_value = st.session_state.get( 'audio_system_instructions', '' )
 		if not isinstance( text_value, str ) or not text_value.strip( ):
 			return
@@ -7260,7 +7286,8 @@ elif mode == 'Audio':
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
-		value."""
+			value.
+		"""
 		for key in [ 'audio_task', 'audio_model', 'audio_language', 'audio_voice', 'audio_format',
 			'audio_response_format', 'audio_speed', 'audio_sample_rate', 'audio_bit_rate', ]:
 			if key in st.session_state:
@@ -7277,7 +7304,8 @@ elif mode == 'Audio':
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
-		    value."""
+		        value.
+		"""
 		for key in [ 'audio_temperature', 'audio_top_percent', 'audio_top_k',
 			'audio_frequency_penalty', 'audio_presence_penalty', 'audio_presense_penalty',
 			'audio_max_tokens', 'audio_include', 'audio_stream', 'audio_store',
@@ -7295,7 +7323,7 @@ elif mode == 'Audio':
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
-		    value."""
+		        value."""
 		for key in [ 'audio_start_time', 'audio_end_time', 'audio_loop', 'audio_autoplay',
 			'audio_output_bytes', 'audio_output_path', 'audio_upload_path',
 			'audio_recorded_path', ]:
@@ -7315,8 +7343,8 @@ elif mode == 'Audio':
 		    instance (Any): Instance value used by the operation.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
- value."""
+		    None: This function performs its work through side effects and does not return a value.
+		"""
 		try:
 			response = getattr( instance, 'response', None )
 			usage = getattr( response, 'usage', None )
@@ -7536,8 +7564,9 @@ elif mode == 'Audio':
 		
 		return None
 	
-	def get_audio_common_kwargs( path: Optional[ str ] = None,
-		prompt: Optional[ str ] = None )  ->  Dict[ str, Any ]:
+	def get_audio_common_kwargs( path: Optional[ str ] = None, prompt: Optional[ str ] = None ) \
+			-> \
+	Dict[ str, Any ]:
 		"""Get audio common kwargs.
 		
 		Purpose:
@@ -7552,8 +7581,7 @@ elif mode == 'Audio':
 		Returns:
 		    Dict[str, Any]: Return value produced by the operation."""
 		domains = parse_audio_domains( st.session_state.get( 'audio_domains_input', '' ) )
-		if domains:
-			st.session_state[ 'audio_domains' ] = domains
+		st.session_state[ 'audio_domains' ] = domains
 		
 		return { 'path': path, 'model': st.session_state.get( 'audio_model' ),
 			'language': st.session_state.get( 'audio_language' ), 'prompt': prompt,
@@ -7642,13 +7670,14 @@ elif mode == 'Audio':
 			'language': st.session_state.get( 'audio_language' ) or 'auto',
 			'instruct': st.session_state.get( 'audio_system_instructions', '' ),
 			'file_path': st.session_state.get( 'audio_output_path' ) or None,
-			'sample_rate': st.session_state.get( 'audio_sample_rate' ) or None,
-			'bit_rate': st.session_state.get( 'audio_bit_rate' ) or None,
+			'sample_rate': st.session_state.get( 'audio_sample_rate' ),
+			'bit_rate': st.session_state.get( 'audio_bit_rate' ),
 			'temperature': st.session_state.get( 'audio_temperature' ),
 			'top_p': st.session_state.get( 'audio_top_percent' ),
 			'frequency': st.session_state.get( 'audio_frequency_penalty' ),
 			'presence': st.session_state.get( 'audio_presence_penalty' ),
 			'max_tokens': st.session_state.get( 'audio_max_tokens' ),
+			'include': st.session_state.get( 'audio_include', [ ] ),
 			'store': st.session_state.get( 'audio_store' ),
 			'stream': st.session_state.get( 'audio_stream' ),
 			'background': st.session_state.get( 'audio_background' ), }
@@ -7806,7 +7835,8 @@ elif mode == 'Audio':
 				
 				# ---------- Background ------------
 				with ctl_c4:
-					st.toggle( label='Background', key='audio_background', help=cfg.BACKGROUND_MODE )
+					st.toggle( label='Background', key='audio_background',
+						help=cfg.BACKGROUND_MODE )
 				
 				# ----- Reset Button -----
 				st.button( label='Reset', key='audio_inference_reset', width='stretch',
@@ -7815,7 +7845,8 @@ elif mode == 'Audio':
 			# ------------------------------------------------------------------
 			# Expander - Playback
 			# ------------------------------------------------------------------
-			with st.expander( label='Playback Settings', icon='🔊', expanded=False, width='stretch' ):
+			with st.expander( label='Playback Settings', icon='🔊', expanded=False,
+					width='stretch' ):
 				play_c1, play_c2, play_c3, play_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 					gap='xxsmall', border=True )
 				
@@ -7846,7 +7877,8 @@ elif mode == 'Audio':
 		# ------------------------------------------------------------------
 		# Expander — Audio System Instructions
 		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			
 			# ----- Prompt Categories ------
@@ -8004,7 +8036,8 @@ elif mode == 'Audio':
 			# ----- Clear Button -----
 			with process_c2:
 				if st.button( 'Clear Messages', key='audio_clear_process_messages',
-						width='stretch', on_click=clear_audio_messages, icon='🧹' ):
+						width='stretch',
+						on_click=clear_audio_messages, icon='🧹' ):
 					st.rerun( )
 			
 			if st.session_state.get( 'audio_output' ):
@@ -8039,8 +8072,9 @@ elif mode == 'Audio':
 									append_audio_message( 'user', tts_input.strip( ) )
 									append_audio_message( 'assistant',
 										'Text-to-speech audio generated successfully.' )
-									st.audio( audio_bytes, format=f'audio/'
-									                              f'{st.session_state.get( "audio_response_format", "mp3" )}' )
+									st.audio( audio_bytes,
+										format=f'audio/'
+										       f'{st.session_state.get( "audio_response_format", "mp3" )}' )
 								else:
 									st.warning( 'No audio bytes were returned.' )
 						
@@ -8106,7 +8140,8 @@ elif mode == 'Audio':
 		# ------------------------------------------------------------------
 		# Expander - Metadata
 		# ------------------------------------------------------------------
-		if st.session_state.get( 'audio_last_usage' ) or st.session_state.get( 'audio_last_result' ):
+		if st.session_state.get( 'audio_last_usage' ) or st.session_state.get(
+				'audio_last_result' ):
 			with st.expander( label='Audio Result Metadata', icon='📊', expanded=False,
 					width='stretch' ):
 				if st.session_state.get( 'audio_last_usage' ):
@@ -8158,10 +8193,135 @@ elif mode == 'Document Q&A':
 	docqna_multi_mode = st.session_state.get( 'docqna_multi_mode' )
 	docqna = provider_module.Files( )
 	
-	for key in [ 'docqna_domains', 'docqna_stops', 'docqna_includes', 'docqna_input', ]:
-		if key in st.session_state and isinstance( st.session_state[ key ], list ):
-			del st.session_state[ key ]
+	# ------------------------------------------------------------------
+	# Document Q&A State Safety
+	# ------------------------------------------------------------------
+	for key, value in { 'docqna_number': 0, 'docqna_max_calls': 0, 'docqna_max_searches': 0,
+		'docqna_max_tokens': 0, 'docqna_top_percent': 0.0, 'docqna_top_k': 0,
+		'docqna_frequency_penalty': 0.0, 'docqna_presense_penalty': 0.0,
+		'docqna_presence_penalty': 0.0, 'docqna_temperature': 0.0, 'docqna_stream': False,
+		'docqna_parallel_tools': False, 'docqna_store': False, 'docqna_background': False,
+		'docqna_reasoning': '', 'docqna_media_resolution': '', 'docqna_response_format': '',
+		'docqna_tool_choice': '', 'docqna_tools': [ ], 'docqna_modalities': [ ],
+		'docqna_include': [ ], 'docqna_messages': [ ], }.items( ):
+		if key not in st.session_state:
+			st.session_state[ key ] = value
+	
+	def parse_docqna_list( value: Any ) -> List[ str ]:
+		"""Parse Document Q&A list.
+		
+		Purpose:
+		    Converts a comma-delimited string or existing sequence into a normalized list of
+		    non-empty values for provider arguments.
+		
+		Args:
+		    value (Any): String or sequence containing provider option values.
+		
+		Returns:
+		    List[str]: Normalized provider argument values.
+		"""
+		if isinstance( value, str ):
+			return [ item.strip( ) for item in value.split( ',' ) if item.strip( ) ]
+		
+		if isinstance( value, (list, tuple, set) ):
+			return [ str( item ).strip( ) for item in value if str( item ).strip( ) ]
+		
+		return [ ]
+	
+	def run_document_query( prompt: str ) -> str:
+		"""Run Document Q&A query.
+		
+		Purpose:
+		    Builds document-grounded input and forwards every active Document Q&A UI setting to
+		    the selected provider text-generation wrapper.
+		
+		Args:
+		    prompt (str): User question submitted for the active document.
+		
+		Returns:
+		    str: Text returned by the selected provider.
+		
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			chat = get_chat_module( provider_name )
+			model = st.session_state.get( 'docqna_model', '' )
+			if not model:
+				model_options = list( getattr( chat, 'model_options', [ ] ) or [ ] )
+				model = model_options[ 0 ] if model_options else None
 			
+			if not model:
+				raise ValueError(
+					f'No Document Q&A model is configured for provider "{provider_name}".' )
+			
+			top_k = int( st.session_state.get( 'docqna_top_k', 0 ) )
+			system_instructions = st.session_state.get( 'system_instructions', '' )
+			st.session_state[ 'system_instructions' ] = ''
+			try:
+				user_input = build_document_user_input( prompt, k=top_k or 6 )
+			finally:
+				st.session_state[ 'system_instructions' ] = system_instructions
+			
+			if not user_input:
+				user_input = prompt.strip( )
+			
+			domains_value = st.session_state.get( 'docqna_domains_input',
+				st.session_state.get( 'docqna_domains', [ ] ) )
+			stops_value = st.session_state.get( 'docqna_stops_input',
+				st.session_state.get( 'docqna_stops', [ ] ) )
+			presence = st.session_state.get( 'docqna_presence_penalty',
+				st.session_state.get( 'docqna_presense_penalty', 0.0 ) )
+			
+			kwargs: Dict[ str, Any ] = { 'model': model, 'prompt': user_input,
+				'number': int( st.session_state.get( 'docqna_number', 0 ) ),
+				'temperature': float( st.session_state.get( 'docqna_temperature', 0.0 ) ),
+				'top_p': float( st.session_state.get( 'docqna_top_percent', 0.0 ) ), 'top_k':
+					top_k,
+				'frequency': float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) ),
+				'presence': float( presence ),
+				'max_tokens': int( st.session_state.get( 'docqna_max_tokens', 0 ) ),
+				'store': bool( st.session_state.get( 'docqna_store', False ) ),
+				'stream': bool( st.session_state.get( 'docqna_stream', False ) ),
+				'background': bool( st.session_state.get( 'docqna_background', False ) ),
+				'instruct': st.session_state.get( 'docqna_system_instructions', '' ),
+				'tools': st.session_state.get( 'docqna_tools', [ ] ),
+				'include': st.session_state.get( 'docqna_include', [ ] ),
+				'tool_choice': st.session_state.get( 'docqna_tool_choice' ) or None,
+				'reasoning': st.session_state.get( 'docqna_reasoning' ) or None,
+				'response_format': st.session_state.get( 'docqna_response_format' ) or None,
+				'modalities': st.session_state.get( 'docqna_modalities', [ ] ),
+				'media_resolution': st.session_state.get( 'docqna_media_resolution' ) or None,
+				'allowed_domains': parse_docqna_list( domains_value ),
+				'stops': parse_docqna_list( stops_value ),
+				'is_parallel': bool( st.session_state.get( 'docqna_parallel_tools', False ) ),
+				'max_tools': int( st.session_state.get( 'docqna_max_calls', 0 ) ),
+				'max_searches': int( st.session_state.get( 'docqna_max_searches', 0 ) ),
+				'context': st.session_state.get( 'docqna_context', [ ] ),
+				'content': st.session_state.get( 'docqna_content', '' ) or None, }
+			
+			answer = chat.generate_text( **kwargs )
+			if isinstance( answer, str ):
+				return answer
+			
+			output_text = getattr( chat, 'output_text', None )
+			if isinstance( output_text, str ) and output_text.strip( ):
+				return output_text.strip( )
+			
+			output_text = getattr( answer, 'output_text', None )
+			if isinstance( output_text, str ) and output_text.strip( ):
+				return output_text.strip( )
+			
+			return str( answer or '' )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Document Q&A'
+			ex.method = 'run_document_query( prompt: str ) -> str'
+			Logger( ).write( ex )
+			raise ex
+	
 	if st.session_state.get( 'clear_instructions' ):
 		st.session_state[ 'docqna_system_instructions' ] = ''
 		st.session_state[ 'clear_docqa_instructions' ] = False
@@ -8178,7 +8338,8 @@ elif mode == 'Document Q&A':
 		# Expander — DocQ&A LLM Configuration (Grok)
 		# ------------------------------------------------------------------
 		if provider_name == 'Grok':
-			with st.expander( label='LLM Configuration', icon='🧠', expanded=False, width='stretch' ):
+			with st.expander( label='LLM Configuration', icon='🧠', expanded=False,
+					width='stretch' ):
 				# ------------------------------------------------------------------
 				# Expander - DocQ&A Model (Grok)
 				# ------------------------------------------------------------------
@@ -8261,7 +8422,7 @@ elif mode == 'Document Q&A':
 						if not reasoning_options:
 							reasoning_options = [ 'none' ]
 						set_docqna_reasoning = st.selectbox( label='Reasoning',
-							options=reasoning_options, key='doc_reasoning', index=0,
+							options=reasoning_options, key='docqna_reasoning', index=0,
 							help='Optional reasoning level when supported by the active '
 							     'provider.' )
 						
@@ -8384,7 +8545,8 @@ elif mode == 'Document Q&A':
 					if st.button( label='Reset', key='docqna_tools_reset', width='stretch',
 							icon='🔄' ):
 						for key in [ 'docqna_parallel_tools', 'docqna_max_searches',
-							'docqna_tools', 'docqna_max_calls' ]:
+							'docqna_tools',
+							'docqna_max_calls' ]:
 							if key in st.session_state:
 								del st.session_state[ key ]
 						
@@ -8446,6 +8608,9 @@ elif mode == 'Document Q&A':
 		elif provider_name == 'Gemini':
 			with st.expander( label='LLM Configuration', icon='🧠', expanded=False,
 					width='stretch' ):
+				# ------------------------------------------------------------------
+				# Expander — Model Settings (Gemini)
+				# ------------------------------------------------------------------
 				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4, llm_c5 = st.columns(
 						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
@@ -8701,9 +8866,7 @@ elif mode == 'Document Q&A':
 		# Expander — Mind COntrols (GPT)
 		# ------------------------------------------------------------------
 		elif provider_name == 'GPT':
-			with st.expander( label='Mind Controls', icon='🧠', expanded=False,
-					width='stretch' ):
-				
+			with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
 				# ------------------------------------------------------------------
 				# Expander — LLM Settings (GPT)
 				# ------------------------------------------------------------------
@@ -8937,7 +9100,8 @@ elif mode == 'Document Q&A':
 		# ------------------------------------------------------------------
 		# Expander —  System Instructions
 		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			
 			# ------ Document Q&A Prompt Categories ------
@@ -9057,7 +9221,7 @@ elif mode == 'Document Q&A':
 		
 		if prompt := st.chat_input( 'Ask a question about the document' ):
 			st.session_state.docqna_messages.append( { 'role': 'user', 'content': prompt } )
-			response = route_document_query( prompt )
+			response = run_document_query( prompt )
 			st.session_state.docqna_messages.append( { 'role': 'assistant', 'content': response } )
 			st.rerun( )
 
@@ -9069,7 +9233,6 @@ elif mode == 'Embeddings':
 	embedding = get_embeddings_module( provider_name )
 	
 	# ----- Embeddings Utilties ------
-	
 	def get_embedding_help( name: str, fallback: str = '' ) -> str:
 		"""Get embedding help.
 		
@@ -9463,42 +9626,50 @@ elif mode == 'Embeddings':
 		except Exception:
 			pass
 	
-	if ( 'embeddings_dimensions' in st.session_state and 'embedding_dimensions' not in
+	if (
+			'embeddings_dimensions' in st.session_state and 'embedding_dimensions' not in
 			st.session_state):
 		st.session_state[ 'embedding_dimensions' ] = st.session_state.get( 'embeddings_dimensions',
 			0 )
 	
-	if ( 'embedding_dimensions' in st.session_state and 'embeddings_dimensions' not in
+	if (
+			'embedding_dimensions' in st.session_state and 'embeddings_dimensions' not in
 			st.session_state):
 		st.session_state[ 'embeddings_dimensions' ] = st.session_state.get( 'embedding_dimensions',
 			0 )
 	
-	if ( 'embeddings_encoding_format' in st.session_state and 'embedding_encoding_format' not
+	if (
+			'embeddings_encoding_format' in st.session_state and 'embedding_encoding_format' not
 			in st.session_state):
 		st.session_state[ 'embedding_encoding_format' ] = st.session_state.get(
 			'embeddings_encoding_format', '' )
 	
-	if ( 'embedding_encoding_format' in st.session_state and 'embeddings_encoding_format' not
+	if (
+			'embedding_encoding_format' in st.session_state and 'embeddings_encoding_format' not
 			in st.session_state):
 		st.session_state[ 'embeddings_encoding_format' ] = st.session_state.get(
 			'embedding_encoding_format', '' )
 	
-	if ( 'embeddings_chunk_size' in st.session_state and 'embedding_chunk_size' not in
+	if (
+			'embeddings_chunk_size' in st.session_state and 'embedding_chunk_size' not in
 			st.session_state):
 		st.session_state[ 'embedding_chunk_size' ] = st.session_state.get( 'embeddings_chunk_size',
 			0 )
 	
-	if ( 'embedding_chunk_size' in st.session_state and 'embeddings_chunk_size' not in
+	if (
+			'embedding_chunk_size' in st.session_state and 'embeddings_chunk_size' not in
 			st.session_state):
 		st.session_state[ 'embeddings_chunk_size' ] = st.session_state.get( 'embedding_chunk_size',
 			0 )
 	
-	if ( 'embeddings_overlap_amount' in st.session_state and 'embedding_chunk_overlap' not in
+	if (
+			'embeddings_overlap_amount' in st.session_state and 'embedding_chunk_overlap' not in
 			st.session_state):
 		st.session_state[ 'embedding_chunk_overlap' ] = st.session_state.get(
 			'embeddings_overlap_amount', 0 )
 	
-	if ( 'embedding_chunk_overlap' in st.session_state and 'embeddings_overlap_amount' not in
+	if (
+			'embedding_chunk_overlap' in st.session_state and 'embeddings_overlap_amount' not in
 			st.session_state):
 		st.session_state[ 'embeddings_overlap_amount' ] = st.session_state.get(
 			'embedding_chunk_overlap', 0 )
@@ -9583,7 +9754,8 @@ elif mode == 'Embeddings':
 		# ------------------------------------------------------------------
 		with st.expander( label='Source Text', icon='📝', expanded=True, width='stretch' ):
 			source_text = st.text_area( label='Input Text', key='embeddings_input_text',
-				height=240, width='stretch',
+				height=240,
+				width='stretch',
 				placeholder='Paste text to embed, or upload a text-compatible file below.' )
 			st.session_state[ 'embedding_input' ] = source_text
 			st.session_state[ 'embedding_text' ] = source_text
@@ -9606,7 +9778,8 @@ elif mode == 'Embeddings':
 		
 		# ----- Create Embeddings ------
 		with action_c1:
-			if st.button( 'Create Embeddings', key='create_embeddings', width='stretch', icon='➕' ):
+			if st.button( 'Create Embeddings', key='create_embeddings', width='stretch',
+					icon='➕' ):
 				with st.spinner( 'Creating embeddings…' ):
 					try:
 						source_text = normalize_embedding_text(
@@ -9779,7 +9952,6 @@ elif mode == 'Files':
 		st.session_state[ 'clear_instructions' ] = False
 	
 	# ----- Files Mode Utilties -----
-	
 	def get_files_help( name: str, fallback: str = '' ) -> str:
 		"""Get files help.
 		
@@ -9851,8 +10023,8 @@ elif mode == 'Files':
 		
 		return False
 	
-	def sanitize_files_selection( key: str, valid_options: List[ Any ],
-		default: Any = '' ) -> None:
+	def sanitize_files_selection( key: str, valid_options: List[ Any ], default: Any = '' ) -> \
+			None:
 		"""Sanitize files selection.
 		
 		Purpose:
@@ -10267,9 +10439,10 @@ value."""
 		
 		Returns:
 		    Any: Return value produced by the operation."""
+		page_number = st.session_state.get( 'files_page_number' )
 		kwargs = { 'file_id': file_id, 'id': file_id, 'name': file_id,
 			'format': st.session_state.get( 'files_download_format' ) or None,
-			'page_number': st.session_state.get( 'files_page_number' ) or None, }
+			'page_number': page_number, }
 		
 		return call_files_method(
 			[ 'extract', 'download', 'content', 'retrieve_content', 'files_content' ], kwargs )
@@ -10314,6 +10487,7 @@ value."""
 			'frequency': st.session_state.get( 'files_frequency_penalty' ),
 			'presence': st.session_state.get( 'files_presence_penalty' ),
 			'max_tokens': st.session_state.get( 'files_max_tokens' ),
+			'response_format': st.session_state.get( 'files_response_format' ) or None,
 			'store': st.session_state.get( 'files_store' ),
 			'stream': st.session_state.get( 'files_stream' ),
 			'instruct': st.session_state.get( 'files_system_instructions', '' ),
@@ -10362,7 +10536,8 @@ value."""
 		
 		Purpose:
 		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
+		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
+		    lifecycle
 		    logic.
 		
 		Returns:
@@ -10524,7 +10699,7 @@ value."""
 					st.text_input( label='Manual File ID', key='files_manual_id',
 						help='Optional. Paste a provider file ID/name for retrieve, extract, ask, '
 						     'or delete.', width='stretch' )
-					
+				
 				# ----- Selected File -----
 				with mgmt_c4:
 					table_rows = st.session_state.get( 'files_table', [ ] )
@@ -10620,8 +10795,7 @@ value."""
 						str( item ).strip( ) ]
 					sanitize_files_multiselect( 'files_include', include_options )
 					st.multiselect( label='Include', options=include_options, key='files_include',
-						placeholder='Options',
-						help=cfg.INCLUDE )
+						placeholder='Options', help=cfg.INCLUDE )
 				
 				# ----- Store -----
 				with req3_c3:
@@ -10634,7 +10808,8 @@ value."""
 		# ------------------------------------------------------------------
 		# Expander — Files System Instructions
 		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			
 			# ----- Prompt Categories -----
@@ -10694,7 +10869,9 @@ value."""
 		with upload_tab:
 			allowed_types = [ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv',
 				'xlsx', 'xls' ]
-			uploaded_file = st.file_uploader( label='Upload File', type=allowed_types,
+			selected_file_type = st.session_state.get( 'files_type' )
+			upload_types = [ selected_file_type ] if selected_file_type else allowed_types
+			uploaded_file = st.file_uploader( label='Upload File', type=upload_types,
 				accept_multiple_files=False, key='files_uploader' )
 			
 			if uploaded_file is not None:
@@ -10723,7 +10900,8 @@ value."""
 						st.error( f'Upload failed: {err.info}' )
 			
 			if st.session_state.get( 'files_results' ) is not None:
-				with st.expander( label='Upload Result', icon='📄', expanded=False, width='stretch' ):
+				with st.expander( label='Upload Result', icon='📄', expanded=False,
+						width='stretch' ):
 					st.write( st.session_state.get( 'files_results' ) )
 		
 		# ----- List -----
@@ -10764,7 +10942,8 @@ value."""
 			st.text_input( label='Retrieve File ID', key='files_retrieve_id',
 				help='Provider file ID/name to retrieve.', width='stretch' )
 			
-			if st.button( 'Retrieve File', key='files_retrieve_button', width='stretch', icon='🐕' ):
+			if st.button( 'Retrieve File', key='files_retrieve_button', width='stretch',
+					icon='🐕' ):
 				with st.spinner( 'Retrieving file metadata…' ):
 					try:
 						file_id = st.session_state.get( 'files_retrieve_id', '' ).strip( )
@@ -11558,12 +11737,14 @@ elif mode == 'Vector Stores':
 			# ------ Metadata -----
 			with desc_c2:
 				st.text_area( label='Metadata JSON', key='stores_metadata', height=80,
-					width='stretch', help='Optional. JSON object metadata for create/update calls.' )
+					width='stretch',
+					help='Optional. JSON object metadata for create/update calls.' )
 		
 		# ------------------------------------------------------------------
 		# Expander — System Instructions
 		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			
 			# ------ Vector Stores Prompt Categories -----
@@ -11603,7 +11784,7 @@ elif mode == 'Vector Stores':
 					help=('Loads the selected prompt into the Vector Stores '
 					      'system-instruction field.'),
 					on_change=load_stores_instruction_template, )
-	
+			
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
 			
 			# ----- Clear Button -----
@@ -11624,7 +11805,8 @@ elif mode == 'Vector Stores':
 			
 			# ----- Create Button ------
 			with create_c1:
-				if st.button( 'Create Store', key='create_vector_store', width='stretch', icon='➕' ):
+				if st.button( 'Create Store', key='create_vector_store', width='stretch',
+						icon='➕' ):
 					with st.spinner( 'Creating vector store…' ):
 						try:
 							name = st.session_state.get( 'stores_name', '' ).strip( )
@@ -11656,7 +11838,8 @@ elif mode == 'Vector Stores':
 			
 			# ----- List Button -----
 			with create_c2:
-				if st.button( 'List Stores', key='list_vector_stores', width='stretch', icon='🔠' ):
+				if st.button( 'List Stores', key='list_vector_stores', width='stretch',
+						icon='🔠' ):
 					with st.spinner( 'Listing vector stores…' ):
 						try:
 							if provider_name == 'Grok':
@@ -11688,7 +11871,8 @@ elif mode == 'Vector Stores':
 			
 			# ----- Retrieve Button -----
 			with retrieve_c1:
-				if st.button( 'Retrieve Store', key='retrieve_vector_store', width='stretch', icon='🐕' ):
+				if st.button( 'Retrieve Store', key='retrieve_vector_store', width='stretch',
+						icon='🐕' ):
 					with st.spinner( 'Retrieving vector store…' ):
 						try:
 							if not selected_store_id:
@@ -11717,7 +11901,8 @@ elif mode == 'Vector Stores':
 			
 			# ----- Update Button -----
 			with retrieve_c2:
-				if st.button( 'Update Store', key='update_vector_store', width='stretch', icon='🔼' ):
+				if st.button( 'Update Store', key='update_vector_store', width='stretch',
+						icon='🔼' ):
 					with st.spinner( 'Updating vector store…' ):
 						try:
 							if not selected_store_id:
@@ -11743,7 +11928,8 @@ elif mode == 'Vector Stores':
 			
 			# ----- Delete Button -----
 			with retrieve_c3:
-				if st.button( 'Delete Store', key='delete_vector_store', width='stretch', icon='❌' ):
+				if st.button( 'Delete Store', key='delete_vector_store', width='stretch',
+						icon='❌' ):
 					with st.spinner( 'Deleting vector store…' ):
 						try:
 							if not selected_store_id:
@@ -11776,10 +11962,11 @@ elif mode == 'Vector Stores':
 				placeholder='Search this vector store or collection.' )
 			
 			search_c1, search_c2 = st.columns( [ 0.50, 0.50 ] )
-	
+			
 			# ----- Search Button ----
 			with search_c1:
-				if st.button( 'Search Store', key='search_vector_store', width='stretch', icon='🔍' ):
+				if st.button( 'Search Store', key='search_vector_store', width='stretch',
+						icon='🔍' ):
 					with st.spinner( 'Searching store…' ):
 						try:
 							if not selected_store_id:
@@ -11812,7 +11999,8 @@ elif mode == 'Vector Stores':
 			# ----- Clear Button -----
 			with search_c2:
 				st.button( label='Clear Outputs', key='clear_vector_store_outputs',
-					width='stretch', on_click=clear_vector_store_outputs, icon='🧹' )
+					width='stretch',
+					on_click=clear_vector_store_outputs, icon='🧹' )
 			
 			render_storage_search_results( st.session_state.get( 'stores_search_results', [ ] ) )
 		
@@ -11829,7 +12017,8 @@ elif mode == 'Vector Stores':
 			
 			# ----- Attach Button ----
 			with file_op_c1:
-				if st.button( 'Attach File', key='attach_vector_store_file', width='stretch', icon='📎' ):
+				if st.button( 'Attach File', key='attach_vector_store_file', width='stretch',
+						icon='📎' ):
 					with st.spinner( 'Attaching file…' ):
 						try:
 							if provider_name == 'Grok':
@@ -11855,7 +12044,8 @@ elif mode == 'Vector Stores':
 			
 			# ------ List Button -----
 			with file_op_c2:
-				if st.button( 'List Files', key='list_vector_store_files', width='stretch', icon='🔠' ):
+				if st.button( 'List Files', key='list_vector_store_files', width='stretch',
+						icon='🔠' ):
 					with st.spinner( 'Listing store files…' ):
 						try:
 							if provider_name == 'Grok':
@@ -11878,7 +12068,8 @@ elif mode == 'Vector Stores':
 			
 			# ----- Delete Button -----
 			with file_op_c3:
-				if st.button( 'Delete File', key='delete_vector_store_file', width='stretch', icon='❌' ):
+				if st.button( 'Delete File', key='delete_vector_store_file', width='stretch',
+						icon='❌' ):
 					with st.spinner( 'Deleting store file…' ):
 						try:
 							if provider_name == 'Grok':
@@ -11918,8 +12109,8 @@ elif mode == 'Vector Stores':
 			
 			# ----- Create Button -----
 			with batch_c1:
-				if st.button( 'Create Batch', key='create_vector_store_batch',
-						width='stretch', icon='➕' ):
+				if st.button( 'Create Batch', key='create_vector_store_batch', width='stretch',
+						icon='➕' ):
 					with st.spinner( 'Creating file batch…' ):
 						try:
 							if provider_name == 'Grok':
@@ -12174,7 +12365,8 @@ elif mode == 'File Search Stores':
 		# ------------------------------------------------------------------
 		# Expander — System Instructions
 		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			filestore_prompt_categories = fetch_prompt_categories( 'File Search Stores' )
 			current_filestore_category = st.session_state.get( 'filestore_prompt_category' )
@@ -12226,6 +12418,250 @@ elif mode == 'File Search Stores':
 					width='stretch', on_click=convert_filestore_system_instructions, )
 		
 		stores_left, stores_right = st.columns( [ 0.50, 0.50 ], border=True, )
+		
+		# ------------------------------------------------------------------
+		# Store Management
+		# ------------------------------------------------------------------
+		with stores_left:
+			st.subheader( 'Store Management' )
+			st.text_input( label='Store Name', key='filestore_name',
+				help='Name used when creating a Gemini File Search Store.', )
+			st.text_input( label='Store ID', key='filestore_manual_id',
+				help='Optional. Enter a File Search Store identifier directly.', )
+			
+			store_c1, store_c2 = st.columns( 2 )
+			with store_c1:
+				if st.button( label='Create Store', key='filestore_create', icon='➕',
+						width='stretch' ):
+					try:
+						result = call_file_search_method( [ 'create_store', 'create' ],
+							{ 'name': st.session_state.get( 'filestore_name', '' ),
+								'display_name': st.session_state.get( 'filestore_name', '' ),
+								'instruct': st.session_state.get( 'filestore_system_instructions',
+									'' ), } )
+						st.session_state[ 'filestore_metadata' ] = normalize_storage_object(
+							result )
+						st.success( 'File Search Store created.' )
+					except Exception as exc:
+						st.error( f'Create failed: {exc}' )
+			
+			with store_c2:
+				if st.button( label='List Stores', key='filestore_list', icon='📋',
+						width='stretch' ):
+					try:
+						result = call_file_search_method( [ 'list_stores', 'list' ] )
+						rows = [ normalize_storage_object( item ) for item in
+							(getattr( result, 'data', result ) or [ ]) ]
+						st.session_state[ 'filestore_table' ] = rows
+					except Exception as exc:
+						st.error( f'List failed: {exc}' )
+			
+			if st.session_state.get( 'filestore_table' ):
+				df_filestores = pd.DataFrame( st.session_state[ 'filestore_table' ] )
+				st.dataframe( df_filestores, width='stretch', hide_index=True )
+				store_options = [ str( row.get( 'id', '' ) ) for row in
+					st.session_state[ 'filestore_table' ] if row.get( 'id' ) ]
+				if store_options:
+					st.selectbox( label='Select Store', options=store_options, index=None,
+						key='filestore_selected_id', placeholder='Select Store', )
+			
+			selected_store_id = (
+						st.session_state.get( 'filestore_manual_id', '' ) or st.session_state.get(
+					'filestore_selected_id', '' ))
+			
+			store_c3, store_c4 = st.columns( 2 )
+			with store_c3:
+				if st.button( label='Retrieve Store', key='filestore_retrieve', icon='🔎',
+						width='stretch', disabled=not bool( selected_store_id ) ):
+					try:
+						result = call_file_search_method( [ 'retrieve_store', 'retrieve', 'get' ],
+							{ 'store_id': selected_store_id, 'id': selected_store_id,
+								'name': selected_store_id, } )
+						st.session_state[ 'filestore_metadata' ] = normalize_storage_object(
+							result )
+					except Exception as exc:
+						st.error( f'Retrieve failed: {exc}' )
+			
+			with store_c4:
+				if st.button( label='Delete Store', key='filestore_delete', icon='🗑️',
+						width='stretch', disabled=not bool( selected_store_id ) ):
+					try:
+						call_file_search_method( [ 'delete_store', 'delete' ],
+							{ 'store_id': selected_store_id, 'id': selected_store_id,
+								'name': selected_store_id, } )
+						clear_filestore_outputs( )
+						st.success( 'File Search Store deleted.' )
+					except Exception as exc:
+						st.error( f'Delete failed: {exc}' )
+			
+			if st.session_state.get( 'filestore_metadata' ):
+				render_storage_metadata( st.session_state[ 'filestore_metadata' ] )
+		
+		# ------------------------------------------------------------------
+		# File Upload and Search
+		# ------------------------------------------------------------------
+		with stores_right:
+			st.subheader( 'Files and Search' )
+			model_options = getattr( searcher, 'model_options', [ ] ) or [ ]
+			if callable( model_options ):
+				model_options = model_options( )
+			if model_options:
+				st.selectbox( label='Model', options=list( model_options ), index=None,
+					key='filestore_model', placeholder='Select Model', )
+			
+			# ------------------------------------------------------------------
+			# Search Settings
+			# ------------------------------------------------------------------
+			with st.expander( label='Search Settings', icon='🎚️', expanded=False,
+					width='stretch' ):
+				search_c1, search_c2, search_c3 = st.columns( 3, border=True, gap='xxsmall' )
+				
+				with search_c1:
+					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
+						key='filestore_temperature', help=cfg.TEMPERATURE )
+				
+				with search_c2:
+					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
+						key='filestore_top_percent', help=cfg.TOP_P )
+				
+				with search_c3:
+					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+						key='filestore_max_tokens', help=cfg.MAX_OUTPUT_TOKENS )
+				
+				search_c4, search_c5 = st.columns( 2, border=True, gap='xxsmall' )
+				
+				with search_c4:
+					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='filestore_frequency_penalty', help=cfg.FREQUENCY_PENALTY )
+				
+				with search_c5:
+					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='filestore_presence_penalty', help=cfg.PRESENCE_PENALTY )
+				
+				format_options = getattr( searcher, 'format_options', [ ] ) or [ ]
+				if callable( format_options ):
+					format_options = format_options( )
+				
+				choice_options = getattr( searcher, 'choice_options', [ ] ) or [ ]
+				if callable( choice_options ):
+					choice_options = choice_options( )
+				
+				reasoning_options = getattr( searcher, 'reasoning_options', [ ] ) or [ ]
+				if callable( reasoning_options ):
+					reasoning_options = reasoning_options( )
+				
+				search_c6, search_c7, search_c8 = st.columns( 3, border=True, gap='xxsmall' )
+				
+				with search_c6:
+					st.selectbox( label='Response Format', options=list( format_options ),
+						index=None, key='filestore_response_format', placeholder='Options' )
+				
+				with search_c7:
+					st.selectbox( label='Tool Choice', options=list( choice_options ), index=None,
+						key='filestore_tool_choice', placeholder='Options' )
+				
+				with search_c8:
+					st.selectbox( label='Reasoning', options=list( reasoning_options ), index=None,
+						key='filestore_reasoning', placeholder='Options' )
+				
+				flag_c1, flag_c2, flag_c3 = st.columns( 3, border=True, gap='xxsmall' )
+				
+				with flag_c1:
+					st.toggle( label='Store', key='filestore_store', help=cfg.STORE )
+				
+				with flag_c2:
+					st.toggle( label='Stream', key='filestore_stream', help=cfg.STREAM )
+				
+				with flag_c3:
+					st.toggle( label='Background', key='filestore_background',
+						help=cfg.BACKGROUND_MODE )
+			
+			uploaded_file = st.file_uploader( label='Upload File', key='filestore_input',
+				help='Upload a file to the selected Gemini File Search Store.' )
+			
+			if st.button( label='Upload to Store', key='filestore_upload', icon='⬆️',
+					width='stretch',
+					disabled=uploaded_file is None or not bool( selected_store_id ) ):
+				try:
+					file_path = save_uploaded_storage_file( uploaded_file )
+					result = call_file_search_method( [ 'upload_file', 'upload', 'add_file' ],
+						{ 'store_id': selected_store_id, 'id': selected_store_id,
+							'file_path': file_path, 'path': file_path,
+							'instruct': st.session_state.get( 'filestore_system_instructions',
+								'' ), } )
+					st.session_state[ 'filestore_upload_result' ] = normalize_storage_object(
+						result )
+					st.success( 'File uploaded to the File Search Store.' )
+				except Exception as exc:
+					st.error( f'Upload failed: {exc}' )
+			
+			st.text_area( label='Query', key='filestore_query', height=120,
+				help='Search the selected Gemini File Search Store.' )
+			
+			query_c1, query_c2, query_c3 = st.columns( 3 )
+			with query_c1:
+				st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
+					key='filestore_temperature' )
+			with query_c2:
+				st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
+					key='filestore_top_percent' )
+			with query_c3:
+				st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+					key='filestore_max_tokens' )
+			
+			query_c4, query_c5, query_c6 = st.columns( 3 )
+			with query_c4:
+				st.toggle( label='Store', key='filestore_store' )
+			with query_c5:
+				st.toggle( label='Stream', key='filestore_stream' )
+			with query_c6:
+				st.toggle( label='Background', key='filestore_background' )
+			
+			if st.button( label='Search Store', key='filestore_search', icon='🔍', width='stretch',
+					disabled=not bool( selected_store_id ) or not bool(
+						st.session_state.get( 'filestore_query', '' ).strip( ) ) ):
+				try:
+					query = st.session_state.get( 'filestore_query', '' ).strip( )
+					result = call_file_search_method( [ 'search', 'query', 'generate_text' ],
+						{ 'store_id': selected_store_id, 'id': selected_store_id, 'query': query,
+							'prompt': query, 'model': st.session_state.get( 'filestore_model',
+							'' ),
+							'temperature': st.session_state.get( 'filestore_temperature', 0.0 ),
+							'top_p': st.session_state.get( 'filestore_top_percent', 0.0 ),
+							'max_tokens': st.session_state.get( 'filestore_max_tokens', 0 ),
+							'frequency': st.session_state.get( 'filestore_frequency_penalty',
+								0.0 ),
+							'presence': st.session_state.get( 'filestore_presence_penalty', 0.0 ),
+							'response_format': st.session_state.get( 'filestore_response_format',
+								'' ),
+							'tool_choice': st.session_state.get( 'filestore_tool_choice', '' ),
+							'reasoning': st.session_state.get( 'filestore_reasoning', '' ),
+							'background': st.session_state.get( 'filestore_background', False ),
+							'store': st.session_state.get( 'filestore_store', False ),
+							'stream': st.session_state.get( 'filestore_stream', False ),
+							'instruct': st.session_state.get( 'filestore_system_instructions',
+								'' ), } )
+					st.session_state[ 'filestore_results' ] = result
+				except Exception as exc:
+					st.error( f'Search failed: {exc}' )
+			
+			if st.session_state.get( 'filestore_upload_result' ):
+				with st.expander( label='Upload Result', icon='📄', expanded=False,
+						width='stretch' ):
+					render_storage_metadata( st.session_state[ 'filestore_upload_result' ] )
+			
+			if st.session_state.get( 'filestore_results' ) is not None:
+				with st.expander( label='Search Results', icon='🔎', expanded=True,
+						width='stretch' ):
+					result = st.session_state[ 'filestore_results' ]
+					if isinstance( result, str ):
+						st.markdown( result )
+					else:
+						st.json( normalize( result ) )
+		
+		st.button( label='Clear Outputs', key='filestore_clear_outputs', icon='🧹',
+			width='stretch',
+			on_click=clear_filestore_outputs, )
 
 # ======================================================================================
 # GOOGLE CLOUD BUCKETS MODE
@@ -12340,8 +12776,8 @@ elif mode == 'Google Cloud Buckets':
 		    lifecycle logic.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-value."""
+		    None: This function performs its work through side effects and does not return a value.
+		"""
 		st.session_state[ 'bucket_results' ] = None
 		st.session_state[ 'bucket_metadata' ] = { }
 		st.session_state[ 'bucket_upload_result' ] = { }
@@ -12439,7 +12875,8 @@ value."""
 		# ------------------------------------------------------------------
 		# Expander — System Instructions
 		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			
 			# ------------------------------------------------------------------
@@ -12623,6 +13060,120 @@ value."""
 			
 			st.caption( 'Upload Result' )
 			render_storage_metadata( st.session_state.get( 'bucket_upload_result', { } ) )
+			
+			# ------------------------------------------------------------------
+			# Cloud Bucket Query
+			# ------------------------------------------------------------------
+			with st.expander( label='Query', icon='🔎', expanded=True, width='stretch' ):
+				model_options = getattr( buckets, 'model_options', [ ] ) or [ ]
+				if callable( model_options ):
+					model_options = model_options( )
+				
+				if model_options:
+					st.selectbox( label='Model', options=list( model_options ), index=None,
+						key='bucket_model', placeholder='Select Model' )
+				
+				st.text_area( label='Query', key='bucket_query', height=120,
+					help='Ask a question using content stored in the selected Google Cloud '
+					     'Bucket.' )
+				
+				query_c1, query_c2, query_c3, query_c4 = st.columns( 4 )
+				with query_c1:
+					st.slider( label='Responses', min_value=0, max_value=8, step=1,
+						key='bucket_number' )
+				with query_c2:
+					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
+						key='bucket_temperature' )
+				with query_c3:
+					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
+						key='bucket_top_percent' )
+				with query_c4:
+					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+						key='bucket_max_tokens' )
+				
+				query_c5, query_c6 = st.columns( 2 )
+				with query_c5:
+					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='bucket_frequency_penalty' )
+				with query_c6:
+					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='bucket_presence_penalty' )
+				
+				format_options = getattr( buckets, 'format_options', [ ] ) or [ ]
+				if callable( format_options ):
+					format_options = format_options( )
+				
+				choice_options = getattr( buckets, 'choice_options', [ ] ) or [ ]
+				if callable( choice_options ):
+					choice_options = choice_options( )
+				
+				reasoning_options = getattr( buckets, 'reasoning_options', [ ] ) or [ ]
+				if callable( reasoning_options ):
+					reasoning_options = reasoning_options( )
+				
+				query_c7, query_c8, query_c9 = st.columns( 3 )
+				with query_c7:
+					st.selectbox( label='Response Format', options=list( format_options ),
+						index=None, key='bucket_response_format', placeholder='Options' )
+				with query_c8:
+					st.selectbox( label='Tool Choice', options=list( choice_options ), index=None,
+						key='bucket_tool_choice', placeholder='Options' )
+				with query_c9:
+					st.selectbox( label='Reasoning', options=list( reasoning_options ), index=None,
+						key='bucket_reasoning', placeholder='Options' )
+				
+				query_c10, query_c11, query_c12 = st.columns( 3 )
+				with query_c10:
+					st.toggle( label='Store', key='bucket_store' )
+				with query_c11:
+					st.toggle( label='Stream', key='bucket_stream' )
+				with query_c12:
+					st.toggle( label='Background', key='bucket_background' )
+				
+				if st.button( label='Query Cloud Bucket', key='query_bucket', icon='🔍',
+						width='stretch', disabled=not bool( target_bucket ) or not bool(
+							st.session_state.get( 'bucket_query', '' ).strip( ) ) ):
+					with st.spinner( 'Querying cloud bucket…' ):
+						try:
+							query = st.session_state.get( 'bucket_query', '' ).strip( )
+							result = call_bucket_method(
+								[ 'search', 'query', 'ask', 'generate_text' ],
+								{ 'bucket': target_bucket, 'bucket_name': target_bucket,
+									'store_id': target_bucket, 'id': target_bucket, 'query': query,
+									'prompt': query,
+									'model': st.session_state.get( 'bucket_model', '' ),
+									'number': st.session_state.get( 'bucket_number', 0 ),
+									'temperature': st.session_state.get( 'bucket_temperature',
+										0.0 ),
+									'top_p': st.session_state.get( 'bucket_top_percent', 0.0 ),
+									'max_tokens': st.session_state.get( 'bucket_max_tokens', 0 ),
+									'frequency': st.session_state.get( 'bucket_frequency_penalty',
+										0.0 ),
+									'presence': st.session_state.get( 'bucket_presence_penalty',
+										0.0 ), 'response_format': st.session_state.get(
+									'bucket_response_format', '' ),
+									'tool_choice': st.session_state.get( 'bucket_tool_choice',
+										'' ),
+									'reasoning': st.session_state.get( 'bucket_reasoning', '' ),
+									'background': st.session_state.get( 'bucket_background',
+										False ),
+									'store': st.session_state.get( 'bucket_store', False ),
+									'stream': st.session_state.get( 'bucket_stream', False ),
+									'instruct': st.session_state.get( 'bucket_system_instructions',
+										'' ), 'project_id': project_id, 'location': location, } )
+							st.session_state[ 'bucket_results' ] = result
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'Bucket query failed: {err.info}' )
+				
+				if st.session_state.get( 'bucket_results' ) is not None:
+					with st.expander( label='Query Results', icon='📄', expanded=True,
+							width='stretch' ):
+						result = st.session_state[ 'bucket_results' ]
+						if isinstance( result, str ):
+							st.markdown( result )
+						else:
+							st.json( normalize( result ) )
 		
 		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 		st.subheader( 'Cloud Bucket Metadata' )
