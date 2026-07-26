@@ -5130,7 +5130,7 @@ if mode == 'Text':
 				# ---------- Max Tokens ------------
 				with resp_c1:
 					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
-						help=cfg.MAX_TOKENS, key='text_max_tokens' )
+						help=cfg.MAX_OUTPUT_TOKENS, key='text_max_tokens' )
 				
 				# ---------- Response Format ------------
 				with resp_c2:
