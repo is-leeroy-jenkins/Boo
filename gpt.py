@@ -490,7 +490,7 @@ class Chat( GPT ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def normalize_reasoning_effort( self, reasoning: str | Dict[ str, str ] = None,
+	def normalize_reasoning_effort( self, reasoning: str | Dict[ str, str ]=None,
 		model: str=None ) -> str | None:
 		"""Normalize reasoning effort.
 		
@@ -553,8 +553,8 @@ class Chat( GPT ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_reasoning( self, reasoning: str | Dict[ str, str ] = None, model: str=None ) -> \
-	Dict[ str, str ] | None:
+	def build_reasoning( self, reasoning: str | Dict[ str, str ]=None,
+		model: str=None ) -> Dict[ str, str ] | None:
 		"""Build reasoning.
 		
 		Purpose:
@@ -623,7 +623,6 @@ class Chat( GPT ):
 			model_value = model if isinstance( model, str ) else self.model
 			model_name = str( model_value or '' ).strip( ).lower( )
 			limit = 16384
-			
 			if model_name.startswith( 'gpt-5' ):
 				limit = 32768
 			elif model_name.startswith( 'gpt-4.1' ):
@@ -640,7 +639,7 @@ class Chat( GPT ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def normalize_domains( self, allowed_domains: List[ str ] = None ) -> List[ str ]:
+	def normalize_domains( self, allowed_domains: List[ str ]=None ) -> List[ str ]:
 		"""Normalize domains.
 		
 		Purpose:
@@ -670,7 +669,6 @@ class Chat( GPT ):
 				value = domain.strip( ).lower( )
 				value = value.replace( 'https://', '' ).replace( 'http://', '' )
 				value = value.split( '/' )[ 0 ].strip( )
-				
 				if value and value not in domains:
 					domains.append( value )
 			
@@ -707,7 +705,6 @@ class Chat( GPT ):
 		try:
 			throw_if( 'prompt', prompt )
 			self.messages = [ ]
-			
 			if input_data is not None and len( input_data ) > 0:
 				self.messages.extend( input_data )
 			elif context is not None and len( context ) > 0:
@@ -717,7 +714,6 @@ class Chat( GPT ):
 					
 					role = str( item.get( 'role', '' ) or '' ).strip( )
 					content = item.get( 'content', '' )
-					
 					if role not in [ 'user', 'assistant', 'system', 'developer' ]:
 						continue
 					
@@ -727,8 +723,8 @@ class Chat( GPT ):
 					self.messages.append( { 'role': role,
 						'content': [ { 'type': 'input_text', 'text': content.strip( ), }, ], } )
 			
-			self.messages.append(
-				{ 'role': 'user', 'content': [ { 'type': 'input_text', 'text': prompt, }, ], } )
+			self.messages.append( { 'role': 'user',
+				'content': [ { 'type': 'input_text', 'text': prompt, }, ], } )
 			
 			return self.messages
 		except Exception as e:
@@ -739,9 +735,8 @@ class Chat( GPT ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_tools( self, tools: List[ Dict[ str, Any ] ] = None,
-		allowed_domains: List[ str ] = None, vector_store_ids: List[ str ] = None ) -> List[ Dict[
-		str, Any ] ] | None:
+	def build_tools( self, tools: List[ Dict[ str, Any ] ]=None, allowed_domains: List[ str ]=None,
+		vector_store_ids: List[ str ]=None ) -> List[ Dict[ str, Any ] ] | None:
 		"""Build tools.
 		
 		Purpose:
@@ -843,8 +838,8 @@ class Chat( GPT ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_include( self, include: List[ str ] = None,
-		tools: List[ Dict[ str, Any ] ] = None ) -> List[ str ] | None:
+	def build_include( self, include: List[ str ]=None,
+		tools: List[ Dict[ str, Any ] ]=None ) -> List[ str ] | None:
 		"""Build include.
 		
 		Purpose:
@@ -903,8 +898,7 @@ class Chat( GPT ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_text_format( self, format: Dict[ str, Any ] | str = None ) -> Dict[ str,
-	Any ] | None:
+	def build_text_format( self, format: Dict[ str, Any ] | str=None ) -> Dict[ str, Any ] | None:
 		"""Build text format.
 		
 		Purpose:
@@ -1255,8 +1249,7 @@ class Chat( GPT ):
 			'frequency_penalty', 'presence_penalty', 'max_tokens', 'stops', 'store', 'stream',
 			'background', 'number', 'response_format', 'context', 'instructions', 'include',
 			'tool_choice', 'previous_id', 'conversation_id', 'parallel_tools', 'max_tools',
-			'input',
-			'tools', 'reasoning', 'allowed_domains', 'max_search_results', 'output_text',
+			'input', 'tools', 'reasoning', 'allowed_domains', 'max_search_results', 'output_text',
 			'vector_store_ids', 'file_ids', 'response', 'file', 'purpose', 'model_options',
 			'include_options', 'tool_options', 'choice_options', 'purpose_options',
 			'format_options', 'reasoning_options', 'modality_options', 'supports_reasoning_model',
@@ -3544,6 +3537,22 @@ class Files( GPT ):
 		"""
 		return [ 'gpt-5-mini', 'gpt-5-nano', 'gpt-4.1-mini', 'gpt-4.1-nano', 'gpt-4o-mini', ]
 	
+	@property
+	def include_options( self ) -> List[ str ] | None:
+		"""Get include options.
+		
+		Purpose:
+			Returns the include options exposed by the Chat wrapper. The property centralizes UI
+			option values and keeps application selectors aligned with the provider-specific
+			implementation.
+		
+		Returns:
+			Available option values exposed by the provider wrapper.
+		"""
+		return [ 'file_search_call.results', 'web_search_call.results',
+			'web_search_call.action.sources', 'code_interpreter_call.outputs',
+			'reasoning.encrypted_content', 'message.output_text.logprobs', ]
+	
 	def validate_file_id( self, id: str=None ) -> str:
 		"""Validate file id.
 		
@@ -3656,7 +3665,6 @@ class Files( GPT ):
 			rows: List[ Dict[ str, Any ] ] = [ ]
 			for item in items:
 				row = self.normalize_file_object( item )
-				
 				if not row.get( 'id' ):
 					continue
 				
@@ -3665,7 +3673,6 @@ class Files( GPT ):
 						continue
 				
 				rows.append( row )
-			
 			return rows
 		except Exception as e:
 			exception = Error( e )
@@ -3768,7 +3775,6 @@ class Files( GPT ):
 		try:
 			throw_if( 'filepath', filepath )
 			throw_if( 'purpose', purpose )
-			
 			if not os.path.exists( filepath ):
 				raise FileNotFoundError( f'File not found: {filepath}' )
 			

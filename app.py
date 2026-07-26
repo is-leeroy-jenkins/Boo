@@ -8860,7 +8860,7 @@ elif mode == 'Document Q&A':
 						st.rerun( )
 		
 		# ------------------------------------------------------------------
-		# Expander — Mind COntrols (GPT)
+		# Expander — Mind Controls (GPT)
 		# ------------------------------------------------------------------
 		elif provider_name == 'GPT':
 			with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
