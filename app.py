@@ -6076,8 +6076,8 @@ elif mode == 'Images':
 		
 		return kwargs
 	
-	def get_image_edit_kwargs( prompt: str, path: str, mask_path: Optional[ str ] = None ) -> Dict[
-		str, Any ]:
+	def get_image_edit_kwargs( prompt: str, path: str,
+		mask_path: Optional[ str ] = None ) -> Dict[ str, Any ]:
 		"""Get image edit kwargs.
 		
 		Purpose:
@@ -6228,14 +6228,12 @@ elif mode == 'Images':
 				# ---------- Top-P ------------
 				with prm_c1:
 					st.slider( label='Top-P', key='image_top_percent', min_value=0.0,
-						max_value=1.0,
-						step=0.01, help=cfg.TOP_P )
+						max_value=1.0, step=0.01, help=cfg.TOP_P )
 				
 				# ---------- Top-K ------------
 				with prm_c2:
 					st.slider( label='Top-K', key='image_top_k', min_value=0, max_value=200,
-						step=1,
-						help=cfg.TOP_K )
+						step=1, help=cfg.TOP_K )
 				
 				# ---------- Temperature ------------
 				with prm_c3:
@@ -6245,7 +6243,7 @@ elif mode == 'Images':
 				# ---------- Frequency Penalty ------------
 				with prm_c4:
 					st.slider( label='Frequency Penalty', key='image_frequency_penalty',
-						min_value=-2.0, max_value=2.0, step=0.01, help=cfg.FREQUECY_PENALTY )
+						min_value=-2.0, max_value=2.0, step=0.01, help=cfg.FREQUENCY_PENALTY )
 				
 				# ---------- Presence Penalty ------------
 				with prm_c5:
@@ -7036,8 +7034,8 @@ elif mode == 'Audio':
 		
 		return values
 	
-	def sanitize_audio_selection( key: str, valid_options: List[ Any ], default: Any = '' ) -> \
-			None:
+	def sanitize_audio_selection( key: str,
+		valid_options: List[ Any ], default: Any = '' ) -> None:
 		"""Sanitize audio selection.
 		
 		Purpose:
@@ -7564,9 +7562,8 @@ elif mode == 'Audio':
 		
 		return None
 	
-	def get_audio_common_kwargs( path: Optional[ str ] = None, prompt: Optional[ str ] = None ) \
-			-> \
-	Dict[ str, Any ]:
+	def get_audio_common_kwargs( path: Optional[ str ]=None,
+		prompt: Optional[ str ]=None ) -> Dict[ str, Any ]:
 		"""Get audio common kwargs.
 		
 		Purpose:
@@ -7602,7 +7599,7 @@ elif mode == 'Audio':
 			'start_time': st.session_state.get( 'audio_start_time' ),
 			'end_time': st.session_state.get( 'audio_end_time' ), }
 	
-	def run_audio_transcription( path: str, prompt: Optional[ str ] = None ) -> str:
+	def run_audio_transcription( path: str, prompt: Optional[ str ]=None ) -> str:
 		"""Run audio transcription.
 		
 		Purpose:
@@ -7626,7 +7623,7 @@ elif mode == 'Audio':
 		update_audio_usage( transcriber )
 		return text_result
 	
-	def run_audio_translation( path: str, prompt: Optional[ str ] = None ) -> str:
+	def run_audio_translation( path: str, prompt: Optional[ str ]=None ) -> str:
 		"""Run audio translation.
 		
 		Purpose:
@@ -7815,7 +7812,7 @@ elif mode == 'Audio':
 				# ---------- Max Tokens ------------
 				with inf_c5:
 					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
-						key='audio_max_tokens', help=get_audio_help( 'MAX_OUTPUT_TOKENS' ) )
+						key='audio_max_tokens', help=cfg.MAX_OUTPUT_TOKENS )
 				
 				ctl_c1, ctl_c2, ctl_c3, ctl_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 					gap='xxsmall', border=True )
@@ -7840,7 +7837,7 @@ elif mode == 'Audio':
 				
 				# ----- Reset Button -----
 				st.button( label='Reset', key='audio_inference_reset', width='stretch',
-					on_click=reset_audio_inference_controls )
+					on_click=reset_audio_inference_controls, icon='🔄' )
 			
 			# ------------------------------------------------------------------
 			# Expander - Playback
