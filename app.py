@@ -10525,7 +10525,7 @@ value."""
 						help='Optional. Paste a provider file ID/name for retrieve, extract, ask, '
 						     'or delete.', width='stretch' )
 					
-				# -----  -----
+				# ----- Selected File -----
 				with mgmt_c4:
 					table_rows = st.session_state.get( 'files_table', [ ] )
 					file_options = [ row.get( 'id', '' ) for row in table_rows if
@@ -10535,12 +10535,15 @@ value."""
 						key='files_selected_id', index=None, placeholder='Options',
 						help='File selected from the latest provider list.' )
 			
+			# ------------------------------------------------------------------
+			# Expander - Request Settings
+			# ------------------------------------------------------------------
 			with st.expander( label='Request Settings', icon='⚙️', expanded=False,
 					width='stretch' ):
 				req_c1, req_c2, req_c3, req_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 					border=True, gap='xxsmall' )
 				
-				# -----  -----
+				# ----- Model -----
 				with req_c1:
 					model_options = get_files_options( files, 'model_options', [ ] )
 					model_options = [ str( item ) for item in model_options if
@@ -10550,19 +10553,17 @@ value."""
 						index=None, placeholder='Options',
 						help='Optional provider model for file-aware operations.' )
 				
-				# -----  -----
+				# ----- Max TOkens -----
 				with req_c2:
 					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
-						key='files_max_tokens',
-						help='Optional max tokens for file-aware model calls.' )
+						key='files_max_tokens', help=cfg.MAX_OUTPUT_TOKENS )
 				
-				# -----  -----
+				# ----- Temperature -----
 				with req_c3:
 					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
-						key='files_temperature',
-						help='Optional temperature for file-aware model calls.' )
+						key='files_temperature', help=cfg.TEMPERATURE )
 				
-				# -----  -----
+				# ----- Formate -----
 				with req_c4:
 					format_options = get_files_options( files, 'format_options', [ ] )
 					format_options = [ str( item ) for item in format_options if
@@ -10575,24 +10576,22 @@ value."""
 				req2_c1, req2_c2, req2_c3, req2_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 					border=True, gap='xxsmall' )
 				
-				# -----  -----
+				# ----- Top-P -----
 				with req2_c1:
 					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
-						key='files_top_percent', help='Optional top-p for file-aware model calls.' )
+						key='files_top_percent', help=cfg.TOP_P )
 				
-				# -----  -----
+				# ----- Frequency -----
 				with req2_c2:
 					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						key='files_frequency_penalty',
-						help='Optional frequency penalty for file-aware model calls.' )
+						key='files_frequency_penalty', help=cfg.FREQUENCY_PENALTY )
 				
-				# -----  -----
+				# ----- Presence -----
 				with req2_c3:
 					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						key='files_presence_penalty',
-						help='Optional presence penalty for file-aware model calls.' )
+						key='files_presence_penalty', help=cfg.PRESENCE_PENALTY )
 				
-				# -----  -----
+				# ----- Choice -----
 				with req2_c4:
 					choice_options = get_files_options( files, 'choice_options',
 						[ 'auto', 'required', 'none' ] )
@@ -10601,20 +10600,20 @@ value."""
 					sanitize_files_selection( 'files_tool_choice', choice_options, '' )
 					st.selectbox( label='Tool Choice', options=choice_options,
 						key='files_tool_choice', index=None, placeholder='Options',
-						help='Optional provider tool choice.' )
+						help=cfg.CHOICE )
 				
 				req3_c1, req3_c2, req3_c3, req3_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 					border=True, gap='xxsmall' )
 				
-				# -----  -----
+				# ----- Tools -----
 				with req3_c1:
 					tool_options = get_files_options( files, 'tool_options', [ ] )
 					tool_options = [ str( item ) for item in tool_options if str( item ).strip( ) ]
 					sanitize_files_multiselect( 'files_tools', tool_options )
 					st.multiselect( label='Tools', options=tool_options, key='files_tools',
-						placeholder='Options', help='Optional file-aware provider tools.' )
+						placeholder='Options', help=cfg.TOOLS )
 				
-				# -----  -----
+				# ----- Include -----
 				with req3_c2:
 					include_options = get_files_options( files, 'include_options', [ ] )
 					include_options = [ str( item ) for item in include_options if
@@ -10622,17 +10621,15 @@ value."""
 					sanitize_files_multiselect( 'files_include', include_options )
 					st.multiselect( label='Include', options=include_options, key='files_include',
 						placeholder='Options',
-						help='Optional include fields for file-aware responses.' )
+						help=cfg.INCLUDE )
 				
-				# -----  -----
+				# ----- Store -----
 				with req3_c3:
-					st.toggle( label='Store', key='files_store',
-						help='Optional store flag for file-aware responses.' )
+					st.toggle( label='Store', key='files_store', help=cfg.STORE )
 				
-				# -----  -----
+				# ----- Stream -----
 				with req3_c4:
-					st.toggle( label='Stream', key='files_stream',
-						help='Optional stream flag retained for wrapper compatibility.' )
+					st.toggle( label='Stream', key='files_stream', help=cfg.STREAM )
 		
 		# ------------------------------------------------------------------
 		# Expander — Files System Instructions
@@ -10640,7 +10637,7 @@ value."""
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			
-			# ----- Files Prompt Categories -----
+			# ----- Prompt Categories -----
 			files_prompt_categories = fetch_prompt_categories( 'Files' )
 			current_files_category = st.session_state.get( 'files_prompt_category' )
 			if current_files_category not in files_prompt_categories:
@@ -10681,7 +10678,7 @@ value."""
 			# ----- Clear Button -----
 			with btn_c1:
 				st.button( label='Clear Instructions', width='stretch',
-					on_click=clear_files_instructions, icon='' )
+					on_click=clear_files_instructions, icon='🧹' )
 			
 			# ----- Convert Button ----
 			with btn_c2:
@@ -10693,6 +10690,7 @@ value."""
 		upload_tab, list_tab, retrieve_tab, extract_tab, ask_tab, delete_tab = st.tabs(
 			[ 'Upload', 'List', 'Retrieve', 'Extract', 'Ask', 'Delete' ] )
 		
+		# ----- Upload -----
 		with upload_tab:
 			allowed_types = [ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv',
 				'xlsx', 'xls' ]
@@ -10701,7 +10699,7 @@ value."""
 			
 			if uploaded_file is not None:
 				st.caption( f'Selected: {uploaded_file.name}' )
-			
+			# ----- Upload Button -----
 			if st.button( 'Upload File', key='files_upload_button', width='stretch', icon='📤' ):
 				with st.spinner( 'Uploading file…' ):
 					try:
@@ -10728,6 +10726,7 @@ value."""
 				with st.expander( label='Upload Result', icon='📄', expanded=False, width='stretch' ):
 					st.write( st.session_state.get( 'files_results' ) )
 		
+		# ----- List -----
 		with list_tab:
 			list_c1, list_c2 = st.columns( [ 0.50, 0.50 ] )
 			
@@ -10786,6 +10785,7 @@ value."""
 			if st.session_state.get( 'files_metadata' ):
 				st.json( st.session_state.get( 'files_metadata' ) )
 		
+		# ----- Extract -----
 		with extract_tab:
 			if not extract_supported:
 				st.info(
@@ -10912,6 +10912,7 @@ value."""
 					data=st.session_state.get( 'files_last_answer', '' ),
 					file_name='file_answer.txt', mime='text/plain', width='stretch' )
 		
+		# ----- Delete -----
 		with delete_tab:
 			if not st.session_state.get( 'files_delete_id' ):
 				st.session_state[ 'files_delete_id' ] = get_effective_file_id( 'files_selected_id',
@@ -10924,7 +10925,7 @@ value."""
 			
 			# ----- Delete Button -----
 			if st.button( 'Delete File', key='files_delete_button', width='stretch',
-					disabled=not confirm_delete, icon='🔄' ):
+					disabled=not confirm_delete, icon='❌' ):
 				with st.spinner( 'Deleting file…' ):
 					try:
 						file_id = st.session_state.get( 'files_delete_id', '' ).strip( )
