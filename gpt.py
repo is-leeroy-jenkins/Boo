@@ -4471,8 +4471,7 @@ class VectorStores( GPT ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_expires_after( self, anchor: str=None, days: int=None ) -> Dict[
-		                                                                         str, Any ] | None:
+	def build_expires_after( self, anchor: str=None, days: int=None ) -> Dict[ str, Any ] | None:
 		"""Build expires after.
 		
 		Purpose:
@@ -4896,7 +4895,6 @@ class VectorStores( GPT ):
 			self.client = OpenAI( api_key=self.api_key )
 			self.store_id = self.validate_store_id( store_id )
 			self.request = { 'vector_store_id': self.store_id, }
-			
 			self.response = self.client.vector_stores.retrieve( vector_store_id=self.store_id )
 			self.vector_store = self.normalize_vector_store( self.response )
 			return self.vector_store
@@ -4909,10 +4907,8 @@ class VectorStores( GPT ):
 			raise exception
 	
 	def update( self, store_id: str, name: str=None, description: str=None,
-		metadata: Dict[ str, Any ] = None, expires_after: Dict[ str, Any ] = None ) -> (Dict[
-			                                                                               str,
-			                                                                               Any ] |
-	                                                                                    None):
+		metadata: Dict[ str, Any ] = None,
+		expires_after: Dict[ str, Any ] = None ) -> (Dict[ str, Any ] | None):
 		"""Update.
 		
 		Purpose:
@@ -4937,7 +4933,6 @@ class VectorStores( GPT ):
 			self.client = OpenAI( api_key=self.api_key )
 			self.store_id = self.validate_store_id( store_id )
 			self.request = { }
-			
 			if isinstance( name, str ) and name.strip( ):
 				self.request[ 'name' ] = name.strip( )
 			
@@ -4986,9 +4981,7 @@ class VectorStores( GPT ):
 			self.client = OpenAI( api_key=self.api_key )
 			self.store_id = self.validate_store_id( store_id )
 			self.request = { 'vector_store_id': self.store_id, }
-			
 			self.response = self.client.vector_stores.delete( vector_store_id=self.store_id )
-			
 			if isinstance( self.response, dict ):
 				return self.response
 			
@@ -5052,8 +5045,8 @@ class VectorStores( GPT ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def list( self, store_id: str, limit: int=100, order: str='desc' ) -> List[
-		Dict[ str, Any ] ]:
+	def list( self, store_id: str, limit: int=100,
+		order: str='desc' ) -> List[ Dict[ str, Any ] ]:
 		"""List.
 		
 		Purpose:
@@ -5081,8 +5074,8 @@ class VectorStores( GPT ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def list_files( self, store_id: str, limit: int=100, order: str='desc' ) -> List[
-		Dict[ str, Any ] ]:
+	def list_files( self, store_id: str, limit: int=100,
+		order: str='desc' ) -> List[ Dict[ str, Any ] ]:
 		"""List files.
 		
 		Purpose:
@@ -5105,7 +5098,6 @@ class VectorStores( GPT ):
 			self.client = OpenAI( api_key=self.api_key )
 			self.store_id = self.validate_store_id( store_id )
 			self.request = { 'limit': limit, 'order': order, }
-			
 			self.response = self.client.vector_stores.files.list( vector_store_id=self.store_id,
 				**self.request )
 			
@@ -5157,8 +5149,8 @@ class VectorStores( GPT ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def update_file( self, store_id: str, file_id: str, attributes: Dict[ str, Any ] = None ) -> \
-	Dict[ str, Any ] | None:
+	def update_file( self, store_id: str, file_id: str,
+		attributes: Dict[ str, Any ] = None ) -> Dict[ str, Any ] | None:
 		"""Update file.
 		
 		Purpose:
@@ -5278,8 +5270,8 @@ class VectorStores( GPT ):
 			raise exception
 	
 	def create_file_batch( self, store_id: str, file_ids: List[ str ],
-		attributes: Dict[ str, Any ] = None, chunking_strategy: Dict[ str, Any ] = None ) -> Dict[
-			                                                                                     str, Any ] | None:
+		attributes: Dict[ str, Any ] = None,
+		chunking_strategy: Dict[ str, Any ] = None ) -> Dict[ str, Any ] | None:
 		"""Create file batch.
 		
 		Purpose:
@@ -5366,8 +5358,8 @@ class VectorStores( GPT ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def list_file_batch_files( self, store_id: str, batch_id: str, limit: int=100 ) -> List[
-		Dict[ str, Any ] ]:
+	def list_file_batch_files( self, store_id: str, batch_id: str,
+		limit: int=100 ) -> List[ Dict[ str, Any ] ]:
 		"""List file batch files.
 		
 		Purpose:
