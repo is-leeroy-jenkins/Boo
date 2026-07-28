@@ -3563,7 +3563,6 @@ class VectorStores( GPT ):
 			self.filter = filter
 			self.client = OpenAI( api_key=self.api_key, )
 			self.request = { 'limit': self.limit, 'order': self.order, }
-			
 			if self.after:
 				self.request[ 'after' ] = self.after
 			
@@ -3620,8 +3619,8 @@ class VectorStores( GPT ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def update_file( self, store_id: str, file_id: str, attributes: Dict[ str, Any ] ) -> Dict[
-		str, Any ]:
+	def update_file( self, store_id: str, file_id: str,
+		attributes: Dict[ str, Any ] ) -> Dict[ str, Any ]:
 		"""Update an attached file.
 		
 		Purpose:
