@@ -45,6 +45,7 @@ from google.genai.file_search_stores import FileSearchStores
 import config as cfg
 import base64
 from boogr import Error, Logger
+import io
 import json
 import os
 import requests
@@ -193,541 +194,434 @@ class Gemini( ):
 		self.tools = [ ]
 
 class Chat( Gemini ):
-	"""Chat class.
+	"""Provide Gemini text-generation workflow support.
 	
 	Purpose:
-	    Defines the Chat component used by the Boo application. The class groups related provider
-	    configuration, runtime state, helper methods, and API-facing behavior so Streamlit workflows can
-	    call a consistent interface.
+		Provides synchronous and streaming text generation through the Google Gen AI SDK.
+		The class constructs Gemini content, configuration, safety, reasoning, structured-output,
+		URL-context, Google Search, File Search, and code-execution objects from arguments assigned
+		to object members.
 	
 	Attributes:
-	    use_vertex (Optional[bool]): Stores use vertex for the component runtime state.
-	    http_options (Optional[HttpOptions]): Stores http options for the component runtime state.
-	    client (Optional[genai.Client]): Stores client for the component runtime state.
-	    storage_client (Optional[storage.Client]): Stores storage client for the component runtime state.
-	    contents (Optional[Union[str, List[str], List[Content]]]): Stores contents for the component runtime state.
-	    image_uri (Optional[str]): Stores image uri for the component runtime state.
-	    audio_uri (Optional[str]): Stores audio uri for the component runtime state.
-	    file_path (Optional[str]): Stores file path for the component runtime state.
-	    files (Optional[List[str]]): Stores files for the component runtime state.
-	    content_block (Optional[str]): Stores content block for the component runtime state.
-	    context (Optional[List[Dict[str, Any]]]): Stores context for the component runtime state.
-	    urls (Optional[List[str]]): Stores urls for the component runtime state.
-	    max_urls (Optional[int]): Stores max urls for the component runtime state.
-	    response_schema (Optional[Any]): Stores response schema for the component runtime state.
-	    safety_profile (Optional[str]): Stores safety profile for the component runtime state.
-	    safety_settings (Optional[List[SafetySetting]]): Stores safety settings for the component runtime state."""
-	use_vertex: Optional[ bool ]
-	http_options: Optional[ HttpOptions ]
+		client (Optional[genai.Client]): Google Gen AI client.
+		model (str): Gemini model used by the current request.
+		prompt (str): User prompt used by the current request.
+		contents (List[Content]): Provider-ready request contents.
+		content_config (Optional[GenerateContentConfig]): Provider generation configuration.
+		content_response (Optional[GenerateContentResponse]): Latest synchronous response.
+		stream_response (Any): Latest streaming response iterator.
+		output_text (str): Text extracted from the latest response.
+		context (List[Dict[str, Any]]): Application conversation history.
+		tools (List[str]): Selected Gemini built-in tool names.
+		tool_objects (List[Tool]): Provider-ready Gemini tool objects.
+		file_search_store_names (List[str]): File Search store resource names.
+		grounding_metadata (Any): Grounding metadata from the latest response.
+	"""
 	client: Optional[ genai.Client ]
-	storage_client: Optional[ storage.Client ]
-	contents: Optional[ Union[ str, List[ str ], List[ Content ] ] ]
-	image_uri: Optional[ str ]
-	audio_uri: Optional[ str ]
-	file_path: Optional[ str ]
-	files: Optional[ List[ str ] ]
-	content_block: Optional[ str ]
-	context: Optional[ List[ Dict[ str, Any ] ] ]
-	urls: Optional[ List[ str ] ]
-	max_urls: Optional[ int ]
-	response_schema: Optional[ Any ]
-	safety_profile: Optional[ str ]
-	safety_settings: Optional[ List[ SafetySetting ] ]
+	model: str
+	prompt: str
+	contents: List[ Content ]
+	content_config: Optional[ GenerateContentConfig ]
+	content_response: Optional[ GenerateContentResponse ]
+	stream_response: Any
+	output_text: str
+	context: List[ Dict[ str, Any ] ]
+	tools: List[ str ]
+	tool_objects: List[ Tool ]
+	file_search_store_names: List[ str ]
+	grounding_metadata: Any
 	
-	def __init__( self, model: str = 'gemini-2.5-flash-lite' ):
+	def __init__( self, model: str = 'gemini-2.5-flash-lite' ) -> None:
+		"""Initialize instance.
+		
+		Purpose:
+			Initializes Gemini text-generation configuration and runtime state without executing
+			a provider request.
+		
+		Args:
+			model (str): Default Gemini text-generation model.
+		
+		Returns:
+			None: This method initializes object state.
+		"""
 		super( ).__init__( )
 		self.gemini_api_key = cfg.GEMINI_API_KEY
 		self.google_api_key = cfg.GOOGLE_API_KEY
-		self.api_version = None
 		self.client = None
-		self.content_config = None
-		self.image_config = None
-		self.function_tool_config = None
-		self.thought_config = None
-		self.genimg_config = None
-		self.tool_objects = None
-		self.tools = [ ]
-		self.response_modalities = [ ]
-		self.files = [ ]
-		self.http_options = { }
-		self.number = None
-		self.candidate_count = None
 		self.model = model
-		self.top_p = None
-		self.top_k = None
-		self.temperature = None
-		self.frequency_penalty = None
-		self.presence_penalty = None
-		self.max_tokens = None
-		self.use_vertex = None
-		self.instructions = None
-		self.media_resolution = None
-		self.tool_choice = None
-		self.contents = None
-		self.grounding_metadata = None
-		self.content_block = None
-		self.context = [ ]
-		self.client = None
-		self.storage_client = None
-		self.content_response = None
-		self.image_response = None
-		self.image_uri = None
-		self.audio_uri = None
-		self.file_path = None
+		self.prompt = ''
+		self.number = 1
+		self.candidate_count = 1
+		self.temperature = 0.0
+		self.top_p = 0.0
+		self.top_k = 0
+		self.frequency_penalty = 0.0
+		self.presence_penalty = 0.0
+		self.max_tokens = 0
+		self.instructions = ''
 		self.stops = [ ]
-		self.response_mime_type = None
+		self.response_mime_type = ''
 		self.response_schema = None
-		self.urls = [ ]
-		self.max_urls = None
-		self.safety_profile = None
-		self.safety_settings = None
+		self.reasoning = ''
+		self.thought_config = None
+		self.media_resolution = ''
+		self.response_modalities = [ ]
+		self.tools = [ ]
+		self.tool_objects = [ ]
+		self.tool_choice = ''
 		self.file_search_store_names = [ ]
-		self.include_server_side_tool_invocations = None
+		self.safety_profile = ''
+		self.safety_settings = [ ]
+		self.context = [ ]
+		self.content_block = ''
+		self.urls = [ ]
+		self.max_urls = 10
+		self.contents = [ ]
+		self.content_config = None
+		self.content_response = None
+		self.stream_response = None
+		self.stream = False
+		self.stream_handler = None
+		self.output_text = ''
+		self.grounding_metadata = None
+		self.config_values = { }
+		self.sources = [ ]
+		self.history = [ ]
 	
 	@property
-	def model_options( self ) -> List[ str ] | None:
-		"""Model options.
+	def model_options( self ) -> List[ str ]:
+		"""Get model options.
 		
 		Purpose:
-		    Returns normalized information for the Chat component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns Gemini text-generation models exposed by the wrapper.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
-		return [ 'gemini-2.5-flash',
-		         'gemini-2.5-flash-lite',
-		         'gemini-2.5-pro',
-		         'gemini-3-flash-preview',
-		         'gemini-3.1-flash-lite-preview',
-		         'gemini-3.1-pro-preview',
-		         'gemini-2.0-flash',
-		         'gemini-2.0-flash-lite' ]
+			List[str]: Available Gemini model identifiers.
+		"""
+		return [ 'gemini-3.1-pro-preview', 'gemini-3.1-flash-lite-preview',
+			'gemini-3-flash-preview', 'gemini-2.5-pro', 'gemini-2.5-flash',
+			'gemini-2.5-flash-lite',
+			'gemini-2.0-flash', 'gemini-2.0-flash-lite', ]
 	
 	@property
-	def tool_options( self ) -> List[ str ] | None:
-		"""Tool options.
+	def tool_options( self ) -> List[ str ]:
+		"""Get tool options.
 		
 		Purpose:
-		    Returns normalized information for the Chat component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns Gemini built-in tools implemented by the wrapper.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'google_search',
-		         'google_maps',
-		         'url_context',
-		         'file_search',
-		         'code_execution' ]
+			List[str]: Supported built-in tool names.
+		"""
+		return [ 'google_search', 'url_context', 'file_search', 'code_execution', ]
 	
 	@property
-	def reasoning_options( self ) -> List[ str ] | None:
-		"""Reasoning options.
+	def reasoning_options( self ) -> List[ str ]:
+		"""Get reasoning options.
 		
 		Purpose:
-		    Returns normalized information for the Chat component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns thinking-level values exposed by the wrapper.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'THINKING_LEVEL_UNSPECIFIED', 'MINIMAL',
-		         'LOW', 'MEDIUM', 'HIGH' ]
+			List[str]: Supported thinking-level values.
+		"""
+		return [ 'THINKING_LEVEL_UNSPECIFIED', 'MINIMAL', 'LOW', 'MEDIUM', 'HIGH', ]
 	
 	@property
 	def media_options( self ) -> List[ str ]:
-		"""Media options.
+		"""Get media-resolution options.
 		
 		Purpose:
-		    Returns normalized information for the Chat component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns media-resolution values exposed by the wrapper.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
-		return [ 'media_resolution_high',
-		         'media_resolution_medium',
-		         'media_resolution_low' ]
+			List[str]: Supported media-resolution values.
+		"""
+		return [ 'media_resolution_high', 'media_resolution_medium', 'media_resolution_low', ]
 	
 	@property
-	def choice_options( self ) -> List[ str ] | None:
-		"""Choice options.
+	def choice_options( self ) -> List[ str ]:
+		"""Get tool-choice options.
 		
 		Purpose:
-		    Returns normalized information for the Chat component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns function-calling modes retained for application control compatibility.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'auto', 'any', 'none', 'validated' ]
+			List[str]: Supported function-calling mode values.
+		"""
+		return [ 'auto', 'any', 'none', 'validated', ]
 	
 	@property
-	def include_options( self ) -> List[ str ] | None:
-		"""Include options.
+	def include_options( self ) -> List[ str ]:
+		"""Get include options.
 		
 		Purpose:
-		    Returns normalized information for the Chat component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns an empty collection because Gemini Generate Content does not use the OpenAI
+			include-path request argument.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'file_search_call.results',
-		         'message.input_image.image_url',
-		         'message.output_text.logprobs',
-		         'reasoning.encrypted_content' ]
+			List[str]: Empty include-option collection.
+		"""
+		return [ ]
 	
 	@property
-	def modality_options( self ) -> List[ str ] | None:
-		"""Modality options.
+	def modality_options( self ) -> List[ str ]:
+		"""Get response-modality options.
 		
 		Purpose:
-		    Returns normalized information for the Chat component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns response modalities exposed by the wrapper.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ '', 'text', 'image', 'audio' ]
+			List[str]: Supported response-modality values.
+		"""
+		return [ 'text', 'image', 'audio', ]
 	
 	@property
 	def format_options( self ) -> List[ str ]:
-		"""Format options.
+		"""Get response-format options.
 		
 		Purpose:
-		    Returns normalized information for the Chat component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns MIME types supported by Gemini structured-output configuration.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
-		return [ 'text/plain',
-		         'application/json',
-		         'text/x.enum' ]
+			List[str]: Supported response MIME types.
+		"""
+		return [ 'text/plain', 'application/json', 'text/x.enum', ]
 	
 	def get_supported_tools( self, model: str ) -> List[ str ]:
 		"""Get supported tools.
 		
 		Purpose:
-		    Returns normalized information for the Chat component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns the built-in tools implemented by the Gemini Chat wrapper.
 		
 		Args:
-		    model (str): Model value used by the operation.
+			model (str): Required Gemini model identifier.
 		
 		Returns:
-		    List[str]: Return value produced by the operation.
+			List[str]: Supported built-in tool names.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'model', model )
-			self.model_name = str( model ).strip( ).lower( )
-			self.options = [ 'google_search', 'url_context', 'file_search', 'code_execution' ]
-			
-			if self.supports_google_maps( self.model_name ):
-				self.options.append( 'google_maps' )
-			
-			return self.options
+			self.model = model
+			return self.tool_options
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = 'get_supported_tools( self, model: str=None )'
+			exception.method = ('get_supported_tools( self, model: str ) -> List[ str ]')
 			Logger( ).write( exception )
 			raise exception
 	
-	def supports_google_maps( self, model: str ) -> bool:
-		"""Supports google maps.
+	def build_urls( self, urls: Optional[ List[ str ] ] = None, max_urls: int = 10 ) -> List[
+		str ]:
+		"""Build URL collection.
 		
 		Purpose:
-		    Performs the Chat.supports_google_maps workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Builds a bounded collection of nonempty reference URLs without modifying the
+			caller-supplied collection.
 		
 		Args:
-		    model (str): Model value used by the operation.
+			urls (Optional[List[str]]): Optional reference URLs.
+			max_urls (int): Maximum number of URLs retained.
 		
 		Returns:
-		    bool: Return value produced by the operation.
+			List[str]: Bounded reference URL collection.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			throw_if( 'model', model )
-			self.model_name = model.strip( ).lower( )
-			self.maps_models = {
-					'gemini-3.1-pro-preview',
-					'gemini-3.1-flash-lite-preview',
-					'gemini-3-flash-preview',
-					'gemini-2.5-pro',
-					'gemini-2.5-flash',
-					'gemini-2.5-flash-lite',
-					'gemini-2.0-flash'
-			}
-			return self.model_name in self.maps_models
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'supports_google_maps( self, model: str=None ) -> bool'
-			Logger( ).write( exception )
-			raise exception
-	
-	def build_urls( self, urls: List[ str ], max_urls: int = 10 ) -> List[ str ]:
-		"""Build urls.
-		
-		Purpose:
-		    Builds the normalized data structure required by the Chat workflow. The function converts caller
-		    input, session state, or provider-specific options into a stable shape that downstream API calls
-		    and rendering code can consume safely.
-		
-		Args:
-		    urls (List[str]): Urls value used by the operation.
-		    max_urls (int): Max urls value used by the operation.
-		
-		Returns:
-		    List[str]: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			throw_if( 'max_urls', max_urls )
-			self.urls = urls if urls is not None else [ ]
-			for url in urls:
-				if url is None:
-					continue
-				
-				self.url = url.strip( )
-				if not self.url:
-					continue
-				
-				self.urls.append( self.url )
-			
+			self.url_values = urls if urls is not None else [ ]
 			self.max_urls = max_urls
-			if self.max_urls is not None:
-				self.urls = self.urls[ : self.max_urls ]
+			self.urls = [ ]
+			
+			for item in self.url_values:
+				if item is None:
+					continue
+				
+				self.url = str( item ).strip( )
+				
+				if self.url:
+					self.urls.append( self.url )
+			
+			if self.max_urls > 0:
+				self.urls = self.urls[ :self.max_urls ]
 			
 			return self.urls
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = 'build_urls( self, urls: List[ str ]=None, max_urls: int=None )'
+			exception.method = 'build_urls( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def append_urls_to_content( self, content: str, urls: List[ str ] ) -> str | None:
-		"""Append urls to content.
+	def append_urls_to_content( self, content: str, urls: List[ str ] ) -> str:
+		"""Append URLs to content.
 		
 		Purpose:
-		    Performs the Chat.append_urls_to_content workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Appends reference URLs to optional supplemental request content.
 		
 		Args:
-		    content (str): Content value used by the operation.
-		    urls (List[str]): Urls value used by the operation.
+			content (str): Supplemental request content.
+			urls (List[str]): Reference URLs appended to the content.
 		
 		Returns:
-		    Optional[str]: Return value produced by the operation.
+			str: Combined supplemental content.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			self.content_blocks = [ ]
-			self.content_blocks.append( content.strip( ) )
+			self.content_block = content
 			self.urls = urls
-			if len( self.urls ) > 0:
+			self.content_blocks = [ ]
+			
+			if self.content_block:
+				self.content_blocks.append( self.content_block.strip( ) )
+			
+			if self.urls:
 				self.content_blocks.append( 'Reference URLs:\n' + '\n'.join( self.urls ) )
 			
-			return '\n\n'.join( self.content_blocks ) if len( self.content_blocks ) > 0 else None
+			return '\n\n'.join( self.content_blocks )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = ('append_urls_to_content( self, **kwargs ) -> str')
+			exception.method = 'append_urls_to_content( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_modalities( self, modalities: List[ str ] ) -> List[ str ] | None:
-		"""Build modalities.
+	def build_modalities( self, modalities: Optional[ List[ str ] ] = None ) -> Optional[
+		List[ str ] ]:
+		"""Build response modalities.
 		
 		Purpose:
-		    Builds the normalized data structure required by the Chat workflow. The function converts caller
-		    input, session state, or provider-specific options into a stable shape that downstream API calls
-		    and rendering code can consume safely.
+			Builds provider-ready uppercase response modality values.
 		
 		Args:
-		    modalities (List[str]): Modalities value used by the operation.
+			modalities (Optional[List[str]]): Requested response modalities.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation.
+			Optional[List[str]]: Provider-ready modalities or None when none are selected.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			self.modalities = [ ]
+			self.requested_modalities = (modalities if modalities is not None else [ ])
+			self.response_modalities = [ ]
 			
-			for modality in (modalities or [ ]):
-				if modality is None:
-					continue
+			for item in self.requested_modalities:
+				self.modality = str( item ).strip( ).upper( )
 				
-				self.modality = str( modality ).strip( ).upper( )
 				if self.modality in [ 'TEXT', 'IMAGE', 'AUDIO' ]:
-					self.modalities.append( self.modality )
+					self.response_modalities.append( self.modality )
 			
-			return self.modalities if len( self.modalities ) > 0 else None
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'build_modalities( self, modalities: List[ str ] )'
-			Logger( ).write( exception )
-			raise exception
-	
-	def build_reasoning( self, reasoning: str ) -> ThinkingConfig | None:
-		"""Build reasoning.
-		
-		Purpose:
-		    Builds the normalized data structure required by the Chat workflow. The function converts caller
-		    input, session state, or provider-specific options into a stable shape that downstream API calls
-		    and rendering code can consume safely.
-		
-		Args:
-		    reasoning (str): Reasoning value used by the operation.
-		
-		Returns:
-		    ThinkingConfig | None: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			self.reasoning = str( reasoning or '' ).strip( ).upper( )
-			if not self.reasoning:
-				return None
-			
-			if self.reasoning == 'THINKING_LEVEL_UNSPECIFIED':
-				return None
-			
-			if self.reasoning not in [ 'MINIMAL', 'LOW', 'MEDIUM', 'HIGH' ]:
-				return None
-			
-			return ThinkingConfig( thinking_level=self.reasoning )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'build_reasoning( self, reasoning: str ) -> ThinkingConfig | None'
-			Logger( ).write( exception )
-			raise exception
-	
-	def build_safety_settings( self, safety_profile: str ) -> List[ SafetySetting ] | None:
-		"""Build safety settings.
-		
-		Purpose:
-		    Builds the normalized data structure required by the Chat workflow. The function converts caller
-		    input, session state, or provider-specific options into a stable shape that downstream API calls
-		    and rendering code can consume safely.
-		
-		Args:
-		    safety_profile (str): Safety profile value used by the operation.
-		
-		Returns:
-		    List[SafetySetting] | None: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			self.safety_profile = str( safety_profile or '' ).strip( ).upper( )
-			if not self.safety_profile:
-				return None
-			
-			self.threshold = getattr( HarmBlockThreshold, self.safety_profile, None )
-			if self.threshold is None:
-				return None
-			
-			self.categories = [ ]
-			for name in [
-					'HARM_CATEGORY_HATE_SPEECH',
-					'HARM_CATEGORY_HARASSMENT',
-					'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-					'HARM_CATEGORY_DANGEROUS_CONTENT',
-					'HARM_CATEGORY_CIVIC_INTEGRITY' ]:
-				self.category = getattr( HarmCategory, name, None )
-				if self.category is not None:
-					self.categories.append( self.category )
-			
-			if len( self.categories ) == 0:
-				return None
-			
-			return [ SafetySetting( category=category, threshold=self.threshold )
-			         for category in self.categories ]
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'build_safety_settings( self, safety_profile: str )'
-			Logger( ).write( exception )
-			raise exception
-	
-	def get_output_text( self ) -> Optional[ str ]:
-		"""Get output text.
-		
-		Purpose:
-		    Returns normalized information for the Chat component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
-		
-		Returns:
-		    Optional[str]: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			if self.content_response is None:
-				return None
-			
-			self.text = getattr( self.content_response, 'text', None )
-			if isinstance( self.text, str ) and self.text.strip( ):
-				return self.text.strip( )
-			
-			self.parts = getattr( self.content_response, 'parts', None )
-			if self.parts:
-				self.output = [ ]
-				for part in self.parts:
-					self.part_text = getattr( part, 'text', None )
-					if isinstance( self.part_text, str ) and self.part_text.strip( ):
-						self.output.append( self.part_text.strip( ) )
-				
-				if len( self.output ) > 0:
-					return '\n'.join( self.output ).strip( )
-			
-			self.candidates = getattr( self.content_response, 'candidates', None )
-			if self.candidates:
-				self.output = [ ]
-				for candidate in self.candidates:
-					self.content = getattr( candidate, 'content', None )
-					if self.content is None:
-						continue
-					
-					for part in getattr( self.content, 'parts', None ) or [ ]:
-						self.part_text = getattr( part, 'text', None )
-						if isinstance( self.part_text, str ) and self.part_text.strip( ):
-							self.output.append( self.part_text.strip( ) )
-				
-				if len( self.output ) > 0:
-					return '\n'.join( self.output ).strip( )
+			if self.response_modalities:
+				return self.response_modalities
 			
 			return None
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = 'get_output_text( self ) -> Optional[ str ]'
+			exception.method = ('build_modalities( self, modalities: Optional[ '
+			                    'List[ str ] ] = None ) -> Optional[ List[ str ] ]')
+			Logger( ).write( exception )
+			raise exception
+	
+	def build_reasoning( self, reasoning: str = '' ) -> Optional[ ThinkingConfig ]:
+		"""Build thinking configuration.
+		
+		Purpose:
+			Builds a Gemini thinking configuration from the selected thinking level.
+		
+		Args:
+			reasoning (str): Requested Gemini thinking level.
+		
+		Returns:
+			Optional[ThinkingConfig]: Thinking configuration or None.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.reasoning = reasoning.strip( ).upper( )
+			self.thought_config = None
+			
+			if not self.reasoning:
+				return self.thought_config
+			
+			if self.reasoning == 'THINKING_LEVEL_UNSPECIFIED':
+				return self.thought_config
+			
+			if self.reasoning not in [ 'MINIMAL', 'LOW', 'MEDIUM', 'HIGH', ]:
+				return self.thought_config
+			
+			self.thought_config = ThinkingConfig( thinking_level=self.reasoning, )
+			return self.thought_config
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = ('build_reasoning( self, reasoning: str = "" ) -> '
+			                    'Optional[ ThinkingConfig ]')
+			Logger( ).write( exception )
+			raise exception
+	
+	def build_safety_settings( self, safety_profile: str = '' ) -> Optional[
+		List[ SafetySetting ] ]:
+		"""Build safety settings.
+		
+		Purpose:
+			Builds consistent safety thresholds for supported Gemini harm categories.
+		
+		Args:
+			safety_profile (str): Harm-block threshold enumeration name.
+		
+		Returns:
+			Optional[List[SafetySetting]]: Safety settings or None.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.safety_profile = safety_profile.strip( ).upper( )
+			self.safety_settings = [ ]
+			
+			if not self.safety_profile:
+				return None
+			
+			self.threshold = getattr( HarmBlockThreshold, self.safety_profile, None, )
+			
+			if self.threshold is None:
+				return None
+			
+			self.category_names = [ 'HARM_CATEGORY_HATE_SPEECH', 'HARM_CATEGORY_HARASSMENT',
+				'HARM_CATEGORY_SEXUALLY_EXPLICIT', 'HARM_CATEGORY_DANGEROUS_CONTENT',
+				'HARM_CATEGORY_CIVIC_INTEGRITY', ]
+			
+			for name in self.category_names:
+				self.category = getattr( HarmCategory, name, None, )
+				
+				if self.category is not None:
+					self.safety_settings.append(
+						SafetySetting( category=self.category, threshold=self.threshold, ) )
+			
+			if self.safety_settings:
+				return self.safety_settings
+			
+			return None
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = ('build_safety_settings( self, safety_profile: str = "" ) -> '
+			                    'Optional[ List[ SafetySetting ] ]')
 			Logger( ).write( exception )
 			raise exception
 	
@@ -735,29 +629,29 @@ class Chat( Gemini ):
 		"""Parse response schema.
 		
 		Purpose:
-		    Performs the Chat.parse_response_schema workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Converts a JSON schema string into a dictionary while preserving provider-ready
+			dictionaries and typed schemas.
 		
 		Args:
-		    response_schema (Any): Response schema value used by the operation.
+			response_schema (Any): Response schema supplied by the application.
 		
 		Returns:
-		    Any: Return value produced by the operation.
+			Any: Parsed or unchanged response schema.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			if response_schema is None:
+			self.response_schema = response_schema
+			
+			if self.response_schema is None:
 				return None
 			
-			if isinstance( response_schema, dict ):
-				return response_schema
+			if not isinstance( self.response_schema, str ):
+				return self.response_schema
 			
-			if not isinstance( response_schema, str ):
-				return response_schema
+			self.schema_text = self.response_schema.strip( )
 			
-			self.schema_text = response_schema.strip( )
 			if not self.schema_text:
 				return None
 			
@@ -766,40 +660,37 @@ class Chat( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = 'parse_response_schema( self, response_schema: Any )'
+			exception.method = ('parse_response_schema( self, response_schema: Any ) -> Any')
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_contents( self, prompt: str, content: str, context: List[ Any ] = None ) -> List[
-		Content ]:
-		"""Build contents.
+	def build_contents( self, prompt: str, content: str = '',
+		context: Optional[ List[ Dict[ str, Any ] ] ] = None ) -> List[ Content ]:
+		"""Build request contents.
 		
 		Purpose:
-		    Builds the normalized data structure required by the Chat workflow. The function converts caller
-		    input, session state, or provider-specific options into a stable shape that downstream API calls
-		    and rendering code can consume safely.
+			Builds Gemini Content objects from application history, supplemental content, and
+			the current required user prompt.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
-		    content (str): Content value used by the operation.
-		    context (List[str]): Context value used by the operation.
+			prompt (str): Required user prompt.
+			content (str): Optional supplemental content.
+			context (Optional[List[Dict[str, Any]]]): Prior conversation history.
 		
 		Returns:
-		    List[Content]: Return value produced by the operation.
+			List[Content]: Provider-ready Gemini content objects.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'prompt', prompt )
-			self.prompt = str( prompt ).strip( )
+			self.prompt = prompt
+			self.content_block = content
 			self.context = context if context is not None else [ ]
-			self.content_block = str( content or '' ).strip( )
 			self.contents = [ ]
 			
 			for item in self.context:
-				if item is None:
-					continue
-				
 				if isinstance( item, Content ):
 					self.contents.append( item )
 					continue
@@ -807,35 +698,334 @@ class Chat( Gemini ):
 				if not isinstance( item, dict ):
 					continue
 				
-				role = str( item.get( 'role', 'user' ) or 'user' ).strip( )
-				text = item.get( 'content', None )
-				if text is None:
+				self.role = str( item.get( 'role', 'user' ) ).strip( ).lower( )
+				self.message_text = item.get( 'content', '' )
+				
+				if not self.message_text:
 					continue
 				
-				text = str( text ).strip( )
-				if not text:
+				self.message_text = str( self.message_text ).strip( )
+				
+				if not self.message_text:
 					continue
 				
-				if role == 'assistant':
-					self.contents.append( Content( role='model',
-						parts=[ Part.from_text( text=text ) ] ) )
+				if self.role == 'assistant':
+					self.provider_role = 'model'
 				else:
-					self.contents.append( Content( role='user',
-						parts=[ Part.from_text( text=text ) ] ) )
+					self.provider_role = 'user'
+				
+				self.contents.append( Content( role=self.provider_role,
+					parts=[ Part.from_text( text=self.message_text, ), ], ) )
 			
 			self.user_text = self.prompt
+			
 			if self.content_block:
-				self.user_text = f'{self.content_block}\n\n{self.user_text}'
+				self.user_text = (f'{self.content_block}\n\n{self.prompt}')
 			
-			self.contents.append( Content( role='user',
-				parts=[ Part.from_text( text=self.user_text ) ] ) )
-			
+			self.contents.append(
+				Content( role='user', parts=[ Part.from_text( text=self.user_text, ), ], ) )
 			return self.contents
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = 'build_contents( self, prompt: str, content: str, context: List[ Any ]=None )'
+			exception.method = 'build_contents( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def build_tools( self, tools: Optional[ List[ str ] ] = None,
+		file_search_store_names: Optional[ List[ str ] ] = None ) -> Optional[ List[ Tool ] ]:
+		"""Build Gemini tools.
+		
+		Purpose:
+			Builds provider-ready Google Search, URL Context, File Search, and code-execution
+			tools.
+		
+		Args:
+			tools (Optional[List[str]]): Selected built-in tool names.
+			file_search_store_names (Optional[List[str]]): File Search store resource names.
+		
+		Returns:
+			Optional[List[Tool]]: Provider-ready tool objects or None.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.selected_tools = tools if tools is not None else [ ]
+			self.file_search_store_names = (
+				file_search_store_names if file_search_store_names is not None else [ ])
+			self.tools = [ ]
+			self.tool_objects = [ ]
+			
+			for item in self.selected_tools:
+				self.tool_name = str( item ).strip( )
+				
+				if not self.tool_name:
+					continue
+				
+				if self.tool_name not in self.tools:
+					self.tools.append( self.tool_name )
+			
+			if 'google_search' in self.tools:
+				self.tool_objects.append( Tool( google_search=GoogleSearch( ), ) )
+			
+			if 'url_context' in self.tools:
+				self.tool_objects.append( Tool( url_context=UrlContext( ), ) )
+			
+			if 'file_search' in self.tools:
+				throw_if( 'file_search_store_names', self.file_search_store_names, )
+				self.tool_objects.append( Tool( file_search=FileSearch(
+					file_search_store_names=(self.file_search_store_names), ), ) )
+			
+			if 'code_execution' in self.tools:
+				self.tool_objects.append( Tool( code_execution=types.ToolCodeExecution( ), ) )
+			
+			if self.tool_objects:
+				return self.tool_objects
+			
+			return None
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'build_tools( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def build_tool_config( self, tool_choice: str, tools: List[ Tool ] ) -> Optional[ ToolConfig ]:
+		"""Build function-calling configuration.
+		
+		Purpose:
+			Builds a function-calling mode when provider tools include function declarations.
+			Built-in Gemini tools do not require a function-calling configuration.
+		
+		Args:
+			tool_choice (str): Requested function-calling mode.
+			tools (List[Tool]): Provider-ready tools.
+		
+		Returns:
+			Optional[ToolConfig]: Function-calling configuration or None.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.tool_choice = tool_choice.strip( ).upper( )
+			self.tool_objects = tools
+			
+			if not self.tool_choice:
+				return None
+			
+			if self.tool_choice == 'AUTO':
+				return None
+			
+			if not self.tool_objects:
+				return None
+			
+			self.has_function_declarations = False
+			
+			for tool in self.tool_objects:
+				self.declarations = getattr( tool, 'function_declarations', None, )
+				
+				if self.declarations:
+					self.has_function_declarations = True
+					break
+			
+			if not self.has_function_declarations:
+				return None
+			
+			if self.tool_choice not in [ 'ANY', 'NONE', 'VALIDATED', ]:
+				return None
+			
+			return ToolConfig(
+				function_calling_config=FunctionCallingConfig( mode=self.tool_choice, ), )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'build_tool_config( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def build_config( self, model: str, number: int = 1, temperature: float = 0.0,
+		top_p: float = 0.0, top_k: int = 0, frequency: float = 0.0, presence: float = 0.0,
+		max_tokens: int = 0, stops: Optional[ List[ str ] ] = None, instruct: str = '',
+		response_format: str = '', tools: Optional[ List[ str ] ] = None, tool_choice: str = '',
+		reasoning: str = '', modalities: Optional[ List[ str ] ] = None, media_resolution: str =
+		'',
+		response_schema: Any = None, safety_profile: str = '',
+		file_search_store_names: Optional[ List[ str ] ] = None ) -> GenerateContentConfig:
+		"""Build generation configuration.
+		
+		Purpose:
+			Builds a provider-ready GenerateContentConfig exclusively from arguments assigned
+			to object members.
+		
+		Args:
+			model (str): Required Gemini model identifier.
+			number (int): Candidate count.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			top_k (int): Top-k sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			stops (Optional[List[str]]): Stop sequences.
+			instruct (str): System instruction.
+			response_format (str): Response MIME type.
+			tools (Optional[List[str]]): Selected built-in tools.
+			tool_choice (str): Function-calling mode.
+			reasoning (str): Thinking level.
+			modalities (Optional[List[str]]): Response modalities.
+			media_resolution (str): Media-resolution value.
+			response_schema (Any): Structured-output schema.
+			safety_profile (str): Harm-block threshold name.
+			file_search_store_names (Optional[List[str]]): File Search stores.
+		
+		Returns:
+			GenerateContentConfig: Provider-ready generation configuration.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'model', model )
+			self.model = model
+			self.number = number
+			self.candidate_count = number
+			self.temperature = temperature
+			self.top_p = top_p
+			self.top_k = top_k
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops if stops is not None else [ ]
+			self.instructions = instruct
+			self.response_mime_type = response_format
+			self.tool_choice = tool_choice
+			self.reasoning = reasoning
+			self.media_resolution = media_resolution
+			self.response_schema = self.parse_response_schema( response_schema )
+			self.tool_objects = self.build_tools( tools, file_search_store_names, )
+			self.function_tool_config = self.build_tool_config( self.tool_choice,
+				self.tool_objects if self.tool_objects is not None else [ ], )
+			self.response_modalities = self.build_modalities( modalities )
+			self.thought_config = self.build_reasoning( self.reasoning )
+			self.safety_settings = self.build_safety_settings( safety_profile )
+			self.config_values = { }
+			
+			if self.candidate_count > 0:
+				self.config_values[ 'candidate_count' ] = (self.candidate_count)
+			
+			self.config_values[ 'temperature' ] = self.temperature
+			
+			if self.top_p > 0:
+				self.config_values[ 'top_p' ] = self.top_p
+			
+			if self.top_k > 0:
+				self.config_values[ 'top_k' ] = self.top_k
+			
+			if self.frequency_penalty != 0:
+				self.config_values[ 'frequency_penalty' ] = (self.frequency_penalty)
+			
+			if self.presence_penalty != 0:
+				self.config_values[ 'presence_penalty' ] = (self.presence_penalty)
+			
+			if self.max_tokens > 0:
+				self.config_values[ 'max_output_tokens' ] = (self.max_tokens)
+			
+			if self.stops:
+				self.config_values[ 'stop_sequences' ] = self.stops
+			
+			if self.instructions:
+				self.config_values[ 'system_instruction' ] = (self.instructions)
+			
+			if self.response_mime_type:
+				self.config_values[ 'response_mime_type' ] = (self.response_mime_type)
+			
+			if self.response_schema is not None:
+				if isinstance( self.response_schema, dict ):
+					self.config_values[ 'response_json_schema' ] = (self.response_schema)
+				else:
+					self.config_values[ 'response_schema' ] = (self.response_schema)
+			
+			if self.media_resolution:
+				self.config_values[ 'media_resolution' ] = (self.media_resolution)
+			
+			if self.tool_objects:
+				self.config_values[ 'tools' ] = self.tool_objects
+			
+			if self.function_tool_config is not None:
+				self.config_values[ 'tool_config' ] = (self.function_tool_config)
+			
+			if self.safety_settings:
+				self.config_values[ 'safety_settings' ] = (self.safety_settings)
+			
+			if self.response_modalities:
+				self.config_values[ 'response_modalities' ] = (self.response_modalities)
+			
+			if self.thought_config is not None:
+				self.config_values[ 'thinking_config' ] = (self.thought_config)
+			
+			self.content_config = GenerateContentConfig( **self.config_values )
+			return self.content_config
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'build_config( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def get_output_text( self ) -> str:
+		"""Get output text.
+		
+		Purpose:
+			Extracts generated text from the latest synchronous Gemini response.
+		
+		Returns:
+			str: Generated response text or an empty string.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.output_text = ''
+			
+			if self.content_response is None:
+				return self.output_text
+			
+			self.response_text = getattr( self.content_response, 'text', '', )
+			
+			if self.response_text:
+				self.output_text = str( self.response_text )
+				return self.output_text
+			
+			self.candidates = getattr( self.content_response, 'candidates', [ ], ) or [ ]
+			self.text_blocks = [ ]
+			
+			for candidate in self.candidates:
+				self.response_content = getattr( candidate, 'content', None, )
+				
+				if self.response_content is None:
+					continue
+				
+				self.parts = getattr( self.response_content, 'parts', [ ], ) or [ ]
+				
+				for part in self.parts:
+					self.part_text = getattr( part, 'text', '', )
+					
+					if self.part_text:
+						self.text_blocks.append( str( self.part_text ) )
+			
+			self.output_text = ''.join( self.text_blocks ).strip( )
+			return self.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Chat'
+			exception.method = 'get_output_text( self ) -> str'
 			Logger( ).write( exception )
 			raise exception
 	
@@ -843,29 +1033,24 @@ class Chat( Gemini ):
 		"""Capture grounding metadata.
 		
 		Purpose:
-		    Performs the Chat.capture_grounding_metadata workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Captures grounding metadata from the latest synchronous Gemini response.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value.
+			None: This method updates object state.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			self.grounding_metadata = None
 			
 			if self.content_response is None:
 				return
 			
-			self.candidates = getattr( self.content_response, 'candidates', None )
-			if not self.candidates:
-				return
+			self.candidates = getattr( self.content_response, 'candidates', [ ], ) or [ ]
 			
 			for candidate in self.candidates:
-				self.metadata = getattr( candidate, 'grounding_metadata', None )
-				if self.metadata is None:
-					self.metadata = getattr( candidate, 'groundingMetadata', None )
+				self.metadata = getattr( candidate, 'grounding_metadata', None, )
 				
 				if self.metadata is not None:
 					self.grounding_metadata = self.metadata
@@ -874,7 +1059,7 @@ class Chat( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = 'capture_grounding_metadata( self )'
+			exception.method = 'capture_grounding_metadata( self ) -> None'
 			Logger( ).write( exception )
 			raise exception
 	
@@ -882,1173 +1067,1015 @@ class Chat( Gemini ):
 		"""Get grounding sources.
 		
 		Purpose:
-		    Returns normalized information for the Chat component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Extracts web source titles and URLs from captured Gemini grounding metadata.
 		
 		Returns:
-		    List[Dict[str, str]]: Return value produced by the operation.
+			List[Dict[str, str]]: Grounding source records.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			self.sources = [ ]
 			
 			if self.grounding_metadata is None:
 				return self.sources
 			
-			self.chunks = getattr( self.grounding_metadata, 'grounding_chunks', None )
-			if self.chunks is None:
-				self.chunks = getattr( self.grounding_metadata, 'groundingChunks', None )
-			
-			if not self.chunks:
-				return self.sources
+			self.chunks = getattr( self.grounding_metadata, 'grounding_chunks', [ ], ) or [ ]
 			
 			for chunk in self.chunks:
-				self.web = getattr( chunk, 'web', None )
-				if self.web is None and isinstance( chunk, dict ):
-					self.web = chunk.get( 'web' )
+				self.web_source = getattr( chunk, 'web', None, )
 				
-				if self.web is None:
+				if self.web_source is None:
 					continue
 				
-				if isinstance( self.web, dict ):
-					self.uri = self.web.get( 'uri' ) or self.web.get( 'url' )
-					self.title = self.web.get( 'title' ) or self.uri
-				else:
-					self.uri = getattr( self.web, 'uri', None )
-					if self.uri is None:
-						self.uri = getattr( self.web, 'url', None )
-					
-					self.title = getattr( self.web, 'title', None ) or self.uri
+				self.uri = getattr( self.web_source, 'uri', '', )
+				self.title = getattr( self.web_source, 'title', '', )
 				
 				if self.uri:
 					self.sources.append(
-						{
-								'title': str( self.title or self.uri ),
-								'url': str( self.uri ),
-								'snippet': ''
-						} )
+						{ 'title': str( self.title or self.uri ), 'url': str( self.uri ),
+							'snippet': '', } )
 			
 			return self.sources
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = 'get_grounding_sources( self ) -> List[ Dict[ str, str ] ]'
+			exception.method = ('get_grounding_sources( self ) -> '
+			                    'List[ Dict[ str, str ] ]')
 			Logger( ).write( exception )
 			raise exception
 	
-	def get_structured_history( self ) -> List[ Content ] | None:
+	def get_structured_history( self ) -> Optional[ List[ Content ] ]:
 		"""Get structured history.
 		
 		Purpose:
-		    Returns normalized information for the Chat component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns the request contents and latest model response as Gemini Content objects.
 		
 		Returns:
-		    List[Content] | None: Return value produced by the operation.
+			Optional[List[Content]]: Structured history or None.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			self.history = [ ]
 			
-			if self.contents is not None and isinstance( self.contents, list ):
-				for item in self.contents:
-					if isinstance( item, Content ):
-						self.history.append( item )
+			for item in self.contents:
+				if isinstance( item, Content ):
+					self.history.append( item )
 			
 			if self.content_response is not None:
-				self.candidates = getattr( self.content_response, 'candidates', None )
-				if self.candidates:
-					for candidate in self.candidates:
-						self.response_content = getattr( candidate, 'content', None )
-						if isinstance( self.response_content, Content ):
-							self.history.append( self.response_content )
-							break
+				self.candidates = getattr( self.content_response, 'candidates', [ ], ) or [ ]
+				
+				for candidate in self.candidates:
+					self.response_content = getattr( candidate, 'content', None, )
+					
+					if isinstance( self.response_content, Content ):
+						self.history.append( self.response_content )
+						break
 			
-			return self.history if len( self.history ) > 0 else None
+			if self.history:
+				return self.history
+			
+			return None
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = 'get_structured_history( self ) -> List[ Content ] | None'
+			exception.method = ('get_structured_history( self ) -> '
+			                    'Optional[ List[ Content ] ]')
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_tools( self, tools: List[ str ], file_search_store_names: List[ str ] = None ) -> \
-	List[ Tool ] | None:
-		"""Build tools.
-		
-		Purpose:
-		    Builds the normalized data structure required by the Chat workflow. The function converts caller
-		    input, session state, or provider-specific options into a stable shape that downstream API calls
-		    and rendering code can consume safely.
-		
-		Args:
-		    tools (List[str]): Tools value used by the operation.
-		    file_search_store_names (List[str]): File search store names value used by the operation.
-		
-		Returns:
-		    List[Tool] | None: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			self.tools = [
-					str( tool ).strip( )
-					for tool in (tools or [ ])
-					if str( tool ).strip( )
-			]
-			
-			self.file_search_store_names = file_search_store_names or [ ]
-			self.tool_objects = [ ]
-			
-			if len( self.tools ) == 0:
-				return None
-			
-			if 'google_search' in self.tools:
-				self.tool_objects.append( Tool( google_search=GoogleSearch( ) ) )
-			
-			if 'url_context' in self.tools:
-				self.tool_objects.append( Tool( url_context=UrlContext( ) ) )
-			
-			if 'file_search' in self.tools:
-				throw_if( 'file_search_store_names', file_search_store_names )
-				self.file_search_store_names = file_search_store_names
-				self.tool_objects.append(
-					Tool(
-						file_search=FileSearch(
-							file_search_store_names=self.file_search_store_names
-						)
-					)
-				)
-			
-			if 'code_execution' in self.tools:
-				self.tool_objects.append(
-					Tool( code_execution=types.ToolCodeExecution( ) )
-				)
-			
-			return self.tool_objects if len( self.tool_objects ) > 0 else None
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'build_tools( self, tools, file_search_store_names )'
-			Logger( ).write( exception )
-			raise exception
-	
-	def build_tool_config( self, tool_choice: str, tools: List[ Tool ] ) -> ToolConfig | None:
-		"""Build tool config.
-		
-		Purpose:
-		    Builds the normalized data structure required by the Chat workflow. The function converts caller
-		    input, session state, or provider-specific options into a stable shape that downstream API calls
-		    and rendering code can consume safely.
-		
-		Args:
-		    tool_choice (str): Tool choice value used by the operation.
-		    tools (List[Tool]): Tools value used by the operation.
-		
-		Returns:
-		    ToolConfig | None: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			self.tool_choice = str( tool_choice or '' ).strip( ).upper( )
-			self.tool_objects = tools if tools is not None else [ ]
-			
-			if not self.tool_choice:
-				return None
-			
-			if self.tool_choice == 'AUTO':
-				return None
-			
-			if self.tool_choice not in [ 'ANY', 'NONE', 'VALIDATED' ]:
-				return None
-			
-			if len( self.tool_objects ) == 0:
-				raise ValueError( 'Gemini tool configuration requires at least one tool.' )
-			
-			return ToolConfig(
-				function_calling_config=FunctionCallingConfig(
-					mode=self.tool_choice
-				)
-			)
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'build_tool_config( self, tool_choice, tools )'
-			Logger( ).write( exception )
-			raise exception
-	
-	def build_config( self, model: str = 'gemini-2.5-flash-lite', number: int = None,
-			temperature: float = None, top_p: float = None, top_k: int = None,
-			frequency: float = None, presence: float = None, max_tokens: int = None,
-			stops: List[ str ] = None, instruct: str = None, response_format: str = None,
-			tools: List[ str ] = None, tool_choice: str = None, reasoning: str = None,
-			modalities: List[ str ] = None, media_resolution: str = None,
-			response_schema: Any = None, safety_profile: str = None,
-			file_search_store_names: List[ str ] = None ) -> GenerateContentConfig:
-		"""Build config.
-		
-		Purpose:
-		    Builds the normalized data structure required by the Chat workflow. The function converts caller
-		    input, session state, or provider-specific options into a stable shape that downstream API calls
-		    and rendering code can consume safely.
-		
-		Args:
-		    model (str): Model value used by the operation.
-		    number (int): Number value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    top_k (int): Top k value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    stops (List[str]): Stops value used by the operation.
-		    instruct (str): Instruct value used by the operation.
-		    response_format (str): Response format value used by the operation.
-		    tools (List[str]): Tools value used by the operation.
-		    tool_choice (str): Tool choice value used by the operation.
-		    reasoning (str): Reasoning value used by the operation.
-		    modalities (List[str]): Modalities value used by the operation.
-		    media_resolution (str): Media resolution value used by the operation.
-		    response_schema (Any): Response schema value used by the operation.
-		    safety_profile (str): Safety profile value used by the operation.
-		    file_search_store_names (List[str]): File search store names value used by the operation.
-		
-		Returns:
-		    GenerateContentConfig: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			throw_if( 'model', model )
-			self.model = str( model ).strip( )
-			
-			self.number = number
-			self.candidate_count = int( self.number or 0 )
-			self.temperature = temperature
-			self.top_p = top_p
-			self.top_k = int( top_k or 0 )
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = int( max_tokens or 0 )
-			self.stops = stops if stops is not None else [ ]
-			self.instructions = instruct
-			self.response_mime_type = str( response_format or '' ).strip( )
-			self.response_schema = self.parse_response_schema( response_schema )
-			self.safety_settings = self.build_safety_settings( safety_profile )
-			self.tool_choice = tool_choice
-			self.media_resolution = str( media_resolution ).strip( ) if media_resolution else None
-			self.file_search_store_names = file_search_store_names or [ ]
-			
-			self.tool_objects = self.build_tools(
-				tools=tools,
-				file_search_store_names=self.file_search_store_names
-			)
-			
-			self.function_tool_config = self.build_tool_config(
-				tool_choice=self.tool_choice,
-				tools=self.tool_objects
-			)
-			
-			self.response_modalities = self.build_modalities( modalities=modalities )
-			self.thought_config = self.build_reasoning( reasoning )
-			self.config_kwargs = { }
-			
-			if self.temperature is not None:
-				self.config_kwargs[ 'temperature' ] = self.temperature
-			
-			if self.top_p is not None and float( self.top_p ) > 0:
-				self.config_kwargs[ 'top_p' ] = self.top_p
-			
-			if self.top_k > 0:
-				self.config_kwargs[ 'top_k' ] = self.top_k
-			
-			if self.max_tokens > 0:
-				self.config_kwargs[ 'max_output_tokens' ] = self.max_tokens
-			
-			if self.candidate_count > 0:
-				self.config_kwargs[ 'candidate_count' ] = self.candidate_count
-			
-			if self.instructions is not None and str( self.instructions ).strip( ):
-				self.config_kwargs[ 'system_instruction' ] = str( self.instructions ).strip( )
-			
-			if self.frequency_penalty is not None:
-				self.config_kwargs[ 'frequency_penalty' ] = self.frequency_penalty
-			
-			if self.presence_penalty is not None:
-				self.config_kwargs[ 'presence_penalty' ] = self.presence_penalty
-			
-			if self.stops is not None and len( self.stops ) > 0:
-				self.config_kwargs[ 'stop_sequences' ] = self.stops
-			
-			if self.response_mime_type:
-				self.config_kwargs[ 'response_mime_type' ] = self.response_mime_type
-			
-			if self.response_schema is not None:
-				if isinstance( self.response_schema, dict ):
-					self.config_kwargs[ 'response_json_schema' ] = self.response_schema
-				else:
-					self.config_kwargs[ 'response_schema' ] = self.response_schema
-			
-			if self.media_resolution is not None:
-				self.config_kwargs[ 'media_resolution' ] = self.media_resolution
-			
-			if self.tool_objects is not None and len( self.tool_objects ) > 0:
-				self.config_kwargs[ 'tools' ] = self.tool_objects
-			
-			if self.function_tool_config is not None:
-				self.config_kwargs[ 'tool_config' ] = self.function_tool_config
-			
-			if self.safety_settings is not None and len( self.safety_settings ) > 0:
-				self.config_kwargs[ 'safety_settings' ] = self.safety_settings
-			
-			if self.response_modalities is not None and len( self.response_modalities ) > 0:
-				self.config_kwargs[ 'response_modalities' ] = self.response_modalities
-			
-			if self.thought_config is not None:
-				self.config_kwargs[ 'thinking_config' ] = self.thought_config
-			
-			self.content_config = GenerateContentConfig( **self.config_kwargs )
-			return self.content_config
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'build_config( self, model ) -> GenerateContentConfig'
-			Logger( ).write( exception )
-			raise exception
-	
-	def generate_text( self, prompt: str, model: str = 'gemini-2.5-flash-lite',
-			number: int = None, temperature: float = None, top_p: float = None,
-			top_k: int = None, frequency: float = None, presence: float = None,
-			max_tokens: int = None,
-			stops: List[ str ] = None, instruct: str = None, response_format: str = None,
-			tools: List[ str ] = None, tool_choice: str = None, reasoning: str = None,
-			modalities: List[ str ] = None, media_resolution: str = None,
-			context: List[ Dict[ str, Any ] ] = None, content: str = None,
-			urls: List[ str ] = None, max_urls: int = None, response_schema: Any = None,
-			safety_profile: str = None, file_search_store_names: List[ str ] = None,
-			stream: bool = False, stream_handler: Any = None ) -> str | None:
+	def generate_text( self, prompt: str, model: str, number: int = 1, temperature: float = 0.0,
+		top_p: float = 0.0, top_k: int = 0, frequency: float = 0.0, presence: float = 0.0,
+		max_tokens: int = 0, stops: Optional[ List[ str ] ] = None, instruct: str = '',
+		response_format: str = '', tools: Optional[ List[ str ] ] = None, tool_choice: str = '',
+		reasoning: str = '', modalities: Optional[ List[ str ] ] = None, media_resolution: str =
+		'',
+		context: Optional[ List[ Dict[ str, Any ] ] ] = None, content: str = '',
+		urls: Optional[ List[ str ] ] = None, max_urls: int = 10, response_schema: Any = None,
+		safety_profile: str = '', file_search_store_names: Optional[ List[ str ] ] = None,
+		stream: bool = False, stream_handler: Any = None ) -> Any:
 		"""Generate text.
 		
 		Purpose:
-		    Generates provider output for the Chat workflow using validated model settings and request
-		    inputs. The method coordinates request construction, provider execution, response capture, and
-		    logged exception handling.
+			Executes synchronous or streaming Gemini text generation using content and
+			configuration objects built from assigned wrapper members.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
-		    model (str): Model value used by the operation.
-		    number (int): Number value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    top_k (int): Top k value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    stops (List[str]): Stops value used by the operation.
-		    instruct (str): Instruct value used by the operation.
-		    response_format (str): Response format value used by the operation.
-		    tools (List[str]): Tools value used by the operation.
-		    tool_choice (str): Tool choice value used by the operation.
-		    reasoning (str): Reasoning value used by the operation.
-		    modalities (List[str]): Modalities value used by the operation.
-		    media_resolution (str): Media resolution value used by the operation.
-		    context (List[Dict[str, Any]]): Context value used by the operation.
-		    content (str): Content value used by the operation.
-		    urls (List[str]): Urls value used by the operation.
-		    max_urls (int): Max urls value used by the operation.
-		    response_schema (Any): Response schema value used by the operation.
-		    safety_profile (str): Safety profile value used by the operation.
-		    file_search_store_names (List[str]): File search store names value used by the operation.
-		    stream (bool): Stream value used by the operation.
-		    stream_handler (Any): Stream handler value used by the operation.
+			prompt (str): Required user prompt.
+			model (str): Required Gemini model identifier.
+			number (int): Candidate count.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			top_k (int): Top-k sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			stops (Optional[List[str]]): Stop sequences.
+			instruct (str): System instruction.
+			response_format (str): Response MIME type.
+			tools (Optional[List[str]]): Selected built-in tools.
+			tool_choice (str): Function-calling mode.
+			reasoning (str): Thinking level.
+			modalities (Optional[List[str]]): Response modalities.
+			media_resolution (str): Media-resolution value.
+			context (Optional[List[Dict[str, Any]]]): Conversation history.
+			content (str): Supplemental request content.
+			urls (Optional[List[str]]): Reference URLs.
+			max_urls (int): Maximum number of reference URLs.
+			response_schema (Any): Structured-output schema.
+			safety_profile (str): Harm-block threshold name.
+			file_search_store_names (Optional[List[str]]): File Search stores.
+			stream (bool): Indicates whether streaming is enabled.
+			stream_handler (Any): Optional callable receiving each text delta.
 		
 		Returns:
-		    Optional[str]: Return value produced by the operation.
+			Any: Generated text or the provider stream iterator when no handler is supplied.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'prompt', prompt )
-			self.model = str( model or self.model or 'gemini-2.5-flash-lite' ).strip( )
-			throw_if( 'model', self.model )
+			throw_if( 'model', model )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key )
+			self.prompt = prompt
+			self.model = model
+			self.number = number
+			self.temperature = temperature
+			self.top_p = top_p
+			self.top_k = top_k
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.stops = stops if stops is not None else [ ]
+			self.instructions = instruct
+			self.response_mime_type = response_format
+			self.tools = tools if tools is not None else [ ]
+			self.tool_choice = tool_choice
+			self.reasoning = reasoning
+			self.response_modalities = (modalities if modalities is not None else [ ])
+			self.media_resolution = media_resolution
+			self.context = context if context is not None else [ ]
+			self.content_block = content
+			self.urls = urls if urls is not None else [ ]
+			self.max_urls = max_urls
+			self.response_schema = response_schema
+			self.safety_profile = safety_profile
+			self.file_search_store_names = (
+				file_search_store_names if file_search_store_names is not None else [ ])
+			self.stream = stream
+			self.stream_handler = stream_handler
+			self.urls = self.build_urls( self.urls, self.max_urls, )
+			self.content_block = self.append_urls_to_content( self.content_block, self.urls, )
+			self.contents = self.build_contents( self.prompt, self.content_block, self.context, )
+			self.content_config = self.build_config( self.model, self.number, self.temperature,
+				self.top_p, self.top_k, self.frequency_penalty, self.presence_penalty,
+				self.max_tokens, self.stops, self.instructions, self.response_mime_type,
+				self.tools,
+				self.tool_choice, self.reasoning, self.response_modalities, self.media_resolution,
+				self.response_schema, self.safety_profile, self.file_search_store_names, )
+			self.client = genai.Client( api_key=self.gemini_api_key, )
 			
-			self.gemini_api_key = cfg.GEMINI_API_KEY
-			self.stream = bool( stream )
-			self.urls = self.build_urls( urls=urls, max_urls=max_urls )
-			self.content_block = self.append_urls_to_content( content=content, urls=self.urls )
-			self.contents = self.build_contents( prompt=prompt, context=context,
-				content=self.content_block )
-			self.content_config = self.build_config( model=self.model, number=number,
-				temperature=temperature, top_p=top_p, top_k=top_k, frequency=frequency,
-				presence=presence, max_tokens=max_tokens, stops=stops, instruct=instruct,
-				response_format=response_format, tools=tools, tool_choice=tool_choice,
-				reasoning=reasoning, modalities=modalities, media_resolution=media_resolution,
-				response_schema=response_schema, safety_profile=safety_profile,
-				file_search_store_names=file_search_store_names )
-			
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
 			if self.stream:
-				self.stream_response = self.client.models.generate_content_stream(
-					model=self.model, contents=self.contents, config=self.content_config )
+				self.stream_response = (
+					self.client.models.generate_content_stream( model=self.model,
+						contents=self.contents, config=self.content_config, ))
 				
-				if stream_handler is not None:
-					self.text_blocks = [ ]
-					for chunk in self.stream_response:
-						if chunk is None:
-							continue
-						
-						self.chunk_text = getattr( chunk, 'text', None )
-						if self.chunk_text is None or not str( self.chunk_text ):
-							continue
-						
-						self.text_blocks.append( str( self.chunk_text ) )
-						stream_handler( str( self.chunk_text ) )
+				if self.stream_handler is None:
+					return self.stream_response
+				
+				self.text_blocks = [ ]
+				
+				for chunk in self.stream_response:
+					self.chunk_text = getattr( chunk, 'text', '', )
 					
-					self.output_text = ''.join( self.text_blocks ).strip( )
-					return self.output_text if self.output_text else None
+					if not self.chunk_text:
+						continue
+					
+					self.chunk_text = str( self.chunk_text )
+					self.text_blocks.append( self.chunk_text )
+					self.stream_handler( self.chunk_text )
 				
-				return self.stream_response
+				self.output_text = ''.join( self.text_blocks ).strip( )
+				return self.output_text
 			
 			self.content_response = self.client.models.generate_content( model=self.model,
-				contents=self.contents, config=self.content_config )
+				contents=self.contents, config=self.content_config, )
 			self.capture_grounding_metadata( )
-			
 			return self.get_output_text( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = 'generate_text( self, prompt, model ) -> Optional[ str ]'
+			exception.method = 'generate_text( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
+	
+	def __dir__( self ) -> List[ str ]:
+		"""Return member names.
+		
+		Purpose:
+			Returns public members exposed by the Gemini Chat wrapper.
+		
+		Returns:
+			List[str]: Public member names.
+		"""
+		return [ 'gemini_api_key', 'google_api_key', 'client', 'model', 'prompt', 'number',
+			'candidate_count', 'temperature', 'top_p', 'top_k', 'frequency_penalty',
+			'presence_penalty', 'max_tokens', 'instructions', 'stops', 'response_mime_type',
+			'response_schema', 'reasoning', 'thought_config', 'media_resolution',
+			'response_modalities', 'tools', 'tool_objects', 'tool_choice',
+			'file_search_store_names', 'safety_profile', 'safety_settings', 'context',
+			'content_block', 'urls', 'max_urls', 'contents', 'content_config', 'content_response',
+			'stream_response', 'stream', 'stream_handler', 'output_text', 'grounding_metadata',
+			'model_options', 'tool_options', 'reasoning_options', 'media_options',
+			'choice_options',
+			'include_options', 'modality_options', 'format_options', 'get_supported_tools',
+			'build_urls', 'append_urls_to_content', 'build_modalities', 'build_reasoning',
+			'build_safety_settings', 'parse_response_schema', 'build_contents', 'build_tools',
+			'build_tool_config', 'build_config', 'get_output_text', 'capture_grounding_metadata',
+			'get_grounding_sources', 'get_structured_history', 'generate_text', ]
 
 class Images( Gemini ):
-	"""Images class.
+	"""Provide Gemini image workflow support.
 	
 	Purpose:
-	    Defines the Images component used by the Boo application. The class groups related provider
-	    configuration, runtime state, helper methods, and API-facing behavior so Streamlit workflows can
-	    call a consistent interface.
+		Provides image generation, image analysis, and conversational image editing through
+		the Google Gen AI SDK. The class assigns accepted method arguments to object members,
+		builds provider-native image and generation configurations, executes Gemini requests,
+		and extracts generated images, response text, and grounding metadata.
 	
 	Attributes:
-	    client (Optional[genai.Client]): Stores client for the component runtime state.
-	    aspect_ratio (Optional[str]): Stores aspect ratio for the component runtime state.
-	    use_vertex (Optional[bool]): Stores use vertex for the component runtime state.
-	    resolution (Optional[str]): Stores resolution for the component runtime state.
-	    size (Optional[str]): Stores size for the component runtime state."""
+		client (Optional[genai.Client]): Google Gen AI client.
+		model (str): Gemini model used by the current operation.
+		prompt (str): Prompt used by the current operation.
+		file_path (str): Local source-image path.
+		aspect_ratio (str): Requested output-image aspect ratio.
+		image_size (str): Requested output-image resolution.
+		output_mime_type (str): Requested generated-image MIME type.
+		response_modalities (List[str]): Requested response modalities.
+		temperature (float): Sampling temperature.
+		top_p (float): Nucleus-sampling value.
+		max_output_tokens (int): Maximum output-token count.
+		instructions (str): Optional system instruction.
+		grounded (bool): Indicates whether Google Search grounding is enabled.
+		image_search (bool): Indicates whether Google Image Search is enabled.
+		image_config (Optional[ImageConfig]): Provider image configuration.
+		content_config (Optional[GenerateContentConfig]): Provider request configuration.
+		content_response (Optional[GenerateContentResponse]): Latest provider response.
+		output_image (Optional[PIL.Image.Image]): First generated image.
+		output_text (str): Text extracted from the latest response.
+		grounding_metadata (Any): Grounding metadata from the latest response.
+	"""
 	client: Optional[ genai.Client ]
-	aspect_ratio: Optional[ str ]
-	use_vertex: Optional[ bool ]
-	resolution: Optional[ str ]
-	size: Optional[ str ]
+	model: str
+	prompt: str
+	file_path: str
+	aspect_ratio: str
+	image_size: str
+	output_mime_type: str
+	response_modalities: List[ str ]
+	temperature: float
+	top_p: float
+	max_output_tokens: int
+	instructions: str
+	grounded: bool
+	image_search: bool
+	image_config: Optional[ ImageConfig ]
+	content_config: Optional[ GenerateContentConfig ]
+	content_response: Optional[ GenerateContentResponse ]
+	output_image: Optional[ PIL.Image.Image ]
+	output_text: str
+	grounding_metadata: Any
 	
-	def __init__( self, model: str = 'gemini-2.5-flash-image' ):
+	def __init__( self, model: str = 'gemini-2.5-flash-image' ) -> None:
+		"""Initialize instance.
+		
+		Purpose:
+			Initializes Gemini image configuration and runtime state without executing a
+			provider request.
+		
+		Args:
+			model (str): Default Gemini image model.
+		
+		Returns:
+			None: This method initializes object state.
+		"""
 		super( ).__init__( )
-		self.number = None
-		self.model = model
+		self.gemini_api_key = cfg.GEMINI_API_KEY
 		self.client = None
-		self.instructions = None
-		self.image_config = None
-		self.function_config = None
-		self.thought_config = None
-		self.genimg_config = None
-		self.tool_config = None
+		self.model = model
+		self.prompt = ''
+		self.file_path = ''
+		self.aspect_ratio = ''
+		self.image_size = ''
+		self.output_mime_type = ''
 		self.response_modalities = [ ]
-		self.tools = [ ]
-		self.stops = [ ]
-		self.domains = [ ]
-		self.http_options = { }
-		self.temperature = None
-		self.size = None
-		self.top_p = None
-		self.top_k = None
-		self.aspect_ratio = None
-		self.frequency_penalty = None
-		self.presence_penalty = None
-		self.candidate_count = None
-		self.max_output_tokens = None
-		self.use_vertex = None
-		self.media_resolution = None
-		self.tool_choice = None
+		self.temperature = 0.0
+		self.top_p = 0.0
+		self.max_output_tokens = 0
+		self.instructions = ''
+		self.grounded = False
+		self.image_search = False
+		self.image_config = None
+		self.content_config = None
 		self.content_response = None
 		self.response = None
+		self.output_image = None
+		self.output_text = ''
 		self.grounding_metadata = None
-		self.output_mime_type = None
-		self.response_mode = None
+		self.image_input = None
+		self.tool = None
+		self.tools = [ ]
+		self.config_values = { }
+		self.parts = [ ]
+		self.candidates = [ ]
 	
 	@property
-	def model_options( self ) -> List[ str ] | None:
-		"""Model options.
+	def model_options( self ) -> List[ str ]:
+		"""Get image-model options.
 		
 		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns Gemini models exposed for image generation and conversational editing.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'gemini-2.5-flash-image',
-		         'gemini-3.1-flash-image-preview' ]
+			List[str]: Supported Gemini image model identifiers.
+		"""
+		return [ 'gemini-3.1-flash-image', 'gemini-3.1-flash-lite-image',
+			'gemini-3-pro-image-preview', 'gemini-2.5-flash-image', ]
 	
 	@property
-	def include_options( self ) -> List[ str ] | None:
-		"""Include options.
+	def analysis_model_options( self ) -> List[ str ]:
+		"""Get image-analysis model options.
 		
 		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns Gemini multimodal models exposed for image analysis.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'file_search_call.results',
-		         'message.input_image.image_url',
-		         'message.output_text.logprobs',
-		         'reasoning.encrypted_content' ]
+			List[str]: Supported Gemini image-analysis model identifiers.
+		"""
+		return [ 'gemini-3.1-pro-preview', 'gemini-3.1-flash-lite-preview',
+			'gemini-3-flash-preview', 'gemini-2.5-pro', 'gemini-2.5-flash',
+			'gemini-2.5-flash-lite',
+			'gemini-2.0-flash', 'gemini-2.0-flash-lite', ]
 	
 	@property
-	def aspect_options( self ) -> List[ str ] | None:
-		"""Aspect options.
+	def aspect_options( self ) -> List[ str ]:
+		"""Get aspect-ratio options.
 		
 		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns output-image aspect ratios exposed by the wrapper.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ '1:1', '2:3', '3:2', '3:4', '4:3', '4:5', '5:4', '9:16', '16:9', '21:9' ]
-	
-	@property
-	def media_options( self ) -> List[ str ]:
-		"""Media options.
-		
-		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
-		
-		Returns:
-		    List[str]: Return value produced by the operation."""
-		return [ 'media_resolution_high',
-		         'media_resolution_medium',
-		         'media_resolution_low' ]
-	
-	@property
-	def modality_options( self ) -> List[ str ] | None:
-		"""Modality options.
-		
-		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
-		
-		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'text', 'image', 'text_and_image' ]
-	
-	@property
-	def reasoning_options( self ) -> List[ str ] | None:
-		"""Reasoning options.
-		
-		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
-		
-		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'unspecified', 'minimal',
-		         'low', 'medium', 'high' ]
+			List[str]: Supported aspect-ratio values.
+		"""
+		return [ '1:1', '1:4', '1:8', '2:3', '3:2', '3:4', '4:1', '4:3', '4:5', '5:4', '8:1',
+			'9:16', '16:9', '21:9', ]
 	
 	@property
 	def size_options( self ) -> List[ str ]:
-		"""Size options.
+		"""Get image-size options.
 		
 		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns image-resolution values exposed by the wrapper.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
-		return [ '1K', '2K', '4K' ]
+			List[str]: Supported image-size values.
+		"""
+		return [ '512', '1K', '2K', '4K', ]
 	
 	@property
-	def tool_options( self ) -> List[ str ] | None:
-		"""Tool options.
+	def resolution_options( self ) -> List[ str ]:
+		"""Get image-resolution options.
 		
 		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns the same provider image-resolution values exposed by size options.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'google_search', 'image_search' ]
+			List[str]: Supported image-resolution values.
+		"""
+		return self.size_options
 	
 	@property
-	def choice_options( self ) -> List[ str ] | None:
-		"""Choice options.
+	def modality_options( self ) -> List[ str ]:
+		"""Get response-modality options.
 		
 		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns response-modality selections supported by Gemini image workflows.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'auto', 'any', 'none', 'validated' ]
+			List[str]: Supported response-modality selections.
+		"""
+		return [ 'image', 'text', 'text_and_image', ]
 	
 	@property
-	def format_options( self ) -> List[ str ] | None:
-		"""Format options.
+	def mime_options( self ) -> List[ str ]:
+		"""Get output MIME-type options.
 		
 		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns generated-image MIME types exposed by the wrapper.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'text/plain',
-		         'application/json',
-		         'text/x.enum' ]
+			List[str]: Supported image MIME types.
+		"""
+		return [ 'image/png', 'image/jpeg', 'image/webp', ]
 	
 	@property
-	def mime_options( self ) -> List[ str ] | None:
-		"""Mime options.
+	def tool_options( self ) -> List[ str ]:
+		"""Get grounding-tool options.
 		
 		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns Google Search grounding tools implemented by the wrapper.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'image/jpeg',
-		         'image/png',
-		         'image/webp' ]
+			List[str]: Supported grounding-tool names.
+		"""
+		return [ 'google_search', 'image_search', ]
 	
 	@property
-	def resolution_options( self ) -> List[ str ] | None:
-		"""Resolution options.
+	def include_options( self ) -> List[ str ]:
+		"""Get include options.
 		
 		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns an empty collection because Gemini image requests do not use OpenAI
+			include-path arguments.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ '1K', '2K', '4K' ]
+			List[str]: Empty include-option collection.
+		"""
+		return [ ]
 	
-	def supports_image_size( self, model: str = 'gemini-2.5-flash-image' ) -> bool:
-		"""Supports image size.
+	@property
+	def choice_options( self ) -> List[ str ]:
+		"""Get tool-choice options.
 		
 		Purpose:
-		    Performs the Images.supports_image_size workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Returns an empty collection because Gemini image grounding tools do not use the
+			function-calling choice control.
+		
+		Returns:
+			List[str]: Empty tool-choice collection.
+		"""
+		return [ ]
+	
+	@property
+	def reasoning_options( self ) -> List[ str ]:
+		"""Get reasoning options.
+		
+		Purpose:
+			Returns an empty collection because reasoning for Gemini image models is managed
+			by the provider rather than this wrapper.
+		
+		Returns:
+			List[str]: Empty reasoning-option collection.
+		"""
+		return [ ]
+	
+	@property
+	def format_options( self ) -> List[ str ]:
+		"""Get response-format options.
+		
+		Purpose:
+			Returns generated-image MIME types exposed by the wrapper.
+		
+		Returns:
+			List[str]: Supported response-format values.
+		"""
+		return self.mime_options
+	
+	def supports_image_size( self, model: str ) -> bool:
+		"""Determine image-size support.
+		
+		Purpose:
+			Determines whether a required Gemini image model supports an explicit image-size
+			configuration.
 		
 		Args:
-		    model (str): Model value used by the operation.
+			model (str): Required Gemini image model identifier.
 		
 		Returns:
-		    bool: Return value produced by the operation.
+			bool: True when the model supports explicit image sizes.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			self.model_name = str( model or '' ).strip( ).lower( )
-			self.image_size_models = [ 'gemini-3.1-flash-image-preview',
-			                           'gemini-3-pro-image-preview' ]
-			return self.model_name in self.image_size_models
+			throw_if( 'model', model )
+			self.model = model
+			return self.model in [ 'gemini-3.1-flash-image', 'gemini-3.1-flash-lite-image',
+				'gemini-3-pro-image-preview', ]
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = 'supports_image_size( self, model: str ) -> bool'
+			exception.method = ('supports_image_size( self, model: str ) -> bool')
 			Logger( ).write( exception )
 			raise exception
 	
-	def supports_search_grounding( self, model: str = 'gemini-2.5-flash-image' ) -> bool:
-		"""Supports search grounding.
+	def supports_search_grounding( self, model: str ) -> bool:
+		"""Determine search-grounding support.
 		
 		Purpose:
-		    Performs the Images.supports_search_grounding workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Determines whether a required Gemini image model supports Google Search grounding.
 		
 		Args:
-		    model (str): Model value used by the operation.
+			model (str): Required Gemini image model identifier.
 		
 		Returns:
-		    bool: Return value produced by the operation.
+			bool: True when Google Search grounding is supported.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			self.model_name = str( model or '' ).strip( ).lower( )
-			self.search_grounding_models = [ 'gemini-3.1-flash-image-preview',
-			                                 'gemini-3-pro-image-preview' ]
-			return self.model_name in self.search_grounding_models
+			throw_if( 'model', model )
+			self.model = model
+			return self.model in [ 'gemini-3.1-flash-image', 'gemini-3-pro-image-preview', ]
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = 'supports_search_grounding( self, model: str ) -> bool'
+			exception.method = ('supports_search_grounding( self, model: str ) -> bool')
 			Logger( ).write( exception )
 			raise exception
 	
-	def supports_image_search( self, model: str = 'gemini-2.5-flash-image' ) -> bool:
-		"""Supports image search.
+	def supports_image_search( self, model: str ) -> bool:
+		"""Determine Image Search support.
 		
 		Purpose:
-		    Performs the Images.supports_image_search workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Determines whether a required Gemini image model supports Google Image Search
+			grounding.
 		
 		Args:
-		    model (str): Model value used by the operation.
+			model (str): Required Gemini image model identifier.
 		
 		Returns:
-		    bool: Return value produced by the operation.
+			bool: True when Google Image Search grounding is supported.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			self.model_name = str( model or '' ).strip( ).lower( )
-			return self.model_name == 'gemini-3.1-flash-image-preview'
+			throw_if( 'model', model )
+			self.model = model
+			return self.model == 'gemini-3.1-flash-image'
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = 'supports_image_search( self, model: str ) -> bool'
+			exception.method = ('supports_image_search( self, model: str ) -> bool')
 			Logger( ).write( exception )
 			raise exception
 	
-	def normalize_response_modalities( self, response_modalities: Optional[ str ],
-			image_only: bool = False ) -> List[ str ]:
-		"""Normalize response modalities.
+	def build_response_modalities( self, response_modalities: str, image_only: bool = False ) -> \
+	List[ str ]:
+		"""Build response modalities.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
-		    displayed.
+			Builds provider-ready Gemini response modalities from a required application
+			selection.
 		
 		Args:
-		    response_modalities (Optional[str]): Response modalities value used by the operation.
-		    image_only (bool): Image only value used by the operation.
+			response_modalities (str): Required application response-modality selection.
+			image_only (bool): Indicates whether image output must be requested.
 		
 		Returns:
-		    List[str]: Return value produced by the operation.
+			List[str]: Provider-ready response modalities.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			self.mode_name = str( response_modalities or '' ).strip( ).upper( )
-			if self.mode_name == 'TEXT_AND_IMAGE':
-				return [ 'TEXT', 'IMAGE' ]
+			throw_if( 'response_modalities', response_modalities )
+			self.response_mode = response_modalities
+			self.image_only = image_only
+			self.response_modalities = [ ]
 			
-			if self.mode_name == 'TEXT':
-				return [ 'TEXT' ]
+			if self.response_mode == 'text_and_image':
+				self.response_modalities = [ 'TEXT', 'IMAGE', ]
+			elif self.response_mode == 'text':
+				self.response_modalities = [ 'TEXT', ]
+			elif self.response_mode == 'image':
+				self.response_modalities = [ 'IMAGE', ]
 			
-			if self.mode_name == 'IMAGE':
-				return [ 'IMAGE' ]
+			if self.image_only:
+				self.response_modalities = [ 'IMAGE', ]
 			
-			if self.mode_name == 'TEXT,IMAGE':
-				return [ 'TEXT', 'IMAGE' ]
-			
-			if self.mode_name == 'TEXT, IMAGE':
-				return [ 'TEXT', 'IMAGE' ]
-			
-			return [ 'IMAGE' ] if image_only else [ 'TEXT' ]
+			throw_if( 'response_modalities', self.response_modalities, )
+			return self.response_modalities
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = (
-					'normalize_response_modalities( self, response_modalities: Optional[str], '
-					'image_only: bool=False ) -> List[str]')
+			exception.method = ('build_response_modalities( self, **kwargs )')
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_grounding_tool( self, image_search: bool = False ) -> Optional[ Tool ]:
+	def build_grounding_tool( self, model: str, image_search: bool = False ) -> Optional[ Tool ]:
 		"""Build grounding tool.
 		
 		Purpose:
-		    Builds the normalized data structure required by the Images workflow. The function converts
-		    caller input, session state, or provider-specific options into a stable shape that downstream
-		    API calls and rendering code can consume safely.
+			Builds a Google Search grounding tool for a required compatible Gemini image model.
 		
 		Args:
-		    image_search (bool): Image search value used by the operation.
+			model (str): Required Gemini image model identifier.
+			image_search (bool): Indicates whether Google Image Search is enabled.
 		
 		Returns:
-		    Optional[Tool]: Return value produced by the operation.
+			Optional[Tool]: Provider-ready grounding tool or None.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
+			throw_if( 'model', model )
+			self.model = model
+			self.image_search = image_search
+			self.tool = None
+			
 			if not self.supports_search_grounding( self.model ):
-				return None
+				return self.tool
 			
-			self.use_image_search = bool( image_search )
-			self.model_name = str( self.model or '' ).strip( ).lower( )
-			if self.use_image_search and self.supports_image_search( self.model_name ):
-				return Tool( google_search=types.GoogleSearch( search_types=types.SearchTypes(
-					web_search=types.WebSearch( ), image_search=types.ImageSearch( ) ) ) )
+			if self.image_search:
+				if self.supports_image_search( self.model ):
+					self.tool = Tool( google_search=GoogleSearch(
+						search_types=types.SearchTypes( web_search=types.WebSearch( ),
+							image_search=types.ImageSearch( ), ), ), )
+					return self.tool
 			
-			return Tool( google_search=types.GoogleSearch( ) )
+			self.tool = Tool( google_search=GoogleSearch( ), )
+			return self.tool
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = 'build_grounding_tool( self, image_search: bool=False ) -> Optional[Tool]'
+			exception.method = ('build_grounding_tool( self, **kwargs )')
 			Logger( ).write( exception )
 			raise exception
 	
-	def get_content_config( self, response_modalities: Optional[ str ], image_only: bool = False,
-			image_search: bool = False, grounded: bool = False,
-			output_mime_type: Optional[ str ] = None ) -> GenerateContentConfig:
-		"""Get content config.
+	def build_image_config( self, model: str, aspect_ratio: str = '', image_size: str = '',
+		output_mime_type: str = '' ) -> Optional[ ImageConfig ]:
+		"""Build image configuration.
 		
 		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Builds provider-native output-image configuration for a required Gemini image model.
 		
 		Args:
-		    response_modalities (Optional[str]): Response modalities value used by the operation.
-		    image_only (bool): Image only value used by the operation.
-		    image_search (bool): Image search value used by the operation.
-		    grounded (bool): Grounded value used by the operation.
-		    output_mime_type (Optional[str]): Output mime type value used by the operation.
+			model (str): Required Gemini image model identifier.
+			aspect_ratio (str): Optional output-image aspect ratio.
+			image_size (str): Optional output-image resolution.
+			output_mime_type (str): Optional output-image MIME type.
 		
 		Returns:
-		    GenerateContentConfig: Return value produced by the operation.
+			Optional[ImageConfig]: Provider image configuration or None.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
+			throw_if( 'model', model )
+			self.model = model
+			self.aspect_ratio = aspect_ratio
+			self.image_size = image_size
+			self.output_mime_type = output_mime_type
+			self.image_values = { }
+			
+			if self.aspect_ratio:
+				self.image_values[ 'aspect_ratio' ] = (self.aspect_ratio)
+			
+			if self.image_size:
+				if self.supports_image_size( self.model ):
+					self.image_values[ 'image_size' ] = (self.image_size)
+			
+			if self.output_mime_type:
+				self.image_values[ 'output_mime_type' ] = (self.output_mime_type)
+			
+			if not self.image_values:
+				self.image_config = None
+				return self.image_config
+			
+			self.image_config = ImageConfig( **self.image_values )
+			return self.image_config
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Images'
+			exception.method = ('build_image_config( self, **kwargs )')
+			Logger( ).write( exception )
+			raise exception
+	
+	def build_content_config( self, model: str, response_modalities: str, image_only: bool = False,
+		aspect_ratio: str = '', image_size: str = '', output_mime_type: str = '',
+		temperature: float = 0.0, top_p: float = 0.0, max_tokens: int = 0, instruct: str = '',
+		grounded: bool = False, image_search: bool = False ) -> GenerateContentConfig:
+		"""Build content configuration.
+		
+		Purpose:
+			Builds a provider-ready GenerateContentConfig from arguments assigned to object
+			members.
+		
+		Args:
+			model (str): Required Gemini model identifier.
+			response_modalities (str): Required response-modality selection.
+			image_only (bool): Indicates whether image output must be requested.
+			aspect_ratio (str): Optional output-image aspect ratio.
+			image_size (str): Optional output-image resolution.
+			output_mime_type (str): Optional output-image MIME type.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			max_tokens (int): Maximum output-token count.
+			instruct (str): Optional system instruction.
+			grounded (bool): Indicates whether Google Search grounding is enabled.
+			image_search (bool): Indicates whether Google Image Search is enabled.
+		
+		Returns:
+			GenerateContentConfig: Provider-ready generation configuration.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'model', model )
+			throw_if( 'response_modalities', response_modalities, )
+			self.model = model
+			self.response_mode = response_modalities
 			self.image_only = image_only
-			self.image_config = None
-			self.tool_config = None
-			self.grounding_metadata = None
-			self.output_mime_type = str( output_mime_type or '' ).strip( ) or None
-			self.image_kwargs = { }
-			self.aspect_value = str( self.aspect_ratio or '' ).strip( )
-			if self.aspect_value:
-				self.image_kwargs[ 'aspect_ratio' ] = self.aspect_value
+			self.aspect_ratio = aspect_ratio
+			self.image_size = image_size
+			self.output_mime_type = output_mime_type
+			self.temperature = temperature
+			self.top_p = top_p
+			self.max_output_tokens = max_tokens
+			self.instructions = instruct
+			self.grounded = grounded
+			self.image_search = image_search
+			self.response_modalities = (
+				self.build_response_modalities( self.response_mode, self.image_only, ))
+			self.image_config = self.build_image_config( self.model, self.aspect_ratio,
+				self.image_size, self.output_mime_type, )
+			self.tools = [ ]
 			
-			self.size_value = str( self.size or '' ).strip( )
-			if self.size_value and self.supports_image_size( self.model ):
-				self.image_kwargs[ 'image_size' ] = self.size_value
+			if self.grounded:
+				self.tool = self.build_grounding_tool( self.model, self.image_search, )
+				
+				if self.tool is not None:
+					self.tools.append( self.tool )
 			
-			if len( self.image_kwargs ) > 0:
-				self.image_config = types.ImageConfig( **self.image_kwargs )
+			self.config_values = { 'response_modalities': self.response_modalities,
+				'temperature': self.temperature, }
 			
-			if grounded:
-				self.grounding_tool = self.build_grounding_tool( image_search=image_search )
-				if self.grounding_tool is not None:
-					self.tool_config = [ self.grounding_tool ]
+			if self.top_p > 0:
+				self.config_values[ 'top_p' ] = self.top_p
 			
-			self.response_modalities = self.normalize_response_modalities(
-				response_modalities=response_modalities, image_only=image_only )
+			if self.max_output_tokens > 0:
+				self.config_values[ 'max_output_tokens' ] = (self.max_output_tokens)
 			
-			self.config_kwargs = { 'response_modalities': self.response_modalities }
-			if self.temperature is not None:
-				self.config_kwargs[ 'temperature' ] = self.temperature
-			
-			if self.top_p is not None:
-				self.config_kwargs[ 'top_p' ] = self.top_p
-			
-			if self.number is not None and int( self.number or 0 ) > 0:
-				self.config_kwargs[ 'candidate_count' ] = int( self.number )
-			
-			if self.max_output_tokens is not None and int( self.max_output_tokens or 0 ) > 0:
-				self.config_kwargs[ 'max_output_tokens' ] = int( self.max_output_tokens )
-			
-			if self.instructions is not None and str( self.instructions ).strip( ):
-				self.config_kwargs[ 'system_instruction' ] = str( self.instructions ).strip( )
+			if self.instructions:
+				self.config_values[ 'system_instruction' ] = (self.instructions)
 			
 			if self.image_config is not None:
-				self.config_kwargs[ 'image_config' ] = self.image_config
+				self.config_values[ 'image_config' ] = (self.image_config)
 			
-			if self.tool_config is not None and len( self.tool_config ) > 0:
-				self.config_kwargs[ 'tools' ] = self.tool_config
+			if self.tools:
+				self.config_values[ 'tools' ] = self.tools
 			
-			self.content_config = GenerateContentConfig( **self.config_kwargs )
+			self.content_config = GenerateContentConfig( **self.config_values )
 			return self.content_config
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = 'get_content_config( self, **kwargs ) -> GenerateContentConfig'
+			exception.method = ('build_content_config( self, **kwargs )')
 			Logger( ).write( exception )
 			raise exception
 	
 	def open_image( self, path: str ) -> PIL.Image.Image:
-		"""Open image.
+		"""Open an image.
 		
 		Purpose:
-		    Performs the Images.open_image workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Loads a required local image and returns an independent PIL image object.
 		
 		Args:
-		    path (str): Path value used by the operation.
+			path (str): Required local image path.
 		
 		Returns:
-		    PIL.Image.Image: Return value produced by the operation.
+			PIL.Image.Image: Loaded image.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'path', path )
-			with PIL.Image.open( path ) as source:
-				return source.copy( )
+			self.file_path = path
+			
+			with PIL.Image.open( self.file_path ) as source:
+				self.image_input = source.copy( )
+			
+			return self.image_input
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = 'open_image( self, path ) -> PIL.Image.Image'
+			exception.method = ('open_image( self, path: str ) -> PIL.Image.Image')
 			Logger( ).write( exception )
 			raise exception
 	
 	def capture_metadata( self ) -> None:
-		"""Capture metadata.
+		"""Capture grounding metadata.
 		
 		Purpose:
-		    Performs the Images.capture_metadata workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Captures grounding metadata from the latest Gemini response.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value.
+			None: This method updates object state.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			self.grounding_metadata = None
+			
 			if self.content_response is None:
 				return
 			
-			self.candidates = getattr( self.content_response, 'candidates', None )
-			if self.candidates:
-				for candidate in self.candidates:
-					self.metadata = getattr( candidate, 'grounding_metadata', None )
-					if self.metadata is None:
-						self.metadata = getattr( candidate, 'groundingMetadata', None )
-					
-					if self.metadata is not None:
-						self.grounding_metadata = self.metadata
-						return
+			self.candidates = getattr( self.content_response, 'candidates', [ ], ) or [ ]
+			
+			for candidate in self.candidates:
+				self.metadata = getattr( candidate, 'grounding_metadata', None, )
+				
+				if self.metadata is not None:
+					self.grounding_metadata = self.metadata
+					return
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = 'capture_metadata( self )'
+			exception.method = ('capture_metadata( self ) -> None')
 			Logger( ).write( exception )
 			raise exception
 	
 	def get_first_image( self ) -> Optional[ PIL.Image.Image ]:
-		"""Get first image.
+		"""Get first generated image.
 		
 		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Extracts the first generated inline image from the latest Gemini response.
 		
 		Returns:
-		    Optional[PIL.Image.Image]: Return value produced by the operation.
+			Optional[PIL.Image.Image]: First generated image or None.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
+			self.output_image = None
+			
 			if self.content_response is None:
-				return None
+				return self.output_image
 			
-			parts = getattr( self.content_response, 'parts', None )
-			if parts:
-				for part in parts:
-					try:
-						if getattr( part, 'inline_data', None ) is not None:
-							return part.as_image( )
-					except Exception:
-						continue
+			self.candidates = getattr( self.content_response, 'candidates', [ ], ) or [ ]
 			
-			candidates = getattr( self.content_response, 'candidates', None )
-			if candidates:
-				for candidate in candidates:
-					content = getattr( candidate, 'content', None )
-					if content is None:
-						continue
-					
-					candidate_parts = getattr( content, 'parts', None ) or [ ]
-					for part in candidate_parts:
-						try:
-							if getattr( part, 'inline_data', None ) is not None:
-								return part.as_image( )
-						except Exception:
-							continue
-			
-			return None
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Images'
-			exception.method = 'get_first_image( self ) -> Optional[ PIL.Image.Image ]'
-			Logger( ).write( exception )
-			raise exception
-	
-	def get_output_text( self ) -> Optional[ str ]:
-		"""Get output text.
-		
-		Purpose:
-		    Returns normalized information for the Images component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
-		
-		Returns:
-		    Optional[str]: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			if self.content_response is None:
-				return None
-			
-			text = getattr( self.content_response, 'text', None )
-			if isinstance( text, str ) and text.strip( ):
-				return text
-			
-			parts = getattr( self.content_response, 'parts', None )
-			if parts:
-				output = [ ]
-				for part in parts:
-					part_text = getattr( part, 'text', None )
-					if isinstance( part_text, str ) and part_text.strip( ):
-						output.append( part_text.strip( ) )
+			for candidate in self.candidates:
+				self.content = getattr( candidate, 'content', None, )
 				
-				if output:
-					return '\n'.join( output )
-			
-			candidates = getattr( self.content_response, 'candidates', None )
-			if candidates:
-				for candidate in candidates:
-					content = getattr( candidate, 'content', None )
-					if content is None:
+				if self.content is None:
+					continue
+				
+				self.parts = getattr( self.content, 'parts', [ ], ) or [ ]
+				
+				for part in self.parts:
+					self.inline_data = getattr( part, 'inline_data', None, )
+					
+					if self.inline_data is None:
 						continue
 					
-					output = [ ]
-					for part in getattr( content, 'parts', None ) or [ ]:
-						part_text = getattr( part, 'text', None )
-						if isinstance( part_text, str ) and part_text.strip( ):
-							output.append( part_text.strip( ) )
+					self.image_data = getattr( self.inline_data, 'data', None, )
 					
-					if output:
-						return '\n'.join( output )
+					if not self.image_data:
+						continue
+					
+					self.output_image = PIL.Image.open( io.BytesIO( self.image_data ) )
+					self.output_image.load( )
+					return self.output_image
 			
-			return None
+			return self.output_image
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = 'get_output_text( self ) -> Optional[ str ]'
+			exception.method = ('get_first_image( self ) -> Optional[ PIL.Image.Image ]')
 			Logger( ).write( exception )
 			raise exception
 	
-	def generate( self, prompt: str, model: str = 'gemini-2.5-flash-image',
-			aspect: str = None, number: int = None, temperature: float = None,
-			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int = None, resolution: str = None, instruct: str = None,
-			output_mime_type: str = None, response_modalities: str = None,
-			grounded: bool = False, image_search: bool = False, size: str = None,
-			quality: str = None, style: str = None, fmt: str = None,
-			mime_type: str = None, compression: float = None, background: str = None,
-			aspect_ratio: str = None, **kwargs: Any ) -> Optional[ PIL.Image.Image ]:
-		"""Generate.
+	def get_output_text( self ) -> str:
+		"""Get response text.
 		
 		Purpose:
-		    Generates provider output for the Images workflow using validated model settings and request
-		    inputs. The method coordinates request construction, provider execution, response capture, and
-		    logged exception handling.
+			Extracts text from the latest Gemini image or image-analysis response.
+		
+		Returns:
+			str: Extracted response text or an empty string.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.output_text = ''
+			
+			if self.content_response is None:
+				return self.output_text
+			
+			self.response_text = getattr( self.content_response, 'text', '', )
+			
+			if self.response_text:
+				self.output_text = str( self.response_text )
+				return self.output_text
+			
+			self.text_parts = [ ]
+			self.candidates = getattr( self.content_response, 'candidates', [ ], ) or [ ]
+			
+			for candidate in self.candidates:
+				self.content = getattr( candidate, 'content', None, )
+				
+				if self.content is None:
+					continue
+				
+				self.parts = getattr( self.content, 'parts', [ ], ) or [ ]
+				
+				for part in self.parts:
+					self.part_text = getattr( part, 'text', '', )
+					
+					if self.part_text:
+						self.text_parts.append( str( self.part_text ) )
+			
+			self.output_text = ''.join( self.text_parts ).strip( )
+			return self.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Images'
+			exception.method = ('get_output_text( self ) -> str')
+			Logger( ).write( exception )
+			raise exception
+	
+	def generate( self, prompt: str, model: str, aspect_ratio: str = '1:1', image_size: str = '1K',
+		output_mime_type: str = 'image/png', response_modalities: str = 'image',
+		temperature: float = 0.0, top_p: float = 0.0, max_tokens: int = 0, instruct: str = '',
+		grounded: bool = False, image_search: bool = False ) -> Optional[ PIL.Image.Image ]:
+		"""Generate an image.
+		
+		Purpose:
+			Generates an image from a required prompt using a required Gemini image model.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
-		    model (str): Model value used by the operation.
-		    aspect (str): Aspect value used by the operation.
-		    number (int): Number value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    resolution (str): Resolution value used by the operation.
-		    instruct (str): Instruct value used by the operation.
-		    output_mime_type (str): Output mime type value used by the operation.
-		    response_modalities (str): Response modalities value used by the operation.
-		    grounded (bool): Grounded value used by the operation.
-		    image_search (bool): Image search value used by the operation.
-		    size (str): Size value used by the operation.
-		    quality (str): Quality value used by the operation.
-		    style (str): Style value used by the operation.
-		    fmt (str): Fmt value used by the operation.
-		    mime_type (str): Mime type value used by the operation.
-		    compression (float): Compression value used by the operation.
-		    background (str): Background value used by the operation.
-		    aspect_ratio (str): Aspect ratio value used by the operation.
-		    **kwargs (Any): Additional keyword arguments retained for compatibility with caller workflows.
+			prompt (str): Required image-generation prompt.
+			model (str): Required Gemini image model.
+			aspect_ratio (str): Output-image aspect ratio.
+			image_size (str): Output-image resolution.
+			output_mime_type (str): Output-image MIME type.
+			response_modalities (str): Response-modality selection.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			max_tokens (int): Maximum output-token count.
+			instruct (str): Optional system instruction.
+			grounded (bool): Indicates whether Google Search grounding is enabled.
+			image_search (bool): Indicates whether Google Image Search is enabled.
 		
 		Returns:
-		    Optional[PIL.Image.Image]: Return value produced by the operation.
+			Optional[PIL.Image.Image]: Generated image or None.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'prompt', prompt )
-			self.prompt = prompt
 			throw_if( 'model', model )
+			throw_if( 'response_modalities', response_modalities, )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.prompt = prompt
 			self.model = model
-			self.gemini_api_key = cfg.GEMINI_API_KEY
-			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
-				raise ValueError( 'GEMINI_API_KEY is required.' )
-			
-			self.number = number
-			self.aspect_ratio = aspect or aspect_ratio
-			self.media_resolution = resolution or size
-			self.size = self.media_resolution
-			self.quality = quality
-			self.style = style
-			self.top_p = top_p
+			self.aspect_ratio = aspect_ratio
+			self.image_size = image_size
+			self.output_mime_type = output_mime_type
+			self.response_mode = response_modalities
 			self.temperature = temperature
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
+			self.top_p = top_p
 			self.max_output_tokens = max_tokens
 			self.instructions = instruct
-			self.output_mime_type = output_mime_type or mime_type or fmt
-			self.compression = compression
-			self.background = background
-			self.response_mode = response_modalities or 'image'
-			self.client = genai.Client( api_key=self.gemini_api_key )
-			self.content_config = self.get_content_config( image_only=True,
-				grounded=grounded, image_search=image_search,
-				response_modalities=self.response_mode,
-				output_mime_type=self.output_mime_type )
-			self.content_response = self.client.models.generate_content( model=self.model,
-				contents=[ self.prompt ], config=self.content_config )
+			self.grounded = grounded
+			self.image_search = image_search
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.content_config = self.build_content_config( self.model, self.response_mode, True,
+				self.aspect_ratio, self.image_size, self.output_mime_type, self.temperature,
+				self.top_p, self.max_output_tokens, self.instructions, self.grounded,
+				self.image_search, )
+			self.content_response = (
+				self.client.models.generate_content( model=self.model, contents=[ self.prompt, ],
+					config=self.content_config, ))
 			self.response = self.content_response
 			self.capture_metadata( )
 			return self.get_first_image( )
@@ -2056,80 +2083,75 @@ class Images( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = 'generate( self, prompt, model ) -> Optional[ PIL.Image.Image ]'
+			exception.method = 'generate( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def analyze( self, prompt: str, path: str, model: str = 'gemini-2.5-flash-image',
-			aspect: str = None, number: int = None, temperature: float = None,
-			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int = None, resolution: str = None, instruct: str = None,
-			output_mime_type: str = None, response_modalities: str = None,
-			grounded: bool = False, image_search: bool = False, image_path: str = None,
-			detail: str = None, **kwargs: Any ) -> Optional[ str ]:
-		"""Analyze.
+	def analyze( self, prompt: str, path: str, model: str, temperature: float = 0.0,
+		top_p: float = 0.0, max_tokens: int = 0, instruct: str = '', media_resolution: str = '',
+		grounded: bool = False ) -> str:
+		"""Analyze an image.
 		
 		Purpose:
-		    Performs the Images.analyze workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Analyzes a required local image using a required Gemini multimodal model.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
-		    path (str): Path value used by the operation.
-		    model (str): Model value used by the operation.
-		    aspect (str): Aspect value used by the operation.
-		    number (int): Number value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    resolution (str): Resolution value used by the operation.
-		    instruct (str): Instruct value used by the operation.
-		    output_mime_type (str): Output mime type value used by the operation.
-		    response_modalities (str): Response modalities value used by the operation.
-		    grounded (bool): Grounded value used by the operation.
-		    image_search (bool): Image search value used by the operation.
-		    image_path (str): Image path value used by the operation.
-		    detail (str): Detail value used by the operation.
-		    **kwargs (Any): Additional keyword arguments retained for compatibility with caller workflows.
+			prompt (str): Required image-analysis prompt.
+			path (str): Required local image path.
+			model (str): Required Gemini multimodal model.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			max_tokens (int): Maximum output-token count.
+			instruct (str): Optional system instruction.
+			media_resolution (str): Optional input-media resolution.
+			grounded (bool): Indicates whether Google Search grounding is enabled.
 		
 		Returns:
-		    Optional[str]: Return value produced by the operation.
+			str: Image-analysis response text.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'prompt', prompt )
-			self.prompt = prompt
 			throw_if( 'path', path )
-			self.file_path = path
 			throw_if( 'model', model )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.prompt = prompt
+			self.file_path = path
 			self.model = model
-			self.gemini_api_key = cfg.GEMINI_API_KEY
-			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
-				raise ValueError( 'GEMINI_API_KEY is required.' )
-			
-			self.number = number
-			self.aspect_ratio = aspect
-			self.media_resolution = resolution
-			self.detail = detail
-			self.top_p = top_p
 			self.temperature = temperature
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
+			self.top_p = top_p
 			self.max_output_tokens = max_tokens
 			self.instructions = instruct
-			self.output_mime_type = output_mime_type
-			self.response_mode = response_modalities or 'text'
-			self.client = genai.Client( api_key=self.gemini_api_key )
-			self.content_config = self.get_content_config( image_only=False, grounded=grounded,
-				image_search=image_search, response_modalities=self.response_mode,
-				output_mime_type=self.output_mime_type )
+			self.media_resolution = media_resolution
+			self.grounded = grounded
+			self.client = genai.Client( api_key=self.gemini_api_key, )
 			self.image_input = self.open_image( self.file_path )
-			self.content_response = self.client.models.generate_content( model=self.model,
-				contents=[ self.prompt, self.image_input ], config=self.content_config )
+			self.config_values = { 'response_modalities': [ 'TEXT', ],
+				'temperature': self.temperature, }
+			
+			if self.top_p > 0:
+				self.config_values[ 'top_p' ] = self.top_p
+			
+			if self.max_output_tokens > 0:
+				self.config_values[ 'max_output_tokens' ] = (self.max_output_tokens)
+			
+			if self.instructions:
+				self.config_values[ 'system_instruction' ] = (self.instructions)
+			
+			if self.media_resolution:
+				self.config_values[ 'media_resolution' ] = (self.media_resolution)
+			
+			if self.grounded:
+				self.tool = self.build_grounding_tool( self.model, False, )
+				
+				if self.tool is not None:
+					self.config_values[ 'tools' ] = [ self.tool, ]
+			
+			self.content_config = GenerateContentConfig( **self.config_values )
+			self.content_response = (self.client.models.generate_content( model=self.model,
+				contents=[ self.prompt, self.image_input, ], config=self.content_config, ))
 			self.response = self.content_response
 			self.capture_metadata( )
 			return self.get_output_text( )
@@ -2137,107 +2159,69 @@ class Images( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = 'analyze( self, prompt, path, model ) -> Optional[ str ]'
+			exception.method = 'analyze( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def edit( self, prompt: str, path: str, model: str = 'gemini-2.5-flash-image',
-			aspect: str = None, number: int = None, temperature: float = None,
-			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int = None, resolution: str = None, instruct: str = None,
-			output_mime_type: str = None, response_modalities: str = None,
-			grounded: bool = False, image_search: bool = False, image_path: str = None,
-			mask_path: str = None, mask: str = None, size: str = None,
-			quality: str = None, style: str = None, fmt: str = None,
-			mime_type: str = None, compression: float = None, background: str = None,
-			aspect_ratio: str = None, **kwargs: Any ) -> Optional[ PIL.Image.Image ]:
-		"""Edit.
+	def edit( self, prompt: str, path: str, model: str, aspect_ratio: str = '',
+		image_size: str = '', output_mime_type: str = 'image/png',
+		response_modalities: str = 'image', temperature: float = 0.0, top_p: float = 0.0,
+		max_tokens: int = 0, instruct: str = '', grounded: bool = False,
+		image_search: bool = False ) -> Optional[ PIL.Image.Image ]:
+		"""Edit an image.
 		
 		Purpose:
-		    Performs the Images.edit workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Edits a required local image through conversational Gemini image generation using
+			a required editing prompt and image model.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
-		    path (str): Path value used by the operation.
-		    model (str): Model value used by the operation.
-		    aspect (str): Aspect value used by the operation.
-		    number (int): Number value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    resolution (str): Resolution value used by the operation.
-		    instruct (str): Instruct value used by the operation.
-		    output_mime_type (str): Output mime type value used by the operation.
-		    response_modalities (str): Response modalities value used by the operation.
-		    grounded (bool): Grounded value used by the operation.
-		    image_search (bool): Image search value used by the operation.
-		    image_path (str): Image path value used by the operation.
-		    mask_path (str): Mask path value used by the operation.
-		    mask (str): Mask value used by the operation.
-		    size (str): Size value used by the operation.
-		    quality (str): Quality value used by the operation.
-		    style (str): Style value used by the operation.
-		    fmt (str): Fmt value used by the operation.
-		    mime_type (str): Mime type value used by the operation.
-		    compression (float): Compression value used by the operation.
-		    background (str): Background value used by the operation.
-		    aspect_ratio (str): Aspect ratio value used by the operation.
-		    **kwargs (Any): Additional keyword arguments retained for compatibility with caller workflows.
+			prompt (str): Required image-editing instruction.
+			path (str): Required local source-image path.
+			model (str): Required Gemini image model.
+			aspect_ratio (str): Optional output-image aspect ratio.
+			image_size (str): Optional output-image resolution.
+			output_mime_type (str): Output-image MIME type.
+			response_modalities (str): Response-modality selection.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			max_tokens (int): Maximum output-token count.
+			instruct (str): Optional system instruction.
+			grounded (bool): Indicates whether Google Search grounding is enabled.
+			image_search (bool): Indicates whether Google Image Search is enabled.
 		
 		Returns:
-		    Optional[PIL.Image.Image]: Return value produced by the operation.
+			Optional[PIL.Image.Image]: Edited image or None.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'prompt', prompt )
-			self.prompt = prompt
-			
 			throw_if( 'path', path )
-			self.file_path = path
-			
 			throw_if( 'model', model )
+			throw_if( 'response_modalities', response_modalities, )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.prompt = prompt
+			self.file_path = path
 			self.model = model
-			
-			self.gemini_api_key = cfg.GEMINI_API_KEY
-			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
-				raise ValueError( 'GEMINI_API_KEY is required.' )
-			
-			self.number = number
-			self.aspect_ratio = aspect or aspect_ratio
-			self.media_resolution = resolution or size
-			self.size = self.media_resolution
-			self.quality = quality
-			self.style = style
-			self.mask_path = mask_path or mask
-			self.top_p = top_p
+			self.aspect_ratio = aspect_ratio
+			self.image_size = image_size
+			self.output_mime_type = output_mime_type
+			self.response_mode = response_modalities
 			self.temperature = temperature
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
+			self.top_p = top_p
 			self.max_output_tokens = max_tokens
 			self.instructions = instruct
-			self.output_mime_type = output_mime_type or mime_type or fmt
-			self.compression = compression
-			self.background = background
-			self.response_mode = response_modalities or 'image'
-			self.client = genai.Client( api_key=self.gemini_api_key )
-			self.content_config = self.get_content_config(
-				image_only=True,
-				grounded=grounded,
-				image_search=image_search,
-				response_modalities=self.response_mode,
-				output_mime_type=self.output_mime_type
-			)
+			self.grounded = grounded
+			self.image_search = image_search
+			self.client = genai.Client( api_key=self.gemini_api_key, )
 			self.image_input = self.open_image( self.file_path )
-			self.content_response = self.client.models.generate_content(
-				model=self.model,
-				contents=[ self.prompt, self.image_input ],
-				config=self.content_config
-			)
+			self.content_config = self.build_content_config( self.model, self.response_mode, True,
+				self.aspect_ratio, self.image_size, self.output_mime_type, self.temperature,
+				self.top_p, self.max_output_tokens, self.instructions, self.grounded,
+				self.image_search, )
+			self.content_response = (self.client.models.generate_content( model=self.model,
+				contents=[ self.prompt, self.image_input, ], config=self.content_config, ))
 			self.response = self.content_response
 			self.capture_metadata( )
 			return self.get_first_image( )
@@ -2245,211 +2229,309 @@ class Images( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = 'edit( self, prompt, path, model ) -> Optional[ PIL.Image.Image ]'
+			exception.method = 'edit( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
+	
+	def __dir__( self ) -> List[ str ]:
+		"""Return member names.
+		
+		Purpose:
+			Returns public members exposed by the Gemini Images wrapper.
+		
+		Returns:
+			List[str]: Public member names.
+		"""
+		return [ 'gemini_api_key', 'client', 'model', 'prompt', 'file_path', 'aspect_ratio',
+			'image_size', 'output_mime_type', 'response_modalities', 'temperature', 'top_p',
+			'max_output_tokens', 'instructions', 'grounded', 'image_search', 'image_config',
+			'content_config', 'content_response', 'response', 'output_image', 'output_text',
+			'grounding_metadata', 'model_options', 'analysis_model_options', 'aspect_options',
+			'size_options', 'resolution_options', 'modality_options', 'mime_options',
+			'tool_options', 'include_options', 'choice_options', 'reasoning_options',
+			'format_options', 'supports_image_size', 'supports_search_grounding',
+			'supports_image_search', 'build_response_modalities', 'build_grounding_tool',
+			'build_image_config', 'build_content_config', 'open_image', 'capture_metadata',
+			'get_first_image', 'get_output_text', 'generate', 'analyze', 'edit', ]
 
 class Embeddings( Gemini ):
-	"""Embeddings class.
+	"""Provide Gemini embedding workflow support.
 	
 	Purpose:
-	    Defines the Embeddings component used by the Boo application. The class groups related provider
-	    configuration, runtime state, helper methods, and API-facing behavior so Streamlit workflows can
-	    call a consistent interface.
+		Provides embedding generation through the Google Gen AI SDK for individual text values
+		and batches of text. The class assigns accepted method arguments to object members,
+		constructs provider-native EmbedContentConfig objects, executes embedding requests, and
+		extracts floating-point vectors and usage metadata from provider responses.
 	
 	Attributes:
-	    client (Optional[genai.Client]): Stores client for the component runtime state.
-	    response (Optional[Any]): Stores response for the component runtime state.
-	    embedding (Optional[List[float] | List[List[float]]]): Stores embedding for the component runtime state.
-	    encoding_format (Optional[str]): Stores encoding format for the component runtime state.
-	    dimensions (Optional[int]): Stores dimensions for the component runtime state.
-	    task_type (Optional[str]): Stores task type for the component runtime state.
-	    title (Optional[str]): Stores title for the component runtime state.
-	    embedding_config (Optional[types.EmbedContentConfig]): Stores embedding config for the component runtime state.
-	    contents (Optional[str | List[str]]): Stores contents for the component runtime state.
-	    input_text (Optional[str | List[str]]): Stores input text for the component runtime state.
-	    file_path (Optional[str]): Stores file path for the component runtime state.
-	    response_modalities (Optional[str]): Stores response modalities for the component runtime state."""
+		client (Optional[genai.Client]): Google Gen AI client.
+		model (str): Gemini embedding model used by the current request.
+		input_text (str | List[str]): Original embedding input.
+		contents (str | List[str]): Provider-ready embedding content.
+		dimensions (int): Requested output dimensionality.
+		task_type (str): Embedding task type.
+		title (str): Optional retrieval-document title.
+		embedding_config (Optional[EmbedContentConfig]): Provider embedding configuration.
+		response (Any): Latest provider embedding response.
+		embedding (Optional[List[float] | List[List[float]]]): Extracted embedding output.
+		embeddings (List[List[float]]): Extracted embedding collection.
+		usage (Any): Usage metadata from the latest provider response.
+	"""
 	client: Optional[ genai.Client ]
-	response: Optional[ Any ]
+	model: str
+	input_text: str | List[ str ]
+	contents: str | List[ str ]
+	dimensions: int
+	task_type: str
+	title: str
+	embedding_config: Optional[ EmbedContentConfig ]
+	response: Any
 	embedding: Optional[ List[ float ] | List[ List[ float ] ] ]
-	encoding_format: Optional[ str ]
-	dimensions: Optional[ int ]
-	task_type: Optional[ str ]
-	title: Optional[ str ]
-	embedding_config: Optional[ types.EmbedContentConfig ]
-	contents: Optional[ str | List[ str ] ]
-	input_text: Optional[ str | List[ str ] ]
-	file_path: Optional[ str ]
-	response_modalities: Optional[ str ]
+	embeddings: List[ List[ float ] ]
+	usage: Any
 	
-	def __init__( self, model: str = 'gemini-embedding-001' ):
+	def __init__( self, model: str = 'gemini-embedding-001' ) -> None:
+		"""Initialize instance.
+		
+		Purpose:
+			Initializes Gemini embedding configuration and runtime state without executing a
+			provider request.
+		
+		Args:
+			model (str): Default Gemini embedding model.
+		
+		Returns:
+			None: This method initializes object state.
+		"""
 		super( ).__init__( )
-		self.model = model
+		self.gemini_api_key = cfg.GEMINI_API_KEY
 		self.client = None
-		self.embedding = None
-		self.embeddings = None
-		self.response = None
-		self.encoding_format = None
-		self.input_text = None
-		self.contents = None
-		self.file_path = None
-		self.dimensions = None
-		self.task_type = None
-		self.title = None
-		self.response_modalities = None
+		self.model = model
+		self.input_text = ''
+		self.contents = ''
+		self.dimensions = 0
+		self.task_type = ''
+		self.title = ''
 		self.embedding_config = None
-		self.content_config = None
-		self.api_key = None
+		self.response = None
+		self.embedding = None
+		self.embeddings = [ ]
+		self.usage = None
+		self.config_values = { }
 	
 	@property
-	def model_options( self ) -> List[ str ] | None:
-		"""Model options.
+	def model_options( self ) -> List[ str ]:
+		"""Get embedding-model options.
 		
 		Purpose:
-		    Returns normalized information for the Embeddings component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns Gemini embedding models exposed by the wrapper.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'gemini-embedding-001',
-		         'gemini-embedding-2',
-		         'gemini-embedding-2-preview',
-		         'text-embedding-004',
-		         'text-multilingual-embedding-002' ]
-	
-	@property
-	def encoding_options( self ) -> List[ str ]:
-		"""Encoding options.
-		
-		Purpose:
-		    Returns normalized information for the Embeddings component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
-		
-		Returns:
-		    List[str]: Return value produced by the operation."""
-		return [ 'float', 'base64' ]
+			List[str]: Supported Gemini embedding model identifiers.
+		"""
+		return [ 'gemini-embedding-2', 'gemini-embedding-2-preview', 'gemini-embedding-001',
+			'text-embedding-004', 'text-multilingual-embedding-002', ]
 	
 	@property
 	def task_options( self ) -> List[ str ]:
-		"""Task options.
+		"""Get task-type options.
 		
 		Purpose:
-		    Returns normalized information for the Embeddings component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns Gemini embedding task types exposed by the wrapper.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
-		return [ '',
-		         'RETRIEVAL_QUERY',
-		         'RETRIEVAL_DOCUMENT',
-		         'SEMANTIC_SIMILARITY',
-		         'CLASSIFICATION',
-		         'CLUSTERING',
-		         'QUESTION_ANSWERING',
-		         'FACT_VERIFICATION',
-		         'CODE_RETRIEVAL_QUERY' ]
+			List[str]: Supported embedding task-type values.
+		"""
+		return [ '', 'RETRIEVAL_QUERY', 'RETRIEVAL_DOCUMENT', 'SEMANTIC_SIMILARITY',
+			'CLASSIFICATION', 'CLUSTERING', 'QUESTION_ANSWERING', 'FACT_VERIFICATION',
+			'CODE_RETRIEVAL_QUERY', ]
 	
-	def normalize_dimensions( self, dimensions: int ) -> int | None:
-		"""Normalize dimensions.
+	@property
+	def dimension_options( self ) -> List[ int ]:
+		"""Get output-dimensionality options.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
-		    displayed.
+			Returns commonly used output dimensions exposed by the application. A value of zero
+			uses the selected model's default dimensionality.
+		
+		Returns:
+			List[int]: Available output-dimensionality values.
+		"""
+		return [ 0, 128, 256, 512, 768, 1536, 3072, ]
+	
+	def supports_dimensions( self, model: str ) -> bool:
+		"""Determine output-dimensionality support.
+		
+		Purpose:
+			Determines whether a required embedding model supports the provider's
+			output_dimensionality configuration.
 		
 		Args:
-		    dimensions (int): Dimensions value used by the operation.
+			model (str): Required Gemini embedding model identifier.
 		
 		Returns:
-		    Optional[int]: Return value produced by the operation."""
-		try:
-			throw_if( 'dimensions', dimensions )
-			self.dimensions = dimensions
-			if self.dimensions <= 0:
-				return None
-			
-			return self.dimensions
-		except Exception:
-			return None
-	
-	def normalize_contents( self, text: str | List[ str ] ) -> str | List[ str ]:
-		"""Normalize contents.
-		
-		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
-		    displayed.
-		
-		Args:
-		    text (str | List[str]): Text value used by the operation.
-		
-		Returns:
-		    str | List[str]: Return value produced by the operation.
+			bool: True when the selected model supports configurable output dimensions.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'model', model )
+			self.model = model
+			
+			return self.model in [ 'gemini-embedding-2', 'gemini-embedding-2-preview',
+				'gemini-embedding-001', 'text-embedding-004', 'text-multilingual-embedding-002', ]
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Embeddings'
+			exception.method = ('supports_dimensions( self, model: str ) -> bool')
+			Logger( ).write( exception )
+			raise exception
+	
+	def build_contents( self, text: str | List[ str ] ) -> str | List[ str ]:
+		"""Build embedding contents.
+		
+		Purpose:
+			Builds provider-ready embedding content from required text or a required collection
+			of text values.
+		
+		Args:
+			text (str | List[str]): Required text input or batch of text inputs.
+		
+		Returns:
+			str | List[str]: Provider-ready embedding content.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'text', text )
-			if isinstance( text, list ):
+			self.input_text = text
+			
+			if isinstance( self.input_text, list ):
 				self.contents = [ ]
-				for item in text:
+				
+				for item in self.input_text:
 					if item is None:
 						continue
 					
-					self.item = str( item ).strip( )
-					if self.item:
-						self.contents.append( self.item )
+					self.content_text = str( item ).strip( )
+					
+					if self.content_text:
+						self.contents.append( self.content_text )
 				
-				throw_if( 'text', self.contents )
+				throw_if( 'contents', self.contents )
 				return self.contents
 			
-			self.contents = str( text ).strip( )
-			throw_if( 'text', self.contents )
+			self.contents = str( self.input_text ).strip( )
+			throw_if( 'contents', self.contents )
 			return self.contents
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Embeddings'
-			exception.method = 'normalize_contents( self, text: str | List[ str ] )'
+			exception.method = ('build_contents( self, text: str | List[ str ] ) -> '
+			                    'str | List[ str ]')
 			Logger( ).write( exception )
 			raise exception
 	
-	def extract_embeddings( self ) -> List[ float ] | List[ List[ float ] ] | None:
+	def build_embedding_config( self, model: str, dimensions: int = 0, task_type: str = '',
+		title: str = '' ) -> EmbedContentConfig:
+		"""Build embedding configuration.
+		
+		Purpose:
+			Builds a provider-native EmbedContentConfig from arguments assigned to object
+			members.
+		
+		Args:
+			model (str): Required Gemini embedding model identifier.
+			dimensions (int): Requested output dimensionality, where zero uses the model default.
+			task_type (str): Optional embedding task type.
+			title (str): Optional retrieval-document title.
+		
+		Returns:
+			EmbedContentConfig: Provider-ready embedding configuration.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'model', model )
+			self.model = model
+			self.dimensions = dimensions
+			self.task_type = task_type.strip( ).upper( )
+			self.title = title.strip( )
+			self.config_values = { }
+			
+			if self.dimensions > 0:
+				if self.supports_dimensions( self.model ):
+					self.config_values[ 'output_dimensionality' ] = (self.dimensions)
+			
+			if self.task_type:
+				self.config_values[ 'task_type' ] = (self.task_type)
+			
+			if self.title:
+				if self.task_type == 'RETRIEVAL_DOCUMENT':
+					self.config_values[ 'title' ] = (self.title)
+			
+			self.embedding_config = EmbedContentConfig( **self.config_values )
+			return self.embedding_config
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Embeddings'
+			exception.method = ('build_embedding_config( self, **kwargs )')
+			Logger( ).write( exception )
+			raise exception
+	
+	def extract_embeddings( self ) -> (List[ float ] | List[ List[ float ] ] | None):
 		"""Extract embeddings.
 		
 		Purpose:
-		    Extracts structured information from a provider response, uploaded file, or application data
-		    object. The function normalizes provider-specific shapes into values that can be rendered,
-		    stored, or passed to later processing steps.
+			Extracts floating-point embedding vectors from the latest provider response.
 		
 		Returns:
-		    List[float] | List[List[float]] | None: Return value produced by the operation.
+			List[float] | List[List[float]] | None: A single vector, multiple vectors, or None
+			when the response contains no embeddings.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
+			self.embedding = None
+			self.embeddings = [ ]
+			
 			if self.response is None:
 				return None
 			
-			if not hasattr( self.response, 'embeddings' ):
-				return None
+			self.response_embeddings = getattr( self.response, 'embeddings', [ ], ) or [ ]
 			
-			self.embeddings = [ ]
-			for item in self.response.embeddings:
+			if not self.response_embeddings:
+				self.response_embedding = getattr( self.response, 'embedding', None, )
+				
+				if self.response_embedding is not None:
+					self.response_embeddings = [ self.response_embedding, ]
+			
+			for item in self.response_embeddings:
 				if item is None:
 					continue
 				
-				if hasattr( item, 'values' ) and item.values is not None:
-					self.embeddings.append( list( item.values ) )
+				self.values = getattr( item, 'values', None, )
+				
+				if self.values is None:
+					if isinstance( item, dict ):
+						self.values = item.get( 'values', None, )
+				
+				if self.values is None:
+					continue
+				
+				self.embeddings.append( list( self.values ) )
 			
-			if len( self.embeddings ) == 0:
+			if not self.embeddings:
 				return None
 			
-			if len( self.embeddings ) == 1 and isinstance( self.input_text, str ):
+			if isinstance( self.contents, str ):
 				self.embedding = self.embeddings[ 0 ]
 				return self.embedding
 			
@@ -2459,2204 +2541,2548 @@ class Embeddings( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Embeddings'
-			exception.method = 'extract_embeddings( self )'
+			exception.method = ('extract_embeddings( self ) -> '
+			                    'List[ float ] | List[ List[ float ] ] | None')
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_embedding_config( self, model: str = 'gemini-embedding-001', dimensions: int = None,
-			task_type: str = None, title: str = None ) -> EmbedContentConfig:
-		"""Build embedding config.
+	def create( self, text: str | List[ str ], model: str, dimensions: int = 0, task_type: str =
+	'',
+		title: str = '' ) -> List[ float ] | List[ List[ float ] ] | None:
+		"""Create embeddings.
 		
 		Purpose:
-		    Builds the normalized data structure required by the Embeddings workflow. The function converts
-		    caller input, session state, or provider-specific options into a stable shape that downstream
-		    API calls and rendering code can consume safely.
+			Creates one or more embedding vectors from required text input using a required
+			Gemini embedding model and optional output dimensionality, task type, and
+			retrieval-document title.
 		
 		Args:
-		    model (str): Model value used by the operation.
-		    dimensions (int): Dimensions value used by the operation.
-		    task_type (str): Task type value used by the operation.
-		    title (str): Title value used by the operation.
+			text (str | List[str]): Required text input or batch of text inputs.
+			model (str): Required Gemini embedding model identifier.
+			dimensions (int): Requested output dimensionality, where zero uses the model default.
+			task_type (str): Optional embedding task type.
+			title (str): Optional title used with RETRIEVAL_DOCUMENT.
 		
 		Returns:
-		    EmbedContentConfig: Return value produced by the operation.
+			List[float] | List[List[float]] | None: A single embedding, multiple embeddings, or
+			None when the provider returns no embedding vectors.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			throw_if( 'model', model )
-			self.model = model
-			self.dimensions = dimensions
-			self.task_type = task_type
-			self.title = title
-			self.normalized_dimensions = self.normalize_dimensions( self.dimensions )
-			self.config_kwargs = { }
-			
-			if self.normalized_dimensions is not None:
-				self.config_kwargs[ 'output_dimensionality' ] = self.normalized_dimensions
-			
-			if self.task_type is not None and str( self.task_type ).strip( ):
-				self.task_type = str( self.task_type ).strip( ).upper( )
-				self.config_kwargs[ 'task_type' ] = self.task_type
-			
-			if self.title is not None and str( self.title ).strip( ) \
-					and self.task_type == 'RETRIEVAL_DOCUMENT':
-				self.title = str( self.title ).strip( )
-				self.config_kwargs[ 'title' ] = self.title
-			
-			self.embedding_config = EmbedContentConfig( **self.config_kwargs )
-			return self.embedding_config
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'Embeddings'
-			exception.method = 'build_embedding_config( self, model, dimensions, task_type, title )'
-			Logger( ).write( exception )
-			raise exception
-	
-	def create( self, text: str | List[ str ], model: str = 'gemini-embedding-001',
-			dimensions: int = None, task_type: str = None, title: str = None,
-			encoding_format: str = 'float' ) -> List[ float ] | List[ List[ float ] ] | None:
-		"""Create.
-		
-		Purpose:
-		    Performs the Embeddings.create workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
-		
-		Args:
-		    text (str | List[str]): Text value used by the operation.
-		    model (str): Model value used by the operation.
-		    dimensions (int): Dimensions value used by the operation.
-		    task_type (str): Task type value used by the operation.
-		    title (str): Title value used by the operation.
-		    encoding_format (str): Encoding format value used by the operation.
-		
-		Returns:
-		    List[float] | List[List[float]] | None: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'text', text )
-			self.input_text = text
-			
 			throw_if( 'model', model )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.input_text = text
 			self.model = model
-			
 			self.dimensions = dimensions
 			self.task_type = task_type
 			self.title = title
-			self.encoding_format = encoding_format
-			self.gemini_api_key = cfg.GEMINI_API_KEY
+			self.contents = self.build_contents( self.input_text )
+			self.embedding_config = self.build_embedding_config( self.model, self.dimensions,
+				self.task_type, self.title, )
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.response = self.client.models.embed_content( model=self.model,
+				contents=self.contents, config=self.embedding_config, )
+			self.usage = getattr( self.response, 'usage_metadata', None, )
 			
-			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
-				raise ValueError( 'GEMINI_API_KEY is required.' )
-			
-			if self.model not in self.model_options:
-				raise ValueError( f'Unsupported Gemini embedding model: {self.model}' )
-			
-			if self.encoding_format not in self.encoding_options:
-				self.encoding_format = 'float'
-			
-			self.contents = self.normalize_contents( self.input_text )
-			if self.contents is None:
-				raise ValueError( 'The Gemini embedding contents cannot be None.' )
-			
-			if isinstance( self.contents, str ) and not self.contents.strip( ):
-				raise ValueError( 'The Gemini embedding contents cannot be empty.' )
-			
-			if isinstance( self.contents, list ) and len( self.contents ) == 0:
-				raise ValueError( 'The Gemini embedding contents list cannot be empty.' )
-			
-			self.embedding_config = self.build_embedding_config(
-				model=self.model,
-				dimensions=self.dimensions,
-				task_type=self.task_type,
-				title=self.title
-			)
-			
-			self.client = genai.Client( api_key=self.gemini_api_key )
-			self.response = self.client.models.embed_content(
-				model=self.model,
-				contents=self.contents,
-				config=self.embedding_config
-			)
+			if self.usage is None:
+				self.usage = getattr( self.response, 'usageMetadata', None, )
 			
 			return self.extract_embeddings( )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Embeddings'
-			exception.method = 'create( self, text, model, dimensions, task_type, title, encoding_format )'
+			exception.method = 'create( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
+	
+	def get_usage( self ) -> Any:
+		"""Get embedding usage.
+		
+		Purpose:
+			Returns usage metadata from the latest Gemini embedding response.
+		
+		Returns:
+			Any: Provider usage metadata or None when unavailable.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			if self.response is None:
+				return None
+			
+			self.usage = getattr( self.response, 'usage_metadata', None, )
+			
+			if self.usage is None:
+				self.usage = getattr( self.response, 'usageMetadata', None, )
+			
+			return self.usage
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Embeddings'
+			exception.method = 'get_usage( self ) -> Any'
+			Logger( ).write( exception )
+			raise exception
+	
+	def __dir__( self ) -> List[ str ]:
+		"""Return member names.
+		
+		Purpose:
+			Returns public members exposed by the Gemini Embeddings wrapper.
+		
+		Returns:
+			List[str]: Public member names.
+		"""
+		return [ 'gemini_api_key', 'client', 'model', 'input_text', 'contents', 'dimensions',
+			'task_type', 'title', 'embedding_config', 'response', 'embedding', 'embeddings',
+			'usage', 'model_options', 'task_options', 'dimension_options', 'supports_dimensions',
+			'build_contents', 'build_embedding_config', 'extract_embeddings', 'create',
+			'get_usage', ]
 
 class TTS( Gemini ):
-	"""TTS class.
+	"""Provide Gemini text-to-speech workflow support.
 	
 	Purpose:
-	    Defines the TTS component used by the Boo application. The class groups related provider
-	    configuration, runtime state, helper methods, and API-facing behavior so Streamlit workflows can
-	    call a consistent interface.
+		Provides single-speaker speech generation through the Google Gen AI SDK. The class
+		assigns accepted method arguments to object members, constructs provider-native voice,
+		speech, and content configuration objects, converts the returned raw PCM audio into WAV
+		bytes, and optionally writes the generated audio to a local file.
 	
 	Attributes:
-	    speed (Optional[float]): Stores speed for the component runtime state.
-	    voice (Optional[str]): Stores voice for the component runtime state.
-	    response (Optional[GenerateContentResponse]): Stores response for the component runtime state.
-	    voice_config (Optional[VoiceConfig]): Stores voice config for the component runtime state.
-	    speech_config (Optional[SpeechConfig]): Stores speech config for the component runtime state.
-	    client (Optional[genai.Client]): Stores client for the component runtime state.
-	    audio_path (Optional[str]): Stores audio path for the component runtime state.
-	    response_format (Optional[str]): Stores response format for the component runtime state.
-	    input_text (Optional[str]): Stores input text for the component runtime state.
-	    audio_bytes (Optional[bytes]): Stores audio bytes for the component runtime state."""
-	speed: Optional[ float ]
-	voice: Optional[ str ]
-	response: Optional[ GenerateContentResponse ]
+		client (Optional[genai.Client]): Google Gen AI client.
+		model (str): Gemini text-to-speech model used by the current request.
+		input_text (str): Text and delivery instructions sent to the provider.
+		voice (str): Prebuilt Gemini voice used by the current request.
+		speed (float): Requested delivery speed represented through prompt instructions.
+		response_format (str): Audio format returned by the wrapper.
+		instructions (str): Optional speech-delivery instructions.
+		audio_path (str): Optional local output path.
+		sample_rate (int): PCM sample rate used to construct WAV output.
+		channels (int): Number of PCM audio channels.
+		sample_width (int): PCM sample width in bytes.
+		temperature (float): Sampling temperature.
+		top_p (float): Nucleus-sampling value.
+		max_tokens (int): Maximum output-token count.
+		voice_config (Optional[VoiceConfig]): Provider voice configuration.
+		speech_config (Optional[SpeechConfig]): Provider speech configuration.
+		content_config (Optional[GenerateContentConfig]): Provider generation configuration.
+		response (Optional[GenerateContentResponse]): Latest provider response.
+		audio_bytes (bytes): Generated WAV audio bytes.
+	"""
+	client: Optional[ genai.Client ]
+	model: str
+	input_text: str
+	voice: str
+	speed: float
+	response_format: str
+	instructions: str
+	audio_path: str
+	sample_rate: int
+	channels: int
+	sample_width: int
+	temperature: float
+	top_p: float
+	max_tokens: int
 	voice_config: Optional[ VoiceConfig ]
 	speech_config: Optional[ SpeechConfig ]
-	client: Optional[ genai.Client ]
-	audio_path: Optional[ str ]
-	response_format: Optional[ str ]
-	input_text: Optional[ str ]
-	audio_bytes: Optional[ bytes ]
+	content_config: Optional[ GenerateContentConfig ]
+	response: Optional[ GenerateContentResponse ]
+	audio_bytes: bytes
 	
-	def __init__( self, model: str = 'gemini-2.5-flash-preview-tts' ):
+	def __init__( self, model: str = 'gemini-2.5-flash-preview-tts' ) -> None:
+		"""Initialize instance.
+		
+		Purpose:
+			Initializes Gemini text-to-speech configuration and runtime state without executing
+			a provider request.
+		
+		Args:
+			model (str): Default Gemini text-to-speech model.
+		
+		Returns:
+			None: This method initializes object state.
+		"""
 		super( ).__init__( )
-		self.number = None
+		self.gemini_api_key = cfg.GEMINI_API_KEY
+		self.client = None
 		self.model = model
-		self.temperature = None
-		self.top_p = None
-		self.frequency_penalty = None
-		self.presence_penalty = None
-		self.max_tokens = None
-		self.instructions = None
+		self.input_text = ''
+		self.voice = 'Kore'
+		self.speed = 1.0
+		self.response_format = 'audio/wav'
+		self.instructions = ''
+		self.audio_path = ''
+		self.sample_rate = 24000
+		self.channels = 1
+		self.sample_width = 2
+		self.temperature = 0.0
+		self.top_p = 0.0
+		self.max_tokens = 0
+		self.response_modalities = [ 'AUDIO', ]
 		self.voice_config = None
 		self.speech_config = None
 		self.content_config = None
-		self.client = None
-		self.voice = None
-		self.speed = None
 		self.response = None
-		self.response_format = None
-		self.audio_path = None
-		self.input_text = None
-		self.audio_bytes = None
-		self.response_modalities = [ ]
+		self.audio_bytes = b''
+		self.config_values = { }
 	
 	@property
-	def model_options( self ) -> List[ str ] | None:
-		"""Model options.
+	def model_options( self ) -> List[ str ]:
+		"""Get text-to-speech model options.
 		
 		Purpose:
-		    Returns normalized information for the TTS component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns Gemini models exposed for text-to-speech generation.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
+			List[str]: Supported Gemini text-to-speech model identifiers.
+		"""
 		return [ 'gemini-3.1-flash-tts-preview', 'gemini-2.5-flash-preview-tts',
-		         'gemini-2.5-pro-preview-tts' ]
+			'gemini-2.5-pro-preview-tts', ]
 	
 	@property
-	def format_options( self ) -> List[ str ] | None:
-		"""Format options.
+	def format_options( self ) -> List[ str ]:
+		"""Get audio-format options.
 		
 		Purpose:
-		    Returns normalized information for the TTS component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns the WAV output format implemented by the wrapper.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'audio/wav' ]
+			List[str]: Supported audio-format values.
+		"""
+		return [ 'audio/wav', ]
+	
+	@property
+	def mime_options( self ) -> List[ str ]:
+		"""Get audio MIME-type options.
+		
+		Purpose:
+			Returns the WAV MIME type implemented by the wrapper.
+		
+		Returns:
+			List[str]: Supported audio MIME types.
+		"""
+		return self.format_options
+	
+	@property
+	def voice_options( self ) -> List[ str ]:
+		"""Get voice options.
+		
+		Purpose:
+			Returns prebuilt Gemini voices exposed for single-speaker speech generation.
+		
+		Returns:
+			List[str]: Supported prebuilt voice names.
+		"""
+		return [ 'Achernar', 'Achird', 'Aoede', 'Algenib', 'Algieba', 'Alnilam', 'Autonoe',
+			'Callirrhoe', 'Charon', 'Despina', 'Enceladus', 'Erinome', 'Fenrir', 'Gacrux',
+			'Iapetus', 'Kore', 'Laomedeia', 'Leda', 'Orus', 'Puck', 'Pulcherrima', 'Rasalgethi',
+			'Sadachbia', 'Sadaltager', 'Schedar', 'Sulafat', 'Umbriel', 'Vindemiatrix', 'Zephyr',
+			'Zubenelgenubi', ]
+	
+	@property
+	def speed_options( self ) -> List[ float ]:
+		"""Get speech-speed options.
+		
+		Purpose:
+			Returns speech-speed selections represented through natural-language delivery
+			instructions.
+		
+		Returns:
+			List[float]: Available speech-speed selections.
+		"""
+		return [ 0.75, 1.0, 1.25, 1.50, ]
 	
 	def to_wave_bytes( self, pcm_data: bytes, rate: int = 24000, channels: int = 1,
-			sample_width: int = 2 ) -> bytes:
-		"""To wave bytes.
+		sample_width: int = 2 ) -> bytes:
+		"""Convert PCM data to WAV bytes.
 		
 		Purpose:
-		    Performs the TTS.to_wave_bytes workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Wraps required raw PCM audio in a WAV container using the assigned sample rate,
+			channel count, and sample width.
 		
 		Args:
-		    pcm_data (bytes): Pcm data value used by the operation.
-		    rate (int): Rate value used by the operation.
-		    channels (int): Channels value used by the operation.
-		    sample_width (int): Sample width value used by the operation.
+			pcm_data (bytes): Required raw PCM audio bytes.
+			rate (int): PCM sample rate.
+			channels (int): Number of audio channels.
+			sample_width (int): Sample width in bytes.
 		
 		Returns:
-		    bytes: Return value produced by the operation.
+			bytes: WAV-formatted audio bytes.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			import io
 			import wave
 			
 			throw_if( 'pcm_data', pcm_data )
+			self.pcm_data = pcm_data
+			self.sample_rate = rate
+			self.channels = channels
+			self.sample_width = sample_width
+			
 			with io.BytesIO( ) as buffer:
-				with wave.open( buffer, 'wb' ) as wf:
-					wf.setnchannels( channels )
-					wf.setsampwidth( sample_width )
-					wf.setframerate( rate )
-					wf.writeframes( pcm_data )
+				with wave.open( buffer, 'wb' ) as wave_file:
+					wave_file.setnchannels( self.channels )
+					wave_file.setsampwidth( self.sample_width )
+					wave_file.setframerate( self.sample_rate )
+					wave_file.writeframes( self.pcm_data )
 				
-				return buffer.getvalue( )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'TTS'
-			exception.method = 'to_wave_bytes( self, **kwargs) -> bytes'
-			Logger( ).write( exception )
-			raise exception
-	
-	def normalize_voice( self, voice: Optional[ str ] = None ) -> str:
-		"""Normalize voice.
-		
-		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
-		    displayed.
-		
-		Args:
-		    voice (Optional[str]): Voice value used by the operation.
-		
-		Returns:
-		    str: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			self.voice_name = str( voice or '' ).strip( )
-			self.valid_voices = set( self.voice_options or [ ] )
-			if self.voice_name in self.valid_voices:
-				return self.voice_name
-			
-			return 'Kore'
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'TTS'
-			exception.method = 'normalize_voice( self, voice: Optional[str]=None ) -> str'
-			Logger( ).write( exception )
-			raise exception
-	
-	def normalize_tts_prompt( self, text: str, speed: Optional[ float ] = None,
-			instruct: Optional[ str ] = None ) -> str:
-		"""Normalize tts prompt.
-		
-		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
-		    displayed.
-		
-		Args:
-		    text (str): Text value used by the operation.
-		    speed (Optional[float]): Speed value used by the operation.
-		    instruct (Optional[str]): Instruct value used by the operation.
-		
-		Returns:
-		    str: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			throw_if( 'text', text )
-			self.prompt_parts = [ ]
-			
-			if instruct is not None and str( instruct ).strip( ):
-				self.prompt_parts.append( str( instruct ).strip( ) )
-			
-			if speed is not None:
-				self.speed_value = float( speed )
-				if self.speed_value < 0.85:
-					self.prompt_parts.append( 'Read the following text at a slow, clear pace.' )
-				elif self.speed_value > 1.15:
-					self.prompt_parts.append(
-						'Read the following text at a faster, energetic pace.' )
-			
-			self.prompt_parts.append( str( text ).strip( ) )
-			return '\n\n'.join( self.prompt_parts )
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'gemini'
-			exception.cause = 'TTS'
-			exception.method = 'normalize_tts_prompt( self, **kwargs ) -> str'
-			Logger( ).write( exception )
-			raise exception
-	
-	def create_speech( self, text: str, filepath: str = None,
-			model: str = 'gemini-3.1-flash-tts-preview', format: str = 'audio/wav',
-			speed: float = None, voice: str = None, frequency: float = None,
-			presense: float = None, presence: float = None, max_tokens: int = None,
-			instruct: str = None, temperature: float = None, top_p: float = None,
-			file_path: str = None, language: str = None, sample_rate: int = None,
-			bit_rate: int = None, store: bool = None, stream: bool = None,
-			background: bool = None, **kwargs: Any ) -> bytes | None:
-		"""Create speech.
-		
-		Purpose:
-		    Creates the requested resource, connection, schema object, or user interface artifact using
-		    validated inputs. The function encapsulates setup details so callers can rely on a consistent
-		    resource lifecycle.
-		
-		Args:
-		    text (str): Text value used by the operation.
-		    filepath (str): Filepath value used by the operation.
-		    model (str): Model value used by the operation.
-		    format (str): Format value used by the operation.
-		    speed (float): Speed value used by the operation.
-		    voice (str): Voice value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presense (float): Presense value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    instruct (str): Instruct value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    file_path (str): File path value used by the operation.
-		    language (str): Language value used by the operation.
-		    sample_rate (int): Sample rate value used by the operation.
-		    bit_rate (int): Bit rate value used by the operation.
-		    store (bool): Store value used by the operation.
-		    stream (bool): Stream value used by the operation.
-		    background (bool): Background value used by the operation.
-		    **kwargs (Any): Additional keyword arguments retained for compatibility with caller workflows.
-		
-		Returns:
-		    bytes | None: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			throw_if( 'text', text )
-			self.raw_text = text
-			throw_if( 'model', model )
-			self.model = model
-			self.gemini_api_key = cfg.GEMINI_API_KEY
-			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
-				raise ValueError( 'GEMINI_API_KEY is required.' )
-			
-			self.audio_path = filepath or file_path
-			self.response_format = str( format or 'audio/wav' ).strip( )
-			self.speed = speed
-			self.voice = self.normalize_voice( voice )
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence if presence is not None else presense
-			self.max_tokens = max_tokens
-			self.instructions = instruct
-			self.temperature = temperature
-			self.top_p = top_p
-			self.language = language
-			self.sample_rate = sample_rate
-			self.bit_rate = bit_rate
-			self.store = store
-			self.stream = stream
-			self.background = background
-			self.response_modalities = [ 'AUDIO' ]
-			if self.response_format != 'audio/wav':
-				raise ValueError( 'Gemini TTS wrapper currently supports local WAV output only.' )
-			
-			if self.model not in self.model_options:
-				raise ValueError( f'Unsupported Gemini TTS model: {self.model}' )
-			
-			self.input_text = self.normalize_tts_prompt( text=self.raw_text, speed=self.speed,
-				instruct=self.instructions )
-			
-			if self.input_text is None or not str( self.input_text ).strip( ):
-				raise ValueError( 'The Gemini TTS prompt cannot be empty.' )
-			
-			self.voice_config = VoiceConfig( prebuilt_voice_config=types.PrebuiltVoiceConfig(
-				voice_name=self.voice ) )
-			self.speech_config = SpeechConfig( voice_config=self.voice_config )
-			self.config_kwargs = {
-					'response_modalities': self.response_modalities,
-					'speech_config': self.speech_config,
-			}
-			if self.temperature is not None:
-				self.config_kwargs[ 'temperature' ] = self.temperature
-			
-			if self.top_p is not None:
-				self.config_kwargs[ 'top_p' ] = self.top_p
-			
-			if self.max_tokens is not None and int( self.max_tokens or 0 ) > 0:
-				self.config_kwargs[ 'max_output_tokens' ] = int( self.max_tokens )
-			
-			self.content_config = GenerateContentConfig( **self.config_kwargs )
-			self.client = genai.Client( api_key=self.gemini_api_key )
-			self.response = self.client.models.generate_content( model=self.model,
-				contents=self.input_text, config=self.content_config )
-			
-			self.audio_bytes = None
-			self.candidates = getattr( self.response, 'candidates', None )
-			if self.candidates:
-				for candidate in self.candidates:
-					content = getattr( candidate, 'content', None )
-					parts = getattr( content, 'parts', None ) if content is not None else [ ]
-					
-					for part in parts or [ ]:
-						inline_data = getattr( part, 'inline_data', None )
-						if inline_data is not None and inline_data.data:
-							self.audio_bytes = self.to_wave_bytes( inline_data.data )
-							break
-					
-					if self.audio_bytes is not None:
-						break
-			
-			if self.audio_bytes is None or len( self.audio_bytes ) == 0:
-				raise ValueError( 'No audio bytes were returned by Gemini TTS.' )
-			
-			if self.audio_path is not None and str( self.audio_path ).strip( ):
-				with open( self.audio_path, 'wb' ) as f:
-					f.write( self.audio_bytes )
+				self.audio_bytes = buffer.getvalue( )
 			
 			return self.audio_bytes
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'TTS'
-			exception.method = 'create_speech( self, text, filepath, model, format, speed, voice )'
+			exception.method = 'to_wave_bytes( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
-
-class Transcription( Gemini ):
-	"""Transcription class.
 	
-	Purpose:
-	    Defines the Transcription component used by the Boo application. The class groups related
-	    provider configuration, runtime state, helper methods, and API-facing behavior so Streamlit
-	    workflows can call a consistent interface.
-	
-	Attributes:
-	    client (Optional[genai.Client]): Stores client for the component runtime state.
-	    transcript (Optional[str]): Stores transcript for the component runtime state.
-	    file_path (Optional[str]): Stores file path for the component runtime state.
-	    response (Optional[GenerateContentResponse]): Stores response for the component runtime state."""
-	client: Optional[ genai.Client ]
-	transcript: Optional[ str ]
-	file_path: Optional[ str ]
-	response: Optional[ GenerateContentResponse ]
-	
-	def __init__( self, n: int = 1, model: str = 'gemini-3-flash-preview', temperature: float = 0.8,
-			top_p: float = 0.9, frequency: float = 0.0, presence: float = 0.0,
-			max_tokens: int = 10000, instruct: str = None ):
-		super( ).__init__( )
-		self.number = n
-		self.model = model
-		self.temperature = temperature
-		self.top_p = top_p
-		self.frequency_penalty = frequency
-		self.presence_penalty = presence
-		self.max_tokens = max_tokens
-		self.instructions = instruct
-		self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-		self.transcript = None
-		self.file_path = None
-		self.response = None
-		self.content_config = None
-	
-	@property
-	def model_options( self ) -> List[ str ] | None:
-		"""Model options.
+	def create_speech( self, text: str, model: str = 'gemini-2.5-flash-preview-tts',
+		format: str = 'audio/wav', voice: str = 'Kore', speed: float = 1.0, instruct: str = '',
+		file_path: str = '', temperature: float = 0.0, top_p: float = 0.0, max_tokens: int = 0,
+		sample_rate: int = 24000 ) -> bytes:
+		"""Create speech.
 		
 		Purpose:
-		    Returns normalized information for the Transcription component. The method provides a stable
-		    view of provider capabilities, stored state, or response metadata so UI controls and downstream
-		    logic can consume it consistently.
-		
-		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'gemini-3-flash-preview',
-		         'gemini-2.0-flash' ]
-	
-	@property
-	def language_options( self ) -> List[ str ] | None:
-		"""Language options.
-		
-		Purpose:
-		    Returns normalized information for the Transcription component. The method provides a stable
-		    view of provider capabilities, stored state, or response metadata so UI controls and downstream
-		    logic can consume it consistently.
-		
-		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'Auto',
-		         'English',
-		         'Spanish',
-		         'French',
-		         'Japanese',
-		         'German',
-		         'Chinese' ]
-	
-	@property
-	def format_options( self ) -> List[ str ] | None:
-		"""Format options.
-		
-		Purpose:
-		    Returns normalized information for the Transcription component. The method provides a stable
-		    view of provider capabilities, stored state, or response metadata so UI controls and downstream
-		    logic can consume it consistently.
-		
-		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [
-				'audio/wav',
-				'audio/mp3',
-				'audio/aiff',
-				'audio/aac',
-				'audio/ogg',
-				'audio/flac'
-		]
-	
-	def normalize_mime_type( self, path: str, mime_type: str = None ) -> str:
-		"""Normalize mime type.
-		
-		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
-		    displayed.
+			Generates single-speaker speech from required text using the selected Gemini TTS
+			model and prebuilt voice. Speech speed and delivery instructions are incorporated
+			into the text prompt because Gemini TTS controls style through natural-language
+			instructions.
 		
 		Args:
-		    path (str): Path value used by the operation.
-		    mime_type (str): Mime type value used by the operation.
+			text (str): Required text converted to speech.
+			model (str): Gemini text-to-speech model.
+			format (str): Wrapper audio-output format.
+			voice (str): Prebuilt Gemini voice.
+			speed (float): Requested delivery speed.
+			instruct (str): Optional speech-delivery instructions.
+			file_path (str): Optional local output path.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			max_tokens (int): Maximum output-token count.
+			sample_rate (int): PCM sample rate used to construct WAV output.
 		
 		Returns:
-		    str: Return value produced by the operation.
+			bytes: Generated WAV audio bytes.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			import mimetypes
+			throw_if( 'text', text )
+			throw_if( 'model', model )
+			throw_if( 'format', format )
+			throw_if( 'voice', voice )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.raw_text = text
+			self.model = model
+			self.response_format = format
+			self.voice = voice
+			self.speed = speed
+			self.instructions = instruct
+			self.audio_path = file_path
+			self.temperature = temperature
+			self.top_p = top_p
+			self.max_tokens = max_tokens
+			self.sample_rate = sample_rate
+			self.channels = 1
+			self.sample_width = 2
+			self.response_modalities = [ 'AUDIO', ]
 			
-			self.raw_mime_type = str( mime_type or '' ).strip( )
-			if not self.raw_mime_type:
-				self.raw_mime_type = mimetypes.guess_type( path )[ 0 ] or ''
+			if self.response_format != 'audio/wav':
+				raise ValueError( 'Gemini TTS supports WAV output in this wrapper.' )
 			
-			self.mime_aliases = {
-					'audio/mpeg': 'audio/mp3',
-					'audio/x-mp3': 'audio/mp3',
-					'audio/x-wav': 'audio/wav',
-					'audio/wave': 'audio/wav',
-					'audio/x-m4a': 'audio/aac',
-					'audio/m4a': 'audio/aac',
-					'audio/mp4': 'audio/aac',
-					'audio/x-aiff': 'audio/aiff',
-					'audio/aif': 'audio/aiff',
-					'audio/x-flac': 'audio/flac'
-			}
-			self.mime_type = self.mime_aliases.get( self.raw_mime_type, self.raw_mime_type )
+			if self.model not in self.model_options:
+				raise ValueError( f'Unsupported Gemini TTS model: {self.model}' )
 			
-			if self.mime_type in self.format_options:
-				return self.mime_type
+			if self.voice not in self.voice_options:
+				raise ValueError( f'Unsupported Gemini TTS voice: {self.voice}' )
 			
-			self.suffix = str( Path( path ).suffix or '' ).strip( ).lower( )
-			self.extension_map = {
-					'.wav': 'audio/wav',
-					'.mp3': 'audio/mp3',
-					'.aiff': 'audio/aiff',
-					'.aif': 'audio/aiff',
-					'.aac': 'audio/aac',
-					'.m4a': 'audio/aac',
-					'.ogg': 'audio/ogg',
-					'.flac': 'audio/flac'
-			}
+			self.prompt_parts = [ ]
 			
-			if self.suffix in self.extension_map:
-				return self.extension_map[ self.suffix ]
+			if self.instructions:
+				self.prompt_parts.append( self.instructions.strip( ) )
 			
-			return 'audio/wav'
+			if self.speed < 0.90:
+				self.prompt_parts.append( 'Speak slowly and clearly.' )
+			elif self.speed > 1.10:
+				self.prompt_parts.append( 'Speak at a faster, energetic pace.' )
+			
+			self.prompt_parts.append( self.raw_text.strip( ) )
+			self.input_text = '\n\n'.join( self.prompt_parts )
+			throw_if( 'input_text', self.input_text )
+			self.voice_config = VoiceConfig(
+				prebuilt_voice_config=types.PrebuiltVoiceConfig( voice_name=self.voice, ), )
+			self.speech_config = SpeechConfig( voice_config=self.voice_config, )
+			self.config_values = { 'response_modalities': self.response_modalities,
+				'speech_config': self.speech_config, 'temperature': self.temperature, }
+			
+			if self.top_p > 0:
+				self.config_values[ 'top_p' ] = self.top_p
+			
+			if self.max_tokens > 0:
+				self.config_values[ 'max_output_tokens' ] = (self.max_tokens)
+			
+			self.content_config = GenerateContentConfig( **self.config_values )
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.response = self.client.models.generate_content( model=self.model,
+				contents=self.input_text, config=self.content_config, )
+			self.audio_bytes = b''
+			self.candidates = getattr( self.response, 'candidates', [ ], ) or [ ]
+			
+			for candidate in self.candidates:
+				self.content = getattr( candidate, 'content', None, )
+				
+				if self.content is None:
+					continue
+				
+				self.parts = getattr( self.content, 'parts', [ ], ) or [ ]
+				
+				for part in self.parts:
+					self.inline_data = getattr( part, 'inline_data', None, )
+					
+					if self.inline_data is None:
+						continue
+					
+					self.pcm_data = getattr( self.inline_data, 'data', b'', )
+					
+					if not self.pcm_data:
+						continue
+					
+					self.audio_bytes = self.to_wave_bytes( self.pcm_data, self.sample_rate,
+						self.channels, self.sample_width, )
+					break
+				
+				if self.audio_bytes:
+					break
+			
+			throw_if( 'audio_bytes', self.audio_bytes )
+			
+			if self.audio_path:
+				with open( self.audio_path, 'wb' ) as target:
+					target.write( self.audio_bytes )
+			
+			return self.audio_bytes
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'TTS'
+			exception.method = 'create_speech( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def __dir__( self ) -> List[ str ]:
+		"""Return member names.
+		
+		Purpose:
+			Returns public members exposed by the Gemini text-to-speech wrapper.
+		
+		Returns:
+			List[str]: Public member names.
+		"""
+		return [ 'gemini_api_key', 'client', 'model', 'input_text', 'voice', 'speed',
+			'response_format', 'instructions', 'audio_path', 'sample_rate', 'channels',
+			'sample_width', 'temperature', 'top_p', 'max_tokens', 'response_modalities',
+			'voice_config', 'speech_config', 'content_config', 'response', 'audio_bytes',
+			'model_options', 'format_options', 'mime_options', 'voice_options', 'speed_options',
+			'to_wave_bytes', 'create_speech', ]
+
+class Transcription( Gemini ):
+	"""Provide Gemini audio-transcription workflow support.
+	
+	Purpose:
+		Provides audio transcription through Gemini multimodal audio understanding. The class
+		uploads a required local audio file, builds a transcription prompt from the requested
+		language and time range, constructs provider-native generation configuration, executes
+		the Gemini request, and returns the resulting transcript text.
+	
+	Attributes:
+		client (Optional[genai.Client]): Google Gen AI client.
+		model (str): Gemini model used by the current transcription request.
+		file_path (str): Local audio-file path used by the current request.
+		language (str): Expected language of the source audio.
+		mime_type (str): Audio MIME type associated with the local file.
+		prompt (str): Transcription prompt sent to Gemini.
+		temperature (float): Sampling temperature.
+		top_p (float): Nucleus-sampling value.
+		top_k (int): Top-k sampling value.
+		frequency_penalty (float): Frequency penalty.
+		presence_penalty (float): Presence penalty.
+		max_tokens (int): Maximum output-token count.
+		instructions (str): Optional system instruction.
+		start_time (float): Optional transcription start time in seconds.
+		end_time (float): Optional transcription end time in seconds.
+		content_config (Optional[GenerateContentConfig]): Provider generation configuration.
+		uploaded_file (Optional[File]): Audio file uploaded through the Gemini Files API.
+		response (Optional[GenerateContentResponse]): Latest provider response.
+		transcript (str): Transcript extracted from the latest response.
+	"""
+	client: Optional[ genai.Client ]
+	model: str
+	file_path: str
+	language: str
+	mime_type: str
+	prompt: str
+	temperature: float
+	top_p: float
+	top_k: int
+	frequency_penalty: float
+	presence_penalty: float
+	max_tokens: int
+	instructions: str
+	start_time: float
+	end_time: float
+	content_config: Optional[ GenerateContentConfig ]
+	uploaded_file: Optional[ File ]
+	response: Optional[ GenerateContentResponse ]
+	transcript: str
+	
+	def __init__( self,
+		model: str = 'gemini-3-flash-preview' ) -> None:
+		"""Initialize instance.
+		
+		Purpose:
+			Initializes Gemini audio-transcription configuration and runtime state without
+			executing a provider request.
+		
+		Args:
+			model (str): Default Gemini model used for audio transcription.
+		
+		Returns:
+			None: This method initializes object state.
+		"""
+		super( ).__init__( )
+		self.gemini_api_key = cfg.GEMINI_API_KEY
+		self.client = None
+		self.model = model
+		self.file_path = ''
+		self.language = 'Auto'
+		self.mime_type = ''
+		self.prompt = ''
+		self.temperature = 0.0
+		self.top_p = 0.0
+		self.top_k = 0
+		self.frequency_penalty = 0.0
+		self.presence_penalty = 0.0
+		self.max_tokens = 0
+		self.instructions = ''
+		self.start_time = 0.0
+		self.end_time = 0.0
+		self.content_config = None
+		self.uploaded_file = None
+		self.response = None
+		self.transcript = ''
+		self.config_values = { }
+		self.prompt_parts = [ ]
+	
+	@property
+	def model_options( self ) -> List[ str ]:
+		"""Get transcription-model options.
+		
+		Purpose:
+			Returns Gemini multimodal models exposed for audio transcription.
+		
+		Returns:
+			List[str]: Supported Gemini transcription model identifiers.
+		"""
+		return [
+			'gemini-3.1-pro-preview',
+			'gemini-3.1-flash-lite-preview',
+			'gemini-3-flash-preview',
+			'gemini-2.5-pro',
+			'gemini-2.5-flash',
+			'gemini-2.5-flash-lite',
+			'gemini-2.0-flash',
+			'gemini-2.0-flash-lite',
+		]
+	
+	@property
+	def language_options( self ) -> List[ str ]:
+		"""Get language options.
+		
+		Purpose:
+			Returns source-language hints exposed by the transcription wrapper.
+		
+		Returns:
+			List[str]: Available source-language selections.
+		"""
+		return [
+			'Auto',
+			'English',
+			'Spanish',
+			'French',
+			'German',
+			'Italian',
+			'Portuguese',
+			'Dutch',
+			'Polish',
+			'Russian',
+			'Ukrainian',
+			'Turkish',
+			'Arabic',
+			'Hindi',
+			'Japanese',
+			'Korean',
+			'Chinese',
+		]
+	
+	@property
+	def format_options( self ) -> List[ str ]:
+		"""Get supported audio MIME types.
+		
+		Purpose:
+			Returns audio MIME types exposed by the Gemini transcription workflow.
+		
+		Returns:
+			List[str]: Supported audio MIME-type values.
+		"""
+		return [
+			'audio/wav',
+			'audio/mpeg',
+			'audio/mp3',
+			'audio/aiff',
+			'audio/aac',
+			'audio/ogg',
+			'audio/flac',
+			'audio/mp4',
+			'audio/webm',
+		]
+	
+	@property
+	def mime_options( self ) -> List[ str ]:
+		"""Get supported audio MIME types.
+		
+		Purpose:
+			Returns the audio MIME types exposed by the transcription wrapper.
+		
+		Returns:
+			List[str]: Supported audio MIME-type values.
+		"""
+		return self.format_options
+	
+	def build_prompt( self, language: str = 'Auto',
+		start_time: float = 0.0, end_time: float = 0.0,
+		prompt: str = '' ) -> str:
+		"""Build transcription prompt.
+		
+		Purpose:
+			Builds a Gemini transcription instruction from the selected language, optional time
+			range, and optional caller-supplied transcription guidance.
+		
+		Args:
+			language (str): Expected language of the source audio.
+			start_time (float): Optional transcription start time in seconds.
+			end_time (float): Optional transcription end time in seconds.
+			prompt (str): Optional transcription guidance or vocabulary context.
+		
+		Returns:
+			str: Provider-ready transcription prompt.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.language = language
+			self.start_time = start_time
+			self.end_time = end_time
+			self.prompt = prompt
+			self.prompt_parts = [ ]
+			
+			if self.prompt:
+				self.prompt_parts.append(
+					self.prompt.strip( )
+				)
+			
+			self.prompt_parts.append(
+				'Generate a complete, verbatim transcript of the spoken audio.'
+			)
+			
+			if self.language:
+				if self.language.strip( ).lower( ) != 'auto':
+					self.prompt_parts.append(
+						f'The expected spoken language is '
+						f'{self.language.strip( )}.'
+					)
+			
+			if self.end_time > self.start_time:
+				self.prompt_parts.append(
+					f'Transcribe only the audio between '
+					f'{self.start_time:0.2f} seconds and '
+					f'{self.end_time:0.2f} seconds.'
+				)
+			
+			self.prompt_parts.append(
+				'Preserve the spoken wording, speaker changes, punctuation, '
+				'numbers, names, and technical terms accurately.'
+			)
+			self.prompt_parts.append(
+				'Return only the transcript text.'
+			)
+			self.prompt = '\n\n'.join(
+				self.prompt_parts
+			)
+			throw_if( 'prompt', self.prompt )
+			return self.prompt
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Transcription'
-			exception.method = 'normalize_mime_type( self, path: str, mime_type: str=None ) -> str'
+			exception.method = 'build_prompt( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_prompt( self, language: str = None, start_time: float = None,
-			end_time: float = None ) -> str:
-		"""Build prompt.
+	def get_output_text( self ) -> str:
+		"""Get transcript text.
 		
 		Purpose:
-		    Builds the normalized data structure required by the Transcription workflow. The function
-		    converts caller input, session state, or provider-specific options into a stable shape that
-		    downstream API calls and rendering code can consume safely.
-		
-		Args:
-		    language (str): Language value used by the operation.
-		    start_time (float): Start time value used by the operation.
-		    end_time (float): End time value used by the operation.
+			Extracts transcript text from the latest Gemini response.
 		
 		Returns:
-		    str: Return value produced by the operation."""
-		self.prompt_parts = [ 'Generate a verbatim transcript of the speech.' ]
-		
-		if language is not None and str( language ).strip( ) and str( language ).strip( ) != 'Auto':
-			self.prompt_parts.append(
-				f'The expected spoken language is {str( language ).strip( )}.' )
-		
-		if start_time is not None and end_time is not None and end_time >= start_time:
-			self.prompt_parts.append(
-				f'Only transcribe the portion of the audio between {start_time:0.2f} seconds '
-				f'and {end_time:0.2f} seconds.' )
-		
-		self.prompt_parts.append( 'Return only the transcript text.' )
-		return ' '.join( self.prompt_parts )
-	
-	def transcribe( self, path: str = None, model: str = 'gemini-3-flash-preview',
-			language: str = None, mime_type: str = None, temperature: float = None,
-			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int = None, start_time: float = None, end_time: float = None,
-			instruct: str = None, prompt: str = None, response_format: str = None,
-			include: List[ str ] = None, top_k: int = None, store: bool = None,
-			stream: bool = None, background: bool = None,
-			allowed_domains: List[ str ] = None, **kwargs: Any ) -> Optional[ str ]:
-		"""Transcribe.
-		
-		Purpose:
-		    Performs the Transcription.transcribe workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
-		
-		Args:
-		    path (str): Path value used by the operation.
-		    model (str): Model value used by the operation.
-		    language (str): Language value used by the operation.
-		    mime_type (str): Mime type value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    start_time (float): Start time value used by the operation.
-		    end_time (float): End time value used by the operation.
-		    instruct (str): Instruct value used by the operation.
-		    prompt (str): Prompt value used by the operation.
-		    response_format (str): Response format value used by the operation.
-		    include (List[str]): Include value used by the operation.
-		    top_k (int): Top k value used by the operation.
-		    store (bool): Store value used by the operation.
-		    stream (bool): Stream value used by the operation.
-		    background (bool): Background value used by the operation.
-		    allowed_domains (List[str]): Allowed domains value used by the operation.
-		    **kwargs (Any): Additional keyword arguments retained for compatibility with caller workflows.
-		
-		Returns:
-		    Optional[str]: Return value produced by the operation.
+			str: Extracted transcript text or an empty string.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			self.api_key = cfg.GEMINI_API_KEY
-			throw_if( 'api_key', self.api_key )
+			self.transcript = ''
 			
-			self.file_path = path or kwargs.get( 'filepath' ) or kwargs.get( 'file_path' )
-			throw_if( 'path', self.file_path )
+			if self.response is None:
+				return self.transcript
 			
-			self.model = str( model or self.model or 'gemini-3-flash-preview' ).strip( )
-			throw_if( 'model', self.model )
+			self.response_text = getattr(
+				self.response,
+				'text',
+				'',
+			)
 			
-			self.temperature = temperature if temperature is not None else self.temperature
-			self.top_p = top_p if top_p is not None else self.top_p
+			if self.response_text:
+				self.transcript = str(
+					self.response_text
+				).strip( )
+				return self.transcript
+			
+			self.text_parts = [ ]
+			self.candidates = getattr(
+				self.response,
+				'candidates',
+				[ ],
+			) or [ ]
+			
+			for candidate in self.candidates:
+				self.content = getattr(
+					candidate,
+					'content',
+					None,
+				)
+				
+				if self.content is None:
+					continue
+				
+				self.parts = getattr(
+					self.content,
+					'parts',
+					[ ],
+				) or [ ]
+				
+				for part in self.parts:
+					self.part_text = getattr(
+						part,
+						'text',
+						'',
+					)
+					
+					if self.part_text:
+						self.text_parts.append(
+							str( self.part_text )
+						)
+			
+			self.transcript = ''.join(
+				self.text_parts
+			).strip( )
+			return self.transcript
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Transcription'
+			exception.method = 'get_output_text( self ) -> str'
+			Logger( ).write( exception )
+			raise exception
+	
+	def transcribe( self, path: str, model: str,
+		language: str = 'Auto', mime_type: str = '',
+		temperature: float = 0.0, top_p: float = 0.0,
+		top_k: int = 0, frequency: float = 0.0,
+		presence: float = 0.0, max_tokens: int = 0,
+		start_time: float = 0.0, end_time: float = 0.0,
+		instruct: str = '', prompt: str = '' ) -> str:
+		"""Transcribe audio.
+		
+		Purpose:
+			Uploads a required local audio file and generates a transcript through Gemini
+			multimodal audio understanding using the selected model, source-language hint,
+			time range, generation controls, and optional transcription guidance.
+		
+		Args:
+			path (str): Required local audio-file path.
+			model (str): Required Gemini multimodal model.
+			language (str): Expected language of the source audio.
+			mime_type (str): Optional audio MIME type retained with the request state.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			top_k (int): Top-k sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			start_time (float): Optional transcription start time in seconds.
+			end_time (float): Optional transcription end time in seconds.
+			instruct (str): Optional system instruction.
+			prompt (str): Optional transcription guidance or vocabulary context.
+		
+		Returns:
+			str: Generated transcript text.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'path', path )
+			throw_if( 'model', model )
+			throw_if(
+				'GEMINI_API_KEY',
+				self.gemini_api_key,
+			)
+			self.file_path = path
+			self.model = model
+			self.language = language
+			self.mime_type = mime_type
+			self.temperature = temperature
+			self.top_p = top_p
 			self.top_k = top_k
-			self.frequency_penalty = frequency if frequency is not None else self.frequency_penalty
-			self.presence_penalty = presence if presence is not None else self.presence_penalty
-			self.max_tokens = max_tokens if max_tokens is not None else self.max_tokens
-			self.instructions = instruct if instruct is not None else self.instructions
-			self.response_format = response_format
-			self.include = include if include is not None else [ ]
-			self.store = store
-			self.stream = stream
-			self.background = background
-			self.allowed_domains = allowed_domains if allowed_domains is not None else [ ]
-			self.mime_type = self.normalize_mime_type(
-				path=self.file_path,
-				mime_type=mime_type
-			)
-			
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.start_time = start_time
+			self.end_time = end_time
+			self.instructions = instruct
+			self.prompt = prompt
 			self.prompt = self.build_prompt(
-				language=language,
-				start_time=start_time,
-				end_time=end_time
+				self.language,
+				self.start_time,
+				self.end_time,
+				self.prompt,
 			)
+			self.config_values = {
+				'temperature': self.temperature,
+			}
 			
-			if prompt is not None and str( prompt ).strip( ):
-				self.prompt = f'{str( prompt ).strip( )}\n\n{self.prompt}'
+			if self.top_p > 0:
+				self.config_values[ 'top_p' ] = self.top_p
 			
-			throw_if( 'prompt', self.prompt )
+			if self.top_k > 0:
+				self.config_values[ 'top_k' ] = self.top_k
 			
-			self.config_kwargs = { }
+			if self.frequency_penalty != 0:
+				self.config_values[ 'frequency_penalty' ] = (
+					self.frequency_penalty
+				)
 			
-			if self.temperature is not None:
-				self.config_kwargs[ 'temperature' ] = self.temperature
+			if self.presence_penalty != 0:
+				self.config_values[ 'presence_penalty' ] = (
+					self.presence_penalty
+				)
 			
-			if self.top_p is not None:
-				self.config_kwargs[ 'top_p' ] = self.top_p
+			if self.max_tokens > 0:
+				self.config_values[ 'max_output_tokens' ] = (
+					self.max_tokens
+				)
 			
-			if self.top_k is not None and int( self.top_k or 0 ) > 0:
-				self.config_kwargs[ 'top_k' ] = int( self.top_k )
+			if self.instructions:
+				self.config_values[ 'system_instruction' ] = (
+					self.instructions
+				)
 			
-			if self.max_tokens is not None and int( self.max_tokens or 0 ) > 0:
-				self.config_kwargs[ 'max_output_tokens' ] = int( self.max_tokens )
-			
-			if self.instructions is not None and str( self.instructions ).strip( ):
-				self.config_kwargs[ 'system_instruction' ] = str( self.instructions ).strip( )
-			
-			self.content_config = GenerateContentConfig( **self.config_kwargs )
-			self.client = genai.Client( api_key=self.api_key )
-			self.uploaded_file = self.client.files.upload( file=self.file_path )
-			throw_if( 'uploaded_file', self.uploaded_file )
-			
+			self.content_config = GenerateContentConfig(
+				**self.config_values
+			)
+			self.client = genai.Client(
+				api_key=self.gemini_api_key,
+			)
+			self.uploaded_file = self.client.files.upload(
+				file=self.file_path,
+			)
+			throw_if(
+				'uploaded_file',
+				self.uploaded_file,
+			)
 			self.response = self.client.models.generate_content(
 				model=self.model,
-				contents=[ self.prompt, self.uploaded_file ],
-				config=self.content_config
+				contents=[
+					self.prompt,
+					self.uploaded_file,
+				],
+				config=self.content_config,
 			)
-			
-			self.transcript = getattr( self.response, 'text', None )
-			if isinstance( self.transcript, str ) and self.transcript.strip( ):
-				return self.transcript.strip( )
-			
-			return None
+			self.transcript = self.get_output_text( )
+			throw_if( 'transcript', self.transcript )
+			return self.transcript
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Transcription'
-			ex.method = 'transcribe( self, path: str=None, **kwargs ) -> Optional[ str ]'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Transcription'
+			exception.method = 'transcribe( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def __dir__( self ) -> List[ str ]:
+		"""Return member names.
+		
+		Purpose:
+			Returns public members exposed by the Gemini Transcription wrapper.
+		
+		Returns:
+			List[str]: Public member names.
+		"""
+		return [
+			'gemini_api_key',
+			'client',
+			'model',
+			'file_path',
+			'language',
+			'mime_type',
+			'prompt',
+			'temperature',
+			'top_p',
+			'top_k',
+			'frequency_penalty',
+			'presence_penalty',
+			'max_tokens',
+			'instructions',
+			'start_time',
+			'end_time',
+			'content_config',
+			'uploaded_file',
+			'response',
+			'transcript',
+			'model_options',
+			'language_options',
+			'format_options',
+			'mime_options',
+			'build_prompt',
+			'get_output_text',
+			'transcribe',
+		]
 
 class Translation( Gemini ):
-	"""Translation class.
+	"""Provide Gemini audio-translation workflow support.
 	
 	Purpose:
-	    Defines the Translation component used by the Boo application. The class groups related provider
-	    configuration, runtime state, helper methods, and API-facing behavior so Streamlit workflows can
-	    call a consistent interface.
+		Provides spoken-audio translation through Gemini multimodal audio understanding. The
+		class uploads a required local audio file, builds a translation prompt from the required
+		target language and optional source language and time range, constructs provider-native
+		generation configuration, executes the Gemini request, and returns translated text.
 	
 	Attributes:
-	    client (Optional[genai.Client]): Stores client for the component runtime state.
-	    target_language (Optional[str]): Stores target language for the component runtime state.
-	    source_language (Optional[str]): Stores source language for the component runtime state.
-	    file_path (Optional[str]): Stores file path for the component runtime state.
-	    response (Optional[GenerateContentResponse]): Stores response for the component runtime state."""
+		client (Optional[genai.Client]): Google Gen AI client.
+		model (str): Gemini model used by the current translation request.
+		file_path (str): Local audio-file path used by the current request.
+		target_language (str): Required target language.
+		source_language (str): Expected source language.
+		mime_type (str): Optional audio MIME type supplied during upload.
+		prompt (str): Translation prompt sent to Gemini.
+		temperature (float): Sampling temperature.
+		top_p (float): Nucleus-sampling value.
+		top_k (int): Top-k sampling value.
+		frequency_penalty (float): Frequency penalty.
+		presence_penalty (float): Presence penalty.
+		max_tokens (int): Maximum output-token count.
+		instructions (str): Optional system instruction.
+		start_time (float): Optional translation start time in seconds.
+		end_time (float): Optional translation end time in seconds.
+		content_config (Optional[GenerateContentConfig]): Provider generation configuration.
+		uploaded_file (Optional[File]): Audio file uploaded through the Gemini Files API.
+		response (Optional[GenerateContentResponse]): Latest provider response.
+		translation (str): Translated text extracted from the latest response.
+	"""
 	client: Optional[ genai.Client ]
-	target_language: Optional[ str ]
-	source_language: Optional[ str ]
-	file_path: Optional[ str ]
+	model: str
+	file_path: str
+	target_language: str
+	source_language: str
+	mime_type: str
+	prompt: str
+	temperature: float
+	top_p: float
+	top_k: int
+	frequency_penalty: float
+	presence_penalty: float
+	max_tokens: int
+	instructions: str
+	start_time: float
+	end_time: float
+	content_config: Optional[ GenerateContentConfig ]
+	uploaded_file: Optional[ File ]
 	response: Optional[ GenerateContentResponse ]
+	translation: str
 	
-	def __init__( self, n: int = 1, model: str = 'gemini-3-flash-preview', temperature: float = 0.8,
-			top_p: float = 0.9, frequency: float = 0.0, presence: float = 0.0,
-			max_tokens: int = 10000,
-			instruct: str = None ):
-		super( ).__init__( )
-		self.number = n
-		self.model = model
-		self.temperature = temperature
-		self.top_p = top_p
-		self.frequency_penalty = frequency
-		self.presence_penalty = presence
-		self.max_tokens = max_tokens
-		self.instructions = instruct
-		self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-		self.target_language = None
-		self.source_language = None
-		self.file_path = None
-		self.response = None
-		self.content_config = None
-	
-	@property
-	def model_options( self ) -> List[ str ] | None:
-		"""Model options.
+	def __init__( self, model: str = 'gemini-3-flash-preview' ) -> None:
+		"""Initialize instance.
 		
 		Purpose:
-		    Returns normalized information for the Translation component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
-		
-		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'gemini-3-flash-preview',
-		         'gemini-2.0-flash' ]
-	
-	@property
-	def format_options( self ) -> List[ str ] | None:
-		"""Format options.
-		
-		Purpose:
-		    Returns normalized information for the Translation component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
-		
-		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [
-				'audio/wav',
-				'audio/mp3',
-				'audio/aiff',
-				'audio/aac',
-				'audio/ogg',
-				'audio/flac'
-		]
-	
-	def normalize_mime_type( self, path: str, mime_type: str = None ) -> str:
-		"""Normalize mime type.
-		
-		Purpose:
-		    Normalizes incoming values into a predictable representation for application processing. The
-		    function reduces provider, user-input, or serialization differences before values are stored or
-		    displayed.
+			Initializes Gemini audio-translation configuration and runtime state without
+			executing a provider request.
 		
 		Args:
-		    path (str): Path value used by the operation.
-		    mime_type (str): Mime type value used by the operation.
+			model (str): Default Gemini model used for audio translation.
 		
 		Returns:
-		    str: Return value produced by the operation.
+			None: This method initializes object state.
+		"""
+		super( ).__init__( )
+		self.gemini_api_key = cfg.GEMINI_API_KEY
+		self.client = None
+		self.model = model
+		self.file_path = ''
+		self.target_language = 'English'
+		self.source_language = 'Auto'
+		self.mime_type = ''
+		self.prompt = ''
+		self.temperature = 0.0
+		self.top_p = 0.0
+		self.top_k = 0
+		self.frequency_penalty = 0.0
+		self.presence_penalty = 0.0
+		self.max_tokens = 0
+		self.instructions = ''
+		self.start_time = 0.0
+		self.end_time = 0.0
+		self.content_config = None
+		self.uploaded_file = None
+		self.response = None
+		self.translation = ''
+		self.config_values = { }
+		self.prompt_parts = [ ]
+		self.upload_config = None
+	
+	@property
+	def model_options( self ) -> List[ str ]:
+		"""Get translation-model options.
+		
+		Purpose:
+			Returns Gemini multimodal models exposed for spoken-audio translation.
+		
+		Returns:
+			List[str]: Supported Gemini translation model identifiers.
+		"""
+		return [ 'gemini-3.1-pro-preview', 'gemini-3.1-flash-lite-preview',
+			'gemini-3-flash-preview', 'gemini-2.5-pro', 'gemini-2.5-flash',
+			'gemini-2.5-flash-lite',
+			'gemini-2.0-flash', 'gemini-2.0-flash-lite', ]
+	
+	@property
+	def language_options( self ) -> List[ str ]:
+		"""Get language options.
+		
+		Purpose:
+			Returns source and target languages exposed by the audio-translation wrapper.
+		
+		Returns:
+			List[str]: Available language selections.
+		"""
+		return [ 'Auto', 'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese',
+			'Dutch',
+			'Polish', 'Russian', 'Ukrainian', 'Turkish', 'Arabic', 'Hindi', 'Japanese', 'Korean',
+			'Chinese', ]
+	
+	@property
+	def format_options( self ) -> List[ str ]:
+		"""Get supported audio MIME types.
+		
+		Purpose:
+			Returns audio MIME types exposed by the Gemini translation workflow.
+		
+		Returns:
+			List[str]: Supported audio MIME-type values.
+		"""
+		return [ 'audio/wav', 'audio/mpeg', 'audio/mp3', 'audio/aiff', 'audio/aac', 'audio/ogg',
+			'audio/flac', 'audio/mp4', 'audio/webm', ]
+	
+	@property
+	def mime_options( self ) -> List[ str ]:
+		"""Get supported audio MIME types.
+		
+		Purpose:
+			Returns audio MIME types exposed by the Gemini translation wrapper.
+		
+		Returns:
+			List[str]: Supported audio MIME-type values.
+		"""
+		return self.format_options
+	
+	def build_prompt( self, target: str, source: str = 'Auto', start_time: float = 0.0,
+		end_time: float = 0.0, prompt: str = '' ) -> str:
+		"""Build translation prompt.
+		
+		Purpose:
+			Builds a Gemini audio-translation instruction from the required target language,
+			optional source language, optional time range, and caller-supplied guidance.
+		
+		Args:
+			target (str): Required target language.
+			source (str): Expected source language.
+			start_time (float): Optional translation start time in seconds.
+			end_time (float): Optional translation end time in seconds.
+			prompt (str): Optional translation guidance or vocabulary context.
+		
+		Returns:
+			str: Provider-ready translation prompt.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			import mimetypes
+			throw_if( 'target', target )
+			self.target_language = target
+			self.source_language = source
+			self.start_time = start_time
+			self.end_time = end_time
+			self.prompt = prompt
+			self.prompt_parts = [ ]
 			
-			self.raw_mime_type = str( mime_type or '' ).strip( )
-			if not self.raw_mime_type:
-				self.raw_mime_type = mimetypes.guess_type( path )[ 0 ] or ''
+			if self.prompt:
+				self.prompt_parts.append( self.prompt.strip( ) )
 			
-			self.mime_aliases = {
-					'audio/mpeg': 'audio/mp3',
-					'audio/x-mp3': 'audio/mp3',
-					'audio/x-wav': 'audio/wav',
-					'audio/wave': 'audio/wav',
-					'audio/x-m4a': 'audio/aac',
-					'audio/m4a': 'audio/aac',
-					'audio/mp4': 'audio/aac',
-					'audio/x-aiff': 'audio/aiff',
-					'audio/aif': 'audio/aiff',
-					'audio/x-flac': 'audio/flac'
-			}
-			self.mime_type = self.mime_aliases.get( self.raw_mime_type, self.raw_mime_type )
+			self.prompt_parts.append( f'Translate all spoken audio into '
+			                          f'{self.target_language.strip( )}.' )
 			
-			if self.mime_type in self.format_options:
-				return self.mime_type
+			if self.source_language:
+				if self.source_language.strip( ).lower( ) != 'auto':
+					self.prompt_parts.append( f'The expected source language is '
+					                          f'{self.source_language.strip( )}.' )
 			
-			self.suffix = str( Path( path ).suffix or '' ).strip( ).lower( )
-			self.extension_map = {
-					'.wav': 'audio/wav',
-					'.mp3': 'audio/mp3',
-					'.aiff': 'audio/aiff',
-					'.aif': 'audio/aiff',
-					'.aac': 'audio/aac',
-					'.m4a': 'audio/aac',
-					'.ogg': 'audio/ogg',
-					'.flac': 'audio/flac'
-			}
+			if self.end_time > self.start_time:
+				self.prompt_parts.append( f'Translate only the audio between '
+				                          f'{self.start_time:0.2f} seconds and '
+				                          f'{self.end_time:0.2f} seconds.' )
 			
-			if self.suffix in self.extension_map:
-				return self.extension_map[ self.suffix ]
-			
-			return 'audio/wav'
+			self.prompt_parts.append( 'Preserve the meaning, names, numbers, technical terms, '
+			                          'tone, and speaker changes accurately.' )
+			self.prompt_parts.append( 'Return only the translated text.' )
+			self.prompt = '\n\n'.join( self.prompt_parts )
+			throw_if( 'prompt', self.prompt )
+			return self.prompt
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Translation'
-			exception.method = 'normalize_mime_type( self, path: str, mime_type: str=None ) -> str'
+			exception.method = 'build_prompt( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	@property
-	def language_options( self ) -> List[ str ] | None:
-		"""Language options.
+	def get_output_text( self ) -> str:
+		"""Get translated text.
 		
 		Purpose:
-		    Returns normalized information for the Translation component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Extracts translated text from the latest Gemini response.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'English',
-		         'Spanish',
-		         'French',
-		         'Japanese',
-		         'German',
-		         'Chinese' ]
-	
-	def build_prompt( self, target: str, source: str = 'Auto', start_time: float = None,
-			end_time: float = None ) -> str:
-		"""Build prompt.
-		
-		Purpose:
-		    Builds the normalized data structure required by the Translation workflow. The function converts
-		    caller input, session state, or provider-specific options into a stable shape that downstream
-		    API calls and rendering code can consume safely.
-		
-		Args:
-		    target (str): Target value used by the operation.
-		    source (str): Source value used by the operation.
-		    start_time (float): Start time value used by the operation.
-		    end_time (float): End time value used by the operation.
-		
-		Returns:
-		    str: Return value produced by the operation."""
-		self.prompt_parts = [ f'Translate the spoken audio into {target}.' ]
-		if source is not None and str( source ).strip( ) and str( source ).strip( ) != 'Auto':
-			self.prompt_parts.append(
-				f'The expected source language is {str( source ).strip( )}.' )
-		
-		if start_time is not None and end_time is not None and end_time >= start_time:
-			self.prompt_parts.append(
-				f'Only translate the portion of the audio between {start_time:0.2f} seconds '
-				f'and {end_time:0.2f} seconds.' )
-		
-		self.prompt_parts.append( 'Return only the translated text.' )
-		return ' '.join( self.prompt_parts )
-	
-	def translate( self, path: str, model: str = 'gemini-3-flash-preview',
-			language: str = 'English', source: str = 'Auto', mime_type: str = None,
-			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int = None, start_time: float = None,
-			end_time: float = None, instruct: str = None, prompt: str = None,
-			response_format: str = None, include: List[ str ] = None, top_k: int = None,
-			store: bool = None, stream: bool = None, background: bool = None,
-			allowed_domains: List[ str ] = None, **kwargs: Any ) -> Optional[ str ]:
-		"""Translate.
-		
-		Purpose:
-		    Performs the Translation.translate workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
-		
-		Args:
-		    path (str): Path value used by the operation.
-		    model (str): Model value used by the operation.
-		    language (str): Language value used by the operation.
-		    source (str): Source value used by the operation.
-		    mime_type (str): Mime type value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    start_time (float): Start time value used by the operation.
-		    end_time (float): End time value used by the operation.
-		    instruct (str): Instruct value used by the operation.
-		    prompt (str): Prompt value used by the operation.
-		    response_format (str): Response format value used by the operation.
-		    include (List[str]): Include value used by the operation.
-		    top_k (int): Top k value used by the operation.
-		    store (bool): Store value used by the operation.
-		    stream (bool): Stream value used by the operation.
-		    background (bool): Background value used by the operation.
-		    allowed_domains (List[str]): Allowed domains value used by the operation.
-		    **kwargs (Any): Additional keyword arguments retained for compatibility with caller workflows.
-		
-		Returns:
-		    Optional[str]: Return value produced by the operation.
+			str: Extracted translated text or an empty string.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.translation = ''
+			
+			if self.response is None:
+				return self.translation
+			
+			self.response_text = getattr( self.response, 'text', '', )
+			
+			if self.response_text:
+				self.translation = str( self.response_text ).strip( )
+				return self.translation
+			
+			self.text_parts = [ ]
+			self.candidates = getattr( self.response, 'candidates', [ ], ) or [ ]
+			
+			for candidate in self.candidates:
+				self.content = getattr( candidate, 'content', None, )
+				
+				if self.content is None:
+					continue
+				
+				self.parts = getattr( self.content, 'parts', [ ], ) or [ ]
+				
+				for part in self.parts:
+					self.part_text = getattr( part, 'text', '', )
+					
+					if self.part_text:
+						self.text_parts.append( str( self.part_text ) )
+			
+			self.translation = ''.join( self.text_parts ).strip( )
+			return self.translation
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Translation'
+			exception.method = 'get_output_text( self ) -> str'
+			Logger( ).write( exception )
+			raise exception
+	
+	def translate( self, path: str, model: str, language: str, source: str = 'Auto',
+		mime_type: str = '', temperature: float = 0.0, top_p: float = 0.0, top_k: int = 0,
+		frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 0, start_time: float =
+		0.0,
+		end_time: float = 0.0, instruct: str = '', prompt: str = '' ) -> str:
+		"""Translate audio.
+		
+		Purpose:
+			Uploads a required local audio file and translates its spoken content into a
+			required target language through Gemini multimodal audio understanding.
+		
+		Args:
+			path (str): Required local audio-file path.
+			model (str): Required Gemini multimodal model.
+			language (str): Required target language.
+			source (str): Expected source language.
+			mime_type (str): Optional audio MIME type supplied during file upload.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			top_k (int): Top-k sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			start_time (float): Optional translation start time in seconds.
+			end_time (float): Optional translation end time in seconds.
+			instruct (str): Optional system instruction.
+			prompt (str): Optional translation guidance or vocabulary context.
+		
+		Returns:
+			str: Generated translated text.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'path', path )
-			self.file_path = path
-			
 			throw_if( 'model', model )
-			self.model = model
-			
 			throw_if( 'language', language )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.file_path = path
+			self.model = model
 			self.target_language = language
-			
-			self.gemini_api_key = cfg.GEMINI_API_KEY
-			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
-				raise ValueError( 'GEMINI_API_KEY is required.' )
-			
-			if self.model not in self.model_options:
-				raise ValueError( f'Unsupported Gemini translation model: {self.model}' )
-			
-			self.source_language = str( source or 'Auto' ).strip( )
-			self.mime_type = self.normalize_mime_type(
-				path=self.file_path,
-				mime_type=mime_type
-			)
-			self.temperature = temperature if temperature is not None else self.temperature
-			self.top_p = top_p if top_p is not None else self.top_p
+			self.source_language = source
+			self.mime_type = mime_type
+			self.temperature = temperature
+			self.top_p = top_p
 			self.top_k = top_k
-			self.frequency_penalty = frequency if frequency is not None else self.frequency_penalty
-			self.presence_penalty = presence if presence is not None else self.presence_penalty
-			self.max_tokens = max_tokens if max_tokens is not None else self.max_tokens
-			self.instructions = instruct if instruct is not None else self.instructions
-			self.response_format = response_format
-			self.include = include if include is not None else [ ]
-			self.store = store
-			self.stream = stream
-			self.background = background
-			self.allowed_domains = allowed_domains if allowed_domains is not None else [ ]
-			self.prompt = self.build_prompt( target=self.target_language,
-				source=self.source_language,
-				start_time=start_time, end_time=end_time )
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.start_time = start_time
+			self.end_time = end_time
+			self.instructions = instruct
+			self.prompt = prompt
+			self.prompt = self.build_prompt( self.target_language, self.source_language,
+				self.start_time, self.end_time, self.prompt, )
+			self.config_values = { 'temperature': self.temperature, }
 			
-			if prompt is not None and str( prompt ).strip( ):
-				self.prompt = f'{str( prompt ).strip( )}\n\n{self.prompt}'
+			if self.top_p > 0:
+				self.config_values[ 'top_p' ] = self.top_p
 			
-			if self.prompt is None or not str( self.prompt ).strip( ):
-				raise ValueError( 'The Gemini translation prompt cannot be empty.' )
+			if self.top_k > 0:
+				self.config_values[ 'top_k' ] = self.top_k
 			
-			self.config_kwargs = { }
+			if self.frequency_penalty != 0:
+				self.config_values[ 'frequency_penalty' ] = (self.frequency_penalty)
 			
-			if self.temperature is not None:
-				self.config_kwargs[ 'temperature' ] = self.temperature
+			if self.presence_penalty != 0:
+				self.config_values[ 'presence_penalty' ] = (self.presence_penalty)
 			
-			if self.top_p is not None:
-				self.config_kwargs[ 'top_p' ] = self.top_p
+			if self.max_tokens > 0:
+				self.config_values[ 'max_output_tokens' ] = (self.max_tokens)
 			
-			if self.top_k is not None and int( self.top_k or 0 ) > 0:
-				self.config_kwargs[ 'top_k' ] = int( self.top_k )
+			if self.instructions:
+				self.config_values[ 'system_instruction' ] = (self.instructions)
 			
-			if self.max_tokens is not None and int( self.max_tokens or 0 ) > 0:
-				self.config_kwargs[ 'max_output_tokens' ] = int( self.max_tokens )
+			self.content_config = GenerateContentConfig( **self.config_values )
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.upload_config = None
 			
-			if self.instructions is not None and str( self.instructions ).strip( ):
-				self.config_kwargs[ 'system_instruction' ] = str( self.instructions ).strip( )
+			if self.mime_type:
+				self.upload_config = types.UploadFileConfig( mime_type=self.mime_type, )
 			
-			self.content_config = GenerateContentConfig( **self.config_kwargs )
-			self.client = genai.Client( api_key=self.gemini_api_key )
-			self.uploaded_file = self.client.files.upload( file=self.file_path )
+			if self.upload_config is not None:
+				self.uploaded_file = self.client.files.upload( file=self.file_path,
+					config=self.upload_config, )
+			else:
+				self.uploaded_file = self.client.files.upload( file=self.file_path, )
 			
-			if self.uploaded_file is None:
-				raise ValueError( 'The audio file could not be uploaded to Gemini.' )
-			
-			self.response = self.client.models.generate_content(
-				model=self.model,
-				contents=[ self.prompt, self.uploaded_file ],
-				config=self.content_config
-			)
-			
-			self.translation = getattr( self.response, 'text', None )
-			if isinstance( self.translation, str ) and self.translation.strip( ):
-				return self.translation.strip( )
-			
-			return None
+			throw_if( 'uploaded_file', self.uploaded_file, )
+			self.response = self.client.models.generate_content( model=self.model,
+				contents=[ self.prompt, self.uploaded_file, ], config=self.content_config, )
+			self.translation = self.get_output_text( )
+			throw_if( 'translation', self.translation, )
+			return self.translation
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Translation'
-			ex.method = 'translate( self, path, model, language ) -> Optional[ str ]'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Translation'
+			exception.method = 'translate( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def __dir__( self ) -> List[ str ]:
+		"""Return member names.
+		
+		Purpose:
+			Returns public members exposed by the Gemini Translation wrapper.
+		
+		Returns:
+			List[str]: Public member names.
+		"""
+		return [ 'gemini_api_key', 'client', 'model', 'file_path', 'target_language',
+			'source_language', 'mime_type', 'prompt', 'temperature', 'top_p', 'top_k',
+			'frequency_penalty', 'presence_penalty', 'max_tokens', 'instructions', 'start_time',
+			'end_time', 'content_config', 'uploaded_file', 'response', 'translation',
+			'model_options', 'language_options', 'format_options', 'mime_options', 'build_prompt',
+			'get_output_text', 'translate', ]
 
 class Files( Gemini ):
-	"""Files class.
+	"""Provide Gemini Files API workflow support.
 	
 	Purpose:
-	    Defines the Files component used by the Boo application. The class groups related provider
-	    configuration, runtime state, helper methods, and API-facing behavior so Streamlit workflows can
-	    call a consistent interface.
+		Provides file upload, listing, retrieval, deletion, conditional download, file analysis,
+		file search, and multi-file survey operations through the Google Gen AI SDK. The class
+		assigns accepted arguments to object members before constructing provider requests and
+		returns provider file objects, file metadata, downloaded bytes, or generated text.
 	
 	Attributes:
-	    api_version (Optional[str]): Stores api version for the component runtime state.
-	    google_api_key (Optional[str]): Stores google api key for the component runtime state.
-	    storage_client (Optional[storage.Client]): Stores storage client for the component runtime state.
-	    project_id (Optional[str]): Stores project id for the component runtime state.
-	    project_location (Optional[str]): Stores project location for the component runtime state.
-	    file_id (Optional[str]): Stores file id for the component runtime state.
-	    bucket_id (Optional[str]): Stores bucket id for the component runtime state.
-	    display_name (Optional[str]): Stores display name for the component runtime state.
-	    mime_type (Optional[str]): Stores mime type for the component runtime state.
-	    file_path (Optional[str]): Stores file path for the component runtime state.
-	    file_list (Optional[List[File]]): Stores file list for the component runtime state.
-	    file_paths (Optional[List[str]]): Stores file paths for the component runtime state.
-	    file_lists (Optional[List[File]]): Stores file lists for the component runtime state.
-	    response (Optional[Any]): Stores response for the component runtime state.
-	    use_vertex (Optional[bool]): Stores use vertex for the component runtime state.
-	    collections (Optional[Dict[str, str]]): Stores collections for the component runtime state.
-	    documents (Optional[Dict[str, str]]): Stores documents for the component runtime state."""
-	api_version: Optional[ str ]
-	google_api_key: Optional[ str ]
-	storage_client: Optional[ storage.Client ]
-	project_id: Optional[ str ]
-	project_location: Optional[ str ]
-	file_id: Optional[ str ]
-	bucket_id: Optional[ str ]
-	display_name: Optional[ str ]
-	mime_type: Optional[ str ]
-	file_path: Optional[ str ]
-	file_list: Optional[ List[ File ] ]
-	file_paths: Optional[ List[ str ] ]
-	file_lists: Optional[ List[ File ] ]
-	response: Optional[ Any ]
-	use_vertex: Optional[ bool ]
-	collections: Optional[ Dict[ str, str ] ]
-	documents: Optional[ Dict[ str, str ] ]
+		client (Optional[genai.Client]): Google Gen AI client.
+		model (str): Gemini model used for file analysis.
+		file_path (str): Local file path used by an upload operation.
+		file_id (str): Gemini file resource name used by the current operation.
+		filename (str): Filename associated with the current operation.
+		display_name (str): Display name assigned during upload.
+		mime_type (str): MIME type assigned during upload.
+		file (Optional[File]): Latest Gemini file object.
+		files (List[File]): Latest collection of Gemini file objects.
+		response (Any): Latest provider response.
+		content (Any): Latest downloaded content or metadata result.
+		output_text (str): Text returned by the latest file-analysis request.
+		content_config (Optional[GenerateContentConfig]): File-analysis configuration.
+	"""
+	client: Optional[ genai.Client ]
+	model: str
+	file_path: str
+	file_id: str
+	filename: str
+	display_name: str
+	mime_type: str
+	file: Optional[ File ]
+	files: List[ File ]
+	response: Any
+	content: Any
+	output_text: str
+	content_config: Optional[ GenerateContentConfig ]
 	
-	def __init__( self, model: str = 'gemini-2.0-flash' ):
+	def __init__( self, model: str = 'gemini-2.5-flash-lite' ) -> None:
+		"""Initialize instance.
+		
+		Purpose:
+			Initializes Gemini Files API configuration and runtime state without executing a
+			provider request.
+		
+		Args:
+			model (str): Default Gemini model used for file analysis.
+		
+		Returns:
+			None: This method initializes object state.
+		"""
 		super( ).__init__( )
-		self.google_api_key = cfg.GOOGLE_API_KEY
-		self.project_id = cfg.GOOGLE_CLOUD_PROJECT_ID
-		self.project_location = cfg.GOOGLE_CLOUD_LOCATION
+		self.gemini_api_key = cfg.GEMINI_API_KEY
+		self.client = None
 		self.model = model
-		self.top_p = None
-		self.top_k = None
-		self.temperature = None
-		self.frequency_penalty = None
-		self.presence_penalty = None
-		self.max_tokens = None
-		self.tool_choice = None
-		self.stops = [ ]
-		self.response_modalities = [ ]
-		self.tools = [ ]
-		self.domains = [ ]
-		self.http_options = { }
-		self.storage_client = None
-		self.bucket_id = None
-		self.file_id = None
-		self.display_name = None
-		self.media_resolution = None
-		self.mime_type = None
-		self.file_path = None
-		self.file_list = [ ]
+		self.file_path = ''
+		self.file_id = ''
+		self.filename = ''
+		self.display_name = ''
+		self.mime_type = ''
+		self.file = None
+		self.files = [ ]
 		self.response = None
-		self.collections = { }
-		self.documents = { }
+		self.content = None
+		self.output_text = ''
+		self.prompt = ''
+		self.instructions = ''
+		self.temperature = 0.0
+		self.top_p = 0.0
+		self.top_k = 0
+		self.frequency_penalty = 0.0
+		self.presence_penalty = 0.0
+		self.max_tokens = 0
+		self.response_format = ''
+		self.content_config = None
+		self.upload_config = None
+		self.config_values = { }
+		self.metadata = { }
+		self.results = [ ]
+		self.file_objects = [ ]
+		self.file_paths = [ ]
+		self.contents = [ ]
 	
 	@property
-	def file_options( self ) -> List[ str ] | None:
-		"""File options.
+	def file_options( self ) -> List[ str ]:
+		"""Get file-extension options.
 		
 		Purpose:
-		    Returns normalized information for the Files component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns common file extensions supported by Gemini file-input workflows.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return self.files
+			List[str]: Supported file-extension values.
+		"""
+		return [ 'pdf', 'txt', 'md', 'csv', 'json', 'xml', 'html', 'doc', 'docx', 'xls', 'xlsx',
+			'ppt', 'pptx', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'tiff', 'wav', 'mp3', 'm4a',
+			'aac', 'flac', 'ogg', 'mp4', 'mpeg', 'mov', 'webm', ]
 	
 	@property
-	def model_options( self ) -> List[ str ] | None:
-		"""Model options.
+	def purpose_options( self ) -> List[ str ]:
+		"""Get file-purpose options.
 		
 		Purpose:
-		    Returns normalized information for the Files component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns an empty collection because the Gemini Files API does not require OpenAI-style
+			upload-purpose values.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'gemini-3.5-flash',
-		         'gemini-3.5 flash-lite',
-		         'gemini-3.0-flash',
-		         'gemini-3.0-flash-lite' ]
+			List[str]: Empty purpose collection.
+		"""
+		return [ ]
+	
+	@property
+	def model_options( self ) -> List[ str ]:
+		"""Get file-analysis model options.
+		
+		Purpose:
+			Returns Gemini models exposed for file analysis and document question answering.
+		
+		Returns:
+			List[str]: Supported Gemini model identifiers.
+		"""
+		return [ 'gemini-3.1-pro-preview', 'gemini-3.1-flash-lite-preview',
+			'gemini-3-flash-preview', 'gemini-2.5-pro', 'gemini-2.5-flash',
+			'gemini-2.5-flash-lite',
+			'gemini-2.0-flash', 'gemini-2.0-flash-lite', ]
 	
 	@property
 	def media_options( self ) -> List[ str ]:
-		"""Media options.
+		"""Get media-resolution options.
 		
 		Purpose:
-		    Returns normalized information for the Files component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns media-resolution values exposed for file-analysis requests.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
-		return [ 'media_resolution_high',
-		         'media_resolution_medium',
-		         'media_resolution_low' ]
+			List[str]: Supported media-resolution values.
+		"""
+		return [ 'media_resolution_high', 'media_resolution_medium', 'media_resolution_low', ]
 	
 	@property
-	def include_options( self ) -> List[ str ] | None:
-		"""Include options.
+	def format_options( self ) -> List[ str ]:
+		"""Get response-format options.
 		
 		Purpose:
-		    Returns normalized information for the Files component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns response MIME types supported by Gemini file-analysis requests.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'file_search_call.results',
-		         'message.input_image.image_url',
-		         'message.output_text.logprobs',
-		         'reasoning.encrypted_content' ]
+			List[str]: Supported response MIME types.
+		"""
+		return [ 'text/plain', 'application/json', 'text/x.enum', ]
 	
 	@property
-	def reasoning_options( self ) -> List[ str ] | None:
-		"""Reasoning options.
+	def include_options( self ) -> List[ str ]:
+		"""Get include options.
 		
 		Purpose:
-		    Returns normalized information for the Files component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns an empty collection because Gemini file requests do not use OpenAI
+			include-path arguments.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'THINKING_LEVEL_UNSPECIFIED', 'MINIMAL',
-		         'LOW', 'MEDIUM', 'HIGH' ]
+			List[str]: Empty include-option collection.
+		"""
+		return [ ]
 	
 	@property
-	def choice_options( self ) -> List[ str ] | None:
-		"""Choice options.
+	def reasoning_options( self ) -> List[ str ]:
+		"""Get reasoning options.
 		
 		Purpose:
-		    Returns normalized information for the Files component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns Gemini thinking-level values exposed for file-analysis requests.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'AUTO',
-		         'ANY',
-		         'NONE',
-		         'VALIDATED' ]
+			List[str]: Supported thinking-level values.
+		"""
+		return [ 'THINKING_LEVEL_UNSPECIFIED', 'MINIMAL', 'LOW', 'MEDIUM', 'HIGH', ]
 	
 	@property
-	def tool_options( self ) -> List[ str ] | None:
-		"""Tool options.
+	def choice_options( self ) -> List[ str ]:
+		"""Get tool-choice options.
 		
 		Purpose:
-		    Returns normalized information for the Files component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns an empty collection because direct Gemini file analysis does not require a
+			tool-choice argument.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'google_search',
-		         'google_maps',
-		         'file_search',
-		         'url_context',
-		         'code_execution',
-		         'computer_use' ]
+			List[str]: Empty tool-choice collection.
+		"""
+		return [ ]
 	
 	@property
-	def modality_options( self ) -> List[ str ] | None:
-		"""Modality options.
+	def tool_options( self ) -> List[ str ]:
+		"""Get tool options.
 		
 		Purpose:
-		    Returns normalized information for the Files component. The method provides a stable view of
-		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns optional grounding tools supported by file-analysis requests.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [ 'MODALITY_UNSPECIFIED', 'TEXT', 'IMAGE', 'AUDIO' ]
+			List[str]: Supported tool names.
+		"""
+		return [ 'google_search', 'code_execution', ]
 	
-	def upload( self, filepath: str, name: str = None, display_name: str = None,
-			filename: str = None, mime_type: str = None, purpose: str = None ) -> File | None:
-		"""Upload.
+	@property
+	def modality_options( self ) -> List[ str ]:
+		"""Get response-modality options.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application workflows. The
-		    function standardizes file handling and returns a stable reference for downstream processing.
+			Returns the text modality used by file-analysis requests.
+		
+		Returns:
+			List[str]: Supported response modalities.
+		"""
+		return [ 'text', ]
+	
+	def get_file_metadata( self, file: File ) -> Dict[ str, Any ]:
+		"""Get file metadata.
+		
+		Purpose:
+			Extracts application-facing metadata from a required Gemini File object.
 		
 		Args:
-		    filepath (str): Filepath value used by the operation.
-		    name (str): Name value used by the operation.
-		    display_name (str): Display name value used by the operation.
-		    filename (str): Filename value used by the operation.
-		    mime_type (str): Mime type value used by the operation.
-		    purpose (str): Purpose value used by the operation.
+			file (File): Required Gemini File object.
 		
 		Returns:
-		    File | None: Return value produced by the operation.
+			Dict[str, Any]: Application-facing file metadata.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			throw_if( 'filepath', filepath )
-			self.file_path = filepath
+			throw_if( 'file', file )
+			self.file = file
+			self.metadata = { 'id': getattr( self.file, 'name', '', ),
+				'name': getattr( self.file, 'name', '', ),
+				'display_name': getattr( self.file, 'display_name', '', ),
+				'filename': getattr( self.file, 'display_name', '', ),
+				'mime_type': getattr( self.file, 'mime_type', '', ),
+				'size_bytes': getattr( self.file, 'size_bytes', 0, ),
+				'create_time': getattr( self.file, 'create_time', None, ),
+				'expiration_time': getattr( self.file, 'expiration_time', None, ),
+				'update_time': getattr( self.file, 'update_time', None, ),
+				'uri': getattr( self.file, 'uri', '', ),
+				'download_uri': getattr( self.file, 'download_uri', '', ),
+				'state': getattr( self.file, 'state', None, ),
+				'source': getattr( self.file, 'source', None, ),
+				'error': getattr( self.file, 'error', None, ), }
+			return self.metadata
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = ('get_file_metadata( self, file: File ) -> Dict[ str, Any ]')
+			Logger( ).write( exception )
+			raise exception
+	
+	def get_output_text( self ) -> str:
+		"""Get output text.
+		
+		Purpose:
+			Extracts generated text from the latest Gemini file-analysis response.
+		
+		Returns:
+			str: Generated response text or an empty string.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.output_text = ''
 			
-			if not os.path.exists( self.file_path ):
-				raise FileNotFoundError( f'File not found: {self.file_path}' )
+			if self.response is None:
+				return self.output_text
 			
-			self.display_name = name or display_name or filename or Path( self.file_path ).name
+			self.response_text = getattr( self.response, 'text', '', )
+			
+			if self.response_text:
+				self.output_text = str( self.response_text ).strip( )
+				return self.output_text
+			
+			self.text_parts = [ ]
+			self.candidates = getattr( self.response, 'candidates', [ ], ) or [ ]
+			
+			for candidate in self.candidates:
+				self.response_content = getattr( candidate, 'content', None, )
+				
+				if self.response_content is None:
+					continue
+				
+				self.parts = getattr( self.response_content, 'parts', [ ], ) or [ ]
+				
+				for part in self.parts:
+					self.part_text = getattr( part, 'text', '', )
+					
+					if self.part_text:
+						self.text_parts.append( str( self.part_text ) )
+			
+			self.output_text = ''.join( self.text_parts ).strip( )
+			return self.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'get_output_text( self ) -> str'
+			Logger( ).write( exception )
+			raise exception
+	
+	def upload( self, path: str, display_name: str = '', mime_type: str = '' ) -> File:
+		"""Upload a file.
+		
+		Purpose:
+			Uploads a required local file to the Gemini Files API using an optional display name
+			and MIME type.
+		
+		Args:
+			path (str): Required local file path.
+			display_name (str): Optional uploaded-file display name.
+			mime_type (str): Optional uploaded-file MIME type.
+		
+		Returns:
+			File: Uploaded Gemini File object.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'path', path )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.file_path = path
+			self.filename = Path( self.file_path ).name
+			self.display_name = (display_name if display_name else self.filename)
 			self.mime_type = mime_type
-			self.purpose = purpose
-			self.gemini_api_key = cfg.GEMINI_API_KEY
+			self.upload_config = None
 			
-			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
-				raise ValueError( 'GEMINI_API_KEY is required.' )
+			if self.display_name or self.mime_type:
+				self.upload_values = { }
+				
+				if self.display_name:
+					self.upload_values[ 'display_name' ] = (self.display_name)
+				
+				if self.mime_type:
+					self.upload_values[ 'mime_type' ] = (self.mime_type)
+				
+				self.upload_config = types.UploadFileConfig( **self.upload_values )
 			
-			self.client = genai.Client( api_key=self.gemini_api_key )
-			self.response = self.client.files.upload(
-				path=self.file_path,
-				config={ 'display_name': self.display_name }
-			)
+			self.client = genai.Client( api_key=self.gemini_api_key, )
 			
-			self.file_id = getattr( self.response, 'name', None )
-			if self.file_id is None:
-				self.file_id = getattr( self.response, 'uri', None )
+			if self.upload_config is None:
+				self.file = self.client.files.upload( file=self.file_path, )
+			else:
+				self.file = self.client.files.upload( file=self.file_path,
+					config=self.upload_config, )
 			
-			return self.response
+			throw_if( 'file', self.file )
+			self.file_id = getattr( self.file, 'name', '', )
+			return self.file
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'upload( self, filepath, name, display_name, filename, mime_type, purpose )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'upload( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
-	def upload_file( self, path: str, file_path: str = None, filepath: str = None,
-			name: str = None, display_name: str = None, filename: str = None,
-			mime_type: str = None, purpose: str = None ) -> File | None:
-		"""Upload file.
+	def upload_file( self, path: str, display_name: str = '', mime_type: str = '' ) -> File:
+		"""Upload a file.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application workflows. The
-		    function standardizes file handling and returns a stable reference for downstream processing.
+			Provides the application-compatible upload-file alias.
 		
 		Args:
-		    path (str): Path value used by the operation.
-		    file_path (str): File path value used by the operation.
-		    filepath (str): Filepath value used by the operation.
-		    name (str): Name value used by the operation.
-		    display_name (str): Display name value used by the operation.
-		    filename (str): Filename value used by the operation.
-		    mime_type (str): Mime type value used by the operation.
-		    purpose (str): Purpose value used by the operation.
+			path (str): Required local file path.
+			display_name (str): Optional uploaded-file display name.
+			mime_type (str): Optional uploaded-file MIME type.
 		
 		Returns:
-		    File | None: Return value produced by the operation.
+			File: Uploaded Gemini File object.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			throw_if( 'path', path )
 			self.file_path = path
-			
-			return self.upload(
-				filepath=self.file_path,
-				name=name,
-				display_name=display_name,
-				filename=filename,
-				mime_type=mime_type,
-				purpose=purpose
-			)
+			self.display_name = display_name
+			self.mime_type = mime_type
+			return self.upload( self.file_path, self.display_name, self.mime_type, )
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'upload_file( self, path, file_path, filepath, name, display_name, filename )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'upload_file( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
-	def files_upload( self, path: str, file_path: str = None, filepath: str = None,
-			name: str = None, display_name: str = None, filename: str = None,
-			mime_type: str = None, purpose: str = None ) -> File | None:
-		"""Files upload.
+	def files_upload( self, path: str, display_name: str = '', mime_type: str = '' ) -> File:
+		"""Upload a file.
 		
 		Purpose:
-		    Performs the Files.files_upload workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Provides the application-compatible files-upload alias.
 		
 		Args:
-		    path (str): Path value used by the operation.
-		    file_path (str): File path value used by the operation.
-		    filepath (str): Filepath value used by the operation.
-		    name (str): Name value used by the operation.
-		    display_name (str): Display name value used by the operation.
-		    filename (str): Filename value used by the operation.
-		    mime_type (str): Mime type value used by the operation.
-		    purpose (str): Purpose value used by the operation.
+			path (str): Required local file path.
+			display_name (str): Optional uploaded-file display name.
+			mime_type (str): Optional uploaded-file MIME type.
 		
 		Returns:
-		    File | None: Return value produced by the operation.
+			File: Uploaded Gemini File object.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			throw_if( 'path', path )
 			self.file_path = path
-			self.file_paths = file_path
-			self.filepath = filepath
-			return self.upload( filepath=self.file_path, name=name, display_name=display_name,
-				filename=filename, mime_type=mime_type, purpose=purpose )
+			self.display_name = display_name
+			self.mime_type = mime_type
+			return self.upload( self.file_path, self.display_name, self.mime_type, )
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'files_upload( self, path, file_path, filepath, name, display_name, filename )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'files_upload( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
-	def list( self, model: str = 'gemini-2.0-flash', temperature: float = None,
-			top_p: float = None, frequency: float = None, presence: float = None,
-			max_tokens: int = None, stops: List[ str ] = None ) -> List[ File ]:
-		"""List.
-		
-		Purpose:
-		    Performs the Files.list workflow using the inputs supplied by the caller and the current runtime
-		    configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
-		
-		Args:
-		    model (str): Model value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    stops (List[str]): Stops value used by the operation.
-		
-		Returns:
-		    List[File]: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			self.model = model
-			self.top_p = top_p
-			self.temperature = temperature
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = max_tokens
-			self.stops = stops
-			self.gemini_api_key = cfg.GEMINI_API_KEY
-			
-			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
-				raise ValueError( 'GEMINI_API_KEY is required.' )
-			
-			self.client = genai.Client( api_key=self.gemini_api_key )
-			self.file_list = list( self.client.files.list( ) )
-			return self.file_list
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'list( self, model, temperature, top_p, frequency, presence, max_tokens, stops )'
-			Logger( ).write( ex )
-			raise ex
-	
-	def list_files( self ) -> List[ File ]:
+	def list( self ) -> List[ Dict[ str, Any ] ]:
 		"""List files.
 		
 		Purpose:
-		    Performs the Files.list_files workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Lists Gemini files and returns application-facing metadata rows.
 		
 		Returns:
-		    List[File]: Return value produced by the operation.
+			List[Dict[str, Any]]: Gemini file metadata rows.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.response = self.client.files.list( )
+			self.files = [ item for item in self.response ]
+			self.results = [ self.get_file_metadata( item ) for item in self.files ]
+			return self.results
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'list( self ) -> List[ Dict[ str, Any ] ]'
+			Logger( ).write( exception )
+			raise exception
+	
+	def list_files( self ) -> List[ Dict[ str, Any ] ]:
+		"""List files.
+		
+		Purpose:
+			Provides the application-compatible file-list alias.
+		
+		Returns:
+			List[Dict[str, Any]]: Gemini file metadata rows.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			return self.list( )
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'list_files( self ) -> List[ File ]'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = ('list_files( self ) -> List[ Dict[ str, Any ] ]')
+			Logger( ).write( exception )
+			raise exception
 	
-	def retrieve( self, file_id: str ) -> Optional[ File ]:
-		"""Retrieve.
+	def retrieve( self, file_id: str ) -> File:
+		"""Retrieve a file.
 		
 		Purpose:
-		    Performs the Files.retrieve workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Retrieves a required Gemini file resource by name.
 		
 		Args:
-		    file_id (str): File id value used by the operation.
+			file_id (str): Required Gemini file resource name.
 		
 		Returns:
-		    Optional[File]: Return value produced by the operation.
+			File: Retrieved Gemini File object.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'file_id', file_id )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.file_id = file_id
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.file = self.client.files.get( name=self.file_id, )
+			throw_if( 'file', self.file )
+			return self.file
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'retrieve( self, file_id: str ) -> File'
+			Logger( ).write( exception )
+			raise exception
+	
+	def extract( self, file_id: str ) -> Any:
+		"""Extract file content or metadata.
+		
+		Purpose:
+			Downloads content for a required Gemini file when the file exposes a download URI.
+			Uploaded Gemini prompt files generally cannot be downloaded, so their metadata is
+			returned instead.
+		
+		Args:
+			file_id (str): Required Gemini file resource name.
+		
+		Returns:
+			Any: Downloaded bytes or application-facing file metadata.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'file_id', file_id )
 			self.file_id = file_id
-			self.gemini_api_key = cfg.GEMINI_API_KEY
+			self.file = self.retrieve( self.file_id )
+			self.download_uri = getattr( self.file, 'download_uri', '', )
 			
-			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
-				raise ValueError( 'GEMINI_API_KEY is required.' )
+			if not self.download_uri:
+				self.content = self.get_file_metadata( self.file )
+				return self.content
 			
-			self.client = genai.Client( api_key=self.gemini_api_key )
-			self.response = self.client.files.get( name=self.file_id )
-			return self.response
+			self.content = self.client.files.download( file=self.file, )
+			return self.content
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'retrieve( self, file_id ) -> Optional[ File ]'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'extract( self, file_id: str ) -> Any'
+			Logger( ).write( exception )
+			raise exception
 	
-	def extract( self, file_id: str, format: str = None,
-			page_number: int = None ) -> Dict[ str, Any ] | None:
-		"""Extract.
+	def download( self, file_id: str ) -> Any:
+		"""Download file content.
 		
 		Purpose:
-		    Performs the Files.extract workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Provides the application-compatible download alias.
 		
 		Args:
-		    file_id (str): File id value used by the operation.
-		    format (str): Format value used by the operation.
-		    page_number (int): Page number value used by the operation.
+			file_id (str): Required Gemini file resource name.
 		
 		Returns:
-		    Dict[str, Any] | None: Return value produced by the operation.
+			Any: Downloaded bytes or application-facing file metadata.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.file_id = file_id
+			return self.extract( self.file_id )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'download( self, file_id: str ) -> Any'
+			Logger( ).write( exception )
+			raise exception
+	
+	def content( self, file_id: str ) -> Any:
+		"""Get file content.
+		
+		Purpose:
+			Provides the application-compatible file-content alias.
+		
+		Args:
+			file_id (str): Required Gemini file resource name.
+		
+		Returns:
+			Any: Downloaded bytes or application-facing file metadata.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.file_id = file_id
+			return self.extract( self.file_id )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'content( self, file_id: str ) -> Any'
+			Logger( ).write( exception )
+			raise exception
+	
+	def delete( self, file_id: str ) -> bool:
+		"""Delete a file.
+		
+		Purpose:
+			Deletes a required Gemini file resource.
+		
+		Args:
+			file_id (str): Required Gemini file resource name.
+		
+		Returns:
+			bool: True when the delete request completes.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'file_id', file_id )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
 			self.file_id = file_id
-			self.format = format
-			self.page_number = page_number
-			self.response = self.retrieve( self.file_id )
-			
-			if self.response is None:
-				return None
-			
-			if hasattr( self.response, 'model_dump' ):
-				return self.response.model_dump( )
-			
-			return {
-					'name': getattr( self.response, 'name', self.file_id ),
-					'display_name': getattr( self.response, 'display_name', None ),
-					'mime_type': getattr( self.response, 'mime_type', None ),
-					'uri': getattr( self.response, 'uri', None ),
-					'state': getattr( self.response, 'state', None ),
-			}
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'extract( self, file_id, format, page_number )'
-			Logger( ).write( ex )
-			raise ex
-	
-	def download( self, file_id: str, format: str = None,
-			page_number: int = None ) -> Dict[ str, Any ] | None:
-		"""Download.
-		
-		Purpose:
-		    Performs the Files.download workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
-		
-		Args:
-		    file_id (str): File id value used by the operation.
-		    format (str): Format value used by the operation.
-		    page_number (int): Page number value used by the operation.
-		
-		Returns:
-		    Dict[str, Any] | None: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			throw_if( 'file_id', file_id )
-			self.file_id = file_id
-			return self.extract(
-				file_id=self.file_id,
-				format=format,
-				page_number=page_number
-			)
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'download( self, file_id, format, page_number )'
-			Logger( ).write( ex )
-			raise ex
-	
-	def content( self, file_id: str, format: str = None,
-			page_number: int = None ) -> Dict[ str, Any ] | None:
-		"""Content.
-		
-		Purpose:
-		    Performs the Files.content workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
-		
-		Args:
-		    file_id (str): File id value used by the operation.
-		    format (str): Format value used by the operation.
-		    page_number (int): Page number value used by the operation.
-		
-		Returns:
-		    Dict[str, Any] | None: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			throw_if( 'file_id', file_id )
-			self.file_id = file_id
-			return self.extract(
-				file_id=self.file_id,
-				format=format,
-				page_number=page_number
-			)
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'content( self, file_id, format, page_number )'
-			Logger( ).write( ex )
-			raise ex
-	
-	def delete( self, file_id: str = None, id: str = None, name: str = None ) -> bool | None:
-		"""Delete.
-		
-		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
-		
-		Args:
-		    file_id (str): File id value used by the operation.
-		    id (str): Id value used by the operation.
-		    name (str): Name value used by the operation.
-		
-		Returns:
-		    Optional[bool]: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			value = file_id or id or name
-			throw_if( 'file_id', value )
-			self.file_id = str( value ).strip( )
-			self.gemini_api_key = cfg.GEMINI_API_KEY
-			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
-				raise ValueError( 'GEMINI_API_KEY is required.' )
-			
-			self.client = genai.Client( api_key=self.gemini_api_key )
-			self.client.files.delete( name=self.file_id )
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.response = self.client.files.delete( name=self.file_id, )
 			return True
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'delete( self, file_id: str=None, id: str=None, name: str=None ) -> bool'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'delete( self, file_id: str ) -> bool'
+			Logger( ).write( exception )
+			raise exception
 	
-	def summarize( self, prompt: str, filepath: str = None, file_id: str = None,
-			id: str = None, model: str = 'gemini-2.0-flash',
-			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
-			instruct: str = None, tools: List[ str ] = None, tool_choice: str = None,
-			include: List[ str ] = None, store: bool = None, stream: bool = None,
-			previous_id: str = None, conversation_id: str = None ) -> str | None:
-		"""Summarize.
+	def build_content_config( self, model: str, temperature: float = 0.0, top_p: float = 0.0,
+		top_k: int = 0, frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 0,
+		instruct: str = '', response_format: str = '' ) -> GenerateContentConfig:
+		"""Build file-analysis configuration.
 		
 		Purpose:
-		    Performs the Files.summarize workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Builds provider-native file-analysis configuration from arguments assigned to object
+			members.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
-		    filepath (str): Filepath value used by the operation.
-		    file_id (str): File id value used by the operation.
-		    id (str): Id value used by the operation.
-		    model (str): Model value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    stops (List[str]): Stops value used by the operation.
-		    instruct (str): Instruct value used by the operation.
-		    tools (List[str]): Tools value used by the operation.
-		    tool_choice (str): Tool choice value used by the operation.
-		    include (List[str]): Include value used by the operation.
-		    store (bool): Store value used by the operation.
-		    stream (bool): Stream value used by the operation.
-		    previous_id (str): Previous id value used by the operation.
-		    conversation_id (str): Conversation id value used by the operation.
+			model (str): Required Gemini model identifier.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			top_k (int): Top-k sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			instruct (str): Optional system instruction.
+			response_format (str): Optional response MIME type.
 		
 		Returns:
-		    Optional[str]: Return value produced by the operation.
+			GenerateContentConfig: Provider-ready generation configuration.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			throw_if( 'prompt', prompt )
-			self.prompt = prompt
-			
 			throw_if( 'model', model )
 			self.model = model
-			
-			self.file_id = file_id or id
-			self.file_path = filepath
-			self.top_p = top_p
 			self.temperature = temperature
+			self.top_p = top_p
+			self.top_k = top_k
 			self.frequency_penalty = frequency
 			self.presence_penalty = presence
 			self.max_tokens = max_tokens
-			self.stops = stops
 			self.instructions = instruct
-			self.tools = tools if tools is not None else [ ]
-			self.tool_choice = tool_choice
-			self.include = include if include is not None else [ ]
-			self.store = store
-			self.stream = stream
-			self.previous_id = previous_id
-			self.conversation_id = conversation_id
-			self.gemini_api_key = cfg.GEMINI_API_KEY
+			self.response_format = response_format
+			self.config_values = { 'temperature': self.temperature, }
 			
-			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
-				raise ValueError( 'GEMINI_API_KEY is required.' )
+			if self.top_p > 0:
+				self.config_values[ 'top_p' ] = self.top_p
 			
-			if not self.file_id and not self.file_path:
-				raise ValueError( 'A Gemini file ID or local filepath is required.' )
+			if self.top_k > 0:
+				self.config_values[ 'top_k' ] = self.top_k
 			
-			self.config_kwargs = { }
+			if self.frequency_penalty != 0:
+				self.config_values[ 'frequency_penalty' ] = (self.frequency_penalty)
 			
-			if self.temperature is not None:
-				self.config_kwargs[ 'temperature' ] = self.temperature
+			if self.presence_penalty != 0:
+				self.config_values[ 'presence_penalty' ] = (self.presence_penalty)
 			
-			if self.top_p is not None:
-				self.config_kwargs[ 'top_p' ] = self.top_p
+			if self.max_tokens > 0:
+				self.config_values[ 'max_output_tokens' ] = (self.max_tokens)
 			
-			if self.max_tokens is not None and int( self.max_tokens or 0 ) > 0:
-				self.config_kwargs[ 'max_output_tokens' ] = int( self.max_tokens )
+			if self.instructions:
+				self.config_values[ 'system_instruction' ] = (self.instructions)
 			
-			if self.instructions is not None and str( self.instructions ).strip( ):
-				self.config_kwargs[ 'system_instruction' ] = str( self.instructions ).strip( )
+			if self.response_format:
+				self.config_values[ 'response_mime_type' ] = (self.response_format)
 			
-			if self.stops is not None and len( self.stops ) > 0:
-				self.config_kwargs[ 'stop_sequences' ] = self.stops
-			
-			self.content_config = GenerateContentConfig( **self.config_kwargs )
-			self.client = genai.Client( api_key=self.gemini_api_key )
-			
-			if self.file_id:
-				self.uploaded_file = self.client.files.get( name=self.file_id )
-			else:
-				self.uploaded_file = self.client.files.upload( path=self.file_path )
-			
-			if self.uploaded_file is None:
-				raise ValueError( 'The Gemini file could not be resolved.' )
-			
-			self.response = self.client.models.generate_content(
-				model=self.model,
-				contents=[ self.uploaded_file, self.prompt ],
-				config=self.content_config
-			)
-			
-			self.output_text = getattr( self.response, 'text', None )
+			self.content_config = GenerateContentConfig( **self.config_values )
+			return self.content_config
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'build_content_config( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def summarize( self, prompt: str, file_id: str, model: str = 'gemini-2.5-flash-lite',
+		temperature: float = 0.0, top_p: float = 0.0, top_k: int = 0, frequency: float = 0.0,
+		presence: float = 0.0, max_tokens: int = 0, instruct: str = '',
+		response_format: str = '' ) -> str:
+		"""Analyze a file.
+		
+		Purpose:
+			Answers a required prompt using a required Gemini file resource.
+		
+		Args:
+			prompt (str): Required file-analysis prompt.
+			file_id (str): Required Gemini file resource name.
+			model (str): Gemini model used for file analysis.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			top_k (int): Top-k sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			instruct (str): Optional system instruction.
+			response_format (str): Optional response MIME type.
+		
+		Returns:
+			str: Generated file-analysis text.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			throw_if( 'file_id', file_id )
+			throw_if( 'model', model )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.prompt = prompt
+			self.file_id = file_id
+			self.model = model
+			self.temperature = temperature
+			self.top_p = top_p
+			self.top_k = top_k
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.instructions = instruct
+			self.response_format = response_format
+			self.file = self.retrieve( self.file_id )
+			self.content_config = self.build_content_config( self.model, self.temperature,
+				self.top_p, self.top_k, self.frequency_penalty, self.presence_penalty,
+				self.max_tokens, self.instructions, self.response_format, )
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.response = self.client.models.generate_content( model=self.model,
+				contents=[ self.prompt, self.file, ], config=self.content_config, )
+			self.output_text = self.get_output_text( )
+			throw_if( 'output_text', self.output_text )
 			return self.output_text
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'summarize( self, prompt, filepath, file_id, id, model ) -> str'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'summarize( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
-	def search( self, prompt: str, filepath: str = None, file_id: str = None,
-			id: str = None, model: str = 'gemini-2.0-flash',
-			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
-			instruct: str = None, tools: List[ str ] = None, tool_choice: str = None,
-			include: List[ str ] = None, store: bool = None, stream: bool = None,
-			previous_id: str = None, conversation_id: str = None ) -> str | None:
-		"""Search.
+	def search( self, prompt: str, file_id: str, model: str = 'gemini-2.5-flash-lite',
+		temperature: float = 0.0, top_p: float = 0.0, top_k: int = 0, frequency: float = 0.0,
+		presence: float = 0.0, max_tokens: int = 0, instruct: str = '',
+		response_format: str = '' ) -> str:
+		"""Search a file.
 		
 		Purpose:
-		    Performs the Files.search workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Answers a required question using a required Gemini file resource.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
-		    filepath (str): Filepath value used by the operation.
-		    file_id (str): File id value used by the operation.
-		    id (str): Id value used by the operation.
-		    model (str): Model value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    stops (List[str]): Stops value used by the operation.
-		    instruct (str): Instruct value used by the operation.
-		    tools (List[str]): Tools value used by the operation.
-		    tool_choice (str): Tool choice value used by the operation.
-		    include (List[str]): Include value used by the operation.
-		    store (bool): Store value used by the operation.
-		    stream (bool): Stream value used by the operation.
-		    previous_id (str): Previous id value used by the operation.
-		    conversation_id (str): Conversation id value used by the operation.
+			prompt (str): Required question about the file.
+			file_id (str): Required Gemini file resource name.
+			model (str): Gemini model used for analysis.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			top_k (int): Top-k sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			instruct (str): Optional system instruction.
+			response_format (str): Optional response MIME type.
 		
 		Returns:
-		    Optional[str]: Return value produced by the operation.
+			str: Generated answer.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'prompt', prompt )
+			throw_if( 'file_id', file_id )
 			self.prompt = prompt
-			
-			return self.summarize( prompt=self.prompt, filepath=filepath, file_id=file_id,
-				id=id, model=model, temperature=temperature, top_p=top_p, frequency=frequency,
-				presence=presence, max_tokens=max_tokens, stops=stops, instruct=instruct,
-				tools=tools, tool_choice=tool_choice, include=include, store=store,
-				stream=stream, previous_id=previous_id, conversation_id=conversation_id )
+			self.file_id = file_id
+			self.model = model
+			self.temperature = temperature
+			self.top_p = top_p
+			self.top_k = top_k
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.instructions = instruct
+			self.response_format = response_format
+			return self.summarize( self.prompt, self.file_id, self.model, self.temperature,
+				self.top_p, self.top_k, self.frequency_penalty, self.presence_penalty,
+				self.max_tokens, self.instructions, self.response_format, )
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'search( self, prompt, filepath, file_id, id, model ) -> str'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'search( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
-	def survey( self, prompt: str, filepaths: List[ str ] = None,
-			file_id: str = None, id: str = None, model: str = 'gemini-2.0-flash',
-			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
-			instruct: str = None, tools: List[ str ] = None, tool_choice: str = None,
-			include: List[ str ] = None, store: bool = None, stream: bool = None,
-			previous_id: str = None, conversation_id: str = None ) -> str | None:
-		"""Survey.
+	def survey( self, prompt: str, file_ids: List[ str ], model: str = 'gemini-2.5-flash-lite',
+		temperature: float = 0.0, top_p: float = 0.0, top_k: int = 0, frequency: float = 0.0,
+		presence: float = 0.0, max_tokens: int = 0, instruct: str = '',
+		response_format: str = '' ) -> str:
+		"""Survey multiple files.
 		
 		Purpose:
-		    Performs the Files.survey workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Answers a required prompt using multiple required Gemini file resources.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
-		    filepaths (List[str]): Filepaths value used by the operation.
-		    file_id (str): File id value used by the operation.
-		    id (str): Id value used by the operation.
-		    model (str): Model value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    stops (List[str]): Stops value used by the operation.
-		    instruct (str): Instruct value used by the operation.
-		    tools (List[str]): Tools value used by the operation.
-		    tool_choice (str): Tool choice value used by the operation.
-		    include (List[str]): Include value used by the operation.
-		    store (bool): Store value used by the operation.
-		    stream (bool): Stream value used by the operation.
-		    previous_id (str): Previous id value used by the operation.
-		    conversation_id (str): Conversation id value used by the operation.
+			prompt (str): Required multi-file analysis prompt.
+			file_ids (List[str]): Required Gemini file resource names.
+			model (str): Gemini model used for analysis.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			top_k (int): Top-k sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			instruct (str): Optional system instruction.
+			response_format (str): Optional response MIME type.
 		
 		Returns:
-		    Optional[str]: Return value produced by the operation.
+			str: Generated multi-file analysis.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'prompt', prompt )
+			throw_if( 'file_ids', file_ids )
+			throw_if( 'model', model )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
 			self.prompt = prompt
-			
-			if file_id or id:
-				return self.summarize( prompt=self.prompt, file_id=file_id, id=id,
-					model=model, temperature=temperature, top_p=top_p, frequency=frequency,
-					presence=presence, max_tokens=max_tokens, stops=stops,
-					instruct=instruct, tools=tools, tool_choice=tool_choice,
-					include=include, store=store, stream=stream, previous_id=previous_id,
-					conversation_id=conversation_id )
-			
-			throw_if( 'filepaths', filepaths )
-			self.file_paths = filepaths
-			self.outputs = [ ]
-			for filepath in self.file_paths:
-				self.outputs.append(
-					self.summarize( prompt=self.prompt, filepath=filepath, model=model,
-						temperature=temperature, top_p=top_p, frequency=frequency,
-						presence=presence, max_tokens=max_tokens, stops=stops,
-						instruct=instruct, tools=tools, tool_choice=tool_choice, include=include,
-						store=store, stream=stream, previous_id=previous_id,
-						conversation_id=conversation_id ) )
-			
-			return '\n\n'.join( [ item for item in self.outputs if item ] )
+			self.file_ids = file_ids
+			self.model = model
+			self.temperature = temperature
+			self.top_p = top_p
+			self.top_k = top_k
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.instructions = instruct
+			self.response_format = response_format
+			self.file_objects = [ self.retrieve( item ) for item in self.file_ids ]
+			self.content_config = self.build_content_config( self.model, self.temperature,
+				self.top_p, self.top_k, self.frequency_penalty, self.presence_penalty,
+				self.max_tokens, self.instructions, self.response_format, )
+			self.contents = [ self.prompt, ]
+			self.contents.extend( self.file_objects )
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.response = self.client.models.generate_content( model=self.model,
+				contents=self.contents, config=self.content_config, )
+			self.output_text = self.get_output_text( )
+			throw_if( 'output_text', self.output_text )
+			return self.output_text
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'Files'
-			ex.method = 'survey( self, prompt, filepaths, file_id, id, model ) -> str'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'Files'
+			exception.method = 'survey( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
 	def web_search( self, prompt: str, model: str = 'gemini-2.5-flash-lite',
-			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None,
-			max_tokens: int = None, stops: List[ str ] = None, instruct: str = None ) -> str | None:
-		"""Web search.
+		temperature: float = 0.0 ) -> str:
+		"""Search the web.
 		
 		Purpose:
-		    Performs the Files.web_search workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Answers a required prompt using Gemini Google Search grounding.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
-		    model (str): Model value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    stops (List[str]): Stops value used by the operation.
-		    instruct (str): Instruct value used by the operation.
+			prompt (str): Required grounded-search prompt.
+			model (str): Gemini model used for generation.
+			temperature (float): Sampling temperature.
 		
 		Returns:
-		    Optional[str]: Return value produced by the operation."""
+			str: Grounded response text.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'prompt', prompt )
-			self.contents = prompt;
+			throw_if( 'model', model )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.prompt = prompt
 			self.model = model
-			self.contents = prompt;
-			self.top_p = top_p;
 			self.temperature = temperature
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = max_tokens
-			self.stops = stops
-			self.instructions = instruct
-			self.tool_config = [
-					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
+			self.client = genai.Client( api_key=self.gemini_api_key, )
 			self.content_config = GenerateContentConfig( temperature=self.temperature,
-				tools=self.tool_config, system_instruction=self.instructions )
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			response = self.client.models.generate_content( model=self.model,
-				contents=self.contents, config=self.content_config )
-			return response.text
-		except Exception as e:
-			exception = Error( e );
-			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'web_search( self, prompt, model ) -> Optional[ str ]'
-			error = ErrorDialog( exception )
-			error.show( )
-	
-	def search_maps( self, prompt: str, model: str = 'gemini-2.5-flash-lite',
-			temperature: float = None, top_p: float = None, frequency: float = None,
-			presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
-			instruct: str = None ) -> str | None:
-		"""Search maps.
-		
-		Purpose:
-		    Performs the Files.search_maps workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
-		
-		Args:
-		    prompt (str): Prompt value used by the operation.
-		    model (str): Model value used by the operation.
-		    temperature (float): Temperature value used by the operation.
-		    top_p (float): Top p value used by the operation.
-		    frequency (float): Frequency value used by the operation.
-		    presence (float): Presence value used by the operation.
-		    max_tokens (int): Max tokens value used by the operation.
-		    stops (List[str]): Stops value used by the operation.
-		    instruct (str): Instruct value used by the operation.
-		
-		Returns:
-		    Optional[str]: Return value produced by the operation."""
-		try:
-			throw_if( 'prompt', prompt )
-			self.contents = f"Using Google Search and Maps data, answer: {prompt}"
-			self.model = model
-			self.contents = prompt;
-			self.top_p = top_p;
-			self.temperature = temperature
-			self.frequency_penalty = frequency
-			self.presence_penalty = presence
-			self.max_tokens = max_tokens
-			self.stops = stops
-			self.instructions = instruct
-			self.tool_config = [
-					types.Tool( google_search_retrieval=types.GoogleSearchRetrieval( ) ) ]
-			self.content_config = GenerateContentConfig( temperature=self.temperature,
-				tools=self.tool_config )
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			response = self.client.models.generate_content( model=self.model,
-				contents=self.contents, config=self.content_config )
-			return response.text
+				tools=[ Tool( google_search=GoogleSearch( ), ), ], )
+			self.response = self.client.models.generate_content( model=self.model,
+				contents=self.prompt, config=self.content_config, )
+			self.output_text = self.get_output_text( )
+			throw_if( 'output_text', self.output_text )
+			return self.output_text
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
-			exception.cause = 'Chat'
-			exception.method = 'search_maps( self, prompt, model ) -> Optional[ str ]'
-			error = ErrorDialog( exception )
-			error.show( )
+			exception.cause = 'Files'
+			exception.method = 'web_search( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
-	def delete( self, file_id: str ) -> bool | None:
-		"""Delete.
+	def __dir__( self ) -> List[ str ]:
+		"""Return member names.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
-		
-		Args:
-		    file_id (str): File id value used by the operation.
+			Returns public members exposed by the Gemini Files wrapper.
 		
 		Returns:
-		    Optional[bool]: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			throw_if( 'file_id', file_id )
-			self.file_id = file_id
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			self.client.files.delete( name=self.file_id )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'FileStore'
-			ex.method = 'delete( self, file_id: str ) -> bool'
-			Logger( ).write( ex )
-			raise ex
+			List[str]: Public member names.
+		"""
+		return [ 'gemini_api_key', 'client', 'model', 'file_path', 'file_id', 'filename',
+			'display_name', 'mime_type', 'file', 'files', 'response', 'content', 'output_text',
+			'content_config', 'file_options', 'purpose_options', 'model_options', 'media_options',
+			'format_options', 'include_options', 'reasoning_options', 'choice_options',
+			'tool_options', 'modality_options', 'get_file_metadata', 'get_output_text', 'upload',
+			'upload_file', 'files_upload', 'list', 'list_files', 'retrieve', 'extract', 'download',
+			'content', 'delete', 'build_content_config', 'summarize', 'search', 'survey',
+			'web_search', ]
 
 class FileSearch( Gemini ):
-	"""FileSearch class.
+	"""Provide Gemini File Search Store workflow support.
 	
 	Purpose:
-	    Defines the FileSearch component used by the Boo application. The class groups related provider
-	    configuration, runtime state, helper methods, and API-facing behavior so Streamlit workflows can
-	    call a consistent interface.
+		Provides File Search Store creation, listing, retrieval, deletion, document importing,
+		and grounded search through the Google Gen AI SDK. The class assigns accepted method
+		arguments to object members before constructing provider-native store, file-import,
+		tool, and generation requests.
 	
 	Attributes:
-	    client (Optional[genai.Client]): Stores client for the component runtime state.
-	    response (Optional[Any]): Stores response for the component runtime state.
-	    store_id (Optional[str]): Stores store id for the component runtime state.
-	    store_name (Optional[str]): Stores store name for the component runtime state.
-	    collections (Optional[Dict[str, str]]): Stores collections for the component runtime state.
-	    stores (Optional[List[FileSearchStore]]): Stores stores for the component runtime state."""
+		client (Optional[genai.Client]): Google Gen AI client.
+		store_id (str): File Search Store resource name used by the current operation.
+		store_name (str): Display name used when creating a File Search Store.
+		embedding_model (str): Embedding model assigned when creating a store.
+		file_path (str): Local file path used by the current upload operation.
+		file_name (str): Gemini Files API resource name imported into a store.
+		display_name (str): Display name assigned to an uploaded file.
+		mime_type (str): Optional MIME type assigned to an uploaded file.
+		model (str): Gemini model used by the current File Search query.
+		query_text (str): Query submitted to the selected File Search Store.
+		instructions (str): Optional system instruction used by the query.
+		response_format (str): Optional response MIME type.
+		temperature (float): Sampling temperature.
+		top_p (float): Nucleus-sampling value.
+		frequency_penalty (float): Frequency penalty.
+		presence_penalty (float): Presence penalty.
+		max_tokens (int): Maximum output-token count.
+		response (Any): Latest provider response.
+		operation (Any): Latest asynchronous import operation.
+		uploaded_file (Optional[File]): Latest uploaded Gemini file.
+		file_search_store (Optional[FileSearchStore]): Latest File Search Store.
+		stores (List[FileSearchStore]): Latest File Search Store collection.
+		collections (Dict[str, str]): Display names mapped to store resource names.
+		output_text (str): Text extracted from the latest grounded query.
+		grounding_metadata (Any): Grounding metadata from the latest query.
+	"""
 	client: Optional[ genai.Client ]
-	response: Optional[ Any ]
-	store_id: Optional[ str ]
-	store_name: Optional[ str ]
-	collections: Optional[ Dict[ str, str ] ]
-	stores: Optional[ List[ FileSearchStore ] ]
+	store_id: str
+	store_name: str
+	embedding_model: str
+	file_path: str
+	file_name: str
+	display_name: str
+	mime_type: str
+	model: str
+	query_text: str
+	instructions: str
+	response_format: str
+	temperature: float
+	top_p: float
+	frequency_penalty: float
+	presence_penalty: float
+	max_tokens: int
+	response: Any
+	operation: Any
+	uploaded_file: Optional[ File ]
+	file_search_store: Optional[ FileSearchStore ]
+	stores: List[ FileSearchStore ]
+	collections: Dict[ str, str ]
+	output_text: str
+	grounding_metadata: Any
 	
-	def __init__( self ):
+	def __init__( self, model: str = 'gemini-2.5-flash-lite',
+		embedding_model: str = 'models/gemini-embedding-001' ) -> None:
+		"""Initialize instance.
+		
+		Purpose:
+			Initializes Gemini File Search Store configuration and runtime state without
+			executing a provider request.
+		
+		Args:
+			model (str): Default Gemini model used for grounded File Search queries.
+			embedding_model (str): Default embedding model used when creating stores.
+		
+		Returns:
+			None: This method initializes object state.
+		"""
 		super( ).__init__( )
+		self.gemini_api_key = cfg.GEMINI_API_KEY
 		self.client = None
+		self.store_id = ''
+		self.store_name = ''
+		self.embedding_model = embedding_model
+		self.file_path = ''
+		self.file_name = ''
+		self.display_name = ''
+		self.mime_type = ''
+		self.model = model
+		self.query_text = ''
+		self.instructions = ''
+		self.response_format = ''
+		self.temperature = 0.0
+		self.top_p = 0.0
+		self.frequency_penalty = 0.0
+		self.presence_penalty = 0.0
+		self.max_tokens = 0
 		self.response = None
-		self.store_id = None
-		self.store_name = None
-		self.collections = { }
+		self.operation = None
+		self.uploaded_file = None
+		self.file_search_store = None
 		self.stores = [ ]
-		self.refresh_collections( )
+		self.collections = { }
+		self.output_text = ''
+		self.grounding_metadata = None
+		self.file_config = { }
+		self.import_config = { }
+		self.store_config = { }
+		self.config_values = { }
+		self.content_config = None
+		self.file_search_tool = None
+		self.candidates = [ ]
+		self.metadata_filter = ''
+		self.custom_metadata = [ ]
+	
+	@property
+	def model_options( self ) -> List[ str ]:
+		"""Get query-model options.
+		
+		Purpose:
+			Returns Gemini models exposed for grounded File Search queries.
+		
+		Returns:
+			List[str]: Supported Gemini model identifiers.
+		"""
+		return [ 'gemini-3.1-pro-preview', 'gemini-3.1-flash-lite-preview',
+			'gemini-3-flash-preview', 'gemini-2.5-pro', 'gemini-2.5-flash',
+			'gemini-2.5-flash-lite', ]
+	
+	@property
+	def embedding_model_options( self ) -> List[ str ]:
+		"""Get embedding-model options.
+		
+		Purpose:
+			Returns embedding models exposed when creating File Search Stores.
+		
+		Returns:
+			List[str]: Supported File Search embedding-model resource names.
+		"""
+		return [ 'models/gemini-embedding-001', 'models/gemini-embedding-2', ]
+	
+	@property
+	def format_options( self ) -> List[ str ]:
+		"""Get response-format options.
+		
+		Purpose:
+			Returns response MIME types exposed for File Search queries.
+		
+		Returns:
+			List[str]: Supported response MIME types.
+		"""
+		return [ 'text/plain', 'application/json', 'text/x.enum', ]
+	
+	@property
+	def reasoning_options( self ) -> List[ str ]:
+		"""Get reasoning options.
+		
+		Purpose:
+			Returns an empty collection because this wrapper does not expose a separate
+			reasoning argument for File Search queries.
+		
+		Returns:
+			List[str]: Empty reasoning-option collection.
+		"""
+		return [ ]
+	
+	@property
+	def choice_options( self ) -> List[ str ]:
+		"""Get tool-choice options.
+		
+		Purpose:
+			Returns an empty collection because the File Search tool is explicitly assigned by
+			the wrapper.
+		
+		Returns:
+			List[str]: Empty tool-choice collection.
+		"""
+		return [ ]
 	
 	def refresh_collections( self ) -> Dict[ str, str ]:
-		"""Refresh collections.
+		"""Refresh File Search Store collections.
 		
 		Purpose:
-		    Performs the FileSearch.refresh_collections workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Lists available Gemini File Search Stores and rebuilds the application-facing mapping
+			of display names to globally scoped store resource names.
 		
 		Returns:
-		    Dict[str, str]: Return value produced by the operation."""
+			Dict[str, str]: Display names mapped to File Search Store resource names.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.stores = [ store for store in self.client.file_search_stores.list( ) ]
 			self.collections = { }
-			self.stores = [ ]
-			for store in self.client.file_search_stores.list( ):
-				self.stores.append( store )
-				self.display_name = getattr( store, 'display_name', None )
-				self.resource_name = getattr( store, 'name', None )
+			
+			for store in self.stores:
+				self.store_id = getattr( store, 'name', '', )
+				self.store_name = getattr( store, 'display_name', '', )
 				
-				if self.resource_name is None:
+				if not self.store_id:
 					continue
 				
-				self.label = str( self.display_name ).strip( ) if self.display_name else str(
-					self.resource_name ).strip( )
-				self.collections[ self.label ] = str( self.resource_name ).strip( )
+				if not self.store_name:
+					self.store_name = self.store_id
+				
+				self.collections[ str( self.store_name ).strip( ) ] = str( self.store_id ).strip( )
 			
 			return self.collections
-		except Exception:
-			self.collections = { }
-			self.stores = [ ]
-			return self.collections
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = ('refresh_collections( self ) -> Dict[ str, str ]')
+			Logger( ).write( exception )
+			raise exception
 	
-	def create( self, name: str ) -> FileSearchStore | Any:
-		"""Create.
+	def create( self, name: str,
+		embedding_model: str = 'models/gemini-embedding-001' ) -> FileSearchStore:
+		"""Create a File Search Store.
 		
 		Purpose:
-		    Performs the FileSearch.create workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Creates a Gemini File Search Store with a required display name and selected embedding
+			model.
 		
 		Args:
-		    name (str): Name value used by the operation.
+			name (str): Required File Search Store display name.
+			embedding_model (str): Embedding model assigned to the store.
 		
 		Returns:
-		    FileSearchStore | Any: Return value produced by the operation.
+			FileSearchStore: Created Gemini File Search Store.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'name', name )
-			self.store_name = str( name ).strip( )
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			self.response = self.client.file_search_stores.create(
-				config={ 'display_name': self.store_name } )
+			throw_if( 'embedding_model', embedding_model )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.store_name = name
+			self.embedding_model = embedding_model
+			self.store_config = { 'display_name': self.store_name,
+				'embedding_model': self.embedding_model, }
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.file_search_store = (
+				self.client.file_search_stores.create( config=self.store_config, ))
+			throw_if( 'file_search_store', self.file_search_store, )
+			self.store_id = getattr( self.file_search_store, 'name', '', )
 			self.refresh_collections( )
-			return self.response
+			return self.file_search_store
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'FileSearch'
-			exception.method = 'create( self, name: str ) -> FileSearchStore | Any'
+			exception.method = 'create( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def retrieve( self, store_id: str ) -> FileSearchStore | Any:
-		"""Retrieve.
+	def create_store( self, name: str,
+		embedding_model: str = 'models/gemini-embedding-001' ) -> FileSearchStore:
+		"""Create a File Search Store.
 		
 		Purpose:
-		    Performs the FileSearch.retrieve workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Provides the application-compatible alias for File Search Store creation.
 		
 		Args:
-		    store_id (str): Store id value used by the operation.
+			name (str): Required File Search Store display name.
+			embedding_model (str): Embedding model assigned to the store.
 		
 		Returns:
-		    FileSearchStore | Any: Return value produced by the operation.
+			FileSearchStore: Created Gemini File Search Store.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			throw_if( 'store_id', store_id )
-			self.store_id = str( store_id ).strip( )
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
-			self.response = self.client.file_search_stores.get( name=self.store_id )
-			return self.response
+			self.store_name = name
+			self.embedding_model = embedding_model
+			return self.create( self.store_name, self.embedding_model, )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'FileSearch'
-			exception.method = 'retrieve( self, store_id: str ) -> FileSearchStore | Any'
+			exception.method = 'create_store( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def list( self ) -> List[ FileSearchStore ] | Any:
-		"""List.
+	def list( self ) -> List[ FileSearchStore ]:
+		"""List File Search Stores.
 		
 		Purpose:
-		    Performs the FileSearch.list workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
+			Lists available Gemini File Search Stores.
 		
 		Returns:
-		    List[FileSearchStore] | Any: Return value produced by the operation.
+			List[FileSearchStore]: Available File Search Stores.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			self.refresh_collections( )
 			return self.stores
@@ -4664,661 +5090,1651 @@ class FileSearch( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'FileSearch'
-			exception.method = 'list( self ) -> List[ FileSearchStore ] | Any'
+			exception.method = 'list( self ) -> List[ FileSearchStore ]'
 			Logger( ).write( exception )
 			raise exception
 	
-	def delete( self, store_id: str, force: bool = True ) -> bool | Any:
-		"""Delete.
+	def list_stores( self ) -> List[ FileSearchStore ]:
+		"""List File Search Stores.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
-		
-		Args:
-		    store_id (str): Store id value used by the operation.
-		    force (bool): Force value used by the operation.
+			Provides the application-compatible alias for File Search Store listing.
 		
 		Returns:
-		    bool | Any: Return value produced by the operation.
+			List[FileSearchStore]: Available File Search Stores.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			return self.list( )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = ('list_stores( self ) -> List[ FileSearchStore ]')
+			Logger( ).write( exception )
+			raise exception
+	
+	def retrieve( self, store_id: str ) -> FileSearchStore:
+		"""Retrieve a File Search Store.
+		
+		Purpose:
+			Retrieves a required Gemini File Search Store resource.
+		
+		Args:
+			store_id (str): Required File Search Store resource name.
+		
+		Returns:
+			FileSearchStore: Retrieved File Search Store.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'store_id', store_id )
-			self.store_id = str( store_id ).strip( )
-			self.client = genai.Client( api_key=cfg.GEMINI_API_KEY )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.store_id = store_id
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.file_search_store = (self.client.file_search_stores.get( name=self.store_id, ))
+			throw_if( 'file_search_store', self.file_search_store, )
+			return self.file_search_store
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = ('retrieve( self, store_id: str ) -> FileSearchStore')
+			Logger( ).write( exception )
+			raise exception
+	
+	def retrieve_store( self, store_id: str ) -> FileSearchStore:
+		"""Retrieve a File Search Store.
+		
+		Purpose:
+			Provides the application-compatible alias for File Search Store retrieval.
+		
+		Args:
+			store_id (str): Required File Search Store resource name.
+		
+		Returns:
+			FileSearchStore: Retrieved File Search Store.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.store_id = store_id
+			return self.retrieve( self.store_id )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = ('retrieve_store( self, store_id: str ) -> FileSearchStore')
+			Logger( ).write( exception )
+			raise exception
+	
+	def delete( self, store_id: str, force: bool = True ) -> bool:
+		"""Delete a File Search Store.
+		
+		Purpose:
+			Deletes a required Gemini File Search Store and optionally forces deletion of its
+			indexed documents.
+		
+		Args:
+			store_id (str): Required File Search Store resource name.
+			force (bool): Indicates whether indexed documents are deleted with the store.
+		
+		Returns:
+			bool: True when the delete request completes.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'store_id', store_id )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.store_id = store_id
+			self.force = force
+			self.client = genai.Client( api_key=self.gemini_api_key, )
 			self.client.file_search_stores.delete( name=self.store_id,
-				config={ 'force': bool( force ) } )
+				config={ 'force': self.force, }, )
 			self.refresh_collections( )
 			return True
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'FileSearch'
-			exception.method = 'delete( self, store_id: str, force: bool=True ) -> bool | Any'
+			exception.method = 'delete( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def upload_file( self, path: str, store_id: str, file_path: str = None, id: str = None,
-			display_name: str = None, mime_type: str = None ) -> Any:
-		"""Upload file.
+	def delete_store( self, store_id: str, force: bool = True ) -> bool:
+		"""Delete a File Search Store.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application workflows. The
-		    function standardizes file handling and returns a stable reference for downstream processing.
+			Provides the application-compatible alias for File Search Store deletion.
 		
 		Args:
-		    path (str): Path value used by the operation.
-		    store_id (str): Store id value used by the operation.
-		    file_path (str): File path value used by the operation.
-		    id (str): Id value used by the operation.
-		    display_name (str): Display name value used by the operation.
-		    mime_type (str): Mime type value used by the operation.
+			store_id (str): Required File Search Store resource name.
+			force (bool): Indicates whether indexed documents are deleted with the store.
 		
 		Returns:
-		    Any: Return value produced by the operation.
+			bool: True when the delete request completes.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			self.file_path = path or file_path
-			throw_if( 'file_path', self.file_path )
-			
-			self.store_id = store_id or id
-			throw_if( 'store_id', self.store_id )
-			
-			self.file_path = str( self.file_path ).strip( )
-			self.store_id = str( self.store_id ).strip( )
-			self.display_name = str( display_name or Path( self.file_path ).name ).strip( )
-			self.mime_type = mime_type
-			self.gemini_api_key = cfg.GEMINI_API_KEY
-			
-			if self.gemini_api_key is None or not str( self.gemini_api_key ).strip( ):
-				raise ValueError( 'GEMINI_API_KEY is required.' )
-			
-			if not os.path.exists( self.file_path ):
-				raise FileNotFoundError( f'File not found: {self.file_path}' )
-			
-			self.client = genai.Client( api_key=self.gemini_api_key )
-			
-			if self.mime_type:
-				self.file_config = {
-						'display_name': self.display_name,
-						'mime_type': self.mime_type,
-				}
-			else:
-				self.file_config = {
-						'display_name': self.display_name,
-				}
-			
-			self.uploaded_file = self.client.files.upload( file=self.file_path,
-				config=self.file_config )
-			
-			if self.uploaded_file is None:
-				raise ValueError( 'The file could not be uploaded to Gemini Files.' )
-			
-			self.file_name = getattr( self.uploaded_file, 'name', None )
-			if self.file_name is None or not str( self.file_name ).strip( ):
-				raise ValueError( 'Gemini Files upload did not return a file resource name.' )
-			
-			self.response = self.client.file_search_stores.import_file(
-				file_search_store_name=self.store_id,
-				file_name=self.file_name
-			)
-			
-			return self.response
+			self.store_id = store_id
+			self.force = force
+			return self.delete( self.store_id, self.force, )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'FileSearch'
-			exception.method = 'upload_file( self, path, store_id, file_path, id, display_name, mime_type )'
+			exception.method = 'delete_store( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
+	
+	def upload_file( self, path: str, store_id: str, display_name: str = '', mime_type: str = '',
+		custom_metadata: Optional[ List[ Dict[ str, Any ] ] ] = None ) -> Any:
+		"""Upload a file to a File Search Store.
+		
+		Purpose:
+			Uploads a required local file through the Gemini Files API and imports the resulting
+			file resource into a required File Search Store.
+		
+		Args:
+			path (str): Required local file path.
+			store_id (str): Required File Search Store resource name.
+			display_name (str): Optional file display name used in citations.
+			mime_type (str): Optional uploaded-file MIME type.
+			custom_metadata (Optional[List[Dict[str, Any]]]): Optional indexed-file metadata.
+		
+		Returns:
+			Any: Gemini file-import operation.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'path', path )
+			throw_if( 'store_id', store_id )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.file_path = path
+			self.store_id = store_id
+			self.display_name = (display_name if display_name else Path( self.file_path ).name)
+			self.mime_type = mime_type
+			self.custom_metadata = (custom_metadata if custom_metadata is not None else [ ])
+			self.file_config = { 'display_name': self.display_name, }
+			
+			if self.mime_type:
+				self.file_config[ 'mime_type' ] = self.mime_type
+			
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.uploaded_file = self.client.files.upload( file=self.file_path,
+				config=self.file_config, )
+			throw_if( 'uploaded_file', self.uploaded_file, )
+			self.file_name = getattr( self.uploaded_file, 'name', '', )
+			throw_if( 'file_name', self.file_name )
+			self.import_config = { }
+			
+			if self.custom_metadata:
+				self.import_config[ 'custom_metadata' ] = (self.custom_metadata)
+			
+			if self.import_config:
+				self.operation = (self.client.file_search_stores.import_file(
+					file_search_store_name=self.store_id, file_name=self.file_name,
+					config=self.import_config, ))
+			else:
+				self.operation = (self.client.file_search_stores.import_file(
+					file_search_store_name=self.store_id, file_name=self.file_name, ))
+			
+			throw_if( 'operation', self.operation )
+			self.response = self.operation
+			return self.operation
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = 'upload_file( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def upload( self, path: str, store_id: str, display_name: str = '', mime_type: str = '',
+		custom_metadata: Optional[ List[ Dict[ str, Any ] ] ] = None ) -> Any:
+		"""Upload a file to a File Search Store.
+		
+		Purpose:
+			Provides the application-compatible alias for File Search Store file importing.
+		
+		Args:
+			path (str): Required local file path.
+			store_id (str): Required File Search Store resource name.
+			display_name (str): Optional file display name.
+			mime_type (str): Optional uploaded-file MIME type.
+			custom_metadata (Optional[List[Dict[str, Any]]]): Optional indexed-file metadata.
+		
+		Returns:
+			Any: Gemini file-import operation.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.file_path = path
+			self.store_id = store_id
+			self.display_name = display_name
+			self.mime_type = mime_type
+			self.custom_metadata = (custom_metadata if custom_metadata is not None else [ ])
+			return self.upload_file( self.file_path, self.store_id, self.display_name,
+				self.mime_type, self.custom_metadata, )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = 'upload( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def get_output_text( self ) -> str:
+		"""Get File Search response text.
+		
+		Purpose:
+			Extracts generated text from the latest Gemini File Search response.
+		
+		Returns:
+			str: Generated grounded response text or an empty string.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.output_text = ''
+			
+			if self.response is None:
+				return self.output_text
+			
+			self.response_text = getattr( self.response, 'text', '', )
+			
+			if self.response_text:
+				self.output_text = str( self.response_text ).strip( )
+				return self.output_text
+			
+			self.text_parts = [ ]
+			self.candidates = getattr( self.response, 'candidates', [ ], ) or [ ]
+			
+			for candidate in self.candidates:
+				self.response_content = getattr( candidate, 'content', None, )
+				
+				if self.response_content is None:
+					continue
+				
+				self.parts = getattr( self.response_content, 'parts', [ ], ) or [ ]
+				
+				for part in self.parts:
+					self.part_text = getattr( part, 'text', '', )
+					
+					if self.part_text:
+						self.text_parts.append( str( self.part_text ) )
+			
+			self.output_text = ''.join( self.text_parts ).strip( )
+			return self.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = 'get_output_text( self ) -> str'
+			Logger( ).write( exception )
+			raise exception
+	
+	def capture_grounding_metadata( self ) -> None:
+		"""Capture grounding metadata.
+		
+		Purpose:
+			Captures citation and retrieved-context metadata from the latest File Search response.
+		
+		Returns:
+			None: This method updates object state.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.grounding_metadata = None
+			
+			if self.response is None:
+				return
+			
+			self.candidates = getattr( self.response, 'candidates', [ ], ) or [ ]
+			
+			for candidate in self.candidates:
+				self.grounding_metadata = getattr( candidate, 'grounding_metadata', None, )
+				
+				if self.grounding_metadata is not None:
+					return
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = ('capture_grounding_metadata( self ) -> None')
+			Logger( ).write( exception )
+			raise exception
+	
+	def search( self, store_id: str, query: str, model: str = 'gemini-2.5-flash-lite',
+		temperature: float = 0.0, top_p: float = 0.0, frequency: float = 0.0, presence: float =
+		0.0,
+		max_tokens: int = 0, response_format: str = '', instruct: str = '',
+		metadata_filter: str = '' ) -> str:
+		"""Search a File Search Store.
+		
+		Purpose:
+			Answers a required query using a required Gemini File Search Store as grounded
+			retrieval context.
+		
+		Args:
+			store_id (str): Required File Search Store resource name.
+			query (str): Required File Search query.
+			model (str): Gemini model used to generate the grounded response.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			response_format (str): Optional response MIME type.
+			instruct (str): Optional system instruction.
+			metadata_filter (str): Optional indexed-file metadata filter.
+		
+		Returns:
+			str: Generated grounded response text.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'store_id', store_id )
+			throw_if( 'query', query )
+			throw_if( 'model', model )
+			throw_if( 'GEMINI_API_KEY', self.gemini_api_key, )
+			self.store_id = store_id
+			self.query_text = query
+			self.model = model
+			self.temperature = temperature
+			self.top_p = top_p
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.response_format = response_format
+			self.instructions = instruct
+			self.metadata_filter = metadata_filter
+			self.file_search_values = { 'file_search_store_names': [ self.store_id, ], }
+			
+			if self.metadata_filter:
+				self.file_search_values[ 'metadata_filter' ] = (self.metadata_filter)
+			
+			self.file_search_tool = Tool( file_search=FileSearch( **self.file_search_values ), )
+			self.config_values = { 'tools': [ self.file_search_tool, ],
+				'temperature': self.temperature, }
+			
+			if self.top_p > 0:
+				self.config_values[ 'top_p' ] = self.top_p
+			
+			if self.frequency_penalty != 0:
+				self.config_values[ 'frequency_penalty' ] = (self.frequency_penalty)
+			
+			if self.presence_penalty != 0:
+				self.config_values[ 'presence_penalty' ] = (self.presence_penalty)
+			
+			if self.max_tokens > 0:
+				self.config_values[ 'max_output_tokens' ] = (self.max_tokens)
+			
+			if self.response_format:
+				self.config_values[ 'response_mime_type' ] = (self.response_format)
+			
+			if self.instructions:
+				self.config_values[ 'system_instruction' ] = (self.instructions)
+			
+			self.content_config = GenerateContentConfig( **self.config_values )
+			self.client = genai.Client( api_key=self.gemini_api_key, )
+			self.response = self.client.models.generate_content( model=self.model,
+				contents=self.query_text, config=self.content_config, )
+			self.capture_grounding_metadata( )
+			self.output_text = self.get_output_text( )
+			throw_if( 'output_text', self.output_text )
+			return self.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = 'search( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def query( self, store_id: str, query: str, model: str = 'gemini-2.5-flash-lite',
+		temperature: float = 0.0, top_p: float = 0.0, frequency: float = 0.0, presence: float =
+		0.0,
+		max_tokens: int = 0, response_format: str = '', instruct: str = '',
+		metadata_filter: str = '' ) -> str:
+		"""Search a File Search Store.
+		
+		Purpose:
+			Provides the application-compatible alias for grounded File Search Store queries.
+		
+		Args:
+			store_id (str): Required File Search Store resource name.
+			query (str): Required File Search query.
+			model (str): Gemini model used to generate the response.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			response_format (str): Optional response MIME type.
+			instruct (str): Optional system instruction.
+			metadata_filter (str): Optional indexed-file metadata filter.
+		
+		Returns:
+			str: Generated grounded response text.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.store_id = store_id
+			self.query_text = query
+			self.model = model
+			self.temperature = temperature
+			self.top_p = top_p
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.response_format = response_format
+			self.instructions = instruct
+			self.metadata_filter = metadata_filter
+			return self.search( self.store_id, self.query_text, self.model, self.temperature,
+				self.top_p, self.frequency_penalty, self.presence_penalty, self.max_tokens,
+				self.response_format, self.instructions, self.metadata_filter, )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'FileSearch'
+			exception.method = 'query( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def __dir__( self ) -> List[ str ]:
+		"""Return member names.
+		
+		Purpose:
+			Returns public members exposed by the Gemini FileSearch wrapper.
+		
+		Returns:
+			List[str]: Public member names.
+		"""
+		return [ 'gemini_api_key', 'client', 'store_id', 'store_name', 'embedding_model',
+			'file_path', 'file_name', 'display_name', 'mime_type', 'model', 'query_text',
+			'instructions', 'response_format', 'temperature', 'top_p', 'frequency_penalty',
+			'presence_penalty', 'max_tokens', 'response', 'operation', 'uploaded_file',
+			'file_search_store', 'stores', 'collections', 'output_text', 'grounding_metadata',
+			'model_options', 'embedding_model_options', 'format_options', 'reasoning_options',
+			'choice_options', 'refresh_collections', 'create', 'create_store', 'list',
+			'list_stores', 'retrieve', 'retrieve_store', 'delete', 'delete_store', 'upload_file',
+			'upload', 'get_output_text', 'capture_grounding_metadata', 'search', 'query', ]
 
 class CloudBuckets( Gemini ):
-	"""CloudBuckets class.
+	"""Provide Google Cloud Storage bucket workflow support.
 	
 	Purpose:
-	    Defines the CloudBuckets component used by the Boo application. The class groups related
-	    provider configuration, runtime state, helper methods, and API-facing behavior so Streamlit
-	    workflows can call a consistent interface.
+		Provides Google Cloud Storage bucket creation, retrieval, listing, deletion, object
+		upload, object retrieval, object deletion, and Gemini-based bucket querying. Bucket
+		queries construct Vertex AI Gemini input from Google Cloud Storage object URIs so
+		supported bucket content can be analyzed without first copying each object into the
+		Gemini Files API.
 	
 	Attributes:
-	    project_id (Optional[str]): Stores project id for the component runtime state.
-	    bucket_name (Optional[str]): Stores bucket name for the component runtime state.
-	    object_name (Optional[str]): Stores object name for the component runtime state.
-	    file_path (Optional[str]): Stores file path for the component runtime state.
-	    file_ids (Optional[List[str]]): Stores file ids for the component runtime state.
-	    store_ids (Optional[List[str]]): Stores store ids for the component runtime state.
-	    client (Optional[storage.Client]): Stores client for the component runtime state.
-	    bucket (Optional[storage.Bucket]): Stores bucket for the component runtime state.
-	    response (Optional[Any]): Stores response for the component runtime state.
-	    collections (Optional[Dict[str, str]]): Stores collections for the component runtime state.
-	    documents (Optional[Dict[str, str]]): Stores documents for the component runtime state."""
-	project_id: Optional[ str ]
-	bucket_name: Optional[ str ]
-	object_name: Optional[ str ]
-	file_path: Optional[ str ]
-	file_ids: Optional[ List[ str ] ]
-	store_ids: Optional[ List[ str ] ]
-	client: Optional[ storage.Client ]
+		project_id (str): Google Cloud project identifier.
+		location (str): Google Cloud region used by Vertex AI.
+		bucket_name (str): Bucket name used by the current operation.
+		object_name (str): Object name used by the current operation.
+		file_path (str): Local file path used by an upload operation.
+		model (str): Gemini model used by the current query.
+		query_text (str): Query submitted against bucket content.
+		instructions (str): Optional Gemini system instruction.
+		temperature (float): Sampling temperature.
+		top_p (float): Nucleus-sampling value.
+		frequency_penalty (float): Frequency penalty.
+		presence_penalty (float): Presence penalty.
+		max_tokens (int): Maximum output-token count.
+		response_format (str): Optional response MIME type.
+		max_files (int): Maximum number of bucket objects included in a query.
+		storage_client (Optional[storage.Client]): Google Cloud Storage client.
+		genai_client (Optional[genai.Client]): Vertex AI Google Gen AI client.
+		bucket (Optional[storage.Bucket]): Bucket used by the current operation.
+		blob (Optional[storage.Blob]): Object used by the current operation.
+		blobs (List[storage.Blob]): Objects returned by the latest list operation.
+		response (Any): Latest provider response.
+		output_text (str): Text extracted from the latest Gemini response.
+		collections (Dict[str, str]): Application-facing bucket collection mappings.
+		documents (Dict[str, str]): Application-facing document mappings.
+	"""
+	project_id: str
+	location: str
+	bucket_name: str
+	object_name: str
+	file_path: str
+	model: str
+	query_text: str
+	instructions: str
+	temperature: float
+	top_p: float
+	frequency_penalty: float
+	presence_penalty: float
+	max_tokens: int
+	response_format: str
+	max_files: int
+	storage_client: Optional[ storage.Client ]
+	genai_client: Optional[ genai.Client ]
 	bucket: Optional[ storage.Bucket ]
-	response: Optional[ Any ]
-	collections: Optional[ Dict[ str, str ] ]
-	documents: Optional[ Dict[ str, str ] ]
+	blob: Optional[ storage.Blob ]
+	blobs: List[ storage.Blob ]
+	response: Any
+	output_text: str
+	collections: Dict[ str, str ]
+	documents: Dict[ str, str ]
 	
-	def __init__( self ):
+	def __init__( self, project_id: str = '', location: str = 'us-central1',
+		model: str = 'gemini-2.5-flash-lite' ) -> None:
 		"""Initialize instance.
 		
 		Purpose:
-		    Initializes the CloudBuckets object with its default configuration, runtime state, provider
-		    settings, and compatibility fields. This constructor prepares the instance for later method
-		    calls without performing external work beyond local attribute assignment."""
-		self.project_id = cfg.GOOGLE_CLOUD_PROJECT_ID
-		self.client = storage.Client( project=self.project_id )
-		self.bucket_name = None
-		self.object_name = None
-		self.file_path = None
-		self.media_resolution = None
-		self.file_ids = [ ]
-		self.store_ids = [ ]
-		self.stops = [ ]
-		self.response_modalities = [ ]
-		self.tools = [ ]
-		self.domains = [ ]
-		self.http_options = { }
-		self.bucket = None
-		self.response = None
-		self.collections = {
-				'Federal Financial Data': 'jeni-financial/data',
-				'Federal Financial Regulations': 'jeni-financial/regulations',
-				'DoW Financial Data': 'jeni-dow/budget/data',
-				'DoW Financial Regulations': 'jeni-dow/budget/regulations',
-				'DoA Financial Data': 'jenni-doa/Financial Data',
-		}
-		self.documents = {
-				'Account_Balances.csv': 'file-U6wFeRGSeg38Db5uJzo5sj',
-				'SF133.csv': 'file-32s641QK1Xb5QUatY3zfWF',
-				'Authority.csv': 'file-Qi2rw2QsdxKBX1iiaQxY3m',
-				'Outlays.csv': 'file-GHEwSWR7ezMvHrQ3X648wn'
-		}
-	
-	@property
-	def model_options( self ) -> List[ str ] | None:
-		"""Model options.
+			Initializes Google Cloud Storage and Gemini bucket-query configuration without
+			executing a provider request.
 		
-		Purpose:
-		    Returns normalized information for the CloudBuckets component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+		Args:
+			project_id (str): Google Cloud project identifier. An empty value uses config.py.
+			location (str): Google Cloud region used by Vertex AI.
+			model (str): Default Gemini model used for bucket queries.
 		
 		Returns:
-		    List[str] | None: Return value produced by the operation."""
-		return [
-				'gemini-2.5-flash',
-				'gemini-2.5-flash-image',
-				'gemini-2.5-flash-tts',
-				'gemini-2.5-flash-lite',
-				'gemini-2.0-flash',
-				'gemini-2.0-flash-lite',
-		]
+			None: This method initializes object state.
+		"""
+		super( ).__init__( )
+		self.project_id = (project_id if project_id else cfg.GOOGLE_CLOUD_PROJECT_ID)
+		self.location = location
+		self.model = model
+		self.bucket_name = ''
+		self.object_name = ''
+		self.file_path = ''
+		self.query_text = ''
+		self.instructions = ''
+		self.temperature = 0.0
+		self.top_p = 0.0
+		self.frequency_penalty = 0.0
+		self.presence_penalty = 0.0
+		self.max_tokens = 0
+		self.response_format = ''
+		self.max_files = 20
+		self.prefix = ''
+		self.content_type = ''
+		self.storage_client = None
+		self.genai_client = None
+		self.client = None
+		self.bucket = None
+		self.blob = None
+		self.blobs = [ ]
+		self.response = None
+		self.output_text = ''
+		self.content_config = None
+		self.config_values = { }
+		self.contents = [ ]
+		self.object_parts = [ ]
+		self.metadata = { }
+		self.results = [ ]
+		self.collections = { 'Federal Financial Data': 'jeni-financial/data',
+			'Federal Financial Regulations': 'jeni-financial/regulations',
+			'DoW Financial Data': 'jeni-dow/budget/data',
+			'DoW Financial Regulations': 'jeni-dow/budget/regulations',
+			'DoA Financial Data': 'jenni-doa/Financial Data', }
+		self.documents = { 'Account_Balances.csv': 'file-U6wFeRGSeg38Db5uJzo5sj',
+			'SF133.csv': 'file-32s641QK1Xb5QUatY3zfWF',
+			'Authority.csv': 'file-Qi2rw2QsdxKBX1iiaQxY3m',
+			'Outlays.csv': 'file-GHEwSWR7ezMvHrQ3X648wn', }
+	
+	@property
+	def model_options( self ) -> List[ str ]:
+		"""Get model options.
+		
+		Purpose:
+			Returns Gemini models exposed for Google Cloud Storage bucket queries.
+		
+		Returns:
+			List[str]: Supported Gemini model identifiers.
+		"""
+		return [ 'gemini-3.1-pro-preview', 'gemini-3.1-flash-lite-preview',
+			'gemini-3-flash-preview', 'gemini-2.5-pro', 'gemini-2.5-flash',
+			'gemini-2.5-flash-lite',
+			'gemini-2.0-flash', 'gemini-2.0-flash-lite', ]
 	
 	@property
 	def media_options( self ) -> List[ str ]:
-		"""Media options.
+		"""Get media-resolution options.
 		
 		Purpose:
-		    Returns normalized information for the CloudBuckets component. The method provides a stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and downstream logic
-		    can consume it consistently.
+			Returns media-resolution values exposed for bucket-content analysis.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
-		return [
-				'media_resolution_high',
-				'media_resolution_medium',
-				'media_resolution_low',
-		]
+			List[str]: Supported media-resolution values.
+		"""
+		return [ 'media_resolution_high', 'media_resolution_medium', 'media_resolution_low', ]
 	
-	def create( self, bucket: str = None, name: str = None,
-			bucket_name: str = None ) -> storage.Bucket:
-		"""Create.
+	@property
+	def format_options( self ) -> List[ str ]:
+		"""Get response-format options.
 		
 		Purpose:
-		    Performs the CloudBuckets.create workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Returns response MIME types exposed for bucket queries.
+		
+		Returns:
+			List[str]: Supported response MIME types.
+		"""
+		return [ 'text/plain', 'application/json', 'text/x.enum', ]
+	
+	@property
+	def reasoning_options( self ) -> List[ str ]:
+		"""Get reasoning options.
+		
+		Purpose:
+			Returns an empty collection because bucket queries do not expose a separate reasoning
+			control in this wrapper.
+		
+		Returns:
+			List[str]: Empty reasoning-option collection.
+		"""
+		return [ ]
+	
+	@property
+	def choice_options( self ) -> List[ str ]:
+		"""Get tool-choice options.
+		
+		Purpose:
+			Returns an empty collection because bucket queries do not use function-calling tool
+			selection.
+		
+		Returns:
+			List[str]: Empty tool-choice collection.
+		"""
+		return [ ]
+	
+	def get_storage_client( self, project_id: str ) -> storage.Client:
+		"""Get Storage client.
+		
+		Purpose:
+			Creates a Google Cloud Storage client for a required project identifier.
 		
 		Args:
-		    bucket (str): Bucket value used by the operation.
-		    name (str): Name value used by the operation.
-		    bucket_name (str): Bucket name value used by the operation.
+			project_id (str): Required Google Cloud project identifier.
 		
 		Returns:
-		    storage.Bucket: Return value produced by the operation.
+			storage.Client: Configured Google Cloud Storage client.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			value = bucket or bucket_name or name
-			throw_if( 'bucket', value )
-			self.bucket_name = str( value ).strip( )
-			self.bucket = self.client.bucket( self.bucket_name )
-			
-			if not self.bucket.exists( ):
-				self.bucket = self.client.create_bucket( self.bucket_name )
-			
-			self.response = self.bucket
-			return self.response
+			throw_if( 'project_id', project_id )
+			self.project_id = project_id
+			self.storage_client = storage.Client( project=self.project_id, )
+			self.client = self.storage_client
+			return self.storage_client
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'CloudBuckets'
-			ex.method = 'create( self, bucket: str=None, name: str=None, bucket_name: str=None )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = ('get_storage_client( self, project_id: str ) -> '
+			                    'storage.Client')
+			Logger( ).write( exception )
+			raise exception
 	
-	def create_bucket( self, bucket: str = None, name: str = None,
-			bucket_name: str = None ) -> storage.Bucket:
-		"""Create bucket.
+	def get_genai_client( self, project_id: str, location: str ) -> genai.Client:
+		"""Get Gemini client.
 		
 		Purpose:
-		    Creates the requested resource, connection, schema object, or user interface artifact using
-		    validated inputs. The function encapsulates setup details so callers can rely on a consistent
-		    resource lifecycle.
+			Creates a Vertex AI Google Gen AI client for a required project and location.
 		
 		Args:
-		    bucket (str): Bucket value used by the operation.
-		    name (str): Name value used by the operation.
-		    bucket_name (str): Bucket name value used by the operation.
+			project_id (str): Required Google Cloud project identifier.
+			location (str): Required Vertex AI region.
 		
 		Returns:
-		    storage.Bucket: Return value produced by the operation.
+			genai.Client: Configured Vertex AI Google Gen AI client.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			return self.create( bucket=bucket, name=name, bucket_name=bucket_name )
+			throw_if( 'project_id', project_id )
+			throw_if( 'location', location )
+			self.project_id = project_id
+			self.location = location
+			self.genai_client = genai.Client( vertexai=True, project=self.project_id,
+				location=self.location, )
+			return self.genai_client
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'CloudBuckets'
-			ex.method = 'create_bucket( self, bucket: str=None, name: str=None )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'get_genai_client( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
-	def upload_file( self, path: str = None, bucket: str = None, name: str = None,
-			file_path: str = None, bucket_name: str = None, id: str = None,
-			store_id: str = None ) -> storage.Blob:
-		"""Upload file.
+	def get_bucket_metadata( self, bucket: storage.Bucket ) -> Dict[ str, Any ]:
+		"""Get bucket metadata.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application workflows. The
-		    function standardizes file handling and returns a stable reference for downstream processing.
+			Extracts application-facing metadata from a required Google Cloud Storage bucket.
 		
 		Args:
-		    path (str): Path value used by the operation.
-		    bucket (str): Bucket value used by the operation.
-		    name (str): Name value used by the operation.
-		    file_path (str): File path value used by the operation.
-		    bucket_name (str): Bucket name value used by the operation.
-		    id (str): Id value used by the operation.
-		    store_id (str): Store id value used by the operation.
+			bucket (storage.Bucket): Required Google Cloud Storage bucket.
 		
 		Returns:
-		    storage.Blob: Return value produced by the operation.
+			Dict[str, Any]: Application-facing bucket metadata.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			self.file_path = path or file_path
-			throw_if( 'file_path', self.file_path )
-			
-			self.bucket_name = bucket or bucket_name or store_id or id
-			throw_if( 'bucket', self.bucket_name )
-			
-			self.file_path = str( self.file_path ).strip( )
-			self.bucket_name = str( self.bucket_name ).strip( )
-			self.object_name = str( name or Path( self.file_path ).name ).strip( )
-			self.bucket = self.client.bucket( self.bucket_name )
-			
-			if not self.bucket.exists( ):
-				raise ValueError( f'Google Cloud Storage bucket not found: {self.bucket_name}' )
-			
-			self.response = self.bucket.blob( self.object_name )
-			self.response.upload_from_filename( self.file_path )
-			return self.response
+			throw_if( 'bucket', bucket )
+			self.bucket = bucket
+			self.metadata = { 'id': getattr( self.bucket, 'id', '', ),
+				'name': getattr( self.bucket, 'name', '', ),
+				'project_number': getattr( self.bucket, 'project_number', None, ),
+				'location': getattr( self.bucket, 'location', '', ),
+				'location_type': getattr( self.bucket, 'location_type', '', ),
+				'storage_class': getattr( self.bucket, 'storage_class', '', ),
+				'time_created': getattr( self.bucket, 'time_created', None, ),
+				'updated': getattr( self.bucket, 'updated', None, ),
+				'versioning_enabled': getattr( self.bucket, 'versioning_enabled', False, ),
+				'requester_pays': getattr( self.bucket, 'requester_pays', False, ),
+				'retention_period': getattr( self.bucket, 'retention_period', None, ),
+				'labels': getattr( self.bucket, 'labels', None, ),
+				'self_link': getattr( self.bucket, 'self_link', '', ), }
+			return self.metadata
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'CloudBuckets'
-			ex.method = 'upload_file( self, path: str=None, bucket: str=None, name: str=None )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = ('get_bucket_metadata( self, bucket: storage.Bucket ) -> '
+			                    'Dict[ str, Any ]')
+			Logger( ).write( exception )
+			raise exception
 	
-	def upload( self, path: str = None, bucket: str = None, name: str = None,
-			file_path: str = None, bucket_name: str = None, id: str = None,
-			store_id: str = None ) -> storage.Blob:
-		"""Upload.
+	def get_blob_metadata( self, blob: storage.Blob ) -> Dict[ str, Any ]:
+		"""Get object metadata.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application workflows. The
-		    function standardizes file handling and returns a stable reference for downstream processing.
+			Extracts application-facing metadata from a required Google Cloud Storage object.
 		
 		Args:
-		    path (str): Path value used by the operation.
-		    bucket (str): Bucket value used by the operation.
-		    name (str): Name value used by the operation.
-		    file_path (str): File path value used by the operation.
-		    bucket_name (str): Bucket name value used by the operation.
-		    id (str): Id value used by the operation.
-		    store_id (str): Store id value used by the operation.
+			blob (storage.Blob): Required Google Cloud Storage object.
 		
 		Returns:
-		    storage.Blob: Return value produced by the operation.
+			Dict[str, Any]: Application-facing object metadata.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			return self.upload_file( path=path, bucket=bucket, name=name, file_path=file_path,
-				bucket_name=bucket_name, id=id, store_id=store_id )
+			throw_if( 'blob', blob )
+			self.blob = blob
+			self.metadata = { 'id': getattr( self.blob, 'id', '', ),
+				'name': getattr( self.blob, 'name', '', ),
+				'bucket': getattr( getattr( self.blob, 'bucket', None, ), 'name', '', ),
+				'content_type': getattr( self.blob, 'content_type', '', ),
+				'size': getattr( self.blob, 'size', 0, ),
+				'generation': getattr( self.blob, 'generation', None, ),
+				'metageneration': getattr( self.blob, 'metageneration', None, ),
+				'md5_hash': getattr( self.blob, 'md5_hash', '', ),
+				'crc32c': getattr( self.blob, 'crc32c', '', ),
+				'time_created': getattr( self.blob, 'time_created', None, ),
+				'updated': getattr( self.blob, 'updated', None, ),
+				'storage_class': getattr( self.blob, 'storage_class', '', ),
+				'metadata': getattr( self.blob, 'metadata', None, ),
+				'uri': (f'gs://{self.bucket_name}/'
+				        f'{getattr( self.blob, "name", "" )}'), }
+			return self.metadata
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'CloudBuckets'
-			ex.method = 'upload( self, path: str=None, bucket: str=None, name: str=None )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = ('get_blob_metadata( self, blob: storage.Blob ) -> '
+			                    'Dict[ str, Any ]')
+			Logger( ).write( exception )
+			raise exception
 	
-	def files_upload( self, path: str = None, bucket: str = None, name: str = None,
-			file_path: str = None, bucket_name: str = None, id: str = None,
-			store_id: str = None ) -> storage.Blob:
-		"""Files upload.
+	def create( self, name: str, project_id: str = '', location: str = 'US' ) -> storage.Bucket:
+		"""Create a bucket.
 		
 		Purpose:
-		    Performs the CloudBuckets.files_upload workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Creates a Google Cloud Storage bucket with a required globally unique name.
 		
 		Args:
-		    path (str): Path value used by the operation.
-		    bucket (str): Bucket value used by the operation.
-		    name (str): Name value used by the operation.
-		    file_path (str): File path value used by the operation.
-		    bucket_name (str): Bucket name value used by the operation.
-		    id (str): Id value used by the operation.
-		    store_id (str): Store id value used by the operation.
+			name (str): Required Google Cloud Storage bucket name.
+			project_id (str): Google Cloud project identifier. An empty value uses object state.
+			location (str): Google Cloud Storage bucket location.
 		
 		Returns:
-		    storage.Blob: Return value produced by the operation.
+			storage.Bucket: Created Google Cloud Storage bucket.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			return self.upload_file( path=path, bucket=bucket, name=name, file_path=file_path,
-				bucket_name=bucket_name, id=id, store_id=store_id )
+			throw_if( 'name', name )
+			self.bucket_name = name
+			self.project_id = (project_id if project_id else self.project_id)
+			self.location = location
+			throw_if( 'project_id', self.project_id )
+			throw_if( 'location', self.location )
+			self.storage_client = self.get_storage_client( self.project_id )
+			self.bucket = storage.Bucket( client=self.storage_client, name=self.bucket_name, )
+			self.response = self.storage_client.create_bucket( self.bucket,
+				location=self.location, )
+			self.bucket = self.response
+			return self.bucket
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'CloudBuckets'
-			ex.method = 'files_upload( self, path: str=None, bucket: str=None, name: str=None )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'create( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
-	def retrieve( self, bucket: str = None, name: str = None,
-			bucket_name: str = None, id: str = None, store_id: str = None ) -> Any:
-		"""Retrieve.
+	def create_bucket( self, name: str, project_id: str = '',
+		location: str = 'US' ) -> storage.Bucket:
+		"""Create a bucket.
 		
 		Purpose:
-		    Performs the CloudBuckets.retrieve workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Provides the application-compatible alias for bucket creation.
 		
 		Args:
-		    bucket (str): Bucket value used by the operation.
-		    name (str): Name value used by the operation.
-		    bucket_name (str): Bucket name value used by the operation.
-		    id (str): Id value used by the operation.
-		    store_id (str): Store id value used by the operation.
+			name (str): Required Google Cloud Storage bucket name.
+			project_id (str): Google Cloud project identifier.
+			location (str): Google Cloud Storage bucket location.
 		
 		Returns:
-		    Any: Return value produced by the operation.
+			storage.Bucket: Created Google Cloud Storage bucket.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			self.bucket_name = bucket or bucket_name or store_id or id or name
-			throw_if( 'bucket', self.bucket_name )
-			self.bucket_name = str( self.bucket_name ).strip( )
-			self.bucket = self.client.bucket( self.bucket_name )
-			
-			if not self.bucket.exists( ):
-				raise ValueError( f'Google Cloud Storage bucket not found: {self.bucket_name}' )
-			
-			if name and name != self.bucket_name:
-				self.object_name = str( name ).strip( )
-				self.response = self.bucket.get_blob( self.object_name )
-				return self.response
-			
-			self.bucket.reload( )
-			self.response = self.bucket
-			return self.response
+			self.bucket_name = name
+			self.project_id = (project_id if project_id else self.project_id)
+			self.location = location
+			return self.create( self.bucket_name, self.project_id, self.location, )
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'CloudBuckets'
-			ex.method = 'retrieve( self, bucket: str=None, name: str=None )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'create_bucket( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
-	def retrieve_bucket( self, bucket: str = None, name: str = None,
-			bucket_name: str = None, id: str = None, store_id: str = None ) -> Any:
-		"""Retrieve bucket.
+	def upload_file( self, path: str, bucket: str, object_name: str = '', content_type: str = '',
+		project_id: str = '' ) -> storage.Blob:
+		"""Upload an object.
 		
 		Purpose:
-		    Performs the CloudBuckets.retrieve_bucket workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Uploads a required local file to a required Google Cloud Storage bucket.
 		
 		Args:
-		    bucket (str): Bucket value used by the operation.
-		    name (str): Name value used by the operation.
-		    bucket_name (str): Bucket name value used by the operation.
-		    id (str): Id value used by the operation.
-		    store_id (str): Store id value used by the operation.
+			path (str): Required local file path.
+			bucket (str): Required Google Cloud Storage bucket name.
+			object_name (str): Optional destination object name.
+			content_type (str): Optional uploaded-object content type.
+			project_id (str): Google Cloud project identifier.
 		
 		Returns:
-		    Any: Return value produced by the operation.
+			storage.Blob: Uploaded Google Cloud Storage object.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			return self.retrieve( bucket=bucket, name=name, bucket_name=bucket_name,
-				id=id, store_id=store_id )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'CloudBuckets'
-			ex.method = 'retrieve_bucket( self, bucket: str=None, name: str=None )'
-			Logger( ).write( ex )
-			raise ex
-	
-	def get( self, bucket: str = None, name: str = None,
-			bucket_name: str = None, id: str = None, store_id: str = None ) -> Any:
-		"""Get.
-		
-		Purpose:
-		    Performs the CloudBuckets.get workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
-		
-		Args:
-		    bucket (str): Bucket value used by the operation.
-		    name (str): Name value used by the operation.
-		    bucket_name (str): Bucket name value used by the operation.
-		    id (str): Id value used by the operation.
-		    store_id (str): Store id value used by the operation.
-		
-		Returns:
-		    Any: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			return self.retrieve( bucket=bucket, name=name, bucket_name=bucket_name,
-				id=id, store_id=store_id )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'CloudBuckets'
-			ex.method = 'get( self, bucket: str=None, name: str=None )'
-			Logger( ).write( ex )
-			raise ex
-	
-	def list( self, bucket: str = None, bucket_name: str = None,
-			id: str = None, store_id: str = None ) -> List[ storage.Blob ]:
-		"""List.
-		
-		Purpose:
-		    Performs the CloudBuckets.list workflow using the inputs supplied by the caller and the current
-		    runtime configuration. The function keeps this behavior isolated so related UI, provider, and
-		    data-processing paths can call it consistently.
-		
-		Args:
-		    bucket (str): Bucket value used by the operation.
-		    bucket_name (str): Bucket name value used by the operation.
-		    id (str): Id value used by the operation.
-		    store_id (str): Store id value used by the operation.
-		
-		Returns:
-		    List[storage.Blob]: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			self.bucket_name = bucket or bucket_name or store_id or id
-			throw_if( 'bucket', self.bucket_name )
-			self.bucket_name = str( self.bucket_name ).strip( )
-			self.bucket = self.client.bucket( self.bucket_name )
-			if not self.bucket.exists( ):
-				raise ValueError( f'Google Cloud Storage bucket not found: {self.bucket_name}' )
+			throw_if( 'path', path )
+			throw_if( 'bucket', bucket )
+			self.file_path = path
+			self.bucket_name = bucket
+			self.object_name = (object_name if object_name else Path( self.file_path ).name)
+			self.content_type = content_type
+			self.project_id = (project_id if project_id else self.project_id)
+			throw_if( 'project_id', self.project_id )
+			self.storage_client = self.get_storage_client( self.project_id )
+			self.bucket = self.storage_client.get_bucket( self.bucket_name )
+			self.blob = self.bucket.blob( self.object_name )
 			
-			self.response = list( self.bucket.list_blobs( ) )
-			return self.response
+			if self.content_type:
+				self.blob.upload_from_filename( self.file_path, content_type=self.content_type, )
+			else:
+				self.blob.upload_from_filename( self.file_path, )
+			
+			self.blob.reload( )
+			self.response = self.blob
+			return self.blob
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'CloudBuckets'
-			ex.method = 'list( self, bucket: str=None )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'upload_file( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
-	def delete( self, bucket: str = None, name: str = None,
-			bucket_name: str = None, id: str = None, store_id: str = None ) -> bool:
-		"""Delete.
+	def upload( self, path: str, bucket: str, object_name: str = '', content_type: str = '',
+		project_id: str = '' ) -> storage.Blob:
+		"""Upload an object.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+			Provides the application-compatible alias for Google Cloud Storage object upload.
 		
 		Args:
-		    bucket (str): Bucket value used by the operation.
-		    name (str): Name value used by the operation.
-		    bucket_name (str): Bucket name value used by the operation.
-		    id (str): Id value used by the operation.
-		    store_id (str): Store id value used by the operation.
+			path (str): Required local file path.
+			bucket (str): Required Google Cloud Storage bucket name.
+			object_name (str): Optional destination object name.
+			content_type (str): Optional uploaded-object content type.
+			project_id (str): Google Cloud project identifier.
 		
 		Returns:
-		    bool: Return value produced by the operation.
+			storage.Blob: Uploaded Google Cloud Storage object.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			self.bucket_name = bucket or bucket_name or store_id or id or name
-			throw_if( 'bucket', self.bucket_name )
-			self.bucket_name = str( self.bucket_name ).strip( )
-			self.bucket = self.client.bucket( self.bucket_name )
+			self.file_path = path
+			self.bucket_name = bucket
+			self.object_name = object_name
+			self.content_type = content_type
+			self.project_id = (project_id if project_id else self.project_id)
+			return self.upload_file( self.file_path, self.bucket_name, self.object_name,
+				self.content_type, self.project_id, )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'upload( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def files_upload( self, path: str, bucket: str, object_name: str = '', content_type: str = '',
+		project_id: str = '' ) -> storage.Blob:
+		"""Upload an object.
+		
+		Purpose:
+			Provides the application-compatible files-upload alias.
+		
+		Args:
+			path (str): Required local file path.
+			bucket (str): Required Google Cloud Storage bucket name.
+			object_name (str): Optional destination object name.
+			content_type (str): Optional uploaded-object content type.
+			project_id (str): Google Cloud project identifier.
+		
+		Returns:
+			storage.Blob: Uploaded Google Cloud Storage object.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.file_path = path
+			self.bucket_name = bucket
+			self.object_name = object_name
+			self.content_type = content_type
+			self.project_id = (project_id if project_id else self.project_id)
+			return self.upload_file( self.file_path, self.bucket_name, self.object_name,
+				self.content_type, self.project_id, )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'files_upload( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def retrieve( self, bucket: str, object_name: str = '', project_id: str = '' ) -> Any:
+		"""Retrieve a bucket or object.
+		
+		Purpose:
+			Retrieves metadata for a required Google Cloud Storage bucket or for an optional
+			object within that bucket.
+		
+		Args:
+			bucket (str): Required Google Cloud Storage bucket name.
+			object_name (str): Optional object name.
+			project_id (str): Google Cloud project identifier.
+		
+		Returns:
+			Any: Retrieved Google Cloud Storage bucket or object.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'bucket', bucket )
+			self.bucket_name = bucket
+			self.object_name = object_name
+			self.project_id = (project_id if project_id else self.project_id)
+			throw_if( 'project_id', self.project_id )
+			self.storage_client = self.get_storage_client( self.project_id )
+			self.bucket = self.storage_client.get_bucket( self.bucket_name )
 			
-			if not self.bucket.exists( ):
-				raise ValueError( f'Google Cloud Storage bucket not found: {self.bucket_name}' )
+			if not self.object_name:
+				self.response = self.bucket
+				return self.bucket
 			
-			if name and name != self.bucket_name:
-				self.object_name = str( name ).strip( )
-				self.response = self.bucket.blob( self.object_name )
-				self.response.delete( )
+			self.blob = self.bucket.get_blob( self.object_name )
+			throw_if( 'blob', self.blob )
+			self.response = self.blob
+			return self.blob
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'retrieve( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def retrieve_bucket( self, bucket: str, project_id: str = '' ) -> storage.Bucket:
+		"""Retrieve a bucket.
+		
+		Purpose:
+			Provides the application-compatible alias for Google Cloud Storage bucket retrieval.
+		
+		Args:
+			bucket (str): Required Google Cloud Storage bucket name.
+			project_id (str): Google Cloud project identifier.
+		
+		Returns:
+			storage.Bucket: Retrieved Google Cloud Storage bucket.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.bucket_name = bucket
+			self.project_id = (project_id if project_id else self.project_id)
+			self.bucket = self.retrieve( self.bucket_name, '', self.project_id, )
+			return self.bucket
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'retrieve_bucket( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def get( self, bucket: str, object_name: str = '', project_id: str = '' ) -> Any:
+		"""Retrieve a bucket or object.
+		
+		Purpose:
+			Provides the application-compatible alias for bucket or object retrieval.
+		
+		Args:
+			bucket (str): Required Google Cloud Storage bucket name.
+			object_name (str): Optional object name.
+			project_id (str): Google Cloud project identifier.
+		
+		Returns:
+			Any: Retrieved Google Cloud Storage bucket or object.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.bucket_name = bucket
+			self.object_name = object_name
+			self.project_id = (project_id if project_id else self.project_id)
+			return self.retrieve( self.bucket_name, self.object_name, self.project_id, )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'get( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def list( self, bucket: str, prefix: str = '', project_id: str = '' ) -> List[ storage.Blob ]:
+		"""List bucket objects.
+		
+		Purpose:
+			Lists objects in a required Google Cloud Storage bucket and optionally limits the
+			result to an object-name prefix.
+		
+		Args:
+			bucket (str): Required Google Cloud Storage bucket name.
+			prefix (str): Optional object-name prefix.
+			project_id (str): Google Cloud project identifier.
+		
+		Returns:
+			List[storage.Blob]: Google Cloud Storage objects.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'bucket', bucket )
+			self.bucket_name = bucket
+			self.prefix = prefix
+			self.project_id = (project_id if project_id else self.project_id)
+			throw_if( 'project_id', self.project_id )
+			self.storage_client = self.get_storage_client( self.project_id )
+			self.bucket = self.storage_client.get_bucket( self.bucket_name )
+			self.blobs = list( self.storage_client.list_blobs( self.bucket_name,
+				prefix=self.prefix if self.prefix else None, ) )
+			self.response = self.blobs
+			return self.blobs
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'list( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def list_objects( self, bucket: str, prefix: str = '', project_id: str = '' ) -> List[
+		Dict[ str, Any ] ]:
+		"""List object metadata.
+		
+		Purpose:
+			Lists application-facing metadata for objects in a required Google Cloud Storage
+			bucket.
+		
+		Args:
+			bucket (str): Required Google Cloud Storage bucket name.
+			prefix (str): Optional object-name prefix.
+			project_id (str): Google Cloud project identifier.
+		
+		Returns:
+			List[Dict[str, Any]]: Google Cloud Storage object metadata.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.bucket_name = bucket
+			self.prefix = prefix
+			self.project_id = (project_id if project_id else self.project_id)
+			self.blobs = self.list( self.bucket_name, self.prefix, self.project_id, )
+			self.results = [ self.get_blob_metadata( item ) for item in self.blobs ]
+			return self.results
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'list_objects( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def delete( self, bucket: str, object_name: str = '', project_id: str = '' ) -> bool:
+		"""Delete a bucket or object.
+		
+		Purpose:
+			Deletes an optional object from a required Google Cloud Storage bucket. When no
+			object name is supplied, deletes the bucket.
+		
+		Args:
+			bucket (str): Required Google Cloud Storage bucket name.
+			object_name (str): Optional object name.
+			project_id (str): Google Cloud project identifier.
+		
+		Returns:
+			bool: True when the deletion request completes.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'bucket', bucket )
+			self.bucket_name = bucket
+			self.object_name = object_name
+			self.project_id = (project_id if project_id else self.project_id)
+			throw_if( 'project_id', self.project_id )
+			self.storage_client = self.get_storage_client( self.project_id )
+			self.bucket = self.storage_client.get_bucket( self.bucket_name )
+			
+			if self.object_name:
+				self.blob = self.bucket.blob( self.object_name )
+				self.blob.delete( )
+				self.response = True
 				return True
 			
 			self.bucket.delete( )
 			self.response = True
 			return True
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'CloudBuckets'
-			ex.method = 'delete( self, bucket: str=None, name: str=None )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'delete( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
-	def delete_bucket( self, bucket: str = None, name: str = None,
-			bucket_name: str = None, id: str = None, store_id: str = None ) -> bool:
-		"""Delete bucket.
+	def delete_bucket( self, bucket: str, project_id: str = '' ) -> bool:
+		"""Delete a bucket.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle logic.
+			Provides the application-compatible alias for Google Cloud Storage bucket deletion.
 		
 		Args:
-		    bucket (str): Bucket value used by the operation.
-		    name (str): Name value used by the operation.
-		    bucket_name (str): Bucket name value used by the operation.
-		    id (str): Id value used by the operation.
-		    store_id (str): Store id value used by the operation.
+			bucket (str): Required Google Cloud Storage bucket name.
+			project_id (str): Google Cloud project identifier.
 		
 		Returns:
-		    bool: Return value produced by the operation.
+			bool: True when the deletion request completes.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			return self.delete( bucket=bucket, name=name, bucket_name=bucket_name,
-				id=id, store_id=store_id )
+			self.bucket_name = bucket
+			self.project_id = (project_id if project_id else self.project_id)
+			return self.delete( self.bucket_name, '', self.project_id, )
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'CloudBuckets'
-			ex.method = 'delete_bucket( self, bucket: str=None, name: str=None )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'delete_bucket( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
 	
-	def remove( self, bucket: str = None, name: str = None,
-			bucket_name: str = None, id: str = None, store_id: str = None ) -> bool:
-		"""Remove.
+	def remove( self, bucket: str, object_name: str = '', project_id: str = '' ) -> bool:
+		"""Delete a bucket or object.
 		
 		Purpose:
-		    Performs the CloudBuckets.remove workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Provides the application-compatible alias for bucket or object deletion.
 		
 		Args:
-		    bucket (str): Bucket value used by the operation.
-		    name (str): Name value used by the operation.
-		    bucket_name (str): Bucket name value used by the operation.
-		    id (str): Id value used by the operation.
-		    store_id (str): Store id value used by the operation.
+			bucket (str): Required Google Cloud Storage bucket name.
+			object_name (str): Optional object name.
+			project_id (str): Google Cloud project identifier.
 		
 		Returns:
-		    bool: Return value produced by the operation.
+			bool: True when the deletion request completes.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+			Error: Re-raised after the exception is logged.
+		"""
 		try:
-			return self.delete( bucket=bucket, name=name, bucket_name=bucket_name,
-				id=id, store_id=store_id )
+			self.bucket_name = bucket
+			self.object_name = object_name
+			self.project_id = (project_id if project_id else self.project_id)
+			return self.delete( self.bucket_name, self.object_name, self.project_id, )
 		except Exception as e:
-			ex = Error( e )
-			ex.module = 'gemini'
-			ex.cause = 'CloudBuckets'
-			ex.method = 'remove( self, bucket: str=None, name: str=None )'
-			Logger( ).write( ex )
-			raise ex
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'remove( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def get_output_text( self ) -> str:
+		"""Get query output text.
+		
+		Purpose:
+			Extracts generated text from the latest Gemini bucket-query response.
+		
+		Returns:
+			str: Generated query response text or an empty string.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.output_text = ''
+			
+			if self.response is None:
+				return self.output_text
+			
+			self.response_text = getattr( self.response, 'text', '', )
+			
+			if self.response_text:
+				self.output_text = str( self.response_text ).strip( )
+				return self.output_text
+			
+			self.text_parts = [ ]
+			self.candidates = getattr( self.response, 'candidates', [ ], ) or [ ]
+			
+			for candidate in self.candidates:
+				self.response_content = getattr( candidate, 'content', None, )
+				
+				if self.response_content is None:
+					continue
+				
+				self.parts = getattr( self.response_content, 'parts', [ ], ) or [ ]
+				
+				for part in self.parts:
+					self.part_text = getattr( part, 'text', '', )
+					
+					if self.part_text:
+						self.text_parts.append( str( self.part_text ) )
+			
+			self.output_text = ''.join( self.text_parts ).strip( )
+			return self.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'get_output_text( self ) -> str'
+			Logger( ).write( exception )
+			raise exception
+	
+	def search( self, bucket: str, query: str, model: str, project_id: str = '',
+		location: str = 'us-central1', prefix: str = '', max_files: int = 20,
+		temperature: float = 0.0, top_p: float = 0.0, frequency: float = 0.0, presence: float =
+		0.0,
+		max_tokens: int = 0, response_format: str = '', instruct: str = '' ) -> str:
+		"""Query bucket content.
+		
+		Purpose:
+			Answers a required query using supported objects from a required Google Cloud Storage
+			bucket as Gemini multimodal input.
+		
+		Args:
+			bucket (str): Required Google Cloud Storage bucket name.
+			query (str): Required question about bucket content.
+			model (str): Required Gemini model identifier.
+			project_id (str): Google Cloud project identifier.
+			location (str): Vertex AI region.
+			prefix (str): Optional object-name prefix.
+			max_files (int): Maximum number of bucket objects included.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			response_format (str): Optional response MIME type.
+			instruct (str): Optional system instruction.
+		
+		Returns:
+			str: Generated answer based on bucket content.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'bucket', bucket )
+			throw_if( 'query', query )
+			throw_if( 'model', model )
+			self.bucket_name = bucket
+			self.query_text = query
+			self.model = model
+			self.project_id = (project_id if project_id else self.project_id)
+			self.location = location
+			self.prefix = prefix
+			self.max_files = max_files
+			self.temperature = temperature
+			self.top_p = top_p
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.response_format = response_format
+			self.instructions = instruct
+			throw_if( 'project_id', self.project_id )
+			throw_if( 'location', self.location )
+			self.blobs = self.list( self.bucket_name, self.prefix, self.project_id, )
+			
+			if self.max_files > 0:
+				self.blobs = self.blobs[ :self.max_files ]
+			
+			throw_if( 'blobs', self.blobs )
+			self.object_parts = [ ]
+			
+			for item in self.blobs:
+				self.object_name = getattr( item, 'name', '', )
+				self.content_type = getattr( item, 'content_type', '', )
+				
+				if not self.object_name:
+					continue
+				
+				if not self.content_type:
+					continue
+				
+				self.object_parts.append( Part.from_uri( file_uri=(f'gs://{self.bucket_name}/'
+				                                                   f'{self.object_name}'),
+					mime_type=self.content_type, ) )
+			
+			throw_if( 'object_parts', self.object_parts )
+			self.contents = [ Part.from_text( text=self.query_text, ), ]
+			self.contents.extend( self.object_parts )
+			self.config_values = { 'temperature': self.temperature, }
+			
+			if self.top_p > 0:
+				self.config_values[ 'top_p' ] = self.top_p
+			
+			if self.frequency_penalty != 0:
+				self.config_values[ 'frequency_penalty' ] = (self.frequency_penalty)
+			
+			if self.presence_penalty != 0:
+				self.config_values[ 'presence_penalty' ] = (self.presence_penalty)
+			
+			if self.max_tokens > 0:
+				self.config_values[ 'max_output_tokens' ] = (self.max_tokens)
+			
+			if self.response_format:
+				self.config_values[ 'response_mime_type' ] = (self.response_format)
+			
+			if self.instructions:
+				self.config_values[ 'system_instruction' ] = (self.instructions)
+			
+			self.content_config = GenerateContentConfig( **self.config_values )
+			self.genai_client = self.get_genai_client( self.project_id, self.location, )
+			self.response = self.genai_client.models.generate_content( model=self.model,
+				contents=self.contents, config=self.content_config, )
+			self.output_text = self.get_output_text( )
+			throw_if( 'output_text', self.output_text )
+			return self.output_text
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'search( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def query( self, bucket: str, query: str, model: str, project_id: str = '',
+		location: str = 'us-central1', prefix: str = '', max_files: int = 20,
+		temperature: float = 0.0, top_p: float = 0.0, frequency: float = 0.0, presence: float =
+		0.0,
+		max_tokens: int = 0, response_format: str = '', instruct: str = '' ) -> str:
+		"""Query bucket content.
+		
+		Purpose:
+			Provides the application-compatible alias for Gemini bucket-content queries.
+		
+		Args:
+			bucket (str): Required Google Cloud Storage bucket name.
+			query (str): Required question about bucket content.
+			model (str): Required Gemini model identifier.
+			project_id (str): Google Cloud project identifier.
+			location (str): Vertex AI region.
+			prefix (str): Optional object-name prefix.
+			max_files (int): Maximum number of bucket objects included.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			response_format (str): Optional response MIME type.
+			instruct (str): Optional system instruction.
+		
+		Returns:
+			str: Generated answer based on bucket content.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.bucket_name = bucket
+			self.query_text = query
+			self.model = model
+			self.project_id = (project_id if project_id else self.project_id)
+			self.location = location
+			self.prefix = prefix
+			self.max_files = max_files
+			self.temperature = temperature
+			self.top_p = top_p
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.response_format = response_format
+			self.instructions = instruct
+			return self.search( self.bucket_name, self.query_text, self.model, self.project_id,
+				self.location, self.prefix, self.max_files, self.temperature, self.top_p,
+				self.frequency_penalty, self.presence_penalty, self.max_tokens,
+				self.response_format, self.instructions, )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'query( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def ask( self, bucket: str, query: str, model: str, project_id: str = '',
+		location: str = 'us-central1', prefix: str = '', max_files: int = 20,
+		temperature: float = 0.0, top_p: float = 0.0, frequency: float = 0.0, presence: float =
+		0.0,
+		max_tokens: int = 0, response_format: str = '', instruct: str = '' ) -> str:
+		"""Query bucket content.
+		
+		Purpose:
+			Provides the application-compatible ask alias for Gemini bucket-content queries.
+		
+		Args:
+			bucket (str): Required Google Cloud Storage bucket name.
+			query (str): Required question about bucket content.
+			model (str): Required Gemini model identifier.
+			project_id (str): Google Cloud project identifier.
+			location (str): Vertex AI region.
+			prefix (str): Optional object-name prefix.
+			max_files (int): Maximum number of bucket objects included.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			response_format (str): Optional response MIME type.
+			instruct (str): Optional system instruction.
+		
+		Returns:
+			str: Generated answer based on bucket content.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.bucket_name = bucket
+			self.query_text = query
+			self.model = model
+			self.project_id = (project_id if project_id else self.project_id)
+			self.location = location
+			self.prefix = prefix
+			self.max_files = max_files
+			self.temperature = temperature
+			self.top_p = top_p
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.response_format = response_format
+			self.instructions = instruct
+			return self.search( self.bucket_name, self.query_text, self.model, self.project_id,
+				self.location, self.prefix, self.max_files, self.temperature, self.top_p,
+				self.frequency_penalty, self.presence_penalty, self.max_tokens,
+				self.response_format, self.instructions, )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'ask( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def generate_text( self, bucket: str, prompt: str, model: str, project_id: str = '',
+		location: str = 'us-central1', prefix: str = '', max_files: int = 20,
+		temperature: float = 0.0, top_p: float = 0.0, frequency: float = 0.0, presence: float =
+		0.0,
+		max_tokens: int = 0, response_format: str = '', instruct: str = '' ) -> str:
+		"""Generate text from bucket content.
+		
+		Purpose:
+			Provides the application-compatible generate-text alias for Gemini bucket-content
+			queries.
+		
+		Args:
+			bucket (str): Required Google Cloud Storage bucket name.
+			prompt (str): Required question about bucket content.
+			model (str): Required Gemini model identifier.
+			project_id (str): Google Cloud project identifier.
+			location (str): Vertex AI region.
+			prefix (str): Optional object-name prefix.
+			max_files (int): Maximum number of bucket objects included.
+			temperature (float): Sampling temperature.
+			top_p (float): Nucleus-sampling value.
+			frequency (float): Frequency penalty.
+			presence (float): Presence penalty.
+			max_tokens (int): Maximum output-token count.
+			response_format (str): Optional response MIME type.
+			instruct (str): Optional system instruction.
+		
+		Returns:
+			str: Generated answer based on bucket content.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.bucket_name = bucket
+			self.query_text = prompt
+			self.model = model
+			self.project_id = (project_id if project_id else self.project_id)
+			self.location = location
+			self.prefix = prefix
+			self.max_files = max_files
+			self.temperature = temperature
+			self.top_p = top_p
+			self.frequency_penalty = frequency
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.response_format = response_format
+			self.instructions = instruct
+			return self.search( self.bucket_name, self.query_text, self.model, self.project_id,
+				self.location, self.prefix, self.max_files, self.temperature, self.top_p,
+				self.frequency_penalty, self.presence_penalty, self.max_tokens,
+				self.response_format, self.instructions, )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'gemini'
+			exception.cause = 'CloudBuckets'
+			exception.method = 'generate_text( self, **kwargs )'
+			Logger( ).write( exception )
+			raise exception
+	
+	def __dir__( self ) -> List[ str ]:
+		"""Return member names.
+		
+		Purpose:
+			Returns public members exposed by the Gemini CloudBuckets wrapper.
+		
+		Returns:
+			List[str]: Public member names.
+		"""
+		return [ 'project_id', 'location', 'bucket_name', 'object_name', 'file_path', 'model',
+			'query_text', 'instructions', 'temperature', 'top_p', 'frequency_penalty',
+			'presence_penalty', 'max_tokens', 'response_format', 'max_files', 'storage_client',
+			'genai_client', 'client', 'bucket', 'blob', 'blobs', 'response', 'output_text',
+			'collections', 'documents', 'model_options', 'media_options', 'format_options',
+			'reasoning_options', 'choice_options', 'get_storage_client', 'get_genai_client',
+			'get_bucket_metadata', 'get_blob_metadata', 'create', 'create_bucket', 'upload_file',
+			'upload', 'files_upload', 'retrieve', 'retrieve_bucket', 'get', 'list', 'list_objects',
+			'delete', 'delete_bucket', 'remove', 'get_output_text', 'search', 'query', 'ask',
+			'generate_text', ]
