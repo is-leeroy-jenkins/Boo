@@ -12224,33 +12224,32 @@ elif mode == 'Vector Stores':
 # ======================================================================================
 elif mode == 'File Search Stores':
 	provider_name = st.session_state.get( 'provider', 'GPT' )
+	
 	if provider_name != 'Gemini':
 		st.warning( 'File Search Stores are available for Gemini only.' )
 		st.stop( )
 	
 	searcher = get_file_search_module( provider_name )
 	
-	# ----- File Search Store Uitlities
-	
+	# ----- File Search Store Utilities
 	def call_file_search_method( method_names: List[ str ],
 		kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
 		"""Call file search method.
 		
 		Purpose:
-		    Performs the call_file_search_method workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so
-		    related UI, provider, and data-processing paths can call it consistently.
+		    Calls the first compatible File Search Store wrapper method using the supplied
+		    provider arguments. The function resolves supported argument aliases before invoking
+		    the provider method.
 		
 		Args:
-		    method_names (List[str]): Method names value used by the operation.
-		    kwargs (Optional[Dict[str, Any]]): Kwargs value used by the operation.
+		    method_names (List[str]): Ordered provider method names to evaluate.
+		    kwargs (Optional[Dict[str, Any]]): Candidate arguments for the provider method.
 		
 		Returns:
-		    Any: Return value produced by the operation.
+		    Any: Result returned by the compatible provider method.
 		
 		Raises:
 		    Exception: Re-raises exceptions after recording them with the application logger."""
-		
 		try:
 			import inspect
 			
@@ -12259,6 +12258,7 @@ elif mode == 'File Search Stores':
 			
 			for method_name in method_names:
 				method = getattr( searcher, method_name, None )
+				
 				if not callable( method ):
 					continue
 				
@@ -12267,7 +12267,7 @@ elif mode == 'File Search Stores':
 				accepted_names = set( parameters.keys( ) )
 				accepts_kwargs = any(
 					parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in
-						parameters.values( ) )
+					parameters.values( ) )
 				
 				clean_kwargs = { key: value for key, value in candidate_kwargs.items( ) if
 					value is not None and value != '' and value != [ ] }
@@ -12324,7 +12324,7 @@ elif mode == 'File Search Stores':
 		
 		Purpose:
 		    Removes File Search Store operation results without changing store selections,
-		    search settings, uploaded-file controls, queries, or system instructions.
+		    request settings, uploaded-file controls, queries, or system instructions.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a
@@ -12395,6 +12395,41 @@ elif mode == 'File Search Stores':
 			Logger( ).write( ex )
 			raise ex
 	
+	def reset_filestore_management_settings( ) -> None:
+		"""Reset File Search Store management settings.
+		
+		Purpose:
+		    Returns the File Search Store management controls to their initial values without
+		    clearing provider resources, operation results, request settings, or instructions.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a
+		    value."""
+		for key in [ 'filestore_name', 'filestore_selected_id', 'filestore_selected_label',
+			'filestore_manual_id', ]:
+			if key in st.session_state:
+				del st.session_state[ key ]
+	
+	def reset_filestore_request_settings( ) -> None:
+		"""Reset File Search Store request settings.
+		
+		Purpose:
+		    Returns the File Search Store model, inference, and response controls to their initial
+		    values without clearing store selections, uploads, queries, results, or instructions.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a
+		    value."""
+		for key in [ 'filestore_model', 'filestore_temperature', 'filestore_top_percent',
+			'filestore_max_tokens', 'filestore_frequency_penalty', 'filestore_presence_penalty',
+			'filestore_response_format', 'filestore_tool_choice', 'filestore_reasoning',
+			'filestore_store', 'filestore_stream', 'filestore_background', ]:
+			if key in st.session_state:
+				del st.session_state[ key ]
+	
+	# ------------------------------------------------------------------
+	# Mode State
+	# ------------------------------------------------------------------
 	for key, default_value in { 'filestore_table': [ ], 'filestore_metadata': { },
 		'filestore_upload_result': { }, }.items( ):
 		if key not in st.session_state or not isinstance( st.session_state.get( key ),
@@ -12408,13 +12443,282 @@ elif mode == 'File Search Stores':
 		st.session_state[ 'filestore_manual_id' ] = ''
 	
 	# ------------------------------------------------------------------
-	# Main Chat UI
+	# Provider Options
+	# ------------------------------------------------------------------
+	model_options = getattr( searcher, 'model_options', [ ] ) or [ ]
+	if callable( model_options ):
+		model_options = model_options( )
+	
+	model_options = [ str( option ) for option in model_options if str( option ).strip( ) ]
+	format_options = getattr( searcher, 'format_options', [ ] ) or [ ]
+	if callable( format_options ):
+		format_options = format_options( )
+	
+	format_options = [ str( option ) for option in format_options if str( option ).strip( ) ]
+	choice_options = getattr( searcher, 'choice_options', [ ] ) or [ ]
+	if callable( choice_options ):
+		choice_options = choice_options( )
+	
+	choice_options = [ str( option ) for option in choice_options if str( option ).strip( ) ]
+	reasoning_options = getattr( searcher, 'reasoning_options', [ ] ) or [ ]
+	if callable( reasoning_options ):
+		reasoning_options = reasoning_options( )
+	
+	reasoning_options = [ str( option ) for option in reasoning_options if str( option ).strip( ) ]
+	
+	# ------------------------------------------------------------------
+	# Store Selection
+	# ------------------------------------------------------------------
+	store_options = [ str( row.get( 'id', '' ) ) for row in
+		st.session_state.get( 'filestore_table', [ ] ) if
+		isinstance( row, dict ) and row.get( 'id' ) ]
+	
+	if st.session_state.get( 'filestore_selected_id' ) not in store_options:
+		st.session_state[ 'filestore_selected_id' ] = None
+	
+	st.session_state[ 'filestore_selected_label' ] = (
+			st.session_state.get( 'filestore_selected_id' ) or '')
+	
+	selected_store_id = (st.session_state.get( 'filestore_manual_id', '' ) or st.session_state.get(
+		'filestore_selected_id', '' ))
+	
+	# ------------------------------------------------------------------
+	# Main UI
 	# ------------------------------------------------------------------
 	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
 	
-	with center:
+	with (center):
 		st.subheader( '📦 File Search Stores', help=cfg.VECTORSTORES_API )
 		st.divider( )
+		
+		# ------------------------------------------------------------------
+		# Expander — Mind Controls
+		# ------------------------------------------------------------------
+		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
+			# ------------------------------------------------------------------
+			# Expander — Store Management
+			# ------------------------------------------------------------------
+			with st.expander( label='Store Management', icon='📦', expanded=False,
+					width='stretch' ):
+				management_c1, management_c2, management_c3 = st.columns( [ 0.34, 0.33, 0.33 ],
+					border=True, gap='xxsmall', )
+				
+				# ----- New Store Name -----
+				with management_c1:
+					st.text_input( label='New Store Name', key='filestore_name', width='stretch',
+						help='Name used when creating a Gemini File Search Store.',
+						placeholder='Enter store name', )
+				
+				# ----- Selected Store -----
+				with management_c2:
+					st.selectbox( label='Selected Store', options=store_options,
+						key='filestore_selected_id', index=None,
+						placeholder='Options' if store_options else 'No stores loaded',
+						help='Select a File Search Store returned by List Stores.',
+						disabled=not bool( store_options ), )
+				
+				# ----- Manual Store ID -----
+				with management_c3:
+					st.text_input( label='Manual Store ID', key='filestore_manual_id',
+						width='stretch',
+						help='Optional. Enter a File Search Store identifier directly.',
+						placeholder='Enter store ID', )
+				
+				lifecycle_c1, lifecycle_c2, lifecycle_c3, lifecycle_c4 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ] )
+				
+				# ----- Create Store -----
+				with lifecycle_c1:
+					if st.button( label='Create Store', key='filestore_create', icon='➕',
+							width='stretch' ):
+						try:
+							name = st.session_state.get( 'filestore_name', '', ).strip( )
+							
+							if not name:
+								st.warning( 'Enter a File Search Store name.' )
+							else:
+								result = call_file_search_method( [ 'create_store', 'create' ],
+									{ 'name': name, 'display_name': name,
+										'instruct': st.session_state.get(
+											'filestore_system_instructions', '', ), }, )
+								
+								st.session_state[ 'filestore_metadata' ] = \
+									normalize_storage_object( result )
+								
+								st.success( 'File Search Store created.' )
+						except Exception as exc:
+							st.error( f'Create failed: {exc}' )
+				
+				# ----- List Stores -----
+				with lifecycle_c2:
+					if st.button( label='List Stores', key='filestore_list', icon='📋',
+							width='stretch' ):
+						try:
+							result = call_file_search_method( [ 'list_stores', 'list' ] )
+							
+							rows = [ normalize_storage_object( item ) for item in
+								(getattr( result, 'data', result ) or [ ]) ]
+							
+							st.session_state[ 'filestore_table' ] = rows
+						except Exception as exc:
+							st.error( f'List failed: {exc}' )
+				
+				# ----- Retrieve Store -----
+				with lifecycle_c3:
+					if st.button( label='Retrieve Store', key='filestore_retrieve', icon='🔎',
+							width='stretch', disabled=not bool( selected_store_id ) ):
+						try:
+							result = call_file_search_method(
+								[ 'retrieve_store', 'retrieve', 'get' ],
+								{ 'store_id': selected_store_id, 'id': selected_store_id,
+									'name': selected_store_id, }, )
+							
+							st.session_state[ 'filestore_metadata' ] = normalize_storage_object(
+								result )
+						except Exception as exc:
+							st.error( f'Retrieve failed: {exc}' )
+				
+				# ----- Delete Store -----
+				with lifecycle_c4:
+					if st.button( label='Delete Store', key='filestore_delete', icon='🗑️',
+							width='stretch', disabled=not bool( selected_store_id ) ):
+						try:
+							call_file_search_method( [ 'delete_store', 'delete' ],
+								{ 'store_id': selected_store_id, 'id': selected_store_id,
+									'name': selected_store_id, }, )
+							
+							clear_filestore_outputs( )
+							st.success( 'File Search Store deleted.' )
+						except Exception as exc:
+							st.error( f'Delete failed: {exc}' )
+				
+				# ----- Store Table -----
+				if st.session_state.get( 'filestore_table' ):
+					df_filestores = pd.DataFrame( st.session_state[ 'filestore_table' ] )
+					
+					st.dataframe( df_filestores, width='stretch', hide_index=True, )
+				
+				# ----- Store Metadata -----
+				if st.session_state.get( 'filestore_metadata' ):
+					with st.expander( label='Store Metadata', icon='📄', expanded=False,
+							width='stretch' ):
+						render_storage_metadata( st.session_state[ 'filestore_metadata' ] )
+				
+				# ----- Reset Button -----
+				st.button( label='Reset', key='filestore_management_reset', width='stretch',
+					icon='🔄', on_click=reset_filestore_management_settings, )
+			
+			# ------------------------------------------------------------------
+			# Expander — Request Settings
+			# ------------------------------------------------------------------
+			with st.expander( label='Request Settings', icon='⚙️', expanded=False, width='stretch' ):
+				request_c1, request_c2, request_c3 = st.columns( [ 0.34, 0.33, 0.33 ], border=True,
+					gap='xxsmall', )
+				
+				# ----- Model -----
+				with request_c1:
+					st.selectbox( label='Model', options=model_options, index=None,
+						key='filestore_model', placeholder='Options',
+						help='Optional model used for File Search Store queries.', )
+				
+				# ----- Max Tokens -----
+				with request_c2:
+					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+						key='filestore_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, )
+				
+				# ----- Response Format -----
+				with request_c3:
+					st.selectbox( label='Response Format', options=format_options, index=None,
+						key='filestore_response_format', placeholder='Options',
+						help='Optional response format when supported.', )
+				
+				request_c4, request_c5, request_c6, request_c7 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+				
+				# ----- Temperature -----
+				with request_c4:
+					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
+						key='filestore_temperature', help=cfg.TEMPERATURE, )
+				
+				# ----- Top-P -----
+				with request_c5:
+					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
+						key='filestore_top_percent', help=cfg.TOP_P, )
+				
+				# ----- Frequency Penalty -----
+				with request_c6:
+					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='filestore_frequency_penalty', help=cfg.FREQUENCY_PENALTY, )
+				
+				# ----- Presence Penalty -----
+				with request_c7:
+					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='filestore_presence_penalty', help=cfg.PRESENCE_PENALTY, )
+				
+				request_c8, request_c9, request_c10 = st.columns( [ 0.34, 0.33, 0.33 ],
+					border=True, gap='xxsmall', )
+				
+				# ----- Tool Choice -----
+				with request_c8:
+					st.selectbox( label='Tool Choice', options=choice_options, index=None,
+						key='filestore_tool_choice', placeholder='Options', help=cfg.CHOICE, )
+				
+				# ----- Reasoning -----
+				with request_c9:
+					st.selectbox( label='Reasoning', options=reasoning_options, index=None,
+						key='filestore_reasoning', placeholder='Options', help=cfg.REASONING, )
+				
+				# ----- Store -----
+				with request_c10:
+					st.toggle( label='Store', key='filestore_store', help=cfg.STORE, )
+				
+				request_c11, request_c12 = st.columns( [ 0.50, 0.50 ], border=True,
+					gap='xxsmall', )
+				
+				# ----- Stream -----
+				with request_c11:
+					st.toggle( label='Stream', key='filestore_stream', help=cfg.STREAM, )
+				
+				# ----- Background -----
+				with request_c12:
+					st.toggle( label='Background', key='filestore_background',
+						help=cfg.BACKGROUND_MODE, )
+				
+				# ----- Reset Button -----
+				st.button( label='Reset', key='filestore_request_settings_reset', width='stretch',
+					icon='🔄', on_click=reset_filestore_request_settings, )
+	
+		# ------------------------------------------------------------------
+		# Expander — File Uploader
+		# ------------------------------------------------------------------
+		with st.expander( label='File Uploader', icon='📤', expanded=False, width='stretch' ):
+			uploaded_file = st.file_uploader( label='Upload File to File Search Store',
+				key='filestore_input',
+				help='Upload a file to the selected Gemini File Search Store.', )
+			
+			if st.button( label='Upload to Store', key='filestore_upload', icon='⬆️',
+					width='stretch',
+					disabled=uploaded_file is None or not bool( selected_store_id ) ):
+				try:
+					file_path = save_uploaded_storage_file( uploaded_file )
+					
+					result = call_file_search_method( [ 'upload_file', 'upload', 'add_file' ],
+						{ 'store_id': selected_store_id, 'id': selected_store_id,
+							'file_path': file_path, 'path': file_path,
+							'instruct': st.session_state.get( 'filestore_system_instructions',
+								'', ), }, )
+					
+					st.session_state[ 'filestore_upload_result' ] = normalize_storage_object(
+						result )
+					
+					st.success( 'File uploaded to the File Search Store.' )
+				except Exception as exc:
+					st.error( f'Upload failed: {exc}' )
+			
+			if st.session_state.get( 'filestore_upload_result' ):
+				with st.expander( label='Upload Result', icon='📄', expanded=False,
+						width='stretch' ):
+					render_storage_metadata( st.session_state[ 'filestore_upload_result' ] )
 		
 		# ------------------------------------------------------------------
 		# Expander — System Instructions
@@ -12461,247 +12765,28 @@ elif mode == 'File Search Stores':
 			
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
 			
-			# ----- Clear -----
+			# ----- Clear Instructions -----
 			with btn_c1:
 				st.button( label='Clear Instructions', key='clear_filestore_instructions',
-					width='stretch', on_click=clear_filestore_instructions, icon='🧹' )
+					width='stretch', on_click=clear_filestore_instructions, icon='🧹', )
 			
-			# ----- Convert -----
+			# ----- Convert Instructions -----
 			with btn_c2:
 				st.button( label='XML ↔️ Markdown', key='convert_filestore_instructions',
 					width='stretch', on_click=convert_filestore_system_instructions, )
 		
-		stores_left, stores_right = st.columns( [ 0.50, 0.50 ], border=True, )
+		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 		
 		# ------------------------------------------------------------------
-		# Store Management
+		# Expander — Vector Store Query
 		# ------------------------------------------------------------------
-		with stores_left:
-			st.subheader( 'Store Management' )
-			
-			# ----- Name -----
-			st.text_input( label='Store Name', key='filestore_name',
-				help='Name used when creating a Gemini File Search Store.', )
-			
-			# ----- ID -----
-			st.text_input( label='Store ID', key='filestore_manual_id',
-				help='Optional. Enter a File Search Store identifier directly.', )
-			
-			store_c1, store_c2 = st.columns( 2 )
-			
-			# ----- Create -----
-			with store_c1:
-				if st.button( label='Create Store', key='filestore_create', icon='➕',
-						width='stretch' ):
-					try:
-						result = call_file_search_method( [ 'create_store', 'create' ],
-							{ 'name': st.session_state.get( 'filestore_name', '', ),
-								'display_name': st.session_state.get( 'filestore_name', '', ),
-								'instruct': st.session_state.get( 'filestore_system_instructions',
-									'', ), }, )
-						
-						st.session_state[ 'filestore_metadata' ] = normalize_storage_object(
-							result )
-						
-						st.success( 'File Search Store created.' )
-					except Exception as exc:
-						st.error( f'Create failed: {exc}' )
-			
-			# ----- List Stores -----
-			with store_c2:
-				if st.button( label='List Stores', key='filestore_list', icon='📋',
-						width='stretch' ):
-					try:
-						result = call_file_search_method( [ 'list_stores', 'list' ] )
-						
-						rows = [ normalize_storage_object( item ) for item in
-							(getattr( result, 'data', result ) or [ ]) ]
-						
-						st.session_state[ 'filestore_table' ] = rows
-					except Exception as exc:
-						st.error( f'List failed: {exc}' )
-			
-			# ----- Data Editor -----
-			if st.session_state.get( 'filestore_table' ):
-				df_filestores = pd.DataFrame( st.session_state[ 'filestore_table' ] )
-				
-				st.dataframe( df_filestores, width='stretch', hide_index=True, )
-				
-				store_options = [ str( row.get( 'id', '' ) ) for row in
-					st.session_state[ 'filestore_table' ] if row.get( 'id' ) ]
-				
-				if store_options:
-					st.selectbox( label='Select Store', options=store_options, index=None,
-						key='filestore_selected_id', placeholder='Select Store', )
-			
-			selected_store_id = ( st.session_state.get( 'filestore_manual_id', '' ) or st.session_state.get(
-				'filestore_selected_id', '' ))
-			
-			store_c3, store_c4 = st.columns( 2 )
-			
-			# ----- Retrieve -----
-			with store_c3:
-				if st.button( label='Retrieve Store', key='filestore_retrieve', icon='🐕',
-						width='stretch', disabled=not bool( selected_store_id ) ):
-					try:
-						result = call_file_search_method( [ 'retrieve_store', 'retrieve', 'get' ],
-							{ 'store_id': selected_store_id, 'id': selected_store_id,
-								'name': selected_store_id, }, )
-						
-						st.session_state[ 'filestore_metadata' ] = normalize_storage_object(
-							result )
-					except Exception as exc:
-						st.error( f'Retrieve failed: {exc}' )
-			
-			# ----- Delete -----
-			with store_c4:
-				if st.button( label='Delete Store', key='filestore_delete', icon='🗑️',
-						width='stretch', disabled=not bool( selected_store_id ) ):
-					try:
-						call_file_search_method( [ 'delete_store', 'delete' ],
-							{ 'store_id': selected_store_id, 'id': selected_store_id,
-								'name': selected_store_id, }, )
-						
-						clear_filestore_outputs( )
-						st.success( 'File Search Store deleted.' )
-					except Exception as exc:
-						st.error( f'Delete failed: {exc}' )
-			
-			if st.session_state.get( 'filestore_metadata' ):
-				render_storage_metadata( st.session_state[ 'filestore_metadata' ] )
+		st.text_area( label='Query', key='filestore_query', height=120,
+			help='Search the selected Gemini File Search Store.', )
 		
+		query_c1, query_c2 = st.columns( 2 )
 		
-		# -----  Files & Search -----
-		with stores_right:
-			st.markdown( '##### Files and Search' )
-			model_options = getattr( searcher, 'model_options', [ ] ) or [ ]
-			if callable( model_options ):
-				model_options = model_options( )
-			
-			# ----- Model -----
-			if model_options:
-				st.selectbox( label='Model', options=list( model_options ), index=None,
-					key='filestore_model', placeholder='Select Model', )
-			
-			# ------------------------------------------------------------------
-			# Search Settings
-			# ------------------------------------------------------------------
-			with st.expander( label='Search Settings', icon='🎚️', expanded=False, width='stretch' ):
-				search_c1, search_c2, search_c3 = st.columns( 3, border=True, gap='xxsmall', )
-				
-				# ----- Temperature -----
-				with search_c1:
-					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
-						key='filestore_temperature', help=cfg.TEMPERATURE, )
-				
-				# ----- Top-P -----
-				with search_c2:
-					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
-						key='filestore_top_percent', help=cfg.TOP_P, )
-				
-				# ----- Max Tokens -----
-				with search_c3:
-					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
-						key='filestore_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, )
-				
-				search_c4, search_c5 = st.columns( 2, border=True, gap='xxsmall', )
-				
-				# ----- Frequency Penalty -----
-				with search_c4:
-					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						key='filestore_frequency_penalty', help=cfg.FREQUENCY_PENALTY, )
-				
-				# ----- Presence Penalty -----
-				with search_c5:
-					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						key='filestore_presence_penalty', help=cfg.PRESENCE_PENALTY, )
-				
-				format_options = getattr( searcher, 'format_options', [ ], ) or [ ]
-				if callable( format_options ):
-					format_options = format_options( )
-				
-				choice_options = getattr( searcher, 'choice_options', [ ], ) or [ ]
-				if callable( choice_options ):
-					choice_options = choice_options( )
-				
-				reasoning_options = getattr( searcher, 'reasoning_options', [ ], ) or [ ]
-				if callable( reasoning_options ):
-					reasoning_options = reasoning_options( )
-				
-				search_c6, search_c7, search_c8 = st.columns( 3, border=True, gap='xxsmall', )
-				
-				# ----- Response Format -----
-				with search_c6:
-					st.selectbox( label='Response Format', options=list( format_options ),
-						index=None, key='filestore_response_format', placeholder='Options', )
-				
-				# ----- Tool Choice -----
-				with search_c7:
-					st.selectbox( label='Tool Choice', options=list( choice_options ), index=None,
-						key='filestore_tool_choice', placeholder='Options', )
-				
-				# ----- Reasoning -----
-				with search_c8:
-					st.selectbox( label='Reasoning', options=list( reasoning_options ), index=None,
-						key='filestore_reasoning', placeholder='Options', )
-				
-				flag_c1, flag_c2, flag_c3 = st.columns( 3, border=True, gap='xxsmall', )
-				
-				# ----- Store -----
-				with flag_c1:
-					st.toggle( label='Store', key='filestore_store', help=cfg.STORE, )
-				
-				# ----- Stream -----
-				with flag_c2:
-					st.toggle( label='Stream', key='filestore_stream', help=cfg.STREAM, )
-				
-				# ----- Background -----
-				with flag_c3:
-					st.toggle( label='Background', key='filestore_background',
-						help=cfg.BACKGROUND_MODE, )
-				
-				# ----- Reset Button -----
-				if st.button( label='Reset', key='filestore_search_settings_reset',
-						width='stretch', con='🔄' ):
-					for key in [ 'filestore_temperature', 'filestore_top_percent',
-						'filestore_max_tokens', 'filestore_frequency_penalty',
-						'filestore_presence_penalty', 'filestore_response_format',
-						'filestore_tool_choice', 'filestore_reasoning', 'filestore_store',
-						'filestore_stream', 'filestore_background', ]:
-						if key in st.session_state:
-							del st.session_state[ key ]
-					
-					st.rerun( )
-			
-			# ----- File Upload -----
-			uploaded_file = st.file_uploader( label='Upload File', key='filestore_input',
-				help='Upload a file to the selected Gemini File Search Store.', )
-			
-			# ----- Upload to Store -----
-			if st.button( label='Upload to Store', key='filestore_upload', icon='⬆️',
-					width='stretch',
-					disabled=uploaded_file is None or not bool( selected_store_id ) ):
-				try:
-					file_path = save_uploaded_storage_file( uploaded_file )
-					
-					result = call_file_search_method( [ 'upload_file', 'upload', 'add_file' ],
-						{ 'store_id': selected_store_id, 'id': selected_store_id,
-							'file_path': file_path, 'path': file_path,
-							'instruct': st.session_state.get( 'filestore_system_instructions',
-								'', ), }, )
-					
-					st.session_state[ 'filestore_upload_result' ] = normalize_storage_object(
-						result )
-					
-					st.success( 'File uploaded to the File Search Store.' )
-				except Exception as exc:
-					st.error( f'Upload failed: {exc}' )
-			
-			# ----- Store Query -----
-			st.text_area( label='Query', key='filestore_query', height=120,
-				help='Search the selected Gemini File Search Store.', )
-			
-			# ----- Search Stor -----
+		# ------ Search -----
+		with query_c1:
 			if st.button( label='Search Store', key='filestore_search', icon='🔍', width='stretch',
 					disabled=not bool( selected_store_id ) or not bool(
 						st.session_state.get( 'filestore_query', '', ).strip( ) ) ):
@@ -12731,72 +12816,65 @@ elif mode == 'File Search Stores':
 					st.session_state[ 'filestore_results' ] = result
 				except Exception as exc:
 					st.error( f'Search failed: {exc}' )
-			
-			# ------------------------------------------------------------------
-			# Expander - Upload Result
-			# ------------------------------------------------------------------
-			if st.session_state.get( 'filestore_upload_result' ):
-				with st.expander( label='Upload Result', icon='📄', expanded=False,
-						width='stretch' ):
-					render_storage_metadata( st.session_state[ 'filestore_upload_result' ] )
-			
-			# ------------------------------------------------------------------
-			# Expander - Search Results
-			# ------------------------------------------------------------------
-			if st.session_state.get( 'filestore_results' ) is not None:
-				with st.expander( label='Search Results', icon='🔎', expanded=True,
-						width='stretch' ):
-					result = st.session_state[ 'filestore_results' ]
-					
-					if isinstance( result, str ):
-						st.markdown( result )
-					else:
-						st.json( normalize( result ) )
 		
-		# ----- Clear Outputs  -----
-		st.button( label='Clear Outputs', key='filestore_clear_outputs', icon='🧹',
-			width='stretch', on_click=clear_filestore_outputs, )
+		# ----- Clear Outputs -----
+		with query_c2:
+			st.button( label='Clear Outputs', key='filestore_clear_outputs', icon='🧹',
+				width='stretch', on_click=clear_filestore_outputs, )
+		
+		# ------------------------------------------------------------------
+		# Expander — Search Results
+		# ------------------------------------------------------------------
+		if st.session_state.get( 'filestore_results' ) is not None:
+			with st.expander( label='Search Results', icon='🔎', expanded=True, width='stretch' ):
+				result = st.session_state[ 'filestore_results' ]
+				
+				if isinstance( result, str ):
+					st.markdown( result )
+				else:
+					st.json( normalize( result ) )
 
 # ======================================================================================
 # GOOGLE CLOUD BUCKETS MODE
 # ======================================================================================
 elif mode == 'Google Cloud Buckets':
 	provider_name = st.session_state.get( 'provider', 'GPT' )
-	
 	if provider_name != 'Gemini':
 		st.warning( 'Google Cloud Buckets are available for Gemini / Google Cloud only.' )
 		st.stop( )
 	
 	buckets = get_cloud_buckets_module( provider_name )
 	
-	# ----- Google Cloud Bucket Utiliteis -----
+	# ----- Google Cloud Bucket Utilities -----
 	
 	def call_bucket_method( method_names: List[ str ],
 		kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
 		"""Call bucket method.
 		
 		Purpose:
-		    Performs the call_bucket_method workflow using the inputs supplied by the caller and
-			the current runtime configuration. The function keeps this behavior isolated so
-			related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Calls the first compatible Google Cloud Bucket wrapper method using the supplied
+		    provider arguments. The function resolves supported argument aliases before invoking
+		    the provider method.
 		
 		Args:
-		    method_names (List[str]): Method names value used by the operation.
-		    kwargs (Optional[Dict[str, Any]]): Kwargs value used by the operation.
+		    method_names (List[str]): Ordered provider method names to evaluate.
+		    kwargs (Optional[Dict[str, Any]]): Candidate arguments for the provider method.
 		
 		Returns:
-		    Any: Return value produced by the operation.
+		    Any: Result returned by the compatible provider method.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
 		try:
 			import inspect
 			
 			throw_if( 'method_names', method_names )
 			candidate_kwargs = kwargs or { }
+			
 			for method_name in method_names:
 				method = getattr( buckets, method_name, None )
+				
 				if not callable( method ):
 					continue
 				
@@ -12804,11 +12882,15 @@ elif mode == 'Google Cloud Buckets':
 				parameters = signature.parameters
 				accepted_names = set( parameters.keys( ) )
 				accepts_kwargs = any(
-					parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in
-						parameters.values( ) )
+					parameter.kind == inspect.Parameter.VAR_KEYWORD
+					for parameter in parameters.values( )
+				)
 				
-				clean_kwargs = { key: value for key, value in candidate_kwargs.items( ) if
-					value is not None and value != '' and value != [ ] }
+				clean_kwargs = {
+					key: value
+					for key, value in candidate_kwargs.items( )
+					if value is not None and value != '' and value != [ ]
+				}
 				
 				if 'bucket' in accepted_names and not clean_kwargs.get( 'bucket' ):
 					if clean_kwargs.get( 'bucket_name' ):
@@ -12836,15 +12918,27 @@ elif mode == 'Google Cloud Buckets':
 				if accepts_kwargs:
 					return method( **clean_kwargs )
 				
-				method_kwargs = { key: value for key, value in clean_kwargs.items( ) if
-					key in accepted_names }
+				method_kwargs = {
+					key: value
+					for key, value in clean_kwargs.items( )
+					if key in accepted_names
+				}
 				
-				required_names = [ name for name, parameter in parameters.items( ) if
-					parameter.default == inspect.Parameter.empty and parameter.kind in [
-						inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.KEYWORD_ONLY,
-					] ]
+				required_names = [
+					name
+					for name, parameter in parameters.items( )
+					if parameter.default == inspect.Parameter.empty
+					and parameter.kind in [
+						inspect.Parameter.POSITIONAL_OR_KEYWORD,
+						inspect.Parameter.KEYWORD_ONLY,
+					]
+				]
 				
-				missing_names = [ name for name in required_names if name not in method_kwargs ]
+				missing_names = [
+					name
+					for name in required_names
+					if name not in method_kwargs
+				]
 				
 				if missing_names:
 					continue
@@ -12853,12 +12947,16 @@ elif mode == 'Google Cloud Buckets':
 			
 			raise AttributeError(
 				f'Gemini CloudBuckets does not expose any compatible method from: '
-				f'{", ".join( method_names )}.' )
+				f'{", ".join( method_names )}.'
+			)
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'app'
 			exception.cause = 'Google Cloud Buckets'
-			exception.method = 'call_bucket_method( method_names, kwargs )'
+			exception.method = (
+				'call_bucket_method( method_names: List[ str ], '
+				'kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any'
+			)
 			Logger( ).write( exception )
 			raise exception
 	
@@ -12866,10 +12964,8 @@ elif mode == 'Google Cloud Buckets':
 		"""Clear bucket outputs.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a
-		    controlled manner. The function keeps cleanup behavior centralized so callers do not
-		    duplicate
-		    lifecycle logic.
+		    Clears Google Cloud Bucket operation results without changing bucket selections,
+		    request settings, uploaded files, queries, or system instructions.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a value.
@@ -12883,8 +12979,8 @@ elif mode == 'Google Cloud Buckets':
 		
 		Purpose:
 		    Clears the Google Cloud Buckets system-instruction text and selected prompt template
-		    without changing the selected category, bucket configuration, provider results, or
-		    uploaded files.
+		    without changing the selected category, bucket configuration, results, or uploaded
+		    files.
 		
 		Returns:
 		    None: This function performs its work through side effects and does not return a value.
@@ -12930,8 +13026,10 @@ elif mode == 'Google Cloud Buckets':
 		    Exception: Re-raises exceptions after recording them with the application logger.
 		"""
 		try:
-			load_prompt_template( prompt_id_key='bucket_prompt_id',
-				instructions_key='bucket_system_instructions', )
+			load_prompt_template(
+				prompt_id_key='bucket_prompt_id',
+				instructions_key='bucket_system_instructions',
+			)
 		except Exception as e:
 			ex = Error( e )
 			ex.module = 'app'
@@ -12940,9 +13038,63 @@ elif mode == 'Google Cloud Buckets':
 			Logger( ).write( ex )
 			raise ex
 	
-	for key, default_value in { 'bucket_table': [ ], 'bucket_metadata': { },
+	def reset_bucket_management_settings( ) -> None:
+		"""Reset bucket management settings.
+		
+		Purpose:
+		    Returns the Google Cloud Bucket management controls to their initial values without
+		    clearing provider resources, operation results, request settings, or instructions.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		"""
+		for key in [
+			'bucket_name',
+			'bucket_select',
+			'bucket_selected_id',
+			'bucket_selected_label',
+			'bucket_manual_id',
+		]:
+			if key in st.session_state:
+				del st.session_state[ key ]
+	
+	def reset_bucket_request_settings( ) -> None:
+		"""Reset bucket request settings.
+		
+		Purpose:
+		    Returns the Google Cloud Bucket model, inference, and response controls to their
+		    initial values without clearing bucket selections, queries, results, or instructions.
+		
+		Returns:
+		    None: This function performs its work through side effects and does not return a value.
+		"""
+		for key in [
+			'bucket_model',
+			'bucket_number',
+			'bucket_temperature',
+			'bucket_top_percent',
+			'bucket_max_tokens',
+			'bucket_frequency_penalty',
+			'bucket_presence_penalty',
+			'bucket_response_format',
+			'bucket_tool_choice',
+			'bucket_reasoning',
+			'bucket_store',
+			'bucket_stream',
+			'bucket_background',
+		]:
+			if key in st.session_state:
+				del st.session_state[ key ]
+	
+	# ------------------------------------------------------------------
+	# Mode State
+	# ------------------------------------------------------------------
+	for key, default_value in {
+		'bucket_table': [ ],
+		'bucket_metadata': { },
 		'bucket_upload_result': { }, }.items( ):
-		if key not in st.session_state or not isinstance( st.session_state.get( key ),
+		if key not in st.session_state or not isinstance(
+				st.session_state.get( key ),
 				type( default_value ) ):
 			st.session_state[ key ] = default_value
 	
@@ -12953,26 +13105,314 @@ elif mode == 'Google Cloud Buckets':
 		st.session_state[ 'bucket_manual_id' ] = ''
 	
 	# ------------------------------------------------------------------
-	# Main Chat UI
+	# Provider Options
+	# ------------------------------------------------------------------
+	model_options = getattr( buckets, 'model_options', [ ] ) or [ ]
+	if callable( model_options ):
+		model_options = model_options( )
+	
+	model_options = [ str( option )
+		for option in model_options
+		if str( option ).strip( ) ]
+	
+	format_options = getattr( buckets, 'format_options', [ ] ) or [ ]
+	
+	if callable( format_options ):
+		format_options = format_options( )
+	
+	format_options = [
+		str( option )
+		for option in format_options
+		if str( option ).strip( ) ]
+	
+	choice_options = getattr( buckets, 'choice_options', [ ] ) or [ ]
+	if callable( choice_options ):
+		choice_options = choice_options( )
+	
+	choice_options = [
+		str( option )
+		for option in choice_options
+		if str( option ).strip( ) ]
+	reasoning_options = getattr( buckets, 'reasoning_options', [ ] ) or [ ]
+	if callable( reasoning_options ):
+		reasoning_options = reasoning_options( )
+	
+	reasoning_options = [
+		str( option )
+		for option in reasoning_options
+		if str( option ).strip( )
+	]
+	
+	collections = getattr( buckets, 'collections', None )
+	bucket_options = list( collections.items( ) ) if isinstance( collections, dict ) else [ ]
+	bucket_option_labels = [
+		f'{name} — {bucket_id}'
+		for name, bucket_id in bucket_options
+	]
+	
+	if st.session_state.get( 'bucket_select' ) not in bucket_option_labels:
+		st.session_state[ 'bucket_select' ] = None
+	
+	selected_bucket_label = st.session_state.get( 'bucket_select' )
+	selected_bucket_id = ''
+	
+	for bucket_name, bucket_id in bucket_options:
+		if f'{bucket_name} — {bucket_id}' == selected_bucket_label:
+			selected_bucket_id = str( bucket_id )
+			break
+	
+	st.session_state[ 'bucket_selected_id' ] = selected_bucket_id
+	st.session_state[ 'bucket_selected_label' ] = selected_bucket_label or ''
+	target_bucket = (st.session_state.get( 'bucket_manual_id', '' ) or st.session_state.get(
+		'bucket_selected_id', '' ))
+	
+	# ------------------------------------------------------------------
+	# Main UI
 	# ------------------------------------------------------------------
 	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
+	
 	with center:
-		st.subheader( '🧊 Google Cloud Buckets', help=getattr( cfg, 'VECTORSTORES_API', '' ) )
+		st.subheader( '🧊 Google Cloud Buckets', help=getattr( cfg, 'VECTORSTORES_API', '' ), )
 		st.divider( )
-		
 		project_id = cfg.GOOGLE_CLOUD_PROJECT_ID
 		location = cfg.GOOGLE_CLOUD_LOCATION
-		
 		st.caption( f'Project: {project_id or "Not configured"} | '
 		            f'Location: {location or "Not configured"}' )
+		
+		# ------------------------------------------------------------------
+		# Expander — Mind Controls
+		# ------------------------------------------------------------------
+		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
+			# ------------------------------------------------------------------
+			# Expander — Bucket Management
+			# ------------------------------------------------------------------
+			with st.expander( label='Bucket Management', icon='🪣', expanded=False, width='stretch' ):
+				management_c1, management_c2, management_c3 = st.columns( [ 0.34, 0.33, 0.33 ],
+					border=True, gap='xxsmall', )
+				
+				# ----- New Bucket Name -----
+				with management_c1:
+					st.text_input( label='New Bucket Name', key='bucket_name', width='stretch',
+						help='Name used when creating a new Google Cloud Bucket.',
+						placeholder='Enter bucket name', )
+				
+				# ----- Configured Bucket -----
+				with management_c2:
+					if bucket_option_labels:
+						st.selectbox( label='Configured Bucket', options=bucket_option_labels,
+							key='bucket_select', index=None, placeholder='Options',
+							help='Select a Google Cloud Bucket exposed by the provider wrapper.', )
+					else:
+						st.selectbox( label='Configured Bucket', options=[ ], key='bucket_select',
+							index=None, placeholder='No configured buckets',
+							help='No Google Cloud Bucket collections are exposed by the wrapper.',
+							disabled=True, )
+				
+				# ----- Manual Bucket ID -----
+				with management_c3:
+					st.text_input( label='Manual Bucket ID / Name', key='bucket_manual_id',
+						width='stretch',
+						help='Optional. Enter a bucket identifier or name directly.',
+						placeholder='Enter bucket ID or name', )
+				
+				lifecycle_c1, lifecycle_c2, lifecycle_c3 = st.columns( [ 0.34, 0.33, 0.33 ] )
+				
+				# ----- Create Bucket -----
+				with lifecycle_c1:
+					if st.button( label='Create Bucket', key='create_bucket', width='stretch',
+							icon='➕' ):
+						with st.spinner( 'Creating cloud bucket…' ):
+							try:
+								name = st.session_state.get( 'bucket_name', '' ).strip( )
+								
+								if not name:
+									st.warning( 'Enter a Cloud Bucket name.' )
+								else:
+									result = call_bucket_method( [ 'create', 'create_bucket' ],
+										{ 'name': name, 'bucket_name': name, 'project_id': project_id,
+											'location': location, }, )
+									
+									st.session_state[ 'bucket_metadata' ] = normalize_storage_object(
+										result )
+									
+									st.success( f'Created Cloud Bucket: {name}' )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'Create bucket failed: {err.info}' )
+				
+				# ----- Retrieve Bucket -----
+				with lifecycle_c2:
+					if st.button( label='Retrieve Bucket', key='retrieve_bucket', width='stretch',
+							icon='🔎' ):
+						with st.spinner( 'Retrieving cloud bucket…' ):
+							try:
+								if not target_bucket:
+									st.warning( 'Select or enter a Cloud Bucket ID.' )
+								else:
+									result = call_bucket_method(
+										[ 'retrieve', 'retrieve_bucket', 'get' ],
+										{ 'store_id': target_bucket, 'id': target_bucket,
+											'name': target_bucket, 'bucket_name': target_bucket,
+											'project_id': project_id, 'location': location, }, )
+									
+									st.session_state[ 'bucket_metadata' ] = normalize_storage_object(
+										result )
+									
+									st.success( 'Cloud Bucket metadata retrieved.' )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'Retrieve bucket failed: {err.info}' )
+				
+				# ----- Delete Bucket -----
+				with lifecycle_c3:
+					if st.button( label='Delete Bucket', key='delete_bucket', width='stretch',
+							icon='❌' ):
+						with st.spinner( 'Deleting cloud bucket…' ):
+							try:
+								if not target_bucket:
+									st.warning( 'Select or enter a Cloud Bucket ID.' )
+								else:
+									result = call_bucket_method(
+										[ 'delete', 'delete_bucket', 'remove' ],
+										{ 'store_id': target_bucket, 'id': target_bucket,
+											'name': target_bucket, 'bucket_name': target_bucket,
+											'project_id': project_id, 'location': location, }, )
+									
+									st.session_state[ 'bucket_metadata' ] = normalize_storage_object(
+										result )
+									
+									st.success( 'Delete request completed.' )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'Delete bucket failed: {err.info}' )
+				
+				# ----- Reset Button -----
+				st.button( label='Reset', key='bucket_management_reset', width='stretch',
+					icon='🔄', on_click=reset_bucket_management_settings, )
+			
+			# ------------------------------------------------------------------
+			# File Upload
+			# ------------------------------------------------------------------
+			with st.expander( label='File Uploader', expanded=False, icon='📤' ):
+				# ----- File Uploader -----
+				uploaded_file = st.file_uploader( label='Upload File to Cloud Bucket',
+					type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv', ],
+					key='bucket_uploader',
+					help='Select a local file to upload to the active Google Cloud Bucket.', )
+			
+				# ----- Upload Button -----
+				if st.button( label='Upload File', key='upload_bucket_file', width='stretch',
+						icon='⬆️' ):
+					with st.spinner( 'Uploading file…' ):
+						try:
+							if uploaded_file is None:
+								st.warning( 'Select a file first.' )
+							elif not target_bucket:
+								st.warning( 'Select or enter a Cloud Bucket first.' )
+							else:
+								path = save_uploaded_storage_file( uploaded_file )
+								
+								result = call_bucket_method(
+									[ 'upload_file', 'upload', 'files_upload' ],
+									{ 'path': path, 'file_path': path, 'bucket_name': target_bucket,
+										'store_id': target_bucket, 'id': target_bucket,
+										'project_id': project_id, 'location': location, }, )
+								
+								st.session_state[ 'bucket_upload_result' ] = normalize_storage_object(
+									result )
+								
+								st.success( 'Upload request completed.' )
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'Bucket upload failed: {err.info}' )
+		
+			# ------------------------------------------------------------------
+			# Expander — Request Settings
+			# ------------------------------------------------------------------
+			with st.expander( label='Request Settings', icon='⚙️', expanded=False,
+					width='stretch' ):
+				request_c1, request_c2, request_c3, request_c4 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+				
+				# ----- Model -----
+				with request_c1:
+					st.selectbox( label='Model', options=model_options, index=None,
+						key='bucket_model', placeholder='Options',
+						help='Optional model used for bucket-backed queries.', )
+				
+				# ----- Responses -----
+				with request_c2:
+					st.slider( label='Responses', min_value=0, max_value=8, step=1,
+						key='bucket_number',
+						help='Optional number of candidate responses when supported.', )
+				
+				# ----- Max Tokens -----
+				with request_c3:
+					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+						key='bucket_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, )
+				
+				# ----- Response Format -----
+				with request_c4:
+					st.selectbox( label='Response Format', options=format_options, index=None,
+						key='bucket_response_format', placeholder='Options',
+						help='Optional response format when supported.', )
+				
+				request_c5, request_c6, request_c7, request_c8 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+				
+				# ----- Temperature -----
+				with request_c5:
+					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
+						key='bucket_temperature', help=cfg.TEMPERATURE, )
+				
+				# ----- Top-P -----
+				with request_c6:
+					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
+						key='bucket_top_percent', help=cfg.TOP_P, )
+				
+				# ----- Frequency Penalty -----
+				with request_c7:
+					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='bucket_frequency_penalty', help=cfg.FREQUENCY_PENALTY, )
+				
+				# ----- Presence Penalty -----
+				with request_c8:
+					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='bucket_presence_penalty', help=cfg.PRESENCE_PENALTY, )
+				
+				request_c9, request_c10, request_c11, request_c12 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+				
+				# ----- Tool Choice -----
+				with request_c9:
+					st.selectbox( label='Tool Choice', options=choice_options, index=None,
+						key='bucket_tool_choice', placeholder='Options', help=cfg.CHOICE, )
+				
+				# ----- Reasoning -----
+				with request_c10:
+					st.selectbox( label='Reasoning', options=reasoning_options, index=None,
+						key='bucket_reasoning', placeholder='Options', help=cfg.REASONING, )
+				
+				# ----- Store -----
+				with request_c11:
+					st.toggle( label='Store', key='bucket_store', help=cfg.STORE, )
+				
+				# ----- Stream -----
+				with request_c12:
+					st.toggle( label='Stream', key='bucket_stream', help=cfg.STREAM, )
+				
+				# ----- Background -----
+				st.toggle( label='Background', key='bucket_background', help=cfg.BACKGROUND_MODE, )
+				
+				st.button( label='Reset', key='bucket_request_settings_reset', width='stretch',
+					icon='🔄', on_click=reset_bucket_request_settings, )
 		
 		# ------------------------------------------------------------------
 		# Expander — System Instructions
 		# ------------------------------------------------------------------
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch' ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
-			
-			bucket_prompt_categories = fetch_prompt_categories( 'Google Cloud Buckets' )
+			bucket_prompt_categories = fetch_prompt_categories( 'Cloud Buckets' )
 			current_bucket_category = st.session_state.get( 'bucket_prompt_category' )
 			if current_bucket_category not in bucket_prompt_categories:
 				st.session_state[ 'bucket_prompt_category' ] = None
@@ -12988,7 +13428,7 @@ elif mode == 'Google Cloud Buckets':
 			# ----- Instruction Text -----
 			with in_left:
 				st.text_area( label='Enter Text', height=140, width='stretch',
-					key='bucket_system_instructions', help=cfg.SYSTEM_INSTRUCTIONS )
+					key='bucket_system_instructions', help=cfg.SYSTEM_INSTRUCTIONS, )
 			
 			# ----- Template Selection -----
 			with in_right:
@@ -13012,304 +13452,76 @@ elif mode == 'Google Cloud Buckets':
 			# ----- Clear Button -----
 			with btn_c1:
 				st.button( label='Clear Instructions', key='clear_bucket_instructions',
-					width='stretch', on_click=clear_bucket_instructions, icon='🧹' )
+					width='stretch', on_click=clear_bucket_instructions, icon='🧹', )
 			
-			# ----- Convert Button ----
+			# ----- Convert Button -----
 			with btn_c2:
 				st.button( label='XML ↔️ Markdown', key='convert_bucket_instructions',
 					width='stretch', on_click=convert_bucket_system_instructions, )
-		
-		buckets_left, buckets_right = st.columns( [ 0.50, 0.50 ], border=True, )
+	
+		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
 		
 		# ------------------------------------------------------------------
-		# Expander — Cloud Bucket Create
+		# Bucket Query
 		# ------------------------------------------------------------------
-		with buckets_left:
-			with st.expander( label='Create', expanded=True ):
-				st.text_input( label='New Cloud Bucket Name', key='bucket_name', width='stretch' )
-				
-				# ----- Create Bucket -----
-				if st.button( 'Create Cloud Bucket', key='create_bucket', width='stretch', icon='➕' ):
-					with st.spinner( 'Creating cloud bucket…' ):
-						try:
-							name = st.session_state.get( 'bucket_name', '' ).strip( )
-							if not name:
-								st.warning( 'Enter a Cloud Bucket name.' )
-							else:
-								result = call_bucket_method( [ 'create', 'create_bucket' ],
-									{ 'name': name, 'bucket_name': name, 'project_id': project_id,
-										'location': location } )
-								st.session_state[ 'bucket_metadata' ] = normalize_storage_object(
-									result )
-								st.success( f'Created Cloud Bucket: {name}' )
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'Create bucket failed: {err.info}' )
-			
-			# ------------------------------------------------------------------
-			# Expander — Retreive / Delete
-			# ------------------------------------------------------------------
-			with st.expander( label='Retrieve / Delete', expanded=True ):
-				collections = getattr( buckets, 'collections', None )
-				options = list( collections.items( ) ) if isinstance( collections, dict ) else [ ]
-				option_labels = [ f'{name} — {bucket_id}' for name, bucket_id in options ]
-				
-				# ------ Select ------
-				if option_labels:
-					selected_label = st.selectbox( label='Select Cloud Bucket',
-						options=option_labels, key='bucket_select', index=None,
-						placeholder='Options' )
-					
-					selected_id = ''
-					for name, bucket_id in options:
-						if f'{name} — {bucket_id}' == selected_label:
-							selected_id = bucket_id
-							break
-					
-					st.session_state[ 'bucket_selected_id' ] = selected_id
-				else:
-					st.info( 'No configured Cloud Bucket collections found on the wrapper.' )
-				
-				# ------ ID ------
-				st.text_input( label='Manual Cloud Bucket ID / Name', key='bucket_manual_id',
-					width='stretch' )
-				
-				selected_bucket_id = st.session_state.get( 'bucket_selected_id',
-					'' ) or st.session_state.get( 'bucket_manual_id', '' )
-				
-				bucket_c1, bucket_c2 = st.columns( [ 0.50, 0.50 ] )
-				
-				# ------ Retrieve ------
-				with bucket_c1:
-					if st.button( 'Retrieve Cloud Bucket', key='retrieve_bucket',
-							width='stretch', icon='🐕' ):
-						with st.spinner( 'Retrieving cloud bucket…' ):
-							try:
-								if not selected_bucket_id:
-									st.warning( 'Select or enter a Cloud Bucket ID.' )
-								else:
-									result = call_bucket_method(
-										[ 'retrieve', 'retrieve_bucket', 'get' ],
-										{ 'store_id': selected_bucket_id, 'id': selected_bucket_id,
-											'name': selected_bucket_id,
-											'bucket_name': selected_bucket_id,
-											'project_id': project_id, 'location': location } )
-									st.session_state[ 'bucket_metadata' ] = normalize_storage_object( result )
-									
-									st.success( 'Cloud Bucket metadata retrieved.' )
-							except Exception as exc:
-								err = Error( exc )
-								st.error( f'Retrieve bucket failed: {err.info}' )
-				
-				# ------ Delete ------
-				with bucket_c2:
-					if st.button( 'Delete Cloud Bucket', key='delete_bucket',
-							width='stretch', icon='❌' ):
-						with st.spinner( 'Deleting cloud bucket…' ):
-							try:
-								if not selected_bucket_id:
-									st.warning( 'Select or enter a Cloud Bucket ID.' )
-								else:
-									result = call_bucket_method(
-										[ 'delete', 'delete_bucket', 'remove' ],
-										{ 'store_id': selected_bucket_id, 'id': selected_bucket_id,
-											'name': selected_bucket_id,
-											'bucket_name': selected_bucket_id,
-											'project_id': project_id, 'location': location } )
-									st.session_state[
-										'bucket_metadata' ] = normalize_storage_object( result )
-									
-									st.success( 'Delete request completed.' )
-							except Exception as exc:
-								err = Error( exc )
-								st.error( f'Delete bucket failed: {err.info}' )
+		st.text_area( label='Query', key='bucket_query', height=120,
+			help=('Ask a question using content stored in the selected '
+			      'Google Cloud Bucket.'), )
 		
-		with buckets_right:
-			st.markdown( '##### Upload' )
-			uploaded_file = st.file_uploader( label='Upload File to Cloud Bucket',
-				type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv' ],
-				key='bucket_uploader' )
-			
-			target_bucket = st.session_state.get( 'bucket_selected_id',
-				'' ) or st.session_state.get( 'bucket_manual_id', '' )
-			
-			# ------ Upload  ------
-			if st.button( 'Upload File', key='upload_bucket_file', width='stretch', icon='📤' ):
-				with st.spinner( 'Uploading file…' ):
+		qry_c1, qry_c2 = st.columns( 2 )
+		
+		with qry_c1:
+			# ----- Query Button -----
+			if st.button( label='Query Cloud Bucket', key='query_bucket', icon='🔍', width='stretch',
+					disabled=not bool( target_bucket ) or not bool(
+						st.session_state.get( 'bucket_query', '' ).strip( ) ) ):
+				
+				with st.spinner( 'Querying cloud bucket…' ):
 					try:
-						if uploaded_file is None:
-							st.warning( 'Select a file first.' )
-						elif not target_bucket:
-							st.warning( 'Select or enter a Cloud Bucket first.' )
-						else:
-							path = save_uploaded_storage_file( uploaded_file )
-							result = call_bucket_method(
-								[ 'upload_file', 'upload', 'files_upload' ],
-								{ 'path': path, 'file_path': path, 'bucket_name': target_bucket,
-									'store_id': target_bucket, 'id': target_bucket,
-									'project_id': project_id, 'location': location } )
-							st.session_state[ 'bucket_upload_result' ] = normalize_storage_object(
-								result )
-							
-							st.success( 'Upload request completed.' )
+						query = st.session_state.get( 'bucket_query', '', ).strip( )
+						
+						result = call_bucket_method( [ 'search', 'query', 'ask', 'generate_text' ],
+							{ 'bucket': target_bucket, 'bucket_name': target_bucket,
+								'store_id': target_bucket, 'id': target_bucket, 'query': query,
+								'prompt': query,
+								'model': st.session_state.get( 'bucket_model', '', ),
+								'number': st.session_state.get( 'bucket_number', 0, ),
+								'temperature': st.session_state.get( 'bucket_temperature', 0.0, ),
+								'top_p': st.session_state.get( 'bucket_top_percent', 0.0, ),
+								'max_tokens': st.session_state.get( 'bucket_max_tokens', 0, ),
+								'frequency': st.session_state.get( 'bucket_frequency_penalty',
+									0.0, ),
+								'presence': st.session_state.get( 'bucket_presence_penalty',
+									0.0, ),
+								'response_format': st.session_state.get( 'bucket_response_format',
+									'', ),
+								'tool_choice': st.session_state.get( 'bucket_tool_choice', '', ),
+								'reasoning': st.session_state.get( 'bucket_reasoning', '', ),
+								'background': st.session_state.get( 'bucket_background', False, ),
+								'store': st.session_state.get( 'bucket_store', False, ),
+								'stream': st.session_state.get( 'bucket_stream', False, ),
+								'instruct': st.session_state.get( 'bucket_system_instructions',
+									'', ), 'project_id': project_id, 'location': location, }, )
+						
+						st.session_state[ 'bucket_results' ] = result
 					except Exception as exc:
 						err = Error( exc )
-						st.error( f'Bucket upload failed: {err.info}' )
+						st.error( f'Bucket query failed: {err.info}' )
 			
-			# ------ Clear Outputs ------
-			if st.button( 'Clear Outputs', key='clear_bucket_outputs', width='stretch',
+		if st.session_state.get( 'bucket_results' ) is not None:
+			with st.expander( label='Query Results', icon='📄', expanded=True, width='stretch' ):
+				result = st.session_state[ 'bucket_results' ]
+				
+				if isinstance( result, str ):
+					st.markdown( result )
+				else:
+					st.json( normalize( result ) )
+	
+		with qry_c2:
+			# ----- Clear Outputs -----
+			if st.button( label='Clear Outputs', key='clear_bucket_outputs', width='stretch',
 					on_click=clear_bucket_outputs, icon='🧹' ):
 				st.rerun( )
-			
-			st.caption( 'Upload Result' )
-			render_storage_metadata( st.session_state.get( 'bucket_upload_result', { } ) )
-			
-			# ------------------------------------------------------------------
-			# Expander - Cloud Bucket Query
-			# ------------------------------------------------------------------
-			with st.expander( label='Query', icon='🔎', expanded=True, width='stretch' ):
-				model_options = getattr( buckets, 'model_options', [ ] ) or [ ]
-				if callable( model_options ):
-					model_options = model_options( )
-				
-				if model_options:
-					st.selectbox( label='Model', options=list( model_options ), index=None,
-						key='bucket_model', placeholder='Select Model' )
-				
-				st.text_area( label='Query', key='bucket_query', height=120,
-					help='Ask a question using content stored in the selected Google Cloud '
-					     'Bucket.' )
-				
-				query_c1, query_c2, query_c3, query_c4 = st.columns( 4 )
-				
-				# ----- Responses ------
-				with query_c1:
-					st.slider( label='Responses', min_value=0, max_value=8, step=1,
-						key='bucket_number'  )
-				
-				# ----- Temperature ------
-				with query_c2:
-					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
-						key='bucket_temperature', help=cfg.TEMPERATURE )
-				
-				# ----- TOP-P ------
-				with query_c3:
-					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
-						key='bucket_top_percent', help=cfg.TOP_P )
-				
-				# ----- Max Tokens ------
-				with query_c4:
-					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
-						key='bucket_max_tokens', help=cfg.MAX_OUTPUT_TOKENS )
-				
-				query_c5, query_c6 = st.columns( 2 )
-				
-				# ----- Freaquency ------
-				with query_c5:
-					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						key='bucket_frequency_penalty', help=cfg.FREQUENCY_PENALTY )
-				
-				# ----- Presence ------
-				with query_c6:
-					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						key='bucket_presence_penalty', help=cfg.PRESENCE_PENALTY )
-				
-				format_options = getattr( buckets, 'format_options', [ ] ) or [ ]
-				if callable( format_options ):
-					format_options = format_options( )
-				
-				choice_options = getattr( buckets, 'choice_options', [ ] ) or [ ]
-				if callable( choice_options ):
-					choice_options = choice_options( )
-				
-				reasoning_options = getattr( buckets, 'reasoning_options', [ ] ) or [ ]
-				if callable( reasoning_options ):
-					reasoning_options = reasoning_options( )
-				
-				query_c7, query_c8, query_c9 = st.columns( 3 )
-				
-				# ----- FORMAT ------
-				with query_c7:
-					st.selectbox( label='Response Format', options=list( format_options ),
-						index=None, key='bucket_response_format', placeholder='Options' )
-				
-				# ----- Choice ------
-				with query_c8:
-					st.selectbox( label='Tool Choice', options=list( choice_options ), index=None,
-						key='bucket_tool_choice', placeholder='Options', help=cfg.CHOICE )
-				
-				# ----- Reasoning  ------
-				with query_c9:
-					st.selectbox( label='Reasoning', options=list( reasoning_options ), index=None,
-						key='bucket_reasoning', placeholder='Options', help=cfg.REASONING )
-				
-				query_c10, query_c11, query_c12 = st.columns( 3 )
-				
-				# ----- Store ------
-				with query_c10:
-					st.toggle( label='Store', key='bucket_store', help=cfg.STORE )
-				
-				# ----- Stream ------
-				with query_c11:
-					st.toggle( label='Stream', key='bucket_stream', help=cfg.STREAM )
-				
-				# ----- Background ------
-				with query_c12:
-					st.toggle( label='Background', key='bucket_background', help=cfg.BACKGROUND_MODE )
-				
-				# ----- Query ------
-				if st.button( label='Query Cloud Bucket', key='query_bucket', icon='🔍',
-						width='stretch', disabled=not bool( target_bucket ) or not bool(
-							st.session_state.get( 'bucket_query', '' ).strip( ) ) ):
-					
-					with st.spinner( 'Querying cloud bucket…' ):
-						try:
-							query = st.session_state.get( 'bucket_query', '' ).strip( )
-							result = call_bucket_method(
-								[ 'search', 'query', 'ask', 'generate_text' ],
-								{ 'bucket': target_bucket, 'bucket_name': target_bucket,
-									'store_id': target_bucket, 'id': target_bucket, 'query': query,
-									'prompt': query,
-									'model': st.session_state.get( 'bucket_model', '' ),
-									'number': st.session_state.get( 'bucket_number', 0 ),
-									'temperature': st.session_state.get( 'bucket_temperature',
-										0.0 ),
-									'top_p': st.session_state.get( 'bucket_top_percent', 0.0 ),
-									'max_tokens': st.session_state.get( 'bucket_max_tokens', 0 ),
-									'frequency': st.session_state.get( 'bucket_frequency_penalty',
-										0.0 ),
-									'presence': st.session_state.get( 'bucket_presence_penalty',
-										0.0 ), 'response_format': st.session_state.get(
-									'bucket_response_format', '' ),
-									'tool_choice': st.session_state.get( 'bucket_tool_choice',
-										'' ),
-									'reasoning': st.session_state.get( 'bucket_reasoning', '' ),
-									'background': st.session_state.get( 'bucket_background',
-										False ),
-									'store': st.session_state.get( 'bucket_store', False ),
-									'stream': st.session_state.get( 'bucket_stream', False ),
-									'instruct': st.session_state.get( 'bucket_system_instructions',
-										'' ), 'project_id': project_id, 'location': location, } )
-							st.session_state[ 'bucket_results' ] = result
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'Bucket query failed: {err.info}' )
-				
-				# ------------------------------------------------------------------
-				# Expander - Results
-				# ------------------------------------------------------------------
-				if st.session_state.get( 'bucket_results' ) is not None:
-					with st.expander( label='Query Results', icon='📄', expanded=True,
-							width='stretch' ):
-						result = st.session_state[ 'bucket_results' ]
-						if isinstance( result, str ):
-							st.markdown( result )
-						else:
-							st.json( normalize( result ) )
-		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
-		st.markdown( '##### Cloud Bucket Metadata' )
-		render_storage_metadata( st.session_state.get( 'bucket_metadata', { } ) )
 
 # ======================================================================================
 # PROMPT ENGINEERING MODE
