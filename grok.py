@@ -1575,6 +1575,21 @@ class Files( Grok ):
 				'code_execution',
 		]
 	
+	@property
+	def include_options( self ) -> List[ str ] | None:
+		"""Include options.
+		
+		Purpose:
+		    Returns normalized information for the Chat component. The method provides a stable view of
+		    provider capabilities, stored state, or response metadata so UI controls and downstream logic
+		    can consume it consistently.
+		
+		Returns:
+		    List[str] | None: Return value produced by the operation."""
+		return [
+				'verbose_streaming',
+		]
+	
 	def upload( self, filepath: str = None, filename: str = None, purpose: str = 'assistants',
 			file_path: str = None, name: str = None, expires_after: int = None,
 			**kwargs: Any ) -> Dict[ str, Any ]:

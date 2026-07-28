@@ -3553,6 +3553,49 @@ class Files( GPT ):
 			'web_search_call.action.sources', 'code_interpreter_call.outputs',
 			'reasoning.encrypted_content', 'message.output_text.logprobs', ]
 	
+	@property
+	def reasoning_options( self ) -> List[ str ] | None:
+		"""Get reasoning options.
+		
+		Purpose:
+			Returns the reasoning options exposed by the Chat wrapper. The property centralizes UI
+			option values and keeps application selectors aligned with the provider-specific
+			implementation.
+		
+		Returns:
+			Available option values exposed by the provider wrapper.
+		"""
+		return [ 'none', 'minimal', 'low', 'medium', 'high', 'xhigh', ]
+	
+	@property
+	def choice_options( self ) -> List[ str ] | None:
+		"""Get choice options.
+		
+		Purpose:
+			Returns the choice options exposed by the Chat wrapper. The property centralizes UI
+			option values and keeps application selectors aligned with the provider-specific
+			implementation.
+		
+		Returns:
+			Available option values exposed by the provider wrapper.
+		"""
+		return [ 'auto', 'required', 'none', ]
+	
+	@property
+	def tool_options( self ) -> List[ str ] | None:
+		"""Get tool options.
+		
+		Purpose:
+			Returns the tool options exposed by the Chat wrapper. The property centralizes UI
+			option
+			values and keeps application selectors aligned with the provider-specific
+			implementation.
+		
+		Returns:
+			Available option values exposed by the provider wrapper.
+		"""
+		return [ 'web_search', 'file_search', ]
+	
 	def validate_file_id( self, id: str=None ) -> str:
 		"""Validate file id.
 		
@@ -3959,7 +4002,6 @@ class Files( GPT ):
 				str ) and prompt.strip( ) else 'Summarize the selected file content.'
 			self.model = model
 			content = self.extract( self.file_id )
-			
 			if isinstance( content, bytes ):
 				try:
 					content_text = content.decode( 'utf-8' )
