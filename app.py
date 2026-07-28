@@ -8335,12 +8335,12 @@ elif mode == 'Document Q&A':
 		# Expander — DocQ&A LLM Configuration (Grok)
 		# ------------------------------------------------------------------
 		if provider_name == 'Grok':
-			with st.expander( label='LLM Configuration', icon='🧠', expanded=False,
+			with st.expander( label='Mind Controls', icon='🧠', expanded=False,
 					width='stretch' ):
 				# ------------------------------------------------------------------
 				# Expander - DocQ&A Model (Grok)
 				# ------------------------------------------------------------------
-				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
+				with st.expander( label='LLM Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
 						border=True, gap='medium' )
 					
@@ -8604,12 +8604,12 @@ elif mode == 'Document Q&A':
 		# Expander — DocQ&A LLM Configuration (Gemini)
 		# ------------------------------------------------------------------
 		elif provider_name == 'Gemini':
-			with st.expander( label='LLM Configuration', icon='🧠', expanded=False,
+			with st.expander( label='Mind Controls', icon='🧠', expanded=False,
 					width='stretch' ):
 				# ------------------------------------------------------------------
 				# Expander — Model Settings (Gemini)
 				# ------------------------------------------------------------------
-				with st.expander( label='Model Settings', expanded=False, width='stretch' ):
+				with st.expander( label='LLM Settings', expanded=False, width='stretch' ):
 					llm_c1, llm_c2, llm_c3, llm_c4, llm_c5 = st.columns(
 						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
 					
@@ -9160,7 +9160,7 @@ elif mode == 'Document Q&A':
 		# ------------------------------------------------------------------
 		# Expander —  Document Uploader
 		# ------------------------------------------------------------------
-		with st.expander( label='Documnet Loader', width='stretch', expanded=True, icon='📤' ):
+		with st.expander( label='Documnet Loader', width='stretch', expanded=False, icon='📤' ):
 			doc_left, doc_right = st.columns( [ 0.2, 0.8 ], border=True )
 			# ----- Document Loader -----
 			with doc_left:
