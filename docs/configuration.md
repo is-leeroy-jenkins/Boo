@@ -1,10 +1,5 @@
 # Configuration
 
-## Purpose
-
-This page documents the configuration model for the Boo application. It explains how local settings,
-provider credentials, runtime defaults, model options, and documentation settings should be managed
-for development and demonstration deployments.
 
 Boo is designed as a multi-provider Streamlit application. Configuration should therefore remain
 explicit, predictable, and easy to audit. Provider keys, model names, file paths, feature flags, and
@@ -30,25 +25,25 @@ errors should occur only when the user selects a workflow that requires the miss
 
 A typical Boo repository uses the following configuration files:
 
-| File | Purpose |
-| --- | --- |
-| `config.py` | Central Python configuration constants used by the application and provider wrappers. |
-| `.env` | Optional local environment-variable file for development. Do not commit this file. |
+| File                      | Purpose                                                                                                |
+|---------------------------|--------------------------------------------------------------------------------------------------------|
+| `config.py`               | Central Python configuration constants used by the application and provider wrappers.                  |
+| `.env`                    | Optional local environment-variable file for development. Do not commit this file.                     |
 | `.streamlit/secrets.toml` | Optional Streamlit secrets file for local or hosted Streamlit deployments. Do not commit real secrets. |
-| `requirements.txt` | Runtime dependencies for the Streamlit application and provider wrappers. |
-| `requirements-docs.txt` | Documentation dependencies for MkDocs and mkdocstrings. |
-| `mkdocs.yml` | Documentation site navigation, theme, plugin, and mkdocstrings configuration. |
+| `requirements.txt`        | Runtime dependencies for the Streamlit application and provider wrappers.                              |
+| `requirements-docs.txt`   | Documentation dependencies for MkDocs and mkdocstrings.                                                |
+| `mkdocs.yml`              | Documentation site navigation, theme, plugin, and mkdocstrings configuration.                          |
 
 ## Provider Credentials
 
 Boo supports provider-backed workflows through OpenAI GPT, Google Gemini, and xAI Grok wrappers.
 Each provider should have its own credential variable.
 
-| Provider | Environment Variable | Typical Use |
-| --- | --- | --- |
-| OpenAI | `OPENAI_API_KEY` | GPT chat, image, audio, embeddings, files, and vector stores. |
-| Google Gemini | `GEMINI_API_KEY` | Gemini text, image, file, and grounded generation workflows. |
-| xAI Grok | `XAI_API_KEY` | Grok chat, image, embeddings, files, and vector-store workflows. |
+| Provider       | Environment Variable | Typical Use                                                          |
+|----------------|----------------------|----------------------------------------------------------------------|
+| OpenAI         | `OPENAI_API_KEY`     | GPT chat, image, audio, embeddings, files, and vector stores.        |
+| Google Gemini  | `GEMINI_API_KEY`     | Gemini text, image, file, and grounded generation workflows.         |
+| xAI Grok       | `XAI_API_KEY`        | Grok chat, image, embeddings, files, and vector-store workflows.     |
 | xAI Management | `XAI_MANAGEMENT_KEY` | Optional management or administrative xAI workflows, if implemented. |
 
 For PowerShell development, set keys before launching Streamlit:
@@ -123,11 +118,11 @@ application's provider wrapper classes.
 
 Provider wrappers should follow a consistent configuration contract:
 
-| Wrapper | Required Configuration | Optional Configuration |
-| --- | --- | --- |
-| `gpt.py` | `OPENAI_API_KEY` | Default model, image size, embedding model, vector-store defaults. |
-| `gemini.py` | `GEMINI_API_KEY` | Default model, grounding options, file-search defaults. |
-| `grok.py` | `XAI_API_KEY` | `XAI_MANAGEMENT_KEY`, default model, collection mapping. |
+| Wrapper     | Required Configuration | Optional Configuration                                             |
+|-------------|------------------------|--------------------------------------------------------------------|
+| `gpt.py`    | `OPENAI_API_KEY`       | Default model, image size, embedding model, vector-store defaults. |
+| `gemini.py` | `GEMINI_API_KEY`       | Default model, grounding options, file-search defaults.            |
+| `grok.py`   | `XAI_API_KEY`          | `XAI_MANAGEMENT_KEY`, default model, collection mapping.           |
 
 The wrapper constructor should assign configuration values to instance members. Individual methods
 should validate required user inputs before calling the provider SDK. Missing provider credentials
@@ -137,15 +132,15 @@ should produce clear, actionable messages.
 
 Boo is organized around provider and workflow selections. Common workflow modes include:
 
-| Mode | Description |
-| --- | --- |
-| Text | General chat, question answering, drafting, coding, and analysis. |
-| Image | Image generation or image-related provider workflows where supported. |
-| Audio | Text-to-speech, transcription, or translation workflows where supported. |
-| Document Q&A | File upload, document parsing, retrieval, and document-grounded answering. |
-| Semantic Search | Embedding and similarity-search workflows. |
-| Prompt | Prompt construction, testing, and reusable prompt templates. |
-| Data | Data analysis or structured-data utility workflows. |
+| Mode            | Description                                                                |
+|-----------------|----------------------------------------------------------------------------|
+| Text            | General chat, question answering, drafting, coding, and analysis.          |
+| Image           | Image generation or image-related provider workflows where supported.      |
+| Audio           | Text-to-speech, transcription, or translation workflows where supported.   |
+| Document Q&A    | File upload, document parsing, retrieval, and document-grounded answering. |
+| Semantic Search | Embedding and similarity-search workflows.                                 |
+| Prompt          | Prompt construction, testing, and reusable prompt templates.               |
+| Data            | Data analysis or structured-data utility workflows.                        |
 
 Do not expose modes for a provider unless that provider wrapper implements the corresponding
 workflow. This avoids presenting buttons or controls that cannot execute.
@@ -157,15 +152,15 @@ an intentional repository artifact.
 
 Recommended paths:
 
-| Path | Purpose | Source Control |
-| --- | --- | --- |
-| `docs/` | MkDocs documentation source files. | Commit. |
-| `site/` | Generated MkDocs static site. | Usually ignore. |
-| `.venv/` | Local virtual environment. | Ignore. |
-| `.streamlit/secrets.toml` | Local Streamlit secrets. | Ignore real secrets. |
-| `data/` | Optional local test data or examples. | Commit only safe examples. |
-| `outputs/` | Optional generated artifacts. | Usually ignore. |
-| `logs/` | Optional local logs. | Usually ignore. |
+| Path                      | Purpose                               | Source Control             |
+|---------------------------|---------------------------------------|----------------------------|
+| `docs/`                   | MkDocs documentation source files.    | Commit.                    |
+| `site/`                   | Generated MkDocs static site.         | Usually ignore.            |
+| `.venv/`                  | Local virtual environment.            | Ignore.                    |
+| `.streamlit/secrets.toml` | Local Streamlit secrets.              | Ignore real secrets.       |
+| `data/`                   | Optional local test data or examples. | Commit only safe examples. |
+| `outputs/`                | Optional generated artifacts.         | Usually ignore.            |
+| `logs/`                   | Optional local logs.                  | Usually ignore.            |
 
 ## Documentation Configuration
 

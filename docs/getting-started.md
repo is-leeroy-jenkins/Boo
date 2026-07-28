@@ -1,23 +1,18 @@
 # Getting Started
 
-## Purpose
-
-This page explains how to install the Boo application dependencies, configure the local Python
-environment, run the Streamlit application, install the documentation dependencies, and build or
-serve the MkDocs documentation site.
 
 ## Prerequisites
 
 Before running the application or documentation site, confirm that the workstation has the following
 tools installed:
 
-| Requirement | Purpose |
-| --- | --- |
-| Python 3.11 or later | Runs the Streamlit application and provider wrapper modules. |
-| Git | Clones and updates the Boo repository. |
-| PowerShell | Runs the Windows setup commands shown in this guide. |
-| Local Boo repository clone | Provides the application source and `docs/` directory. |
-| Provider API keys | Enables provider-backed workflows. Keys are only required for the providers being used. |
+| Requirement                | Purpose                                                                                 |
+|----------------------------|-----------------------------------------------------------------------------------------|
+| Python 3.11 or later       | Runs the Streamlit application and provider wrapper modules.                            |
+| Git                        | Clones and updates the Boo repository.                                                  |
+| PowerShell                 | Runs the Windows setup commands shown in this guide.                                    |
+| Local Boo repository clone | Provides the application source and `docs/` directory.                                  |
+| Provider API keys          | Enables provider-backed workflows. Keys are only required for the providers being used. |
 
 ## Create the Virtual Environment
 

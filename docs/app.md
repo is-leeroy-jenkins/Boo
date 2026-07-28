@@ -1,25 +1,23 @@
 # Application API
 
-## Purpose
+![](docs/assets/images/boo-classes.png)
 
-This page documents the Streamlit application module, `app.py`.
-
-`app.py` is the user-interface shell for Boo. It coordinates model selection, mode selection, user
+`app.py` is the user-interface shell for Boo that coordinates model selection, mode selection, user
 inputs, uploaded files, provider routing, result rendering, and session-state persistence.
 
 ## Module Responsibilities
 
 The application module normally owns the following responsibilities:
 
-| Area | Responsibility |
-| --- | --- |
-| Page setup | Configure Streamlit page metadata, layout, title, branding, and top-level containers. |
-| Navigation | Render tabs, expanders, sidebars, model selectors, mode selectors, and workflow controls. |
-| Session state | Initialize, read, and update `st.session_state` keys used across reruns. |
+| Area             | Responsibility                                                                                  |
+|------------------|-------------------------------------------------------------------------------------------------|
+| Page setup       | Configure Streamlit page metadata, layout, title, branding, and top-level containers.           |
+| Navigation       | Render tabs, expanders, sidebars, model selectors, mode selectors, and workflow controls.       |
+| Session state    | Initialize, read, and update `st.session_state` keys used across reruns.                        |
 | Provider routing | Dispatch user requests to `gpt.py`, `gemini.py`, or `grok.py` based on selected provider/model. |
-| Input handling | Read text prompts, uploaded documents, URLs, audio files, images, and workflow options. |
-| Output rendering | Display responses, errors, metrics, tables, images, files, and downloadable artifacts. |
-| Error handling | Convert runtime exceptions into clear user-facing messages and developer-friendly logs. |
+| Input handling   | Read text prompts, uploaded documents, URLs, audio files, images, and workflow options.         |
+| Output rendering | Display responses, errors, metrics, tables, images, files, and downloadable artifacts.          |
+| Error handling   | Convert runtime exceptions into clear user-facing messages and developer-friendly logs.         |
 
 ## Streamlit Import Warning
 
@@ -46,14 +44,14 @@ The application should use explicit session-state keys for values that must surv
 reruns. The exact keys depend on the current source code, but the application should generally
 separate these categories:
 
-| State Category | Example Keys |
-| --- | --- |
-| Selection state | `selected_model_name`, `selected_mode_name`, `selected_provider_name` |
-| Input state | `prompt_text`, `uploaded_files`, `uploaded_documents`, `allow_domains` |
-| Intermediate state | `parsed_documents`, `chunked_documents`, `embedding_results` |
-| Provider state | `provider_client_status`, `vector_store_id`, `file_ids` |
-| Output state | `chat_response`, `image_response`, `audio_response`, `dataframe_response` |
-| UI state | `active_tab`, `show_advanced_options`, `sidebar_expanded` |
+| State Category     | Example Keys                                                              |
+|--------------------|---------------------------------------------------------------------------|
+| Selection state    | `selected_model_name`, `selected_mode_name`, `selected_provider_name`     |
+| Input state        | `prompt_text`, `uploaded_files`, `uploaded_documents`, `allow_domains`    |
+| Intermediate state | `parsed_documents`, `chunked_documents`, `embedding_results`              |
+| Provider state     | `provider_client_status`, `vector_store_id`, `file_ids`                   |
+| Output state       | `chat_response`, `image_response`, `audio_response`, `dataframe_response` |
+| UI state           | `active_tab`, `show_advanced_options`, `sidebar_expanded`                 |
 
 Session-state keys should be written before they are read. Keys should not be reused for unrelated
 data structures.

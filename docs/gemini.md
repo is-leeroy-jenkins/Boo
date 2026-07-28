@@ -1,10 +1,7 @@
 # Gemini API
 
-## Purpose
 
-This page documents the Google Gemini provider wrapper module, `gemini.py`.
-
-The Gemini wrapper isolates Google-specific SDK calls from the Streamlit application shell. It should
+Gemini isolates Google-specific SDK calls from the Streamlit application shell. It should
 provide documented methods for Gemini text, multimodal, file, and grounded-generation workflows while
 keeping Google SDK details outside the UI layer.
 
@@ -12,27 +9,27 @@ keeping Google SDK details outside the UI layer.
 
 The Gemini module may support the following workflow families depending on the current source code:
 
-| Workflow | Description |
-| --- | --- |
-| Chat/Text | Sends prompts to Gemini text-capable models. |
-| Multimodal Generation | Sends text plus images or files to Gemini multimodal models. |
-| Image Workflows | Handles image-related workflows where supported by the configured Gemini model. |
-| Files | Uploads, retrieves, lists, or deletes Gemini-managed files. |
-| Grounded Generation | Uses Google-supported grounding or search features where configured. |
-| File Search Stores | Manages provider-side file-search or document-search resources where implemented. |
+| Workflow              | Description                                                                       |
+|-----------------------|-----------------------------------------------------------------------------------|
+| Chat/Text             | Sends prompts to Gemini text-capable models.                                      |
+| Multimodal Generation | Sends text plus images or files to Gemini multimodal models.                      |
+| Image Workflows       | Handles image-related workflows where supported by the configured Gemini model.   |
+| Files                 | Uploads, retrieves, lists, or deletes Gemini-managed files.                       |
+| Grounded Generation   | Uses Google-supported grounding or search features where configured.              |
+| File Search Stores    | Manages provider-side file-search or document-search resources where implemented. |
 
 ## Design Contract
 
 The wrapper should follow these conventions:
 
-| Contract | Expected Pattern |
-| --- | --- |
-| Configuration | Assign Gemini API keys and reusable model names from `config.py` or environment-derived config. |
-| Validation | Validate mandatory method arguments before provider calls. |
-| Client lifecycle | Create Gemini clients inside the method that uses them, not at import time. |
-| File handling | Keep file upload, polling, and cleanup logic inside the wrapper. |
-| Error handling | Capture exceptions using the project `Error` and `Logger` pattern. |
-| Documentation | Use Google-style docstrings for every public class and method. |
+| Contract         | Expected Pattern                                                                                |
+|------------------|-------------------------------------------------------------------------------------------------|
+| Configuration    | Assign Gemini API keys and reusable model names from `config.py` or environment-derived config. |
+| Validation       | Validate mandatory method arguments before provider calls.                                      |
+| Client lifecycle | Create Gemini clients inside the method that uses them, not at import time.                     |
+| File handling    | Keep file upload, polling, and cleanup logic inside the wrapper.                                |
+| Error handling   | Capture exceptions using the project `Error` and `Logger` pattern.                              |
+| Documentation    | Use Google-style docstrings for every public class and method.                                  |
 
 ## Common Configuration Values
 

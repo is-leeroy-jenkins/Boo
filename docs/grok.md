@@ -1,10 +1,6 @@
 # Grok API
 
-## Purpose
-
-This page documents the xAI Grok provider wrapper module, `grok.py`.
-
-The Grok wrapper isolates xAI-specific SDK calls from the Streamlit application shell. It should
+The Grok file isolates xAI-specific SDK calls from the Streamlit application shell. It should
 provide typed, documented methods for Grok text, image-capable, embedding, file, and vector-store
 workflows where those features are implemented in the source code.
 

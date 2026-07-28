@@ -1,12 +1,7 @@
-# Architecture
 
-## Purpose
+![](docs/assets/images/boo-architecture.png)
 
-This page describes the high-level architecture of the Boo application, including the Streamlit
-application shell, provider wrapper modules, session-state flow, and documentation-generation
-boundary.
 
-## Architectural Summary
 
 Boo uses a conventional layered structure:
 
@@ -46,15 +41,15 @@ app.py
 
 ## Application Modules
 
-| Module | Architectural Role | Primary Responsibility |
-| --- | --- | --- |
-| `app.py` | UI shell and workflow router | Owns Streamlit layout, session state, model selection, workflow selection, and result rendering. |
-| `gpt.py` | OpenAI provider wrapper | Encapsulates GPT text, images, audio, embeddings, files, vector stores, and assistant workflows. |
-| `gemini.py` | Gemini provider wrapper | Encapsulates Gemini text, multimodal, file, and grounded-generation workflows. |
-| `grok.py` | Grok provider wrapper | Encapsulates xAI Grok text, image-capable, file, embedding, and vector-store workflows. |
-| `config.py` | Configuration boundary | Centralizes API keys, model names, feature flags, local paths, and constants. |
-| `booger.py` or logging helpers | Error handling | Normalizes exception capture, metadata assignment, and user/developer-facing logging. |
-| `docs/` | Documentation source | Stores MkDocs Markdown pages and API reference pages. |
+| Module                         | Architectural Role           | Primary Responsibility                                                                           |
+|--------------------------------|------------------------------|--------------------------------------------------------------------------------------------------|
+| `app.py`                       | UI shell and workflow router | Owns Streamlit layout, session state, model selection, workflow selection, and result rendering. |
+| `gpt.py`                       | OpenAI provider wrapper      | Encapsulates GPT text, images, audio, embeddings, files, vector stores, and assistant workflows. |
+| `gemini.py`                    | Gemini provider wrapper      | Encapsulates Gemini text, multimodal, file, and grounded-generation workflows.                   |
+| `grok.py`                      | Grok provider wrapper        | Encapsulates xAI Grok text, image-capable, file, embedding, and vector-store workflows.          |
+| `config.py`                    | Configuration boundary       | Centralizes API keys, model names, feature flags, local paths, and constants.                    |
+| `booger.py` or logging helpers | Error handling               | Normalizes exception capture, metadata assignment, and user/developer-facing logging.            |
+| `docs/`                        | Documentation source         | Stores MkDocs Markdown pages and API reference pages.                                            |
 
 ## Provider Isolation
 

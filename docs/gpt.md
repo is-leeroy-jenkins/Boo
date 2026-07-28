@@ -1,10 +1,7 @@
 # GPT API
 
-## Purpose
 
-This page documents the OpenAI GPT provider wrapper module, `gpt.py`.
-
-The GPT wrapper isolates OpenAI-specific SDK calls from the Streamlit application shell. The wrapper
+The GPT isolates OpenAI-specific SDK calls from the Streamlit application shell. The wrapper
 should expose typed, documented methods for text, image, audio, embedding, file, and vector-store
 workflows while keeping provider-specific request and response handling out of `app.py`.
 

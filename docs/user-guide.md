@@ -1,7 +1,5 @@
 # User Guide
 
-## Purpose
-
 This guide explains how to use the Boo application from the Streamlit interface. It is written for
 users who need to select a provider, choose a workflow, provide inputs, run the request, and review
 or export results.

@@ -18,14 +18,14 @@ where the underlying APIs differ.
 
 The current documentation set covers:
 
-| Section | Description |
-| --- | --- |
+| Section                               | Description                                                                       |
+|---------------------------------------|-----------------------------------------------------------------------------------|
 | [Getting Started](getting-started.md) | Local setup, dependency installation, runtime configuration, and MkDocs commands. |
-| [Architecture](architecture.md) | Application structure, provider routing, module responsibilities, and data flow. |
-| [Application API](app.md) | Streamlit shell documentation and import-safety notes for `app.py`. |
-| [GPT API](gpt.md) | OpenAI GPT provider wrapper reference. |
-| [Gemini API](gemini.md) | Google Gemini provider wrapper reference. |
-| [Grok API](grok.md) | xAI Grok provider wrapper reference. |
+| [Architecture](architecture.md)       | Application structure, provider routing, module responsibilities, and data flow.  |
+| [Application API](app.md)             | Streamlit shell documentation and import-safety notes for `app.py`.               |
+| [GPT API](gpt.md)                     | OpenAI GPT provider wrapper reference.                                            |
+| [Gemini API](gemini.md)               | Google Gemini provider wrapper reference.                                         |
+| [Grok API](grok.md)                   | xAI Grok provider wrapper reference.                                              |
 
 ## Core Capabilities
 
