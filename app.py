@@ -12960,7 +12960,7 @@ elif mode == 'Google Cloud Buckets':
 		st.subheader( '🧊 Google Cloud Buckets', help=getattr( cfg, 'VECTORSTORES_API', '' ) )
 		st.divider( )
 		
-		project_id = cfg.GOOLGE_CLOUD_PROJECT_ID
+		project_id = cfg.GOOGLE_CLOUD_PROJECT_ID
 		location = cfg.GOOGLE_CLOUD_LOCATION
 		
 		st.caption( f'Project: {project_id or "Not configured"} | '
