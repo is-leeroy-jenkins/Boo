@@ -9156,12 +9156,12 @@ elif mode == 'Document Q&A':
 			st.button( label='Clear Instructions', width='stretch',
 				on_click=clear_docqna_instructions, icon='🧹' )
 		
-		doc_left, doc_right = st.columns( [ 0.2, 0.8 ], border=True )
 		
 		# ------------------------------------------------------------------
 		# Expander —  Document Uploader
 		# ------------------------------------------------------------------
 		with st.expander( label='Documnet Loader', width='stretch', expanded=True, icon='📤' ):
+			doc_left, doc_right = st.columns( [ 0.2, 0.8 ], border=True )
 			# ----- Document Loader -----
 			with doc_left:
 				docqna_uploaded = st.file_uploader( 'Upload', type=[ 'pdf', 'txt', 'md', 'docx' ],
