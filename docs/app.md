@@ -1,6 +1,6 @@
 # Application API
 
-![](assets/images/boo-classes.png)
+![](./assets/images/boo-classes.png)
 
 `app.py` is the user-interface shell for Boo that coordinates model selection, mode selection, user
 inputs, uploaded files, provider routing, result rendering, and session-state persistence.

@@ -1,5 +1,5 @@
 
-![](assets/images/boo-architecture.png)
+![](./assets/images/boo-architecture.png)
 
 
 
