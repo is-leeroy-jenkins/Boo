@@ -10162,8 +10162,16 @@ elif mode == 'Embeddings':
 # ======================================================================================
 elif mode == 'Files':
 	provider_name = st.session_state.get( 'provider', 'GPT' )
+	
+	if not provider_has_class( 'Files', provider_name ):
+		st.error( f'{provider_name} does not provide a Files wrapper.' )
+		st.stop( )
+	
 	files = get_files_module( provider_name )
 	
+	# ------------------------------------------------------------------
+	# Files Mode State
+	# ------------------------------------------------------------------
 	if not isinstance( st.session_state.get( 'files_table' ), list ):
 		st.session_state[ 'files_table' ] = [ ]
 	
@@ -10245,53 +10253,60 @@ elif mode == 'Files':
 	if 'files_confirm_delete' not in st.session_state:
 		st.session_state[ 'files_confirm_delete' ] = False
 	
+	if 'files_limit' not in st.session_state:
+		st.session_state[ 'files_limit' ] = 100
+	
+	if 'files_pagination_token' not in st.session_state:
+		st.session_state[ 'files_pagination_token' ] = ''
+	
+	if 'files_expires_after' not in st.session_state:
+		st.session_state[ 'files_expires_after' ] = 0
+	
+	if 'files_max_chars' not in st.session_state:
+		st.session_state[ 'files_max_chars' ] = 200000
+	
 	if st.session_state.get( 'clear_instructions' ):
 		st.session_state[ 'files_system_instructions' ] = ''
 		st.session_state[ 'clear_instructions' ] = False
 	
-	# ----- Files Mode Utilties -----
+	# ----- Files Mode Utilities -----
 	def get_files_help( name: str, fallback: str = '' ) -> str:
-		"""Get files help.
+		"""Get Files help.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI controls
-		    and  downstream logic can consume it consistently.
+		    Returns configured help text for a Files Mode control.
 		
 		Args:
-		    name (str): Name value used by the operation.
-		    fallback (str): Fallback value used by the operation.
+		    name (str): Configuration attribute name.
+		    fallback (str): Fallback text.
 		
 		Returns:
-		    str: Return value produced by the operation."""
+		    str: Configured or fallback help text.
+		"""
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
 	def get_files_options( instance: Any, attr_name: str,
 		fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
-		"""Get files options.
+		"""Get Files options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and
-		    downstream logic can consume it consistently.
+		    Returns provider-supported options exposed by a Files wrapper property or method.
 		
 		Args:
-		    instance (Any): Instance value used by the operation.
-		    attr_name (str): Attr name value used by the operation.
-		    fallback (Optional[List[Any]]): Fallback value used by the operation.
+		    instance (Any): Files wrapper instance.
+		    attr_name (str): Option property or method name.
+		    fallback (Optional[List[Any]]): Fallback options.
 		
 		Returns:
-		    List[Any]: Return value produced by the operation."""
+		    List[Any]: Provider-supported options.
+		"""
 		values = getattr( instance, attr_name, None )
+		
 		if callable( values ):
 			try:
 				values = values( )
 			except Exception:
 				values = None
-		
-		if values is None:
-			values = fallback or [ ]
 		
 		if isinstance( values, tuple ):
 			values = list( values )
@@ -10301,68 +10316,42 @@ elif mode == 'Files':
 		
 		return fallback or [ ]
 	
-	def files_has_method( method_names: List[ str ] ) -> bool:
-		"""Files has method.
+	def sanitize_files_selection( key: str, valid_options: List[ Any ], default: Any = '' ) -> \
+			None:
+		"""Sanitize Files selection.
 		
 		Purpose:
-		    Performs the files_has_method workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Clears a stored selection when it is not supported by the active provider.
 		
 		Args:
-		    method_names (List[str]): Method names value used by the operation.
+		    key (str): Session-state key.
+		    valid_options (List[Any]): Valid provider options.
+		    default (Any): Replacement value.
 		
 		Returns:
-		    bool: Return value produced by the operation."""
-		for method_name in method_names:
-			method = getattr( files, method_name, None )
-			if callable( method ):
-				return True
-		
-		return False
-	
-	def sanitize_files_selection( key: str,
-		valid_options: List[ Any ], default: Any = '' ) -> None:
-		"""Sanitize files selection.
-		
-		Purpose:
-		    Performs the sanitize_files_selection workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
-		
-		Args:
-		    key (str): Key value used by the operation.
-		    valid_options (List[Any]): Valid options value used by the operation.
-		    default (Any): Default value used by the operation.
-		
-		Returns:
-		    None: This function performs its work through side effects and does not return a value.
+		    None: This function updates session state.
 		"""
 		current_value = st.session_state.get( key, default )
 		
 		if current_value in [ None, '' ]:
 			return
 		
-		if valid_options and current_value not in valid_options:
+		if current_value not in valid_options:
 			st.session_state[ key ] = default
 	
 	def sanitize_files_multiselect( key: str, valid_options: List[ Any ] ) -> None:
-		"""Sanitize files multiselect.
+		"""Sanitize Files multiselect.
 		
 		Purpose:
-		    Performs the sanitize_files_multiselect workflow using the inputs supplied by the
-		    caller and the current runtime configuration. The function keeps this behavior
-		    isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Removes stored multiselect values unsupported by the active provider.
 		
 		Args:
-		    key (str): Key value used by the operation.
-		    valid_options (List[Any]): Valid options value used by the operation.
+		    key (str): Session-state key.
+		    valid_options (List[Any]): Valid provider options.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-value."""
+		    None: This function updates session state.
+		"""
 		current_values = st.session_state.get( key, [ ] )
 		
 		if not isinstance( current_values, list ):
@@ -10371,143 +10360,18 @@ value."""
 		
 		st.session_state[ key ] = [ value for value in current_values if value in valid_options ]
 	
-	def call_files_method( method_names: List[ str ],
-		kwargs: Optional[ Dict[ str, Any ] ] = None ) -> Any:
-		"""Call files method.
-		
-		Purpose:
-		    Performs the call_files_method workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
-		
-		Args:
-		    method_names (List[str]): Method names value used by the operation.
-		    kwargs (Optional[Dict[str, Any]]): Kwargs value used by the operation.
-		
-		Returns:
-		    Any: Return value produced by the operation."""
-		import inspect
-		
-		kwargs = kwargs or { }
-		last_error = None
-		
-		clean_kwargs = { key: value for key, value in kwargs.items( ) if
-			value is not None and value != '' and value != [ ] }
-		
-		for method_name in method_names:
-			method = getattr( files, method_name, None )
-			if not callable( method ):
-				continue
-			
-			try:
-				signature = inspect.signature( method )
-				parameters = signature.parameters
-				
-				has_var_keyword = any(
-					parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in
-						parameters.values( ) )
-				
-				accepted_names = { name for name, parameter in parameters.items( ) if
-					parameter.kind in [ inspect.Parameter.POSITIONAL_OR_KEYWORD,
-						inspect.Parameter.KEYWORD_ONLY, ] }
-				
-				aliased_kwargs = dict( clean_kwargs )
-				
-				if 'id' in accepted_names and 'id' not in aliased_kwargs:
-					for alias in [ 'file_id', 'name', 'document_id' ]:
-						if alias in clean_kwargs:
-							aliased_kwargs[ 'id' ] = clean_kwargs[ alias ]
-							break
-				
-				if 'file_id' in accepted_names and 'file_id' not in aliased_kwargs:
-					for alias in [ 'id', 'name', 'document_id' ]:
-						if alias in clean_kwargs:
-							aliased_kwargs[ 'file_id' ] = clean_kwargs[ alias ]
-							break
-				
-				if 'name' in accepted_names and 'name' not in aliased_kwargs:
-					for alias in [ 'id', 'file_id', 'document_id' ]:
-						if alias in clean_kwargs:
-							aliased_kwargs[ 'name' ] = clean_kwargs[ alias ]
-							break
-				
-				if 'filepath' in accepted_names and 'filepath' not in aliased_kwargs:
-					for alias in [ 'file_path', 'path' ]:
-						if alias in clean_kwargs:
-							aliased_kwargs[ 'filepath' ] = clean_kwargs[ alias ]
-							break
-				
-				if 'file_path' in accepted_names and 'file_path' not in aliased_kwargs:
-					for alias in [ 'filepath', 'path' ]:
-						if alias in clean_kwargs:
-							aliased_kwargs[ 'file_path' ] = clean_kwargs[ alias ]
-							break
-				
-				if 'path' in accepted_names and 'path' not in aliased_kwargs:
-					for alias in [ 'filepath', 'file_path' ]:
-						if alias in clean_kwargs:
-							aliased_kwargs[ 'path' ] = clean_kwargs[ alias ]
-							break
-				
-				if has_var_keyword:
-					return method( **aliased_kwargs )
-				
-				filtered_kwargs = { key: value for key, value in aliased_kwargs.items( ) if
-					key in accepted_names }
-				
-				if filtered_kwargs:
-					return method( **filtered_kwargs )
-				
-				if len( clean_kwargs ) == 1:
-					return method( list( clean_kwargs.values( ) )[ 0 ] )
-				
-				return method( )
-			
-			except TypeError as exc:
-				last_error = exc
-				
-				if 'id' in clean_kwargs:
-					try:
-						return method( clean_kwargs[ 'id' ] )
-					except TypeError as inner_exc:
-						last_error = inner_exc
-				
-				if 'file_id' in clean_kwargs:
-					try:
-						return method( clean_kwargs[ 'file_id' ] )
-					except TypeError as inner_exc:
-						last_error = inner_exc
-				
-				if 'name' in clean_kwargs:
-					try:
-						return method( clean_kwargs[ 'name' ] )
-					except TypeError as inner_exc:
-						last_error = inner_exc
-				
-				continue
-		
-		if last_error is not None:
-			raise last_error
-		
-		raise AttributeError( f'Provider "{provider_name}" does not expose any Files method from: '
-		                      f'{", ".join( method_names )}.' )
-	
 	def normalize_file_id( result: Any ) -> str:
-		"""Normalize file id.
+		"""Normalize file identifier.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application
-		    processing. The
-		    function reduces provider, user-input, or serialization differences before values are
-		    stored or
-		    displayed.
+		    Extracts a stable provider file identifier from a file response.
 		
 		Args:
-		    result (Any): Result value used by the operation.
+		    result (Any): Provider file response.
 		
 		Returns:
-		    str: Return value produced by the operation."""
+		    str: Provider file identifier or resource name.
+		"""
 		if result is None:
 			return ''
 		
@@ -10520,24 +10384,24 @@ value."""
 				'name', None ) or '' )
 	
 	def normalize_files_list( result: Any ) -> List[ Dict[ str, Any ] ]:
-		"""Normalize files list.
+		"""Normalize Files list.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application
-		    processing. The function reduces provider, user-input, or serialization differences
-		    before values are stored or displayed.
+		    Converts provider-specific file collections into rows for the Files Mode table.
 		
 		Args:
-		    result (Any): Result value used by the operation.
+		    result (Any): Provider file-list response.
 		
 		Returns:
-		    List[Dict[str, Any]]: Return value produced by the operation."""
+		    List[Dict[str, Any]]: Normalized file records.
+		"""
 		if result is None:
 			return [ ]
 		
 		items = result
+		
 		if isinstance( result, dict ):
-			items = result.get( 'data' ) or result.get( 'files' ) or result.get( 'items' ) or [ ]
+			items = (result.get( 'data' ) or result.get( 'files' ) or result.get( 'items' ) or [ ])
 		
 		if hasattr( result, 'data' ):
 			items = getattr( result, 'data' )
@@ -10546,32 +10410,37 @@ value."""
 			items = getattr( result, 'files' )
 		
 		if not isinstance( items, list ):
-			items = [ items ]
+			try:
+				items = list( items )
+			except Exception:
+				items = [ items ]
 		
 		rows: List[ Dict[ str, Any ] ] = [ ]
+		
 		for item in items:
 			if item is None:
 				continue
 			
 			if isinstance( item, dict ):
-				file_id = item.get( 'id' ) or item.get( 'file_id' ) or item.get( 'name' )
-				filename = item.get( 'filename' ) or item.get( 'display_name' ) or item.get(
-					'name' )
-				purpose = item.get( 'purpose' ) or item.get( 'mime_type' ) or item.get( 'state' )
-				created = item.get( 'created_at' ) or item.get( 'create_time' ) or item.get(
-					'created' )
-				size = item.get( 'bytes' ) or item.get( 'size_bytes' ) or item.get( 'size' )
+				file_id = (item.get( 'id' ) or item.get( 'file_id' ) or item.get( 'name' ))
+				filename = (
+						item.get( 'filename' ) or item.get( 'display_name' ) or item.get( 'name' ))
+				purpose = (item.get( 'purpose' ) or item.get( 'mime_type' ) or item.get( 'state' ))
+				created = (item.get( 'created_at' ) or item.get( 'create_time' ) or item.get(
+					'created' ))
+				size = (item.get( 'bytes' ) or item.get( 'size_bytes' ) or item.get( 'size' ))
 			else:
-				file_id = getattr( item, 'id', None ) or getattr( item, 'file_id',
-					None ) or getattr( item, 'name', None )
-				filename = getattr( item, 'filename', None ) or getattr( item, 'display_name',
-					None ) or getattr( item, 'name', '' )
-				purpose = getattr( item, 'purpose', None ) or getattr( item, 'mime_type',
-					None ) or getattr( item, 'state', '' )
-				created = getattr( item, 'created_at', None ) or getattr( item, 'create_time',
-					None ) or getattr( item, 'created', '' )
-				size = getattr( item, 'bytes', None ) or getattr( item, 'size_bytes',
-					None ) or getattr( item, 'size', '' )
+				file_id = (
+						getattr( item, 'id', None ) or getattr( item, 'file_id', None ) or getattr(
+					item, 'name', None ))
+				filename = (getattr( item, 'filename', None ) or getattr( item, 'display_name',
+					None ) or getattr( item, 'name', None ))
+				purpose = (getattr( item, 'purpose', None ) or getattr( item, 'mime_type',
+					None ) or getattr( item, 'state', None ))
+				created = (getattr( item, 'created_at', None ) or getattr( item, 'create_time',
+					None ) or getattr( item, 'created', None ))
+				size = (getattr( item, 'bytes', None ) or getattr( item, 'size_bytes',
+					None ) or getattr( item, 'size', None ))
 			
 			rows.append( { 'id': str( file_id or '' ), 'filename': str( filename or '' ),
 				'purpose': str( purpose or '' ), 'created': str( created or '' ),
@@ -10579,52 +10448,83 @@ value."""
 		
 		return rows
 	
-	def save_uploaded_file_for_api( uploaded_file: Any ) -> Optional[ str ]:
-		"""Save uploaded file for api.
+	def normalize_file_metadata( result: Any ) -> Dict[ str, Any ]:
+		"""Normalize file metadata.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application
-		    workflows. The function standardizes file handling and returns a stable reference
-		    for downstream processing.
+		    Converts provider file metadata into a dictionary suitable for Streamlit output.
 		
 		Args:
-		    uploaded_file (Any): Uploaded file value used by the operation.
+		    result (Any): Provider file response.
 		
 		Returns:
-		    Optional[str]: Return value produced by the operation."""
+		    Dict[str, Any]: Normalized metadata.
+		"""
+		if result is None:
+			return { }
+		
+		if isinstance( result, dict ):
+			return result
+		
+		if hasattr( result, 'model_dump' ):
+			try:
+				value = result.model_dump( )
+				if isinstance( value, dict ):
+					return value
+			except Exception:
+				pass
+		
+		if hasattr( files, 'get_file_metadata' ):
+			try:
+				value = files.get_file_metadata( result )
+				if isinstance( value, dict ):
+					return value
+			except Exception:
+				pass
+		
+		return { 'result': str( result ) }
+	
+	def save_uploaded_file_for_api( uploaded_file: Any ) -> Optional[ str ]:
+		"""Save uploaded file for API.
+		
+		Purpose:
+		    Writes a Streamlit uploaded file to a temporary local path.
+		
+		Args:
+		    uploaded_file (Any): Streamlit uploaded-file object.
+		
+		Returns:
+		    Optional[str]: Temporary file path.
+		"""
 		if uploaded_file is None:
 			return None
 		
-		try:
-			suffix = Path( getattr( uploaded_file, 'name', 'upload.bin' ) ).suffix or '.bin'
-			with tempfile.NamedTemporaryFile( delete=False, suffix=suffix ) as tmp:
-				if hasattr( uploaded_file, 'getbuffer' ):
-					tmp.write( uploaded_file.getbuffer( ) )
-				elif hasattr( uploaded_file, 'getvalue' ):
-					tmp.write( uploaded_file.getvalue( ) )
-				elif hasattr( uploaded_file, 'read' ):
-					tmp.write( uploaded_file.read( ) )
-				else:
-					return None
-				
-				return tmp.name
-		except Exception:
-			return None
+		suffix = Path( getattr( uploaded_file, 'name', 'upload.bin' ) ).suffix or '.bin'
+		
+		with tempfile.NamedTemporaryFile( delete=False, suffix=suffix, ) as tmp:
+			if hasattr( uploaded_file, 'getbuffer' ):
+				tmp.write( uploaded_file.getbuffer( ) )
+			elif hasattr( uploaded_file, 'getvalue' ):
+				tmp.write( uploaded_file.getvalue( ) )
+			elif hasattr( uploaded_file, 'read' ):
+				tmp.write( uploaded_file.read( ) )
+			else:
+				return None
+			
+			return tmp.name
 	
 	def normalize_file_content( content: Any ) -> str:
 		"""Normalize file content.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application
-		    processing. The function reduces provider, user-input, or serialization differences
-		    before values
-		    are stored or  displayed.
+		    Converts extracted provider content into displayable text.
 		
 		Args:
-		    content (Any): Content value used by the operation.
+		    content (Any): Provider file content.
 		
 		Returns:
-		    str: Return value produced by the operation."""
+		    str: Displayable content.
+		"""
 		if content is None:
 			return ''
 		
@@ -10634,290 +10534,308 @@ value."""
 		if isinstance( content, bytes ):
 			try:
 				return content.decode( 'utf-8' )
-			except Exception:
-				return f'<{len( content )} byte(s)>'
+			except UnicodeDecodeError:
+				return ''
 		
 		if isinstance( content, dict ):
-			return str( content )
+			return json.dumps( content, indent=2, default=str )
+		
+		if hasattr( content, 'text' ):
+			text_value = getattr( content, 'text', '' )
+			if text_value:
+				return str( text_value )
 		
 		return str( content )
 	
 	def get_effective_file_id( *keys: str ) -> str:
-		"""Get effective file id.
+		"""Get effective file identifier.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides
-		    a  stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and downstream logic can consume it consistently.
+		    Returns the first populated provider file identifier from the supplied state keys.
 		
 		Args:
-		    *keys (str): Additional positional arguments retained for compatibility with caller
-		    workflows.
+		    *keys (str): Ordered session-state keys.
 		
 		Returns:
-		    str: Return value produced by the operation."""
+		    str: Active file identifier.
+		"""
 		for key in keys:
 			value = st.session_state.get( key, '' )
+			
 			if isinstance( value, str ) and value.strip( ):
 				return value.strip( )
 		
 		return ''
 	
 	def refresh_files_table( ) -> List[ Dict[ str, Any ] ]:
-		"""Refresh files table.
+		"""Refresh Files table.
 		
 		Purpose:
-		    Performs the refresh_files_table workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Lists provider files and stores normalized records for display and selection.
 		
 		Returns:
-		    List[Dict[str, Any]]: Return value produced by the operation."""
-		result = call_files_method( [ 'list', 'list_files', 'files_list' ] )
+		    List[Dict[str, Any]]: Normalized provider file records.
+		"""
+		if provider_name == 'GPT':
+			result = files.list( purpose=st.session_state.get( 'files_purpose', '' ), )
+		elif provider_name == 'Gemini':
+			result = files.list( )
+		elif provider_name == 'Grok':
+			result = files.list( limit=int( st.session_state.get( 'files_limit', 100 ) or 100 ),
+				pagination_token=str(
+					st.session_state.get( 'files_pagination_token', '', ) or '' ), )
+		else:
+			raise ValueError( f'Unsupported Files provider: {provider_name}' )
+		
 		rows = normalize_files_list( result )
 		st.session_state[ 'files_table' ] = rows
+		
+		if provider_name == 'Grok':
+			st.session_state[ 'files_pagination_token' ] = str(
+				getattr( files, 'next_token', '' ) or '' )
+		
 		return rows
 	
 	def upload_provider_file( uploaded_file: Any, purpose: Optional[ str ] = None ) -> Any:
 		"""Upload provider file.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or
-		    application  workflows. The function standardizes file handling and returns a
-		    stable reference for downstream processing.
+		    Uploads a staged local file through the exact selected-provider Files contract.
 		
 		Args:
-		    uploaded_file (Any): Uploaded file value used by the operation.
-		    purpose (Optional[str]): Purpose value used by the operation.
+		    uploaded_file (Any): Streamlit uploaded-file object.
+		    purpose (Optional[str]): Optional file-purpose value.
 		
 		Returns:
-		    Any: Return value produced by the operation."""
+		    Any: Provider file response.
+		"""
 		path = save_uploaded_file_for_api( uploaded_file )
+		
 		if not path:
 			raise ValueError( 'Could not create a temporary file for upload.' )
 		
-		filename = getattr( uploaded_file, 'name', None )
-		kwargs = { 'path': path, 'file_path': path, 'filepath': path, 'filename': filename,
-			'display_name': filename, 'purpose': purpose,
-			'mime_type': getattr( uploaded_file, 'type', None ), }
+		filename = str( getattr( uploaded_file, 'name', '' ) or Path( path ).name )
+		mime_type = str( getattr( uploaded_file, 'type', '' ) or '' )
 		
-		return call_files_method( [ 'upload_file', 'upload', 'files_upload', 'create' ], kwargs )
+		if provider_name == 'GPT':
+			return files.upload( path=path, purpose=purpose or 'user_data', )
+		
+		if provider_name == 'Gemini':
+			return files.upload( path=path, display_name=filename, mime_type=mime_type, )
+		
+		if provider_name == 'Grok':
+			return files.upload( file_path=path, file_name=filename,
+				purpose=purpose or 'assistants',
+				expires_after=int( st.session_state.get( 'files_expires_after', 0, ) or 0 ), )
+		
+		raise ValueError( f'Unsupported Files provider: {provider_name}' )
 	
 	def retrieve_provider_file( file_id: str ) -> Any:
 		"""Retrieve provider file.
 		
 		Purpose:
-		    Performs the retrieve_provider_file workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Retrieves file metadata through the exact selected-provider Files contract.
 		
 		Args:
-		    file_id (str): File id value used by the operation.
+		    file_id (str): Provider file identifier or resource name.
 		
 		Returns:
-		    Any: Return value produced by the operation."""
-		kwargs = { 'file_id': file_id, 'id': file_id, 'name': file_id, }
+		    Any: Provider file metadata.
+		"""
+		throw_if( 'file_id', file_id )
 		
-		return call_files_method(
-			[ 'retrieve', 'retrieve_file', 'get', 'get_file', 'files_retrieve' ], kwargs )
+		if provider_name == 'GPT':
+			return files.retrieve( id=file_id )
+		
+		return files.retrieve( file_id=file_id )
 	
 	def extract_provider_file( file_id: str ) -> Any:
 		"""Extract provider file.
 		
 		Purpose:
-		    Extracts structured information from a provider response, uploaded file,
-		    or application data object. The function normalizes provider-specific shapes into
-		    values that can be
-		    rendered, stored, or passed to later processing steps.
+		    Retrieves file content through the exact selected-provider Files contract.
 		
 		Args:
-		    file_id (str): File id value used by the operation.
+		    file_id (str): Provider file identifier or resource name.
 		
 		Returns:
-		    Any: Return value produced by the operation."""
-		page_number = st.session_state.get( 'files_page_number' )
-		kwargs = { 'file_id': file_id, 'id': file_id, 'name': file_id,
-			'format': st.session_state.get( 'files_download_format' ) or None,
-			'page_number': page_number, }
+		    Any: Extracted content or downloaded bytes.
+		"""
+		throw_if( 'file_id', file_id )
 		
-		return call_files_method(
-			[ 'extract', 'download', 'content', 'retrieve_content', 'files_content' ], kwargs )
+		if provider_name == 'GPT':
+			return files.extract( id=file_id )
+		
+		return files.extract( file_id=file_id )
 	
 	def delete_provider_file( file_id: str ) -> Any:
 		"""Delete provider file.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+		    Deletes a file through the exact selected-provider Files contract.
 		
 		Args:
-		    file_id (str): File id value used by the operation.
+		    file_id (str): Provider file identifier or resource name.
 		
 		Returns:
-		    Any: Return value produced by the operation."""
-		kwargs = { 'file_id': file_id, 'id': file_id, 'name': file_id, }
+		    Any: Provider deletion response.
+		"""
+		throw_if( 'file_id', file_id )
 		
-		return call_files_method( [ 'delete', 'delete_file', 'files_delete', 'remove' ], kwargs )
+		if provider_name == 'GPT':
+			return files.delete( id=file_id )
+		
+		return files.delete( file_id=file_id )
 	
 	def ask_provider_file( file_id: str, prompt: str ) -> str:
 		"""Ask provider file.
 		
 		Purpose:
-		    Performs the ask_provider_file workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Executes a file-aware question through the exact search contract implemented by the
+		    selected provider wrapper.
 		
 		Args:
-		    file_id (str): File id value used by the operation.
-		    prompt (str): Prompt value used by the operation.
+		    file_id (str): Provider file identifier or resource name.
+		    prompt (str): Question asked about the file.
 		
 		Returns:
-		    str: Return value produced by the operation."""
-		kwargs = { 'file_id': file_id, 'id': file_id, 'prompt': prompt,
-			'model': st.session_state.get( 'files_model' ) or None,
-			'temperature': st.session_state.get( 'files_temperature' ),
-			'top_p': st.session_state.get( 'files_top_percent' ),
-			'frequency': st.session_state.get( 'files_frequency_penalty' ),
-			'presence': st.session_state.get( 'files_presence_penalty' ),
-			'max_tokens': st.session_state.get( 'files_max_tokens' ),
-			'response_format': st.session_state.get( 'files_response_format' ) or None,
-			'store': st.session_state.get( 'files_store' ),
-			'stream': st.session_state.get( 'files_stream' ),
-			'instruct': st.session_state.get( 'files_system_instructions', '' ),
-			'include': st.session_state.get( 'files_include', [ ] ),
-			'tools': st.session_state.get( 'files_tools', [ ] ),
-			'tool_choice': st.session_state.get( 'files_tool_choice' ) or None,
-			'previous_id': st.session_state.get( 'files_previous_response_id' ) or None,
-			'conversation_id': st.session_state.get( 'files_conversation_id' ) or None, }
+		    str: Provider-generated answer.
+		"""
+		throw_if( 'file_id', file_id )
+		throw_if( 'prompt', prompt )
 		
-		result = call_files_method( [ 'summarize', 'ask', 'query', 'answer', 'search', 'survey' ],
-			kwargs )
+		model = str( st.session_state.get( 'files_model', '' ) or '' )
+		throw_if( 'model', model )
+		
+		if provider_name == 'GPT':
+			result = files.search( id=file_id, query=prompt, model=model,
+				max_chars=int( st.session_state.get( 'files_max_chars', 200000, ) or 200000 ), )
+		elif provider_name == 'Gemini':
+			result = files.search( prompt=prompt, file_id=file_id, model=model,
+				temperature=float( st.session_state.get( 'files_temperature', 0.0, ) or 0.0 ),
+				top_p=float( st.session_state.get( 'files_top_percent', 0.0, ) or 0.0 ), top_k=0,
+				frequency=float( st.session_state.get( 'files_frequency_penalty', 0.0, ) or 0.0 ),
+				presence=float( st.session_state.get( 'files_presence_penalty', 0.0, ) or 0.0 ),
+				max_tokens=int( st.session_state.get( 'files_max_tokens', 0, ) or 0 ),
+				instruct=str( st.session_state.get( 'files_system_instructions', '', ) or '' ),
+				response_format=str( st.session_state.get( 'files_response_format', '', ) or ''
+				), )
+		elif provider_name == 'Grok':
+			result = files.search( file_id=file_id, query=prompt, model=model,
+				instruct=str( st.session_state.get( 'files_system_instructions', '', ) or '' ),
+				temperature=float( st.session_state.get( 'files_temperature', 0.0, ) or 0.0 ),
+				top_p=float( st.session_state.get( 'files_top_percent', 0.0, ) or 0.0 ),
+				frequency=float( st.session_state.get( 'files_frequency_penalty', 0.0, ) or 0.0 ),
+				presence=float( st.session_state.get( 'files_presence_penalty', 0.0, ) or 0.0 ),
+				max_tokens=int( st.session_state.get( 'files_max_tokens', 0, ) or 0 ),
+				store=bool( st.session_state.get( 'files_store', False, ) ),
+				stream=bool( st.session_state.get( 'files_stream', False, ) ),
+				include=list( st.session_state.get( 'files_include', [ ], ) or [ ] ),
+				previous_id=str(
+					st.session_state.get( 'files_previous_response_id', '', ) or '' ), )
+		else:
+			raise ValueError( f'Unsupported Files provider: {provider_name}' )
+		
 		if isinstance( result, str ):
 			return result
 		
-		text = getattr( files, 'output_text', None )
-		if isinstance( text, str ) and text.strip( ):
-			return text.strip( )
+		output_text = getattr( files, 'output_text', '' )
 		
-		output_text = getattr( result, 'output_text', None )
 		if isinstance( output_text, str ) and output_text.strip( ):
 			return output_text.strip( )
 		
 		return str( result or '' )
 	
 	def clear_files_outputs( ) -> None:
-		"""Clear files outputs.
+		"""Clear Files outputs.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+		    Clears loaded file records, metadata, extracted content, and operation results.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		value."""
+		    None: This function updates session state.
+		"""
+		st.session_state[ 'files_table' ] = [ ]
 		st.session_state[ 'files_metadata' ] = { }
-		st.session_state[ 'files_results' ] = None
 		st.session_state[ 'files_delete_result' ] = { }
+		st.session_state[ 'files_results' ] = None
 		st.session_state[ 'files_content' ] = None
 		st.session_state[ 'files_content_text' ] = ''
-		st.session_state[ 'files_last_answer' ] = ''
 	
 	def clear_files_messages( ) -> None:
-		"""Clear files messages.
+		"""Clear Files messages.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+		    Clears Files Mode messages and the latest generated answer.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value.
+		    None: This function updates session state.
 		"""
 		st.session_state[ 'files_messages' ] = [ ]
 		st.session_state[ 'files_last_answer' ] = ''
 	
 	def append_files_message( role: str, content: str ) -> None:
-		"""Append files message.
+		"""Append Files message.
 		
 		Purpose:
-		    Performs the append_files_message workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Adds a user or assistant message to Files Mode history.
 		
 		Args:
-		    role (str): Role value used by the operation.
-		    content (str): Content value used by the operation.
+		    role (str): Message role.
+		    content (str): Message content.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		if not isinstance( st.session_state.get( 'files_messages' ), list ):
-			st.session_state[ 'files_messages' ] = [ ]
-		
+		    None: This function updates session state.
+		"""
 		st.session_state[ 'files_messages' ].append( { 'role': role, 'content': content, } )
 	
 	def render_files_messages( ) -> None:
-		"""Render files messages.
+		"""Render Files messages.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using
-		    normalized inputs. The function keeps presentation logic isolated from provider calls
-		    and
-		    data-processing steps so the screen output remains predictable.
+		    Renders Files Mode conversation history.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		if not isinstance( st.session_state.get( 'files_messages' ), list ):
-			st.session_state[ 'files_messages' ] = [ ]
-		
-		for message in st.session_state.get( 'files_messages', [ ] ):
+		    None: This function renders Streamlit output.
+		"""
+		for message in st.session_state.get( 'files_messages', [ ], ):
 			if not isinstance( message, dict ):
 				continue
 			
-			with st.chat_message( message.get( 'role', 'assistant' ), avatar='' ):
+			with st.chat_message( message.get( 'role', 'assistant' ), ):
 				st.markdown( message.get( 'content', '' ) )
 	
 	def clear_files_instructions( ) -> None:
-		"""Clear files instructions.
+		"""Clear Files instructions.
 		
 		Purpose:
-		    Clears the Files-mode system instructions and selected prompt template without
-		    modifying the selected prompt category or any file-management state.
+		    Clears Files Mode system instructions and its selected prompt template.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value.
+		    None: This function updates session state.
 		"""
 		st.session_state[ 'files_system_instructions' ] = ''
 		st.session_state[ 'files_prompt_id' ] = None
 	
 	def convert_files_system_instructions( ) -> None:
-		"""Convert files system instructions.
+		"""Convert Files system instructions.
 		
 		Purpose:
-		    Performs the convert_files_system_instructions workflow using the inputs supplied by
-		    the caller and the current runtime configuration. The function keeps this behavior
-		    isolated so
-		    related UI, provider, and data-processing paths can call it consistently.
+		    Converts Files Mode instructions between XML blocks and Markdown headings.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		text_value = st.session_state.get( 'files_system_instructions', '' )
-		if not isinstance( text_value, str ) or not text_value.strip( ):
+		    None: This function updates session state.
+		"""
+		text_value = st.session_state.get( 'files_system_instructions', '', )
+		
+		if not isinstance( text_value, str ):
+			return
+		
+		if not text_value.strip( ):
 			return
 		
 		source = text_value.strip( )
+		
 		if cfg.XML_BLOCK_PATTERN.search( source ):
 			converted = convert_xml( source )
 		else:
@@ -10926,186 +10844,183 @@ value."""
 		st.session_state[ 'files_system_instructions' ] = converted
 	
 	def load_files_instruction_template( ) -> None:
-		"""Load files instruction template.
+		"""Load Files instruction template.
 		
 		Purpose:
-		    Loads the selected Files-mode prompt template into the Files-mode
-		    system-instruction field using its stable prompt identifier.
+		    Loads the selected Files Mode prompt template into the system-instruction field.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger.
+		    None: This function updates session state.
 		"""
-		try:
-			load_prompt_template( prompt_id_key='files_prompt_id',
-				instructions_key='files_system_instructions', )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'app'
-			ex.cause = 'Files Mode'
-			ex.method = 'load_files_instruction_template( ) -> None'
-			Logger( ).write( ex )
-			raise ex
+		load_prompt_template( prompt_id_key='files_prompt_id',
+			instructions_key='files_system_instructions', )
 	
-	extract_supported = files_has_method(
-		[ 'extract', 'download', 'content', 'retrieve_content', 'files_content' ] )
-	
-	ask_supported = files_has_method(
-		[ 'summarize', 'ask', 'query', 'answer', 'search', 'survey' ] )
+	# ------------------------------------------------------------------
+	# Provider Capabilities
+	# ------------------------------------------------------------------
+	extract_supported = callable( getattr( files, 'extract', None ) )
+	ask_supported = callable( getattr( files, 'search', None ) )
 	
 	# ------------------------------------------------------------------
 	# Main UI
 	# ------------------------------------------------------------------
 	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
+	
+	
 	with center:
-		st.subheader( '📁 Files API', help=get_files_help( 'FILES_API' ) )
+		st.subheader( '📁 Files API', help=get_files_help( 'FILES_API' ), )
 		st.divider( )
 		
 		# ------------------------------------------------------------------
 		# Expander - Mind Controls
 		# ------------------------------------------------------------------
-		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
+		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch', ):
 			# ------------------------------------------------------------------
 			# Expander - File Management
 			# ------------------------------------------------------------------
 			with st.expander( label='File Management', icon='📂', expanded=False,
-					width='stretch' ):
+					width='stretch', ):
 				mgmt_c1, mgmt_c2, mgmt_c3, mgmt_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-					border=True, gap='xxsmall' )
+					border=True, gap='xxsmall', )
 				
 				# ----- Purpose -----
 				with mgmt_c1:
 					purpose_options = get_files_options( files, 'purpose_options',
-						[ 'assistants', 'batch', 'fine-tune', 'user_data' ] )
+						[ 'assistants', 'batch', 'fine-tune', 'user_data' ], )
 					purpose_options = [ str( item ) for item in purpose_options if
 						str( item ).strip( ) ]
-					sanitize_files_selection( 'files_purpose', purpose_options, '' )
+					sanitize_files_selection( 'files_purpose', purpose_options, )
 					st.selectbox( label='Purpose', options=purpose_options, key='files_purpose',
-						index=None, placeholder='Options', help='Optional provider file purpose.' )
+						index=None, placeholder='Options', help='Optional provider file '
+						                                        'purpose.', )
 				
 				# ----- Type ------
 				with mgmt_c2:
 					st.selectbox( label='File Type',
 						options=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv',
-							'xlsx', 'xls' ], key='files_type', index=None, placeholder='Options',
-						help='Optional local filter for uploaded file types.' )
+							'xlsx', 'xls', ], key='files_type', index=None, placeholder='Options',
+						help='Optional local filter for uploaded file types.', )
 				
 				# ----- ID ------
 				with mgmt_c3:
 					st.text_input( label='Manual File ID', key='files_manual_id',
-						help='Optional. Paste a provider file ID/name for retrieve, extract, ask, '
-						     'or delete.', width='stretch' )
+						help=('Optional. Paste a provider file ID/name for '
+						      'retrieve, extract, ask, or delete.'), width='stretch', )
 				
 				# ----- Selected File -----
 				with mgmt_c4:
-					table_rows = st.session_state.get( 'files_table', [ ] )
+					table_rows = st.session_state.get( 'files_table', [ ], )
 					file_options = [ row.get( 'id', '' ) for row in table_rows if
 						isinstance( row, dict ) and row.get( 'id', '' ) ]
-					sanitize_files_selection( 'files_selected_id', file_options, '' )
+					sanitize_files_selection( 'files_selected_id', file_options, )
 					st.selectbox( label='Selected File', options=file_options,
 						key='files_selected_id', index=None, placeholder='Options',
-						help='File selected from the latest provider list.' )
+						help='File selected from the latest provider list.', )
 			
 			# ------------------------------------------------------------------
 			# Expander - Request Settings
 			# ------------------------------------------------------------------
 			with st.expander( label='Request Settings', icon='⚙️', expanded=False,
-					width='stretch' ):
+					width='stretch', ):
 				req_c1, req_c2, req_c3, req_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-					border=True, gap='xxsmall' )
+					border=True, gap='xxsmall', )
 				
 				# ----- Model -----
 				with req_c1:
-					model_options = get_files_options( files, 'model_options', [ ] )
+					model_options = get_files_options( files, 'model_options', [ ], )
 					model_options = [ str( item ) for item in model_options if
 						str( item ).strip( ) ]
-					sanitize_files_selection( 'files_model', model_options, '' )
+					sanitize_files_selection( 'files_model', model_options, )
 					st.selectbox( label='Model', options=model_options, key='files_model',
 						index=None, placeholder='Options',
-						help='Optional provider model for file-aware operations.' )
+						help='Provider model for file-aware operations.', )
 				
 				# ----- Max Tokens -----
 				with req_c2:
 					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
-						key='files_max_tokens', help=cfg.MAX_OUTPUT_TOKENS )
+						key='files_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, )
 				
 				# ----- Temperature -----
 				with req_c3:
 					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
-						key='files_temperature', help=cfg.TEMPERATURE )
+						key='files_temperature', help=cfg.TEMPERATURE,
+						disabled=provider_name == 'GPT', )
 				
 				# ----- Format -----
 				with req_c4:
-					format_options = get_files_options( files, 'format_options', [ ] )
+					format_options = get_files_options( files, 'format_options', [ ], )
 					format_options = [ str( item ) for item in format_options if
 						str( item ).strip( ) ]
-					sanitize_files_selection( 'files_response_format', format_options, '' )
+					sanitize_files_selection( 'files_response_format', format_options, )
 					st.selectbox( label='Response Format', options=format_options,
 						key='files_response_format', index=None, placeholder='Options',
-						help='Optional response format.' )
+						help='Optional response format.', disabled=provider_name == 'GPT', )
 				
 				req2_c1, req2_c2, req2_c3, req2_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-					border=True, gap='xxsmall' )
+					border=True, gap='xxsmall', )
 				
 				# ----- Top-P -----
 				with req2_c1:
 					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
-						key='files_top_percent', help=cfg.TOP_P )
+						key='files_top_percent', help=cfg.TOP_P, disabled=provider_name == 'GPT', )
 				
 				# ----- Frequency -----
 				with req2_c2:
 					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						key='files_frequency_penalty', help=cfg.FREQUENCY_PENALTY )
+						key='files_frequency_penalty', help=cfg.FREQUENCY_PENALTY,
+						disabled=provider_name == 'GPT', )
 				
 				# ----- Presence -----
 				with req2_c3:
 					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						key='files_presence_penalty', help=cfg.PRESENCE_PENALTY )
+						key='files_presence_penalty', help=cfg.PRESENCE_PENALTY,
+						disabled=provider_name == 'GPT', )
 				
 				# ----- Choice -----
 				with req2_c4:
-					choice_options = get_files_options( files, 'choice_options',
-						[ 'auto', 'required', 'none' ] )
+					choice_options = get_files_options( files, 'choice_options', [ ], )
 					choice_options = [ str( item ) for item in choice_options if
 						str( item ).strip( ) ]
-					sanitize_files_selection( 'files_tool_choice', choice_options, '' )
+					sanitize_files_selection( 'files_tool_choice', choice_options, )
 					st.selectbox( label='Tool Choice', options=choice_options,
 						key='files_tool_choice', index=None, placeholder='Options',
-						help=cfg.CHOICE )
+						help=cfg.CHOICE,
+						disabled=True, )
 				
 				req3_c1, req3_c2, req3_c3, req3_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-					border=True, gap='xxsmall' )
+					border=True, gap='xxsmall', )
 				
 				# ----- Tools -----
 				with req3_c1:
-					tool_options = get_files_options( files, 'tool_options', [ ] )
+					tool_options = get_files_options( files, 'tool_options', [ ], )
 					tool_options = [ str( item ) for item in tool_options if str( item ).strip( ) ]
-					sanitize_files_multiselect( 'files_tools', tool_options )
+					sanitize_files_multiselect( 'files_tools', tool_options, )
 					st.multiselect( label='Tools', options=tool_options, key='files_tools',
-						placeholder='Options', help=cfg.TOOLS )
+						placeholder='Options', help=cfg.TOOLS, disabled=True, )
 				
 				# ----- Include -----
 				with req3_c2:
-					include_options = get_files_options( files, 'include_options', [ ] )
+					include_options = get_files_options( files, 'include_options', [ ], )
 					include_options = [ str( item ) for item in include_options if
 						str( item ).strip( ) ]
-					sanitize_files_multiselect( 'files_include', include_options )
+					sanitize_files_multiselect( 'files_include', include_options, )
 					st.multiselect( label='Include', options=include_options, key='files_include',
-						placeholder='Options', help=cfg.INCLUDE )
+						placeholder='Options', help=cfg.INCLUDE, disabled=provider_name !=
+						                                                  'Grok', )
 				
 				# ----- Store -----
 				with req3_c3:
-					st.toggle( label='Store', key='files_store', help=cfg.STORE )
+					st.toggle( label='Store', key='files_store', help=cfg.STORE,
+						disabled=provider_name != 'Grok', )
 				
 				# ----- Stream -----
 				with req3_c4:
-					st.toggle( label='Stream', key='files_stream', help=cfg.STREAM )
+					st.toggle( label='Stream', key='files_stream', help=cfg.STREAM,
+						disabled=provider_name != 'Grok', )
 				
 				# ----- Reset Button -----
 				if st.button( label='Reset', key='files_request_settings_reset', width='stretch',
-						icon='🔄' ):
+						icon='🔄', ):
 					for key in [ 'files_model', 'files_max_tokens', 'files_temperature',
 						'files_response_format', 'files_top_percent', 'files_frequency_penalty',
 						'files_presence_penalty', 'files_tool_choice', 'files_tools',
@@ -11119,35 +11034,37 @@ value."""
 		# Expander — Files System Instructions
 		# ------------------------------------------------------------------
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
-				width='stretch' ):
+				width='stretch', ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			
 			# ----- Prompt Categories -----
 			files_prompt_categories = fetch_prompt_categories( 'Files' )
 			current_files_category = st.session_state.get( 'files_prompt_category' )
+			
 			if current_files_category not in files_prompt_categories:
 				st.session_state[ 'files_prompt_category' ] = None
 			
 			selected_files_category = st.session_state.get( 'files_prompt_category' )
-			files_prompt_options = fetch_prompt_options(
-				selected_files_category ) if selected_files_category else [ ]
-			
+			files_prompt_options = (
+				fetch_prompt_options( selected_files_category ) if selected_files_category else
+				[ ])
 			files_prompt_ids = [ int( option[ 'ID' ] ) for option in files_prompt_options ]
+			
 			if st.session_state.get( 'files_prompt_id' ) not in files_prompt_ids:
 				st.session_state[ 'files_prompt_id' ] = None
 			
 			# ----- Instruction Text ------
 			with in_left:
 				st.text_area( label='Enter Text', height=140, width='stretch',
-					key='files_system_instructions', help=cfg.SYSTEM_INSTRUCTIONS )
+					key='files_system_instructions', help=cfg.SYSTEM_INSTRUCTIONS, )
 			
 			# ----- Template Selection ------
 			with in_right:
 				st.selectbox( label='Category', options=files_prompt_categories, index=None,
 					key='files_prompt_category', placeholder='Select Category',
-					help=('Limits prompt templates to categories associated with '
-					      'file-processing workflows.'), on_change=reset_prompt_template_selection,
-					args=('files_prompt_id',), )
+					help=('Limits prompt templates to categories associated '
+					      'with file-processing workflows.'),
+					on_change=reset_prompt_template_selection, args=('files_prompt_id',), )
 				
 				st.selectbox( label='Use Template', options=files_prompt_ids, index=None,
 					key='files_prompt_id', placeholder='Select Template',
@@ -11163,14 +11080,14 @@ value."""
 			# ----- Clear Button -----
 			with btn_c1:
 				st.button( label='Clear Instructions', width='stretch',
-					on_click=clear_files_instructions, icon='🧹' )
+					on_click=clear_files_instructions, icon='🧹', )
 			
 			# ----- Convert Button ----
 			with btn_c2:
 				st.button( label='XML ↔️ Markdown', width='stretch',
 					on_click=convert_files_system_instructions, )
 		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
+		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True, )
 		
 		upload_tab, list_tab, retrieve_tab, extract_tab, ask_tab, delete_tab = st.tabs(
 			[ 'Upload', 'List', 'Retrieve', 'Extract', 'Ask', 'Delete' ] )
@@ -11178,23 +11095,24 @@ value."""
 		# ----- Upload -----
 		with upload_tab:
 			allowed_types = [ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv',
-				'xlsx', 'xls' ]
+				'xlsx', 'xls', ]
 			selected_file_type = st.session_state.get( 'files_type' )
-			upload_types = [ selected_file_type ] if selected_file_type else allowed_types
+			upload_types = ([ selected_file_type ] if selected_file_type else allowed_types)
 			uploaded_file = st.file_uploader( label='Upload File', type=upload_types,
-				accept_multiple_files=False, key='files_uploader' )
+				accept_multiple_files=False, key='files_uploader', )
 			
 			if uploaded_file is not None:
 				st.caption( f'Selected: {uploaded_file.name}' )
+			
 			# ----- Upload Button -----
-			if st.button( 'Upload File', key='files_upload_button', width='stretch', icon='📤' ):
+			if st.button( 'Upload File', key='files_upload_button', width='stretch', icon='📤', ):
 				with st.spinner( 'Uploading file…' ):
 					try:
 						if uploaded_file is None:
 							st.warning( 'Select a file before uploading.' )
 						else:
 							result = upload_provider_file( uploaded_file=uploaded_file,
-								purpose=st.session_state.get( 'files_purpose' ) or None )
+								purpose=st.session_state.get( 'files_purpose' ) or None, )
 							file_id = normalize_file_id( result )
 							
 							st.session_state[ 'files_results' ] = result
@@ -11202,16 +11120,14 @@ value."""
 							st.session_state[ 'files_uploaded' ].append(
 								{ 'id': file_id, 'filename': uploaded_file.name,
 									'provider': provider_name, } )
-							
 							st.success( f'Uploaded file: {file_id}' )
-					
 					except Exception as exc:
 						err = Error( exc )
 						st.error( f'Upload failed: {err.info}' )
 			
 			if st.session_state.get( 'files_results' ) is not None:
 				with st.expander( label='Upload Result', icon='📄', expanded=False,
-						width='stretch' ):
+						width='stretch', ):
 					st.write( st.session_state.get( 'files_results' ) )
 		
 		# ----- List -----
@@ -11220,7 +11136,7 @@ value."""
 			
 			# ----- List Button -----
 			with list_c1:
-				if st.button( 'List Files', key='files_list_button', width='stretch', icon='🔠' ):
+				if st.button( 'List Files', key='files_list_button', width='stretch', icon='🔠', ):
 					with st.spinner( 'Listing files…' ):
 						try:
 							rows = refresh_files_table( )
@@ -11233,40 +11149,40 @@ value."""
 			# ----- Clear Button ----
 			with list_c2:
 				if st.button( 'Clear Outputs', key='files_clear_outputs', width='stretch',
-						on_click=clear_files_outputs, icon='🧹' ):
+						on_click=clear_files_outputs, icon='🧹', ):
 					st.rerun( )
 			
 			df_files = pd.DataFrame( st.session_state.get( 'files_table', [ ] ) )
+			
 			if not df_files.empty:
-				st.data_editor( df_files, use_container_width=True, hide_index=True,
-					key='files_table_view' )
+				st.data_editor( df_files, use_container_width=True, hide_index=True, disabled=True,
+					key='files_table_view', )
 			else:
 				st.info( 'No file records loaded yet.' )
 		
 		# ----- Retrieve -----
 		with retrieve_tab:
 			if not st.session_state.get( 'files_retrieve_id' ):
-				st.session_state[ 'files_retrieve_id' ] = get_effective_file_id(
-					'files_selected_id', 'files_manual_id' )
+				st.session_state[ 'files_retrieve_id' ] = (
+					get_effective_file_id( 'files_selected_id', 'files_manual_id', ))
 			
 			st.text_input( label='Retrieve File ID', key='files_retrieve_id',
-				help='Provider file ID/name to retrieve.', width='stretch' )
+				help='Provider file ID/name to retrieve.', width='stretch', )
 			
 			if st.button( 'Retrieve File', key='files_retrieve_button', width='stretch',
-					icon='🐕' ):
+					icon='🐕', ):
 				with st.spinner( 'Retrieving file metadata…' ):
 					try:
-						file_id = st.session_state.get( 'files_retrieve_id', '' ).strip( )
+						file_id = st.session_state.get( 'files_retrieve_id', '', ).strip( )
 						
 						if not file_id:
 							st.warning( 'Select or enter a file ID before retrieving.' )
 						else:
 							result = retrieve_provider_file( file_id )
-							st.session_state[ 'files_metadata' ] = result if isinstance( result,
-								dict ) else { 'result': str( result ) }
+							st.session_state[ 'files_metadata' ] = (
+								normalize_file_metadata( result ))
 							st.session_state[ 'files_results' ] = result
 							st.success( 'File metadata retrieved.' )
-					
 					except Exception as exc:
 						err = Error( exc )
 						st.error( f'Retrieve failed: {err.info}' )
@@ -11277,38 +11193,41 @@ value."""
 		# ----- Extract -----
 		with extract_tab:
 			if not extract_supported:
-				st.info(
-					f'{provider_name} Files wrapper does not expose an extract/download method.' )
+				st.info( f'{provider_name} Files wrapper does not expose '
+				         f'an extract method.' )
 			
 			if not st.session_state.get( 'files_extract_id' ):
-				st.session_state[ 'files_extract_id' ] = get_effective_file_id(
-					'files_selected_id',
-					'files_manual_id' )
+				st.session_state[ 'files_extract_id' ] = (
+					get_effective_file_id( 'files_selected_id', 'files_manual_id', ))
 			
-			ext_c1, ext_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall' )
+			ext_c1, ext_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall', )
 			
 			# ----- Extract ------
 			with ext_c1:
 				st.text_input( label='Extract File ID', key='files_extract_id',
-					help='Provider file ID/name to download or extract.', width='stretch' )
+					help='Provider file ID/name to download or extract.', width='stretch', )
 			
 			with ext_c2:
 				st.selectbox( label='Download Format',
-					options=[ '', 'DOWNLOAD_FORMAT_TEXT', 'DOWNLOAD_FORMAT_BYTES' ],
+					options=[ '', 'DOWNLOAD_FORMAT_TEXT', 'DOWNLOAD_FORMAT_BYTES', ],
 					key='files_download_format', index=None, placeholder='Options',
-					help='Optional provider download format.' )
+					help=('Retained for compatible provider download '
+					      'workflows. The current extract wrappers choose '
+					      'the provider-native content representation.'), disabled=True, )
 			
 			st.number_input( label='Page Number', min_value=0, step=1, key='files_page_number',
-				help='Optional page number for providers that support page-level extraction.' )
+				help=('Retained for provider compatibility. Current Files '
+				      'wrappers extract complete content.'), disabled=True, )
 			
 			if st.button( 'Extract File Content', key='files_extract_button', width='stretch',
-					disabled=not extract_supported, icon='🦷' ):
+					disabled=not extract_supported, icon='🦷', ):
 				with st.spinner( 'Extracting file content…' ):
 					try:
-						file_id = st.session_state.get( 'files_extract_id', '' ).strip( )
+						file_id = st.session_state.get( 'files_extract_id', '', ).strip( )
 						
 						if not file_id:
-							st.warning( 'Select or enter a file ID before extracting content.' )
+							st.warning( 'Select or enter a file ID before '
+							            'extracting content.' )
 						else:
 							content = extract_provider_file( file_id )
 							content_text = normalize_file_content( content )
@@ -11316,75 +11235,75 @@ value."""
 							st.session_state[ 'files_content_text' ] = content_text
 							st.session_state[ 'files_results' ] = content
 							st.success( 'File content extracted.' )
-					
 					except Exception as exc:
 						err = Error( exc )
 						st.error( f'Extract failed: {err.info}' )
 			
 			if st.session_state.get( 'files_content_text' ):
 				st.text_area( label='Extracted Content',
-					value=st.session_state.get( 'files_content_text', '' ), height=300,
-					width='stretch' )
+					value=st.session_state.get( 'files_content_text', '', ), height=300,
+					width='stretch', disabled=True, )
 				
 				st.download_button( label='Download Extracted Text',
-					data=st.session_state.get( 'files_content_text', '' ),
-					file_name='file_content.txt', mime='text/plain', width='stretch' )
-			
-			elif isinstance( st.session_state.get( 'files_content' ), bytes ):
+					data=st.session_state.get( 'files_content_text', '', ),
+					file_name='file_content.txt', mime='text/plain', width='stretch', )
+			elif isinstance( st.session_state.get( 'files_content' ), bytes, ):
 				st.download_button( label='Download File Content',
 					data=st.session_state.get( 'files_content' ), file_name='file_content.bin',
-					mime='application/octet-stream', width='stretch' )
+					mime='application/octet-stream', width='stretch', )
 		
 		# ----- Ask ------
 		with ask_tab:
 			if not ask_supported:
-				st.info( f'{provider_name} Files wrapper does not expose a compatible file-aware '
-				         f'question method.' )
+				st.info( f'{provider_name} Files wrapper does not expose a '
+				         f'compatible file-aware search method.' )
 			
 			render_files_messages( )
 			file_id = get_effective_file_id( 'files_selected_id', 'files_manual_id',
-				'files_retrieve_id', 'files_extract_id' )
+				'files_retrieve_id', 'files_extract_id', )
 			
 			if file_id:
 				st.caption( f'Active File ID: {file_id}' )
 			else:
-				st.info( 'Select or enter a file ID before asking a file-aware question.' )
+				st.info( 'Select or enter a file ID before asking a '
+				         'file-aware question.' )
 			
 			st.text_area( label='Question', key='files_question', height=120, width='stretch',
-				placeholder='Ask a question about the selected file.' )
+				placeholder='Ask a question about the selected file.', )
 			
 			ask_c1, ask_c2 = st.columns( [ 0.50, 0.50 ] )
 			
 			# ----- Ask Button -----
 			with ask_c1:
 				if st.button( 'Ask File', key='files_ask_button', width='stretch',
-						disabled=not ask_supported, icon='❓' ):
+						disabled=not ask_supported, icon='❓', ):
 					with st.spinner( 'Asking file-aware question…' ):
 						try:
 							active_file_id = get_effective_file_id( 'files_selected_id',
-								'files_manual_id', 'files_retrieve_id', 'files_extract_id' )
-							question = st.session_state.get( 'files_question', '' ).strip( )
+								'files_manual_id', 'files_retrieve_id', 'files_extract_id', )
+							question = st.session_state.get( 'files_question', '', ).strip( )
 							
 							if not active_file_id:
-								st.warning( 'Select or enter a file ID before asking a question.' )
+								st.warning( 'Select or enter a file ID before '
+								            'asking a question.' )
 							elif not question:
 								st.warning( 'Enter a question before asking the file.' )
 							elif not st.session_state.get( 'files_model' ):
-								st.warning( 'Select a model before asking a file-aware question.' )
+								st.warning( 'Select a model before asking a '
+								            'file-aware question.' )
 							else:
-								append_files_message( 'user', question )
-								answer = ask_provider_file( active_file_id, question )
+								append_files_message( 'user', question, )
+								answer = ask_provider_file( active_file_id, question, )
 								st.session_state[ 'files_last_answer' ] = answer
 								
 								previous_id = (
-										getattr( files, 'previous_id', None ) or getattr( files,
-									'previous_response_id', None ) or st.session_state.get(
-									'files_previous_response_id', '' ) or '')
+										getattr( files, 'previous_id', None, ) or getattr( files,
+									'previous_response_id', None, ) or st.session_state.get(
+									'files_previous_response_id', '', ) or '')
 								st.session_state[ 'files_previous_response_id' ] = previous_id
 								
-								append_files_message( 'assistant', answer )
+								append_files_message( 'assistant', answer, )
 								st.markdown( answer )
-						
 						except Exception as exc:
 							err = Error( exc )
 							st.error( f'File question failed: {err.info}' )
@@ -11392,48 +11311,47 @@ value."""
 			# ----- Clear Button -----
 			with ask_c2:
 				if st.button( 'Clear Messages', key='files_clear_messages_button', width='stretch',
-						on_click=clear_files_messages, icon='🧹' ):
+						on_click=clear_files_messages, icon='🧹', ):
 					st.rerun( )
 			
 			if st.session_state.get( 'files_last_answer' ):
 				st.download_button( label='Download Answer',
-					data=st.session_state.get( 'files_last_answer', '' ),
-					file_name='file_answer.txt', mime='text/plain', width='stretch' )
+					data=st.session_state.get( 'files_last_answer', '', ),
+					file_name='file_answer.txt', mime='text/plain', width='stretch', )
 		
 		# ----- Delete -----
 		with delete_tab:
 			if not st.session_state.get( 'files_delete_id' ):
-				st.session_state[ 'files_delete_id' ] = get_effective_file_id( 'files_selected_id',
-					'files_manual_id' )
+				st.session_state[ 'files_delete_id' ] = (
+					get_effective_file_id( 'files_selected_id', 'files_manual_id', ))
 			
 			st.text_input( label='Delete File ID', key='files_delete_id',
-				help='Provider file ID/name to delete.', width='stretch' )
+				help='Provider file ID/name to delete.', width='stretch', )
 			
-			confirm_delete = st.checkbox( 'Confirm Delete', key='files_confirm_delete' )
+			confirm_delete = st.checkbox( 'Confirm Delete', key='files_confirm_delete', )
 			
 			# ----- Delete Button -----
 			if st.button( 'Delete File', key='files_delete_button', width='stretch',
-					disabled=not confirm_delete, icon='❌' ):
+					disabled=not confirm_delete, icon='❌', ):
 				with st.spinner( 'Deleting file…' ):
 					try:
-						file_id = st.session_state.get( 'files_delete_id', '' ).strip( )
+						file_id = st.session_state.get( 'files_delete_id', '', ).strip( )
 						
 						if not file_id:
 							st.warning( 'Select or enter a file ID before deleting.' )
 						else:
 							result = delete_provider_file( file_id )
-							st.session_state[ 'files_delete_result' ] = result if isinstance(
-								result, dict ) else { 'result': str( result ) }
+							st.session_state[ 'files_delete_result' ] = normalize_file_metadata(
+								result )
 							st.session_state[ 'files_results' ] = result
 							st.session_state[ 'files_table' ] = [ row for row in
-								st.session_state.get( 'files_table', [ ] ) if
+								st.session_state.get( 'files_table', [ ], ) if
 								isinstance( row, dict ) and row.get( 'id' ) != file_id ]
 							
 							if st.session_state.get( 'files_selected_id' ) == file_id:
 								st.session_state[ 'files_selected_id' ] = ''
 							
 							st.success( 'File deleted.' )
-					
 					except Exception as exc:
 						err = Error( exc )
 						st.error( f'Delete failed: {err.info}' )
