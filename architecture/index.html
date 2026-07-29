@@ -149,7 +149,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#architecture" class="md-skip">
+        <a href="#system-context" class="md-skip">
           Skip to content
         </a>
       
@@ -580,8 +580,6 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
-      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -624,36 +622,12 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#purpose" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Purpose
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#architectural-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architectural Summary
-      
-    </span>
-  </a>
-  
-</li>
       
         <li class="md-nav__item">
   <a href="#system-context" class="md-nav__link">
@@ -995,36 +969,12 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#purpose" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Purpose
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#architectural-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architectural Summary
-      
-    </span>
-  </a>
-  
-</li>
       
         <li class="md-nav__item">
   <a href="#system-context" class="md-nav__link">
@@ -1186,12 +1136,9 @@
   
 
 
-<h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
-<h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
-<p>This page describes the high-level architecture of the Boo application, including the Streamlit
-application shell, provider wrapper modules, session-state flow, and documentation-generation
-boundary.</p>
-<h2 id="architectural-summary">Architectural Summary<a class="headerlink" href="#architectural-summary" title="Permanent link">&para;</a></h2>
+  <h1>Architecture</h1>
+
+<p><img alt="" src="../assets/images/boo-architecture.png" /></p>
 <p>Boo uses a conventional layered structure:</p>
 <ol>
 <li><strong>Streamlit UI layer</strong> renders controls, tabs, inputs, uploaders, result panels, and workflow
