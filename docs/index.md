@@ -1,4 +1,5 @@
 # Boo Documentation
+![](./assets/images/boo-project.gif)
 
 Boo is a multi-provider AI assistant application built with Streamlit. It provides a single user
 interface for provider-backed text, image, audio, embedding, file, document, vector-store, and local
