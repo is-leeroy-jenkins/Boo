@@ -15037,9 +15037,9 @@ elif mode == 'Prompt Engineering':
 			st.button( label='Clear Selection', key='pe_clear_selection', width='stretch',
 				on_click=reset_prompt_selection, )
 
-# ==============================================================================
+# ======================================================================================
 # DATA MANAGEMENT MODE
-# ==============================================================================
+# ======================================================================================
 elif mode == 'Data Management':
 	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
 	with center:
