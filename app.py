@@ -10866,7 +10866,6 @@ elif mode == 'Files':
 	# ------------------------------------------------------------------
 	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
 	
-	
 	with center:
 		st.subheader( '📁 Files API', help=get_files_help( 'FILES_API' ), )
 		st.divider( )
