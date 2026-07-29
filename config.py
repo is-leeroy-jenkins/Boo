@@ -229,7 +229,6 @@ LOG_PATH: str = get_text( 'LOG_PATH', str( LOG_DIR / 'Exceptions.db' ) )
 LOG_FILE: str = get_text( 'LOG_FILE', 'Exceptions' )
 FAVICON = r'resources/images/favicon.ico'
 
-
 # ----------------- GPT CONFIG -------------------
 
 GPT_LOGO = r'resources/images/gpt.png'
@@ -281,7 +280,6 @@ GPT_EDITING = [ 'gpt-image-1.5', 'gpt-image-1', 'gpt-image-1-mini', 'chatgpt-ima
                 'dall-e-2' ]
 
 GPT_REASONING_MODELS = [ 'gpt-5', 'gpt-5-mini', 'gpt-5-nano', 'gpt-4o', 'gpt-4.1', 'gpt-4.1-mini' ]
-
 
 # ---------------- GROK CONFIG ------------------
 

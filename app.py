@@ -46,6 +46,8 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import json
+import inspect
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -4025,32 +4027,23 @@ def get_supported_provider_modes( provider: str ) -> List[ str ]:
 	"""Get supported provider modes.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable
-	    view of provider capabilities, stored state, or response metadata so UI controls and
-	    downstream
-	    logic can consume it consistently.
+	    Returns the configured application modes available to the selected provider. Mode
+	    availability is determined by the provider-specific configuration and is not altered by
+	    runtime wrapper introspection.
 	
 	Args:
-	    provider (str): Provider value used by the operation.
+	    provider (str): Selected provider name.
 	
 	Returns:
-	    List[str]: Return value produced by the operation."""
+	    List[str]: Normalized provider modes in configured display order.
+	"""
 	raw_modes = get_raw_provider_modes( provider )
 	modes = normalize_mode_list( raw_modes )
-	supported = [ ]
 	
-	for mode_name in modes:
-		if not mode_requires_runtime_wrapper( mode_name ):
-			supported.append( mode_name )
-			continue
-		
-		if provider_supports_mode( mode_name, provider ):
-			supported.append( mode_name )
+	if not modes:
+		return [ 'Text' ]
 	
-	if not supported:
-		supported = [ 'Text' ]
-	
-	return supported
+	return modes
 
 def get_mode_index( modes: List[ str ], current_mode: Optional[ str ] ) -> int:
 	"""Get mode index.
@@ -4173,7 +4166,6 @@ with st.sidebar:
 	
 	mode_options = get_supported_provider_modes( provider )
 	current_mode = normalize_mode_name( st.session_state.get( 'mode', 'Text' ) )
-	
 	if current_mode not in mode_options:
 		current_mode = mode_options[ 0 ]
 		st.session_state[ 'mode' ] = current_mode
@@ -4196,38 +4188,43 @@ if mode == 'Text':
 	# ------------------------------------------------------------------
 	# Text Mode State Safety
 	# ------------------------------------------------------------------
-	if 'text_grok_collection_ids' not in st.session_state:
+	text_defaults: Dict[ str, Any ] = { 'text_messages': [ ], 'text_model': '',
+		'text_reasoning': '', 'text_temperature': 0.0, 'text_top_percent': 0.0, 'text_top_k': 0,
+		'text_frequency_penalty': 0.0, 'text_presence_penalty': 0.0, 'text_max_tokens': 0,
+		'text_tools': [ ], 'text_include': [ ], 'text_tool_choice': '', 'text_max_calls': 0,
+		'text_parallel_tools': False, 'text_google_grounding': False, 'text_urls_input': '',
+		'text_max_urls': 0, 'text_domains_input': '', 'text_vector_store_ids': '',
+		'text_grok_collection_labels': [ ], 'text_grok_collection_ids': [ ],
+		'text_grok_collection_ids_input': '', 'text_response_format': '',
+		'text_response_schema': '', 'text_json_schema': '',
+		'text_json_schema_name': 'response_schema', 'text_json_schema_strict': True,
+		'text_stops_input': '', 'text_store': False, 'text_stream': False, 'text_background': False,
+		'text_continuation_mode': 'None', 'text_previous_response_id': '',
+		'text_conversation_id': '', 'text_input': 'conversation', 'text_system_instructions': '',
+		'text_safety_profile': '', 'text_prompt_category': None, 'text_prompt_id': None,
+		'text_context': [ ], 'last_answer': '', 'last_sources': [ ], }
+	
+	for state_key, state_default in text_defaults.items( ):
+		if state_key not in st.session_state:
+			st.session_state[ state_key ] = state_default
+	
+	if not isinstance( st.session_state.get( 'text_messages' ), list ):
+		st.session_state[ 'text_messages' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'text_context' ), list ):
+		st.session_state[ 'text_context' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'text_tools' ), list ):
+		st.session_state[ 'text_tools' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'text_include' ), list ):
+		st.session_state[ 'text_include' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'text_grok_collection_labels' ), list ):
+		st.session_state[ 'text_grok_collection_labels' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'text_grok_collection_ids' ), list ):
 		st.session_state[ 'text_grok_collection_ids' ] = [ ]
-	
-	if 'text_grok_collection_ids_input' not in st.session_state:
-		st.session_state[ 'text_grok_collection_ids_input' ] = ''
-	
-	if 'text_vector_store_ids' not in st.session_state:
-		st.session_state[ 'text_vector_store_ids' ] = ''
-	
-	if 'text_domains_input' not in st.session_state:
-		st.session_state[ 'text_domains_input' ] = ''
-	
-	if 'text_urls_input' not in st.session_state:
-		st.session_state[ 'text_urls_input' ] = ''
-	
-	if 'text_stops_input' not in st.session_state:
-		st.session_state[ 'text_stops_input' ] = ''
-	
-	if 'text_response_schema' not in st.session_state:
-		st.session_state[ 'text_response_schema' ] = ''
-	
-	if 'text_json_schema' not in st.session_state:
-		st.session_state[ 'text_json_schema' ] = ''
-	
-	if 'text_json_schema_name' not in st.session_state:
-		st.session_state[ 'text_json_schema_name' ] = 'response_schema'
-	
-	if 'text_json_schema_strict' not in st.session_state:
-		st.session_state[ 'text_json_schema_strict' ] = True
-	
-	if 'text_safety_profile' not in st.session_state:
-		st.session_state[ 'text_safety_profile' ] = ''
 	
 	# ----- Text Generation Utilities -------
 	def get_text_options( instance: Any, attr_name: str,
@@ -4235,24 +4232,20 @@ if mode == 'Text':
 		"""Get text options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and
-		    downstream logic can consume it consistently.
+			Returns normalized option values exposed by the selected provider wrapper.
 		
 		Args:
-		    instance (Any): Instance value used by the operation.
-		    attr_name (str): Attr name value used by the operation.
-		    fallback (Optional[List[str]]): Fallback value used by the operation.
+			instance (Any): Provider wrapper instance.
+			attr_name (str): Option-property name.
+			fallback (Optional[List[str]]): Values returned when the property is unavailable.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
+			List[str]: Normalized provider option values.
+		"""
 		values = getattr( instance, attr_name, None )
+		
 		if callable( values ):
-			try:
-				values = values( )
-			except Exception:
-				values = None
+			values = values( )
 		
 		if values is None:
 			values = fallback or [ ]
@@ -4260,125 +4253,89 @@ if mode == 'Text':
 		if isinstance( values, tuple ):
 			values = list( values )
 		
-		if isinstance( values, list ):
-			return [ str( value ) for value in values if str( value ).strip( ) ]
+		if not isinstance( values, list ):
+			return fallback or [ ]
 		
-		return fallback or [ ]
-	
-	def get_text_help( name: str, fallback: str = '' ) -> str:
-		"""Get text help.
-		
-		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and
-		    downstream logic can consume it consistently.
-		
-		Args:
-		    name (str): Name value used by the operation.
-		    fallback (str): Fallback value used by the operation.
-		
-		Returns:
-		    str: Return value produced by the operation."""
-		return str( getattr( cfg, name, fallback ) or fallback )
+		return [ str( value ) for value in values if str( value ).strip( ) ]
 	
 	def parse_semicolon_list( value: Any ) -> List[ str ]:
 		"""Parse semicolon list.
 		
 		Purpose:
-		    Performs the parse_semicolon_list workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+			Converts a semicolon-delimited value into normalized non-empty entries.
 		
 		Args:
-		    value (Any): Value value used by the operation.
+			value (Any): Delimited source value.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
-		raw_value = str( value or '' )
-		return [ item.strip( ) for item in raw_value.split( ';' ) if item.strip( ) ]
+			List[str]: Parsed values.
+		"""
+		return [ item.strip( ) for item in str( value or '' ).split( ';' ) if item.strip( ) ]
 	
 	def parse_comma_list( value: Any ) -> List[ str ]:
 		"""Parse comma list.
 		
 		Purpose:
-		    Performs the parse_comma_list workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Converts a comma-delimited value into normalized non-empty entries.
 		
 		Args:
-		    value (Any): Value value used by the operation.
+			value (Any): Delimited source value.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
-		raw_value = str( value or '' )
-		return [ item.strip( ) for item in raw_value.split( ',' ) if item.strip( ) ]
-	
-	def normalize_bool_or_none( value: Any ) -> Optional[ bool ]:
-		"""Normalize bool or none.
-		
-		Purpose:
-		    Normalizes incoming values into a predictable representation for application
-		    processing. The function reduces provider, user-input, or serialization differences
-		    before values are
-		    stored or displayed.
-		
-		Args:
-		    value (Any): Value value used by the operation.
-		
-		Returns:
-		    Optional[bool]: Return value produced by the operation."""
-		if value is None:
-			return None
-		
-		return bool( value )
+			List[str]: Parsed values.
+		"""
+		return [ item.strip( ) for item in str( value or '' ).split( ',' ) if item.strip( ) ]
 	
 	def get_grok_collection_options( ) -> Dict[ str, str ]:
-		"""Get grok collection options.
+		"""Get Grok collection options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and
-		    downstream logic can consume it consistently.
+			Returns configured xAI Collection labels mapped to provider collection identifiers.
 		
 		Returns:
-		    Dict[str, str]: Return value produced by the operation."""
-		collection_rows = getattr( cfg, 'GROK_COLLECTIONS', [ ] )
+			Dict[str, str]: Collection labels mapped to identifiers.
+		"""
+		configured_collections = getattr( cfg, 'GROK_COLLECTIONS', { }, )
 		collections: Dict[ str, str ] = { }
 		
-		if isinstance( collection_rows, list ):
-			for row in collection_rows:
-				if isinstance( row, dict ):
-					for label, value in row.items( ):
-						if label and value:
-							collections[ str( label ) ] = str( value )
+		if isinstance( configured_collections, dict ):
+			for label, collection_id in configured_collections.items( ):
+				if str( label ).strip( ) and str( collection_id ).strip( ):
+					collections[ str( label ) ] = str( collection_id )
+			
+			return collections
+		
+		if isinstance( configured_collections, list ):
+			for row in configured_collections:
+				if not isinstance( row, dict ):
+					continue
+				
+				for label, collection_id in row.items( ):
+					if str( label ).strip( ) and str( collection_id ).strip( ):
+						collections[ str( label ) ] = str( collection_id )
 		
 		return collections
 	
 	def get_selected_grok_collection_ids( ) -> List[ str ]:
-		"""Get selected grok collection ids.
+		"""Get selected Grok collection IDs.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and
-		    downstream logic can consume it consistently.
+			Resolves configured collection labels and manually entered collection identifiers.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
+			List[str]: Unique xAI Collection identifiers.
+		"""
 		collection_map = get_grok_collection_options( )
-		selected_labels = st.session_state.get( 'text_grok_collection_labels', [ ] )
+		selected_labels = st.session_state.get( 'text_grok_collection_labels', [ ], )
 		manual_ids = parse_comma_list(
-			st.session_state.get( 'text_grok_collection_ids_input', '' ) )
+			st.session_state.get( 'text_grok_collection_ids_input', '', ) )
 		resolved_ids: List[ str ] = [ ]
 		
-		if isinstance( selected_labels, list ):
-			for label in selected_labels:
-				collection_id = collection_map.get( str( label ) )
-				if collection_id and collection_id not in resolved_ids:
-					resolved_ids.append( collection_id )
+		for label in selected_labels:
+			collection_id = collection_map.get( str( label ), '', )
+			
+			if collection_id and collection_id not in resolved_ids:
+				resolved_ids.append( collection_id )
 		
 		for collection_id in manual_ids:
 			if collection_id not in resolved_ids:
@@ -4391,21 +4348,20 @@ if mode == 'Text':
 		"""Sanitize text selection.
 		
 		Purpose:
-		    Performs the sanitize_text_selection workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+			Removes a stale single-select value when it is not supported by the selected
+			provider.
 		
 		Args:
-		    key (str): Key value used by the operation.
-		    valid_options (List[str]): Valid options value used by the operation.
-		    default (Any): Default value used by the operation.
+			key (str): Session-state key.
+			valid_options (List[str]): Supported option values.
+			default (Any): Replacement value.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		current_value = st.session_state.get( key, default )
-		if current_value in [ None, '' ]:
+			None: This function updates session state.
+		"""
+		current_value = st.session_state.get( key, default, )
+		
+		if current_value in [ None, '', ]:
 			return
 		
 		if valid_options and current_value not in valid_options:
@@ -4415,811 +4371,986 @@ if mode == 'Text':
 		"""Sanitize text multiselect.
 		
 		Purpose:
-		    Performs the sanitize_text_multiselect workflow using the inputs supplied by the
-		    caller and the current runtime configuration. The function keeps this behavior
-		    isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Removes stale multi-select values that are unsupported by the selected provider.
 		
 		Args:
-		    key (str): Key value used by the operation.
-		    valid_options (List[str]): Valid options value used by the operation.
+			key (str): Session-state key.
+			valid_options (List[str]): Supported option values.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		current_values = st.session_state.get( key, [ ] )
+			None: This function updates session state.
+		"""
+		current_values = st.session_state.get( key, [ ], )
+		
 		if not isinstance( current_values, list ):
 			st.session_state[ key ] = [ ]
 			return
 		
 		st.session_state[ key ] = [ value for value in current_values if value in valid_options ]
 	
+	def build_text_context( ) -> List[ Dict[ str, str ] ]:
+		"""Build text context.
+		
+		Purpose:
+			Returns prior Text Mode user and assistant messages without including the current
+			prompt.
+		
+		Returns:
+			List[Dict[str, str]]: Prior conversation messages.
+		"""
+		if st.session_state.get( 'text_input', 'conversation' ) != 'conversation':
+			return [ ]
+		
+		messages = st.session_state.get( 'text_messages', [ ], )
+		
+		if not isinstance( messages, list ):
+			return [ ]
+		
+		return [ { 'role': str( message.get( 'role', '', ) ),
+			'content': str( message.get( 'content', '', ) ), } for message in messages if
+			isinstance( message, dict ) and message.get( 'role' ) in [ 'user',
+				'assistant', ] and str( message.get( 'content', '', ) ).strip( ) ]
+	
+	def normalize_text_domains( ) -> List[ str ]:
+		"""Normalize allowed domains.
+		
+		Purpose:
+			Removes URL schemes and paths from Web Search domain restrictions.
+		
+		Returns:
+			List[str]: Provider-compatible domain names.
+		"""
+		domains: List[ str ] = [ ]
+		
+		for entered_domain in parse_comma_list( st.session_state.get( 'text_domains_input', '',
+		) ):
+			domain = entered_domain.strip( )
+			
+			if domain.startswith( 'https://' ):
+				domain = domain[ len( 'https://' ): ]
+			elif domain.startswith( 'http://' ):
+				domain = domain[ len( 'http://' ): ]
+			
+			domain = domain.split( '/', 1, )[ 0 ].strip( )
+			
+			if domain and domain not in domains:
+				domains.append( domain )
+		
+		return domains
+	
+	def get_text_response_schema( required: bool = False ) -> Optional[ Dict[ str, Any ] ]:
+		"""Get text response schema.
+		
+		Purpose:
+			Parses the configured JSON schema only when the selected response mode requires it.
+		
+		Args:
+			required (bool): Indicates whether an empty schema is invalid.
+		
+		Returns:
+			Optional[Dict[str, Any]]: Parsed JSON schema or None.
+		
+		Raises:
+			ValueError: Raised when required schema text is missing or invalid.
+		"""
+		schema_text = str( st.session_state.get( 'text_json_schema', '', ) or '' ).strip( )
+		
+		if not schema_text:
+			if required:
+				raise ValueError( 'Response Schema is required when JSON Schema is selected.' )
+			
+			return None
+		
+		response_schema = json.loads( schema_text )
+		if not isinstance( response_schema, dict ):
+			raise ValueError( 'Response Schema must contain a JSON object.' )
+		
+		return response_schema
+	
+	def get_gpt_text_format( ) -> Any:
+		"""Get GPT text format.
+		
+		Purpose:
+			Builds the response-format value accepted by the GPT Chat replacement.
+		
+		Returns:
+			Any: GPT response-format configuration.
+		"""
+		selected_format = str( st.session_state.get( 'text_response_format', '', ) or '' ).strip( )
+		
+		if not selected_format or selected_format == 'text':
+			return None
+		
+		if selected_format == 'json_object':
+			return { 'type': 'json_object', }
+		
+		if selected_format == 'json_schema':
+			return { 'type': 'json_schema', 'name': str(
+				st.session_state.get( 'text_json_schema_name',
+					'response_schema', ) or 'response_schema' ).strip( ),
+				'schema': get_text_response_schema( required=True ),
+				'strict': bool( st.session_state.get( 'text_json_schema_strict', True, ) ), }
+		
+		return selected_format
+	
+	def get_gemini_text_schema( ) -> Optional[ Dict[ str, Any ] ]:
+		"""Get Gemini text schema.
+		
+		Purpose:
+			Returns a Gemini response schema only when JSON output is selected and schema text
+			has been entered.
+		
+		Returns:
+			Optional[Dict[str, Any]]: Parsed schema or None.
+		"""
+		selected_format = str( st.session_state.get( 'text_response_format', '', ) or '' ).strip( )
+		
+		if selected_format != 'application/json':
+			return None
+		
+		return get_text_response_schema( required=False )
+	
+	def get_grok_text_schema( ) -> Any:
+		"""Get Grok text schema.
+		
+		Purpose:
+			Returns the required xAI schema only when JSON Schema output is selected.
+		
+		Returns:
+			Any: Parsed schema or None.
+		"""
+		selected_format = str( st.session_state.get( 'text_response_format', '', ) or '' ).strip( )
+		
+		if selected_format != 'json_schema':
+			return None
+		
+		return get_text_response_schema( required=True )
+	
+	def validate_text_request( ) -> None:
+		"""Validate text request.
+		
+		Purpose:
+			Prevents submission when the selected provider operation is missing required
+			provider-specific controls.
+		
+		Returns:
+			None: This function validates state.
+		
+		Raises:
+			ValueError: Raised when required request values are missing.
+		"""
+		if not st.session_state.get( 'text_model' ):
+			raise ValueError( 'Select a Text model before sending a prompt.' )
+		
+		selected_tools = st.session_state.get( 'text_tools', [ ], )
+		
+		if provider_name == 'GPT':
+			continuation_mode = st.session_state.get( 'text_continuation_mode', 'None', )
+			
+			if (continuation_mode == 'Previous Response' and not str(
+				st.session_state.get( 'text_previous_response_id', '', ) or '' ).strip( )):
+				raise ValueError(
+					'Enter a Previous Response ID or select another continuation mode.' )
+			
+			if (continuation_mode == 'Conversation' and not str(
+				st.session_state.get( 'text_conversation_id', '', ) or '' ).strip( )):
+				raise ValueError( 'Enter a Conversation ID or select another continuation mode.' )
+			
+			if ('file_search' in selected_tools and not parse_comma_list(
+				st.session_state.get( 'text_vector_store_ids', '', ) )):
+				raise ValueError(
+					'Enter at least one GPT Vector Store ID when File Search is selected.' )
+		
+		if provider_name == 'Gemini':
+			if ('file_search' in selected_tools and not parse_comma_list(
+				st.session_state.get( 'text_vector_store_ids', '', ) )):
+				raise ValueError( 'Enter at least one Gemini File Search Store resource name.' )
+			
+			if ('url_context' in selected_tools and not parse_semicolon_list(
+				st.session_state.get( 'text_urls_input', '', ) )):
+				raise ValueError( 'Enter at least one URL when URL Context is selected.' )
+		
+		if (
+				provider_name == 'Grok' and 'collections_search' in selected_tools and not
+		get_selected_grok_collection_ids( )):
+			raise ValueError( 'Select or enter at least one xAI Collection.' )
+		
+		selected_format = str( st.session_state.get( 'text_response_format', '', ) or '' )
+		
+		if (provider_name in [ 'GPT', 'Grok', ] and selected_format == 'json_schema'):
+			get_text_response_schema( required=True )
+	
 	def reset_text_model_settings( ) -> None:
 		"""Reset text model settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+			Resets Text Mode model and provider-capability selections.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		for key in [ 'text_model', 'text_reasoning', 'text_modalities', 'text_media_resolution',
-			'text_number', ]:
-			if key in st.session_state:
-				del st.session_state[ key ]
+			None: This function updates session state.
+		"""
+		st.session_state[ 'text_model' ] = ''
+		st.session_state[ 'text_reasoning' ] = ''
+		st.session_state[ 'text_safety_profile' ] = ''
 	
 	def reset_text_inference_settings( ) -> None:
 		"""Reset text inference settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+			Resets Text Mode sampling and penalty controls.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		for key in [ 'text_temperature', 'text_top_percent', 'text_top_k',
-			'text_frequency_penalty',
-			'text_presence_penalty', 'text_presense_penalty', ]:
-			if key in st.session_state:
-				del st.session_state[ key ]
+			None: This function updates session state.
+		"""
+		st.session_state[ 'text_temperature' ] = 0.0
+		st.session_state[ 'text_top_percent' ] = 0.0
+		st.session_state[ 'text_top_k' ] = 0
+		st.session_state[ 'text_frequency_penalty' ] = 0.0
+		st.session_state[ 'text_presence_penalty' ] = 0.0
 	
 	def reset_text_tool_settings( ) -> None:
 		"""Reset text tool settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+			Resets Text Mode tools, grounding, domains, URLs, and retrieval resources.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		for key in [ 'text_google_grounding', 'text_max_calls', 'text_tool_choice', 'text_include',
-			'text_tools', 'text_domains_input', 'text_domains', 'text_parallel_tools',
-			'text_parallel_calls', 'text_vector_store_ids', 'text_grok_collection_labels',
-			'text_grok_collection_ids', 'text_grok_collection_ids_input', 'text_urls_input',
-			'text_urls', 'text_max_urls', 'selected_filestore_id', 'selected_filestore_label',
-			'text_file_search_store_names', 'text_file_search_store_select', ]:
-			if key in st.session_state:
-				del st.session_state[ key ]
+			None: This function updates session state.
+		"""
+		st.session_state[ 'text_tools' ] = [ ]
+		st.session_state[ 'text_include' ] = [ ]
+		st.session_state[ 'text_tool_choice' ] = ''
+		st.session_state[ 'text_max_calls' ] = 0
+		st.session_state[ 'text_parallel_tools' ] = False
+		st.session_state[ 'text_google_grounding' ] = False
+		st.session_state[ 'text_urls_input' ] = ''
+		st.session_state[ 'text_max_urls' ] = 0
+		st.session_state[ 'text_domains_input' ] = ''
+		st.session_state[ 'text_vector_store_ids' ] = ''
+		st.session_state[ 'text_grok_collection_labels' ] = [ ]
+		st.session_state[ 'text_grok_collection_ids' ] = [ ]
+		st.session_state[ 'text_grok_collection_ids_input' ] = ''
 	
 	def reset_text_response_settings( ) -> None:
 		"""Reset text response settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+			Resets Text Mode output, structured-response, streaming, storage, and continuation
+			controls.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		for key in [ 'text_stream', 'text_store', 'text_max_tokens', 'text_background',
-			'text_response_format', 'text_response_schema', 'text_json_schema',
-			'text_json_schema_name', 'text_json_schema_strict', 'text_stops', 'text_stops_input',
-			'text_previous_response_id', 'text_conversation_id', 'text_input',
-			'text_safety_profile', ]:
-			if key in st.session_state:
-				del st.session_state[ key ]
-	
-	def clear_text_instructions( ) -> None:
-		"""Clear text instructions.
-		
-		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
-		
-		Returns:
-		    None: This function performs its work through side effects and does not return a
- value."""
-		st.session_state[ 'text_system_instructions' ] = ''
-		st.session_state[ 'instructions' ] = ''
-	
-	def convert_text_system_instructions( ) -> None:
-		"""Convert text system instructions.
-		
-		Purpose:
-		    Performs the convert_text_system_instructions workflow using the inputs supplied by
-		    the caller and the current runtime configuration. The function keeps this behavior
-		    isolated so
-		    related UI, provider, and data-processing paths can call it consistently.
-		
-		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		text_value = st.session_state.get( 'text_system_instructions', '' )
-		if not isinstance( text_value, str ) or not text_value.strip( ):
-			return
-		
-		source = text_value.strip( )
-		if cfg.XML_BLOCK_PATTERN.search( source ):
-			converted = convert_xml( source )
-		else:
-			converted = convert_markdown( source )
-		
-		st.session_state[ 'text_system_instructions' ] = converted
-	
-	def load_text_instruction_template( ) -> None:
-		"""Load text instruction template.
-		
-		Purpose:
-		    Loads the selected Text-mode prompt template into the Text-mode system-instruction
-		    field using the stable prompt identifier stored in session state.
-		
-		Returns:
-		    None: This function performs its work through side effects and does not return a value.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger.
+			None: This function updates session state.
 		"""
-		try:
-			load_prompt_template( prompt_id_key='text_prompt_id',
-				instructions_key='text_system_instructions', )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'app'
-			ex.cause = 'Text Mode'
-			ex.method = 'load_text_instruction_template( ) -> None'
-			Logger( ).write( ex )
-			raise ex
+		st.session_state[ 'text_max_tokens' ] = 0
+		st.session_state[ 'text_response_format' ] = ''
+		st.session_state[ 'text_response_schema' ] = ''
+		st.session_state[ 'text_json_schema' ] = ''
+		st.session_state[ 'text_json_schema_name' ] = 'response_schema'
+		st.session_state[ 'text_json_schema_strict' ] = True
+		st.session_state[ 'text_stops_input' ] = ''
+		st.session_state[ 'text_store' ] = False
+		st.session_state[ 'text_stream' ] = False
+		st.session_state[ 'text_background' ] = False
+		st.session_state[ 'text_continuation_mode' ] = 'None'
+		st.session_state[ 'text_previous_response_id' ] = ''
+		st.session_state[ 'text_conversation_id' ] = ''
 	
-	def build_text_response_format_payload( ) -> Any:
-		"""Build text response format payload.
+	def clear_text_messages( ) -> None:
+		"""Clear text messages.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The
-		    function converts caller input, session state, or provider-specific options into a
-		    stable shape that
-		    downstream API calls and rendering code can consume safely.
+			Clears Text Mode conversation, continuation, answer, and source state.
 		
 		Returns:
-		    Any: Return value produced by the operation."""
-		response_format = st.session_state.get( 'text_response_format', '' )
-		schema_text = st.session_state.get( 'text_json_schema', '' )
-		schema_name = st.session_state.get( 'text_json_schema_name', 'response_schema' )
-		strict = bool( st.session_state.get( 'text_json_schema_strict', True ) )
-		
-		if provider_name in [ 'GPT', 'Grok' ] and schema_text and str(
-				response_format ).lower( ) == 'json_schema':
-			try:
-				import json
-				
-				schema = json.loads( schema_text )
-				return { 'type': 'json_schema',
-					'json_schema': { 'name': schema_name or 'response_schema', 'strict': strict,
-						'schema': schema, }, }
-			except Exception:
-				st.warning( 'Text JSON schema is not valid JSON. Falling back to selected '
-				            'format.' )
-		
-		return response_format or None
+			None: This function updates session state.
+		"""
+		st.session_state[ 'text_messages' ] = [ ]
+		st.session_state[ 'text_context' ] = [ ]
+		st.session_state[ 'text_previous_response_id' ] = ''
+		st.session_state[ 'text_conversation_id' ] = ''
+		st.session_state[ 'last_answer' ] = ''
+		st.session_state[ 'last_sources' ] = [ ]
 	
-	def build_text_context( include_last_message: bool = False ) -> List[ Dict[ str, Any ] ]:
-		"""Build text context.
+	def build_gpt_text_kwargs( prompt: str, prior_context: List[ Dict[ str, str ] ],
+		stream_handler: Any = None ) -> Dict[ str, Any ]:
+		"""Build GPT text arguments.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The
-		    function converts caller input, session state, or provider-specific options into a
-		    stable shape that
-		    downstream API calls and rendering code can consume safely.
+			Builds only arguments accepted by the GPT Chat replacement.
 		
 		Args:
-		    include_last_message (bool): Include last message value used by the operation.
+			prompt (str): Current user prompt.
+			prior_context (List[Dict[str, str]]): Prior conversation messages.
+			stream_handler (Any): Optional streaming callback.
 		
 		Returns:
-		    List[Dict[str, Any]]: Return value produced by the operation."""
-		messages = st.session_state.get( 'text_messages', [ ] )
-		if not isinstance( messages, list ):
-			return [ ]
+			Dict[str, Any]: GPT text-generation arguments.
+		"""
+		selected_tools = list( st.session_state.get( 'text_tools', [ ], ) )
+		continuation_mode = st.session_state.get( 'text_continuation_mode', 'None', )
+		previous_id = ''
+		conversation_id = ''
 		
-		if include_last_message:
-			return messages
+		if continuation_mode == 'Previous Response':
+			previous_id = str(
+				st.session_state.get( 'text_previous_response_id', '', ) or '' ).strip( )
+		elif continuation_mode == 'Conversation':
+			conversation_id = str(
+				st.session_state.get( 'text_conversation_id', '', ) or '' ).strip( )
 		
-		return messages[ :-1 ]
+		return { 'prompt': prompt, 'model': st.session_state.get( 'text_model', '', ),
+			'temperature': float( st.session_state.get( 'text_temperature', 0.0, ) ),
+			'format': get_gpt_text_format( ),
+			'top_p': float( st.session_state.get( 'text_top_percent', 0.0, ) ),
+			'frequency': float( st.session_state.get( 'text_frequency_penalty', 0.0, ) ),
+			'max_tools': int( st.session_state.get( 'text_max_calls', 0, ) ),
+			'presence': float( st.session_state.get( 'text_presence_penalty', 0.0, ) ),
+			'max_tokens': int( st.session_state.get( 'text_max_tokens', 0, ) ),
+			'store': bool( st.session_state.get( 'text_store', False, ) ),
+			'stream': bool( st.session_state.get( 'text_stream', False, ) ),
+			'instruct': str( st.session_state.get( 'text_system_instructions', '', ) or '' ),
+			'background': bool( st.session_state.get( 'text_background', False, ) ),
+			'reasoning': str( st.session_state.get( 'text_reasoning', '', ) or '' ),
+			'include': list( st.session_state.get( 'text_include', [ ], ) ),
+			'tools': selected_tools, 'allowed_domains': (
+				normalize_text_domains( ) if 'web_search' in selected_tools else [ ]),
+			'previous_id': previous_id,
+			'tool_choice': str( st.session_state.get( 'text_tool_choice', '', ) or '' ),
+			'is_parallel': bool( st.session_state.get( 'text_parallel_tools', False, ) ),
+			'context': prior_context, 'input_data': None, 'vector_store_ids': (parse_comma_list(
+				st.session_state.get( 'text_vector_store_ids',
+					'', ) ) if 'file_search' in selected_tools else [ ]),
+			'conversation_id': conversation_id, }
 	
-	def build_text_common_kwargs( prompt: str ) -> Dict[ str, Any ]:
-		"""Build text common kwargs.
+	def build_gemini_text_kwargs( prompt: str, prior_context: List[ Dict[ str, str ] ],
+		stream_handler: Any = None ) -> Dict[ str, Any ]:
+		"""Build Gemini text arguments.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The
-		    function converts caller input, session state, or provider-specific options into a
-		    stable shape that
-		    downstream API calls and rendering code can consume safely.
+			Builds only arguments accepted by the Gemini Chat replacement.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
+			prompt (str): Current user prompt.
+			prior_context (List[Dict[str, str]]): Prior conversation messages.
+			stream_handler (Any): Optional streaming callback.
 		
 		Returns:
-		    Dict[str, Any]: Return value produced by the operation."""
-		raw_stops = st.session_state.get( 'text_stops_input', '' )
-		raw_urls = st.session_state.get( 'text_urls_input', '' )
-		raw_domains = st.session_state.get( 'text_domains_input', '' )
+			Dict[str, Any]: Gemini text-generation arguments.
+		"""
+		selected_tools = list( st.session_state.get( 'text_tools', [ ], ) )
 		
-		derived_stops = parse_comma_list( raw_stops )
-		derived_urls = parse_semicolon_list( raw_urls )
-		derived_domains = parse_comma_list( raw_domains )
+		if (st.session_state.get( 'text_google_grounding',
+			False, ) and 'google_search' not in selected_tools):
+			selected_tools.append( 'google_search' )
 		
-		st.session_state[ 'text_stops' ] = derived_stops
-		st.session_state[ 'text_domains' ] = derived_domains
-		st.session_state[ 'text_urls' ] = derived_urls
-		
-		derived_modalities = [ str( modality ).strip( ) for modality in
-			st.session_state.get( 'text_modalities', [ ] ) if str( modality ).strip( ) ]
-		
-		return { 'prompt': prompt, 'model': st.session_state.get( 'text_model' ),
-			'number': st.session_state.get( 'text_number' ),
-			'temperature': st.session_state.get( 'text_temperature' ),
-			'top_p': st.session_state.get( 'text_top_percent' ),
-			'top_k': st.session_state.get( 'text_top_k' ),
-			'frequency': st.session_state.get( 'text_frequency_penalty' ),
-			'presence': st.session_state.get( 'text_presence_penalty' ),
-			'max_tokens': st.session_state.get( 'text_max_tokens' ), 'stops': derived_stops,
-			'instruct': st.session_state.get( 'text_system_instructions' ),
-			'response_format': st.session_state.get( 'text_response_format' ) or None,
-			'tools': st.session_state.get( 'text_tools', [ ] ),
-			'tool_choice': st.session_state.get( 'text_tool_choice' ) or None,
-			'reasoning': st.session_state.get( 'text_reasoning' ) or None,
-			'modalities': derived_modalities,
-			'media_resolution': st.session_state.get( 'text_media_resolution' ) or None,
-			'context': build_text_context( include_last_message=False ),
-			'content': st.session_state.get( 'text_content' ), 'urls': derived_urls,
-			'max_urls': st.session_state.get( 'text_max_urls' ),
-			'response_schema': st.session_state.get( 'text_response_schema' ) or None,
-			'safety_profile': st.session_state.get( 'text_safety_profile' ) or None, }
+		return { 'prompt': prompt, 'model': st.session_state.get( 'text_model', '', ), 'number': 1,
+			'temperature': float( st.session_state.get( 'text_temperature', 0.0, ) ),
+			'top_p': float( st.session_state.get( 'text_top_percent', 0.0, ) ),
+			'top_k': int( st.session_state.get( 'text_top_k', 0, ) ),
+			'frequency': float( st.session_state.get( 'text_frequency_penalty', 0.0, ) ),
+			'presence': float( st.session_state.get( 'text_presence_penalty', 0.0, ) ),
+			'max_tokens': int( st.session_state.get( 'text_max_tokens', 0, ) ),
+			'stops': parse_comma_list( st.session_state.get( 'text_stops_input', '', ) ),
+			'instruct': str( st.session_state.get( 'text_system_instructions', '', ) or '' ),
+			'response_format': str( st.session_state.get( 'text_response_format', '', ) or '' ),
+			'tools': selected_tools, 'tool_choice': '',
+			'reasoning': str( st.session_state.get( 'text_reasoning', '', ) or '' ),
+			'modalities': [ ], 'media_resolution': '', 'context': prior_context, 'content': '',
+			'urls': (parse_semicolon_list( st.session_state.get( 'text_urls_input',
+				'', ) ) if 'url_context' in selected_tools else [ ]),
+			'max_urls': int( st.session_state.get( 'text_max_urls', 0, ) ),
+			'response_schema': get_gemini_text_schema( ),
+			'safety_profile': str( st.session_state.get( 'text_safety_profile', '', ) or '' ),
+			'file_search_store_names': (parse_comma_list(
+				st.session_state.get( 'text_vector_store_ids',
+					'', ) ) if 'file_search' in selected_tools else [ ]),
+			'stream': bool( st.session_state.get( 'text_stream', False, ) ),
+			'stream_handler': stream_handler, }
 	
-	def build_gpt_text_kwargs( prompt: str ) -> Dict[ str, Any ]:
-		"""Build gpt text kwargs.
+	def build_grok_text_kwargs( prompt: str, prior_context: List[ Dict[ str, str ] ],
+		stream_handler: Any = None ) -> Dict[ str, Any ]:
+		"""Build Grok text arguments.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The
-		    function converts caller input, session state, or provider-specific options into a
-		    stable shape that
-		    downstream API calls and rendering code can consume safely.
+			Builds only arguments accepted by the Grok Chat replacement.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
+			prompt (str): Current user prompt.
+			prior_context (List[Dict[str, str]]): Prior conversation messages.
+			stream_handler (Any): Optional streaming callback.
 		
 		Returns:
-		    Dict[str, Any]: Return value produced by the operation."""
-		vector_store_ids = parse_comma_list( st.session_state.get( 'text_vector_store_ids', '' ) )
-		tools = st.session_state.get( 'text_tools', [ ] )
-		include = st.session_state.get( 'text_include', [ ] )
-		tool_choice = st.session_state.get( 'text_tool_choice' ) or None
-		input_mode = st.session_state.get( 'text_input', '' )
+			Dict[str, Any]: Grok text-generation arguments.
+		"""
+		selected_tools = list( st.session_state.get( 'text_tools', [ ], ) )
 		
-		if 'file_search' in tools and vector_store_ids:
-			text_tools = [ { 'type': 'file_search', 'vector_store_ids': vector_store_ids, } ]
-		else:
-			text_tools = tools
-		
-		if input_mode == 'single_turn':
-			context = [ ]
-		else:
-			context = build_text_context( include_last_message=False )
-		
-		raw_stops = st.session_state.get( 'text_stops_input', '' )
-		raw_urls = st.session_state.get( 'text_urls_input', '' )
-		raw_domains = st.session_state.get( 'text_domains_input', '' )
-		stops = parse_comma_list( raw_stops )
-		urls = parse_semicolon_list( raw_urls )
-		allowed_domains = parse_comma_list( raw_domains )
-		modalities = [ str( modality ).strip( ) for modality in
-			st.session_state.get( 'text_modalities', [ ] ) if str( modality ).strip( ) ]
-		st.session_state[ 'text_stops' ] = stops
-		st.session_state[ 'text_urls' ] = urls
-		st.session_state[ 'text_domains' ] = allowed_domains
-		
-		return { 'prompt': prompt, 'model': st.session_state.get( 'text_model' ),
-			'number': st.session_state.get( 'text_number' ),
-			'temperature': st.session_state.get( 'text_temperature' ),
-			'format': build_text_response_format_payload( ),
-			'top_p': st.session_state.get( 'text_top_percent' ),
-			'top_k': st.session_state.get( 'text_top_k' ),
-			'frequency': st.session_state.get( 'text_frequency_penalty' ),
-			'presence': st.session_state.get( 'text_presence_penalty' ),
-			'max_tools': st.session_state.get( 'text_max_calls' ),
-			'max_tokens': st.session_state.get( 'text_max_tokens' ), 'stops': stops,
-			'store': normalize_bool_or_none( st.session_state.get( 'text_store' ) ),
-			'stream': normalize_bool_or_none( st.session_state.get( 'text_stream' ) ),
-			'instruct': st.session_state.get( 'text_system_instructions' ),
-			'background': normalize_bool_or_none( st.session_state.get( 'text_background' ) ),
-			'reasoning': st.session_state.get( 'text_reasoning' ) or None, 'include': include,
-			'tools': text_tools, 'allowed_domains': allowed_domains,
-			'previous_id': st.session_state.get( 'text_previous_response_id' ) or None,
-			'tool_choice': tool_choice,
-			'is_parallel': bool( st.session_state.get( 'text_parallel_tools', False ) ),
-			'context': context, 'vector_store_ids': vector_store_ids,
-			'conversation_id': st.session_state.get( 'text_conversation_id' ) or None,
-			'modalities': modalities,
-			'media_resolution': st.session_state.get( 'text_media_resolution' ) or None,
-			'urls': urls, 'max_urls': st.session_state.get( 'text_max_urls' ), }
+		return { 'prompt': prompt, 'model': st.session_state.get( 'text_model', '', ),
+			'temperature': float( st.session_state.get( 'text_temperature', 0.0, ) ),
+			'format': str( st.session_state.get( 'text_response_format', '', ) or '' ),
+			'top_p': float( st.session_state.get( 'text_top_percent', 0.0, ) ),
+			'frequency': float( st.session_state.get( 'text_frequency_penalty', 0.0, ) ),
+			'presence': float( st.session_state.get( 'text_presence_penalty', 0.0, ) ),
+			'max_tokens': int( st.session_state.get( 'text_max_tokens', 0, ) ),
+			'stops': parse_comma_list( st.session_state.get( 'text_stops_input', '', ) ),
+			'store': bool( st.session_state.get( 'text_store', False, ) ),
+			'stream': bool( st.session_state.get( 'text_stream', False, ) ),
+			'instruct': str( st.session_state.get( 'text_system_instructions', '', ) or '' ),
+			'reasoning': str( st.session_state.get( 'text_reasoning', '', ) or '' ),
+			'include': list( st.session_state.get( 'text_include', [ ], ) ),
+			'tools': selected_tools, 'allowed_domains': (
+				normalize_text_domains( ) if 'web_search' in selected_tools else [ ]),
+			'previous_id': str(
+				st.session_state.get( 'text_previous_response_id', '', ) or '' ).strip( ),
+			'tool_choice': str( st.session_state.get( 'text_tool_choice', '', ) or '' ),
+			'is_parallel': bool( st.session_state.get( 'text_parallel_tools', False, ) ),
+			'context': prior_context, 'vector_store_ids': (
+				get_selected_grok_collection_ids( ) if 'collections_search' in selected_tools else
+				[ ]),
+			'max_tools': int( st.session_state.get( 'text_max_calls', 0, ) ),
+			'response_schema': get_grok_text_schema( ), 'stream_handler': stream_handler, }
 	
-	def build_gemini_text_kwargs( prompt: str,
-		stream_handler: Optional[ Any ] = None ) -> Dict[ str, Any ]:
-		"""Build gemini text kwargs.
-		
-		Purpose:
-		    Builds the normalized data structure required by the application workflow. The
-		    function converts caller input, session state, or provider-specific options into a
-		    stable shape that
-		    downstream API calls and rendering code can consume safely.
-		
-		Args:
-		    prompt (str): Prompt value used by the operation.
-		    stream_handler (Optional[Any]): Stream handler value used by the operation.
-		
-		Returns:
-		    Dict[str, Any]: Return value produced by the operation."""
-		kwargs = build_text_common_kwargs( prompt )
-		grounding_enabled = bool( st.session_state.get( 'text_google_grounding', False ) )
-		kwargs[ 'tools' ] = [ 'google_search' ] if grounding_enabled else st.session_state.get(
-			'text_tools', [ ] )
-		kwargs[ 'file_search_store_names' ] = st.session_state.get( 'text_file_search_store_names',
-			[ ] )
-		kwargs[ 'include' ] = st.session_state.get( 'text_include', [ ] )
-		kwargs[ 'store' ] = normalize_bool_or_none( st.session_state.get( 'text_store' ) )
-		kwargs[ 'background' ] = normalize_bool_or_none( st.session_state.get( 'text_background'
-		) )
-		kwargs[ 'is_parallel' ] = bool( st.session_state.get( 'text_parallel_tools', False ) )
-		kwargs[ 'max_tools' ] = st.session_state.get( 'text_max_calls' )
-		kwargs[ 'allowed_domains' ] = st.session_state.get( 'text_domains', [ ] )
-		kwargs[ 'format' ] = build_text_response_format_payload( )
-		kwargs[ 'stream' ] = bool( st.session_state.get( 'text_stream', False ) )
-		kwargs[ 'stream_handler' ] = stream_handler
-		return kwargs
-	
-	def build_grok_text_kwargs( prompt: str ) -> Dict[ str, Any ]:
-		"""Build grok text kwargs.
-		
-		Purpose:
-		    Builds the normalized data structure required by the application workflow. The
-		    function converts caller input, session state, or provider-specific options into a
-		    stable shape that
-		    downstream API calls and rendering code can consume safely.
-		
-		Args:
-		    prompt (str): Prompt value used by the operation.
-		
-		Returns:
-		    Dict[str, Any]: Return value produced by the operation."""
-		kwargs = build_text_common_kwargs( prompt )
-		collection_ids = get_selected_grok_collection_ids( )
-		input_mode = st.session_state.get( 'text_input', '' )
-		
-		if input_mode == 'single_turn':
-			kwargs[ 'context' ] = [ ]
-		
-		kwargs[ 'format' ] = build_text_response_format_payload( )
-		kwargs[ 'include' ] = st.session_state.get( 'text_include', [ ] )
-		kwargs[ 'allowed_domains' ] = st.session_state.get( 'text_domains', [ ] )
-		kwargs[ 'background' ] = normalize_bool_or_none( st.session_state.get( 'text_background'
-		) )
-		kwargs[ 'stream' ] = normalize_bool_or_none( st.session_state.get( 'text_stream' ) )
-		kwargs[ 'store' ] = normalize_bool_or_none( st.session_state.get( 'text_store' ) )
-		kwargs[ 'is_parallel' ] = bool( st.session_state.get( 'text_parallel_tools', False ) )
-		kwargs[ 'max_tools' ] = st.session_state.get( 'text_max_calls' )
-		kwargs[ 'previous_id' ] = st.session_state.get( 'text_previous_response_id' ) or None
-		kwargs[ 'conversation_id' ] = st.session_state.get( 'text_conversation_id' ) or None
-		kwargs[ 'vector_store_ids' ] = collection_ids
-		return kwargs
-	
-	def call_generate_text( prompt: str, stream_handler: Optional[ Any ] = None ) -> Any:
+	def call_generate_text( prompt: str, prior_context: List[ Dict[ str, str ] ],
+		stream_handler: Any = None ) -> Any:
 		"""Call generate text.
 		
 		Purpose:
-		    Performs the call_generate_text workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+			Dispatches Text Mode through the exact replacement interface for the selected
+			provider.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
-		    stream_handler (Optional[Any]): Stream handler value used by the operation.
+			prompt (str): Current user prompt.
+			prior_context (List[Dict[str, str]]): Prior conversation messages.
+			stream_handler (Any): Optional streaming callback.
 		
 		Returns:
-		    Any: Return value produced by the operation."""
+			Any: Provider-generated text.
+		"""
 		if provider_name == 'GPT':
-			kwargs = build_gpt_text_kwargs( prompt )
-		elif provider_name == 'Gemini':
-			kwargs = build_gemini_text_kwargs( prompt, stream_handler )
-		else:
-			kwargs = build_grok_text_kwargs( prompt )
+			return text.generate_text(
+				**build_gpt_text_kwargs( prompt, prior_context, stream_handler, ) )
 		
-		return text.generate_text( **kwargs )
-	
-	def extract_text_sources( instance: Any, response: Any ) -> List[ Dict[ str, Any ] ]:
-		"""Extract text sources.
+		if provider_name == 'Gemini':
+			return text.generate_text(
+				**build_gemini_text_kwargs( prompt, prior_context, stream_handler, ) )
 		
-		Purpose:
-		    Extracts structured information from a provider response, uploaded file,
-		    or application data object. The function normalizes provider-specific shapes into
-		    values that can be
-		    rendered, stored, or passed to later processing steps.
+		if provider_name == 'Grok':
+			return text.generate_text(
+				**build_grok_text_kwargs( prompt, prior_context, stream_handler, ) )
 		
-		Args:
-		    instance (Any): Instance value used by the operation.
-		    response (Any): Response value used by the operation.
-		
-		Returns:
-		    List[Dict[str, Any]]: Return value produced by the operation."""
-		if hasattr( instance, 'get_grounding_sources' ):
-			try:
-				sources = instance.get_grounding_sources( )
-				if isinstance( sources, list ):
-					return sources
-			except Exception:
-				pass
-		
-		if 'extract_sources' in globals( ):
-			try:
-				sources = extract_sources( response )
-				if isinstance( sources, list ):
-					return sources
-			except Exception:
-				pass
-		
-		return [ ]
-	
-	def update_text_usage( response: Any ) -> None:
-		"""Update text usage.
-		
-		Purpose:
-		    Performs the update_text_usage workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
-		
-		Args:
-		    response (Any): Response value used by the operation.
-		
-		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		try:
-			if 'update_token_counters' in globals( ):
-				update_token_counters( response )
-		except Exception:
-			pass
+		raise ValueError( f'Unsupported Text provider: {provider_name}' )
 	
 	def get_text_avatar( role: str ) -> str:
 		"""Get text avatar.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI controls
-		    and downstream logic can consume it consistently.
+			Returns the configured assistant avatar for the selected provider.
 		
 		Args:
-		    role (str): Role value used by the operation.
+			role (str): Message role.
 		
 		Returns:
-		    str: Return value produced by the operation."""
+			str: Avatar value.
+		"""
 		if role != 'assistant':
 			return ''
 		
-		if provider_name == 'Gemini':
-			return getattr( cfg, 'JENI', getattr( cfg, 'BOO', '🧠' ) )
-		
 		if provider_name == 'GPT':
-			return getattr( cfg, 'GPT', getattr( cfg, 'BOO', '🧠' ) )
+			return getattr( cfg, 'GPT', getattr( cfg, 'BOO', '🧠' ), )
+		
+		if provider_name == 'Gemini':
+			return getattr( cfg, 'JENI', getattr( cfg, 'BOO', '🧠' ), )
 		
 		if provider_name == 'Grok':
-			return getattr( cfg, 'GROK', getattr( cfg, 'BOO', '🧠' ) )
+			return getattr( cfg, 'GROK', getattr( cfg, 'BOO', '🧠' ), )
 		
-		return getattr( cfg, 'BOO', '' )
+		return getattr( cfg, 'BOO', '🧠', )
 	
+	def extract_text_sources( instance: Any, response: Any ) -> List[ Dict[ str, Any ] ]:
+		"""Extract text sources.
+		
+		Purpose:
+			Extracts provider-specific grounding and search sources from the latest response.
+		
+		Args:
+			instance (Any): Selected provider wrapper.
+			response (Any): Provider response.
+		
+		Returns:
+			List[Dict[str, Any]]: Normalized source records.
+		"""
+		sources: List[ Dict[ str, Any ] ] = [ ]
+		
+		if (provider_name == 'Gemini' and hasattr( instance, 'get_grounding_sources', )):
+			result = instance.get_grounding_sources( )
+			
+			if isinstance( result, list ):
+				sources = result
+		
+		elif (provider_name in [ 'GPT', 'Grok', ] and hasattr( instance, 'get_sources', )):
+			result = instance.get_sources( )
+			
+			if isinstance( result, list ):
+				sources = result
+		
+		elif 'extract_sources' in globals( ):
+			result = extract_sources( response )
+			
+			if isinstance( result, list ):
+				sources = result
+		
+		return sources
+	
+	def update_text_usage( response: Any ) -> None:
+		"""Update text usage.
+		
+		Purpose:
+			Updates application token counters from the latest provider response when the
+			application usage helper is available.
+		
+		Args:
+			response (Any): Provider response.
+		
+		Returns:
+			None: This function updates application state.
+		"""
+		if 'update_token_counters' in globals( ):
+			update_token_counters( response )
+	
+	def load_text_instruction_template( ) -> None:
+		"""Load Text instruction template.
+		
+		Purpose:
+		    Loads the selected prompt template into the Text Mode system-instruction field.
+		
+		Returns:
+		    None: This function updates Text Mode session state.
+		"""
+		load_prompt_template( prompt_id_key='text_prompt_id',
+			instructions_key='text_system_instructions', )
+	
+	def clear_text_instructions( ) -> None:
+		"""Clear Text instructions.
+		
+		Purpose:
+		    Clears the Text Mode system instructions and its selected prompt template.
+		
+		Returns:
+		    None: This function updates Text Mode session state.
+		"""
+		st.session_state[ 'text_system_instructions' ] = ''
+		st.session_state[ 'text_prompt_id' ] = None
+	
+	def convert_text_system_instructions( ) -> None:
+		"""Convert Text system instructions.
+		
+		Purpose:
+		    Converts the Text Mode system instructions between Markdown headings and XML-style
+		    heading elements.
+		
+		Returns:
+		    None: This function updates Text Mode session state.
+		"""
+		instructions = str( st.session_state.get( 'text_system_instructions', '' ) or '' )
+		
+		if not instructions.strip( ):
+			return
+		
+		st.session_state[ 'text_system_instructions' ] = convert_markdown( instructions )
+		
 	# ------------------------------------------------------------------
 	# Main Chat UI
 	# ------------------------------------------------------------------
-	left, center, right = st.columns( [ 0.05, 0.9, 0.05 ] )
+	left, center, right = st.columns( [ 0.05, 0.90, 0.05, ] )
+	
 	with center:
-		st.subheader( '💬 Text Generation', help=get_text_help( 'TEXT_GENERATION' ) )
+		st.subheader( '💬 Text Generation', help=cfg.TEXT_GENERATION, )
 		st.divider( )
-		
-		if st.session_state.get( 'clear_instructions' ):
-			st.session_state[ 'text_system_instructions' ] = ''
-			st.session_state[ 'instructions_last_loaded' ] = ''
-			st.session_state[ 'clear_instructions' ] = False
 		
 		# ------------------------------------------------------------------
 		# Expander — Text Mind Controls
 		# ------------------------------------------------------------------
-		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
+		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch', ):
 			# ------------------------------------------------------------------
 			# Expander — Model Settings
 			# ------------------------------------------------------------------
-			with st.expander( label='Model Settings', icon='🧊', expanded=False, width='stretch' ):
-				model_c1, model_c2, model_c3, model_c4, model_c5 = st.columns(
-					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
+			with st.expander( label='Model Settings', icon='🧊', expanded=False,
+					width='stretch', ):
+				model_options = get_text_options( text, 'model_options', )
+				reasoning_options = get_text_options( text, 'reasoning_options', )
+				
+				if not model_options:
+					default_model = str( getattr( text, 'model', '', ) or '' )
+					
+					if default_model:
+						model_options = [ default_model, ]
+				
+				sanitize_text_selection( 'text_model', model_options, '', )
+				sanitize_text_selection( 'text_reasoning', reasoning_options, '', )
+				model_c1, model_c2, model_c3 = st.columns( [ 0.34, 0.33, 0.33, ], border=True,
+					gap='xxsmall', )
 				
 				# ---------- Model ------------
 				with model_c1:
-					model_options = get_text_options( text, 'model_options' )
-					if not model_options:
-						model_options = [
-							st.session_state.get( 'text_model', '' ) or getattr( text, 'model',
-								'' ) ]
-						model_options = [ item for item in model_options if item ]
-					
-					sanitize_text_selection( 'text_model', model_options, '' )
 					st.selectbox( label='Model', options=model_options, key='text_model',
-						placeholder='Options', index=None,
-						help='Required. Text generation model used by the selected provider.' )
+						index=None, placeholder='Select Model',
+						help='Required. Select the provider model used for Text generation.', )
 				
 				# ---------- Reasoning ------------
 				with model_c2:
-					reasoning_options = get_text_options( text, 'reasoning_options' )
-					sanitize_text_selection( 'text_reasoning', reasoning_options, '' )
 					st.selectbox( label='Reasoning', options=reasoning_options,
-						key='text_reasoning', help=get_text_help( 'REASONING' ), index=None,
-						placeholder='Options' )
+						key='text_reasoning', index=None, placeholder='Options',
+						disabled=not reasoning_options, help=cfg.REASONING, )
 				
-				# ---------- Modalities ------------
+				# ---------- Input Mode ------------
 				with model_c3:
-					modality_options = get_text_options( text, 'modality_options', [ 'text' ] )
-					sanitize_text_multiselect( 'text_modalities', modality_options )
-					st.multiselect( label='Modalities', options=modality_options,
-						key='text_modalities',
-						help='Optional. Provider-supported response modalities.',
-						placeholder='Options' )
+					st.selectbox( label='Input Mode', options=[ 'conversation', 'single_turn', ],
+						key='text_input', help=('Conversation includes prior Text Mode messages. '
+						                        'Single turn sends only the current prompt.'), )
 				
-				# ---------- Media Resolution ------------
-				with model_c4:
-					media_options = get_text_options( text, 'media_options' )
-					sanitize_text_selection( 'text_media_resolution', media_options, '' )
-					st.selectbox( label='Media Resolution', options=media_options,
-						key='text_media_resolution',
-						help='Optional. Provider-supported media resolution.', index=None,
-						placeholder='Options' )
-				
-				# ---------- Candidate Count ------------
-				with model_c5:
-					st.slider( label='Responses', min_value=0, max_value=8, step=1,
-						key='text_number',
-						help='Optional. Number of candidate responses when supported.' )
+				if provider_name == 'Gemini':
+					safety_options = get_text_options( text, 'safety_options', )
+					
+					if safety_options:
+						sanitize_text_selection( 'text_safety_profile', safety_options, '', )
+						
+						# ---------- Safety Profile ------------
+						st.selectbox( label='Safety Profile', options=safety_options,
+							key='text_safety_profile', index=None, placeholder='Options',
+							help='Optional. Gemini safety configuration profile.', )
 				
 				st.button( label='Reset', key='text_model_reset', width='stretch',
-					on_click=reset_text_model_settings, icon='🔄' )
+					on_click=reset_text_model_settings, icon='🔄', )
 			
 			# ------------------------------------------------------------------
 			# Expander — Inference Settings
 			# ------------------------------------------------------------------
 			with st.expander( label='Inference Settings', icon='🎚️', expanded=False,
-					width='stretch' ):
-				prm_c1, prm_c2, prm_c3, prm_c4, prm_c5 = st.columns(
-					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
+					width='stretch', ):
+				if provider_name == 'Gemini':
+					inf_c1, inf_c2, inf_c3, inf_c4, inf_c5 = st.columns(
+						[ 0.20, 0.20, 0.20, 0.20, 0.20, ], border=True, gap='xxsmall', )
+				else:
+					inf_c1, inf_c2, inf_c3, inf_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25, ],
+						border=True, gap='xxsmall', )
 				
 				# ---------- Top-P ------------
-				with prm_c1:
+				with inf_c1:
 					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
-						help=get_text_help( 'TOP_P' ), key='text_top_percent' )
-				
-				# ---------- Top-K ------------
-				with prm_c2:
-					st.slider( label='Top-K', min_value=0, max_value=200, step=1,
-						help=get_text_help( 'TOP_K' ), key='text_top_k' )
+						help=cfg.TOP_P, key='text_top_percent', )
 				
 				# ---------- Temperature ------------
-				with prm_c3:
+				with inf_c2:
 					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
-						help=get_text_help( 'TEMPERATURE' ), key='text_temperature' )
+						help=cfg.TEMPERATURE, key='text_temperature', )
 				
-				# ---------- Frequency Penalty ------------
-				with prm_c4:
-					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						help=get_text_help( 'FREQUENCY_PENALTY' ), key='text_frequency_penalty' )
-				
-				# ---------- Presence Penalty ------------
-				with prm_c5:
-					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						help=get_text_help( 'PRESENCE_PENALTY' ), key='text_presence_penalty' )
-					st.session_state[ 'text_presense_penalty' ] = st.session_state.get(
-						'text_presence_penalty', 0.0 )
+				if provider_name == 'Gemini':
+					# ---------- Top-K ------------
+					with inf_c3:
+						st.slider( label='Top-K', min_value=0, max_value=200, step=1,
+							help=cfg.TOP_K, key='text_top_k', )
+					
+					# ---------- Frequency Penalty ------------
+					with inf_c4:
+						st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
+							step=0.01, help=cfg.FREQUENCY_PENALTY, key='text_frequency_penalty', )
+					
+					# ---------- Presence Penalty ------------
+					with inf_c5:
+						st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0,
+							step=0.01, help=cfg.PRESENCE_PENALTY, key='text_presence_penalty', )
+				else:
+					# ---------- Frequency Penalty ------------
+					with inf_c3:
+						st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
+							step=0.01, help=cfg.FREQUENCY_PENALTY, key='text_frequency_penalty', )
+					
+					# ---------- Presence Penalty ------------
+					with inf_c4:
+						st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0,
+							step=0.01, help=cfg.PRESENCE_PENALTY, key='text_presence_penalty', )
 				
 				st.button( label='Reset', key='text_inference_reset', width='stretch',
-					on_click=reset_text_inference_settings, icon='🔄' )
+					on_click=reset_text_inference_settings, icon='🔄', )
 			
 			# ------------------------------------------------------------------
 			# Expander — Grounding Settings
 			# ------------------------------------------------------------------
 			with st.expander( label='Tools / Grounding Settings', icon='🔎', expanded=False,
-					width='stretch' ):
-				tool_c1, tool_c2, tool_c3, tool_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-					border=True, gap='xxsmall' )
+					width='stretch', ):
+				tool_options = get_text_options( text, 'tool_options', )
+				include_options = get_text_options( text, 'include_options', )
+				choice_options = get_text_options( text, 'choice_options', )
+				
+				sanitize_text_multiselect( 'text_tools', tool_options, )
+				sanitize_text_multiselect( 'text_include', include_options, )
+				sanitize_text_selection( 'text_tool_choice', choice_options, '', )
+				
+				selected_tools = st.session_state.get( 'text_tools', [ ], )
+				gemini_builtin_tools = { 'google_search', 'url_context', 'file_search',
+					'code_execution', }
+				gemini_function_tool_selected = (provider_name == 'Gemini' and any(
+					selected_tool not in gemini_builtin_tools for selected_tool in
+						selected_tools ))
+				
+				tool_c1, tool_c2, tool_c3 = st.columns( [ 0.34, 0.33, 0.33, ], border=True,
+					gap='xxsmall', )
 				
 				# ---------- Tools ------------
 				with tool_c1:
-					tool_options = get_text_options( text, 'tool_options' )
-					sanitize_text_multiselect( 'text_tools', tool_options )
 					st.multiselect( label='Tools', options=tool_options, key='text_tools',
-						help=get_text_help( 'TOOLS' ), placeholder='Options' )
+						placeholder='Options', help=cfg.TOOLS, )
 				
 				# ---------- Include ------------
 				with tool_c2:
-					include_options = get_text_options( text, 'include_options' )
-					sanitize_text_multiselect( 'text_include', include_options )
 					st.multiselect( label='Include', options=include_options, key='text_include',
-						help=get_text_help( 'INCLUDE' ), placeholder='Options' )
+						placeholder='Options', disabled=not include_options, help=cfg.INCLUDE, )
 				
 				# ---------- Tool Choice ------------
 				with tool_c3:
-					choice_options = get_text_options( text, 'choice_options' )
-					sanitize_text_selection( 'text_tool_choice', choice_options, '' )
 					st.selectbox( label='Tool Choice', options=choice_options,
-						key='text_tool_choice', help=get_text_help( 'CHOICE' ), index=None,
-						placeholder='Options' )
+						key='text_tool_choice', index=None, placeholder='Options', disabled=(
+								not choice_options or (
+								provider_name == 'Gemini' and not gemini_function_tool_selected)),
+						help=cfg.CHOICE, )
 				
-				# ---------- Max Tool Calls ------------
-				with tool_c4:
-					st.slider( label='Max Tool Calls', min_value=0, max_value=100, step=1,
-						key='text_max_calls', help=get_text_help( 'MAX_TOOL_CALLS' ) )
+				selected_tools = st.session_state.get( 'text_tools', [ ], )
 				
-				ctx_c1, ctx_c2, ctx_c3, ctx_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-					border=True, gap='xxsmall' )
-				
-				# ---------- Google Grounding ------------
-				with ctx_c1:
-					google_grounding_supported = provider_name == 'Gemini'
+				if provider_name in [ 'GPT', 'Grok', ]:
+					tool_c4, tool_c5 = st.columns( [ 0.50, 0.50, ], border=True, gap='xxsmall', )
 					
-					if not google_grounding_supported:
-						st.session_state[ 'text_google_grounding' ] = False
+					# ---------- Max Tool Calls ------------
+					with tool_c4:
+						st.slider( label='Max Tool Calls', min_value=0, max_value=100, step=1,
+							key='text_max_calls', help=cfg.MAX_TOOL_CALLS, )
 					
+					# ---------- Parallel Tools ------------
+					with tool_c5:
+						st.toggle( label='Parallel Tools', key='text_parallel_tools',
+							help=cfg.PARALLEL_TOOL_CALLS, )
+				else:
+					st.session_state[ 'text_max_calls' ] = 0
+					st.session_state[ 'text_parallel_tools' ] = False
+				
+				if provider_name == 'Gemini':
+					# ---------- Google Grounding ------------
 					st.toggle( label='Google Grounding', key='text_google_grounding',
-						disabled=not google_grounding_supported,
-						help='When enabled, Gemini grounds this Text response using Google '
-						     'Search.' if google_grounding_supported else 'Google grounding is '
-						                                                  'available only for '
-						                                                  'Gemini Text mode.' )
+						help=('Adds Google Search grounding without replacing '
+						      'other selected Gemini tools.'), )
+				else:
+					st.session_state[ 'text_google_grounding' ] = False
 				
-				# ---------- Parallel Tools ------------
-				with ctx_c2:
-					st.toggle( label='Parallel Tools', key='text_parallel_tools',
-						help=get_text_help( 'PARALLEL_TOOL_CALLS' ) )
-					st.session_state[ 'text_parallel_calls' ] = st.session_state.get(
-						'text_parallel_tools', False )
-				
-				# ---------- Max URLs ------------
-				with ctx_c3:
-					st.slider( label='Max URLs', min_value=0, max_value=25, step=1,
-						key='text_max_urls',
-						help='Optional. Maximum number of URLs from the URL list to include.' )
-				
-				# ---------- Input Mode ------------
-				with ctx_c4:
-					st.selectbox( label='Input Mode', options=[ 'conversation', 'single_turn' ],
-						key='text_input',
-						help='Conversation uses prior Text messages as context; single_turn omits '
-						     'them.', index=None, placeholder='Options' )
-				
-				# ---------- URLs ------------
-				st.text_input( label='URLs', key='text_urls_input',
-					help='Optional. Enter URLs separated by semicolons for added prompt context.',
-					width='stretch',
-					placeholder='https://example.com/page-1;https://example.com/page-2' )
+				if (provider_name == 'Gemini' and 'url_context' in selected_tools):
+					url_c1, url_c2 = st.columns( [ 0.80, 0.20, ], border=True, gap='xxsmall', )
+					
+					# ---------- URLs ------------
+					with url_c1:
+						st.text_input( label='URLs', key='text_urls_input',
+							help='Required for Gemini URL Context. Separate URLs with semicolons.',
+							width='stretch', placeholder=('https://example.com/page-1;'
+							                              'https://example.com/page-2'), )
+					
+					# ---------- Max URLs ------------
+					with url_c2:
+						st.slider( label='Max URLs', min_value=0, max_value=25, step=1,
+							key='text_max_urls',
+							help='Optional maximum number of URL Context sources.', )
+				else:
+					st.session_state[ 'text_urls_input' ] = ''
+					st.session_state[ 'text_max_urls' ] = 0
 				
 				# ---------- Allowed Domains ------------
-				st.text_input( label='Allowed Domains', key='text_domains_input',
-					help=get_text_help( 'ALLOWED_DOMAINS' ), width='stretch',
-					placeholder='example.com,openai.com' )
+				if (provider_name in [ 'GPT', 'Grok', ] and 'web_search' in selected_tools):
+					st.text_input( label='Allowed Domains', key='text_domains_input',
+						help=cfg.ALLOWED_DOMAINS, width='stretch',
+						placeholder='example.com,openai.com', )
+				else:
+					st.session_state[ 'text_domains_input' ] = ''
 				
 				# ---------- Vector Store / Collection IDs ------------
-				if provider_name == 'GPT':
+				if (provider_name == 'GPT' and 'file_search' in selected_tools):
 					st.text_input( label='Vector Store IDs', key='text_vector_store_ids',
-						help=cfg.VECTORSTORES_API, width='stretch',
-						placeholder='vs_abc123,vs_def456' )
+						help='Required for GPT File Search. Separate IDs with commas.',
+						width='stretch', placeholder='vs_abc123,vs_def456', )
 				
-				elif provider_name == 'Grok':
-					collection_map = get_grok_collection_options( )
-					collection_labels = list( collection_map.keys( ) )
+				elif (provider_name == 'Gemini' and 'file_search' in selected_tools):
+					st.text_input( label='File Search Store Names', key='text_vector_store_ids',
+						help=('Required for Gemini File Search. Enter complete resource names '
+						      'separated with commas.'), width='stretch',
+						placeholder=('fileSearchStores/store-a,'
+						             'fileSearchStores/store-b'), )
+				
+				elif (provider_name == 'Grok' and 'collections_search' in selected_tools):
+					collection_options = get_grok_collection_options( )
+					collection_labels = list( collection_options.keys( ) )
 					
 					if collection_labels:
 						st.multiselect( label='Collections', options=collection_labels,
-							key='text_grok_collection_labels',
-							help='Optional. Select configured xAI Collections for Grok retrieval.',
-							placeholder='Options' )
+							key='text_grok_collection_labels', placeholder='Options',
+							help='Configured xAI Collections used by Collections Search.', )
 					
 					st.text_input( label='Collection IDs', key='text_grok_collection_ids_input',
-						help='Optional. Enter xAI Collection IDs separated by commas.',
-						width='stretch', placeholder='collection_abc123,collection_def456' )
+						help='Enter additional xAI Collection IDs separated with commas.',
+						width='stretch', placeholder='collection_abc123,collection_def456', )
+				else:
+					st.session_state[ 'text_vector_store_ids' ] = ''
+					
+					if provider_name != 'Grok':
+						st.session_state[ 'text_grok_collection_labels' ] = [ ]
+						st.session_state[ 'text_grok_collection_ids' ] = [ ]
+						st.session_state[ 'text_grok_collection_ids_input' ] = ''
 				
 				st.button( label='Reset', key='reset_text_tools', width='stretch',
-					on_click=reset_text_tool_settings, icon='🔄' )
+					on_click=reset_text_tool_settings, icon='🔄', )
 			
 			# ------------------------------------------------------------------
 			# Expander — Response Settings
 			# ------------------------------------------------------------------
 			with st.expander( label='Output / Response Settings', icon='↔️', expanded=False,
-					width='stretch' ):
-				resp_c1, resp_c2, resp_c3, resp_c4, resp_c5 = st.columns(
-					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
+					width='stretch', ):
+				format_options = get_text_options( text, 'format_options', )
+				sanitize_text_selection( 'text_response_format', format_options, '', )
+				
+				resp_c1, resp_c2, resp_c3, resp_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25, ],
+					border=True, gap='xxsmall', )
 				
 				# ---------- Max Tokens ------------
 				with resp_c1:
 					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
-						help=cfg.MAX_OUTPUT_TOKENS, key='text_max_tokens' )
+						help=cfg.MAX_OUTPUT_TOKENS, key='text_max_tokens', )
 				
 				# ---------- Response Format ------------
 				with resp_c2:
-					format_options = get_text_options( text, 'format_options' )
-					sanitize_text_selection( 'text_response_format', format_options, '' )
 					st.selectbox( label='Response Format', options=format_options,
 						key='text_response_format',
-						help='Optional. Desired response format or MIME type.', index=None,
-						placeholder='Options' )
+						help='Optional. Desired provider-supported response format.', index=None,
+						placeholder='Options', disabled=not format_options, )
 				
 				# ---------- Store ------------
 				with resp_c3:
-					st.toggle( label='Store', key='text_store', help=cfg.STORE )
+					if provider_name in [ 'GPT', 'Grok', ]:
+						st.toggle( label='Store', key='text_store', help=cfg.STORE, )
+					else:
+						st.session_state[ 'text_store' ] = False
+						st.toggle( label='Store', key='text_store', help=cfg.STORE,
+							disabled=True, )
 				
 				# ---------- Stream ------------
 				with resp_c4:
-					st.toggle( label='Stream', key='text_stream', help=cfg.STREAM )
+					st.toggle( label='Stream', key='text_stream', help=cfg.STREAM, )
 				
-				# ---------- Background ------------
-				with resp_c5:
-					st.toggle( label='Background', key='text_background',
-						help=cfg.BACKGROUND_MODE )
+				if provider_name == 'GPT':
+					gpt_resp_c1, gpt_resp_c2 = st.columns( [ 0.50, 0.50, ], border=True,
+						gap='xxsmall', )
+					
+					# ---------- Background ------------
+					with gpt_resp_c1:
+						st.toggle( label='Background', key='text_background',
+							help=cfg.BACKGROUND_MODE, )
+					
+					# ---------- Continuation ------------
+					with gpt_resp_c2:
+						st.selectbox( label='Continuation',
+							options=[ 'None', 'Previous Response', 'Conversation', ],
+							key='text_continuation_mode',
+							help=('Select one OpenAI continuation mechanism. '
+							      'Previous Response and Conversation are mutually exclusive.'), )
+					
+					if (st.session_state.get( 'text_continuation_mode' ) == 'Previous Response'):
+						# ---------- Previous Response ID ------------
+						st.text_input( label='Previous Response ID',
+							key='text_previous_response_id',
+							help='Required when Previous Response continuation is selected.',
+							width='stretch', placeholder='resp_...', )
+						st.session_state[ 'text_conversation_id' ] = ''
+					
+					elif (st.session_state.get( 'text_continuation_mode' ) == 'Conversation'):
+						# ---------- Conversation ID ------------
+						st.text_input( label='Conversation ID', key='text_conversation_id',
+							help='Required when Conversation continuation is selected.',
+							width='stretch', placeholder='conv_...', )
+						st.session_state[ 'text_previous_response_id' ] = ''
+					
+					else:
+						st.session_state[ 'text_previous_response_id' ] = ''
+						st.session_state[ 'text_conversation_id' ] = ''
 				
-				schema_c1, schema_c2, schema_c3 = st.columns( [ 0.25, 0.50, 0.25 ], border=True,
-					gap='xxsmall' )
+				elif provider_name == 'Grok':
+					st.session_state[ 'text_background' ] = False
+					st.session_state[ 'text_continuation_mode' ] = 'Previous Response'
+					st.session_state[ 'text_conversation_id' ] = ''
+					
+					# ---------- Previous Response ID ------------
+					st.text_input( label='Previous Response ID', key='text_previous_response_id',
+						help='Optional xAI stored-response continuation identifier.',
+						width='stretch', placeholder='response_...', )
 				
-				# ---------- Schema Name ------------
-				with schema_c1:
-					st.text_input( label='Schema Name', key='text_json_schema_name',
-						help='Optional. Name used for GPT/Grok JSON schema response format.',
-						width='stretch', placeholder='response_schema' )
+				else:
+					st.session_state[ 'text_background' ] = False
+					st.session_state[ 'text_continuation_mode' ] = 'None'
+					st.session_state[ 'text_previous_response_id' ] = ''
+					st.session_state[ 'text_conversation_id' ] = ''
 				
-				# ---------- Response Schema ------------
-				with schema_c2:
-					st.text_area( label='Response Schema', key='text_json_schema',
-						help='Optional. JSON schema used when Response Format is json_schema.',
-						height=100, width='stretch',
-						placeholder='{"type":"object","properties":{"answer":{"type":"string"}}}' )
-					st.session_state[ 'text_response_schema' ] = st.session_state.get(
-						'text_json_schema', '' )
+				selected_format = str( st.session_state.get( 'text_response_format', '', ) or '' )
+				show_json_schema = ((provider_name in [ 'GPT',
+					'Grok', ] and selected_format == 'json_schema') or (
+						                    provider_name == 'Gemini' and selected_format ==
+						                    'application/json'))
 				
-				# ---------- Strict Schema ------------
-				with schema_c3:
-					st.toggle( label='Strict Schema', key='text_json_schema_strict',
-						help='Optional. Enforce strict JSON schema when supported.' )
+				if show_json_schema:
+					schema_c1, schema_c2, schema_c3 = st.columns( [ 0.25, 0.50, 0.25, ],
+						border=True, gap='xxsmall', )
+					
+					# ---------- Schema Name ------------
+					with schema_c1:
+						st.text_input( label='Schema Name', key='text_json_schema_name',
+							help='Name used for GPT or Grok JSON Schema output.', width='stretch',
+							placeholder='response_schema', disabled=provider_name == 'Gemini', )
+					
+					# ---------- Response Schema ------------
+					with schema_c2:
+						st.text_area( label='Response Schema', key='text_json_schema',
+							help=('Optional for Gemini JSON output. Required for GPT or '
+							      'Grok json_schema output.'), height=100, width='stretch',
+							placeholder=('{"type":"object","properties":'
+							             '{"answer":{"type":"string"}}}'), )
+						st.session_state[ 'text_response_schema' ] = (
+							st.session_state.get( 'text_json_schema', '', ))
+					
+					# ---------- Strict Schema ------------
+					with schema_c3:
+						st.toggle( label='Strict Schema', key='text_json_schema_strict',
+							help='Enforce strict JSON Schema when supported.',
+							disabled=provider_name == 'Gemini', )
 				
 				# ---------- Stop Sequences ------------
 				st.text_input( label='Stop Sequences', key='text_stops_input',
-					help=cfg.STOP_SEQUENCE, width='stretch', placeholder='END,STOP,DONE' )
+					help=cfg.STOP_SEQUENCE, width='stretch', placeholder='END,STOP,DONE',
+					disabled=provider_name == 'GPT', )
 				
 				st.button( label='Reset', key='text_response_reset', width='stretch',
-					on_click=reset_text_response_settings, icon='🔄' )
+					on_click=reset_text_response_settings, icon='🔄', )
 		
 		# ------------------------------------------------------------------
 		# Expander — System Instructions
 		# ------------------------------------------------------------------
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
-				width='stretch' ):
-			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
+				width='stretch', ):
+			in_left, in_right = st.columns( [ 0.80, 0.20, ] )
 			
 			# ------------------------------------------------------------------
 			# Text Prompt Categories
 			# ------------------------------------------------------------------
 			text_prompt_categories = fetch_prompt_categories( 'Text' )
 			current_text_category = st.session_state.get( 'text_prompt_category' )
+			
 			if current_text_category not in text_prompt_categories:
 				st.session_state[ 'text_prompt_category' ] = None
 			
 			selected_text_category = st.session_state.get( 'text_prompt_category' )
-			text_prompt_options = fetch_prompt_options(
-				selected_text_category ) if selected_text_category else [ ]
-			
+			text_prompt_options = (
+				fetch_prompt_options( selected_text_category ) if selected_text_category else [ ])
 			text_prompt_ids = [ int( option[ 'ID' ] ) for option in text_prompt_options ]
+			
 			if st.session_state.get( 'text_prompt_id' ) not in text_prompt_ids:
 				st.session_state[ 'text_prompt_id' ] = None
 			
@@ -5228,7 +5359,7 @@ if mode == 'Text':
 			# ------------------------------------------------------------------
 			with in_left:
 				st.text_area( label='Enter Text', height=140, width='stretch',
-					help=get_text_help( 'SYSTEM_INSTRUCTIONS' ), key='text_system_instructions', )
+					help=cfg.SYSTEM_INSTRUCTIONS, key='text_system_instructions', )
 			
 			# ------------------------------------------------------------------
 			# Prompt Template Selection
@@ -5236,41 +5367,44 @@ if mode == 'Text':
 			with in_right:
 				st.selectbox( label='Category', options=text_prompt_categories, index=None,
 					key='text_prompt_category', placeholder='Select Category',
-					help='Limits prompt templates to categories associated with Text generation.',
-					on_change=reset_prompt_template_selection, args=('text_prompt_id',), )
+					help=('Limits prompt templates to categories associated '
+					      'with Text generation.'), on_change=reset_prompt_template_selection,
+					args=('text_prompt_id',), )
 				
 				st.selectbox( label='Use Template', options=text_prompt_ids, index=None,
 					key='text_prompt_id', placeholder='Select Template',
 					disabled=not text_prompt_ids,
 					format_func=lambda prompt_id: format_prompt_option( prompt_id,
-						text_prompt_options, ),
-					help='Loads the selected prompt into the Text system-instruction field.',
+						text_prompt_options, ), help=('Loads the selected prompt into the Text '
+					                                  'system-instruction field.'),
 					on_change=load_text_instruction_template, )
 			
 			# ------------------------------------------------------------------
 			# Instruction Actions
 			# ------------------------------------------------------------------
-			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
+			btn_c1, btn_c2 = st.columns( [ 0.80, 0.20, ] )
+			
 			with btn_c1:
 				st.button( label='Clear Instructions', width='stretch',
-					on_click=clear_text_instructions, icon='🧹' )
+					on_click=clear_text_instructions, icon='🧹', )
 			
 			with btn_c2:
 				st.button( label='XML ↔️ Markdown', width='stretch',
 					on_click=convert_text_system_instructions, )
 		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
+		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True, )
 		
 		# ------------------------------------------------------------------
 		# Messages
 		# ------------------------------------------------------------------
-		if not isinstance( st.session_state.get( 'text_messages' ), list ):
-			st.session_state[ 'text_messages' ] = [ ]
-		
-		for msg in st.session_state.get( 'text_messages', [ ] ):
-			role = msg.get( 'role', 'assistant' )
-			content = msg.get( 'content', '' )
-			with st.chat_message( role, avatar=get_text_avatar( role ) ):
+		for msg in st.session_state.get( 'text_messages', [ ], ):
+			if not isinstance( msg, dict ):
+				continue
+			
+			role = str( msg.get( 'role', 'assistant', ) )
+			content = str( msg.get( 'content', '', ) )
+			
+			with st.chat_message( role, avatar=get_text_avatar( role ), ):
 				st.markdown( content )
 		
 		if provider_name == 'GPT':
@@ -5284,9 +5418,11 @@ if mode == 'Text':
 		
 		if prompt is not None and str( prompt ).strip( ):
 			prompt = str( prompt ).strip( )
-			st.session_state.text_messages.append( { 'role': 'user', 'content': prompt, } )
 			
-			with st.chat_message( 'assistant', avatar=get_text_avatar( 'assistant' ) ):
+			# Capture context before appending the current prompt so the prompt is sent once.
+			prior_context = build_text_context( )
+			st.session_state[ 'text_messages' ].append( { 'role': 'user', 'content': prompt, } )
+			with st.chat_message( 'assistant', avatar=get_text_avatar( 'assistant' ), ):
 				with st.spinner( 'Thinking…' ):
 					response = None
 					response_obj = None
@@ -5297,85 +5433,96 @@ if mode == 'Text':
 						"""On stream chunk.
 						
 						Purpose:
-						    Performs the on_stream_chunk workflow using the inputs supplied by the
-						    caller and the current runtime configuration. The function keeps this
-						    behavior isolated so
-						    related UI, provider, and  data-processing paths can call it
-						    consistently.
+							Renders the accumulated provider streaming response.
 						
 						Args:
-						    chunk (str): Chunk value used by the operation.
+							chunk (str): Provider text delta.
 						
 						Returns:
-						    None: This function performs its work through side effects and does
-						        not return a value.
+							None: This function updates the streaming placeholder.
 						"""
 						if chunk is None:
 							return
 						
-						stream_buffer.append( str( chunk ) )
+						chunk_text = str( chunk )
+						
+						if not chunk_text:
+							return
+						
+						stream_buffer.append( chunk_text )
 						stream_placeholder.markdown( ''.join( stream_buffer ) + '▌' )
 					
 					try:
-						response = call_generate_text( prompt=prompt,
-							stream_handler=on_stream_chunk if st.session_state.get( 'text_stream',
-								False ) else None )
+						validate_text_request( )
 						
-						response_obj = getattr( text, 'response', None ) or response
-						if provider_name in [ 'GPT', 'Grok' ]:
-							st.session_state[ 'text_previous_response_id' ] = (
-									getattr( text, 'previous_id', None ) or getattr( text,
-								'previous_response_id', None ) or st.session_state.get(
-								'text_previous_response_id', '' ) or '')
-					
-					except Exception as exc:
-						err = Error( exc )
-						st.error( f'Generation Failed: {err.info}' )
-						response = None
-						response_obj = getattr( text, 'response', None )
-					
-					if response is not None and str( response ).strip( ):
-						response_text = str( response ).strip( )
+						response = call_generate_text( prompt=prompt, prior_context=prior_context,
+							stream_handler=(on_stream_chunk if st.session_state.get( 'text_stream',
+								False, ) else None), )
+						response_obj = (getattr( text, 'response', None, ) or response)
+						response_text = str( response or '' ).strip( )
+						streamed_text = ''.join( stream_buffer ).strip( )
 						
-						if st.session_state.get( 'text_stream', False ):
+						if streamed_text:
+							response_text = streamed_text
+						
+						if not response_text:
+							raise ValueError( 'The provider returned no text.' )
+						
+						if st.session_state.get( 'text_stream', False, ):
 							stream_placeholder.markdown( response_text )
 						else:
 							st.markdown( response_text )
 						
-						st.session_state.text_messages.append(
+						st.session_state[ 'text_messages' ].append(
 							{ 'role': 'assistant', 'content': response_text, } )
-						
-						st.session_state[ 'text_context' ] = build_text_context(
-							include_last_message=True )
+						st.session_state[ 'text_context' ] = build_text_context( )
 						st.session_state[ 'last_answer' ] = response_text
-						sources = extract_text_sources( text, response_obj )
+						
+						if provider_name in [ 'GPT', 'Grok', ]:
+							previous_response_id = str(
+								getattr( text, 'previous_response_id', '', ) or getattr( text,
+									'previous_id', '', ) or '' )
+							
+							if previous_response_id:
+								st.session_state[
+									'text_previous_response_id' ] = previous_response_id
+						
+						if provider_name == 'GPT':
+							conversation_id = str( getattr( text, 'conversation_id', '', ) or '' )
+							
+							if conversation_id:
+								st.session_state[ 'text_conversation_id' ] = conversation_id
+						
+						sources = extract_text_sources( text, response_obj, )
 						st.session_state[ 'last_sources' ] = sources
 						
 						if sources:
 							with st.expander( label='Sources', icon='🔎', expanded=False,
-									width='stretch' ):
+									width='stretch', ):
 								for source in sources:
-									title = source.get( 'title', '' ) or source.get( 'url', '' )
-									url = source.get( 'url', '' )
+									if not isinstance( source, dict ):
+										continue
+									
+									title = str(
+										source.get( 'title', '', ) or source.get( 'url', '', ) )
+									url = str( source.get( 'url', '', ) or '' )
+									
 									if url:
 										st.markdown( f'- [{title}]({url})' )
 									elif title:
 										st.markdown( f'- {title}' )
-					else:
-						st.error( 'Generation Failed!.' )
+						
+						update_text_usage( response_obj )
 					
-					update_text_usage( response_obj )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Generation Failed: {err.info}' )
 		
 		# ------------------------------------------------------------------
 		# Message Reset
 		# ------------------------------------------------------------------
-		if st.button( 'Clear Messages', key='text_clear_messages', icon='🧹' ):
-			st.session_state[ 'text_messages' ] = [ ]
-			st.session_state[ 'text_context' ] = [ ]
-			st.session_state[ 'text_previous_response_id' ] = ''
-			st.session_state[ 'text_conversation_id' ] = ''
-			st.session_state[ 'last_answer' ] = ''
-			st.session_state[ 'last_sources' ] = [ ]
+		if st.button( 'Clear Messages', key='text_clear_messages', icon='🧹', width='stretch', ):
+			clear_text_messages( )
 			st.rerun( )
 
 # ======================================================================================
@@ -5385,76 +5532,45 @@ elif mode == 'Images':
 	provider_name = st.session_state.get( 'provider', 'GPT' )
 	image = get_images_module( provider_name )
 	
-	if 'image_mode' not in st.session_state:
-		st.session_state[ 'image_mode' ] = ''
+	# ------------------------------------------------------------------
+	# Images Mode State Safety
+	# ------------------------------------------------------------------
+	image_defaults: Dict[ str, Any ] = { 'image_mode': 'Generation', 'image_model': '',
+		'image_analysis_model': '', 'image_generation_model': '', 'image_editing_model': '',
+		'image_number': 1, 'image_size': '', 'image_quality': '', 'image_style': '',
+		'image_mime_type': '', 'image_compression': 0.0, 'image_backcolor': '',
+		'image_aspect_ratio': '', 'image_analysis_detail': 'auto', 'image_media_resolution': '',
+		'image_modality': '', 'image_temperature': 0.0, 'image_top_percent': 0.0, 'image_top_k': 0,
+		'image_frequency_penalty': 0.0, 'image_presence_penalty': 0.0, 'image_max_tokens': 0,
+		'image_include': [ ], 'image_store': False, 'image_stream': False, 'image_grounded': False,
+		'image_image_search': False, 'image_generate_prompt': '', 'image_analysis_prompt': '',
+		'image_edit_prompt': '', 'image_system_instructions': '', 'image_prompt_category': None,
+		'image_prompt_id': None, 'image_input': [ ], 'generated_images': [ ],
+		'analyzed_images': [ ], 'edited_images': [ ], }
 	
-	if 'image_analysis_detail' not in st.session_state:
-		st.session_state[ 'image_analysis_detail' ] = 'auto'
+	for state_key, state_default in image_defaults.items( ):
+		if state_key not in st.session_state:
+			st.session_state[ state_key ] = state_default
 	
-	if 'image_compression' not in st.session_state:
-		st.session_state[ 'image_compression' ] = 0.0
-	
-	if 'image_domains_input' not in st.session_state:
-		st.session_state[ 'image_domains_input' ] = ''
-	
-	if 'image_domains' not in st.session_state:
-		st.session_state[ 'image_domains' ] = [ ]
-	
-	if 'image_mime_type' not in st.session_state:
-		st.session_state[ 'image_mime_type' ] = ''
-	
-	if 'image_output' not in st.session_state:
-		st.session_state[ 'image_output' ] = ''
-	
-	if 'image_backcolor' not in st.session_state:
-		st.session_state[ 'image_backcolor' ] = ''
-	
-	if 'image_aspect_ratio' not in st.session_state:
-		st.session_state[ 'image_aspect_ratio' ] = ''
-	
-	if 'image_detail' not in st.session_state:
-		st.session_state[ 'image_detail' ] = ''
-	
-	if 'image_modality' not in st.session_state:
-		st.session_state[ 'image_modality' ] = ''
-	
-	if 'image_grounded' not in st.session_state:
-		st.session_state[ 'image_grounded' ] = False
-	
-	if 'image_image_search' not in st.session_state:
-		st.session_state[ 'image_image_search' ] = False
-	
-	if 'image_generate_prompt' not in st.session_state:
-		st.session_state[ 'image_generate_prompt' ] = ''
-	
-	if 'image_analysis_prompt' not in st.session_state:
-		st.session_state[ 'image_analysis_prompt' ] = ''
-	
-	if 'image_edit_prompt' not in st.session_state:
-		st.session_state[ 'image_edit_prompt' ] = ''
-	
-	if not isinstance( st.session_state.get( 'image_input' ), list ):
+	if not isinstance( st.session_state.get( 'image_input' ), list, ):
 		st.session_state[ 'image_input' ] = [ ]
 	
-	if not isinstance( st.session_state.get( 'generated_images' ), list ):
+	if not isinstance( st.session_state.get( 'generated_images' ), list, ):
 		st.session_state[ 'generated_images' ] = [ ]
 	
-	if not isinstance( st.session_state.get( 'analyzed_images' ), list ):
+	if not isinstance( st.session_state.get( 'analyzed_images' ), list, ):
 		st.session_state[ 'analyzed_images' ] = [ ]
 	
-	if not isinstance( st.session_state.get( 'edited_images' ), list ):
+	if not isinstance( st.session_state.get( 'edited_images' ), list, ):
 		st.session_state[ 'edited_images' ] = [ ]
 	
-	if not isinstance( st.session_state.get( 'image_include' ), list ):
+	if not isinstance( st.session_state.get( 'image_include' ), list, ):
 		st.session_state[ 'image_include' ] = [ ]
 	
-	if not isinstance( st.session_state.get( 'image_tools' ), list ):
-		st.session_state[ 'image_tools' ] = [ ]
+	image_number_value = st.session_state.get( 'image_number', 1, )
 	
-	if not isinstance( st.session_state.get( 'image_number' ), int ):
-		st.session_state[ 'image_number' ] = 1
-	
-	if int( st.session_state.get( 'image_number', 1 ) or 1 ) < 1:
+	if (not isinstance( image_number_value, int ) or isinstance( image_number_value,
+		bool ) or image_number_value < 1 or image_number_value > 10):
 		st.session_state[ 'image_number' ] = 1
 	
 	# ----- Image Helpers -----
@@ -5463,24 +5579,20 @@ elif mode == 'Images':
 		"""Get image options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and
-		    downstream logic can consume it consistently.
+			Returns normalized image options exposed by the selected provider wrapper.
 		
 		Args:
-		    instance (Any): Instance value used by the operation.
-		    attr_name (str): Attr name value used by the operation.
-		    fallback (Optional[List[str]]): Fallback value used by the operation.
+			instance (Any): Provider image-wrapper instance.
+			attr_name (str): Wrapper option-property name.
+			fallback (Optional[List[str]]): Values used when the property is unavailable.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
-		values = getattr( instance, attr_name, None )
+			List[str]: Normalized provider option values.
+		"""
+		values = getattr( instance, attr_name, None, )
+		
 		if callable( values ):
-			try:
-				values = values( )
-			except Exception:
-				values = None
+			values = values( )
 		
 		if values is None:
 			values = fallback or [ ]
@@ -5488,49 +5600,30 @@ elif mode == 'Images':
 		if isinstance( values, tuple ):
 			values = list( values )
 		
-		if isinstance( values, list ):
-			return [ str( value ) for value in values if str( value ).strip( ) ]
+		if not isinstance( values, list ):
+			return fallback or [ ]
 		
-		return fallback or [ ]
-	
-	def get_image_help( name: str, fallback: str = '' ) -> str:
-		"""Get image help.
-		
-		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and
-		    downstream logic can consume it consistently.
-		
-		Args:
-		    name (str): Name value used by the operation.
-		    fallback (str): Fallback value used by the operation.
-		
-		Returns:
-		    str: Return value produced by the operation."""
-		return str( getattr( cfg, name, fallback ) or fallback )
+		return [ str( value ) for value in values if str( value ).strip( ) ]
 	
 	def sanitize_image_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> \
 			None:
 		"""Sanitize image selection.
 		
 		Purpose:
-		    Performs the sanitize_image_selection workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+			Removes stale single-select values that are unsupported by the selected provider
+			and image operation.
 		
 		Args:
-		    key (str): Key value used by the operation.
-		    valid_options (List[str]): Valid options value used by the operation.
-		    default (Any): Default value used by the operation.
+			key (str): Session-state key.
+			valid_options (List[str]): Supported option values.
+			default (Any): Replacement value.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		current_value = st.session_state.get( key, default )
+			None: This function updates session state.
+		"""
+		current_value = st.session_state.get( key, default, )
 		
-		if current_value in [ None, '' ]:
+		if current_value in [ None, '', ]:
 			return
 		
 		if valid_options and current_value not in valid_options:
@@ -5540,19 +5633,16 @@ elif mode == 'Images':
 		"""Sanitize image multiselect.
 		
 		Purpose:
-		    Performs the sanitize_image_multiselect workflow using the inputs supplied by the
-		    caller and the current runtime configuration. The function keeps this behavior
-		    isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Removes stale multi-select values that are unsupported by the selected provider.
 		
 		Args:
-		    key (str): Key value used by the operation.
-		    valid_options (List[str]): Valid options value used by the operation.
+			key (str): Session-state key.
+			valid_options (List[str]): Supported option values.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		current_values = st.session_state.get( key, [ ] )
+			None: This function updates session state.
+		"""
+		current_values = st.session_state.get( key, [ ], )
 		
 		if not isinstance( current_values, list ):
 			st.session_state[ key ] = [ ]
@@ -5564,138 +5654,157 @@ elif mode == 'Images':
 		"""Get provider image models.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and
-		    downstream logic can consume it consistently.
+			Returns models configured for the selected provider and image operation.
 		
 		Args:
-		    selected_mode (Optional[str]): Selected mode value used by the operation.
+			selected_mode (Optional[str]): Generation, Analysis, or Editing.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
+			List[str]: Available model identifiers.
+		"""
 		mode_name = selected_mode or ''
 		
 		if provider_name == 'GPT':
 			if mode_name == 'Generation':
-				return list( getattr( cfg, 'GPT_GENERATION', [ ] ) )
+				models = list( getattr( cfg, 'GPT_GENERATION', [ ], ) )
+				
+				if models:
+					return models
+			
 			if mode_name == 'Analysis':
-				return list( getattr( cfg, 'GPT_ANALYSIS', [ ] ) )
+				models = list( getattr( cfg, 'GPT_ANALYSIS', [ ], ) )
+				
+				if models:
+					return models
+			
 			if mode_name == 'Editing':
-				return list( getattr( cfg, 'GPT_EDITING', [ ] ) )
+				models = list( getattr( cfg, 'GPT_EDITING', [ ], ) )
+				
+				if models:
+					return models
 		
 		if provider_name == 'Gemini':
 			if mode_name == 'Generation':
-				return list( getattr( cfg, 'GEMINI_GENERATION', [ ] ) )
+				models = list( getattr( cfg, 'GEMINI_GENERATION', [ ], ) )
+				
+				if models:
+					return models
+			
 			if mode_name == 'Analysis':
-				return list( getattr( cfg, 'GEMINI_ANALYSIS', [ ] ) )
+				models = list( getattr( cfg, 'GEMINI_ANALYSIS', [ ], ) )
+				
+				if models:
+					return models
+			
 			if mode_name == 'Editing':
-				return list( getattr( cfg, 'GEMINI_EDITING', [ ] ) )
+				models = list( getattr( cfg, 'GEMINI_EDITING', [ ], ) )
+				
+				if models:
+					return models
 		
 		if provider_name == 'Grok':
+			if mode_name == 'Analysis':
+				models = get_image_options( image, 'analysis_model_options', )
+				
+				if models:
+					return models
+				
+				models = list( getattr( cfg, 'GROK_ANALYSIS', [ ], ) )
+				
+				if models:
+					return models
+			
 			if mode_name == 'Generation':
-				models = list( getattr( cfg, 'GROK_GENERATION', [ ] ) )
-				if models:
-					return models
-			
-			if mode_name == 'Analysis':
-				models = list( getattr( cfg, 'GROK_ANALYSIS', [ ] ) )
+				models = list( getattr( cfg, 'GROK_GENERATION', [ ], ) )
+				
 				if models:
 					return models
 			
 			if mode_name == 'Editing':
-				models = list( getattr( cfg, 'GROK_EDITING', [ ] ) )
+				models = list( getattr( cfg, 'GROK_EDITING', [ ], ) )
+				
 				if models:
 					return models
 		
-		models = get_image_options( image, 'model_options' )
+		models = get_image_options( image, 'model_options', )
+		
 		if not models:
-			model_value = getattr( image, 'model', '' )
-			models = [ model_value ] if model_value else [ ]
+			model_value = str( getattr( image, 'model', '', ) or '' )
+			
+			if model_value:
+				models = [ model_value, ]
 		
 		return models
 	
-	def call_existing_image_method( instance: Any, method_names: List[ str ],
-		kwargs: Dict[ str, Any ] ) -> Any:
-		"""Call existing image method.
+	def get_selected_image_model( operation: str ) -> str:
+		"""Get selected image model.
 		
 		Purpose:
-		    Performs the call_existing_image_method workflow using the inputs supplied by the
-		    caller and the current runtime configuration. The function keeps this behavior
-		    isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+			Returns the model selected for the requested image operation.
 		
 		Args:
-		    instance (Any): Instance value used by the operation.
-		    method_names (List[str]): Method names value used by the operation.
-		    kwargs (Dict[str, Any]): Kwargs value used by the operation.
+			operation (str): Generation, Analysis, or Editing.
 		
 		Returns:
-		    Any: Return value produced by the operation."""
-		for method_name in method_names:
-			method = getattr( instance, method_name, None )
-			if callable( method ):
-				try:
-					return method( **kwargs )
-				except TypeError:
-					clean_kwargs = { key: value for key, value in kwargs.items( ) if
-						value is not None and value != '' and value != [ ] }
-					return method( **clean_kwargs )
+			str: Selected model identifier.
+		"""
+		if operation == 'Generation':
+			return str(
+				st.session_state.get( 'image_generation_model', '', ) or st.session_state.get(
+					'image_model', '', ) or '' )
 		
-		raise AttributeError( f'Provider "{provider_name}" does not expose any image method from: '
-		                      f'{", ".join( method_names )}.' )
+		if operation == 'Analysis':
+			return str( st.session_state.get( 'image_analysis_model', '',
+			) or st.session_state.get(
+				'image_model', '', ) or '' )
+		
+		if operation == 'Editing':
+			return str( st.session_state.get( 'image_editing_model', '', ) or st.session_state.get(
+				'image_model', '', ) or '' )
+		
+		return ''
 	
 	def save_uploaded_image( uploaded_file: Any ) -> Optional[ str ]:
 		"""Save uploaded image.
 		
 		Purpose:
-		    Persists or stages input data so it can be used by later provider or application
-		    workflows. The function standardizes file handling and returns a stable reference for
-		    downstream
-		    processing.
+			Persists an uploaded image to a temporary local file for provider requests.
 		
 		Args:
-		    uploaded_file (Any): Uploaded file value used by the operation.
+			uploaded_file (Any): Streamlit uploaded-file object.
 		
 		Returns:
-		    Optional[str]: Return value produced by the operation."""
+			Optional[str]: Temporary local path or None.
+		"""
 		if uploaded_file is None:
 			return None
 		
 		if 'save_temp' in globals( ):
-			try:
-				return save_temp( uploaded_file )
-			except Exception:
-				pass
+			return save_temp( uploaded_file )
 		
-		try:
-			import tempfile
-			from pathlib import Path
-			
-			suffix = Path( uploaded_file.name ).suffix or '.png'
-			with tempfile.NamedTemporaryFile( delete=False, suffix=suffix ) as tmp:
-				tmp.write( uploaded_file.getvalue( ) )
-				return tmp.name
-		except Exception:
-			return None
+		import tempfile
+		from pathlib import Path
+		
+		suffix = Path( uploaded_file.name ).suffix or '.png'
+		
+		with tempfile.NamedTemporaryFile( delete=False, suffix=suffix, ) as temporary_file:
+			temporary_file.write( uploaded_file.getvalue( ) )
+			return temporary_file.name
 	
 	def append_image_message( role: str, content: str ) -> None:
 		"""Append image message.
 		
 		Purpose:
-		    Performs the append_image_message workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+			Appends an Images Mode conversation message.
 		
 		Args:
-		    role (str): Role value used by the operation.
-		    content (str): Content value used by the operation.
+			role (str): Message role.
+			content (str): Message content.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		if not isinstance( st.session_state.get( 'image_input' ), list ):
+			None: This function updates session state.
+		"""
+		if not isinstance( st.session_state.get( 'image_input' ), list, ):
 			st.session_state[ 'image_input' ] = [ ]
 		
 		st.session_state[ 'image_input' ].append( { 'role': role, 'content': content, } )
@@ -5704,34 +5813,30 @@ elif mode == 'Images':
 		"""Render image messages.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using
-		    normalized inputs. The function keeps presentation logic isolated from provider calls
-		    and
-		    data-processing steps so the screen output remains predictable.
+			Renders Images Mode conversation messages.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		if not isinstance( st.session_state.get( 'image_input' ), list ):
+			None: This function renders Streamlit content.
+		"""
+		if not isinstance( st.session_state.get( 'image_input' ), list, ):
 			st.session_state[ 'image_input' ] = [ ]
 		
-		for msg in st.session_state.get( 'image_input', [ ] ):
-			if isinstance( msg, dict ):
-				with st.chat_message( msg.get( 'role', 'assistant' ), avatar='' ):
-					st.markdown( msg.get( 'content', '' ) )
+		for message in st.session_state.get( 'image_input', [ ], ):
+			if not isinstance( message, dict, ):
+				continue
+			
+			with st.chat_message( message.get( 'role', 'assistant', ), avatar='', ):
+				st.markdown( message.get( 'content', '', ) )
 	
 	def clear_image_messages( ) -> None:
 		"""Clear image messages.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+			Clears Images Mode message and result collections.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
+			None: This function updates session state.
+		"""
 		st.session_state[ 'image_input' ] = [ ]
 		st.session_state[ 'generated_images' ] = [ ]
 		st.session_state[ 'analyzed_images' ] = [ ]
@@ -5741,38 +5846,31 @@ elif mode == 'Images':
 		"""Clear image instructions.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+			Clears Images Mode system instructions.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
+			None: This function updates session state.
+		"""
 		st.session_state[ 'image_system_instructions' ] = ''
-		st.session_state[ 'instructions' ] = ''
 	
 	def convert_image_system_instructions( ) -> None:
 		"""Convert image system instructions.
 		
 		Purpose:
-		    Performs the convert_image_system_instructions workflow using the inputs supplied by
-		    the caller and the current runtime configuration. The function keeps this behavior
-		    isolated so
-		    related UI, provider, and data-processing paths can call it consistently.
+			Converts Images Mode instructions between XML and Markdown.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		text_value = st.session_state.get( 'image_system_instructions', '' )
-		if not isinstance( text_value, str ) or not text_value.strip( ):
+			None: This function updates session state.
+		"""
+		text_value = str( st.session_state.get( 'image_system_instructions', '', ) or '' ).strip( )
+		
+		if not text_value:
 			return
 		
-		source = text_value.strip( )
-		if cfg.XML_BLOCK_PATTERN.search( source ):
-			converted = convert_xml( source )
+		if cfg.XML_BLOCK_PATTERN.search( text_value ):
+			converted = convert_xml( text_value )
 		else:
-			converted = convert_markdown( source )
+			converted = convert_markdown( text_value )
 		
 		st.session_state[ 'image_system_instructions' ] = converted
 	
@@ -5780,14 +5878,13 @@ elif mode == 'Images':
 		"""Load image instruction template.
 		
 		Purpose:
-		    Loads the selected Images-mode prompt template into the Images-mode system-instruction
-		    field using the stable prompt identifier stored in session state.
+			Loads the selected Images Mode prompt template into system instructions.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a value.
+			None: This function updates session state.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger.
+			Error: Re-raised after the exception is logged.
 		"""
 		try:
 			load_prompt_template( prompt_id_key='image_prompt_id',
@@ -5796,7 +5893,7 @@ elif mode == 'Images':
 			ex = Error( e )
 			ex.module = 'app'
 			ex.cause = 'Images Mode'
-			ex.method = 'load_image_instruction_template( ) -> None'
+			ex.method = ('load_image_instruction_template( ) -> None')
 			Logger( ).write( ex )
 			raise ex
 	
@@ -5804,682 +5901,696 @@ elif mode == 'Images':
 		"""Reset image model settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+			Resets Images Mode operation and model selections.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		for key in [ 'image_mode', 'image_model', 'image_analysis_model', 'image_generation_model',
-			'image_editing_model', 'image_number', ]:
-			if key in st.session_state:
-				del st.session_state[ key ]
+			None: This function updates session state.
+		"""
+		st.session_state[ 'image_mode' ] = 'Generation'
+		st.session_state[ 'image_model' ] = ''
+		st.session_state[ 'image_generation_model' ] = ''
+		st.session_state[ 'image_analysis_model' ] = ''
+		st.session_state[ 'image_editing_model' ] = ''
+		st.session_state[ 'image_number' ] = 1
 	
 	def reset_image_inference_settings( ) -> None:
 		"""Reset image inference settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+			Resets provider-supported image inference controls.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		for key in [ 'image_temperature', 'image_top_percent', 'image_top_k',
-			'image_frequency_penalty', 'image_presence_penalty', 'image_presense_penalty',
-			'image_max_tokens', ]:
-			if key in st.session_state:
-				del st.session_state[ key ]
+			None: This function updates session state.
+		"""
+		st.session_state[ 'image_temperature' ] = 0.0
+		st.session_state[ 'image_top_percent' ] = 0.0
+		st.session_state[ 'image_top_k' ] = 0
+		st.session_state[ 'image_frequency_penalty' ] = 0.0
+		st.session_state[ 'image_presence_penalty' ] = 0.0
+		st.session_state[ 'image_max_tokens' ] = 0
 	
-	def reset_image_tool_settings( ) -> None:
-		"""Reset image tool settings.
+	def reset_image_response_settings( ) -> None:
+		"""Reset image response settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+			Resets provider-supported image analysis response controls.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		for key in [ 'image_tools', 'image_include', 'image_tool_choice', 'image_domains_input',
-			'image_domains', 'image_grounded', 'image_image_search', 'image_parallel_tools',
-			'image_parallel_calls', 'image_max_calls', 'image_max_searches', ]:
-			if key in st.session_state:
-				del st.session_state[ key ]
+			None: This function updates session state.
+		"""
+		st.session_state[ 'image_include' ] = [ ]
+		st.session_state[ 'image_store' ] = False
+		st.session_state[ 'image_stream' ] = False
+		st.session_state[ 'image_analysis_detail' ] = 'auto'
+		st.session_state[ 'image_media_resolution' ] = ''
 	
 	def reset_image_visual_settings( ) -> None:
 		"""Reset image visual settings.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner. The function keeps cleanup behavior centralized so callers do not duplicate
-		    lifecycle
-		    logic.
+			Resets provider-supported generation and editing output controls.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		for key in [ 'image_resolution', 'image_media_resolution', 'image_mime_type',
-			'image_output', 'image_size', 'image_quality', 'image_style', 'image_backcolor',
-			'image_aspect_ratio', 'image_detail', 'image_analysis_detail', 'image_compression',
-			'image_modality', ]:
-			if key in st.session_state:
-				del st.session_state[ key ]
+			None: This function updates session state.
+		"""
+		st.session_state[ 'image_size' ] = ''
+		st.session_state[ 'image_quality' ] = ''
+		st.session_state[ 'image_style' ] = ''
+		st.session_state[ 'image_mime_type' ] = ''
+		st.session_state[ 'image_compression' ] = 0.0
+		st.session_state[ 'image_backcolor' ] = ''
+		st.session_state[ 'image_aspect_ratio' ] = ''
+		st.session_state[ 'image_modality' ] = ''
+		st.session_state[ 'image_grounded' ] = False
+		st.session_state[ 'image_image_search' ] = False
 	
-	def parse_image_domains( value: Any ) -> List[ str ]:
-		"""Parse image domains.
-		
-		Purpose:
-		    Performs the parse_image_domains workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
-		
-		Args:
-		    value (Any): Value value used by the operation.
-		
-		Returns:
-		    List[str]: Return value produced by the operation."""
-		raw = str( value or '' )
-		return [ item.strip( ) for item in raw.split( ',' ) if item.strip( ) ]
-	
-	def render_image_output( result: Any, caption: str = 'Image output' ) -> bool:
+	def render_image_output( result: Any, caption: str ) -> bool:
 		"""Render image output.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using
-		    normalized inputs. The function keeps presentation logic isolated from provider calls
-		    and
-		    data-processing steps so the screen output remains predictable.
+			Renders provider image URLs, byte content, lists, or compatible image objects.
 		
 		Args:
-		    result (Any): Result value used by the operation.
-		    caption (str): Caption value used by the operation.
+			result (Any): Provider image output.
+			caption (str): Image caption.
 		
 		Returns:
-		    bool: Return value produced by the operation."""
+			bool: True when at least one image is rendered.
+		"""
 		if result is None:
 			return False
 		
-		if isinstance( result, list ) or isinstance( result, tuple ):
+		if isinstance( result, list ):
 			rendered = False
-			for idx, item in enumerate( result, start=1 ):
-				rendered = render_image_output( item, f'{caption} {idx}' ) or rendered
+			
+			for index, item in enumerate( result, start=1, ):
+				if render_image_output( item, f'{caption} {index}', ):
+					rendered = True
+			
 			return rendered
 		
-		if isinstance( result, dict ):
-			for key in [ 'image', 'images', 'data', 'bytes', 'content', 'url', 'path' ]:
-				if key in result:
-					return render_image_output( result.get( key ), caption )
-			
-			st.json( result )
-			return False
+		if isinstance( result, (str, bytes, bytearray,), ):
+			st.image( result, caption=caption, use_container_width=True, )
+			return True
+		
+		result_url = getattr( result, 'url', '', )
+		
+		if result_url:
+			st.image( result_url, caption=caption, use_container_width=True, )
+			return True
+		
+		result_bytes = getattr( result, 'image_bytes', None, )
+		
+		if result_bytes:
+			st.image( result_bytes, caption=caption, use_container_width=True, )
+			return True
 		
 		try:
-			if isinstance( result, bytes ):
-				st.image( result, caption=caption, use_container_width=False )
-				return True
-			
-			if isinstance( result, str ):
-				value = result.strip( )
-				lower_value = value.lower( )
-				if lower_value.startswith( 'http://' ) or lower_value.startswith( 'https://' ):
-					st.image( value, caption=caption, use_container_width=False )
-					return True
-				
-				if lower_value.endswith( ('.png', '.jpg', '.jpeg', '.webp', '.gif') ):
-					st.image( value, caption=caption, use_container_width=False )
-					return True
-				
-				st.markdown( value )
-				return False
-			
-			if hasattr( result, 'read' ):
-				st.image( result.read( ), caption=caption, use_container_width=False )
-				return True
-			
-			if hasattr( result, 'content' ):
-				return render_image_output( getattr( result, 'content' ), caption )
-			
-			if hasattr( result, 'url' ):
-				return render_image_output( getattr( result, 'url' ), caption )
-			
-			if hasattr( result, 'path' ):
-				return render_image_output( getattr( result, 'path' ), caption )
+			st.image( result, caption=caption, use_container_width=True, )
+			return True
 		except Exception:
 			return False
-		
-		st.write( result )
-		return False
 	
 	def update_image_usage( response: Any ) -> None:
 		"""Update image usage.
 		
 		Purpose:
-		    Performs the update_image_usage workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+			Updates application usage counters when a compatible usage helper is available.
 		
 		Args:
-		    response (Any): Response value used by the operation.
+			response (Any): Provider response.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		try:
-			if 'update_token_counters' in globals( ):
-				update_token_counters( response )
-			elif 'update_counters' in globals( ):
-				count_tokens( response )
-		except Exception:
-			pass
+			None: This function updates application state.
+		"""
+		if 'update_token_counters' in globals( ):
+			update_token_counters( response )
 	
-	def get_image_common_kwargs( prompt: str ) -> Dict[ str, Any ]:
-		"""Get image common kwargs.
+	def validate_image_request( operation: str, prompt: str, path: str = '' ) -> str:
+		"""Validate image request.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and
-		    downstream logic can consume it consistently.
+			Validates required Images Mode controls for the selected provider operation.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
+			operation (str): Generation, Analysis, or Editing.
+			prompt (str): Operation prompt.
+			path (str): Optional required local image path.
 		
 		Returns:
-		    Dict[str, Any]: Return value produced by the operation."""
-		domains = parse_image_domains( st.session_state.get( 'image_domains_input', '' ) )
-		st.session_state[ 'image_domains' ] = domains
+			str: Selected provider model.
 		
-		return { 'prompt': prompt, 'model': st.session_state.get( 'image_model' ),
-			'number': st.session_state.get( 'image_number' ),
-			'temperature': st.session_state.get( 'image_temperature' ),
-			'top_p': st.session_state.get( 'image_top_percent' ),
-			'top_k': st.session_state.get( 'image_top_k' ),
-			'frequency': st.session_state.get( 'image_frequency_penalty' ),
-			'presence': st.session_state.get( 'image_presence_penalty' ),
-			'max_tokens': st.session_state.get( 'image_max_tokens' ),
-			'instruct': st.session_state.get( 'image_system_instructions', '' ),
-			'tools': st.session_state.get( 'image_tools', [ ] ),
-			'tool_choice': st.session_state.get( 'image_tool_choice' ) or None,
-			'include': st.session_state.get( 'image_include', [ ] ),
-			'allowed_domains': st.session_state.get( 'image_domains', [ ] ),
-			'store': st.session_state.get( 'image_store' ),
-			'stream': st.session_state.get( 'image_stream' ),
-			'background': st.session_state.get( 'image_background' ),
-			'is_parallel': st.session_state.get( 'image_parallel_tools',
-				st.session_state.get( 'image_parallel_calls', False ) ),
-			'max_tools': st.session_state.get( 'image_max_calls' ),
-			'max_searches': st.session_state.get( 'image_max_searches' ), }
-	
-	def get_image_generation_kwargs( prompt: str ) -> Dict[ str, Any ]:
-		"""Get image generation kwargs.
+		Raises:
+			ValueError: Raised when a required input is missing.
+		"""
+		if not isinstance( prompt, str, ) or not prompt.strip( ):
+			raise ValueError( f'Enter an {operation.lower( )} prompt.' )
 		
-		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and
-		    downstream logic  can consume it consistently.
+		model = get_selected_image_model( operation )
 		
-		Args:
-		    prompt (str): Prompt value used by the operation.
+		if not model:
+			raise ValueError( f'Select a model for Image {operation}.' )
 		
-		Returns:
-		    Dict[str, Any]: Return value produced by the operation."""
-		kwargs = get_image_common_kwargs( prompt )
-		kwargs.update( { 'size': st.session_state.get( 'image_size' ) or None,
-			'quality': st.session_state.get( 'image_quality' ) or None,
-			'style': st.session_state.get( 'image_style' ) or None,
-			'fmt': st.session_state.get( 'image_mime_type' ) or st.session_state.get(
-				'image_output' ) or None,
-			'mime_type': st.session_state.get( 'image_mime_type' ) or None,
-			'compression': st.session_state.get( 'image_compression' ),
-			'backcolor': st.session_state.get( 'image_backcolor' ) or None,
-			'aspect_ratio': st.session_state.get( 'image_aspect_ratio' ) or None,
-			'response_modalities': st.session_state.get( 'image_modality' ) or None,
-			'grounded': st.session_state.get( 'image_grounded', False ),
-			'image_search': st.session_state.get( 'image_image_search', False ), } )
+		if operation in [ 'Analysis', 'Editing', ] and not path:
+			raise ValueError( f'Upload an image before {operation.lower( )}.' )
 		
-		return kwargs
-	
-	def get_image_analysis_kwargs( prompt: str, path: str ) -> Dict[ str, Any ]:
-		"""Get image analysis kwargs.
+		if (provider_name == 'Gemini' and operation in [ 'Generation',
+			'Editing', ] and st.session_state.get( 'image_image_search', False, ) and hasattr(
+			image, 'supports_image_search', ) and not image.supports_image_search( model )):
+			raise ValueError( 'The selected Gemini model does not support Image Search.' )
 		
-		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and
-		    downstream logic can consume it consistently.
+		if (provider_name == 'Gemini' and operation in [ 'Generation',
+			'Editing', ] and st.session_state.get( 'image_grounded', False, ) and hasattr( image,
+			'supports_grounding', ) and not image.supports_grounding( model )):
+			raise ValueError( 'The selected Gemini model does not support Google grounding.' )
 		
-		Args:
-		    prompt (str): Prompt value used by the operation.
-		    path (str): Path value used by the operation.
-		
-		Returns:
-		    Dict[str, Any]: Return value produced by the operation."""
-		kwargs = get_image_common_kwargs( prompt )
-		kwargs[ 'model' ] = st.session_state.get( 'image_analysis_model' ) or st.session_state.get(
-			'image_model' )
-		kwargs.update( { 'path': path, 'image_path': path,
-			'detail': st.session_state.get( 'image_analysis_detail' ) or st.session_state.get(
-				'image_detail' ) or None,
-			'response_modalities': st.session_state.get( 'image_modality' ) or None,
-			'grounded': st.session_state.get( 'image_grounded', False ),
-			'image_search': st.session_state.get( 'image_image_search', False ), } )
-		
-		return kwargs
-	
-	def get_image_edit_kwargs( prompt: str, path: str,
-		mask_path: Optional[ str ] = None ) -> Dict[ str, Any ]:
-		"""Get image edit kwargs.
-		
-		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI
-		    controls and
-		    downstream logic can consume it consistently.
-		
-		Args:
-		    prompt (str): Prompt value used by the operation.
-		    path (str): Path value used by the operation.
-		    mask_path (Optional[str]): Mask path value used by the operation.
-		
-		Returns:
-		    Dict[str, Any]: Return value produced by the operation."""
-		kwargs = get_image_generation_kwargs( prompt )
-		kwargs.update(
-			{ 'path': path, 'image_path': path, 'mask_path': mask_path, 'mask': mask_path, } )
-		
-		return kwargs
+		return model
 	
 	def run_image_generation( prompt: str ) -> Any:
 		"""Run image generation.
 		
 		Purpose:
-		    Performs the run_image_generation workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+			Calls the exact generation interface implemented by the selected provider wrapper.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
+			prompt (str): Image-generation prompt.
 		
 		Returns:
-		    Any: Return value produced by the operation."""
-		kwargs = get_image_generation_kwargs( prompt )
-		return call_existing_image_method( instance=image,
-			method_names=[ 'generate', 'generate_image', 'create', 'create_image' ],
-			kwargs=kwargs )
+			Any: Provider image output.
+		"""
+		model = validate_image_request( 'Generation', prompt, )
+		
+		if provider_name == 'GPT':
+			return image.generate( prompt=prompt,
+				number=int( st.session_state.get( 'image_number', 1, ) ), model=model,
+				size=str( st.session_state.get( 'image_size', '', ) or '1024x1024' ),
+				quality=str( st.session_state.get( 'image_quality', '', ) or 'auto' ),
+				fmt=str( st.session_state.get( 'image_mime_type', '', ) or 'png' ).replace(
+					'image/', '', ),
+				compression=float( st.session_state.get( 'image_compression', 0.0, ) ),
+				background=str( st.session_state.get( 'image_backcolor', '', ) or '' ), )
+		
+		if provider_name == 'Gemini':
+			return image.generate( prompt=prompt, model=model,
+				number=int( st.session_state.get( 'image_number', 1, ) ),
+				aspect_ratio=str( st.session_state.get( 'image_aspect_ratio', '', ) or '' ),
+				image_size=str( st.session_state.get( 'image_size', '', ) or '' ),
+				output_mime_type=str( st.session_state.get( 'image_mime_type', '', ) or '' ),
+				response_modalities=str( st.session_state.get( 'image_modality', '', ) or '' ),
+				temperature=float( st.session_state.get( 'image_temperature', 0.0, ) ),
+				top_p=float( st.session_state.get( 'image_top_percent', 0.0, ) ),
+				frequency=float( st.session_state.get( 'image_frequency_penalty', 0.0, ) ),
+				presence=float( st.session_state.get( 'image_presence_penalty', 0.0, ) ),
+				max_tokens=int( st.session_state.get( 'image_max_tokens', 0, ) ),
+				media_resolution=str( st.session_state.get( 'image_media_resolution', '', ) or '' ),
+				instruct=str( st.session_state.get( 'image_system_instructions', '', ) or '' ),
+				grounded=bool( st.session_state.get( 'image_grounded', False, ) ),
+				image_search=bool( st.session_state.get( 'image_image_search', False, ) ), )
+		
+		if provider_name == 'Grok':
+			return image.generate( prompt=prompt, model=model,
+				number=int( st.session_state.get( 'image_number', 1, ) ), aspect_ratio=str(
+					st.session_state.get( 'image_aspect_ratio', 'auto', ) or 'auto' ), )
+		
+		raise ValueError( f'Unsupported Images provider: {provider_name}' )
 	
 	def run_image_analysis( prompt: str, path: str ) -> Any:
 		"""Run image analysis.
 		
 		Purpose:
-		    Performs the run_image_analysis workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+			Calls the exact image-analysis interface implemented by the selected provider
+			wrapper.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
-		    path (str): Path value used by the operation.
+			prompt (str): Image-analysis prompt.
+			path (str): Local image path.
 		
 		Returns:
-		    Any: Return value produced by the operation."""
-		kwargs = get_image_analysis_kwargs( prompt, path )
-		return call_existing_image_method( instance=image,
-			method_names=[ 'analyze', 'analyze_image', 'vision', 'describe' ], kwargs=kwargs )
+			Any: Provider analysis text.
+		"""
+		model = validate_image_request( 'Analysis', prompt, path, )
+		
+		if provider_name == 'GPT':
+			return image.analyze( text=prompt, path=path,
+				instruct=str( st.session_state.get( 'image_system_instructions', '', ) or '' ),
+				model=model, max_tokens=int( st.session_state.get( 'image_max_tokens', 0, ) ),
+				temperature=float( st.session_state.get( 'image_temperature', 0.0, ) ),
+				include=list( st.session_state.get( 'image_include', [ ], ) ),
+				store=bool( st.session_state.get( 'image_store', False, ) ),
+				stream=bool( st.session_state.get( 'image_stream', False, ) ),
+				detail=str( st.session_state.get( 'image_analysis_detail', 'auto', ) or 'auto' ), )
+		
+		if provider_name == 'Gemini':
+			return image.analyze( prompt=prompt, path=path, model=model,
+				temperature=float( st.session_state.get( 'image_temperature', 0.0, ) ),
+				top_p=float( st.session_state.get( 'image_top_percent', 0.0, ) ),
+				frequency=float( st.session_state.get( 'image_frequency_penalty', 0.0, ) ),
+				presence=float( st.session_state.get( 'image_presence_penalty', 0.0, ) ),
+				max_tokens=int( st.session_state.get( 'image_max_tokens', 0, ) ),
+				media_resolution=str( st.session_state.get( 'image_media_resolution', '',
+				) or '' ),
+				instruct=str( st.session_state.get( 'image_system_instructions', '', ) or '' ), )
+		
+		if provider_name == 'Grok':
+			return image.analyze( prompt=prompt, path=path, model=model,
+				detail=str( st.session_state.get( 'image_analysis_detail', 'auto', ) or 'auto' ), )
+		
+		raise ValueError( f'Unsupported Images provider: {provider_name}' )
 	
-	def run_image_editing( prompt: str, path: str, mask_path: Optional[ str ] = None ) -> Any:
+	def run_image_editing( prompt: str, path: str, mask_path: str = '' ) -> Any:
 		"""Run image editing.
 		
 		Purpose:
-		    Performs the run_image_editing workflow using the inputs supplied by the caller and
-		    the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
+			Calls the exact image-editing interface implemented by the selected provider
+			wrapper.
 		
 		Args:
-		    prompt (str): Prompt value used by the operation.
-		    path (str): Path value used by the operation.
-		    mask_path (Optional[str]): Mask path value used by the operation.
+			prompt (str): Image-editing prompt.
+			path (str): Local source-image path.
+			mask_path (str): Optional GPT mask path.
 		
 		Returns:
-		    Any: Return value produced by the operation."""
-		kwargs = get_image_edit_kwargs( prompt, path, mask_path )
-		return call_existing_image_method( instance=image,
-			method_names=[ 'edit', 'edit_image', 'modify', 'generate_edit' ], kwargs=kwargs )
-	
-	if st.session_state.get( 'clear_instructions' ):
-		st.session_state[ 'image_system_instructions' ] = ''
-		st.session_state[ 'clear_image_instructions' ] = False
-		st.session_state[ 'clear_instructions' ] = False
+			Any: Provider edited-image output.
+		"""
+		model = validate_image_request( 'Editing', prompt, path, )
+		
+		if provider_name == 'GPT':
+			edit_method = getattr( image, 'edit', None, )
+			
+			if not callable( edit_method ):
+				raise AttributeError( 'GPT Images does not expose edit().' )
+			
+			edit_parameters = inspect.signature( edit_method ).parameters
+			edit_kwargs: Dict[ str, Any ] = { 'prompt': prompt, 'path': path, 'model': model,
+				'size': str( st.session_state.get( 'image_size', '', ) or '1024x1024' ),
+				'quality': str( st.session_state.get( 'image_quality', '', ) or 'auto' ),
+				'fmt': str( st.session_state.get( 'image_mime_type', '', ) or 'png' ).replace(
+					'image/', '', ),
+				'compression': float( st.session_state.get( 'image_compression', 0.0, ) ),
+				'background': str( st.session_state.get( 'image_backcolor', '', ) or '' ),
+				'number': int( st.session_state.get( 'image_number', 1, ) ), }
+			
+			if mask_path:
+				if 'mask_path' in edit_parameters:
+					edit_kwargs[ 'mask_path' ] = mask_path
+				elif 'mask' in edit_parameters:
+					edit_kwargs[ 'mask' ] = mask_path
+			
+			return edit_method( **edit_kwargs )
+		
+		if provider_name == 'Gemini':
+			return image.edit( prompt=prompt, path=path, model=model,
+				number=int( st.session_state.get( 'image_number', 1, ) ),
+				aspect_ratio=str( st.session_state.get( 'image_aspect_ratio', '', ) or '' ),
+				image_size=str( st.session_state.get( 'image_size', '', ) or '' ),
+				output_mime_type=str( st.session_state.get( 'image_mime_type', '', ) or '' ),
+				response_modalities=str( st.session_state.get( 'image_modality', '', ) or '' ),
+				temperature=float( st.session_state.get( 'image_temperature', 0.0, ) ),
+				top_p=float( st.session_state.get( 'image_top_percent', 0.0, ) ),
+				frequency=float( st.session_state.get( 'image_frequency_penalty', 0.0, ) ),
+				presence=float( st.session_state.get( 'image_presence_penalty', 0.0, ) ),
+				max_tokens=int( st.session_state.get( 'image_max_tokens', 0, ) ),
+				media_resolution=str( st.session_state.get( 'image_media_resolution', '',
+				) or '' ),
+				instruct=str( st.session_state.get( 'image_system_instructions', '', ) or '' ),
+				grounded=bool( st.session_state.get( 'image_grounded', False, ) ),
+				image_search=bool( st.session_state.get( 'image_image_search', False, ) ), )
+		
+		if provider_name == 'Grok':
+			return image.edit( prompt=prompt, model=model, path=path, image_url='',
+				aspect_ratio=str( st.session_state.get( 'image_aspect_ratio', 'auto',
+				) or 'auto' ),
+				number=int( st.session_state.get( 'image_number', 1, ) ), )
+		
+		raise ValueError( f'Unsupported Images provider: {provider_name}' )
 	
 	# ------------------------------------------------------------------
-	# Main UI
+	# Main Image UI
 	# ------------------------------------------------------------------
-	left, center, right = st.columns( [ 0.05, 0.9, 0.05 ] )
+	left, center, right = st.columns( [ 0.05, 0.90, 0.05, ] )
+	
 	with center:
-		st.subheader( '📷 Images API', help=get_image_help( 'IMAGES_API' ) )
+		st.subheader( '🖼️ Images',
+			help=getattr( cfg, 'IMAGE_GENERATION', 'Generate, analyze, and edit images.', ), )
 		st.divider( )
 		
 		# ------------------------------------------------------------------
-		# Expander — Mind Controls
+		# Expander — Image Mind Controls
 		# ------------------------------------------------------------------
-		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
+		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch', ):
 			# ------------------------------------------------------------------
-			# Expander — LLM Settings
+			# Expander — Model Settings
 			# ------------------------------------------------------------------
-			with st.expander( label='LLM Settings', icon='🧊', expanded=False, width='stretch' ):
-				llm_c1, llm_c2, llm_c3, llm_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-					border=True, gap='xxsmall' )
+			with st.expander( label='Model Settings', icon='🧊', expanded=False,
+					width='stretch', ):
+				mode_options = [ 'Generation', 'Analysis', 'Editing', ]
+				sanitize_image_selection( 'image_mode', mode_options, 'Generation', )
 				
-				# ---------- Image Mode ------------
-				with llm_c1:
-					st.selectbox( label='Image Mode',
-						options=[ 'Generation', 'Analysis', 'Editing' ], key='image_mode',
-						help='Available provider image workflows.', index=None,
-						placeholder='Options' )
-					image_mode = st.session_state.get( 'image_mode', '' )
+				# ----- Image Mode -----
+				st.selectbox( label='Image Mode', options=mode_options, key='image_mode',
+					help='Select the image operation used to configure the controls below.', )
 				
-				# ---------- Model ------------
-				with llm_c2:
-					image_model_options = get_provider_image_models( image_mode )
-					sanitize_image_selection( 'image_model', image_model_options, '' )
-					st.selectbox( label='Select Model', options=image_model_options,
-						key='image_model',
-						help='Required. Model used by the selected image workflow.', index=None,
-						placeholder='Options' )
+				selected_image_mode = st.session_state.get( 'image_mode', 'Generation', )
+				model_options = get_provider_image_models( selected_image_mode )
 				
-				# ---------- Analysis Model ------------
-				with llm_c3:
-					analysis_models = get_provider_image_models( 'Analysis' )
-					sanitize_image_selection( 'image_analysis_model', analysis_models, '' )
-					st.selectbox( label='Analysis Model', options=analysis_models,
-						key='image_analysis_model',
-						help='Optional. Separate model used for image analysis when supported.',
-						index=None, placeholder='Options' )
+				if selected_image_mode == 'Generation':
+					sanitize_image_selection( 'image_generation_model', model_options, '', )
+					model_key = 'image_generation_model'
 				
-				# ---------- Number ------------
-				with llm_c4:
-					st.slider( label='Number', min_value=1, max_value=10, step=1,
-						key='image_number',
-						help='Number of images or candidates requested when supported.' )
+				elif selected_image_mode == 'Analysis':
+					sanitize_image_selection( 'image_analysis_model', model_options, '', )
+					model_key = 'image_analysis_model'
 				
-				# ----- Reset Button -----
+				else:
+					sanitize_image_selection( 'image_editing_model', model_options, '', )
+					model_key = 'image_editing_model'
+				
+				model_c1, model_c2 = st.columns( [ 0.75, 0.25, ], border=True, gap='xxsmall', )
+				
+				# ----- Model -----
+				with model_c1:
+					st.selectbox( label='Model', options=model_options, key=model_key, index=None,
+						placeholder='Select Model',
+						help='Required. Select the provider model for the chosen image '
+						     'operation.', )
+				
+				# ----- Number of Images -----
+				with model_c2:
+					st.slider( label='Images', min_value=1, max_value=10, step=1,
+						key='image_number', disabled=selected_image_mode == 'Analysis',
+						help='Number of generated or edited images requested.', )
+				
+				st.session_state[ 'image_model' ] = str(
+					st.session_state.get( model_key, '', ) or '' )
+				
 				st.button( label='Reset', key='image_model_reset', width='stretch',
-					on_click=reset_image_model_settings, icon='🔄' )
+					on_click=reset_image_model_settings, icon='🔄', )
 			
 			# ------------------------------------------------------------------
 			# Expander — Inference Settings
 			# ------------------------------------------------------------------
 			with st.expander( label='Inference Settings', icon='🎚️', expanded=False,
-					width='stretch' ):
-				prm_c1, prm_c2, prm_c3, prm_c4, prm_c5 = st.columns(
-					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
+					width='stretch', ):
+				selected_image_mode = st.session_state.get( 'image_mode', 'Generation', )
 				
-				# ---------- Top-P ------------
-				with prm_c1:
-					st.slider( label='Top-P', key='image_top_percent', min_value=0.0,
-						max_value=1.0, step=0.01, help=cfg.TOP_P )
+				if provider_name == 'Gemini':
+					inf_c1, inf_c2, inf_c3, inf_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25, ],
+						border=True, gap='xxsmall', )
+					
+					# ----- Temperature -----
+					with inf_c1:
+						st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
+							key='image_temperature', help=cfg.TEMPERATURE, )
+					
+					# ----- Top-P -----
+					with inf_c2:
+						st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
+							key='image_top_percent', help=cfg.TOP_P, )
+					
+					# ----- Frequency Penalty -----
+					with inf_c3:
+						st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
+							step=0.01, key='image_frequency_penalty', help=cfg.FREQUENCY_PENALTY, )
+					
+					# ----- Presence Penalty -----
+					with inf_c4:
+						st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0,
+							step=0.01, key='image_presence_penalty', help=cfg.PRESENCE_PENALTY, )
+					
+					# ----- Max Tokens -----
+					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+						key='image_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, )
 				
-				# ---------- Top-K ------------
-				with prm_c2:
-					st.slider( label='Top-K', key='image_top_k', min_value=0, max_value=200,
-						step=1, help=cfg.TOP_K )
+				elif (provider_name == 'GPT' and selected_image_mode == 'Analysis'):
+					inf_c1, inf_c2 = st.columns( [ 0.50, 0.50, ], border=True, gap='xxsmall', )
+					
+					# ----- Temperature -----
+					with inf_c1:
+						st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
+							key='image_temperature', help=cfg.TEMPERATURE, )
+					
+					# ----- Max Tokens -----
+					with inf_c2:
+						st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+							key='image_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, )
 				
-				# ---------- Temperature ------------
-				with prm_c3:
-					st.slider( label='Temperature', key='image_temperature', min_value=0.0,
-						max_value=2.0, step=0.01, help=cfg.TEMPERATURE )
+				else:
+					st.info( 'The selected provider operation does not expose sampling controls.' )
 				
-				# ---------- Frequency Penalty ------------
-				with prm_c4:
-					st.slider( label='Frequency Penalty', key='image_frequency_penalty',
-						min_value=-2.0, max_value=2.0, step=0.01, help=cfg.FREQUENCY_PENALTY )
-				
-				# ---------- Presence Penalty ------------
-				with prm_c5:
-					st.slider( label='Presence Penalty', key='image_presence_penalty',
-						min_value=-2.0, max_value=2.0, step=0.01, help=cfg.PRESENCE_PENALTY )
-					st.session_state[ 'image_presense_penalty' ] = st.session_state.get(
-						'image_presence_penalty', 0.0 )
-				
-				resp_c1, resp_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall' )
-				
-				# ---------- Max Tokens ------------
-				with resp_c1:
-					st.slider( label='Max Tokens', key='image_max_tokens', min_value=0,
-						max_value=100000, step=500, help=cfg.MAX_OUTPUT_TOKENS )
-				
-				# ---------- Compression ------------
-				with resp_c2:
-					st.slider( label='Compression', key='image_compression', min_value=0.0,
-						max_value=1.0, step=0.01,
-						help='Optional. Image compression when supported by the provider.' )
-				
-				# ----- Reset Button -----
 				st.button( label='Reset', key='image_inference_reset', width='stretch',
-					on_click=reset_image_inference_settings, icon='🔄' )
+					on_click=reset_image_inference_settings, icon='🔄', )
 			
 			# ------------------------------------------------------------------
-			# Expander — Grounding Settings
+			# Expander — Response Settings
 			# ------------------------------------------------------------------
-			with st.expander( label='Tools / Grounding Settings', icon='🔎', expanded=False,
-					width='stretch' ):
-				tool_c1, tool_c2, tool_c3, tool_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-					border=True, gap='xxsmall' )
+			with st.expander( label='Output / Response Settings', icon='↔️', expanded=False,
+					width='stretch', ):
+				selected_image_mode = st.session_state.get( 'image_mode', 'Generation', )
 				
-				# ---------- Tools ------------
-				with tool_c1:
-					tool_options = get_image_options( image, 'tool_options' )
-					sanitize_image_multiselect( 'image_tools', tool_options )
-					st.multiselect( label='Tools', options=tool_options, key='image_tools',
-						help=cfg.TOOLS, placeholder='Options' )
-				
-				# ---------- Include ------------
-				with tool_c2:
-					include_options = get_image_options( image, 'include_options' )
-					sanitize_image_multiselect( 'image_include', include_options )
-					st.multiselect( label='Include', options=include_options, key='image_include',
-						help=cfg.INCLUDE, placeholder='Options' )
-				
-				# ---------- Tool Choice ------------
-				with tool_c3:
-					choice_options = get_image_options( image, 'choice_options' )
-					sanitize_image_selection( 'image_tool_choice', choice_options, '' )
-					st.selectbox( label='Tool Choice', options=choice_options,
-						key='image_tool_choice', help=cfg.CHOICE, index=None,
-						placeholder='Options' )
-				
-				# ---------- Max Calls ------------
-				with tool_c4:
-					st.slider( label='Max Calls', min_value=0, max_value=100, step=1,
-						key='image_max_calls', help=cfg.MAX_TOOL_CALLS )
-				
-				ctx_c1, ctx_c2, ctx_c3, ctx_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-					border=True, gap='xxsmall' )
-				
-				# ---------- Gemini Grounding ------------
-				with ctx_c1:
-					grounding_supported = provider_name == 'Gemini'
-					if hasattr( image, 'supports_search_grounding' ):
-						try:
-							grounding_supported = bool( image.supports_search_grounding(
-								st.session_state.get( 'image_model', '' ) ) )
-						except Exception:
-							grounding_supported = provider_name == 'Gemini'
+				if selected_image_mode == 'Analysis':
+					if provider_name == 'GPT':
+						detail_options = get_image_options( image, 'detail_options',
+							[ 'auto', 'low', 'high', ], )
+						include_options = get_image_options( image, 'include_options', )
+						
+						sanitize_image_selection( 'image_analysis_detail', detail_options,
+							'auto', )
+						sanitize_image_multiselect( 'image_include', include_options, )
+						
+						resp_c1, resp_c2, resp_c3, resp_c4 = st.columns(
+							[ 0.25, 0.25, 0.25, 0.25, ], border=True, gap='xxsmall', )
+						
+						# ----- Detail -----
+						with resp_c1:
+							st.selectbox( label='Detail', options=detail_options,
+								key='image_analysis_detail',
+								help='GPT image-analysis detail level.', )
+						
+						# ----- Include -----
+						with resp_c2:
+							st.multiselect( label='Include', options=include_options,
+								key='image_include', placeholder='Options',
+								disabled=not include_options, help=cfg.INCLUDE, )
+						
+						# ----- Store -----
+						with resp_c3:
+							st.toggle( label='Store', key='image_store', help=cfg.STORE, )
+						
+						# ----- Stream -----
+						with resp_c4:
+							st.toggle( label='Stream', key='image_stream', help=cfg.STREAM, )
 					
-					if not grounding_supported:
-						st.session_state[ 'image_grounded' ] = False
+					elif provider_name == 'Gemini':
+						media_options = get_image_options( image, 'media_options', )
+						sanitize_image_selection( 'image_media_resolution', media_options, '', )
+						
+						# ----- Media Resolution -----
+						st.selectbox( label='Media Resolution', options=media_options,
+							key='image_media_resolution', index=None, placeholder='Options',
+							disabled=not media_options,
+							help='Gemini media resolution used for image analysis.', )
+						
+						st.session_state[ 'image_include' ] = [ ]
+						st.session_state[ 'image_store' ] = False
+						st.session_state[ 'image_stream' ] = False
+						st.session_state[ 'image_analysis_detail' ] = 'auto'
 					
-					st.toggle( label='Google Grounding', key='image_grounded',
-						disabled=not grounding_supported,
-						help='Ground image response through Google Search when supported.' )
+					elif provider_name == 'Grok':
+						detail_options = get_image_options( image, 'detail_options',
+							[ 'auto', 'low', 'high', ], )
+						sanitize_image_selection( 'image_analysis_detail', detail_options,
+							'auto', )
+						
+						# ----- Detail -----
+						st.selectbox( label='Detail', options=detail_options,
+							key='image_analysis_detail',
+							help='Grok multimodal image-analysis detail level.', )
+						
+						st.session_state[ 'image_include' ] = [ ]
+						st.session_state[ 'image_store' ] = False
+						st.session_state[ 'image_stream' ] = False
+						st.session_state[ 'image_media_resolution' ] = ''
 				
-				# ---------- Gemini Image Search ------------
-				with ctx_c2:
-					image_search_supported = provider_name == 'Gemini'
-					if hasattr( image, 'supports_image_search' ):
-						try:
-							image_search_supported = bool( image.supports_image_search(
-								st.session_state.get( 'image_model', '' ) ) )
-						except Exception:
-							image_search_supported = provider_name == 'Gemini'
-					
-					if not image_search_supported:
-						st.session_state[ 'image_image_search' ] = False
-					
-					st.toggle( label='Image Search', key='image_image_search',
-						disabled=not image_search_supported,
-						help='Use image search when supported by Gemini image grounding.' )
+				else:
+					st.info( 'Response controls in this section apply to image analysis only.' )
 				
-				# ---------- Parallel Tools ------------
-				with ctx_c3:
-					st.toggle( label='Parallel Tools', key='image_parallel_tools',
-						help=cfg.PARALLEL_TOOL_CALLS )
-					st.session_state[ 'image_parallel_calls' ] = st.session_state.get(
-						'image_parallel_tools', False )
-				
-				# ---------- Max Searches ------------
-				with ctx_c4:
-					st.slider( label='Max Searches', min_value=0, max_value=100, step=1,
-						key='image_max_searches',
-						help='Optional. Maximum image/web searches when supported.' )
-				
-				# ------ Allowed Domains -----
-				st.text_input( label='Allowed Domains', key='image_domains_input',
-					help=cfg.ALLOWED_DOMAINS, width='stretch',
-					placeholder='example.com,openai.com' )
-				
-				# ----- Reset Button -----
-				st.button( label='Reset', key='image_tools_reset', width='stretch',
-					on_click=reset_image_tool_settings, icon='🔄' )
+				st.button( label='Reset', key='image_response_reset', width='stretch',
+					on_click=reset_image_response_settings, icon='🔄', )
 			
 			# ------------------------------------------------------------------
 			# Expander — Visual Settings
 			# ------------------------------------------------------------------
-			with st.expander( label='Visual Settings', icon='👁️', expanded=False,
-					width='stretch' ):
-				img_c1, img_c2, img_c3, img_c4, img_c5 = st.columns(
-					[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall' )
+			with st.expander( label='Visual Settings', icon='🎨', expanded=False,
+					width='stretch', ):
+				selected_image_mode = st.session_state.get( 'image_mode', 'Generation', )
 				
-				# ---------- Size ------------
-				with img_c1:
-					size_options = get_image_options( image, 'size_options',
-						[ '1024x1024', '1024x1536', '1536x1024' ] )
-					sanitize_image_selection( 'image_size', size_options, '' )
-					st.selectbox( label='Image Size', options=size_options, key='image_size',
-						help='Optional. Generated or edited image size.', index=None,
-						placeholder='Options' )
-				
-				# ---------- Quality ------------
-				with img_c2:
-					quality_options = get_image_options( image, 'quality_options',
-						[ 'auto', 'standard', 'hd', 'low', 'medium', 'high' ] )
-					sanitize_image_selection( 'image_quality', quality_options, '' )
-					st.selectbox( label='Image Quality', options=quality_options,
-						key='image_quality', help='Optional. Image quality.', index=None,
-						placeholder='Options' )
-				
-				# ---------- Style ------------
-				with img_c3:
-					style_options = get_image_options( image, 'style_options' )
-					sanitize_image_selection( 'image_style', style_options, '' )
-					st.selectbox( label='Image Style', options=style_options, key='image_style',
-						help='Optional. Image style when supported.', index=None,
-						placeholder='Options' )
-				
-				# ---------- Background ------------
-				with img_c4:
-					background_options = get_image_options( image, 'backcolor_options',
-						[ 'auto', 'transparent', 'opaque' ] )
-					sanitize_image_selection( 'image_backcolor', background_options, '' )
-					st.selectbox( label='Background', options=background_options,
-						key='image_backcolor', help=cfg.IMAGE_BACKGROUND, index=None,
-						placeholder='Options' )
-				
-				# ---------- MIME / Output Format ------------
-				with img_c5:
-					output_options = get_image_options( image, 'mime_options' )
-					if not output_options:
-						output_options = get_image_options( image, 'output_options',
-							[ 'png', 'jpeg', 'webp' ] )
+				if selected_image_mode in [ 'Generation', 'Editing', ]:
+					if provider_name == 'GPT':
+						size_options = get_image_options( image, 'size_options', )
+						quality_options = get_image_options( image, 'quality_options', )
+						format_options = get_image_options( image, 'format_options',
+							[ 'png', 'jpeg', 'webp', ], )
+						background_options = get_image_options( image, 'background_options',
+							[ 'auto', 'transparent', 'opaque', ], )
+						
+						sanitize_image_selection( 'image_size', size_options, '', )
+						sanitize_image_selection( 'image_quality', quality_options, '', )
+						sanitize_image_selection( 'image_mime_type', format_options, '', )
+						sanitize_image_selection( 'image_backcolor', background_options, '', )
+						
+						visual_c1, visual_c2, visual_c3, visual_c4 = st.columns(
+							[ 0.25, 0.25, 0.25, 0.25, ], border=True, gap='xxsmall', )
+						
+						# ----- Size -----
+						with visual_c1:
+							st.selectbox( label='Size', options=size_options, key='image_size',
+								index=None, placeholder='Options', disabled=not size_options,
+								help='GPT output pixel dimensions.', )
+						
+						# ----- Quality -----
+						with visual_c2:
+							st.selectbox( label='Quality', options=quality_options,
+								key='image_quality', index=None, placeholder='Options',
+								disabled=not quality_options, help='GPT output image quality.', )
+						
+						# ----- Format -----
+						with visual_c3:
+							st.selectbox( label='Format', options=format_options,
+								key='image_mime_type', index=None, placeholder='Options',
+								disabled=not format_options, help='GPT output image encoding.', )
+						
+						# ----- Background -----
+						with visual_c4:
+							st.selectbox( label='Background', options=background_options,
+								key='image_backcolor', index=None, placeholder='Options',
+								disabled=not background_options,
+								help='GPT output background behavior.', )
+						
+						# ----- Compression -----
+						st.slider( label='Compression', min_value=0.0, max_value=100.0, step=1.0,
+							key='image_compression',
+							help='GPT JPEG or WebP compression level when supported.', )
+						
+						st.session_state[ 'image_aspect_ratio' ] = ''
+						st.session_state[ 'image_modality' ] = ''
+						st.session_state[ 'image_grounded' ] = False
+						st.session_state[ 'image_image_search' ] = False
 					
-					sanitize_image_selection( 'image_mime_type', output_options, '' )
-					st.selectbox( label='MIME Format', options=output_options,
-						key='image_mime_type', help=get_image_help( 'IMAGE_RESPONSE' ), index=None,
-						placeholder='Options' )
-					st.session_state[ 'image_output' ] = st.session_state.get( 'image_mime_type',
-						'' )
-				
-				img2_c1, img2_c2, img2_c3 = st.columns( [ 0.34, 0.33, 0.33 ], border=True,
-					gap='xxsmall' )
-				
-				# ---------- Aspect Ratio ------------
-				with img2_c1:
-					aspect_options = get_image_options( image, 'aspect_options',
-						[ '1:1', '3:4', '4:3', '9:16', '16:9' ] )
-					sanitize_image_selection( 'image_aspect_ratio', aspect_options, '' )
-					st.selectbox( label='Aspect Ratio', options=aspect_options,
-						key='image_aspect_ratio',
-						help='Optional. Output aspect ratio when supported.', index=None,
-						placeholder='Options' )
-				
-				# ---------- Detail ------------
-				with img2_c2:
-					detail_options = get_image_options( image, 'detail_options',
-						[ 'auto', 'low', 'high' ] )
-					sanitize_image_selection( 'image_analysis_detail', detail_options, 'auto' )
-					st.selectbox( label='Analysis Detail', options=detail_options,
-						key='image_analysis_detail', help='Optional. Image analysis detail level.',
-						index=None, placeholder='Options' )
-					st.session_state[ 'image_detail' ] = st.session_state.get(
-						'image_analysis_detail', '' )
-				
-				# ---------- Response Mode ------------
-				with img2_c3:
-					if st.session_state.get( 'image_mode' ) == 'Analysis':
-						modality_options = [ 'TEXT' ]
-					else:
-						modality_options = [ 'IMAGE', 'TEXT_AND_IMAGE' ]
+					elif provider_name == 'Gemini':
+						aspect_options = get_image_options( image, 'aspect_options', )
+						size_options = get_image_options( image, 'size_options', )
+						mime_options = get_image_options( image, 'mime_options',
+							get_image_options( image, 'format_options', ), )
+						modality_options = get_image_options( image, 'modality_options',
+							[ 'IMAGE', 'TEXT_AND_IMAGE', ], )
+						media_options = get_image_options( image, 'media_options', )
+						
+						sanitize_image_selection( 'image_aspect_ratio', aspect_options, '', )
+						sanitize_image_selection( 'image_size', size_options, '', )
+						sanitize_image_selection( 'image_mime_type', mime_options, '', )
+						sanitize_image_selection( 'image_modality', modality_options, '', )
+						sanitize_image_selection( 'image_media_resolution', media_options, '', )
+						
+						visual_c1, visual_c2, visual_c3, visual_c4 = st.columns(
+							[ 0.25, 0.25, 0.25, 0.25, ], border=True, gap='xxsmall', )
+						
+						# ----- Aspect Ratio -----
+						with visual_c1:
+							st.selectbox( label='Aspect Ratio', options=aspect_options,
+								key='image_aspect_ratio', index=None, placeholder='Options',
+								disabled=not aspect_options,
+								help='Gemini output image aspect ratio.', )
+						
+						# ----- Image Size -----
+						with visual_c2:
+							st.selectbox( label='Image Size', options=size_options,
+								key='image_size', index=None, placeholder='Options',
+								disabled=not size_options, help='Gemini output image size.', )
+						
+						# ----- Output MIME Type -----
+						with visual_c3:
+							st.selectbox( label='Output MIME Type', options=mime_options,
+								key='image_mime_type', index=None, placeholder='Options',
+								disabled=not mime_options, help='Gemini output image MIME type.', )
+						
+						# ----- Response Mode -----
+						with visual_c4:
+							st.selectbox( label='Response Mode', options=modality_options,
+								key='image_modality', index=None, placeholder='Options',
+								disabled=not modality_options,
+								help='Gemini response modality for image generation or editing.', )
+						
+						# ----- Media Resolution -----
+						st.selectbox( label='Media Resolution', options=media_options,
+							key='image_media_resolution', index=None, placeholder='Options',
+							disabled=not media_options,
+							help='Gemini media-resolution configuration.', )
+						
+						ground_c1, ground_c2 = st.columns( [ 0.50, 0.50, ], border=True,
+							gap='xxsmall', )
+						
+						# ----- Google Grounding -----
+						with ground_c1:
+							st.toggle( label='Google Grounding', key='image_grounded',
+								help='Enable Gemini Google Search grounding when supported.', )
+						
+						# ----- Image Search -----
+						with ground_c2:
+							st.toggle( label='Image Search', key='image_image_search',
+								help='Enable Gemini Image Search when supported.', )
+						
+						st.session_state[ 'image_quality' ] = ''
+						st.session_state[ 'image_style' ] = ''
+						st.session_state[ 'image_compression' ] = 0.0
+						st.session_state[ 'image_backcolor' ] = ''
 					
-					sanitize_image_selection( 'image_modality', modality_options, '' )
-					st.selectbox( label='Response Mode', options=modality_options,
-						key='image_modality',
-						help='Provider response modality for image workflows.', index=None,
-						placeholder='Options' )
+					elif provider_name == 'Grok':
+						aspect_options = get_image_options( image, 'aspect_options', )
+						sanitize_image_selection( 'image_aspect_ratio', aspect_options, 'auto', )
+						
+						# ----- Aspect Ratio -----
+						st.selectbox( label='Aspect Ratio', options=aspect_options,
+							key='image_aspect_ratio', index=None, placeholder='Options',
+							disabled=not aspect_options, help='Grok output image aspect ratio.', )
+						
+						st.session_state[ 'image_size' ] = ''
+						st.session_state[ 'image_quality' ] = ''
+						st.session_state[ 'image_style' ] = ''
+						st.session_state[ 'image_mime_type' ] = ''
+						st.session_state[ 'image_compression' ] = 0.0
+						st.session_state[ 'image_backcolor' ] = ''
+						st.session_state[ 'image_modality' ] = ''
+						st.session_state[ 'image_grounded' ] = False
+						st.session_state[ 'image_image_search' ] = False
+				
+				else:
+					st.info( 'Visual output controls apply to image generation and editing.' )
 				
 				# ----- Reset Button -----
 				st.button( label='Reset', key='image_visual_reset', width='stretch',
-					on_click=reset_image_visual_settings, icon='🔄' )
+					on_click=reset_image_visual_settings, icon='🔄', )
 		
 		# ------------------------------------------------------------------
 		# Expander — Image System Instructions
 		# ------------------------------------------------------------------
 		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
-				width='stretch' ):
-			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
+				width='stretch', ):
+			in_left, in_right = st.columns( [ 0.80, 0.20, ] )
 			
 			# ------ Image Prompt Categories ------
 			image_prompt_categories = fetch_prompt_categories( 'Images' )
 			current_image_category = st.session_state.get( 'image_prompt_category' )
+			
 			if current_image_category not in image_prompt_categories:
 				st.session_state[ 'image_prompt_category' ] = None
 			
 			selected_image_category = st.session_state.get( 'image_prompt_category' )
-			image_prompt_options = fetch_prompt_options(
-				selected_image_category ) if selected_image_category else [ ]
-			
+			image_prompt_options = (
+				fetch_prompt_options( selected_image_category ) if selected_image_category else
+				[ ])
 			image_prompt_ids = [ int( option[ 'ID' ] ) for option in image_prompt_options ]
-			if st.session_state.get( 'image_prompt_id' ) not in image_prompt_ids:
+			
+			if (st.session_state.get( 'image_prompt_id' ) not in image_prompt_ids):
 				st.session_state[ 'image_prompt_id' ] = None
 			
 			# ----- Instruction Text ------
@@ -6491,66 +6602,69 @@ elif mode == 'Images':
 			with in_right:
 				st.selectbox( label='Category', options=image_prompt_categories, index=None,
 					key='image_prompt_category', placeholder='Select Category',
-					help='Limits prompt templates to categories associated with image workflows.',
-					on_change=reset_prompt_template_selection, args=('image_prompt_id',), )
+					help=('Limits prompt templates to categories associated '
+					      'with image workflows.'), on_change=reset_prompt_template_selection,
+					args=('image_prompt_id',), )
 				
 				st.selectbox( label='Use Template', options=image_prompt_ids, index=None,
 					key='image_prompt_id', placeholder='Select Template',
 					disabled=not image_prompt_ids,
 					format_func=lambda prompt_id: format_prompt_option( prompt_id,
-						image_prompt_options, ),
-					help='Loads the selected prompt into the Images system-instruction field.',
+						image_prompt_options, ), help=('Loads the selected prompt into the Images '
+					                                   'system-instruction field.'),
 					on_change=load_image_instruction_template, )
 			
-			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
+			btn_c1, btn_c2 = st.columns( [ 0.80, 0.20, ] )
+			
 			# ------ Clear Button -----
 			with btn_c1:
 				st.button( label='Clear Instructions', width='stretch',
-					on_click=clear_image_instructions, icon='🧹' )
+					on_click=clear_image_instructions, icon='🧹', )
 			
 			# ----- Convert Button ------
 			with btn_c2:
 				st.button( label='XML ↔️ Markdown', width='stretch',
 					on_click=convert_image_system_instructions, )
 		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
+		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True, )
 		
 		# ----- Tab Section ------
-		tab_gen, tab_analyze, tab_edit = st.tabs( [ 'Generate', 'Analyze', 'Edit' ] )
+		tab_gen, tab_analyze, tab_edit = st.tabs( [ 'Generate', 'Analyze', 'Edit', ] )
+		
 		with tab_gen:
 			render_image_messages( )
 			generation_prompt = st.text_area( label='Image Generation Prompt',
 				key='image_generate_prompt', height=120, width='stretch',
-				placeholder='Describe the image to generate.' )
+				placeholder='Describe the image to generate.', )
 			
 			# ----- Generate Image -----
-			gen_c1, gen_c2 = st.columns( [ 0.50, 0.50 ] )
+			gen_c1, gen_c2 = st.columns( [ 0.50, 0.50, ] )
+			
 			with gen_c1:
-				if st.button( 'Generate Image', key='generate_image', width='stretch', icon='🎨' ):
+				if st.button( 'Generate Image', key='generate_image', width='stretch',
+						icon='🎨', ):
 					with st.spinner( 'Generating…' ):
 						try:
-							if not isinstance( generation_prompt,
-									str ) or not generation_prompt.strip( ):
-								st.warning( 'Enter a prompt before generating an image.' )
-							elif not st.session_state.get( 'image_model' ):
-								st.warning( 'Select a model before generating an image.' )
+							result = run_image_generation( str( generation_prompt or '' ).strip(
+							
+							) )
+							append_image_message( 'user', str( generation_prompt or '' ).strip(
+							
+							), )
+							
+							if result is None:
+								st.warning( 'No image output was returned.' )
 							else:
-								append_image_message( 'user', generation_prompt.strip( ) )
-								result = run_image_generation( generation_prompt.strip( ) )
+								st.session_state[ 'generated_images' ].append( result )
+								rendered = render_image_output( result, 'Generated image', )
 								
-								if result is None:
-									st.warning( 'No image output was returned.' )
+								if rendered:
+									append_image_message( 'assistant',
+										'Generated image returned successfully.', )
 								else:
-									st.session_state[ 'generated_images' ].append( result )
-									rendered = render_image_output( result, 'Generated image' )
-									
-									if rendered:
-										append_image_message( 'assistant',
-											'Generated image returned successfully.' )
-									else:
-										append_image_message( 'assistant', str( result ) )
-								
-								update_image_usage( getattr( image, 'response', None ) )
+									append_image_message( 'assistant', str( result ), )
+							
+							update_image_usage( getattr( image, 'response', None, ) )
 						except Exception as exc:
 							err = Error( exc )
 							st.error( f'Image generation failed: {err.info}' )
@@ -6558,60 +6672,46 @@ elif mode == 'Images':
 			# ---- Clear Button -----
 			with gen_c2:
 				if st.button( 'Clear Messages', key='clear_image_generation', width='stretch',
-						on_click=clear_image_messages, icon='🧹' ):
+						on_click=clear_image_messages, icon='🧹', ):
 					st.rerun( )
 		
 		# ----- Analyze Image -----
 		with tab_analyze:
 			uploaded_img = st.file_uploader( 'Upload an image for analysis',
-				type=[ 'png', 'jpg', 'jpeg', 'webp' ], accept_multiple_files=False,
-				key='images_analyze_uploader' )
+				type=[ 'png', 'jpg', 'jpeg', 'webp', ], accept_multiple_files=False,
+				key='images_analyze_uploader', )
 			
 			analysis_path = None
+			
 			if uploaded_img:
 				analysis_path = save_uploaded_image( uploaded_img )
-				st.image( uploaded_img, caption='Uploaded image preview', width=250 )
+				st.image( uploaded_img, caption='Uploaded image preview', width=250, )
 			
 			render_image_messages( )
 			analysis_prompt = st.text_area( label='Image Analysis Prompt',
 				key='image_analysis_prompt', height=120, width='stretch',
-				placeholder='Ask a question about the uploaded image.' )
+				placeholder='Ask a question about the uploaded image.', )
 			
-			ana_c1, ana_c2 = st.columns( [ 0.50, 0.50 ] )
+			ana_c1, ana_c2 = st.columns( [ 0.50, 0.50, ] )
 			
 			# ----- Analyze Button -----
 			with ana_c1:
-				if st.button( 'Analyze Image', key='analyze_image', width='stretch', icon='🔬' ):
+				if st.button( 'Analyze Image', key='analyze_image', width='stretch', icon='🔬', ):
 					with st.spinner( 'Analyzing image…' ):
 						try:
-							if not analysis_path:
-								st.warning( 'Upload an image before analyzing.' )
-							elif not isinstance( analysis_prompt,
-									str ) or not analysis_prompt.strip( ):
-								st.warning( 'Enter an analysis prompt before analyzing the '
-								            'image.' )
-							elif not st.session_state.get(
-									'image_model' ) and not st.session_state.get(
-								'image_analysis_model' ):
-								st.warning( 'Select a model before analyzing an image.' )
+							result = run_image_analysis( str( analysis_prompt or '' ).strip( ),
+								str( analysis_path or '' ), )
+							append_image_message( 'user', str( analysis_prompt or '' ).strip( ), )
+							
+							if result is None:
+								st.warning( 'No analysis output returned by the model.' )
 							else:
-								if st.session_state.get( 'image_analysis_model' ):
-									st.session_state[ 'image_model' ] = st.session_state.get(
-										'image_analysis_model' )
-								
-								append_image_message( 'user', analysis_prompt.strip( ) )
-								result = run_image_analysis( analysis_prompt.strip( ),
-									analysis_path )
-								
-								if result is None:
-									st.warning( 'No analysis output returned by the model.' )
-								else:
-									st.session_state[ 'analyzed_images' ].append( result )
-									st.markdown( '**Analysis result:**' )
-									st.write( result )
-									append_image_message( 'assistant', str( result ) )
-								
-								update_image_usage( getattr( image, 'response', None ) )
+								st.session_state[ 'analyzed_images' ].append( result )
+								st.markdown( '**Analysis result:**' )
+								st.write( result )
+								append_image_message( 'assistant', str( result ), )
+							
+							update_image_usage( getattr( image, 'response', None, ) )
 						except Exception as exc:
 							err = Error( exc )
 							st.error( f'Analysis Failed: {err.info}' )
@@ -6619,66 +6719,62 @@ elif mode == 'Images':
 			# ----- Clear Button ------
 			with ana_c2:
 				if st.button( 'Clear Messages', key='clear_image_analysis', width='stretch',
-						on_click=clear_image_messages, icon='🧹' ):
+						on_click=clear_image_messages, icon='🧹', ):
 					st.rerun( )
 		
 		# ----- Edit Image -----
 		with tab_edit:
 			uploaded_img = st.file_uploader( 'Upload Image for Edit',
-				type=[ 'png', 'jpg', 'jpeg', 'webp' ], accept_multiple_files=False,
-				key='images_edit_uploader' )
+				type=[ 'png', 'jpg', 'jpeg', 'webp', ], accept_multiple_files=False,
+				key='images_edit_uploader', )
 			
-			uploaded_mask = st.file_uploader( 'Upload Optional Mask',
-				type=[ 'png', 'jpg', 'jpeg', 'webp' ], accept_multiple_files=False,
-				key='images_edit_mask_uploader' )
+			uploaded_mask = None
+			
+			if provider_name == 'GPT':
+				uploaded_mask = st.file_uploader( 'Upload Optional Mask',
+					type=[ 'png', 'jpg', 'jpeg', 'webp', ], accept_multiple_files=False,
+					key='images_edit_mask_uploader', help='Optional GPT image-edit mask.', )
 			
 			edit_path = None
 			mask_path = None
 			
 			if uploaded_img:
 				edit_path = save_uploaded_image( uploaded_img )
-				st.image( uploaded_img, caption='Uploaded image preview', width=250 )
+				st.image( uploaded_img, caption='Uploaded image preview', width=250, )
 			
 			if uploaded_mask:
 				mask_path = save_uploaded_image( uploaded_mask )
-				st.image( uploaded_mask, caption='Uploaded mask preview', width=250 )
+				st.image( uploaded_mask, caption='Uploaded mask preview', width=250, )
 			
 			render_image_messages( )
 			edit_prompt = st.text_area( label='Image Editing Prompt', key='image_edit_prompt',
 				height=120, width='stretch',
-				placeholder='Describe how the image should be edited.' )
+				placeholder='Describe how the image should be edited.', )
 			
-			edit_c1, edit_c2 = st.columns( [ 0.50, 0.50 ] )
+			edit_c1, edit_c2 = st.columns( [ 0.50, 0.50, ] )
 			
 			# ----- Edit Button -----
 			with edit_c1:
-				if st.button( 'Edit Image', key='edit_image', width='stretch', icon='✏️' ):
+				if st.button( 'Edit Image', key='edit_image', width='stretch', icon='✏️', ):
 					with st.spinner( 'Editing image…' ):
 						try:
-							if not edit_path:
-								st.warning( 'Upload an image before editing.' )
-							elif not isinstance( edit_prompt, str ) or not edit_prompt.strip( ):
-								st.warning( 'Enter an edit prompt before editing the image.' )
-							elif not st.session_state.get( 'image_model' ):
-								st.warning( 'Select a model before editing an image.' )
+							result = run_image_editing( str( edit_prompt or '' ).strip( ),
+								str( edit_path or '' ), str( mask_path or '' ), )
+							append_image_message( 'user', str( edit_prompt or '' ).strip( ), )
+							
+							if result is None:
+								st.warning( 'No edited image output was returned.' )
 							else:
-								append_image_message( 'user', edit_prompt.strip( ) )
-								result = run_image_editing( edit_prompt.strip( ), edit_path,
-									mask_path )
+								st.session_state[ 'edited_images' ].append( result )
+								rendered = render_image_output( result, 'Edited image', )
 								
-								if result is None:
-									st.warning( 'No edited image output was returned.' )
+								if rendered:
+									append_image_message( 'assistant',
+										'Edited image returned successfully.', )
 								else:
-									st.session_state[ 'edited_images' ].append( result )
-									rendered = render_image_output( result, 'Edited image' )
-									
-									if rendered:
-										append_image_message( 'assistant',
-											'Edited image returned successfully.' )
-									else:
-										append_image_message( 'assistant', str( result ) )
-								
-								update_image_usage( getattr( image, 'response', None ) )
+									append_image_message( 'assistant', str( result ), )
+							
+							update_image_usage( getattr( image, 'response', None, ) )
 						except Exception as exc:
 							err = Error( exc )
 							st.error( f'Image edit failed: {err.info}' )
@@ -6686,7 +6782,7 @@ elif mode == 'Images':
 			# ----- Clear Button -----
 			with edit_c2:
 				if st.button( 'Clear Messages', key='clear_image_edit', width='stretch',
-						on_click=clear_image_messages, icon='🧹' ):
+						on_click=clear_image_messages, icon='🧹', ):
 					st.rerun( )
 
 # ======================================================================================
@@ -7034,8 +7130,7 @@ elif mode == 'Audio':
 		
 		return values
 	
-	def sanitize_audio_selection( key: str,
-		valid_options: List[ Any ], default: Any = '' ) -> None:
+	def sanitize_audio_selection( key: str, valid_options: List[ Any ], default: Any='' ) -> None:
 		"""Sanitize audio selection.
 		
 		Purpose:
@@ -7366,139 +7461,18 @@ elif mode == 'Audio':
 		except Exception:
 			st.session_state[ 'audio_last_usage' ] = { }
 	
-	def call_existing_audio_method( instance: Any, method_names: List[ str ],
-		kwargs: Dict[ str, Any ] ) -> Any:
-		"""Call existing audio method.
-		
-		Purpose:
-		    Performs the call_existing_audio_method workflow using the inputs supplied by the
-		    caller and the current runtime configuration. The function keeps this behavior
-		    isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
-		
-		Args:
-		    instance (Any): Instance value used by the operation.
-		    method_names (List[str]): Method names value used by the operation.
-		    kwargs (Dict[str, Any]): Kwargs value used by the operation.
-		
-		Returns:
-		    Any: Return value produced by the operation.
-		
-		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
-		try:
-			import inspect
-			
-			throw_if( 'instance', instance )
-			throw_if( 'method_names', method_names )
-			
-			for method_name in method_names:
-				method = getattr( instance, method_name, None )
-				if not callable( method ):
-					continue
-				
-				signature = inspect.signature( method )
-				parameters = signature.parameters
-				accepted_names = set( parameters.keys( ) )
-				accepts_kwargs = any(
-					parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in
-						parameters.values( ) )
-				
-				candidate_kwargs = { key: value for key, value in (kwargs or { }).items( ) if
-					value is not None and value != '' and value != [ ] }
-				
-				if 'output_format' in accepted_names and 'output_format' not in candidate_kwargs:
-					if candidate_kwargs.get( 'format' ):
-						candidate_kwargs[ 'output_format' ] = candidate_kwargs[ 'format' ]
-					elif candidate_kwargs.get( 'response_format' ):
-						candidate_kwargs[ 'output_format' ] = candidate_kwargs[ 'response_format' ]
-				
-				if 'format' in accepted_names and 'format' not in candidate_kwargs:
-					if candidate_kwargs.get( 'response_format' ):
-						candidate_kwargs[ 'format' ] = candidate_kwargs[ 'response_format' ]
-					elif candidate_kwargs.get( 'output_format' ):
-						candidate_kwargs[ 'format' ] = candidate_kwargs[ 'output_format' ]
-				
-				if 'voice_id' in accepted_names and 'voice_id' not in candidate_kwargs:
-					if candidate_kwargs.get( 'voice' ):
-						candidate_kwargs[ 'voice_id' ] = candidate_kwargs[ 'voice' ]
-				
-				if 'voice' in accepted_names and 'voice' not in candidate_kwargs:
-					if candidate_kwargs.get( 'voice_id' ):
-						candidate_kwargs[ 'voice' ] = candidate_kwargs[ 'voice_id' ]
-				
-				if 'filepath' in accepted_names and 'filepath' not in candidate_kwargs:
-					if candidate_kwargs.get( 'file_path' ):
-						candidate_kwargs[ 'filepath' ] = candidate_kwargs[ 'file_path' ]
-					elif candidate_kwargs.get( 'audio_path' ):
-						candidate_kwargs[ 'filepath' ] = candidate_kwargs[ 'audio_path' ]
-					elif candidate_kwargs.get( 'path' ):
-						candidate_kwargs[ 'filepath' ] = candidate_kwargs[ 'path' ]
-				
-				if 'audio_path' in accepted_names and 'audio_path' not in candidate_kwargs:
-					if candidate_kwargs.get( 'file_path' ):
-						candidate_kwargs[ 'audio_path' ] = candidate_kwargs[ 'file_path' ]
-					elif candidate_kwargs.get( 'filepath' ):
-						candidate_kwargs[ 'audio_path' ] = candidate_kwargs[ 'filepath' ]
-					elif candidate_kwargs.get( 'path' ):
-						candidate_kwargs[ 'audio_path' ] = candidate_kwargs[ 'path' ]
-				
-				if 'file_path' in accepted_names and 'file_path' not in candidate_kwargs:
-					if candidate_kwargs.get( 'filepath' ):
-						candidate_kwargs[ 'file_path' ] = candidate_kwargs[ 'filepath' ]
-					elif candidate_kwargs.get( 'audio_path' ):
-						candidate_kwargs[ 'file_path' ] = candidate_kwargs[ 'audio_path' ]
-					elif candidate_kwargs.get( 'path' ):
-						candidate_kwargs[ 'file_path' ] = candidate_kwargs[ 'path' ]
-				
-				if (
-						'target_language' in accepted_names and 'target_language' not in
-						candidate_kwargs):
-					if candidate_kwargs.get( 'language' ):
-						candidate_kwargs[ 'target_language' ] = candidate_kwargs[ 'language' ]
-				
-				if accepts_kwargs:
-					return method( **candidate_kwargs )
-				
-				method_kwargs = { key: value for key, value in candidate_kwargs.items( ) if
-					key in accepted_names }
-				
-				required_names = [ name for name, parameter in parameters.items( ) if
-					parameter.default == inspect.Parameter.empty and parameter.kind in [
-						inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.KEYWORD_ONLY,
-					] ]
-				
-				missing_names = [ name for name in required_names if name not in method_kwargs ]
-				
-				if missing_names:
-					continue
-				
-				return method( **method_kwargs )
-			
-			raise AttributeError( f'Provider "{provider_name}" does not expose any audio method '
-			                      f'from: {", ".join( method_names )}.' )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'app'
-			ex.cause = 'Audio'
-			ex.method = 'call_existing_audio_method( instance, method_names, kwargs )'
-			Logger( ).write( ex )
-			raise ex
-	
 	def normalize_audio_text_result( result: Any ) -> str:
 		"""Normalize audio text result.
-		
+
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application
-		    processing. The
-		    function reduces provider, user-input, or serialization differences before values are
-		    stored or displayed.
-		
+		    Normalizes provider transcription and translation results into displayable text.
+
 		Args:
-		    result (Any): Result value used by the operation.
-		
+		    result (Any): Provider result returned by the active audio wrapper.
+
 		Returns:
-		    str: Return value produced by the operation."""
+		    str: Extracted text or an empty string.
+		"""
 		if result is None:
 			return ''
 		
@@ -7522,18 +7496,16 @@ elif mode == 'Audio':
 	
 	def normalize_audio_bytes_result( result: Any ) -> Optional[ bytes ]:
 		"""Normalize audio bytes result.
-		
+
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application
-		    processing. The function reduces provider, user-input, or serialization differences
-		    before values are
-		    stored or displayed.
-		
+		    Normalizes provider text-to-speech results into audio bytes.
+
 		Args:
-		    result (Any): Result value used by the operation.
-		
+		    result (Any): Provider result returned by the active text-to-speech wrapper.
+
 		Returns:
-		    Optional[bytes]: Return value produced by the operation."""
+		    Optional[bytes]: Generated audio bytes when available; otherwise None.
+		"""
 		if result is None:
 			return None
 		
@@ -7544,7 +7516,7 @@ elif mode == 'Audio':
 			return bytes( result )
 		
 		if isinstance( result, dict ):
-			for key in [ 'audio_bytes', 'bytes', 'content', 'data' ]:
+			for key in [ 'audio_bytes', 'bytes', 'content', 'data', 'audio' ]:
 				value = result.get( key )
 				if isinstance( value, bytes ):
 					return value
@@ -7552,7 +7524,7 @@ elif mode == 'Audio':
 				if isinstance( value, bytearray ):
 					return bytes( value )
 		
-		for attr_name in [ 'audio_bytes', 'bytes', 'content', 'data' ]:
+		for attr_name in [ 'audio_bytes', 'bytes', 'content', 'data', 'audio' ]:
 			value = getattr( result, attr_name, None )
 			if isinstance( value, bytes ):
 				return value
@@ -7562,130 +7534,301 @@ elif mode == 'Audio':
 		
 		return None
 	
-	def get_audio_common_kwargs( path: Optional[ str ]=None,
-		prompt: Optional[ str ]=None ) -> Dict[ str, Any ]:
-		"""Get audio common kwargs.
-		
+	def get_audio_mime_type( format_value: Any ) -> str:
+		"""Get audio MIME type.
+
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view of provider capabilities, stored state, or response metadata so UI controls
-		    and downstream logic can consume it consistently.
-		
+		    Converts the selected provider audio format into a valid MIME type for Streamlit
+		    playback and download controls.
+
 		Args:
-		    path (Optional[str]): Path value used by the operation.
-		    prompt (Optional[str]): Prompt value used by the operation.
-		
+		    format_value (Any): Provider audio format or MIME-type value.
+
 		Returns:
-		    Dict[str, Any]: Return value produced by the operation."""
-		domains = parse_audio_domains( st.session_state.get( 'audio_domains_input', '' ) )
-		st.session_state[ 'audio_domains' ] = domains
+		    str: Valid audio MIME type.
+		"""
+		format_text = str( format_value or '' ).strip( ).lower( )
 		
-		return { 'path': path, 'model': st.session_state.get( 'audio_model' ),
-			'language': st.session_state.get( 'audio_language' ), 'prompt': prompt,
-			'temperature': st.session_state.get( 'audio_temperature' ),
-			'top_p': st.session_state.get( 'audio_top_percent' ),
-			'top_k': st.session_state.get( 'audio_top_k' ),
-			'frequency': st.session_state.get( 'audio_frequency_penalty' ),
-			'presence': st.session_state.get( 'audio_presence_penalty' ),
-			'max_tokens': st.session_state.get( 'audio_max_tokens' ),
-			'store': st.session_state.get( 'audio_store' ),
-			'stream': st.session_state.get( 'audio_stream' ),
-			'background': st.session_state.get( 'audio_background' ),
-			'instruct': st.session_state.get( 'audio_system_instructions', '' ),
-			'response_format': st.session_state.get( 'audio_response_format' ) or None,
-			'include': st.session_state.get( 'audio_include', [ ] ),
-			'mime_type': st.session_state.get( 'audio_format' ) or None,
-			'allowed_domains': st.session_state.get( 'audio_domains', [ ] ),
-			'start_time': st.session_state.get( 'audio_start_time' ),
-			'end_time': st.session_state.get( 'audio_end_time' ), }
+		if not format_text:
+			return 'audio/mpeg'
+		
+		if format_text.startswith( 'audio/' ):
+			return format_text
+		
+		mime_map = { 'mp3': 'audio/mpeg', 'mpeg': 'audio/mpeg', 'mpga': 'audio/mpeg',
+			'wav': 'audio/wav', 'pcm': 'audio/pcm', 'opus': 'audio/opus', 'ogg': 'audio/ogg',
+			'flac': 'audio/flac', 'aac': 'audio/aac', 'm4a': 'audio/mp4', 'mp4': 'audio/mp4',
+			'webm': 'audio/webm', 'mulaw': 'audio/basic', 'alaw': 'audio/basic', }
+		
+		return mime_map.get( format_text, f'audio/{format_text}' )
 	
-	def run_audio_transcription( path: str, prompt: Optional[ str ]=None ) -> str:
+	def get_audio_file_extension( format_value: Any ) -> str:
+		"""Get audio file extension.
+
+		Purpose:
+		    Converts the selected provider audio format into a safe download-file extension.
+
+		Args:
+		    format_value (Any): Provider audio format or MIME-type value.
+
+		Returns:
+		    str: Audio file extension without a leading period.
+		"""
+		format_text = str( format_value or '' ).strip( ).lower( )
+		
+		if '/' in format_text:
+			format_text = format_text.rsplit( '/', 1 )[ -1 ]
+		
+		extension_map = { 'mpeg': 'mp3', 'x-wav': 'wav', 'wave': 'wav', 'basic': 'au', }
+		
+		return extension_map.get( format_text, format_text or 'mp3' )
+	
+	def get_audio_source_mime_type( path: str, selected_format: Any ) -> str:
+		"""Get audio source MIME type.
+
+		Purpose:
+		    Resolves the source-audio MIME type required by Gemini and Grok upload workflows.
+
+		Args:
+		    path (str): Local source-audio path.
+		    selected_format (Any): Current format selection from Audio Mode.
+
+		Returns:
+		    str: Source-audio MIME type.
+		"""
+		selected_text = str( selected_format or '' ).strip( ).lower( )
+		
+		if selected_text.startswith( 'audio/' ):
+			return selected_text
+		
+		suffix = Path( path ).suffix.lower( )
+		mime_map = { '.mp3': 'audio/mpeg', '.mpeg': 'audio/mpeg', '.mpga': 'audio/mpeg',
+			'.wav': 'audio/wav', '.flac': 'audio/flac', '.ogg': 'audio/ogg', '.webm': 'audio/webm',
+			'.mp4': 'audio/mp4', '.m4a': 'audio/m4a', '.aac': 'audio/aac', '.aiff': 'audio/aiff', }
+		
+		return mime_map.get( suffix, get_audio_mime_type( selected_text ) )
+	
+	def get_audio_target_language( ) -> str:
+		"""Get audio target language.
+
+		Purpose:
+		    Returns the selected target language required by provider translation wrappers.
+
+		Returns:
+		    str: Selected target language.
+		"""
+		return str( st.session_state.get( 'audio_language', '' ) or '' ).strip( )
+	
+	def run_audio_transcription( path: str, prompt: Optional[ str ] = None ) -> str:
 		"""Run audio transcription.
-		
+
 		Purpose:
-		    Performs the run_audio_transcription workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
-		
+		    Executes the selected provider transcription wrapper using only arguments implemented
+		    by that provider contract.
+
 		Args:
-		    path (str): Path value used by the operation.
-		    prompt (Optional[str]): Prompt value used by the operation.
-		
+		    path (str): Required local source-audio path.
+		    prompt (Optional[str]): Optional transcription guidance.
+
 		Returns:
-		    str: Return value produced by the operation."""
-		kwargs = get_audio_common_kwargs( path=path, prompt=prompt )
-		result = call_existing_audio_method( instance=transcriber,
-			method_names=[ 'transcribe', 'create_transcription', 'create' ], kwargs=kwargs )
-		text_result = normalize_audio_text_result( result )
-		st.session_state[ 'audio_output' ] = text_result
-		st.session_state[ 'audio_last_result' ] = { 'task': 'Transcribe', 'text': text_result }
-		update_audio_usage( transcriber )
-		return text_result
+		    str: Generated transcript.
+
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			throw_if( 'path', path )
+			model = str( st.session_state.get( 'audio_model', '' ) or '' ).strip( )
+			throw_if( 'model', model )
+			language = str( st.session_state.get( 'audio_language', '' ) or '' ).strip( )
+			response_format = st.session_state.get( 'audio_response_format' )
+			prompt_text = str( prompt or '' )
+			
+			if provider_name == 'GPT':
+				result = transcriber.transcribe( path=path, model=model, language=language,
+					prompt=prompt_text, format=str( response_format or 'json' ),
+					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
+					include=list( st.session_state.get( 'audio_include', [ ] ) or [ ] ), )
+			
+			elif provider_name == 'Gemini':
+				result = transcriber.transcribe( path=path, model=model,
+					language=language or 'Auto',
+					mime_type=get_audio_source_mime_type( path, response_format ),
+					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
+					top_p=float( st.session_state.get( 'audio_top_percent', 0.0 ) or 0.0 ),
+					top_k=int( st.session_state.get( 'audio_top_k', 0 ) or 0 ), frequency=float(
+						st.session_state.get( 'audio_frequency_penalty', 0.0 ) or 0.0 ),
+					presence=float( st.session_state.get( 'audio_presence_penalty', 0.0 ) or 0.0 ),
+					max_tokens=int( st.session_state.get( 'audio_max_tokens', 0 ) or 0 ),
+					start_time=float( st.session_state.get( 'audio_start_time', 0.0 ) or 0.0 ),
+					end_time=float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ),
+					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
+					prompt=prompt_text, )
+			
+			elif provider_name == 'Grok':
+				result = transcriber.transcribe( path=path, language=language,
+					format=bool( response_format ),
+					mime_type=get_audio_source_mime_type( path, '' ), keyterm=prompt_text, )
+			
+			else:
+				raise ValueError( f'Unsupported Audio provider: {provider_name}' )
+			
+			text_result = normalize_audio_text_result( result )
+			st.session_state[ 'audio_output' ] = text_result
+			st.session_state[ 'audio_last_result' ] = { 'task': 'Transcribe',
+				'provider': provider_name, 'model': model, 'text': text_result, }
+			update_audio_usage( transcriber )
+			return text_result
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Audio'
+			ex.method = ('run_audio_transcription( path: str, '
+			             'prompt: Optional[ str ] = None ) -> str')
+			Logger( ).write( ex )
+			raise ex
 	
-	def run_audio_translation( path: str, prompt: Optional[ str ]=None ) -> str:
+	def run_audio_translation( path: str, prompt: Optional[ str ] = None ) -> str:
 		"""Run audio translation.
-		
+
 		Purpose:
-		    Performs the run_audio_translation workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior isolated so
-		    related UI,
-		    provider, and data-processing paths can call it consistently.
-		
+		    Executes the selected provider audio-translation wrapper using only arguments
+		    implemented by that provider contract.
+
 		Args:
-		    path (str): Path value used by the operation.
-		    prompt (Optional[str]): Prompt value used by the operation.
-		
+		    path (str): Required local source-audio path.
+		    prompt (Optional[str]): Optional translation guidance.
+
 		Returns:
-		    str: Return value produced by the operation."""
-		kwargs = get_audio_common_kwargs( path=path, prompt=prompt )
-		result = call_existing_audio_method( instance=translator,
-			method_names=[ 'translate', 'create_translation', 'create' ], kwargs=kwargs )
-		text_result = normalize_audio_text_result( result )
-		st.session_state[ 'audio_output' ] = text_result
-		st.session_state[ 'audio_last_result' ] = { 'task': 'Translate', 'text': text_result }
-		update_audio_usage( translator )
-		return text_result
+		    str: Generated translated text.
+
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			throw_if( 'path', path )
+			model = str( st.session_state.get( 'audio_model', '' ) or '' ).strip( )
+			throw_if( 'model', model )
+			target_language = get_audio_target_language( )
+			response_format = st.session_state.get( 'audio_response_format' )
+			prompt_text = str( prompt or '' )
+			
+			if provider_name == 'GPT':
+				result = translator.translate( path=path, model=model, prompt=prompt_text,
+					format=str( response_format or 'json' ),
+					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ), )
+			
+			elif provider_name == 'Gemini':
+				throw_if( 'audio_language', target_language )
+				result = translator.translate( path=path, model=model, language=target_language,
+					source='Auto', mime_type=get_audio_source_mime_type( path, response_format ),
+					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
+					top_p=float( st.session_state.get( 'audio_top_percent', 0.0 ) or 0.0 ),
+					top_k=int( st.session_state.get( 'audio_top_k', 0 ) or 0 ), frequency=float(
+						st.session_state.get( 'audio_frequency_penalty', 0.0 ) or 0.0 ),
+					presence=float( st.session_state.get( 'audio_presence_penalty', 0.0 ) or 0.0 ),
+					max_tokens=int( st.session_state.get( 'audio_max_tokens', 0 ) or 0 ),
+					start_time=float( st.session_state.get( 'audio_start_time', 0.0 ) or 0.0 ),
+					end_time=float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ),
+					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
+					prompt=prompt_text, )
+			
+			elif provider_name == 'Grok':
+				throw_if( 'audio_language', target_language )
+				result = translator.translate( path=path, target_language=target_language,
+					model=model, source_language='', text_format=bool( response_format ),
+					mime_type=get_audio_source_mime_type( path, '' ), keyterm=prompt_text,
+					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or ''
+					), )
+			
+			else:
+				raise ValueError( f'Unsupported Audio provider: {provider_name}' )
+			
+			text_result = normalize_audio_text_result( result )
+			st.session_state[ 'audio_output' ] = text_result
+			st.session_state[ 'audio_last_result' ] = { 'task': 'Translate',
+				'provider': provider_name, 'model': model,
+				'target_language': target_language or 'English', 'text': text_result, }
+			update_audio_usage( translator )
+			return text_result
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Audio'
+			ex.method = ('run_audio_translation( path: str, '
+			             'prompt: Optional[ str ] = None ) -> str')
+			Logger( ).write( ex )
+			raise ex
 	
 	def run_audio_tts( text: str ) -> Optional[ bytes ]:
-		"""Run audio tts.
-		
+		"""Run audio text-to-speech.
+
 		Purpose:
-		    Performs the run_audio_tts workflow using the inputs supplied by the caller and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
-		
+		    Executes the selected provider text-to-speech wrapper using only arguments
+		    implemented by that provider contract.
+
 		Args:
-		    text (str): Text value used by the operation.
-		
+		    text (str): Required text converted to speech.
+
 		Returns:
-		    Optional[bytes]: Return value produced by the operation."""
-		kwargs = { 'text': text, 'prompt': text, 'model': st.session_state.get( 'audio_model' ),
-			'format': st.session_state.get( 'audio_response_format' ) or st.session_state.get(
-				'audio_format' ) or None, 'voice': st.session_state.get( 'audio_voice' ) or None,
-			'speed': st.session_state.get( 'audio_speed' ),
-			'language': st.session_state.get( 'audio_language' ) or 'auto',
-			'instruct': st.session_state.get( 'audio_system_instructions', '' ),
-			'file_path': st.session_state.get( 'audio_output_path' ) or None,
-			'sample_rate': st.session_state.get( 'audio_sample_rate' ),
-			'bit_rate': st.session_state.get( 'audio_bit_rate' ),
-			'temperature': st.session_state.get( 'audio_temperature' ),
-			'top_p': st.session_state.get( 'audio_top_percent' ),
-			'frequency': st.session_state.get( 'audio_frequency_penalty' ),
-			'presence': st.session_state.get( 'audio_presence_penalty' ),
-			'max_tokens': st.session_state.get( 'audio_max_tokens' ),
-			'include': st.session_state.get( 'audio_include', [ ] ),
-			'store': st.session_state.get( 'audio_store' ),
-			'stream': st.session_state.get( 'audio_stream' ),
-			'background': st.session_state.get( 'audio_background' ), }
-		result = call_existing_audio_method( instance=tts,
-			method_names=[ 'create_speech', 'synthesize', 'generate', 'create' ], kwargs=kwargs )
-		audio_bytes = normalize_audio_bytes_result( result )
-		st.session_state[ 'audio_output_bytes' ] = audio_bytes
-		st.session_state[ 'audio_last_result' ] = { 'task': 'Text-to-Speech',
-			'bytes': len( audio_bytes ) if audio_bytes else 0, }
-		update_audio_usage( tts )
-		return audio_bytes
+		    Optional[bytes]: Generated audio bytes when available.
+
+		Raises:
+		    Exception: Re-raises exceptions after recording them with the application logger.
+		"""
+		try:
+			throw_if( 'text', text )
+			model = str( st.session_state.get( 'audio_model', '' ) or '' ).strip( )
+			voice = str( st.session_state.get( 'audio_voice', '' ) or '' ).strip( )
+			response_format = st.session_state.get( 'audio_response_format' )
+			speed = float( st.session_state.get( 'audio_speed', 1.0 ) or 1.0 )
+			output_path = str( st.session_state.get( 'audio_output_path', '' ) or '' )
+			throw_if( 'voice', voice )
+			
+			if provider_name == 'GPT':
+				throw_if( 'model', model )
+				result = tts.create_speech( text=text, model=model,
+					format=str( response_format or 'mp3' ), speed=speed, voice=voice,
+					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
+					file_path=output_path, )
+			
+			elif provider_name == 'Gemini':
+				throw_if( 'model', model )
+				result = tts.create_speech( text=text, model=model,
+					format=str( response_format or 'audio/wav' ), voice=voice, speed=speed,
+					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
+					file_path=output_path,
+					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
+					top_p=float( st.session_state.get( 'audio_top_percent', 0.0 ) or 0.0 ),
+					max_tokens=int( st.session_state.get( 'audio_max_tokens', 0 ) or 0 ),
+					sample_rate=int(
+						st.session_state.get( 'audio_sample_rate', 24000 ) or 24000 ), )
+			
+			elif provider_name == 'Grok':
+				result = tts.create_speech( text=text,
+					language=str( st.session_state.get( 'audio_language', '' ) or 'auto' ),
+					voice_id=voice, output_format=str( response_format or 'mp3' ), speed=speed,
+					sample_rate=int( st.session_state.get( 'audio_sample_rate', 24000 ) or 24000 ),
+					bit_rate=int( st.session_state.get( 'audio_bit_rate', 128000 ) or 128000 ),
+					filepath=output_path, )
+			
+			else:
+				raise ValueError( f'Unsupported Audio provider: {provider_name}' )
+			
+			audio_bytes = normalize_audio_bytes_result( result )
+			st.session_state[ 'audio_output_bytes' ] = audio_bytes
+			st.session_state[ 'audio_last_result' ] = { 'task': 'Text-to-Speech',
+				'provider': provider_name, 'model': model, 'format': str( response_format or '' ),
+				'bytes': len( audio_bytes ) if audio_bytes else 0, }
+			update_audio_usage( tts )
+			return audio_bytes
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Audio'
+			ex.method = 'run_audio_tts( text: str ) -> Optional[ bytes ]'
+			Logger( ).write( ex )
+			raise ex
 	
 	# ------------------------------------------------------------------
 	# Main UI
@@ -7724,7 +7867,6 @@ elif mode == 'Audio':
 				include_options = get_audio_include_options( audio_task )
 				sample_rate_options = get_audio_sample_rate_options( )
 				bit_rate_options = get_audio_bit_rate_options( )
-				
 				sanitize_audio_selection( 'audio_model', model_options, '' )
 				sanitize_audio_selection( 'audio_language', language_options, '' )
 				sanitize_audio_selection( 'audio_voice', voice_options, '' )
@@ -7924,8 +8066,6 @@ elif mode == 'Audio':
 				st.button( label='XML ↔️ Markdown', width='stretch',
 					on_click=convert_audio_system_instructions, )
 		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
-		
 		# ------------------------------------------------------------------
 		# Audio Workflows
 		# ------------------------------------------------------------------
@@ -8069,9 +8209,8 @@ elif mode == 'Audio':
 									append_audio_message( 'user', tts_input.strip( ) )
 									append_audio_message( 'assistant',
 										'Text-to-speech audio generated successfully.' )
-									st.audio( audio_bytes,
-										format=f'audio/'
-										       f'{st.session_state.get( "audio_response_format", "mp3" )}' )
+									st.audio( audio_bytes, format=get_audio_mime_type(
+										st.session_state.get( 'audio_response_format', 'mp3' ) ) )
 								else:
 									st.warning( 'No audio bytes were returned.' )
 						
@@ -8087,18 +8226,19 @@ elif mode == 'Audio':
 			
 			if st.session_state.get( 'audio_output_bytes' ):
 				audio_format = st.session_state.get( 'audio_response_format', 'mp3' ) or 'mp3'
+				audio_extension = get_audio_file_extension( audio_format )
+				audio_mime_type = get_audio_mime_type( audio_format )
 				st.download_button( label='Download Audio',
 					data=st.session_state.get( 'audio_output_bytes' ),
-					file_name=f'tts_output.{audio_format}', mime=f'audio/{audio_format}',
+					file_name=f'tts_output.{audio_extension}', mime=audio_mime_type,
 					width='stretch' )
 		
 		# ----- Playback ------
 		with tab_playback:
 			st.caption( 'Playback generated output, uploaded/recorded audio, or a local file.' )
 			if st.session_state.get( 'audio_output_bytes' ):
-				st.audio( st.session_state.get( 'audio_output_bytes' ),
-					format=f'audio/{st.session_state.get( "audio_response_form"
-					                                      "at", "mp3" ) or "mp3"}' )
+				st.audio( st.session_state.get( 'audio_output_bytes' ), format=get_audio_mime_type(
+					st.session_state.get( 'audio_response_format', 'mp3' ) ) )
 			
 			playback_path = (st.session_state.get( 'audio_upload_path' ) or st.session_state.get(
 				'audio_recorded_path' ) or st.session_state.get( 'audio_output_path' ) or '')
@@ -9252,25 +9392,28 @@ elif mode == 'Document Q&A':
 # ======================================================================================
 elif mode == 'Embeddings':
 	provider_name = st.session_state.get( 'provider', 'GPT' )
+	
+	if not provider_has_class( 'Embeddings', provider_name ):
+		st.error( f'{provider_name} does not provide an Embeddings wrapper.' )
+		st.stop( )
+	
 	embedding = get_embeddings_module( provider_name )
 	
-	# ----- Embeddings Utilties ------
+	# ----- Embeddings Utilities ------
 	def get_embedding_help( name: str, fallback: str = '' ) -> str:
 		"""Get embedding help.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    Returns normalized help text for an Embeddings Mode control from the current
+		    application configuration.
 		
 		Args:
-		    name (str): Name value used by the operation.
-		    fallback (str): Fallback value used by the operation.
+		    name (str): Configuration attribute containing the help text.
+		    fallback (str): Fallback help text used when the attribute is unavailable.
 		
 		Returns:
-		    str: Return value produced by the operation."""
+		    str: Configured or fallback help text.
+		"""
 		return str( getattr( cfg, name, fallback ) or fallback )
 	
 	def get_embedding_options( instance: Any, attr_name: str,
@@ -9278,19 +9421,17 @@ elif mode == 'Embeddings':
 		"""Get embedding options.
 		
 		Purpose:
-		    Returns normalized information for the application component. The method provides a
-		    stable view
-		    of provider capabilities, stored state, or response metadata so UI controls and
-		    downstream logic
-		    can consume it consistently.
+		    Returns a normalized list of provider options exposed through an Embeddings wrapper
+		    property or method.
 		
 		Args:
-		    instance (Any): Instance value used by the operation.
-		    attr_name (str): Attr name value used by the operation.
-		    fallback (Optional[List[Any]]): Fallback value used by the operation.
+		    instance (Any): Provider Embeddings wrapper instance.
+		    attr_name (str): Name of the wrapper option property or method.
+		    fallback (Optional[List[Any]]): Values used when the wrapper exposes no options.
 		
 		Returns:
-		    List[Any]: Return value produced by the operation."""
+		    List[Any]: Provider-supported option values.
+		"""
 		values = getattr( instance, attr_name, None )
 		if callable( values ):
 			try:
@@ -9313,17 +9454,15 @@ elif mode == 'Embeddings':
 		"""Normalize embedding text.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application
-			processing. The
-		    function reduces provider, user-input, or serialization differences before values are
-		    stored or
-		    displayed.
+		    Converts source input into normalized text suitable for chunking and provider
+		    embedding requests.
 		
 		Args:
-		    value (Any): Value value used by the operation.
+		    value (Any): Source text value.
 		
 		Returns:
-		    str: Return value produced by the operation."""
+		    str: Normalized source text.
+		"""
 		if value is None:
 			return ''
 		
@@ -9333,18 +9472,17 @@ elif mode == 'Embeddings':
 		"""Chunk embedding text.
 		
 		Purpose:
-		    Performs the chunk_embedding_text workflow using the inputs supplied by the caller and
-		    the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Divides embedding source text into bounded overlapping chunks while preserving the
+		    existing application chunking helpers when available.
 		
 		Args:
-		    text_value (str): Text value value used by the operation.
-		    chunk_size (int): Chunk size value used by the operation.
-		    overlap (int): Overlap value used by the operation.
+		    text_value (str): Source text to divide.
+		    chunk_size (int): Maximum words or tokens retained in each chunk.
+		    overlap (int): Number of words or tokens shared by adjacent chunks.
 		
 		Returns:
-		    List[str]: Return value produced by the operation."""
+		    List[str]: Ordered embedding chunks.
+		"""
 		source = normalize_embedding_text( text_value )
 		if not source:
 			return [ ]
@@ -9383,15 +9521,16 @@ elif mode == 'Embeddings':
 		"""Normalize embedding vectors.
 		
 		Purpose:
-		    Normalizes incoming values into a predictable representation for application
-		    processing. The function reduces provider, user-input, or serialization differences
-		    before values are stored or displayed.
+		    Converts GPT, Gemini, dictionary, response-object, batch, single-vector, and
+		    base64-encoded embedding outputs into a consistent collection of floating-point
+		    vectors.
 		
 		Args:
-		    vectors (Any): Vectors value used by the operation.
+		    vectors (Any): Provider embedding result or response object.
 		
 		Returns:
-		    List[List[float]]: Return value produced by the operation."""
+		    List[List[float]]: Normalized embedding vectors.
+		"""
 		if vectors is None:
 			return [ ]
 		
@@ -9409,8 +9548,22 @@ elif mode == 'Embeddings':
 		if hasattr( vectors, 'embedding' ):
 			return normalize_embedding_vectors( getattr( vectors, 'embedding' ) )
 		
+		if isinstance( vectors, str ):
+			try:
+				decoded = base64.b64decode( vectors )
+				return [ np.frombuffer( decoded, dtype=np.float32, ).astype( float ).tolist( ) ]
+			except Exception:
+				return [ ]
+		
 		if isinstance( vectors, list ) and vectors:
 			first = vectors[ 0 ]
+			
+			if isinstance( first, str ):
+				rows = [ ]
+				for item in vectors:
+					rows.extend( normalize_embedding_vectors( item ) )
+				
+				return rows
 			
 			if isinstance( first, float ) or isinstance( first, int ):
 				return [ [ float( value ) for value in vectors ] ]
@@ -9422,6 +9575,7 @@ elif mode == 'Embeddings':
 						rows.extend( normalize_embedding_vectors( item.get( 'embedding' ) ) )
 					elif 'vector' in item:
 						rows.extend( normalize_embedding_vectors( item.get( 'vector' ) ) )
+				
 				return rows
 			
 			if hasattr( first, 'embedding' ):
@@ -9438,27 +9592,26 @@ elif mode == 'Embeddings':
 		"""Call embeddings create.
 		
 		Purpose:
-		    Performs the call_embeddings_create workflow using the inputs supplied by the caller
-		    and the
-		    current runtime configuration. The function keeps this behavior isolated so related UI,
-		    provider, and data-processing paths can call it consistently.
+		    Routes embedding creation to the exact GPT or Gemini wrapper contract using the
+		    currently selected provider controls.
 		
 		Args:
-		    chunks (List[str]): Chunks value used by the operation.
+		    chunks (List[str]): Required source-text chunks.
 		
 		Returns:
-		    Any: Return value produced by the operation.
+		    Any: Provider embedding output.
 		
 		Raises:
-		    Exception: Re-raises exceptions after recording them with the application logger."""
+		    Error: Re-raised after the exception is logged.
+		"""
 		try:
 			throw_if( 'chunks', chunks )
 			
 			input_value = chunks if len( chunks ) != 1 else chunks[ 0 ]
 			dimensions = st.session_state.get( 'embedding_dimensions',
-				st.session_state.get( 'embeddings_dimensions', 0 ) )
+				st.session_state.get( 'embeddings_dimensions', 0 ), )
 			encoding_format = st.session_state.get( 'embedding_encoding_format',
-				st.session_state.get( 'embeddings_encoding_format', '' ) )
+				st.session_state.get( 'embeddings_encoding_format', '' ), )
 			model = st.session_state.get( 'embedding_model' ) or None
 			
 			throw_if( 'model', model )
@@ -9466,26 +9619,21 @@ elif mode == 'Embeddings':
 			if provider_name == 'GPT':
 				return embedding.create( text=input_value, model=model,
 					format=encoding_format or 'float',
-					dimensions=dimensions if int( dimensions or 0 ) > 0 else None )
+					dimensions=(dimensions if int( dimensions or 0 ) > 0 else None), )
 			
 			if provider_name == 'Gemini':
+				task_type = str( st.session_state.get( 'embedding_task_type', '' ) or '' )
+				title = str( st.session_state.get( 'embedding_title', '' ) or '' )
+				
 				return embedding.create( text=input_value, model=model,
-					encoding_format=encoding_format or 'float',
-					dimensions=dimensions if int( dimensions or 0 ) > 0 else None )
+					dimensions=int( dimensions or 0 ), task_type=task_type, title=title, )
 			
-			if provider_name == 'Grok':
-				return embedding.create( text=input_value, model=model,
-					format=encoding_format or 'float',
-					dimensions=dimensions if int( dimensions or 0 ) > 0 else None )
-			
-			return embedding.create( text=input_value, model=model,
-				format=encoding_format or 'float',
-				dimensions=dimensions if int( dimensions or 0 ) > 0 else None )
+			raise ValueError( f'{provider_name} does not support embedding creation.' )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'app'
 			exception.cause = 'Embeddings'
-			exception.method = 'call_embeddings_create( chunks: List[ str ] ) -> Any'
+			exception.method = ('call_embeddings_create( chunks: List[ str ] ) -> Any')
 			Logger( ).write( exception )
 			raise exception
 	
@@ -9493,17 +9641,15 @@ elif mode == 'Embeddings':
 		"""Extract embedding usage.
 		
 		Purpose:
-		    Extracts structured information from a provider response, uploaded file,
-		    or application data
-		    object. The function normalizes provider-specific shapes into values that can be
-		rendered,
-		    stored, or passed to later processing steps.
+		    Extracts provider usage metadata from the active wrapper response or returned
+		    embedding result.
 		
 		Args:
-		    result (Any): Result value used by the operation.
+		    result (Any): Provider embedding result.
 		
 		Returns:
-		    Dict[str, Any]: Return value produced by the operation."""
+		    Dict[str, Any]: Normalized provider usage metadata.
+		"""
 		response = getattr( embedding, 'response', None ) or result
 		
 		if response is None:
@@ -9514,13 +9660,23 @@ elif mode == 'Embeddings':
 			return usage
 		
 		if usage is not None:
+			if hasattr( usage, 'model_dump' ):
+				try:
+					dumped_usage = usage.model_dump( )
+					if isinstance( dumped_usage, dict ):
+						return dumped_usage
+				except Exception:
+					pass
+			
 			try:
 				return dict( usage )
 			except Exception:
 				return { 'usage': str( usage ) }
 		
-		if isinstance( response, dict ) and isinstance( response.get( 'usage' ), dict ):
-			return response.get( 'usage' )
+		if isinstance( response, dict ):
+			response_usage = response.get( 'usage' )
+			if isinstance( response_usage, dict ):
+				return response_usage
 		
 		return { }
 	
@@ -9529,28 +9685,27 @@ elif mode == 'Embeddings':
 		"""Build embedding metrics.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The
-		    function converts
-		    caller input, session state, or provider-specific options into a stable shape that
-		    downstream
-		    API calls and rendering code can consume safely.
+		    Builds source-text, chunk, vector, dimensionality, and usage metrics for the
+		    current embedding result.
 		
 		Args:
-		    source_text (str): Source text value used by the operation.
-		    chunks (List[str]): Chunks value used by the operation.
-		    vectors (List[List[float]]): Vectors value used by the operation.
-		    usage (Dict[str, Any]): Usage value used by the operation.
+		    source_text (str): Complete normalized source text.
+		    chunks (List[str]): Source-text chunks submitted to the provider.
+		    vectors (List[List[float]]): Normalized embedding vectors.
+		    usage (Dict[str, Any]): Provider usage metadata.
 		
 		Returns:
-		    Dict[str, Any]: Return value produced by the operation."""
+		    Dict[str, Any]: Embedding metrics.
+		"""
 		words = source_text.split( )
 		total_words = len( words )
 		unique_words = len( set( words ) )
-		token_total = count_tokens( source_text ) if 'count_tokens' in globals( ) else total_words
+		token_total = (count_tokens( source_text ) if 'count_tokens' in globals( ) else
+		               total_words)
 		dimensions = len( vectors[ 0 ] ) if vectors else 0
 		
 		return { 'tokens': token_total, 'words': total_words, 'unique_words': unique_words,
-			'ttr': (unique_words / total_words) if total_words > 0 else 0.0,
+			'ttr': (unique_words / total_words if total_words > 0 else 0.0),
 			'characters': len( source_text ), 'chunks': len( chunks ), 'vectors': len( vectors ),
 			'dimensions': dimensions, 'usage': usage, }
 	
@@ -9559,28 +9714,26 @@ elif mode == 'Embeddings':
 		"""Build embeddings dataframe.
 		
 		Purpose:
-		    Builds the normalized data structure required by the application workflow. The
-		    function converts
-		    caller input, session state, or provider-specific options into a stable shape that
-		    downstream
-		    API calls and rendering code can consume safely.
+		    Builds a tabular embedding output containing chunk identifiers, source text, and
+		    one column for each vector dimension.
 		
 		Args:
-		    chunks (List[str]): Chunks value used by the operation.
-		    vectors (List[List[float]]): Vectors value used by the operation.
+		    chunks (List[str]): Source-text chunks.
+		    vectors (List[List[float]]): Normalized embedding vectors.
 		
 		Returns:
-		    pd.DataFrame: Return value produced by the operation."""
+		    pd.DataFrame: Embedding output dataframe.
+		"""
 		if not vectors:
 			return pd.DataFrame( )
 		
 		df_vectors = pd.DataFrame( vectors,
-			columns=[ f'dim_{index}' for index in range( len( vectors[ 0 ] ) ) ] )
+			columns=[ f'dim_{index}' for index in range( len( vectors[ 0 ] ) ) ], )
 		
-		df_vectors.insert( 0, 'ChunkIndex', range( 1, len( df_vectors ) + 1 ) )
+		df_vectors.insert( 0, 'ChunkIndex', range( 1, len( df_vectors ) + 1 ), )
 		
 		if chunks:
-			df_vectors.insert( 1, 'Text', chunks[ :len( df_vectors ) ] )
+			df_vectors.insert( 1, 'Text', chunks[ :len( df_vectors ) ], )
 		
 		return df_vectors
 	
@@ -9588,105 +9741,156 @@ elif mode == 'Embeddings':
 		"""Render embedding metrics.
 		
 		Purpose:
-		    Renders the requested user interface element or result block in Streamlit using
-		    normalized inputs. The function keeps presentation logic isolated from provider
-		    calls and data-processing steps so the screen output remains predictable.
+		    Renders token, chunk, vector, dimensionality, and type-token-ratio metrics for the
+		    active embedding result.
 		
 		Args:
-		    metrics (Dict[str, Any]): Metrics value used by the operation.
+		    metrics (Dict[str, Any]): Embedding metrics.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-		    value."""
-		col_m1, col_m2, col_m3, col_m4, col_m5 = st.columns( 5, border=True )
+		    None: This function renders Streamlit controls.
+		"""
+		col_m1, col_m2, col_m3, col_m4, col_m5 = st.columns( 5, border=True, )
 		col_m1.metric( 'Tokens', metrics.get( 'tokens', 0 ) )
 		col_m2.metric( 'Chunks', metrics.get( 'chunks', 0 ) )
 		col_m3.metric( 'Vectors', metrics.get( 'vectors', 0 ) )
 		col_m4.metric( 'Dimensions', metrics.get( 'dimensions', 0 ) )
-		col_m5.metric( 'TTR', f"{float( metrics.get( 'ttr', 0.0 ) ):.3f}" )
+		col_m5.metric( 'TTR', f"{float( metrics.get( 'ttr', 0.0 ) ):.3f}", )
 	
 	def reset_embeddings_all( ) -> None:
 		"""Reset embeddings all.
 		
 		Purpose:
-		    Removes or resets the requested application state or provider resource in a controlled
-		    manner.
-		    The function keeps cleanup behavior centralized so callers do not duplicate lifecycle
-		    logic.
+		    Clears Embeddings Mode source input, provider configuration, generated vectors,
+		    metrics, dataframe output, and compatibility aliases.
 		
 		Returns:
-		    None: This function performs its work through side effects and does
-		    not return a value."""
-		for key in [ 'embedding_input', 'embedding_text', 'embeddings_input_text',
+		    None: This function updates Streamlit session state.
+		"""
+		keys_to_clear = [ 'embedding_input', 'embedding_text', 'embeddings_input_text',
+			'embedding_file', 'embedding_file_uploader', 'embedding_model',
+			'embedding_encoding_format', 'embedding_encoding_format_display',
+			'embeddings_encoding_format', 'embedding_dimensions', 'embeddings_dimensions',
+			'embedding_chunk_size', 'embeddings_chunk_size', 'embedding_chunk_overlap',
+			'embeddings_overlap_amount', 'embedding_task_type', 'embedding_title',
 			'embedding_chunks', 'embeddings_chunks', 'embedding_vectors', 'embeddings',
-			'embedding_results', 'embeddings_df', 'embedding_dataframe', 'embedding_metrics',
-			'embedding_usage', ]:
+			'embedding_results', 'embedding_dataframe', 'embeddings_df', 'embedding_metrics',
+			'embedding_usage', ]
+		
+		for key in keys_to_clear:
 			if key in st.session_state:
 				del st.session_state[ key ]
+		
+		st.session_state[ 'embedding_input' ] = ''
+		st.session_state[ 'embedding_text' ] = ''
+		st.session_state[ 'embeddings_input_text' ] = ''
+		st.session_state[ 'embedding_file' ] = None
+		st.session_state[ 'embedding_model' ] = ''
+		st.session_state[ 'embedding_encoding_format' ] = ''
+		st.session_state[ 'embeddings_encoding_format' ] = ''
+		st.session_state[ 'embedding_dimensions' ] = 0
+		st.session_state[ 'embeddings_dimensions' ] = 0
+		st.session_state[ 'embedding_chunk_size' ] = 0
+		st.session_state[ 'embeddings_chunk_size' ] = 0
+		st.session_state[ 'embedding_chunk_overlap' ] = 0
+		st.session_state[ 'embeddings_overlap_amount' ] = 0
+		st.session_state[ 'embedding_task_type' ] = ''
+		st.session_state[ 'embedding_title' ] = ''
+		st.session_state[ 'embedding_chunks' ] = [ ]
+		st.session_state[ 'embeddings_chunks' ] = [ ]
+		st.session_state[ 'embedding_vectors' ] = [ ]
+		st.session_state[ 'embeddings' ] = [ ]
+		st.session_state[ 'embedding_results' ] = None
+		st.session_state[ 'embedding_dataframe' ] = None
+		st.session_state[ 'embeddings_df' ] = None
+		st.session_state[ 'embedding_metrics' ] = { }
+		st.session_state[ 'embedding_usage' ] = { }
 	
 	def update_embedding_usage( response: Any ) -> None:
 		"""Update embedding usage.
 		
 		Purpose:
-		    Performs the update_embedding_usage workflow using the inputs supplied by the caller
-		    and the current runtime configuration. The function keeps this behavior
-		    isolated so related UI, provider, and data-processing paths can call it consistently.
+		    Updates the shared application token counters when the embedding provider exposes
+		    compatible usage metadata.
 		
 		Args:
-		    response (Any): Response value used by the operation.
+		    response (Any): Provider response containing usage metadata.
 		
 		Returns:
-		    None: This function performs its work through side effects and does not return a
-			value."""
+		    None: This function updates Streamlit session state.
+		"""
+		if response is None:
+			return
+		
 		try:
-			if 'update_token_counters' in globals( ):
-				update_token_counters( response )
-			elif 'update_token_counters' in globals( ):
-				update_token_counters( response )
-			elif 'update_counters' in globals( ):
-				count_tokens( response )
+			update_token_counters( response )
 		except Exception:
 			pass
 	
-	if ( 'embeddings_dimensions' in st.session_state and 'embedding_dimensions' not in
+	if 'embedding_task_type' not in st.session_state:
+		st.session_state[ 'embedding_task_type' ] = ''
+	
+	if 'embedding_title' not in st.session_state:
+		st.session_state[ 'embedding_title' ] = ''
+	
+	# ------------------------------------------------------------------
+	# Non-destructive state aliases
+	# ------------------------------------------------------------------
+	if ('embeddings_input_text' in st.session_state and 'embedding_input' not in st.session_state):
+		st.session_state[ 'embedding_input' ] = st.session_state.get( 'embeddings_input_text',
+			'', )
+	
+	if ('embedding_input' in st.session_state and 'embeddings_input_text' not in st.session_state):
+		st.session_state[ 'embeddings_input_text' ] = st.session_state.get( 'embedding_input',
+			'', )
+	
+	if (
+			'embeddings_dimensions' in st.session_state and 'embedding_dimensions' not in
 			st.session_state):
 		st.session_state[ 'embedding_dimensions' ] = st.session_state.get( 'embeddings_dimensions',
-			0 )
+			0, )
 	
-	if ( 'embedding_dimensions' in st.session_state and 'embeddings_dimensions' not in
+	if (
+			'embedding_dimensions' in st.session_state and 'embeddings_dimensions' not in
 			st.session_state):
 		st.session_state[ 'embeddings_dimensions' ] = st.session_state.get( 'embedding_dimensions',
-			0 )
+			0, )
 	
-	if ( 'embeddings_encoding_format' in st.session_state and 'embedding_encoding_format' not
+	if (
+			'embeddings_encoding_format' in st.session_state and 'embedding_encoding_format' not
 			in st.session_state):
 		st.session_state[ 'embedding_encoding_format' ] = st.session_state.get(
-			'embeddings_encoding_format', '' )
+			'embeddings_encoding_format', '', )
 	
-	if ( 'embedding_encoding_format' in st.session_state and 'embeddings_encoding_format' not
+	if (
+			'embedding_encoding_format' in st.session_state and 'embeddings_encoding_format' not
 			in st.session_state):
 		st.session_state[ 'embeddings_encoding_format' ] = st.session_state.get(
-			'embedding_encoding_format', '' )
+			'embedding_encoding_format', '', )
 	
-	if ( 'embeddings_chunk_size' in st.session_state and 'embedding_chunk_size' not in
+	if (
+			'embeddings_chunk_size' in st.session_state and 'embedding_chunk_size' not in
 			st.session_state):
 		st.session_state[ 'embedding_chunk_size' ] = st.session_state.get( 'embeddings_chunk_size',
-			0 )
+			0, )
 	
-	if ( 'embedding_chunk_size' in st.session_state and 'embeddings_chunk_size' not in
+	if (
+			'embedding_chunk_size' in st.session_state and 'embeddings_chunk_size' not in
 			st.session_state):
 		st.session_state[ 'embeddings_chunk_size' ] = st.session_state.get( 'embedding_chunk_size',
-			0 )
+			0, )
 	
-	if ( 'embeddings_overlap_amount' in st.session_state and 'embedding_chunk_overlap' not in
+	if (
+			'embeddings_overlap_amount' in st.session_state and 'embedding_chunk_overlap' not in
 			st.session_state):
 		st.session_state[ 'embedding_chunk_overlap' ] = st.session_state.get(
-			'embeddings_overlap_amount', 0 )
+			'embeddings_overlap_amount', 0, )
 	
-	if ( 'embedding_chunk_overlap' in st.session_state and 'embeddings_overlap_amount' not in
+	if (
+			'embedding_chunk_overlap' in st.session_state and 'embeddings_overlap_amount' not in
 			st.session_state):
 		st.session_state[ 'embeddings_overlap_amount' ] = st.session_state.get(
-			'embedding_chunk_overlap', 0 )
+			'embedding_chunk_overlap', 0, )
 	
 	if not isinstance( st.session_state.get( 'embedding_chunks' ), list ):
 		st.session_state[ 'embedding_chunks' ] = [ ]
@@ -9704,72 +9908,123 @@ elif mode == 'Embeddings':
 	# Main UI
 	# ------------------------------------------------------------------
 	emb_left, emb_center, emb_right = st.columns( [ 0.05, 0.9, 0.05 ] )
+	
 	with emb_center:
-		st.subheader( '🔢 Embeddings', help=cfg.EMBEDDINGS_API )
+		st.subheader( '🔢 Embeddings', help=cfg.EMBEDDINGS_API, )
 		st.divider( )
 		
 		# ------------------------------------------------------------------
 		# Expander - Embedding Configuration
 		# ------------------------------------------------------------------
-		with st.expander( label='Configuration', icon='🎚️', expanded=False, width='stretch' ):
+		with st.expander( label='Configuration', icon='🎚️', expanded=False, width='stretch', ):
 			emb_c1, emb_c2, emb_c3, emb_c4, emb_c5 = st.columns( [ 0.20, 0.20, 0.20, 0.20, 0.20 ],
-				border=True, gap='xxsmall' )
+				border=True, gap='xxsmall', )
 			
 			# --------- Model --------
 			with emb_c1:
-				model_options = get_embedding_options( embedding, 'model_options' )
+				model_options = get_embedding_options( embedding, 'model_options', )
 				model_options = [ str( item ) for item in model_options if str( item ).strip( ) ]
+				
 				st.selectbox( label='Embedding Model', options=model_options,
-					help='Required. Embedding model used by the selected provider.',
-					key='embedding_model', index=None, placeholder='Options' )
+					help=('Required. Embedding model used by the selected '
+					      'provider.'), key='embedding_model', index=None, placeholder='Options', )
 			
 			# --------- Encoding --------
 			with emb_c2:
-				encoding_options = get_embedding_options( embedding, 'encoding_options',
-					[ 'float', 'base64' ] )
-				encoding_options = [ str( item ) for item in encoding_options if
-					str( item ).strip( ) ]
-				st.selectbox( label='Encoding Format', options=encoding_options,
-					key='embedding_encoding_format',
-					help='Optional. Format returned by the embedding provider.', index=None,
-					placeholder='Options' )
-				st.session_state[ 'embeddings_encoding_format' ] = st.session_state.get(
-					'embedding_encoding_format', '' )
+				if provider_name == 'GPT':
+					encoding_options = get_embedding_options( embedding, 'encoding_options',
+						[ 'float', 'base64' ], )
+					encoding_options = [ str( item ) for item in encoding_options if
+						str( item ).strip( ) ]
+					
+					st.selectbox( label='Encoding Format', options=encoding_options,
+						key='embedding_encoding_format',
+						help=('Optional. Format returned by the embedding '
+						      'provider.'), index=None, placeholder='Options', )
+				else:
+					st.selectbox( label='Encoding Format', options=[ 'Provider Default' ], index=0,
+						disabled=True, key='embedding_encoding_format_display',
+						help=('Gemini returns floating-point embedding values.'), )
+					st.session_state[ 'embedding_encoding_format' ] = ''
+				
+				st.session_state[ 'embeddings_encoding_format' ] = (
+					st.session_state.get( 'embedding_encoding_format', '', ))
 			
 			# --------- Dimensions --------
 			with emb_c3:
-				st.slider( label='Dimensions', min_value=0, max_value=4096,
-					value=int( st.session_state.get( 'embedding_dimensions', 0 ) or 0 ), step=1,
-					key='embedding_dimensions',
-					help='Optional. Embedding output dimensions when supported.' )
-				st.session_state[ 'embeddings_dimensions' ] = st.session_state.get(
-					'embedding_dimensions', 0 )
+				selected_model = str( st.session_state.get( 'embedding_model', '' ) or '' )
+				
+				if provider_name == 'GPT':
+					dimension_support = getattr( embedding, 'model_dimension_support', { }, )
+					max_dimensions = getattr( embedding, 'model_max_dimensions', { }, )
+					supports_dimensions = bool( dimension_support.get( selected_model, False, ) )
+					dimension_max = int( max_dimensions.get( selected_model, 4096, ) or 4096 )
+				else:
+					supports_dimensions = (bool( selected_model ) and bool(
+						embedding.supports_dimensions( selected_model ) ))
+					dimension_options = get_embedding_options( embedding, 'dimension_options',
+						[ 0 ], )
+					dimension_max = max( [ int( item ) for item in dimension_options ] or [ 4096
+					] )
+				
+				current_dimensions = int( st.session_state.get( 'embedding_dimensions', 0, ) or 0 )
+				
+				if current_dimensions > dimension_max:
+					st.session_state[ 'embedding_dimensions' ] = (dimension_max)
+				
+				st.slider( label='Dimensions', min_value=0, max_value=dimension_max,
+					value=int( st.session_state.get( 'embedding_dimensions', 0, ) or 0 ), step=1,
+					key='embedding_dimensions', disabled=not supports_dimensions,
+					help=('Optional. Embedding output dimensions when '
+					      'supported. Zero uses the provider default.'), )
+				st.session_state[ 'embeddings_dimensions' ] = (
+					st.session_state.get( 'embedding_dimensions', 0, ))
 			
 			# --------- Chunk Size --------
 			with emb_c4:
 				st.slider( label='Chunk Size', min_value=0, max_value=8000,
-					value=int( st.session_state.get( 'embedding_chunk_size', 0 ) or 0 ), step=50,
+					value=int( st.session_state.get( 'embedding_chunk_size', 0, ) or 0 ), step=50,
 					key='embedding_chunk_size',
-					help='Maximum words/tokens per chunk. Zero embeds the full input.' )
-				st.session_state[ 'embeddings_chunk_size' ] = st.session_state.get(
-					'embedding_chunk_size', 0 )
+					help=('Maximum words or tokens per chunk. Zero embeds '
+					      'the full input.'), )
+				st.session_state[ 'embeddings_chunk_size' ] = (
+					st.session_state.get( 'embedding_chunk_size', 0, ))
 			
 			# --------- Overlap --------
 			with emb_c5:
 				st.slider( label='Overlap', min_value=0, max_value=2000,
-					value=int( st.session_state.get( 'embedding_chunk_overlap', 0 ) or 0 ),
-					step=25,
-					key='embedding_chunk_overlap', help='Overlap between adjacent chunks.' )
-				st.session_state[ 'embeddings_overlap_amount' ] = st.session_state.get(
-					'embedding_chunk_overlap', 0 )
-			 
+					value=int( st.session_state.get( 'embedding_chunk_overlap', 0, ) or 0 ),
+					step=25, key='embedding_chunk_overlap',
+					help='Overlap between adjacent chunks.', )
+				st.session_state[ 'embeddings_overlap_amount' ] = (
+					st.session_state.get( 'embedding_chunk_overlap', 0, ))
+			
+			# --------- Gemini Task Configuration --------
+			if provider_name == 'Gemini':
+				task_c1, task_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall', )
+				
+				with task_c1:
+					task_options = get_embedding_options( embedding, 'task_options', [ '' ], )
+					st.selectbox( label='Task Type', options=task_options,
+						key='embedding_task_type',
+						help=('Optional. Gemini embedding task type used '
+						      'to optimize the vector.'), )
+				
+				with task_c2:
+					st.text_input( label='Document Title', key='embedding_title', disabled=(
+							st.session_state.get( 'embedding_task_type',
+								'', ) != 'RETRIEVAL_DOCUMENT'),
+						help=('Optional. Used only with the '
+						      'RETRIEVAL_DOCUMENT task type.'), )
+			
 			# ----- Reset Button -----
 			if st.button( label='Reset', key='reset_embedding_configuration', icon='🔄',
-					width='stretch' ):
+					width='stretch', ):
 				for key in [ 'embedding_model', 'embedding_encoding_format',
 					'embeddings_encoding_format', 'embedding_dimensions', 'embeddings_dimensions',
 					'embedding_chunk_size', 'embeddings_chunk_size', 'embedding_chunk_overlap',
-					'embeddings_overlap_amount', ]:
+					'embeddings_overlap_amount', 'embedding_task_type', 'embedding_title',
+					'embedding_encoding_format_display', ]:
 					if key in st.session_state:
 						del st.session_state[ key ]
 				
@@ -9778,21 +10033,22 @@ elif mode == 'Embeddings':
 		# ------------------------------------------------------------------
 		# Expander - Embedding Source
 		# ------------------------------------------------------------------
-		with st.expander( label='Source Text', icon='📝', expanded=True, width='stretch' ):
+		with st.expander( label='Source Text', icon='📝', expanded=True, width='stretch', ):
 			source_text = st.text_area( label='Input Text', key='embeddings_input_text',
 				height=240,
-				width='stretch',
-				placeholder='Paste text to embed, or upload a text-compatible file below.' )
+				width='stretch', placeholder=('Paste text to embed, or upload a text-compatible '
+				                              'file below.'), )
 			st.session_state[ 'embedding_input' ] = source_text
 			st.session_state[ 'embedding_text' ] = source_text
+			
 			uploaded_embedding_file = st.file_uploader( label='Upload Text File',
-				type=[ 'txt', 'md', 'csv', 'json', 'py', 'cs', 'sql', 'xml', 'html' ],
-				accept_multiple_files=False, key='embedding_file_uploader' )
+				type=[ 'txt', 'md', 'csv', 'json', 'py', 'cs', 'sql', 'xml', 'html', ],
+				accept_multiple_files=False, key='embedding_file_uploader', )
 			
 			if uploaded_embedding_file is not None:
 				try:
 					file_text = uploaded_embedding_file.getvalue( ).decode( 'utf-8',
-						errors='ignore' )
+						errors='ignore', )
 					st.session_state[ 'embeddings_input_text' ] = file_text
 					st.session_state[ 'embedding_input' ] = file_text
 					st.session_state[ 'embedding_text' ] = file_text
@@ -9805,48 +10061,62 @@ elif mode == 'Embeddings':
 		# ----- Create Embeddings ------
 		with action_c1:
 			if st.button( 'Create Embeddings', key='create_embeddings', width='stretch',
-					icon='➕' ):
+					icon='➕', ):
 				with st.spinner( 'Creating embeddings…' ):
 					try:
 						source_text = normalize_embedding_text(
-							st.session_state.get( 'embeddings_input_text', '' ) )
+							st.session_state.get( 'embeddings_input_text', '', ) )
 						
 						if not source_text:
 							st.warning( 'Enter text before creating embeddings.' )
 						
 						elif not st.session_state.get( 'embedding_model' ):
-							st.warning( 'Select an embedding model before creating embeddings.' )
+							st.warning( 'Select an embedding model before '
+							            'creating embeddings.' )
 						
 						else:
 							chunk_size = int(
-								st.session_state.get( 'embedding_chunk_size', 0 ) or 0 )
+								st.session_state.get( 'embedding_chunk_size', 0, ) or 0 )
 							overlap = int(
-								st.session_state.get( 'embedding_chunk_overlap', 0 ) or 0 )
-							chunks = chunk_embedding_text( source_text, chunk_size, overlap )
+								st.session_state.get( 'embedding_chunk_overlap', 0, ) or 0 )
 							
-							if not chunks:
-								st.warning( 'No chunks were created from the source text.' )
+							if overlap >= chunk_size and chunk_size > 0:
+								st.warning( 'Overlap must be smaller than the '
+								            'chunk size.' )
 							else:
-								raw_result = call_embeddings_create( chunks )
-								vectors = normalize_embedding_vectors( raw_result )
-								usage = extract_embedding_usage( raw_result )
-								df_embeddings = build_embeddings_dataframe( chunks, vectors )
-								metrics = build_embedding_metrics( source_text, chunks, vectors,
-									usage )
+								chunks = chunk_embedding_text( source_text, chunk_size, overlap, )
 								
-								st.session_state[ 'embedding_results' ] = raw_result
-								st.session_state[ 'embedding_chunks' ] = chunks
-								st.session_state[ 'embeddings_chunks' ] = chunks
-								st.session_state[ 'embedding_vectors' ] = vectors
-								st.session_state[ 'embeddings' ] = vectors
-								st.session_state[ 'embedding_dataframe' ] = df_embeddings
-								st.session_state[ 'embeddings_df' ] = df_embeddings
-								st.session_state[ 'embedding_metrics' ] = metrics
-								st.session_state[ 'embedding_usage' ] = usage
-								
-								update_embedding_usage(
-									getattr( embedding, 'response', None ) or raw_result )
-								st.success( 'Embeddings created successfully.' )
+								if not chunks:
+									st.warning( 'No chunks were created from the '
+									            'source text.' )
+								else:
+									raw_result = call_embeddings_create( chunks )
+									vectors = normalize_embedding_vectors( raw_result )
+									
+									if not vectors:
+										raise ValueError( 'The provider returned no '
+										                  'embedding vectors.' )
+									
+									usage = extract_embedding_usage( raw_result )
+									df_embeddings = (build_embeddings_dataframe( chunks,
+										vectors, ))
+									metrics = build_embedding_metrics( source_text, chunks,
+										vectors,
+										usage, )
+									
+									st.session_state[ 'embedding_results' ] = raw_result
+									st.session_state[ 'embedding_chunks' ] = chunks
+									st.session_state[ 'embeddings_chunks' ] = chunks
+									st.session_state[ 'embedding_vectors' ] = vectors
+									st.session_state[ 'embeddings' ] = vectors
+									st.session_state[ 'embedding_dataframe' ] = df_embeddings
+									st.session_state[ 'embeddings_df' ] = df_embeddings
+									st.session_state[ 'embedding_metrics' ] = metrics
+									st.session_state[ 'embedding_usage' ] = usage
+									
+									update_embedding_usage(
+										getattr( embedding, 'response', None, ) or raw_result )
+									st.success( 'Embeddings created successfully.' )
 					
 					except Exception as exc:
 						err = Error( exc )
@@ -9855,34 +10125,36 @@ elif mode == 'Embeddings':
 		# ----- Reset Button -----
 		with action_c2:
 			if st.button( 'Reset All', key='reset_embeddings_all', width='stretch',
-					on_click=reset_embeddings_all, icon='🔄' ):
+					on_click=reset_embeddings_all, icon='🔄', ):
 				st.rerun( )
 		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
+		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True, )
 		
-		metrics = st.session_state.get( 'embedding_metrics', { } )
+		metrics = st.session_state.get( 'embedding_metrics', { }, )
 		if isinstance( metrics, dict ) and len( metrics ) > 0:
 			render_embedding_metrics( metrics )
 		
-		df_embeddings = st.session_state.get( 'embedding_dataframe', pd.DataFrame( ) )
-		if isinstance( df_embeddings, pd.DataFrame ) and not df_embeddings.empty:
+		df_embeddings = st.session_state.get( 'embedding_dataframe', pd.DataFrame( ), )
+		if (isinstance( df_embeddings, pd.DataFrame ) and not df_embeddings.empty):
 			st.subheader( 'Embedding Output' )
 			st.data_editor( df_embeddings, use_container_width=True, hide_index=True,
-				key='embedding_dataframe_view' )
+				disabled=True,
+				key='embedding_dataframe_view', )
 		
-		chunks = st.session_state.get( 'embedding_chunks', [ ] )
+		chunks = st.session_state.get( 'embedding_chunks', [ ], )
 		if isinstance( chunks, list ) and len( chunks ) > 0:
-			with st.expander( label='Chunks', icon='🧩', expanded=False, width='stretch' ):
-				df_chunks = pd.DataFrame( [ { 'ChunkIndex': index + 1, 'Text': chunk,
-					'Tokens': count_tokens( chunk ) if 'count_tokens' in globals( ) else len(
-						chunk.split( ) ), } for index, chunk in enumerate( chunks ) ] )
+			with st.expander( label='Chunks', icon='🧩', expanded=False, width='stretch', ):
+				df_chunks = pd.DataFrame( [ { 'ChunkIndex': index + 1, 'Text': chunk, 'Tokens': (
+					count_tokens( chunk ) if 'count_tokens' in globals( ) else len(
+						chunk.split( ) )), } for index, chunk in enumerate( chunks ) ] )
 				st.data_editor( df_chunks, use_container_width=True, hide_index=True,
-					key='embedding_chunks_view' )
+					disabled=True,
+					key='embedding_chunks_view', )
 		
-		usage = st.session_state.get( 'embedding_usage', { } )
+		usage = st.session_state.get( 'embedding_usage', { }, )
 		if isinstance( usage, dict ) and len( usage ) > 0:
 			with st.expander( label='Embedding Usage', icon='📊', expanded=False,
-					width='stretch' ):
+					width='stretch', ):
 				st.json( usage )
 
 # ======================================================================================

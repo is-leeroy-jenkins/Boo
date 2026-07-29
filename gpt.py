@@ -168,6 +168,870 @@ class GPT:
 		self.instructions = None
 		self.context = [ ]
 
+class Chat( GPT ):
+	"""Provide OpenAI Responses API text-generation support.
+	
+	Purpose:
+		Provides the OpenAI Responses API implementation used by Text mode. The class stores
+		request arguments as object members, constructs provider-specific input, tool, response-
+		format, reasoning, and continuation payloads, executes synchronous or streaming requests,
+		and exposes response text and usage information to the application.
+	
+	Attributes:
+		include (List[str]): Additional response fields requested from the provider.
+		tool_choice (str): Tool-selection behavior used by the request.
+		previous_id (str): Previous response identifier used for continuation.
+		conversation_id (str): Conversation identifier used for continuation.
+		parallel_tools (bool): Indicates whether parallel tool calls are permitted.
+		max_tools (int): Maximum number of built-in tool calls permitted.
+		input (List[Dict[str, Any]]): Input messages sent to the provider.
+		tools (List[Dict[str, Any]]): Provider-ready tool definitions.
+		reasoning (Dict[str, str]): Provider-ready reasoning configuration.
+		allowed_domains (List[str]): Domains allowed by the web-search tool.
+		output_text (str): Text extracted from the latest response.
+		vector_store_ids (List[str]): Vector store identifiers used by file search.
+		response (Optional[Response]): Latest OpenAI response object.
+	"""
+	include: List[ str ]
+	tool_choice: str
+	previous_id: str
+	conversation_id: str
+	parallel_tools: bool
+	max_tools: int
+	input: List[ Dict[ str, Any ] ]
+	tools: List[ Dict[ str, Any ] ]
+	reasoning: Dict[ str, str ]
+	allowed_domains: List[ str ]
+	output_text: str
+	vector_store_ids: List[ str ]
+	response: Optional[ Response ]
+	
+	def __init__( self, model: str = 'gpt-5-nano', prompt: str = '', temperature: float = 0.0,
+		top_p: float = 0.0, frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 0,
+		max_tools: int = 0, store: bool = False, stream: bool = False, background: bool = False,
+		is_parallel: bool = False, instruct: str = '', tool_choice: str = '', previous_id: str =
+		'',
+		conversation_id: str = '', reasoning: str = '',
+		response_format: Optional[ Dict[ str, Any ] ] = None,
+		context: Optional[ List[ Dict[ str, Any ] ] ] = None,
+		allowed_domains: Optional[ List[ str ] ] = None, include: Optional[ List[ str ] ] = None,
+		tools: Optional[ List[ str | Dict[ str, Any ] ] ] = None,
+		input_data: Optional[ List[ Dict[ str, Any ] ] ] = None,
+		vector_store_ids: Optional[ List[ str ] ] = None ) -> None:
+		"""Initialize instance.
+		
+		Purpose:
+			Initializes the OpenAI Chat wrapper with explicit defaults and provider-request
+			state. The constructor performs local assignment only and does not execute an API
+			request.
+		
+		Args:
+			model (str): OpenAI model identifier.
+			prompt (str): User prompt retained for a later request.
+			temperature (float): Sampling temperature retained for supported models.
+			top_p (float): Nucleus-sampling value retained for supported models.
+			frequency (float): Frequency penalty retained for supported models.
+			presence (float): Presence penalty retained for supported models.
+			max_tokens (int): Maximum output-token count.
+			max_tools (int): Maximum number of built-in tool calls.
+			store (bool): Indicates whether the response should be stored.
+			stream (bool): Indicates whether response events should be streamed.
+			background (bool): Indicates whether the response should run in background mode.
+			is_parallel (bool): Indicates whether parallel tool calls are permitted.
+			instruct (str): System or developer instructions.
+			tool_choice (str): Tool-selection behavior.
+			previous_id (str): Previous response identifier.
+			conversation_id (str): Conversation identifier.
+			reasoning (str): Reasoning effort.
+			response_format (Optional[Dict[str, Any]]): Text-format configuration.
+			context (Optional[List[Dict[str, Any]]]): Prior application messages.
+			allowed_domains (Optional[List[str]]): Domains allowed by web search.
+			include (Optional[List[str]]): Additional response fields to include.
+			tools (Optional[List[str | Dict[str, Any]]]): Selected provider tools.
+			input_data (Optional[List[Dict[str, Any]]]): Prebuilt Responses API input items.
+			vector_store_ids (Optional[List[str]]): Vector stores used by file search.
+		
+		Returns:
+			None: This method initializes object state.
+		"""
+		super( ).__init__( )
+		self.api_key = cfg.OPENAI_API_KEY
+		self.client = None
+		self.model = model
+		self.prompt = prompt
+		self.temperature = temperature
+		self.top_percent = top_p
+		self.frequency_penalty = frequency
+		self.presence_penalty = presence
+		self.max_tokens = max_tokens
+		self.max_tools = max_tools
+		self.store = store
+		self.stream = stream
+		self.background = background
+		self.parallel_tools = is_parallel
+		self.instructions = instruct
+		self.tool_choice = tool_choice
+		self.previous_id = previous_id
+		self.conversation_id = conversation_id
+		self.reasoning_effort = reasoning
+		self.reasoning = { }
+		self.response_format = response_format if response_format is not None else { }
+		self.context = context if context is not None else [ ]
+		self.allowed_domains = allowed_domains if allowed_domains is not None else [ ]
+		self.include = include if include is not None else [ ]
+		self.selected_tools = tools if tools is not None else [ ]
+		self.tools = [ ]
+		self.input = input_data if input_data is not None else [ ]
+		self.vector_store_ids = vector_store_ids if vector_store_ids is not None else [ ]
+		self.response = None
+		self.output_text = ''
+		self.request = { }
+		self.messages = [ ]
+		self.stream_events = [ ]
+		self.response_stream = None
+		self.requested_format = None
+		self.effective_context = [ ]
+		self.vector_stores = { 'Governance': 'vs_6a1850a9bdc08191912353eedf59aede',
+			'Public Laws': 'vs_699506f7d5348191990e0557c717fa9d',
+			'Explanatory Statements': 'vs_699505df9ac48191a525c0ecb86fef66',
+			'Army Techniques Publications': 'vs_699356ef052c81918da14c4ed3bcea17',
+			'Army Field Manuals': 'vs_69935542863481918d150c1e89c38633',
+			'Army Regulations': 'vs_6993550488408191919cd70968ba8be8',
+			'DoD Armory': 'vs_697f86ad98888191b967685ae558bfc0',
+			'Army Style Guides': 'vs_68f4efd7d4c4819191458dd6cde6f2cc',
+			'Apportionments': 'vs_68a34aaff93481918c3b3fef8c4e8fea',
+			'Financial Regulations': 'vs_712r5W5833G6aLxIYIbuvVcK', }
+		self.files = { 'Account_Balances.csv': 'file-U6wFeRGSeg38Db5uJzo5sj',
+			'SF133.csv': 'file-WT2h2F5SNxqK2CxyAMSDg6',
+			'Authority.csv': 'file-Qi2rw2QsdxKBX1iiaQxY3m',
+			'Outlays.csv': 'file-GHEwSWR7ezMvHrQ3X648wn', }
+	
+	@property
+	def model_options( self ) -> List[ str ]:
+		"""Get model options.
+		
+		Purpose:
+			Returns model identifiers exposed to the application for OpenAI Text mode.
+		
+		Returns:
+			List[str]: Available OpenAI text-generation models.
+		"""
+		return [ 'gpt-5.4', 'gpt-5.4-mini', 'gpt-5.4-nano', 'gpt-5.1', 'gpt-5', 'gpt-5-mini',
+			'gpt-5-nano', 'gpt-4.1', 'gpt-4.1-mini', 'gpt-4.1-nano', 'gpt-4o', 'gpt-4o-mini', ]
+	
+	@property
+	def include_options( self ) -> List[ str ]:
+		"""Get include options.
+		
+		Purpose:
+			Returns additional response fields supported by the Responses API workflow.
+		
+		Returns:
+			List[str]: Supported include-path values.
+		"""
+		return [ 'file_search_call.results', 'web_search_call.action.sources',
+			'code_interpreter_call.outputs', 'reasoning.encrypted_content',
+			'message.output_text.logprobs', ]
+	
+	@property
+	def tool_options( self ) -> List[ str ]:
+		"""Get tool options.
+		
+		Purpose:
+			Returns built-in tools implemented by this wrapper.
+		
+		Returns:
+			List[str]: Supported built-in tool names.
+		"""
+		return [ 'web_search', 'file_search', ]
+	
+	@property
+	def choice_options( self ) -> List[ str ]:
+		"""Get tool-choice options.
+		
+		Purpose:
+			Returns tool-selection values accepted by the Responses API workflow.
+		
+		Returns:
+			List[str]: Supported tool-choice values.
+		"""
+		return [ 'auto', 'required', 'none', ]
+	
+	@property
+	def purpose_options( self ) -> List[ str ]:
+		"""Get file-purpose options.
+		
+		Purpose:
+			Returns file-purpose values retained for compatibility with file workflows.
+		
+		Returns:
+			List[str]: Supported file-purpose values.
+		"""
+		return [ 'assistants', 'batch', 'fine-tune', 'vision', 'user_data', 'evals', ]
+	
+	@property
+	def format_options( self ) -> List[ str ]:
+		"""Get response-format options.
+		
+		Purpose:
+			Returns text-format values implemented by the Responses API request builder.
+		
+		Returns:
+			List[str]: Supported response-format values.
+		"""
+		return [ 'text', 'json_object', 'json_schema', ]
+	
+	@property
+	def reasoning_options( self ) -> List[ str ]:
+		"""Get reasoning options.
+		
+		Purpose:
+			Returns reasoning-effort values supported by current OpenAI reasoning models.
+		
+		Returns:
+			List[str]: Supported reasoning-effort values.
+		"""
+		return [ 'none', 'minimal', 'low', 'medium', 'high', 'xhigh', ]
+	
+	@property
+	def modality_options( self ) -> List[ str ]:
+		"""Get modality options.
+		
+		Purpose:
+			Returns the output modality implemented by the Text-mode wrapper.
+		
+		Returns:
+			List[str]: Supported output modalities.
+		"""
+		return [ 'text' ]
+	
+	def supports_reasoning_model( self, model: str = '' ) -> bool:
+		"""Determine reasoning-model support.
+		
+		Purpose:
+			Determines whether the selected model accepts a Responses API reasoning object.
+		
+		Args:
+			model (str): Model identifier to inspect.
+		
+		Returns:
+			bool: True when the model supports reasoning configuration.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.model = model if model else self.model
+			return self.model.startswith( 'gpt-5' ) or self.model.startswith( 'o' )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gpt'
+			ex.cause = 'Chat'
+			ex.method = 'supports_reasoning_model( self, model: str = "" ) -> bool'
+			Logger( ).write( ex )
+			raise ex
+	
+	def build_reasoning( self, reasoning: str = '', model: str = '' ) -> Dict[ str, str ]:
+		"""Build reasoning configuration.
+		
+		Purpose:
+			Builds the provider-ready reasoning object for a supported model and effort value.
+		
+		Args:
+			reasoning (str): Requested reasoning effort.
+			model (str): OpenAI model identifier.
+		
+		Returns:
+			Dict[str, str]: Provider-ready reasoning configuration or an empty dictionary.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.reasoning_effort = reasoning
+			self.model = model if model else self.model
+			self.reasoning = { }
+			
+			if not self.reasoning_effort:
+				return self.reasoning
+			
+			if self.reasoning_effort == 'none':
+				return self.reasoning
+			
+			if not self.supports_reasoning_model( self.model ):
+				return self.reasoning
+			
+			if self.reasoning_effort not in self.reasoning_options:
+				return self.reasoning
+			
+			if self.model.startswith( 'gpt-5.1' ):
+				if self.reasoning_effort in [ 'minimal', 'xhigh' ]:
+					return self.reasoning
+			
+			if self.reasoning_effort == 'xhigh':
+				if not self.model.startswith( 'gpt-5.4' ):
+					self.reasoning_effort = 'high'
+			
+			self.reasoning = { 'effort': self.reasoning_effort, }
+			return self.reasoning
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gpt'
+			ex.cause = 'Chat'
+			ex.method = ('build_reasoning( self, reasoning: str = "", '
+			             'model: str = "" ) -> Dict[ str, str ]')
+			Logger( ).write( ex )
+			raise ex
+	
+	def build_input( self, prompt: str, context: Optional[ List[ Dict[ str, Any ] ] ] = None,
+		input_data: Optional[ List[ Dict[ str, Any ] ] ] = None ) -> List[ Dict[ str, Any ] ]:
+		"""Build input messages.
+		
+		Purpose:
+			Builds Responses API input items from prebuilt input data or application history and
+			appends the current user prompt.
+		
+		Args:
+			prompt (str): Current user prompt.
+			context (Optional[List[Dict[str, Any]]]): Prior application messages.
+			input_data (Optional[List[Dict[str, Any]]]): Prebuilt Responses API input items.
+		
+		Returns:
+			List[Dict[str, Any]]: Provider-ready Responses API input items.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			self.prompt = prompt
+			self.context = context if context is not None else [ ]
+			self.input = input_data if input_data is not None else [ ]
+			self.messages = [ ]
+			
+			if self.input:
+				self.messages.extend( self.input )
+			else:
+				for item in self.context:
+					if not isinstance( item, dict ):
+						continue
+					
+					self.message_role = item.get( 'role', '' )
+					self.message_content = item.get( 'content', '' )
+					
+					if self.message_role not in [ 'user', 'assistant', 'system', 'developer', ]:
+						continue
+					
+					if not self.message_content:
+						continue
+					
+					self.messages.append( { 'role': self.message_role,
+						'content': [ { 'type': 'input_text', 'text': self.message_content, }, ],
+					} )
+			
+			self.messages.append( { 'role': 'user',
+				'content': [ { 'type': 'input_text', 'text': self.prompt, }, ], } )
+			self.input = self.messages
+			return self.input
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gpt'
+			ex.cause = 'Chat'
+			ex.method = ('build_input( self, prompt: str, context: Optional[ List[ '
+			             'Dict[ str, Any ] ] ] = None, input_data: Optional[ List[ '
+			             'Dict[ str, Any ] ] ] = None ) -> List[ Dict[ str, Any ] ]')
+			Logger( ).write( ex )
+			raise ex
+	
+	def build_tools( self, tools: Optional[ List[ str | Dict[ str, Any ] ] ] = None,
+		allowed_domains: Optional[ List[ str ] ] = None,
+		vector_store_ids: Optional[ List[ str ] ] = None ) -> List[ Dict[ str, Any ] ]:
+		"""Build tool definitions.
+		
+		Purpose:
+			Builds OpenAI web-search and file-search tool definitions from application-selected
+			tool names.
+		
+		Args:
+			tools (Optional[List[str | Dict[str, Any]]]): Selected provider tools.
+			allowed_domains (Optional[List[str]]): Domains permitted by web search.
+			vector_store_ids (Optional[List[str]]): Vector stores used by file search.
+		
+		Returns:
+			List[Dict[str, Any]]: Provider-ready OpenAI tool definitions.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.selected_tools = tools if tools is not None else [ ]
+			self.allowed_domains = allowed_domains if allowed_domains is not None else [ ]
+			self.vector_store_ids = (vector_store_ids if vector_store_ids is not None else [ ])
+			self.tools = [ ]
+			
+			for selected_tool in self.selected_tools:
+				if isinstance( selected_tool, dict ):
+					self.tool_name = selected_tool.get( 'type', '' )
+				else:
+					self.tool_name = selected_tool
+				
+				if self.tool_name in [ 'web_search', 'web_search_preview',
+					'web_search_preview_2025_03_11', ]:
+					self.web_search_tool = { 'type': 'web_search', }
+					
+					if self.allowed_domains:
+						self.web_search_tool[ 'filters' ] = {
+							'allowed_domains': self.allowed_domains, }
+					
+					self.tools.append( self.web_search_tool )
+					continue
+				
+				if self.tool_name == 'file_search':
+					throw_if( 'vector_store_ids', self.vector_store_ids )
+					self.tools.append(
+						{ 'type': 'file_search', 'vector_store_ids': self.vector_store_ids, } )
+			
+			return self.tools
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gpt'
+			ex.cause = 'Chat'
+			ex.method = ('build_tools( self, tools: Optional[ List[ str | Dict[ str, '
+			             'Any ] ] ] = None, allowed_domains: Optional[ List[ str ] ] = '
+			             'None, vector_store_ids: Optional[ List[ str ] ] = None ) -> '
+			             'List[ Dict[ str, Any ] ]')
+			Logger( ).write( ex )
+			raise ex
+	
+	def build_text_format( self, format: Optional[ Dict[ str, Any ] | str ] = None ) -> Dict[
+		str, Any ]:
+		"""Build text-format configuration.
+		
+		Purpose:
+			Builds the Responses API text-format object from a supported format name or a
+			complete provider-ready format dictionary.
+		
+		Args:
+			format (Optional[Dict[str, Any] | str]): Requested response format.
+		
+		Returns:
+			Dict[str, Any]: Provider-ready text configuration or an empty dictionary.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.requested_format = format
+			self.response_format = { }
+			
+			if self.requested_format is None:
+				return self.response_format
+			
+			if isinstance( self.requested_format, dict ):
+				if 'format' in self.requested_format:
+					self.response_format = self.requested_format
+					return self.response_format
+				
+				if 'type' in self.requested_format:
+					self.response_format = { 'format': self.requested_format, }
+					return self.response_format
+				
+				return self.response_format
+			
+			if self.requested_format == 'text':
+				self.response_format = { 'format': { 'type': 'text', }, }
+				return self.response_format
+			
+			if self.requested_format == 'json_object':
+				self.response_format = { 'format': { 'type': 'json_object', }, }
+				return self.response_format
+			
+			return self.response_format
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gpt'
+			ex.cause = 'Chat'
+			ex.method = ('build_text_format( self, format: Optional[ Dict[ str, Any ] '
+			             '| str ] = None ) -> Dict[ str, Any ]')
+			Logger( ).write( ex )
+			raise ex
+	
+	def build_request( self, prompt: str, model: str, temperature: float = 0.0,
+		format: Optional[ Dict[ str, Any ] | str ] = None, top_p: float = 0.0,
+		frequency: float = 0.0, max_tools: int = 0, presence: float = 0.0, max_tokens: int = 0,
+		store: bool = False, stream: bool = False, instruct: str = '', background: bool = False,
+		reasoning: str = '', include: Optional[ List[ str ] ] = None,
+		tools: Optional[ List[ str | Dict[ str, Any ] ] ] = None,
+		allowed_domains: Optional[ List[ str ] ] = None, previous_id: str = '',
+		tool_choice: str = '', is_parallel: bool = False,
+		context: Optional[ List[ Dict[ str, Any ] ] ] = None,
+		input_data: Optional[ List[ Dict[ str, Any ] ] ] = None,
+		vector_store_ids: Optional[ List[ str ] ] = None, conversation_id: str = '' ) -> Dict[
+		str, Any ]:
+		"""Build request.
+		
+		Purpose:
+			Builds the complete OpenAI Responses API request from values assigned to object
+			members.
+		
+		Args:
+			prompt (str): Current user prompt.
+			model (str): OpenAI model identifier.
+			temperature (float): Sampling temperature for supported models.
+			format (Optional[Dict[str, Any] | str]): Text-format configuration.
+			top_p (float): Nucleus-sampling value for supported models.
+			frequency (float): Frequency penalty for supported models.
+			max_tools (int): Maximum number of built-in tool calls.
+			presence (float): Presence penalty for supported models.
+			max_tokens (int): Maximum output-token count.
+			store (bool): Indicates whether the response should be stored.
+			stream (bool): Indicates whether response events should be streamed.
+			instruct (str): System or developer instructions.
+			background (bool): Indicates whether the response runs in background mode.
+			reasoning (str): Reasoning effort.
+			include (Optional[List[str]]): Additional response fields to include.
+			tools (Optional[List[str | Dict[str, Any]]]): Selected provider tools.
+			allowed_domains (Optional[List[str]]): Domains allowed by web search.
+			previous_id (str): Previous response identifier.
+			tool_choice (str): Tool-selection behavior.
+			is_parallel (bool): Indicates whether parallel tool calls are permitted.
+			context (Optional[List[Dict[str, Any]]]): Prior application messages.
+			input_data (Optional[List[Dict[str, Any]]]): Prebuilt Responses API input items.
+			vector_store_ids (Optional[List[str]]): Vector stores used by file search.
+			conversation_id (str): Conversation identifier.
+		
+		Returns:
+			Dict[str, Any]: Provider-ready Responses API request.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			throw_if( 'model', model )
+			self.prompt = prompt
+			self.model = model
+			self.temperature = temperature
+			self.requested_format = format
+			self.top_percent = top_p
+			self.frequency_penalty = frequency
+			self.max_tools = max_tools
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.store = store
+			self.stream = stream
+			self.instructions = instruct
+			self.background = background
+			self.reasoning_effort = reasoning
+			self.include = include if include is not None else [ ]
+			self.selected_tools = tools if tools is not None else [ ]
+			self.allowed_domains = allowed_domains if allowed_domains is not None else [ ]
+			self.previous_id = previous_id
+			self.tool_choice = tool_choice
+			self.parallel_tools = is_parallel
+			self.context = context if context is not None else [ ]
+			self.input = input_data if input_data is not None else [ ]
+			self.vector_store_ids = (vector_store_ids if vector_store_ids is not None else [ ])
+			self.conversation_id = conversation_id
+			self.reasoning = self.build_reasoning( self.reasoning_effort, self.model, )
+			self.tools = self.build_tools( self.selected_tools, self.allowed_domains,
+				self.vector_store_ids, )
+			self.response_format = self.build_text_format( self.requested_format, )
+			self.effective_context = ([ ] if self.conversation_id else self.context)
+			self.input = self.build_input( self.prompt, self.effective_context, self.input, )
+			self.request = { 'model': self.model, 'input': self.input, }
+			
+			if self.instructions:
+				self.request[ 'instructions' ] = self.instructions
+			
+			if self.reasoning:
+				self.request[ 'reasoning' ] = self.reasoning
+			
+			if self.max_tokens > 0:
+				self.request[ 'max_output_tokens' ] = self.max_tokens
+			
+			if not self.model.startswith( 'gpt-5' ):
+				self.request[ 'temperature' ] = self.temperature
+				self.request[ 'top_p' ] = self.top_percent
+				self.request[ 'frequency_penalty' ] = self.frequency_penalty
+				self.request[ 'presence_penalty' ] = self.presence_penalty
+			
+			self.request[ 'store' ] = self.store
+			self.request[ 'stream' ] = self.stream
+			self.request[ 'background' ] = self.background
+			
+			if self.include:
+				self.request[ 'include' ] = self.include
+			
+			if self.tools:
+				self.request[ 'tools' ] = self.tools
+				self.request[ 'parallel_tool_calls' ] = self.parallel_tools
+				
+				if self.max_tools > 0:
+					self.request[ 'max_tool_calls' ] = self.max_tools
+			
+			if self.tool_choice:
+				self.request[ 'tool_choice' ] = self.tool_choice
+			
+			if self.previous_id:
+				self.request[ 'previous_response_id' ] = self.previous_id
+			
+			if self.conversation_id:
+				self.request[ 'conversation' ] = self.conversation_id
+			
+			if self.response_format:
+				self.request[ 'text' ] = self.response_format
+			
+			return self.request
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gpt'
+			ex.cause = 'Chat'
+			ex.method = ('build_request( self, prompt: str, model: str, '
+			             'temperature: float = 0.0, format: Optional[ Dict[ str, Any ] '
+			             '| str ] = None, top_p: float = 0.0, frequency: float = 0.0, '
+			             'max_tools: int = 0, presence: float = 0.0, max_tokens: int = '
+			             '0, store: bool = False, stream: bool = False, instruct: str '
+			             '= "", background: bool = False, reasoning: str = "", '
+			             'include: Optional[ List[ str ] ] = None, tools: Optional[ '
+			             'List[ str | Dict[ str, Any ] ] ] = None, allowed_domains: '
+			             'Optional[ List[ str ] ] = None, previous_id: str = "", '
+			             'tool_choice: str = "", is_parallel: bool = False, context: '
+			             'Optional[ List[ Dict[ str, Any ] ] ] = None, input_data: '
+			             'Optional[ List[ Dict[ str, Any ] ] ] = None, '
+			             'vector_store_ids: Optional[ List[ str ] ] = None, '
+			             'conversation_id: str = "" ) -> Dict[ str, Any ]')
+			Logger( ).write( ex )
+			raise ex
+	
+	def get_output_text( self ) -> str:
+		"""Get output text.
+		
+		Purpose:
+			Extracts aggregated text from the latest synchronous or completed background response.
+		
+		Returns:
+			str: Extracted response text or an empty string.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			self.output_text = ''
+			
+			if self.response is None:
+				return self.output_text
+			
+			self.response_text = getattr( self.response, 'output_text', '' )
+			
+			if self.response_text:
+				self.output_text = self.response_text
+				return self.output_text
+			
+			self.text_parts = [ ]
+			
+			for item in getattr( self.response, 'output', [ ] ) or [ ]:
+				if getattr( item, 'type', '' ) != 'message':
+					continue
+				
+				for block in getattr( item, 'content', [ ] ) or [ ]:
+					if getattr( block, 'type', '' ) != 'output_text':
+						continue
+					
+					self.block_text = getattr( block, 'text', '' )
+					
+					if self.block_text:
+						self.text_parts.append( self.block_text )
+			
+			self.output_text = ''.join( self.text_parts ).strip( )
+			return self.output_text
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gpt'
+			ex.cause = 'Chat'
+			ex.method = 'get_output_text( self ) -> str'
+			Logger( ).write( ex )
+			raise ex
+	
+	def get_usage( self ) -> Any:
+		"""Get response usage.
+		
+		Purpose:
+			Returns token usage from the latest completed response.
+		
+		Returns:
+			Any: Provider usage object or None when unavailable.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			if self.response is None:
+				return None
+			
+			return getattr( self.response, 'usage', None )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gpt'
+			ex.cause = 'Chat'
+			ex.method = 'get_usage( self ) -> Any'
+			Logger( ).write( ex )
+			raise ex
+	
+	def generate_text( self, prompt: str, model: str, temperature: float = 0.0,
+		format: Optional[ Dict[ str, Any ] | str ] = None, top_p: float = 0.0,
+		frequency: float = 0.0, max_tools: int = 0, presence: float = 0.0, max_tokens: int = 0,
+		store: bool = False, stream: bool = False, instruct: str = '', background: bool = False,
+		reasoning: str = '', include: Optional[ List[ str ] ] = None,
+		tools: Optional[ List[ str | Dict[ str, Any ] ] ] = None,
+		allowed_domains: Optional[ List[ str ] ] = None, previous_id: str = '',
+		tool_choice: str = '', is_parallel: bool = False,
+		context: Optional[ List[ Dict[ str, Any ] ] ] = None,
+		input_data: Optional[ List[ Dict[ str, Any ] ] ] = None,
+		vector_store_ids: Optional[ List[ str ] ] = None, conversation_id: str = '' ) -> str:
+		"""Generate text.
+		
+		Purpose:
+			Executes a synchronous, streaming, or background OpenAI Responses API request using
+			arguments assigned to wrapper members.
+		
+		Args:
+			prompt (str): Current user prompt.
+			model (str): OpenAI model identifier.
+			temperature (float): Sampling temperature for supported models.
+			format (Optional[Dict[str, Any] | str]): Text-format configuration.
+			top_p (float): Nucleus-sampling value for supported models.
+			frequency (float): Frequency penalty for supported models.
+			max_tools (int): Maximum number of built-in tool calls.
+			presence (float): Presence penalty for supported models.
+			max_tokens (int): Maximum output-token count.
+			store (bool): Indicates whether the response should be stored.
+			stream (bool): Indicates whether response events should be streamed.
+			instruct (str): System or developer instructions.
+			background (bool): Indicates whether the response runs in background mode.
+			reasoning (str): Reasoning effort.
+			include (Optional[List[str]]): Additional response fields to include.
+			tools (Optional[List[str | Dict[str, Any]]]): Selected provider tools.
+			allowed_domains (Optional[List[str]]): Domains allowed by web search.
+			previous_id (str): Previous response identifier.
+			tool_choice (str): Tool-selection behavior.
+			is_parallel (bool): Indicates whether parallel tool calls are permitted.
+			context (Optional[List[Dict[str, Any]]]): Prior application messages.
+			input_data (Optional[List[Dict[str, Any]]]): Prebuilt Responses API input items.
+			vector_store_ids (Optional[List[str]]): Vector stores used by file search.
+			conversation_id (str): Conversation identifier.
+		
+		Returns:
+			str: Generated text, streamed text, or an empty string for an incomplete background
+			response.
+		
+		Raises:
+			Error: Re-raised after the exception is logged.
+		"""
+		try:
+			throw_if( 'prompt', prompt )
+			throw_if( 'model', model )
+			throw_if( 'OPENAI_API_KEY', self.api_key )
+			self.prompt = prompt
+			self.model = model
+			self.temperature = temperature
+			self.requested_format = format
+			self.top_percent = top_p
+			self.frequency_penalty = frequency
+			self.max_tools = max_tools
+			self.presence_penalty = presence
+			self.max_tokens = max_tokens
+			self.store = store
+			self.stream = stream
+			self.instructions = instruct
+			self.background = background
+			self.reasoning_effort = reasoning
+			self.include = include if include is not None else [ ]
+			self.selected_tools = tools if tools is not None else [ ]
+			self.allowed_domains = allowed_domains if allowed_domains is not None else [ ]
+			self.previous_id = previous_id
+			self.tool_choice = tool_choice
+			self.parallel_tools = is_parallel
+			self.context = context if context is not None else [ ]
+			self.input = input_data if input_data is not None else [ ]
+			self.vector_store_ids = (vector_store_ids if vector_store_ids is not None else [ ])
+			self.conversation_id = conversation_id
+			self.client = OpenAI( api_key=self.api_key, )
+			self.request = self.build_request( self.prompt, self.model, self.temperature,
+				self.requested_format, self.top_percent, self.frequency_penalty, self.max_tools,
+				self.presence_penalty, self.max_tokens, self.store, self.stream, self.instructions,
+				self.background, self.reasoning_effort, self.include, self.selected_tools,
+				self.allowed_domains, self.previous_id, self.tool_choice, self.parallel_tools,
+				self.context, self.input, self.vector_store_ids, self.conversation_id, )
+			
+			if self.stream:
+				self.stream_events = [ ]
+				self.text_parts = [ ]
+				self.response_stream = self.client.responses.create( **self.request )
+				
+				for event in self.response_stream:
+					self.stream_events.append( event )
+					self.event_type = getattr( event, 'type', '' )
+					
+					if self.event_type == 'response.output_text.delta':
+						self.delta = getattr( event, 'delta', '' )
+						
+						if self.delta:
+							self.text_parts.append( self.delta )
+					
+					elif self.event_type == 'response.completed':
+						self.response = getattr( event, 'response', None )
+				
+				self.output_text = ''.join( self.text_parts ).strip( )
+				
+				if self.response is not None:
+					self.previous_id = getattr( self.response, 'id', self.previous_id, )
+				
+				return self.output_text
+			
+			self.response = self.client.responses.create( **self.request )
+			self.previous_id = getattr( self.response, 'id', self.previous_id, )
+			self.output_text = self.get_output_text( )
+			return self.output_text
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'gpt'
+			ex.cause = 'Chat'
+			ex.method = ('generate_text( self, prompt: str, model: str, temperature: '
+			             'float = 0.0, format: Optional[ Dict[ str, Any ] | str ] = '
+			             'None, top_p: float = 0.0, frequency: float = 0.0, max_tools: '
+			             'int = 0, presence: float = 0.0, max_tokens: int = 0, store: '
+			             'bool = False, stream: bool = False, instruct: str = "", '
+			             'background: bool = False, reasoning: str = "", include: '
+			             'Optional[ List[ str ] ] = None, tools: Optional[ List[ str | '
+			             'Dict[ str, Any ] ] ] = None, allowed_domains: Optional[ '
+			             'List[ str ] ] = None, previous_id: str = "", tool_choice: str '
+			             '= "", is_parallel: bool = False, context: Optional[ List[ '
+			             'Dict[ str, Any ] ] ] = None, input_data: Optional[ List[ '
+			             'Dict[ str, Any ] ] ] = None, vector_store_ids: Optional[ '
+			             'List[ str ] ] = None, conversation_id: str = "" ) -> str')
+			Logger( ).write( ex )
+			raise ex
+	
+	def __dir__( self ) -> List[ str ]:
+		"""Return member names.
+		
+		Purpose:
+			Returns public members exposed by the OpenAI Chat wrapper.
+		
+		Returns:
+			List[str]: Public member names.
+		"""
+		return [ 'api_key', 'client', 'model', 'prompt', 'temperature', 'top_percent',
+			'frequency_penalty', 'presence_penalty', 'max_tokens', 'store', 'stream', 'background',
+			'response_format', 'context', 'instructions', 'include', 'tool_choice', 'previous_id',
+			'conversation_id', 'parallel_tools', 'max_tools', 'input', 'tools', 'reasoning',
+			'allowed_domains', 'output_text', 'vector_store_ids', 'response', 'model_options',
+			'include_options', 'tool_options', 'choice_options', 'purpose_options',
+			'format_options', 'reasoning_options', 'modality_options', 'supports_reasoning_model',
+			'build_reasoning', 'build_input', 'build_tools', 'build_text_format', 'build_request',
+			'get_output_text', 'get_usage', 'generate_text', ]
+
 class Images( GPT ):
 	"""Provide OpenAI image workflow support.
 	
