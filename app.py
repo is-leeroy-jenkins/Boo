@@ -14093,17 +14093,13 @@ elif mode == 'Google Cloud Buckets':
 	
 	sanitize_bucket_selection( 'bucket_model', model_options, )
 	sanitize_bucket_selection( 'bucket_response_format', format_options, )
-	
-	# The CloudBuckets search contract does not accept these controls.
 	st.session_state[ 'bucket_tool_choice' ] = ''
 	st.session_state[ 'bucket_reasoning' ] = ''
 	st.session_state[ 'bucket_store' ] = False
 	st.session_state[ 'bucket_stream' ] = False
 	st.session_state[ 'bucket_background' ] = False
 	st.session_state[ 'bucket_number' ] = 0
-	
 	collections = getattr( buckets, 'collections', { }, )
-	
 	if isinstance( collections, dict, ):
 		bucket_options = [ str( bucket_name ).split( '/', 1, )[ 0 ] for bucket_name in
 			collections.values( ) if str( bucket_name ).strip( ) ]
@@ -14111,7 +14107,6 @@ elif mode == 'Google Cloud Buckets':
 		bucket_options = [ ]
 	
 	bucket_options = list( dict.fromkeys( bucket_options ) )
-	
 	if (st.session_state.get( 'bucket_selected_id' ) not in bucket_options):
 		st.session_state[ 'bucket_selected_id' ] = ''
 	
@@ -14122,9 +14117,8 @@ elif mode == 'Google Cloud Buckets':
 	# Main UI
 	# ------------------------------------------------------------------
 	left, center, right = st.columns( [ 0.025, 0.95, 0.025 ] )
-	
 	with center:
-		st.subheader( '🪣 Google Cloud Buckets', help=getattr( cfg, 'GOOGLE_CLOUD_BUCKETS_API',
+		st.subheader( '☁️ Google Cloud Buckets', help=getattr( cfg, 'GOOGLE_CLOUD_BUCKETS_API',
 			'Google Cloud Storage bucket management and Gemini-grounded querying.', ), )
 		st.divider( )
 		
@@ -14277,8 +14271,7 @@ elif mode == 'Google Cloud Buckets':
 				
 				# ----- Reset Button -----
 				st.button( label='Reset', key='bucket_management_reset', width='stretch',
-					icon='🔄',
-					on_click=reset_bucket_management_settings, )
+					icon='🔄', on_click=reset_bucket_management_settings, )
 				
 				if st.session_state.get( 'bucket_table' ):
 					st.data_editor( pd.DataFrame( st.session_state.get( 'bucket_table', [ ], ) ),
@@ -14295,8 +14288,7 @@ elif mode == 'Google Cloud Buckets':
 			# ------------------------------------------------------------------
 			# Expander — Request Settings
 			# ------------------------------------------------------------------
-			with st.expander( label='Request Settings', icon='⚙️', expanded=False,
-					width='stretch', ):
+			with st.expander( label='Request Settings', icon='⚙️', expanded=False, width='stretch', ):
 				request_c1, request_c2, request_c3, request_c4 = st.columns(
 					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
 				
@@ -14411,6 +14403,9 @@ elif mode == 'Google Cloud Buckets':
 		# ------------------------------------------------------------------
 		# Expander — File Uploader
 		# ------------------------------------------------------------------
+		if 'bucket_upload_object_name' not in st.session_state:
+			st.session_state[ 'bucket_upload_object_name' ] = ''
+		
 		with st.expander( label='File Uploader', icon='📤', expanded=False, width='stretch', ):
 			upload_c1, upload_c2, upload_c3 = st.columns( [ 0.50, 0.25, 0.25 ], border=True,
 				gap='xxsmall', )
@@ -14424,7 +14419,7 @@ elif mode == 'Google Cloud Buckets':
 			
 			# ----- Object Name -----
 			with upload_c2:
-				st.text_input( label='Destination Object Name', key='bucket_object_name',
+				st.text_input( label='Destination Object Name', key='bucket_upload_object_name',
 					help=('Optional destination object name. The uploaded '
 					      'filename is used when blank.'), width='stretch', )
 			
@@ -14437,10 +14432,15 @@ elif mode == 'Google Cloud Buckets':
 			target_bucket = get_selected_bucket_name( )
 			
 			if st.button( label='Upload to Bucket', key='bucket_upload', icon='⬆️',
-					width='stretch',
-					disabled=(uploaded_file is None or not bool( target_bucket )), ):
+					width='stretch', disabled=(uploaded_file is None or not bool( target_bucket )),):
 				with st.spinner( 'Uploading file to Google Cloud Storage…' ):
 					try:
+						# Synchronize the uploader-specific destination name
+						# with the value consumed by upload_cloud_bucket_object( ).
+						st.session_state[ 'bucket_object_name' ] = str(
+							st.session_state.get( 'bucket_upload_object_name',
+								'', ) or '' ).strip( )
+						
 						upload_cloud_bucket_object( uploaded_file, target_bucket, )
 						st.success( 'File uploaded to Google Cloud Storage.' )
 					except Exception as exc:
@@ -14455,13 +14455,10 @@ elif mode == 'Google Cloud Buckets':
 		# ------------------------------------------------------------------
 		# Expander — System Instructions
 		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
-				width='stretch', ):
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch', ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
-			
 			bucket_prompt_categories = fetch_prompt_categories( 'Cloud Buckets' )
 			current_bucket_category = st.session_state.get( 'bucket_prompt_category' )
-			
 			if current_bucket_category not in bucket_prompt_categories:
 				st.session_state[ 'bucket_prompt_category' ] = None
 			
@@ -14524,8 +14521,7 @@ elif mode == 'Google Cloud Buckets':
 		with qry_c1:
 			# ----- Query Button -----
 			if st.button( label='Query Cloud Bucket', key='query_bucket', icon='🔍',
-					width='stretch',
-					disabled=(not bool( target_bucket ) or not bool(
+					width='stretch', disabled=(not bool( target_bucket ) or not bool(
 						str( st.session_state.get( 'bucket_query', '', ) or '' ).strip( ) )), ):
 				with st.spinner( 'Querying cloud bucket…' ):
 					try:
