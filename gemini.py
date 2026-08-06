@@ -1,12 +1,12 @@
-"""Gemini provider wrappers for the Boo Streamlit application.
+"""AI wrapping the gemini API for the Boo Streamlit application.
 
 Purpose:
-    Provides application-facing wrapper classes for Gemini text generation, image generation
+    Provides classes for Gemini text generation, image generation
     and analysis, embeddings, transcription, translation, text-to-speech, Gemini file
     operations, file-search stores, and Google Cloud Storage bucket workflows.
 
     The module centralizes provider request construction, option lists, response extraction,
-    and error logging so the Streamlit application can call stable Python interfaces instead
+    and error logging so the  application can call stable Python interfaces instead
     of provider-specific SDK objects directly.
 
 Classes:

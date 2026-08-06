@@ -99,13 +99,12 @@ def throw_if( name: str, value: object ) -> None:
 	if isinstance( value, str ) and not value.strip( ):
 		raise ValueError( f'Argument "{name}" cannot be empty.' )
 
-def init_state( key: str, value: Any ) -> None:
-	"""Init state.
+def init_session_value( key: str, value: Any ) -> None:
+	"""Initializes session values.
 	
 	Purpose:
-	    Performs the init_state workflow using the inputs supplied by the caller and the current
-	    runtime
-	    configuration. The function keeps this behavior isolated so related UI, provider, and
+	    Performs the init_session_value workflow using the inputs supplied by the caller and the current
+	    runtime onfiguration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -203,7 +202,7 @@ def init_env_state( key: str, config_name: str, env_name: str,
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value."""
-	init_state( key, '' )
+	initialize_runtime_state( key, '' )
 	value = get_runtime_config_value( key, config_name, env_name )
 	sync_provider_config( key, config_name, env_name, value, provider )
 
@@ -232,7 +231,7 @@ def copy_state_alias( source_key: str, target_key: str, default: Any ) -> None:
 
 # ---------- API / PROVIDER CONFIGURATION -------------------------------------
 
-init_state( 'api_keys', { 'GPT': None, 'Grok': None, 'Gemini': None } )
+init_session_value( 'api_keys', { 'GPT': None, 'Grok': None, 'Gemini': None } )
 init_env_state( 'openai_api_key', 'OPENAI_API_KEY', 'OPENAI_API_KEY', 'GPT' )
 init_env_state( 'gemini_api_key', 'GEMINI_API_KEY', 'GEMINI_API_KEY', 'Gemini' )
 init_env_state( 'google_api_key', 'GOOGLE_API_KEY', 'GOOGLE_API_KEY' )
@@ -243,8 +242,8 @@ init_env_state( 'geoapify_api_key', 'GEOAPIFY_API_KEY', 'GEOAPIFY_API_KEY' )
 init_env_state( 'google_cloud_project_id', 'GOOGLE_CLOUD_PROJECT_ID', 'GOOGLE_CLOUD_PROJECT_ID' )
 init_env_state( 'google_cloud_location', 'GOOGLE_CLOUD_LOCATION', 'GOOGLE_CLOUD_LOCATION' )
 init_env_state( 'xai_api_key', 'XAI_API_KEY', 'XAI_API_KEY', 'Grok' )
-init_state( 'provider', 'GPT' )
-init_state( 'mode', 'Text' )
+init_session_value( 'provider', 'GPT' )
+init_session_value( 'mode', 'Text' )
 if st.session_state[ 'provider' ] is None:
 	st.session_state[ 'provider' ] = 'GPT'
 
@@ -253,380 +252,380 @@ if st.session_state[ 'mode' ] is None:
 
 # ---------- SHARED APPLICATION STATE -----------------------------------------
 
-init_state( 'messages', [ ] )
-init_state( 'chat_history', [ ] )
-init_state( 'files', [ ] )
-init_state( 'last_sources', [ ] )
-init_state( 'use_semantic', False )
-init_state( 'is_grounded', False )
-init_state( 'selected_prompt_id', '' )
-init_state( 'pending_system_prompt_name', '' )
-init_state( 'last_call_usage', { 'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, } )
-init_state( 'token_usage', { 'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, } )
+init_session_value( 'messages', [ ] )
+init_session_value( 'chat_history', [ ] )
+init_session_value( 'files', [ ] )
+init_session_value( 'last_sources', [ ] )
+init_session_value( 'use_semantic', False )
+init_session_value( 'is_grounded', False )
+init_session_value( 'selected_prompt_id', '' )
+init_session_value( 'pending_system_prompt_name', '' )
+init_session_value( 'last_call_usage', { 'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, } )
+init_session_value( 'token_usage', { 'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, } )
 
 # ---------- SHARED MODEL PARAMETERS ------------------------------------------
 
-init_state( 'chat_model', '' )
-init_state( 'text_model', '' )
-init_state( 'image_model', '' )
-init_state( 'image_analysis_model', '' )
-init_state( 'image_generation_model', '' )
-init_state( 'image_editing_model', '' )
-init_state( 'audio_model', '' )
-init_state( 'embedding_model', '' )
-init_state( 'docqna_model', '' )
-init_state( 'files_model', '' )
-init_state( 'stores_model', '' )
-init_state( 'bucket_model', '' )
-init_state( 'tts_model', '' )
-init_state( 'transcription_model', '' )
-init_state( 'translation_model', '' )
+init_session_value( 'chat_model', '' )
+init_session_value( 'text_model', '' )
+init_session_value( 'image_model', '' )
+init_session_value( 'image_analysis_model', '' )
+init_session_value( 'image_generation_model', '' )
+init_session_value( 'image_editing_model', '' )
+init_session_value( 'audio_model', '' )
+init_session_value( 'embedding_model', '' )
+init_session_value( 'docqna_model', '' )
+init_session_value( 'files_model', '' )
+init_session_value( 'stores_model', '' )
+init_session_value( 'bucket_model', '' )
+init_session_value( 'tts_model', '' )
+init_session_value( 'transcription_model', '' )
+init_session_value( 'translation_model', '' )
 
 # ---------- SHARED INSTRUCTION STATE -----------------------------------------
 
-init_state( 'instructions', '' )
-init_state( 'chat_system_instructions', '' )
-init_state( 'text_system_instructions', '' )
-init_state( 'image_system_instructions', '' )
-init_state( 'audio_system_instructions', '' )
-init_state( 'docqna_system_instructions', '' )
-init_state( 'docqna_systems_instructions', st.session_state[ 'docqna_system_instructions' ] )
-init_state( 'files_system_instructions', '' )
-init_state( 'stores_system_instructions', '' )
-init_state( 'filestore_system_instructions', '' )
-init_state( 'bucket_system_instructions', '' )
+init_session_value( 'instructions', '' )
+init_session_value( 'chat_system_instructions', '' )
+init_session_value( 'text_system_instructions', '' )
+init_session_value( 'image_system_instructions', '' )
+init_session_value( 'audio_system_instructions', '' )
+init_session_value( 'docqna_system_instructions', '' )
+init_session_value( 'docqna_systems_instructions', st.session_state[ 'docqna_system_instructions' ] )
+init_session_value( 'files_system_instructions', '' )
+init_session_value( 'stores_system_instructions', '' )
+init_session_value( 'filestore_system_instructions', '' )
+init_session_value( 'bucket_system_instructions', '' )
 
 # ---------- PROMPT TEMPLATE SELECTION STATE ----------------------------------
 
-init_state( 'text_prompt_category', '' )
-init_state( 'text_prompt_id', None )
-init_state( 'image_prompt_category', '' )
-init_state( 'image_prompt_id', None )
-init_state( 'audio_prompt_category', '' )
-init_state( 'audio_prompt_id', None )
-init_state( 'docqna_prompt_category', '' )
-init_state( 'docqna_prompt_id', None )
-init_state( 'files_prompt_category', '' )
-init_state( 'files_prompt_id', None )
-init_state( 'stores_prompt_category', '' )
-init_state( 'stores_prompt_id', None )
-init_state( 'filestore_prompt_category', '' )
-init_state( 'filestore_prompt_id', None )
-init_state( 'bucket_prompt_category', '' )
-init_state( 'bucket_prompt_id', None )
+init_session_value( 'text_prompt_category', '' )
+init_session_value( 'text_prompt_id', None )
+init_session_value( 'image_prompt_category', '' )
+init_session_value( 'image_prompt_id', None )
+init_session_value( 'audio_prompt_category', '' )
+init_session_value( 'audio_prompt_id', None )
+init_session_value( 'docqna_prompt_category', '' )
+init_session_value( 'docqna_prompt_id', None )
+init_session_value( 'files_prompt_category', '' )
+init_session_value( 'files_prompt_id', None )
+init_session_value( 'stores_prompt_category', '' )
+init_session_value( 'stores_prompt_id', None )
+init_session_value( 'filestore_prompt_category', '' )
+init_session_value( 'filestore_prompt_id', None )
+init_session_value( 'bucket_prompt_category', '' )
+init_session_value( 'bucket_prompt_id', None )
 
 # ---------- SHARED GENERATION PARAMETERS -------------------------------------
 
-init_state( 'max_tools', 0 )
-init_state( 'max_tokens', 0 )
-init_state( 'temperature', 0.0 )
-init_state( 'top_p', 0.0 )
-init_state( 'top_percent', 0.0 )
-init_state( 'frequency_penalty', 0.0 )
-init_state( 'presence_penalty', 0.0 )
-init_state( 'presense_penalty', st.session_state[ 'presence_penalty' ] )
-init_state( 'freq_penalty', 0.0 )
-init_state( 'pres_penalty', 0.0 )
-init_state( 'background', False )
-init_state( 'parallel_tools', False )
-init_state( 'store', False )
-init_state( 'stream', False )
-init_state( 'execution_mode', '' )
-init_state( 'response_format', '' )
-init_state( 'tool_choice', '' )
-init_state( 'reasoning', '' )
-init_state( 'stop_sequences', [ ] )
-init_state( 'stops', [ ] )
-init_state( 'include', [ ] )
-init_state( 'input', [ ] )
-init_state( 'tools', [ ] )
+init_session_value( 'max_tools', 0 )
+init_session_value( 'max_tokens', 0 )
+init_session_value( 'temperature', 0.0 )
+init_session_value( 'top_p', 0.0 )
+init_session_value( 'top_percent', 0.0 )
+init_session_value( 'frequency_penalty', 0.0 )
+init_session_value( 'presence_penalty', 0.0 )
+init_session_value( 'presense_penalty', st.session_state[ 'presence_penalty' ] )
+init_session_value( 'freq_penalty', 0.0 )
+init_session_value( 'pres_penalty', 0.0 )
+init_session_value( 'background', False )
+init_session_value( 'parallel_tools', False )
+init_session_value( 'store', False )
+init_session_value( 'stream', False )
+init_session_value( 'execution_mode', '' )
+init_session_value( 'response_format', '' )
+init_session_value( 'tool_choice', '' )
+init_session_value( 'reasoning', '' )
+init_session_value( 'stop_sequences', [ ] )
+init_session_value( 'stops', [ ] )
+init_session_value( 'include', [ ] )
+init_session_value( 'input', [ ] )
+init_session_value( 'tools', [ ] )
 
 # ---------- TEXT MODE STATE ---------------------------------------------------
 
-init_state( 'text_number', 0 )
-init_state( 'text_max_calls', 0 )
-init_state( 'text_max_tools', 0 )
-init_state( 'text_max_searches', 0 )
-init_state( 'text_max_urls', 0 )
-init_state( 'text_top_k', 0 )
-init_state( 'text_max_tokens', 0 )
-init_state( 'text_temperature', 0.0 )
-init_state( 'text_top_percent', 0.0 )
-init_state( 'text_frequency_penalty', 0.0 )
-init_state( 'text_presence_penalty', 0.0 )
-init_state( 'text_presense_penalty', st.session_state[ 'text_presence_penalty' ] )
-init_state( 'text_parallel_tools', False )
-init_state( 'text_parallel_calls', st.session_state[ 'text_parallel_tools' ] )
-init_state( 'text_background', False )
-init_state( 'text_store', False )
-init_state( 'text_stream', False )
-init_state( 'text_google_grounding', False )
-init_state( 'text_response_format', '' )
-init_state( 'text_tool_choice', '' )
-init_state( 'text_resolution', '' )
-init_state( 'text_media_resolution', '' )
-init_state( 'text_reasoning', '' )
-init_state( 'text_input', '' )
-init_state( 'text_content', '' )
-init_state( 'text_previous_response_id', '' )
-init_state( 'text_conversation_id', '' )
-init_state( 'text_stops', [ ] )
-init_state( 'text_modalities', [ ] )
-init_state( 'text_include', [ ] )
-init_state( 'text_domains', [ ] )
-init_state( 'text_tools', [ ] )
-init_state( 'text_context', [ ] )
-init_state( 'text_messages', [ ] )
-init_state( 'text_gemini_history', [ ] )
-init_state( 'text_file_search_store_names', [ ] )
-init_state( 'text_grok_collection_ids', [ ] )
-init_state( 'text_grok_collection_ids_input', '' )
-init_state( 'selected_filestore_id', '' )
-init_state( 'selected_filestore_label', '' )
+init_session_value( 'text_number', 0 )
+init_session_value( 'text_max_calls', 0 )
+init_session_value( 'text_max_tools', 0 )
+init_session_value( 'text_max_searches', 0 )
+init_session_value( 'text_max_urls', 0 )
+init_session_value( 'text_top_k', 0 )
+init_session_value( 'text_max_tokens', 0 )
+init_session_value( 'text_temperature', 0.0 )
+init_session_value( 'text_top_percent', 0.0 )
+init_session_value( 'text_frequency_penalty', 0.0 )
+init_session_value( 'text_presence_penalty', 0.0 )
+init_session_value( 'text_presense_penalty', st.session_state[ 'text_presence_penalty' ] )
+init_session_value( 'text_parallel_tools', False )
+init_session_value( 'text_parallel_calls', st.session_state[ 'text_parallel_tools' ] )
+init_session_value( 'text_background', False )
+init_session_value( 'text_store', False )
+init_session_value( 'text_stream', False )
+init_session_value( 'text_google_grounding', False )
+init_session_value( 'text_response_format', '' )
+init_session_value( 'text_tool_choice', '' )
+init_session_value( 'text_resolution', '' )
+init_session_value( 'text_media_resolution', '' )
+init_session_value( 'text_reasoning', '' )
+init_session_value( 'text_input', '' )
+init_session_value( 'text_content', '' )
+init_session_value( 'text_previous_response_id', '' )
+init_session_value( 'text_conversation_id', '' )
+init_session_value( 'text_stops', [ ] )
+init_session_value( 'text_modalities', [ ] )
+init_session_value( 'text_include', [ ] )
+init_session_value( 'text_domains', [ ] )
+init_session_value( 'text_tools', [ ] )
+init_session_value( 'text_context', [ ] )
+init_session_value( 'text_messages', [ ] )
+init_session_value( 'text_gemini_history', [ ] )
+init_session_value( 'text_file_search_store_names', [ ] )
+init_session_value( 'text_grok_collection_ids', [ ] )
+init_session_value( 'text_grok_collection_ids_input', '' )
+init_session_value( 'selected_filestore_id', '' )
+init_session_value( 'selected_filestore_label', '' )
 
 # ---------- IMAGE MODE STATE --------------------------------------------------
 
-init_state( 'image_number', 0 )
-init_state( 'image_max_calls', 0 )
-init_state( 'image_max_tools', 0 )
-init_state( 'image_max_searches', 0 )
-init_state( 'image_top_k', 0 )
-init_state( 'image_max_tokens', 0 )
-init_state( 'image_temperature', 0.0 )
-init_state( 'image_top_percent', 0.0 )
-init_state( 'image_frequency_penalty', 0.0 )
-init_state( 'image_presence_penalty', 0.0 )
-init_state( 'image_presense_penalty', st.session_state[ 'image_presence_penalty' ] )
-init_state( 'image_parallel_tools', False )
-init_state( 'image_background', False )
-init_state( 'image_store', False )
-init_state( 'image_stream', False )
-init_state( 'image_response_format', '' )
-init_state( 'image_tool_choice', '' )
-init_state( 'image_resolution', '' )
-init_state( 'image_media_resolution', '' )
-init_state( 'image_reasoning', '' )
-init_state( 'image_input', '' )
-init_state( 'image_content', '' )
-init_state( 'image_size', '' )
-init_state( 'image_quality', '' )
-init_state( 'image_style', '' )
-init_state( 'image_prompt', '' )
-init_state( 'image_action', '' )
-init_state( 'image_file', None )
-init_state( 'image_uploaded_file', None )
-init_state( 'image_mask_file', None )
-init_state( 'image_stops', [ ] )
-init_state( 'image_modalities', [ ] )
-init_state( 'image_include', [ ] )
-init_state( 'image_domains', [ ] )
-init_state( 'image_tools', [ ] )
-init_state( 'image_context', [ ] )
-init_state( 'image_messages', [ ] )
-init_state( 'generated_images', [ ] )
-init_state( 'analyzed_images', [ ] )
-init_state( 'edited_images', [ ] )
+init_session_value( 'image_number', 0 )
+init_session_value( 'image_max_calls', 0 )
+init_session_value( 'image_max_tools', 0 )
+init_session_value( 'image_max_searches', 0 )
+init_session_value( 'image_top_k', 0 )
+init_session_value( 'image_max_tokens', 0 )
+init_session_value( 'image_temperature', 0.0 )
+init_session_value( 'image_top_percent', 0.0 )
+init_session_value( 'image_frequency_penalty', 0.0 )
+init_session_value( 'image_presence_penalty', 0.0 )
+init_session_value( 'image_presense_penalty', st.session_state[ 'image_presence_penalty' ] )
+init_session_value( 'image_parallel_tools', False )
+init_session_value( 'image_background', False )
+init_session_value( 'image_store', False )
+init_session_value( 'image_stream', False )
+init_session_value( 'image_response_format', '' )
+init_session_value( 'image_tool_choice', '' )
+init_session_value( 'image_resolution', '' )
+init_session_value( 'image_media_resolution', '' )
+init_session_value( 'image_reasoning', '' )
+init_session_value( 'image_input', '' )
+init_session_value( 'image_content', '' )
+init_session_value( 'image_size', '' )
+init_session_value( 'image_quality', '' )
+init_session_value( 'image_style', '' )
+init_session_value( 'image_prompt', '' )
+init_session_value( 'image_action', '' )
+init_session_value( 'image_file', None )
+init_session_value( 'image_uploaded_file', None )
+init_session_value( 'image_mask_file', None )
+init_session_value( 'image_stops', [ ] )
+init_session_value( 'image_modalities', [ ] )
+init_session_value( 'image_include', [ ] )
+init_session_value( 'image_domains', [ ] )
+init_session_value( 'image_tools', [ ] )
+init_session_value( 'image_context', [ ] )
+init_session_value( 'image_messages', [ ] )
+init_session_value( 'generated_images', [ ] )
+init_session_value( 'analyzed_images', [ ] )
+init_session_value( 'edited_images', [ ] )
 
 # ---------- AUDIO MODE STATE --------------------------------------------------
 
-init_state( 'audio_number', 0 )
-init_state( 'audio_max_calls', 0 )
-init_state( 'audio_max_tools', 0 )
-init_state( 'audio_max_searches', 0 )
-init_state( 'audio_top_k', 0 )
-init_state( 'audio_max_tokens', 0 )
-init_state( 'audio_temperature', 0.0 )
-init_state( 'audio_top_percent', 0.0 )
-init_state( 'audio_frequency_penalty', 0.0 )
-init_state( 'audio_presence_penalty', 0.0 )
-init_state( 'audio_presense_penalty', st.session_state[ 'audio_presence_penalty' ] )
-init_state( 'audio_parallel_tools', False )
-init_state( 'audio_background', False )
-init_state( 'audio_store', False )
-init_state( 'audio_stream', False )
-init_state( 'audio_loop', False )
-init_state( 'audio_autoplay', False )
-init_state( 'audio_response_format', '' )
-init_state( 'audio_tool_choice', '' )
-init_state( 'audio_resolution', '' )
-init_state( 'audio_media_resolution', '' )
-init_state( 'audio_reasoning', '' )
-init_state( 'audio_input', '' )
-init_state( 'audio_content', '' )
-init_state( 'audio_task', '' )
-init_state( 'audio_language', '' )
-init_state( 'audio_format', '' )
-init_state( 'audio_file', '' )
-init_state( 'audio_voice', '' )
-init_state( 'audio_rate', 1.0 )
-init_state( 'audio_start_time', 0.0 )
-init_state( 'audio_end_time', 0.0 )
-init_state( 'audio_stops', [ ] )
-init_state( 'audio_modalities', [ ] )
-init_state( 'audio_include', [ ] )
-init_state( 'audio_domains', [ ] )
-init_state( 'audio_tools', [ ] )
-init_state( 'audio_context', [ ] )
-init_state( 'audio_messages', [ ] )
-init_state( 'tts_input', '' )
-init_state( 'tts_voice', '' )
-init_state( 'tts_format', '' )
-init_state( 'tts_output_path', '' )
-init_state( 'transcription_file', None )
-init_state( 'transcription_language', '' )
-init_state( 'transcription_prompt', '' )
-init_state( 'translation_file', None )
-init_state( 'translation_prompt', '' )
+init_session_value( 'audio_number', 0 )
+init_session_value( 'audio_max_calls', 0 )
+init_session_value( 'audio_max_tools', 0 )
+init_session_value( 'audio_max_searches', 0 )
+init_session_value( 'audio_top_k', 0 )
+init_session_value( 'audio_max_tokens', 0 )
+init_session_value( 'audio_temperature', 0.0 )
+init_session_value( 'audio_top_percent', 0.0 )
+init_session_value( 'audio_frequency_penalty', 0.0 )
+init_session_value( 'audio_presence_penalty', 0.0 )
+init_session_value( 'audio_presense_penalty', st.session_state[ 'audio_presence_penalty' ] )
+init_session_value( 'audio_parallel_tools', False )
+init_session_value( 'audio_background', False )
+init_session_value( 'audio_store', False )
+init_session_value( 'audio_stream', False )
+init_session_value( 'audio_loop', False )
+init_session_value( 'audio_autoplay', False )
+init_session_value( 'audio_response_format', '' )
+init_session_value( 'audio_tool_choice', '' )
+init_session_value( 'audio_resolution', '' )
+init_session_value( 'audio_media_resolution', '' )
+init_session_value( 'audio_reasoning', '' )
+init_session_value( 'audio_input', '' )
+init_session_value( 'audio_content', '' )
+init_session_value( 'audio_task', '' )
+init_session_value( 'audio_language', '' )
+init_session_value( 'audio_format', '' )
+init_session_value( 'audio_file', '' )
+init_session_value( 'audio_voice', '' )
+init_session_value( 'audio_rate', 1.0 )
+init_session_value( 'audio_start_time', 0.0 )
+init_session_value( 'audio_end_time', 0.0 )
+init_session_value( 'audio_stops', [ ] )
+init_session_value( 'audio_modalities', [ ] )
+init_session_value( 'audio_include', [ ] )
+init_session_value( 'audio_domains', [ ] )
+init_session_value( 'audio_tools', [ ] )
+init_session_value( 'audio_context', [ ] )
+init_session_value( 'audio_messages', [ ] )
+init_session_value( 'tts_input', '' )
+init_session_value( 'tts_voice', '' )
+init_session_value( 'tts_format', '' )
+init_session_value( 'tts_output_path', '' )
+init_session_value( 'transcription_file', None )
+init_session_value( 'transcription_language', '' )
+init_session_value( 'transcription_prompt', '' )
+init_session_value( 'translation_file', None )
+init_session_value( 'translation_prompt', '' )
 
 # ---------- EMBEDDINGS MODE STATE --------------------------------------------
 
-init_state( 'embedding_input', '' )
-init_state( 'embedding_text', '' )
-init_state( 'embedding_file', None )
-init_state( 'embedding_dimensions', 0 )
-init_state( 'embedding_encoding_format', '' )
-init_state( 'embedding_chunk_size', 0 )
-init_state( 'embedding_chunk_overlap', 0 )
-init_state( 'embedding_chunks', [ ] )
-init_state( 'embedding_vectors', [ ] )
-init_state( 'embedding_results', None )
-init_state( 'embedding_dataframe', None )
-init_state( 'embedding_messages', [ ] )
+init_session_value( 'embedding_input', '' )
+init_session_value( 'embedding_text', '' )
+init_session_value( 'embedding_file', None )
+init_session_value( 'embedding_dimensions', 0 )
+init_session_value( 'embedding_encoding_format', '' )
+init_session_value( 'embedding_chunk_size', 0 )
+init_session_value( 'embedding_chunk_overlap', 0 )
+init_session_value( 'embedding_chunks', [ ] )
+init_session_value( 'embedding_vectors', [ ] )
+init_session_value( 'embedding_results', None )
+init_session_value( 'embedding_dataframe', None )
+init_session_value( 'embedding_messages', [ ] )
 
 # ---------- DOCUMENT Q&A MODE STATE ------------------------------------------
 
-init_state( 'docqna_source', '' )
-init_state( 'docqna_mode', '' )
-init_state( 'docqna_file', None )
-init_state( 'docqna_files', [ ] )
-init_state( 'docqna_file_id', '' )
-init_state( 'docqna_vector_store_id', '' )
-init_state( 'docqna_question', '' )
-init_state( 'docqna_context', '' )
-init_state( 'docqna_answer', '' )
-init_state( 'docqna_messages', [ ] )
-init_state( 'docqna_history', [ ] )
-init_state( 'docqna_chunks', [ ] )
-init_state( 'docqna_sources', [ ] )
-init_state( 'docqna_temperature', 0.0 )
-init_state( 'docqna_top_percent', 0.0 )
-init_state( 'docqna_max_tokens', 0 )
-init_state( 'docqna_frequency_penalty', 0.0 )
-init_state( 'docqna_presence_penalty', 0.0 )
-init_state( 'docqna_response_format', '' )
-init_state( 'docqna_tool_choice', '' )
-init_state( 'docqna_reasoning', '' )
+init_session_value( 'docqna_source', '' )
+init_session_value( 'docqna_mode', '' )
+init_session_value( 'docqna_file', None )
+init_session_value( 'docqna_files', [ ] )
+init_session_value( 'docqna_file_id', '' )
+init_session_value( 'docqna_vector_store_id', '' )
+init_session_value( 'docqna_question', '' )
+init_session_value( 'docqna_context', '' )
+init_session_value( 'docqna_answer', '' )
+init_session_value( 'docqna_messages', [ ] )
+init_session_value( 'docqna_history', [ ] )
+init_session_value( 'docqna_chunks', [ ] )
+init_session_value( 'docqna_sources', [ ] )
+init_session_value( 'docqna_temperature', 0.0 )
+init_session_value( 'docqna_top_percent', 0.0 )
+init_session_value( 'docqna_max_tokens', 0 )
+init_session_value( 'docqna_frequency_penalty', 0.0 )
+init_session_value( 'docqna_presence_penalty', 0.0 )
+init_session_value( 'docqna_response_format', '' )
+init_session_value( 'docqna_tool_choice', '' )
+init_session_value( 'docqna_reasoning', '' )
 
 # ---------- FILES MODE STATE --------------------------------------------------
 
-init_state( 'files_input', '' )
-init_state( 'files_file', None )
-init_state( 'files_uploaded', [ ] )
-init_state( 'files_selected_id', '' )
-init_state( 'files_selected_label', '' )
-init_state( 'files_purpose', '' )
-init_state( 'files_metadata', None )
-init_state( 'files_results', None )
-init_state( 'files_messages', [ ] )
-init_state( 'files_temperature', 0.0 )
-init_state( 'files_top_percent', 0.0 )
-init_state( 'files_max_tokens', 0 )
-init_state( 'files_frequency_penalty', 0.0 )
-init_state( 'files_presence_penalty', 0.0 )
-init_state( 'files_response_format', '' )
-init_state( 'files_tool_choice', '' )
-init_state( 'files_reasoning', '' )
+init_session_value( 'files_input', '' )
+init_session_value( 'files_file', None )
+init_session_value( 'files_uploaded', [ ] )
+init_session_value( 'files_selected_id', '' )
+init_session_value( 'files_selected_label', '' )
+init_session_value( 'files_purpose', '' )
+init_session_value( 'files_metadata', None )
+init_session_value( 'files_results', None )
+init_session_value( 'files_messages', [ ] )
+init_session_value( 'files_temperature', 0.0 )
+init_session_value( 'files_top_percent', 0.0 )
+init_session_value( 'files_max_tokens', 0 )
+init_session_value( 'files_frequency_penalty', 0.0 )
+init_session_value( 'files_presence_penalty', 0.0 )
+init_session_value( 'files_response_format', '' )
+init_session_value( 'files_tool_choice', '' )
+init_session_value( 'files_reasoning', '' )
 
 # ---------- VECTOR STORES MODE STATE -----------------------------------------
 
-init_state( 'stores_input', '' )
-init_state( 'stores_query', '' )
-init_state( 'stores_selected_id', '' )
-init_state( 'stores_selected_label', '' )
-init_state( 'stores_file_id', '' )
-init_state( 'stores_file_ids', [ ] )
-init_state( 'stores_results', None )
-init_state( 'stores_messages', [ ] )
-init_state( 'stores_temperature', 0.0 )
-init_state( 'stores_top_percent', 0.0 )
-init_state( 'stores_max_tokens', 0 )
-init_state( 'stores_frequency_penalty', 0.0 )
-init_state( 'stores_presence_penalty', 0.0 )
-init_state( 'stores_response_format', '' )
-init_state( 'stores_tool_choice', '' )
-init_state( 'stores_reasoning', '' )
-init_state( 'stores_background', False )
-init_state( 'stores_store', False )
-init_state( 'stores_stream', False )
+init_session_value( 'stores_input', '' )
+init_session_value( 'stores_query', '' )
+init_session_value( 'stores_selected_id', '' )
+init_session_value( 'stores_selected_label', '' )
+init_session_value( 'stores_file_id', '' )
+init_session_value( 'stores_file_ids', [ ] )
+init_session_value( 'stores_results', None )
+init_session_value( 'stores_messages', [ ] )
+init_session_value( 'stores_temperature', 0.0 )
+init_session_value( 'stores_top_percent', 0.0 )
+init_session_value( 'stores_max_tokens', 0 )
+init_session_value( 'stores_frequency_penalty', 0.0 )
+init_session_value( 'stores_presence_penalty', 0.0 )
+init_session_value( 'stores_response_format', '' )
+init_session_value( 'stores_tool_choice', '' )
+init_session_value( 'stores_reasoning', '' )
+init_session_value( 'stores_background', False )
+init_session_value( 'stores_store', False )
+init_session_value( 'stores_stream', False )
 
 # ---------- FILE SEARCH STORES MODE STATE ------------------------------------
 
-init_state( 'filestore_model', '' )
-init_state( 'filestore_input', '' )
-init_state( 'filestore_query', '' )
-init_state( 'filestore_selected_id', '' )
-init_state( 'filestore_selected_label', '' )
-init_state( 'filestore_file_id', '' )
-init_state( 'filestore_file_ids', [ ] )
-init_state( 'filestore_results', None )
-init_state( 'filestore_messages', [ ] )
-init_state( 'filestore_temperature', 0.0 )
-init_state( 'filestore_top_percent', 0.0 )
-init_state( 'filestore_max_tokens', 0 )
-init_state( 'filestore_frequency_penalty', 0.0 )
-init_state( 'filestore_presence_penalty', 0.0 )
-init_state( 'filestore_response_format', '' )
-init_state( 'filestore_tool_choice', '' )
-init_state( 'filestore_reasoning', '' )
-init_state( 'filestore_background', False )
-init_state( 'filestore_store', False )
-init_state( 'filestore_stream', False )
+init_session_value( 'filestore_model', '' )
+init_session_value( 'filestore_input', '' )
+init_session_value( 'filestore_query', '' )
+init_session_value( 'filestore_selected_id', '' )
+init_session_value( 'filestore_selected_label', '' )
+init_session_value( 'filestore_file_id', '' )
+init_session_value( 'filestore_file_ids', [ ] )
+init_session_value( 'filestore_results', None )
+init_session_value( 'filestore_messages', [ ] )
+init_session_value( 'filestore_temperature', 0.0 )
+init_session_value( 'filestore_top_percent', 0.0 )
+init_session_value( 'filestore_max_tokens', 0 )
+init_session_value( 'filestore_frequency_penalty', 0.0 )
+init_session_value( 'filestore_presence_penalty', 0.0 )
+init_session_value( 'filestore_response_format', '' )
+init_session_value( 'filestore_tool_choice', '' )
+init_session_value( 'filestore_reasoning', '' )
+init_session_value( 'filestore_background', False )
+init_session_value( 'filestore_store', False )
+init_session_value( 'filestore_stream', False )
 
 # ---------- GOOGLE CLOUD BUCKETS MODE STATE ----------------------------------
 
-init_state( 'bucket_input', '' )
-init_state( 'bucket_query', '' )
-init_state( 'bucket_selected_id', '' )
-init_state( 'bucket_selected_label', '' )
-init_state( 'bucket_file_id', '' )
-init_state( 'bucket_file_ids', [ ] )
-init_state( 'bucket_results', None )
-init_state( 'bucket_messages', [ ] )
-init_state( 'bucket_number', 0 )
-init_state( 'bucket_temperature', 0.0 )
-init_state( 'bucket_top_percent', 0.0 )
-init_state( 'bucket_max_tokens', 0 )
-init_state( 'bucket_frequency_penalty', 0.0 )
-init_state( 'bucket_presence_penalty', 0.0 )
-init_state( 'bucket_response_format', '' )
-init_state( 'bucket_tool_choice', '' )
-init_state( 'bucket_reasoning', '' )
-init_state( 'bucket_background', False )
-init_state( 'bucket_store', False )
-init_state( 'bucket_stream', False )
+init_session_value( 'bucket_input', '' )
+init_session_value( 'bucket_query', '' )
+init_session_value( 'bucket_selected_id', '' )
+init_session_value( 'bucket_selected_label', '' )
+init_session_value( 'bucket_file_id', '' )
+init_session_value( 'bucket_file_ids', [ ] )
+init_session_value( 'bucket_results', None )
+init_session_value( 'bucket_messages', [ ] )
+init_session_value( 'bucket_number', 0 )
+init_session_value( 'bucket_temperature', 0.0 )
+init_session_value( 'bucket_top_percent', 0.0 )
+init_session_value( 'bucket_max_tokens', 0 )
+init_session_value( 'bucket_frequency_penalty', 0.0 )
+init_session_value( 'bucket_presence_penalty', 0.0 )
+init_session_value( 'bucket_response_format', '' )
+init_session_value( 'bucket_tool_choice', '' )
+init_session_value( 'bucket_reasoning', '' )
+init_session_value( 'bucket_background', False )
+init_session_value( 'bucket_store', False )
+init_session_value( 'bucket_stream', False )
 
 # ---------- PROMPT ENGINEERING STATE -----------------------------------------
 
-init_state( 'prompt_id', getattr( cfg, 'PROMPT_ID', '' ) )
-init_state( 'prompt_version', getattr( cfg, 'PROMPT_VERSION', '' ) )
-init_state( 'prompt_name', '' )
-init_state( 'prompt_text', '' )
-init_state( 'prompt_rows', [ ] )
-init_state( 'selected_prompt_name', '' )
-init_state( 'selected_prompt_text', '' )
+init_session_value( 'prompt_id', getattr( cfg, 'PROMPT_ID', '' ) )
+init_session_value( 'prompt_version', getattr( cfg, 'PROMPT_VERSION', '' ) )
+init_session_value( 'prompt_name', '' )
+init_session_value( 'prompt_text', '' )
+init_session_value( 'prompt_rows', [ ] )
+init_session_value( 'selected_prompt_name', '' )
+init_session_value( 'selected_prompt_text', '' )
 
 # ---------- DATA MANAGEMENT / EXPORT STATE -----------------------------------
 
-init_state( 'df_original', None )
-init_state( 'df_working', None )
-init_state( 'df_processed', None )
-init_state( 'df_results', None )
-init_state( 'uploaded_data_file', None )
-init_state( 'selected_table', '' )
-init_state( 'selected_columns', [ ] )
-init_state( 'target_column', '' )
-init_state( 'export_format', '' )
-init_state( 'export_path', '' )
+init_session_value( 'df_original', None )
+init_session_value( 'df_working', None )
+init_session_value( 'df_processed', None )
+init_session_value( 'df_results', None )
+init_session_value( 'uploaded_data_file', None )
+init_session_value( 'selected_table', '' )
+init_session_value( 'selected_columns', [ ] )
+init_session_value( 'target_column', '' )
+init_session_value( 'export_format', '' )
+init_session_value( 'export_path', '' )
 
 # ---------- NON-DESTRUCTIVE LIASES -----------------------------------
 
@@ -695,36 +694,6 @@ def encode_image_base64( path: str ) -> str:
 	    str: Return value produced by the operation."""
 	data = Path( path ).read_bytes( )
 	return base64.b64encode( data ).decode( "utf-8" )
-
-def normalize_text( text: str ) -> str:
-	"""Normalize text.
-	
-	Purpose:
-	    Normalizes incoming values into a predictable representation for application processing.
-	    The function reduces provider, user-input, or serialization differences before values are
-	    stored or displayed.
-	
-	Args:
-	    text (str): Text value used by the operation.
-	
-	Returns:
-	    str: Return value produced by the operation."""
-	if not text:
-		return ""
-	
-	# Lowercase
-	text = text.lower( )
-	
-	# Remove punctuation except . ! ?
-	text = re.sub( r"[^\w\s\.\!\?]", "", text )
-	
-	# Ensure single space after sentence delimiters
-	text = re.sub( r"([.!?])\s*", r"\1 ", text )
-	
-	# Normalize whitespace
-	text = re.sub( r"\s+", " ", text ).strip( )
-	
-	return text
 
 def chunk_text( text: str, max_tokens: int = 400 ) -> list[ str ]:
 	"""Chunk text.
@@ -795,53 +764,6 @@ def sanitize_markdown( text: str ) -> str:
 	text = re.sub( r"\*(.*?)\*", r"\1", text )
 	return text
 
-def inject_response_css( ) -> None:
-	"""Inject response css.
-	
-	Purpose:
-	    Performs the inject_response_css workflow using the inputs supplied by the caller and the
-	    current runtime configuration. The function keeps this behavior isolated so related UI,
-	    provider, and data-processing paths can call it consistently.
-	
-	Returns:
-	    None: This function performs its work through side effects and does not return a value."""
-	st.markdown( """
-		<style>
-		/* Chat message text */
-		.stChatMessage p {
-			color: rgb(220, 220, 220);
-			font-size: 1rem;
-			line-height: 1.6;
-		}
-
-		/* Headings inside chat responses */
-		.stChatMessage h1 {
-			color: rgb(0, 120, 252); /* DoD Blue */
-			font-size: 1.6rem;
-		}
-
-		.stChatMessage h2 {
-			color: rgb(0, 120, 252);
-			font-size: 1.35rem;
-		}
-
-		.stChatMessage h3 {
-			color: rgb(0, 120, 252);
-			font-size: 1.15rem;
-		}
-		
-		.stChatMessage a {
-			color: rgb(0, 120, 252); /* DoD Blue */
-			text-decoration: underline;
-		}
-		
-		.stChatMessage a:hover {
-			color: rgb(80, 160, 255);
-		}
-
-		</style>
-		""", unsafe_allow_html=True )
-
 def style_subheaders( ) -> None:
 	"""Style subheaders.
 	
@@ -868,7 +790,7 @@ def style_subheaders( ) -> None:
 		</style>
 		""", unsafe_allow_html=True, )
 
-def init_state( ) -> None:
+def initialize_runtime_state( ) -> None:
 	"""Init state.
 	
 	Purpose:
@@ -1234,15 +1156,7 @@ def build_intent_prefix( mode: str ) -> str:
 def save_message( role: str, content: str ) -> None:
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
 		conn.execute( "INSERT INTO chat_history (role, content) VALUES (?, ?)", (role, content) )
-
-def load_history( ) -> List[ Tuple[ str, str ] ]:
-	with sqlite3.connect( cfg.DB_PATH ) as conn:
-		return conn.execute( "SELECT role, content FROM chat_history ORDER BY id" ).fetchall( )
-
-def clear_history( ) -> None:
-	with sqlite3.connect( cfg.DB_PATH ) as conn:
-		conn.execute( "DELETE FROM chat_history" )
-
+		
 def format_results( results ):
 	formatted_results = ''
 	for result in results.data:
@@ -1582,10 +1496,6 @@ def style_subheaders( ) -> None:
 		}
 		</style>
 		""", unsafe_allow_html=True, )
-
-def save_message( role: str, content: str ) -> None:
-	with sqlite3.connect( cfg.DB_PATH ) as conn:
-		conn.execute( 'INSERT INTO chat_history (role, content) VALUES (?, ?)', (role, content) )
 
 def load_history( ) -> List[ Tuple[ str, str ] ]:
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
@@ -4137,7 +4047,7 @@ st.set_page_config( page_title=cfg.APP_TITLE, layout='wide', page_icon=cfg.FAVIC
 style_subheaders( )
 st.caption( cfg.APP_SUBTITLE )
 inject_response_css( )
-init_state( )
+initialize_runtime_state( )
 
 # ======================================================================================
 # SIDEBAR
