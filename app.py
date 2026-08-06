@@ -206,7 +206,7 @@ def init_env_state( key: str, config_name: str, env_name: str,
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value."""
-	initialize_runtime_state( key, '' )
+	init_session_value( key, '' )
 	value = get_runtime_config_value( key, config_name, env_name )
 	sync_provider_config( key, config_name, env_name, value, provider )
 
@@ -5529,7 +5529,7 @@ if mode == 'Text':
 		# ------------------------------------------------------------------
 		# Message Reset
 		# ------------------------------------------------------------------
-		if st.button( 'Clear Messages', key='text_clear_messages', icon='🧹', width='stretch', ):
+		if st.button( 'Clear Messages', key='text_clear_messages', icon='🧹', width='content', ):
 			clear_text_messages( )
 			st.rerun( )
 
@@ -6416,7 +6416,7 @@ elif mode == 'Images':
 				else:
 					st.info( 'Response controls in this section apply to image analysis only.' )
 				
-				st.button( label='Reset', key='image_response_reset', width='stretch',
+				st.button( label='Reset', key='image_response_reset', width='content',
 					on_click=reset_image_response_settings, icon='🔄', )
 			
 			# ------------------------------------------------------------------
@@ -8204,8 +8204,7 @@ elif mode == 'Audio':
 			# ----- Clear Button -----
 			with process_c2:
 				if st.button( 'Clear Messages', key='audio_clear_process_messages',
-						width='stretch',
-						on_click=clear_audio_messages, icon='🧹' ):
+						width='stretch', on_click=clear_audio_messages, icon='🧹' ):
 					st.rerun( )
 			
 			if st.session_state.get( 'audio_output' ):
