@@ -61,24 +61,25 @@ from google.genai.types import (Part, GenerateContentConfig, ImageConfig, Functi
                                 EmbedContentResponse)
 
 def throw_if( name: str, value: object ) -> None:
-	"""Validate that a required argument has a usable value.
+	"""Throw if.
 
 	Purpose:
-		Provides a shared argument guard for provider calls, file operations, and configuration
-		builders. The helper raises a clear ``ValueError`` when a required value is missing,
-		blank, or an empty collection.
+	    Validates that a required argument contains a usable value so failures occur before provider, filesystem, or parsing work begins.
 
 	Args:
-		name (str): Name of the argument being validated.
-		value (object): Runtime value to validate.
+	    name (str): Argument name included in validation error messages.
+	    value (object): Candidate value to validate or normalize.
+
+	Returns:
+	    None: This method updates instance state or validates input and does not return a value.
 
 	Raises:
-		ValueError: Raised when ``value`` is ``None``, blank, or an empty collection.
+	    ValueError: Raised when the method cannot satisfy its documented value requirement.
 	"""
 	if value is None:
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
 	
-	if isinstance( value, str ) and not value.strip( ):
+	if isinstance( value, str ) and (not value.strip( )):
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
 	
 	if isinstance( value, (list, tuple, dict, set) ) and len( value ) == 0:
@@ -3943,7 +3944,7 @@ class Files( Gemini ):
 		mime_type (Optional[str]): Active file MIME type.
 		file_path (Optional[str]): Active local file path.
 		file_list (List[str]): Google Cloud Storage object names returned by the latest list
-		operation.
+			operation.
 		file_paths (List[str]): Local paths used by a multi-document request.
 		file_lists (List[File]): Uploaded Gemini file resources used by a multi-document request.
 		response (Optional[Any]): Most recent Files API or Interactions response.

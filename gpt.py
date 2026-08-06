@@ -59,22 +59,24 @@ import tempfile
 
 def throw_if( name: str, value: object ) -> None:
 	"""Throw if.
-	
+
 	Purpose:
-		Validates a required value before a provider or application operation proceeds. The
-		function raises a ValueError when the supplied value is missing, blank, or empty.
-	
+	    Validates that a required argument contains a usable value so failures occur before provider, filesystem, or parsing work begins.
+
 	Args:
-		name (str): Name value used by the operation.
-		value (object): Value value used by the operation.
-	
+	    name (str): Argument name included in validation error messages.
+	    value (object): Candidate value to validate or normalize.
+
+	Returns:
+	    None: This method updates instance state or validates input and does not return a value.
+
 	Raises:
-		ValueError: Raised when required input is missing or invalid.
+	    ValueError: Raised when the method cannot satisfy its documented value requirement.
 	"""
 	if value is None:
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
 	
-	if isinstance( value, str ) and not value.strip( ):
+	if isinstance( value, str ) and (not value.strip( )):
 		raise ValueError( f'Argument "{name}" cannot be empty!' )
 	
 	if isinstance( value, (list, tuple, dict, set) ) and len( value ) == 0:
@@ -119,7 +121,7 @@ class GPT:
 		background (Optional[bool]): Background retained by the provider wrapper.
 		number (Optional[int]): Number retained by the provider wrapper.
 		response_format (Optional[Dict[str, str]]): Response format retained by the provider
-		wrapper.
+			wrapper.
 		context (Optional[List[Dict[str, str]]]): Context retained by the provider wrapper.
 		instructions (Optional[str]): Instructions retained by the provider wrapper.
 	"""
@@ -2668,7 +2670,7 @@ class Embeddings( GPT ):
 		response (Optional[CreateEmbeddingResponse]): Response retained by the provider wrapper.
 		embedding (Optional[List[float] | str]): Embedding retained by the provider wrapper.
 		embeddings (Optional[List[List[float]] | List[str]]): Embeddings retained by the provider
-		wrapper.
+			wrapper.
 		usage (Optional[Any]): Usage retained by the provider wrapper.
 		request (Optional[Dict[str, Any]]): Request retained by the provider wrapper.
 	"""

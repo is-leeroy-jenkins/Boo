@@ -80,24 +80,28 @@ import grok
 
 def throw_if( name: str, value: object ) -> None:
 	"""Throw if.
-	
+
 	Purpose:
-	    Validates that a required argument contains a usable value before the surrounding workflow
-	    continues. This guard centralizes early validation so provider wrappers and UI routines
-	    fail
-	    with consistent, readable error messages.
-	
+	    Validates that a required argument contains a usable value so failures occur before provider, filesystem, or parsing work begins.
+
 	Args:
-	    name (str): Name value used by the operation.
-	    value (object): Value value used by the operation.
-	
+	    name (str): Argument name included in validation error messages.
+	    value (object): Candidate value to validate or normalize.
+
 	Returns:
-	    None: This function performs its work through side effects and does not return a value."""
+	    None: This method updates instance state or validates input and does not return a value.
+
+	Raises:
+	    ValueError: Raised when the method cannot satisfy its documented value requirement.
+	"""
 	if value is None:
-		raise ValueError( f'Argument "{name}" cannot be None.' )
+		raise ValueError( f'Argument "{name}" cannot be empty!' )
 	
-	if isinstance( value, str ) and not value.strip( ):
-		raise ValueError( f'Argument "{name}" cannot be empty.' )
+	if isinstance( value, str ) and (not value.strip( )):
+		raise ValueError( f'Argument "{name}" cannot be empty!' )
+	
+	if isinstance( value, (list, tuple, dict, set) ) and len( value ) == 0:
+		raise ValueError( f'Argument "{name}" cannot be empty!' )
 
 def init_session_value( key: str, value: Any ) -> None:
 	"""Initializes session values.
@@ -3224,7 +3228,7 @@ def format_prompt_option( prompt_id: int, prompt_options: List[ Dict[ str, Any ]
 	Args:
 	    prompt_id (int): Numeric prompt identifier rendered by the selection control.
 	    prompt_options (List[Dict[str, Any]]): Available prompt records used to resolve the
-	    caption.
+	        caption.
 	
 	Returns:
 	    str: Prompt caption when found; otherwise the numeric identifier as text.
@@ -3277,7 +3281,7 @@ def insert_prompt( data: Dict[ str, Any ] ) -> None:
 	
 	Args:
 	    data (Dict[str, Any]): Prompt-template values containing Caption, Name, Category,
-	    and Prompt.
+	        and Prompt.
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value.

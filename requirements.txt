@@ -16,3 +16,9 @@ requests>=2.32.4,<3
 plotly
 streamlit-extras
 streamlit-pdf
+mkdocs
+mkdocs-material
+mkdocstrings[python]
+mkdocs-autorefs
+pymdown-extensions
+black
