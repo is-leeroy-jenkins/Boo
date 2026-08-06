@@ -4680,11 +4680,9 @@ class FileSearch( Gemini ):
 			self.client = self.create_client( )
 			self.collections = { }
 			self.stores = list( self.client.file_search_stores.list( ) )
-			
 			for store in self.stores:
 				self.display_name = getattr( store, 'display_name', None )
 				self.resource_name = getattr( store, 'name', None )
-				
 				if not self.resource_name:
 					continue
 				

@@ -1537,64 +1537,91 @@ def extract_text_from_bytes( file_bytes: bytes ) -> str:
 			return ""
 
 def route_document_query( prompt: str ) -> str:
-	"""Route document query.
+	"""Route a document-grounded query through the active provider.
 	
 	Purpose:
-	    Performs the route_document_query workflow using the inputs supplied by the caller and the
-	    current runtime configuration. The function keeps this behavior isolated so related UI,
-	    provider, and data-processing paths can call it consistently.
+	    Builds local retrieval context for the active documents and invokes the exact Chat wrapper
+	    contract implemented by the selected provider. Gemini requests preserve complete
+	    Interactions history and grounding sources separately from display messages.
 	
 	Args:
-	    prompt (str): Prompt value used by the operation.
+	    prompt (str): Document-grounded question or summary instruction.
 	
 	Returns:
-	    str: Return value produced by the operation.
+	    str: Provider-generated answer.
 	
 	Raises:
-	    Exception: Re-raises exceptions after recording them with the application logger."""
+	    Error: Re-raised after the exception is recorded by the application logger.
+	"""
 	try:
 		throw_if( 'prompt', prompt )
-		provider_name = st.session_state.get( 'provider', 'GPT' )
+		provider_name = str( st.session_state.get( 'provider', 'GPT' ) or 'GPT' )
 		docqna = get_chat_module( provider_name )
-		user_input = build_document_user_input( prompt )
+		user_input = build_document_user_input( prompt ) or prompt.strip( )
+		model = str( st.session_state.get( 'docqna_model', '' ) or '' ).strip( )
 		
-		if not user_input:
-			user_input = (prompt or '').strip( )
-		
-		model = st.session_state.get( 'docqna_model' )
 		if not model:
 			model_options = list( getattr( docqna, 'model_options', [ ] ) or [ ] )
-			model = model_options[ 0 ] if model_options else None
+			model = str( model_options[ 0 ] ) if model_options else ''
 		
-		if not model:
-			raise ValueError(
-				f'No Document Q&A model is configured for provider "{provider_name}".' )
+		throw_if( 'model', model )
+		temperature = float( st.session_state.get( 'docqna_temperature', 0.0 ) or 0.0 )
+		top_p = float( st.session_state.get( 'docqna_top_percent', 0.0 ) or 0.0 )
+		frequency = float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) or 0.0 )
+		presence = float( st.session_state.get( 'docqna_presence_penalty', 0.0 ) or 0.0 )
+		max_tokens = int( st.session_state.get( 'docqna_max_tokens', 0 ) or 0 )
+		instructions = str( st.session_state.get( 'docqna_system_instructions', '' ) or '' )
+		reasoning = str( st.session_state.get( 'docqna_reasoning', '' ) or '' )
+		response_format = str( st.session_state.get( 'docqna_response_format', '' ) or '' )
+		tools = list( st.session_state.get( 'docqna_tools', [ ] ) or [ ] )
+		tool_choice = str( st.session_state.get( 'docqna_tool_choice', '' ) or '' )
 		
-		answer = docqna.generate_text( model=model, prompt=user_input,
-			temperature=float( st.session_state.get( 'docqna_temperature', 0.0 ) ),
-			top_p=float( st.session_state.get( 'docqna_top_percent', 0.95 ) ),
-			frequency=float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) ),
-			presence=float( st.session_state.get( 'docqna_presence_penalty', 0.0 ) ),
-			max_tokens=int( st.session_state.get( 'docqna_max_tokens', 4096 ) ) or 4096,
-			store=bool( st.session_state.get( 'docqna_store', False ) ), stream=False,
-			instruct=st.session_state.get( 'docqna_system_instructions', '' ),
-			tools=st.session_state.get( 'docqna_tools', [ ] ),
-			include=st.session_state.get( 'docqna_include', [ ] ),
-			tool_choice=st.session_state.get( 'docqna_tool_choice' ) or None,
-			reasoning=st.session_state.get( 'docqna_reasoning' ) or None, )
+		if provider_name == 'Gemini':
+			context = list( st.session_state.get( 'docqna_gemini_history', [ ] ) or [ ] )
+			answer = docqna.generate_text( prompt=user_input, model=model,
+				number=max( 1, int( st.session_state.get( 'docqna_number', 1 ) or 1 ) ),
+				temperature=temperature, top_p=top_p,
+				top_k=int( st.session_state.get( 'docqna_top_k', 0 ) or 0 ),
+				frequency=frequency, presence=presence, max_tokens=max_tokens,
+				stops=list( st.session_state.get( 'docqna_stops', [ ] ) or [ ] ),
+				instruct=instructions, response_format=response_format, tools=tools,
+				tool_choice=tool_choice or None, reasoning=reasoning,
+				modalities=list( st.session_state.get( 'docqna_modalities', [ ] ) or [ ] ),
+				media_resolution=str(
+					st.session_state.get( 'docqna_media_resolution', '' ) or '' ),
+				context=context,
+				content=str( st.session_state.get( 'docqna_content', '' ) or '' ),
+				stream=False, )
+			get_history = getattr( docqna, 'get_structured_history', None )
+			if callable( get_history ):
+				st.session_state[ 'docqna_gemini_history' ] = get_history( ) or [ ]
+			get_sources = getattr( docqna, 'get_grounding_sources', None )
+			if callable( get_sources ):
+				sources = get_sources( ) or [ ]
+				st.session_state[ 'docqna_sources' ] = sources
+				st.session_state[ 'last_sources' ] = sources
+		elif provider_name == 'GPT':
+			answer = docqna.generate_text( model=model, prompt=user_input,
+				temperature=temperature, top_p=top_p, frequency=frequency,
+				presence=presence, max_tokens=max_tokens,
+				store=bool( st.session_state.get( 'docqna_store', False ) ), stream=False,
+				instruct=instructions, tools=tools,
+				include=list( st.session_state.get( 'docqna_include', [ ] ) or [ ] ),
+				tool_choice=tool_choice or None, reasoning=reasoning or None, )
+		else:
+			answer = docqna.generate_text( model=model, prompt=user_input,
+				temperature=temperature, top_p=top_p, frequency=frequency,
+				presence=presence, max_tokens=max_tokens,
+				store=bool( st.session_state.get( 'docqna_store', False ) ), stream=False,
+				instruct=instructions, tools=tools,
+				include=list( st.session_state.get( 'docqna_include', [ ] ) or [ ] ),
+				tool_choice=tool_choice or None, reasoning=reasoning or None, )
 		
-		if isinstance( answer, str ):
-			return answer
-		
-		output_text = getattr( docqna, 'output_text', None )
-		if isinstance( output_text, str ) and output_text.strip( ):
-			return output_text.strip( )
-		
-		output_text = getattr( answer, 'output_text', None )
-		if isinstance( output_text, str ) and output_text.strip( ):
-			return output_text.strip( )
-		
-		return str( answer or '' )
+		output_text = answer.strip( ) if isinstance( answer, str ) else str(
+			getattr( docqna, 'output_text', '' ) or getattr( answer, 'output_text', '' )
+			or answer or '' ).strip( )
+		throw_if( 'output_text', output_text )
+		return output_text
 	except Exception as e:
 		ex = Error( e )
 		ex.module = 'app'
@@ -4104,9 +4131,10 @@ if mode == 'Text':
 		'text_tools': [ ], 'text_include': [ ], 'text_tool_choice': '', 'text_max_calls': 0,
 		'text_parallel_tools': False, 'text_google_grounding': False, 'text_urls_input': '',
 		'text_max_urls': 0, 'text_domains_input': '', 'text_vector_store_ids': '',
-		'text_grok_collection_labels': [ ], 'text_grok_collection_ids': [ ],
-		'text_grok_collection_ids_input': '', 'text_response_format': '',
-		'text_response_schema': '', 'text_json_schema': '',
+		'text_file_search_store_names_input': '', 'text_file_search_store_names': [ ],
+		'text_gemini_history': [ ], 'text_grok_collection_labels': [ ],
+		'text_grok_collection_ids': [ ], 'text_grok_collection_ids_input': '',
+		'text_response_format': '', 'text_response_schema': '', 'text_json_schema': '',
 		'text_json_schema_name': 'response_schema', 'text_json_schema_strict': True,
 		'text_stops_input': '', 'text_store': False, 'text_stream': False, 'text_background': False,
 		'text_continuation_mode': 'None', 'text_previous_response_id': '',
@@ -4123,6 +4151,12 @@ if mode == 'Text':
 	
 	if not isinstance( st.session_state.get( 'text_context' ), list ):
 		st.session_state[ 'text_context' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'text_gemini_history' ), list ):
+		st.session_state[ 'text_gemini_history' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'text_file_search_store_names' ), list ):
+		st.session_state[ 'text_file_search_store_names' ] = [ ]
 	
 	if not isinstance( st.session_state.get( 'text_tools' ), list ):
 		st.session_state[ 'text_tools' ] = [ ]
@@ -4321,6 +4355,47 @@ if mode == 'Text':
 			isinstance( message, dict ) and message.get( 'role' ) in [ 'user',
 				'assistant', ] and str( message.get( 'content', '', ) ).strip( ) ]
 	
+	def build_text_request_context( ) -> List[ Dict[ str, Any ] ]:
+		"""Build text request context.
+		
+		Purpose:
+			Returns provider-compatible prior conversation state without including the current
+			prompt. Gemini receives its complete Interactions timeline while GPT and Grok retain
+			the existing role-and-content message contract.
+		
+		Returns:
+			List[Dict[str, Any]]: Prior conversation state for the selected provider.
+		"""
+		if st.session_state.get( 'text_input', 'conversation' ) != 'conversation':
+			return [ ]
+		
+		if provider_name == 'Gemini':
+			gemini_history = st.session_state.get( 'text_gemini_history', [ ] )
+			return list( gemini_history ) if isinstance( gemini_history, list ) else [ ]
+		
+		return build_text_context( )
+	
+	def get_selected_gemini_file_search_stores( ) -> List[ str ]:
+		"""Get selected Gemini File Search Stores.
+		
+		Purpose:
+			Normalizes the Gemini File Search Store resource names entered by the user and
+			persists them independently from GPT Vector Store identifiers.
+		
+		Returns:
+			List[str]: Unique Gemini File Search Store resource names.
+		"""
+		store_names = parse_comma_list(
+			st.session_state.get( 'text_file_search_store_names_input', '' ) )
+		unique_names: List[ str ] = [ ]
+		
+		for store_name in store_names:
+			if store_name not in unique_names:
+				unique_names.append( store_name )
+		
+		st.session_state[ 'text_file_search_store_names' ] = unique_names
+		return unique_names
+	
 	def normalize_text_domains( ) -> List[ str ]:
 		"""Normalize allowed domains.
 		
@@ -4332,8 +4407,7 @@ if mode == 'Text':
 		"""
 		domains: List[ str ] = [ ]
 		
-		for entered_domain in parse_comma_list( st.session_state.get( 'text_domains_input', '',
-		) ):
+		for entered_domain in parse_comma_list( st.session_state.get( 'text_domains_input', '', ) ):
 			domain = entered_domain.strip( )
 			
 			if domain.startswith( 'https://' ):
@@ -4458,26 +4532,25 @@ if mode == 'Text':
 			continuation_mode = st.session_state.get( 'text_continuation_mode', 'None', )
 			
 			if (continuation_mode == 'Previous Response' and not str(
-				st.session_state.get( 'text_previous_response_id', '', ) or '' ).strip( )):
+					st.session_state.get( 'text_previous_response_id', '', ) or '' ).strip( )):
 				raise ValueError(
 					'Enter a Previous Response ID or select another continuation mode.' )
 			
 			if (continuation_mode == 'Conversation' and not str(
-				st.session_state.get( 'text_conversation_id', '', ) or '' ).strip( )):
+					st.session_state.get( 'text_conversation_id', '', ) or '' ).strip( )):
 				raise ValueError( 'Enter a Conversation ID or select another continuation mode.' )
 			
 			if ('file_search' in selected_tools and not parse_comma_list(
-				st.session_state.get( 'text_vector_store_ids', '', ) )):
+					st.session_state.get( 'text_vector_store_ids', '', ) )):
 				raise ValueError(
 					'Enter at least one GPT Vector Store ID when File Search is selected.' )
 		
 		if provider_name == 'Gemini':
-			if ('file_search' in selected_tools and not parse_comma_list(
-				st.session_state.get( 'text_vector_store_ids', '', ) )):
+			if ('file_search' in selected_tools and not get_selected_gemini_file_search_stores( )):
 				raise ValueError( 'Enter at least one Gemini File Search Store resource name.' )
 			
 			if ('url_context' in selected_tools and not parse_semicolon_list(
-				st.session_state.get( 'text_urls_input', '', ) )):
+					st.session_state.get( 'text_urls_input', '', ) )):
 				raise ValueError( 'Enter at least one URL when URL Context is selected.' )
 		
 		if (
@@ -4537,6 +4610,8 @@ if mode == 'Text':
 		st.session_state[ 'text_max_urls' ] = 0
 		st.session_state[ 'text_domains_input' ] = ''
 		st.session_state[ 'text_vector_store_ids' ] = ''
+		st.session_state[ 'text_file_search_store_names_input' ] = ''
+		st.session_state[ 'text_file_search_store_names' ] = [ ]
 		st.session_state[ 'text_grok_collection_labels' ] = [ ]
 		st.session_state[ 'text_grok_collection_ids' ] = [ ]
 		st.session_state[ 'text_grok_collection_ids_input' ] = ''
@@ -4576,6 +4651,7 @@ if mode == 'Text':
 		"""
 		st.session_state[ 'text_messages' ] = [ ]
 		st.session_state[ 'text_context' ] = [ ]
+		st.session_state[ 'text_gemini_history' ] = [ ]
 		st.session_state[ 'text_previous_response_id' ] = ''
 		st.session_state[ 'text_conversation_id' ] = ''
 		st.session_state[ 'last_answer' ] = ''
@@ -4632,7 +4708,7 @@ if mode == 'Text':
 					'', ) ) if 'file_search' in selected_tools else [ ]),
 			'conversation_id': conversation_id, }
 	
-	def build_gemini_text_kwargs( prompt: str, prior_context: List[ Dict[ str, str ] ],
+	def build_gemini_text_kwargs( prompt: str, prior_context: List[ Dict[ str, Any ] ],
 		stream_handler: Any = None ) -> Dict[ str, Any ]:
 		"""Build Gemini text arguments.
 		
@@ -4650,7 +4726,7 @@ if mode == 'Text':
 		selected_tools = list( st.session_state.get( 'text_tools', [ ], ) )
 		
 		if (st.session_state.get( 'text_google_grounding',
-			False, ) and 'google_search' not in selected_tools):
+				False, ) and 'google_search' not in selected_tools):
 			selected_tools.append( 'google_search' )
 		
 		return { 'prompt': prompt, 'model': st.session_state.get( 'text_model', '', ), 'number': 1,
@@ -4663,7 +4739,8 @@ if mode == 'Text':
 			'stops': parse_comma_list( st.session_state.get( 'text_stops_input', '', ) ),
 			'instruct': str( st.session_state.get( 'text_system_instructions', '', ) or '' ),
 			'response_format': str( st.session_state.get( 'text_response_format', '', ) or '' ),
-			'tools': selected_tools, 'tool_choice': '',
+			'tools': selected_tools,
+			'tool_choice': str( st.session_state.get( 'text_tool_choice', '', ) or '' ),
 			'reasoning': str( st.session_state.get( 'text_reasoning', '', ) or '' ),
 			'modalities': [ ], 'media_resolution': '', 'context': prior_context, 'content': '',
 			'urls': (parse_semicolon_list( st.session_state.get( 'text_urls_input',
@@ -4671,9 +4748,9 @@ if mode == 'Text':
 			'max_urls': int( st.session_state.get( 'text_max_urls', 0, ) ),
 			'response_schema': get_gemini_text_schema( ),
 			'safety_profile': str( st.session_state.get( 'text_safety_profile', '', ) or '' ),
-			'file_search_store_names': (parse_comma_list(
-				st.session_state.get( 'text_vector_store_ids',
-					'', ) ) if 'file_search' in selected_tools else [ ]),
+			'file_search_store_names': (
+				get_selected_gemini_file_search_stores( ) if 'file_search' in selected_tools else
+				[ ]),
 			'stream': bool( st.session_state.get( 'text_stream', False, ) ),
 			'stream_handler': stream_handler, }
 	
@@ -4719,7 +4796,7 @@ if mode == 'Text':
 			'max_tools': int( st.session_state.get( 'text_max_calls', 0, ) ),
 			'response_schema': get_grok_text_schema( ), 'stream_handler': stream_handler, }
 	
-	def call_generate_text( prompt: str, prior_context: List[ Dict[ str, str ] ],
+	def call_generate_text( prompt: str, prior_context: List[ Dict[ str, Any ] ],
 		stream_handler: Any = None ) -> Any:
 		"""Call generate text.
 		
@@ -4866,7 +4943,7 @@ if mode == 'Text':
 			return
 		
 		st.session_state[ 'text_system_instructions' ] = convert_markdown( instructions )
-		
+	
 	# ------------------------------------------------------------------
 	# Main Chat UI
 	# ------------------------------------------------------------------
@@ -4988,6 +5065,11 @@ if mode == 'Text':
 			with st.expander( label='Tools / Grounding Settings', icon='🔎', expanded=False,
 					width='stretch', ):
 				tool_options = get_text_options( text, 'tool_options', )
+				
+				if (provider_name == 'Gemini' and st.session_state.get( 'text_model' ) and hasattr(
+					text, 'get_supported_tools' )):
+					tool_options = text.get_supported_tools(
+						str( st.session_state.get( 'text_model', '' ) ) )
 				include_options = get_text_options( text, 'include_options', )
 				choice_options = get_text_options( text, 'choice_options', )
 				
@@ -4996,11 +5078,6 @@ if mode == 'Text':
 				sanitize_text_selection( 'text_tool_choice', choice_options, '', )
 				
 				selected_tools = st.session_state.get( 'text_tools', [ ], )
-				gemini_builtin_tools = { 'google_search', 'url_context', 'file_search',
-					'code_execution', }
-				gemini_function_tool_selected = (provider_name == 'Gemini' and any(
-					selected_tool not in gemini_builtin_tools for selected_tool in
-						selected_tools ))
 				
 				tool_c1, tool_c2, tool_c3 = st.columns( [ 0.34, 0.33, 0.33, ], border=True,
 					gap='xxsmall', )
@@ -5018,10 +5095,8 @@ if mode == 'Text':
 				# ---------- Tool Choice ------------
 				with tool_c3:
 					st.selectbox( label='Tool Choice', options=choice_options,
-						key='text_tool_choice', index=None, placeholder='Options', disabled=(
-								not choice_options or (
-								provider_name == 'Gemini' and not gemini_function_tool_selected)),
-						help=cfg.CHOICE, )
+						key='text_tool_choice', index=None, placeholder='Options',
+						disabled=not choice_options, help=cfg.CHOICE, )
 				
 				selected_tools = st.session_state.get( 'text_tools', [ ], )
 				
@@ -5083,7 +5158,8 @@ if mode == 'Text':
 						width='stretch', placeholder='vs_abc123,vs_def456', )
 				
 				elif (provider_name == 'Gemini' and 'file_search' in selected_tools):
-					st.text_input( label='File Search Store Names', key='text_vector_store_ids',
+					st.text_input( label='File Search Store Names',
+						key='text_file_search_store_names_input',
 						help=('Required for Gemini File Search. Enter complete resource names '
 						      'separated with commas.'), width='stretch',
 						placeholder=('fileSearchStores/store-a,'
@@ -5102,7 +5178,12 @@ if mode == 'Text':
 						help='Enter additional xAI Collection IDs separated with commas.',
 						width='stretch', placeholder='collection_abc123,collection_def456', )
 				else:
-					st.session_state[ 'text_vector_store_ids' ] = ''
+					if provider_name != 'GPT':
+						st.session_state[ 'text_vector_store_ids' ] = ''
+					
+					if provider_name != 'Gemini':
+						st.session_state[ 'text_file_search_store_names_input' ] = ''
+						st.session_state[ 'text_file_search_store_names' ] = [ ]
 					
 					if provider_name != 'Grok':
 						st.session_state[ 'text_grok_collection_labels' ] = [ ]
@@ -5329,8 +5410,8 @@ if mode == 'Text':
 		if prompt is not None and str( prompt ).strip( ):
 			prompt = str( prompt ).strip( )
 			
-			# Capture context before appending the current prompt so the prompt is sent once.
-			prior_context = build_text_context( )
+			# Capture provider context before appending the current prompt so it is sent once.
+			prior_context = build_text_request_context( )
 			st.session_state[ 'text_messages' ].append( { 'role': 'user', 'content': prompt, } )
 			with st.chat_message( 'assistant', avatar=get_text_avatar( 'assistant' ), ):
 				with st.spinner( 'Thinking…' ):
@@ -5386,6 +5467,13 @@ if mode == 'Text':
 						st.session_state[ 'text_messages' ].append(
 							{ 'role': 'assistant', 'content': response_text, } )
 						st.session_state[ 'text_context' ] = build_text_context( )
+						
+						if (provider_name == 'Gemini' and hasattr( text,
+							'get_structured_history' )):
+							structured_history = text.get_structured_history( )
+							if isinstance( structured_history, list ):
+								st.session_state[ 'text_gemini_history' ] = structured_history
+						
 						st.session_state[ 'last_answer' ] = response_text
 						
 						if provider_name in [ 'GPT', 'Grok', ]:
@@ -5413,14 +5501,20 @@ if mode == 'Text':
 									if not isinstance( source, dict ):
 										continue
 									
-									title = str(
-										source.get( 'title', '', ) or source.get( 'url', '', ) )
-									url = str( source.get( 'url', '', ) or '' )
+									source_type = str( source.get( 'type', '', ) or '' ).strip( )
+									title = str( source.get( 'title', '', ) or '' ).strip( )
+									url = str( source.get( 'url', '', ) or '' ).strip( )
+									file_id = str( source.get( 'files_id', '', ) or '' ).strip( )
+									snippet = str( source.get( 'snippet', '', ) or '' ).strip( )
+									label = title or file_id or url or source_type or 'Source'
 									
 									if url:
-										st.markdown( f'- [{title}]({url})' )
-									elif title:
-										st.markdown( f'- {title}' )
+										st.markdown( f'- [{label}]({url})' )
+									else:
+										st.markdown( f'- {label}' )
+									
+									if snippet:
+										st.caption( snippet )
 						
 						update_text_usage( response_obj )
 					
@@ -5515,8 +5609,7 @@ elif mode == 'Images':
 		
 		return [ str( value ) for value in values if str( value ).strip( ) ]
 	
-	def sanitize_image_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> \
-			None:
+	def sanitize_image_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> None:
 		"""Sanitize image selection.
 		
 		Purpose:
@@ -5971,7 +6064,7 @@ elif mode == 'Images':
 		
 		if (provider_name == 'Gemini' and operation in [ 'Generation',
 			'Editing', ] and st.session_state.get( 'image_grounded', False, ) and hasattr( image,
-			'supports_grounding', ) and not image.supports_grounding( model )):
+			'supports_search_grounding', ) and not image.supports_search_grounding( model )):
 			raise ValueError( 'The selected Gemini model does not support Google grounding.' )
 		
 		return model
@@ -6003,8 +6096,8 @@ elif mode == 'Images':
 		if provider_name == 'Gemini':
 			return image.generate( prompt=prompt, model=model,
 				number=int( st.session_state.get( 'image_number', 1, ) ),
-				aspect_ratio=str( st.session_state.get( 'image_aspect_ratio', '', ) or '' ),
-				image_size=str( st.session_state.get( 'image_size', '', ) or '' ),
+				aspect=str( st.session_state.get( 'image_aspect_ratio', '', ) or '' ),
+				resolution=str( st.session_state.get( 'image_size', '', ) or '' ),
 				output_mime_type=str( st.session_state.get( 'image_mime_type', '', ) or '' ),
 				response_modalities=str( st.session_state.get( 'image_modality', '', ) or '' ),
 				temperature=float( st.session_state.get( 'image_temperature', 0.0, ) ),
@@ -6012,7 +6105,6 @@ elif mode == 'Images':
 				frequency=float( st.session_state.get( 'image_frequency_penalty', 0.0, ) ),
 				presence=float( st.session_state.get( 'image_presence_penalty', 0.0, ) ),
 				max_tokens=int( st.session_state.get( 'image_max_tokens', 0, ) ),
-				media_resolution=str( st.session_state.get( 'image_media_resolution', '', ) or '' ),
 				instruct=str( st.session_state.get( 'image_system_instructions', '', ) or '' ),
 				grounded=bool( st.session_state.get( 'image_grounded', False, ) ),
 				image_search=bool( st.session_state.get( 'image_image_search', False, ) ), )
@@ -6057,8 +6149,6 @@ elif mode == 'Images':
 				frequency=float( st.session_state.get( 'image_frequency_penalty', 0.0, ) ),
 				presence=float( st.session_state.get( 'image_presence_penalty', 0.0, ) ),
 				max_tokens=int( st.session_state.get( 'image_max_tokens', 0, ) ),
-				media_resolution=str( st.session_state.get( 'image_media_resolution', '',
-				) or '' ),
 				instruct=str( st.session_state.get( 'image_system_instructions', '', ) or '' ), )
 		
 		if provider_name == 'Grok':
@@ -6111,8 +6201,8 @@ elif mode == 'Images':
 		if provider_name == 'Gemini':
 			return image.edit( prompt=prompt, path=path, model=model,
 				number=int( st.session_state.get( 'image_number', 1, ) ),
-				aspect_ratio=str( st.session_state.get( 'image_aspect_ratio', '', ) or '' ),
-				image_size=str( st.session_state.get( 'image_size', '', ) or '' ),
+				aspect=str( st.session_state.get( 'image_aspect_ratio', '', ) or '' ),
+				resolution=str( st.session_state.get( 'image_size', '', ) or '' ),
 				output_mime_type=str( st.session_state.get( 'image_mime_type', '', ) or '' ),
 				response_modalities=str( st.session_state.get( 'image_modality', '', ) or '' ),
 				temperature=float( st.session_state.get( 'image_temperature', 0.0, ) ),
@@ -6120,8 +6210,6 @@ elif mode == 'Images':
 				frequency=float( st.session_state.get( 'image_frequency_penalty', 0.0, ) ),
 				presence=float( st.session_state.get( 'image_presence_penalty', 0.0, ) ),
 				max_tokens=int( st.session_state.get( 'image_max_tokens', 0, ) ),
-				media_resolution=str( st.session_state.get( 'image_media_resolution', '',
-				) or '' ),
 				instruct=str( st.session_state.get( 'image_system_instructions', '', ) or '' ),
 				grounded=bool( st.session_state.get( 'image_grounded', False, ) ),
 				image_search=bool( st.session_state.get( 'image_image_search', False, ) ), )
@@ -6297,8 +6385,8 @@ elif mode == 'Images':
 						# ----- Media Resolution -----
 						st.selectbox( label='Media Resolution', options=media_options,
 							key='image_media_resolution', index=None, placeholder='Options',
-							disabled=not media_options,
-							help='Gemini media resolution used for image analysis.', )
+							disabled=True,
+							help='Retained for cross-provider compatibility; the Gemini Interactions image wrapper does not submit this value.', )
 						
 						st.session_state[ 'image_include' ] = [ ]
 						st.session_state[ 'image_store' ] = False
@@ -6394,6 +6482,23 @@ elif mode == 'Images':
 						modality_options = get_image_options( image, 'modality_options',
 							[ 'IMAGE', 'TEXT_AND_IMAGE', ], )
 						media_options = get_image_options( image, 'media_options', )
+						active_gemini_model = get_selected_image_model( selected_image_mode )
+						gemini_supports_image_size = bool( active_gemini_model ) and hasattr( image,
+							'supports_image_size', ) and image.supports_image_size( active_gemini_model )
+						gemini_supports_grounding = bool( active_gemini_model ) and hasattr( image,
+							'supports_search_grounding', ) and image.supports_search_grounding(
+							active_gemini_model )
+						gemini_supports_image_search = bool( active_gemini_model ) and hasattr( image,
+							'supports_image_search', ) and image.supports_image_search( active_gemini_model )
+						
+						if not gemini_supports_image_size:
+							st.session_state[ 'image_size' ] = ''
+						
+						if not gemini_supports_grounding:
+							st.session_state[ 'image_grounded' ] = False
+						
+						if not gemini_supports_image_search:
+							st.session_state[ 'image_image_search' ] = False
 						
 						sanitize_image_selection( 'image_aspect_ratio', aspect_options, '', )
 						sanitize_image_selection( 'image_size', size_options, '', )
@@ -6415,7 +6520,8 @@ elif mode == 'Images':
 						with visual_c2:
 							st.selectbox( label='Image Size', options=size_options,
 								key='image_size', index=None, placeholder='Options',
-								disabled=not size_options, help='Gemini output image size.', )
+								disabled=(not size_options or not gemini_supports_image_size),
+								help='Gemini output image size when supported by the selected model.', )
 						
 						# ----- Output MIME Type -----
 						with visual_c3:
@@ -6433,8 +6539,8 @@ elif mode == 'Images':
 						# ----- Media Resolution -----
 						st.selectbox( label='Media Resolution', options=media_options,
 							key='image_media_resolution', index=None, placeholder='Options',
-							disabled=not media_options,
-							help='Gemini media-resolution configuration.', )
+							disabled=True,
+							help='Retained for cross-provider compatibility; the Gemini Interactions image wrapper does not submit this value.', )
 						
 						ground_c1, ground_c2 = st.columns( [ 0.50, 0.50, ], border=True,
 							gap='xxsmall', )
@@ -6442,11 +6548,13 @@ elif mode == 'Images':
 						# ----- Google Grounding -----
 						with ground_c1:
 							st.toggle( label='Google Grounding', key='image_grounded',
+								disabled=not gemini_supports_grounding,
 								help='Enable Gemini Google Search grounding when supported.', )
 						
 						# ----- Image Search -----
 						with ground_c2:
 							st.toggle( label='Image Search', key='image_image_search',
+								disabled=not gemini_supports_image_search,
 								help='Enable Gemini Image Search when supported.', )
 						
 						st.session_state[ 'image_quality' ] = ''
@@ -7552,37 +7660,41 @@ elif mode == 'Audio':
 			throw_if( 'model', model )
 			language = str( st.session_state.get( 'audio_language', '' ) or '' ).strip( )
 			response_format = st.session_state.get( 'audio_response_format' )
-			prompt_text = str( prompt or '' )
-			
+			prompt_text = str( prompt or '' ).strip( )
+			system_instructions = str(
+				st.session_state.get( 'audio_system_instructions', '' ) or '' ).strip( )
+
 			if provider_name == 'GPT':
 				result = transcriber.transcribe( path=path, model=model, language=language,
 					prompt=prompt_text, format=str( response_format or 'json' ),
 					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
 					include=list( st.session_state.get( 'audio_include', [ ] ) or [ ] ), )
-			
+
 			elif provider_name == 'Gemini':
+				instructions = '\n\n'.join(
+					value for value in [ system_instructions, prompt_text ] if value )
 				result = transcriber.transcribe( path=path, model=model,
-					language=language or 'Auto',
-					mime_type=get_audio_source_mime_type( path, response_format ),
+					language=language or 'Auto Detect',
+					mime_type=get_audio_source_mime_type( path, '' ),
 					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
 					top_p=float( st.session_state.get( 'audio_top_percent', 0.0 ) or 0.0 ),
-					top_k=int( st.session_state.get( 'audio_top_k', 0 ) or 0 ), frequency=float(
+					frequency=float(
 						st.session_state.get( 'audio_frequency_penalty', 0.0 ) or 0.0 ),
-					presence=float( st.session_state.get( 'audio_presence_penalty', 0.0 ) or 0.0 ),
+					presence=float(
+						st.session_state.get( 'audio_presence_penalty', 0.0 ) or 0.0 ),
 					max_tokens=int( st.session_state.get( 'audio_max_tokens', 0 ) or 0 ),
 					start_time=float( st.session_state.get( 'audio_start_time', 0.0 ) or 0.0 ),
 					end_time=float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ),
-					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
-					prompt=prompt_text, )
-			
+					instruct=instructions, )
+
 			elif provider_name == 'Grok':
 				result = transcriber.transcribe( path=path, language=language,
-					format=bool( response_format ),
-					mime_type=get_audio_source_mime_type( path, '' ), keyterm=prompt_text, )
-			
+					format=bool( response_format ), mime_type=get_audio_source_mime_type( path, '' ),
+					keyterm=prompt_text, )
+
 			else:
 				raise ValueError( f'Unsupported Audio provider: {provider_name}' )
-			
+
 			text_result = normalize_audio_text_result( result )
 			st.session_state[ 'audio_output' ] = text_result
 			st.session_state[ 'audio_last_result' ] = { 'task': 'Transcribe',
@@ -7597,7 +7709,7 @@ elif mode == 'Audio':
 			             'prompt: Optional[ str ] = None ) -> str')
 			Logger( ).write( ex )
 			raise ex
-	
+
 	def run_audio_translation( path: str, prompt: Optional[ str ] = None ) -> str:
 		"""Run audio translation.
 
@@ -7621,39 +7733,42 @@ elif mode == 'Audio':
 			throw_if( 'model', model )
 			target_language = get_audio_target_language( )
 			response_format = st.session_state.get( 'audio_response_format' )
-			prompt_text = str( prompt or '' )
-			
+			prompt_text = str( prompt or '' ).strip( )
+			system_instructions = str(
+				st.session_state.get( 'audio_system_instructions', '' ) or '' ).strip( )
+
 			if provider_name == 'GPT':
 				result = translator.translate( path=path, model=model, prompt=prompt_text,
 					format=str( response_format or 'json' ),
 					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ), )
-			
+
 			elif provider_name == 'Gemini':
 				throw_if( 'audio_language', target_language )
-				result = translator.translate( path=path, model=model, language=target_language,
-					source='Auto', mime_type=get_audio_source_mime_type( path, response_format ),
+				instructions = '\n\n'.join(
+					value for value in [ system_instructions, prompt_text ] if value )
+				result = translator.translate( path=path, target_language=target_language,
+					model=model, source_language='', mime_type=get_audio_source_mime_type( path, '' ),
 					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
 					top_p=float( st.session_state.get( 'audio_top_percent', 0.0 ) or 0.0 ),
-					top_k=int( st.session_state.get( 'audio_top_k', 0 ) or 0 ), frequency=float(
+					frequency=float(
 						st.session_state.get( 'audio_frequency_penalty', 0.0 ) or 0.0 ),
-					presence=float( st.session_state.get( 'audio_presence_penalty', 0.0 ) or 0.0 ),
+					presence=float(
+						st.session_state.get( 'audio_presence_penalty', 0.0 ) or 0.0 ),
 					max_tokens=int( st.session_state.get( 'audio_max_tokens', 0 ) or 0 ),
 					start_time=float( st.session_state.get( 'audio_start_time', 0.0 ) or 0.0 ),
 					end_time=float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ),
-					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
-					prompt=prompt_text, )
-			
+					instruct=instructions, )
+
 			elif provider_name == 'Grok':
 				throw_if( 'audio_language', target_language )
 				result = translator.translate( path=path, target_language=target_language,
 					model=model, source_language='', text_format=bool( response_format ),
 					mime_type=get_audio_source_mime_type( path, '' ), keyterm=prompt_text,
-					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or ''
-					), )
-			
+					instruct=system_instructions, )
+
 			else:
 				raise ValueError( f'Unsupported Audio provider: {provider_name}' )
-			
+
 			text_result = normalize_audio_text_result( result )
 			st.session_state[ 'audio_output' ] = text_result
 			st.session_state[ 'audio_last_result' ] = { 'task': 'Translate',
@@ -7669,7 +7784,7 @@ elif mode == 'Audio':
 			             'prompt: Optional[ str ] = None ) -> str')
 			Logger( ).write( ex )
 			raise ex
-	
+
 	def run_audio_tts( text: str ) -> Optional[ bytes ]:
 		"""Run audio text-to-speech.
 
@@ -7694,26 +7809,27 @@ elif mode == 'Audio':
 			speed = float( st.session_state.get( 'audio_speed', 1.0 ) or 1.0 )
 			output_path = str( st.session_state.get( 'audio_output_path', '' ) or '' )
 			throw_if( 'voice', voice )
-			
+
 			if provider_name == 'GPT':
 				throw_if( 'model', model )
 				result = tts.create_speech( text=text, model=model,
 					format=str( response_format or 'mp3' ), speed=speed, voice=voice,
 					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
 					file_path=output_path, )
-			
+
 			elif provider_name == 'Gemini':
 				throw_if( 'model', model )
-				result = tts.create_speech( text=text, model=model,
-					format=str( response_format or 'audio/wav' ), voice=voice, speed=speed,
-					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
-					file_path=output_path,
-					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
-					top_p=float( st.session_state.get( 'audio_top_percent', 0.0 ) or 0.0 ),
+				result = tts.create_speech( text=text, filepath=output_path, model=model,
+					format=str( response_format or 'audio/wav' ), speed=speed, voice=voice,
+					frequency=float(
+						st.session_state.get( 'audio_frequency_penalty', 0.0 ) or 0.0 ),
+					presense=float(
+						st.session_state.get( 'audio_presence_penalty', 0.0 ) or 0.0 ),
 					max_tokens=int( st.session_state.get( 'audio_max_tokens', 0 ) or 0 ),
-					sample_rate=int(
-						st.session_state.get( 'audio_sample_rate', 24000 ) or 24000 ), )
-			
+					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
+					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
+					top_p=float( st.session_state.get( 'audio_top_percent', 0.0 ) or 0.0 ), )
+
 			elif provider_name == 'Grok':
 				result = tts.create_speech( text=text,
 					language=str( st.session_state.get( 'audio_language', '' ) or 'auto' ),
@@ -7721,10 +7837,10 @@ elif mode == 'Audio':
 					sample_rate=int( st.session_state.get( 'audio_sample_rate', 24000 ) or 24000 ),
 					bit_rate=int( st.session_state.get( 'audio_bit_rate', 128000 ) or 128000 ),
 					filepath=output_path, )
-			
+
 			else:
 				raise ValueError( f'Unsupported Audio provider: {provider_name}' )
-			
+
 			audio_bytes = normalize_audio_bytes_result( result )
 			st.session_state[ 'audio_output_bytes' ] = audio_bytes
 			st.session_state[ 'audio_last_result' ] = { 'task': 'Text-to-Speech',
@@ -7739,7 +7855,7 @@ elif mode == 'Audio':
 			ex.method = 'run_audio_tts( text: str ) -> Optional[ bytes ]'
 			Logger( ).write( ex )
 			raise ex
-	
+
 	# ------------------------------------------------------------------
 	# Main UI
 	# ------------------------------------------------------------------
@@ -7819,13 +7935,14 @@ elif mode == 'Audio':
 				with sr_c1:
 					st.selectbox( label='Sample Rate', options=sample_rate_options,
 						key='audio_sample_rate', index=None, placeholder='Options',
-						help='Optional TTS sample rate. Zero/blank means provider default.' )
+						disabled=provider_name == 'Gemini',
+						help='Optional TTS sample rate. Gemini uses its native output rate.' )
 				
 				# ---------- Bit Rate ------------
 				with sr_c2:
 					st.selectbox( label='Bit Rate', options=bit_rate_options, key='audio_bit_rate',
-						index=None, placeholder='Options',
-						help='Optional TTS MP3 bit rate. Zero/blank means provider default.' )
+						index=None, placeholder='Options', disabled=provider_name == 'Gemini',
+						help='Optional TTS MP3 bit rate. Gemini currently returns WAV output.' )
 				
 				# ----- Reset Button -----
 				st.button( label='Reset', key='audio_task_reset', width='stretch',
@@ -8222,7 +8339,7 @@ elif mode == 'Document Q&A':
 		'docqna_model': '', 'docqna_reasoning': '', 'docqna_resolution': '',
 		'docqna_media_resolution': '', 'docqna_response_format': '', 'docqna_tool_choice': '',
 		'docqna_content': '', 'docqna_input': '', 'docqna_tools': [ ], 'docqna_modalities': [ ],
-		'docqna_context': [ ], 'docqna_include': [ ], 'docqna_domains': [ ],
+		'docqna_context': [ ], 'docqna_gemini_history': [ ], 'docqna_include': [ ], 'docqna_domains': [ ],
 		'docqna_domains_input': '', 'docqna_stops': [ ], 'docqna_stops_input': '',
 		'docqna_files': [ ], 'docqna_uploaded': None, 'docqna_messages': [ ], 'docqna_history':
 			[ ],
@@ -8242,6 +8359,9 @@ elif mode == 'Document Q&A':
 	
 	if not isinstance( st.session_state.get( 'docqna_context' ), list ):
 		st.session_state[ 'docqna_context' ] = [ ]
+
+	if not isinstance( st.session_state.get( 'docqna_gemini_history' ), list ):
+		st.session_state[ 'docqna_gemini_history' ] = [ ]
 	
 	if not isinstance( st.session_state.get( 'docqna_sources' ), list ):
 		st.session_state[ 'docqna_sources' ] = [ ]
@@ -8444,16 +8564,17 @@ elif mode == 'Document Q&A':
 		st.session_state[ 'docqna_history' ] = [ ]
 		st.session_state[ 'docqna_answer' ] = ''
 		st.session_state[ 'docqna_context' ] = [ ]
+		st.session_state[ 'docqna_gemini_history' ] = [ ]
 		st.session_state[ 'docqna_sources' ] = [ ]
 		st.session_state[ 'last_answer' ] = ''
 		st.session_state[ 'last_sources' ] = [ ]
 	
 	def run_document_query( prompt: str ) -> str:
-		"""Run Document Q&A query.
+		"""Run a document-grounded query through the active provider.
 		
 		Purpose:
-		    Builds locally grounded document input and invokes the exact text-generation contract
-		    implemented by the selected provider Chat wrapper.
+		    Builds local retrieval context, invokes the exact provider Chat contract, preserves
+		    Gemini Interactions history, and records normalized grounding sources and usage.
 		
 		Args:
 		    prompt (str): User question submitted for the active document.
@@ -8466,111 +8587,110 @@ elif mode == 'Document Q&A':
 		"""
 		try:
 			throw_if( 'prompt', prompt )
-			
 			model = str( st.session_state.get( 'docqna_model', '' ) or '' ).strip( )
 			throw_if( 'model', model )
-			
-			active_documents = st.session_state.get( 'docqna_active_docs', [ ], )
-			
+			active_documents = st.session_state.get( 'docqna_active_docs', [ ] )
 			if not active_documents:
 				raise ValueError( 'Load a document before submitting a Document Q&A question.' )
-			
 			top_k = int( st.session_state.get( 'docqna_top_k', 0 ) or 0 )
-			user_input = build_document_user_input( prompt, k=top_k or 6, )
-			
+			user_input = build_document_user_input( prompt, k=top_k or 6 )
 			if not user_input:
 				raise ValueError( 'The active document did not produce usable context.' )
-			
-			context = st.session_state.get( 'docqna_context', [ ], )
-			instructions = str( st.session_state.get( 'docqna_system_instructions', '', ) or '' )
-			temperature = float( st.session_state.get( 'docqna_temperature', 0.0, ) or 0.0 )
-			top_p = float( st.session_state.get( 'docqna_top_percent', 0.0, ) or 0.0 )
-			frequency = float( st.session_state.get( 'docqna_frequency_penalty', 0.0, ) or 0.0 )
-			presence = float( st.session_state.get( 'docqna_presence_penalty', 0.0, ) or 0.0 )
-			max_tokens = int( st.session_state.get( 'docqna_max_tokens', 0, ) or 0 )
-			stream = bool( st.session_state.get( 'docqna_stream', False, ) )
-			store = bool( st.session_state.get( 'docqna_store', False, ) )
-			reasoning = str( st.session_state.get( 'docqna_reasoning', '', ) or '' )
-			response_format = str( st.session_state.get( 'docqna_response_format', '', ) or '' )
-			tools = list( st.session_state.get( 'docqna_tools', [ ], ) or [ ] )
-			include = list( st.session_state.get( 'docqna_include', [ ], ) or [ ] )
-			tool_choice = str( st.session_state.get( 'docqna_tool_choice', '', ) or '' )
+			instructions = str( st.session_state.get( 'docqna_system_instructions', '' ) or '' )
+			temperature = float( st.session_state.get( 'docqna_temperature', 0.0 ) or 0.0 )
+			top_p = float( st.session_state.get( 'docqna_top_percent', 0.0 ) or 0.0 )
+			frequency = float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) or 0.0 )
+			presence = float( st.session_state.get( 'docqna_presence_penalty', 0.0 ) or 0.0 )
+			max_tokens = int( st.session_state.get( 'docqna_max_tokens', 0 ) or 0 )
+			stream = bool( st.session_state.get( 'docqna_stream', False ) )
+			store = bool( st.session_state.get( 'docqna_store', False ) )
+			reasoning = str( st.session_state.get( 'docqna_reasoning', '' ) or '' )
+			response_format = str( st.session_state.get( 'docqna_response_format', '' ) or '' )
+			tools = list( st.session_state.get( 'docqna_tools', [ ] ) or [ ] )
+			include = list( st.session_state.get( 'docqna_include', [ ] ) or [ ] )
+			tool_choice = str( st.session_state.get( 'docqna_tool_choice', '' ) or '' )
 			stops = parse_docqna_list( st.session_state.get( 'docqna_stops_input',
-				st.session_state.get( 'docqna_stops', [ ], ), ) )
+				st.session_state.get( 'docqna_stops', [ ] ) ) )
 			
-			if provider_name == 'GPT':
+			if provider_name == 'Gemini':
+				context = list( st.session_state.get( 'docqna_gemini_history', [ ] ) or [ ] )
+				stream_placeholder = st.empty( ) if stream else None
+				stream_chunks: List[ str ] = [ ]
+				
+				def handle_stream_delta( delta: str ) -> None:
+					"""Render one Gemini streaming text delta.
+					
+					Args:
+					    delta (str): Text fragment returned by the Interactions stream.
+					
+					Returns:
+					    None: This function updates the Streamlit placeholder.
+					"""
+					if not delta:
+						return
+					stream_chunks.append( delta )
+					if stream_placeholder is not None:
+						stream_placeholder.markdown( ''.join( stream_chunks ) )
+				
+				answer = docqna.generate_text( prompt=user_input, model=model,
+					number=max( 1, int( st.session_state.get( 'docqna_number', 1 ) or 1 ) ),
+					temperature=temperature, top_p=top_p, top_k=top_k,
+					frequency=frequency, presence=presence, max_tokens=max_tokens,
+					stops=stops, instruct=instructions, response_format=response_format,
+					tools=tools, tool_choice=tool_choice or None, reasoning=reasoning,
+					modalities=list( st.session_state.get( 'docqna_modalities', [ ] ) or [ ] ),
+					media_resolution=str(
+						st.session_state.get( 'docqna_media_resolution', '' ) or '' ),
+					context=context,
+					content=str( st.session_state.get( 'docqna_content', '' ) or '' ),
+					stream=stream, stream_handler=handle_stream_delta if stream else None )
+				get_history = getattr( docqna, 'get_structured_history', None )
+				if callable( get_history ):
+					st.session_state[ 'docqna_gemini_history' ] = get_history( ) or [ ]
+				get_sources = getattr( docqna, 'get_grounding_sources', None )
+				sources = get_sources( ) or [ ] if callable( get_sources ) else [ ]
+				st.session_state[ 'docqna_sources' ] = sources
+				st.session_state[ 'last_sources' ] = sources
+			elif provider_name == 'GPT':
+				context = list( st.session_state.get( 'docqna_context', [ ] ) or [ ] )
 				answer = docqna.generate_text( prompt=user_input, model=model,
 					temperature=temperature, format=response_format or None, top_p=top_p,
 					frequency=frequency,
-					max_tools=int( st.session_state.get( 'docqna_max_calls', 0, ) or 0 ),
+					max_tools=int( st.session_state.get( 'docqna_max_calls', 0 ) or 0 ),
 					presence=presence, max_tokens=max_tokens, store=store, stream=stream,
 					instruct=instructions,
-					background=bool( st.session_state.get( 'docqna_background', False, ) ),
+					background=bool( st.session_state.get( 'docqna_background', False ) ),
 					reasoning=reasoning, include=include, tools=tools,
 					allowed_domains=parse_docqna_list( st.session_state.get(
-						'docqna_domains_input',
-						st.session_state.get( 'docqna_domains', [ ], ), ) ),
+						'docqna_domains_input', st.session_state.get( 'docqna_domains', [ ] ) ) ),
 					tool_choice=tool_choice,
-					is_parallel=bool( st.session_state.get( 'docqna_parallel_tools', False, ) ),
-					context=context, )
-			
-			elif provider_name == 'Gemini':
-				answer = docqna.generate_text( prompt=user_input, model=model,
-					number=max( 1, int( st.session_state.get( 'docqna_number', 1, ) or 1 ), ),
-					temperature=temperature, top_p=top_p, top_k=top_k, frequency=frequency,
-					presence=presence, max_tokens=max_tokens, stops=stops, instruct=instructions,
-					response_format=response_format, tools=tools, tool_choice=tool_choice,
-					reasoning=reasoning,
-					modalities=list( st.session_state.get( 'docqna_modalities', [ ], ) or [ ] ),
-					media_resolution=str(
-						st.session_state.get( 'docqna_media_resolution', '', ) or '' ),
-					context=context,
-					content=str( st.session_state.get( 'docqna_content', '', ) or '' ),
-					stream=stream, )
-			
+					is_parallel=bool( st.session_state.get( 'docqna_parallel_tools', False ) ),
+					context=context )
 			elif provider_name == 'Grok':
+				context = list( st.session_state.get( 'docqna_context', [ ] ) or [ ] )
 				answer = docqna.generate_text( prompt=user_input, model=model,
 					temperature=temperature, format=response_format or None, top_p=top_p,
 					frequency=frequency, presence=presence, max_tokens=max_tokens, stops=stops,
 					store=store, stream=stream, instruct=instructions, reasoning=reasoning,
-					include=include, tools=tools, allowed_domains=parse_docqna_list(
-						st.session_state.get( 'docqna_domains_input',
-							st.session_state.get( 'docqna_domains', [ ], ), ) ),
+					include=include, tools=tools,
+					allowed_domains=parse_docqna_list( st.session_state.get(
+						'docqna_domains_input', st.session_state.get( 'docqna_domains', [ ] ) ) ),
 					tool_choice=tool_choice,
-					is_parallel=bool( st.session_state.get( 'docqna_parallel_tools', False, ) ),
+					is_parallel=bool( st.session_state.get( 'docqna_parallel_tools', False ) ),
 					context=context,
-					max_tools=int( st.session_state.get( 'docqna_max_calls', 0, ) or 0 ), )
-			
+					max_tools=int( st.session_state.get( 'docqna_max_calls', 0 ) or 0 ) )
 			else:
 				raise ValueError( f'Unsupported Document Q&A provider: {provider_name}' )
 			
-			if isinstance( answer, str ):
-				output_text = answer.strip( )
-			else:
-				output_text = str(
-					getattr( docqna, 'output_text', '' ) or getattr( answer, 'output_text',
-						'' ) or answer or '' ).strip( )
-			
+			output_text = answer.strip( ) if isinstance( answer, str ) else str(
+				getattr( docqna, 'output_text', '' ) or getattr( answer, 'output_text', '' )
+				or answer or '' ).strip( )
 			throw_if( 'output_text', output_text )
-			
 			st.session_state[ 'docqna_answer' ] = output_text
 			st.session_state[ 'last_answer' ] = output_text
-			
-			if provider_name == 'Gemini':
-				sources = [ ]
-				get_sources = getattr( docqna, 'get_grounding_sources', None, )
-				
-				if callable( get_sources ):
-					sources = get_sources( ) or [ ]
-				
-				st.session_state[ 'docqna_sources' ] = sources
-				st.session_state[ 'last_sources' ] = sources
-			
 			usage_response = getattr( docqna, 'response', None )
-			
 			if usage_response is not None:
 				update_token_counters( usage_response )
-			
 			return output_text
 		except Exception as e:
 			ex = Error( e )
@@ -8579,7 +8699,7 @@ elif mode == 'Document Q&A':
 			ex.method = 'run_document_query( prompt: str ) -> str'
 			Logger( ).write( ex )
 			raise ex
-	
+
 	if st.session_state.get( 'clear_instructions' ):
 		st.session_state[ 'docqna_system_instructions' ] = ''
 		st.session_state[ 'clear_docqa_instructions' ] = False
@@ -9323,9 +9443,10 @@ elif mode == 'Document Q&A':
 				
 				st.session_state[ 'docqna_messages' ].append(
 					{ 'role': 'assistant', 'content': response, } )
-				st.session_state[ 'docqna_context' ].extend(
-					[ { 'role': 'user', 'content': prompt, },
-						{ 'role': 'assistant', 'content': response, }, ] )
+				if provider_name != 'Gemini':
+					st.session_state[ 'docqna_context' ].extend(
+						[ { 'role': 'user', 'content': prompt, },
+							{ 'role': 'assistant', 'content': response, }, ] )
 				st.rerun( )
 			except Exception as exc:
 				err = Error( exc )
