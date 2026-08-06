@@ -9561,7 +9561,8 @@ elif mode == 'Embeddings':
 		if chunk_size <= 0:
 			return [ source ]
 		
-		for helper_name in [ 'chunk_text', 'chunk_by_tokens', 'split_text' ]:
+		for helper_name in [ 'chunk_text_with_overlap', 'chunk_text', 'chunk_by_tokens',
+			'split_text' ]:
 			helper = globals( ).get( helper_name )
 			if callable( helper ):
 				try:
@@ -9697,7 +9698,8 @@ elif mode == 'Embeddings':
 				title = str( st.session_state.get( 'embedding_title', '' ) or '' )
 				
 				return embedding.create( text=input_value, model=model,
-					dimensions=int( dimensions or 0 ), task_type=task_type, title=title, )
+					dimensions=int( dimensions or 0 ), task_type=task_type, title=title,
+					encoding_format='float', )
 			
 			raise ValueError( f'{provider_name} does not support embedding creation.' )
 		except Exception as e:
@@ -10016,7 +10018,7 @@ elif mode == 'Embeddings':
 					st.selectbox( label='Encoding Format', options=[ 'Provider Default' ], index=0,
 						disabled=True, key='embedding_encoding_format_display',
 						help=('Gemini returns floating-point embedding values.'), )
-					st.session_state[ 'embedding_encoding_format' ] = ''
+					st.session_state[ 'embedding_encoding_format' ] = 'float'
 				
 				st.session_state[ 'embeddings_encoding_format' ] = (
 					st.session_state.get( 'embedding_encoding_format', '', ))
@@ -10031,12 +10033,8 @@ elif mode == 'Embeddings':
 					supports_dimensions = bool( dimension_support.get( selected_model, False, ) )
 					dimension_max = int( max_dimensions.get( selected_model, 4096, ) or 4096 )
 				else:
-					supports_dimensions = (bool( selected_model ) and bool(
-						embedding.supports_dimensions( selected_model ) ))
-					dimension_options = get_embedding_options( embedding, 'dimension_options',
-						[ 0 ], )
-					dimension_max = max( [ int( item ) for item in dimension_options ] or [ 4096
-					] )
+					supports_dimensions = bool( selected_model )
+					dimension_max = 2048
 				
 				current_dimensions = int( st.session_state.get( 'embedding_dimensions', 0, ) or 0 )
 				
@@ -12628,17 +12626,9 @@ elif mode == 'File Search Stores':
 	# Mode State
 	# ------------------------------------------------------------------
 	filestore_defaults: Dict[ str, Any ] = { 'filestore_table': [ ], 'filestore_metadata': { },
-		'filestore_upload_result': { }, 'filestore_results': None, 'filestore_messages': [ ],
 		'filestore_name': '', 'filestore_manual_id': '', 'filestore_selected_id': '',
-		'filestore_selected_label': '', 'filestore_model': '', 'filestore_embedding_model': '',
-		'filestore_input': None, 'filestore_query': '', 'filestore_metadata_filter': '',
-		'filestore_custom_metadata': '', 'filestore_temperature': 0.0, 'filestore_top_percent': 0.0,
-		'filestore_max_tokens': 0, 'filestore_frequency_penalty': 0.0,
-		'filestore_presence_penalty': 0.0, 'filestore_response_format': '',
-		'filestore_tool_choice': '', 'filestore_reasoning': '', 'filestore_background': False,
-		'filestore_store': False, 'filestore_stream': False, 'filestore_force_delete': True,
-		'filestore_confirm_delete': False, 'filestore_system_instructions': '',
-		'filestore_prompt_category': None, 'filestore_prompt_id': None, }
+		'filestore_selected_label': '', 'filestore_force_delete': True,
+		'filestore_confirm_delete': False, }
 	
 	for key, default_value in filestore_defaults.items( ):
 		if key not in st.session_state:
@@ -12650,130 +12640,30 @@ elif mode == 'File Search Stores':
 	if not isinstance( st.session_state.get( 'filestore_metadata' ), dict ):
 		st.session_state[ 'filestore_metadata' ] = { }
 	
-	if not isinstance( st.session_state.get( 'filestore_upload_result' ), dict, ):
-		st.session_state[ 'filestore_upload_result' ] = { }
-	
-	if not isinstance( st.session_state.get( 'filestore_messages' ), list ):
-		st.session_state[ 'filestore_messages' ] = [ ]
+	if not isinstance( st.session_state.get( 'text_file_search_store_names' ), list ):
+		st.session_state[ 'text_file_search_store_names' ] = [ ]
 	
 	# ------------------------------------------------------------------
 	# File Search Store Utilities
 	# ------------------------------------------------------------------
-	def get_filestore_options( instance: Any, attr_name: str,
-		fallback: Optional[ List[ Any ] ] = None, ) -> List[ Any ]:
-		"""Get File Search Store options.
+	def normalize_filestore_object( value: Any ) -> Dict[ str, Any ]:
+		"""Normalize a File Search Store response.
 		
 		Purpose:
-		    Returns option values exposed by the Gemini FileSearch wrapper.
+			Converts Gemini File Search Store resources and deletion results into stable
+			dictionaries used by Boo's metadata renderer and management table.
 		
 		Args:
-		    instance (Any): Active Gemini FileSearch wrapper.
-		    attr_name (str): Wrapper property or method containing option values.
-		    fallback (Optional[List[Any]]): Values used when the wrapper exposes no options.
+			value (Any): Gemini File Search Store response.
 		
 		Returns:
-		    List[Any]: Provider-supported option values.
-		"""
-		values = getattr( instance, attr_name, None )
-		
-		if callable( values ):
-			try:
-				values = values( )
-			except Exception:
-				values = None
-		
-		if isinstance( values, tuple ):
-			values = list( values )
-		
-		if isinstance( values, list ):
-			return values
-		
-		return fallback or [ ]
-	
-	def sanitize_filestore_selection( key: str, options: List[ Any ], default: Any = '', ) -> None:
-		"""Sanitize File Search Store selection.
-		
-		Purpose:
-		    Clears a stored selection when it is unsupported by the active wrapper.
-		
-		Args:
-		    key (str): Session-state key containing the selection.
-		    options (List[Any]): Provider-supported option values.
-		    default (Any): Replacement value for an invalid selection.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		"""
-		current_value = st.session_state.get( key, default )
-		
-		if current_value in [ None, '' ]:
-			return
-		
-		if current_value not in options:
-			st.session_state[ key ] = default
-	
-	def parse_filestore_metadata( value: Any, ) -> Optional[ List[ Dict[ str, Any ] ] ]:
-		"""Parse File Search Store metadata.
-		
-		Purpose:
-		    Converts optional JSON metadata input into the list of metadata objects accepted by
-		    the Gemini File Search Store upload contract.
-		
-		Args:
-		    value (Any): Metadata JSON text or existing metadata sequence.
-		
-		Returns:
-		    Optional[List[Dict[str, Any]]]: Provider-ready metadata or None.
-		
-		Raises:
-		    ValueError: Raised when nonempty metadata is not a JSON object or array.
-		"""
-		if value is None:
-			return None
-		
-		if isinstance( value, list ):
-			return value if value else None
-		
-		if isinstance( value, dict ):
-			return [ value ]
-		
-		raw_value = str( value ).strip( )
-		
-		if not raw_value:
-			return None
-		
-		parsed_value = json.loads( raw_value )
-		
-		if isinstance( parsed_value, dict ):
-			return [ parsed_value ]
-		
-		if isinstance( parsed_value, list ):
-			for item in parsed_value:
-				if not isinstance( item, dict ):
-					raise ValueError( 'Each custom metadata entry must be a JSON object.' )
-			
-			return parsed_value
-		
-		raise ValueError( 'Custom metadata must be a JSON object or array of JSON objects.' )
-	
-	def normalize_filestore_object( value: Any, ) -> Dict[ str, Any ]:
-		"""Normalize File Search Store object.
-		
-		Purpose:
-		    Converts Gemini File Search Store, upload, operation, and deletion responses into a
-		    stable dictionary for display.
-		
-		Args:
-		    value (Any): Provider response.
-		
-		Returns:
-		    Dict[str, Any]: Normalized provider response.
+			Dict[str, Any]: Normalized provider response.
 		"""
 		if value is None:
 			return { }
 		
 		if isinstance( value, bool ):
-			return { 'success': value, }
+			return { 'success': value }
 		
 		if isinstance( value, dict ):
 			return dict( value )
@@ -12783,9 +12673,9 @@ elif mode == 'File Search Stores':
 				dumped_value = value.model_dump( )
 				
 				if isinstance( dumped_value, dict ):
-					return dumped_value
+					return normalize( dumped_value )
 				
-				return { 'result': dumped_value, }
+				return { 'result': dumped_value }
 			except Exception:
 				pass
 		
@@ -12794,35 +12684,32 @@ elif mode == 'File Search Stores':
 				dumped_value = value.dict( )
 				
 				if isinstance( dumped_value, dict ):
-					return dumped_value
+					return normalize( dumped_value )
 				
-				return { 'result': dumped_value, }
+				return { 'result': dumped_value }
 			except Exception:
 				pass
 		
 		result: Dict[ str, Any ] = { }
 		
 		for attr_name in [ 'name', 'display_name', 'id', 'state', 'status', 'create_time',
-			'update_time', 'operation', 'metadata', 'done', 'error', 'response', ]:
+			'update_time' ]:
 			if hasattr( value, attr_name ):
-				result[ attr_name ] = getattr( value, attr_name, )
+				result[ attr_name ] = getattr( value, attr_name )
 		
 		if result:
 			return normalize( result )
 		
-		return { 'result': str( value ), }
+		return { 'result': str( value ) }
 	
-	def get_filestore_items( result: Any, ) -> List[ Any ]:
-		"""Get File Search Store items.
-		
-		Purpose:
-		    Extracts store records from Gemini list responses and iterators.
+	def get_filestore_items( result: Any ) -> List[ Any ]:
+		"""Extract File Search Store resources from a list result.
 		
 		Args:
-		    result (Any): Gemini File Search Store list result.
+			result (Any): Gemini File Search Store list response or iterator.
 		
 		Returns:
-		    List[Any]: Store resource objects.
+			List[Any]: File Search Store resource objects.
 		"""
 		if result is None:
 			return [ ]
@@ -12834,13 +12721,13 @@ elif mode == 'File Search Stores':
 			return list( result )
 		
 		if isinstance( result, dict ):
-			for key in [ 'file_search_stores', 'stores', 'data', 'items', ]:
+			for key in [ 'file_search_stores', 'stores', 'data', 'items' ]:
 				items = result.get( key )
 				
 				if isinstance( items, list ):
 					return items
 		
-		for attr_name in [ 'file_search_stores', 'stores', 'data', 'items', ]:
+		for attr_name in [ 'file_search_stores', 'stores', 'data', 'items' ]:
 			items = getattr( result, attr_name, None )
 			
 			if items is not None:
@@ -12854,356 +12741,159 @@ elif mode == 'File Search Stores':
 		except Exception:
 			return [ result ]
 	
-	def normalize_filestore_rows( result: Any, ) -> List[ Dict[ str, Any ] ]:
-		"""Normalize File Search Store rows.
-		
-		Purpose:
-		    Converts Gemini File Search Store resources into rows used by the management table
-		    and selector.
+	def normalize_filestore_rows( result: Any ) -> List[ Dict[ str, Any ] ]:
+		"""Normalize File Search Store resources for display.
 		
 		Args:
-		    result (Any): Gemini list response.
+			result (Any): Gemini File Search Store list response.
 		
 		Returns:
-		    List[Dict[str, Any]]: Normalized store rows.
+			List[Dict[str, Any]]: Normalized store rows.
 		"""
 		rows: List[ Dict[ str, Any ] ] = [ ]
 		
 		for item in get_filestore_items( result ):
 			metadata = normalize_filestore_object( item )
-			store_id = str( metadata.get( 'name' ) or metadata.get( 'id' ) or '' )
-			display_name = str(
-				metadata.get( 'display_name' ) or metadata.get( 'displayName' ) or store_id or '' )
-			state = str( metadata.get( 'state' ) or metadata.get( 'status' ) or '' )
-			create_time = str( metadata.get( 'create_time' ) or metadata.get( 'createTime' ) or
-			                   '' )
-			update_time = str( metadata.get( 'update_time' ) or metadata.get( 'updateTime' ) or
-			                   '' )
+			store_id = str( metadata.get( 'name' ) or metadata.get( 'id' ) or '' ).strip( )
+			display_name = str( metadata.get( 'display_name' ) or
+				metadata.get( 'displayName' ) or store_id ).strip( )
+			state = str( metadata.get( 'state' ) or metadata.get( 'status' ) or '' ).strip( )
+			create_time = str( metadata.get( 'create_time' ) or
+				metadata.get( 'createTime' ) or '' ).strip( )
+			update_time = str( metadata.get( 'update_time' ) or
+				metadata.get( 'updateTime' ) or '' ).strip( )
 			
 			if store_id:
-				rows.append(
-					{ 'id': store_id, 'name': display_name, 'state': state, 'created': create_time,
-						'updated': update_time, } )
+				rows.append( {
+					'id': store_id,
+					'name': display_name,
+					'state': state,
+					'created': create_time,
+					'updated': update_time,
+				} )
 		
 		return rows
 	
-	def get_selected_filestore_id( ) -> str:
-		"""Get selected File Search Store identifier.
+	def synchronize_text_filestores( rows: List[ Dict[ str, Any ] ] ) -> None:
+		"""Synchronize File Search Stores with Text Mode.
 		
 		Purpose:
-		    Returns the manually entered store resource name or the current table selection.
+			Publishes the currently listed Gemini File Search Store resource names to the Text
+			Mode state consumed by the ``file_search`` tool.
+		
+		Args:
+			rows (List[Dict[str, Any]]): Normalized File Search Store rows.
 		
 		Returns:
-		    str: Active Gemini File Search Store resource name.
+			None: This function updates Streamlit session state.
 		"""
-		manual_id = str( st.session_state.get( 'filestore_manual_id', '', ) or '' ).strip( )
+		store_names = [ str( row.get( 'id', '' ) or '' ).strip( ) for row in rows if
+			isinstance( row, dict ) and str( row.get( 'id', '' ) or '' ).strip( ) ]
+		st.session_state[ 'text_file_search_store_names' ] = store_names
+	
+	def get_selected_filestore_id( ) -> str:
+		"""Return the active File Search Store resource name.
+		
+		Returns:
+			str: Manually entered resource name or selected listed resource name.
+		"""
+		manual_id = str( st.session_state.get( 'filestore_manual_id', '' ) or '' ).strip( )
 		
 		if manual_id:
 			return manual_id
 		
-		return str( st.session_state.get( 'filestore_selected_id', '', ) or '' ).strip( )
-	
-	def clear_filestore_outputs( ) -> None:
-		"""Clear File Search Store outputs.
-		
-		Purpose:
-		    Removes File Search Store operation results without changing store selections,
-		    request settings, uploaded-file controls, queries, or system instructions.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		"""
-		st.session_state[ 'filestore_results' ] = None
-		st.session_state[ 'filestore_metadata' ] = { }
-		st.session_state[ 'filestore_upload_result' ] = { }
-	
-	def clear_filestore_instructions( ) -> None:
-		"""Clear File Search Stores instructions.
-		
-		Purpose:
-		    Clears File Search Stores system instructions and the selected prompt template.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		"""
-		st.session_state[ 'filestore_system_instructions' ] = ''
-		st.session_state[ 'filestore_prompt_id' ] = None
-	
-	def convert_filestore_system_instructions( ) -> None:
-		"""Convert File Search Stores system instructions.
-		
-		Purpose:
-		    Converts File Search Stores instructions between XML blocks and Markdown headings.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		"""
-		text_value = str(
-			st.session_state.get( 'filestore_system_instructions', '', ) or '' ).strip( )
-		
-		if not text_value:
-			return
-		
-		if cfg.XML_BLOCK_PATTERN.search( text_value ):
-			st.session_state[ 'filestore_system_instructions' ] = convert_xml( text_value )
-		else:
-			st.session_state[ 'filestore_system_instructions' ] = convert_markdown( text_value )
-	
-	def load_filestore_instruction_template( ) -> None:
-		"""Load File Search Stores instruction template.
-		
-		Purpose:
-		    Loads the selected File Search Stores prompt template into the system-instruction
-		    field.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		
-		Raises:
-		    Error: Re-raised after the exception is logged.
-		"""
-		try:
-			load_prompt_template( prompt_id_key='filestore_prompt_id',
-				instructions_key='filestore_system_instructions', )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'app'
-			ex.cause = 'File Search Stores'
-			ex.method = ('load_filestore_instruction_template( self ) -> None')
-			Logger( ).write( ex )
-			raise ex
+		return str( st.session_state.get( 'filestore_selected_id', '' ) or '' ).strip( )
 	
 	def reset_filestore_management_settings( ) -> None:
-		"""Reset File Search Store management settings.
-		
-		Purpose:
-		    Returns store-management controls to their initial values without modifying provider
-		    resources or request output.
+		"""Reset File Search Store management controls.
 		
 		Returns:
-		    None: This function updates Streamlit session state.
+			None: This function updates Streamlit session state.
 		"""
-		for key in [ 'filestore_name', 'filestore_embedding_model', 'filestore_selected_id',
-			'filestore_selected_label', 'filestore_manual_id', 'filestore_force_delete',
-			'filestore_confirm_delete', ]:
-			if key in st.session_state:
-				del st.session_state[ key ]
-	
-	def reset_filestore_request_settings( ) -> None:
-		"""Reset File Search Store request settings.
-		
-		Purpose:
-		    Returns supported Gemini File Search query settings to their initial values without
-		    clearing stores, uploads, queries, results, or instructions.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		"""
-		for key in [ 'filestore_model', 'filestore_temperature', 'filestore_top_percent',
-			'filestore_max_tokens', 'filestore_frequency_penalty', 'filestore_presence_penalty',
-			'filestore_response_format', 'filestore_metadata_filter', 'filestore_tool_choice',
-			'filestore_reasoning', 'filestore_store', 'filestore_stream',
-			'filestore_background', ]:
+		for key in [ 'filestore_name', 'filestore_selected_id', 'filestore_selected_label',
+			'filestore_manual_id', 'filestore_force_delete', 'filestore_confirm_delete' ]:
 			if key in st.session_state:
 				del st.session_state[ key ]
 	
 	def refresh_filestore_table( ) -> List[ Dict[ str, Any ] ]:
-		"""Refresh File Search Store table.
-		
-		Purpose:
-		    Lists Gemini File Search Stores and stores normalized table rows and display-name
-		    mappings.
+		"""List and cache Gemini File Search Stores.
 		
 		Returns:
-		    List[Dict[str, Any]]: Normalized File Search Store rows.
+			List[Dict[str, Any]]: Normalized File Search Store rows.
 		"""
 		result = searcher.list( )
 		rows = normalize_filestore_rows( result )
 		st.session_state[ 'filestore_table' ] = rows
-		
-		collections = getattr( searcher, 'collections', { }, )
-		
-		if isinstance( collections, dict ):
-			st.session_state[ 'text_file_search_store_names' ] = list( collections.values( ) )
-		
+		synchronize_text_filestores( rows )
 		return rows
 	
 	def create_filestore( ) -> Dict[ str, Any ]:
-		"""Create File Search Store.
-		
-		Purpose:
-		    Creates a Gemini File Search Store using the exact wrapper contract.
+		"""Create a Gemini File Search Store.
 		
 		Returns:
-		    Dict[str, Any]: Normalized created-store metadata.
+			Dict[str, Any]: Normalized created-store metadata.
 		"""
-		name = str( st.session_state.get( 'filestore_name', '', ) or '' ).strip( )
-		embedding_model = str(
-			st.session_state.get( 'filestore_embedding_model', '', ) or '' ).strip( )
-		
+		name = str( st.session_state.get( 'filestore_name', '' ) or '' ).strip( )
 		throw_if( 'name', name )
-		throw_if( 'embedding_model', embedding_model )
-		
-		result = searcher.create( name=name, embedding_model=embedding_model, )
+		result = searcher.create( name=name )
 		metadata = normalize_filestore_object( result )
-		store_id = str(
-			metadata.get( 'name' ) or metadata.get( 'id' ) or getattr( searcher, 'store_id',
-				'' ) or '' )
-		
+		store_id = str( metadata.get( 'name' ) or metadata.get( 'id' ) or
+			getattr( searcher, 'store_id', '' ) or '' ).strip( )
 		st.session_state[ 'filestore_metadata' ] = metadata
 		st.session_state[ 'filestore_manual_id' ] = store_id
 		st.session_state[ 'filestore_selected_id' ] = store_id
 		st.session_state[ 'filestore_selected_label' ] = store_id
-		
+		refresh_filestore_table( )
 		return metadata
 	
-	def retrieve_filestore( store_id: str, ) -> Dict[ str, Any ]:
-		"""Retrieve File Search Store.
-		
-		Purpose:
-		    Retrieves Gemini File Search Store metadata using the exact wrapper contract.
+	def retrieve_filestore( store_id: str ) -> Dict[ str, Any ]:
+		"""Retrieve Gemini File Search Store metadata.
 		
 		Args:
-		    store_id (str): Required Gemini File Search Store resource name.
+			store_id (str): Gemini File Search Store resource name.
 		
 		Returns:
-		    Dict[str, Any]: Normalized store metadata.
+			Dict[str, Any]: Normalized store metadata.
 		"""
 		throw_if( 'store_id', store_id )
-		result = searcher.retrieve( store_id=store_id, )
+		result = searcher.retrieve( store_id=store_id )
 		metadata = normalize_filestore_object( result )
 		st.session_state[ 'filestore_metadata' ] = metadata
 		return metadata
 	
-	def delete_filestore( store_id: str, ) -> Dict[ str, Any ]:
-		"""Delete File Search Store.
-		
-		Purpose:
-		    Deletes a Gemini File Search Store using the exact wrapper contract and explicit
-		    force-selection state.
+	def delete_filestore( store_id: str ) -> Dict[ str, Any ]:
+		"""Delete a Gemini File Search Store.
 		
 		Args:
-		    store_id (str): Required Gemini File Search Store resource name.
+			store_id (str): Gemini File Search Store resource name.
 		
 		Returns:
-		    Dict[str, Any]: Normalized deletion result.
+			Dict[str, Any]: Normalized deletion result.
 		"""
 		throw_if( 'store_id', store_id )
 		result = searcher.delete( store_id=store_id,
-			force=bool( st.session_state.get( 'filestore_force_delete', True, ) ), )
+			force=bool( st.session_state.get( 'filestore_force_delete', True ) ) )
 		metadata = normalize_filestore_object( result )
 		st.session_state[ 'filestore_metadata' ] = metadata
-		st.session_state[ 'filestore_table' ] = [ row for row in
-			st.session_state.get( 'filestore_table', [ ], ) if
-			isinstance( row, dict ) and row.get( 'id' ) != store_id ]
 		st.session_state[ 'filestore_selected_id' ] = ''
 		st.session_state[ 'filestore_selected_label' ] = ''
 		st.session_state[ 'filestore_manual_id' ] = ''
+		st.session_state[ 'filestore_confirm_delete' ] = False
+		refresh_filestore_table( )
 		return metadata
-	
-	def upload_filestore_file( uploaded_file: Any, store_id: str, ) -> Dict[ str, Any ]:
-		"""Upload File Search Store file.
-		
-		Purpose:
-		    Stages and uploads a file through the exact Gemini File Search Store upload contract.
-		
-		Args:
-		    uploaded_file (Any): Streamlit uploaded-file object.
-		    store_id (str): Required Gemini File Search Store resource name.
-		
-		Returns:
-		    Dict[str, Any]: Normalized upload or import-operation result.
-		"""
-		throw_if( 'uploaded_file', uploaded_file )
-		throw_if( 'store_id', store_id )
-		
-		file_path = save_uploaded_storage_file( uploaded_file )
-		throw_if( 'file_path', file_path )
-		
-		result = searcher.upload_file( path=file_path, store_id=store_id, display_name=str(
-			getattr( uploaded_file, 'name', Path( file_path ).name, ) or Path( file_path ).name ),
-			mime_type=str( getattr( uploaded_file, 'type', '', ) or '' ),
-			custom_metadata=parse_filestore_metadata(
-				st.session_state.get( 'filestore_custom_metadata', '', ) ), )
-		metadata = normalize_filestore_object( result )
-		st.session_state[ 'filestore_upload_result' ] = metadata
-		return metadata
-	
-	def search_filestore( store_id: str, query: str, ) -> str:
-		"""Search File Search Store.
-		
-		Purpose:
-		    Executes a grounded Gemini File Search Store query using only parameters implemented
-		    by the uploaded wrapper.
-		
-		Args:
-		    store_id (str): Required Gemini File Search Store resource name.
-		    query (str): Required grounded query.
-		
-		Returns:
-		    str: Gemini grounded response text.
-		"""
-		throw_if( 'store_id', store_id )
-		throw_if( 'query', query )
-		
-		model = str( st.session_state.get( 'filestore_model', '', ) or '' ).strip( )
-		throw_if( 'model', model )
-		
-		result = searcher.search( store_id=store_id, query=query, model=model,
-			temperature=float( st.session_state.get( 'filestore_temperature', 0.0, ) or 0.0 ),
-			top_p=float( st.session_state.get( 'filestore_top_percent', 0.0, ) or 0.0 ),
-			frequency=float( st.session_state.get( 'filestore_frequency_penalty', 0.0, ) or 0.0 ),
-			presence=float( st.session_state.get( 'filestore_presence_penalty', 0.0, ) or 0.0 ),
-			max_tokens=int( st.session_state.get( 'filestore_max_tokens', 0, ) or 0 ),
-			response_format=str( st.session_state.get( 'filestore_response_format', '', ) or '' ),
-			instruct=str( st.session_state.get( 'filestore_system_instructions', '', ) or '' ),
-			metadata_filter=str( st.session_state.get( 'filestore_metadata_filter', '', ) or ''
-			), )
-		
-		if isinstance( result, str ):
-			return result.strip( )
-		
-		return str( getattr( searcher, 'output_text', '', ) or getattr( result, 'text',
-			'', ) or result or '' ).strip( )
-	
-	# ------------------------------------------------------------------
-	# Provider Options
-	# ------------------------------------------------------------------
-	model_options = [ str( option ) for option in
-		get_filestore_options( searcher, 'model_options', [ ], ) if str( option ).strip( ) ]
-	embedding_model_options = [ str( option ) for option in
-		get_filestore_options( searcher, 'embedding_model_options',
-			[ 'models/gemini-embedding-001' ], ) if str( option ).strip( ) ]
-	format_options = [ str( option ) for option in
-		get_filestore_options( searcher, 'format_options', [ ], ) if str( option ).strip( ) ]
-	choice_options = [ str( option ) for option in
-		get_filestore_options( searcher, 'choice_options', [ ], ) if str( option ).strip( ) ]
-	reasoning_options = [ str( option ) for option in
-		get_filestore_options( searcher, 'reasoning_options', [ ], ) if str( option ).strip( ) ]
-	
-	sanitize_filestore_selection( 'filestore_model', model_options, )
-	sanitize_filestore_selection( 'filestore_embedding_model', embedding_model_options, )
-	sanitize_filestore_selection( 'filestore_response_format', format_options, )
-	
-	# The FileSearch.search wrapper does not accept tool-choice or reasoning arguments.
-	st.session_state[ 'filestore_tool_choice' ] = ''
-	st.session_state[ 'filestore_reasoning' ] = ''
-	st.session_state[ 'filestore_store' ] = False
-	st.session_state[ 'filestore_stream' ] = False
-	st.session_state[ 'filestore_background' ] = False
 	
 	# ------------------------------------------------------------------
 	# Store Selection
 	# ------------------------------------------------------------------
-	store_options = [ str( row.get( 'id', '' ) ) for row in
-		st.session_state.get( 'filestore_table', [ ], ) if
-		isinstance( row, dict ) and row.get( 'id' ) ]
+	store_options = [ str( row.get( 'id', '' ) or '' ).strip( ) for row in
+		st.session_state.get( 'filestore_table', [ ] ) if isinstance( row, dict ) and
+		str( row.get( 'id', '' ) or '' ).strip( ) ]
 	
-	if (st.session_state.get( 'filestore_selected_id' ) not in store_options):
+	if st.session_state.get( 'filestore_selected_id' ) not in store_options:
 		st.session_state[ 'filestore_selected_id' ] = ''
 	
 	st.session_state[ 'filestore_selected_label' ] = str(
-		st.session_state.get( 'filestore_selected_id', '', ) or '' )
+		st.session_state.get( 'filestore_selected_id', '' ) or '' )
 	
 	# ------------------------------------------------------------------
 	# Main UI
@@ -13212,57 +12902,50 @@ elif mode == 'File Search Stores':
 	
 	with center:
 		st.subheader( '🗂️ File Search Stores', help=getattr( cfg, 'FILE_SEARCH_STORES_API',
-			'Gemini File Search Store management and grounded querying.', ), )
+			'Gemini File Search Store management.' ) )
 		st.divider( )
 		
 		# ------------------------------------------------------------------
 		# Expander — Mind Controls
 		# ------------------------------------------------------------------
-		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch', ):
+		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
 			# ------------------------------------------------------------------
 			# Expander — Store Management
 			# ------------------------------------------------------------------
 			with st.expander( label='Store Management', icon='🏛️', expanded=False,
-					width='stretch', ):
-				management_c1, management_c2, management_c3, management_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+					width='stretch' ):
+				management_c1, management_c2, management_c3 = st.columns(
+					[ 0.34, 0.33, 0.33 ], border=True, gap='xxsmall' )
 				
 				# ----- Store Name -----
 				with management_c1:
 					st.text_input( label='Store Name', key='filestore_name',
-						help='Required display name used when creating a Gemini File Search '
-						     'Store.',
-						width='stretch', )
-				
-				# ----- Embedding Model -----
-				with management_c2:
-					st.selectbox( label='Embedding Model', options=embedding_model_options,
-						index=None, key='filestore_embedding_model', placeholder='Options',
-						help='Required embedding model used when creating the store.', )
+						help='Required display name used when creating a Gemini File Search Store.',
+						width='stretch' )
 				
 				# ----- Selected Store -----
-				with management_c3:
+				with management_c2:
 					st.selectbox( label='Selected Store', options=store_options, index=None,
 						key='filestore_selected_id', placeholder='Options',
-						help='File Search Store selected from the latest store list.', )
+						help='File Search Store selected from the latest store list.' )
 				
 				# ----- Manual Store ID -----
-				with management_c4:
+				with management_c3:
 					st.text_input( label='Manual Store ID', key='filestore_manual_id',
-						help='Optional Gemini File Search Store resource name.', width='stretch', )
+						help='Optional Gemini File Search Store resource name.', width='stretch' )
 				
-				management_c5, management_c6 = st.columns( [ 0.50, 0.50 ], border=True,
-					gap='xxsmall', )
+				management_c4, management_c5 = st.columns( [ 0.50, 0.50 ], border=True,
+					gap='xxsmall' )
 				
 				# ----- Force Delete -----
-				with management_c5:
+				with management_c4:
 					st.toggle( label='Force Delete', key='filestore_force_delete', help=(
-						'Deletes indexed documents with the File Search Store when enabled.'), )
+						'Deletes indexed documents with the File Search Store when enabled.') )
 				
 				# ----- Confirm Delete -----
-				with management_c6:
+				with management_c5:
 					st.toggle( label='Confirm Delete', key='filestore_confirm_delete',
-						help='Required before deleting the selected File Search Store.', )
+						help='Required before deleting the selected File Search Store.' )
 				
 				action_c1, action_c2, action_c3, action_c4 = st.columns(
 					[ 0.25, 0.25, 0.25, 0.25 ] )
@@ -13270,11 +12953,14 @@ elif mode == 'File Search Stores':
 				# ----- Create Store -----
 				with action_c1:
 					if st.button( label='Create Store', key='filestore_create', icon='➕',
-							width='stretch', ):
+							width='stretch' ):
 						with st.spinner( 'Creating File Search Store…' ):
 							try:
 								metadata = create_filestore( )
-								st.success( f"Created store: ")
+								created_name = str( metadata.get( 'display_name' ) or
+									metadata.get( 'displayName' ) or metadata.get( 'name' ) or
+									st.session_state.get( 'filestore_name', '' ) )
+								st.success( f'Created store: {created_name}' )
 							except Exception as exc:
 								err = Error( exc )
 								st.error( f'Create store failed: {err.info}' )
@@ -13282,7 +12968,7 @@ elif mode == 'File Search Stores':
 				# ----- List Stores -----
 				with action_c2:
 					if st.button( label='List Stores', key='filestore_list', icon='🔠',
-							width='stretch', ):
+							width='stretch' ):
 						with st.spinner( 'Listing File Search Stores…' ):
 							try:
 								rows = refresh_filestore_table( )
@@ -13294,7 +12980,7 @@ elif mode == 'File Search Stores':
 				# ----- Retrieve Store -----
 				with action_c3:
 					if st.button( label='Retrieve Store', key='filestore_retrieve', icon='🐕',
-							width='stretch', ):
+							width='stretch' ):
 						with st.spinner( 'Retrieving File Search Store…' ):
 							try:
 								store_id = get_selected_filestore_id( )
@@ -13311,15 +12997,14 @@ elif mode == 'File Search Stores':
 				# ----- Delete Store -----
 				with action_c4:
 					if st.button( label='Delete Store', key='filestore_delete', icon='❌',
-							width='stretch', ):
+							width='stretch' ):
 						with st.spinner( 'Deleting File Search Store…' ):
 							try:
 								store_id = get_selected_filestore_id( )
 								
 								if not store_id:
 									st.warning( 'Select or enter a store ID before deleting.' )
-								elif not st.session_state.get( 'filestore_confirm_delete',
-										False, ):
+								elif not st.session_state.get( 'filestore_confirm_delete', False ):
 									st.warning( 'Confirm store deletion before continuing.' )
 								else:
 									delete_filestore( store_id )
@@ -13330,1258 +13015,422 @@ elif mode == 'File Search Stores':
 				
 				# ----- Reset Button -----
 				st.button( label='Reset', key='filestore_management_reset', width='stretch',
-					icon='🔄', on_click=reset_filestore_management_settings, )
+					icon='🔄', on_click=reset_filestore_management_settings )
 				
 				if st.session_state.get( 'filestore_table' ):
-					st.data_editor( pd.DataFrame( st.session_state.get( 'filestore_table', [ ],
-					) ),
+					st.data_editor( pd.DataFrame( st.session_state.get( 'filestore_table', [ ] ) ),
 						use_container_width=True, hide_index=True, disabled=True,
-						key='filestore_table_view', )
+						key='filestore_table_view' )
 				else:
 					st.info( 'No File Search Store records loaded yet.' )
 				
 				if st.session_state.get( 'filestore_metadata' ):
 					with st.expander( label='Store Metadata', icon='📋', expanded=False,
-							width='stretch', ):
+							width='stretch' ):
 						render_storage_metadata( st.session_state[ 'filestore_metadata' ] )
-			
-			# ------------------------------------------------------------------
-			# Expander — Request Settings
-			# ------------------------------------------------------------------
-			with st.expander( label='Request Settings', icon='⚙️', expanded=False,
-					width='stretch', ):
-				request_c1, request_c2, request_c3 = st.columns( [ 0.34, 0.33, 0.33 ], border=True,
-					gap='xxsmall', )
-				
-				# ----- Model -----
-				with request_c1:
-					st.selectbox( label='Model', options=model_options, index=None,
-						key='filestore_model', placeholder='Options',
-						help='Required Gemini model used for grounded File Search queries.', )
-				
-				# ----- Max Tokens -----
-				with request_c2:
-					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
-						key='filestore_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, )
-				
-				# ----- Response Format -----
-				with request_c3:
-					st.selectbox( label='Response Format', options=format_options, index=None,
-						key='filestore_response_format', placeholder='Options',
-						help='Optional Gemini response MIME type.', )
-				
-				request_c4, request_c5, request_c6, request_c7 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
-				
-				# ----- Temperature -----
-				with request_c4:
-					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
-						key='filestore_temperature', help=cfg.TEMPERATURE, )
-				
-				# ----- Top-P -----
-				with request_c5:
-					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
-						key='filestore_top_percent', help=cfg.TOP_P, )
-				
-				# ----- Frequency Penalty -----
-				with request_c6:
-					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						key='filestore_frequency_penalty', help=cfg.FREQUENCY_PENALTY, )
-				
-				# ----- Presence Penalty -----
-				with request_c7:
-					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						key='filestore_presence_penalty', help=cfg.PRESENCE_PENALTY, )
-				
-				request_c8, request_c9, request_c10 = st.columns( [ 0.34, 0.33, 0.33 ],
-					border=True,
-					gap='xxsmall', )
-				
-				# ----- Tool Choice -----
-				with request_c8:
-					st.selectbox( label='Tool Choice', options=choice_options, index=None,
-						key='filestore_tool_choice', placeholder='Options',
-						help=('The FileSearch.search wrapper does not accept a '
-						      'tool-choice argument.'), disabled=True, )
-				
-				# ----- Reasoning -----
-				with request_c9:
-					st.selectbox( label='Reasoning', options=reasoning_options, index=None,
-						key='filestore_reasoning', placeholder='Options',
-						help=('The FileSearch.search wrapper does not accept a '
-						      'reasoning argument.'), disabled=True, )
-				
-				# ----- Metadata Filter -----
-				with request_c10:
-					st.text_input( label='Metadata Filter', key='filestore_metadata_filter',
-						help=('Optional Gemini File Search metadata-filter expression.'),
-						width='stretch', )
-				
-				request_c11, request_c12, request_c13 = st.columns( [ 0.34, 0.33, 0.33 ],
-					border=True, gap='xxsmall', )
-				
-				# ----- Store -----
-				with request_c11:
-					st.toggle( label='Store', key='filestore_store',
-						help=('The FileSearch.search wrapper does not expose response storage.'),
-						disabled=True, )
-				
-				# ----- Stream -----
-				with request_c12:
-					st.toggle( label='Stream', key='filestore_stream',
-						help=('The FileSearch.search wrapper does not expose streaming.'),
-						disabled=True, )
-				
-				# ----- Background -----
-				with request_c13:
-					st.toggle( label='Background', key='filestore_background', help=(
-						'The FileSearch.search wrapper does not expose background execution.'),
-						disabled=True, )
-				
-				# ----- Reset Button -----
-				st.button( label='Reset', key='filestore_request_settings_reset', width='stretch',
-					icon='🔄', on_click=reset_filestore_request_settings, )
 		
-		# ------------------------------------------------------------------
-		# Expander — File Uploader
-		# ------------------------------------------------------------------
-		with st.expander( label='File Uploader', icon='📤', expanded=False, width='stretch', ):
-			upload_c1, upload_c2 = st.columns( [ 0.60, 0.40 ], border=True, gap='xxsmall', )
-			
-			# ----- File Upload -----
-			with upload_c1:
-				uploaded_file = st.file_uploader( label='Upload File to File Search Store',
-					key='filestore_input',
-					help='Upload a file to the selected Gemini File Search Store.', )
-			
-			# ----- Custom Metadata -----
-			with upload_c2:
-				st.text_area( label='Custom Metadata JSON', key='filestore_custom_metadata',
-					height=100, width='stretch',
-					help=('Optional JSON object or array accepted by the Gemini '
-					      'File Search Store import configuration.'), )
-			
-			selected_store_id = get_selected_filestore_id( )
-			
-			if st.button( label='Upload to Store', key='filestore_upload', icon='⬆️',
-					width='stretch',
-					disabled=(uploaded_file is None or not bool( selected_store_id )), ):
-				with st.spinner( 'Uploading file to the File Search Store…' ):
-					try:
-						upload_filestore_file( uploaded_file, selected_store_id, )
-						st.success( 'File uploaded and imported into the File Search Store.' )
-					except Exception as exc:
-						err = Error( exc )
-						st.error( f'Upload failed: {err.info}' )
-			
-			if st.session_state.get( 'filestore_upload_result' ):
-				with st.expander( label='Upload Result', icon='📄', expanded=False,
-						width='stretch', ):
-					render_storage_metadata( st.session_state[ 'filestore_upload_result' ] )
-		
-		# ------------------------------------------------------------------
-		# Expander — System Instructions
-		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
-				width='stretch', ):
-			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
-			
-			filestore_prompt_categories = fetch_prompt_categories( 'File Search Stores' )
-			current_filestore_category = st.session_state.get( 'filestore_prompt_category' )
-			
-			if (current_filestore_category not in filestore_prompt_categories):
-				st.session_state[ 'filestore_prompt_category' ] = None
-			
-			selected_filestore_category = st.session_state.get( 'filestore_prompt_category' )
-			filestore_prompt_options = (fetch_prompt_options(
-				selected_filestore_category ) if selected_filestore_category else [ ])
-			filestore_prompt_ids = [ int( option[ 'ID' ] ) for option in filestore_prompt_options ]
-			
-			if (st.session_state.get( 'filestore_prompt_id' ) not in filestore_prompt_ids):
-				st.session_state[ 'filestore_prompt_id' ] = None
-			
-			# ----- Instruction Text -----
-			with in_left:
-				st.text_area( label='Enter Text', height=140, width='stretch',
-					key='filestore_system_instructions',
-					help=getattr( cfg, 'SYSTEM_INSTRUCTIONS', '', ), )
-			
-			# ----- Template Selection -----
-			with in_right:
-				st.selectbox( label='Category', options=filestore_prompt_categories, index=None,
-					key='filestore_prompt_category', placeholder='Select Category',
-					help=('Limits prompt templates to categories associated '
-					      'with file-search, retrieval, and corpus-management workflows.'),
-					on_change=reset_prompt_template_selection, args=('filestore_prompt_id',), )
-				
-				st.selectbox( label='Use Template', options=filestore_prompt_ids, index=None,
-					key='filestore_prompt_id', placeholder='Select Template',
-					disabled=not filestore_prompt_ids,
-					format_func=lambda prompt_id: format_prompt_option( prompt_id,
-						filestore_prompt_options, ),
-					help=('Loads the selected prompt into the File Search Stores '
-					      'system-instruction field.'),
-					on_change=load_filestore_instruction_template, )
-			
-			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
-			
-			# ----- Clear Instructions -----
-			with btn_c1:
-				st.button( label='Clear Instructions', key='clear_filestore_instructions',
-					width='stretch', on_click=clear_filestore_instructions, icon='🧹', )
-			
-			# ----- Convert Instructions -----
-			with btn_c2:
-				st.button( label='XML ↔️ Markdown', key='convert_filestore_instructions',
-					width='stretch', on_click=convert_filestore_system_instructions, )
-		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True, )
-		
-		# ------------------------------------------------------------------
-		# Expander — Vector Store Query
-		# ------------------------------------------------------------------
-		st.text_area( label='Query', key='filestore_query', height=120,
-			help='Search the selected Gemini File Search Store.', )
-		
-		query_c1, query_c2 = st.columns( 2 )
-		
-		# ------ Search -----
-		with query_c1:
-			if st.button( label='Search Store', key='filestore_search', icon='🔍', width='stretch',
-					disabled=(not bool( selected_store_id ) or not bool(
-						str( st.session_state.get( 'filestore_query', '', ) or '' ).strip( ) )), ):
-				with st.spinner( 'Searching File Search Store…' ):
-					try:
-						query_text = str(
-							st.session_state.get( 'filestore_query', '', ) or '' ).strip( )
-						
-						result = search_filestore( selected_store_id, query_text, )
-						st.session_state[ 'filestore_results' ] = result
-						st.success( 'File Search Store query completed.' )
-					except Exception as exc:
-						err = Error( exc )
-						st.error( f'Search failed: {err.info}' )
-		
-		# ----- Clear Outputs -----
-		with query_c2:
-			st.button( label='Clear Outputs', key='filestore_clear_outputs', icon='🧹',
-				width='stretch', on_click=clear_filestore_outputs, )
-		
-		# ------------------------------------------------------------------
-		# Expander — Search Results
-		# ------------------------------------------------------------------
-		if st.session_state.get( 'filestore_results' ) is not None:
-			with st.expander( label='Search Results', icon='🔎', expanded=True, width='stretch', ):
-				result = st.session_state[ 'filestore_results' ]
-				
-				if isinstance( result, str ):
-					st.markdown( result )
-				else:
-					st.json( normalize( result ) )
+		st.info( 'Use Text Mode with the Gemini file_search tool to query the stores listed here.' )
 
 # ======================================================================================
 # GOOGLE CLOUD BUCKETS MODE
 # ======================================================================================
 elif mode == 'Google Cloud Buckets':
-	provider_name = st.session_state.get( 'provider', 'GPT' )
-	
-	# ------------------------------------------------------------------
-	# Provider Capability Validation
-	# ------------------------------------------------------------------
+	# ======================================================================================
+	# GOOGLE CLOUD BUCKETS MODE
+	# ======================================================================================
+	provider_name = str( st.session_state.get( 'provider', '' ) or '' ).strip( )
+
 	if provider_name != 'Gemini':
-		st.warning( 'Google Cloud Buckets are available for Gemini / Google Cloud only.' )
+		st.error( 'Google Cloud Buckets Mode is available only for Gemini.' )
 		st.stop( )
-	
+
 	if not provider_has_class( 'CloudBuckets', provider_name ):
 		st.error( 'Gemini does not provide the CloudBuckets wrapper required by this mode.' )
 		st.stop( )
-	
-	buckets = get_cloud_buckets_module( provider_name )
-	
+
+	buckets = get_provider_class( 'CloudBuckets', provider_name )
+
 	# ------------------------------------------------------------------
-	# Mode State
+	# Google Cloud Buckets State
 	# ------------------------------------------------------------------
-	bucket_defaults: Dict[ str, Any ] = { 'bucket_table': [ ], 'bucket_metadata': { },
-		'bucket_upload_result': { }, 'bucket_results': None, 'bucket_messages': [ ],
-		'bucket_name': '', 'bucket_manual_id': '', 'bucket_selected_id': '',
-		'bucket_selected_label': '', 'bucket_object_name': '', 'bucket_prefix': '',
-		'bucket_content_type': '', 'bucket_location': (
-				st.session_state.get( 'google_cloud_location',
-					getattr( cfg, 'GOOGLE_CLOUD_LOCATION', 'us-central1', ), ) or 'us-central1'),
-		'bucket_storage_location': 'US', 'bucket_project_id': (
-				st.session_state.get( 'google_cloud_project_id',
-					getattr( cfg, 'GOOGLE_CLOUD_PROJECT_ID', '', ), ) or ''), 'bucket_input': None,
-		'bucket_query': '', 'bucket_model': '', 'bucket_number': 0, 'bucket_temperature': 0.0,
-		'bucket_top_percent': 0.0, 'bucket_max_tokens': 0, 'bucket_frequency_penalty': 0.0,
-		'bucket_presence_penalty': 0.0, 'bucket_response_format': '', 'bucket_tool_choice': '',
-		'bucket_reasoning': '', 'bucket_background': False, 'bucket_store': False,
-		'bucket_stream': False, 'bucket_max_files': 20, 'bucket_confirm_delete': False,
-		'bucket_delete_object_only': False, 'bucket_system_instructions': '',
-		'bucket_prompt_category': None, 'bucket_prompt_id': None, }
-	
+	bucket_defaults: Dict[ str, Any ] = {
+		'bucket_table': [ ],
+		'bucket_metadata': { },
+		'bucket_upload_result': { },
+		'bucket_selected_id': '',
+		'bucket_selected_label': '',
+		'bucket_manual_id': '',
+		'bucket_object_name': '',
+		'bucket_upload_object_name': '',
+		'bucket_input': None,
+		'bucket_confirm_delete': False,
+	}
+
 	for key, default_value in bucket_defaults.items( ):
-		if key not in st.session_state:
-			st.session_state[ key ] = default_value
-	
-	if not isinstance( st.session_state.get( 'bucket_table' ), list, ):
+		st.session_state.setdefault( key, default_value )
+
+	if not isinstance( st.session_state.get( 'bucket_table' ), list ):
 		st.session_state[ 'bucket_table' ] = [ ]
-	
-	if not isinstance( st.session_state.get( 'bucket_metadata' ), dict, ):
+
+	if not isinstance( st.session_state.get( 'bucket_metadata' ), dict ):
 		st.session_state[ 'bucket_metadata' ] = { }
-	
-	if not isinstance( st.session_state.get( 'bucket_upload_result' ), dict, ):
+
+	if not isinstance( st.session_state.get( 'bucket_upload_result' ), dict ):
 		st.session_state[ 'bucket_upload_result' ] = { }
-	
-	if not isinstance( st.session_state.get( 'bucket_messages' ), list, ):
-		st.session_state[ 'bucket_messages' ] = [ ]
-	
+
 	# ------------------------------------------------------------------
-	# Google Cloud Bucket Utilities
+	# Google Cloud Buckets Helpers
 	# ------------------------------------------------------------------
-	def get_bucket_options( instance: Any, attr_name: str,
-		fallback: Optional[ List[ Any ] ] = None, ) -> List[ Any ]:
-		"""Get bucket options.
-		
+	def normalize_bucket_object( value: Any ) -> Dict[ str, Any ]:
+		"""Normalize Google Cloud Storage object metadata.
+
 		Purpose:
-		    Returns provider-supported values exposed by the Gemini CloudBuckets wrapper.
-		
+			Converts a Google Cloud Storage Blob or mapping into a stable dictionary suitable
+			for Boo's metadata and table renderers.
+
 		Args:
-		    instance (Any): Active Gemini CloudBuckets wrapper.
-		    attr_name (str): Wrapper option property or method name.
-		    fallback (Optional[List[Any]]): Values used when no wrapper options are exposed.
-		
+			value (Any): Blob, mapping, or provider result to normalize.
+
 		Returns:
-		    List[Any]: Provider-supported option values.
-		"""
-		values = getattr( instance, attr_name, None, )
-		
-		if callable( values ):
-			try:
-				values = values( )
-			except Exception:
-				values = None
-		
-		if isinstance( values, tuple ):
-			values = list( values )
-		
-		if isinstance( values, list ):
-			return values
-		
-		return fallback or [ ]
-	
-	def sanitize_bucket_selection( key: str, options: List[ Any ], default: Any = '', ) -> None:
-		"""Sanitize bucket selection.
-		
-		Purpose:
-		    Clears a stored single-selection value that is unsupported by the active wrapper.
-		
-		Args:
-		    key (str): Session-state key containing the selection.
-		    options (List[Any]): Provider-supported option values.
-		    default (Any): Replacement value for an unsupported selection.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		"""
-		current_value = st.session_state.get( key, default, )
-		
-		if current_value in [ None, '' ]:
-			return
-		
-		if current_value not in options:
-			st.session_state[ key ] = default
-	
-	def normalize_bucket_object( value: Any, ) -> Dict[ str, Any ]:
-		"""Normalize bucket object.
-		
-		Purpose:
-		    Converts Google Cloud Storage bucket and object responses into dictionaries suitable
-		    for Streamlit tables and metadata output.
-		
-		Args:
-		    value (Any): Google Cloud Storage bucket, blob, boolean, or dictionary response.
-		
-		Returns:
-		    Dict[str, Any]: Normalized bucket or object metadata.
+			Dict[str, Any]: Normalized Google Cloud Storage object metadata.
 		"""
 		if value is None:
 			return { }
-		
-		if isinstance( value, bool ):
-			return { 'success': value, }
-		
+
 		if isinstance( value, dict ):
-			return normalize( value )
-		
-		if hasattr( value, 'model_dump' ):
-			try:
-				dumped_value = value.model_dump( )
-				
-				if isinstance( dumped_value, dict ):
-					return normalize( dumped_value )
-			except Exception:
-				pass
-		
-		value_bucket = getattr( value, 'bucket', None, )
+			return dict( value )
+
+		value_bucket = getattr( value, 'bucket', None )
 		bucket_name = str(
-			getattr( value_bucket, 'name', '', ) or getattr( value, 'bucket_name', '', ) or '' )
-		object_name = str( getattr( value, 'name', '', ) or '' )
-		
-		# A Blob exposes a bucket reference. A Bucket normally does not.
-		if value_bucket is not None:
-			return { 'id': str( getattr( value, 'id', '', ) or '' ), 'name': object_name,
-				'bucket': bucket_name,
-				'content_type': str( getattr( value, 'content_type', '', ) or '' ),
-				'size': getattr( value, 'size', 0, ),
-				'generation': getattr( value, 'generation', None, ),
-				'metageneration': getattr( value, 'metageneration', None, ),
-				'md5_hash': str( getattr( value, 'md5_hash', '', ) or '' ),
-				'crc32c': str( getattr( value, 'crc32c', '', ) or '' ),
-				'time_created': str( getattr( value, 'time_created', '', ) or '' ),
-				'updated': str( getattr( value, 'updated', '', ) or '' ),
-				'storage_class': str( getattr( value, 'storage_class', '', ) or '' ),
-				'metadata': normalize( getattr( value, 'metadata', None, ) ), 'uri': (
-					f'gs://{bucket_name}/{object_name}' if bucket_name and object_name else ''), }
-		
-		return { 'id': str( getattr( value, 'id', '', ) or '' ),
-			'name': str( getattr( value, 'name', '', ) or '' ),
-			'project_number': str( getattr( value, 'project_number', '', ) or '' ),
-			'location': str( getattr( value, 'location', '', ) or '' ),
-			'storage_class': str( getattr( value, 'storage_class', '', ) or '' ),
-			'time_created': str( getattr( value, 'time_created', '', ) or '' ),
-			'updated': str( getattr( value, 'updated', '', ) or '' ),
-			'versioning_enabled': getattr( value, 'versioning_enabled', False, ),
-			'retention_period': getattr( value, 'retention_period', None, ),
-			'labels': normalize( getattr( value, 'labels', None, ) ),
-			'self_link': str( getattr( value, 'self_link', '', ) or '' ), }
-	
-	def normalize_bucket_rows( result: Any, ) -> List[ Dict[ str, Any ] ]:
-		"""Normalize bucket rows.
-		
-		Purpose:
-		    Converts Google Cloud Storage object-list responses into stable table rows.
-		
+			getattr( value_bucket, 'name', '' ) or getattr( value, 'bucket_name', '' ) or '' )
+		object_name = str( getattr( value, 'name', '' ) or '' )
+		created = getattr( value, 'time_created', None )
+		updated = getattr( value, 'updated', None )
+
+		return {
+			'id': str( getattr( value, 'id', '' ) or object_name ),
+			'bucket': bucket_name,
+			'name': object_name,
+			'size': int( getattr( value, 'size', 0 ) or 0 ),
+			'content_type': str( getattr( value, 'content_type', '' ) or '' ),
+			'generation': str( getattr( value, 'generation', '' ) or '' ),
+			'metageneration': str( getattr( value, 'metageneration', '' ) or '' ),
+			'etag': str( getattr( value, 'etag', '' ) or '' ),
+			'created': created.isoformat( ) if hasattr( created, 'isoformat' ) else str(
+				created or '' ),
+			'updated': updated.isoformat( ) if hasattr( updated, 'isoformat' ) else str(
+				updated or '' ),
+			'uri': f'gs://{bucket_name}/{object_name}' if bucket_name and object_name else '',
+		}
+
+	def normalize_bucket_rows( result: Any ) -> List[ Dict[ str, Any ] ]:
+		"""Normalize Google Cloud Storage object rows.
+
 		Args:
-		    result (Any): Google Cloud Storage object collection.
-		
+			result (Any): Provider result containing zero or more Blob objects.
+
 		Returns:
-		    List[Dict[str, Any]]: Normalized object metadata rows.
+			List[Dict[str, Any]]: Normalized object rows.
 		"""
 		if result is None:
 			return [ ]
-		
-		if isinstance( result, list ):
-			items = result
-		elif isinstance( result, tuple ):
-			items = list( result )
-		else:
-			try:
-				items = list( result )
-			except Exception:
-				items = [ result ]
-		
-		rows: List[ Dict[ str, Any ] ] = [ ]
-		
-		for item in items:
-			metadata = normalize_bucket_object( item )
-			
-			if not metadata:
-				continue
-			
-			rows.append( { 'id': str( metadata.get( 'id', '', ) or '' ),
-				'name': str( metadata.get( 'name', '', ) or '' ),
-				'content_type': str( metadata.get( 'content_type', '', ) or '' ),
-				'size': metadata.get( 'size', 0, ),
-				'updated': str( metadata.get( 'updated', '', ) or '' ),
-				'uri': str( metadata.get( 'uri', '', ) or '' ), } )
-		
-		return rows
-	
+
+		items = result if isinstance( result, (list, tuple, set) ) else [ result ]
+		return [ metadata for metadata in (normalize_bucket_object( item ) for item in items)
+			if metadata ]
+
 	def get_selected_bucket_name( ) -> str:
-		"""Get selected bucket name.
-		
-		Purpose:
-		    Returns the manually entered bucket name or the currently selected configured bucket.
-		
+		"""Return the active Google Cloud Storage bucket name.
+
 		Returns:
-		    str: Active Google Cloud Storage bucket name.
+			str: Manual bucket name when supplied; otherwise the selected configured bucket.
 		"""
-		manual_name = str( st.session_state.get( 'bucket_manual_id', '', ) or '' ).strip( )
-		
+		manual_name = str( st.session_state.get( 'bucket_manual_id', '' ) or '' ).strip( )
 		if manual_name:
 			return manual_name
-		
-		return str( st.session_state.get( 'bucket_selected_id', '', ) or '' ).strip( )
-	
-	def save_bucket_upload( uploaded_file: Any, ) -> str:
-		"""Save bucket upload.
-		
-		Purpose:
-		    Writes a Streamlit uploaded file to a temporary local path for Google Cloud Storage
-		    upload.
-		
+
+		return str( st.session_state.get( 'bucket_selected_id', '' ) or '' ).strip( )
+
+	def save_bucket_upload( uploaded_file: Any ) -> str:
+		"""Persist an uploaded file for the CloudBuckets wrapper.
+
 		Args:
-		    uploaded_file (Any): Streamlit uploaded-file object.
-		
+			uploaded_file (Any): Streamlit uploaded-file object.
+
 		Returns:
-		    str: Temporary local file path.
+			str: Local temporary filepath.
 		"""
-		throw_if( 'uploaded_file', uploaded_file, )
-		
-		path = save_uploaded_storage_file( uploaded_file )
-		throw_if( 'path', path, )
-		return str( path )
-	
+		throw_if( 'uploaded_file', uploaded_file )
+		suffix = Path( str( getattr( uploaded_file, 'name', '' ) or '' ) ).suffix
+		with tempfile.NamedTemporaryFile( delete=False, suffix=suffix ) as temporary_file:
+			temporary_file.write( uploaded_file.getvalue( ) )
+			return temporary_file.name
+
+	def reset_bucket_management_settings( ) -> None:
+		"""Reset Google Cloud Storage management controls.
+
+		Returns:
+			None: This function updates Streamlit session state.
+		"""
+		for key in [ 'bucket_selected_id', 'bucket_selected_label', 'bucket_manual_id',
+			'bucket_object_name', 'bucket_upload_object_name', 'bucket_confirm_delete',
+			'bucket_input', ]:
+			if key in st.session_state:
+				del st.session_state[ key ]
+
 	def clear_bucket_outputs( ) -> None:
-		"""Clear bucket outputs.
-		
-		Purpose:
-		    Clears Google Cloud Bucket operation results without changing bucket selections,
-		    request settings, uploaded files, queries, or system instructions.
-		
+		"""Clear Google Cloud Storage operation outputs.
+
 		Returns:
-		    None: This function updates Streamlit session state.
+			None: This function updates Streamlit session state.
 		"""
-		st.session_state[ 'bucket_results' ] = None
+		st.session_state[ 'bucket_table' ] = [ ]
 		st.session_state[ 'bucket_metadata' ] = { }
 		st.session_state[ 'bucket_upload_result' ] = { }
-		st.session_state[ 'bucket_table' ] = [ ]
-	
-	def clear_bucket_instructions( ) -> None:
-		"""Clear Google Cloud Buckets instructions.
-		
-		Purpose:
-		    Clears the Google Cloud Buckets system-instruction text and selected prompt template
-		    without changing the selected category, bucket configuration, results, or uploaded
-		    files.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		"""
-		st.session_state[ 'bucket_system_instructions' ] = ''
-		st.session_state[ 'bucket_prompt_id' ] = None
-	
-	def convert_bucket_system_instructions( ) -> None:
-		"""Convert Google Cloud Buckets system instructions.
-		
-		Purpose:
-		    Converts the active Google Cloud Buckets system instructions between supported
-		    XML-style instruction blocks and Markdown headings.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		"""
-		text_value = str( st.session_state.get( 'bucket_system_instructions', '', ) or ''
-		).strip( )
-		
-		if not text_value:
-			return
-		
-		if cfg.XML_BLOCK_PATTERN.search( text_value ):
-			st.session_state[ 'bucket_system_instructions' ] = convert_xml( text_value )
-		else:
-			st.session_state[ 'bucket_system_instructions' ] = convert_markdown( text_value )
-	
-	def load_bucket_instruction_template( ) -> None:
-		"""Load Google Cloud Buckets instruction template.
-		
-		Purpose:
-		    Loads the selected Google Cloud Buckets prompt template into the mode-specific
-		    system-instruction field.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		
-		Raises:
-		    Error: Re-raised after the exception is logged.
-		"""
-		try:
-			load_prompt_template( prompt_id_key='bucket_prompt_id',
-				instructions_key='bucket_system_instructions', )
-		except Exception as e:
-			ex = Error( e )
-			ex.module = 'app'
-			ex.cause = 'Google Cloud Buckets Mode'
-			ex.method = ('load_bucket_instruction_template( ) -> None')
-			Logger( ).write( ex )
-			raise ex
-	
-	def reset_bucket_management_settings( ) -> None:
-		"""Reset bucket management settings.
-		
-		Purpose:
-		    Returns the Google Cloud Bucket management controls to their initial values without
-		    clearing provider resources, operation results, request settings, or instructions.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		"""
-		for key in [ 'bucket_name', 'bucket_selected_id', 'bucket_selected_label',
-			'bucket_manual_id', 'bucket_object_name', 'bucket_prefix', 'bucket_storage_location',
-			'bucket_confirm_delete', 'bucket_delete_object_only', ]:
-			if key in st.session_state:
-				del st.session_state[ key ]
-	
-	def reset_bucket_request_settings( ) -> None:
-		"""Reset bucket request settings.
-		
-		Purpose:
-		    Returns the Google Cloud Bucket model, inference, and response controls to their
-		    initial values without clearing bucket selections, queries, results, or instructions.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		"""
-		for key in [ 'bucket_model', 'bucket_number', 'bucket_temperature', 'bucket_top_percent',
-			'bucket_max_tokens', 'bucket_frequency_penalty', 'bucket_presence_penalty',
-			'bucket_response_format', 'bucket_tool_choice', 'bucket_reasoning', 'bucket_store',
-			'bucket_stream', 'bucket_background', 'bucket_max_files', 'bucket_location',
-			'bucket_project_id', ]:
-			if key in st.session_state:
-				del st.session_state[ key ]
-	
-	def create_cloud_bucket( ) -> Dict[ str, Any ]:
-		"""Create cloud bucket.
-		
-		Purpose:
-		    Creates a Google Cloud Storage bucket using the exact Gemini CloudBuckets contract.
-		
-		Returns:
-		    Dict[str, Any]: Normalized created-bucket metadata.
-		"""
-		bucket_name = str( st.session_state.get( 'bucket_name', '', ) or '' ).strip( )
-		project_id = str( st.session_state.get( 'bucket_project_id', '', ) or '' ).strip( )
-		location = str( st.session_state.get( 'bucket_storage_location', 'US', ) or 'US' ).strip( )
-		
-		throw_if( 'bucket_name', bucket_name, )
-		throw_if( 'project_id', project_id, )
-		throw_if( 'location', location, )
-		
-		result = buckets.create( name=bucket_name, project_id=project_id, location=location, )
-		metadata = normalize_bucket_object( result )
-		st.session_state[ 'bucket_metadata' ] = metadata
-		st.session_state[ 'bucket_manual_id' ] = bucket_name
-		st.session_state[ 'bucket_selected_id' ] = bucket_name
-		st.session_state[ 'bucket_selected_label' ] = bucket_name
-		return metadata
-	
-	def retrieve_cloud_bucket( bucket_name: str, object_name: str = '', ) -> Dict[ str, Any ]:
-		"""Retrieve cloud bucket.
-		
-		Purpose:
-		    Retrieves Google Cloud Storage bucket or object metadata using the exact wrapper
-		    contract.
-		
+
+	def create_cloud_object( bucket_name: str, object_name: str ) -> Dict[ str, Any ]:
+		"""Create an empty object in a Google Cloud Storage bucket.
+
 		Args:
-		    bucket_name (str): Required Google Cloud Storage bucket name.
-		    object_name (str): Optional object name.
-		
+			bucket_name (str): Existing Google Cloud Storage bucket name.
+			object_name (str): New object name.
+
 		Returns:
-		    Dict[str, Any]: Normalized bucket or object metadata.
+			Dict[str, Any]: Normalized created-object metadata.
 		"""
-		throw_if( 'bucket_name', bucket_name, )
-		
-		result = buckets.retrieve( bucket=bucket_name, object_name=object_name,
-			project_id=str( st.session_state.get( 'bucket_project_id', '', ) or '' ), )
+		throw_if( 'bucket_name', bucket_name )
+		throw_if( 'object_name', object_name )
+		result = buckets.create( bucket=bucket_name, name=object_name )
 		metadata = normalize_bucket_object( result )
 		st.session_state[ 'bucket_metadata' ] = metadata
 		return metadata
-	
-	def list_cloud_bucket_objects( bucket_name: str, ) -> List[ Dict[ str, Any ] ]:
-		"""List cloud bucket objects.
-		
-		Purpose:
-		    Lists Google Cloud Storage object metadata using the exact wrapper contract.
-		
+
+	def retrieve_cloud_object( bucket_name: str, object_name: str ) -> Dict[ str, Any ]:
+		"""Retrieve Google Cloud Storage object metadata.
+
 		Args:
-		    bucket_name (str): Required Google Cloud Storage bucket name.
-		
+			bucket_name (str): Existing Google Cloud Storage bucket name.
+			object_name (str): Existing object name.
+
 		Returns:
-		    List[Dict[str, Any]]: Normalized object rows.
+			Dict[str, Any]: Normalized object metadata.
 		"""
-		throw_if( 'bucket_name', bucket_name, )
-		
-		result = buckets.list_objects( bucket=bucket_name,
-			prefix=str( st.session_state.get( 'bucket_prefix', '', ) or '' ),
-			project_id=str( st.session_state.get( 'bucket_project_id', '', ) or '' ), )
-		rows = normalize_bucket_rows( result )
+		throw_if( 'bucket_name', bucket_name )
+		throw_if( 'object_name', object_name )
+		result = buckets.retrieve( bucket=bucket_name, name=object_name )
+		if result is None:
+			raise ValueError( f'Object not found: gs://{bucket_name}/{object_name}' )
+		metadata = normalize_bucket_object( result )
+		st.session_state[ 'bucket_metadata' ] = metadata
+		return metadata
+
+	def list_cloud_objects( bucket_name: str ) -> List[ Dict[ str, Any ] ]:
+		"""List objects in a Google Cloud Storage bucket.
+
+		Args:
+			bucket_name (str): Existing Google Cloud Storage bucket name.
+
+		Returns:
+			List[Dict[str, Any]]: Normalized object rows.
+		"""
+		throw_if( 'bucket_name', bucket_name )
+		rows = normalize_bucket_rows( buckets.list( bucket=bucket_name ) )
 		st.session_state[ 'bucket_table' ] = rows
 		return rows
-	
-	def upload_cloud_bucket_object( uploaded_file: Any, bucket_name: str, ) -> Dict[ str, Any ]:
-		"""Upload cloud bucket object.
-		
-		Purpose:
-		    Uploads a local file to Google Cloud Storage using the exact wrapper contract.
-		
+
+	def upload_cloud_object( uploaded_file: Any, bucket_name: str ) -> Dict[ str, Any ]:
+		"""Upload a local file to a Google Cloud Storage bucket.
+
 		Args:
-		    uploaded_file (Any): Streamlit uploaded-file object.
-		    bucket_name (str): Required Google Cloud Storage bucket name.
-		
+			uploaded_file (Any): Streamlit uploaded-file object.
+			bucket_name (str): Existing Google Cloud Storage bucket name.
+
 		Returns:
-		    Dict[str, Any]: Normalized uploaded-object metadata.
+			Dict[str, Any]: Normalized uploaded-object metadata.
 		"""
-		throw_if( 'uploaded_file', uploaded_file, )
-		throw_if( 'bucket_name', bucket_name, )
-		
+		throw_if( 'uploaded_file', uploaded_file )
+		throw_if( 'bucket_name', bucket_name )
 		path = save_bucket_upload( uploaded_file )
-		object_name = str(
-			st.session_state.get( 'bucket_object_name', '', ) or getattr( uploaded_file, 'name',
-				Path( path ).name, ) or Path( path ).name ).strip( )
-		content_type = str(
-			st.session_state.get( 'bucket_content_type', '', ) or getattr( uploaded_file, 'type',
-				'', ) or '' ).strip( )
-		
-		result = buckets.upload_file( path=path, bucket=bucket_name, object_name=object_name,
-			content_type=content_type,
-			project_id=str( st.session_state.get( 'bucket_project_id', '', ) or '' ), )
+		object_name = str( st.session_state.get( 'bucket_upload_object_name', '' ) or
+			getattr( uploaded_file, 'name', '' ) or Path( path ).name ).strip( )
+		result = buckets.upload( path=path, bucket=bucket_name, name=object_name )
 		metadata = normalize_bucket_object( result )
 		st.session_state[ 'bucket_upload_result' ] = metadata
 		st.session_state[ 'bucket_object_name' ] = object_name
 		return metadata
-	
-	def delete_cloud_bucket_resource( bucket_name: str, object_name: str = '', ) -> bool:
-		"""Delete cloud bucket resource.
-		
-		Purpose:
-		    Deletes a Google Cloud Storage bucket or object using the exact wrapper contract.
-		
+
+	def delete_cloud_object( bucket_name: str, object_name: str ) -> bool:
+		"""Delete an object from a Google Cloud Storage bucket.
+
 		Args:
-		    bucket_name (str): Required Google Cloud Storage bucket name.
-		    object_name (str): Optional object name. An empty value deletes the bucket.
-		
+			bucket_name (str): Existing Google Cloud Storage bucket name.
+			object_name (str): Existing object name.
+
 		Returns:
-		    bool: True when the deletion request completes.
+			bool: True after successful deletion.
 		"""
-		throw_if( 'bucket_name', bucket_name, )
-		
-		result = buckets.delete( bucket=bucket_name, object_name=object_name,
-			project_id=str( st.session_state.get( 'bucket_project_id', '', ) or '' ), )
-		
-		if object_name:
-			st.session_state[ 'bucket_table' ] = [ row for row in
-				st.session_state.get( 'bucket_table', [ ], ) if
-				isinstance( row, dict, ) and row.get( 'name' ) != object_name ]
-		else:
-			st.session_state[ 'bucket_selected_id' ] = ''
-			st.session_state[ 'bucket_selected_label' ] = ''
-			st.session_state[ 'bucket_manual_id' ] = ''
-			st.session_state[ 'bucket_table' ] = [ ]
-		
-		st.session_state[ 'bucket_metadata' ] = { 'success': bool( result ), 'bucket': bucket_name,
-			'object_name': object_name, }
-		return bool( result )
-	
-	def query_cloud_bucket( bucket_name: str, query: str, ) -> str:
-		"""Query cloud bucket.
-		
-		Purpose:
-		    Answers a question using supported objects in a Google Cloud Storage bucket through
-		    the exact Gemini CloudBuckets search contract.
-		
-		Args:
-		    bucket_name (str): Required Google Cloud Storage bucket name.
-		    query (str): Required question about bucket content.
-		
-		Returns:
-		    str: Gemini answer grounded in supported bucket objects.
-		"""
-		throw_if( 'bucket_name', bucket_name, )
-		throw_if( 'query', query, )
-		
-		model = str( st.session_state.get( 'bucket_model', '', ) or '' ).strip( )
-		throw_if( 'model', model, )
-		
-		result = buckets.search( bucket=bucket_name, query=query, model=model,
-			project_id=str( st.session_state.get( 'bucket_project_id', '', ) or '' ), location=str(
-				st.session_state.get( 'bucket_location', 'us-central1', ) or 'us-central1' ),
-			prefix=str( st.session_state.get( 'bucket_prefix', '', ) or '' ),
-			max_files=int( st.session_state.get( 'bucket_max_files', 20, ) or 20 ),
-			temperature=float( st.session_state.get( 'bucket_temperature', 0.0, ) or 0.0 ),
-			top_p=float( st.session_state.get( 'bucket_top_percent', 0.0, ) or 0.0 ),
-			frequency=float( st.session_state.get( 'bucket_frequency_penalty', 0.0, ) or 0.0 ),
-			presence=float( st.session_state.get( 'bucket_presence_penalty', 0.0, ) or 0.0 ),
-			max_tokens=int( st.session_state.get( 'bucket_max_tokens', 0, ) or 0 ),
-			response_format=str( st.session_state.get( 'bucket_response_format', '', ) or '' ),
-			instruct=str( st.session_state.get( 'bucket_system_instructions', '', ) or '' ), )
-		
-		if isinstance( result, str, ):
-			return result.strip( )
-		
-		return str( getattr( buckets, 'output_text', '', ) or result or '' ).strip( )
-	
+		throw_if( 'bucket_name', bucket_name )
+		throw_if( 'object_name', object_name )
+		result = bool( buckets.delete( bucket=bucket_name, name=object_name ) )
+		st.session_state[ 'bucket_table' ] = [ row for row in
+			st.session_state.get( 'bucket_table', [ ] ) if str( row.get( 'name', '' ) ) !=
+			object_name ]
+		st.session_state[ 'bucket_metadata' ] = {
+			'success': result,
+			'bucket': bucket_name,
+			'name': object_name,
+		}
+		return result
+
 	# ------------------------------------------------------------------
 	# Provider Options
 	# ------------------------------------------------------------------
-	model_options = [ str( option ) for option in
-		get_bucket_options( buckets, 'model_options', [ ], ) if str( option ).strip( ) ]
-	format_options = [ str( option ) for option in
-		get_bucket_options( buckets, 'format_options', [ ], ) if str( option ).strip( ) ]
-	choice_options = [ str( option ) for option in
-		get_bucket_options( buckets, 'choice_options', [ ], ) if str( option ).strip( ) ]
-	reasoning_options = [ str( option ) for option in
-		get_bucket_options( buckets, 'reasoning_options', [ ], ) if str( option ).strip( ) ]
-	
-	sanitize_bucket_selection( 'bucket_model', model_options, )
-	sanitize_bucket_selection( 'bucket_response_format', format_options, )
-	st.session_state[ 'bucket_tool_choice' ] = ''
-	st.session_state[ 'bucket_reasoning' ] = ''
-	st.session_state[ 'bucket_store' ] = False
-	st.session_state[ 'bucket_stream' ] = False
-	st.session_state[ 'bucket_background' ] = False
-	st.session_state[ 'bucket_number' ] = 0
-	collections = getattr( buckets, 'collections', { }, )
-	if isinstance( collections, dict, ):
-		bucket_options = [ str( bucket_name ).split( '/', 1, )[ 0 ] for bucket_name in
-			collections.values( ) if str( bucket_name ).strip( ) ]
-	else:
-		bucket_options = [ ]
-	
+	collections = getattr( buckets, 'collections', { } )
+	bucket_options = [ ]
+	if isinstance( collections, dict ):
+		bucket_options = [ str( value ).split( '/', 1 )[ 0 ] for value in collections.values( )
+			if str( value ).strip( ) ]
 	bucket_options = list( dict.fromkeys( bucket_options ) )
-	if (st.session_state.get( 'bucket_selected_id' ) not in bucket_options):
+
+	if st.session_state.get( 'bucket_selected_id' ) not in bucket_options:
 		st.session_state[ 'bucket_selected_id' ] = ''
-	
+
 	st.session_state[ 'bucket_selected_label' ] = str(
-		st.session_state.get( 'bucket_selected_id', '', ) or '' )
-	
+		st.session_state.get( 'bucket_selected_id', '' ) or '' )
+
 	# ------------------------------------------------------------------
-	# Main UI
+	# Header
 	# ------------------------------------------------------------------
-	left, center, right = st.columns( [ 0.025, 0.95, 0.025 ] )
-	with center:
-		st.subheader( '☁️ Google Cloud Buckets', help=getattr( cfg, 'GOOGLE_CLOUD_BUCKETS_API',
-			'Google Cloud Storage bucket management and Gemini-grounded querying.', ), )
-		st.divider( )
-		
+	st.header( '☁️ Google Cloud Buckets' )
+	st.caption( 'Manage objects in existing Google Cloud Storage buckets.' )
+
+	left_column, center_column, right_column = st.columns( [ 0.05, 0.90, 0.05 ] )
+
+	with center_column:
 		# ------------------------------------------------------------------
 		# Expander — Mind Controls
 		# ------------------------------------------------------------------
-		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch', ):
+		with st.expander( label='Mind Controls', icon='🧠', expanded=True, width='stretch' ):
 			# ------------------------------------------------------------------
-			# Expander — Bucket Management
+			# Expander — Object Management
 			# ------------------------------------------------------------------
-			with st.expander( label='Bucket Management', icon='🏛️', expanded=False,
-					width='stretch', ):
-				management_c1, management_c2, management_c3, management_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
-				
-				# ----- Bucket Name -----
+			with st.expander( label='Object Management', icon='🪣', expanded=True,
+					width='stretch' ):
+				management_c1, management_c2, management_c3 = st.columns(
+					[ 0.34, 0.33, 0.33 ], border=True, gap='xxsmall' )
+
 				with management_c1:
-					st.text_input( label='Bucket Name', key='bucket_name',
-						help=('Required globally unique Google Cloud Storage '
-						      'bucket name used when creating a bucket.'), width='stretch', )
-				
-				# ----- Selected Bucket -----
+					st.selectbox( label='Configured Bucket', options=bucket_options, index=None,
+						key='bucket_selected_id', placeholder='Options',
+						help='Select a bucket configured by the Boo CloudBuckets wrapper.' )
+
 				with management_c2:
-					st.selectbox( label='Selected Bucket', options=bucket_options,
-						key='bucket_selected_id', index=None, placeholder='Options',
-						help=('Selects a configured Google Cloud Storage bucket.'), )
-				
-				# ----- Manual Bucket Name -----
-				with management_c3:
 					st.text_input( label='Manual Bucket Name', key='bucket_manual_id',
-						help=('Optional Google Cloud Storage bucket name used '
-						      'for management and query operations.'), width='stretch', )
-				
-				# ----- Bucket Location -----
-				with management_c4:
-					st.text_input( label='Bucket Location', key='bucket_storage_location',
-						help=('Google Cloud Storage location used only when '
-						      'creating a bucket, such as US or us-central1.'), width='stretch', )
-				
-				management_c5, management_c6, management_c7, management_c8 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
-				
-				# ----- Object Name -----
-				with management_c5:
+						help='Overrides the configured bucket selection when populated.' )
+
+				with management_c3:
 					st.text_input( label='Object Name', key='bucket_object_name',
-						help=('Optional object name used for retrieve, upload, '
-						      'or delete operations.'), width='stretch', )
-				
-				# ----- Prefix -----
-				with management_c6:
-					st.text_input( label='Object Prefix', key='bucket_prefix',
-						help=('Optional object-name prefix used for listing and '
-						      'bucket-grounded queries.'), width='stretch', )
-				
-				# ----- Delete Object Only -----
-				with management_c7:
-					st.toggle( label='Delete Object Only', key='bucket_delete_object_only',
-						help=('Deletes the specified object instead of deleting '
-						      'the entire bucket.'), )
-				
-				# ----- Confirm Delete -----
-				with management_c8:
-					st.toggle( label='Confirm Delete', key='bucket_confirm_delete',
-						help=('Required before deleting a Google Cloud Storage '
-						      'bucket or object.'), )
-				
+						help='Object name used by create, retrieve, and delete operations.' )
+
 				action_c1, action_c2, action_c3, action_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ] )
-				
-				# ----- Create Bucket -----
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' )
+				target_bucket = get_selected_bucket_name( )
+				object_name = str( st.session_state.get( 'bucket_object_name', '' ) or '' ).strip( )
+
 				with action_c1:
-					if st.button( label='Create Bucket', key='bucket_create', icon='➕',
-							width='stretch', ):
-						with st.spinner( 'Creating Google Cloud Bucket…' ):
+					if st.button( label='Create Empty Object', key='bucket_create', icon='➕',
+							width='stretch', disabled=(not target_bucket or not object_name) ):
+						with st.spinner( 'Creating object…' ):
 							try:
-								metadata = create_cloud_bucket( )
-								st.success( f"Created bucket: "
-								            f"{metadata.get( 'name', '' )}" )
+								create_cloud_object( target_bucket, object_name )
+								st.success( 'Empty object created.' )
 							except Exception as exc:
 								err = Error( exc )
-								st.error( f'Create bucket failed: {err.info}' )
-				
-				# ----- List Objects -----
+								st.error( f'Object creation failed: {err.info}' )
+
 				with action_c2:
 					if st.button( label='List Objects', key='bucket_list', icon='🔠',
-							width='stretch', ):
-						with st.spinner( 'Listing Google Cloud Bucket objects…' ):
+							width='stretch', disabled=not bool( target_bucket ) ):
+						with st.spinner( 'Listing objects…' ):
 							try:
-								target_bucket = get_selected_bucket_name( )
-								
-								if not target_bucket:
-									st.warning( 'Select or enter a bucket name before '
-									            'listing objects.' )
-								else:
-									rows = list_cloud_bucket_objects( target_bucket )
-									st.success( f'Loaded {len( rows )} object record(s).' )
+								rows = list_cloud_objects( target_bucket )
+								st.success( f'{len( rows )} object(s) found.' )
 							except Exception as exc:
 								err = Error( exc )
-								st.error( f'List objects failed: {err.info}' )
-				
-				# ----- Retrieve -----
+								st.error( f'Object listing failed: {err.info}' )
+
 				with action_c3:
-					if st.button( label='Retrieve', key='bucket_retrieve', icon='🐕',
-							width='stretch', ):
-						with st.spinner( 'Retrieving Google Cloud resource…' ):
+					if st.button( label='Retrieve Object', key='bucket_retrieve', icon='🐕',
+							width='stretch', disabled=(not target_bucket or not object_name) ):
+						with st.spinner( 'Retrieving object metadata…' ):
 							try:
-								target_bucket = get_selected_bucket_name( )
-								
-								if not target_bucket:
-									st.warning( 'Select or enter a bucket name before '
-									            'retrieving.' )
-								else:
-									retrieve_cloud_bucket( target_bucket, str(
-										st.session_state.get( 'bucket_object_name',
-											'', ) or '' ).strip( ), )
-									st.success( 'Google Cloud resource metadata retrieved.' )
+								retrieve_cloud_object( target_bucket, object_name )
+								st.success( 'Object retrieved.' )
 							except Exception as exc:
 								err = Error( exc )
-								st.error( f'Retrieve failed: {err.info}' )
-				
-				# ----- Delete -----
+								st.error( f'Object retrieval failed: {err.info}' )
+
 				with action_c4:
-					if st.button( label='Delete', key='bucket_delete', icon='❌',
-							width='stretch', ):
-						with st.spinner( 'Deleting Google Cloud resource…' ):
+					st.toggle( label='Confirm Delete', key='bucket_confirm_delete',
+						help='Required before deleting the selected object.' )
+					if st.button( label='Delete Object', key='bucket_delete', icon='❌',
+							width='stretch', disabled=(not target_bucket or not object_name or not bool(
+								st.session_state.get( 'bucket_confirm_delete', False ) )) ):
+						with st.spinner( 'Deleting object…' ):
 							try:
-								target_bucket = get_selected_bucket_name( )
-								delete_object_only = bool(
-									st.session_state.get( 'bucket_delete_object_only', False, ) )
-								object_name = str( st.session_state.get( 'bucket_object_name',
-									'', ) or '' ).strip( )
-								
-								if not target_bucket:
-									st.warning( 'Select or enter a bucket name before '
-									            'deleting.' )
-								elif not st.session_state.get( 'bucket_confirm_delete', False, ):
-									st.warning( 'Confirm deletion before continuing.' )
-								elif delete_object_only and not object_name:
-									st.warning( 'Enter an object name before deleting '
-									            'an object.' )
-								else:
-									delete_cloud_bucket_resource( target_bucket,
-										(object_name if delete_object_only else ''), )
-									st.success( (
-										'Google Cloud object deleted.' if delete_object_only else
-										'Google Cloud bucket deleted.') )
+								delete_cloud_object( target_bucket, object_name )
+								st.session_state[ 'bucket_confirm_delete' ] = False
+								st.success( 'Object deleted.' )
 							except Exception as exc:
 								err = Error( exc )
-								st.error( f'Delete failed: {err.info}' )
-				
-				# ----- Reset Button -----
+								st.error( f'Object deletion failed: {err.info}' )
+
 				st.button( label='Reset', key='bucket_management_reset', width='stretch',
-					icon='🔄', on_click=reset_bucket_management_settings, )
-				
+					icon='🔄', on_click=reset_bucket_management_settings )
+
 				if st.session_state.get( 'bucket_table' ):
-					st.data_editor( pd.DataFrame( st.session_state.get( 'bucket_table', [ ], ) ),
-						use_container_width=True, hide_index=True, disabled=True,
-						key='bucket_table_view', )
-				else:
-					st.info( 'No Google Cloud Bucket object records loaded yet.' )
-				
+					st.data_editor( pd.DataFrame( st.session_state[ 'bucket_table' ] ),
+						width='stretch', hide_index=True, disabled=True,
+						key='bucket_table_view' )
+
 				if st.session_state.get( 'bucket_metadata' ):
-					with st.expander( label='Bucket Metadata', icon='📋', expanded=False,
-							width='stretch', ):
+					with st.expander( label='Object Metadata', icon='📄', expanded=False,
+							width='stretch' ):
 						render_storage_metadata( st.session_state[ 'bucket_metadata' ] )
-			
-			# ------------------------------------------------------------------
-			# Expander — Request Settings
-			# ------------------------------------------------------------------
-			with st.expander( label='Request Settings', icon='⚙️', expanded=False, width='stretch', ):
-				request_c1, request_c2, request_c3, request_c4 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
-				
-				# ----- Model -----
-				with request_c1:
-					st.selectbox( label='Model', options=model_options, index=None,
-						key='bucket_model', placeholder='Options',
-						help=('Required Gemini model used for bucket-content '
-						      'queries.'), )
-				
-				# ----- Project ID -----
-				with request_c2:
-					st.text_input( label='Project ID', key='bucket_project_id',
-						help=('Required Google Cloud project identifier used '
-						      'for Storage and Vertex AI clients.'), width='stretch', )
-				
-				# ----- Vertex AI Location -----
-				with request_c3:
-					st.text_input( label='Vertex AI Location', key='bucket_location',
-						help=('Required Vertex AI region used for Gemini '
-						      'bucket-content queries.'), width='stretch', )
-				
-				# ----- Max Files -----
-				with request_c4:
-					st.slider( label='Max Files', min_value=1, max_value=100, step=1,
-						key='bucket_max_files',
-						help=('Maximum number of matching bucket objects included '
-						      'in the Gemini request.'), )
-				
-				request_c5, request_c6, request_c7, request_c8 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
-				
-				# ----- Temperature -----
-				with request_c5:
-					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
-						key='bucket_temperature', help=cfg.TEMPERATURE, )
-				
-				# ----- Top-P -----
-				with request_c6:
-					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
-						key='bucket_top_percent', help=cfg.TOP_P, )
-				
-				# ----- Frequency Penalty -----
-				with request_c7:
-					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						key='bucket_frequency_penalty', help=cfg.FREQUENCY_PENALTY, )
-				
-				# ----- Presence Penalty -----
-				with request_c8:
-					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
-						key='bucket_presence_penalty', help=cfg.PRESENCE_PENALTY, )
-				
-				request_c9, request_c10, request_c11, request_c12 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
-				
-				# ----- Max Tokens -----
-				with request_c9:
-					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
-						key='bucket_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, )
-				
-				# ----- Response Format -----
-				with request_c10:
-					st.selectbox( label='Response Format', options=format_options, index=None,
-						key='bucket_response_format', placeholder='Options',
-						help=('Optional response MIME type accepted by the '
-						      'CloudBuckets search wrapper.'), )
-				
-				# ----- Number -----
-				with request_c11:
-					st.slider( label='Number', min_value=0, max_value=10, value=0, step=1,
-						key='bucket_number', help=('The CloudBuckets wrapper returns one response '
-						                           'per query.'), disabled=True, )
-				
-				# ----- Tool Choice -----
-				with request_c12:
-					st.selectbox( label='Tool Choice', options=choice_options, index=None,
-						key='bucket_tool_choice', placeholder='Options',
-						help=('CloudBuckets queries do not use tool-choice '
-						      'configuration.'), disabled=True, )
-				
-				request_c13, request_c14, request_c15, request_c16 = st.columns(
-					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
-				
-				# ----- Reasoning -----
-				with request_c13:
-					st.selectbox( label='Reasoning', options=reasoning_options, index=None,
-						key='bucket_reasoning', placeholder='Options',
-						help=('CloudBuckets queries do not expose a separate '
-						      'reasoning argument.'), disabled=True, )
-				
-				# ----- Store -----
-				with request_c14:
-					st.toggle( label='Store', key='bucket_store',
-						help=('CloudBuckets queries do not expose response '
-						      'storage.'), disabled=True, )
-				
-				# ----- Stream -----
-				with request_c15:
-					st.toggle( label='Stream', key='bucket_stream',
-						help=('CloudBuckets queries do not expose streaming.'), disabled=True, )
-				
-				# ----- Background -----
-				with request_c16:
-					st.toggle( label='Background', key='bucket_background',
-						help=('CloudBuckets queries do not expose background '
-						      'execution.'), disabled=True, )
-				
-				# ----- Reset Button -----
-				st.button( label='Reset', key='bucket_request_settings_reset', width='stretch',
-					icon='🔄', on_click=reset_bucket_request_settings, )
-		
+
 		# ------------------------------------------------------------------
 		# Expander — File Uploader
 		# ------------------------------------------------------------------
-		if 'bucket_upload_object_name' not in st.session_state:
-			st.session_state[ 'bucket_upload_object_name' ] = ''
-		
-		with st.expander( label='File Uploader', icon='📤', expanded=False, width='stretch', ):
-			upload_c1, upload_c2, upload_c3 = st.columns( [ 0.50, 0.25, 0.25 ], border=True,
-				gap='xxsmall', )
-			
-			# ----- File Upload -----
+		with st.expander( label='File Uploader', icon='📤', expanded=False, width='stretch' ):
+			upload_c1, upload_c2 = st.columns( [ 0.67, 0.33 ], border=True, gap='xxsmall' )
+
 			with upload_c1:
 				uploaded_file = st.file_uploader( label='Upload File to Bucket',
 					key='bucket_input',
-					help=('Uploads a local file to the selected Google Cloud '
-					      'Storage bucket.'), )
-			
-			# ----- Object Name -----
+					help='Uploads a local file to the selected Google Cloud Storage bucket.' )
+
 			with upload_c2:
 				st.text_input( label='Destination Object Name', key='bucket_upload_object_name',
-					help=('Optional destination object name. The uploaded '
-					      'filename is used when blank.'), width='stretch', )
-			
-			# ----- Content Type -----
-			with upload_c3:
-				st.text_input( label='Content Type', key='bucket_content_type',
-					help=('Optional object MIME type. The uploaded file MIME '
-					      'type is used when blank.'), width='stretch', )
-			
+					help='Optional destination name. The uploaded filename is used when blank.' )
+
 			target_bucket = get_selected_bucket_name( )
-			
 			if st.button( label='Upload to Bucket', key='bucket_upload', icon='⬆️',
-					width='stretch', disabled=(uploaded_file is None or not bool( target_bucket )),):
+					width='stretch', disabled=(uploaded_file is None or not bool( target_bucket )) ):
 				with st.spinner( 'Uploading file to Google Cloud Storage…' ):
 					try:
-						# Synchronize the uploader-specific destination name
-						# with the value consumed by upload_cloud_bucket_object( ).
-						st.session_state[ 'bucket_object_name' ] = str(
-							st.session_state.get( 'bucket_upload_object_name',
-								'', ) or '' ).strip( )
-						
-						upload_cloud_bucket_object( uploaded_file, target_bucket, )
+						upload_cloud_object( uploaded_file, target_bucket )
 						st.success( 'File uploaded to Google Cloud Storage.' )
 					except Exception as exc:
 						err = Error( exc )
 						st.error( f'Upload failed: {err.info}' )
-			
+
 			if st.session_state.get( 'bucket_upload_result' ):
 				with st.expander( label='Upload Result', icon='📄', expanded=False,
-						width='stretch', ):
+						width='stretch' ):
 					render_storage_metadata( st.session_state[ 'bucket_upload_result' ] )
-		
-		# ------------------------------------------------------------------
-		# Expander — System Instructions
-		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch', ):
-			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
-			bucket_prompt_categories = fetch_prompt_categories( 'Cloud Buckets' )
-			current_bucket_category = st.session_state.get( 'bucket_prompt_category' )
-			if current_bucket_category not in bucket_prompt_categories:
-				st.session_state[ 'bucket_prompt_category' ] = None
-			
-			selected_bucket_category = st.session_state.get( 'bucket_prompt_category' )
-			bucket_prompt_options = (fetch_prompt_options(
-				selected_bucket_category ) if selected_bucket_category else [ ])
-			bucket_prompt_ids = [ int( option[ 'ID' ] ) for option in bucket_prompt_options ]
-			
-			if (st.session_state.get( 'bucket_prompt_id' ) not in bucket_prompt_ids):
-				st.session_state[ 'bucket_prompt_id' ] = None
-			
-			# ----- Instruction Text -----
-			with in_left:
-				st.text_area( label='Enter Text', height=140, width='stretch',
-					key='bucket_system_instructions', help=cfg.SYSTEM_INSTRUCTIONS, )
-			
-			# ----- Template Selection -----
-			with in_right:
-				st.selectbox( label='Category', options=bucket_prompt_categories, index=None,
-					key='bucket_prompt_category', placeholder='Select Category',
-					help=('Limits prompt templates to categories associated '
-					      'with cloud-storage, governance, and data-management '
-					      'workflows.'), on_change=reset_prompt_template_selection,
-					args=('bucket_prompt_id',), )
-				
-				st.selectbox( label='Use Template', options=bucket_prompt_ids, index=None,
-					key='bucket_prompt_id', placeholder='Select Template',
-					disabled=not bucket_prompt_ids,
-					format_func=lambda prompt_id: format_prompt_option( prompt_id,
-						bucket_prompt_options, ),
-					help=('Loads the selected prompt into the Google Cloud '
-					      'Buckets system-instruction field.'),
-					on_change=load_bucket_instruction_template, )
-			
-			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
-			
-			# ----- Clear Button -----
-			with btn_c1:
-				st.button( label='Clear Instructions', key='clear_bucket_instructions',
-					width='stretch', on_click=clear_bucket_instructions, icon='🧹', )
-			
-			# ----- Convert Button -----
-			with btn_c2:
-				st.button( label='XML ↔️ Markdown', key='convert_bucket_instructions',
-					width='stretch', on_click=convert_bucket_system_instructions, )
-		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True, )
-		
-		# ------------------------------------------------------------------
-		# Bucket Query
-		# ------------------------------------------------------------------
-		st.text_area( label='Query', key='bucket_query', height=120,
-			help=('Ask a question using supported content stored in the '
-			      'selected Google Cloud Bucket.'), )
-		
-		qry_c1, qry_c2 = st.columns( 2 )
-		
-		target_bucket = get_selected_bucket_name( )
-		
-		with qry_c1:
-			# ----- Query Button -----
-			if st.button( label='Query Cloud Bucket', key='query_bucket', icon='🔍',
-					width='stretch', disabled=(not bool( target_bucket ) or not bool(
-						str( st.session_state.get( 'bucket_query', '', ) or '' ).strip( ) )), ):
-				with st.spinner( 'Querying cloud bucket…' ):
-					try:
-						query = str( st.session_state.get( 'bucket_query', '', ) or '' ).strip( )
-						
-						result = query_cloud_bucket( target_bucket, query, )
-						st.session_state[ 'bucket_results' ] = result
-						st.success( 'Google Cloud Bucket query completed.' )
-					except Exception as exc:
-						err = Error( exc )
-						st.error( f'Bucket query failed: {err.info}' )
-		
-		with qry_c2:
-			# ----- Clear Outputs -----
-			if st.button( label='Clear Outputs', key='clear_bucket_outputs', width='stretch',
-					on_click=clear_bucket_outputs, icon='🧹', ):
-				st.rerun( )
-		
-		# ------------------------------------------------------------------
-		# Expander — Query Results
-		# ------------------------------------------------------------------
-		if st.session_state.get( 'bucket_results' ) is not None:
-			with st.expander( label='Query Results', icon='📄', expanded=True, width='stretch', ):
-				result = st.session_state[ 'bucket_results' ]
-				
-				if isinstance( result, str, ):
-					st.markdown( result )
-				else:
-					st.json( normalize( result ) )
+
+		st.button( label='Clear Outputs', key='clear_bucket_outputs', width='stretch',
+			on_click=clear_bucket_outputs, icon='🧹' )
 
 # ======================================================================================
 # PROMPT ENGINEERING MODE
