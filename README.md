@@ -7,7 +7,7 @@
   <a href="#-overview">Overview</a>  ·
   <a href="#-features">Features</a>  ·
   <a href="#-application-modes">Modes</a>  ·
-  <a href="#-requirements">Requirements</a> ·
+  <a href="https://github.com/is-leeroy-jenkins/Boo/blob/main/requirements.txt">Requirements</a> ·
   <a href="#-api-key-setup">Setup</a>  ·
   <a href="#-installation">Installation</a>  ·
   <a href="#-running-the-streamlit-application">Run</a>  ·
@@ -18,7 +18,7 @@
 
 ___
 
-Boo is a Python and Streamlit application for building, running, and managing provider-aware
+Boo is a Python application for running provider-aware
 artificial intelligence workflows across OpenAI GPT, Google Gemini, and xAI Grok. It supports text
 generation, image generation and analysis, image editing, audio transcription, audio translation,
 text-to-speech, embeddings, document question answering, file operations, vector stores,

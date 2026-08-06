@@ -1187,11 +1187,31 @@ def count_tokens( text: str ) -> int:
 	num_tokens = len( encoding.encode( text ) )
 	return num_tokens
 
+def resolve_gemini_api_key( ) -> Optional[ str ]:
+	"""Resolve gemini api key.
+    
+    Purpose:
+        The function coordinates local state, input validation, and downstream helper
+        calls needed by the surrounding application mode.
+    
+    Returns:
+        Result produced by the operation.
+    """
+	session_key = st.session_state.get( "gemini_api_key" )
+	if session_key:
+		return session_key
+	
+	cfg_key = getattr( cfg, "GOOGLE_API_KEY", None )
+	if cfg_key:
+		return cfg_key
+	
+	return os.environ.get( "GOOGLE_API_KEY" )
+
 def apply_gemini_runtime_config( ) -> None:
 	"""Apply gemini runtime config.
     
     Purpose:
-        Supports the Jeni Streamlit application by executing the apply gemini runtime config
+        Supports the Boo Streamlit application by executing the apply gemini runtime config
         workflow. The function coordinates local state, input validation, and downstream helper
         calls needed by the surrounding application mode.
     """
@@ -5832,7 +5852,7 @@ if mode == 'Text':
 			return getattr( cfg, 'GPT', getattr( cfg, 'BOO', '🧠' ), )
 		
 		if provider_name == 'Gemini':
-			return getattr( cfg, 'JENI', getattr( cfg, 'BOO', '🧠' ), )
+			return getattr( cfg, 'Boo', getattr( cfg, 'BOO', '🧠' ), )
 		
 		if provider_name == 'Grok':
 			return getattr( cfg, 'GROK', getattr( cfg, 'BOO', '🧠' ), )
@@ -13438,7 +13458,7 @@ elif mode == 'File Search Stores':
 			if not message_content:
 				continue
 			
-			message_avatar = (cfg.JENI if message_role == 'assistant' else '')
+			message_avatar = (cfg.Boo if message_role == 'assistant' else '')
 			with st.chat_message( message_role, avatar=message_avatar ):
 				st.markdown( message_content )
 		
@@ -13454,7 +13474,7 @@ elif mode == 'File Search Stores':
 			st.session_state[ 'stores_messages' ].append( { 'role': 'user',
 				'content': stores_prompt, } )
 			
-			with st.chat_message( 'assistant', avatar=cfg.JENI ):
+			with st.chat_message( 'assistant', avatar=cfg.Boo ):
 				with st.spinner( 'Searching the selected File Search Store…' ):
 					try:
 						response_text = run_file_search_store_query( prompt=stores_prompt,
@@ -14135,7 +14155,7 @@ elif mode == 'Google Cloud Buckets':
 			if not message_content:
 				continue
 			
-			message_avatar = (cfg.JENI if message_role == 'assistant' else '')
+			message_avatar = (cfg.Boo if message_role == 'assistant' else '')
 			with st.chat_message( message_role, avatar=message_avatar ):
 				st.markdown( message_content )
 		
@@ -14154,7 +14174,7 @@ elif mode == 'Google Cloud Buckets':
 			st.session_state[ 'bucket_messages' ].append(
 				{ 'role': 'user', 'content': bucket_prompt, } )
 			
-			with st.chat_message( 'assistant', avatar=cfg.JENI ):
+			with st.chat_message( 'assistant', avatar=cfg.Boo ):
 				with st.spinner( 'Processing Google Cloud Buckets request…' ):
 					try:
 						response_text = run_bucket_chat_query( prompt=bucket_prompt,
