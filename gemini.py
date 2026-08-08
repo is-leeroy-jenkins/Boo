@@ -558,8 +558,8 @@ class Chat( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def normalize_context( self, context: Optional[ List[ Dict[ str, Any ] ] ] = None ) -> List[
-		Dict[ str, Any ] ]:
+	def normalize_context( self,
+		context: Optional[ List[ Dict[ str, Any ] ] ] = None ) -> List[ Dict[ str, Any ] ]:
 		"""Convert application history into Interactions steps.
 
 		Purpose:
@@ -665,8 +665,7 @@ class Chat( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = ('build_urls( self, urls: Optional[ List[ str ] ], max_urls: int ) '
-			                    '-> List[ str ]')
+			exception.method = ('build_urls( self, **kwargs ) -> List[ str ]')
 			Logger( ).write( exception )
 			raise exception
 	
@@ -792,10 +791,7 @@ class Chat( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = ('build_generation_config( self, temperature: float, top_p: float, '
-			                    'top_k: int, max_tokens: int, stops: Optional[ List[ str ] ], '
-			                    'reasoning: str, tool_choice: Optional[ str ] ) '
-			                    '-> Dict[ str, Any ]')
+			exception.method = ('build_generation_config( self, **kwargs -> Dict[ str, Any ]')
 			Logger( ).write( exception )
 			raise exception
 	
@@ -817,7 +813,6 @@ class Chat( Gemini ):
 		"""
 		try:
 			self.response_schema = response_schema
-			
 			if self.response_schema is None:
 				return None
 			
@@ -893,9 +888,7 @@ class Chat( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = ('build_response_format( self, response_format: str, '
-			                    'response_schema: Any, modalities: Optional[ List[ str ] ] ) '
-			                    '-> Optional[ Any ]')
+			exception.method = ('build_response_format( self, **kwargs ) -> Optional[ Any ]')
 			Logger( ).write( exception )
 			raise exception
 	
@@ -930,7 +923,6 @@ class Chat( Gemini ):
 			self.file_search_store_names = [ str( value ).strip( ) for value in
 				self.file_search_store_names if value is not None and str( value ).strip( ) ]
 			self.tool_objects = [ ]
-			
 			if 'google_search' in self.selected_tools:
 				self.tool_objects.append( { 'type': 'google_search', } )
 			
@@ -952,10 +944,7 @@ class Chat( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = ('build_tools( self, tools: Optional[ List[ str ] ], '
-			                    'urls: Optional[ List[ str ] ], '
-			                    'file_search_store_names: Optional[ List[ str ] ] ) '
-			                    '-> List[ Dict[ str, Any ] ]')
+			exception.method = ('build_tools( self, **kwargs ) -> List[ Dict[ str, Any ] ]')
 			Logger( ).write( exception )
 			raise exception
 	
@@ -1008,16 +997,14 @@ class Chat( Gemini ):
 				return
 			
 			self.source_keys.add( self.source_key )
-			self.source_values.append(
-				{ 'type': self.source_type, 'title': self.source_title or None,
+			self.source_values.append( { 'type': self.source_type, 'title': self.source_title or None,
 					'snippet': self.source_text or None, 'url': self.source_url or None,
 					'files_id': self.source_file_id or None, 'metadata': self.source, } )
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = ('append_source( self, source: Dict[ str, Any ], '
-			                    'default_type: str ) -> None')
+			exception.method = ('append_source( self, *kwargs ) -> None')
 			Logger( ).write( exception )
 			raise exception
 	
@@ -1044,13 +1031,10 @@ class Chat( Gemini ):
 			self.source_values: List[ Dict[ str, Any ] ] = [ ]
 			self.source_keys: Set[ Tuple[ str, str, str ] ] = set( )
 			self.source_steps = getattr( self.source_interaction, 'steps', None ) or [ ]
-			
 			for step in self.source_steps:
 				self.source_step_type = str( getattr( step, 'type', '' ) or '' ).strip( )
-				
 				if self.source_step_type == 'model_output':
 					self.source_content = getattr( step, 'content', None ) or [ ]
-					
 					for block in self.source_content:
 						self.annotations = getattr( block, 'annotations', None ) or [ ]
 						
@@ -1066,7 +1050,6 @@ class Chat( Gemini ):
 				elif self.source_step_type in ('google_search_result', 'file_search_result',
 					'url_context_result', 'google_maps_result', 'code_execution_result',):
 					self.result_value = self.normalize_value( getattr( step, 'result', None ) )
-					
 					if isinstance( self.result_value, list ):
 						for result in self.result_value:
 							if isinstance( result, dict ) and result:
@@ -1080,8 +1063,7 @@ class Chat( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = ('extract_grounding_sources( self, interaction: Any ) '
-			                    '-> List[ Dict[ str, Any ] ]')
+			exception.method = ('extract_grounding_sources( self, **kwargs) -> List[Dict[str, Any]]')
 			Logger( ).write( exception )
 			raise exception
 	
@@ -1145,7 +1127,6 @@ class Chat( Gemini ):
 		"""
 		try:
 			self.structured_history: List[ Dict[ str, Any ] ] = [ ]
-			
 			for step in self.input_steps:
 				self.input_step = self.normalize_value( step )
 				if isinstance( self.input_step, dict ) and self.input_step:
@@ -1161,8 +1142,7 @@ class Chat( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = ('get_structured_history( self ) '
-			                    '-> List[ Dict[ str, Any ] ]')
+			exception.method = ('get_structured_history( self ) -> List[ Dict[ str, Any ] ]')
 			Logger( ).write( exception )
 			raise exception
 	
@@ -2401,11 +2381,7 @@ class Images( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = ('analyze( self, prompt: str, path: str, model: str, aspect: str, '
-			                    'number: int, temperature: float, top_p: float, frequency: float, '
-			                    'presence: float, max_tokens: int, resolution: str, instruct: str, '
-			                    'output_mime_type: str, response_modalities: str, grounded: bool, '
-			                    'image_search: bool ) -> Optional[str]')
+			exception.method = ('analyze( self, **kwargs ) -> Optional[str]')
 			Logger( ).write( exception )
 			raise exception
 	
@@ -2413,8 +2389,7 @@ class Images( Gemini ):
 		aspect: str=None, number: int=None, temperature: float=None, top_p: float=None,
 		frequency: float=None, presence: float=None, max_tokens: int=None,
 		resolution: str=None, instruct: str=None, output_mime_type: str=None,
-		response_modalities: str=None, grounded: bool = False, image_search: bool = False ) -> \
-	Optional[ PIL.Image.Image ]:
+		response_modalities: str=None, grounded: bool=False, image_search: bool=False ) -> Image:
 		"""Edit an image through the Gemini Interactions API.
 
 		Purpose:
@@ -2461,11 +2436,7 @@ class Images( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Images'
-			exception.method = ('edit( self, prompt: str, path: str, model: str, aspect: str, '
-			                    'number: int, temperature: float, top_p: float, frequency: float, '
-			                    'presence: float, max_tokens: int, resolution: str, instruct: str, '
-			                    'output_mime_type: str, response_modalities: str, grounded: bool, '
-			                    'image_search: bool ) -> Optional[PIL.Image.Image]')
+			exception.method = ('edit( self, **kwargs ) -> Optional[PIL.Image.Image]')
 			Logger( ).write( exception )
 			raise exception
 
