@@ -2251,8 +2251,7 @@ class Files( Grok ):
 			raise exception
 	
 	def summarize( self, file_id: str, prompt: str, model: str, instruct: str='',
-		temperature: float=0.0, top_p: float=0.0, frequency: float=0.0, presence: float =
-		0.0,
+		temperature: float=0.0, top_p: float=0.0, frequency: float=0.0, presence: float=0.0,
 		max_tokens: int=0, store: bool=False, stream: bool=False,
 		include: Optional[ List[ str ] ] = None, previous_id: str='',
 		stream_handler: Any=None ) -> str:

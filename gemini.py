@@ -281,7 +281,7 @@ class Chat( Gemini ):
 	stream: bool
 	stream_handler: Optional[ Callable[ [ str ], None ] ]
 	
-	def __init__( self, model: str = 'gemini-2.5-flash-lite' ) -> None:
+	def __init__( self, model: str='gemini-2.5-flash-lite' ) -> None:
 		"""Initialize the Chat wrapper.
 
 		Purpose:
@@ -578,7 +578,6 @@ class Chat( Gemini ):
 		try:
 			self.context = context if isinstance( context, list ) else [ ]
 			self.history_steps: List[ Dict[ str, Any ] ] = [ ]
-			
 			for message in self.context:
 				if not isinstance( message, dict ):
 					continue
@@ -624,7 +623,7 @@ class Chat( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_urls( self, urls: Optional[ List[ str ] ] = None, max_urls: int = 0 ) -> List[ str ]:
+	def build_urls( self, urls: Optional[ List[ str ] ]=None, max_urls: int=0 ) -> List[ str ]:
 		"""Build the normalized URL list.
 
 		Purpose:
@@ -671,9 +670,9 @@ class Chat( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_input( self, prompt: str, content: str = '',
-		context: Optional[ List[ Dict[ str, Any ] ] ] = None, urls: Optional[ List[ str ] ] = None,
-		max_urls: int = 0 ) -> List[ Dict[ str, Any ] ]:
+	def build_input( self, prompt: str, content: str='',
+		context: Optional[ List[ Dict[ str, Any ] ] ]=None, urls: Optional[ List[ str ] ]=None,
+		max_urls: int=0 ) -> List[ Dict[ str, Any ] ]:
 		"""Build the complete Interactions input timeline.
 
 		Purpose:
@@ -704,7 +703,6 @@ class Chat( Gemini ):
 			self.input_steps = self.normalize_context( self.context )
 			self.urls = self.build_urls( self.urls, self.max_urls )
 			self.current_parts: List[ str ] = [ ]
-			
 			if self.content_block and self.content_block.strip( ):
 				self.current_parts.append( self.content_block.strip( ) )
 			
@@ -731,9 +729,9 @@ class Chat( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_generation_config( self, temperature: float = 0.0, top_p: float = 0.0, top_k: int
+	def build_generation_config( self, temperature: float=0.0, top_p: float=0.0, top_k: int
 	= 0,
-		max_tokens: int = 0, stops: Optional[ List[ str ] ] = None, reasoning: str = '',
+		max_tokens: int=0, stops: Optional[ List[ str ] ] = None, reasoning: str='',
 		tool_choice: Optional[ str ] = None ) -> Dict[ str, Any ]:
 		"""Build the Interactions generation configuration.
 
@@ -851,7 +849,7 @@ class Chat( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_response_format( self, response_format: str = '', response_schema: Any = None,
+	def build_response_format( self, response_format: str='', response_schema: Any = None,
 		modalities: Optional[ List[ str ] ] = None ) -> Optional[ Any ]:
 		"""Build the Interactions response format.
 
@@ -1261,15 +1259,15 @@ class Chat( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def generate_text( self, prompt: str, model: str, number: int = 1, temperature: float = 0.0,
-		top_p: float = 0.0, top_k: int = 0, frequency: float = 0.0, presence: float = 0.0,
-		max_tokens: int = 0, stops: Optional[ List[ str ] ] = None, instruct: str = '',
-		response_format: str = '', tools: Optional[ List[ str ] ] = None,
-		tool_choice: Optional[ str ] = None, reasoning: str = '',
-		modalities: Optional[ List[ str ] ] = None, media_resolution: str = '',
-		context: Optional[ List[ Dict[ str, Any ] ] ] = None, content: str = '',
-		urls: Optional[ List[ str ] ] = None, max_urls: int = 0, response_schema: Any = '',
-		safety_profile: str = '', file_search_store_names: Optional[ List[ str ] ] = None,
+	def generate_text( self, prompt: str, model: str, number: int=1, temperature: float=0.0,
+		top_p: float=0.0, top_k: int=0, frequency: float=0.0, presence: float=0.0,
+		max_tokens: int=0, stops: Optional[ List[ str ] ] = None, instruct: str='',
+		response_format: str='', tools: Optional[ List[ str ] ] = None,
+		tool_choice: Optional[ str ] = None, reasoning: str='',
+		modalities: Optional[ List[ str ] ] = None, media_resolution: str='',
+		context: Optional[ List[ Dict[ str, Any ] ] ] = None, content: str='',
+		urls: Optional[ List[ str ] ] = None, max_urls: int=0, response_schema: Any = '',
+		safety_profile: str='', file_search_store_names: Optional[ List[ str ] ] = None,
 		stream: bool = False, stream_handler: Optional[ Callable[ [ str ], None ] ] = None ) -> (
 			str):
 		"""Generate text through the Gemini Interactions API.
@@ -1457,7 +1455,7 @@ class Images( Gemini ):
 	grounding_metadata: Optional[ Any ]
 	grounding_sources: List[ Dict[ str, Any ] ]
 	
-	def __init__( self, model: str = 'gemini-3.1-flash-image' ) -> None:
+	def __init__( self, model: str='gemini-3.1-flash-image' ) -> None:
 		"""Initialize the Images wrapper.
 
 		Purpose:
@@ -2299,11 +2297,11 @@ class Images( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def generate( self, prompt: str, model: str = 'gemini-3.1-flash-image', aspect: str = None,
-		number: int = None, temperature: float = None, top_p: float = None, frequency: float =
+	def generate( self, prompt: str, model: str='gemini-3.1-flash-image', aspect: str=None,
+		number: int=None, temperature: float=None, top_p: float=None, frequency: float =
 		None,
-		presence: float = None, max_tokens: int = None, resolution: str = None,
-		instruct: str = None, output_mime_type: str = None, response_modalities: str = None,
+		presence: float=None, max_tokens: int=None, resolution: str=None,
+		instruct: str=None, output_mime_type: str=None, response_modalities: str=None,
 		grounded: bool = False, image_search: bool = False ) -> Optional[ PIL.Image.Image ]:
 		"""Generate an image through the Gemini Interactions API.
 
@@ -2356,11 +2354,11 @@ class Images( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def analyze( self, prompt: str, path: str, model: str = 'gemini-3.1-flash-image',
-		aspect: str = None, number: int = None, temperature: float = None, top_p: float = None,
-		frequency: float = None, presence: float = None, max_tokens: int = None,
-		resolution: str = None, instruct: str = None, output_mime_type: str = None,
-		response_modalities: str = None, grounded: bool = False, image_search: bool = False ) -> \
+	def analyze( self, prompt: str, path: str, model: str='gemini-3.1-flash-image',
+		aspect: str=None, number: int=None, temperature: float=None, top_p: float=None,
+		frequency: float=None, presence: float=None, max_tokens: int=None,
+		resolution: str=None, instruct: str=None, output_mime_type: str=None,
+		response_modalities: str=None, grounded: bool = False, image_search: bool = False ) -> \
 	Optional[ str ]:
 		"""Analyze an image through the Gemini Interactions API.
 
@@ -2416,11 +2414,11 @@ class Images( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def edit( self, prompt: str, path: str, model: str = 'gemini-3.1-flash-image',
-		aspect: str = None, number: int = None, temperature: float = None, top_p: float = None,
-		frequency: float = None, presence: float = None, max_tokens: int = None,
-		resolution: str = None, instruct: str = None, output_mime_type: str = None,
-		response_modalities: str = None, grounded: bool = False, image_search: bool = False ) -> \
+	def edit( self, prompt: str, path: str, model: str='gemini-3.1-flash-image',
+		aspect: str=None, number: int=None, temperature: float=None, top_p: float=None,
+		frequency: float=None, presence: float=None, max_tokens: int=None,
+		resolution: str=None, instruct: str=None, output_mime_type: str=None,
+		response_modalities: str=None, grounded: bool = False, image_search: bool = False ) -> \
 	Optional[ PIL.Image.Image ]:
 		"""Edit an image through the Gemini Interactions API.
 
@@ -2511,7 +2509,7 @@ class Embeddings( Gemini ):
 	contents: Optional[ str | List[ str ] ]
 	input_text: Optional[ str | List[ str ] ]
 	
-	def __init__( self, model: str = 'gemini-embedding-2' ) -> None:
+	def __init__( self, model: str='gemini-embedding-2' ) -> None:
 		"""Initialize the embeddings wrapper.
 
 		Purpose:
@@ -2577,7 +2575,7 @@ class Embeddings( Gemini ):
 			'CLASSIFICATION', 'CLUSTERING', 'QUESTION_ANSWERING', 'FACT_VERIFICATION',
 			'CODE_RETRIEVAL_QUERY', ]
 	
-	def normalize_dimensions( self, dimensions: int = 0 ) -> Optional[ int ]:
+	def normalize_dimensions( self, dimensions: int=0 ) -> Optional[ int ]:
 		"""Normalize the requested output dimensionality.
 
 		Purpose:
@@ -2650,8 +2648,8 @@ class Embeddings( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_embedding_config( self, model: str, dimensions: int = 0, task_type: str = '',
-		title: str = '' ) -> EmbedContentConfig:
+	def build_embedding_config( self, model: str, dimensions: int=0, task_type: str='',
+		title: str='' ) -> EmbedContentConfig:
 		"""Build the embedding request configuration.
 
 		Purpose:
@@ -2745,9 +2743,9 @@ class Embeddings( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def create( self, text: str | List[ str ], model: str = 'gemini-embedding-2',
-		dimensions: int = 0, task_type: str = '', title: str = '',
-		encoding_format: str = 'float' ) -> Optional[ List[ float ] | List[ List[ float ] ] ]:
+	def create( self, text: str | List[ str ], model: str='gemini-embedding-2',
+		dimensions: int=0, task_type: str='', title: str='',
+		encoding_format: str='float' ) -> Optional[ List[ float ] | List[ List[ float ] ] ]:
 		"""Create text embeddings.
 
 		Purpose:
@@ -2840,7 +2838,7 @@ class TTS( Gemini ):
 	pcm_bytes: Optional[ bytes ]
 	generation_config: Dict[ str, Any ]
 	
-	def __init__( self, model: str = 'gemini-3.1-flash-tts-preview' ) -> None:
+	def __init__( self, model: str='gemini-3.1-flash-tts-preview' ) -> None:
 		"""Initialize the TTS wrapper.
 
 		Purpose:
@@ -2919,8 +2917,8 @@ class TTS( Gemini ):
 			'Sadachbia', 'Sadaltager', 'Schedar', 'Sulafat', 'Umbriel', 'Vindemiatrix', 'Zephyr',
 			'Zubenelgenubi', ]
 	
-	def to_wave_bytes( self, pcm_data: bytes, rate: int = 24000, channels: int = 1,
-		sample_width: int = 2 ) -> bytes:
+	def to_wave_bytes( self, pcm_data: bytes, rate: int=24000, channels: int=1,
+		sample_width: int=2 ) -> bytes:
 		"""Wrap PCM audio in a WAV container.
 
 		Purpose:
@@ -3098,12 +3096,12 @@ class TTS( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def create_speech( self, text: str, filepath: str = None,
-		model: str = 'gemini-3.1-flash-tts-preview', format: str = 'audio/wav', speed: float =
+	def create_speech( self, text: str, filepath: str=None,
+		model: str='gemini-3.1-flash-tts-preview', format: str='audio/wav', speed: float =
 		None,
-		voice: str = None, frequency: float = None, presense: float = None, max_tokens: int = None,
-		instruct: str = None, temperature: float = None,
-		top_p: float = None ) -> bytes | str | None:
+		voice: str=None, frequency: float=None, presense: float=None, max_tokens: int=None,
+		instruct: str=None, temperature: float=None,
+		top_p: float=None ) -> bytes | str | None:
 		"""Generate speech through the Gemini Interactions API.
 
 		Purpose:
@@ -3237,9 +3235,9 @@ class Transcription( Gemini ):
 	response: Optional[ Any ]
 	generation_config: Dict[ str, Any ]
 	
-	def __init__( self, n: int = 1, model: str = 'gemini-3.6-flash', temperature: float = 0.8,
-		top_p: float = 0.9, frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 10000,
-		instruct: str = None ) -> None:
+	def __init__( self, n: int=1, model: str='gemini-3.6-flash', temperature: float=0.8,
+		top_p: float=0.9, frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
+		instruct: str=None ) -> None:
 		"""Initialize the Transcription wrapper.
 
 		Purpose:
@@ -3323,7 +3321,7 @@ class Transcription( Gemini ):
 		return [ 'audio/wav', 'audio/mpeg', 'audio/mp3', 'audio/mp4', 'audio/x-m4a', 'audio/aac',
 			'audio/ogg', 'audio/flac', 'audio/webm', ]
 	
-	def normalize_mime_type( self, path: str, mime_type: str = None ) -> str:
+	def normalize_mime_type( self, path: str, mime_type: str=None ) -> str:
 		"""Normalize an audio MIME type.
 
 		Purpose:
@@ -3371,8 +3369,8 @@ class Transcription( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_prompt( self, language: str = None, start_time: float = 0.0,
-		end_time: float = 0.0 ) -> str:
+	def build_prompt( self, language: str=None, start_time: float=0.0,
+		end_time: float=0.0 ) -> str:
 		"""Build the transcription prompt.
 
 		Purpose:
@@ -3471,10 +3469,10 @@ class Transcription( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def transcribe( self, path: str, model: str = 'gemini-3.6-flash', language: str = None,
-		mime_type: str = None, temperature: float = None, top_p: float = None,
-		frequency: float = None, presence: float = None, max_tokens: int = None,
-		start_time: float = 0.0, end_time: float = 0.0, instruct: str = None ) -> str:
+	def transcribe( self, path: str, model: str='gemini-3.6-flash', language: str=None,
+		mime_type: str=None, temperature: float=None, top_p: float=None,
+		frequency: float=None, presence: float=None, max_tokens: int=None,
+		start_time: float=0.0, end_time: float=0.0, instruct: str=None ) -> str:
 		"""Transcribe audio through the Gemini Interactions API.
 
 		Purpose:
@@ -3603,9 +3601,9 @@ class Translation( Gemini ):
 	response: Optional[ Any ]
 	generation_config: Dict[ str, Any ]
 	
-	def __init__( self, n: int = 1, model: str = 'gemini-3.6-flash', temperature: float = 0.8,
-		top_p: float = 0.9, frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 10000,
-		instruct: str = None ) -> None:
+	def __init__( self, n: int=1, model: str='gemini-3.6-flash', temperature: float=0.8,
+		top_p: float=0.9, frequency: float=0.0, presence: float=0.0, max_tokens: int=10000,
+		instruct: str=None ) -> None:
 		"""Initialize the Translation wrapper.
 
 		Purpose:
@@ -3677,7 +3675,7 @@ class Translation( Gemini ):
 			'Russian', 'Ukrainian', 'Polish', 'Arabic', 'Hebrew', 'Hindi', 'Bengali', 'Urdu',
 			'Chinese', 'Japanese', 'Korean', 'Vietnamese', 'Thai', 'Indonesian', 'Filipino', ]
 	
-	def normalize_mime_type( self, path: str, mime_type: str = None ) -> str:
+	def normalize_mime_type( self, path: str, mime_type: str=None ) -> str:
 		"""Normalize an audio MIME type.
 
 		Purpose:
@@ -3723,8 +3721,8 @@ class Translation( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_prompt( self, target_language: str, source_language: str = None,
-		start_time: float = 0.0, end_time: float = 0.0 ) -> str:
+	def build_prompt( self, target_language: str, source_language: str=None,
+		start_time: float=0.0, end_time: float=0.0 ) -> str:
 		"""Build the audio-translation prompt.
 
 		Purpose:
@@ -3827,11 +3825,11 @@ class Translation( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def translate( self, path: str, target_language: str, model: str = 'gemini-3.6-flash',
-		source_language: str = None, mime_type: str = None, temperature: float = None,
-		top_p: float = None, frequency: float = None, presence: float = None,
-		max_tokens: int = None, start_time: float = 0.0, end_time: float = 0.0,
-		instruct: str = None ) -> str:
+	def translate( self, path: str, target_language: str, model: str='gemini-3.6-flash',
+		source_language: str=None, mime_type: str=None, temperature: float=None,
+		top_p: float=None, frequency: float=None, presence: float=None,
+		max_tokens: int=None, start_time: float=0.0, end_time: float=0.0,
+		instruct: str=None ) -> str:
 		"""Translate audio through the Gemini Interactions API.
 
 		Purpose:
@@ -3972,7 +3970,7 @@ class Files( Gemini ):
 	collections: Dict[ str, str ]
 	documents: Dict[ str, str ]
 	
-	def __init__( self, model: str = 'gemini-3.6-flash' ) -> None:
+	def __init__( self, model: str='gemini-3.6-flash' ) -> None:
 		"""Initialize the Files wrapper.
 
 		Purpose:
@@ -4150,7 +4148,7 @@ class Files( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def upload( self, filepath: str, name: str = None ) -> File:
+	def upload( self, filepath: str, name: str=None ) -> File:
 		"""Upload a local file through the Gemini Files API.
 
 		Args:
@@ -4189,11 +4187,11 @@ class Files( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def list( self, model: str = 'gemini-3.6-flash', top_p: float = 0.8, top_k: int = 50,
-		temperature: float = 0.5, frequency: float = 0.0, presence: float = 0.0,
-		max_tokens: int = 8192, tool_choice: str = 'auto', stops: List[ str ] = None,
+	def list( self, model: str='gemini-3.6-flash', top_p: float=0.8, top_k: int=50,
+		temperature: float=0.5, frequency: float=0.0, presence: float=0.0,
+		max_tokens: int=8192, tool_choice: str='auto', stops: List[ str ] = None,
 		tools: List[ str ] = None, domains: List[ str ] = None, modalities: List[ str ] = None,
-		media_resolution: str = 'media_resolution_medium' ) -> List[ str ]:
+		media_resolution: str='media_resolution_medium' ) -> List[ str ]:
 		"""List configured Google Cloud Storage document objects.
 
 		Purpose:
@@ -4285,8 +4283,8 @@ class Files( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_generation_config( self, temperature: float = None, top_p: float = None,
-		max_tokens: int = None, stops: List[ str ] = None ) -> Dict[ str, Any ]:
+	def build_generation_config( self, temperature: float=None, top_p: float=None,
+		max_tokens: int=None, stops: List[ str ] = None ) -> Dict[ str, Any ]:
 		"""Build an Interactions generation configuration.
 
 		Args:
@@ -4351,9 +4349,9 @@ class Files( Gemini ):
 			raise exception
 	
 	def execute_document_interaction( self, prompt: str, filepaths: List[ str ], model: str,
-		temperature: float = None, top_p: float = None, frequency: float = None,
-		presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
-		instruct: str = None ) -> str:
+		temperature: float=None, top_p: float=None, frequency: float=None,
+		presence: float=None, max_tokens: int=None, stops: List[ str ] = None,
+		instruct: str=None ) -> str:
 		"""Execute a document Interaction.
 
 		Args:
@@ -4422,10 +4420,10 @@ class Files( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def summarize( self, prompt: str, filepath: str, model: str = 'gemini-3.6-flash',
-		temperature: float = None, top_p: float = None, frequency: float = None,
-		presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
-		instruct: str = None ) -> str:
+	def summarize( self, prompt: str, filepath: str, model: str='gemini-3.6-flash',
+		temperature: float=None, top_p: float=None, frequency: float=None,
+		presence: float=None, max_tokens: int=None, stops: List[ str ] = None,
+		instruct: str=None ) -> str:
 		"""Summarize a local document through Interactions."""
 		try:
 			throw_if( 'filepath', filepath )
@@ -4444,10 +4442,10 @@ class Files( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def search( self, prompt: str, filepath: str, model: str = 'gemini-3.6-flash',
-		temperature: float = None, top_p: float = None, frequency: float = None,
-		presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
-		instruct: str = None ) -> str:
+	def search( self, prompt: str, filepath: str, model: str='gemini-3.6-flash',
+		temperature: float=None, top_p: float=None, frequency: float=None,
+		presence: float=None, max_tokens: int=None, stops: List[ str ] = None,
+		instruct: str=None ) -> str:
 		"""Answer a question about a local document through Interactions."""
 		try:
 			throw_if( 'filepath', filepath )
@@ -4466,9 +4464,9 @@ class Files( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def survey( self, prompt: str, filepaths: List[ str ], model: str = 'gemini-3.6-flash',
-		temperature: float = None, top_p: float = None, frequency: float = None,
-		presence: float = None, max_tokens: int = None, stops: List[ str ] = None ) -> str:
+	def survey( self, prompt: str, filepaths: List[ str ], model: str='gemini-3.6-flash',
+		temperature: float=None, top_p: float=None, frequency: float=None,
+		presence: float=None, max_tokens: int=None, stops: List[ str ] = None ) -> str:
 		"""Analyze multiple local documents through Interactions."""
 		try:
 			return self.execute_document_interaction( prompt=prompt, filepaths=filepaths,
@@ -4486,9 +4484,9 @@ class Files( Gemini ):
 			raise exception
 	
 	def execute_grounded_interaction( self, prompt: str, model: str, tool_type: str,
-		temperature: float = None, top_p: float = None, frequency: float = None,
-		presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
-		instruct: str = None ) -> str:
+		temperature: float=None, top_p: float=None, frequency: float=None,
+		presence: float=None, max_tokens: int=None, stops: List[ str ] = None,
+		instruct: str=None ) -> str:
 		"""Execute a Google Search or Google Maps Interaction."""
 		try:
 			throw_if( 'prompt', prompt )
@@ -4538,9 +4536,9 @@ class Files( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def web_search( self, prompt: str, model: str = 'gemini-3.6-flash', temperature: float = None,
-		top_p: float = None, frequency: float = None, presence: float = None,
-		max_tokens: int = None, stops: List[ str ] = None, instruct: str = None ) -> str:
+	def web_search( self, prompt: str, model: str='gemini-3.6-flash', temperature: float=None,
+		top_p: float=None, frequency: float=None, presence: float=None,
+		max_tokens: int=None, stops: List[ str ] = None, instruct: str=None ) -> str:
 		"""Generate a Google Search-grounded response."""
 		try:
 			return self.execute_grounded_interaction( prompt=prompt, model=model,
@@ -4558,9 +4556,9 @@ class Files( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def search_maps( self, prompt: str, model: str = 'gemini-3.6-flash', temperature: float = None,
-		top_p: float = None, frequency: float = None, presence: float = None,
-		max_tokens: int = None, stops: List[ str ] = None, instruct: str = None ) -> str:
+	def search_maps( self, prompt: str, model: str='gemini-3.6-flash', temperature: float=None,
+		top_p: float=None, frequency: float=None, presence: float=None,
+		max_tokens: int=None, stops: List[ str ] = None, instruct: str=None ) -> str:
 		"""Generate a Google Maps-grounded response."""
 		try:
 			return self.execute_grounded_interaction( prompt=prompt, model=model,
@@ -4941,7 +4939,7 @@ class CloudBuckets( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def upload( self, path: str, bucket: str, name: str = None ) -> Blob:
+	def upload( self, path: str, bucket: str, name: str=None ) -> Blob:
 		"""Upload a local file to a bucket.
 
 		Args:
@@ -5037,9 +5035,9 @@ class CloudBuckets( Gemini ):
 			raise exception
 	
 	def execute_grounded_interaction( self, prompt: str, model: str, tool_type: str,
-		temperature: float = None, top_p: float = None, frequency: float = None,
-		presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
-		instruct: str = None ) -> str:
+		temperature: float=None, top_p: float=None, frequency: float=None,
+		presence: float=None, max_tokens: int=None, stops: List[ str ] = None,
+		instruct: str=None ) -> str:
 		"""Execute a grounded Interactions request.
 
 		Args:
@@ -5128,19 +5126,19 @@ class CloudBuckets( Gemini ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def web_search( self, prompt: str, model: str = 'gemini-2.5-flash-lite',
-		temperature: float = None, top_p: float = None, frequency: float = None,
-		presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
-		instruct: str = None ) -> str:
+	def web_search( self, prompt: str, model: str='gemini-2.5-flash-lite',
+		temperature: float=None, top_p: float=None, frequency: float=None,
+		presence: float=None, max_tokens: int=None, stops: List[ str ] = None,
+		instruct: str=None ) -> str:
 		"""Generate a Google Search-grounded response."""
 		return self.execute_grounded_interaction( prompt=prompt, model=model,
 			tool_type='google_search', temperature=temperature, top_p=top_p, frequency=frequency,
 			presence=presence, max_tokens=max_tokens, stops=stops, instruct=instruct )
 	
-	def search_maps( self, prompt: str, model: str = 'gemini-2.5-flash-lite',
-		temperature: float = None, top_p: float = None, frequency: float = None,
-		presence: float = None, max_tokens: int = None, stops: List[ str ] = None,
-		instruct: str = None ) -> str:
+	def search_maps( self, prompt: str, model: str='gemini-2.5-flash-lite',
+		temperature: float=None, top_p: float=None, frequency: float=None,
+		presence: float=None, max_tokens: int=None, stops: List[ str ] = None,
+		instruct: str=None ) -> str:
 		"""Generate a Google Maps-grounded response."""
 		return self.execute_grounded_interaction( prompt=prompt, model=model,
 			tool_type='google_maps', temperature=temperature, top_p=top_p, frequency=frequency,

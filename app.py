@@ -2143,8 +2143,7 @@ def build_document_user_input( user_query: str, k: int = 6 ) -> str:
 	if context:
 		prompt_parts.append(
 			'Use the following document excerpts to answer the question. If the excerpts do not '
-			'contain '
-			'the answer, say you do not have enough information.\n\n'
+			'contain the answer, say you do not have enough information.\n\n'
 			f'{context}' )
 	
 	prompt_parts.append( f'Question:\n{user_query}\n\nAnswer:' )
@@ -3133,8 +3132,7 @@ PROMPT_CATEGORY_MODE_MAP: Dict[ str, List[ str ] ] = {
 	'Files': [ 'Writing / Administrative', 'Research / Academic', 'Data Analytics & Governance',
 		'Software Engineering', 'Business / Finance / Marketing', 'Compliance / Legal / Budget',
 		'Instruction/ Training / Planning', ],
-	'Vector Stores': [ 'Research / Academic', 'Data Analytics & Governance', 'Software '
-	                                                                         'Engineering',
+	'Vector Stores': [ 'Research / Academic', 'Data Analytics & Governance', 'Software Engineering',
 		'Compliance / Legal / Budget', 'Instruction/ Training / Planning', ],
 	'Collections': [ 'Research / Academic', 'Data Analytics & Governance', 'Software Engineering',
 		'Compliance / Legal / Budget', 'Instruction/ Training / Planning', ],
@@ -4358,7 +4356,7 @@ with st.sidebar:
 	# ------------------------------------------------------------------
 	# Provider Selection
 	# ------------------------------------------------------------------
-	with st.expander( 'AI:', expanded=True ):
+	with st.expander( 'Provider', expanded=True ):
 		provider = st.radio( label='Select', options=provider_options,
 			index=provider_options.index( current_provider ), key='provider' )
 	
@@ -4374,7 +4372,7 @@ with st.sidebar:
 		current_mode = mode_options[ 0 ]
 		st.session_state[ 'mode' ] = current_mode
 	
-	with st.expander( 'Modes:', expanded=False ):
+	with st.expander( 'Mode', expanded=False ):
 		mode = st.radio( label='Select', options=mode_options,
 			index=get_mode_index( mode_options, current_mode ), key='mode' )
 	
