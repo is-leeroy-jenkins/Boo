@@ -81,35 +81,32 @@ import grok
 
 def throw_if( name: str, value: object ) -> None:
 	"""Throw if.
-
+	
 	Purpose:
-	    Validates that a required argument contains a usable value so failures occur before provider, filesystem, or parsing work begins.
-
+	    Validates that a required argument contains a usable value before the surrounding workflow
+	    continues. This guard centralizes early validation so provider wrappers and UI routines
+	    fail
+	    with consistent, readable error messages.
+	
 	Args:
-	    name (str): Argument name included in validation error messages.
-	    value (object): Candidate value to validate or normalize.
-
+	    name (str): Name value used by the operation.
+	    value (object): Value value used by the operation.
+	
 	Returns:
-	    None: This method updates instance state or validates input and does not return a value.
-
-	Raises:
-	    ValueError: Raised when the method cannot satisfy its documented value requirement.
-	"""
+	    None: This function performs its work through side effects and does not return a value."""
 	if value is None:
-		raise ValueError( f'Argument "{name}" cannot be empty!' )
+		raise ValueError( f'Argument "{name}" cannot be None.' )
 	
-	if isinstance( value, str ) and (not value.strip( )):
-		raise ValueError( f'Argument "{name}" cannot be empty!' )
-	
-	if isinstance( value, (list, tuple, dict, set) ) and len( value ) == 0:
-		raise ValueError( f'Argument "{name}" cannot be empty!' )
+	if isinstance( value, str ) and not value.strip( ):
+		raise ValueError( f'Argument "{name}" cannot be empty.' )
 
-def init_session_value( key: str, value: Any ) -> None:
-	"""Initializes session values.
+def init_state( key: str, value: Any ) -> None:
+	"""Init state.
 	
 	Purpose:
-	    Performs the init_session_value workflow using the inputs supplied by the caller and the current
-	    runtime onfiguration. The function keeps this behavior isolated so related UI, provider, and
+	    Performs the init_state workflow using the inputs supplied by the caller and the current
+	    runtime
+	    configuration. The function keeps this behavior isolated so related UI, provider, and
 	    data-processing paths can call it consistently.
 	
 	Args:
@@ -207,7 +204,7 @@ def init_env_state( key: str, config_name: str, env_name: str,
 	
 	Returns:
 	    None: This function performs its work through side effects and does not return a value."""
-	init_session_value( key, '' )
+	init_state( key, '' )
 	value = get_runtime_config_value( key, config_name, env_name )
 	sync_provider_config( key, config_name, env_name, value, provider )
 
@@ -236,7 +233,7 @@ def copy_state_alias( source_key: str, target_key: str, default: Any ) -> None:
 
 # ---------- API / PROVIDER CONFIGURATION -------------------------------------
 
-init_session_value( 'api_keys', { 'GPT': None, 'Grok': None, 'Gemini': None } )
+init_state( 'api_keys', { 'GPT': None, 'Grok': None, 'Gemini': None } )
 init_env_state( 'openai_api_key', 'OPENAI_API_KEY', 'OPENAI_API_KEY', 'GPT' )
 init_env_state( 'gemini_api_key', 'GEMINI_API_KEY', 'GEMINI_API_KEY', 'Gemini' )
 init_env_state( 'google_api_key', 'GOOGLE_API_KEY', 'GOOGLE_API_KEY' )
@@ -247,8 +244,8 @@ init_env_state( 'geoapify_api_key', 'GEOAPIFY_API_KEY', 'GEOAPIFY_API_KEY' )
 init_env_state( 'google_cloud_project_id', 'GOOGLE_CLOUD_PROJECT_ID', 'GOOGLE_CLOUD_PROJECT_ID' )
 init_env_state( 'google_cloud_location', 'GOOGLE_CLOUD_LOCATION', 'GOOGLE_CLOUD_LOCATION' )
 init_env_state( 'xai_api_key', 'XAI_API_KEY', 'XAI_API_KEY', 'Grok' )
-init_session_value( 'provider', 'GPT' )
-init_session_value( 'mode', 'Text' )
+init_state( 'provider', 'GPT' )
+init_state( 'mode', 'Text' )
 if st.session_state[ 'provider' ] is None:
 	st.session_state[ 'provider' ] = 'GPT'
 
@@ -257,380 +254,421 @@ if st.session_state[ 'mode' ] is None:
 
 # ---------- SHARED APPLICATION STATE -----------------------------------------
 
-init_session_value( 'messages', [ ] )
-init_session_value( 'chat_history', [ ] )
-init_session_value( 'files', [ ] )
-init_session_value( 'last_sources', [ ] )
-init_session_value( 'use_semantic', False )
-init_session_value( 'is_grounded', False )
-init_session_value( 'selected_prompt_id', '' )
-init_session_value( 'pending_system_prompt_name', '' )
-init_session_value( 'last_call_usage', { 'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, } )
-init_session_value( 'token_usage', { 'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, } )
+init_state( 'messages', [ ] )
+init_state( 'chat_history', [ ] )
+init_state( 'files', [ ] )
+init_state( 'last_sources', [ ] )
+init_state( 'use_semantic', False )
+init_state( 'is_grounded', False )
+init_state( 'selected_prompt_id', '' )
+init_state( 'pending_system_prompt_name', '' )
+init_state( 'last_call_usage', { 'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, } )
+init_state( 'token_usage', { 'prompt_tokens': 0, 'completion_tokens': 0, 'total_tokens': 0, } )
 
 # ---------- SHARED MODEL PARAMETERS ------------------------------------------
 
-init_session_value( 'chat_model', '' )
-init_session_value( 'text_model', '' )
-init_session_value( 'image_model', '' )
-init_session_value( 'image_analysis_model', '' )
-init_session_value( 'image_generation_model', '' )
-init_session_value( 'image_editing_model', '' )
-init_session_value( 'audio_model', '' )
-init_session_value( 'embedding_model', '' )
-init_session_value( 'docqna_model', '' )
-init_session_value( 'files_model', '' )
-init_session_value( 'stores_model', '' )
-init_session_value( 'bucket_model', '' )
-init_session_value( 'tts_model', '' )
-init_session_value( 'transcription_model', '' )
-init_session_value( 'translation_model', '' )
+init_state( 'chat_model', '' )
+init_state( 'text_model', '' )
+init_state( 'image_model', '' )
+init_state( 'image_analysis_model', '' )
+init_state( 'image_generation_model', '' )
+init_state( 'image_editing_model', '' )
+init_state( 'audio_model', '' )
+init_state( 'embedding_model', '' )
+init_state( 'docqna_model', '' )
+init_state( 'files_model', '' )
+init_state( 'stores_model', '' )
+init_state( 'bucket_model', '' )
+init_state( 'tts_model', '' )
+init_state( 'transcription_model', '' )
+init_state( 'translation_model', '' )
 
 # ---------- SHARED INSTRUCTION STATE -----------------------------------------
 
-init_session_value( 'instructions', '' )
-init_session_value( 'chat_system_instructions', '' )
-init_session_value( 'text_system_instructions', '' )
-init_session_value( 'image_system_instructions', '' )
-init_session_value( 'audio_system_instructions', '' )
-init_session_value( 'docqna_system_instructions', '' )
-init_session_value( 'docqna_systems_instructions', st.session_state[ 'docqna_system_instructions' ] )
-init_session_value( 'files_system_instructions', '' )
-init_session_value( 'stores_system_instructions', '' )
-init_session_value( 'filestore_system_instructions', '' )
-init_session_value( 'bucket_system_instructions', '' )
+init_state( 'instructions', '' )
+init_state( 'chat_system_instructions', '' )
+init_state( 'text_system_instructions', '' )
+init_state( 'image_system_instructions', '' )
+init_state( 'audio_system_instructions', '' )
+init_state( 'docqna_system_instructions', '' )
+init_state( 'docqna_systems_instructions', st.session_state[ 'docqna_system_instructions' ] )
+init_state( 'files_system_instructions', '' )
+init_state( 'stores_system_instructions', '' )
+init_state( 'filestore_system_instructions', '' )
+init_state( 'bucket_system_instructions', '' )
 
 # ---------- PROMPT TEMPLATE SELECTION STATE ----------------------------------
 
-init_session_value( 'text_prompt_category', '' )
-init_session_value( 'text_prompt_id', None )
-init_session_value( 'image_prompt_category', '' )
-init_session_value( 'image_prompt_id', None )
-init_session_value( 'audio_prompt_category', '' )
-init_session_value( 'audio_prompt_id', None )
-init_session_value( 'docqna_prompt_category', '' )
-init_session_value( 'docqna_prompt_id', None )
-init_session_value( 'files_prompt_category', '' )
-init_session_value( 'files_prompt_id', None )
-init_session_value( 'stores_prompt_category', '' )
-init_session_value( 'stores_prompt_id', None )
-init_session_value( 'filestore_prompt_category', '' )
-init_session_value( 'filestore_prompt_id', None )
-init_session_value( 'bucket_prompt_category', '' )
-init_session_value( 'bucket_prompt_id', None )
+init_state( 'text_prompt_category', '' )
+init_state( 'text_prompt_id', None )
+init_state( 'image_prompt_category', '' )
+init_state( 'image_prompt_id', None )
+init_state( 'audio_prompt_category', '' )
+init_state( 'audio_prompt_id', None )
+init_state( 'docqna_prompt_category', '' )
+init_state( 'docqna_prompt_id', None )
+init_state( 'files_prompt_category', '' )
+init_state( 'files_prompt_id', None )
+init_state( 'stores_prompt_category', '' )
+init_state( 'stores_prompt_id', None )
+init_state( 'filestore_prompt_category', '' )
+init_state( 'filestore_prompt_id', None )
+init_state( 'bucket_prompt_category', '' )
+init_state( 'bucket_prompt_id', None )
 
 # ---------- SHARED GENERATION PARAMETERS -------------------------------------
 
-init_session_value( 'max_tools', 0 )
-init_session_value( 'max_tokens', 0 )
-init_session_value( 'temperature', 0.0 )
-init_session_value( 'top_p', 0.0 )
-init_session_value( 'top_percent', 0.0 )
-init_session_value( 'frequency_penalty', 0.0 )
-init_session_value( 'presence_penalty', 0.0 )
-init_session_value( 'presense_penalty', st.session_state[ 'presence_penalty' ] )
-init_session_value( 'freq_penalty', 0.0 )
-init_session_value( 'pres_penalty', 0.0 )
-init_session_value( 'background', False )
-init_session_value( 'parallel_tools', False )
-init_session_value( 'store', False )
-init_session_value( 'stream', False )
-init_session_value( 'execution_mode', '' )
-init_session_value( 'response_format', '' )
-init_session_value( 'tool_choice', '' )
-init_session_value( 'reasoning', '' )
-init_session_value( 'stop_sequences', [ ] )
-init_session_value( 'stops', [ ] )
-init_session_value( 'include', [ ] )
-init_session_value( 'input', [ ] )
-init_session_value( 'tools', [ ] )
+init_state( 'max_tools', 0 )
+init_state( 'max_tokens', 0 )
+init_state( 'temperature', 0.0 )
+init_state( 'top_p', 0.0 )
+init_state( 'top_percent', 0.0 )
+init_state( 'frequency_penalty', 0.0 )
+init_state( 'presence_penalty', 0.0 )
+init_state( 'presense_penalty', st.session_state[ 'presence_penalty' ] )
+init_state( 'freq_penalty', 0.0 )
+init_state( 'pres_penalty', 0.0 )
+init_state( 'background', False )
+init_state( 'parallel_tools', False )
+init_state( 'store', False )
+init_state( 'stream', False )
+init_state( 'execution_mode', '' )
+init_state( 'response_format', '' )
+init_state( 'tool_choice', '' )
+init_state( 'reasoning', '' )
+init_state( 'stop_sequences', [ ] )
+init_state( 'stops', [ ] )
+init_state( 'include', [ ] )
+init_state( 'input', [ ] )
+init_state( 'tools', [ ] )
 
 # ---------- TEXT MODE STATE ---------------------------------------------------
 
-init_session_value( 'text_number', 0 )
-init_session_value( 'text_max_calls', 0 )
-init_session_value( 'text_max_tools', 0 )
-init_session_value( 'text_max_searches', 0 )
-init_session_value( 'text_max_urls', 0 )
-init_session_value( 'text_top_k', 0 )
-init_session_value( 'text_max_tokens', 0 )
-init_session_value( 'text_temperature', 0.0 )
-init_session_value( 'text_top_percent', 0.0 )
-init_session_value( 'text_frequency_penalty', 0.0 )
-init_session_value( 'text_presence_penalty', 0.0 )
-init_session_value( 'text_presense_penalty', st.session_state[ 'text_presence_penalty' ] )
-init_session_value( 'text_parallel_tools', False )
-init_session_value( 'text_parallel_calls', st.session_state[ 'text_parallel_tools' ] )
-init_session_value( 'text_background', False )
-init_session_value( 'text_store', False )
-init_session_value( 'text_stream', False )
-init_session_value( 'text_google_grounding', False )
-init_session_value( 'text_response_format', '' )
-init_session_value( 'text_tool_choice', '' )
-init_session_value( 'text_resolution', '' )
-init_session_value( 'text_media_resolution', '' )
-init_session_value( 'text_reasoning', '' )
-init_session_value( 'text_input', '' )
-init_session_value( 'text_content', '' )
-init_session_value( 'text_previous_response_id', '' )
-init_session_value( 'text_conversation_id', '' )
-init_session_value( 'text_stops', [ ] )
-init_session_value( 'text_modalities', [ ] )
-init_session_value( 'text_include', [ ] )
-init_session_value( 'text_domains', [ ] )
-init_session_value( 'text_tools', [ ] )
-init_session_value( 'text_context', [ ] )
-init_session_value( 'text_messages', [ ] )
-init_session_value( 'text_gemini_history', [ ] )
-init_session_value( 'text_file_search_store_names', [ ] )
-init_session_value( 'text_grok_collection_ids', [ ] )
-init_session_value( 'text_grok_collection_ids_input', '' )
-init_session_value( 'selected_filestore_id', '' )
-init_session_value( 'selected_filestore_label', '' )
+init_state( 'text_number', 0 )
+init_state( 'text_max_calls', 0 )
+init_state( 'text_max_tools', 0 )
+init_state( 'text_max_searches', 0 )
+init_state( 'text_max_urls', 0 )
+init_state( 'text_top_k', 0 )
+init_state( 'text_max_tokens', 0 )
+init_state( 'text_temperature', 0.0 )
+init_state( 'text_top_percent', 0.0 )
+init_state( 'text_frequency_penalty', 0.0 )
+init_state( 'text_presence_penalty', 0.0 )
+init_state( 'text_presense_penalty', st.session_state[ 'text_presence_penalty' ] )
+init_state( 'text_parallel_tools', False )
+init_state( 'text_parallel_calls', st.session_state[ 'text_parallel_tools' ] )
+init_state( 'text_background', False )
+init_state( 'text_store', False )
+init_state( 'text_stream', False )
+init_state( 'text_google_grounding', False )
+init_state( 'text_response_format', '' )
+init_state( 'text_tool_choice', '' )
+init_state( 'text_resolution', '' )
+init_state( 'text_media_resolution', '' )
+init_state( 'text_reasoning', '' )
+init_state( 'text_input', '' )
+init_state( 'text_content', '' )
+init_state( 'text_previous_response_id', '' )
+init_state( 'text_conversation_id', '' )
+init_state( 'text_stops', [ ] )
+init_state( 'text_modalities', [ ] )
+init_state( 'text_include', [ ] )
+init_state( 'text_domains', [ ] )
+init_state( 'text_tools', [ ] )
+init_state( 'text_context', [ ] )
+init_state( 'text_messages', [ ] )
+init_state( 'text_gemini_history', [ ] )
+init_state( 'text_file_search_store_names', [ ] )
+init_state( 'text_grok_collection_ids', [ ] )
+init_state( 'text_grok_collection_ids_input', '' )
+init_state( 'selected_filestore_id', '' )
+init_state( 'selected_filestore_label', '' )
 
 # ---------- IMAGE MODE STATE --------------------------------------------------
 
-init_session_value( 'image_number', 0 )
-init_session_value( 'image_max_calls', 0 )
-init_session_value( 'image_max_tools', 0 )
-init_session_value( 'image_max_searches', 0 )
-init_session_value( 'image_top_k', 0 )
-init_session_value( 'image_max_tokens', 0 )
-init_session_value( 'image_temperature', 0.0 )
-init_session_value( 'image_top_percent', 0.0 )
-init_session_value( 'image_frequency_penalty', 0.0 )
-init_session_value( 'image_presence_penalty', 0.0 )
-init_session_value( 'image_presense_penalty', st.session_state[ 'image_presence_penalty' ] )
-init_session_value( 'image_parallel_tools', False )
-init_session_value( 'image_background', False )
-init_session_value( 'image_store', False )
-init_session_value( 'image_stream', False )
-init_session_value( 'image_response_format', '' )
-init_session_value( 'image_tool_choice', '' )
-init_session_value( 'image_resolution', '' )
-init_session_value( 'image_media_resolution', '' )
-init_session_value( 'image_reasoning', '' )
-init_session_value( 'image_input', '' )
-init_session_value( 'image_content', '' )
-init_session_value( 'image_size', '' )
-init_session_value( 'image_quality', '' )
-init_session_value( 'image_style', '' )
-init_session_value( 'image_prompt', '' )
-init_session_value( 'image_action', '' )
-init_session_value( 'image_file', None )
-init_session_value( 'image_uploaded_file', None )
-init_session_value( 'image_mask_file', None )
-init_session_value( 'image_stops', [ ] )
-init_session_value( 'image_modalities', [ ] )
-init_session_value( 'image_include', [ ] )
-init_session_value( 'image_domains', [ ] )
-init_session_value( 'image_tools', [ ] )
-init_session_value( 'image_context', [ ] )
-init_session_value( 'image_messages', [ ] )
-init_session_value( 'generated_images', [ ] )
-init_session_value( 'analyzed_images', [ ] )
-init_session_value( 'edited_images', [ ] )
+init_state( 'image_number', 0 )
+init_state( 'image_max_calls', 0 )
+init_state( 'image_max_tools', 0 )
+init_state( 'image_max_searches', 0 )
+init_state( 'image_top_k', 0 )
+init_state( 'image_max_tokens', 0 )
+init_state( 'image_temperature', 0.0 )
+init_state( 'image_top_percent', 0.0 )
+init_state( 'image_frequency_penalty', 0.0 )
+init_state( 'image_presence_penalty', 0.0 )
+init_state( 'image_presense_penalty', st.session_state[ 'image_presence_penalty' ] )
+init_state( 'image_parallel_tools', False )
+init_state( 'image_background', False )
+init_state( 'image_store', False )
+init_state( 'image_stream', False )
+init_state( 'image_response_format', '' )
+init_state( 'image_tool_choice', '' )
+init_state( 'image_resolution', '' )
+init_state( 'image_media_resolution', '' )
+init_state( 'image_reasoning', '' )
+init_state( 'image_input', '' )
+init_state( 'image_content', '' )
+init_state( 'image_size', '' )
+init_state( 'image_quality', '' )
+init_state( 'image_style', '' )
+init_state( 'image_prompt', '' )
+init_state( 'image_action', '' )
+init_state( 'image_file', None )
+init_state( 'image_uploaded_file', None )
+init_state( 'image_mask_file', None )
+init_state( 'image_stops', [ ] )
+init_state( 'image_modalities', [ ] )
+init_state( 'image_include', [ ] )
+init_state( 'image_domains', [ ] )
+init_state( 'image_tools', [ ] )
+init_state( 'image_context', [ ] )
+init_state( 'image_messages', [ ] )
+init_state( 'generated_images', [ ] )
+init_state( 'analyzed_images', [ ] )
+init_state( 'edited_images', [ ] )
 
 # ---------- AUDIO MODE STATE --------------------------------------------------
 
-init_session_value( 'audio_number', 0 )
-init_session_value( 'audio_max_calls', 0 )
-init_session_value( 'audio_max_tools', 0 )
-init_session_value( 'audio_max_searches', 0 )
-init_session_value( 'audio_top_k', 0 )
-init_session_value( 'audio_max_tokens', 0 )
-init_session_value( 'audio_temperature', 0.0 )
-init_session_value( 'audio_top_percent', 0.0 )
-init_session_value( 'audio_frequency_penalty', 0.0 )
-init_session_value( 'audio_presence_penalty', 0.0 )
-init_session_value( 'audio_presense_penalty', st.session_state[ 'audio_presence_penalty' ] )
-init_session_value( 'audio_parallel_tools', False )
-init_session_value( 'audio_background', False )
-init_session_value( 'audio_store', False )
-init_session_value( 'audio_stream', False )
-init_session_value( 'audio_loop', False )
-init_session_value( 'audio_autoplay', False )
-init_session_value( 'audio_response_format', '' )
-init_session_value( 'audio_tool_choice', '' )
-init_session_value( 'audio_resolution', '' )
-init_session_value( 'audio_media_resolution', '' )
-init_session_value( 'audio_reasoning', '' )
-init_session_value( 'audio_input', '' )
-init_session_value( 'audio_content', '' )
-init_session_value( 'audio_task', '' )
-init_session_value( 'audio_language', '' )
-init_session_value( 'audio_format', '' )
-init_session_value( 'audio_file', '' )
-init_session_value( 'audio_voice', '' )
-init_session_value( 'audio_rate', 1.0 )
-init_session_value( 'audio_start_time', 0.0 )
-init_session_value( 'audio_end_time', 0.0 )
-init_session_value( 'audio_stops', [ ] )
-init_session_value( 'audio_modalities', [ ] )
-init_session_value( 'audio_include', [ ] )
-init_session_value( 'audio_domains', [ ] )
-init_session_value( 'audio_tools', [ ] )
-init_session_value( 'audio_context', [ ] )
-init_session_value( 'audio_messages', [ ] )
-init_session_value( 'tts_input', '' )
-init_session_value( 'tts_voice', '' )
-init_session_value( 'tts_format', '' )
-init_session_value( 'tts_output_path', '' )
-init_session_value( 'transcription_file', None )
-init_session_value( 'transcription_language', '' )
-init_session_value( 'transcription_prompt', '' )
-init_session_value( 'translation_file', None )
-init_session_value( 'translation_prompt', '' )
+init_state( 'audio_number', 0 )
+init_state( 'audio_max_calls', 0 )
+init_state( 'audio_max_tools', 0 )
+init_state( 'audio_max_searches', 0 )
+init_state( 'audio_top_k', 0 )
+init_state( 'audio_max_tokens', 0 )
+init_state( 'audio_temperature', 0.0 )
+init_state( 'audio_top_percent', 0.0 )
+init_state( 'audio_frequency_penalty', 0.0 )
+init_state( 'audio_presence_penalty', 0.0 )
+init_state( 'audio_presense_penalty', st.session_state[ 'audio_presence_penalty' ] )
+init_state( 'audio_parallel_tools', False )
+init_state( 'audio_background', False )
+init_state( 'audio_store', False )
+init_state( 'audio_stream', False )
+init_state( 'audio_loop', False )
+init_state( 'audio_autoplay', False )
+init_state( 'audio_response_format', '' )
+init_state( 'audio_tool_choice', '' )
+init_state( 'audio_resolution', '' )
+init_state( 'audio_media_resolution', '' )
+init_state( 'audio_reasoning', '' )
+init_state( 'audio_input', '' )
+init_state( 'audio_content', '' )
+init_state( 'audio_task', '' )
+init_state( 'audio_language', '' )
+init_state( 'audio_format', '' )
+init_state( 'audio_file', '' )
+init_state( 'audio_voice', '' )
+init_state( 'audio_rate', 1.0 )
+init_state( 'audio_start_time', 0.0 )
+init_state( 'audio_end_time', 0.0 )
+init_state( 'audio_stops', [ ] )
+init_state( 'audio_modalities', [ ] )
+init_state( 'audio_include', [ ] )
+init_state( 'audio_domains', [ ] )
+init_state( 'audio_tools', [ ] )
+init_state( 'audio_context', [ ] )
+init_state( 'audio_messages', [ ] )
+init_state( 'tts_input', '' )
+init_state( 'tts_voice', '' )
+init_state( 'tts_format', '' )
+init_state( 'tts_output_path', '' )
+init_state( 'transcription_file', None )
+init_state( 'transcription_language', '' )
+init_state( 'transcription_prompt', '' )
+init_state( 'translation_file', None )
+init_state( 'translation_prompt', '' )
 
 # ---------- EMBEDDINGS MODE STATE --------------------------------------------
 
-init_session_value( 'embedding_input', '' )
-init_session_value( 'embedding_text', '' )
-init_session_value( 'embedding_file', None )
-init_session_value( 'embedding_dimensions', 0 )
-init_session_value( 'embedding_encoding_format', '' )
-init_session_value( 'embedding_chunk_size', 0 )
-init_session_value( 'embedding_chunk_overlap', 0 )
-init_session_value( 'embedding_chunks', [ ] )
-init_session_value( 'embedding_vectors', [ ] )
-init_session_value( 'embedding_results', None )
-init_session_value( 'embedding_dataframe', None )
-init_session_value( 'embedding_messages', [ ] )
+init_state( 'embedding_input', '' )
+init_state( 'embedding_text', '' )
+init_state( 'embedding_file', None )
+init_state( 'embedding_dimensions', 0 )
+init_state( 'embedding_encoding_format', '' )
+init_state( 'embedding_chunk_size', 0 )
+init_state( 'embedding_chunk_overlap', 0 )
+init_state( 'embedding_chunks', [ ] )
+init_state( 'embedding_vectors', [ ] )
+init_state( 'embedding_results', None )
+init_state( 'embedding_dataframe', None )
+init_state( 'embedding_messages', [ ] )
 
 # ---------- DOCUMENT Q&A MODE STATE ------------------------------------------
 
-init_session_value( 'docqna_source', '' )
-init_session_value( 'docqna_mode', '' )
-init_session_value( 'docqna_file', None )
-init_session_value( 'docqna_files', [ ] )
-init_session_value( 'docqna_file_id', '' )
-init_session_value( 'docqna_vector_store_id', '' )
-init_session_value( 'docqna_question', '' )
-init_session_value( 'docqna_context', '' )
-init_session_value( 'docqna_answer', '' )
-init_session_value( 'docqna_messages', [ ] )
-init_session_value( 'docqna_history', [ ] )
-init_session_value( 'docqna_chunks', [ ] )
-init_session_value( 'docqna_sources', [ ] )
-init_session_value( 'docqna_temperature', 0.0 )
-init_session_value( 'docqna_top_percent', 0.0 )
-init_session_value( 'docqna_max_tokens', 0 )
-init_session_value( 'docqna_frequency_penalty', 0.0 )
-init_session_value( 'docqna_presence_penalty', 0.0 )
-init_session_value( 'docqna_response_format', '' )
-init_session_value( 'docqna_tool_choice', '' )
-init_session_value( 'docqna_reasoning', '' )
+init_state( 'docqna_source', '' )
+init_state( 'docqna_mode', '' )
+init_state( 'docqna_file', None )
+init_state( 'docqna_files', [ ] )
+init_state( 'docqna_file_id', '' )
+init_state( 'docqna_vector_store_id', '' )
+init_state( 'docqna_question', '' )
+init_state( 'docqna_context', '' )
+init_state( 'docqna_answer', '' )
+init_state( 'docqna_messages', [ ] )
+init_state( 'docqna_history', [ ] )
+init_state( 'docqna_chunks', [ ] )
+init_state( 'docqna_sources', [ ] )
+init_state( 'docqna_temperature', 0.0 )
+init_state( 'docqna_top_percent', 0.0 )
+init_state( 'docqna_max_tokens', 0 )
+init_state( 'docqna_frequency_penalty', 0.0 )
+init_state( 'docqna_presence_penalty', 0.0 )
+init_state( 'docqna_response_format', '' )
+init_state( 'docqna_tool_choice', '' )
+init_state( 'docqna_reasoning', '' )
 
 # ---------- FILES MODE STATE --------------------------------------------------
 
-init_session_value( 'files_input', '' )
-init_session_value( 'files_file', None )
-init_session_value( 'files_uploaded', [ ] )
-init_session_value( 'files_selected_id', '' )
-init_session_value( 'files_selected_label', '' )
-init_session_value( 'files_purpose', '' )
-init_session_value( 'files_metadata', None )
-init_session_value( 'files_results', None )
-init_session_value( 'files_messages', [ ] )
-init_session_value( 'files_temperature', 0.0 )
-init_session_value( 'files_top_percent', 0.0 )
-init_session_value( 'files_max_tokens', 0 )
-init_session_value( 'files_frequency_penalty', 0.0 )
-init_session_value( 'files_presence_penalty', 0.0 )
-init_session_value( 'files_response_format', '' )
-init_session_value( 'files_tool_choice', '' )
-init_session_value( 'files_reasoning', '' )
+init_state( 'files_input', '' )
+init_state( 'files_file', None )
+init_state( 'files_uploaded', [ ] )
+init_state( 'files_selected_id', '' )
+init_state( 'files_selected_label', '' )
+init_state( 'files_purpose', '' )
+init_state( 'files_metadata', None )
+init_state( 'files_results', None )
+init_state( 'files_messages', [ ] )
+init_state( 'files_temperature', 0.0 )
+init_state( 'files_top_percent', 0.0 )
+init_state( 'files_max_tokens', 0 )
+init_state( 'files_frequency_penalty', 0.0 )
+init_state( 'files_presence_penalty', 0.0 )
+init_state( 'files_response_format', '' )
+init_state( 'files_tool_choice', '' )
+init_state( 'files_reasoning', '' )
 
 # ---------- VECTOR STORES MODE STATE -----------------------------------------
 
-init_session_value( 'stores_input', '' )
-init_session_value( 'stores_query', '' )
-init_session_value( 'stores_selected_id', '' )
-init_session_value( 'stores_selected_label', '' )
-init_session_value( 'stores_file_id', '' )
-init_session_value( 'stores_file_ids', [ ] )
-init_session_value( 'stores_results', None )
-init_session_value( 'stores_messages', [ ] )
-init_session_value( 'stores_temperature', 0.0 )
-init_session_value( 'stores_top_percent', 0.0 )
-init_session_value( 'stores_max_tokens', 0 )
-init_session_value( 'stores_frequency_penalty', 0.0 )
-init_session_value( 'stores_presence_penalty', 0.0 )
-init_session_value( 'stores_response_format', '' )
-init_session_value( 'stores_tool_choice', '' )
-init_session_value( 'stores_reasoning', '' )
-init_session_value( 'stores_background', False )
-init_session_value( 'stores_store', False )
-init_session_value( 'stores_stream', False )
+init_state( 'stores_input', '' )
+init_state( 'stores_query', '' )
+init_state( 'stores_selected_id', '' )
+init_state( 'stores_selected_label', '' )
+init_state( 'stores_file_id', '' )
+init_state( 'stores_file_ids', [ ] )
+init_state( 'stores_results', None )
+init_state( 'stores_messages', [ ] )
+init_state( 'stores_temperature', 0.0 )
+init_state( 'stores_top_percent', 0.0 )
+init_state( 'stores_max_tokens', 0 )
+init_state( 'stores_frequency_penalty', 0.0 )
+init_state( 'stores_presence_penalty', 0.0 )
+init_state( 'stores_response_format', '' )
+init_state( 'stores_tool_choice', '' )
+init_state( 'stores_reasoning', '' )
+init_state( 'stores_background', False )
+init_state( 'stores_store', False )
+init_state( 'stores_stream', False )
+
+# ---------- COLLECTIONS MODE STATE --------------------------------------------
+
+init_state( 'collections_input', '' )
+init_state( 'collections_query', '' )
+init_state( 'collections_selected_id', '' )
+init_state( 'collections_selected_label', '' )
+init_state( 'collections_document_id', '' )
+init_state( 'collections_document_ids', [ ] )
+init_state( 'collections_results', None )
+init_state( 'collections_messages', [ ] )
+init_state( 'collections_model', '' )
+init_state( 'collections_max_tokens', 0 )
+init_state( 'collections_max_results', 10 )
+init_state( 'collections_temperature', 0.0 )
+init_state( 'collections_top_percent', 0.0 )
+init_state( 'collections_frequency_penalty', 0.0 )
+init_state( 'collections_presence_penalty', 0.0 )
+init_state( 'collections_response_format', '' )
+init_state( 'collections_tool_choice', '' )
+init_state( 'collections_reasoning', '' )
+init_state( 'collections_rewrite_query', False )
+init_state( 'collections_background', False )
+init_state( 'collections_store', False )
+init_state( 'collections_stream', False )
+init_state( 'collections_table', [ ] )
+init_state( 'collections_documents_table', [ ] )
+init_state( 'collections_metadata', { } )
+init_state( 'collections_search_results', [ ] )
+init_state( 'collections_name', '' )
+init_state( 'collections_id', '' )
+init_state( 'collections_manual_id', '' )
+init_state( 'collections_description', '' )
+init_state( 'collections_attributes', '' )
+init_state( 'collections_team_id', '' )
+init_state( 'collections_pagination_token', '' )
+init_state( 'collections_next_token', '' )
+init_state( 'collections_confirm_delete', False )
+init_state( 'collections_prompt_category', None )
+init_state( 'collections_prompt_id', None )
+init_state( 'collections_system_instructions', '' )
 
 # ---------- FILE SEARCH STORES MODE STATE ------------------------------------
 
-init_session_value( 'filestore_model', '' )
-init_session_value( 'filestore_input', '' )
-init_session_value( 'filestore_query', '' )
-init_session_value( 'filestore_selected_id', '' )
-init_session_value( 'filestore_selected_label', '' )
-init_session_value( 'filestore_file_id', '' )
-init_session_value( 'filestore_file_ids', [ ] )
-init_session_value( 'filestore_results', None )
-init_session_value( 'filestore_messages', [ ] )
-init_session_value( 'filestore_temperature', 0.0 )
-init_session_value( 'filestore_top_percent', 0.0 )
-init_session_value( 'filestore_max_tokens', 0 )
-init_session_value( 'filestore_frequency_penalty', 0.0 )
-init_session_value( 'filestore_presence_penalty', 0.0 )
-init_session_value( 'filestore_response_format', '' )
-init_session_value( 'filestore_tool_choice', '' )
-init_session_value( 'filestore_reasoning', '' )
-init_session_value( 'filestore_background', False )
-init_session_value( 'filestore_store', False )
-init_session_value( 'filestore_stream', False )
+init_state( 'filestore_model', '' )
+init_state( 'filestore_input', '' )
+init_state( 'filestore_query', '' )
+init_state( 'filestore_selected_id', '' )
+init_state( 'filestore_selected_label', '' )
+init_state( 'filestore_file_id', '' )
+init_state( 'filestore_file_ids', [ ] )
+init_state( 'filestore_results', None )
+init_state( 'filestore_messages', [ ] )
+init_state( 'filestore_temperature', 0.0 )
+init_state( 'filestore_top_percent', 0.0 )
+init_state( 'filestore_max_tokens', 0 )
+init_state( 'filestore_frequency_penalty', 0.0 )
+init_state( 'filestore_presence_penalty', 0.0 )
+init_state( 'filestore_response_format', '' )
+init_state( 'filestore_tool_choice', '' )
+init_state( 'filestore_reasoning', '' )
+init_state( 'filestore_background', False )
+init_state( 'filestore_store', False )
+init_state( 'filestore_stream', False )
 
 # ---------- GOOGLE CLOUD BUCKETS MODE STATE ----------------------------------
 
-init_session_value( 'bucket_input', '' )
-init_session_value( 'bucket_query', '' )
-init_session_value( 'bucket_selected_id', '' )
-init_session_value( 'bucket_selected_label', '' )
-init_session_value( 'bucket_file_id', '' )
-init_session_value( 'bucket_file_ids', [ ] )
-init_session_value( 'bucket_results', None )
-init_session_value( 'bucket_messages', [ ] )
-init_session_value( 'bucket_number', 0 )
-init_session_value( 'bucket_temperature', 0.0 )
-init_session_value( 'bucket_top_percent', 0.0 )
-init_session_value( 'bucket_max_tokens', 0 )
-init_session_value( 'bucket_frequency_penalty', 0.0 )
-init_session_value( 'bucket_presence_penalty', 0.0 )
-init_session_value( 'bucket_response_format', '' )
-init_session_value( 'bucket_tool_choice', '' )
-init_session_value( 'bucket_reasoning', '' )
-init_session_value( 'bucket_background', False )
-init_session_value( 'bucket_store', False )
-init_session_value( 'bucket_stream', False )
+init_state( 'bucket_input', '' )
+init_state( 'bucket_query', '' )
+init_state( 'bucket_selected_id', '' )
+init_state( 'bucket_selected_label', '' )
+init_state( 'bucket_file_id', '' )
+init_state( 'bucket_file_ids', [ ] )
+init_state( 'bucket_results', None )
+init_state( 'bucket_messages', [ ] )
+init_state( 'bucket_number', 0 )
+init_state( 'bucket_temperature', 0.0 )
+init_state( 'bucket_top_percent', 0.0 )
+init_state( 'bucket_max_tokens', 0 )
+init_state( 'bucket_frequency_penalty', 0.0 )
+init_state( 'bucket_presence_penalty', 0.0 )
+init_state( 'bucket_response_format', '' )
+init_state( 'bucket_tool_choice', '' )
+init_state( 'bucket_reasoning', '' )
+init_state( 'bucket_background', False )
+init_state( 'bucket_store', False )
+init_state( 'bucket_stream', False )
 
 # ---------- PROMPT ENGINEERING STATE -----------------------------------------
 
-init_session_value( 'prompt_id', getattr( cfg, 'PROMPT_ID', '' ) )
-init_session_value( 'prompt_version', getattr( cfg, 'PROMPT_VERSION', '' ) )
-init_session_value( 'prompt_name', '' )
-init_session_value( 'prompt_text', '' )
-init_session_value( 'prompt_rows', [ ] )
-init_session_value( 'selected_prompt_name', '' )
-init_session_value( 'selected_prompt_text', '' )
+init_state( 'prompt_id', getattr( cfg, 'PROMPT_ID', '' ) )
+init_state( 'prompt_version', getattr( cfg, 'PROMPT_VERSION', '' ) )
+init_state( 'prompt_name', '' )
+init_state( 'prompt_text', '' )
+init_state( 'prompt_rows', [ ] )
+init_state( 'selected_prompt_name', '' )
+init_state( 'selected_prompt_text', '' )
 
 # ---------- DATA MANAGEMENT / EXPORT STATE -----------------------------------
 
-init_session_value( 'df_original', None )
-init_session_value( 'df_working', None )
-init_session_value( 'df_processed', None )
-init_session_value( 'df_results', None )
-init_session_value( 'uploaded_data_file', None )
-init_session_value( 'selected_table', '' )
-init_session_value( 'selected_columns', [ ] )
-init_session_value( 'target_column', '' )
-init_session_value( 'export_format', '' )
-init_session_value( 'export_path', '' )
+init_state( 'df_original', None )
+init_state( 'df_working', None )
+init_state( 'df_processed', None )
+init_state( 'df_results', None )
+init_state( 'uploaded_data_file', None )
+init_state( 'selected_table', '' )
+init_state( 'selected_columns', [ ] )
+init_state( 'target_column', '' )
+init_state( 'export_format', '' )
+init_state( 'export_path', '' )
 
 # ---------- NON-DESTRUCTIVE LIASES -----------------------------------
 
@@ -699,6 +737,36 @@ def encode_image_base64( path: str ) -> str:
 	    str: Return value produced by the operation."""
 	data = Path( path ).read_bytes( )
 	return base64.b64encode( data ).decode( "utf-8" )
+
+def normalize_text( text: str ) -> str:
+	"""Normalize text.
+	
+	Purpose:
+	    Normalizes incoming values into a predictable representation for application processing.
+	    The function reduces provider, user-input, or serialization differences before values are
+	    stored or displayed.
+	
+	Args:
+	    text (str): Text value used by the operation.
+	
+	Returns:
+	    str: Return value produced by the operation."""
+	if not text:
+		return ""
+	
+	# Lowercase
+	text = text.lower( )
+	
+	# Remove punctuation except . ! ?
+	text = re.sub( r"[^\w\s\.\!\?]", "", text )
+	
+	# Ensure single space after sentence delimiters
+	text = re.sub( r"([.!?])\s*", r"\1 ", text )
+	
+	# Normalize whitespace
+	text = re.sub( r"\s+", " ", text ).strip( )
+	
+	return text
 
 def chunk_text( text: str, max_tokens: int = 400 ) -> list[ str ]:
 	"""Chunk text.
@@ -769,6 +837,53 @@ def sanitize_markdown( text: str ) -> str:
 	text = re.sub( r"\*(.*?)\*", r"\1", text )
 	return text
 
+def inject_response_css( ) -> None:
+	"""Inject response css.
+	
+	Purpose:
+	    Performs the inject_response_css workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
+	
+	Returns:
+	    None: This function performs its work through side effects and does not return a value."""
+	st.markdown( """
+		<style>
+		/* Chat message text */
+		.stChatMessage p {
+			color: rgb(220, 220, 220);
+			font-size: 1rem;
+			line-height: 1.6;
+		}
+
+		/* Headings inside chat responses */
+		.stChatMessage h1 {
+			color: rgb(0, 120, 252); /* DoD Blue */
+			font-size: 1.6rem;
+		}
+
+		.stChatMessage h2 {
+			color: rgb(0, 120, 252);
+			font-size: 1.35rem;
+		}
+
+		.stChatMessage h3 {
+			color: rgb(0, 120, 252);
+			font-size: 1.15rem;
+		}
+		
+		.stChatMessage a {
+			color: rgb(0, 120, 252); /* DoD Blue */
+			text-decoration: underline;
+		}
+		
+		.stChatMessage a:hover {
+			color: rgb(80, 160, 255);
+		}
+
+		</style>
+		""", unsafe_allow_html=True )
+
 def style_subheaders( ) -> None:
 	"""Style subheaders.
 	
@@ -795,7 +910,7 @@ def style_subheaders( ) -> None:
 		</style>
 		""", unsafe_allow_html=True, )
 
-def initialize_runtime_state( ) -> None:
+def init_state( ) -> None:
 	"""Init state.
 	
 	Purpose:
@@ -1161,7 +1276,15 @@ def build_intent_prefix( mode: str ) -> str:
 def save_message( role: str, content: str ) -> None:
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
 		conn.execute( "INSERT INTO chat_history (role, content) VALUES (?, ?)", (role, content) )
-		
+
+def load_history( ) -> List[ Tuple[ str, str ] ]:
+	with sqlite3.connect( cfg.DB_PATH ) as conn:
+		return conn.execute( "SELECT role, content FROM chat_history ORDER BY id" ).fetchall( )
+
+def clear_history( ) -> None:
+	with sqlite3.connect( cfg.DB_PATH ) as conn:
+		conn.execute( "DELETE FROM chat_history" )
+
 def format_results( results ):
 	formatted_results = ''
 	for result in results.data:
@@ -1187,59 +1310,6 @@ def count_tokens( text: str ) -> int:
 	num_tokens = len( encoding.encode( text ) )
 	return num_tokens
 
-def resolve_gemini_api_key( ) -> Optional[ str ]:
-	"""Resolve gemini api key.
-    
-    Purpose:
-        The function coordinates local state, input validation, and downstream helper
-        calls needed by the surrounding application mode.
-    
-    Returns:
-        Result produced by the operation.
-    """
-	session_key = st.session_state.get( "gemini_api_key" )
-	if session_key:
-		return session_key
-	
-	cfg_key = getattr( cfg, "GOOGLE_API_KEY", None )
-	if cfg_key:
-		return cfg_key
-	
-	return os.environ.get( "GOOGLE_API_KEY" )
-
-def apply_gemini_runtime_config( ) -> None:
-	"""Apply gemini runtime config.
-    
-    Purpose:
-        Supports the Boo Streamlit application by executing the apply gemini runtime config
-        workflow. The function coordinates local state, input validation, and downstream helper
-        calls needed by the surrounding application mode.
-    """
-	key = resolve_gemini_api_key( )
-	if key:
-		os.environ[ "GEMINI_API_KEY" ] = key
-		os.environ[ "GOOGLE_API_KEY" ] = key
-	
-	for env_name in ("GOOGLE_GENAI_USE_VERTEXAI", "GOOGLE_CLOUD_PROJECT",
-		"GOOGLE_CLOUD_PROJECT_ID",
-		"GOOGLE_CLOUD_LOCATION"):
-		os.environ.pop( env_name, None )
-	
-	for attr_name in ("GOOGLE_GENAI_USE_VERTEXAI", "GOOGLE_CLOUD_PROJECT",
-		"GOOGLE_CLOUD_PROJECT_ID", "GOOGLE_CLOUD_LOCATION"):
-		try:
-			setattr( cfg, attr_name, None )
-		except Exception as _logged_exception:
-			try:
-				error = Error( _logged_exception )
-				error.module = 'app'
-				error.cause = 'apply_gemini_runtime_config'
-				error.method = 'apply_gemini_runtime_config(  )'
-				Logger( ).write( error )
-			except Exception:
-				pass
-			pass
-		
 # ------------- FILESTORE UTILITIES
 
 def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
@@ -1548,15 +1618,16 @@ def style_subheaders( ) -> None:
 		<style>
 		div[data-testid="stMarkdownContainer"] h2,
 		div[data-testid="stMarkdownContainer"] h3,
-		div[data-testid="stMarkdownContainer"] h4,
-		div[data-testid="stMarkdownContainer"] h5,
-		div[data-testid="stMarkdownContainer"] h6,
 		div[data-testid="stChatMessage"] div[data-testid="stMarkdownContainer"] h2,
 		div[data-testid="stChatMessage"] div[data-testid="stMarkdownContainer"] h3 {
 			color: rgb(0, 120, 252) !important;
 		}
 		</style>
 		""", unsafe_allow_html=True, )
+
+def save_message( role: str, content: str ) -> None:
+	with sqlite3.connect( cfg.DB_PATH ) as conn:
+		conn.execute( 'INSERT INTO chat_history (role, content) VALUES (?, ?)', (role, content) )
 
 def load_history( ) -> List[ Tuple[ str, str ] ]:
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
@@ -1566,6 +1637,38 @@ def clear_history( ) -> None:
 	with sqlite3.connect( cfg.DB_PATH ) as conn:
 		conn.execute( "DELETE FROM chat_history" )
 
+def apply_gemini_runtime_config( ) -> None:
+	"""Apply gemini runtime config.
+	
+	Purpose:
+	    Supports the apply gemini runtime config application workflow by coordinating validated
+	    inputs, Streamlit session state, provider configuration, and local data processing.
+	"""
+	key = (st.session_state.get( 'gemini_api_key' ) or st.session_state.get(
+		'google_api_key' ) or getattr( cfg, 'GEMINI_API_KEY', None ) or getattr( cfg,
+		'GOOGLE_API_KEY', None ) or os.environ.get( 'GEMINI_API_KEY' ) or os.environ.get(
+		'GOOGLE_API_KEY' ))
+	
+	if key:
+		os.environ[ 'GEMINI_API_KEY' ] = key
+		os.environ[ 'GOOGLE_API_KEY' ] = key
+	
+	for env_name in [ 'GOOGLE_GENAI_USE_VERTEXAI', 'GOOGLE_CLOUD_PROJECT',
+		'GOOGLE_CLOUD_PROJECT_ID', 'GOOGLE_CLOUD_LOCATION' ]:
+		os.environ.pop( env_name, None )
+	
+	for attr_name in [ 'GOOGLE_GENAI_USE_VERTEXAI', 'GOOGLE_CLOUD_PROJECT',
+		'GOOGLE_CLOUD_PROJECT_ID', 'GOOGLE_CLOUD_LOCATION' ]:
+		try:
+			setattr( cfg, attr_name, None )
+		except Exception as e:
+			exception = Error( e )
+			exception.module = 'app'
+			exception.cause = 'apply_gemini_runtime_config'
+			exception.method = 'apply_gemini_runtime_config( ) -> None'
+			Logger( ).write( exception )
+			pass
+		
 # ------------ DOCQNA UTILITIES
 
 def extract_text_from_bytes( file_bytes: bytes ) -> str:
@@ -1598,91 +1701,64 @@ def extract_text_from_bytes( file_bytes: bytes ) -> str:
 			return ""
 
 def route_document_query( prompt: str ) -> str:
-	"""Route a document-grounded query through the active provider.
+	"""Route document query.
 	
 	Purpose:
-	    Builds local retrieval context for the active documents and invokes the exact Chat wrapper
-	    contract implemented by the selected provider. Gemini requests preserve complete
-	    Interactions history and grounding sources separately from display messages.
+	    Performs the route_document_query workflow using the inputs supplied by the caller and the
+	    current runtime configuration. The function keeps this behavior isolated so related UI,
+	    provider, and data-processing paths can call it consistently.
 	
 	Args:
-	    prompt (str): Document-grounded question or summary instruction.
+	    prompt (str): Prompt value used by the operation.
 	
 	Returns:
-	    str: Provider-generated answer.
+	    str: Return value produced by the operation.
 	
 	Raises:
-	    Error: Re-raised after the exception is recorded by the application logger.
-	"""
+	    Exception: Re-raises exceptions after recording them with the application logger."""
 	try:
 		throw_if( 'prompt', prompt )
-		provider_name = str( st.session_state.get( 'provider', 'GPT' ) or 'GPT' )
+		provider_name = st.session_state.get( 'provider', 'GPT' )
 		docqna = get_chat_module( provider_name )
-		user_input = build_document_user_input( prompt ) or prompt.strip( )
-		model = str( st.session_state.get( 'docqna_model', '' ) or '' ).strip( )
+		user_input = build_document_user_input( prompt )
 		
+		if not user_input:
+			user_input = (prompt or '').strip( )
+		
+		model = st.session_state.get( 'docqna_model' )
 		if not model:
 			model_options = list( getattr( docqna, 'model_options', [ ] ) or [ ] )
-			model = str( model_options[ 0 ] ) if model_options else ''
+			model = model_options[ 0 ] if model_options else None
 		
-		throw_if( 'model', model )
-		temperature = float( st.session_state.get( 'docqna_temperature', 0.0 ) or 0.0 )
-		top_p = float( st.session_state.get( 'docqna_top_percent', 0.0 ) or 0.0 )
-		frequency = float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) or 0.0 )
-		presence = float( st.session_state.get( 'docqna_presence_penalty', 0.0 ) or 0.0 )
-		max_tokens = int( st.session_state.get( 'docqna_max_tokens', 0 ) or 0 )
-		instructions = str( st.session_state.get( 'docqna_system_instructions', '' ) or '' )
-		reasoning = str( st.session_state.get( 'docqna_reasoning', '' ) or '' )
-		response_format = str( st.session_state.get( 'docqna_response_format', '' ) or '' )
-		tools = list( st.session_state.get( 'docqna_tools', [ ] ) or [ ] )
-		tool_choice = str( st.session_state.get( 'docqna_tool_choice', '' ) or '' )
+		if not model:
+			raise ValueError(
+				f'No Document Q&A model is configured for provider "{provider_name}".' )
 		
-		if provider_name == 'Gemini':
-			context = list( st.session_state.get( 'docqna_gemini_history', [ ] ) or [ ] )
-			answer = docqna.generate_text( prompt=user_input, model=model,
-				number=max( 1, int( st.session_state.get( 'docqna_number', 1 ) or 1 ) ),
-				temperature=temperature, top_p=top_p,
-				top_k=int( st.session_state.get( 'docqna_top_k', 0 ) or 0 ),
-				frequency=frequency, presence=presence, max_tokens=max_tokens,
-				stops=list( st.session_state.get( 'docqna_stops', [ ] ) or [ ] ),
-				instruct=instructions, response_format=response_format, tools=tools,
-				tool_choice=tool_choice or None, reasoning=reasoning,
-				modalities=list( st.session_state.get( 'docqna_modalities', [ ] ) or [ ] ),
-				media_resolution=str(
-					st.session_state.get( 'docqna_media_resolution', '' ) or '' ),
-				context=context,
-				content=str( st.session_state.get( 'docqna_content', '' ) or '' ),
-				stream=False, )
-			get_history = getattr( docqna, 'get_structured_history', None )
-			if callable( get_history ):
-				st.session_state[ 'docqna_gemini_history' ] = get_history( ) or [ ]
-			get_sources = getattr( docqna, 'get_grounding_sources', None )
-			if callable( get_sources ):
-				sources = get_sources( ) or [ ]
-				st.session_state[ 'docqna_sources' ] = sources
-				st.session_state[ 'last_sources' ] = sources
-		elif provider_name == 'GPT':
-			answer = docqna.generate_text( model=model, prompt=user_input,
-				temperature=temperature, top_p=top_p, frequency=frequency,
-				presence=presence, max_tokens=max_tokens,
-				store=bool( st.session_state.get( 'docqna_store', False ) ), stream=False,
-				instruct=instructions, tools=tools,
-				include=list( st.session_state.get( 'docqna_include', [ ] ) or [ ] ),
-				tool_choice=tool_choice or None, reasoning=reasoning or None, )
-		else:
-			answer = docqna.generate_text( model=model, prompt=user_input,
-				temperature=temperature, top_p=top_p, frequency=frequency,
-				presence=presence, max_tokens=max_tokens,
-				store=bool( st.session_state.get( 'docqna_store', False ) ), stream=False,
-				instruct=instructions, tools=tools,
-				include=list( st.session_state.get( 'docqna_include', [ ] ) or [ ] ),
-				tool_choice=tool_choice or None, reasoning=reasoning or None, )
+		answer = docqna.generate_text( model=model, prompt=user_input,
+			temperature=float( st.session_state.get( 'docqna_temperature', 0.0 ) ),
+			top_p=float( st.session_state.get( 'docqna_top_percent', 0.95 ) ),
+			frequency=float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) ),
+			presence=float( st.session_state.get( 'docqna_presence_penalty', 0.0 ) ),
+			max_tokens=int( st.session_state.get( 'docqna_max_tokens', 4096 ) ) or 4096,
+			store=bool( st.session_state.get( 'docqna_store', False ) ), stream=False,
+			instruct=st.session_state.get( 'docqna_system_instructions', '' ),
+			tools=st.session_state.get( 'docqna_tools', [ ] ),
+			include=st.session_state.get( 'docqna_include', [ ] ),
+			tool_choice=st.session_state.get( 'docqna_tool_choice' ) or None,
+			reasoning=st.session_state.get( 'docqna_reasoning' ) or None, )
 		
-		output_text = answer.strip( ) if isinstance( answer, str ) else str(
-			getattr( docqna, 'output_text', '' ) or getattr( answer, 'output_text', '' )
-			or answer or '' ).strip( )
-		throw_if( 'output_text', output_text )
-		return output_text
+		if isinstance( answer, str ):
+			return answer
+		
+		output_text = getattr( docqna, 'output_text', None )
+		if isinstance( output_text, str ) and output_text.strip( ):
+			return output_text.strip( )
+		
+		output_text = getattr( answer, 'output_text', None )
+		if isinstance( output_text, str ) and output_text.strip( ):
+			return output_text.strip( )
+		
+		return str( answer or '' )
 	except Exception as e:
 		ex = Error( e )
 		ex.module = 'app'
@@ -3060,37 +3136,13 @@ PROMPT_CATEGORY_MODE_MAP: Dict[ str, List[ str ] ] = {
 	'Vector Stores': [ 'Research / Academic', 'Data Analytics & Governance', 'Software '
 	                                                                         'Engineering',
 		'Compliance / Legal / Budget', 'Instruction/ Training / Planning', ],
+	'Collections': [ 'Research / Academic', 'Data Analytics & Governance', 'Software Engineering',
+		'Compliance / Legal / Budget', 'Instruction/ Training / Planning', ],
 	'File Search Stores': [ 'Research / Academic', 'Data Analytics & Governance',
 		'Software Engineering', 'Compliance / Legal / Budget',
 		'Instruction/ Training / Planning', ],
-	'Cloud Buckets': [ 'Data Analytics & Governance', 'Software Engineering', 'Research / '
-	                                                                          'Academic',
-		'Compliance / Legal / Budget', ], }
-
-TEXT_PROMPT_CATEGORIES: Tuple[ str, ... ] = ('Research / Academic', 'Prompt Engineering',
-	'Writing / Administrative', 'Compliance / Legal / Budget', 'Business / Finance / Marketing',
-	'Software Engineering', 'Data Analytics & Governance', 'Instruction/ Training / Planning',
-	'Image Analysis',)
-
-IMAGE_PROMPT_CATEGORIES: Tuple[ str, ... ] = ('Image Generation', 'Image Analysis',
-	'Image Editing',)
-
-AUDIO_PROMPT_CATEGORIES: Tuple[ str, ... ] = ('Translation API', 'Transcription API', 'Speech API',)
-
-DOCQNA_PROMPT_CATEGORIES: Tuple[ str, ... ] = ('Research / Academic', 'Prompt Engineering',
-	'Writing / Administrative', 'Compliance / Legal / Budget', 'Business / Finance / Marketing',
-	'Software Engineering', 'Data Analytics & Governance', 'Instruction/ Training / Planning',
-	'Image Analysis',)
-
-FILESEARCHSTORE_PROMPT_CATEGORIES: Tuple[ str, ... ] = ('Research / Academic', 'Prompt Engineering',
-	'Writing / Administrative', 'Compliance / Legal / Budget', 'Business / Finance / Marketing',
-	'Software Engineering', 'Data Analytics & Governance', 'Instruction/ Training / Planning',
-	'Image Analysis', 'Image Editing',)
-
-CLOUDBUCKET_PROMPT_CATEGORIES: Tuple[ str, ... ] = ('Research / Academic', 'Prompt Engineering',
-	'Writing / Administrative', 'Compliance / Legal / Budget', 'Business / Finance / Marketing',
-	'Software Engineering', 'Data Analytics & Governance', 'Instruction/ Training / Planning',
-	'Image Analysis', 'Image Editing',)
+	'Google Cloud Buckets': [ 'Data Analytics & Governance', 'Software Engineering',
+		'Research / Academic', 'Compliance / Legal / Budget', ], }
 
 def fetch_prompt_categories( mode_name: str ) -> List[ str ]:
 	"""Fetch prompt categories.
@@ -3300,117 +3352,6 @@ def load_prompt_template( prompt_id_key: str, instructions_key: str, ) -> None:
 		Logger( ).write( ex )
 		raise ex
 
-def load_prompt_into_state( prompt_id_key: str, instruction_key: str ) -> None:
-	"""Load a selected prompt into session state.
-	
-	Purpose:
-	    Retrieves the prompt selected through a mode-specific prompt selector and
-	    copies its Text value into the corresponding system-instruction control.
-	
-	Args:
-	    prompt_id_key (str): Session-state key containing the selected prompt ID.
-	    instruction_key (str): Session-state key receiving the prompt text.
-	
-	Returns:
-	    None: This function updates Streamlit session state.
-	
-	Raises:
-	    Error: Raised when the selected prompt cannot be retrieved.
-	"""
-	try:
-		selected_prompt_id = st.session_state.get( prompt_id_key )
-		if selected_prompt_id in (None, ''):
-			return
-		
-		prompt_record = fetch_prompt_by_id( int( selected_prompt_id ) )
-		if prompt_record is None:
-			raise ValueError( f'Prompt ID {selected_prompt_id} was not found.' )
-		
-		st.session_state[ instruction_key ] = str( prompt_record.get( 'Text', '' ) or '' )
-	
-	except Exception as e:
-		exception = Error( e )
-		exception.module = 'app'
-		exception.cause = 'load_prompt_into_state'
-		exception.method = ('load_prompt_into_state( '
-		                    'prompt_id_key: str, instruction_key: str ) '
-		                    '-> None')
-		Logger( ).write( exception )
-		raise exception
-
-def clear_prompt_state( category_key: str, prompt_id_key: str, instruction_key: str ) -> None:
-	"""Clear a system-prompt selection.
-	
-	Purpose:
-	    Clears the selected category, prompt ID, and editable instruction text for
-	    one application mode without modifying database records.
-	
-	Args:
-	    category_key (str): Session-state key containing the selected category.
-	    prompt_id_key (str): Session-state key containing the selected prompt ID.
-	    instruction_key (str): Session-state key containing the instruction text.
-	
-	Returns:
-	    None: This function updates Streamlit session state.
-	
-	Raises:
-	    Error: Raised when session-state values cannot be cleared.
-	"""
-	try:
-		st.session_state[ category_key ] = None
-		st.session_state[ prompt_id_key ] = None
-		st.session_state[ instruction_key ] = ''
-	
-	except Exception as e:
-		exception = Error( e )
-		exception.module = 'app'
-		exception.cause = 'clear_prompt_state'
-		exception.method = ('clear_prompt_state( '
-		                    'category_key: str, prompt_id_key: str, '
-		                    'instruction_key: str ) -> None')
-		Logger( ).write( exception )
-		raise exception
-
-def convert_prompt_state( instruction_key: str ) -> None:
-	"""Convert mode-specific system instructions.
-	
-	Purpose:
-	    Converts the specified instruction value between the supported XML prompt
-	    blocks and Markdown heading notation.
-	
-	Args:
-	    instruction_key (str): Session-state key containing the instruction text.
-	
-	Returns:
-	    None: This function updates Streamlit session state.
-	
-	Raises:
-	    Error: Raised when the instruction text cannot be converted.
-	"""
-	try:
-		instruction_text = st.session_state.get( instruction_key, '' )
-		if not isinstance( instruction_text, str ):
-			return
-		
-		source_text = instruction_text.strip( )
-		if not source_text:
-			return
-		
-		if cfg.XML_BLOCK_PATTERN.search( source_text ):
-			converted_text = convert_xml( source_text )
-		else:
-			converted_text = convert_markdown( source_text )
-		
-		st.session_state[ instruction_key ] = converted_text
-	
-	except Exception as e:
-		exception = Error( e )
-		exception.module = 'app'
-		exception.cause = 'convert_prompt_state'
-		exception.method = ('convert_prompt_state( instruction_key: str ) -> None')
-		Logger( ).write( exception )
-		raise exception
-	
 def format_prompt_option( prompt_id: int, prompt_options: List[ Dict[ str, Any ] ], ) -> str:
 	"""Format prompt option.
 	
@@ -3654,817 +3595,7 @@ def build_prompt( user_input: str ) -> str:
 		exception.method = 'build_prompt( user_input: str ) -> str'
 		Logger( ).write( exception )
 		raise exception
-	
-def clear_stores_instructions( ) -> None:
-		"""Clear Vector Stores instructions.
-		
-		Purpose:
-		    Clears the Vector Stores system instructions and selected prompt template.
-		
-		Returns:
-		    None: This function updates Streamlit session state.
-		"""
-		st.session_state[ 'stores_system_instructions' ] = ''
-		st.session_state[ 'stores_prompt_id' ] = None
 
-# ------ Vector Stores Utilities -----
-def get_storage_help( name: str, fallback: str = '' ) -> str:
-	"""Get storage help.
-	
-	Purpose:
-	    Returns configured help text for a Vector Stores Mode control.
-	
-	Args:
-	    name (str): Configuration attribute name.
-	    fallback (str): Fallback text used when the attribute is unavailable.
-	
-	Returns:
-	    str: Configured or fallback help text.
-	"""
-	return str( getattr( cfg, name, fallback ) or fallback )
-
-def get_storage_options( instance: Any, attr_name: str,
-	fallback: Optional[ List[ Any ] ] = None, ) -> List[ Any ]:
-	"""Get storage options.
-	
-	Purpose:
-	    Returns provider-supported values exposed by a VectorStores wrapper property or
-	    method.
-	
-	Args:
-	    instance (Any): Active VectorStores wrapper.
-	    attr_name (str): Option property or method name.
-	    fallback (Optional[List[Any]]): Fallback option values.
-	
-	Returns:
-	    List[Any]: Provider-supported option values.
-	"""
-	values = getattr( instance, attr_name, None )
-	
-	if callable( values ):
-		try:
-			values = values( )
-		except Exception:
-			values = None
-	
-	if isinstance( values, tuple ):
-		values = list( values )
-	
-	if isinstance( values, list ):
-		return values
-	
-	return fallback or [ ]
-
-def parse_storage_json( value: Any, label: str = 'JSON', ) -> Dict[ str, Any ]:
-	"""Parse storage JSON.
-	
-	Purpose:
-	    Parses optional Vector Stores JSON input into a dictionary.
-	
-	Args:
-	    value (Any): JSON text or existing dictionary.
-	    label (str): Label included in validation messages.
-	
-	Returns:
-	    Dict[str, Any]: Parsed JSON object or an empty dictionary.
-	
-	Raises:
-	    ValueError: Raised when nonempty input is not a JSON object.
-	"""
-	if isinstance( value, dict ):
-		return dict( value )
-	
-	raw = str( value or '' ).strip( )
-	
-	if not raw:
-		return { }
-	
-	parsed = json.loads( raw )
-	
-	if not isinstance( parsed, dict ):
-		raise ValueError( f'{label} must be a JSON object.' )
-	
-	return parsed
-
-def parse_storage_ids( value: Any ) -> List[ str ]:
-	"""Parse storage identifiers.
-	
-	Purpose:
-	    Converts comma-delimited text or a sequence into normalized provider identifiers.
-	
-	Args:
-	    value (Any): Identifier text or sequence.
-	
-	Returns:
-	    List[str]: Normalized identifiers.
-	"""
-	if isinstance( value, str ):
-		return [ item.strip( ) for item in value.split( ',' ) if item.strip( ) ]
-	
-	if isinstance( value, (list, tuple, set) ):
-		return [ str( item ).strip( ) for item in value if str( item ).strip( ) ]
-	
-	return [ ]
-
-def normalize_storage_object( value: Any ) -> Dict[ str, Any ]:
-	"""Normalize storage object.
-	
-	Purpose:
-	    Converts provider-specific store, collection, file, document, batch, and deletion
-	    results into a stable dictionary.
-	
-	Args:
-	    value (Any): Provider result.
-	
-	Returns:
-	    Dict[str, Any]: Normalized provider result.
-	"""
-	if value is None:
-		return { }
-	
-	if isinstance( value, dict ):
-		result = dict( value )
-	elif hasattr( value, 'model_dump' ):
-		try:
-			dumped = value.model_dump( )
-			result = (dumped if isinstance( dumped, dict ) else { 'result': dumped })
-		except Exception:
-			result = { 'result': str( value ) }
-	elif hasattr( value, 'dict' ):
-		try:
-			dumped = value.dict( )
-			result = (dumped if isinstance( dumped, dict ) else { 'result': dumped })
-		except Exception:
-			result = { 'result': str( value ) }
-	else:
-		result = { }
-		
-		for attr_name in [ 'id', 'name', 'display_name', 'description', 'status', 'state',
-			'file_counts', 'usage_bytes', 'created_at', 'expires_at', 'metadata', 'attributes',
-			'deleted', 'collection_id', 'collection_name', 'collection_description',
-			'documents_count', 'document_count', 'size_bytes', 'bytes', 'file_id', 'filename',
-			'batch_id', ]:
-			if hasattr( value, attr_name ):
-				result[ attr_name ] = getattr( value, attr_name, )
-		
-		if not result:
-			result = { 'result': str( value ) }
-	
-	resource_id = (result.get( 'id' ) or result.get( 'collection_id' ) or result.get(
-		'file_id' ) or result.get( 'batch_id' ) or '')
-	resource_name = (
-			result.get( 'display_name' ) or result.get( 'collection_name' ) or result.get(
-		'name' ) or result.get( 'filename' ) or resource_id or '')
-	description = (result.get( 'collection_description' ) or result.get( 'description' ) or '')
-	status = (result.get( 'status' ) or result.get( 'state' ) or '')
-	file_counts = result.get( 'file_counts' )
-	
-	if file_counts is None:
-		file_counts = result.get( 'documents_count' )
-	
-	if file_counts is None:
-		file_counts = result.get( 'document_count' )
-	
-	usage_bytes = result.get( 'usage_bytes' )
-	
-	if usage_bytes is None:
-		usage_bytes = result.get( 'size_bytes' )
-	
-	if usage_bytes is None:
-		usage_bytes = result.get( 'bytes' )
-	
-	result[ 'id' ] = str( resource_id or '' )
-	result[ 'name' ] = str( resource_name or '' )
-	result[ 'display_name' ] = str( resource_name or '' )
-	result[ 'description' ] = str( description or '' )
-	result[ 'status' ] = str( status or '' )
-	result[ 'file_counts' ] = (file_counts if file_counts is not None else '')
-	result[ 'usage_bytes' ] = (usage_bytes if usage_bytes is not None else '')
-	
-	return result
-
-def get_storage_items( result: Any ) -> List[ Any ]:
-	"""Get storage items.
-	
-	Purpose:
-	    Extracts resource items from provider list and search responses.
-	
-	Args:
-	    result (Any): Provider result.
-	
-	Returns:
-	    List[Any]: Provider result items.
-	"""
-	if result is None:
-		return [ ]
-	
-	if isinstance( result, list ):
-		return result
-	
-	if isinstance( result, tuple ):
-		return list( result )
-	
-	if isinstance( result, dict ):
-		for key in [ 'data', 'stores', 'items', 'collections', 'documents', 'files', 'results',
-			'matches', ]:
-			items = result.get( key )
-			
-			if isinstance( items, list ):
-				return items
-	
-	for attr_name in [ 'data', 'stores', 'items', 'collections', 'documents', 'files',
-		'results', 'matches', ]:
-		items = getattr( result, attr_name, None )
-		
-		if items is not None:
-			try:
-				return list( items )
-			except Exception:
-				pass
-	
-	return [ result ]
-
-def normalize_storage_rows( result: Any ) -> List[ Dict[ str, Any ] ]:
-	"""Normalize storage rows.
-	
-	Purpose:
-	    Converts provider resource collections into rows for Streamlit tables.
-	
-	Args:
-	    result (Any): Provider list response.
-	
-	Returns:
-	    List[Dict[str, Any]]: Normalized resource rows.
-	"""
-	rows: List[ Dict[ str, Any ] ] = [ ]
-	
-	for item in get_storage_items( result ):
-		obj = normalize_storage_object( item )
-		
-		if not obj:
-			continue
-		
-		rows.append( { 'id': str( obj.get( 'id', '' ) or '' ),
-			'name': str( obj.get( 'name', '' ) or '' ),
-			'status': str( obj.get( 'status', '' ) or '' ),
-			'file_counts': obj.get( 'file_counts', '' ),
-			'usage_bytes': obj.get( 'usage_bytes', '' ), } )
-	
-	return rows
-
-def normalize_search_results( result: Any ) -> List[ Dict[ str, Any ] ]:
-	"""Normalize search results.
-	
-	Purpose:
-	    Converts GPT vector-search and Grok collection-search responses into stable result
-	    rows.
-	
-	Args:
-	    result (Any): Provider search response.
-	
-	Returns:
-	    List[Dict[str, Any]]: Normalized search-result rows.
-	"""
-	rows: List[ Dict[ str, Any ] ] = [ ]
-	
-	for index, item in enumerate( get_storage_items( result ) ):
-		if isinstance( item, dict ):
-			row = dict( item )
-		elif hasattr( item, 'model_dump' ):
-			try:
-				row = item.model_dump( )
-			except Exception:
-				row = { 'result': str( item ) }
-		else:
-			row = { }
-			
-			for attr_name in [ 'id', 'file_id', 'filename', 'score', 'text', 'content',
-				'attributes', 'metadata', ]:
-				if hasattr( item, attr_name ):
-					row[ attr_name ] = getattr( item, attr_name, )
-			
-			if not row:
-				row = { 'result': str( item ) }
-		
-		content = row.get( 'content' )
-		
-		if isinstance( content, list ):
-			text_blocks: List[ str ] = [ ]
-			
-			for block in content:
-				if isinstance( block, dict ):
-					block_text = (block.get( 'text' ) or block.get( 'content' ) or '')
-				else:
-					block_text = getattr( block, 'text', '', )
-				
-				if block_text:
-					text_blocks.append( str( block_text ) )
-			
-			row[ 'text' ] = '\n'.join( text_blocks )
-		
-		rows.append( { 'rank': index + 1,
-			'file_id': str( row.get( 'file_id' ) or row.get( 'id' ) or '' ),
-			'filename': str( row.get( 'filename' ) or row.get( 'name' ) or '' ),
-			'score': row.get( 'score', '' ),
-			'text': str( row.get( 'text' ) or row.get( 'result' ) or '' ), } )
-	
-	return rows
-
-def get_selected_store_id( ) -> str:
-	"""Get selected store identifier.
-	
-	Purpose:
-	    Returns the manually entered store identifier or the latest table selection.
-	
-	Returns:
-	    str: Active provider store or collection identifier.
-	"""
-	manual_id = str( st.session_state.get( 'stores_manual_id', '' ) or '' ).strip( )
-	
-	if manual_id:
-		return manual_id
-	
-	return str( st.session_state.get( 'stores_selected_id', '' ) or '' ).strip( )
-
-def build_gpt_expires_after( ) -> Optional[ Dict[ str, Any ] ]:
-	"""Build GPT expiration policy.
-	
-	Purpose:
-	    Builds the OpenAI vector-store expiration policy from the configured number of
-	    inactivity days.
-	
-	Returns:
-	    Optional[Dict[str, Any]]: Expiration policy or None.
-	"""
-	days = int( st.session_state.get( 'stores_expires_after_days', 0, ) or 0 )
-	
-	if days <= 0:
-		return None
-	
-	return { 'anchor': 'last_active_at', 'days': days, }
-
-def get_uploaded_storage_path( uploaded_file: Any ) -> str:
-	"""Get uploaded storage path.
-	
-	Purpose:
-	    Writes an uploaded file to a temporary local path for the provider Files wrapper.
-	
-	Args:
-	    uploaded_file (Any): Streamlit uploaded-file object.
-	
-	Returns:
-	    str: Temporary local file path.
-	"""
-	throw_if( 'uploaded_file', uploaded_file )
-	
-	path = save_uploaded_storage_file( uploaded_file )
-	throw_if( 'path', path )
-	return str( path )
-
-def upload_and_attach_storage_file( store_id: str, uploaded_file: Any, ) -> Dict[ str, Any ]:
-	"""Upload and attach storage file.
-	
-	Purpose:
-	    Uploads a local file through the selected provider Files wrapper and attaches the
-	    returned file identifier to the selected vector store or collection.
-	
-	Args:
-	    store_id (str): Provider vector-store or collection identifier.
-	    uploaded_file (Any): Streamlit uploaded-file object.
-	
-	Returns:
-	    Dict[str, Any]: Upload and attachment results.
-	
-	Raises:
-	    ValueError: Raised when the provider does not expose a Files wrapper.
-	"""
-	throw_if( 'store_id', store_id )
-	throw_if( 'uploaded_file', uploaded_file )
-	
-	if files is None:
-		raise ValueError( f'{provider_name} does not provide a Files wrapper.' )
-	
-	path = get_uploaded_storage_path( uploaded_file )
-	filename = str( getattr( uploaded_file, 'name', Path( path ).name ) or Path( path ).name )
-	
-	if provider_name == 'GPT':
-		uploaded = files.upload( path=path, purpose='assistants', )
-		file_id = str(
-			getattr( uploaded, 'id', '' ) or normalize_storage_object( uploaded ).get( 'id',
-				'' ) )
-		throw_if( 'file_id', file_id )
-		attached = vector.attach_file( store_id=store_id, file_id=file_id, )
-	
-	elif provider_name == 'Grok':
-		uploaded = files.upload( file_path=path, file_name=filename, purpose='assistants',
-			expires_after=0, )
-		file_id = str( getattr( uploaded, 'id', '' ) or getattr( uploaded, 'file_id',
-			'' ) or normalize_storage_object( uploaded ).get( 'id', '' ) )
-		throw_if( 'file_id', file_id )
-		attached = vector.add_document( store_id=store_id, file_id=file_id, fields=None, )
-	
-	else:
-		raise ValueError( f'Unsupported Vector Stores provider: {provider_name}' )
-	
-	return { 'upload': normalize_storage_object( uploaded ),
-		'attachment': normalize_storage_object( attached ), 'file_id': file_id, }
-
-def clear_stores_instructions( ) -> None:
-	"""Clear Vector Stores instructions.
-	
-	Purpose:
-	    Clears the Vector Stores system instructions and selected prompt template.
-	
-	Returns:
-	    None: This function updates Streamlit session state.
-	"""
-	st.session_state[ 'stores_system_instructions' ] = ''
-	st.session_state[ 'stores_prompt_id' ] = None
-
-def convert_stores_system_instructions( ) -> None:
-	"""Convert Vector Stores system instructions.
-	
-	Purpose:
-	    Converts Vector Stores instructions between XML blocks and Markdown headings.
-	
-	Returns:
-	    None: This function updates Streamlit session state.
-	"""
-	text_value = str( st.session_state.get( 'stores_system_instructions', '', ) or ''
-	).strip( )
-	
-	if not text_value:
-		return
-	
-	if cfg.XML_BLOCK_PATTERN.search( text_value ):
-		st.session_state[ 'stores_system_instructions' ] = convert_xml( text_value )
-	else:
-		st.session_state[ 'stores_system_instructions' ] = convert_markdown( text_value )
-
-def load_stores_instruction_template( ) -> None:
-	"""Load Vector Stores instruction template.
-	
-	Purpose:
-	    Loads the selected Vector Stores prompt template into the system-instruction field.
-	
-	Returns:
-	    None: This function updates Streamlit session state.
-	"""
-	load_prompt_template( prompt_id_key='stores_prompt_id',
-		instructions_key='stores_system_instructions', )
-
-def clear_vector_store_outputs( ) -> None:
-	"""Clear Vector Stores outputs.
-	
-	Purpose:
-	    Clears store tables, file tables, metadata, batch results, and search results without
-	    clearing configuration controls.
-	
-	Returns:
-	    None: This function updates Streamlit session state.
-	"""
-	st.session_state[ 'stores_table' ] = [ ]
-	st.session_state[ 'stores_files_table' ] = [ ]
-	st.session_state[ 'stores_store_metadata' ] = { }
-	st.session_state[ 'stores_batch_result' ] = { }
-	st.session_state[ 'stores_search_results' ] = [ ]
-	st.session_state[ 'stores_selected_id' ] = ''
-	st.session_state[ 'stores_id' ] = ''
-	st.session_state[ 'stores_next_token' ] = ''
-
-def render_storage_table( rows: List[ Dict[ str, Any ] ], key: str, ) -> None:
-	"""Render storage table.
-	
-	Purpose:
-	    Renders normalized vector-store, collection, file, or document rows.
-	
-	Args:
-	    rows (List[Dict[str, Any]]): Table records.
-	    key (str): Stable Streamlit widget key.
-	
-	Returns:
-	    None: This function renders Streamlit output.
-	"""
-	if not rows:
-		st.info( 'No records loaded yet.' )
-		return
-	
-	st.data_editor( pd.DataFrame( rows ), use_container_width=True, hide_index=True,
-		disabled=True, key=key, )
-
-def render_storage_search_results( rows: List[ Dict[ str, Any ] ], ) -> None:
-	"""Render storage search results.
-	
-	Purpose:
-	    Renders normalized vector-store or collection search results.
-	
-	Args:
-	    rows (List[Dict[str, Any]]): Search-result records.
-	
-	Returns:
-	    None: This function renders Streamlit output.
-	"""
-	if not rows:
-		st.info( 'No search results loaded yet.' )
-		return
-	
-	st.data_editor( pd.DataFrame( rows ), use_container_width=True, hide_index=True,
-		disabled=True, key='vector_store_search_results_view', )
-
-# -------- File Search Stores Helpers --------
-def reset_stores_model_settings( ) -> None:
-	"""Reset File Search Stores model settings.
-	
-	Purpose:
-	    Removes the File Search Stores model, reasoning, and candidate controls so
-	    Streamlit restores their initial values during the subsequent rerun.
-	
-	Returns:
-	    None: This function updates Streamlit session state through side effects.
-	"""
-	try:
-		for key in [ 'stores_model', 'stores_reasoning', 'stores_number' ]:
-			st.session_state.pop( key, None )
-	
-	except Exception as e:
-		exception = Error( e )
-		exception.module = 'app'
-		exception.cause = 'reset_stores_model_settings'
-		exception.method = 'reset_stores_model_settings( ) -> None'
-		Logger( ).write( exception )
-		raise exception
-
-def reset_stores_inference_settings( ) -> None:
-	"""Reset File Search Stores inference settings.
-	
-	Purpose:
-	    Removes the File Search Stores sampling and penalty controls so Streamlit
-	    restores their initial values during the subsequent rerun.
-	
-	Returns:
-	    None: This function updates Streamlit session state through side effects.
-	"""
-	try:
-		for key in [ 'stores_temperature', 'stores_top_percent', 'stores_frequency_penalty',
-			'stores_presence_penalty' ]:
-			st.session_state.pop( key, None )
-	
-	except Exception as e:
-		exception = Error( e )
-		exception.module = 'app'
-		exception.cause = 'reset_stores_inference_settings'
-		exception.method = 'reset_stores_inference_settings( ) -> None'
-		Logger( ).write( exception )
-		raise exception
-
-def reset_stores_response_settings( ) -> None:
-	"""Reset File Search Stores response settings.
-	
-	Purpose:
-	    Removes the File Search Stores output-token, response-format, and streaming
-	    controls so Streamlit restores their initial values during the subsequent rerun.
-	
-	Returns:
-	    None: This function updates Streamlit session state through side effects.
-	"""
-	try:
-		for key in [ 'stores_max_tokens', 'stores_response_format', 'stores_stream' ]:
-			st.session_state.pop( key, None )
-	
-	except Exception as e:
-		exception = Error( e )
-		exception.module = 'app'
-		exception.cause = 'reset_stores_response_settings'
-		exception.method = 'reset_stores_response_settings( ) -> None'
-		Logger( ).write( exception )
-		raise exception
-
-def clear_stores_messages( ) -> None:
-	"""Clear File Search Stores conversation history.
-	
-	Purpose:
-	    Removes File Search Stores user and assistant messages while preserving the
-	    selected store, uploaded files, model controls, and system instructions.
-	
-	Returns:
-	    None: This function updates Streamlit session state through side effects.
-	"""
-	try:
-		st.session_state[ 'stores_messages' ] = [ ]
-		st.session_state[ 'stores_input' ] = [ ]
-		st.session_state[ 'last_answer' ] = ''
-		st.session_state[ 'last_sources' ] = [ ]
-	
-	except Exception as e:
-		exception = Error( e )
-		exception.module = 'app'
-		exception.cause = 'clear_stores_messages'
-		exception.method = 'clear_stores_messages( ) -> None'
-		Logger( ).write( exception )
-		raise exception
-
-def on_stores_prompt_change( ) -> None:
-	"""Load the selected File Search Stores prompt.
-	
-	Purpose:
-	    Retrieves the selected prompt by its stable database ID and copies its Text value
-	    into the File Search Stores system-instruction control.
-	
-	Returns:
-	    None: This function updates Streamlit session state through side effects.
-	"""
-	try:
-		load_prompt_into_state( prompt_id_key='stores_prompt_id',
-			instruction_key='stores_system_instructions' )
-	
-	except Exception as e:
-		exception = Error( e )
-		exception.module = 'app'
-		exception.cause = 'on_stores_prompt_change'
-		exception.method = 'on_stores_prompt_change( ) -> None'
-		Logger( ).write( exception )
-		raise exception
-
-def clear_stores_prompt( ) -> None:
-	"""Clear the File Search Stores prompt.
-	
-	Purpose:
-	    Clears the selected prompt ID and File Search Stores system-instruction text
-	    without modifying any prompt record in the database.
-	
-	Returns:
-	    None: This function updates Streamlit session state through side effects.
-	"""
-	try:
-		clear_prompt_state( prompt_id_key='stores_prompt_id',
-			instruction_key='stores_system_instructions' )
-	
-	except Exception as e:
-		exception = Error( e )
-		exception.module = 'app'
-		exception.cause = 'clear_stores_prompt'
-		exception.method = 'clear_stores_prompt( ) -> None'
-		Logger( ).write( exception )
-		raise exception
-
-def convert_stores_prompt( ) -> None:
-	"""Convert the File Search Stores prompt.
-	
-	Purpose:
-	    Converts the File Search Stores system instructions between supported XML prompt
-	    blocks and Markdown headings.
-	
-	Returns:
-	    None: This function updates Streamlit session state through side effects.
-	"""
-	try:
-		convert_prompt_state( instruction_key='stores_system_instructions' )
-	
-	except Exception as e:
-		exception = Error( e )
-		exception.module = 'app'
-		exception.cause = 'convert_stores_prompt'
-		exception.method = 'convert_stores_prompt( ) -> None'
-		Logger( ).write( exception )
-		raise exception
-
-def run_file_search_store_query( prompt: str, store_name: str ) -> str:
-	"""Run a File Search Stores query.
-
-	Purpose:
-		Sends a user prompt through the Gemini Interactions API and enables File Search
-		grounding against the selected File Search Store. The function resolves the active
-		model and inference settings, excludes the current user message from prior history,
-		updates token counters, and returns normalized response text.
-
-	Args:
-		prompt (str): User question submitted through the File Search Stores chat input.
-		store_name (str): Selected File Search Store resource name.
-
-	Returns:
-		str: Generated answer grounded in the selected File Search Store.
-
-	Raises:
-		Error: Raised when validation, Gemini execution, response normalization, or usage
-			accounting fails.
-		ValueError: Raised when ``prompt``, ``store_name``, or the selected model is missing.
-	"""
-	try:
-		throw_if( 'prompt', prompt )
-		throw_if( 'store_name', store_name )
-		prompt_text = str( prompt ).strip( )
-		selected_store = str( store_name ).strip( )
-		selected_model = str( st.session_state.get( 'stores_model', '' ) or '' ).strip( )
-		throw_if( 'prompt_text', prompt_text )
-		throw_if( 'selected_store', selected_store )
-		throw_if( 'selected_model', selected_model )
-		context = st.session_state.get( 'stores_input', [ ] )
-		if not isinstance( context, list ):
-			context = [ ]
-		
-		if not context:
-			context = st.session_state.get( 'stores_messages', [ ] )
-			if not isinstance( context, list ):
-				context = [ ]
-			
-			if context:
-				context = context[ :-1 ]
-		
-		number = int( st.session_state.get( 'stores_number', 1 ) )
-		temperature = float( st.session_state.get( 'stores_temperature', 0.0 ) )
-		top_p = float( st.session_state.get( 'stores_top_percent', 0.0 ) )
-		frequency_penalty = float( st.session_state.get( 'stores_frequency_penalty', 0.0, ) )
-		presence_penalty = float( st.session_state.get( 'stores_presence_penalty', 0.0, ) )
-		max_tokens = int( st.session_state.get( 'stores_max_tokens', 0 ) )
-		system_instructions = str(
-			st.session_state.get( 'stores_system_instructions', '', ) or '' ).strip( )
-		response_format = str(
-			st.session_state.get( 'stores_response_format', '', ) or '' ).strip( )
-		reasoning = str( st.session_state.get( 'stores_reasoning', '', ) or '' ).strip( )
-		tool_choice = str( st.session_state.get( 'stores_tool_choice', '', ) or '' ).strip( )
-		
-		stream = bool( st.session_state.get( 'stores_stream', False ) )
-		apply_gemini_runtime_config( )
-		response = chat.generate_text( prompt=prompt_text, model=selected_model, number=number,
-			temperature=temperature, top_p=top_p, top_k=0, frequency=frequency_penalty,
-			presence=presence_penalty, max_tokens=max_tokens, stops=[ ],
-			instruct=system_instructions, response_format=response_format,
-			tools=[ 'file_search' ], tool_choice=tool_choice or None, reasoning=reasoning,
-			modalities=[ 'text' ], media_resolution='', context=context, content='', urls=[ ],
-			max_urls=0, response_schema='', safety_profile='',
-			file_search_store_names=[ selected_store ], stream=stream, stream_handler=None, )
-		
-		if response is None:
-			raise ValueError( 'Gemini returned no File Search response.' )
-		
-		response_text = str( response ).strip( )
-		if not response_text:
-			raise ValueError( 'Gemini returned an empty File Search response.' )
-		
-		structured_history = chat.get_structured_history( )
-		st.session_state[ 'stores_input' ] = (
-			structured_history if structured_history else [ ])
-		update_counters( getattr( chat, 'response', None ) )
-		return response_text
-	except Exception as e:
-		exception = Error( e )
-		exception.module = 'app'
-		exception.cause = 'run_file_search_store_query'
-		exception.method = 'run_file_search_store_query( prompt: str, store_name: str ) -> str'
-		Logger( ).write( exception )
-		raise exception
-
-def convert_stores_system_instructions( ) -> None:
-	"""Convert Vector Stores system instructions.
-	
-	Purpose:
-	    Converts Vector Stores instructions between XML blocks and Markdown headings.
-	
-	Returns:
-	    None: This function updates Streamlit session state.
-	"""
-	text_value = str( st.session_state.get( 'stores_system_instructions', '', ) or ''
-	).strip( )
-	
-	if not text_value:
-		return
-	
-	if cfg.XML_BLOCK_PATTERN.search( text_value ):
-		st.session_state[ 'stores_system_instructions' ] = convert_xml( text_value )
-	else:
-		st.session_state[ 'stores_system_instructions' ] = convert_markdown( text_value )
-
-def load_stores_instruction_template( ) -> None:
-	"""Load Vector Stores instruction template.
-	
-	Purpose:
-	    Loads the selected Vector Stores prompt template into the system-instruction field.
-	
-	Returns:
-	    None: This function updates Streamlit session state.
-	"""
-	load_prompt_template( prompt_id_key='stores_prompt_id',
-		instructions_key='stores_system_instructions', )
-
-def clear_vector_store_outputs( ) -> None:
-	"""Clear Vector Stores outputs.
-	
-	Purpose:
-	    Clears store tables, file tables, metadata, batch results, and search results without
-	    clearing configuration controls.
-	
-	Returns:
-	    None: This function updates Streamlit session state.
-	"""
-	st.session_state[ 'stores_table' ] = [ ]
-	st.session_state[ 'stores_files_table' ] = [ ]
-	st.session_state[ 'stores_store_metadata' ] = { }
-	st.session_state[ 'stores_batch_result' ] = { }
-	st.session_state[ 'stores_search_results' ] = [ ]
-	st.session_state[ 'stores_selected_id' ] = ''
-	st.session_state[ 'stores_id' ] = ''
-	st.session_state[ 'stores_next_token' ] = ''
-	
 # ------------ PROVIDER UTILITIES
 
 def get_provider_name( provider: Optional[ str ] = None ) -> str:
@@ -4692,36 +3823,69 @@ def get_files_module( provider: Optional[ str ] = None ) -> Any:
 	return get_provider_instance( 'Files', provider )
 
 def get_vectorstores_module( provider: Optional[ str ] = None ) -> Any:
-	"""Get vectorstores module.
+	"""Get vector stores module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable
-	    view of provider capabilities, stored state, or response metadata so UI controls and
-	    downstream
-	    logic can consume it consistently.
+	    Returns the OpenAI VectorStores wrapper used by the Vector Stores mode. The function
+	    prevents provider-specific retrieval resources from being routed through the OpenAI
+	    VectorStores contract.
 	
 	Args:
-	    provider (Optional[str]): Provider value used by the operation.
+	    provider (Optional[str]): Provider selected by the application.
 	
 	Returns:
-	    Any: Return value produced by the operation."""
-	return get_provider_instance( 'VectorStores', provider )
+	    Any: Instantiated OpenAI VectorStores wrapper.
+	"""
+	selected_provider = get_provider_name( provider )
+	
+	if selected_provider != 'GPT':
+		raise ValueError(
+			f'Provider "{selected_provider}" does not provide OpenAI Vector Stores.' )
+	
+	return get_provider_instance( 'VectorStores', selected_provider )
+
+def get_collections_module( provider: Optional[ str ] = None ) -> Any:
+	"""Get collections module.
+	
+	Purpose:
+	    Returns the xAI Collections wrapper used by the Collections mode. The function keeps
+	    Grok Collections separate from OpenAI Vector Stores and Gemini File Search Stores.
+	
+	Args:
+	    provider (Optional[str]): Provider selected by the application.
+	
+	Returns:
+	    Any: Instantiated xAI Collections wrapper.
+	"""
+	selected_provider = get_provider_name( provider )
+	
+	if selected_provider != 'Grok':
+		raise ValueError(
+			f'Provider "{selected_provider}" does not provide xAI Collections.' )
+	
+	return get_provider_instance( 'Collections', selected_provider )
 
 def get_file_search_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get file search module.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable
-	    view of provider capabilities, stored state, or response metadata so UI controls and
-	    downstream
-	    logic can consume it consistently.
+	    Returns the Gemini FileSearch wrapper used by the File Search Stores mode. The function
+	    prevents OpenAI Vector Stores and xAI Collections from being routed through the Gemini
+	    File Search contract.
 	
 	Args:
-	    provider (Optional[str]): Provider value used by the operation.
+	    provider (Optional[str]): Provider selected by the application.
 	
 	Returns:
-	    Any: Return value produced by the operation."""
-	return get_provider_instance( 'FileSearch', provider )
+	    Any: Instantiated Gemini FileSearch wrapper.
+	"""
+	selected_provider = get_provider_name( provider )
+	
+	if selected_provider != 'Gemini':
+		raise ValueError(
+			f'Provider "{selected_provider}" does not provide Gemini File Search Stores.' )
+	
+	return get_provider_instance( 'FileSearch', selected_provider )
 
 def get_cloud_buckets_module( provider: Optional[ str ] = None ) -> Any:
 	"""Get cloud buckets module.
@@ -4780,26 +3944,87 @@ def get_mode_classes( mode: Optional[ str ] = None,
 	
 	return [ ]
 
-def provider_supports_mode( mode: Optional[ str ] = None,
-	provider: Optional[ str ] = None ) -> bool:
-	"""Provider supports mode.
+def provider_supports_mode( provider: str, mode_name: str ) -> bool:
+	"""Determine provider mode support.
 	
 	Purpose:
-	    Performs the provider_supports_mode workflow using the inputs supplied by the caller and
-	    the current runtime configuration. The function keeps this behavior isolated so related UI,
-	    provider, and data-processing paths can call it consistently.
+	    Determines whether the selected provider exposes the wrapper and functionality required
+	    by an application mode. The function preserves Buddy's Chat alias while enforcing
+	    provider-native retrieval-resource boundaries for OpenAI Vector Stores, xAI Collections,
+	    Gemini File Search Stores, and Google Cloud Buckets.
 	
 	Args:
-	    mode (Optional[str]): Mode value used by the operation.
-	    provider (Optional[str]): Provider value used by the operation.
+	    provider (str): Required provider name.
+	    mode_name (str): Required application mode name.
 	
 	Returns:
-	    bool: Return value produced by the operation."""
-	classes = get_mode_classes( mode, provider )
-	if not classes:
+	    bool: True when the provider supports the requested mode; otherwise False.
+	"""
+	throw_if( 'provider', provider )
+	throw_if( 'mode_name', mode_name )
+	
+	selected_provider = provider
+	selected_mode = normalize_mode_name( mode_name )
+	
+	# ------------------------------------------------------------------
+	# Application Modes Without Provider Wrappers
+	# ------------------------------------------------------------------
+	if selected_mode in [ 'Prompt Engineering', 'Data Management', 'Export', ]:
 		return True
 	
-	return all( provider_has_class( class_name, provider ) for class_name in classes )
+	# ------------------------------------------------------------------
+	# Buddy Chat Alias
+	# ------------------------------------------------------------------
+	if selected_mode == 'Chat':
+		if selected_provider == 'GPT':
+			return provider_has_class( 'Text', selected_provider )
+		
+		return provider_has_class( 'Chat', selected_provider )
+	
+	# ------------------------------------------------------------------
+	# Shared Provider Workflows
+	# ------------------------------------------------------------------
+	if selected_mode == 'Text':
+		if selected_provider == 'GPT':
+			return provider_has_class( 'Text', selected_provider )
+		
+		return provider_has_class( 'Chat', selected_provider )
+	
+	if selected_mode == 'Images':
+		return provider_has_class( 'Images', selected_provider )
+	
+	if selected_mode == 'Audio':
+		return provider_has_class( 'Audio', selected_provider )
+	
+	if selected_mode == 'Embeddings':
+		return provider_has_class( 'Embeddings', selected_provider )
+	
+	if selected_mode == 'Document Q&A':
+		return provider_has_class( 'DocumentQnA', selected_provider )
+	
+	if selected_mode == 'Files':
+		return provider_has_class( 'Files', selected_provider )
+	
+	# ------------------------------------------------------------------
+	# Provider-Native Retrieval Resources
+	# ------------------------------------------------------------------
+	if selected_mode == 'Vector Stores':
+		return (selected_provider == 'GPT' and provider_has_class( 'VectorStores',
+			selected_provider ))
+	
+	if selected_mode == 'Collections':
+		return (selected_provider == 'Grok' and provider_has_class( 'Collections',
+			selected_provider ))
+	
+	if selected_mode == 'File Search Stores':
+		return (selected_provider == 'Gemini' and provider_has_class( 'FileSearch',
+			selected_provider ))
+	
+	if selected_mode == 'Google Cloud Buckets':
+		return (selected_provider == 'Gemini' and provider_has_class( 'CloudBuckets',
+			selected_provider ))
+	
+	return False
 
 def require_provider_mode( mode: Optional[ str ] = None, provider: Optional[ str ] = None ) -> bool:
 	"""Require provider mode.
@@ -4882,29 +4107,61 @@ def get_raw_provider_modes( provider: str ) -> List[ str ]:
 	"""Get raw provider modes.
 	
 	Purpose:
-	    Returns normalized information for the application component. The method provides a stable
-	    view of provider capabilities, stored state, or response metadata so UI controls and
-	    downstream
-	    logic can consume it consistently.
+	    Returns the application modes configured for the selected provider while enforcing
+	    provider-native retrieval-resource terminology. GPT retains Vector Stores, Gemini retains
+	    File Search Stores and Google Cloud Buckets, and Grok exposes Collections instead of
+	    Vector Stores.
 	
 	Args:
-	    provider (str): Provider value used by the operation.
+	    provider (str): Required provider name.
 	
 	Returns:
-	    List[str]: Return value produced by the operation."""
+	    List[str]: Ordered provider-specific application modes.
+	"""
+	throw_if( 'provider', provider )
+	selected_provider = provider
 	class_mode_map = getattr( cfg, 'CLASS_MODE_MAP', None )
+	raw_modes: List[ str ] = [ ]
 	
-	if isinstance( class_mode_map, dict ) and provider in class_mode_map:
-		modes = class_mode_map.get( provider, [ ] )
-		return list( modes or [ ] )
+	if isinstance( class_mode_map, dict ) and selected_provider in class_mode_map:
+		configured_modes = class_mode_map.get( selected_provider, [ ] )
+		raw_modes = list( configured_modes or [ ] )
+	elif selected_provider == 'Gemini':
+		raw_modes = list( getattr( cfg, 'GEMINI_MODES', [ ] ) )
+	elif selected_provider == 'Grok':
+		raw_modes = list( getattr( cfg, 'GROK_MODES', [ ] ) )
+	else:
+		raw_modes = list( getattr( cfg, 'GPT_MODES', [ ] ) )
 	
-	if provider == 'Gemini':
-		return list( getattr( cfg, 'GEMINI_MODES', [ ] ) )
+	provider_modes: List[ str ] = [ ]
 	
-	if provider == 'Grok':
-		return list( getattr( cfg, 'GROK_MODES', [ ] ) )
+	for configured_mode in raw_modes:
+		mode_name = str( configured_mode ).strip( )
+		
+		if not mode_name:
+			continue
+		
+		# Grok uses Collections rather than OpenAI Vector Stores.
+		if selected_provider == 'Grok' and mode_name == 'Vector Stores':
+			mode_name = 'Collections'
+		
+		# Vector Stores are specific to the OpenAI provider workflow.
+		if selected_provider != 'GPT' and mode_name == 'Vector Stores':
+			continue
+		
+		# Collections are specific to the xAI provider workflow.
+		if selected_provider != 'Grok' and mode_name == 'Collections':
+			continue
+		
+		# Gemini retrieval resources remain separate provider-native modes.
+		if selected_provider != 'Gemini' and mode_name in [ 'File Search Stores',
+			'Google Cloud Buckets', ]:
+			continue
+		
+		if mode_name not in provider_modes:
+			provider_modes.append( mode_name )
 	
-	return list( getattr( cfg, 'GPT_MODES', [ ] ) )
+	return provider_modes
 
 def normalize_mode_name( mode_name: Optional[ str ] ) -> str:
 	"""Normalize mode name.
@@ -5074,6 +4331,9 @@ def render_provider_keys( ) -> None:
 # ==============================================================================
 # Page Setup
 # ==============================================================================
+
+initialize_database( )
+embedder = load_embedder( )
 AVATARS = { 'user': cfg.ANALYST, 'assistant': cfg.BOO, }
 st.set_page_config( page_title=cfg.APP_TITLE, layout='wide', page_icon=cfg.FAVICON,
 	initial_sidebar_state='collapsed', )
@@ -5081,7 +4341,7 @@ st.set_page_config( page_title=cfg.APP_TITLE, layout='wide', page_icon=cfg.FAVIC
 style_subheaders( )
 st.caption( cfg.APP_SUBTITLE )
 inject_response_css( )
-initialize_runtime_state( )
+init_state( )
 
 # ======================================================================================
 # SIDEBAR
@@ -5098,8 +4358,8 @@ with st.sidebar:
 	# ------------------------------------------------------------------
 	# Provider Selection
 	# ------------------------------------------------------------------
-	with st.expander( 'Providers:', expanded=True ):
-		provider = st.radio( label='Select Provider', options=provider_options,
+	with st.expander( 'AI:', expanded=True ):
+		provider = st.radio( label='Select', options=provider_options,
 			index=provider_options.index( current_provider ), key='provider' )
 	
 	logo_path = getattr( cfg, 'LOGO_MAP', { } ).get( provider )
@@ -5109,18 +4369,262 @@ with st.sidebar:
 	st.divider( )
 	
 	mode_options = get_supported_provider_modes( provider )
-	current_mode = normalize_mode_name( st.session_state.get( 'mode', 'Text' ) )
+	current_mode = normalize_mode_name( st.session_state.get( 'mode', 'Chat' ) )
 	if current_mode not in mode_options:
 		current_mode = mode_options[ 0 ]
 		st.session_state[ 'mode' ] = current_mode
 	
 	with st.expander( 'Modes:', expanded=False ):
-		mode = st.radio( label='Select Mode', options=mode_options,
+		mode = st.radio( label='Select', options=mode_options,
 			index=get_mode_index( mode_options, current_mode ), key='mode' )
 	
-	st.caption( f'Provider: {provider} | Mode: {mode}' )
+	st.caption( f'AI: {provider} | Mode: {mode}' )
 	st.divider( )
 	render_provider_keys( )
+	
+# ======================================================================================
+# CHAT MODE
+# ======================================================================================
+if mode == 'Chat':
+	provider_module = get_provider_module( )
+	provider_name = st.session_state.get( 'provider', 'GPT' )
+	chat_number = st.session_state.get( 'number', 0 )
+	chat_top_p = st.session_state.get( 'top_percent', 0.0 )
+	chat_freq = st.session_state.get( 'frequency_penalty', 0.0 )
+	chat_presense = st.session_state.get( 'presense_penalty', 0.0 )
+	chat_temperature = st.session_state.get( 'temperature', 0.0 )
+	chat_background = st.session_state.get( 'background', False )
+	chat_stream = st.session_state.get( 'stream', False )
+	chat_store = st.session_state.get( 'store', False )
+	chat_model = st.session_state.get( 'chat_model', '' )
+	chat_format = st.session_state.get( 'response_format', '' )
+	chat_input = st.session_state.get( 'input', [ ] )
+	chat_reasoning = st.session_state.get( 'reasoning', '' )
+	chat_choice = st.session_state.get( 'tool_choice', '' )
+	chat_parallel = st.session_state.get( 'parallel_tools', False )
+	chat_messages = st.session_state.get( 'messages', [ ] )
+	chat_history = st.session_state.get( 'chat_history', [ ] )
+	st.session_state.setdefault( 'chat_previous_response_id', '' )
+	_modes = [ 'Standard', 'Guidance Only', 'Analysis Only' ]
+	_current_mode = st.session_state.get( 'execution_mode', 'Standard' )
+	
+	if _current_mode not in _modes:
+		_current_mode = 'Standard'
+		st.session_state.execution_mode = 'Standard'
+	
+	# ------------------------------------------------------------------
+	# Sidebar — Chat Settings
+	# ------------------------------------------------------------------
+	with st.sidebar:
+		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
+		st.text( '⚙️  Chat Settings' )
+		st.radio( 'Execution Mode', options=_modes, index=_modes.index( _current_mode ),
+			key='execution_mode', )
+	
+	execution_mode = st.session_state.get( 'execution_mode', 'Standard' )
+	intent_prefix = build_intent_prefix( execution_mode )
+	
+	# ------------------------------------------------------------------
+	# Main Chat UI
+	# ------------------------------------------------------------------
+	left, center, right = st.columns( [ 0.05, 0.9, 0.05 ] )
+	with (center):
+		st.subheader( "💬 Chat Completions", help=cfg.CHAT_COMPLETIONS )
+		st.divider( )
+		user_input = st.chat_input( 'Have a Planning, Programming, or Budget Execution question?' )
+		if user_input:
+			with st.chat_message( 'user', avatar=cfg.ANALYST ):
+				st.markdown( user_input )
+			
+			with st.chat_message( 'assistant', avatar=cfg.BUDDY ):
+				try:
+					chat = get_chat_module( )
+					effective_input = f'{intent_prefix}{user_input}' if intent_prefix else user_input
+					with st.spinner( 'Running prompt...' ):
+						if provider_name == 'GPT':
+							response = chat.completion( prompt_id=cfg.PROMPT_ID,
+								prompt_version=cfg.PROMPT_VERSION, model=chat_model or None,
+								user_input=effective_input, temperature=chat_temperature,
+								format=chat_format if isinstance( chat_format, dict ) else None,
+								top_p=chat_top_p, frequency=chat_freq, presence=chat_presense,
+								max_tokens=st.session_state.get( 'max_tokens', 0 ) or None,
+								store=chat_store, stream=chat_stream,
+								instruct=st.session_state.get( 'chat_system_instructions',
+									'' ) or None, background=chat_background,
+								reasoning=chat_reasoning or None,
+								include=[ 'web_search_call.action.sources',
+									'code_interpreter_call.outputs', 'file_search_call.results', ],
+								tools=[ { 'type': 'file_search',
+									'vector_store_ids': cfg.GPT_VECTORSTORES, },
+									{ 'type': 'web_search',
+										'filters': { 'allowed_domains': cfg.GPT_DOMAINS, },
+										'search_context_size': 'medium',
+										'user_location': { 'type': 'approximate' }, },
+									{ 'type': 'code_interpreter', 'container': { 'type': 'auto',
+										'file_ids': cfg.GPT_FILES, }, }, ],
+								tool_choice=chat_choice or None, is_parallel=chat_parallel,
+								previous_id=st.session_state.get( 'chat_previous_response_id',
+									'' ) or None, )
+							st.session_state.chat_previous_response_id = getattr( response, 'id',
+								'' ) or ''
+							output_text = getattr( response, 'output_text', None ) or ''
+						elif provider_name == 'Gemini':
+							apply_gemini_runtime_config( )
+							gemini_context = chat_history if isinstance( chat_history,
+								list ) else [ ]
+							
+							output_text = chat.generate_text( prompt=effective_input,
+								model=chat_model or 'gemini-2.5-flash-lite',
+								number=chat_number or None, temperature=chat_temperature,
+								top_p=chat_top_p, frequency=chat_freq, presence=chat_presense,
+								max_tokens=st.session_state.get( 'max_tokens', 0 ) or None,
+								instruct=st.session_state.get( 'chat_system_instructions',
+									'' ) or None,
+								response_format=chat_format if isinstance( chat_format,
+									str ) else None, tool_choice=chat_choice or None,
+								reasoning=chat_reasoning or None, context=gemini_context,
+								content='', urls=[ ], max_urls=10, stream=False )
+							response = None
+						elif provider_name == 'Grok':
+							output_text = chat.generate_text( prompt=effective_input,
+								model=chat_model or 'grok-4.3', temperature=chat_temperature,
+								format=chat_format if isinstance( chat_format, dict ) else None,
+								top_p=chat_top_p, frequency=chat_freq, presence=chat_presense,
+								max_tokens=st.session_state.get( 'max_tokens', 0 ) or None,
+								store=chat_store, stream=False,
+								instruct=st.session_state.get( 'chat_system_instructions',
+									'' ) or None, background=False,
+								reasoning=chat_reasoning or None, include=[ 'inline_citations' ],
+								tools=[ { 'type': 'web_search' } ], tool_choice=chat_choice or
+								                                                None,
+								is_parallel=chat_parallel,
+								previous_id=st.session_state.get( 'chat_previous_response_id',
+									'' ) or None,
+								context=chat_history if isinstance( chat_history, list ) else [ ] )
+							
+							response = getattr( chat, 'response', None )
+							st.session_state.chat_previous_response_id = getattr( response, 'id',
+								'' ) or ''
+						else:
+							output_text = chat.generate_text( prompt=effective_input,
+								model=chat_model, temperature=chat_temperature,
+								format=chat_format if isinstance( chat_format, dict ) else None,
+								top_p=chat_top_p, frequency=chat_freq, presence=chat_presense,
+								max_tokens=st.session_state.get( 'max_tokens', 0 ) or None,
+								store=chat_store, stream=chat_stream,
+								instruct=st.session_state.get( 'chat_system_instructions',
+									'' ) or None, background=chat_background,
+								reasoning=chat_reasoning or None, tool_choice=chat_choice or None,
+								is_parallel=chat_parallel )
+							response = None
+					
+					sources = [ ]
+					analysis = { 'tables': [ ], 'files': [ ], 'text': [ ] }
+					if response is not None:
+						try:
+							for item in getattr( response, 'output', [ ] ):
+								item_type = getattr( item, 'type', '' )
+								
+								if item_type == 'web_search_call':
+									action = getattr( item, 'action', None )
+									raw_sources = getattr( action, 'sources', None )
+									if raw_sources:
+										for src in raw_sources:
+											sources.append(
+												{ 'type': 'web', 'url': getattr( src, 'url',
+													None ),
+													'title': getattr( src, 'title', None ),
+													'file_id': None, 'file_name': None,
+													'snippet': getattr( src, 'snippet', None ), } )
+								
+								elif item_type == 'file_search_call':
+									results = getattr( item, 'results', None )
+									if results:
+										for result in results:
+											sources.append( { 'type': 'file', 'url': None,
+												'title': getattr( result, 'file_name',
+													None ) or getattr( result, 'title', None ),
+												'file_id': getattr( result, 'file_id',
+													None ) or getattr( result, 'id', None ),
+												'file_name': getattr( result, 'file_name', None ),
+												'snippet': getattr( result, 'text', None ), } )
+								
+								elif item_type == 'code_interpreter_call':
+									outputs = getattr( item, 'outputs', None )
+									if outputs:
+										for out in outputs:
+											out_type = getattr( out, 'type', None )
+											if out_type == 'table':
+												analysis[ 'tables' ].append( normalize( out ) )
+											elif out_type == 'file':
+												analysis[ 'files' ].append( normalize( out ) )
+											elif out_type in ('output_text', 'text'):
+												text = getattr( out, 'text', None )
+												if isinstance( text, str ) and text.strip( ):
+													analysis[ 'text' ].append( text )
+						except Exception as e:
+							exception = Error( e )
+							exception.module = 'app'
+							exception.cause = 'app'
+							exception.method = 'module initialization'
+							Logger( ).write( exception )
+							sources = [ ]
+							analysis = { 'tables': [ ], 'files': [ ], 'text': [ ] }
+					
+					st.session_state.last_sources = sources
+					st.session_state.last_analysis = analysis
+					if response is not None:
+						output_text = extract_response_text( response )
+					else:
+						output_text = output_text if isinstance( output_text, str ) else ''
+					
+					if output_text.strip( ):
+						st.markdown( output_text )
+					else:
+						st.warning( 'No text response returned by the prompt.' )
+					
+					if analysis.get( 'text' ):
+						with st.expander( 'Analysis Output', expanded=False ):
+							for block in analysis.get( 'text', [ ] ):
+								st.markdown( block )
+					
+					if sources:
+						st.markdown( '#### Sources' )
+						for i, src in enumerate( sources, 1 ):
+							url = src.get( 'url' )
+							title = src.get( 'title' ) or src.get( 'file_name' ) or f'Source {i}'
+							
+							if url:
+								st.markdown( f'- [{title}]({url})' )
+							elif src.get( 'file_id' ):
+								st.markdown( f"- {title} _(File ID: `{src[ 'file_id' ]}`)_" )
+							else:
+								st.markdown( f'- {title}' )
+					
+					st.session_state.chat_history.append(
+						{ 'role': 'user', 'content': user_input, } )
+					
+					st.session_state.chat_history.append(
+						{ 'role': 'assistant', 'content': output_text, } )
+					
+					if response is not None:
+						try:
+							update_token_counters( response )
+						except Exception as e:
+							exception = Error( e )
+							exception.module = 'app'
+							exception.cause = 'app'
+							exception.method = 'module initialization'
+							Logger( ).write( exception )
+							pass
+				except Exception as e:
+					exception = Error( e )
+					exception.module = 'app'
+					exception.cause = 'app'
+					exception.method = 'module initialization'
+					Logger( ).write( exception )
+					st.error( 'An error occurred while running the prompt.' )
+					st.exception( e )
 
 # ======================================================================================
 # TEXT MODE
@@ -5138,10 +4642,9 @@ if mode == 'Text':
 		'text_tools': [ ], 'text_include': [ ], 'text_tool_choice': '', 'text_max_calls': 0,
 		'text_parallel_tools': False, 'text_google_grounding': False, 'text_urls_input': '',
 		'text_max_urls': 0, 'text_domains_input': '', 'text_vector_store_ids': '',
-		'text_file_search_store_names_input': '', 'text_file_search_store_names': [ ],
-		'text_gemini_history': [ ], 'text_grok_collection_labels': [ ],
-		'text_grok_collection_ids': [ ], 'text_grok_collection_ids_input': '',
-		'text_response_format': '', 'text_response_schema': '', 'text_json_schema': '',
+		'text_grok_collection_labels': [ ], 'text_grok_collection_ids': [ ],
+		'text_grok_collection_ids_input': '', 'text_response_format': '',
+		'text_response_schema': '', 'text_json_schema': '',
 		'text_json_schema_name': 'response_schema', 'text_json_schema_strict': True,
 		'text_stops_input': '', 'text_store': False, 'text_stream': False, 'text_background': False,
 		'text_continuation_mode': 'None', 'text_previous_response_id': '',
@@ -5158,12 +4661,6 @@ if mode == 'Text':
 	
 	if not isinstance( st.session_state.get( 'text_context' ), list ):
 		st.session_state[ 'text_context' ] = [ ]
-	
-	if not isinstance( st.session_state.get( 'text_gemini_history' ), list ):
-		st.session_state[ 'text_gemini_history' ] = [ ]
-	
-	if not isinstance( st.session_state.get( 'text_file_search_store_names' ), list ):
-		st.session_state[ 'text_file_search_store_names' ] = [ ]
 	
 	if not isinstance( st.session_state.get( 'text_tools' ), list ):
 		st.session_state[ 'text_tools' ] = [ ]
@@ -5362,47 +4859,6 @@ if mode == 'Text':
 			isinstance( message, dict ) and message.get( 'role' ) in [ 'user',
 				'assistant', ] and str( message.get( 'content', '', ) ).strip( ) ]
 	
-	def build_text_request_context( ) -> List[ Dict[ str, Any ] ]:
-		"""Build text request context.
-		
-		Purpose:
-			Returns provider-compatible prior conversation state without including the current
-			prompt. Gemini receives its complete Interactions timeline while GPT and Grok retain
-			the existing role-and-content message contract.
-		
-		Returns:
-			List[Dict[str, Any]]: Prior conversation state for the selected provider.
-		"""
-		if st.session_state.get( 'text_input', 'conversation' ) != 'conversation':
-			return [ ]
-		
-		if provider_name == 'Gemini':
-			gemini_history = st.session_state.get( 'text_gemini_history', [ ] )
-			return list( gemini_history ) if isinstance( gemini_history, list ) else [ ]
-		
-		return build_text_context( )
-	
-	def get_selected_gemini_file_search_stores( ) -> List[ str ]:
-		"""Get selected Gemini File Search Stores.
-		
-		Purpose:
-			Normalizes the Gemini File Search Store resource names entered by the user and
-			persists them independently from GPT Vector Store identifiers.
-		
-		Returns:
-			List[str]: Unique Gemini File Search Store resource names.
-		"""
-		store_names = parse_comma_list(
-			st.session_state.get( 'text_file_search_store_names_input', '' ) )
-		unique_names: List[ str ] = [ ]
-		
-		for store_name in store_names:
-			if store_name not in unique_names:
-				unique_names.append( store_name )
-		
-		st.session_state[ 'text_file_search_store_names' ] = unique_names
-		return unique_names
-	
 	def normalize_text_domains( ) -> List[ str ]:
 		"""Normalize allowed domains.
 		
@@ -5414,7 +4870,8 @@ if mode == 'Text':
 		"""
 		domains: List[ str ] = [ ]
 		
-		for entered_domain in parse_comma_list( st.session_state.get( 'text_domains_input', '', ) ):
+		for entered_domain in parse_comma_list( st.session_state.get( 'text_domains_input', '',
+		) ):
 			domain = entered_domain.strip( )
 			
 			if domain.startswith( 'https://' ):
@@ -5539,25 +4996,26 @@ if mode == 'Text':
 			continuation_mode = st.session_state.get( 'text_continuation_mode', 'None', )
 			
 			if (continuation_mode == 'Previous Response' and not str(
-					st.session_state.get( 'text_previous_response_id', '', ) or '' ).strip( )):
+				st.session_state.get( 'text_previous_response_id', '', ) or '' ).strip( )):
 				raise ValueError(
 					'Enter a Previous Response ID or select another continuation mode.' )
 			
 			if (continuation_mode == 'Conversation' and not str(
-					st.session_state.get( 'text_conversation_id', '', ) or '' ).strip( )):
+				st.session_state.get( 'text_conversation_id', '', ) or '' ).strip( )):
 				raise ValueError( 'Enter a Conversation ID or select another continuation mode.' )
 			
 			if ('file_search' in selected_tools and not parse_comma_list(
-					st.session_state.get( 'text_vector_store_ids', '', ) )):
+				st.session_state.get( 'text_vector_store_ids', '', ) )):
 				raise ValueError(
 					'Enter at least one GPT Vector Store ID when File Search is selected.' )
 		
 		if provider_name == 'Gemini':
-			if ('file_search' in selected_tools and not get_selected_gemini_file_search_stores( )):
+			if ('file_search' in selected_tools and not parse_comma_list(
+				st.session_state.get( 'text_vector_store_ids', '', ) )):
 				raise ValueError( 'Enter at least one Gemini File Search Store resource name.' )
 			
 			if ('url_context' in selected_tools and not parse_semicolon_list(
-					st.session_state.get( 'text_urls_input', '', ) )):
+				st.session_state.get( 'text_urls_input', '', ) )):
 				raise ValueError( 'Enter at least one URL when URL Context is selected.' )
 		
 		if (
@@ -5617,8 +5075,6 @@ if mode == 'Text':
 		st.session_state[ 'text_max_urls' ] = 0
 		st.session_state[ 'text_domains_input' ] = ''
 		st.session_state[ 'text_vector_store_ids' ] = ''
-		st.session_state[ 'text_file_search_store_names_input' ] = ''
-		st.session_state[ 'text_file_search_store_names' ] = [ ]
 		st.session_state[ 'text_grok_collection_labels' ] = [ ]
 		st.session_state[ 'text_grok_collection_ids' ] = [ ]
 		st.session_state[ 'text_grok_collection_ids_input' ] = ''
@@ -5658,7 +5114,6 @@ if mode == 'Text':
 		"""
 		st.session_state[ 'text_messages' ] = [ ]
 		st.session_state[ 'text_context' ] = [ ]
-		st.session_state[ 'text_gemini_history' ] = [ ]
 		st.session_state[ 'text_previous_response_id' ] = ''
 		st.session_state[ 'text_conversation_id' ] = ''
 		st.session_state[ 'last_answer' ] = ''
@@ -5715,7 +5170,7 @@ if mode == 'Text':
 					'', ) ) if 'file_search' in selected_tools else [ ]),
 			'conversation_id': conversation_id, }
 	
-	def build_gemini_text_kwargs( prompt: str, prior_context: List[ Dict[ str, Any ] ],
+	def build_gemini_text_kwargs( prompt: str, prior_context: List[ Dict[ str, str ] ],
 		stream_handler: Any = None ) -> Dict[ str, Any ]:
 		"""Build Gemini text arguments.
 		
@@ -5733,7 +5188,7 @@ if mode == 'Text':
 		selected_tools = list( st.session_state.get( 'text_tools', [ ], ) )
 		
 		if (st.session_state.get( 'text_google_grounding',
-				False, ) and 'google_search' not in selected_tools):
+			False, ) and 'google_search' not in selected_tools):
 			selected_tools.append( 'google_search' )
 		
 		return { 'prompt': prompt, 'model': st.session_state.get( 'text_model', '', ), 'number': 1,
@@ -5746,8 +5201,7 @@ if mode == 'Text':
 			'stops': parse_comma_list( st.session_state.get( 'text_stops_input', '', ) ),
 			'instruct': str( st.session_state.get( 'text_system_instructions', '', ) or '' ),
 			'response_format': str( st.session_state.get( 'text_response_format', '', ) or '' ),
-			'tools': selected_tools,
-			'tool_choice': str( st.session_state.get( 'text_tool_choice', '', ) or '' ),
+			'tools': selected_tools, 'tool_choice': '',
 			'reasoning': str( st.session_state.get( 'text_reasoning', '', ) or '' ),
 			'modalities': [ ], 'media_resolution': '', 'context': prior_context, 'content': '',
 			'urls': (parse_semicolon_list( st.session_state.get( 'text_urls_input',
@@ -5755,9 +5209,9 @@ if mode == 'Text':
 			'max_urls': int( st.session_state.get( 'text_max_urls', 0, ) ),
 			'response_schema': get_gemini_text_schema( ),
 			'safety_profile': str( st.session_state.get( 'text_safety_profile', '', ) or '' ),
-			'file_search_store_names': (
-				get_selected_gemini_file_search_stores( ) if 'file_search' in selected_tools else
-				[ ]),
+			'file_search_store_names': (parse_comma_list(
+				st.session_state.get( 'text_vector_store_ids',
+					'', ) ) if 'file_search' in selected_tools else [ ]),
 			'stream': bool( st.session_state.get( 'text_stream', False, ) ),
 			'stream_handler': stream_handler, }
 	
@@ -5803,7 +5257,7 @@ if mode == 'Text':
 			'max_tools': int( st.session_state.get( 'text_max_calls', 0, ) ),
 			'response_schema': get_grok_text_schema( ), 'stream_handler': stream_handler, }
 	
-	def call_generate_text( prompt: str, prior_context: List[ Dict[ str, Any ] ],
+	def call_generate_text( prompt: str, prior_context: List[ Dict[ str, str ] ],
 		stream_handler: Any = None ) -> Any:
 		"""Call generate text.
 		
@@ -5852,7 +5306,7 @@ if mode == 'Text':
 			return getattr( cfg, 'GPT', getattr( cfg, 'BOO', '🧠' ), )
 		
 		if provider_name == 'Gemini':
-			return getattr( cfg, 'Boo', getattr( cfg, 'BOO', '🧠' ), )
+			return getattr( cfg, 'JENI', getattr( cfg, 'BOO', '🧠' ), )
 		
 		if provider_name == 'Grok':
 			return getattr( cfg, 'GROK', getattr( cfg, 'BOO', '🧠' ), )
@@ -5950,7 +5404,7 @@ if mode == 'Text':
 			return
 		
 		st.session_state[ 'text_system_instructions' ] = convert_markdown( instructions )
-	
+		
 	# ------------------------------------------------------------------
 	# Main Chat UI
 	# ------------------------------------------------------------------
@@ -6072,11 +5526,6 @@ if mode == 'Text':
 			with st.expander( label='Tools / Grounding Settings', icon='🔎', expanded=False,
 					width='stretch', ):
 				tool_options = get_text_options( text, 'tool_options', )
-				
-				if (provider_name == 'Gemini' and st.session_state.get( 'text_model' ) and hasattr(
-					text, 'get_supported_tools' )):
-					tool_options = text.get_supported_tools(
-						str( st.session_state.get( 'text_model', '' ) ) )
 				include_options = get_text_options( text, 'include_options', )
 				choice_options = get_text_options( text, 'choice_options', )
 				
@@ -6085,6 +5534,11 @@ if mode == 'Text':
 				sanitize_text_selection( 'text_tool_choice', choice_options, '', )
 				
 				selected_tools = st.session_state.get( 'text_tools', [ ], )
+				gemini_builtin_tools = { 'google_search', 'url_context', 'file_search',
+					'code_execution', }
+				gemini_function_tool_selected = (provider_name == 'Gemini' and any(
+					selected_tool not in gemini_builtin_tools for selected_tool in
+						selected_tools ))
 				
 				tool_c1, tool_c2, tool_c3 = st.columns( [ 0.34, 0.33, 0.33, ], border=True,
 					gap='xxsmall', )
@@ -6102,8 +5556,10 @@ if mode == 'Text':
 				# ---------- Tool Choice ------------
 				with tool_c3:
 					st.selectbox( label='Tool Choice', options=choice_options,
-						key='text_tool_choice', index=None, placeholder='Options',
-						disabled=not choice_options, help=cfg.CHOICE, )
+						key='text_tool_choice', index=None, placeholder='Options', disabled=(
+								not choice_options or (
+								provider_name == 'Gemini' and not gemini_function_tool_selected)),
+						help=cfg.CHOICE, )
 				
 				selected_tools = st.session_state.get( 'text_tools', [ ], )
 				
@@ -6165,8 +5621,7 @@ if mode == 'Text':
 						width='stretch', placeholder='vs_abc123,vs_def456', )
 				
 				elif (provider_name == 'Gemini' and 'file_search' in selected_tools):
-					st.text_input( label='File Search Store Names',
-						key='text_file_search_store_names_input',
+					st.text_input( label='File Search Store Names', key='text_vector_store_ids',
 						help=('Required for Gemini File Search. Enter complete resource names '
 						      'separated with commas.'), width='stretch',
 						placeholder=('fileSearchStores/store-a,'
@@ -6185,12 +5640,7 @@ if mode == 'Text':
 						help='Enter additional xAI Collection IDs separated with commas.',
 						width='stretch', placeholder='collection_abc123,collection_def456', )
 				else:
-					if provider_name != 'GPT':
-						st.session_state[ 'text_vector_store_ids' ] = ''
-					
-					if provider_name != 'Gemini':
-						st.session_state[ 'text_file_search_store_names_input' ] = ''
-						st.session_state[ 'text_file_search_store_names' ] = [ ]
+					st.session_state[ 'text_vector_store_ids' ] = ''
 					
 					if provider_name != 'Grok':
 						st.session_state[ 'text_grok_collection_labels' ] = [ ]
@@ -6417,8 +5867,8 @@ if mode == 'Text':
 		if prompt is not None and str( prompt ).strip( ):
 			prompt = str( prompt ).strip( )
 			
-			# Capture provider context before appending the current prompt so it is sent once.
-			prior_context = build_text_request_context( )
+			# Capture context before appending the current prompt so the prompt is sent once.
+			prior_context = build_text_context( )
 			st.session_state[ 'text_messages' ].append( { 'role': 'user', 'content': prompt, } )
 			with st.chat_message( 'assistant', avatar=get_text_avatar( 'assistant' ), ):
 				with st.spinner( 'Thinking…' ):
@@ -6471,16 +5921,9 @@ if mode == 'Text':
 						else:
 							st.markdown( response_text )
 						
-						st.session_state[ 'text_messages' ].append( { 'role': 'assistant',
-							'content': response_text, } )
+						st.session_state[ 'text_messages' ].append(
+							{ 'role': 'assistant', 'content': response_text, } )
 						st.session_state[ 'text_context' ] = build_text_context( )
-						
-						if (provider_name == 'Gemini' and hasattr( text,
-							'get_structured_history' )):
-							structured_history = text.get_structured_history( )
-							if isinstance( structured_history, list ):
-								st.session_state[ 'text_gemini_history' ] = structured_history
-						
 						st.session_state[ 'last_answer' ] = response_text
 						
 						if provider_name in [ 'GPT', 'Grok', ]:
@@ -6508,19 +5951,14 @@ if mode == 'Text':
 									if not isinstance( source, dict ):
 										continue
 									
-									source_type = str( source.get( 'type', '', ) or '' ).strip( )
-									title = str( source.get( 'title', '', ) or '' ).strip( )
-									url = str( source.get( 'url', '', ) or '' ).strip( )
-									file_id = str( source.get( 'files_id', '', ) or '' ).strip( )
-									snippet = str( source.get( 'snippet', '', ) or '' ).strip( )
-									label = title or file_id or url or source_type or 'Source'
-									if url:
-										st.markdown( f'- [{label}]({url})' )
-									else:
-										st.markdown( f'- {label}' )
+									title = str(
+										source.get( 'title', '', ) or source.get( 'url', '', ) )
+									url = str( source.get( 'url', '', ) or '' )
 									
-									if snippet:
-										st.caption( snippet )
+									if url:
+										st.markdown( f'- [{title}]({url})' )
+									elif title:
+										st.markdown( f'- {title}' )
 						
 						update_text_usage( response_obj )
 					
@@ -6615,7 +6053,8 @@ elif mode == 'Images':
 		
 		return [ str( value ) for value in values if str( value ).strip( ) ]
 	
-	def sanitize_image_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> None:
+	def sanitize_image_selection( key: str, valid_options: List[ str ], default: Any = '' ) -> \
+			None:
 		"""Sanitize image selection.
 		
 		Purpose:
@@ -7070,7 +6509,7 @@ elif mode == 'Images':
 		
 		if (provider_name == 'Gemini' and operation in [ 'Generation',
 			'Editing', ] and st.session_state.get( 'image_grounded', False, ) and hasattr( image,
-			'supports_search_grounding', ) and not image.supports_search_grounding( model )):
+			'supports_grounding', ) and not image.supports_grounding( model )):
 			raise ValueError( 'The selected Gemini model does not support Google grounding.' )
 		
 		return model
@@ -7102,8 +6541,8 @@ elif mode == 'Images':
 		if provider_name == 'Gemini':
 			return image.generate( prompt=prompt, model=model,
 				number=int( st.session_state.get( 'image_number', 1, ) ),
-				aspect=str( st.session_state.get( 'image_aspect_ratio', '', ) or '' ),
-				resolution=str( st.session_state.get( 'image_size', '', ) or '' ),
+				aspect_ratio=str( st.session_state.get( 'image_aspect_ratio', '', ) or '' ),
+				image_size=str( st.session_state.get( 'image_size', '', ) or '' ),
 				output_mime_type=str( st.session_state.get( 'image_mime_type', '', ) or '' ),
 				response_modalities=str( st.session_state.get( 'image_modality', '', ) or '' ),
 				temperature=float( st.session_state.get( 'image_temperature', 0.0, ) ),
@@ -7111,6 +6550,7 @@ elif mode == 'Images':
 				frequency=float( st.session_state.get( 'image_frequency_penalty', 0.0, ) ),
 				presence=float( st.session_state.get( 'image_presence_penalty', 0.0, ) ),
 				max_tokens=int( st.session_state.get( 'image_max_tokens', 0, ) ),
+				media_resolution=str( st.session_state.get( 'image_media_resolution', '', ) or '' ),
 				instruct=str( st.session_state.get( 'image_system_instructions', '', ) or '' ),
 				grounded=bool( st.session_state.get( 'image_grounded', False, ) ),
 				image_search=bool( st.session_state.get( 'image_image_search', False, ) ), )
@@ -7155,6 +6595,8 @@ elif mode == 'Images':
 				frequency=float( st.session_state.get( 'image_frequency_penalty', 0.0, ) ),
 				presence=float( st.session_state.get( 'image_presence_penalty', 0.0, ) ),
 				max_tokens=int( st.session_state.get( 'image_max_tokens', 0, ) ),
+				media_resolution=str( st.session_state.get( 'image_media_resolution', '',
+				) or '' ),
 				instruct=str( st.session_state.get( 'image_system_instructions', '', ) or '' ), )
 		
 		if provider_name == 'Grok':
@@ -7207,8 +6649,8 @@ elif mode == 'Images':
 		if provider_name == 'Gemini':
 			return image.edit( prompt=prompt, path=path, model=model,
 				number=int( st.session_state.get( 'image_number', 1, ) ),
-				aspect=str( st.session_state.get( 'image_aspect_ratio', '', ) or '' ),
-				resolution=str( st.session_state.get( 'image_size', '', ) or '' ),
+				aspect_ratio=str( st.session_state.get( 'image_aspect_ratio', '', ) or '' ),
+				image_size=str( st.session_state.get( 'image_size', '', ) or '' ),
 				output_mime_type=str( st.session_state.get( 'image_mime_type', '', ) or '' ),
 				response_modalities=str( st.session_state.get( 'image_modality', '', ) or '' ),
 				temperature=float( st.session_state.get( 'image_temperature', 0.0, ) ),
@@ -7216,6 +6658,8 @@ elif mode == 'Images':
 				frequency=float( st.session_state.get( 'image_frequency_penalty', 0.0, ) ),
 				presence=float( st.session_state.get( 'image_presence_penalty', 0.0, ) ),
 				max_tokens=int( st.session_state.get( 'image_max_tokens', 0, ) ),
+				media_resolution=str( st.session_state.get( 'image_media_resolution', '',
+				) or '' ),
 				instruct=str( st.session_state.get( 'image_system_instructions', '', ) or '' ),
 				grounded=bool( st.session_state.get( 'image_grounded', False, ) ),
 				image_search=bool( st.session_state.get( 'image_image_search', False, ) ), )
@@ -7250,36 +6694,38 @@ elif mode == 'Images':
 				mode_options = [ 'Generation', 'Analysis', 'Editing', ]
 				sanitize_image_selection( 'image_mode', mode_options, 'Generation', )
 				
+				model_c1, model_c2, model_c3 = st.columns( [ 0.33, 0.33, 0.33 ], border=True,
+					gap='xxsmall', )
+				
 				# ----- Image Mode -----
-				st.selectbox( label='Image Mode', options=mode_options, key='image_mode',
-					help='Select the image operation used to configure the controls below.', )
+				with model_c1:
+					st.selectbox( label='Image Mode', options=mode_options, key='image_mode',
+						help='Select the image operation used to configure the controls below.', )
+					
+					selected_image_mode = st.session_state.get( 'image_mode', 'Generation', )
+					model_options = get_provider_image_models( selected_image_mode )
+					if selected_image_mode == 'Generation':
+						sanitize_image_selection( 'image_generation_model', model_options, '', )
+						model_key = 'image_generation_model'
+					
+					elif selected_image_mode == 'Analysis':
+						sanitize_image_selection( 'image_analysis_model', model_options, '', )
+						model_key = 'image_analysis_model'
+					
+					else:
+						sanitize_image_selection( 'image_editing_model', model_options, '', )
+						model_key = 'image_editing_model'
 				
-				selected_image_mode = st.session_state.get( 'image_mode', 'Generation', )
-				model_options = get_provider_image_models( selected_image_mode )
-				
-				if selected_image_mode == 'Generation':
-					sanitize_image_selection( 'image_generation_model', model_options, '', )
-					model_key = 'image_generation_model'
-				
-				elif selected_image_mode == 'Analysis':
-					sanitize_image_selection( 'image_analysis_model', model_options, '', )
-					model_key = 'image_analysis_model'
-				
-				else:
-					sanitize_image_selection( 'image_editing_model', model_options, '', )
-					model_key = 'image_editing_model'
-				
-				model_c1, model_c2 = st.columns( [ 0.75, 0.25, ], border=True, gap='xxsmall', )
 				
 				# ----- Model -----
-				with model_c1:
+				with model_c2:
 					st.selectbox( label='Model', options=model_options, key=model_key, index=None,
 						placeholder='Select Model',
 						help='Required. Select the provider model for the chosen image '
 						     'operation.', )
 				
 				# ----- Number of Images -----
-				with model_c2:
+				with model_c3:
 					st.slider( label='Images', min_value=1, max_value=10, step=1,
 						key='image_number', disabled=selected_image_mode == 'Analysis',
 						help='Number of generated or edited images requested.', )
@@ -7298,8 +6744,8 @@ elif mode == 'Images':
 				selected_image_mode = st.session_state.get( 'image_mode', 'Generation', )
 				
 				if provider_name == 'Gemini':
-					inf_c1, inf_c2, inf_c3, inf_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25, ],
-						border=True, gap='xxsmall', )
+					inf_c1, inf_c2, inf_c3, inf_c4, inf_c5 = st.columns(
+						[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall', )
 					
 					# ----- Temperature -----
 					with inf_c1:
@@ -7322,8 +6768,9 @@ elif mode == 'Images':
 							step=0.01, key='image_presence_penalty', help=cfg.PRESENCE_PENALTY, )
 					
 					# ----- Max Tokens -----
-					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
-						key='image_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, )
+					with inf_c5:
+						st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+							key='image_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, )
 				
 				elif (provider_name == 'GPT' and selected_image_mode == 'Analysis'):
 					inf_c1, inf_c2 = st.columns( [ 0.50, 0.50, ], border=True, gap='xxsmall', )
@@ -7391,8 +6838,8 @@ elif mode == 'Images':
 						# ----- Media Resolution -----
 						st.selectbox( label='Media Resolution', options=media_options,
 							key='image_media_resolution', index=None, placeholder='Options',
-							disabled=True,
-							help='Retained for cross-provider compatibility; the Gemini Interactions image wrapper does not submit this value.', )
+							disabled=not media_options,
+							help='Gemini media resolution used for image analysis.', )
 						
 						st.session_state[ 'image_include' ] = [ ]
 						st.session_state[ 'image_store' ] = False
@@ -7418,7 +6865,7 @@ elif mode == 'Images':
 				else:
 					st.info( 'Response controls in this section apply to image analysis only.' )
 				
-				st.button( label='Reset', key='image_response_reset', width='content',
+				st.button( label='Reset', key='image_response_reset', width='stretch',
 					on_click=reset_image_response_settings, icon='🔄', )
 			
 			# ------------------------------------------------------------------
@@ -7434,6 +6881,7 @@ elif mode == 'Images':
 						quality_options = get_image_options( image, 'quality_options', )
 						format_options = get_image_options( image, 'format_options',
 							[ 'png', 'jpeg', 'webp', ], )
+						
 						background_options = get_image_options( image, 'background_options',
 							[ 'auto', 'transparent', 'opaque', ], )
 						
@@ -7442,8 +6890,8 @@ elif mode == 'Images':
 						sanitize_image_selection( 'image_mime_type', format_options, '', )
 						sanitize_image_selection( 'image_backcolor', background_options, '', )
 						
-						visual_c1, visual_c2, visual_c3, visual_c4 = st.columns(
-							[ 0.25, 0.25, 0.25, 0.25, ], border=True, gap='xxsmall', )
+						visual_c1, visual_c2, visual_c3, visual_c4, visual_c5 = st.columns(
+							[ 0.20, 0.20, 0.20, 0.20, 0.20 ], border=True, gap='xxsmall', )
 						
 						# ----- Size -----
 						with visual_c1:
@@ -7471,9 +6919,10 @@ elif mode == 'Images':
 								help='GPT output background behavior.', )
 						
 						# ----- Compression -----
-						st.slider( label='Compression', min_value=0.0, max_value=100.0, step=1.0,
-							key='image_compression',
-							help='GPT JPEG or WebP compression level when supported.', )
+						with visual_c5:
+							st.slider( label='Compression', min_value=0.0, max_value=100.0, step=1.0,
+								key='image_compression',
+								help='GPT JPEG or WebP compression level when supported.', )
 						
 						st.session_state[ 'image_aspect_ratio' ] = ''
 						st.session_state[ 'image_modality' ] = ''
@@ -7488,23 +6937,6 @@ elif mode == 'Images':
 						modality_options = get_image_options( image, 'modality_options',
 							[ 'IMAGE', 'TEXT_AND_IMAGE', ], )
 						media_options = get_image_options( image, 'media_options', )
-						active_gemini_model = get_selected_image_model( selected_image_mode )
-						gemini_supports_image_size = bool( active_gemini_model ) and hasattr( image,
-							'supports_image_size', ) and image.supports_image_size( active_gemini_model )
-						gemini_supports_grounding = bool( active_gemini_model ) and hasattr( image,
-							'supports_search_grounding', ) and image.supports_search_grounding(
-							active_gemini_model )
-						gemini_supports_image_search = bool( active_gemini_model ) and hasattr( image,
-							'supports_image_search', ) and image.supports_image_search( active_gemini_model )
-						
-						if not gemini_supports_image_size:
-							st.session_state[ 'image_size' ] = ''
-						
-						if not gemini_supports_grounding:
-							st.session_state[ 'image_grounded' ] = False
-						
-						if not gemini_supports_image_search:
-							st.session_state[ 'image_image_search' ] = False
 						
 						sanitize_image_selection( 'image_aspect_ratio', aspect_options, '', )
 						sanitize_image_selection( 'image_size', size_options, '', )
@@ -7513,7 +6945,7 @@ elif mode == 'Images':
 						sanitize_image_selection( 'image_media_resolution', media_options, '', )
 						
 						visual_c1, visual_c2, visual_c3, visual_c4 = st.columns(
-							[ 0.25, 0.25, 0.25, 0.25, ], border=True, gap='xxsmall', )
+							[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
 						
 						# ----- Aspect Ratio -----
 						with visual_c1:
@@ -7526,8 +6958,7 @@ elif mode == 'Images':
 						with visual_c2:
 							st.selectbox( label='Image Size', options=size_options,
 								key='image_size', index=None, placeholder='Options',
-								disabled=(not size_options or not gemini_supports_image_size),
-								help='Gemini output image size when supported by the selected model.', )
+								disabled=not size_options, help='Gemini output image size.', )
 						
 						# ----- Output MIME Type -----
 						with visual_c3:
@@ -7542,25 +6973,25 @@ elif mode == 'Images':
 								disabled=not modality_options,
 								help='Gemini response modality for image generation or editing.', )
 						
+							
+						ground_c1, ground_c2, ground_c3 = st.columns( [ 0.33, 0.33, 0.33 ],
+							border=True, gap='xxsmall', )
+						
 						# ----- Media Resolution -----
-						st.selectbox( label='Media Resolution', options=media_options,
-							key='image_media_resolution', index=None, placeholder='Options',
-							disabled=True,
-							help='Retained for cross-provider compatibility; the Gemini Interactions image wrapper does not submit this value.', )
-						
-						ground_c1, ground_c2 = st.columns( [ 0.50, 0.50, ], border=True,
-							gap='xxsmall', )
-						
-						# ----- Google Grounding -----
 						with ground_c1:
+							st.selectbox( label='Media Resolution', options=media_options,
+								key='image_media_resolution', index=None, placeholder='Options',
+								disabled=not media_options,
+								help='Gemini media-resolution configuration.', )
+							
+						# ----- Google Grounding -----
+						with ground_c2:
 							st.toggle( label='Google Grounding', key='image_grounded',
-								disabled=not gemini_supports_grounding,
 								help='Enable Gemini Google Search grounding when supported.', )
 						
 						# ----- Image Search -----
-						with ground_c2:
+						with ground_c3:
 							st.toggle( label='Image Search', key='image_image_search',
-								disabled=not gemini_supports_image_search,
 								help='Enable Gemini Image Search when supported.', )
 						
 						st.session_state[ 'image_quality' ] = ''
@@ -7649,8 +7080,6 @@ elif mode == 'Images':
 			with btn_c2:
 				st.button( label='XML ↔️ Markdown', width='stretch',
 					on_click=convert_image_system_instructions, )
-		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True, )
 		
 		# ----- Tab Section ------
 		tab_gen, tab_analyze, tab_edit = st.tabs( [ 'Generate', 'Analyze', 'Edit', ] )
@@ -8666,41 +8095,37 @@ elif mode == 'Audio':
 			throw_if( 'model', model )
 			language = str( st.session_state.get( 'audio_language', '' ) or '' ).strip( )
 			response_format = st.session_state.get( 'audio_response_format' )
-			prompt_text = str( prompt or '' ).strip( )
-			system_instructions = str(
-				st.session_state.get( 'audio_system_instructions', '' ) or '' ).strip( )
-
+			prompt_text = str( prompt or '' )
+			
 			if provider_name == 'GPT':
 				result = transcriber.transcribe( path=path, model=model, language=language,
 					prompt=prompt_text, format=str( response_format or 'json' ),
 					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
 					include=list( st.session_state.get( 'audio_include', [ ] ) or [ ] ), )
-
+			
 			elif provider_name == 'Gemini':
-				instructions = '\n\n'.join(
-					value for value in [ system_instructions, prompt_text ] if value )
 				result = transcriber.transcribe( path=path, model=model,
-					language=language or 'Auto Detect',
-					mime_type=get_audio_source_mime_type( path, '' ),
+					language=language or 'Auto',
+					mime_type=get_audio_source_mime_type( path, response_format ),
 					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
 					top_p=float( st.session_state.get( 'audio_top_percent', 0.0 ) or 0.0 ),
-					frequency=float(
+					top_k=int( st.session_state.get( 'audio_top_k', 0 ) or 0 ), frequency=float(
 						st.session_state.get( 'audio_frequency_penalty', 0.0 ) or 0.0 ),
-					presence=float(
-						st.session_state.get( 'audio_presence_penalty', 0.0 ) or 0.0 ),
+					presence=float( st.session_state.get( 'audio_presence_penalty', 0.0 ) or 0.0 ),
 					max_tokens=int( st.session_state.get( 'audio_max_tokens', 0 ) or 0 ),
 					start_time=float( st.session_state.get( 'audio_start_time', 0.0 ) or 0.0 ),
 					end_time=float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ),
-					instruct=instructions, )
-
+					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
+					prompt=prompt_text, )
+			
 			elif provider_name == 'Grok':
 				result = transcriber.transcribe( path=path, language=language,
-					format=bool( response_format ), mime_type=get_audio_source_mime_type( path, '' ),
-					keyterm=prompt_text, )
-
+					format=bool( response_format ),
+					mime_type=get_audio_source_mime_type( path, '' ), keyterm=prompt_text, )
+			
 			else:
 				raise ValueError( f'Unsupported Audio provider: {provider_name}' )
-
+			
 			text_result = normalize_audio_text_result( result )
 			st.session_state[ 'audio_output' ] = text_result
 			st.session_state[ 'audio_last_result' ] = { 'task': 'Transcribe',
@@ -8715,7 +8140,7 @@ elif mode == 'Audio':
 			             'prompt: Optional[ str ] = None ) -> str')
 			Logger( ).write( ex )
 			raise ex
-
+	
 	def run_audio_translation( path: str, prompt: Optional[ str ] = None ) -> str:
 		"""Run audio translation.
 
@@ -8739,42 +8164,39 @@ elif mode == 'Audio':
 			throw_if( 'model', model )
 			target_language = get_audio_target_language( )
 			response_format = st.session_state.get( 'audio_response_format' )
-			prompt_text = str( prompt or '' ).strip( )
-			system_instructions = str(
-				st.session_state.get( 'audio_system_instructions', '' ) or '' ).strip( )
-
+			prompt_text = str( prompt or '' )
+			
 			if provider_name == 'GPT':
 				result = translator.translate( path=path, model=model, prompt=prompt_text,
 					format=str( response_format or 'json' ),
 					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ), )
-
+			
 			elif provider_name == 'Gemini':
 				throw_if( 'audio_language', target_language )
-				instructions = '\n\n'.join(
-					value for value in [ system_instructions, prompt_text ] if value )
-				result = translator.translate( path=path, target_language=target_language,
-					model=model, source_language='', mime_type=get_audio_source_mime_type( path, '' ),
+				result = translator.translate( path=path, model=model, language=target_language,
+					source='Auto', mime_type=get_audio_source_mime_type( path, response_format ),
 					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
 					top_p=float( st.session_state.get( 'audio_top_percent', 0.0 ) or 0.0 ),
-					frequency=float(
+					top_k=int( st.session_state.get( 'audio_top_k', 0 ) or 0 ), frequency=float(
 						st.session_state.get( 'audio_frequency_penalty', 0.0 ) or 0.0 ),
-					presence=float(
-						st.session_state.get( 'audio_presence_penalty', 0.0 ) or 0.0 ),
+					presence=float( st.session_state.get( 'audio_presence_penalty', 0.0 ) or 0.0 ),
 					max_tokens=int( st.session_state.get( 'audio_max_tokens', 0 ) or 0 ),
 					start_time=float( st.session_state.get( 'audio_start_time', 0.0 ) or 0.0 ),
 					end_time=float( st.session_state.get( 'audio_end_time', 0.0 ) or 0.0 ),
-					instruct=instructions, )
-
+					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
+					prompt=prompt_text, )
+			
 			elif provider_name == 'Grok':
 				throw_if( 'audio_language', target_language )
 				result = translator.translate( path=path, target_language=target_language,
 					model=model, source_language='', text_format=bool( response_format ),
 					mime_type=get_audio_source_mime_type( path, '' ), keyterm=prompt_text,
-					instruct=system_instructions, )
-
+					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or ''
+					), )
+			
 			else:
 				raise ValueError( f'Unsupported Audio provider: {provider_name}' )
-
+			
 			text_result = normalize_audio_text_result( result )
 			st.session_state[ 'audio_output' ] = text_result
 			st.session_state[ 'audio_last_result' ] = { 'task': 'Translate',
@@ -8790,7 +8212,7 @@ elif mode == 'Audio':
 			             'prompt: Optional[ str ] = None ) -> str')
 			Logger( ).write( ex )
 			raise ex
-
+	
 	def run_audio_tts( text: str ) -> Optional[ bytes ]:
 		"""Run audio text-to-speech.
 
@@ -8815,27 +8237,26 @@ elif mode == 'Audio':
 			speed = float( st.session_state.get( 'audio_speed', 1.0 ) or 1.0 )
 			output_path = str( st.session_state.get( 'audio_output_path', '' ) or '' )
 			throw_if( 'voice', voice )
-
+			
 			if provider_name == 'GPT':
 				throw_if( 'model', model )
 				result = tts.create_speech( text=text, model=model,
 					format=str( response_format or 'mp3' ), speed=speed, voice=voice,
 					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
 					file_path=output_path, )
-
+			
 			elif provider_name == 'Gemini':
 				throw_if( 'model', model )
-				result = tts.create_speech( text=text, filepath=output_path, model=model,
-					format=str( response_format or 'audio/wav' ), speed=speed, voice=voice,
-					frequency=float(
-						st.session_state.get( 'audio_frequency_penalty', 0.0 ) or 0.0 ),
-					presense=float(
-						st.session_state.get( 'audio_presence_penalty', 0.0 ) or 0.0 ),
-					max_tokens=int( st.session_state.get( 'audio_max_tokens', 0 ) or 0 ),
+				result = tts.create_speech( text=text, model=model,
+					format=str( response_format or 'audio/wav' ), voice=voice, speed=speed,
 					instruct=str( st.session_state.get( 'audio_system_instructions', '' ) or '' ),
+					file_path=output_path,
 					temperature=float( st.session_state.get( 'audio_temperature', 0.0 ) or 0.0 ),
-					top_p=float( st.session_state.get( 'audio_top_percent', 0.0 ) or 0.0 ), )
-
+					top_p=float( st.session_state.get( 'audio_top_percent', 0.0 ) or 0.0 ),
+					max_tokens=int( st.session_state.get( 'audio_max_tokens', 0 ) or 0 ),
+					sample_rate=int(
+						st.session_state.get( 'audio_sample_rate', 24000 ) or 24000 ), )
+			
 			elif provider_name == 'Grok':
 				result = tts.create_speech( text=text,
 					language=str( st.session_state.get( 'audio_language', '' ) or 'auto' ),
@@ -8843,10 +8264,10 @@ elif mode == 'Audio':
 					sample_rate=int( st.session_state.get( 'audio_sample_rate', 24000 ) or 24000 ),
 					bit_rate=int( st.session_state.get( 'audio_bit_rate', 128000 ) or 128000 ),
 					filepath=output_path, )
-
+			
 			else:
 				raise ValueError( f'Unsupported Audio provider: {provider_name}' )
-
+			
 			audio_bytes = normalize_audio_bytes_result( result )
 			st.session_state[ 'audio_output_bytes' ] = audio_bytes
 			st.session_state[ 'audio_last_result' ] = { 'task': 'Text-to-Speech',
@@ -8861,7 +8282,7 @@ elif mode == 'Audio':
 			ex.method = 'run_audio_tts( text: str ) -> Optional[ bytes ]'
 			Logger( ).write( ex )
 			raise ex
-
+	
 	# ------------------------------------------------------------------
 	# Main UI
 	# ------------------------------------------------------------------
@@ -8941,14 +8362,13 @@ elif mode == 'Audio':
 				with sr_c1:
 					st.selectbox( label='Sample Rate', options=sample_rate_options,
 						key='audio_sample_rate', index=None, placeholder='Options',
-						disabled=provider_name == 'Gemini',
-						help='Optional TTS sample rate. Gemini uses its native output rate.' )
+						help='Optional TTS sample rate. Zero/blank means provider default.' )
 				
 				# ---------- Bit Rate ------------
 				with sr_c2:
 					st.selectbox( label='Bit Rate', options=bit_rate_options, key='audio_bit_rate',
-						index=None, placeholder='Options', disabled=provider_name == 'Gemini',
-						help='Optional TTS MP3 bit rate. Gemini currently returns WAV output.' )
+						index=None, placeholder='Options',
+						help='Optional TTS MP3 bit rate. Zero/blank means provider default.' )
 				
 				# ----- Reset Button -----
 				st.button( label='Reset', key='audio_task_reset', width='stretch',
@@ -9206,7 +8626,8 @@ elif mode == 'Audio':
 			# ----- Clear Button -----
 			with process_c2:
 				if st.button( 'Clear Messages', key='audio_clear_process_messages',
-						width='stretch', on_click=clear_audio_messages, icon='🧹' ):
+						width='stretch',
+						on_click=clear_audio_messages, icon='🧹' ):
 					st.rerun( )
 			
 			if st.session_state.get( 'audio_output' ):
@@ -9344,9 +8765,10 @@ elif mode == 'Document Q&A':
 		'docqna_model': '', 'docqna_reasoning': '', 'docqna_resolution': '',
 		'docqna_media_resolution': '', 'docqna_response_format': '', 'docqna_tool_choice': '',
 		'docqna_content': '', 'docqna_input': '', 'docqna_tools': [ ], 'docqna_modalities': [ ],
-		'docqna_context': [ ], 'docqna_gemini_history': [ ], 'docqna_include': [ ], 'docqna_domains': [ ],
+		'docqna_context': [ ], 'docqna_include': [ ], 'docqna_domains': [ ],
 		'docqna_domains_input': '', 'docqna_stops': [ ], 'docqna_stops_input': '',
-		'docqna_files': [ ], 'docqna_uploaded': None, 'docqna_messages': [ ], 'docqna_history': [ ],
+		'docqna_files': [ ], 'docqna_uploaded': None, 'docqna_messages': [ ], 'docqna_history':
+			[ ],
 		'docqna_active_docs': [ ], 'docqna_source': '', 'docqna_multi_mode': False,
 		'docqna_answer': '', 'docqna_sources': [ ], 'docqna_prompt_category': None,
 		'docqna_prompt_id': None, 'docqna_system_instructions': '', 'doc_bytes': { }, }
@@ -9363,9 +8785,6 @@ elif mode == 'Document Q&A':
 	
 	if not isinstance( st.session_state.get( 'docqna_context' ), list ):
 		st.session_state[ 'docqna_context' ] = [ ]
-
-	if not isinstance( st.session_state.get( 'docqna_gemini_history' ), list ):
-		st.session_state[ 'docqna_gemini_history' ] = [ ]
 	
 	if not isinstance( st.session_state.get( 'docqna_sources' ), list ):
 		st.session_state[ 'docqna_sources' ] = [ ]
@@ -9568,17 +8987,16 @@ elif mode == 'Document Q&A':
 		st.session_state[ 'docqna_history' ] = [ ]
 		st.session_state[ 'docqna_answer' ] = ''
 		st.session_state[ 'docqna_context' ] = [ ]
-		st.session_state[ 'docqna_gemini_history' ] = [ ]
 		st.session_state[ 'docqna_sources' ] = [ ]
 		st.session_state[ 'last_answer' ] = ''
 		st.session_state[ 'last_sources' ] = [ ]
 	
 	def run_document_query( prompt: str ) -> str:
-		"""Run a document-grounded query through the active provider.
+		"""Run Document Q&A query.
 		
 		Purpose:
-		    Builds local retrieval context, invokes the exact provider Chat contract, preserves
-		    Gemini Interactions history, and records normalized grounding sources and usage.
+		    Builds locally grounded document input and invokes the exact text-generation contract
+		    implemented by the selected provider Chat wrapper.
 		
 		Args:
 		    prompt (str): User question submitted for the active document.
@@ -9591,110 +9009,111 @@ elif mode == 'Document Q&A':
 		"""
 		try:
 			throw_if( 'prompt', prompt )
+			
 			model = str( st.session_state.get( 'docqna_model', '' ) or '' ).strip( )
 			throw_if( 'model', model )
-			active_documents = st.session_state.get( 'docqna_active_docs', [ ] )
+			
+			active_documents = st.session_state.get( 'docqna_active_docs', [ ], )
+			
 			if not active_documents:
 				raise ValueError( 'Load a document before submitting a Document Q&A question.' )
+			
 			top_k = int( st.session_state.get( 'docqna_top_k', 0 ) or 0 )
-			user_input = build_document_user_input( prompt, k=top_k or 6 )
+			user_input = build_document_user_input( prompt, k=top_k or 6, )
+			
 			if not user_input:
 				raise ValueError( 'The active document did not produce usable context.' )
-			instructions = str( st.session_state.get( 'docqna_system_instructions', '' ) or '' )
-			temperature = float( st.session_state.get( 'docqna_temperature', 0.0 ) or 0.0 )
-			top_p = float( st.session_state.get( 'docqna_top_percent', 0.0 ) or 0.0 )
-			frequency = float( st.session_state.get( 'docqna_frequency_penalty', 0.0 ) or 0.0 )
-			presence = float( st.session_state.get( 'docqna_presence_penalty', 0.0 ) or 0.0 )
-			max_tokens = int( st.session_state.get( 'docqna_max_tokens', 0 ) or 0 )
-			stream = bool( st.session_state.get( 'docqna_stream', False ) )
-			store = bool( st.session_state.get( 'docqna_store', False ) )
-			reasoning = str( st.session_state.get( 'docqna_reasoning', '' ) or '' )
-			response_format = str( st.session_state.get( 'docqna_response_format', '' ) or '' )
-			tools = list( st.session_state.get( 'docqna_tools', [ ] ) or [ ] )
-			include = list( st.session_state.get( 'docqna_include', [ ] ) or [ ] )
-			tool_choice = str( st.session_state.get( 'docqna_tool_choice', '' ) or '' )
-			stops = parse_docqna_list( st.session_state.get( 'docqna_stops_input',
-				st.session_state.get( 'docqna_stops', [ ] ) ) )
 			
-			if provider_name == 'Gemini':
-				context = list( st.session_state.get( 'docqna_gemini_history', [ ] ) or [ ] )
-				stream_placeholder = st.empty( ) if stream else None
-				stream_chunks: List[ str ] = [ ]
-				
-				def handle_stream_delta( delta: str ) -> None:
-					"""Render one Gemini streaming text delta.
-					
-					Args:
-					    delta (str): Text fragment returned by the Interactions stream.
-					
-					Returns:
-					    None: This function updates the Streamlit placeholder.
-					"""
-					if not delta:
-						return
-					stream_chunks.append( delta )
-					if stream_placeholder is not None:
-						stream_placeholder.markdown( ''.join( stream_chunks ) )
-				
-				answer = docqna.generate_text( prompt=user_input, model=model,
-					number=max( 1, int( st.session_state.get( 'docqna_number', 1 ) or 1 ) ),
-					temperature=temperature, top_p=top_p, top_k=top_k,
-					frequency=frequency, presence=presence, max_tokens=max_tokens,
-					stops=stops, instruct=instructions, response_format=response_format,
-					tools=tools, tool_choice=tool_choice or None, reasoning=reasoning,
-					modalities=list( st.session_state.get( 'docqna_modalities', [ ] ) or [ ] ),
-					media_resolution=str(
-						st.session_state.get( 'docqna_media_resolution', '' ) or '' ),
-					context=context,
-					content=str( st.session_state.get( 'docqna_content', '' ) or '' ),
-					stream=stream, stream_handler=handle_stream_delta if stream else None )
-				get_history = getattr( docqna, 'get_structured_history', None )
-				if callable( get_history ):
-					st.session_state[ 'docqna_gemini_history' ] = get_history( ) or [ ]
-				get_sources = getattr( docqna, 'get_grounding_sources', None )
-				sources = get_sources( ) or [ ] if callable( get_sources ) else [ ]
-				st.session_state[ 'docqna_sources' ] = sources
-				st.session_state[ 'last_sources' ] = sources
-			elif provider_name == 'GPT':
-				context = list( st.session_state.get( 'docqna_context', [ ] ) or [ ] )
+			context = st.session_state.get( 'docqna_context', [ ], )
+			instructions = str( st.session_state.get( 'docqna_system_instructions', '', ) or '' )
+			temperature = float( st.session_state.get( 'docqna_temperature', 0.0, ) or 0.0 )
+			top_p = float( st.session_state.get( 'docqna_top_percent', 0.0, ) or 0.0 )
+			frequency = float( st.session_state.get( 'docqna_frequency_penalty', 0.0, ) or 0.0 )
+			presence = float( st.session_state.get( 'docqna_presence_penalty', 0.0, ) or 0.0 )
+			max_tokens = int( st.session_state.get( 'docqna_max_tokens', 0, ) or 0 )
+			stream = bool( st.session_state.get( 'docqna_stream', False, ) )
+			store = bool( st.session_state.get( 'docqna_store', False, ) )
+			reasoning = str( st.session_state.get( 'docqna_reasoning', '', ) or '' )
+			response_format = str( st.session_state.get( 'docqna_response_format', '', ) or '' )
+			tools = list( st.session_state.get( 'docqna_tools', [ ], ) or [ ] )
+			include = list( st.session_state.get( 'docqna_include', [ ], ) or [ ] )
+			tool_choice = str( st.session_state.get( 'docqna_tool_choice', '', ) or '' )
+			stops = parse_docqna_list( st.session_state.get( 'docqna_stops_input',
+				st.session_state.get( 'docqna_stops', [ ], ), ) )
+			
+			if provider_name == 'GPT':
 				answer = docqna.generate_text( prompt=user_input, model=model,
 					temperature=temperature, format=response_format or None, top_p=top_p,
 					frequency=frequency,
-					max_tools=int( st.session_state.get( 'docqna_max_calls', 0 ) or 0 ),
+					max_tools=int( st.session_state.get( 'docqna_max_calls', 0, ) or 0 ),
 					presence=presence, max_tokens=max_tokens, store=store, stream=stream,
 					instruct=instructions,
-					background=bool( st.session_state.get( 'docqna_background', False ) ),
+					background=bool( st.session_state.get( 'docqna_background', False, ) ),
 					reasoning=reasoning, include=include, tools=tools,
 					allowed_domains=parse_docqna_list( st.session_state.get(
-						'docqna_domains_input', st.session_state.get( 'docqna_domains', [ ] ) ) ),
+						'docqna_domains_input',
+						st.session_state.get( 'docqna_domains', [ ], ), ) ),
 					tool_choice=tool_choice,
-					is_parallel=bool( st.session_state.get( 'docqna_parallel_tools', False ) ),
-					context=context )
+					is_parallel=bool( st.session_state.get( 'docqna_parallel_tools', False, ) ),
+					context=context, )
+			
+			elif provider_name == 'Gemini':
+				answer = docqna.generate_text( prompt=user_input, model=model,
+					number=max( 1, int( st.session_state.get( 'docqna_number', 1, ) or 1 ), ),
+					temperature=temperature, top_p=top_p, top_k=top_k, frequency=frequency,
+					presence=presence, max_tokens=max_tokens, stops=stops, instruct=instructions,
+					response_format=response_format, tools=tools, tool_choice=tool_choice,
+					reasoning=reasoning,
+					modalities=list( st.session_state.get( 'docqna_modalities', [ ], ) or [ ] ),
+					media_resolution=str(
+						st.session_state.get( 'docqna_media_resolution', '', ) or '' ),
+					context=context,
+					content=str( st.session_state.get( 'docqna_content', '', ) or '' ),
+					stream=stream, )
+			
 			elif provider_name == 'Grok':
-				context = list( st.session_state.get( 'docqna_context', [ ] ) or [ ] )
 				answer = docqna.generate_text( prompt=user_input, model=model,
 					temperature=temperature, format=response_format or None, top_p=top_p,
 					frequency=frequency, presence=presence, max_tokens=max_tokens, stops=stops,
 					store=store, stream=stream, instruct=instructions, reasoning=reasoning,
-					include=include, tools=tools,
-					allowed_domains=parse_docqna_list( st.session_state.get(
-						'docqna_domains_input', st.session_state.get( 'docqna_domains', [ ] ) ) ),
+					include=include, tools=tools, allowed_domains=parse_docqna_list(
+						st.session_state.get( 'docqna_domains_input',
+							st.session_state.get( 'docqna_domains', [ ], ), ) ),
 					tool_choice=tool_choice,
-					is_parallel=bool( st.session_state.get( 'docqna_parallel_tools', False ) ),
+					is_parallel=bool( st.session_state.get( 'docqna_parallel_tools', False, ) ),
 					context=context,
-					max_tools=int( st.session_state.get( 'docqna_max_calls', 0 ) or 0 ) )
+					max_tools=int( st.session_state.get( 'docqna_max_calls', 0, ) or 0 ), )
+			
 			else:
 				raise ValueError( f'Unsupported Document Q&A provider: {provider_name}' )
 			
-			output_text = answer.strip( ) if isinstance( answer, str ) else str(
-				getattr( docqna, 'output_text', '' ) or getattr( answer, 'output_text', '' )
-				or answer or '' ).strip( )
+			if isinstance( answer, str ):
+				output_text = answer.strip( )
+			else:
+				output_text = str(
+					getattr( docqna, 'output_text', '' ) or getattr( answer, 'output_text',
+						'' ) or answer or '' ).strip( )
+			
 			throw_if( 'output_text', output_text )
+			
 			st.session_state[ 'docqna_answer' ] = output_text
 			st.session_state[ 'last_answer' ] = output_text
+			
+			if provider_name == 'Gemini':
+				sources = [ ]
+				get_sources = getattr( docqna, 'get_grounding_sources', None, )
+				
+				if callable( get_sources ):
+					sources = get_sources( ) or [ ]
+				
+				st.session_state[ 'docqna_sources' ] = sources
+				st.session_state[ 'last_sources' ] = sources
+			
 			usage_response = getattr( docqna, 'response', None )
+			
 			if usage_response is not None:
 				update_token_counters( usage_response )
+			
 			return output_text
 		except Exception as e:
 			ex = Error( e )
@@ -9703,7 +9122,7 @@ elif mode == 'Document Q&A':
 			ex.method = 'run_document_query( prompt: str ) -> str'
 			Logger( ).write( ex )
 			raise ex
-
+	
 	if st.session_state.get( 'clear_instructions' ):
 		st.session_state[ 'docqna_system_instructions' ] = ''
 		st.session_state[ 'clear_docqa_instructions' ] = False
@@ -9856,7 +9275,8 @@ elif mode == 'Document Q&A':
 							help=cfg.TOOLS, placeholder='Options', )
 					
 					# ------------- Reset Button -------------
-					if st.button( label='Reset', key='docqna_tools_reset', width='stretch', icon='🔄', ):
+					if st.button( label='Reset', key='docqna_tools_reset', width='stretch',
+							icon='🔄', ):
 						for key in [ 'docqna_parallel_tools', 'docqna_tools', 'docqna_max_calls',
 							'docqna_max_searches_grok_display', ]:
 							if key in st.session_state:
@@ -9979,7 +9399,8 @@ elif mode == 'Document Q&A':
 					# ---------- Frequency ------------
 					with prm_c2:
 						st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0,
-							value=float( st.session_state.get( 'docqna_frequency_penalty', 0.0, ) ),
+							value=float( st.session_state.get( 'docqna_frequency_penalty', 0.0,
+							) ),
 							step=0.01, help=cfg.FREQUENCY_PENALTY,
 							key='docqna_frequency_penalty', )
 					
@@ -10445,10 +9866,9 @@ elif mode == 'Document Q&A':
 				
 				st.session_state[ 'docqna_messages' ].append(
 					{ 'role': 'assistant', 'content': response, } )
-				if provider_name != 'Gemini':
-					st.session_state[ 'docqna_context' ].extend(
-						[ { 'role': 'user', 'content': prompt, },
-							{ 'role': 'assistant', 'content': response, }, ] )
+				st.session_state[ 'docqna_context' ].extend(
+					[ { 'role': 'user', 'content': prompt, },
+						{ 'role': 'assistant', 'content': response, }, ] )
 				st.rerun( )
 			except Exception as exc:
 				err = Error( exc )
@@ -10465,7 +9885,6 @@ elif mode == 'Document Q&A':
 # ======================================================================================
 elif mode == 'Embeddings':
 	provider_name = st.session_state.get( 'provider', 'GPT' )
-	
 	if not provider_has_class( 'Embeddings', provider_name ):
 		st.error( f'{provider_name} does not provide an Embeddings wrapper.' )
 		st.stop( )
@@ -10495,33 +9914,56 @@ elif mode == 'Embeddings':
 		
 		Purpose:
 		    Returns a normalized list of provider options exposed through an Embeddings wrapper
-		    property or method.
+		    property or method. Missing or explicitly unavailable options use the supplied fallback,
+		    while provider-wrapper execution failures are logged and re-raised.
 		
 		Args:
 		    instance (Any): Provider Embeddings wrapper instance.
 		    attr_name (str): Name of the wrapper option property or method.
-		    fallback (Optional[List[Any]]): Values used when the wrapper exposes no options.
+		        fallback (Optional[List[Any]]): Values used when the wrapper exposes no options.
 		
 		Returns:
-		    List[Any]: Provider-supported option values.
+		    List[Any]: Provider-supported option values or the supplied fallback.
+		
+		Raises:
+		    Exception: Re-raises provider-wrapper failures after recording them with the application
+		        logger.
 		"""
-		values = getattr( instance, attr_name, None )
-		if callable( values ):
-			try:
+		try:
+			throw_if( 'instance', instance )
+			throw_if( 'attr_name', attr_name )
+			
+			default_values = list( fallback ) if fallback is not None else [ ]
+			
+			if not hasattr( instance, attr_name ):
+				return default_values
+			
+			values = getattr( instance, attr_name )
+			
+			if callable( values ):
 				values = values( )
-			except Exception:
-				values = None
+			
+			if values is None:
+				return default_values
+			
+			if isinstance( values, list ):
+				return values
+			
+			if isinstance( values, tuple ):
+				return list( values )
+			
+			return default_values
 		
-		if values is None:
-			values = fallback or [ ]
-		
-		if isinstance( values, tuple ):
-			values = list( values )
-		
-		if isinstance( values, list ):
-			return values
-		
-		return fallback or [ ]
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Embeddings'
+			ex.method = (
+				'get_embedding_options( instance: Any, attr_name: str, '
+				'fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]'
+			)
+			Logger( ).write( ex )
+			raise ex
 	
 	def normalize_embedding_text( value: Any ) -> str:
 		"""Normalize embedding text.
@@ -10563,8 +10005,7 @@ elif mode == 'Embeddings':
 		if chunk_size <= 0:
 			return [ source ]
 		
-		for helper_name in [ 'chunk_text_with_overlap', 'chunk_text', 'chunk_by_tokens',
-			'split_text' ]:
+		for helper_name in [ 'chunk_text', 'chunk_by_tokens', 'split_text' ]:
 			helper = globals( ).get( helper_name )
 			if callable( helper ):
 				try:
@@ -10687,9 +10128,7 @@ elif mode == 'Embeddings':
 			encoding_format = st.session_state.get( 'embedding_encoding_format',
 				st.session_state.get( 'embeddings_encoding_format', '' ), )
 			model = st.session_state.get( 'embedding_model' ) or None
-			
 			throw_if( 'model', model )
-			
 			if provider_name == 'GPT':
 				return embedding.create( text=input_value, model=model,
 					format=encoding_format or 'float',
@@ -10698,10 +10137,8 @@ elif mode == 'Embeddings':
 			if provider_name == 'Gemini':
 				task_type = str( st.session_state.get( 'embedding_task_type', '' ) or '' )
 				title = str( st.session_state.get( 'embedding_title', '' ) or '' )
-				
 				return embedding.create( text=input_value, model=model,
-					dimensions=int( dimensions or 0 ), task_type=task_type, title=title,
-					encoding_format='float', )
+					dimensions=int( dimensions or 0 ), task_type=task_type, title=title, )
 			
 			raise ValueError( f'{provider_name} does not support embedding creation.' )
 		except Exception as e:
@@ -10919,50 +10356,42 @@ elif mode == 'Embeddings':
 		st.session_state[ 'embeddings_input_text' ] = st.session_state.get( 'embedding_input',
 			'', )
 	
-	if (
-			'embeddings_dimensions' in st.session_state and 'embedding_dimensions' not in
+	if ('embeddings_dimensions' in st.session_state and 'embedding_dimensions' not in
 			st.session_state):
 		st.session_state[ 'embedding_dimensions' ] = st.session_state.get( 'embeddings_dimensions',
 			0, )
 	
-	if (
-			'embedding_dimensions' in st.session_state and 'embeddings_dimensions' not in
+	if ('embedding_dimensions' in st.session_state and 'embeddings_dimensions' not in
 			st.session_state):
 		st.session_state[ 'embeddings_dimensions' ] = st.session_state.get( 'embedding_dimensions',
 			0, )
 	
-	if (
-			'embeddings_encoding_format' in st.session_state and 'embedding_encoding_format' not
+	if ('embeddings_encoding_format' in st.session_state and 'embedding_encoding_format' not
 			in st.session_state):
 		st.session_state[ 'embedding_encoding_format' ] = st.session_state.get(
 			'embeddings_encoding_format', '', )
 	
-	if (
-			'embedding_encoding_format' in st.session_state and 'embeddings_encoding_format' not
+	if ('embedding_encoding_format' in st.session_state and 'embeddings_encoding_format' not
 			in st.session_state):
 		st.session_state[ 'embeddings_encoding_format' ] = st.session_state.get(
 			'embedding_encoding_format', '', )
 	
-	if (
-			'embeddings_chunk_size' in st.session_state and 'embedding_chunk_size' not in
+	if (  'embeddings_chunk_size' in st.session_state and 'embedding_chunk_size' not in
 			st.session_state):
 		st.session_state[ 'embedding_chunk_size' ] = st.session_state.get( 'embeddings_chunk_size',
 			0, )
 	
-	if (
-			'embedding_chunk_size' in st.session_state and 'embeddings_chunk_size' not in
+	if ('embedding_chunk_size' in st.session_state and 'embeddings_chunk_size' not in
 			st.session_state):
 		st.session_state[ 'embeddings_chunk_size' ] = st.session_state.get( 'embedding_chunk_size',
 			0, )
 	
-	if (
-			'embeddings_overlap_amount' in st.session_state and 'embedding_chunk_overlap' not in
+	if ('embeddings_overlap_amount' in st.session_state and 'embedding_chunk_overlap' not in
 			st.session_state):
 		st.session_state[ 'embedding_chunk_overlap' ] = st.session_state.get(
 			'embeddings_overlap_amount', 0, )
 	
-	if (
-			'embedding_chunk_overlap' in st.session_state and 'embeddings_overlap_amount' not in
+	if ('embedding_chunk_overlap' in st.session_state and 'embeddings_overlap_amount' not in
 			st.session_state):
 		st.session_state[ 'embeddings_overlap_amount' ] = st.session_state.get(
 			'embedding_chunk_overlap', 0, )
@@ -11020,7 +10449,7 @@ elif mode == 'Embeddings':
 					st.selectbox( label='Encoding Format', options=[ 'Provider Default' ], index=0,
 						disabled=True, key='embedding_encoding_format_display',
 						help=('Gemini returns floating-point embedding values.'), )
-					st.session_state[ 'embedding_encoding_format' ] = 'float'
+					st.session_state[ 'embedding_encoding_format' ] = ''
 				
 				st.session_state[ 'embeddings_encoding_format' ] = (
 					st.session_state.get( 'embedding_encoding_format', '', ))
@@ -11035,13 +10464,18 @@ elif mode == 'Embeddings':
 					supports_dimensions = bool( dimension_support.get( selected_model, False, ) )
 					dimension_max = int( max_dimensions.get( selected_model, 4096, ) or 4096 )
 				else:
-					supports_dimensions = bool( selected_model )
-					dimension_max = 2048
+					supports_dimensions = (bool( selected_model ) and bool(
+						embedding.supports_dimensions( selected_model ) ))
+					dimension_options = get_embedding_options( embedding, 'dimension_options',
+						[ ], )
+					positive_dimensions = [ int( item ) for item in dimension_options if
+						int( item ) > 0 ]
+					dimension_max = max( positive_dimensions ) if positive_dimensions else 4096
 				
 				current_dimensions = int( st.session_state.get( 'embedding_dimensions', 0, ) or 0 )
 				
 				if current_dimensions > dimension_max:
-					st.session_state[ 'embedding_dimensions' ] = (dimension_max)
+					st.session_state[ 'embedding_dimensions' ] = dimension_max
 				
 				st.slider( label='Dimensions', min_value=0, max_value=dimension_max,
 					value=int( st.session_state.get( 'embedding_dimensions', 0, ) or 0 ), step=1,
@@ -12155,8 +11589,7 @@ elif mode == 'Files':
 			with btn_c2:
 				st.button( label='XML ↔️ Markdown', width='stretch',
 					on_click=convert_files_system_instructions, )
-		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True, )
+	
 		
 		upload_tab, list_tab, retrieve_tab, extract_tab, ask_tab, delete_tab = st.tabs(
 			[ 'Upload', 'List', 'Retrieve', 'Extract', 'Ask', 'Delete' ] )
@@ -12196,7 +11629,7 @@ elif mode == 'Files':
 			
 			if st.session_state.get( 'files_results' ) is not None:
 				with st.expander( label='Upload Result', icon='📄', expanded=False,
-						width='stretch', ):
+						width='content', ):
 					st.write( st.session_state.get( 'files_results' ) )
 		
 		# ----- List -----
@@ -12269,7 +11702,7 @@ elif mode == 'Files':
 				st.session_state[ 'files_extract_id' ] = (
 					get_effective_file_id( 'files_selected_id', 'files_manual_id', ))
 			
-			ext_c1, ext_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall', )
+			ext_c1, ext_c2, ext_c3 = st.columns( [ 0.33, 0.33, 0.33 ], border=True, gap='xxsmall', )
 			
 			# ----- Extract ------
 			with ext_c1:
@@ -12284,10 +11717,11 @@ elif mode == 'Files':
 					      'workflows. The current extract wrappers choose '
 					      'the provider-native content representation.'), disabled=True, )
 			
-			st.number_input( label='Page Number', min_value=0, step=1, key='files_page_number',
-				help=('Retained for provider compatibility. Current Files '
-				      'wrappers extract complete content.'), disabled=True, )
-			
+			with ext_c3:
+				st.number_input( label='Page Number', min_value=0, step=1, key='files_page_number',
+					help=('Retained for provider compatibility. Current Files '
+					      'wrappers extract complete content.'), disabled=True, )
+				
 			if st.button( 'Extract File Content', key='files_extract_button', width='content',
 					disabled=not extract_supported, icon='🦷', ):
 				with st.spinner( 'Extracting file content…' ):
@@ -12370,6 +11804,7 @@ elif mode == 'Files':
 									'previous_response_id', None, ) or st.session_state.get(
 									'files_previous_response_id', '', ) or '')
 								st.session_state[ 'files_previous_response_id' ] = previous_id
+								
 								append_files_message( 'assistant', answer, )
 								st.markdown( answer )
 						except Exception as exc:
@@ -12393,10 +11828,13 @@ elif mode == 'Files':
 				st.session_state[ 'files_delete_id' ] = (
 					get_effective_file_id( 'files_selected_id', 'files_manual_id', ))
 			
-			st.text_input( label='Delete File ID', key='files_delete_id',
-				help='Provider file ID/name to delete.', width='stretch', )
+			del_c1, del_c2 = st.columns( [ 0.5, 0.5 ] )
+			with del_c1:
+				st.text_input( label='Delete File ID', key='files_delete_id',
+					help='Provider file ID/name to delete.', width='stretch', )
 			
-			confirm_delete = st.checkbox( 'Confirm Delete', key='files_confirm_delete', )
+			with del_c2:
+				confirm_delete = st.checkbox( 'Confirm Delete', key='files_confirm_delete', )
 			
 			# ----- Delete Button -----
 			if st.button( 'Delete File', key='files_delete_button', width='content',
@@ -12428,7 +11866,7 @@ elif mode == 'Files':
 				st.json( st.session_state.get( 'files_delete_result' ) )
 
 # ======================================================================================
-# VECTORSTORES MODE
+# VECTOR STORES MODE
 # ======================================================================================
 elif mode == 'Vector Stores':
 	provider_name = st.session_state.get( 'provider', 'GPT' )
@@ -12436,18 +11874,16 @@ elif mode == 'Vector Stores':
 	# ------------------------------------------------------------------
 	# Provider Capability Validation
 	# ------------------------------------------------------------------
+	if provider_name != 'GPT':
+		st.warning( 'Vector Stores are available through GPT.' )
+		st.stop( )
+	
 	if not provider_has_class( 'VectorStores', provider_name ):
-		if provider_name == 'Gemini':
-			st.warning( 'Gemini storage is available through File Search Stores and '
-			            'Google Cloud Buckets.' )
-		else:
-			st.error( f'{provider_name} does not provide a VectorStores wrapper.' )
-		
+		st.error( f'{provider_name} does not provide a VectorStores wrapper.' )
 		st.stop( )
 	
 	vector = get_vectorstores_module( provider_name )
-	files = (
-		get_files_module( provider_name ) if provider_has_class( 'Files', provider_name ) else
+	files = ( get_files_module( provider_name ) if provider_has_class( 'Files', provider_name ) else
 		None)
 	
 	# ------------------------------------------------------------------
@@ -12458,1371 +11894,203 @@ elif mode == 'Vector Stores':
 		'stores_messages': [ ], 'stores_name': '', 'stores_id': '', 'stores_manual_id': '',
 		'stores_description': '', 'stores_metadata': '', 'stores_query': '', 'stores_file_id': '',
 		'stores_file_ids_text': '', 'stores_selected_id': '', 'stores_model': '',
-		'stores_max_tokens': 0, 'stores_filter': '', 'stores_team_id': '',
-		'stores_pagination_token': '', 'stores_next_token': '', 'stores_batch_id': '',
+		'stores_max_tokens': 0, 'stores_filter': '', 'stores_batch_id': '',
 		'stores_max_results': 10, 'stores_rewrite_query': False, 'stores_ranker': '',
 		'stores_chunking_strategy': '', 'stores_attributes': '', 'stores_expires_after_days': 0,
 		'stores_confirm_delete': False, 'stores_prompt_category': None, 'stores_prompt_id': None,
-		'stores_system_instructions': '', }
+		'stores_system_instructions': '',  }
 	
-	for key, default_value in stores_defaults.items( ):
-		if key not in st.session_state:
-			st.session_state[ key ] = default_value
+	for state_key, default_value in stores_defaults.items( ):
+		if state_key not in st.session_state:
+			st.session_state[ state_key ] = default_value
 	
-	for key in [ 'stores_table', 'stores_files_table', 'stores_search_results',
+	for state_key in [ 'stores_table', 'stores_files_table', 'stores_search_results',
 		'stores_messages', ]:
-		if not isinstance( st.session_state.get( key ), list ):
-			st.session_state[ key ] = [ ]
+		if not isinstance( st.session_state.get( state_key ), list ):
+			st.session_state[ state_key ] = [ ]
 	
-	for key in [ 'stores_store_metadata', 'stores_batch_result', ]:
-		if not isinstance( st.session_state.get( key ), dict ):
-			st.session_state[ key ] = { }
+	for state_key in [ 'stores_store_metadata', 'stores_batch_result', ]:
+		if not isinstance( st.session_state.get( state_key ), dict ):
+			st.session_state[ state_key ] = { }
 	
-	# ------------------------------------------------------------------
-	# Provider Options
-	# ------------------------------------------------------------------
-	model_options = get_storage_options( vector, 'model_options', [ ], )
-	ranker_options = (
-		get_storage_options( vector, 'ranker_options', [ ], ) if provider_name == 'GPT' else [ ])
-	chunking_options = (get_storage_options( vector, 'chunking_strategy_options',
-		[ ], ) if provider_name == 'GPT' else [ ])
-	order_options = (get_storage_options( vector, 'order_options',
-		[ 'desc', 'asc' ], ) if provider_name == 'Grok' else [ 'desc', 'asc' ])
-	
-	if st.session_state.get( 'stores_model' ) not in model_options:
-		st.session_state[ 'stores_model' ] = ''
-	
-	if (st.session_state.get( 'stores_ranker' ) and st.session_state.get(
-		'stores_ranker' ) not in ranker_options):
-		st.session_state[ 'stores_ranker' ] = ''
-	
-	if (st.session_state.get( 'stores_chunking_strategy' ) and st.session_state.get(
-		'stores_chunking_strategy' ) not in chunking_options):
-		st.session_state[ 'stores_chunking_strategy' ] = ''
-	
-	# ------------------------------------------------------------------
-	# Main UI
-	# ------------------------------------------------------------------
-	left, center, right = st.columns( [ 0.025, 0.95, 0.025 ] )
-	
-	with center:
-		st.subheader( '🧊 Vector Stores', help=cfg.VECTORSTORES_API, )
-		st.divider( )
-		
-		# ------------------------------------------------------------------
-		# Expander - Mind Controls
-		# ------------------------------------------------------------------
-		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch', ):
-			ctrl_c1, ctrl_c2, ctrl_c3, ctrl_c4 = st.columns( [ 0.25, 0.25, 0.25, 0.25 ],
-				border=True, gap='xxsmall', )
-			
-			# ----- Store Name -----
-			with ctrl_c1:
-				st.text_input( label='Store Name', key='stores_name',
-					help='Name used when creating a vector store.', width='stretch',
-					placeholder='Enter store name', )
-			
-			# ----- Store ID -----
-			with ctrl_c2:
-				st.text_input( label='Manual Store ID', key='stores_manual_id',
-					help='Optional. Paste a vector store or collection ID.', width='stretch', )
-			
-			# ----- Model -----
-			with ctrl_c3:
-				st.selectbox( label='Answer Model', options=model_options, key='stores_model',
-					index=None, placeholder='Options',
-					help=('Model used for Grok collection searches or optional '
-					      'OpenAI store-backed answer workflows.'), )
-			
-			# ----- Max Tokens ----
-			with ctrl_c4:
-				st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
-					key='stores_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, disabled=True, )
-			
-			desc_c1, desc_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall', )
-			
-			# ----- Description -----
-			with desc_c1:
-				st.text_area( label='Description', key='stores_description', height=80,
-					width='stretch', help='Optional vector-store or collection description.', )
-			
-			# ----- Metadata -----
-			with desc_c2:
-				st.text_area( label='Metadata JSON', key='stores_metadata', height=80,
-					width='stretch', help=('OpenAI vector-store metadata or Grok document fields, '
-					                       'depending on the operation.'), )
-			
-			advanced_c1, advanced_c2, advanced_c3, advanced_c4 = st.columns(
-				[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
-			
-			# ----- Max Results -----
-			with advanced_c1:
-				st.slider( label='Max Results', min_value=1, max_value=50, step=1,
-					key='stores_max_results', help='Maximum number of native search results.', )
-			
-			# ----- Filter -----
-			with advanced_c2:
-				st.text_input( label='Filter', key='stores_filter',
-					help='Optional provider filter expression.', width='stretch', )
-			
-			# ----- Ranker -----
-			with advanced_c3:
-				st.selectbox( label='Ranker', options=ranker_options, key='stores_ranker',
-					index=None, placeholder='Options',
-					help='OpenAI ranking option for native vector-store search.',
-					disabled=provider_name != 'GPT', )
-			
-			# ----- Rewrite Query -----
-			with advanced_c4:
-				st.toggle( label='Rewrite Query', key='stores_rewrite_query',
-					help='Allows OpenAI to rewrite a native vector-store query.',
-					disabled=provider_name != 'GPT', )
-			
-			# ----- Reset Button -----
-			if st.button( label='Reset', key='reset_store_config', icon='🔄', width='stretch', ):
-				for key in [ 'stores_name', 'stores_manual_id', 'stores_model',
-					'stores_max_tokens',
-					'stores_description', 'stores_metadata', 'stores_max_results', 'stores_filter',
-					'stores_ranker', 'stores_rewrite_query', ]:
-					if key in st.session_state:
-						del st.session_state[ key ]
-				
-				st.rerun( )
-		
-		# ------------------------------------------------------------------
-		# Expander — File Uploader
-		# ------------------------------------------------------------------
-		with st.expander( label='File Uploading', expanded=False, width='stretch', icon='📤', ):
-			batch_c1, batch_c2, batch_c3 = st.columns( [ 0.25, 0.35, 0.40 ], border=True,
-				gap='xxsmall', )
-			
-			# ----- File ID -----
-			with batch_c1:
-				st.text_input( label='File ID', key='stores_file_id',
-					help=('Existing provider file or indexed-document ID used '
-					      'by attachment and document operations.'), width='stretch',
-					placeholder='file_abc123', )
-			
-			# ----- File IDs -----
-			with batch_c2:
-				st.text_area( label='File IDs', key='stores_file_ids_text', height=80,
-					width='stretch', help=('Existing provider file IDs used for an OpenAI file '
-					                       'batch or Grok batch document retrieval.'),
-					placeholder='file_abc,file_def,file_xyz', )
-			
-			# ----- File Upload -----
-			with batch_c3:
-				uploaded_store_file = st.file_uploader( label='Upload File to Store',
-					type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', 'json', 'csv', ],
-					key='stores_file_upload',
-					help=('Uploads a local file through the provider Files '
-					      'wrapper and attaches it to the selected store.'), )
-			
-			fileop_c1, fileop_c2, fileop_c3, fileop_c4, fileop_c5 = st.columns(
-				[ 0.2, 0.2, 0.2, 0.2, 0.2 ] )
-			
-			selected_store_id = get_selected_store_id( )
-			file_id = str( st.session_state.get( 'stores_file_id', '' ) or '' ).strip( )
-			
-			# ----- Attach Button -----
-			with fileop_c1:
-				if st.button( 'Attach File', key='attach_vector_store_file', width='stretch',
-						icon='📎', ):
-					with st.spinner( 'Attaching file…' ):
-						try:
-							if not selected_store_id:
-								st.warning( 'Select or enter a store ID first.' )
-							elif not file_id:
-								st.warning( 'Enter a file ID first.' )
-							else:
-								if provider_name == 'GPT':
-									result = vector.attach_file( store_id=selected_store_id,
-										file_id=file_id, attributes=None, chunking_strategy=(
-												st.session_state.get(
-													'stores_chunking_strategy' ) or None), )
-								else:
-									result = vector.add_document( store_id=selected_store_id,
-										file_id=file_id, fields=parse_storage_json(
-											st.session_state.get( 'stores_metadata', '', ),
-											'Document fields', ) or None, )
-								
-								st.session_state[
-									'stores_batch_result' ] = normalize_storage_object( result )
-								st.success( 'File attach request completed.' )
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'Attach file failed: {err.info}' )
-			
-			# ----- List Button -----
-			with fileop_c2:
-				if st.button( 'List Files', key='list_vector_store_files', width='stretch',
-						icon='🔠', ):
-					with st.spinner( 'Listing store files…' ):
-						try:
-							if not selected_store_id:
-								st.warning( 'Select or enter a store ID first.' )
-							else:
-								if provider_name == 'GPT':
-									result = vector.list_files( store_id=selected_store_id,
-										limit=100, order='desc', filter=str(
-											st.session_state.get( 'stores_filter', '', ) or '' ), )
-								else:
-									result = vector.list_documents( store_id=selected_store_id,
-										limit=100, order='desc', sort_by='name',
-										pagination_token=str(
-											st.session_state.get( 'stores_pagination_token',
-												'', ) or '' ), filter=str(
-											st.session_state.get( 'stores_filter', '', ) or '' ),
-										team_id=str(
-											st.session_state.get( 'stores_team_id', '', ) or ''
-										), )
-									st.session_state[ 'stores_next_token' ] = str(
-										getattr( vector, 'next_token', '', ) or '' )
-								
-								rows = normalize_storage_rows( result )
-								st.session_state[ 'stores_files_table' ] = rows
-								st.success( f'Loaded {len( rows )} store file record(s).' )
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'List store files failed: {err.info}' )
-			
-			# ----- Delete Button -----
-			with fileop_c3:
-				if st.button( 'Delete File', key='delete_vector_store_file', width='stretch',
-						icon='❌', ):
-					with st.spinner( 'Deleting store file…' ):
-						try:
-							if not selected_store_id:
-								st.warning( 'Select or enter a store ID first.' )
-							elif not file_id:
-								st.warning( 'Enter a file ID first.' )
-							else:
-								if provider_name == 'GPT':
-									result = vector.delete_file( store_id=selected_store_id,
-										file_id=file_id, )
-								else:
-									result = vector.remove_document( store_id=selected_store_id,
-										file_id=file_id, team_id=str(
-											st.session_state.get( 'stores_team_id', '', ) or ''
-										), )
-								
-								st.session_state[
-									'stores_batch_result' ] = normalize_storage_object( result )
-								st.success( 'Store file delete request completed.' )
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'Delete store file failed: {err.info}' )
-			
-			# ----- Create Button -----
-			with fileop_c4:
-				if st.button( 'Create Batch', key='create_vector_store_batch', width='stretch',
-						icon='➕', ):
-					with st.spinner( 'Processing file batch…' ):
-						try:
-							if not selected_store_id:
-								st.warning( 'Select or enter a store ID first.' )
-							else:
-								file_ids = parse_storage_ids(
-									st.session_state.get( 'stores_file_ids_text', '', ) )
-								
-								if not file_ids:
-									st.warning( 'Enter one or more file IDs first.' )
-								elif provider_name == 'GPT':
-									result = vector.create_file_batch( store_id=selected_store_id,
-										file_ids=file_ids, attributes=None, chunking_strategy=(
-												st.session_state.get(
-													'stores_chunking_strategy' ) or None), )
-									st.session_state[ 'stores_batch_id' ] = str(
-										getattr( result, 'id', '', ) or normalize_storage_object(
-											result ).get( 'id', '' ) )
-									st.session_state[
-										'stores_batch_result' ] = normalize_storage_object(
-										result )
-									st.success( 'File batch creation submitted.' )
-								else:
-									result = vector.batch_get_documents(
-										store_id=selected_store_id,
-										file_ids=file_ids, team_id=str(
-											st.session_state.get( 'stores_team_id', '', ) or ''
-										), )
-									st.session_state[ 'stores_batch_result' ] = {
-										'documents': [ normalize_storage_object( item ) for item in
-											get_storage_items( result ) ] }
-									st.success( 'Grok batch document retrieval completed.' )
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'Batch request failed: {err.info}' )
-			
-			# ----- Upload Button -----
-			with fileop_c5:
-				if st.button( 'Upload + Attach', key='upload_attach_vector_store_file',
-						width='stretch', icon='📤', ):
-					with st.spinner( 'Uploading and attaching file…' ):
-						try:
-							if not selected_store_id:
-								st.warning( 'Select or enter a store ID first.' )
-							elif uploaded_store_file is None:
-								st.warning( 'Select a file first.' )
-							else:
-								result = upload_and_attach_storage_file( selected_store_id,
-									uploaded_store_file, )
-								st.session_state[ 'stores_batch_result' ] = result
-								st.session_state[ 'stores_file_id' ] = result.get( 'file_id', '' )
-								st.success( 'Upload and attachment completed.' )
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'Upload attach failed: {err.info}' )
-			
-			# ----- Reset Button -----
-			if st.button( label='Reset', key='reset_batches', icon='🔄', width='stretch', ):
-				for key in [ 'stores_file_id', 'stores_file_ids_text', 'stores_file_upload',
-					'stores_batch_id', 'stores_batch_result', ]:
-					if key in st.session_state:
-						del st.session_state[ key ]
-				
-				st.rerun( )
-			
-			render_storage_table( st.session_state.get( 'stores_files_table', [ ], ),
-				'vector_store_files_table_view', )
-			
-			if st.session_state.get( 'stores_batch_result' ):
-				with st.expander( label='Batch Result', icon='📄', expanded=False,
-						width='stretch', ):
-					st.json( st.session_state.get( 'stores_batch_result' ) )
-		
-		# ------------------------------------------------------------------
-		# Expander — Store Life-cycle
-		# ------------------------------------------------------------------
-		with st.expander( label='Store Management', expanded=False, width='stretch', icon='🏛️', ):
-			create_c1, create_c2, create_c3 = st.columns( [ 0.33, 0.33, 0.33 ] )
-			
-			# ----- Create Button ------
-			with create_c1:
-				if st.button( 'Create Store', key='create_vector_store', width='stretch',
-						icon='➕', ):
-					with st.spinner( 'Creating vector store…' ):
-						try:
-							name = str( st.session_state.get( 'stores_name', '', ) or '' ).strip( )
-							
-							if not name:
-								st.warning( 'Enter a vector store name before creating.' )
-							elif provider_name == 'GPT':
-								result = vector.create( name=name, description=str(
-									st.session_state.get( 'stores_description', '', ) or '' ),
-									metadata=parse_storage_json(
-										st.session_state.get( 'stores_metadata', '', ),
-										'Vector store metadata', ) or None,
-									expires_after=build_gpt_expires_after( ),
-									file_ids=parse_storage_ids(
-										st.session_state.get( 'stores_file_ids_text',
-											'', ) ) or None, chunking_strategy=(
-											st.session_state.get(
-												'stores_chunking_strategy' ) or None), )
-							else:
-								result = vector.create( name=name, description=str(
-									st.session_state.get( 'stores_description', '', ) or '' ), )
-							
-							metadata = normalize_storage_object( result )
-							st.session_state[ 'stores_store_metadata' ] = metadata
-							st.session_state[ 'stores_id' ] = str(
-								metadata.get( 'id', '' ) or metadata.get( 'collection_id',
-									'', ) or '' )
-							st.session_state[ 'stores_manual_id' ] = st.session_state[
-								'stores_id' ]
-							st.success( f'Created store: '
-							            f'{st.session_state[ "stores_id" ]}' )
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'Create vector store failed: {err.info}' )
-			
-			# ----- List Button -----
-			with create_c2:
-				if st.button( 'List Stores', key='list_vector_stores', width='stretch',
-						icon='🔠', ):
-					with st.spinner( 'Listing vector stores…' ):
-						try:
-							if provider_name == 'GPT':
-								result = vector.list_stores( limit=100, order='desc', )
-							else:
-								result = vector.list( limit=100, order='desc',
-									sort_by='collection_name', pagination_token=str(
-										st.session_state.get( 'stores_pagination_token',
-											'', ) or '' ), filter=str(
-										st.session_state.get( 'stores_filter', '', ) or '' ),
-									team_id=str(
-										st.session_state.get( 'stores_team_id', '', ) or '' ), )
-								st.session_state[ 'stores_next_token' ] = str(
-									getattr( vector, 'next_token', '', ) or '' )
-							
-							rows = normalize_storage_rows( result )
-							st.session_state[ 'stores_table' ] = rows
-							st.success( f'Loaded {len( rows )} store record(s).' )
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'List vector stores failed: {err.info}' )
-			
-			rows = st.session_state.get( 'stores_table', [ ], )
-			store_ids = [ row.get( 'id', '' ) for row in rows if
-				isinstance( row, dict ) and row.get( 'id', '' ) ]
-			
-			# ----- ID Selection -----
-			with create_c3:
-				if (st.session_state.get( 'stores_selected_id' ) not in store_ids):
-					st.session_state[ 'stores_selected_id' ] = ''
-				
-				st.selectbox( label='Selected Store', options=store_ids, key='stores_selected_id',
-					index=None, placeholder='Options',
-					help='Store selected from the latest list.', )
-			
-			selected_store_id = get_selected_store_id( )
-			
-			retrieve_c1, retrieve_c2, retrieve_c3 = st.columns( [ 0.34, 0.33, 0.33 ] )
-			
-			# ----- Retrieve Button -----
-			with retrieve_c1:
-				if st.button( 'Retrieve Store', key='retrieve_vector_store', width='stretch',
-						icon='🐕', ):
-					with st.spinner( 'Retrieving vector store…' ):
-						try:
-							if not selected_store_id:
-								st.warning( 'Select or enter a store ID before retrieving.' )
-							elif provider_name == 'GPT':
-								result = vector.retrieve( store_id=selected_store_id, )
-							else:
-								result = vector.retrieve( store_id=selected_store_id, team_id=str(
-									st.session_state.get( 'stores_team_id', '', ) or '' ), )
-							
-							if selected_store_id:
-								metadata = normalize_storage_object( result )
-								st.session_state[ 'stores_store_metadata' ] = metadata
-								st.session_state[ 'stores_id' ] = selected_store_id
-								st.success( 'Store metadata retrieved.' )
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'Retrieve vector store failed: {err.info}' )
-			
-			# ----- Update Button -----
-			with retrieve_c2:
-				if st.button( 'Update Store', key='update_vector_store', width='stretch',
-						icon='🔼', ):
-					with st.spinner( 'Updating vector store…' ):
-						try:
-							if not selected_store_id:
-								st.warning( 'Select or enter a store ID before updating.' )
-							elif provider_name == 'GPT':
-								result = vector.update( store_id=selected_store_id,
-									name=str( st.session_state.get( 'stores_name', '', ) or '' ),
-									description=str(
-										st.session_state.get( 'stores_description', '', ) or '' ),
-									metadata=parse_storage_json(
-										st.session_state.get( 'stores_metadata', '', ),
-										'Vector store metadata', ) or None,
-									expires_after=build_gpt_expires_after( ), )
-							else:
-								result = vector.update( store_id=selected_store_id,
-									name=str( st.session_state.get( 'stores_name', '', ) or '' ),
-									description=str(
-										st.session_state.get( 'stores_description', '', ) or ''
-									), )
-							
-							if selected_store_id:
-								st.session_state[
-									'stores_store_metadata' ] = normalize_storage_object( result )
-								st.success( 'Store update submitted.' )
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'Update vector store failed: {err.info}' )
-			
-			# ----- Delete Button -----
-			with retrieve_c3:
-				if st.button( 'Delete Store', key='delete_vector_store', width='stretch',
-						icon='❌', ):
-					with st.spinner( 'Deleting vector store…' ):
-						try:
-							if not selected_store_id:
-								st.warning( 'Select or enter a store ID before deleting.' )
-							elif not st.session_state.get( 'stores_confirm_delete', False, ):
-								st.warning( 'Confirm store deletion before continuing.' )
-							elif provider_name == 'GPT':
-								result = vector.delete( store_id=selected_store_id, )
-							else:
-								result = vector.delete( store_id=selected_store_id, team_id=str(
-									st.session_state.get( 'stores_team_id', '', ) or '' ), )
-							
-							if (selected_store_id and st.session_state.get(
-									'stores_confirm_delete',
-								False, )):
-								st.session_state[
-									'stores_store_metadata' ] = normalize_storage_object( result )
-								st.session_state[ 'stores_table' ] = [ row for row in
-									st.session_state.get( 'stores_table', [ ], ) if
-									isinstance( row, dict ) and row.get(
-										'id' ) != selected_store_id ]
-								st.session_state[ 'stores_selected_id' ] = ''
-								st.session_state[ 'stores_manual_id' ] = ''
-								st.success( 'Delete request completed.' )
-						except Exception as exc:
-							err = Error( exc )
-							st.error( f'Delete vector store failed: {err.info}' )
-			
-			st.checkbox( label='Confirm Store Delete', key='stores_confirm_delete',
-				help='Required before deleting a store or collection.', )
-			
-			render_storage_table( st.session_state.get( 'stores_table', [ ], ),
-				'vector_stores_table_view', )
-			
-			if st.session_state.get( 'stores_store_metadata' ):
-				with st.expander( label='Store Metadata', icon='📋', expanded=False,
-						width='stretch', ):
-					st.json( st.session_state.get( 'stores_store_metadata' ) )
-		
-		# ------------------------------------------------------------------
-		# Expander — System Instructions
-		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
-				width='stretch', ):
-			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
-			
-			# ------ Vector Stores Prompt Categories -----
-			stores_prompt_categories = fetch_prompt_categories( 'Vector Stores' )
-			current_stores_category = st.session_state.get( 'stores_prompt_category' )
-			
-			if current_stores_category not in stores_prompt_categories:
-				st.session_state[ 'stores_prompt_category' ] = None
-			
-			selected_stores_category = st.session_state.get( 'stores_prompt_category' )
-			stores_prompt_options = (fetch_prompt_options(
-				selected_stores_category ) if selected_stores_category else [ ])
-			stores_prompt_ids = [ int( option[ 'ID' ] ) for option in stores_prompt_options ]
-			
-			if st.session_state.get( 'stores_prompt_id' ) not in stores_prompt_ids:
-				st.session_state[ 'stores_prompt_id' ] = None
-			
-			# ----- Instruction Text -------
-			with in_left:
-				st.text_area( label='Enter Text', height=140, width='stretch',
-					key='stores_system_instructions',
-					help=get_storage_help( 'SYSTEM_INSTRUCTIONS' ), )
-			
-			# ----- Template Selection -----
-			with in_right:
-				st.selectbox( label='Category', options=stores_prompt_categories, index=None,
-					key='stores_prompt_category', placeholder='Select Category',
-					help=('Limits prompt templates to categories associated '
-					      'with vector-store and retrieval workflows.'),
-					on_change=reset_prompt_template_selection, args=('stores_prompt_id',), )
-				
-				st.selectbox( label='Use Template', options=stores_prompt_ids, index=None,
-					key='stores_prompt_id', placeholder='Select Template',
-					disabled=not stores_prompt_ids,
-					format_func=lambda prompt_id: format_prompt_option( prompt_id,
-						stores_prompt_options, ),
-					help=('Loads the selected prompt into the Vector Stores '
-					      'system-instruction field.'),
-					on_change=load_stores_instruction_template, )
-			
-			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
-			
-			# ----- Clear Button -----
-			with btn_c1:
-				st.button( label='Clear Instructions', key='clear_stores_instructions',
-					width='stretch', on_click=clear_stores_instructions, icon='🧹', )
-			
-			# ----- Convert Button ------
-			with btn_c2:
-				st.button( label='XML ↔️ Markdown', key='convert_stores_instructions',
-					width='stretch', on_click=convert_stores_system_instructions, )
-		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True, )
-		
-		st.text_area( label='Search Query', key='stores_query', height=90, width='stretch',
-			placeholder='Search this vector store or collection.', )
-		
-		search_c1, search_c2 = st.columns( [ 0.50, 0.50 ] )
-		
-		# ----- Search Button ----
-		with search_c1:
-			if st.button( 'Search Store', key='search_vector_store', width='stretch', icon='🔍', ):
-				with st.spinner( 'Searching store…' ):
-					try:
-						selected_store_id = get_selected_store_id( )
-						query_text = str(
-							st.session_state.get( 'stores_query', '', ) or '' ).strip( )
-						
-						if not selected_store_id:
-							st.warning( 'Select or enter a store ID before searching.' )
-						elif not query_text:
-							st.warning( 'Enter a search query first.' )
-						elif provider_name == 'GPT':
-							ranking_options = None
-							ranker = str(
-								st.session_state.get( 'stores_ranker', '', ) or '' ).strip( )
-							
-							if ranker:
-								ranking_options = { 'ranker': ranker, }
-							
-							result = vector.search( store_id=selected_store_id, query=query_text,
-								max_num_results=int(
-									st.session_state.get( 'stores_max_results', 10, ) or 10 ),
-								filters=(parse_storage_json(
-									st.session_state.get( 'stores_filter', '', ),
-									'Search filter', ) if str(
-									st.session_state.get( 'stores_filter',
-										'', ) or '' ).strip( ).startswith( '{' ) else None),
-								ranking_options=ranking_options, rewrite_query=bool(
-									st.session_state.get( 'stores_rewrite_query', False, ) ), )
-						else:
-							model = str(
-								st.session_state.get( 'stores_model', '', ) or '' ).strip( )
-							
-							if not model:
-								st.warning( 'Select a Grok model before searching.' )
-								result = None
-							else:
-								result = vector.search( prompt=query_text,
-									store_id=selected_store_id, model=model, filter=str(
-										st.session_state.get( 'stores_filter', '', ) or '' ), )
-						
-						if result is not None:
-							rows = normalize_search_results( result )
-							st.session_state[ 'stores_search_results' ] = rows
-							st.success( f'Returned {len( rows )} result(s).' )
-					except Exception as exc:
-						err = Error( exc )
-						st.error( f'Store search failed: {err.info}' )
-		
-		# ----- Clear Button -----
-		with search_c2:
-			st.button( label='Clear Outputs', key='clear_vector_store_outputs', width='stretch',
-				on_click=clear_vector_store_outputs, icon='🧹', )
-		
-		render_storage_search_results( st.session_state.get( 'stores_search_results', [ ], ) )
-
-# ======================================================================================
-# FILE SEARCH MODE
-# ======================================================================================
-elif mode == 'File Search Stores':
-	stores_model = st.session_state.get( 'stores_model', '' )
-	stores_format = st.session_state.get( 'stores_response_format', '' )
-	stores_top_percent = st.session_state.get( 'stores_top_percent', 0.0 )
-	stores_frequency = st.session_state.get( 'stores_frequency_penalty', 0.0 )
-	stores_presence = st.session_state.get( 'stores_presence_penalty', 0.0 )
-	stores_number = st.session_state.get( 'stores_number', 1 )
-	stores_temperature = st.session_state.get( 'stores_temperature', 0.0 )
-	stores_stream = st.session_state.get( 'stores_stream', False )
-	stores_store = st.session_state.get( 'stores_store', False )
-	stores_input = st.session_state.get( 'stores_input', [ ] )
-	stores_reasoning = st.session_state.get( 'stores_reasoning', '' )
-	stores_tool_choice = st.session_state.get( 'stores_tool_choice', '' )
-	stores_messages = st.session_state.get( 'stores_messages', [ ] )
-	stores_background = st.session_state.get( 'stores_background', False )
-	stores_max_tokens = st.session_state.get( 'stores_max_tokens', 0 )
-	stores_id = st.session_state.get( 'stores_id', '' )
-	stores_system_instructions = st.session_state.get( 'stores_system_instructions', '' )
-	searcher = gemini.FileSearch( )
-	chat = gemini.Chat( )
-	
-	# ------- File Search Stores State Guards ---------
-	if not isinstance( st.session_state.get( 'stores_messages' ), list ):
-		st.session_state[ 'stores_messages' ] = [ ]
-	
-	if not isinstance( st.session_state.get( 'stores_input' ), list ):
-		st.session_state[ 'stores_input' ] = [ ]
-	
-	if 'stores_system_instructions' not in st.session_state:
-		st.session_state[ 'stores_system_instructions' ] = ''
-	
-	if 'stores_prompt_id' not in st.session_state:
-		st.session_state[ 'stores_prompt_id' ] = None
-	
-	if 'stores_selected_label' not in st.session_state:
-		st.session_state[ 'stores_selected_label' ] = ''
-		
-	if st.session_state.get( 'clear_instructions' ):
-		st.session_state[ 'stores_system_instructions' ] = ''
-		st.session_state[ 'stores_prompt_id' ] = None
-		st.session_state[ 'clear_instructions' ] = False
-	
-	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
-	with center:
-		st.subheader( '📦 File Search Stores', help=cfg.VECTORSTORES_API )
-		
-		st.divider( )
-		
-		# ------------------------------------------------------------------
-		# Expander — Mind Controls
-		# ------------------------------------------------------------------
-		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
-			# --------- LLM Settings ---------
-			with st.expander( label='LLM Settings', icon='🧊', expanded=False, width='stretch' ):
-				model_c1, model_c2, model_c3 = st.columns( [ 0.40, 0.35, 0.25 ], border=True,
-					gap='xxsmall' )
-				
-				with model_c1:
-					stores_model = st.selectbox( label='Model', options=list( chat.model_options ),
-						key='stores_model', index=None, placeholder='Options',
-						help=('REQUIRED. Gemini model used to answer questions '
-						      'against the selected File Search Store.') )
-				
-				with model_c2:
-					stores_reasoning = st.selectbox( label='Thinking Level',
-						options=list( chat.reasoning_options ), key='stores_reasoning', index=None,
-						placeholder='Options', help=cfg.REASONING )
-				
-				with model_c3:
-					stores_number = st.slider( label='Candidates', min_value=1, max_value=8,
-						value=max( 1, int( st.session_state.get( 'stores_number', 1 ) or 1 ) ),
-						step=1, key='stores_number',
-						help=('Maximum number of candidate responses requested '
-						      'from the model.') )
-				
-				st.button( label='Reset', key='stores_model_reset', icon='🔄', width='stretch',
-					on_click=reset_stores_model_settings )
-			
-			# --------- Inference Settings ---------
-			with st.expander( label='Inference Settings', icon='🎚️', expanded=False,
-					width='stretch' ):
-				inference_c1, inference_c2, inference_c3, inference_c4 = (
-					st.columns( [ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' ))
-				
-				with inference_c1:
-					stores_temperature = st.slider( label='Temperature', min_value=-2.0,
-						max_value=2.0, step=0.01, key='stores_temperature', help=cfg.TEMPERATURE )
-				
-				with inference_c2:
-					stores_top_percent = st.slider( label='Top-P', min_value=0.0, max_value=1.0,
-						step=0.01, key='stores_top_percent', help=cfg.TOP_P )
-				
-				with inference_c3:
-					stores_frequency = st.slider( label='Frequency Penalty', min_value=-2.0,
-						max_value=2.0, step=0.01, key='stores_frequency_penalty',
-						help=cfg.FREQUENCY_PENALTY )
-				
-				with inference_c4:
-					stores_presence = st.slider( label='Presence Penalty', min_value=-2.0,
-						max_value=2.0, step=0.01, key='stores_presence_penalty',
-						help=cfg.PRESENCE_PENALTY )
-				
-				st.button( label='Reset', key='stores_inference_reset', icon='🔄', width='stretch',
-					on_click=reset_stores_inference_settings )
-			
-			# --------- Response Settings ---------
-			with st.expander( label='Response Settings', icon='↔️', expanded=False,
-					width='stretch' ):
-				response_c1, response_c2, response_c3 = st.columns( [ 0.40, 0.35, 0.25 ],
-					border=True, gap='xxsmall' )
-				
-				with response_c1:
-					stores_max_tokens = st.slider( label='Max Output Tokens', min_value=0,
-						max_value=100000, step=500, key='stores_max_tokens',
-						help=cfg.MAX_OUTPUT_TOKENS )
-				
-				with response_c2:
-					stores_format = st.selectbox( label='Response Format',
-						options=list( chat.format_options ), key='stores_response_format',
-						index=None, placeholder='Options',
-						help='Optional Gemini response MIME type.' )
-				
-				with response_c3:
-					stores_stream = st.toggle( label='Stream', key='stores_stream',
-						help=cfg.STREAM )
-				
-				st.button( label='Reset', key='stores_response_reset', icon='🔄', width='stretch',
-					on_click=reset_stores_response_settings )
-				
-		# ------------------------------------------------------------------
-		# Expander — System Instructions
-		# ------------------------------------------------------------------
-		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
-				width='stretch', ):
-			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
-			
-			# ------ Vector Stores Prompt Categories -----
-			stores_prompt_categories = fetch_prompt_categories( 'Vector Stores' )
-			current_stores_category = st.session_state.get( 'stores_prompt_category' )
-			
-			if current_stores_category not in stores_prompt_categories:
-				st.session_state[ 'stores_prompt_category' ] = None
-			
-			selected_stores_category = st.session_state.get( 'stores_prompt_category' )
-			stores_prompt_options = (fetch_prompt_options(
-				selected_stores_category ) if selected_stores_category else [ ])
-			stores_prompt_ids = [ int( option[ 'ID' ] ) for option in stores_prompt_options ]
-			
-			if st.session_state.get( 'stores_prompt_id' ) not in stores_prompt_ids:
-				st.session_state[ 'stores_prompt_id' ] = None
-			
-			# ----- Instruction Text -------
-			with in_left:
-				st.text_area( label='Enter Text', height=140, width='stretch',
-					key='stores_system_instructions',
-					help=cfg.SYSTEM_INSTRUCTIONS, )
-			
-			# ----- Template Selection -----
-			with in_right:
-				st.selectbox( label='Category', options=stores_prompt_categories, index=None,
-					key='stores_prompt_category', placeholder='Select Category',
-					help=('Limits prompt templates to categories associated '
-					      'with vector-store and retrieval workflows.'),
-					on_change=reset_prompt_template_selection, args=('stores_prompt_id',), )
-				
-				st.selectbox( label='Use Template', options=stores_prompt_ids, index=None,
-					key='stores_prompt_id', placeholder='Select Template',
-					disabled=not stores_prompt_ids,
-					format_func=lambda prompt_id: format_prompt_option( prompt_id,
-						stores_prompt_options, ),
-					help=('Loads the selected prompt into the Vector Stores '
-					      'system-instruction field.'),
-					on_change=load_stores_instruction_template, )
-			
-			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
-			
-			# ----- Clear Button -----
-			with btn_c1:
-				st.button( label='Clear Instructions', key='clear_stores_instructions',
-					width='stretch', on_click=clear_stores_instructions, icon='🧹', )
-			
-			# ----- Convert Button ------
-			with btn_c2:
-				st.button( label='XML ↔️ Markdown', key='convert_stores_instructions',
-					width='stretch', on_click=convert_stores_system_instructions, )
-		
-		st.caption( 'File Search Store Management' )
-		
-		stores_left, stores_right = st.columns( [ 0.50, 0.50 ], border=True )
-		with stores_left:
-			# ------------------------------------------------------------------
-			# Expander — Create File Search Stores
-			# ------------------------------------------------------------------
-			with st.expander( label='Create', expanded=True ):
-				new_store_name = st.text_input( label='New File Search Store name',
-					key='stores_new_store_name' )
-				
-				if st.button( label='Create', icon='➕', key='stores_create_store',
-						width='stretch' ):
-					if not str( new_store_name or '' ).strip( ):
-						st.warning( 'Enter a File Search Store Name.' )
-					else:
-						try:
-							result = searcher.create( str( new_store_name ).strip( ) )
-							created_name = (getattr( result, 'name', None ) or str(
-								new_store_name ).strip( ))
-							
-							st.success( f'Created File Search Store: {created_name}' )
-						except Exception as e:
-							exception = Error( e )
-							exception.module = 'app'
-							exception.cause = 'File Search Store creation'
-							exception.method = ('searcher.create( new_store_name )')
-							Logger( ).write( exception )
-							st.error( f'Create store failed: {exception.info}' )
-			
-			store_map = getattr( searcher, 'collections', None )
-			store_options: List[ Tuple[ str, str ] ] = [ ]
-			if isinstance( store_map, dict ):
-				store_options = [ (str( name ), str( identifier )) for name, identifier in
-					store_map.items( ) if str( identifier or '' ).strip( ) ]
-			
-			store_lookup = { identifier: name for name, identifier in store_options }
-			store_ids = list( store_lookup.keys( ) )
-			
-			# ------------------------------------------------------------------
-			# Expander — Retrieve File Search Stores
-			# ------------------------------------------------------------------
-			with st.expander( label='Retrieve', expanded=True ):
-				if store_ids:
-					selected_store_id = st.selectbox( label='Select File Search Store',
-						options=store_ids, format_func=lambda identifier: (
-							f'{store_lookup.get( identifier, identifier )} '
-							f'— {identifier}'), index=(store_ids.index(
-							st.session_state.get( 'stores_id' ) ) if st.session_state.get(
-							'stores_id' ) in store_ids else None), key='stores_store_selector',
-						placeholder='Options' )
-					
-					if selected_store_id:
-						st.session_state[ 'stores_id' ] = (selected_store_id)
-						st.session_state[ 'stores_selected_label' ] = (
-							store_lookup.get( selected_store_id, selected_store_id ))
-					
-					store_action_c1, store_action_c2 = st.columns( [ 0.50, 0.50 ] )
-					with store_action_c1:
-						if st.button( label='File Search Store', icon='📥',
-								key='retrieve_filestore',
-								width='stretch' ):
-							active_store_id = str(
-								st.session_state.get( 'stores_id', '' ) or '' ).strip( )
-							
-							if not active_store_id:
-								st.warning( 'No File Search Store Selected.' )
-							else:
-								try:
-									store_result = searcher.retrieve( store_id=active_store_id )
-									st.write( 'Name:', getattr( store_result, 'name', '—' ) )
-									st.write( 'Files:',
-										getattr( store_result, 'file_counts', '—' ) )
-									
-									usage_bytes = getattr( store_result, 'usage_bytes', 0 )
-									st.write( 'Size (MB):',
-										round( float( usage_bytes or 0 ) / 1_048_576, 2 ) )
-								
-								except Exception as e:
-									exception = Error( e )
-									exception.module = 'app'
-									exception.cause = ('File Search Store retrieval')
-									exception.method = ('searcher.retrieve( '
-									                    'store_id: str )')
-									Logger( ).write( exception )
-									st.error( 'retrieve() failed: '
-									          f'{exception.info}' )
-					
-					with store_action_c2:
-						if st.button( label='Delete File Search Store', icon='❌',
-								key='delete_store', width='stretch' ):
-							active_store_id = str(
-								st.session_state.get( 'stores_id', '' ) or '' ).strip( )
-							
-							if not active_store_id:
-								st.warning( 'No File Search Store Selected.' )
-							else:
-								try:
-									searcher.delete( store_id=active_store_id )
-									st.session_state[ 'stores_id' ] = ''
-									st.session_state[ 'stores_selected_label' ] = ''
-									st.success( 'File Search Store deleted.' )
-									st.rerun( )
-								
-								except Exception as e:
-									exception = Error( e )
-									exception.module = 'app'
-									exception.cause = ('File Search Store deletion')
-									exception.method = 'searcher.delete( store_id: str )'
-									Logger( ).write( exception )
-									st.error( f'Delete failed: {exception.info}' )
-				
-				else:
-					st.info( 'No File Search Stores are currently available.' )
-		
-		# ------------------------------------------------------------------
-		# File Uploader
-		# ------------------------------------------------------------------
-		with stores_right:
-			st.caption( 'Upload File' )
-			uploaded_file = st.file_uploader( label='Upload file (server-side via Files API)',
-				type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', ],
-				key='stores_file_uploader' )
-			if uploaded_file is not None:
-				tmp_path = save_temp( uploaded_file )
-				upload_function = None
-				for method_name in ('upload_file', 'upload', 'files_upload'):
-					if hasattr( searcher, method_name ):
-						upload_function = getattr( searcher, method_name )
-						break
-				
-				if upload_function is None:
-					st.warning( 'No upload function was found on FileSearch.' )
-				
-				elif not tmp_path:
-					st.warning( 'The uploaded file could not be prepared.' )
-				
-				else:
-					if st.button( label='Upload File', icon='📤', key='stores_upload_file',
-							width='stretch' ):
-						with st.spinner( 'Uploading to the Files API…' ):
-							try:
-								file_identifier = upload_function( tmp_path )
-								st.success( f'Uploaded file:  {file_identifier}' )
-							except Exception as e:
-								exception = Error( e )
-								exception.module = 'app'
-								exception.cause = ('File Search Store file upload')
-								exception.method = ('FileSearch upload method')
-								Logger( ).write( exception )
-								st.error( f'Upload failed: {exception.info}' )
-			
-			active_store_label = str(
-				st.session_state.get( 'stores_selected_label', '' ) or '' ).strip( )
-			active_store_id = str( st.session_state.get( 'stores_id', '' ) or '' ).strip( )
-			if active_store_id:
-				st.info( f'Active File Search Store: {active_store_label or active_store_id}' )
-			else:
-				st.info( 'Select a File Search Store to enable grounded chat.' )
-		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
-		
-		for message in st.session_state.get( 'stores_messages', [ ] ):
-			if not isinstance( message, dict ):
-				continue
-			
-			message_role = str( message.get( 'role', 'assistant' ) or 'assistant' ).strip( )
-			message_content = str( message.get( 'content', '' ) or '' ).strip( )
-			if not message_content:
-				continue
-			
-			message_avatar = (cfg.Boo if message_role == 'assistant' else '')
-			with st.chat_message( message_role, avatar=message_avatar ):
-				st.markdown( message_content )
-		
-		# ------------------------------------------------------------------
-		# File Search Stores Chat Input
-		# ------------------------------------------------------------------
-		stores_prompt = st.chat_input( 'Ask a question about the selected File Search Store …',
-			key='stores_chat_input' )
-		
-		if (stores_prompt is not None and str( stores_prompt ).strip( )):
-			stores_prompt = str( stores_prompt ).strip( )
-			active_store_id = str( st.session_state.get( 'stores_id', '' ) or '' ).strip( )
-			st.session_state[ 'stores_messages' ].append( { 'role': 'user',
-				'content': stores_prompt, } )
-			
-			with st.chat_message( 'assistant', avatar=cfg.Boo ):
-				with st.spinner( 'Searching the selected File Search Store…' ):
-					try:
-						response_text = run_file_search_store_query( prompt=stores_prompt,
-							store_name=active_store_id, )
-						
-						st.markdown( response_text )
-						grounding_sources = chat.get_grounding_sources( )
-						if grounding_sources:
-							st.session_state[ 'last_sources' ] = grounding_sources
-							with st.expander( label='File Search Sources', icon='🔎',
-									expanded=False,
-									width='stretch', ):
-								for source in grounding_sources:
-									source_title = str( source.get( 'title' ) or source.get(
-										'files_id' ) or source.get(
-										'url' ) or 'File Search Result' ).strip( )
-									source_url = str( source.get( 'url' ) or '' ).strip( )
-									source_snippet = str( source.get( 'snippet' ) or '' ).strip( )
-									if source_url:
-										st.markdown( f'- [{source_title}]({source_url})' )
-									else:
-										st.markdown( f'- {source_title}' )
-									
-									if source_snippet:
-										st.caption( source_snippet )
-						else:
-							st.session_state[ 'last_sources' ] = [ ]
-						
-						st.session_state[ 'stores_messages' ].append( { 'role': 'assistant',
-							'content': response_text, } )
-						
-						if st.session_state.get( 'stores_stream', False ):
-							st.session_state[ 'stores_input' ] = [ ]
-						else:
-							structured_history = chat.get_structured_history( )
-							if structured_history:
-								st.session_state[ 'stores_input' ] = structured_history
-							else:
-								st.session_state[ 'stores_input' ] = [ ]
-						
-						st.session_state[ 'last_answer' ] = response_text
-					except Exception as e:
-						exception = (e if isinstance( e, Error ) else Error( e ))
-						st.error( f'File Search query failed: {exception.info}' )
-		
-		# ------  Clear Messages ---------
-		st.button( label='Clear Messages', key='stores_clear_messages', icon='🧹', width='content',
-			on_click=clear_stores_messages )
-
-# ======================================================================================
-# CLOUD BUCKET MODE
-# ======================================================================================
-elif mode == 'Google Cloud Buckets':
-	bucket_model = st.session_state.get( 'bucket_model', '' )
-	bucket_format = st.session_state.get( 'bucket_response_format', '' )
-	bucket_top_percent = st.session_state.get( 'bucket_top_percent', 0.0 )
-	bucket_frequency = st.session_state.get( 'bucket_frequency_penalty', 0.0 )
-	bucket_presence = st.session_state.get( 'bucket_presence_penalty', 0.0 )
-	bucket_number = st.session_state.get( 'bucket_number', 1 )
-	bucket_temperature = st.session_state.get( 'bucket_temperature', 0.0 )
-	bucket_stream = st.session_state.get( 'bucket_stream', False )
-	bucket_store = st.session_state.get( 'bucket_store', False )
-	bucket_input = st.session_state.get( 'bucket_input', [ ] )
-	bucket_reasoning = st.session_state.get( 'bucket_reasoning', '' )
-	bucket_tool_choice = st.session_state.get( 'bucket_tool_choice', '' )
-	bucket_messages = st.session_state.get( 'bucket_messages', [ ] )
-	bucket_background = st.session_state.get( 'bucket_background', False )
-	bucket_max_tokens = st.session_state.get( 'bucket_max_tokens', 0 )
-	bucket_id = st.session_state.get( 'bucket_id', '' )
-	bucket_system_instructions = st.session_state.get( 'bucket_system_instructions', '' )
-	searcher = gemini.CloudBuckets( )
-	chat = gemini.Chat( )
-	
-	# -------- Session-State Guards --------
-	if not isinstance( st.session_state.get( 'bucket_messages' ), list ):
-		st.session_state[ 'bucket_messages' ] = [ ]
-	
-	if not isinstance( st.session_state.get( 'bucket_input' ), list ):
-		st.session_state[ 'bucket_input' ] = [ ]
-	
-	if 'bucket_prompt_id' not in st.session_state:
-		st.session_state[ 'bucket_prompt_id' ] = None
-	
-	if 'bucket_selected_label' not in st.session_state:
-		st.session_state[ 'bucket_selected_label' ] = ''
-	
-	# ----- Callbacks --------
-	def reset_bucket_model_settings( ) -> None:
-		"""Reset Google Cloud Buckets model settings.
+	# ------ Vector Stores Utilities -----
+	def get_vector_store_options( instance: Any, attribute_name: str,
+		fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
+		"""Get Vector Store options.
 		
 		Purpose:
-		    Removes the model, reasoning, and candidate controls so Streamlit restores
-		    their initial values during the subsequent rerun.
+		    Returns provider-supported option values exposed by the GPT VectorStores wrapper.
 		
-		Returns:
-		    None: This function updates Streamlit session state through side effects.
-		"""
-		try:
-			for key in [ 'bucket_model', 'bucket_reasoning', 'bucket_number' ]:
-				st.session_state.pop( key, None )
-		
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'app'
-			exception.cause = 'reset_bucket_model_settings'
-			exception.method = 'reset_bucket_model_settings( ) -> None'
-			Logger( ).write( exception )
-			raise exception
-	
-	def reset_bucket_inference_settings( ) -> None:
-		"""Reset Google Cloud Buckets inference settings.
-		
-		Purpose:
-		    Removes the sampling and penalty controls so Streamlit restores their initial
-		    values during the subsequent rerun.
-		
-		Returns:
-		    None: This function updates Streamlit session state through side effects.
-		"""
-		try:
-			for key in [ 'bucket_temperature', 'bucket_top_percent', 'bucket_frequency_penalty',
-				'bucket_presence_penalty' ]:
-				st.session_state.pop( key, None )
-		
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'app'
-			exception.cause = 'reset_bucket_inference_settings'
-			exception.method = 'reset_bucket_inference_settings( ) -> None'
-			Logger( ).write( exception )
-			raise exception
-	
-	def reset_bucket_response_settings( ) -> None:
-		"""Reset Google Cloud Buckets response settings.
-		
-		Purpose:
-		    Removes the output-token, response-format, and streaming controls so Streamlit
-		    restores their initial values during the subsequent rerun.
-		
-		Returns:
-		    None: This function updates Streamlit session state through side effects.
-		"""
-		try:
-			for key in [ 'bucket_max_tokens', 'bucket_response_format', 'bucket_stream' ]:
-				st.session_state.pop( key, None )
-		
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'app'
-			exception.cause = 'reset_bucket_response_settings'
-			exception.method = 'reset_bucket_response_settings( ) -> None'
-			Logger( ).write( exception )
-			raise exception
-	
-	def clear_bucket_messages( ) -> None:
-		"""Clear Google Cloud Buckets conversation history.
-		
-		Purpose:
-		    Removes user and assistant messages while preserving the selected bucket,
-		    uploaded files, model controls, and system instructions.
-		
-		Returns:
-		    None: This function updates Streamlit session state through side effects.
-		"""
-		try:
-			st.session_state[ 'bucket_messages' ] = [ ]
-			st.session_state[ 'bucket_input' ] = [ ]
-			st.session_state[ 'last_answer' ] = ''
-			st.session_state[ 'last_sources' ] = [ ]
-		
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'app'
-			exception.cause = 'clear_bucket_messages'
-			exception.method = 'clear_bucket_messages( ) -> None'
-			Logger( ).write( exception )
-			raise exception
-	
-	def on_bucket_prompt_change( ) -> None:
-		"""Load the selected Google Cloud Buckets prompt.
-		
-		Purpose:
-		    Retrieves the selected prompt by its stable database ID and copies its Text
-		    value into the mode-specific system-instruction control.
-		
-		Returns:
-		    None: This function updates Streamlit session state through side effects.
-		"""
-		try:
-			load_prompt_into_state( prompt_id_key='bucket_prompt_id',
-				instruction_key='bucket_system_instructions' )
-		
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'app'
-			exception.cause = 'on_bucket_prompt_change'
-			exception.method = 'on_bucket_prompt_change( ) -> None'
-			Logger( ).write( exception )
-			raise exception
-	
-	def clear_bucket_prompt( ) -> None:
-		"""Clear the Google Cloud Buckets prompt.
-		
-		Purpose:
-		    Clears the selected prompt ID and system-instruction text without modifying
-		    any prompt record in the database.
-		
-		Returns:
-		    None: This function updates Streamlit session state through side effects.
-		"""
-		try:
-			clear_prompt_state( prompt_id_key='bucket_prompt_id',
-				instruction_key='bucket_system_instructions' )
-		
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'app'
-			exception.cause = 'clear_bucket_prompt'
-			exception.method = 'clear_bucket_prompt( ) -> None'
-			Logger( ).write( exception )
-			raise exception
-	
-	def convert_bucket_prompt( ) -> None:
-		"""Convert the Google Cloud Buckets prompt.
-		
-		Purpose:
-		    Converts the system instructions between supported XML prompt blocks and
-		    Markdown headings.
-		
-		Returns:
-		    None: This function updates Streamlit session state through side effects.
-		"""
-		try:
-			convert_prompt_state( instruction_key='bucket_system_instructions' )
-		
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'app'
-			exception.cause = 'convert_bucket_prompt'
-			exception.method = 'convert_bucket_prompt( ) -> None'
-			Logger( ).write( exception )
-			raise exception
-	
-	def run_bucket_chat_query( prompt: str, selected_bucket_id: str,
-		selected_bucket_label: str ) -> str:
-		"""Run a Google Cloud Buckets chat query.
-	
-		Purpose:
-			Builds an operational context describing the selected Google Cloud Storage bucket,
-			submits the user request through the Gemini Interactions wrapper, updates token usage,
-			and returns normalized response text. The bucket identifier and label provide contextual
-			metadata only; this function does not retrieve or inspect bucket objects.
-	
 		Args:
-			prompt (str): User request submitted through the Google Cloud Buckets chat input.
-			selected_bucket_id (str): Selected Google Cloud Storage bucket identifier.
-			selected_bucket_label (str): Display label associated with the selected bucket.
-	
+		    instance (Any): Active GPT VectorStores wrapper.
+		    attribute_name (str): Wrapper option-property name.
+		    fallback (Optional[List[Any]]): Values returned when the property is unavailable.
+		
 		Returns:
-			str: Generated response based on the user request and bucket metadata.
-	
-		Raises:
-			Error: Raised when validation, Gemini execution, response normalization, or usage
-				accounting fails.
-			ValueError: Raised when ``prompt`` or the selected model is missing.
+		    List[Any]: Provider-supported option values.
 		"""
-		try:
-			throw_if( 'prompt', prompt )
-			
-			prompt_text = str( prompt ).strip( )
-			active_bucket_id = str( selected_bucket_id or '' ).strip( )
-			active_bucket_label = str( selected_bucket_label or '' ).strip( )
-			selected_model = str( st.session_state.get( 'bucket_model', '' ) or '' ).strip( )
-			throw_if( 'prompt_text', prompt_text )
-			throw_if( 'selected_model', selected_model )
-			context = st.session_state.get( 'bucket_input', [ ] )
-			if not isinstance( context, list ):
-				context = [ ]
-			
-			if not context:
-				context = st.session_state.get( 'bucket_messages', [ ], )
-				
-				if not isinstance( context, list ):
-					context = [ ]
-				
-				if context:
-					context = context[ :-1 ]
-			
-			bucket_context = ('Google Cloud Storage operational context:\n'
-			                  f'Bucket Name: '
-			                  f'{active_bucket_label or "Not selected"}\n'
-			                  f'Bucket ID: '
-			                  f'{active_bucket_id or "Not selected"}\n\n'
-			                  'The bucket name and identifier are contextual metadata only. '
-			                  'Do not state or imply that bucket objects, object contents, '
-			                  'metadata, permissions, or storage configuration were inspected '
-			                  'unless those values are explicitly supplied in the user request.')
-			
-			system_instructions = str(
-				st.session_state.get( 'bucket_system_instructions', '', ) or '' ).strip( )
-			
-			combined_instructions = '\n\n'.join(
-				part for part in [ system_instructions, bucket_context, ] if part )
-			
-			number = int( st.session_state.get( 'bucket_number', 1 ) )
-			temperature = float( st.session_state.get( 'bucket_temperature', 0.0, ) )
-			top_p = float( st.session_state.get( 'bucket_top_percent', 0.0, ) )
-			frequency_penalty = float( st.session_state.get( 'bucket_frequency_penalty', 0.0, ) )
-			presence_penalty = float( st.session_state.get( 'bucket_presence_penalty', 0.0, ) )
-			max_tokens = int( st.session_state.get( 'bucket_max_tokens', 0, ) )
-			response_format = str(
-				st.session_state.get( 'bucket_response_format', '', ) or '' ).strip( )
-			reasoning = str( st.session_state.get( 'bucket_reasoning', '', ) or '' ).strip( )
-			tool_choice = str( st.session_state.get( 'bucket_tool_choice', '', ) or '' ).strip( )
-			stream = bool( st.session_state.get( 'bucket_stream', False, ) )
-			apply_gemini_runtime_config( )
-			response = chat.generate_text( prompt=prompt_text, model=selected_model, number=number,
-				temperature=temperature, top_p=top_p, top_k=0, frequency=frequency_penalty,
-				presence=presence_penalty, max_tokens=max_tokens, stops=[ ],
-				instruct=combined_instructions, response_format=response_format, tools=[ ],
-				tool_choice=tool_choice or None, reasoning=reasoning, modalities=[ 'text' ],
-				media_resolution='', context=context, content='', urls=[ ], max_urls=0,
-				response_schema='', safety_profile='', file_search_store_names=[ ], stream=stream,
-				stream_handler=None )
-			
-			if response is None:
-				raise ValueError( 'Gemini returned no Google Cloud Buckets response.' )
-			
-			response_text = str( response ).strip( )
-			if not response_text:
-				raise ValueError( 'Gemini returned an empty Google Cloud Buckets response.' )
+		values = getattr( instance, attribute_name, None )
+		
+		if callable( values ):
+			values = values( )
+		
+		if isinstance( values, tuple ):
+			values = list( values )
+		
+		if isinstance( values, list ):
+			return values
+		
+		return fallback or [ ]
 	
-			st.session_state[ 'bucket_input' ] = chat.get_structured_history( )
-			update_counters( getattr( chat, 'response', None ) )
-			return response_text
-		except Exception as e:
-			exception = Error( e )
-			exception.module = 'app'
-			exception.cause = 'run_bucket_chat_query'
-			exception.method = 'run_bucket_chat_query( prompt: str, selected_bucket_id: str, selected_bucket_label: str ) -> str'
-			Logger( ).write( exception )
-			raise exception
-	
-	def load_stores_instruction_template( ) -> None:
-		"""Load Vector Stores instruction template.
+	def parse_vector_store_json( value: Any, label: str ) -> Dict[ str, Any ]:
+		"""Parse Vector Store JSON.
 		
 		Purpose:
-		    Loads the selected Vector Stores prompt template into the system-instruction field.
+		    Parses optional JSON text used by Vector Store metadata, attributes, filters, and
+		    ranking controls.
+		
+		Args:
+		    value (Any): JSON text or an existing dictionary.
+		    label (str): Field label included in validation errors.
+		
+		Returns:
+		    Dict[str, Any]: Parsed JSON object or an empty dictionary.
+		
+		Raises:
+		    ValueError: Raised when nonempty input is not a JSON object.
+		"""
+		if isinstance( value, dict ):
+			return dict( value )
+		
+		raw_value = str( value or '' ).strip( )
+		
+		if not raw_value:
+			return { }
+		
+		parsed_value = json.loads( raw_value )
+		
+		if not isinstance( parsed_value, dict ):
+			raise ValueError( f'{label} must contain a JSON object.' )
+		
+		return parsed_value
+	
+	def parse_vector_store_ids( value: Any ) -> List[ str ]:
+		"""Parse Vector Store identifiers.
+		
+		Purpose:
+		    Converts comma-delimited file identifiers into unique nonempty values.
+		
+		Args:
+		    value (Any): Comma-delimited identifier text.
+		
+		Returns:
+		    List[str]: Unique parsed identifiers.
+		"""
+		identifiers: List[ str ] = [ ]
+		
+		for item in str( value or '' ).split( ',' ):
+			identifier = item.strip( )
+			
+			if identifier and identifier not in identifiers:
+				identifiers.append( identifier )
+		
+		return identifiers
+	
+	def get_selected_vector_store_id( ) -> str:
+		"""Get selected Vector Store identifier.
+		
+		Purpose:
+		    Returns the selected Vector Store identifier or the manually entered fallback.
+		
+		Returns:
+		    str: Active Vector Store identifier.
+		"""
+		selected_id = str( st.session_state.get( 'stores_selected_id', '' ) or '' ).strip( )
+		
+		if selected_id:
+			return selected_id
+		
+		return str( st.session_state.get( 'stores_manual_id', '' ) or '' ).strip( )
+	
+	def normalize_vector_store_rows( result: Any ) -> List[ Dict[ str, Any ] ]:
+		"""Normalize Vector Store rows.
+		
+		Purpose:
+		    Converts a GPT Vector Store response into records suitable for Streamlit tables.
+		
+		Args:
+		    result (Any): Provider response containing one or more Vector Stores.
+		
+		Returns:
+		    List[Dict[str, Any]]: Normalized Vector Store records.
+		"""
+		raw_rows = getattr( result, 'data', result )
+		
+		if raw_rows is None:
+			return [ ]
+		
+		if not isinstance( raw_rows, list ):
+			raw_rows = [ raw_rows ]
+		
+		return [ normalize_storage_object( row ) for row in raw_rows ]
+	
+	def normalize_vector_file_rows( result: Any ) -> List[ Dict[ str, Any ] ]:
+		"""Normalize Vector Store file rows.
+		
+		Purpose:
+		    Converts a GPT Vector Store file response into records suitable for Streamlit tables.
+		
+		Args:
+		    result (Any): Provider response containing one or more Vector Store files.
+		
+		Returns:
+		    List[Dict[str, Any]]: Normalized file records.
+		"""
+		raw_rows = getattr( result, 'data', result )
+		
+		if raw_rows is None:
+			return [ ]
+		
+		if not isinstance( raw_rows, list ):
+			raw_rows = [ raw_rows ]
+		
+		return [ normalize_storage_object( row ) for row in raw_rows ]
+	
+	def clear_vector_store_outputs( ) -> None:
+		"""Clear Vector Store outputs.
+		
+		Purpose:
+		    Clears Vector Store tables, metadata, batch results, and search results without
+		    changing configuration controls.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'stores_table' ] = [ ]
+		st.session_state[ 'stores_files_table' ] = [ ]
+		st.session_state[ 'stores_store_metadata' ] = { }
+		st.session_state[ 'stores_batch_result' ] = { }
+		st.session_state[ 'stores_search_results' ] = [ ]
+		st.session_state[ 'stores_selected_id' ] = ''
+		st.session_state[ 'stores_id' ] = ''
+	
+	def clear_vector_store_instructions( ) -> None:
+		"""Clear Vector Store instructions.
+		
+		Purpose:
+		    Clears Vector Store system instructions and the selected prompt template.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'stores_system_instructions' ] = ''
+		st.session_state[ 'stores_prompt_id' ] = None
+	
+	def load_vector_store_instruction_template( ) -> None:
+		"""Load Vector Store instruction template.
+		
+		Purpose:
+		    Loads the selected prompt template into the Vector Store system-instruction field.
 		
 		Returns:
 		    None: This function updates Streamlit session state.
@@ -13830,96 +12098,2343 @@ elif mode == 'Google Cloud Buckets':
 		load_prompt_template( prompt_id_key='stores_prompt_id',
 			instructions_key='stores_system_instructions', )
 	
-	if st.session_state.get( 'clear_instructions' ):
-		st.session_state[ 'bucket_system_instructions' ] = ''
-		st.session_state[ 'bucket_prompt_id' ] = None
-		st.session_state[ 'clear_instructions' ] = False
+	def convert_vector_store_instructions( ) -> None:
+		"""Convert Vector Store instructions.
+		
+		Purpose:
+		    Converts Vector Store system instructions between Markdown headings and XML-style
+		    heading elements.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		instructions = str( st.session_state.get( 'stores_system_instructions', '' ) or '' )
+		
+		if instructions.strip( ):
+			st.session_state[ 'stores_system_instructions' ] = convert_markdown( instructions )
 	
+	model_options = get_vector_store_options( vector, 'model_options', [ ] )
+	ranker_options = get_vector_store_options( vector, 'ranker_options', [ ] )
+	chunking_options = get_vector_store_options( vector, 'chunking_strategy_options', [ ], )
+	
+	if (st.session_state.get( 'stores_model' ) and model_options and st.session_state[
+		'stores_model' ] not in model_options):
+		st.session_state[ 'stores_model' ] = ''
+	
+	if (st.session_state.get( 'stores_ranker' ) and ranker_options and st.session_state[
+		'stores_ranker' ] not in ranker_options):
+		st.session_state[ 'stores_ranker' ] = ''
+	
+	if (st.session_state.get( 'stores_chunking_strategy' ) and chunking_options and
+			st.session_state[ 'stores_chunking_strategy' ] not in chunking_options):
+		st.session_state[ 'stores_chunking_strategy' ] = ''
+	
+	# ------------------------------------------------------------------
+	# Main Vector Stores UI
+	# ------------------------------------------------------------------
 	left, center, right = st.columns( [ 0.05, 0.90, 0.05 ] )
 	with center:
-		st.subheader( '🧊 Google Cloud Buckets', help=cfg.VECTORSTORES_API )
-		
+		st.subheader( '🗄️ Vector Stores', help=getattr( cfg, 'VECTOR_STORES', '' ) )
 		st.divider( )
 		
 		# ------------------------------------------------------------------
-		# Expander - Mind Controls
+		# Expander — Vector Store Selection
 		# ------------------------------------------------------------------
-		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch' ):
-			# ------ LLM Settings ---------
-			with st.expander( label='LLM Settings', icon='🧊', expanded=False, width='stretch' ):
-				model_c1, model_c2, model_c3 = st.columns( [ 0.40, 0.35, 0.25 ], border=True,
-					gap='xxsmall' )
-				
-				with model_c1:
-					bucket_model = st.selectbox( label='Model', options=list( chat.model_options ),
-						key='bucket_model', index=None, placeholder='Options',
-						help=('REQUIRED. Gemini model used by the Google Cloud '
-						      'Buckets conversational assistant.') )
-				
-				with model_c2:
-					bucket_reasoning = st.selectbox( label='Thinking Level',
-						options=list( chat.reasoning_options ), key='bucket_reasoning', index=None,
-						placeholder='Options', help=cfg.REASONING )
-				
-				with model_c3:
-					bucket_number = st.slider( label='Candidates', min_value=1, max_value=8,
-						value=max( 1, int( st.session_state.get( 'bucket_number', 1 ) or 1 ) ),
-						step=1, key='bucket_number', help='Maximum number of candidate '
-						                                  'responses.' )
-				
-				st.button( label='Reset', key='bucket_model_reset', icon='🔄', width='stretch',
-					on_click=reset_bucket_model_settings )
+		with st.expander( label='Vector Store Selection', icon='🗃️', expanded=True,
+				width='stretch', ):
+			selection_c1, selection_c2, selection_c3 = st.columns( [ 0.40, 0.40, 0.20 ],
+				border=True, gap='xxsmall', )
 			
-			# ------ Inference Settings ---------
-			with st.expander( label='Inference Settings', icon='🎚️', expanded=False,
-					width='stretch' ):
-				inference_c1, inference_c2, inference_c3, inference_c4 = (
-					st.columns( [ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall' ))
-				
-				with inference_c1:
-					bucket_temperature = st.slider( label='Temperature', min_value=-2.0,
-						max_value=2.0, step=0.01, key='bucket_temperature', help=cfg.TEMPERATURE )
-				
-				with inference_c2:
-					bucket_top_percent = st.slider( label='Top-P', min_value=0.0, max_value=1.0,
-						step=0.01, key='bucket_top_percent', help=cfg.TOP_P )
-				
-				with inference_c3:
-					bucket_frequency = st.slider( label='Frequency Penalty', min_value=-2.0,
-						max_value=2.0, step=0.01, key='bucket_frequency_penalty',
-						help=cfg.FREQUENCY_PENALTY )
-				
-				with inference_c4:
-					bucket_presence = st.slider( label='Presence Penalty', min_value=-2.0,
-						max_value=2.0, step=0.01, key='bucket_presence_penalty',
-						help=cfg.PRESENCE_PENALTY )
-				
-				st.button( label='Reset', key='bucket_inference_reset', icon='🔄', width='stretch',
-					on_click=reset_bucket_inference_settings )
+			store_rows = st.session_state.get( 'stores_table', [ ] )
+			store_options: Dict[ str, str ] = { }
 			
-			# ------ Response Settings ---------
-			with st.expander( label='Response Settings', icon='↔️', expanded=False,
-					width='stretch' ):
-				response_c1, response_c2, response_c3 = st.columns( [ 0.40, 0.35, 0.25 ],
-					border=True, gap='xxsmall' )
+			for row in store_rows:
+				if not isinstance( row, dict ):
+					continue
 				
-				with response_c1:
-					bucket_max_tokens = st.slider( label='Max Output Tokens', min_value=0,
-						max_value=100000, step=500, key='bucket_max_tokens',
-						help=cfg.MAX_OUTPUT_TOKENS )
+				store_id = str( row.get( 'id', '' ) or '' ).strip( )
+				store_name = str(
+					row.get( 'name' ) or row.get( 'display_name' ) or store_id ).strip( )
 				
-				with response_c2:
-					bucket_format = st.selectbox( label='Response Format',
-						options=list( chat.format_options ), key='bucket_response_format',
-						index=None, placeholder='Options',
-						help='Optional Gemini response MIME type.' )
+				if store_id:
+					store_options[ f'{store_name} — {store_id}' ] = store_id
+			
+			with selection_c1:
+				selected_label = st.selectbox( label='Vector Store',
+					options=list( store_options.keys( ) ), index=None,
+					placeholder='Select Vector Store', key='stores_selected_label',
+					disabled=not store_options, )
 				
-				with response_c3:
-					bucket_stream = st.toggle( label='Stream', key='bucket_stream',
-						help=cfg.STREAM )
+				if selected_label:
+					st.session_state[ 'stores_selected_id' ] = store_options[ selected_label ]
+			
+			with selection_c2:
+				st.text_input( label='Vector Store ID', key='stores_manual_id',
+					placeholder='vs_...', help='Optional manual Vector Store identifier.',
+					width='stretch', )
+			
+			with selection_c3:
+				if st.button( label='Refresh', key='stores_refresh_button', width='stretch',
+						icon='🔄', ):
+					try:
+						result = vector.list_stores( limit=100, order='desc' )
+						st.session_state[ 'stores_results' ] = result
+						st.session_state[ 'stores_table' ] = normalize_vector_store_rows( result )
+						st.success( 'Vector Stores refreshed.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Unable to list Vector Stores: {err.info}' )
+			
+			active_store_id = get_selected_vector_store_id( )
+			
+			if active_store_id:
+				st.caption( f'Active Vector Store: `{active_store_id}`' )
+		
+		# ------------------------------------------------------------------
+		# Expander — Vector Store Files
+		# ------------------------------------------------------------------
+		with st.expander( label='Vector Store Files', icon='📁', expanded=False,
+				width='stretch', ):
+			file_tab, batch_tab = st.tabs( [ 'Files', 'File Batches' ] )
+			
+			with file_tab:
+				st.file_uploader( label='Upload File', key='stores_uploaded_file',
+					help='Upload a file before attaching it to the active Vector Store.', )
 				
-				st.button( label='Reset', key='bucket_response_reset', icon='🔄', width='stretch',
-					on_click=reset_bucket_response_settings )
+				file_c1, file_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall', )
+				
+				with file_c1:
+					st.text_input( label='File ID', key='stores_file_id', placeholder='file_...',
+						width='stretch', )
+				
+				with file_c2:
+					st.text_area( label='File Attributes', key='stores_attributes',
+						placeholder='{ "category": "policy" }', height=68, )
+				
+				attach_c1, attach_c2, attach_c3, attach_c4 = st.columns( 4, border=True,
+					gap='xxsmall', )
+				
+				with attach_c1:
+					if st.button( label='Upload', key='stores_upload_file_button', width='stretch',
+							icon='⬆️', ):
+						try:
+							if files is None:
+								raise ValueError( 'GPT does not provide a Files wrapper.' )
+							
+							uploaded_file = st.session_state.get( 'stores_uploaded_file' )
+							local_path = save_uploaded_storage_file( uploaded_file )
+							
+							if not local_path:
+								raise ValueError( 'Select a file before uploading.' )
+							
+							result = files.upload( path=local_path, purpose='assistants' )
+							normalized_result = normalize_storage_object( result )
+							file_id = str( normalized_result.get( 'id' ) or getattr( result, 'id',
+								'' ) or '' ).strip( )
+							
+							st.session_state[ 'stores_file_id' ] = file_id
+							st.success( f'File uploaded: {file_id}' )
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'File upload failed: {err.info}' )
+				
+				with attach_c2:
+					if st.button( label='Attach', key='stores_attach_file_button', width='stretch',
+							icon='➕', ):
+						try:
+							store_id = get_selected_vector_store_id( )
+							file_id = str(
+								st.session_state.get( 'stores_file_id', '' ) or '' ).strip( )
+							
+							throw_if( 'store_id', store_id )
+							throw_if( 'file_id', file_id )
+							
+							attributes = parse_vector_store_json(
+								st.session_state.get( 'stores_attributes', '' ),
+								'File Attributes', )
+							
+							result = vector.attach_file( store_id=store_id, file_id=file_id,
+								attributes=attributes or None, chunking_strategy=(
+										st.session_state.get(
+											'stores_chunking_strategy' ) or None), )
+							
+							st.session_state[ 'stores_results' ] = result
+							st.success( 'File attached to the Vector Store.' )
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'Attach failed: {err.info}' )
+				
+				with attach_c3:
+					if st.button( label='List', key='stores_list_files_button', width='stretch',
+							icon='📋', ):
+						try:
+							store_id = get_selected_vector_store_id( )
+							throw_if( 'store_id', store_id )
+							
+							result = vector.list_files( store_id=store_id, limit=100, order='desc',
+								filter=str( st.session_state.get( 'stores_filter', '' ) or '' ), )
+							
+							st.session_state[ 'stores_files_table' ] = (
+								normalize_vector_file_rows( result ))
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'Unable to list files: {err.info}' )
+				
+				with attach_c4:
+					if st.button( label='Remove', key='stores_remove_file_button', width='stretch',
+							icon='➖', ):
+						try:
+							store_id = get_selected_vector_store_id( )
+							file_id = str(
+								st.session_state.get( 'stores_file_id', '' ) or '' ).strip( )
+							
+							throw_if( 'store_id', store_id )
+							throw_if( 'file_id', file_id )
+							
+							vector.delete_file( store_id=store_id, file_id=file_id, )
+							
+							st.session_state[ 'stores_files_table' ] = [ row for row in
+								st.session_state.get( 'stores_files_table', [ ], ) if not (
+										isinstance( row, dict ) and str(
+									row.get( 'id', '' ) ) == file_id) ]
+							
+							st.success( 'File removed from the Vector Store.' )
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'File removal failed: {err.info}' )
+				
+				if st.session_state.get( 'stores_files_table' ):
+					st.data_editor( pd.DataFrame( st.session_state[ 'stores_files_table' ] ),
+						use_container_width=True, hide_index=True, disabled=True,
+						key='stores_files_table_view', )
+				else:
+					st.info( 'No Vector Store files loaded yet.' )
+			
+			with batch_tab:
+				batch_c1, batch_c2 = st.columns( [ 0.70, 0.30 ], border=True, gap='xxsmall', )
+				
+				with batch_c1:
+					st.text_input( label='File IDs', key='stores_file_ids_text',
+						placeholder='file_abc123,file_def456',
+						help='Comma-delimited file identifiers.', width='stretch', )
+				
+				with batch_c2:
+					st.text_input( label='Batch ID', key='stores_batch_id', placeholder='vsfb_...',
+						width='stretch', )
+				
+				batch_action_c1, batch_action_c2, batch_action_c3 = st.columns( 3, border=True,
+					gap='xxsmall', )
+				
+				with batch_action_c1:
+					if st.button( label='Create Batch', key='stores_create_batch_button',
+							width='stretch', icon='➕', ):
+						try:
+							store_id = get_selected_vector_store_id( )
+							file_ids = parse_vector_store_ids(
+								st.session_state.get( 'stores_file_ids_text', '' ) )
+							
+							throw_if( 'store_id', store_id )
+							throw_if( 'file_ids', file_ids )
+							
+							result = vector.create_file_batch( store_id=store_id,
+								file_ids=file_ids,
+								attributes=(parse_vector_store_json(
+									st.session_state.get( 'stores_attributes', '' ),
+									'File Attributes', ) or None), chunking_strategy=(
+										st.session_state.get(
+											'stores_chunking_strategy' ) or None), )
+							
+							st.session_state[ 'stores_batch_result' ] = (
+								normalize_storage_object( result ))
+							st.session_state[ 'stores_batch_id' ] = str(
+								getattr( result, 'id', '' ) or '' )
+							st.success( 'Vector Store file batch created.' )
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'Batch creation failed: {err.info}' )
+				
+				with batch_action_c2:
+					if st.button( label='Retrieve Batch', key='stores_retrieve_batch_button',
+							width='stretch', icon='🔎', ):
+						try:
+							store_id = get_selected_vector_store_id( )
+							batch_id = str(
+								st.session_state.get( 'stores_batch_id', '' ) or '' ).strip( )
+							
+							throw_if( 'store_id', store_id )
+							throw_if( 'batch_id', batch_id )
+							
+							result = vector.retrieve_file_batch( store_id=store_id,
+								batch_id=batch_id, )
+							
+							st.session_state[ 'stores_batch_result' ] = (
+								normalize_storage_object( result ))
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'Batch retrieval failed: {err.info}' )
+				
+				with batch_action_c3:
+					if st.button( label='Cancel Batch', key='stores_cancel_batch_button',
+							width='stretch', icon='⛔', ):
+						try:
+							store_id = get_selected_vector_store_id( )
+							batch_id = str(
+								st.session_state.get( 'stores_batch_id', '' ) or '' ).strip( )
+							
+							throw_if( 'store_id', store_id )
+							throw_if( 'batch_id', batch_id )
+							
+							result = vector.cancel_file_batch( store_id=store_id,
+								batch_id=batch_id, )
+							
+							st.session_state[ 'stores_batch_result' ] = (
+								normalize_storage_object( result ))
+							st.success( 'Vector Store file batch cancellation requested.' )
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'Batch cancellation failed: {err.info}' )
+				
+				if st.session_state.get( 'stores_batch_result' ):
+					st.json( st.session_state[ 'stores_batch_result' ] )
+		
+		# ------------------------------------------------------------------
+		# Expander — Vector Store Lifecycle
+		# ------------------------------------------------------------------
+		with st.expander( label='Vector Store Lifecycle', icon='♻️', expanded=False,
+				width='stretch', ):
+			lifecycle_tab, metadata_tab = st.tabs(
+				[ 'Create / List', 'Retrieve / Update / Delete' ] )
+			
+			with lifecycle_tab:
+				create_c1, create_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall', )
+				
+				with create_c1:
+					st.text_input( label='Name', key='stores_name', width='stretch', )
+					
+					st.text_area( label='Description', key='stores_description', height=100, )
+				
+				with create_c2:
+					st.text_area( label='Metadata', key='stores_metadata',
+						placeholder='{ "department": "finance" }', height=100, )
+					
+					st.number_input( label='Expires After Days', min_value=0, max_value=3650,
+						step=1, key='stores_expires_after_days', )
+				
+				create_action_c1, create_action_c2 = st.columns( 2, border=True, gap='xxsmall', )
+				
+				with create_action_c1:
+					if st.button( label='Create Vector Store', key='create_vector_store',
+							width='stretch', icon='➕', ):
+						try:
+							name = str( st.session_state.get( 'stores_name', '' ) or '' ).strip( )
+							throw_if( 'name', name )
+							
+							metadata = parse_vector_store_json(
+								st.session_state.get( 'stores_metadata', '' ), 'Metadata', )
+							
+							expiration_days = int(
+								st.session_state.get( 'stores_expires_after_days', 0, ) or 0 )
+							expires_after = ({ 'anchor': 'last_active_at',
+								'days': expiration_days, } if expiration_days > 0 else None)
+							
+							result = vector.create( name=name, description=str(
+								st.session_state.get( 'stores_description', '', ) or '' ),
+								metadata=metadata or None, expires_after=expires_after,
+								file_ids=parse_vector_store_ids(
+									st.session_state.get( 'stores_file_ids_text', '', ) ) or None,
+								chunking_strategy=(st.session_state.get(
+									'stores_chunking_strategy' ) or None), )
+							
+							normalized_result = normalize_storage_object( result )
+							st.session_state[ 'stores_store_metadata' ] = normalized_result
+							st.session_state[ 'stores_selected_id' ] = str(
+								normalized_result.get( 'id', '' ) or '' )
+							st.success( 'Vector Store created.' )
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'Vector Store creation failed: {err.info}' )
+				
+				with create_action_c2:
+					if st.button( label='List Vector Stores', key='list_vector_stores',
+							width='stretch', icon='📋', ):
+						try:
+							result = vector.list_stores( limit=100, order='desc' )
+							st.session_state[ 'stores_results' ] = result
+							st.session_state[ 'stores_table' ] = (
+								normalize_vector_store_rows( result ))
+							st.success( 'Vector Stores loaded.' )
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'Unable to list Vector Stores: {err.info}' )
+				
+				if st.session_state.get( 'stores_table' ):
+					st.data_editor( pd.DataFrame( st.session_state[ 'stores_table' ] ),
+						use_container_width=True, hide_index=True, disabled=True,
+						key='stores_table_view', )
+				else:
+					st.info( 'No Vector Stores loaded yet.' )
+			
+			with metadata_tab:
+				st.text_input( label='Vector Store ID', key='stores_id',
+					value=get_selected_vector_store_id( ), placeholder='vs_...', width='stretch', )
+				
+				metadata_action_c1, metadata_action_c2, metadata_action_c3 = st.columns( 3,
+					border=True, gap='xxsmall', )
+				
+				with metadata_action_c1:
+					if st.button( label='Retrieve', key='retrieve_vector_store', width='stretch',
+							icon='🔎', ):
+						try:
+							store_id = str( st.session_state.get( 'stores_id',
+								'' ) or get_selected_vector_store_id( ) ).strip( )
+							throw_if( 'store_id', store_id )
+							
+							result = vector.retrieve( store_id=store_id )
+							st.session_state[ 'stores_store_metadata' ] = (
+								normalize_storage_object( result ))
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'Vector Store retrieval failed: {err.info}' )
+				
+				with metadata_action_c2:
+					if st.button( label='Update', key='update_vector_store', width='stretch',
+							icon='✏️', ):
+						try:
+							store_id = str( st.session_state.get( 'stores_id',
+								'' ) or get_selected_vector_store_id( ) ).strip( )
+							throw_if( 'store_id', store_id )
+							
+							expiration_days = int(
+								st.session_state.get( 'stores_expires_after_days', 0, ) or 0 )
+							expires_after = ({ 'anchor': 'last_active_at',
+								'days': expiration_days, } if expiration_days > 0 else None)
+							
+							result = vector.update( store_id=store_id,
+								name=str( st.session_state.get( 'stores_name', '' ) or '' ),
+								description=str(
+									st.session_state.get( 'stores_description', '', ) or '' ),
+								metadata=(parse_vector_store_json(
+									st.session_state.get( 'stores_metadata', '', ),
+									'Metadata', ) or None), expires_after=expires_after, )
+							
+							st.session_state[ 'stores_store_metadata' ] = (
+								normalize_storage_object( result ))
+							st.success( 'Vector Store updated.' )
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'Vector Store update failed: {err.info}' )
+				
+				with metadata_action_c3:
+					st.checkbox( label='Confirm Delete', key='stores_confirm_delete', )
+					
+					if st.button( label='Delete', key='delete_vector_store', width='stretch',
+							disabled=not st.session_state.get( 'stores_confirm_delete', False, ),
+							icon='❌', ):
+						try:
+							store_id = str( st.session_state.get( 'stores_id',
+								'' ) or get_selected_vector_store_id( ) ).strip( )
+							throw_if( 'store_id', store_id )
+							
+							result = vector.delete( store_id=store_id )
+							st.session_state[ 'stores_store_metadata' ] = (
+								normalize_storage_object( result ))
+							st.session_state[ 'stores_table' ] = [ row for row in
+								st.session_state.get( 'stores_table', [ ], ) if not (
+										isinstance( row, dict ) and str(
+									row.get( 'id', '' ) ) == store_id) ]
+							st.session_state[ 'stores_selected_id' ] = ''
+							st.session_state[ 'stores_id' ] = ''
+							st.success( 'Vector Store deleted.' )
+						except Exception as exc:
+							err = Error( exc )
+							st.error( f'Vector Store deletion failed: {err.info}' )
+				
+				render_storage_metadata( st.session_state.get( 'stores_store_metadata', { } ) )
+		
+		# ------------------------------------------------------------------
+		# Expander — Vector Store Search
+		# ------------------------------------------------------------------
+		with st.expander( label='Vector Store Search', icon='🔍', expanded=False,
+				width='stretch', ):
+			prompt_categories = fetch_prompt_categories( 'Vector Stores' )
+			
+			prompt_c1, prompt_c2 = st.columns( [ 0.50, 0.50 ], border=True, gap='xxsmall', )
+			
+			with prompt_c1:
+				st.selectbox( label='Prompt Category', options=prompt_categories,
+					key='stores_prompt_category', index=None, placeholder='Select Category',
+					on_change=reset_prompt_template_selection, args=('stores_prompt_id',), )
+			
+			selected_category = st.session_state.get( 'stores_prompt_category' )
+			prompt_options = (
+				fetch_prompt_options( selected_category ) if selected_category else [ ])
+			prompt_ids = [ int( option[ 'ID' ] ) for option in prompt_options ]
+			
+			with prompt_c2:
+				st.selectbox( label='Prompt Template', options=prompt_ids, key='stores_prompt_id',
+					index=None, placeholder='Select Template',
+					format_func=lambda prompt_id: format_prompt_option( prompt_id,
+						prompt_options, ), on_change=load_vector_store_instruction_template,
+					disabled=not prompt_ids, )
+			
+			st.text_area( label='System Instructions', key='stores_system_instructions',
+				height=160,
+				width='stretch', )
+			
+			instruction_c1, instruction_c2 = st.columns( 2, border=True, gap='xxsmall', )
+			
+			with instruction_c1:
+				st.button( label='Convert', key='stores_convert_instructions', width='stretch',
+					on_click=convert_vector_store_instructions, icon='🔁', )
+			
+			with instruction_c2:
+				st.button( label='Clear Instructions', key='stores_clear_instructions',
+					width='stretch', on_click=clear_vector_store_instructions, icon='🧹', )
+			
+			search_c1, search_c2, search_c3 = st.columns( [ 0.40, 0.30, 0.30 ], border=True,
+				gap='xxsmall', )
+			
+			with search_c1:
+				st.selectbox( label='Model', options=model_options, key='stores_model', index=None,
+					placeholder='Select Model', disabled=not model_options, )
+			
+			with search_c2:
+				st.slider( label='Maximum Results', min_value=1, max_value=50, step=1,
+					key='stores_max_results', )
+			
+			with search_c3:
+				st.toggle( label='Rewrite Query', key='stores_rewrite_query', )
+			
+			if ranker_options:
+				st.selectbox( label='Ranker', options=ranker_options, key='stores_ranker',
+					index=None, placeholder='Default Ranker', )
+			
+			st.text_area( label='Search Query', key='stores_query', height=120,
+				placeholder='Enter a semantic search query.', width='stretch', )
+			
+			search_action_c1, search_action_c2 = st.columns( 2, border=True, gap='xxsmall', )
+			
+			with search_action_c1:
+				if st.button( label='Search Vector Store', key='search_vector_store',
+						width='stretch', icon='🔍', ):
+					try:
+						store_id = get_selected_vector_store_id( )
+						query_text = str(
+							st.session_state.get( 'stores_query', '' ) or '' ).strip( )
+						
+						throw_if( 'store_id', store_id )
+						throw_if( 'query', query_text )
+						
+						ranking_options = ({
+							'ranker': st.session_state[ 'stores_ranker' ] } if
+						                   st.session_state.get(
+							'stores_ranker' ) else None)
+						filters = parse_vector_store_json(
+							st.session_state.get( 'stores_filter', '' ), 'Search Filter', )
+						
+						result = vector.search( store_id=store_id, query=query_text,
+							max_num_results=int( st.session_state.get( 'stores_max_results',
+								10 ) ),
+							filters=filters or None, ranking_options=ranking_options,
+							rewrite_query=bool(
+								st.session_state.get( 'stores_rewrite_query', False, ) ), )
+						
+						st.session_state[ 'stores_results' ] = result
+						st.session_state[ 'stores_search_results' ] = (
+							normalize_vector_store_rows( result ))
+						
+						if not st.session_state[ 'stores_search_results' ]:
+							raw_results = getattr( vector, 'search_results', None )
+							
+							if isinstance( raw_results, list ):
+								st.session_state[ 'stores_search_results' ] = [
+									normalize_storage_object( row ) for row in raw_results ]
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Vector Store search failed: {err.info}' )
+			
+			with search_action_c2:
+				st.button( label='Clear Results', key='clear_vector_store_outputs_button',
+					width='stretch', on_click=clear_vector_store_outputs, icon='🧹', )
+			
+			if st.session_state.get( 'stores_search_results' ):
+				st.data_editor( pd.DataFrame( st.session_state[ 'stores_search_results' ] ),
+					use_container_width=True, hide_index=True, disabled=True,
+					key='vector_store_search_results_view', )
+			else:
+				st.info( 'No Vector Store search results loaded yet.' )
+
+# ======================================================================================
+# COLLECTIONS MODE
+# ======================================================================================
+elif mode == 'Collections':
+	provider_name = st.session_state.get( 'provider', 'Grok' )
+	
+	# ------------------------------------------------------------------
+	# Provider Capability Validation
+	# ------------------------------------------------------------------
+	if provider_name != 'Grok':
+		st.warning( 'Collections are available through Grok.' )
+		st.stop( )
+	
+	if not provider_has_class( 'Collections', provider_name ):
+		st.error( f'{provider_name} does not provide a Collections wrapper.' )
+		st.stop( )
+	
+	collection = get_collections_module( provider_name )
+	files = (
+		get_files_module( provider_name ) if provider_has_class( 'Files', provider_name ) else
+		None)
+	
+	# ------------------------------------------------------------------
+	# Collections State
+	# ------------------------------------------------------------------
+	collections_defaults: Dict[ str, Any ] = { 'collections_table': [ ],
+		'collections_documents_table': [ ], 'collections_metadata': { },
+		'collections_batch_result': { }, 'collections_search_results': [ ],
+		'collections_messages': [ ], 'collections_name': '', 'collections_id': '',
+		'collections_manual_id': '', 'collections_description': '', 'collections_query': '',
+		'collections_document_id': '', 'collections_document_ids_text': '',
+		'collections_selected_id': '', 'collections_selected_label': '', 'collections_model': '',
+		'collections_max_tokens': 0, 'collections_filter': '', 'collections_team_id': '',
+		'collections_pagination_token': '', 'collections_next_token': '',
+		'collections_max_results': 10, 'collections_rewrite_query': False,
+		'collections_attributes': '', 'collections_confirm_delete': False,
+		'collections_prompt_category': None, 'collections_prompt_id': None,
+		'collections_system_instructions': '', }
+	
+	for state_key, default_value in collections_defaults.items( ):
+		if state_key not in st.session_state:
+			st.session_state[ state_key ] = default_value
+	
+	for state_key in [ 'collections_table', 'collections_documents_table',
+		'collections_search_results', 'collections_messages', ]:
+		if not isinstance( st.session_state.get( state_key ), list ):
+			st.session_state[ state_key ] = [ ]
+	
+	for state_key in [ 'collections_metadata', 'collections_batch_result', ]:
+		if not isinstance( st.session_state.get( state_key ), dict ):
+			st.session_state[ state_key ] = { }
+	
+	# ------ Collections Utilities -----
+	def get_collection_options( instance: Any, attribute_name: str,
+		fallback: Optional[ List[ Any ] ] = None ) -> List[ Any ]:
+		"""Get Collection options.
+		
+		Purpose:
+		    Returns provider-supported option values exposed by the Grok Collections wrapper.
+		
+		Args:
+		    instance (Any): Active Grok Collections wrapper.
+		    attribute_name (str): Wrapper option-property name.
+		    fallback (Optional[List[Any]]): Values returned when the property is unavailable.
+		
+		Returns:
+		    List[Any]: Provider-supported option values.
+		"""
+		values = getattr( instance, attribute_name, None )
+		
+		if callable( values ):
+			values = values( )
+		
+		if isinstance( values, tuple ):
+			values = list( values )
+		
+		if isinstance( values, list ):
+			return values
+		
+		return fallback or [ ]
+	
+	def parse_collection_json( value: Any, label: str ) -> Dict[ str, Any ]:
+		"""Parse Collection JSON.
+		
+		Purpose:
+		    Parses optional JSON used by Collection document attributes and search filters.
+		
+		Args:
+		    value (Any): JSON text or an existing dictionary.
+		    label (str): Field label included in validation errors.
+		
+		Returns:
+		    Dict[str, Any]: Parsed JSON object or an empty dictionary.
+		
+		Raises:
+		    ValueError: Raised when nonempty input is not a JSON object.
+		"""
+		if isinstance( value, dict ):
+			return dict( value )
+		
+		raw_value = str( value or '' ).strip( )
+		
+		if not raw_value:
+			return { }
+		
+		parsed_value = json.loads( raw_value )
+		
+		if not isinstance( parsed_value, dict ):
+			raise ValueError( f'{label} must contain a JSON object.' )
+		
+		return parsed_value
+	
+	def parse_collection_ids( value: Any ) -> List[ str ]:
+		"""Parse Collection document identifiers.
+		
+		Purpose:
+		    Converts comma-delimited document identifiers into unique nonempty values.
+		
+		Args:
+		    value (Any): Comma-delimited identifier text.
+		
+		Returns:
+		    List[str]: Unique parsed identifiers.
+		"""
+		identifiers: List[ str ] = [ ]
+		
+		for item in str( value or '' ).split( ',' ):
+			identifier = item.strip( )
+			
+			if identifier and identifier not in identifiers:
+				identifiers.append( identifier )
+		
+		return identifiers
+	
+	def get_selected_collection_id( ) -> str:
+		"""Get selected Collection identifier.
+		
+		Purpose:
+		    Returns the selected Collection identifier or the manually entered fallback.
+		
+		Returns:
+		    str: Active Collection identifier.
+		"""
+		selected_id = str( st.session_state.get( 'collections_selected_id', '' ) or '' ).strip( )
+		
+		if selected_id:
+			return selected_id
+		
+		return str( st.session_state.get( 'collections_manual_id', '' ) or '' ).strip( )
+	
+	def normalize_collection_rows( result: Any ) -> List[ Dict[ str, Any ] ]:
+		"""Normalize Collection rows.
+		
+		Purpose:
+		    Converts a Grok Collection response into records suitable for Streamlit tables.
+		
+		Args:
+		    result (Any): Provider response containing one or more Collections.
+		
+		Returns:
+		    List[Dict[str, Any]]: Normalized Collection records.
+		"""
+		raw_rows = result
+		
+		if isinstance( raw_rows, dict ):
+			raw_rows = (raw_rows.get( 'collections' ) or raw_rows.get( 'data' ) or raw_rows.get(
+				'results' ) or raw_rows)
+		
+		if raw_rows is None:
+			return [ ]
+		
+		if isinstance( raw_rows, dict ):
+			raw_rows = [ raw_rows ]
+		
+		if not isinstance( raw_rows, list ):
+			raw_rows = [ raw_rows ]
+		
+		return [ normalize_storage_object( row ) for row in raw_rows ]
+	
+	def normalize_collection_document_rows( result: Any ) -> List[ Dict[ str, Any ] ]:
+		"""Normalize Collection document rows.
+		
+		Purpose:
+		    Converts a Grok Collection document response into records suitable for Streamlit
+		    tables.
+		
+		Args:
+		    result (Any): Provider response containing one or more Collection documents.
+		
+		Returns:
+		    List[Dict[str, Any]]: Normalized document records.
+		"""
+		raw_rows = result
+		
+		if isinstance( raw_rows, dict ):
+			raw_rows = (raw_rows.get( 'documents' ) or raw_rows.get( 'data' ) or raw_rows.get(
+				'results' ) or raw_rows)
+		
+		if raw_rows is None:
+			return [ ]
+		
+		if isinstance( raw_rows, dict ):
+			raw_rows = [ raw_rows ]
+		
+		if not isinstance( raw_rows, list ):
+			raw_rows = [ raw_rows ]
+		
+		return [ normalize_storage_object( row ) for row in raw_rows ]
+	
+	def clear_collection_outputs( ) -> None:
+		"""Clear Collection outputs.
+		
+		Purpose:
+		    Clears Collection tables, document tables, metadata, batch results, and search
+		    results without changing configuration controls.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'collections_table' ] = [ ]
+		st.session_state[ 'collections_documents_table' ] = [ ]
+		st.session_state[ 'collections_metadata' ] = { }
+		st.session_state[ 'collections_batch_result' ] = { }
+		st.session_state[ 'collections_search_results' ] = [ ]
+		st.session_state[ 'collections_selected_id' ] = ''
+		st.session_state[ 'collections_id' ] = ''
+		st.session_state[ 'collections_next_token' ] = ''
+	
+	def clear_collection_instructions( ) -> None:
+		"""Clear Collection instructions.
+		
+		Purpose:
+		    Clears Collection system instructions and the selected prompt template.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'collections_system_instructions' ] = ''
+		st.session_state[ 'collections_prompt_id' ] = None
+	
+	def load_collection_instruction_template( ) -> None:
+		"""Load Collection instruction template.
+		
+		Purpose:
+		    Loads the selected prompt template into the Collection system-instruction field.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		load_prompt_template( prompt_id_key='collections_prompt_id',
+			instructions_key='collections_system_instructions', )
+	
+	def convert_collection_instructions( ) -> None:
+		"""Convert Collection instructions.
+		
+		Purpose:
+		    Converts Collection system instructions between Markdown headings and XML-style
+		    heading elements.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		instructions = str( st.session_state.get( 'collections_system_instructions', '' ) or '' )
+		if instructions.strip( ):
+			st.session_state[ 'collections_system_instructions' ] = convert_markdown(
+				instructions )
+	
+	def reset_collection_selection( ) -> None:
+		"""Reset Collection-selection controls.
+
+		Purpose:
+		    Restores the Collection-selection controls to their default values.
+
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'collections_selected_label' ] = ''
+		st.session_state[ 'collections_selected_id' ] = ''
+		st.session_state[ 'collections_manual_id' ] = ''
+	
+	def reset_collection_documents( ) -> None:
+		"""Reset Collection-document controls.
+
+		Purpose:
+		    Restores the Collection-document controls to their default values.
+
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state.pop( 'collections_uploaded_file', None )
+		st.session_state[ 'collections_document_id' ] = ''
+		st.session_state[ 'collections_attributes' ] = ''
+		st.session_state[ 'collections_document_ids_text' ] = ''
+	
+	def reset_collection_lifecycle( ) -> None:
+		"""Reset Collection-lifecycle controls.
+
+		Purpose:
+		    Restores the Collection-lifecycle controls to their default values.
+
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'collections_name' ] = ''
+		st.session_state[ 'collections_description' ] = ''
+		st.session_state[ 'collections_id' ] = ''
+		st.session_state[ 'collections_team_id' ] = ''
+		st.session_state[ 'collections_confirm_delete' ] = False
+	
+	def reset_collection_search( ) -> None:
+		"""Reset Collection-search controls.
+
+		Purpose:
+		    Restores the Collection-search controls to their default values.
+
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'collections_model' ] = ''
+		st.session_state[ 'collections_max_results' ] = 10
+		st.session_state[ 'collections_filter' ] = ''
+		st.session_state[ 'collections_query' ] = ''
+	
+	def reset_collection_system_instructions( ) -> None:
+		"""Reset Collection system-instruction controls.
+
+		Purpose:
+		    Restores the Collection system-instruction controls to their default values.
+
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'collections_prompt_category' ] = None
+		st.session_state[ 'collections_prompt_id' ] = None
+		st.session_state[ 'collections_system_instructions' ] = ''
+	
+	def clear_collection_messages( ) -> None:
+		"""Clear Collection conversation messages.
+
+		Purpose:
+		    Removes the user and assistant messages retained by Collections mode.
+
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'collections_messages' ] = [ ]
+	
+	model_options = get_collection_options( collection, 'model_options', [ ] )
+	if (st.session_state.get( 'collections_model' ) and model_options
+			and st.session_state[ 'collections_model' ] not in model_options):
+		st.session_state[ 'collections_model' ] = ''
+	
+	# ------------------------------------------------------------------
+	# Main Collections UI
+	# ------------------------------------------------------------------
+	left, center, right = st.columns( [ 0.025, 0.95, 0.025 ] )
+	
+	with center:
+		st.subheader( '🗂️ Collections', help=getattr( cfg, 'COLLECTIONS', '' ) )
+		st.divider( )
+		
+		# ------------------------------------------------------------------
+		# Expander — Collection Selection
+		# ------------------------------------------------------------------
+		with st.expander( label='Selection', icon='🗃️', expanded=True, width='stretch', ):
+			sel_c1, sel_c2, sel_c3 = st.columns( [ 0.33, 0.33, 0.33 ], border=True, gap='xxsmall', )
+			collection_rows = st.session_state.get( 'collections_table', [ ] )
+			collection_options: Dict[ str, str ] = { }
+			for row in collection_rows:
+				if not isinstance( row, dict ):
+					continue
+				
+				collection_id = str( row.get( 'collection_id' ) or row.get( 'id' ) or '' ).strip( )
+				collection_name = str( row.get( 'collection_name' ) or row.get( 'name' ) or
+				                       row.get( 'display_name' ) or collection_id ).strip( )
+				
+				if collection_id:
+					collection_options[ f'{collection_name} — {collection_id}' ] = collection_id
+			
+			# ----- Select -----
+			with sel_c1:
+				selected_label = st.selectbox( label='Collection',
+					options=list( collection_options.keys( ) ), index=None,
+					placeholder='Select Collection', key='collections_selected_label',
+					disabled=not collection_options, )
+				
+				if selected_label:
+					st.session_state[ 'collections_selected_id' ] = (
+						collection_options[ selected_label ] )
+			
+			# ----- Collection ID -----
+			with sel_c2:
+				st.text_input( label='Collection ID', key='collections_manual_id',
+					placeholder='collection_...', help='Optional manual xAI Collection '
+					                                   'identifier.', width='stretch', )
+			
+			# ----- Select -----
+			with sel_c3:
+				st.file_uploader( label='Upload Document', key='collections_uploaded_file',
+					help='Upload a file before adding it to the active Collection.', )
+					
+			# ----- Clear -----
+			button_c1, button_c2 = st.columns( [ 0.5 , 0.5 ], gap='xxsmall', )
+			with button_c1:
+				if st.button( label='Clear', key='collections_refresh_button', width='stretch',
+						icon='🧹', ):
+					try:
+						result = collection.list( limit=100, order='desc', pagination_token=str(
+							st.session_state.get( 'collections_pagination_token', '', ) or '' ), )
+						
+						st.session_state[ 'collections_results' ] = result
+						st.session_state[ 'collections_table' ] = (normalize_collection_rows( result ))
+						st.session_state[ 'collections_next_token' ] = str(
+							getattr( collection, 'next_token', '' ) or '' )
+						st.success( 'Collections refreshed.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Unable to list Collections: {err.info}' )
+			
+			# ----- Reset -----
+			with button_c2:
+				st.button( label='Reset', key='collections_selection_reset', width='stretch',
+					on_click=reset_collection_selection, icon='🔄', )
+				
+				active_collection_id = get_selected_collection_id( )
+				
+				if active_collection_id:
+					st.caption( f'Active Collection: `{active_collection_id}`' )
+			
+		# ------------------------------------------------------------------
+		# Expander — Collection Documents
+		# ------------------------------------------------------------------
+		with st.expander( label='Documents', icon='📁', expanded=False, width='stretch', ):
+			
+			doc_c1, doc_c2, doc_c3 = st.columns( [ 0.33, 0.33, 0.3 ], border=True, gap='xxsmall', )
+			
+			# ----- Doc ID -----
+			with doc_c1:
+				st.text_input( label='Document ID', key='collections_document_id',
+					placeholder='file_...', width='stretch', )
+			
+			# ----- Attributes -----
+			with doc_c2:
+				st.text_area( label='Document Attributes', key='collections_attributes',
+					placeholder='{ "category": "policy" }', height=68, )
+			
+			# ------
+			with doc_c3:
+				st.text_input( label='Document IDs', key='collections_document_ids_text',
+					placeholder='file_abc123,file_def456',
+					help='Comma-delimited document identifiers for batch retrieval.',
+					width='stretch', )
+			
+			# ----- Upload -----
+			act_c1, act_c2, act_c3, act_c4, act_c5 = st.columns( 5, border=False, gap='xxsmall', )
+			with act_c1:
+				if st.button( label='Upload', key='collections_upload_document_button',
+						width='stretch', icon='📤', ):
+					try:
+						if files is None:
+							raise ValueError( 'Grok does not provide a Files wrapper.' )
+						
+						uploaded_file = st.session_state.get( 'collections_uploaded_file' )
+						local_path = save_uploaded_storage_file( uploaded_file )
+						
+						if not local_path:
+							raise ValueError( 'Select a document before uploading.' )
+						
+						result = files.upload( path=local_path )
+						normalized_result = normalize_storage_object( result )
+						document_id = str( normalized_result.get( 'id' ) or getattr( result, 'id',
+							'' ) or '' ).strip( )
+						
+						st.session_state[ 'collections_document_id' ] = document_id
+						st.success( f'Document uploaded: {document_id}' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Document upload failed: {err.info}' )
+			
+			# ----- Add -----
+			with act_c2:
+				if st.button( label='Add', key='collections_add_document_button', width='stretch',
+						icon='➕', ):
+					try:
+						collection_id = get_selected_collection_id( )
+						document_id = str(
+							st.session_state.get( 'collections_document_id', '', ) or '' ).strip( )
+						
+						throw_if( 'collection_id', collection_id )
+						throw_if( 'document_id', document_id )
+						
+						result = collection.add_document( store_id=collection_id,
+							file_id=document_id, fields=(parse_collection_json(
+								st.session_state.get( 'collections_attributes', '', ),
+								'Document Attributes', ) or None), )
+						
+						st.session_state[ 'collections_results' ] = result
+						st.success( 'Document added to the Collection.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Add document failed: {err.info}' )
+			
+			# ----- List -----
+			with act_c3:
+				if st.button( label='List', key='collections_list_documents_button',
+						width='stretch', icon='📋', ):
+					try:
+						collection_id = get_selected_collection_id( )
+						throw_if( 'collection_id', collection_id )
+						
+						result = collection.list_documents( store_id=collection_id, limit=100,
+							order='desc', pagination_token=str(
+								st.session_state.get( 'collections_pagination_token', '',
+								) or '' ),
+							team_id=str(
+								st.session_state.get( 'collections_team_id', '', ) or '' ), )
+						
+						st.session_state[ 'collections_documents_table' ] = (
+							normalize_collection_document_rows( result ))
+						st.session_state[ 'collections_next_token' ] = str(
+							getattr( collection, 'next_token', '' ) or '' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Unable to list documents: {err.info}' )
+			
+			# ----- Remove -----
+			with act_c4:
+				if st.button( label='Remove', key='collections_remove_document_button',
+						width='stretch', icon='➖', ):
+					try:
+						collection_id = get_selected_collection_id( )
+						document_id = str(
+							st.session_state.get( 'collections_document_id', '', ) or '' ).strip( )
+						
+						throw_if( 'collection_id', collection_id )
+						throw_if( 'document_id', document_id )
+						
+						collection.remove_document( store_id=collection_id, file_id=document_id,
+							team_id=str(
+								st.session_state.get( 'collections_team_id', '', ) or '' ), )
+						
+						st.session_state[ 'collections_documents_table' ] = [ row for row in
+							st.session_state.get( 'collections_documents_table', [ ], ) if not (
+									isinstance( row, dict ) and str(
+								row.get( 'file_id' ) or row.get( 'id' ) or '' ) == document_id) ]
+						
+						st.success( 'Document removed from the Collection.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Document removal failed: {err.info}' )
+			
+			# ----- Batch ------
+			with act_c5:
+				if st.button( label='Batch Get', key='collections_batch_get_documents_button',
+						width='stretch', icon='🔎', ):
+					try:
+						collection_id = get_selected_collection_id( )
+						document_ids = parse_collection_ids(
+							st.session_state.get( 'collections_document_ids_text', '', ) )
+						
+						throw_if( 'collection_id', collection_id )
+						throw_if( 'document_ids', document_ids )
+						
+						result = collection.batch_get_documents( store_id=collection_id,
+							file_ids=document_ids, team_id=str(
+								st.session_state.get( 'collections_team_id', '', ) or '' ), )
+						
+						st.session_state[ 'collections_batch_result' ] = {
+							'documents': normalize_collection_document_rows( result ), }
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Batch retrieval failed: {err.info}' )
+					
+			# ----- Reset Button -----
+			st.button( label='Reset', key='collections_documents_reset', width='stretch',
+				on_click=reset_collection_documents, icon='🔄', )
+		
+		# ------------------------------------------------------------------
+		# Expander — Collection Lifecycle
+		# ------------------------------------------------------------------
+		with st.expander( label='Lifecycle', icon='♻️', expanded=False, width='stretch' ):
+			meta_c1, meta_c2, meta_c3, meta_c4 = st.columns( 4, border=True, gap='xxsmall', )
+			
+			# ----- Name -----
+			with meta_c1:
+				st.text_input( label='Name', key='collections_name', width='stretch', )
+			
+			# ----- Description -----
+			with meta_c2:
+				st.text_area( label='Description', key='collections_description', height=68, )
+			
+			# ----- Create -----
+			with meta_c3:
+				if st.button( label='Create Collection', key='create_collection',
+						width='stretch', icon='➕', ):
+					try:
+						name = str(
+							st.session_state.get( 'collections_name', '', ) or '' ).strip( )
+						throw_if( 'name', name )
+						result = collection.create( name=name, description=str(
+							st.session_state.get( 'collections_description', '', ) or '' ), )
+						
+						normalized_result = normalize_storage_object( result )
+						st.session_state[ 'collections_metadata' ] = (normalized_result)
+						st.session_state[ 'collections_selected_id' ] = str(
+							normalized_result.get( 'collection_id' ) or normalized_result.get(
+								'id' ) or '' )
+						st.success( 'Collection created.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Collection creation failed: {err.info}' )
+			
+			# ----- List -----
+			with meta_c4:
+				if st.button( label='List Collections', key='list_collections',
+						width='stretch',
+						icon='📋', ):
+					try:
+						result = collection.list( limit=100, order='desc',
+							pagination_token=str(
+							st.session_state.get( 'collections_pagination_token',
+								'', ) or '' ), )
+						
+						st.session_state[ 'collections_results' ] = result
+						st.session_state[ 'collections_table' ] = (
+							normalize_collection_rows( result ) )
+						st.session_state[ 'collections_next_token' ] = str(
+							getattr( collection, 'next_token', '' ) or '' )
+						st.success( 'Collections loaded.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Unable to list Collections: {err.info}' )
+			
+			data_c1, data_c2 = st.columns( 2, border=True, gap='xxsmall', )
+			with data_c1:
+				if st.session_state.get( 'collections_table' ):
+					st.data_editor( pd.DataFrame( st.session_state[ 'collections_table' ] ),
+						use_container_width=True, hide_index=True, disabled=True,
+						key='collections_table_view', )
+				else:
+					st.info( 'No Collections loaded yet.' )
+		
+		 
+			# ----- Collection ID -----
+			with data_c2:
+				st.text_input( label='Collection ID', key='collections_id',
+					value=get_selected_collection_id( ), placeholder='collection_...',
+					width='stretch', )
+			
+			btn_c1, btn_c2, btn_c3, btn_c4 = st.columns( 4, border=False, gap='xxsmall', )
+			
+			# ----- Retrieve -----
+			with btn_c1:
+				if st.button( label='Retrieve', key='retrieve_collection', width='stretch',
+						icon='🐕', ):
+					try:
+						collection_id = str( st.session_state.get( 'collections_id',
+							'' ) or get_selected_collection_id( ) ).strip( )
+						throw_if( 'collection_id', collection_id )
+						
+						result = collection.retrieve( store_id=collection_id, team_id=str(
+							st.session_state.get( 'collections_team_id', '', ) or '' ), )
+						
+						st.session_state[ 'collections_metadata' ] = (
+							normalize_storage_object( result ))
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Collection retrieval failed: {err.info}' )
+			
+			# ----- Update -----
+			with btn_c2:
+				if st.button( label='Update', key='update_collection', width='stretch',
+						icon='✏️', ):
+					try:
+						collection_id = str( st.session_state.get( 'collections_id',
+							'' ) or get_selected_collection_id( ) ).strip( )
+						throw_if( 'collection_id', collection_id )
+						result = collection.update( store_id=collection_id,
+							name=str( st.session_state.get( 'collections_name', '', ) or '' ),
+							description=str( st.session_state.get( 'collections_description',
+								'', ) or '' ),
+							team_id=str( st.session_state.get( 'collections_team_id',
+								'', ) or '' ), )
+						
+						st.session_state[ 'collections_metadata' ] = (
+							normalize_storage_object( result ))
+						st.success( 'Collection updated.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Collection update failed: {err.info}' )
+			
+			# ----- Confirm -----
+			with btn_c3:
+				st.checkbox( label='Confirm Delete', key='collections_confirm_delete', )
+			
+			with btn_c4:
+				if st.button( label='Delete', key='delete_collection', width='stretch',
+						disabled=not st.session_state.get( 'collections_confirm_delete',
+							False, ), icon='❌', ):
+					try:
+						collection_id = str( st.session_state.get( 'collections_id',
+							'' ) or get_selected_collection_id( ) ).strip( )
+						throw_if( 'collection_id', collection_id )
+						
+						result = collection.delete( store_id=collection_id, team_id=str(
+							st.session_state.get( 'collections_team_id', '', ) or '' ), )
+						
+						st.session_state[ 'collections_metadata' ] = (
+							normalize_storage_object( result ))
+						st.session_state[ 'collections_table' ] = [ row for row in
+							st.session_state.get( 'collections_table', [ ], ) if not (
+									isinstance( row, dict ) and str(
+								row.get( 'collection_id' ) or row.get(
+									'id' ) or '' ) == collection_id) ]
+						st.session_state[ 'collections_selected_id' ] = ''
+						st.session_state[ 'collections_id' ] = ''
+						st.success( 'Collection deleted.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Collection deletion failed: {err.info}' )
+			render_storage_metadata( st.session_state.get( 'collections_metadata', { } ) )
+		
+			# ----- Reset Button -----
+			st.button( label='Reset', key='collections_lifecycle_reset', width='stretch',
+				on_click=reset_collection_lifecycle, icon='🔄', )
+		
+		# ------------------------------------------------------------------
+		# Expander — Collection Search
+		# ------------------------------------------------------------------
+		with st.expander( label='Search', icon='🔍', expanded=False, width='stretch', ):
+			search_c1, search_c2 = st.columns( [ 0.60, 0.40 ], border=True, gap='xxsmall', )
+			
+			# ----- Model -----
+			with search_c1:
+				st.selectbox( label='Model', options=model_options, key='collections_model',
+					index=None, placeholder='Select Model', disabled=not model_options, )
+			
+			# ----- Max Results  -----
+			with search_c2:
+				st.slider( label='Maximum Results', min_value=1, max_value=50, step=1,
+					key='collections_max_results',
+					help=('Retained as Collection-search state for display and future '
+					      'wrapper support.'), )
+			
+			query_c1, query_c2 = st.columns( [ 0.40, 0.60 ], border=True, gap='xxsmall', )
+			# ----- Metadata -----
+			with query_c1:
+				st.text_input( label='Metadata Filter', key='collections_filter',
+					placeholder='Optional xAI Collection filter expression.', width='stretch', )
+			
+			# ----- Query -----
+			with query_c2:
+				st.text_area( label='Search Query', key='collections_query', height=68,
+					placeholder='Enter a semantic Collection search query.', width='stretch', )
+			search_action_c1, search_action_c2 = st.columns( 2, border=False, gap='xxsmall', )
+			
+			# ----- Search -----
+			with search_action_c1:
+				if st.button( label='Search Collection', key='search_collection', width='stretch',
+						icon='🔍', ):
+					try:
+						collection_id = get_selected_collection_id( )
+						query_text = str( st.session_state.get( 'collections_query',
+							'' ) or '' ).strip( )
+						model = str( st.session_state.get( 'collections_model',
+							'' ) or '' ).strip( )
+						
+						throw_if( 'collection_id', collection_id )
+						throw_if( 'query', query_text )
+						throw_if( 'model', model )
+						result = collection.search( prompt=query_text, store_id=collection_id,
+							model=model, filter=str( st.session_state.get( 'collections_filter',
+								'', ) or '' ), )
+						
+						st.session_state[ 'collections_results' ] = result
+						if isinstance( result, str ):
+							st.session_state[ 'collections_search_results' ] = [{ 'text': result },]
+						else:
+							st.session_state[ 'collections_search_results' ] = normalize_collection_document_rows( result )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Collection search failed: {err.info}' )
+			
+			# ----- Clear Button -----
+			with search_action_c2:
+				st.button( label='Clear Results', key='clear_collection_outputs_button',
+					width='stretch', on_click=clear_collection_outputs, icon='🧹', )
+			
+			if st.session_state.get( 'collections_search_results' ):
+				st.data_editor( pd.DataFrame( st.session_state[ 'collections_search_results' ] ),
+					use_container_width=True, hide_index=True, disabled=True,
+					key='collection_search_results_view', )
+			else:
+				st.info( 'No Collection search results loaded yet.' )
+			
+			# ----- Reset Button -----
+			st.button( label='Reset', key='collections_search_reset', width='stretch',
+				on_click=reset_collection_search, icon='🔄', )
+		
+		# ------------------------------------------------------------------
+		# Expander — System Instructions
+		# ------------------------------------------------------------------
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False,
+				width='stretch', ):
+			instruction_c1, instruction_c2 = st.columns( [ 0.80, 0.20 ], border=True,
+				gap='xxsmall', )
+			prompt_categories = fetch_prompt_categories( 'Vector Stores' )
+			current_prompt_category = st.session_state.get( 'collections_prompt_category' )
+			
+			if current_prompt_category not in prompt_categories:
+				st.session_state[ 'collections_prompt_category' ] = None
+			
+			selected_category = st.session_state.get( 'collections_prompt_category' )
+			prompt_options = (
+				fetch_prompt_options( selected_category ) if selected_category else [ ])
+			prompt_ids = [ int( option[ 'ID' ] ) for option in prompt_options ]
+			
+			if st.session_state.get( 'collections_prompt_id' ) not in prompt_ids:
+				st.session_state[ 'collections_prompt_id' ] = None
+			
+			# ----- Instruction Text -----
+			with instruction_c1:
+				st.text_area( label='Enter Text', key='collections_system_instructions',
+					height=140,
+					width='stretch', help=cfg.SYSTEM_INSTRUCTIONS, )
+			
+			# ----- Template Selection -----
+			with instruction_c2:
+				st.selectbox( label='Category', options=prompt_categories,
+					key='collections_prompt_category', index=None, placeholder='Select Category',
+					on_change=reset_prompt_template_selection, args=('collections_prompt_id',), )
+				
+				st.selectbox( label='Use Template', options=prompt_ids,
+					key='collections_prompt_id',
+					index=None, placeholder='Select Template',
+					format_func=lambda prompt_id: format_prompt_option( prompt_id,
+						prompt_options, ), on_change=load_collection_instruction_template,
+					disabled=not prompt_ids, )
+			
+			instruction_action_c1, instruction_action_c2 = st.columns( [ 0.80, 0.20 ], border=False,
+				gap='xxsmall', )
+			
+			# ----- Clear Instructions -----
+			with instruction_action_c1:
+				st.button( label='Clear Instructions', key='collections_clear_instructions',
+					width='stretch', on_click=clear_collection_instructions, icon='🧹', )
+			
+			# ----- Convert Format -----
+			with instruction_action_c2:
+				st.button( label='XML ↔️ Markdown', key='collections_convert_instructions',
+					width='stretch', on_click=convert_collection_instructions, )
+		
+		if st.session_state.get( 'collections_documents_table' ):
+			st.data_editor( pd.DataFrame( st.session_state[ 'collections_documents_table' ] ),
+				use_container_width=True, hide_index=True, disabled=True,
+				key='collections_documents_table_view', )
+		else:
+			st.info( 'No Collection documents loaded yet.' )
+		
+		if st.session_state.get( 'collections_batch_result' ):
+			st.json( st.session_state[ 'collections_batch_result' ] )
+			
+		# ------------------------------------------------------------------
+		# Messages
+		# ------------------------------------------------------------------
+		for message in st.session_state.get( 'collections_messages', [ ], ):
+			if not isinstance( message, dict ):
+				continue
+			
+			with st.chat_message( message.get( 'role', 'assistant' ), ):
+				st.markdown( message.get( 'content', '' ) )
+		
+		if prompt := st.chat_input( 'Ask a question about the Collection' ):
+			st.session_state[ 'collections_messages' ].append(
+				{ 'role': 'user', 'content': prompt, } )
+			
+			try:
+				collection_id = get_selected_collection_id( )
+				model = str( st.session_state.get( 'collections_model', '' ) or '' ).strip( )
+				instructions = str(
+					st.session_state.get( 'collections_system_instructions', '' ) or '' ).strip( )
+				
+				throw_if( 'collection_id', collection_id )
+				throw_if( 'model', model )
+				
+				conversation_prompt = (f'{instructions}\n\n{prompt}' if instructions else prompt)
+				
+				with st.spinner( 'Searching the Collection…' ):
+					response = collection.search( prompt=conversation_prompt,
+						store_id=collection_id, model=model,
+						filter=str( st.session_state.get( 'collections_filter', '' ) or '' ), )
+				
+				response_text = response if isinstance( response, str ) else json.dumps(
+					normalize_storage_object( response ), indent=2, default=str, )
+				st.session_state[ 'collections_messages' ].append(
+					{ 'role': 'assistant', 'content': response_text, } )
+				st.rerun( )
+			except Exception as exc:
+				err = Error( exc )
+				st.error( f'Collection conversation failed: {err.info}' )
+
+		# ------------------------------------------------------------------
+		# Clear Messages
+		# ------------------------------------------------------------------
+		st.button( label='Clear Messages', key='collections_clear_messages', icon='🧹',
+			width='content', on_click=clear_collection_messages, )
+			
+# ======================================================================================
+# FILE SEARCH STORES MODE
+# ======================================================================================
+elif mode == 'File Search Stores':
+	provider_name = st.session_state.get( 'provider', 'GPT' )
+	
+	# ----- Provider Capability Validation -----
+	if provider_name != 'Gemini':
+		st.warning( f'{provider_name} does not provide a File Search Stores wrapper. '
+		            f'File Search Stores are available for Gemini only.' )
+		st.stop( )
+	
+	if not provider_has_class( 'FileSearch', provider_name ):
+		st.error( 'Gemini does not provide the FileSearch wrapper required by this mode.' )
+		st.stop( )
+	
+	searcher = get_file_search_module( provider_name )
+	
+	# ------ Mode Session State -----
+	filestore_defaults: Dict[ str, Any ] = { 'filestore_table': [ ], 'filestore_metadata': { },
+		'filestore_upload_result': { }, 'filestore_results': None, 'filestore_messages': [ ],
+		'filestore_name': '', 'filestore_manual_id': '', 'filestore_selected_id': '',
+		'filestore_selected_label': '', 'filestore_model': '', 'filestore_embedding_model': '',
+		'filestore_input': None, 'filestore_query': '', 'filestore_metadata_filter': '',
+		'filestore_custom_metadata': '', 'filestore_temperature': 0.0, 'filestore_top_percent': 0.0,
+		'filestore_max_tokens': 0, 'filestore_frequency_penalty': 0.0,
+		'filestore_presence_penalty': 0.0, 'filestore_response_format': '',
+		'filestore_tool_choice': '', 'filestore_reasoning': '', 'filestore_background': False,
+		'filestore_store': False, 'filestore_stream': False, 'filestore_force_delete': True,
+		'filestore_confirm_delete': False, 'filestore_system_instructions': '',
+		'filestore_prompt_category': None, 'filestore_prompt_id': None, }
+	
+	for key, default_value in filestore_defaults.items( ):
+		if key not in st.session_state:
+			st.session_state[ key ] = default_value
+	
+	if not isinstance( st.session_state.get( 'filestore_table' ), list ):
+		st.session_state[ 'filestore_table' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'filestore_metadata' ), dict ):
+		st.session_state[ 'filestore_metadata' ] = { }
+	
+	if not isinstance( st.session_state.get( 'filestore_upload_result' ), dict, ):
+		st.session_state[ 'filestore_upload_result' ] = { }
+	
+	if not isinstance( st.session_state.get( 'filestore_messages' ), list ):
+		st.session_state[ 'filestore_messages' ] = [ ]
+	
+	# ------ File Search Store Utilities -----
+	def get_filestore_options( instance: Any, attr_name: str,
+		fallback: Optional[ List[ Any ] ] = None, ) -> List[ Any ]:
+		"""Get File Search Store options.
+		
+		Purpose:
+		    Returns option values exposed by the Gemini FileSearch wrapper.
+		
+		Args:
+		    instance (Any): Active Gemini FileSearch wrapper.
+		    attr_name (str): Wrapper property or method containing option values.
+		    fallback (Optional[List[Any]]): Values used when the wrapper exposes no options.
+		
+		Returns:
+		    List[Any]: Provider-supported option values.
+		"""
+		values = getattr( instance, attr_name, None )
+		
+		if callable( values ):
+			try:
+				values = values( )
+			except Exception:
+				values = None
+		
+		if isinstance( values, tuple ):
+			values = list( values )
+		
+		if isinstance( values, list ):
+			return values
+		
+		return fallback or [ ]
+	
+	def sanitize_filestore_selection( key: str, options: List[ Any ], default: Any = '', ) -> None:
+		"""Sanitize File Search Store selection.
+		
+		Purpose:
+		    Clears a stored selection when it is unsupported by the active wrapper.
+		
+		Args:
+		    key (str): Session-state key containing the selection.
+		    options (List[Any]): Provider-supported option values.
+		    default (Any): Replacement value for an invalid selection.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		current_value = st.session_state.get( key, default )
+		
+		if current_value in [ None, '' ]:
+			return
+		
+		if current_value not in options:
+			st.session_state[ key ] = default
+	
+	def parse_filestore_metadata( value: Any, ) -> Optional[ List[ Dict[ str, Any ] ] ]:
+		"""Parse File Search Store metadata.
+		
+		Purpose:
+		    Converts optional JSON metadata input into the list of metadata objects accepted by
+		    the Gemini File Search Store upload contract.
+		
+		Args:
+		    value (Any): Metadata JSON text or existing metadata sequence.
+		
+		Returns:
+		    Optional[List[Dict[str, Any]]]: Provider-ready metadata or None.
+		
+		Raises:
+		    ValueError: Raised when nonempty metadata is not a JSON object or array.
+		"""
+		if value is None:
+			return None
+		
+		if isinstance( value, list ):
+			return value if value else None
+		
+		if isinstance( value, dict ):
+			return [ value ]
+		
+		raw_value = str( value ).strip( )
+		
+		if not raw_value:
+			return None
+		
+		parsed_value = json.loads( raw_value )
+		
+		if isinstance( parsed_value, dict ):
+			return [ parsed_value ]
+		
+		if isinstance( parsed_value, list ):
+			for item in parsed_value:
+				if not isinstance( item, dict ):
+					raise ValueError( 'Each custom metadata entry must be a JSON object.' )
+			
+			return parsed_value
+		
+		raise ValueError( 'Custom metadata must be a JSON object or array of JSON objects.' )
+	
+	def normalize_filestore_object( value: Any, ) -> Dict[ str, Any ]:
+		"""Normalize File Search Store object.
+		
+		Purpose:
+		    Converts Gemini File Search Store, upload, operation, and deletion responses into a
+		    stable dictionary for display.
+		
+		Args:
+		    value (Any): Provider response.
+		
+		Returns:
+		    Dict[str, Any]: Normalized provider response.
+		"""
+		if value is None:
+			return { }
+		
+		if isinstance( value, bool ):
+			return { 'success': value, }
+		
+		if isinstance( value, dict ):
+			return dict( value )
+		
+		if hasattr( value, 'model_dump' ):
+			try:
+				dumped_value = value.model_dump( )
+				
+				if isinstance( dumped_value, dict ):
+					return dumped_value
+				
+				return { 'result': dumped_value, }
+			except Exception:
+				pass
+		
+		if hasattr( value, 'dict' ):
+			try:
+				dumped_value = value.dict( )
+				
+				if isinstance( dumped_value, dict ):
+					return dumped_value
+				
+				return { 'result': dumped_value, }
+			except Exception:
+				pass
+		
+		result: Dict[ str, Any ] = { }
+		
+		for attr_name in [ 'name', 'display_name', 'id', 'state', 'status', 'create_time',
+			'update_time', 'operation', 'metadata', 'done', 'error', 'response', ]:
+			if hasattr( value, attr_name ):
+				result[ attr_name ] = getattr( value, attr_name, )
+		
+		if result:
+			return normalize( result )
+		
+		return { 'result': str( value ), }
+	
+	def get_filestore_items( result: Any, ) -> List[ Any ]:
+		"""Get File Search Store items.
+		
+		Purpose:
+		    Extracts store records from Gemini list responses and iterators.
+		
+		Args:
+		    result (Any): Gemini File Search Store list result.
+		
+		Returns:
+		    List[Any]: Store resource objects.
+		"""
+		if result is None:
+			return [ ]
+		
+		if isinstance( result, list ):
+			return result
+		
+		if isinstance( result, tuple ):
+			return list( result )
+		
+		if isinstance( result, dict ):
+			for key in [ 'file_search_stores', 'stores', 'data', 'items', ]:
+				items = result.get( key )
+				
+				if isinstance( items, list ):
+					return items
+		
+		for attr_name in [ 'file_search_stores', 'stores', 'data', 'items', ]:
+			items = getattr( result, attr_name, None )
+			
+			if items is not None:
+				try:
+					return list( items )
+				except Exception:
+					pass
+		
+		try:
+			return list( result )
+		except Exception:
+			return [ result ]
+	
+	def normalize_filestore_rows( result: Any, ) -> List[ Dict[ str, Any ] ]:
+		"""Normalize File Search Store rows.
+		
+		Purpose:
+		    Converts Gemini File Search Store resources into rows used by the management table
+		    and selector.
+		
+		Args:
+		    result (Any): Gemini list response.
+		
+		Returns:
+		    List[Dict[str, Any]]: Normalized store rows.
+		"""
+		rows: List[ Dict[ str, Any ] ] = [ ]
+		
+		for item in get_filestore_items( result ):
+			metadata = normalize_filestore_object( item )
+			store_id = str( metadata.get( 'name' ) or metadata.get( 'id' ) or '' )
+			display_name = str(
+				metadata.get( 'display_name' ) or metadata.get( 'displayName' ) or store_id or '' )
+			state = str( metadata.get( 'state' ) or metadata.get( 'status' ) or '' )
+			create_time = str( metadata.get( 'create_time' ) or metadata.get( 'createTime' ) or
+			                   '' )
+			update_time = str( metadata.get( 'update_time' ) or metadata.get( 'updateTime' ) or
+			                   '' )
+			
+			if store_id:
+				rows.append(
+					{ 'id': store_id, 'name': display_name, 'state': state, 'created': create_time,
+						'updated': update_time, } )
+		
+		return rows
+	
+	def get_selected_filestore_id( ) -> str:
+		"""Get selected File Search Store identifier.
+		
+		Purpose:
+		    Returns the manually entered store resource name or the current table selection.
+		
+		Returns:
+		    str: Active Gemini File Search Store resource name.
+		"""
+		manual_id = str( st.session_state.get( 'filestore_manual_id', '', ) or '' ).strip( )
+		
+		if manual_id:
+			return manual_id
+		
+		return str( st.session_state.get( 'filestore_selected_id', '', ) or '' ).strip( )
+	
+	def clear_filestore_outputs( ) -> None:
+		"""Clear File Search Store outputs.
+		
+		Purpose:
+		    Removes File Search Store operation results without changing store selections,
+		    request settings, uploaded-file controls, queries, or system instructions.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'filestore_results' ] = None
+		st.session_state[ 'filestore_metadata' ] = { }
+		st.session_state[ 'filestore_upload_result' ] = { }
+	
+	def clear_filestore_instructions( ) -> None:
+		"""Clear File Search Stores instructions.
+		
+		Purpose:
+		    Clears File Search Stores system instructions and the selected prompt template.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'filestore_system_instructions' ] = ''
+		st.session_state[ 'filestore_prompt_id' ] = None
+	
+	def convert_filestore_system_instructions( ) -> None:
+		"""Convert File Search Stores system instructions.
+		
+		Purpose:
+		    Converts File Search Stores instructions between XML blocks and Markdown headings.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		text_value = str(
+			st.session_state.get( 'filestore_system_instructions', '', ) or '' ).strip( )
+		
+		if not text_value:
+			return
+		
+		if cfg.XML_BLOCK_PATTERN.search( text_value ):
+			st.session_state[ 'filestore_system_instructions' ] = convert_xml( text_value )
+		else:
+			st.session_state[ 'filestore_system_instructions' ] = convert_markdown( text_value )
+	
+	def load_filestore_instruction_template( ) -> None:
+		"""Load File Search Stores instruction template.
+		
+		Purpose:
+		    Loads the selected File Search Stores prompt template into the system-instruction
+		    field.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		
+		Raises:
+		    Error: Re-raised after the exception is logged.
+		"""
+		try:
+			load_prompt_template( prompt_id_key='filestore_prompt_id',
+				instructions_key='filestore_system_instructions', )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'File Search Stores'
+			ex.method = ('load_filestore_instruction_template( self ) -> None')
+			Logger( ).write( ex )
+			raise ex
+	
+	def reset_filestore_management_settings( ) -> None:
+		"""Reset File Search Store management settings.
+		
+		Purpose:
+		    Returns store-management controls to their initial values without modifying provider
+		    resources or request output.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		for key in [ 'filestore_name', 'filestore_embedding_model', 'filestore_selected_id',
+			'filestore_selected_label', 'filestore_manual_id', 'filestore_force_delete',
+			'filestore_confirm_delete', ]:
+			if key in st.session_state:
+				del st.session_state[ key ]
+	
+	def reset_filestore_request_settings( ) -> None:
+		"""Reset File Search Store request settings.
+		
+		Purpose:
+		    Returns supported Gemini File Search query settings to their initial values without
+		    clearing stores, uploads, queries, results, or instructions.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		for key in [ 'filestore_model', 'filestore_temperature', 'filestore_top_percent',
+			'filestore_max_tokens', 'filestore_frequency_penalty', 'filestore_presence_penalty',
+			'filestore_response_format', 'filestore_metadata_filter', 'filestore_tool_choice',
+			'filestore_reasoning', 'filestore_store', 'filestore_stream',
+			'filestore_background', ]:
+			if key in st.session_state:
+				del st.session_state[ key ]
+	
+	def refresh_filestore_table( ) -> List[ Dict[ str, Any ] ]:
+		"""Refresh File Search Store table.
+		
+		Purpose:
+		    Lists Gemini File Search Stores and stores normalized table rows and display-name
+		    mappings.
+		
+		Returns:
+		    List[Dict[str, Any]]: Normalized File Search Store rows.
+		"""
+		result = searcher.list( )
+		rows = normalize_filestore_rows( result )
+		st.session_state[ 'filestore_table' ] = rows
+		
+		collections = getattr( searcher, 'collections', { }, )
+		
+		if isinstance( collections, dict ):
+			st.session_state[ 'text_file_search_store_names' ] = list( collections.values( ) )
+		
+		return rows
+	
+	def create_filestore( ) -> Dict[ str, Any ]:
+		"""Create File Search Store.
+		
+		Purpose:
+		    Creates a Gemini File Search Store using the exact wrapper contract.
+		
+		Returns:
+		    Dict[str, Any]: Normalized created-store metadata.
+		"""
+		name = str( st.session_state.get( 'filestore_name', '', ) or '' ).strip( )
+		embedding_model = str(
+			st.session_state.get( 'filestore_embedding_model', '', ) or '' ).strip( )
+		
+		throw_if( 'name', name )
+		throw_if( 'embedding_model', embedding_model )
+		
+		result = searcher.create( name=name, embedding_model=embedding_model, )
+		metadata = normalize_filestore_object( result )
+		store_id = str(
+			metadata.get( 'name' ) or metadata.get( 'id' ) or getattr( searcher, 'store_id',
+				'' ) or '' )
+		
+		st.session_state[ 'filestore_metadata' ] = metadata
+		st.session_state[ 'filestore_manual_id' ] = store_id
+		st.session_state[ 'filestore_selected_id' ] = store_id
+		st.session_state[ 'filestore_selected_label' ] = store_id
+		
+		return metadata
+	
+	def retrieve_filestore( store_id: str, ) -> Dict[ str, Any ]:
+		"""Retrieve File Search Store.
+		
+		Purpose:
+		    Retrieves Gemini File Search Store metadata using the exact wrapper contract.
+		
+		Args:
+		    store_id (str): Required Gemini File Search Store resource name.
+		
+		Returns:
+		    Dict[str, Any]: Normalized store metadata.
+		"""
+		throw_if( 'store_id', store_id )
+		result = searcher.retrieve( store_id=store_id, )
+		metadata = normalize_filestore_object( result )
+		st.session_state[ 'filestore_metadata' ] = metadata
+		return metadata
+	
+	def delete_filestore( store_id: str, ) -> Dict[ str, Any ]:
+		"""Delete File Search Store.
+		
+		Purpose:
+		    Deletes a Gemini File Search Store using the exact wrapper contract and explicit
+		    force-selection state.
+		
+		Args:
+		    store_id (str): Required Gemini File Search Store resource name.
+		
+		Returns:
+		    Dict[str, Any]: Normalized deletion result.
+		"""
+		throw_if( 'store_id', store_id )
+		result = searcher.delete( store_id=store_id,
+			force=bool( st.session_state.get( 'filestore_force_delete', True, ) ), )
+		metadata = normalize_filestore_object( result )
+		st.session_state[ 'filestore_metadata' ] = metadata
+		st.session_state[ 'filestore_table' ] = [ row for row in
+			st.session_state.get( 'filestore_table', [ ], ) if
+			isinstance( row, dict ) and row.get( 'id' ) != store_id ]
+		st.session_state[ 'filestore_selected_id' ] = ''
+		st.session_state[ 'filestore_selected_label' ] = ''
+		st.session_state[ 'filestore_manual_id' ] = ''
+		return metadata
+	
+	def upload_filestore_file( uploaded_file: Any, store_id: str, ) -> Dict[ str, Any ]:
+		"""Upload File Search Store file.
+		
+		Purpose:
+		    Stages and uploads a file through the exact Gemini File Search Store upload contract.
+		
+		Args:
+		    uploaded_file (Any): Streamlit uploaded-file object.
+		    store_id (str): Required Gemini File Search Store resource name.
+		
+		Returns:
+		    Dict[str, Any]: Normalized upload or import-operation result.
+		"""
+		throw_if( 'uploaded_file', uploaded_file )
+		throw_if( 'store_id', store_id )
+		
+		file_path = save_uploaded_storage_file( uploaded_file )
+		throw_if( 'file_path', file_path )
+		
+		result = searcher.upload_file( path=file_path, store_id=store_id, display_name=str(
+			getattr( uploaded_file, 'name', Path( file_path ).name, ) or Path( file_path ).name ),
+			mime_type=str( getattr( uploaded_file, 'type', '', ) or '' ),
+			custom_metadata=parse_filestore_metadata(
+				st.session_state.get( 'filestore_custom_metadata', '', ) ), )
+		metadata = normalize_filestore_object( result )
+		st.session_state[ 'filestore_upload_result' ] = metadata
+		return metadata
+	
+	def search_filestore( store_id: str, query: str, ) -> str:
+		"""Search File Search Store.
+		
+		Purpose:
+		    Executes a grounded Gemini File Search Store query using only parameters implemented
+		    by the uploaded wrapper.
+		
+		Args:
+		    store_id (str): Required Gemini File Search Store resource name.
+		    query (str): Required grounded query.
+		
+		Returns:
+		    str: Gemini grounded response text.
+		"""
+		throw_if( 'store_id', store_id )
+		throw_if( 'query', query )
+		
+		model = str( st.session_state.get( 'filestore_model', '', ) or '' ).strip( )
+		throw_if( 'model', model )
+		
+		result = searcher.search( store_id=store_id, query=query, model=model,
+			temperature=float( st.session_state.get( 'filestore_temperature', 0.0, ) or 0.0 ),
+			top_p=float( st.session_state.get( 'filestore_top_percent', 0.0, ) or 0.0 ),
+			frequency=float( st.session_state.get( 'filestore_frequency_penalty', 0.0, ) or 0.0 ),
+			presence=float( st.session_state.get( 'filestore_presence_penalty', 0.0, ) or 0.0 ),
+			max_tokens=int( st.session_state.get( 'filestore_max_tokens', 0, ) or 0 ),
+			response_format=str( st.session_state.get( 'filestore_response_format', '', ) or '' ),
+			instruct=str( st.session_state.get( 'filestore_system_instructions', '', ) or '' ),
+			metadata_filter=str( st.session_state.get( 'filestore_metadata_filter', '', ) or ''
+			), )
+		
+		if isinstance( result, str ):
+			return result.strip( )
+		
+		return str( getattr( searcher, 'output_text', '', ) or getattr( result, 'text',
+			'', ) or result or '' ).strip( )
+	
+	# ----- Provider Options -----
+	model_options = [ str( option ) for option in
+		get_filestore_options( searcher, 'model_options', [ ], ) if str( option ).strip( ) ]
+	embedding_model_options = [ str( option ) for option in
+		get_filestore_options( searcher, 'embedding_model_options',
+			[ 'models/gemini-embedding-001' ], ) if str( option ).strip( ) ]
+	format_options = [ str( option ) for option in
+		get_filestore_options( searcher, 'format_options', [ ], ) if str( option ).strip( ) ]
+	choice_options = [ str( option ) for option in
+		get_filestore_options( searcher, 'choice_options', [ ], ) if str( option ).strip( ) ]
+	reasoning_options = [ str( option ) for option in
+		get_filestore_options( searcher, 'reasoning_options', [ ], ) if str( option ).strip( ) ]
+	
+	sanitize_filestore_selection( 'filestore_model', model_options, )
+	sanitize_filestore_selection( 'filestore_embedding_model', embedding_model_options, )
+	sanitize_filestore_selection( 'filestore_response_format', format_options, )
+	
+	# The FileSearch.search wrapper does not accept tool-choice or reasoning arguments.
+	st.session_state[ 'filestore_tool_choice' ] = ''
+	st.session_state[ 'filestore_reasoning' ] = ''
+	st.session_state[ 'filestore_store' ] = False
+	st.session_state[ 'filestore_stream' ] = False
+	st.session_state[ 'filestore_background' ] = False
+	
+	# ----- Store Selection -----
+	store_options = [ str( row.get( 'id', '' ) ) for row in
+		st.session_state.get( 'filestore_table', [ ], ) if
+		isinstance( row, dict ) and row.get( 'id' ) ]
+	
+	if (st.session_state.get( 'filestore_selected_id' ) not in store_options):
+		st.session_state[ 'filestore_selected_id' ] = ''
+	
+	st.session_state[ 'filestore_selected_label' ] = str(
+		st.session_state.get( 'filestore_selected_id', '', ) or '' )
+	
+	# ------------------------------------------------------------------
+	# Main UI
+	# ------------------------------------------------------------------
+	left, center, right = st.columns( [ 0.025, 0.95, 0.025 ] )
+	
+	with center:
+		st.subheader( '🗂️ File Search Stores', help=getattr( cfg, 'FILE_SEARCH_STORES_API',
+			'Gemini File Search Store management and grounded querying.', ), )
+		st.divider( )
+		
+		# ------------------------------------------------------------------
+		# Expander — Mind Controls
+		# ------------------------------------------------------------------
+		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch', ):
+			# ------------------------------------------------------------------
+			# Expander — Store Management
+			# ------------------------------------------------------------------
+			with st.expander( label='Store Management', icon='🏛️', expanded=False,
+					width='stretch', ):
+				management_c1, management_c2, management_c3, management_c4 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+				
+				# ----- Store Name -----
+				with management_c1:
+					st.text_input( label='Store Name', key='filestore_name',
+						help='Required display name used when creating a Gemini File Search '
+						     'Store.',
+						width='stretch', )
+				
+				# ----- Embedding Model -----
+				with management_c2:
+					st.selectbox( label='Embedding Model', options=embedding_model_options,
+						index=None, key='filestore_embedding_model', placeholder='Options',
+						help='Required embedding model used when creating the store.', )
+				
+				# ----- Selected Store -----
+				with management_c3:
+					st.selectbox( label='Selected Store', options=store_options, index=None,
+						key='filestore_selected_id', placeholder='Options',
+						help='File Search Store selected from the latest store list.', )
+				
+				# ----- Manual Store ID -----
+				with management_c4:
+					st.text_input( label='Manual Store ID', key='filestore_manual_id',
+						help='Optional Gemini File Search Store resource name.', width='stretch', )
+				
+				management_c5, management_c6 = st.columns( [ 0.50, 0.50 ], border=True,
+					gap='xxsmall', )
+				
+				# ----- Force Delete -----
+				with management_c5:
+					st.toggle( label='Force Delete', key='filestore_force_delete', help=(
+						'Deletes indexed documents with the File Search Store when enabled.'), )
+				
+				# ----- Confirm Delete -----
+				with management_c6:
+					st.toggle( label='Confirm Delete', key='filestore_confirm_delete',
+						help='Required before deleting the selected File Search Store.', )
+				
+				action_c1, action_c2, action_c3, action_c4 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ] )
+				
+				# ----- Create Store -----
+				with action_c1:
+					if st.button( label='Create Store', key='filestore_create', icon='➕',
+							width='stretch', ):
+						with st.spinner( 'Creating File Search Store…' ):
+							try:
+								metadata = create_filestore( )
+								st.success( f"Created store: ")
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'Create store failed: {err.info}' )
+				
+				# ----- List Stores -----
+				with action_c2:
+					if st.button( label='List Stores', key='filestore_list', icon='🔠',
+							width='stretch', ):
+						with st.spinner( 'Listing File Search Stores…' ):
+							try:
+								rows = refresh_filestore_table( )
+								st.success( f'Loaded {len( rows )} File Search Store record(s).' )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'List stores failed: {err.info}' )
+				
+				# ----- Retrieve Store -----
+				with action_c3:
+					if st.button( label='Retrieve Store', key='filestore_retrieve', icon='🐕',
+							width='stretch', ):
+						with st.spinner( 'Retrieving File Search Store…' ):
+							try:
+								store_id = get_selected_filestore_id( )
+								
+								if not store_id:
+									st.warning( 'Select or enter a store ID before retrieving.' )
+								else:
+									retrieve_filestore( store_id )
+									st.success( 'File Search Store metadata retrieved.' )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'Retrieve store failed: {err.info}' )
+				
+				# ----- Delete Store -----
+				with action_c4:
+					if st.button( label='Delete Store', key='filestore_delete', icon='❌',
+							width='stretch', ):
+						with st.spinner( 'Deleting File Search Store…' ):
+							try:
+								store_id = get_selected_filestore_id( )
+								
+								if not store_id:
+									st.warning( 'Select or enter a store ID before deleting.' )
+								elif not st.session_state.get( 'filestore_confirm_delete',
+										False, ):
+									st.warning( 'Confirm store deletion before continuing.' )
+								else:
+									delete_filestore( store_id )
+									st.success( 'File Search Store deleted.' )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'Delete store failed: {err.info}' )
+				
+				# ----- Reset Button -----
+				st.button( label='Reset', key='filestore_management_reset', width='stretch',
+					icon='🔄', on_click=reset_filestore_management_settings, )
+				
+				if st.session_state.get( 'filestore_table' ):
+					st.data_editor( pd.DataFrame( st.session_state.get( 'filestore_table', [ ],
+					) ),
+						use_container_width=True, hide_index=True, disabled=True,
+						key='filestore_table_view', )
+				else:
+					st.info( 'No File Search Store records loaded yet.' )
+				
+				if st.session_state.get( 'filestore_metadata' ):
+					with st.expander( label='Store Metadata', icon='📋', expanded=False,
+							width='stretch', ):
+						render_storage_metadata( st.session_state[ 'filestore_metadata' ] )
+			
+			# ------------------------------------------------------------------
+			# Expander — Request Settings
+			# ------------------------------------------------------------------
+			with st.expander( label='Request Settings', icon='⚙️', expanded=False,
+					width='stretch', ):
+				request_c1, request_c2, request_c3 = st.columns( [ 0.34, 0.33, 0.33 ], border=True,
+					gap='xxsmall', )
+				
+				# ----- Model -----
+				with request_c1:
+					st.selectbox( label='Model', options=model_options, index=None,
+						key='filestore_model', placeholder='Options',
+						help='Required Gemini model used for grounded File Search queries.', )
+				
+				# ----- Max Tokens -----
+				with request_c2:
+					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+						key='filestore_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, )
+				
+				# ----- Response Format -----
+				with request_c3:
+					st.selectbox( label='Response Format', options=format_options, index=None,
+						key='filestore_response_format', placeholder='Options',
+						help='Optional Gemini response MIME type.', )
+				
+				request_c4, request_c5, request_c6, request_c7 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+				
+				# ----- Temperature -----
+				with request_c4:
+					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
+						key='filestore_temperature', help=cfg.TEMPERATURE, )
+				
+				# ----- Top-P -----
+				with request_c5:
+					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
+						key='filestore_top_percent', help=cfg.TOP_P, )
+				
+				# ----- Frequency Penalty -----
+				with request_c6:
+					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='filestore_frequency_penalty', help=cfg.FREQUENCY_PENALTY, )
+				
+				# ----- Presence Penalty -----
+				with request_c7:
+					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='filestore_presence_penalty', help=cfg.PRESENCE_PENALTY, )
+				
+				request_c8, request_c9, request_c10 = st.columns( [ 0.34, 0.33, 0.33 ],
+					border=True,
+					gap='xxsmall', )
+				
+				# ----- Tool Choice -----
+				with request_c8:
+					st.selectbox( label='Tool Choice', options=choice_options, index=None,
+						key='filestore_tool_choice', placeholder='Options',
+						help=('The FileSearch.search wrapper does not accept a '
+						      'tool-choice argument.'), disabled=True, )
+				
+				# ----- Reasoning -----
+				with request_c9:
+					st.selectbox( label='Reasoning', options=reasoning_options, index=None,
+						key='filestore_reasoning', placeholder='Options',
+						help=('The FileSearch.search wrapper does not accept a '
+						      'reasoning argument.'), disabled=True, )
+				
+				# ----- Metadata Filter -----
+				with request_c10:
+					st.text_input( label='Metadata Filter', key='filestore_metadata_filter',
+						help=('Optional Gemini File Search metadata-filter expression.'),
+						width='stretch', )
+				
+				request_c11, request_c12, request_c13 = st.columns( [ 0.34, 0.33, 0.33 ],
+					border=True, gap='xxsmall', )
+				
+				# ----- Store -----
+				with request_c11:
+					st.toggle( label='Store', key='filestore_store',
+						help=('The FileSearch.search wrapper does not expose response storage.'),
+						disabled=True, )
+				
+				# ----- Stream -----
+				with request_c12:
+					st.toggle( label='Stream', key='filestore_stream',
+						help=('The FileSearch.search wrapper does not expose streaming.'),
+						disabled=True, )
+				
+				# ----- Background -----
+				with request_c13:
+					st.toggle( label='Background', key='filestore_background', help=(
+						'The FileSearch.search wrapper does not expose background execution.'),
+						disabled=True, )
+				
+				# ----- Reset Button -----
+				st.button( label='Reset', key='filestore_request_settings_reset', width='stretch',
+					icon='🔄', on_click=reset_filestore_request_settings, )
+		
+		# ------------------------------------------------------------------
+		# Expander — File Uploader
+		# ------------------------------------------------------------------
+		with st.expander( label='File Uploader', icon='📤', expanded=False, width='stretch', ):
+			upload_c1, upload_c2 = st.columns( [ 0.60, 0.40 ], border=True, gap='xxsmall', )
+			
+			# ----- File Upload -----
+			with upload_c1:
+				uploaded_file = st.file_uploader( label='Upload File to File Search Store',
+					key='filestore_input',
+					help='Upload a file to the selected Gemini File Search Store.', )
+			
+			# ----- Custom Metadata -----
+			with upload_c2:
+				st.text_area( label='Custom Metadata JSON', key='filestore_custom_metadata',
+					height=100, width='stretch',
+					help=('Optional JSON object or array accepted by the Gemini '
+					      'File Search Store import configuration.'), )
+			
+			selected_store_id = get_selected_filestore_id( )
+			
+			if st.button( label='Upload to Store', key='filestore_upload', icon='⬆️',
+					width='stretch',
+					disabled=(uploaded_file is None or not bool( selected_store_id )), ):
+				with st.spinner( 'Uploading file to the File Search Store…' ):
+					try:
+						upload_filestore_file( uploaded_file, selected_store_id, )
+						st.success( 'File uploaded and imported into the File Search Store.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Upload failed: {err.info}' )
+			
+			if st.session_state.get( 'filestore_upload_result' ):
+				with st.expander( label='Upload Result', icon='📄', expanded=False,
+						width='stretch', ):
+					render_storage_metadata( st.session_state[ 'filestore_upload_result' ] )
 		
 		# ------------------------------------------------------------------
 		# Expander — System Instructions
@@ -13928,283 +14443,1102 @@ elif mode == 'Google Cloud Buckets':
 				width='stretch', ):
 			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
 			
-			# ------ Vector Stores Prompt Categories -----
-			stores_prompt_categories = fetch_prompt_categories( 'Vector Stores' )
-			current_stores_category = st.session_state.get( 'stores_prompt_category' )
+			filestore_prompt_categories = fetch_prompt_categories( 'File Search Stores' )
+			current_filestore_category = st.session_state.get( 'filestore_prompt_category' )
 			
-			if current_stores_category not in stores_prompt_categories:
-				st.session_state[ 'stores_prompt_category' ] = None
+			if (current_filestore_category not in filestore_prompt_categories):
+				st.session_state[ 'filestore_prompt_category' ] = None
 			
-			selected_stores_category = st.session_state.get( 'stores_prompt_category' )
-			stores_prompt_options = (fetch_prompt_options(
-				selected_stores_category ) if selected_stores_category else [ ])
-			stores_prompt_ids = [ int( option[ 'ID' ] ) for option in stores_prompt_options ]
+			selected_filestore_category = st.session_state.get( 'filestore_prompt_category' )
+			filestore_prompt_options = (fetch_prompt_options(
+				selected_filestore_category ) if selected_filestore_category else [ ])
+			filestore_prompt_ids = [ int( option[ 'ID' ] ) for option in filestore_prompt_options ]
 			
-			if st.session_state.get( 'stores_prompt_id' ) not in stores_prompt_ids:
-				st.session_state[ 'stores_prompt_id' ] = None
+			if (st.session_state.get( 'filestore_prompt_id' ) not in filestore_prompt_ids):
+				st.session_state[ 'filestore_prompt_id' ] = None
 			
-			# ----- Instruction Text -------
+			# ----- Instruction Text -----
 			with in_left:
 				st.text_area( label='Enter Text', height=140, width='stretch',
-					key='stores_system_instructions',
-					help=cfg.SYSTEM_INSTRUCTIONS )
+					key='filestore_system_instructions',
+					help=getattr( cfg, 'SYSTEM_INSTRUCTIONS', '', ), )
 			
 			# ----- Template Selection -----
 			with in_right:
-				st.selectbox( label='Category', options=stores_prompt_categories, index=None,
-					key='stores_prompt_category', placeholder='Select Category',
+				st.selectbox( label='Category', options=filestore_prompt_categories, index=None,
+					key='filestore_prompt_category', placeholder='Select Category',
 					help=('Limits prompt templates to categories associated '
-					      'with vector-store and retrieval workflows.'),
-					on_change=reset_prompt_template_selection, args=('stores_prompt_id',), )
+					      'with file-search, retrieval, and corpus-management workflows.'),
+					on_change=reset_prompt_template_selection, args=('filestore_prompt_id',), )
 				
-				st.selectbox( label='Use Template', options=stores_prompt_ids, index=None,
-					key='stores_prompt_id', placeholder='Select Template',
-					disabled=not stores_prompt_ids,
+				st.selectbox( label='Use Template', options=filestore_prompt_ids, index=None,
+					key='filestore_prompt_id', placeholder='Select Template',
+					disabled=not filestore_prompt_ids,
 					format_func=lambda prompt_id: format_prompt_option( prompt_id,
-						stores_prompt_options, ),
-					help=('Loads the selected prompt into the Vector Stores '
+						filestore_prompt_options, ),
+					help=('Loads the selected prompt into the File Search Stores '
 					      'system-instruction field.'),
-					on_change=load_stores_instruction_template, )
+					on_change=load_filestore_instruction_template, )
+			
+			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
+			
+			# ----- Clear Instructions -----
+			with btn_c1:
+				st.button( label='Clear Instructions', key='clear_filestore_instructions',
+					width='stretch', on_click=clear_filestore_instructions, icon='🧹', )
+			
+			# ----- Convert Instructions -----
+			with btn_c2:
+				st.button( label='XML ↔️ Markdown', key='convert_filestore_instructions',
+					width='stretch', on_click=convert_filestore_system_instructions, )
+		
+		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True, )
+		
+		# ------------------------------------------------------------------
+		# Expander — Vector Store Query
+		# ------------------------------------------------------------------
+		st.text_area( label='Query', key='filestore_query', height=120,
+			help='Search the selected Gemini File Search Store.', )
+		
+		query_c1, query_c2 = st.columns( 2 )
+		
+		# ------ Search -----
+		with query_c1:
+			if st.button( label='Search Store', key='filestore_search', icon='🔍', width='stretch',
+					disabled=(not bool( selected_store_id ) or not bool(
+						str( st.session_state.get( 'filestore_query', '', ) or '' ).strip( ) )), ):
+				with st.spinner( 'Searching File Search Store…' ):
+					try:
+						query_text = str(
+							st.session_state.get( 'filestore_query', '', ) or '' ).strip( )
+						
+						result = search_filestore( selected_store_id, query_text, )
+						st.session_state[ 'filestore_results' ] = result
+						st.success( 'File Search Store query completed.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Search failed: {err.info}' )
+		
+		# ----- Clear Outputs -----
+		with query_c2:
+			st.button( label='Clear Outputs', key='filestore_clear_outputs', icon='🧹',
+				width='stretch', on_click=clear_filestore_outputs, )
+		
+		# ------------------------------------------------------------------
+		# Expander — Search Results
+		# ------------------------------------------------------------------
+		if st.session_state.get( 'filestore_results' ) is not None:
+			with st.expander( label='Search Results', icon='🔎', expanded=True, width='stretch', ):
+				result = st.session_state[ 'filestore_results' ]
+				
+				if isinstance( result, str ):
+					st.markdown( result )
+				else:
+					st.json( normalize( result ) )
+
+# ======================================================================================
+# GOOGLE CLOUD BUCKETS MODE
+# ======================================================================================
+elif mode == 'Google Cloud Buckets':
+	provider_name = st.session_state.get( 'provider', 'GPT' )
+	
+	# ------------------------------------------------------------------
+	# Provider Capability Validation
+	# ------------------------------------------------------------------
+	if provider_name != 'Gemini':
+		st.warning( 'Google Cloud Buckets are available for Gemini / Google Cloud only.' )
+		st.stop( )
+	
+	if not provider_has_class( 'CloudBuckets', provider_name ):
+		st.error( 'Gemini does not provide the CloudBuckets wrapper required by this mode.' )
+		st.stop( )
+	
+	buckets = get_cloud_buckets_module( provider_name )
+	
+	# ------------------------------------------------------------------
+	# Mode State
+	# ------------------------------------------------------------------
+	bucket_defaults: Dict[ str, Any ] = { 'bucket_table': [ ], 'bucket_metadata': { },
+		'bucket_upload_result': { }, 'bucket_results': None, 'bucket_messages': [ ],
+		'bucket_name': '', 'bucket_manual_id': '', 'bucket_selected_id': '',
+		'bucket_selected_label': '', 'bucket_object_name': '', 'bucket_prefix': '',
+		'bucket_content_type': '', 'bucket_location': (
+				st.session_state.get( 'google_cloud_location',
+					getattr( cfg, 'GOOGLE_CLOUD_LOCATION', 'us-central1', ), ) or 'us-central1'),
+		'bucket_storage_location': 'US', 'bucket_project_id': (
+				st.session_state.get( 'google_cloud_project_id',
+					getattr( cfg, 'GOOGLE_CLOUD_PROJECT_ID', '', ), ) or ''), 'bucket_input': None,
+		'bucket_query': '', 'bucket_model': '', 'bucket_number': 0, 'bucket_temperature': 0.0,
+		'bucket_top_percent': 0.0, 'bucket_max_tokens': 0, 'bucket_frequency_penalty': 0.0,
+		'bucket_presence_penalty': 0.0, 'bucket_response_format': '', 'bucket_tool_choice': '',
+		'bucket_reasoning': '', 'bucket_background': False, 'bucket_store': False,
+		'bucket_stream': False, 'bucket_max_files': 20, 'bucket_confirm_delete': False,
+		'bucket_delete_object_only': False, 'bucket_system_instructions': '',
+		'bucket_prompt_category': None, 'bucket_prompt_id': None, }
+	
+	for key, default_value in bucket_defaults.items( ):
+		if key not in st.session_state:
+			st.session_state[ key ] = default_value
+	
+	if not isinstance( st.session_state.get( 'bucket_table' ), list, ):
+		st.session_state[ 'bucket_table' ] = [ ]
+	
+	if not isinstance( st.session_state.get( 'bucket_metadata' ), dict, ):
+		st.session_state[ 'bucket_metadata' ] = { }
+	
+	if not isinstance( st.session_state.get( 'bucket_upload_result' ), dict, ):
+		st.session_state[ 'bucket_upload_result' ] = { }
+	
+	if not isinstance( st.session_state.get( 'bucket_messages' ), list, ):
+		st.session_state[ 'bucket_messages' ] = [ ]
+	
+	# ------------------------------------------------------------------
+	# Google Cloud Bucket Utilities
+	# ------------------------------------------------------------------
+	def get_bucket_options( instance: Any, attr_name: str,
+		fallback: Optional[ List[ Any ] ] = None, ) -> List[ Any ]:
+		"""Get bucket options.
+		
+		Purpose:
+		    Returns provider-supported values exposed by the Gemini CloudBuckets wrapper.
+		
+		Args:
+		    instance (Any): Active Gemini CloudBuckets wrapper.
+		    attr_name (str): Wrapper option property or method name.
+		    fallback (Optional[List[Any]]): Values used when no wrapper options are exposed.
+		
+		Returns:
+		    List[Any]: Provider-supported option values.
+		"""
+		values = getattr( instance, attr_name, None, )
+		
+		if callable( values ):
+			try:
+				values = values( )
+			except Exception:
+				values = None
+		
+		if isinstance( values, tuple ):
+			values = list( values )
+		
+		if isinstance( values, list ):
+			return values
+		
+		return fallback or [ ]
+	
+	def sanitize_bucket_selection( key: str, options: List[ Any ], default: Any = '', ) -> None:
+		"""Sanitize bucket selection.
+		
+		Purpose:
+		    Clears a stored single-selection value that is unsupported by the active wrapper.
+		
+		Args:
+		    key (str): Session-state key containing the selection.
+		    options (List[Any]): Provider-supported option values.
+		    default (Any): Replacement value for an unsupported selection.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		current_value = st.session_state.get( key, default, )
+		
+		if current_value in [ None, '' ]:
+			return
+		
+		if current_value not in options:
+			st.session_state[ key ] = default
+	
+	def normalize_bucket_object( value: Any, ) -> Dict[ str, Any ]:
+		"""Normalize bucket object.
+		
+		Purpose:
+		    Converts Google Cloud Storage bucket and object responses into dictionaries suitable
+		    for Streamlit tables and metadata output.
+		
+		Args:
+		    value (Any): Google Cloud Storage bucket, blob, boolean, or dictionary response.
+		
+		Returns:
+		    Dict[str, Any]: Normalized bucket or object metadata.
+		"""
+		if value is None:
+			return { }
+		
+		if isinstance( value, bool ):
+			return { 'success': value, }
+		
+		if isinstance( value, dict ):
+			return normalize( value )
+		
+		if hasattr( value, 'model_dump' ):
+			try:
+				dumped_value = value.model_dump( )
+				
+				if isinstance( dumped_value, dict ):
+					return normalize( dumped_value )
+			except Exception:
+				pass
+		
+		value_bucket = getattr( value, 'bucket', None, )
+		bucket_name = str(
+			getattr( value_bucket, 'name', '', ) or getattr( value, 'bucket_name', '', ) or '' )
+		object_name = str( getattr( value, 'name', '', ) or '' )
+		
+		# A Blob exposes a bucket reference. A Bucket normally does not.
+		if value_bucket is not None:
+			return { 'id': str( getattr( value, 'id', '', ) or '' ), 'name': object_name,
+				'bucket': bucket_name,
+				'content_type': str( getattr( value, 'content_type', '', ) or '' ),
+				'size': getattr( value, 'size', 0, ),
+				'generation': getattr( value, 'generation', None, ),
+				'metageneration': getattr( value, 'metageneration', None, ),
+				'md5_hash': str( getattr( value, 'md5_hash', '', ) or '' ),
+				'crc32c': str( getattr( value, 'crc32c', '', ) or '' ),
+				'time_created': str( getattr( value, 'time_created', '', ) or '' ),
+				'updated': str( getattr( value, 'updated', '', ) or '' ),
+				'storage_class': str( getattr( value, 'storage_class', '', ) or '' ),
+				'metadata': normalize( getattr( value, 'metadata', None, ) ), 'uri': (
+					f'gs://{bucket_name}/{object_name}' if bucket_name and object_name else ''), }
+		
+		return { 'id': str( getattr( value, 'id', '', ) or '' ),
+			'name': str( getattr( value, 'name', '', ) or '' ),
+			'project_number': str( getattr( value, 'project_number', '', ) or '' ),
+			'location': str( getattr( value, 'location', '', ) or '' ),
+			'storage_class': str( getattr( value, 'storage_class', '', ) or '' ),
+			'time_created': str( getattr( value, 'time_created', '', ) or '' ),
+			'updated': str( getattr( value, 'updated', '', ) or '' ),
+			'versioning_enabled': getattr( value, 'versioning_enabled', False, ),
+			'retention_period': getattr( value, 'retention_period', None, ),
+			'labels': normalize( getattr( value, 'labels', None, ) ),
+			'self_link': str( getattr( value, 'self_link', '', ) or '' ), }
+	
+	def normalize_bucket_rows( result: Any, ) -> List[ Dict[ str, Any ] ]:
+		"""Normalize bucket rows.
+		
+		Purpose:
+		    Converts Google Cloud Storage object-list responses into stable table rows.
+		
+		Args:
+		    result (Any): Google Cloud Storage object collection.
+		
+		Returns:
+		    List[Dict[str, Any]]: Normalized object metadata rows.
+		"""
+		if result is None:
+			return [ ]
+		
+		if isinstance( result, list ):
+			items = result
+		elif isinstance( result, tuple ):
+			items = list( result )
+		else:
+			try:
+				items = list( result )
+			except Exception:
+				items = [ result ]
+		
+		rows: List[ Dict[ str, Any ] ] = [ ]
+		
+		for item in items:
+			metadata = normalize_bucket_object( item )
+			
+			if not metadata:
+				continue
+			
+			rows.append( { 'id': str( metadata.get( 'id', '', ) or '' ),
+				'name': str( metadata.get( 'name', '', ) or '' ),
+				'content_type': str( metadata.get( 'content_type', '', ) or '' ),
+				'size': metadata.get( 'size', 0, ),
+				'updated': str( metadata.get( 'updated', '', ) or '' ),
+				'uri': str( metadata.get( 'uri', '', ) or '' ), } )
+		
+		return rows
+	
+	def get_selected_bucket_name( ) -> str:
+		"""Get selected bucket name.
+		
+		Purpose:
+		    Returns the manually entered bucket name or the currently selected configured bucket.
+		
+		Returns:
+		    str: Active Google Cloud Storage bucket name.
+		"""
+		manual_name = str( st.session_state.get( 'bucket_manual_id', '', ) or '' ).strip( )
+		
+		if manual_name:
+			return manual_name
+		
+		return str( st.session_state.get( 'bucket_selected_id', '', ) or '' ).strip( )
+	
+	def save_bucket_upload( uploaded_file: Any, ) -> str:
+		"""Save bucket upload.
+		
+		Purpose:
+		    Writes a Streamlit uploaded file to a temporary local path for Google Cloud Storage
+		    upload.
+		
+		Args:
+		    uploaded_file (Any): Streamlit uploaded-file object.
+		
+		Returns:
+		    str: Temporary local file path.
+		"""
+		throw_if( 'uploaded_file', uploaded_file, )
+		
+		path = save_uploaded_storage_file( uploaded_file )
+		throw_if( 'path', path, )
+		return str( path )
+	
+	def clear_bucket_outputs( ) -> None:
+		"""Clear bucket outputs.
+		
+		Purpose:
+		    Clears Google Cloud Bucket operation results without changing bucket selections,
+		    request settings, uploaded files, queries, or system instructions.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'bucket_results' ] = None
+		st.session_state[ 'bucket_metadata' ] = { }
+		st.session_state[ 'bucket_upload_result' ] = { }
+		st.session_state[ 'bucket_table' ] = [ ]
+	
+	def clear_bucket_instructions( ) -> None:
+		"""Clear Google Cloud Buckets instructions.
+		
+		Purpose:
+		    Clears the Google Cloud Buckets system-instruction text and selected prompt template
+		    without changing the selected category, bucket configuration, results, or uploaded
+		    files.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		st.session_state[ 'bucket_system_instructions' ] = ''
+		st.session_state[ 'bucket_prompt_id' ] = None
+	
+	def convert_bucket_system_instructions( ) -> None:
+		"""Convert Google Cloud Buckets system instructions.
+		
+		Purpose:
+		    Converts the active Google Cloud Buckets system instructions between supported
+		    XML-style instruction blocks and Markdown headings.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		text_value = str( st.session_state.get( 'bucket_system_instructions', '', ) or ''
+		).strip( )
+		
+		if not text_value:
+			return
+		
+		if cfg.XML_BLOCK_PATTERN.search( text_value ):
+			st.session_state[ 'bucket_system_instructions' ] = convert_xml( text_value )
+		else:
+			st.session_state[ 'bucket_system_instructions' ] = convert_markdown( text_value )
+	
+	def load_bucket_instruction_template( ) -> None:
+		"""Load Google Cloud Buckets instruction template.
+		
+		Purpose:
+		    Loads the selected Google Cloud Buckets prompt template into the mode-specific
+		    system-instruction field.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		
+		Raises:
+		    Error: Re-raised after the exception is logged.
+		"""
+		try:
+			load_prompt_template( prompt_id_key='bucket_prompt_id',
+				instructions_key='bucket_system_instructions', )
+		except Exception as e:
+			ex = Error( e )
+			ex.module = 'app'
+			ex.cause = 'Google Cloud Buckets Mode'
+			ex.method = ('load_bucket_instruction_template( ) -> None')
+			Logger( ).write( ex )
+			raise ex
+	
+	def reset_bucket_management_settings( ) -> None:
+		"""Reset bucket management settings.
+		
+		Purpose:
+		    Returns the Google Cloud Bucket management controls to their initial values without
+		    clearing provider resources, operation results, request settings, or instructions.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		for key in [ 'bucket_name', 'bucket_selected_id', 'bucket_selected_label',
+			'bucket_manual_id', 'bucket_object_name', 'bucket_prefix', 'bucket_storage_location',
+			'bucket_confirm_delete', 'bucket_delete_object_only', ]:
+			if key in st.session_state:
+				del st.session_state[ key ]
+	
+	def reset_bucket_request_settings( ) -> None:
+		"""Reset bucket request settings.
+		
+		Purpose:
+		    Returns the Google Cloud Bucket model, inference, and response controls to their
+		    initial values without clearing bucket selections, queries, results, or instructions.
+		
+		Returns:
+		    None: This function updates Streamlit session state.
+		"""
+		for key in [ 'bucket_model', 'bucket_number', 'bucket_temperature', 'bucket_top_percent',
+			'bucket_max_tokens', 'bucket_frequency_penalty', 'bucket_presence_penalty',
+			'bucket_response_format', 'bucket_tool_choice', 'bucket_reasoning', 'bucket_store',
+			'bucket_stream', 'bucket_background', 'bucket_max_files', 'bucket_location',
+			'bucket_project_id', ]:
+			if key in st.session_state:
+				del st.session_state[ key ]
+	
+	def create_cloud_bucket( ) -> Dict[ str, Any ]:
+		"""Create cloud bucket.
+		
+		Purpose:
+		    Creates a Google Cloud Storage bucket using the exact Gemini CloudBuckets contract.
+		
+		Returns:
+		    Dict[str, Any]: Normalized created-bucket metadata.
+		"""
+		bucket_name = str( st.session_state.get( 'bucket_name', '', ) or '' ).strip( )
+		project_id = str( st.session_state.get( 'bucket_project_id', '', ) or '' ).strip( )
+		location = str( st.session_state.get( 'bucket_storage_location', 'US', ) or 'US' ).strip( )
+		
+		throw_if( 'bucket_name', bucket_name, )
+		throw_if( 'project_id', project_id, )
+		throw_if( 'location', location, )
+		
+		result = buckets.create( name=bucket_name, project_id=project_id, location=location, )
+		metadata = normalize_bucket_object( result )
+		st.session_state[ 'bucket_metadata' ] = metadata
+		st.session_state[ 'bucket_manual_id' ] = bucket_name
+		st.session_state[ 'bucket_selected_id' ] = bucket_name
+		st.session_state[ 'bucket_selected_label' ] = bucket_name
+		return metadata
+	
+	def retrieve_cloud_bucket( bucket_name: str, object_name: str = '', ) -> Dict[ str, Any ]:
+		"""Retrieve cloud bucket.
+		
+		Purpose:
+		    Retrieves Google Cloud Storage bucket or object metadata using the exact wrapper
+		    contract.
+		
+		Args:
+		    bucket_name (str): Required Google Cloud Storage bucket name.
+		    object_name (str): Optional object name.
+		
+		Returns:
+		    Dict[str, Any]: Normalized bucket or object metadata.
+		"""
+		throw_if( 'bucket_name', bucket_name, )
+		
+		result = buckets.retrieve( bucket=bucket_name, object_name=object_name,
+			project_id=str( st.session_state.get( 'bucket_project_id', '', ) or '' ), )
+		metadata = normalize_bucket_object( result )
+		st.session_state[ 'bucket_metadata' ] = metadata
+		return metadata
+	
+	def list_cloud_bucket_objects( bucket_name: str, ) -> List[ Dict[ str, Any ] ]:
+		"""List cloud bucket objects.
+		
+		Purpose:
+		    Lists Google Cloud Storage object metadata using the exact wrapper contract.
+		
+		Args:
+		    bucket_name (str): Required Google Cloud Storage bucket name.
+		
+		Returns:
+		    List[Dict[str, Any]]: Normalized object rows.
+		"""
+		throw_if( 'bucket_name', bucket_name, )
+		
+		result = buckets.list_objects( bucket=bucket_name,
+			prefix=str( st.session_state.get( 'bucket_prefix', '', ) or '' ),
+			project_id=str( st.session_state.get( 'bucket_project_id', '', ) or '' ), )
+		rows = normalize_bucket_rows( result )
+		st.session_state[ 'bucket_table' ] = rows
+		return rows
+	
+	def upload_cloud_bucket_object( uploaded_file: Any, bucket_name: str, ) -> Dict[ str, Any ]:
+		"""Upload cloud bucket object.
+		
+		Purpose:
+		    Uploads a local file to Google Cloud Storage using the exact wrapper contract.
+		
+		Args:
+		    uploaded_file (Any): Streamlit uploaded-file object.
+		    bucket_name (str): Required Google Cloud Storage bucket name.
+		
+		Returns:
+		    Dict[str, Any]: Normalized uploaded-object metadata.
+		"""
+		throw_if( 'uploaded_file', uploaded_file, )
+		throw_if( 'bucket_name', bucket_name, )
+		
+		path = save_bucket_upload( uploaded_file )
+		object_name = str(
+			st.session_state.get( 'bucket_object_name', '', ) or getattr( uploaded_file, 'name',
+				Path( path ).name, ) or Path( path ).name ).strip( )
+		content_type = str(
+			st.session_state.get( 'bucket_content_type', '', ) or getattr( uploaded_file, 'type',
+				'', ) or '' ).strip( )
+		
+		result = buckets.upload_file( path=path, bucket=bucket_name, object_name=object_name,
+			content_type=content_type,
+			project_id=str( st.session_state.get( 'bucket_project_id', '', ) or '' ), )
+		metadata = normalize_bucket_object( result )
+		st.session_state[ 'bucket_upload_result' ] = metadata
+		st.session_state[ 'bucket_object_name' ] = object_name
+		return metadata
+	
+	def delete_cloud_bucket_resource( bucket_name: str, object_name: str = '', ) -> bool:
+		"""Delete cloud bucket resource.
+		
+		Purpose:
+		    Deletes a Google Cloud Storage bucket or object using the exact wrapper contract.
+		
+		Args:
+		    bucket_name (str): Required Google Cloud Storage bucket name.
+		    object_name (str): Optional object name. An empty value deletes the bucket.
+		
+		Returns:
+		    bool: True when the deletion request completes.
+		"""
+		throw_if( 'bucket_name', bucket_name, )
+		
+		result = buckets.delete( bucket=bucket_name, object_name=object_name,
+			project_id=str( st.session_state.get( 'bucket_project_id', '', ) or '' ), )
+		
+		if object_name:
+			st.session_state[ 'bucket_table' ] = [ row for row in
+				st.session_state.get( 'bucket_table', [ ], ) if
+				isinstance( row, dict, ) and row.get( 'name' ) != object_name ]
+		else:
+			st.session_state[ 'bucket_selected_id' ] = ''
+			st.session_state[ 'bucket_selected_label' ] = ''
+			st.session_state[ 'bucket_manual_id' ] = ''
+			st.session_state[ 'bucket_table' ] = [ ]
+		
+		st.session_state[ 'bucket_metadata' ] = { 'success': bool( result ), 'bucket': bucket_name,
+			'object_name': object_name, }
+		return bool( result )
+	
+	def query_cloud_bucket( bucket_name: str, query: str, ) -> str:
+		"""Query cloud bucket.
+		
+		Purpose:
+		    Answers a question using supported objects in a Google Cloud Storage bucket through
+		    the exact Gemini CloudBuckets search contract.
+		
+		Args:
+		    bucket_name (str): Required Google Cloud Storage bucket name.
+		    query (str): Required question about bucket content.
+		
+		Returns:
+		    str: Gemini answer grounded in supported bucket objects.
+		"""
+		throw_if( 'bucket_name', bucket_name, )
+		throw_if( 'query', query, )
+		
+		model = str( st.session_state.get( 'bucket_model', '', ) or '' ).strip( )
+		throw_if( 'model', model, )
+		
+		result = buckets.search( bucket=bucket_name, query=query, model=model,
+			project_id=str( st.session_state.get( 'bucket_project_id', '', ) or '' ), location=str(
+				st.session_state.get( 'bucket_location', 'us-central1', ) or 'us-central1' ),
+			prefix=str( st.session_state.get( 'bucket_prefix', '', ) or '' ),
+			max_files=int( st.session_state.get( 'bucket_max_files', 20, ) or 20 ),
+			temperature=float( st.session_state.get( 'bucket_temperature', 0.0, ) or 0.0 ),
+			top_p=float( st.session_state.get( 'bucket_top_percent', 0.0, ) or 0.0 ),
+			frequency=float( st.session_state.get( 'bucket_frequency_penalty', 0.0, ) or 0.0 ),
+			presence=float( st.session_state.get( 'bucket_presence_penalty', 0.0, ) or 0.0 ),
+			max_tokens=int( st.session_state.get( 'bucket_max_tokens', 0, ) or 0 ),
+			response_format=str( st.session_state.get( 'bucket_response_format', '', ) or '' ),
+			instruct=str( st.session_state.get( 'bucket_system_instructions', '', ) or '' ), )
+		
+		if isinstance( result, str, ):
+			return result.strip( )
+		
+		return str( getattr( buckets, 'output_text', '', ) or result or '' ).strip( )
+	
+	# ------------------------------------------------------------------
+	# Provider Options
+	# ------------------------------------------------------------------
+	model_options = [ str( option ) for option in
+		get_bucket_options( buckets, 'model_options', [ ], ) if str( option ).strip( ) ]
+	format_options = [ str( option ) for option in
+		get_bucket_options( buckets, 'format_options', [ ], ) if str( option ).strip( ) ]
+	choice_options = [ str( option ) for option in
+		get_bucket_options( buckets, 'choice_options', [ ], ) if str( option ).strip( ) ]
+	reasoning_options = [ str( option ) for option in
+		get_bucket_options( buckets, 'reasoning_options', [ ], ) if str( option ).strip( ) ]
+	
+	sanitize_bucket_selection( 'bucket_model', model_options, )
+	sanitize_bucket_selection( 'bucket_response_format', format_options, )
+	st.session_state[ 'bucket_tool_choice' ] = ''
+	st.session_state[ 'bucket_reasoning' ] = ''
+	st.session_state[ 'bucket_store' ] = False
+	st.session_state[ 'bucket_stream' ] = False
+	st.session_state[ 'bucket_background' ] = False
+	st.session_state[ 'bucket_number' ] = 0
+	collections = getattr( buckets, 'collections', { }, )
+	if isinstance( collections, dict, ):
+		bucket_options = [ str( bucket_name ).split( '/', 1, )[ 0 ] for bucket_name in
+			collections.values( ) if str( bucket_name ).strip( ) ]
+	else:
+		bucket_options = [ ]
+	
+	bucket_options = list( dict.fromkeys( bucket_options ) )
+	if (st.session_state.get( 'bucket_selected_id' ) not in bucket_options):
+		st.session_state[ 'bucket_selected_id' ] = ''
+	
+	st.session_state[ 'bucket_selected_label' ] = str(
+		st.session_state.get( 'bucket_selected_id', '', ) or '' )
+	
+	# ------------------------------------------------------------------
+	# Main UI
+	# ------------------------------------------------------------------
+	left, center, right = st.columns( [ 0.025, 0.95, 0.025 ] )
+	with center:
+		st.subheader( '☁️ Google Cloud Buckets', help=getattr( cfg, 'GOOGLE_CLOUD_BUCKETS_API',
+			'Google Cloud Storage bucket management and Gemini-grounded querying.', ), )
+		st.divider( )
+		
+		# ------------------------------------------------------------------
+		# Expander — Mind Controls
+		# ------------------------------------------------------------------
+		with st.expander( label='Mind Controls', icon='🧠', expanded=False, width='stretch', ):
+			# ------------------------------------------------------------------
+			# Expander — Bucket Management
+			# ------------------------------------------------------------------
+			with st.expander( label='Bucket Management', icon='🏛️', expanded=False,
+					width='stretch', ):
+				management_c1, management_c2, management_c3, management_c4 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+				
+				# ----- Bucket Name -----
+				with management_c1:
+					st.text_input( label='Bucket Name', key='bucket_name',
+						help=('Required globally unique Google Cloud Storage '
+						      'bucket name used when creating a bucket.'), width='stretch', )
+				
+				# ----- Selected Bucket -----
+				with management_c2:
+					st.selectbox( label='Selected Bucket', options=bucket_options,
+						key='bucket_selected_id', index=None, placeholder='Options',
+						help=('Selects a configured Google Cloud Storage bucket.'), )
+				
+				# ----- Manual Bucket Name -----
+				with management_c3:
+					st.text_input( label='Manual Bucket Name', key='bucket_manual_id',
+						help=('Optional Google Cloud Storage bucket name used '
+						      'for management and query operations.'), width='stretch', )
+				
+				# ----- Bucket Location -----
+				with management_c4:
+					st.text_input( label='Bucket Location', key='bucket_storage_location',
+						help=('Google Cloud Storage location used only when '
+						      'creating a bucket, such as US or us-central1.'), width='stretch', )
+				
+				management_c5, management_c6, management_c7, management_c8 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+				
+				# ----- Object Name -----
+				with management_c5:
+					st.text_input( label='Object Name', key='bucket_object_name',
+						help=('Optional object name used for retrieve, upload, '
+						      'or delete operations.'), width='stretch', )
+				
+				# ----- Prefix -----
+				with management_c6:
+					st.text_input( label='Object Prefix', key='bucket_prefix',
+						help=('Optional object-name prefix used for listing and '
+						      'bucket-grounded queries.'), width='stretch', )
+				
+				# ----- Delete Object Only -----
+				with management_c7:
+					st.toggle( label='Delete Object Only', key='bucket_delete_object_only',
+						help=('Deletes the specified object instead of deleting '
+						      'the entire bucket.'), )
+				
+				# ----- Confirm Delete -----
+				with management_c8:
+					st.toggle( label='Confirm Delete', key='bucket_confirm_delete',
+						help=('Required before deleting a Google Cloud Storage '
+						      'bucket or object.'), )
+				
+				action_c1, action_c2, action_c3, action_c4 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ] )
+				
+				# ----- Create Bucket -----
+				with action_c1:
+					if st.button( label='Create Bucket', key='bucket_create', icon='➕',
+							width='stretch', ):
+						with st.spinner( 'Creating Google Cloud Bucket…' ):
+							try:
+								metadata = create_cloud_bucket( )
+								st.success( f"Created bucket: "
+								            f"{metadata.get( 'name', '' )}" )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'Create bucket failed: {err.info}' )
+				
+				# ----- List Objects -----
+				with action_c2:
+					if st.button( label='List Objects', key='bucket_list', icon='🔠',
+							width='stretch', ):
+						with st.spinner( 'Listing Google Cloud Bucket objects…' ):
+							try:
+								target_bucket = get_selected_bucket_name( )
+								
+								if not target_bucket:
+									st.warning( 'Select or enter a bucket name before '
+									            'listing objects.' )
+								else:
+									rows = list_cloud_bucket_objects( target_bucket )
+									st.success( f'Loaded {len( rows )} object record(s).' )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'List objects failed: {err.info}' )
+				
+				# ----- Retrieve -----
+				with action_c3:
+					if st.button( label='Retrieve', key='bucket_retrieve', icon='🐕',
+							width='stretch', ):
+						with st.spinner( 'Retrieving Google Cloud resource…' ):
+							try:
+								target_bucket = get_selected_bucket_name( )
+								
+								if not target_bucket:
+									st.warning( 'Select or enter a bucket name before '
+									            'retrieving.' )
+								else:
+									retrieve_cloud_bucket( target_bucket, str(
+										st.session_state.get( 'bucket_object_name',
+											'', ) or '' ).strip( ), )
+									st.success( 'Google Cloud resource metadata retrieved.' )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'Retrieve failed: {err.info}' )
+				
+				# ----- Delete -----
+				with action_c4:
+					if st.button( label='Delete', key='bucket_delete', icon='❌',
+							width='stretch', ):
+						with st.spinner( 'Deleting Google Cloud resource…' ):
+							try:
+								target_bucket = get_selected_bucket_name( )
+								delete_object_only = bool(
+									st.session_state.get( 'bucket_delete_object_only', False, ) )
+								object_name = str( st.session_state.get( 'bucket_object_name',
+									'', ) or '' ).strip( )
+								
+								if not target_bucket:
+									st.warning( 'Select or enter a bucket name before '
+									            'deleting.' )
+								elif not st.session_state.get( 'bucket_confirm_delete', False, ):
+									st.warning( 'Confirm deletion before continuing.' )
+								elif delete_object_only and not object_name:
+									st.warning( 'Enter an object name before deleting '
+									            'an object.' )
+								else:
+									delete_cloud_bucket_resource( target_bucket,
+										(object_name if delete_object_only else ''), )
+									st.success( (
+										'Google Cloud object deleted.' if delete_object_only else
+										'Google Cloud bucket deleted.') )
+							except Exception as exc:
+								err = Error( exc )
+								st.error( f'Delete failed: {err.info}' )
+				
+				# ----- Reset Button -----
+				st.button( label='Reset', key='bucket_management_reset', width='stretch',
+					icon='🔄', on_click=reset_bucket_management_settings, )
+				
+				if st.session_state.get( 'bucket_table' ):
+					st.data_editor( pd.DataFrame( st.session_state.get( 'bucket_table', [ ], ) ),
+						use_container_width=True, hide_index=True, disabled=True,
+						key='bucket_table_view', )
+				else:
+					st.info( 'No Google Cloud Bucket object records loaded yet.' )
+				
+				if st.session_state.get( 'bucket_metadata' ):
+					with st.expander( label='Bucket Metadata', icon='📋', expanded=False,
+							width='stretch', ):
+						render_storage_metadata( st.session_state[ 'bucket_metadata' ] )
+			
+			# ------------------------------------------------------------------
+			# Expander — Request Settings
+			# ------------------------------------------------------------------
+			with st.expander( label='Request Settings', icon='⚙️', expanded=False, width='stretch', ):
+				request_c1, request_c2, request_c3, request_c4 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+				
+				# ----- Model -----
+				with request_c1:
+					st.selectbox( label='Model', options=model_options, index=None,
+						key='bucket_model', placeholder='Options',
+						help=('Required Gemini model used for bucket-content '
+						      'queries.'), )
+				
+				# ----- Project ID -----
+				with request_c2:
+					st.text_input( label='Project ID', key='bucket_project_id',
+						help=('Required Google Cloud project identifier used '
+						      'for Storage and Vertex AI clients.'), width='stretch', )
+				
+				# ----- Vertex AI Location -----
+				with request_c3:
+					st.text_input( label='Vertex AI Location', key='bucket_location',
+						help=('Required Vertex AI region used for Gemini '
+						      'bucket-content queries.'), width='stretch', )
+				
+				# ----- Max Files -----
+				with request_c4:
+					st.slider( label='Max Files', min_value=1, max_value=100, step=1,
+						key='bucket_max_files',
+						help=('Maximum number of matching bucket objects included '
+						      'in the Gemini request.'), )
+				
+				request_c5, request_c6, request_c7, request_c8 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+				
+				# ----- Temperature -----
+				with request_c5:
+					st.slider( label='Temperature', min_value=0.0, max_value=2.0, step=0.01,
+						key='bucket_temperature', help=cfg.TEMPERATURE, )
+				
+				# ----- Top-P -----
+				with request_c6:
+					st.slider( label='Top-P', min_value=0.0, max_value=1.0, step=0.01,
+						key='bucket_top_percent', help=cfg.TOP_P, )
+				
+				# ----- Frequency Penalty -----
+				with request_c7:
+					st.slider( label='Frequency Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='bucket_frequency_penalty', help=cfg.FREQUENCY_PENALTY, )
+				
+				# ----- Presence Penalty -----
+				with request_c8:
+					st.slider( label='Presence Penalty', min_value=-2.0, max_value=2.0, step=0.01,
+						key='bucket_presence_penalty', help=cfg.PRESENCE_PENALTY, )
+				
+				request_c9, request_c10, request_c11, request_c12 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+				
+				# ----- Max Tokens -----
+				with request_c9:
+					st.slider( label='Max Tokens', min_value=0, max_value=100000, step=500,
+						key='bucket_max_tokens', help=cfg.MAX_OUTPUT_TOKENS, )
+				
+				# ----- Response Format -----
+				with request_c10:
+					st.selectbox( label='Response Format', options=format_options, index=None,
+						key='bucket_response_format', placeholder='Options',
+						help=('Optional response MIME type accepted by the '
+						      'CloudBuckets search wrapper.'), )
+				
+				# ----- Number -----
+				with request_c11:
+					st.slider( label='Number', min_value=0, max_value=10, value=0, step=1,
+						key='bucket_number', help=('The CloudBuckets wrapper returns one response '
+						                           'per query.'), disabled=True, )
+				
+				# ----- Tool Choice -----
+				with request_c12:
+					st.selectbox( label='Tool Choice', options=choice_options, index=None,
+						key='bucket_tool_choice', placeholder='Options',
+						help=('CloudBuckets queries do not use tool-choice '
+						      'configuration.'), disabled=True, )
+				
+				request_c13, request_c14, request_c15, request_c16 = st.columns(
+					[ 0.25, 0.25, 0.25, 0.25 ], border=True, gap='xxsmall', )
+				
+				# ----- Reasoning -----
+				with request_c13:
+					st.selectbox( label='Reasoning', options=reasoning_options, index=None,
+						key='bucket_reasoning', placeholder='Options',
+						help=('CloudBuckets queries do not expose a separate '
+						      'reasoning argument.'), disabled=True, )
+				
+				# ----- Store -----
+				with request_c14:
+					st.toggle( label='Store', key='bucket_store',
+						help=('CloudBuckets queries do not expose response '
+						      'storage.'), disabled=True, )
+				
+				# ----- Stream -----
+				with request_c15:
+					st.toggle( label='Stream', key='bucket_stream',
+						help=('CloudBuckets queries do not expose streaming.'), disabled=True, )
+				
+				# ----- Background -----
+				with request_c16:
+					st.toggle( label='Background', key='bucket_background',
+						help=('CloudBuckets queries do not expose background '
+						      'execution.'), disabled=True, )
+				
+				# ----- Reset Button -----
+				st.button( label='Reset', key='bucket_request_settings_reset', width='stretch',
+					icon='🔄', on_click=reset_bucket_request_settings, )
+		
+		# ------------------------------------------------------------------
+		# Expander — File Uploader
+		# ------------------------------------------------------------------
+		if 'bucket_upload_object_name' not in st.session_state:
+			st.session_state[ 'bucket_upload_object_name' ] = ''
+		
+		with st.expander( label='File Uploader', icon='📤', expanded=False, width='stretch', ):
+			upload_c1, upload_c2, upload_c3 = st.columns( [ 0.50, 0.25, 0.25 ], border=True,
+				gap='xxsmall', )
+			
+			# ----- File Upload -----
+			with upload_c1:
+				uploaded_file = st.file_uploader( label='Upload File to Bucket',
+					key='bucket_input',
+					help=('Uploads a local file to the selected Google Cloud '
+					      'Storage bucket.'), )
+			
+			# ----- Object Name -----
+			with upload_c2:
+				st.text_input( label='Destination Object Name', key='bucket_upload_object_name',
+					help=('Optional destination object name. The uploaded '
+					      'filename is used when blank.'), width='stretch', )
+			
+			# ----- Content Type -----
+			with upload_c3:
+				st.text_input( label='Content Type', key='bucket_content_type',
+					help=('Optional object MIME type. The uploaded file MIME '
+					      'type is used when blank.'), width='stretch', )
+			
+			target_bucket = get_selected_bucket_name( )
+			
+			if st.button( label='Upload to Bucket', key='bucket_upload', icon='⬆️',
+					width='stretch', disabled=(uploaded_file is None or not bool( target_bucket )),):
+				with st.spinner( 'Uploading file to Google Cloud Storage…' ):
+					try:
+						# Synchronize the uploader-specific destination name
+						# with the value consumed by upload_cloud_bucket_object( ).
+						st.session_state[ 'bucket_object_name' ] = str(
+							st.session_state.get( 'bucket_upload_object_name',
+								'', ) or '' ).strip( )
+						
+						upload_cloud_bucket_object( uploaded_file, target_bucket, )
+						st.success( 'File uploaded to Google Cloud Storage.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Upload failed: {err.info}' )
+			
+			if st.session_state.get( 'bucket_upload_result' ):
+				with st.expander( label='Upload Result', icon='📄', expanded=False,
+						width='stretch', ):
+					render_storage_metadata( st.session_state[ 'bucket_upload_result' ] )
+		
+		# ------------------------------------------------------------------
+		# Expander — System Instructions
+		# ------------------------------------------------------------------
+		with st.expander( label='System Instructions', icon='🖥️', expanded=False, width='stretch', ):
+			in_left, in_right = st.columns( [ 0.8, 0.2 ] )
+			bucket_prompt_categories = fetch_prompt_categories( 'Cloud Buckets' )
+			current_bucket_category = st.session_state.get( 'bucket_prompt_category' )
+			if current_bucket_category not in bucket_prompt_categories:
+				st.session_state[ 'bucket_prompt_category' ] = None
+			
+			selected_bucket_category = st.session_state.get( 'bucket_prompt_category' )
+			bucket_prompt_options = (fetch_prompt_options(
+				selected_bucket_category ) if selected_bucket_category else [ ])
+			bucket_prompt_ids = [ int( option[ 'ID' ] ) for option in bucket_prompt_options ]
+			
+			if (st.session_state.get( 'bucket_prompt_id' ) not in bucket_prompt_ids):
+				st.session_state[ 'bucket_prompt_id' ] = None
+			
+			# ----- Instruction Text -----
+			with in_left:
+				st.text_area( label='Enter Text', height=140, width='stretch',
+					key='bucket_system_instructions', help=cfg.SYSTEM_INSTRUCTIONS, )
+			
+			# ----- Template Selection -----
+			with in_right:
+				st.selectbox( label='Category', options=bucket_prompt_categories, index=None,
+					key='bucket_prompt_category', placeholder='Select Category',
+					help=('Limits prompt templates to categories associated '
+					      'with cloud-storage, governance, and data-management '
+					      'workflows.'), on_change=reset_prompt_template_selection,
+					args=('bucket_prompt_id',), )
+				
+				st.selectbox( label='Use Template', options=bucket_prompt_ids, index=None,
+					key='bucket_prompt_id', placeholder='Select Template',
+					disabled=not bucket_prompt_ids,
+					format_func=lambda prompt_id: format_prompt_option( prompt_id,
+						bucket_prompt_options, ),
+					help=('Loads the selected prompt into the Google Cloud '
+					      'Buckets system-instruction field.'),
+					on_change=load_bucket_instruction_template, )
 			
 			btn_c1, btn_c2 = st.columns( [ 0.8, 0.2 ] )
 			
 			# ----- Clear Button -----
 			with btn_c1:
-				st.button( label='Clear Instructions', key='clear_stores_instructions',
-					width='stretch', on_click=clear_stores_instructions, icon='🧹', )
+				st.button( label='Clear Instructions', key='clear_bucket_instructions',
+					width='stretch', on_click=clear_bucket_instructions, icon='🧹', )
 			
-			# ----- Convert Button ------
+			# ----- Convert Button -----
 			with btn_c2:
-				st.button( label='XML ↔️ Markdown', key='convert_stores_instructions',
-					width='stretch', on_click=convert_stores_system_instructions, )
+				st.button( label='XML ↔️ Markdown', key='convert_bucket_instructions',
+					width='stretch', on_click=convert_bucket_system_instructions, )
 		
-		st.caption( 'Cloud Bucket Management' )
-		buckets_left, buckets_right = st.columns( [ 0.50, 0.50 ], border=True )
-		with buckets_left:
-			# ----------------------------------------------------------
-			# Expander — Create Bucket
-			# ----------------------------------------------------------
-			with st.expander( label='Create', expanded=False ):
-				new_bucket_name = st.text_input( label='New Cloud Bucket name',
-					key='bucket_new_name' )
-				
-				if st.button( label='Create', icon='➕', key='bucket_create', width='stretch' ):
-					if not str( new_bucket_name or '' ).strip( ):
-						st.warning( 'Enter a Cloud Bucket Name.' )
-					else:
-						try:
-							result = searcher.create( bucket=str( new_bucket_name ).strip( ) )
-							created_name = (getattr( result, 'name', None ) or str(
-								new_bucket_name ).strip( ))
-							
-							st.success( f'Created Cloud Bucket: {created_name}' )
-						
-						except Exception as e:
-							exception = Error( e )
-							exception.module = 'app'
-							exception.cause = 'Cloud Bucket creation'
-							exception.method = ('searcher.create( bucket: str )')
-							Logger( ).write( exception )
-							st.error( f'Create bucket failed: {exception.info}' )
-			
-			# ----------------------------------------------------------
-			# Container - Retrieve and Delete Bucket
-			# ----------------------------------------------------------
-			bucket_map = getattr( searcher, 'collections', None )
-			bucket_options: List[ Tuple[ str, str ] ] = [ ]
-			if isinstance( bucket_map, dict ):
-				bucket_options = [ (str( name ), str( identifier )) for name, identifier in
-					bucket_map.items( ) if str( identifier or '' ).strip( ) ]
-			
-			bucket_lookup = { identifier: name for name, identifier in bucket_options }
-			bucket_ids = list( bucket_lookup.keys( ) )
-			# ----------------------------------------------------------
-			# Expander — Retrieve Bucket
-			# ----------------------------------------------------------
-			with st.expander( label='Retrieve', expanded=False ):
-				if bucket_ids:
-					selected_bucket_id = st.selectbox( label='Select Cloud Bucket',
-						options=bucket_ids, format_func=lambda identifier: (
-							f'{bucket_lookup.get( identifier, identifier )} '
-							f'— {identifier}'), index=(bucket_ids.index(
-							st.session_state.get( 'bucket_id' ) ) if st.session_state.get(
-							'bucket_id' ) in bucket_ids else None), key='bucket_selector',
-						placeholder='Options' )
-					
-					if selected_bucket_id:
-						st.session_state[ 'bucket_id' ] = (selected_bucket_id)
-						st.session_state[ 'bucket_selected_label' ] = bucket_lookup.get(
-							selected_bucket_id, selected_bucket_id )
-					
-					action_c1, action_c2 = st.columns( [ 0.50, 0.50 ] )
-					with action_c1:
-						if st.button( label='Cloud Bucket', icon='📥', key='bucket_retrieve',
-								width='stretch' ):
-							active_bucket_id = str(
-								st.session_state.get( 'bucket_id', '' ) or '' ).strip( )
-							
-							if not active_bucket_id:
-								st.warning( 'No Cloud Bucket Selected.' )
-							else:
-								try:
-									bucket_result = searcher.retrieve( bucket=active_bucket_id )
-									st.write( 'Name:', getattr( bucket_result, 'name', '—' ) )
-									st.write( 'Location:', getattr( bucket_result, 'location', '—' ) )
-									st.write( 'Storage Class:',
-										getattr( bucket_result, 'storage_class', '—' ) )
-								
-								except Exception as e:
-									exception = Error( e )
-									exception.module = 'app'
-									exception.cause = ('Cloud Bucket retrieval')
-									exception.method = 'searcher.retrieve( bucket: str )'
-									Logger( ).write( exception )
-									st.error( 'retrieve() failed: '
-									          f'{exception.info}' )
-					
-					with action_c2:
-						if st.button( label='Delete Cloud Bucket', icon='❌', key='bucket_delete',
-								width='stretch' ):
-							active_bucket_id = str(
-								st.session_state.get( 'bucket_id', '' ) or '' ).strip( )
-							
-							if not active_bucket_id:
-								st.warning( 'No Cloud Bucket Selected.' )
-							else:
-								try:
-									searcher.delete( bucket=active_bucket_id, force=True )
-									
-									st.session_state[ 'bucket_id' ] = ''
-									
-									st.session_state[ 'bucket_selected_label' ] = ''
-									
-									st.success( 'Cloud Bucket deleted.' )
-									
-									st.rerun( )
-								
-								except Exception as e:
-									exception = Error( e )
-									exception.module = 'app'
-									exception.cause = ('Cloud Bucket deletion')
-									exception.method = ('searcher.delete( '
-									                    'store_id: str )')
-									Logger( ).write( exception )
-									st.error( f'Delete failed: {exception.info}' )
-				
-				else:
-					st.info( 'No Cloud Buckets are currently available.' )
+		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True, )
 		
 		# ------------------------------------------------------------------
-		#  File Upload
+		# Bucket Query
 		# ------------------------------------------------------------------
-		with buckets_right:
-			st.caption( 'Upload File' )
-			uploaded_file = st.file_uploader( label='Upload file',
-				type=[ 'pdf', 'txt', 'md', 'docx', 'png', 'jpg', 'jpeg', ],
-				key='bucket_file_uploader' )
-			
-			if uploaded_file is not None:
-				tmp_path = save_temp( uploaded_file )
-				upload_function = None
-				for method_name in ('upload_file', 'upload', 'files_upload'):
-					if hasattr( searcher, method_name ):
-						upload_function = getattr( searcher, method_name )
-						break
-				
-				if upload_function is None:
-					st.warning( 'No upload function was found on CloudBuckets.' )
-				
-				elif not tmp_path:
-					st.warning( 'The uploaded file could not be prepared.' )
-				
-				else:
-					if st.button( label='Upload File', icon='📤', key='bucket_upload',
-							width='stretch' ):
-						with st.spinner( 'Uploading to Google Cloud Storage…' ):
-							try:
-								file_identifier = upload_function( tmp_path )
-								st.success( f'Uploaded file: {file_identifier}' )
-							
-							except Exception as e:
-								exception = Error( e )
-								exception.module = 'app'
-								exception.cause = 'Cloud Bucket upload'
-								exception.method = ('CloudBuckets upload method')
-								Logger( ).write( exception )
-								st.error( f'Upload failed: {exception.info}' )
-			
-			active_bucket_label = str(
-				st.session_state.get( 'bucket_selected_label', '' ) or '' ).strip( )
-			active_bucket_id = str( st.session_state.get( 'bucket_id', '' ) or '' ).strip( )
-			if active_bucket_id:
-				st.info( f'Active Cloud Bucket: {active_bucket_label or active_bucket_id}' )
-			else:
-				st.info( 'Select a Cloud Bucket to provide bucket context to the assistant.' )
+		st.text_area( label='Query', key='bucket_query', height=120,
+			help=('Ask a question using supported content stored in the '
+			      'selected Google Cloud Bucket.'), )
 		
-		st.markdown( cfg.BLUE_DIVIDER, unsafe_allow_html=True )
+		qry_c1, qry_c2 = st.columns( 2 )
 		
-		# ------------------------------------------------------------------
-		# Conversation History
-		# ------------------------------------------------------------------
-		for message in st.session_state.get( 'bucket_messages', [ ] ):
-			if not isinstance( message, dict ):
-				continue
-			
-			message_role = str( message.get( 'role', 'assistant' ) or 'assistant' ).strip( )
-			message_content = str( message.get( 'content', '' ) or '' ).strip( )
-			if not message_content:
-				continue
-			
-			message_avatar = (cfg.Boo if message_role == 'assistant' else '')
-			with st.chat_message( message_role, avatar=message_avatar ):
-				st.markdown( message_content )
+		target_bucket = get_selected_bucket_name( )
 		
-		# ------------------------------------------------------------------
-		# Chat Input
-		# ------------------------------------------------------------------
-		bucket_prompt = st.chat_input( 'Enter a Google Cloud Buckets request …',
-			key='bucket_chat_input' )
-		
-		if (bucket_prompt is not None and str( bucket_prompt ).strip( )):
-			bucket_prompt = str( bucket_prompt ).strip( )
-			active_bucket_id = str( st.session_state.get( 'bucket_id', '' ) or '' ).strip( )
-			active_bucket_label = str(
-				st.session_state.get( 'bucket_selected_label', '' ) or '' ).strip( )
-			
-			st.session_state[ 'bucket_messages' ].append(
-				{ 'role': 'user', 'content': bucket_prompt, } )
-			
-			with st.chat_message( 'assistant', avatar=cfg.Boo ):
-				with st.spinner( 'Processing Google Cloud Buckets request…' ):
+		with qry_c1:
+			# ----- Query Button -----
+			if st.button( label='Query Cloud Bucket', key='query_bucket', icon='🔍',
+					width='stretch', disabled=(not bool( target_bucket ) or not bool(
+						str( st.session_state.get( 'bucket_query', '', ) or '' ).strip( ) )), ):
+				with st.spinner( 'Querying cloud bucket…' ):
 					try:
-						response_text = run_bucket_chat_query( prompt=bucket_prompt,
-							selected_bucket_id=active_bucket_id,
-							selected_bucket_label=active_bucket_label, )
+						query = str( st.session_state.get( 'bucket_query', '', ) or '' ).strip( )
 						
-						st.markdown( response_text )
-						st.session_state[ 'bucket_messages' ].append(
-							{ 'role': 'assistant', 'content': response_text, } )
-						
-						if st.session_state.get( 'bucket_stream', False ):
-							st.session_state[ 'bucket_input' ] = [ ]
-						else:
-							structured_history = chat.get_structured_history( )
-							
-							if structured_history:
-								st.session_state[ 'bucket_input' ] = (structured_history)
-							else:
-								st.session_state[ 'bucket_input' ] = [ ]
-						
-						st.session_state[ 'last_sources' ] = [ ]
-						st.session_state[ 'last_answer' ] = response_text
-					
-					except Exception as e:
-						exception = (e if isinstance( e, Error ) else Error( e ))
-						st.error( 'Google Cloud Buckets request failed: '
-						          f'{exception.info}' )
+						result = query_cloud_bucket( target_bucket, query, )
+						st.session_state[ 'bucket_results' ] = result
+						st.success( 'Google Cloud Bucket query completed.' )
+					except Exception as exc:
+						err = Error( exc )
+						st.error( f'Bucket query failed: {err.info}' )
 		
-		st.button( label='Clear Messages', key='bucket_clear_messages', icon='🧹', width='content',
-			on_click=clear_bucket_messages )
+		with qry_c2:
+			# ----- Clear Outputs -----
+			if st.button( label='Clear Outputs', key='clear_bucket_outputs', width='stretch',
+					on_click=clear_bucket_outputs, icon='🧹', ):
+				st.rerun( )
+		
+		# ------------------------------------------------------------------
+		# Expander — Query Results
+		# ------------------------------------------------------------------
+		if st.session_state.get( 'bucket_results' ) is not None:
+			with st.expander( label='Query Results', icon='📄', expanded=True, width='stretch', ):
+				result = st.session_state[ 'bucket_results' ]
+				
+				if isinstance( result, str, ):
+					st.markdown( result )
+				else:
+					st.json( normalize( result ) )
 
 # ======================================================================================
 # PROMPT ENGINEERING MODE
@@ -15227,17 +16561,22 @@ st.markdown( """
 # ======================================================================================
 # FOOTER RENDERING
 # ======================================================================================
-_mode_to_model_key = { 'Text': 'text_model', 'Images': 'image_model', 'Audio': 'audio_model',
-	'Embeddings': 'embed_model', 'Document Q&A': 'doc_model', 'Files': 'files_model',
-	'Vector Stores': 'stores_model', 'File Search Stores': 'filestore_model',
-	'Google Cloud Buckets': 'bucket_model', 'Prompt Engineering': 'prompt_model',
-	'Data Management': 'data_model', }
+_mode_to_model_key = { 'Chat': 'chat_model', 'Text': 'text_model', 'Images': 'image_model',
+	'Audio': 'audio_model', 'TTS': 'tts_model', 'Translation': 'translation_model',
+	'Transcription': 'transcription_model', 'Embeddings': 'embedding_model',
+	'Document Q&A': 'docqna_model', 'Files': 'files_model', 'Vector Stores': 'stores_model',
+	'Collections': 'collections_model', 'File Search Stores': 'filestore_model',
+	'Google Cloud Buckets': 'bucket_model', 'Data Management': 'text_model', }
 
 provider_val = st.session_state.get( 'provider', '—' )
 mode_val = mode or '—'
-active_model = st.session_state.get( _mode_to_model_key.get( mode, "" ), None )
-right_parts = [ ]
-if active_model is not None:
+model_state_key = _mode_to_model_key.get( mode )
+active_model = None
+if model_state_key:
+	active_model = st.session_state.get( model_state_key, None )
+
+right_parts: List[ str ] = [ ]
+if active_model:
 	right_parts.append( f'Model: {active_model}' )
 
 # ---- Rendered Variables
@@ -15245,15 +16584,15 @@ if mode == 'Text':
 	temperature = st.session_state.get( 'text_temperature' )
 	top_p = st.session_state.get( 'text_top_percent' )
 	freq = st.session_state.get( 'text_frequency_penalty' )
-	presence = st.session_state.get( 'text_presense_penalty' )
+	presence = st.session_state.get( 'text_presence_penalty' )
 	number = st.session_state.get( 'text_number' )
 	stream = st.session_state.get( 'text_stream' )
 	parallel_tools = st.session_state.get( 'text_parallel_tools' )
-	max_calls = st.session_state.get( 'text_max_tools' )
+	max_calls = st.session_state.get( 'text_max_calls' )
 	store = st.session_state.get( 'text_store' )
 	tools = st.session_state.get( 'text_tools' )
 	include = st.session_state.get( 'text_include' )
-	domains = st.session_state.get( 'text_domains' )
+	domains = st.session_state.get( 'text_domains_input' )
 	input_mode = st.session_state.get( 'text_input' )
 	tool_choice = st.session_state.get( 'text_tool_choice' )
 	background = st.session_state.get( 'text_background' )
@@ -15261,40 +16600,101 @@ if mode == 'Text':
 	max_tokens = st.session_state.get( 'text_max_tokens' )
 	
 	if temperature is not None:
-		right_parts.append( f'Temp: {temperature:.1%}' )
+		right_parts.append( f'Temp: {temperature:.2f}' )
+	
 	if top_p is not None:
-		right_parts.append( f'Top-P: {top_p:.1%}' )
+		right_parts.append( f'Top-P: {top_p:.2f}' )
+	
 	if freq is not None:
 		right_parts.append( f'Freq: {freq:.2f}' )
+	
 	if presence is not None:
 		right_parts.append( f'Presence: {presence:.2f}' )
-	if number is not None:
+	
+	if number:
 		right_parts.append( f'N: {number}' )
-	if max_tokens is not None:
+	
+	if max_tokens:
 		right_parts.append( f'Max Tokens: {max_tokens}' )
 	
 	if stream:
 		right_parts.append( 'Stream: On' )
+	
 	if parallel_tools:
 		right_parts.append( 'Parallel Tools: On' )
-	if max_calls is not None:
+	
+	if max_calls:
 		right_parts.append( f'Max Calls: {max_calls}' )
+	
 	if store:
 		right_parts.append( 'Store: On' )
+	
 	if tools:
 		right_parts.append( f'Tools: {len( tools )}' )
+	
 	if include:
 		right_parts.append( 'Include: On' )
+	
 	if domains:
 		right_parts.append( 'Domains: Set' )
+	
 	if input_mode:
-		right_parts.append( 'Input: Set' )
+		right_parts.append( f'Input: {input_mode}' )
+	
 	if tool_choice:
-		right_parts.append( f'Tool Choice: On' )
+		right_parts.append( 'Tool Choice: Set' )
+	
 	if background:
 		right_parts.append( 'Background: On' )
+	
 	if messages:
-		right_parts.append( 'Messages: Set' )
+		right_parts.append( f'Messages: {len( messages )}' )
+
+elif mode == 'Chat':
+	temperature = st.session_state.get( 'temperature' )
+	top_p = st.session_state.get( 'top_percent' )
+	frequency = st.session_state.get( 'frequency_penalty' )
+	presence = st.session_state.get( 'presence_penalty' )
+	max_tokens = st.session_state.get( 'max_tokens' )
+	stream = st.session_state.get( 'stream' )
+	store = st.session_state.get( 'store' )
+	background = st.session_state.get( 'background' )
+	tools = st.session_state.get( 'tools' )
+	tool_choice = st.session_state.get( 'tool_choice' )
+	execution_mode = st.session_state.get( 'execution_mode' )
+	
+	if temperature is not None:
+		right_parts.append( f'Temp: {temperature:.2f}' )
+	
+	if top_p is not None:
+		right_parts.append( f'Top-P: {top_p:.2f}' )
+	
+	if frequency is not None:
+		right_parts.append( f'Freq: {frequency:.2f}' )
+	
+	if presence is not None:
+		right_parts.append( f'Presence: {presence:.2f}' )
+	
+	if max_tokens:
+		right_parts.append( f'Max Tokens: {max_tokens}' )
+	
+	if execution_mode:
+		right_parts.append( f'Execution: {execution_mode}' )
+	
+	if stream:
+		right_parts.append( 'Stream: On' )
+	
+	if store:
+		right_parts.append( 'Store: On' )
+	
+	if background:
+		right_parts.append( 'Background: On' )
+	
+	if tools:
+		right_parts.append( f'Tools: {len( tools )}' )
+	
+	if tool_choice:
+		right_parts.append( 'Tool Choice: Set' )
 
 elif mode == 'Images':
 	image_mode = st.session_state.get( 'image_mode' )
@@ -15312,43 +16712,56 @@ elif mode == 'Images':
 	image_background = st.session_state.get( 'image_background' )
 	image_include = st.session_state.get( 'image_include' )
 	image_parallel_tools = st.session_state.get( 'image_parallel_tools' )
-	image_max_calls = st.session_state.get( 'text_max_tools' )
+	image_max_calls = st.session_state.get( 'image_max_calls' )
 	image_tools = st.session_state.get( 'image_tools' )
 	
-	if image_aspect is not None:
+	if image_aspect:
 		right_parts.append( f'Aspect: {image_aspect}' )
-	elif image_size is not None:
+	elif image_size:
 		right_parts.append( f'Size: {image_size}' )
 	
-	if image_mode is not None:
+	if image_mode:
 		right_parts.append( f'Mode: {image_mode}' )
-	if image_reasoning is not None:
+	
+	if image_reasoning:
 		right_parts.append( f'Reasoning: {image_reasoning}' )
-	if image_style is not None:
+	
+	if image_style:
 		right_parts.append( f'Style: {image_style}' )
-	if image_quality is not None:
+	
+	if image_quality:
 		right_parts.append( f'Quality: {image_quality}' )
-	if image_backcolor is not None:
+	
+	if image_backcolor:
 		right_parts.append( f'Backcolor: {image_backcolor}' )
-	if image_fmt is not None:
+	
+	if image_fmt:
 		right_parts.append( f'Format: {image_fmt}' )
-	if image_detail is not None:
+	
+	if image_detail:
 		right_parts.append( f'Detail: {image_detail}' )
 	
-	if image_number is not None:
+	if image_number:
 		right_parts.append( f'N: {image_number}' )
+	
 	if image_parallel_tools:
 		right_parts.append( 'Parallel Tools: On' )
-	if image_max_calls is not None:
+	
+	if image_max_calls:
 		right_parts.append( f'Max Calls: {image_max_calls}' )
+	
 	if image_tools:
 		right_parts.append( f'Tools: {len( image_tools )}' )
+	
 	if image_include:
 		right_parts.append( 'Include: On' )
+	
 	if image_stream:
 		right_parts.append( 'Stream: On' )
+	
 	if image_store:
 		right_parts.append( 'Store: On' )
+	
 	if image_background:
 		right_parts.append( 'Background: On' )
 
@@ -15357,161 +16770,317 @@ elif mode == 'Audio':
 	audio_format = st.session_state.get( 'audio_response_format' )
 	audio_top_p = st.session_state.get( 'audio_top_percent' )
 	audio_freq = st.session_state.get( 'audio_frequency_penalty' )
-	audio_presence = st.session_state.get( 'audio_presense_penalty' )
+	audio_presence = st.session_state.get( 'audio_presence_penalty' )
 	audio_number = st.session_state.get( 'audio_number' )
 	audio_temperature = st.session_state.get( 'audio_temperature' )
 	audio_stream = st.session_state.get( 'audio_stream' )
 	audio_store = st.session_state.get( 'audio_store' )
-	audio_input = st.session_state.get( 'audio_input' )
+	audio_input_mode = st.session_state.get( 'audio_input' )
 	audio_reasoning = st.session_state.get( 'audio_reasoning' )
 	audio_tool_choice = st.session_state.get( 'audio_tool_choice' )
 	audio_messages = st.session_state.get( 'audio_messages' )
 	audio_background = st.session_state.get( 'audio_background' )
 	audio_file = st.session_state.get( 'audio_file' )
 	audio_rate = st.session_state.get( 'audio_rate' )
-	audio_start = st.session_state.get( 'audio_start' )
-	audio_end = st.session_state.get( 'audio_end' )
+	audio_start = st.session_state.get( 'audio_start_time' )
+	audio_end = st.session_state.get( 'audio_end_time' )
 	audio_loop = st.session_state.get( 'audio_loop' )
-	audio_play = st.session_state.get( 'auto_play' )
-	audio_voice = st.session_state.get( 'voice', None )
+	audio_play = st.session_state.get( 'audio_autoplay' )
+	audio_voice = st.session_state.get( 'audio_voice' )
 	
-	if audio_task is not None:
+	if audio_task:
 		right_parts.append( f'Task: {audio_task}' )
-	if audio_format is not None:
+	
+	if audio_format:
 		right_parts.append( f'Format: {audio_format}' )
 	
 	if audio_temperature is not None:
-		right_parts.append( f'Temp: {audio_temperature:.1%}' )
+		right_parts.append( f'Temp: {audio_temperature:.2f}' )
+	
 	if audio_top_p is not None:
-		right_parts.append( f'Top-P: {audio_top_p:.1%}' )
+		right_parts.append( f'Top-P: {audio_top_p:.2f}' )
+	
 	if audio_freq is not None:
 		right_parts.append( f'Freq: {audio_freq:.2f}' )
+	
 	if audio_presence is not None:
 		right_parts.append( f'Presence: {audio_presence:.2f}' )
-	if audio_number is not None:
+	
+	if audio_number:
 		right_parts.append( f'N: {audio_number}' )
 	
 	if audio_stream:
 		right_parts.append( 'Stream: On' )
+	
 	if audio_store:
 		right_parts.append( 'Store: On' )
+	
 	if audio_reasoning:
-		right_parts.append( 'Reasoning: On' )
-	if audio_input:
+		right_parts.append( f'Reasoning: {audio_reasoning}' )
+	
+	if audio_input_mode:
 		right_parts.append( 'Input: Set' )
+	
 	if audio_tool_choice:
 		right_parts.append( f'Tool Choice: {audio_tool_choice}' )
+	
 	if audio_messages:
-		right_parts.append( 'Messages: Set' )
+		right_parts.append( f'Messages: {len( audio_messages )}' )
+	
 	if audio_background:
 		right_parts.append( 'Background: On' )
 	
 	if audio_voice:
 		right_parts.append( f'Voice: {audio_voice}' )
+	
 	if audio_rate is not None:
 		right_parts.append( f'Rate: {audio_rate}' )
-	if (audio_start or audio_end) and audio_end >= audio_start:
+	
+	if (audio_start is not None and audio_end is not None and audio_end > audio_start):
 		right_parts.append( f'Trim: {audio_start}s–{audio_end}s' )
+	
 	if audio_loop:
 		right_parts.append( 'Loop: On' )
+	
 	if audio_play:
 		right_parts.append( 'Autoplay: On' )
-	if audio_file is not None:
+	
+	if audio_file:
 		right_parts.append( 'File: Set' )
 
 elif mode == 'Embeddings':
-	model = st.session_state.get( 'embedding_model' )
-	dimensions = st.session_state.get( 'embeddings_dimensions' )
-	encoding = st.session_state.get( 'embeddings_encoding_format' )
-	input_data = st.session_state.get( 'embedding_text_input' )
+	dimensions = st.session_state.get( 'embedding_dimensions' )
+	encoding = st.session_state.get( 'embedding_encoding_format' )
+	input_data = st.session_state.get( 'embedding_text' )
+	chunk_size = st.session_state.get( 'embedding_chunk_size' )
+	chunk_overlap = st.session_state.get( 'embedding_chunk_overlap' )
 	
-	if model is not None:
-		right_parts.append( f'Model: {model}' )
-	
-	if dimensions is not None:
+	if dimensions:
 		right_parts.append( f'Dim: {dimensions}' )
 	
-	if encoding is not None:
+	if encoding:
 		right_parts.append( f'Format: {encoding}' )
+	
+	if chunk_size:
+		right_parts.append( f'Chunk: {chunk_size}' )
+	
+	if chunk_overlap:
+		right_parts.append( f'Overlap: {chunk_overlap}' )
 	
 	if input_data:
 		right_parts.append( 'Input: Set' )
 
-elif mode == 'Files':
-	files_purpose = st.session_state.get( 'files_purpose' )
-	files_type = st.session_state.get( 'files_type' )
-	files_id = st.session_state.get( 'files_id' )
-	files_url = st.session_state.get( 'files_url' )
+elif mode == 'Document Q&A':
+	source = st.session_state.get( 'docqna_source' )
+	question = st.session_state.get( 'docqna_question' )
+	max_tokens = st.session_state.get( 'docqna_max_tokens' )
+	temperature = st.session_state.get( 'docqna_temperature' )
+	top_p = st.session_state.get( 'docqna_top_percent' )
+	response_format = st.session_state.get( 'docqna_response_format' )
+	reasoning = st.session_state.get( 'docqna_reasoning' )
+	sources = st.session_state.get( 'docqna_sources' )
 	
-	if files_purpose is not None:
-		right_parts.append( f'Purpose: {files_purpose}' )
+	if source:
+		right_parts.append( f'Source: {source}' )
 	
-	if files_type is not None:
-		right_parts.append( f'Type: {files_type}' )
+	if question:
+		right_parts.append( 'Question: Set' )
 	
-	if files_id is not None:
-		right_parts.append( f'File ID: {files_id}' )
-	
-	if files_url is not None:
-		right_parts.append( 'URL: Set' )
-
-elif mode == 'VectorStores':
-	model = st.session_state.get( 'stores_model' )
-	fmt = st.session_state.get( 'stores_response_format' )
-	temperature = st.session_state.get( 'stores_temperature' )
-	top_p = st.session_state.get( 'stores_top_percent' )
-	freq = st.session_state.get( 'stores_frequency_penalty' )
-	presence = st.session_state.get( 'stores_presense_penalty' )
-	number = st.session_state.get( 'stores_number' )
-	stream = st.session_state.get( 'stores_stream' )
-	store = st.session_state.get( 'stores_store' )
-	input_data = st.session_state.get( 'stores_input' )
-	reasoning = st.session_state.get( 'stores_reasoning' )
-	tool_choice = st.session_state.get( 'stores_tool_choice' )
-	messages = st.session_state.get( 'stores_messages' )
-	background = st.session_state.get( 'stores_background' )
-	
-	if model is not None:
-		right_parts.append( f'Model: {model}' )
-	
-	if fmt is not None:
-		right_parts.append( f'Format: {fmt}' )
+	if max_tokens:
+		right_parts.append( f'Max Tokens: {max_tokens}' )
 	
 	if temperature is not None:
-		right_parts.append( f'Temp: {temperature}' )
+		right_parts.append( f'Temp: {temperature:.2f}' )
 	
 	if top_p is not None:
-		right_parts.append( f'Top-P: {top_p}' )
+		right_parts.append( f'Top-P: {top_p:.2f}' )
 	
-	if freq is not None:
-		right_parts.append( f'Freq: {freq}' )
+	if response_format:
+		right_parts.append( f'Format: {response_format}' )
+	
+	if reasoning:
+		right_parts.append( f'Reasoning: {reasoning}' )
+	
+	if sources:
+		right_parts.append( f'Sources: {len( sources )}' )
+
+elif mode == 'Files':
+	files_purpose = st.session_state.get( 'files_purpose' )
+	files_selected_id = st.session_state.get( 'files_selected_id' )
+	files_uploaded = st.session_state.get( 'files_uploaded' )
+	files_messages = st.session_state.get( 'files_messages' )
+	
+	if files_purpose:
+		right_parts.append( f'Purpose: {files_purpose}' )
+	
+	if files_selected_id:
+		right_parts.append( f'File ID: {files_selected_id}' )
+	
+	if files_uploaded:
+		right_parts.append( f'Files: {len( files_uploaded )}' )
+	
+	if files_messages:
+		right_parts.append( f'Messages: {len( files_messages )}' )
+
+elif mode == 'Vector Stores':
+	active_store_id = (st.session_state.get( 'stores_selected_id' ) or st.session_state.get(
+		'stores_manual_id' ) or st.session_state.get( 'stores_id' ))
+	max_results = st.session_state.get( 'stores_max_results' )
+	ranker = st.session_state.get( 'stores_ranker' )
+	chunking_strategy = st.session_state.get( 'stores_chunking_strategy' )
+	expires_after_days = st.session_state.get( 'stores_expires_after_days' )
+	instructions = st.session_state.get( 'stores_system_instructions' )
+	
+	if active_store_id:
+		right_parts.append( f'Store: {active_store_id}' )
+	
+	if max_results:
+		right_parts.append( f'Max Results: {max_results}' )
+	
+	if ranker:
+		right_parts.append( f'Ranker: {ranker}' )
+	
+	if chunking_strategy:
+		right_parts.append( f'Chunking: {chunking_strategy}' )
+	
+	if expires_after_days:
+		right_parts.append( f'Expires: {expires_after_days} Days' )
+	
+	if instructions:
+		right_parts.append( 'Instructions: Set' )
+
+elif mode == 'Collections':
+	active_collection_id = (
+			st.session_state.get( 'collections_selected_id' ) or st.session_state.get(
+		'collections_manual_id' ) or st.session_state.get( 'collections_id' ))
+	max_results = st.session_state.get( 'collections_max_results' )
+	team_id = st.session_state.get( 'collections_team_id' )
+	metadata_filter = st.session_state.get( 'collections_filter' )
+	next_token = st.session_state.get( 'collections_next_token' )
+	instructions = st.session_state.get( 'collections_system_instructions' )
+	
+	if active_collection_id:
+		right_parts.append( f'Collection: {active_collection_id}' )
+	
+	if max_results:
+		right_parts.append( f'Max Results: {max_results}' )
+	
+	if team_id:
+		right_parts.append( f'Team: {team_id}' )
+	
+	if metadata_filter:
+		right_parts.append( 'Filter: Set' )
+	
+	if next_token:
+		right_parts.append( 'Next Page: Available' )
+	
+	if instructions:
+		right_parts.append( 'Instructions: Set' )
+
+elif mode == 'File Search Stores':
+	active_store_id = (st.session_state.get( 'filestore_selected_id' ) or st.session_state.get(
+		'filestore_manual_id' ) or st.session_state.get( 'filestore_id' ))
+	temperature = st.session_state.get( 'filestore_temperature' )
+	top_p = st.session_state.get( 'filestore_top_percent' )
+	frequency = st.session_state.get( 'filestore_frequency_penalty' )
+	presence = st.session_state.get( 'filestore_presence_penalty' )
+	max_tokens = st.session_state.get( 'filestore_max_tokens' )
+	background = st.session_state.get( 'filestore_background' )
+	store = st.session_state.get( 'filestore_store' )
+	stream = st.session_state.get( 'filestore_stream' )
+	response_format = st.session_state.get( 'filestore_response_format' )
+	tool_choice = st.session_state.get( 'filestore_tool_choice' )
+	reasoning = st.session_state.get( 'filestore_reasoning' )
+	instructions = st.session_state.get( 'filestore_system_instructions' )
+	
+	if active_store_id:
+		right_parts.append( f'Store: {active_store_id}' )
+	
+	if temperature is not None:
+		right_parts.append( f'Temp: {temperature:.2f}' )
+	
+	if top_p is not None:
+		right_parts.append( f'Top-P: {top_p:.2f}' )
+	
+	if frequency is not None:
+		right_parts.append( f'Freq: {frequency:.2f}' )
 	
 	if presence is not None:
-		right_parts.append( f'Presence: {presence}' )
+		right_parts.append( f'Presence: {presence:.2f}' )
 	
-	if number is not None:
-		right_parts.append( f'N: {number}' )
+	if max_tokens:
+		right_parts.append( f'Max Tokens: {max_tokens}' )
 	
-	if stream:
-		right_parts.append( 'Stream: On' )
+	if response_format:
+		right_parts.append( f'Format: {response_format}' )
+	
+	if tool_choice:
+		right_parts.append( 'Tool Choice: Set' )
+	
+	if reasoning:
+		right_parts.append( f'Reasoning: {reasoning}' )
+	
+	if background:
+		right_parts.append( 'Background: On' )
 	
 	if store:
 		right_parts.append( 'Store: On' )
 	
-	if reasoning is not None:
-		right_parts.append( f'Reasoning: {reasoning}' )
+	if stream:
+		right_parts.append( 'Stream: On' )
 	
-	if tool_choice is not None:
-		right_parts.append( f'Tool Choice: {tool_choice}' )
+	if instructions:
+		right_parts.append( 'Instructions: Set' )
+
+elif mode == 'Google Cloud Buckets':
+	bucket_name = st.session_state.get( 'bucket_name' )
+	project_id = st.session_state.get( 'bucket_project_id' )
+	location = st.session_state.get( 'bucket_location' )
+	prefix = st.session_state.get( 'bucket_prefix' )
+	max_files = st.session_state.get( 'bucket_max_files' )
+	max_tokens = st.session_state.get( 'bucket_max_tokens' )
+	temperature = st.session_state.get( 'bucket_temperature' )
+	top_p = st.session_state.get( 'bucket_top_percent' )
+	frequency = st.session_state.get( 'bucket_frequency_penalty' )
+	presence = st.session_state.get( 'bucket_presence_penalty' )
+	response_format = st.session_state.get( 'bucket_response_format' )
+	instructions = st.session_state.get( 'bucket_system_instructions' )
 	
-	if input_data:
-		right_parts.append( 'Input: Set' )
+	if bucket_name:
+		right_parts.append( f'Bucket: {bucket_name}' )
 	
-	if messages:
-		right_parts.append( 'Messages: Set' )
+	if project_id:
+		right_parts.append( f'Project: {project_id}' )
 	
-	if background:
-		right_parts.append( 'Background: On' )
+	if location:
+		right_parts.append( f'Location: {location}' )
+	
+	if prefix:
+		right_parts.append( 'Prefix: Set' )
+	
+	if max_files:
+		right_parts.append( f'Max Files: {max_files}' )
+	
+	if max_tokens:
+		right_parts.append( f'Max Tokens: {max_tokens}' )
+	
+	if temperature is not None:
+		right_parts.append( f'Temp: {temperature:.2f}' )
+	
+	if top_p is not None:
+		right_parts.append( f'Top-P: {top_p:.2f}' )
+	
+	if frequency is not None:
+		right_parts.append( f'Freq: {frequency:.2f}' )
+	
+	if presence is not None:
+		right_parts.append( f'Presence: {presence:.2f}' )
+	
+	if response_format:
+		right_parts.append( f'Format: {response_format}' )
+	
+	if instructions:
+		right_parts.append( 'Instructions: Set' )
 
 right_text = ' ◽ '.join( right_parts ) if right_parts else '—'
 

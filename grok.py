@@ -237,7 +237,7 @@ class Chat( Grok ):
 	response: Any
 	usage: Any
 	
-	def __init__( self, model: str = 'grok-4.20' ) -> None:
+	def __init__( self, model: str='grok-4.20' ) -> None:
 		"""Initialize instance.
 		
 		Purpose:
@@ -487,7 +487,7 @@ class Chat( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_response_format( self, format: Any = None, response_schema: Any = None ) -> Any:
+	def build_response_format( self, format: Any=None, response_schema: Any=None ) -> Any:
 		"""Build response format.
 		
 		Purpose:
@@ -539,15 +539,14 @@ class Chat( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_chat( self, model: str, temperature: float = 0.0, top_p: float = 0.0,
-		frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 0,
-		stops: Optional[ List[ str ] ] = None, store: bool = False,
+	def build_chat( self, model: str, temperature: float=0.0, top_p: float=0.0,
+		frequency: float=0.0, presence: float=0.0, max_tokens: int=0,
+		stops: Optional[ List[ str ] ] = None, store: bool=False,
 		include: Optional[ List[ str ] ] = None, tools: Optional[ List[ Any ] ] = None,
 		allowed_domains: Optional[ List[ str ] ] = None,
-		vector_store_ids: Optional[ List[ str ] ] = None, max_tools: int = 0, tool_choice: str =
-		'',
-		is_parallel: bool = False, previous_id: str = '', reasoning: str = '', format: Any = None,
-		response_schema: Any = None ) -> Any:
+		vector_store_ids: Optional[ List[ str ] ] = None, max_tools: int=0, tool_choice: str='',
+		is_parallel: bool=False, previous_id: str='', reasoning: str='', format: Any=None,
+		response_schema: Any=None ) -> Any:
 		"""Build provider chat.
 		
 		Purpose:
@@ -601,8 +600,7 @@ class Chat( Grok ):
 			self.reasoning = reasoning.strip( ).lower( )
 			self.response_format = self.build_response_format( format, response_schema, )
 			self.tool_objects = self.build_tools( tools, allowed_domains, vector_store_ids, )
-			self.chat_values = { 'model': self.model, 'store_messages': self.store_messages, }
-			
+			self.chat_values = { 'model': self.model, 'store_messages': self.store_messages, }			
 			if self.temperature > 0:
 				self.chat_values[ 'temperature' ] = (self.temperature)
 			
@@ -674,17 +672,14 @@ class Chat( Grok ):
 			Error: Re-raised after the exception is logged.
 		"""
 		try:
-			from xai_sdk.chat import assistant
-			
-			self.context = (context if context is not None else [ ])
-			
+			from xai_sdk.chat import assistant			
+			self.context = (context if context is not None else [ ])			
 			for item in self.context:
 				if not isinstance( item, dict ):
 					continue
 				
 				self.role = str( item.get( 'role', '', ) ).strip( ).lower( )
-				self.message_content = str( item.get( 'content', '', ) ).strip( )
-				
+				self.message_content = str( item.get( 'content', '', ) ).strip( )				
 				if not self.message_content:
 					continue
 				
@@ -702,8 +697,7 @@ class Chat( Grok ):
 			exception = Error( e )
 			exception.module = 'grok'
 			exception.cause = 'Chat'
-			exception.method = ('append_context( self, context: Optional[ '
-			                    'List[ Dict[ str, Any ] ] ] = None ) -> None')
+			exception.method = ('append_context( self, **kwargs ) -> None')
 			Logger( ).write( exception )
 			raise exception
 	
@@ -720,8 +714,7 @@ class Chat( Grok ):
 			Error: Re-raised after the exception is logged.
 		"""
 		try:
-			self.output_text = ''
-			
+			self.output_text = ''			
 			if self.response is None:
 				return self.output_text
 			
@@ -739,15 +732,15 @@ class Chat( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def generate_text( self, prompt: str, model: str, temperature: float = 0.0, format: Any = None,
-		top_p: float = 0.0, frequency: float = 0.0, presence: float = 0.0, max_tokens: int = 0,
-		stops: Optional[ List[ str ] ] = None, store: bool = False, stream: bool = False,
-		instruct: str = '', reasoning: str = '', include: Optional[ List[ str ] ] = None,
+	def generate_text( self, prompt: str, model: str, temperature: float=0.0, format: Any=None,
+		top_p: float=0.0, frequency: float=0.0, presence: float=0.0, max_tokens: int=0,
+		stops: Optional[ List[ str ] ] = None, store: bool=False, stream: bool=False,
+		instruct: str='', reasoning: str='', include: Optional[ List[ str ] ] = None,
 		tools: Optional[ List[ Any ] ] = None, allowed_domains: Optional[ List[ str ] ] = None,
-		previous_id: str = '', tool_choice: str = '', is_parallel: bool = False,
+		previous_id: str='', tool_choice: str='', is_parallel: bool=False,
 		context: Optional[ List[ Dict[ str, Any ] ] ] = None,
-		vector_store_ids: Optional[ List[ str ] ] = None, max_tools: int = 0,
-		response_schema: Any = None, stream_handler: Any = None ) -> str:
+		vector_store_ids: Optional[ List[ str ] ] = None, max_tools: int=0,
+		response_schema: Any=None, stream_handler: Any=None ) -> str:
 		"""Generate text.
 		
 		Purpose:
@@ -953,7 +946,7 @@ class Images( Grok ):
 	output_text: str
 	
 	def __init__( self,
-		model: str = 'grok-imagine-image-quality' ) -> None:
+		model: str='grok-imagine-image-quality' ) -> None:
 		"""Initialize instance.
 		
 		Purpose:
@@ -1357,7 +1350,7 @@ class Images( Grok ):
 			raise exception
 	
 	def generate( self, prompt: str, model: str,
-		number: int = 1, aspect_ratio: str = 'auto' ) -> Any:
+		number: int=1, aspect_ratio: str='auto' ) -> Any:
 		"""Generate images.
 		
 		Purpose:
@@ -1453,7 +1446,7 @@ class Images( Grok ):
 			raise exception
 	
 	def analyze( self, prompt: str, path: str,
-		model: str, detail: str = 'auto' ) -> str:
+		model: str, detail: str='auto' ) -> str:
 		"""Analyze an image.
 		
 		Purpose:
@@ -1521,9 +1514,9 @@ class Images( Grok ):
 			raise exception
 	
 	def edit( self, prompt: str, model: str,
-		path: str = '', image_url: str = '',
-		aspect_ratio: str = 'auto',
-		number: int = 1 ) -> Any:
+		path: str='', image_url: str='',
+		aspect_ratio: str='auto',
+		number: int=1 ) -> Any:
 		"""Edit an image.
 		
 		Purpose:
@@ -1755,7 +1748,7 @@ class Files( Grok ):
 	next_token: str
 	documents: Dict[ str, str ]
 	
-	def __init__( self, model: str = 'grok-4.20' ) -> None:
+	def __init__( self, model: str='grok-4.20' ) -> None:
 		"""Initialize instance.
 		
 		Purpose:
@@ -1935,8 +1928,8 @@ class Files( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def upload( self, file_path: str, file_name: str = '', purpose: str = 'assistants',
-		expires_after: int = 0 ) -> Dict[ str, Any ]:
+	def upload( self, file_path: str, file_name: str='', purpose: str='assistants',
+		expires_after: int=0 ) -> Dict[ str, Any ]:
 		"""Upload a file.
 		
 		Purpose:
@@ -1985,7 +1978,7 @@ class Files( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def list( self, limit: int = 100, pagination_token: str = '' ) -> List[ Dict[ str, Any ] ]:
+	def list( self, limit: int=100, pagination_token: str='' ) -> List[ Dict[ str, Any ] ]:
 		"""List files.
 		
 		Purpose:
@@ -2032,7 +2025,7 @@ class Files( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def list_files( self, limit: int = 100, pagination_token: str = '' ) -> List[
+	def list_files( self, limit: int=100, pagination_token: str='' ) -> List[
 		Dict[ str, Any ] ]:
 		"""List files.
 		
@@ -2257,12 +2250,12 @@ class Files( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def summarize( self, file_id: str, prompt: str, model: str, instruct: str = '',
-		temperature: float = 0.0, top_p: float = 0.0, frequency: float = 0.0, presence: float =
+	def summarize( self, file_id: str, prompt: str, model: str, instruct: str='',
+		temperature: float=0.0, top_p: float=0.0, frequency: float=0.0, presence: float =
 		0.0,
-		max_tokens: int = 0, store: bool = False, stream: bool = False,
-		include: Optional[ List[ str ] ] = None, previous_id: str = '',
-		stream_handler: Any = None ) -> str:
+		max_tokens: int=0, store: bool=False, stream: bool=False,
+		include: Optional[ List[ str ] ] = None, previous_id: str='',
+		stream_handler: Any=None ) -> str:
 		"""Analyze a file.
 		
 		Purpose:
@@ -2378,12 +2371,12 @@ class Files( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def search( self, file_id: str, query: str, model: str, instruct: str = '',
-		temperature: float = 0.0, top_p: float = 0.0, frequency: float = 0.0, presence: float =
+	def search( self, file_id: str, query: str, model: str, instruct: str='',
+		temperature: float=0.0, top_p: float=0.0, frequency: float=0.0, presence: float =
 		0.0,
-		max_tokens: int = 0, store: bool = False, stream: bool = False,
-		include: Optional[ List[ str ] ] = None, previous_id: str = '',
-		stream_handler: Any = None ) -> str:
+		max_tokens: int=0, store: bool=False, stream: bool=False,
+		include: Optional[ List[ str ] ] = None, previous_id: str='',
+		stream_handler: Any=None ) -> str:
 		"""Search a file.
 		
 		Purpose:
@@ -2446,7 +2439,7 @@ class Files( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def survey( self, file_id: str, max_chars: int = 4000 ) -> Dict[ str, Any ]:
+	def survey( self, file_id: str, max_chars: int=4000 ) -> Dict[ str, Any ]:
 		"""Survey a file.
 		
 		Purpose:
@@ -2660,7 +2653,7 @@ class TTS( Grok ):
 		return [ 32000, 64000, 96000, 128000, 192000, ]
 	
 	def build_output_format( self, output_format: str | Dict[ str, Any ] = 'mp3',
-		sample_rate: int = 24000, bit_rate: int = 128000 ) -> Dict[ str, Any ]:
+		sample_rate: int=24000, bit_rate: int=128000 ) -> Dict[ str, Any ]:
 		"""Build output-format configuration.
 		
 		Purpose:
@@ -2756,11 +2749,11 @@ class TTS( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def create_speech( self, text: str, language: str = 'en', voice_id: str = 'eve',
-		output_format: str | Dict[ str, Any ] = 'mp3', speed: float = 1.0,
-		optimize_streaming_latency: int = 0, text_normalization: bool = False,
-		sample_rate: int = 24000, bit_rate: int = 128000, filepath: str = '', audio_path: str = '',
-		with_timestamps: bool = False ) -> bytes:
+	def create_speech( self, text: str, language: str='en', voice_id: str='eve',
+		output_format: str | Dict[ str, Any ] = 'mp3', speed: float=1.0,
+		optimize_streaming_latency: int=0, text_normalization: bool=False,
+		sample_rate: int=24000, bit_rate: int=128000, filepath: str='', audio_path: str='',
+		with_timestamps: bool=False ) -> bytes:
 		"""Create speech.
 		
 		Purpose:
@@ -2909,7 +2902,7 @@ class Translation( Grok ):
 	duration: float
 	words: List[ Dict[ str, Any ] ]
 	
-	def __init__( self, model: str = 'grok-4.20' ) -> None:
+	def __init__( self, model: str='grok-4.20' ) -> None:
 		"""Initialize instance.
 		
 		Purpose:
@@ -3033,8 +3026,8 @@ class Translation( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def transcribe( self, path: str, source_language: str = '', text_format: bool = False,
-		mime_type: str = '', keyterm: str = '' ) -> str:
+	def transcribe( self, path: str, source_language: str='', text_format: bool=False,
+		mime_type: str='', keyterm: str='' ) -> str:
 		"""Transcribe source audio.
 		
 		Purpose:
@@ -3129,9 +3122,9 @@ class Translation( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def translate( self, path: str, target_language: str, model: str, source_language: str = '',
-		text_format: bool = False, mime_type: str = '', keyterm: str = '',
-		instruct: str = '' ) -> str:
+	def translate( self, path: str, target_language: str, model: str, source_language: str='',
+		text_format: bool=False, mime_type: str='', keyterm: str='',
+		instruct: str='' ) -> str:
 		"""Translate spoken audio.
 		
 		Purpose:
@@ -3351,8 +3344,8 @@ class Transcription( Grok ):
 			Logger( ).write( exception )
 			raise exception
 	
-	def transcribe( self, path: str, language: str = '', format: bool = False, mime_type: str = '',
-		keyterm: str = '' ) -> str:
+	def transcribe( self, path: str, language: str='', format: bool=False, mime_type: str='',
+		keyterm: str='' ) -> str:
 		"""Transcribe audio.
 		
 		Purpose:
@@ -3510,7 +3503,7 @@ class Transcription( Grok ):
 			'format_options', 'language_options', 'mime_options', 'get_mime_type', 'transcribe',
 			'get_result', 'get_words', 'get_channels', ]
 
-class VectorStores( Grok ):
+class Collections( Grok ):
 	"""Provide xAI Collections workflow support.
 	
 	Purpose:
@@ -3583,10 +3576,11 @@ class VectorStores( Grok ):
 	pagination_token: str
 	next_token: str
 	filter: str
+	collection: Dict[ str, Any ]
 	collections: Dict[ str, str ]
 	documents: Dict[ str, str ]
 	
-	def __init__( self, model: str = 'grok-4.20' ) -> None:
+	def __init__( self, model: str='grok-4.20' ) -> None:
 		"""Initialize instance.
 		
 		Purpose:
@@ -3635,6 +3629,7 @@ class VectorStores( Grok ):
 		self.pagination_token = ''
 		self.next_token = ''
 		self.filter = ''
+		self.collection = { }
 		self.collections = cfg.GROK_COLLECTIONS
 		self.documents = getattr( cfg, 'GROK_DOCUMENTS', { }, )
 	
@@ -3714,7 +3709,7 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = ('get_collection_id( self, store_id: str ) -> str')
 			Logger( ).write( exception )
 			raise exception
@@ -3747,7 +3742,7 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = ('get_collection_name( self, collection_id: str ) -> str')
 			Logger( ).write( exception )
 			raise exception
@@ -3772,7 +3767,7 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = ('build_management_headers( self ) -> Dict[ str, str ]')
 			Logger( ).write( exception )
 			raise exception
@@ -3822,7 +3817,7 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = ('execute_management_request( self, **kwargs )')
 			Logger( ).write( exception )
 			raise exception
@@ -3864,7 +3859,7 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = ('normalize_collection( self, collection: '
 			                    'Dict[ str, Any ] ) -> Dict[ str, Any ]')
 			Logger( ).write( exception )
@@ -3901,9 +3896,9 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
-			exception.method = ('normalize_collection_list( self, payload: '
-			                    'Dict[ str, Any ] ) -> List[ Dict[ str, Any ] ]')
+			exception.cause = 'Collections'
+			exception.method = ('normalize_collection_list( self, '
+			                    '**kwargs ) -> List[ Dict[ str, Any ] ]')
 			Logger( ).write( exception )
 			raise exception
 	
@@ -3926,13 +3921,11 @@ class VectorStores( Grok ):
 		try:
 			throw_if( 'response', response )
 			self.response = response
-			self.output_text = getattr( self.response, 'content', '', )
-			
+			self.output_text = getattr( self.response, 'content', '', )			
 			if self.output_text:
 				return str( self.output_text ).strip( )
 			
-			self.matches = getattr( self.response, 'matches', None, )
-			
+			self.matches = getattr( self.response, 'matches', None, )			
 			if self.matches is not None:
 				return self.matches
 			
@@ -3947,12 +3940,12 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = ('get_text_output( self, response: Any ) -> Any')
 			Logger( ).write( exception )
 			raise exception
 	
-	def create( self, name: str, description: str = '' ) -> Dict[ str, Any ]:
+	def create( self, name: str, description: str='' ) -> Dict[ str, Any ]:
 		"""Create a collection.
 		
 		Purpose:
@@ -3989,13 +3982,13 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = 'create( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def list( self, limit: int = 100, order: str = 'desc', sort_by: str = 'collection_name',
-		pagination_token: str = '', filter: str = '', team_id: str = '' ) -> List[
+	def list( self, limit: int=100, order: str='desc', sort_by: str='collection_name',
+		pagination_token: str='', filter: str='', team_id: str='' ) -> List[
 		Dict[ str, Any ] ]:
 		"""List collections.
 		
@@ -4041,12 +4034,12 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = 'list( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def retrieve( self, store_id: str, team_id: str = '' ) -> Dict[ str, Any ]:
+	def retrieve( self, store_id: str, team_id: str='' ) -> Dict[ str, Any ]:
 		"""Retrieve a collection.
 		
 		Purpose:
@@ -4078,12 +4071,12 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = 'retrieve( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def update( self, store_id: str, name: str = '', description: str = '' ) -> Dict[ str, Any ]:
+	def update( self, store_id: str, name: str='', description: str='' ) -> Dict[ str, Any ]:
 		"""Update a collection.
 		
 		Purpose:
@@ -4126,12 +4119,12 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = 'update( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def delete( self, store_id: str, team_id: str = '' ) -> bool:
+	def delete( self, store_id: str, team_id: str='' ) -> bool:
 		"""Delete a collection.
 		
 		Purpose:
@@ -4168,7 +4161,7 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = 'delete( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
@@ -4211,15 +4204,15 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = 'add_document( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def list_documents( self, store_id: str, limit: int = 100, order: str = 'desc',
-		sort_by: str = 'name', pagination_token: str = '', filter: str = '', team_id: str = '' ) \
+	def list_documents( self, store_id: str, limit: int=100, order: str='desc',
+		sort_by: str='name', pagination_token: str='', filter: str='', team_id: str='' ) \
 			-> \
-	List[ Dict[ str, Any ] ]:
+			List[ Dict[ str, Any ] ]:
 		"""List collection documents.
 		
 		Purpose:
@@ -4270,12 +4263,12 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = 'list_documents( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def retrieve_document( self, store_id: str, file_id: str, team_id: str = '' ) -> Dict[
+	def retrieve_document( self, store_id: str, file_id: str, team_id: str='' ) -> Dict[
 		str, Any ]:
 		"""Retrieve collection document.
 		
@@ -4312,12 +4305,12 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = ('retrieve_document( self, **kwargs )')
 			Logger( ).write( exception )
 			raise exception
 	
-	def regenerate_document( self, store_id: str, file_id: str, team_id: str = '' ) -> Any:
+	def regenerate_document( self, store_id: str, file_id: str, team_id: str='' ) -> Any:
 		"""Regenerate document index.
 		
 		Purpose:
@@ -4353,12 +4346,12 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = ('regenerate_document( self, **kwargs )')
 			Logger( ).write( exception )
 			raise exception
 	
-	def remove_document( self, store_id: str, file_id: str, team_id: str = '' ) -> bool:
+	def remove_document( self, store_id: str, file_id: str, team_id: str='' ) -> bool:
 		"""Remove a collection document.
 		
 		Purpose:
@@ -4395,13 +4388,13 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = ('remove_document( self, **kwargs )')
 			Logger( ).write( exception )
 			raise exception
 	
-	def batch_get_documents( self, store_id: str, file_ids: List[ str ], team_id: str = '' ) -> \
-	List[ Dict[ str, Any ] ]:
+	def batch_get_documents( self, store_id: str, file_ids: List[ str ], team_id: str='' ) -> \
+			List[ Dict[ str, Any ] ]:
 		"""Retrieve document metadata in a batch.
 		
 		Purpose:
@@ -4437,12 +4430,12 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = ('batch_get_documents( self, **kwargs )')
 			Logger( ).write( exception )
 			raise exception
 	
-	def search( self, prompt: str, store_id: str, model: str, filter: str = '' ) -> Any:
+	def search( self, prompt: str, store_id: str, model: str, filter: str='' ) -> Any:
 		"""Search a collection.
 		
 		Purpose:
@@ -4485,12 +4478,12 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = 'search( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception
 	
-	def survey( self, prompt: str, store_ids: List[ str ], model: str, filter: str = '' ) -> Any:
+	def survey( self, prompt: str, store_ids: List[ str ], model: str, filter: str='' ) -> Any:
 		"""Search multiple collections.
 		
 		Purpose:
@@ -4533,7 +4526,7 @@ class VectorStores( Grok ):
 		except Exception as e:
 			exception = Error( e )
 			exception.module = 'grok'
-			exception.cause = 'VectorStores'
+			exception.cause = 'Collections'
 			exception.method = 'survey( self, **kwargs )'
 			Logger( ).write( exception )
 			raise exception

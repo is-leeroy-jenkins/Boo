@@ -44,7 +44,7 @@
 '''
 import os
 import re
-from typing import Optional, List, Dict
+import multiprocessing
 from pathlib import Path
 
 # -------------- APP-LEVEL UTILITIES -------------
@@ -194,13 +194,29 @@ CLOSE_TAG = re.compile( r'</([A-Za-z0-9_\-:.]+)>' )
 MARKDOWN_HEADING_PATTERN = re.compile( r'^##\s+(?P<title>.+?)\s*$' )
 XML_BLOCK_PATTERN = re.compile( r'<(?P<tag>[a-zA-Z0-9_:-]+)>(?P<body>.*?)</\1>', re.DOTALL )
 DB_PATH = 'stores/sqlite/datamodels/Data.db'
-AUDIO_TEST_FILE = r'stores/audio/conditions.mp3'
 ANALYST = '❓'
 BOO = '🧠'
 PROVIDERS = { 'GPT': 'gpt', 'Gemini': 'gemini', 'Grok': 'grok', }
 PROMPT_ID = 'pmpt_697f53f7ddc881938d81f9b9d18d6136054cd88c36f94549'
 PROMPT_VERSION = '16'
 LOCAL_AUDIO_PATH = r'stores/audio/conditions.mp3'
+GROK = '𝕏'
+OUTPUT_FILE_NAME = "boo.wav"
+SAMPLE_RATE = 48000
+SAMPLE_RATES = [ 8000, 11025, 16000, 22050, 24000, 32000, 44100, 48000 ]
+MODELS = [ 'gpt-5-nano-2025-08-07', 'gpt-4.1-nano-2025-04-14', 'gpt-4o-mini', ]
+DEFAULT_MODEL = MODELS[ 0 ]
+MODELS = [ 'gpt-5-nano-2025-08-07', 'gpt-4.1-nano-2025-04-14', 'gpt-4o-mini', ]
+ROOT_DIR = Path( __file__ ).resolve( ).parent
+ASSETS_DIR: Path = ROOT_DIR / 'assets'
+DOCS_DIR: Path = ROOT_DIR / 'docs'
+LOG_DIR: Path = get_path( 'LOG_DIR', ROOT_DIR / 'logging' )
+LOG_PATH: str = get_text( 'LOG_PATH', str( LOG_DIR / 'Exceptions.db' ) )
+LOG_FILE: str = get_text( 'LOG_FILE', 'Exceptions' )
+FAVICON = r'resources/images/favicon.ico'
+
+# ----------------- API KEYS -------------------
+
 OPENAI_API_KEY = os.getenv( 'OPENAI_API_KEY' )
 GEOAPIFY_API_KEY = os.getenv( 'GEOAPIFY_API_KEY' )
 GEOCODING_API_KEY = os.getenv( 'GEOCODING_API_KEY' )
@@ -209,25 +225,11 @@ XAI_API_KEY = os.getenv( 'XAI_API_KEY' )
 XAI_MANAGEMENT_KEY = os.getenv( 'XAI_MANAGEMENT_KEY' )
 XAI_BASE_URL = 'https://api.x.ai/v1'
 XAI_MANAGEMENT_BASE_URL = os.getenv( 'XAI_MANAGEMENT_BASE_URL' )
-GROK_LOGO = r'resources/images/grok.png'
-GROK = '𝕏'
 GOOGLE_API_KEY = os.getenv( 'GOOGLE_API_KEY' )
 GOOGLE_CSE_ID = os.getenv( 'GOOGLE_CSE_ID' )
 GOOGLE_CLOUD_LOCATION = os.getenv( 'GOOGLE_CLOUD_LOCATION' )
 GOOGLE_CLOUD_PROJECT_ID = os.getenv( 'GOOGLE_CLOUD_PROJECT_ID' )
 GOOGLEMAPS_API_KEY = os.getenv( 'GOOGLEMAPS_API_KEY' )
-OUTPUT_FILE_NAME = "boo.wav"
-SAMPLE_RATE = 48000
-MODELS = [ 'gpt-5-nano-2025-08-07', 'gpt-4.1-nano-2025-04-14', 'gpt-4o-mini', ]
-DEFAULT_MODEL = MODELS[ 0 ]
-BASE_DIR = Path(__file__).resolve().parent
-ROOT_DIR = Path( __file__ ).resolve( ).parent
-ASSETS_DIR: Path = ROOT_DIR / 'assets'
-DOCS_DIR: Path = ROOT_DIR / 'docs'
-LOG_DIR: Path = get_path( 'LOG_DIR', ROOT_DIR / 'logging' )
-LOG_PATH: str = get_text( 'LOG_PATH', str( LOG_DIR / 'Exceptions.db' ) )
-LOG_FILE: str = get_text( 'LOG_FILE', 'Exceptions' )
-FAVICON = r'resources/images/favicon.ico'
 
 # ----------------- GPT CONFIG -------------------
 
@@ -290,7 +292,7 @@ GROK_MODES = [ 'Text',
                'Audio',
                'Document Q&A',
                'Files',
-               'Vector Stores',
+               'Collections',
                'Prompt Engineering',
                'Data Management',
                'Export' ]
@@ -344,6 +346,7 @@ GEMINI_EDITING = [ 'gemini-2.5-flash-image', 'gemini-2.5-flash-lite',
 
 PROVIDER_CLASS_MAP = {
 		'GPT': {
+				'Chat': 'Chat',
 				'Text': 'Chat',
 				'Images': 'Images',
 				'Audio': [ 'TTS', 'Translation', 'Transcription' ],
@@ -367,7 +370,7 @@ PROVIDER_CLASS_MAP = {
 				'Images': 'Images',
 				'Document Q&A': 'Files',
 				'Files': 'Files',
-				'Vector Stores': 'VectorStores',
+				'Collections': 'Collections',
 		},
 }
 
@@ -497,8 +500,6 @@ CHOICE = r'''Optional. Determines how tools are chosen when using reasoning mode
 SYSTEM_INSTRUCTIONS = r'''Optional. Gives the model high-level instructions on how it should behave while
 		generating a response, including tone, goals, and examples of correct responses. Any
 		instructions provided this way will take priority over a prompt in the input parameter.'''
-
-SAMPLE_RATES = [ 8000, 11025, 16000, 22050, 24000, 32000, 44100, 48000 ]
 
 BACKGROUND_MODE = r'''Background mode enables you to execute long-running tasks reliably,
 		without having to worry about timeouts or other connectivity issues.'''
