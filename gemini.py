@@ -722,17 +722,13 @@ class Chat( Gemini ):
 			exception = Error( e )
 			exception.module = 'gemini'
 			exception.cause = 'Chat'
-			exception.method = ('build_input( self, prompt: str, content: str, '
-			                    'context: Optional[ List[ Dict[ str, Any ] ] ], '
-			                    'urls: Optional[ List[ str ] ], max_urls: int ) '
-			                    '-> List[ Dict[ str, Any ] ]')
+			exception.method = ('build_input( self, **kwargs ) -> List[ Dict[ str, Any ] ]')
 			Logger( ).write( exception )
 			raise exception
 	
-	def build_generation_config( self, temperature: float=0.0, top_p: float=0.0, top_k: int
-	= 0,
-		max_tokens: int=0, stops: Optional[ List[ str ] ] = None, reasoning: str='',
-		tool_choice: Optional[ str ] = None ) -> Dict[ str, Any ]:
+	def build_generation_config( self, temperature: float=0.0, top_p: float=0.0, top_k: int=0,
+		max_tokens: int=0, stops: Optional[ List[ str ] ]=None, reasoning: str='',
+		tool_choice: Optional[ str ]=None ) -> Dict[ str, Any ]:
 		"""Build the Interactions generation configuration.
 
 		Purpose:
@@ -763,7 +759,6 @@ class Chat( Gemini ):
 			self.reasoning = reasoning
 			self.tool_choice = tool_choice
 			self.generation_config = { }
-			
 			if self.temperature > 0.0:
 				self.generation_config[ 'temperature' ] = self.temperature
 			
